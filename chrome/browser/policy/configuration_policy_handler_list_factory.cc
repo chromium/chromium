@@ -37,7 +37,6 @@
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/drive_file_sync_available_policy_handler.h"
 #include "chrome/browser/policy/file_selection_dialogs_policy_handler.h"
-#include "chrome/browser/policy/gemini_enterprise_url_policy_handler.h"
 #include "chrome/browser/policy/homepage_location_policy_handler.h"
 #include "chrome/browser/policy/isolate_origins_policy_handler.h"
 #include "chrome/browser/policy/javascript_policy_handler.h"
@@ -290,6 +289,12 @@
 #include "chrome/browser/external_protocol/auto_launch_protocols_policy_handler.h"
 #include "components/device_signals/core/browser/pref_names.h"  // nogncheck due to crbug.com/40147906
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/glic/gemini_enterprise/gemini_enterprise_url_policy_handler.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENTERPRISE_PROXY)
 #include "components/enterprise/net/core/proxy_provisioning_domains_policy_handler.h"

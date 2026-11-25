@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/gemini_enterprise_url_policy_handler.h"
+#include "chrome/browser/glic/gemini_enterprise/gemini_enterprise_url_policy_handler.h"
 
 #include <string>
 #include <vector>

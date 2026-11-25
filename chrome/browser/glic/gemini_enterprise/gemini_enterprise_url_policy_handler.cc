@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/gemini_enterprise_url_policy_handler.h"
+#include "chrome/browser/glic/gemini_enterprise/gemini_enterprise_url_policy_handler.h"
 
 #include <string>
 #include <utility>
@@ -11,7 +11,9 @@
 #include "base/values.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "url/gurl.h"

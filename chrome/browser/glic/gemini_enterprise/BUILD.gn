@@ -59,6 +59,27 @@ source_set("url_allowlist") {
   ]
 }
 
+if (is_win || is_mac || is_linux || is_chromeos) {
+  source_set("policy_handler") {
+    sources = [
+      "gemini_enterprise_url_policy_handler.cc",
+      "gemini_enterprise_url_policy_handler.h",
+    ]
+
+    public_deps = [ "//components/policy/core/browser" ]
+
+    deps = [
+      ":url_allowlist",
+      "//base",
+      "//chrome/browser/glic",
+      "//components/policy:generated",
+      "//components/policy/core/common",
+      "//components/strings:components_strings_grit",
+      "//url",
+    ]
+  }
+}
+
 source_set("guest_url") {
   sources = [
     "geic_guest_url.cc",
@@ -190,6 +211,16 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "gemini_enterprise_url_policy_handler_unittest.cc" ]
+    deps += [
+      ":policy_handler",
+      "//components/policy/core/browser",
+      "//components/strings:components_strings_grit",
+      "//ui/base",
+    ]
+  }
 }
 
 source_set("browser_tests") {
