@@ -61,6 +61,10 @@ class CrashpadLinux {
 
   static Config ReadConfigFileForTesting(const base::FilePath& path,
                                          uid_t expected_owner_uid);
+  // Overrides the config path returned by `GetConfigFilePath()` and relaxes
+  // the trusted config owner in `ReadConfig()` from UID 0 to `geteuid()`. Pass
+  // an empty path to clear the override.
+  static void SetConfigPathForTesting(const base::FilePath& path);
 
  private:
   static bool GetCrashpadHandlerPath(base::FilePath* handler_path);

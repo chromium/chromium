@@ -120,6 +120,10 @@ test("remoting_unittests") {
     }
   }
 
+  if (is_linux || is_win) {
+    data_deps += [ "//remoting/host/crash:remoting_crashpad_handler" ]
+  }
+
   deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
 
   if (is_android) {
@@ -130,7 +134,6 @@ test("remoting_unittests") {
 
   if (is_win) {
     defines += [ "_ALT_NO_EXCEPTIONS" ]
-    data_deps += [ "//remoting/host/crash:remoting_crashpad_handler" ]
 
     libs += [
       "comctl32.lib",

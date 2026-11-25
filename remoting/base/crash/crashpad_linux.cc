@@ -22,6 +22,7 @@
 #include "base/files/scoped_file.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/values.h"
@@ -39,9 +40,15 @@ namespace remoting {
 
 namespace {
 
-constexpr char kChromotingCrashpadHandler[] = "crashpad-handler";
+constexpr char kInstalledCrashpadHandler[] = "crashpad-handler";
+constexpr char kBuildOutputCrashpadHandler[] = "remoting_crashpad_handler";
 constexpr char kDefaultCrashpadUploadUrl[] =
     "https://clients2.google.com/cr/report";
+
+base::FilePath& GetTestConfigPathOverride() {
+  static base::NoDestructor<base::FilePath> path;
+  return *path;
+}
 
 CrashpadLinux::Config ReadAndValidateConfigFile(const base::FilePath& path,
                                                 uid_t expected_owner_uid) {
@@ -257,13 +264,18 @@ bool CrashpadLinux::GetHandlerSocket(base::ScopedFD& socket, pid_t& pid) {
 
 // static
 base::FilePath CrashpadLinux::GetConfigFilePath() {
+  const base::FilePath& test_override = GetTestConfigPathOverride();
+  if (!test_override.empty()) {
+    return test_override;
+  }
   return GetMultiProcessHostGlobalConfigDir().Append(kCrashpadConfigFileName);
 }
 
 // static
 CrashpadLinux::Config CrashpadLinux::ReadConfig() {
-  return ReadAndValidateConfigFile(GetConfigFilePath(),
-                                   /*expected_owner_uid=*/0);
+  const uid_t expected_owner_uid =
+      GetTestConfigPathOverride().empty() ? 0 : geteuid();
+  return ReadAndValidateConfigFile(GetConfigFilePath(), expected_owner_uid);
 }
 
 // static
@@ -274,12 +286,23 @@ CrashpadLinux::Config CrashpadLinux::ReadConfigFileForTesting(
 }
 
 // static
+void CrashpadLinux::SetConfigPathForTesting(const base::FilePath& path) {
+  GetTestConfigPathOverride() = path;
+}
+
+// static
 bool CrashpadLinux::GetCrashpadHandlerPath(base::FilePath* handler_path) {
-  if (!base::PathService::Get(base::DIR_EXE, handler_path)) {
+  base::FilePath exe_dir;
+  if (!base::PathService::Get(base::DIR_EXE, &exe_dir)) {
     LOG(ERROR) << "Unable to get exe dir for crashpad handler";
     return false;
   }
-  *handler_path = handler_path->Append(kChromotingCrashpadHandler);
+  base::FilePath installed_path = exe_dir.Append(kInstalledCrashpadHandler);
+  if (base::PathExists(installed_path)) {
+    *handler_path = std::move(installed_path);
+    return true;
+  }
+  *handler_path = exe_dir.Append(kBuildOutputCrashpadHandler);
   return true;
 }
 

@@ -594,6 +594,8 @@ source_set("unit_tests") {
       "//remoting/base/crash",
       "//remoting/base/crash:crashpad_db_mgr",
       "//third_party/crashpad/crashpad/client",
+      "//third_party/crashpad/crashpad/util",
+      "//third_party/zlib/google:compression_utils",
     ]
   }
 
@@ -601,10 +603,6 @@ source_set("unit_tests") {
     sources += [
       "crash/crashpad_win_unittest.cc",
       "registry_util_win_unittest.cc",
-    ]
-    deps += [
-      "//third_party/crashpad/crashpad/util",
-      "//third_party/zlib/google:compression_utils",
     ]
   }
 
