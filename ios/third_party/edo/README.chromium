@@ -2,7 +2,7 @@ Name: eDistantObject
 Short Name: EDO
 URL: https://github.com/google/eDistantObject
 Version: N/A
-Revision: 22a248634331ac32d487107d4a1152a4971f8303
+Revision: dbe7fde562106a78393da374ca718ca91ceec76a
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
