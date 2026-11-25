@@ -40,9 +40,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.ActionButton;
+import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.Action;
+import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.Surface;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -939,5 +942,103 @@ public class DownloadTrayMediatorTest {
         mModel.onItemUpdated(runningItem, /* updateDelta= */ null);
         assertNull(running.get(DownloadTrayItemProperties.PRIMARY_ACTION));
         assertNull(running.get(DownloadTrayItemProperties.SECONDARY_ACTION));
+    }
+
+    @Test
+    public void testMetrics_recordsShownOnlyWhenPopupActuallyShows() {
+        // Empty-tray fallback opens download history without showing the tray or recording.
+        HistogramWatcher noRecord =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(DownloadTrayMetrics.SHOWN_HISTOGRAM)
+                        .expectNoRecords(DownloadTrayMetrics.ACTION_HISTOGRAM)
+                        .build();
+        mMediator.toggleFullTray();
+        noRecord.assertExpected();
+
+        // Failed completion popup show doesn't record.
+        doReturn(false).when(mPopupController).showCompletions(any(), any());
+        noRecord =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(DownloadTrayMetrics.SHOWN_HISTOGRAM)
+                        .build();
+        runToState("a", OfflineItemState.COMPLETE);
+        noRecord.assertExpected();
+
+        // Successful completion popup show records COMPLETION_POPUP once.
+        doReturn(true).when(mPopupController).showCompletions(any(), any());
+        HistogramWatcher completionShown =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadTrayMetrics.SHOWN_HISTOGRAM, Surface.COMPLETION_POPUP);
+        runToState("b", OfflineItemState.COMPLETE);
+        completionShown.assertExpected();
+
+        // Failed full tray show doesn't record.
+        doReturn(false).when(mPopupController).showFullTray(any(), any());
+        noRecord =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(DownloadTrayMetrics.SHOWN_HISTOGRAM)
+                        .build();
+        mMediator.toggleFullTray();
+        noRecord.assertExpected();
+
+        // Successful full tray show records FULL_TRAY once, and progress ticks don't record.
+        doReturn(true).when(mPopupController).showFullTray(any(), any());
+        OfflineItem active = createItem("c", OfflineItemState.IN_PROGRESS);
+        mModel.onItemsAdded(List.of(active));
+        HistogramWatcher fullTrayShown =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadTrayMetrics.SHOWN_HISTOGRAM, Surface.FULL_TRAY);
+        mMediator.toggleFullTray();
+        OfflineItem tick = active.clone();
+        tick.receivedBytes = 500;
+        mModel.onItemUpdated(tick, /* updateDelta= */ null);
+        fullTrayShown.assertExpected();
+    }
+
+    @Test
+    public void testMetrics_recordsAllActions() {
+        mGetAllItemsCallbackCaptor
+                .getValue()
+                .onResult(
+                        new ArrayList<>(
+                                List.of(
+                                        createItem("running", OfflineItemState.IN_PROGRESS),
+                                        createItem("paused", OfflineItemState.PAUSED),
+                                        createItem("interrupted", OfflineItemState.INTERRUPTED),
+                                        createItem("complete", OfflineItemState.COMPLETE))));
+        mMediator.toggleFullTray();
+        ModelList rows = captureFullTrayRows();
+        PropertyModel running = rows.get(0).model;
+        PropertyModel paused = rows.get(1).model;
+        PropertyModel complete = rows.get(2).model;
+        PropertyModel interrupted = rows.get(3).model;
+
+        HistogramWatcher actions =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                DownloadTrayMetrics.ACTION_HISTOGRAM,
+                                Action.PAUSE,
+                                Action.RESUME,
+                                Action.RETRY,
+                                Action.CANCEL,
+                                Action.OPEN,
+                                Action.FULL_HISTORY)
+                        .build();
+        running.get(DownloadTrayItemProperties.PRIMARY_ACTION)
+                .mOnClick
+                .onResult(running.get(DownloadTrayItemProperties.ITEM_ID));
+        paused.get(DownloadTrayItemProperties.PRIMARY_ACTION)
+                .mOnClick
+                .onResult(paused.get(DownloadTrayItemProperties.ITEM_ID));
+        interrupted
+                .get(DownloadTrayItemProperties.PRIMARY_ACTION)
+                .mOnClick
+                .onResult(interrupted.get(DownloadTrayItemProperties.ITEM_ID));
+        running.get(DownloadTrayItemProperties.SECONDARY_ACTION)
+                .mOnClick
+                .onResult(running.get(DownloadTrayItemProperties.ITEM_ID));
+        complete.get(DownloadTrayItemProperties.ON_OPEN).onClick(mAnchor);
+        mMediator.onFullHistoryClicked();
+        actions.assertExpected();
     }
 }

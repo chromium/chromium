@@ -101,6 +101,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayItemView.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayItemViewBinder.java",
     "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayMediator.java",
+    "java/src/org/chromium/chrome/browser/download/tray/DownloadTrayMetrics.java",
   ]
 
   deps = [

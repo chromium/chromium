@@ -16,6 +16,7 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -36,8 +37,11 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.Action;
+import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.CompletionPopupCloseReason;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -156,6 +160,10 @@ public class DownloadTrayCoordinatorTest {
 
     @Test
     public void testCompletion_showsPopupThatAutoDismisses() {
+        HistogramWatcher closeReason =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadTrayMetrics.COMPLETION_POPUP_CLOSE_REASON_HISTOGRAM,
+                        CompletionPopupCloseReason.AUTO_DISMISSED);
         completeDownload();
         assertEquals(1, shownAdapter().getItemCount());
         assertHasHeaderAndFooter(shownContent(), false);
@@ -168,6 +176,7 @@ public class DownloadTrayCoordinatorTest {
         shownPopup();
         ShadowLooper.idleMainLooper(1, TimeUnit.MILLISECONDS);
         assertNull(mCoordinator.getPopupForTesting());
+        closeReason.assertExpected();
     }
 
     @Test
@@ -196,6 +205,10 @@ public class DownloadTrayCoordinatorTest {
 
     @Test
     public void testClickingRow_opensAndDismisses() {
+        HistogramWatcher closeReason =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadTrayMetrics.COMPLETION_POPUP_CLOSE_REASON_HISTOGRAM,
+                        CompletionPopupCloseReason.ITEM_OPENED);
         OfflineItem item = completeDownload();
 
         firstRow().performClick();
@@ -203,10 +216,18 @@ public class DownloadTrayCoordinatorTest {
         verify(mOnActioned).run();
         verify(mDelegate).openItem(item);
         assertNull(mCoordinator.getPopupForTesting());
+        closeReason.assertExpected();
     }
 
     @Test
     public void testFullTray_hasHeaderAndFooterTakesFocusAndStaysUntilClosed() {
+        HistogramWatcher metrics =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                DownloadTrayMetrics.COMPLETION_POPUP_CLOSE_REASON_HISTOGRAM,
+                                CompletionPopupCloseReason.REPLACED_BY_FULL_TRAY)
+                        .expectIntRecord(DownloadTrayMetrics.ACTION_HISTOGRAM, Action.CLOSE)
+                        .build();
         completeDownload();
         mCoordinator.toggleFullTray();
         View content = shownContent();
@@ -222,12 +243,19 @@ public class DownloadTrayCoordinatorTest {
         content.findViewById(R.id.download_tray_close).performClick();
         assertNull(mCoordinator.getPopupForTesting());
         assertFalse(mAnchor.isSelected());
+        // Closing the full tray doesn't record a second completion-popup close reason.
+        metrics.assertExpected();
     }
 
     @Test
     public void testFullTray_closesOnOutsideTapsOnly() {
         completeDownload();
         mCoordinator.toggleFullTray();
+        HistogramWatcher noCloseReason =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                DownloadTrayMetrics.COMPLETION_POPUP_CLOSE_REASON_HISTOGRAM)
+                        .build();
         View header = shownContent().findViewById(R.id.download_tray_header);
         View root = header.getRootView();
         ShadowLooper.idleMainLooper();
@@ -251,6 +279,7 @@ public class DownloadTrayCoordinatorTest {
                 anchorLocation[0] + 2 * mAnchor.getWidth(),
                 anchorLocation[1] + 2 * mAnchor.getHeight());
         assertNull(mCoordinator.getPopupForTesting());
+        noCloseReason.assertExpected();
     }
 
     @Test
@@ -289,18 +318,76 @@ public class DownloadTrayCoordinatorTest {
 
     @Test
     public void testDestroy_dismissesPopup() {
+        HistogramWatcher closeReason =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadTrayMetrics.COMPLETION_POPUP_CLOSE_REASON_HISTOGRAM,
+                        CompletionPopupCloseReason.OTHER);
         completeDownload();
         shownPopup();
 
         mCoordinator.destroy();
         assertNull(mCoordinator.getPopupForTesting());
+        closeReason.assertExpected();
     }
 
     @Test
     @Config(qualifiers = "w320dp-h40dp")
     public void testNoRoomToShow_resetsState() {
+        HistogramWatcher noRecords =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(DownloadTrayMetrics.SHOWN_HISTOGRAM)
+                        .expectNoRecords(
+                                DownloadTrayMetrics.COMPLETION_POPUP_CLOSE_REASON_HISTOGRAM)
+                        .build();
         // Too short a window for a touchable popup, so AnchoredPopupWindow doesn't show it.
         completeDownload();
         assertNull(mCoordinator.getPopupForTesting());
+        noRecords.assertExpected();
+    }
+
+    @Test
+    public void testCompletionPopup_outsideTapRecordsDismissedOutside() {
+        completeDownload();
+        View root = shownContent().getRootView();
+        ShadowLooper.idleMainLooper();
+
+        int[] anchorLocation = new int[2];
+        mAnchor.getLocationOnScreen(anchorLocation);
+        HistogramWatcher noCloseReason =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                DownloadTrayMetrics.COMPLETION_POPUP_CLOSE_REASON_HISTOGRAM)
+                        .build();
+        // An outside tap on the anchor is left to the button and doesn't dismiss or record.
+        dispatchTouch(
+                root, MotionEvent.ACTION_OUTSIDE, anchorLocation[0] + 1, anchorLocation[1] + 1);
+        shownPopup();
+        noCloseReason.assertExpected();
+
+        HistogramWatcher closeReason =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadTrayMetrics.COMPLETION_POPUP_CLOSE_REASON_HISTOGRAM,
+                        CompletionPopupCloseReason.DISMISSED_OUTSIDE);
+        dispatchTouch(
+                root,
+                MotionEvent.ACTION_OUTSIDE,
+                anchorLocation[0] + 2 * mAnchor.getWidth(),
+                anchorLocation[1] + 2 * mAnchor.getHeight());
+        assertNull(mCoordinator.getPopupForTesting());
+        closeReason.assertExpected();
+    }
+
+    @Test
+    public void testCompletionPopup_anchorHiddenRecordsAnchorHidden() {
+        HistogramWatcher closeReason =
+                HistogramWatcher.newSingleRecordWatcher(
+                        DownloadTrayMetrics.COMPLETION_POPUP_CLOSE_REASON_HISTOGRAM,
+                        CompletionPopupCloseReason.ANCHOR_HIDDEN);
+        completeDownload();
+        shownPopup();
+
+        ((ViewGroup) mAnchor.getParent()).removeView(mAnchor);
+        assertNull(mCoordinator.getPopupForTesting());
+        closeReason.assertExpected();
     }
 }

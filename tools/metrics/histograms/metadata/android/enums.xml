@@ -339,6 +339,42 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/download/DownloadMetrics.java:DownloadOpenTarget) -->
 
+<!-- LINT.IfChange(AndroidDownloadTrayAction) -->
+
+<enum name="AndroidDownloadTrayAction">
+  <int value="0" label="Open"/>
+  <int value="1" label="Pause"/>
+  <int value="2" label="Resume"/>
+  <int value="3" label="Retry"/>
+  <int value="4" label="Cancel"/>
+  <int value="5" label="FullHistory"/>
+  <int value="6" label="Close"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/tray/DownloadTrayMetrics.java:Action) -->
+
+<!-- LINT.IfChange(AndroidDownloadTrayCompletionPopupCloseReason) -->
+
+<enum name="AndroidDownloadTrayCompletionPopupCloseReason">
+  <int value="0" label="AutoDismissed"/>
+  <int value="1" label="ItemOpened"/>
+  <int value="2" label="DismissedOutside"/>
+  <int value="3" label="ReplacedByFullTray"/>
+  <int value="4" label="AnchorHidden"/>
+  <int value="5" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/tray/DownloadTrayMetrics.java:CompletionPopupCloseReason) -->
+
+<!-- LINT.IfChange(AndroidDownloadTraySurface) -->
+
+<enum name="AndroidDownloadTraySurface">
+  <int value="0" label="CompletionPopup"/>
+  <int value="1" label="FullTray"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/tray/DownloadTrayMetrics.java:Surface) -->
+
 <!-- LINT.IfChange(AndroidDragTargetType) -->
 
 <enum name="AndroidDragTargetType">

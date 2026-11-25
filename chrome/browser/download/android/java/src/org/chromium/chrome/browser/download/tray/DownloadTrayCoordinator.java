@@ -25,6 +25,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.Action;
+import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.CompletionPopupCloseReason;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -50,7 +52,7 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
     private final Context mContext;
     private final DownloadTrayMediator mMediator;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private final Runnable mAutoDismissRunnable = this::dismiss;
+    private final Runnable mAutoDismissRunnable = this::onAutoDismiss;
 
     private @Nullable AnchoredPopupWindow mPopup;
     private @Nullable SimpleRecyclerViewAdapter mAdapter;
@@ -130,7 +132,17 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
     private boolean showPopup(
             View anchor, AnchoredPopupWindow.ViewBuilder content, boolean focusable) {
         dismiss();
-        ViewRectProvider anchorRectProvider = new ViewRectProvider(anchor);
+        // AnchoredPopupWindow dismisses on anchor hide without exposing the reason; intercept here
+        // to label completion-popup metrics.
+        ViewRectProvider anchorRectProvider =
+                new ViewRectProvider(anchor) {
+                    @Override
+                    protected void notifyRectHidden() {
+                        mMediator.recordCompletionPopupClosed(
+                                CompletionPopupCloseReason.ANCHOR_HIDDEN);
+                        super.notifyRectHidden();
+                    }
+                };
         mPopup =
                 new AnchoredPopupWindow.Builder(
                                 mContext,
@@ -151,10 +163,17 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
                         // tray, so the popup doesn't close here only for that tap to reopen it.
                         // It clicks nothing itself, so ClickableViewAccessibility is suppressed.
                         .setTouchInterceptor(
-                                (v, event) ->
-                                        event.getAction() == MotionEvent.ACTION_OUTSIDE
-                                                && isOnView(
-                                                        anchor, event.getRawX(), event.getRawY()))
+                                (v, event) -> {
+                                    if (event.getAction() != MotionEvent.ACTION_OUTSIDE) {
+                                        return false;
+                                    }
+                                    if (isOnView(anchor, event.getRawX(), event.getRawY())) {
+                                        return true;
+                                    }
+                                    mMediator.recordCompletionPopupClosed(
+                                            CompletionPopupCloseReason.DISMISSED_OUTSIDE);
+                                    return false;
+                                })
                         .setDismissOnScreenSizeChange(true)
                         .addOnDismissListener(
                                 () -> {
@@ -182,6 +201,11 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
         if (mPopup != null) mPopup.dismiss();
     }
 
+    private void onAutoDismiss() {
+        mMediator.recordCompletionPopupClosed(CompletionPopupCloseReason.AUTO_DISMISSED);
+        dismiss();
+    }
+
     /** Inflates {@code layout}, which contains the tray's list, and binds {@code rows} to it. */
     private View buildList(Context themedContext, @LayoutRes int layout, ModelList rows) {
         View content = LayoutInflater.from(themedContext).inflate(layout, /* root= */ null);
@@ -199,7 +223,12 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
 
     private View buildFullTray(Context themedContext, ModelList rows) {
         View content = buildList(themedContext, R.layout.download_tray_full_tray, rows);
-        content.findViewById(R.id.download_tray_close).setOnClickListener(v -> dismiss());
+        content.findViewById(R.id.download_tray_close)
+                .setOnClickListener(
+                        v -> {
+                            DownloadTrayMetrics.recordAction(Action.CLOSE);
+                            dismiss();
+                        });
         content.findViewById(R.id.download_tray_full_history)
                 .setOnClickListener(v -> mMediator.onFullHistoryClicked());
         return content;

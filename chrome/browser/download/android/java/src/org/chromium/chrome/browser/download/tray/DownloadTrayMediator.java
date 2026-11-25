@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.text.BidiFormatter;
 import androidx.core.text.TextDirectionHeuristicsCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -27,6 +28,9 @@ import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.StringUtils;
 import org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.ActionButton;
+import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.Action;
+import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.CompletionPopupCloseReason;
+import org.chromium.chrome.browser.download.tray.DownloadTrayMetrics.Surface;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -107,6 +111,9 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     /** Whether the showing popup is the full tray rather than the completion popup. */
     private boolean mIsFullTrayShowing;
 
+    /** Whether the showing completion popup still needs a close-reason metric recorded. */
+    private boolean mShouldRecordCompletionClose;
+
     /**
      * Completions since the last popup, waiting to be shown once nothing is still downloading. Kept
      * so they are still shown if the last active download fails, is cancelled or is removed.
@@ -152,25 +159,25 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
                         R.drawable.ic_pause_white_24dp,
                         R.string.download_notification_pause_button,
                         R.string.download_tray_item_pause_accessibility,
-                        mModel::pauseDownload);
+                        withActionMetric(Action.PAUSE, mModel::pauseDownload));
         mResumeAction =
                 new ActionButton(
                         R.drawable.ic_play_arrow_white_24dp,
                         R.string.download_notification_resume_button,
                         R.string.download_tray_item_resume_accessibility,
-                        mModel::resumeDownload);
+                        withActionMetric(Action.RESUME, mModel::resumeDownload));
         mRetryAction =
                 new ActionButton(
                         R.drawable.ic_refresh_24dp,
                         R.string.download_notification_resume_button,
                         R.string.download_tray_item_retry_accessibility,
-                        mModel::resumeDownload);
+                        withActionMetric(Action.RETRY, mModel::resumeDownload));
         mCancelAction =
                 new ActionButton(
                         R.drawable.material_ic_close_24dp,
                         R.string.download_notification_cancel_button,
                         R.string.download_tray_item_cancel_accessibility,
-                        mModel::cancelDownload);
+                        withActionMetric(Action.CANCEL, mModel::cancelDownload));
         mModel.addObserver(this);
     }
 
@@ -182,6 +189,7 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
 
     /** Called by the popup controller whenever the popup is dismissed, for any reason. */
     void onDismissed() {
+        recordCompletionPopupClosed(CompletionPopupCloseReason.OTHER);
         mShownRows.clear();
         mShownList = null;
         mIsFullTrayShowing = false;
@@ -211,15 +219,18 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         }
         // Showing first dismisses any completion popup, which clears the shown rows, so record the
         // new ones only once the tray is showing.
+        recordCompletionPopupClosed(CompletionPopupCloseReason.REPLACED_BY_FULL_TRAY);
         if (!mPopupController.showFullTray(anchor, rows)) return;
         mShownList = rows;
         mShownRows.putAll(rowsById);
         mIsFullTrayShowing = true;
         mUnactionedIds.removeAll(rowsById.keySet());
+        DownloadTrayMetrics.recordShown(Surface.FULL_TRAY);
     }
 
     /** Called when the user asks for the full download history from the tray. */
     void onFullHistoryClicked() {
+        DownloadTrayMetrics.recordAction(Action.FULL_HISTORY);
         mPopupController.dismiss();
         openDownloadHistory();
     }
@@ -338,6 +349,8 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         mLastShownTimeMs = now;
         mShownList = rows;
         mShownRows.putAll(rowsById);
+        mShouldRecordCompletionClose = true;
+        DownloadTrayMetrics.recordShown(Surface.COMPLETION_POPUP);
     }
 
     /** Builds the completion popup's rows: the un-actioned completions this window shows. */
@@ -435,11 +448,29 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         mUnactionedIds.retainAll(listedIds);
     }
 
+    /** Records {@code reason} once if the completion popup is currently showing. */
+    void recordCompletionPopupClosed(@CompletionPopupCloseReason int reason) {
+        if (mShouldRecordCompletionClose) {
+            mShouldRecordCompletionClose = false;
+            DownloadTrayMetrics.recordCompletionPopupCloseReason(reason);
+        }
+    }
+
     private void onOpen(OfflineItem item) {
+        DownloadTrayMetrics.recordAction(Action.OPEN);
+        recordCompletionPopupClosed(CompletionPopupCloseReason.ITEM_OPENED);
         mUnactionedIds.remove(item.id);
         mOnActioned.run();
         mPopupController.dismiss();
         mDelegate.openItem(item);
+    }
+
+    private static Callback<ContentId> withActionMetric(
+            @Action int action, Callback<ContentId> onClick) {
+        return id -> {
+            DownloadTrayMetrics.recordAction(action);
+            onClick.onResult(id);
+        };
     }
 
     /**

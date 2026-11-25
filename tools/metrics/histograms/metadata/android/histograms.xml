@@ -2289,6 +2289,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DownloadTray.Action" enum="AndroidDownloadTrayAction"
+    expires_after="2027-11-25">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records user actions taken inside the download toolbar button tray on
+    Android desktop (opening a completed item, pausing/resuming/retrying/
+    cancelling a download, opening full download history from the footer, or
+    clicking the header close button).
+  </summary>
+</histogram>
+
+<histogram name="Android.DownloadTray.CompletionPopup.CloseReason"
+    enum="AndroidDownloadTrayCompletionPopupCloseReason"
+    expires_after="2027-11-25">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records why an auto-shown download completion popup closed on Android
+    desktop. Normally logged once for every completion popup that is actually
+    shown. &quot;Other&quot; covers programmatic and environmental dismissals
+    such as all rows being removed, screen size changes, or the window being
+    destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Android.DownloadTray.Shown" enum="AndroidDownloadTraySurface"
+    expires_after="2027-11-25">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records each time a download toolbar button tray surface (auto-shown
+    completion popup or user-opened full tray) is actually shown on Android
+    desktop.
+  </summary>
+</histogram>
+
 <histogram name="Android.DragDrop.Files.Count" units="files"
     expires_after="2027-07-26">
   <owner>joelhockey@chromium.org</owner>
