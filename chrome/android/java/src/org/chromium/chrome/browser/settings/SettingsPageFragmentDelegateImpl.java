@@ -803,7 +803,7 @@ public class SettingsPageFragmentDelegateImpl
         if (mToolbar != null) {
             SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, this);
             if (mSearchCoordinator != null) {
-                mSearchCoordinator.updateOptionsMenuVisibility();
+                mSearchCoordinator.updateHelpMenuVisibility();
             }
         }
     }

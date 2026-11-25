@@ -102,9 +102,7 @@ public class SettingsMenuHelper {
      * @param delegate The Delegate to provide the host state.
      */
     public static void onPrepareOptionsMenu(Menu menu, Delegate delegate) {
-        SettingsSearchCoordinator searchCoordinator = delegate.getSearchCoordinator();
-        if (delegate.isShownInTab()
-                || (searchCoordinator != null && searchCoordinator.isSearchOpen())) {
+        if (delegate.isShownInTab()) {
             removeHelpMenuItems(menu);
         }
         for (int i = 0; i < menu.size(); i++) {
@@ -117,7 +115,7 @@ public class SettingsMenuHelper {
 
     /**
      * Removes any help menu items (general, targeted, site settings or editor) from the menu when
-     * settings is shown in a tab or while settings search is open.
+     * settings is shown in a tab.
      */
     private static void removeHelpMenuItems(Menu menu) {
         menu.removeItem(R.id.menu_id_general_help);

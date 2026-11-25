@@ -5,11 +5,7 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -17,10 +13,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertHighlighted;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertNoSearchResultsFound;
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.clickSearchResult;
@@ -28,7 +22,6 @@ import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.typeS
 
 import android.view.View;
 
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
@@ -109,40 +102,6 @@ public class AutofillSettingsSearchTest {
         onView(actionBarTitle(withText(R.string.autofill_payments_title)))
                 .check(matches(isDisplayed()));
         assertHighlighted(R.string.autofill_enable_credit_cards_toggle_label);
-    }
-
-    @Test
-    @SmallTest
-    public void testSearchPaymentMethods_openLocalCardEditor_showsDeleteIcon() throws Exception {
-        mSettingsActivityTestRule.startSettingsActivity();
-
-        AutofillTestHelper autofillTestHelper = new AutofillTestHelper();
-        try {
-            CreditCard card =
-                    AutofillTestHelper.createLocalCreditCard(
-                            "John Doe", "4111111111111111", "05", AutofillTestHelper.nextYear());
-            autofillTestHelper.setCreditCard(card);
-
-            typeSearchQuery("payment");
-            clickSearchResult(R.string.autofill_enable_credit_cards_toggle_label);
-
-            assertHighlighted(R.string.autofill_enable_credit_cards_toggle_label);
-            onView(
-                            allOf(
-                                    withId(R.id.recycler_view),
-                                    isDescendantOfA(withId(R.id.preferences_detail))))
-                    .perform(
-                            RecyclerViewActions.actionOnItem(
-                                    hasDescendant(withText(containsString("1111"))), click()));
-
-            waitForView(withId(R.id.credit_card_number_edit));
-            waitForView(withId(R.id.delete_menu_id));
-            onView(withId(R.id.delete_menu_id)).check(matches(isDisplayed()));
-            onView(withId(R.id.help_menu_id)).check(doesNotExist());
-            onView(withId(R.id.menu_id_general_help)).check(doesNotExist());
-        } finally {
-            autofillTestHelper.clearAllDataForTesting();
-        }
     }
 
     @Test

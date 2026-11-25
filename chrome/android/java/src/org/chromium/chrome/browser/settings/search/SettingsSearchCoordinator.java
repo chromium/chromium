@@ -45,6 +45,7 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.ActionMenuView;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.content.ContextCompat;
@@ -1121,7 +1122,7 @@ public class SettingsSearchCoordinator
         return !mMultiColumnSettings.isLayoutOpen();
     }
 
-    private @Nullable View getOptionsMenuView() {
+    private @Nullable View getHelpMenuView() {
         Toolbar toolbar = requireViewById(R.id.action_bar);
         for (int i = 0; i < toolbar.getChildCount(); i++) {
             View child = toolbar.getChildAt(i);
@@ -1294,11 +1295,7 @@ public class SettingsSearchCoordinator
             updateSingleColumnSearchUiWidth();
         }
 
-        // Rebuild the standalone SettingsActivity options menu so SettingsMenuHelper removes help
-        // items while search is open and keeps detail-page actions (such as delete). SettingsInTab
-        // manages its toolbar menu directly and must not invalidate the host activity's menu.
-        if (!mShownInTab) mActivity.invalidateOptionsMenu();
-        updateOptionsMenuVisibility();
+        updateHelpMenuVisibility();
         adjustTalkbackTraversalOrder(queryContainer);
     }
 
@@ -1394,11 +1391,7 @@ public class SettingsSearchCoordinator
         mBackActionCallback.setEnabled(false);
         mUpdateFirstVisibleTitle.onResult(0);
 
-        // Rebuild the standalone SettingsActivity options menu so SettingsMenuHelper restores help
-        // items now that search has closed. SettingsInTab manages its toolbar menu directly and
-        // must not invalidate the host activity's menu.
-        if (!mShownInTab) mActivity.invalidateOptionsMenu();
-        updateOptionsMenuVisibility();
+        updateHelpMenuVisibility();
         adjustTalkbackTraversalOrder(searchBox);
         logExitReason();
         RecentSearchQueue.getInstance().flushIfDirty();
@@ -1417,15 +1410,15 @@ public class SettingsSearchCoordinator
         }
     }
 
-    /** Update the visibility of the toolbar options menu. */
-    public void updateOptionsMenuVisibility() {
-        View menuView = getOptionsMenuView();
+    /** Update the visibility of the help menu on the toolbar. */
+    public void updateHelpMenuVisibility() {
+        ViewGroup menuView = (ViewGroup) getHelpMenuView();
         if (menuView == null) {
             if (mShownInTab && (mActionBar == null || !hasVisibleMenuItems(mActionBar.getMenu()))) {
                 updateSearchUiWidth();
                 return;
             }
-            mHandler.post(this::updateOptionsMenuVisibility);
+            mHandler.post(this::updateHelpMenuVisibility);
             return;
         }
 
@@ -1435,7 +1428,17 @@ public class SettingsSearchCoordinator
                     // theme switch. https://crbug.com/545872336
                     if (mActivity.isFinishing() || mActivity.isDestroyed() || mIsDestroyed) return;
 
-                    boolean show = shouldShowOptionsMenu();
+                    boolean show = shouldShowHelpMenu();
+                    if (!show) {
+                        // Should show menu if we have the search view.
+                        for (int i = 0; i < menuView.getChildCount(); i++) {
+                            View button = menuView.getChildAt(i);
+                            if (button instanceof SearchView) {
+                                show = true;
+                                break;
+                            }
+                        }
+                    }
                     menuView.setVisibility(show ? View.VISIBLE : View.GONE);
                     updateSearchUiWidth();
                     if (show && menuView.getWidth() == 0) {
@@ -1649,14 +1652,14 @@ public class SettingsSearchCoordinator
     }
 
     private int getMenuWidth() {
-        View menuView = getOptionsMenuView();
+        View menuView = getHelpMenuView();
         return menuView != null && menuView.getVisibility() == View.VISIBLE
                 ? menuView.getWidth()
                 : 0;
     }
 
     private boolean hasMenuIcon() {
-        View menuView = getOptionsMenuView();
+        View menuView = getHelpMenuView();
         return menuView != null && menuView.getVisibility() == View.VISIBLE;
     }
 
@@ -1844,9 +1847,9 @@ public class SettingsSearchCoordinator
 
         boolean useMultiColumn = mUseMultiColumnSupplier.getAsBoolean();
 
-        // Changing the layout restarts the activity; refresh options menu visibility for the
-        // current search state.
-        updateOptionsMenuVisibility();
+        // Changing the layout restarts the activity, and in which case the help icon should remain
+        // invisible if in the search or results view.
+        updateHelpMenuVisibility();
 
         if (useMultiColumn == mUseMultiColumn) {
             // Resizing/rotation could only change the window width. Adjust search bar UI in
@@ -1972,18 +1975,18 @@ public class SettingsSearchCoordinator
     }
 
     /**
-     * Single source of truth for whether the toolbar options menu should be visible. The menu is
-     * hidden during Search ({@link #FS_SEARCH}). During Results ({@link #FS_RESULTS}) and for
-     * SettingsInTab in {@link #FS_SETTINGS}, it is visible only when the options menu has visible
-     * items (for example, the delete icon on payment card editors or a local search action).
+     * Single source of truth for whether the help menu should be visible. Currently, it is visible
+     * only when we are in the main Settings state, not during Search or Results. For SettingsInTab,
+     * it is visible only when the options menu has visible items.
      */
-    private boolean shouldShowOptionsMenu() {
-        return switch (mFragmentState) {
-            case FS_SEARCH -> false;
-            case FS_RESULTS -> hasVisibleMenuItems(mActionBar.getMenu());
-            case FS_SETTINGS -> !mShownInTab || hasVisibleMenuItems(mActionBar.getMenu());
-            default -> false;
-        };
+    private boolean shouldShowHelpMenu() {
+        if (mFragmentState != FS_SETTINGS) return false;
+
+        if (mShownInTab) {
+            return mActionBar != null && hasVisibleMenuItems(mActionBar.getMenu());
+        }
+
+        return true;
     }
 
     private static boolean hasVisibleMenuItems(@Nullable Menu menu) {
