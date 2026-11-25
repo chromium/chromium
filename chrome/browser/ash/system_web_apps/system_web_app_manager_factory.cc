@@ -33,12 +33,6 @@ SystemWebAppManagerFactory* SystemWebAppManagerFactory::GetInstance() {
   return instance.get();
 }
 
-// static
-bool SystemWebAppManagerFactory::IsServiceCreatedForProfile(Profile* profile) {
-  return SystemWebAppManagerFactory::GetInstance()->GetServiceForBrowserContext(
-             profile, /*create=*/false) != nullptr;
-}
-
 SystemWebAppManagerFactory::SystemWebAppManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "SystemWebAppManager",

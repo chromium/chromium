@@ -30,8 +30,6 @@ class SystemWebAppManagerFactory : public BrowserContextKeyedServiceFactory {
 
   static SystemWebAppManagerFactory* GetInstance();
 
-  static bool IsServiceCreatedForProfile(Profile* profile);
-
  private:
   friend base::NoDestructor<SystemWebAppManagerFactory>;
   friend class SystemWebAppManager;
