@@ -105,7 +105,9 @@ void MemorySaverModePolicy::OnMemorySaverModeChanged(bool enabled) {
   memory_saver_mode_enabled_ = enabled;
 
   if (memory_saver_mode_enabled_) {
-    CHECK(active_discard_timers_.empty(), base::NotFatalUntil::M163);
+    // TODO(crbug.com/585517560): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(active_discard_timers_.empty());
     StartAllDiscardTimers();
   } else {
     active_discard_timers_.clear();
