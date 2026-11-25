@@ -195,6 +195,11 @@ inline constexpr char kGlicKeepSidepanelOpenOnNewTabsEnabled[] =
 
 // Bool pref for enabling the shake trigger to capture region.
 inline constexpr char kGlicShakeTriggerEnabled[] = "glic.shake_trigger_enabled";
+
+// Integer pref that stores the last-used prompt endpoint in the Glic
+// selection overlay (`selection::mojom::PromptEndpointId`).
+inline constexpr char kGlicSelectionOverlayLastEndpoint[] =
+    "glic.selection_overlay_last_endpoint";
 // Integer pref that determines if Glic actuation is enabled. This is
 // controlled from the enterprise policy. Only applicable to enterprise
 // accounts.

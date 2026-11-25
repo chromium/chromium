@@ -51,6 +51,15 @@ enum SuggestedActionIcon {
   kExplain = 2,
 };
 
+struct PromptEndpointInfo {
+  // Identifier for the endpoint, which also determines its icon.
+  selection.mojom.PromptEndpointId id;
+  // Localized display name of the endpoint (e.g. "Gemini", "Google Search").
+  string name;
+  // Localized placeholder text shown in the prompt input box.
+  string placeholder;
+};
+
 struct SuggestedAction {
   // Unique identifier for the action.
   mojo_base.mojom.UnguessableToken id;
@@ -103,13 +112,23 @@ interface SelectionOverlayPageHandler {
   // Enables/disables the live blurring of the background
   SetLiveBlur(bool enabled);
 
-  // The user submits a prompt (e.g. from the input box). This prompt will be
-  // sent to the Glic side panel to be submitted to gemini.google.com and
-  // processed server-side. Only valid after `PageContextReceived()`.
+  // Sets the active prompt endpoint for this session (e.g. when the user
+  // switches endpoints in the prompt box). Subsequent `SubmitPrompt()` and
+  // `GetSuggestedActions()` calls use this endpoint. When the active endpoint
+  // changes, previously issued `SuggestedAction.action_id` values are
+  // invalidated and any in-flight `GetSuggestedActions()` request is discarded,
+  // so callers must call `GetSuggestedActions()` again before calling
+  // `ExecuteSuggestedAction()`. Ignored if `endpoint_id` is not currently
+  // available.
+  SetActivePromptEndpoint(selection.mojom.PromptEndpointId endpoint_id);
+
+  // The user submits a prompt (e.g. from the input box) to the active prompt
+  // endpoint. Only valid after `PageContextReceived()`.
   SubmitPrompt(string prompt);
 
-  // Requests suggested actions from the browser for the current selection.
-  // Suggested actions are delivered in segments via `listener`.
+  // Requests suggested actions from the browser for the current selection and
+  // active prompt endpoint. Suggested actions are delivered in segments via
+  // `listener`.
   GetSuggestedActions(pending_remote<SuggestedActionsListener> listener);
 
   // The user executes a suggested action by ID. `channel` carries the endpoint
@@ -146,6 +165,13 @@ interface SelectionOverlayPage {
   // Sets how the user can interact with the overlay.
   // Called before each screenshot is sent.
   SetInteractionOptions(InteractionOptions options);
+
+  // Configures the ordered list of eligible prompt endpoints and the active
+  // endpoint ID for the prompt input box. Called before the screenshot is
+  // sent, and again if the panel adopts a direct session (preserving any
+  // cached or in-flight suggested actions).
+  SetPromptEndpoints(array<PromptEndpointInfo> endpoints,
+                     selection.mojom.PromptEndpointId default_endpoint_id);
 
   // Tells the overlay whether the Glic side panel is open for its tab: showing,
   // or backgrounded and showing again once the tab is in front. Called once

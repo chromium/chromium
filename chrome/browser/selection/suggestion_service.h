@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/selection/feedback_zip_builder.h"
+#include "chrome/browser/selection/mojom/action.mojom-shared.h"
 #include "chrome/browser/selection/page_context.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "chrome/browser/selection/suggestion_tool.h"
@@ -88,9 +89,12 @@ class SuggestionService {
       const optimization_guide::proto::AnnotatedPageContent& apc);
 
   // Requests zero-state or context-aware suggestions from registered tools
-  // for the selection and page snapshot in `context`.
-  virtual void RequestSuggestions(PageContextWithSelection context,
-                                  SuggestionsCallback callback);
+  // for the selection and page snapshot in `context`. `active_endpoint_id`
+  // indicates which prompt endpoint is currently selected in the UI, if any.
+  virtual void RequestSuggestions(
+      PageContextWithSelection context,
+      std::optional<mojom::PromptEndpointId> active_endpoint_id,
+      SuggestionsCallback callback);
 
   // Prewarms the remote model executor (e.g. OAuth token) if server suggestions
   // and prewarming are enabled and the cooldown has passed.

@@ -57,6 +57,7 @@
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/indigo/indigo_cue_target.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
+#include "chrome/browser/lens/google_search_prompt_endpoint.h"
 #include "chrome/browser/lens/lens_suggestion_tool.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
@@ -726,6 +727,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       glic_selection_overlay_controller_ =
           GetUserDataFactory().CreateInstance<glic::SelectionOverlayController>(
               tab, &tab, profile->GetPrefs());
+      if (glic_selection_overlay_controller_ &&
+          base::FeatureList::IsEnabled(lens::kSmartSelectionGoogleSearch)) {
+        glic_selection_overlay_controller_->RegisterPromptEndpoint(
+            std::make_unique<lens::GoogleSearchPromptEndpoint>());
+      }
       if (base::FeatureList::IsEnabled(features::kGlicWarmOnGeminiWeb)) {
         glic_gemini_web_warming_observer_ =
             std::make_unique<glic::GlicGeminiWebWarmingObserver>(&tab);

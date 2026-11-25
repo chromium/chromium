@@ -167,8 +167,18 @@ class SelectionOverlayController
   bool HasPageContextForTesting() const {
     return session_->tab_context && !session_->redacted_screenshot.empty();
   }
+  void RegisterPromptEndpoint(
+      std::unique_ptr<::selection::PromptEndpoint> endpoint);
   void SetPromptEndpointsForTesting(
       std::vector<std::unique_ptr<::selection::PromptEndpoint>> endpoints);
+  std::vector<selection::PromptEndpointInfoPtr>
+  GetAvailablePromptEndpointInfosForTesting() const {
+    return GetAvailablePromptEndpointInfos();
+  }
+  std::optional<::selection::mojom::PromptEndpointId>
+  GetActivePromptEndpointIdForTesting() const {
+    return session_->active_endpoint_id;
+  }
 
  private:
   void WillDiscardContents(tabs::TabInterface* tab,
@@ -254,6 +264,8 @@ class SelectionOverlayController
   void ClosePreselectionBubble() override;
   void AddBackgroundBlur() override;
   void SetLiveBlur(bool enabled) override;
+  void SetActivePromptEndpoint(
+      ::selection::mojom::PromptEndpointId endpoint_id) override;
   void SubmitPrompt(const std::string& prompt) override;
   void GetSuggestedActions(
       mojo::PendingRemote<selection::SuggestedActionsListener> listener)
@@ -312,8 +324,14 @@ class SelectionOverlayController
   // Returns whether submitting to `endpoint_id` should close the overlay.
   bool ShouldCloseOnSubmit(
       ::selection::mojom::PromptEndpointId endpoint_id) const;
+  bool IsEndpointAllowedForSession(
+      ::selection::mojom::PromptEndpointId endpoint_id) const;
   ::selection::PromptEndpoint* FindAvailablePromptEndpoint(
       ::selection::mojom::PromptEndpointId endpoint_id);
+  std::optional<::selection::mojom::PromptEndpointId>
+  ResolveInitialPromptEndpointId();
+  std::vector<selection::PromptEndpointInfoPtr>
+  GetAvailablePromptEndpointInfos() const;
   void CancelPendingEndpointRequests();
 
   struct SelectedRegionData {
@@ -336,7 +354,8 @@ class SelectionOverlayController
     bool suggestions_requested = false;
     bool suggestions_complete = false;
     // The generation of the region. Incremented each time the region is
-    // adjusted, and used to invalidate old suggestions.
+    // adjusted or re-queried for a new endpoint, and used to invalidate old
+    // suggestions.
     uint64_t generation = 0;
   };
 
@@ -464,12 +483,15 @@ class SelectionOverlayController
     // The start of the click to overlay rendered latency; null once recorded.
     base::TimeTicks show_requested_time;
     bool prewarm_ready = false;
+    // The currently active prompt endpoint ID for this session, or nullopt if
+    // no endpoint is available.
+    std::optional<::selection::mojom::PromptEndpointId> active_endpoint_id;
   };
   // Never null.
   std::unique_ptr<Session> session_ = std::make_unique<Session>(this);
 
   // Owned at the controller level so asynchronous endpoint completion callbacks
-  // outlive `Session` reset on `Close()`.
+  // (e.g. Google Search URL creation) outlive `Session` reset on `Close()`.
   std::vector<std::unique_ptr<::selection::PromptEndpoint>> prompt_endpoints_;
 
   SelectionOverlayPrewarmer prewarmer_;

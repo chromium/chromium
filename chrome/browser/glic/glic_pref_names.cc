@@ -117,6 +117,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Boolean pref for enabling shake trigger.
   registry->RegisterBooleanPref(prefs::kGlicShakeTriggerEnabled, false);
 
+  // Integer pref for the last-used selection overlay prompt endpoint
+  // (`selection::mojom::PromptEndpointId`, default 0 = kGemini).
+  registry->RegisterIntegerPref(prefs::kGlicSelectionOverlayLastEndpoint, 0);
+
   // Boolean pref set once the Quick Answers FRE is accepted.
   registry->RegisterBooleanPref(prefs::kGlicQuickAnswersFreAccepted, false);
 

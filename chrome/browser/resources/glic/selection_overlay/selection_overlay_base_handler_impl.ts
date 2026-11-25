@@ -9,9 +9,11 @@ import type {SelectedRegion} from '/lens/selection_overlay_base_handler.js';
 import {RegionSource, SelectionOverlayBaseHandler} from '/lens/selection_overlay_base_handler.js';
 import {calculateCenterRotatedBox} from '/lens/selection_utils.js';
 
+import type {PromptEndpointId} from './action.mojom-webui.js';
 import {browserProxyFactory} from './selection_overlay.mojom-webui.js';
 import type {                                //
              InteractionOptions,             //
+             PromptEndpointInfo,             //
              SelectedRegionMojoType,         //
              SuggestedActionsListenerRemote, //
 } from './selection_overlay.mojom-webui.js';
@@ -75,6 +77,14 @@ export class SelectionOverlayBaseHandlerImpl extends
       callback: (options: InteractionOptions) => void): number {
     return browserProxyFactory.getInstance()
         .callbackRouter.setInteractionOptions.addListener(callback);
+  }
+
+  addSetPromptEndpointsListener(
+      callback:
+          (endpoints: PromptEndpointInfo[],
+           defaultEndpointId: PromptEndpointId) => void): number {
+    return browserProxyFactory.getInstance()
+        .callbackRouter.setPromptEndpoints.addListener(callback);
   }
 
   addSetSidePanelOpenListener(callback: (open: boolean) => void): number {
@@ -173,6 +183,11 @@ export class SelectionOverlayBaseHandlerImpl extends
   deleteRegion(id: string, source: RegionSource): void {
     const proxy = browserProxyFactory.getInstance();
     proxy.handler.deleteRegion(id, source === RegionSource.KEYBOARD);
+  }
+
+  setActivePromptEndpoint(endpointId: PromptEndpointId): void {
+    browserProxyFactory.getInstance().handler.setActivePromptEndpoint(
+        endpointId);
   }
 
   submitPrompt(prompt: string): void {

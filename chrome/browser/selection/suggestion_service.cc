@@ -462,8 +462,10 @@ void SuggestionService::UpdateScreenContent(
   MaybePrewarmServerRequest();
 }
 
-void SuggestionService::RequestSuggestions(PageContextWithSelection context,
-                                           SuggestionsCallback callback) {
+void SuggestionService::RequestSuggestions(
+    PageContextWithSelection context,
+    std::optional<mojom::PromptEndpointId> active_endpoint_id,
+    SuggestionsCallback callback) {
   const auto request_start_time = base::TimeTicks::Now();
   if (tools_.empty() || !remote_model_executor_ ||
       !IsFeatureGroupEnabled(kSmartSelectionServerSuggestions)) {

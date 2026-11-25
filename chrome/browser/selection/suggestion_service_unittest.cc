@@ -279,7 +279,8 @@ TEST_F(SuggestionServiceUnitTest, ServerSuggestionsDisabledByDefault) {
 
   PageContextWithSelection context;
   SuggestionsFuture future;
-  service().RequestSuggestions(context, future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
 
@@ -302,7 +303,8 @@ TEST_F(SuggestionServiceUnitTest,
 
   PageContextWithSelection context;
   SuggestionsFuture future;
-  service().RequestSuggestions(context, future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
 
@@ -342,7 +344,8 @@ TEST_F(SuggestionServiceUnitTest,
 
   PageContextWithSelection context;
   SuggestionsFuture future;
-  service_without_groups.RequestSuggestions(context, future.GetCallback());
+  service_without_groups.RequestSuggestions(
+      context, /*active_endpoint_id=*/std::nullopt, future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Server Gemini Action")));
@@ -359,7 +362,8 @@ TEST_F(SuggestionServiceUnitTest,
 
   PageContextWithSelection context;
   SuggestionsFuture future;
-  service().RequestSuggestions(context, future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
 }
@@ -437,7 +441,8 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
   context.area_of_interest.bounds = gfx::Rect(10, 20, 30, 40);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(context, future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Server Gemini Action")));
@@ -501,7 +506,8 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithJpegScreenshot) {
   context.area_of_interest.bounds = gfx::Rect(10, 20, 30, 40);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(context, future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Jpeg Action")));
 
@@ -555,7 +561,8 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithoutApc) {
   context.area_of_interest.bounds = gfx::Rect(10, 20, 30, 40);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(context, future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Action Without APC")));
@@ -623,7 +630,8 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithCroppedScreenshot) {
   context.area_of_interest.bounds = gfx::Rect(10, 20, 30, 40);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(context, future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Cropped Action")));
@@ -689,7 +697,8 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithDownscaledScreenshot) {
   context.area_of_interest.bounds = gfx::Rect(20, 20, 60, 40);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(context, future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Downscaled Action")));
@@ -755,7 +764,8 @@ TEST_F(SuggestionServiceUnitTest,
   context.area_of_interest.bounds = gfx::Rect(10, 10, 20, 20);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(context, future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Not Downscaled Action")));
@@ -828,7 +838,8 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithCropAndDownscale) {
   context.area_of_interest.bounds = gfx::Rect(40, 40, 60, 60);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(context, future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
 
   EXPECT_THAT(
       std::get<0>(future.Take()),
@@ -870,7 +881,8 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsServerError) {
 
   PageContextWithSelection context;
   SuggestionsFuture future;
-  service().RequestSuggestions(context, future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
 
@@ -931,7 +943,8 @@ class SuggestionServiceMetricsTest : public ChromeRenderViewHostTestHarness {
     context.area_of_interest.bounds = gfx::Rect(10, 10, 20, 20);
 
     SuggestionsFuture future;
-    service_->RequestSuggestions(context, future.GetCallback());
+    service_->RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                                 future.GetCallback());
     task_environment()->AdvanceClock(base::Milliseconds(300));
     EXPECT_THAT(std::get<0>(future.Take()),
                 ElementsAre(SuggestionWithLabel(u"Action")));
@@ -1167,7 +1180,8 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
   context.area_of_interest.selected_text = u"Selected feedback text";
 
   SuggestionsFuture suggestions_future;
-  service().RequestSuggestions(context, suggestions_future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               suggestions_future.GetCallback());
   auto [suggestions, zip_builder] = suggestions_future.Take();
 
   base::flat_map<std::string, std::string> files = CreateAndUnzip(zip_builder);
@@ -1274,7 +1288,8 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipWithJpeg) {
   context.area_of_interest.bounds = gfx::Rect(10, 15, 20, 25);
 
   SuggestionsFuture suggestions_future;
-  service().RequestSuggestions(context, suggestions_future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               suggestions_future.GetCallback());
   auto [suggestions, zip_builder] = suggestions_future.Take();
 
   base::flat_map<std::string, std::string> files = CreateAndUnzip(zip_builder);
@@ -1355,7 +1370,8 @@ TEST_F(SuggestionServiceUnitTest,
   context.area_of_interest.selected_text = u"Disabled server selection";
 
   SuggestionsFuture suggestions_future;
-  service().RequestSuggestions(context, suggestions_future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               suggestions_future.GetCallback());
   auto [suggestions, zip_builder] = suggestions_future.Take();
   EXPECT_THAT(suggestions, IsEmpty());
 
@@ -1404,7 +1420,8 @@ TEST_F(SuggestionServiceUnitTest,
   context_1.area_of_interest.selected_text = u"Stale selection";
 
   SuggestionsFuture future_1;
-  service().RequestSuggestions(context_1, future_1.GetCallback());
+  service().RequestSuggestions(context_1, /*active_endpoint_id=*/std::nullopt,
+                               future_1.GetCallback());
   ASSERT_TRUE(base::test::RunUntil([&] { return !mes_callback_1.is_null(); }));
 
   PageContextWithSelection context_2;
@@ -1413,7 +1430,8 @@ TEST_F(SuggestionServiceUnitTest,
   context_2.area_of_interest.selected_text = u"Fresh selection";
 
   SuggestionsFuture future_2;
-  service().RequestSuggestions(context_2, future_2.GetCallback());
+  service().RequestSuggestions(context_2, /*active_endpoint_id=*/std::nullopt,
+                               future_2.GetCallback());
   ASSERT_TRUE(base::test::RunUntil([&] { return !mes_callback_2.is_null(); }));
 
   // Complete Request 2 first with "Fresh Suggestion".
@@ -1506,7 +1524,8 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipOnServerError) {
   context.area_of_interest.selected_text = u"Error selection text";
 
   SuggestionsFuture suggestions_future;
-  service().RequestSuggestions(context, suggestions_future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               suggestions_future.GetCallback());
   auto [suggestions, zip_builder] = suggestions_future.Take();
   EXPECT_THAT(suggestions, IsEmpty());
 
@@ -1645,7 +1664,8 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsPrewarmsWhenNotPrewarmed) {
 
   PageContextWithSelection context;
   SuggestionsFuture future;
-  service().RequestSuggestions(context, future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
 
   service().UnregisterTool(&gemini_tool);
 }
@@ -1668,7 +1688,8 @@ TEST_F(SuggestionServiceUnitTest,
   // Calling RequestSuggestions right after should not trigger a second prewarm.
   PageContextWithSelection context;
   SuggestionsFuture future;
-  service().RequestSuggestions(context, future.GetCallback());
+  service().RequestSuggestions(context, /*active_endpoint_id=*/std::nullopt,
+                               future.GetCallback());
 
   service().UnregisterTool(&gemini_tool);
 }

@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
@@ -63,6 +64,7 @@
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
@@ -523,6 +525,19 @@ void SelectionOverlayController::AdoptSession(
   session_->owner = Session::Owner::kPanel;
   session_->handoff_to_panel_pending = false;
   BindCaptureRegionObserver(std::move(observer));
+  // Note: do not invalidate cached or in-flight region suggestions here.
+  // `SetPromptEndpoints()` only updates the available endpoint list and does
+  // not tell the overlay to drop or refetch displayed chips; clearing them here
+  // would drop in-flight requests and leave stale chip IDs that hit
+  // `ReportBadMessage` on click. `SuggestionService::RequestSuggestions()` does
+  // not currently vary results by endpoint.
+  // TODO(b/587425707): If suggestions become endpoint-dependent, have the
+  // overlay refetch on `SetPromptEndpoints()` before invalidating here.
+  session_->active_endpoint_id = ResolveInitialPromptEndpointId();
+  if (session_->page && session_->active_endpoint_id.has_value()) {
+    session_->page->SetPromptEndpoints(GetAvailablePromptEndpointInfos(),
+                                       *session_->active_endpoint_id);
+  }
   if (!session_->selected_regions.empty() && !HasOnlyTextSelection()) {
     SyncRegionsToPanel(/*should_focus_panel=*/false);
   }
@@ -673,6 +688,10 @@ void SelectionOverlayController::BindOverlay(
       &SelectionOverlayController::Reset, session_weak_factory_.GetWeakPtr()));
   session_->page.Bind(std::move(page));
   session_->page->SetInteractionOptions(session_->interaction_options.Clone());
+  if (session_->active_endpoint_id.has_value()) {
+    session_->page->SetPromptEndpoints(GetAvailablePromptEndpointInfos(),
+                                       *session_->active_endpoint_id);
+  }
 
   if (views::WebView* web_view = GetOverlayWebView()) {
     session_->overlay_web_view_focus_subscription =
@@ -866,13 +885,15 @@ void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
     session_->show_requested_time = base::TimeTicks::Now();
   }
   session_->options = std::move(options);
+  session_->active_endpoint_id = ResolveInitialPromptEndpointId();
   if (IsSelectionOverlayPromptEnabled() && session_->entry_point.has_value()) {
     session_->metrics_logger.emplace(*session_->entry_point,
                                      tab_->GetContents()->GetContentsMimeType(),
                                      !session_->selected_regions.empty());
   }
   for (const auto& endpoint : prompt_endpoints_) {
-    if (endpoint->IsAvailable(*tab_)) {
+    if (IsEndpointAllowedForSession(endpoint->GetId()) &&
+        endpoint->IsAvailable(*tab_)) {
       endpoint->Prepare(*tab_);
     }
   }
@@ -1427,12 +1448,42 @@ void SelectionOverlayController::InvokeFromSuggestion(
   InvokeWithPrompt(std::move(prompt), endpoint_id);
 }
 
+void SelectionOverlayController::SetActivePromptEndpoint(
+    ::selection::mojom::PromptEndpointId endpoint_id) {
+  // Endpoint availability can change asynchronously on the browser side while a
+  // `SetActivePromptEndpoint()` call from the WebUI is in flight (e.g., if the
+  // Gemini side panel adopts the session via `AdoptSession()`, the default
+  // search engine changes, or Glic enabling changes). Ignore unavailable
+  // endpoints instead of treating the race as a bad message.
+  if (!FindAvailablePromptEndpoint(endpoint_id)) {
+    return;
+  }
+  if (session_->active_endpoint_id == endpoint_id) {
+    return;
+  }
+  session_->active_endpoint_id = endpoint_id;
+  for (auto& [id, region_data] : session_->selected_regions) {
+    if (region_data.suggestions_requested) {
+      // Active prompt endpoint changed: invalidate cached or in-flight
+      // suggestions so stale results are discarded and the next
+      // `GetSuggestedActions()` issues a fresh query for the new endpoint.
+      region_data.suggestions.clear();
+      region_data.suggestions_requested = false;
+      region_data.suggestions_complete = false;
+      region_data.generation++;
+    }
+  }
+}
+
 void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
   if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox)) {
     return;
   }
-  ::selection::PromptEndpoint* endpoint = FindAvailablePromptEndpoint(
-      ::selection::mojom::PromptEndpointId::kGemini);
+  if (!session_->active_endpoint_id.has_value()) {
+    return;
+  }
+  ::selection::PromptEndpoint* endpoint =
+      FindAvailablePromptEndpoint(*session_->active_endpoint_id);
   if (!endpoint) {
     return;
   }
@@ -1442,10 +1493,22 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
         "Prompt submitted before the page context.");
     return;
   }
+  // Panel-owned sessions are pinned to Gemini, so only persist the last-used
+  // endpoint for direct sessions where the user can choose.
+  if (session_->owner == Session::Owner::kDirect) {
+    pref_service_->SetInteger(prefs::kGlicSelectionOverlayLastEndpoint,
+                              static_cast<int>(*session_->active_endpoint_id));
+  }
   if (session_->metrics_logger) {
     session_->metrics_logger->RecordPromptSubmitted(endpoint->GetId());
   }
   InvokeWithPrompt(prompt, endpoint->GetId());
+}
+
+void SelectionOverlayController::RegisterPromptEndpoint(
+    std::unique_ptr<::selection::PromptEndpoint> endpoint) {
+  CHECK(endpoint);
+  prompt_endpoints_.push_back(std::move(endpoint));
 }
 
 void SelectionOverlayController::SetPromptEndpointsForTesting(
@@ -1462,15 +1525,61 @@ bool SelectionOverlayController::ShouldCloseOnSubmit(
          endpoint_id != ::selection::mojom::PromptEndpointId::kGemini;
 }
 
+bool SelectionOverlayController::IsEndpointAllowedForSession(
+    ::selection::mojom::PromptEndpointId endpoint_id) const {
+  // Panel-owned sessions (initiated from or adopted by the open Gemini side
+  // panel) stream regions directly to Gemini and stay pinned to `kGemini`.
+  return session_->owner != Session::Owner::kPanel ||
+         endpoint_id == ::selection::mojom::PromptEndpointId::kGemini;
+}
+
 ::selection::PromptEndpoint*
 SelectionOverlayController::FindAvailablePromptEndpoint(
     ::selection::mojom::PromptEndpointId endpoint_id) {
+  if (!IsEndpointAllowedForSession(endpoint_id)) {
+    return nullptr;
+  }
   for (const auto& endpoint : prompt_endpoints_) {
     if (endpoint->GetId() == endpoint_id && endpoint->IsAvailable(*tab_)) {
       return endpoint.get();
     }
   }
   return nullptr;
+}
+
+std::optional<::selection::mojom::PromptEndpointId>
+SelectionOverlayController::ResolveInitialPromptEndpointId() {
+  const auto last_used = static_cast<::selection::mojom::PromptEndpointId>(
+      pref_service_->GetInteger(prefs::kGlicSelectionOverlayLastEndpoint));
+  if (::selection::mojom::IsKnownEnumValue(last_used) &&
+      FindAvailablePromptEndpoint(last_used)) {
+    return last_used;
+  }
+  if (FindAvailablePromptEndpoint(
+          ::selection::mojom::PromptEndpointId::kGemini)) {
+    return ::selection::mojom::PromptEndpointId::kGemini;
+  }
+  for (const auto& endpoint : prompt_endpoints_) {
+    if (IsEndpointAllowedForSession(endpoint->GetId()) &&
+        endpoint->IsAvailable(*tab_)) {
+      return endpoint->GetId();
+    }
+  }
+  return std::nullopt;
+}
+
+std::vector<selection::PromptEndpointInfoPtr>
+SelectionOverlayController::GetAvailablePromptEndpointInfos() const {
+  std::vector<selection::PromptEndpointInfoPtr> infos;
+  for (const auto& endpoint : prompt_endpoints_) {
+    if (IsEndpointAllowedForSession(endpoint->GetId()) &&
+        endpoint->IsAvailable(*tab_)) {
+      infos.push_back(selection::PromptEndpointInfo::New(
+          endpoint->GetId(), base::UTF16ToUTF8(endpoint->GetDisplayName()),
+          base::UTF16ToUTF8(endpoint->GetPlaceholder())));
+    }
+  }
+  return infos;
 }
 
 ::selection::PageContext SelectionOverlayController::BuildPageContext(
@@ -1801,6 +1910,7 @@ void SelectionOverlayController::RequestNewSuggestions(
   suggestion_service->RequestSuggestions(
       ::selection::PageContextWithSelection(std::move(page_context),
                                             std::move(aoi)),
+      session_->active_endpoint_id,
       base::BindOnce(&SelectionOverlayController::OnSuggestionsReceived,
                      session_weak_factory_.GetWeakPtr(), region_id, generation,
                      /*complete=*/true));
@@ -1886,8 +1996,7 @@ void SelectionOverlayController::ExecuteSuggestedAction(
     return;
   }
 
-  auto tag = matched_suggestion->GetAction()->which();
-
+  const auto tag = matched_suggestion->GetAction()->which();
   switch (tag) {
     case ::selection::mojom::Action::Tag::kHandoff:
       // kHandoff should not have a channel since the surface is going away.
@@ -1896,19 +2005,7 @@ void SelectionOverlayController::ExecuteSuggestedAction(
             "Channel supplied for a handoff action.");
         return;
       }
-      if (session_->metrics_logger) {
-        session_->metrics_logger->RecordSuggestionAccepted(*matched_suggestion);
-      }
-      {
-        base::WeakPtr<SelectionOverlayController> weak_this =
-            weak_factory_.GetWeakPtr();
-        matched_suggestion->Execute(mojo::GenericPendingAssociatedReceiver());
-        if (weak_this && state() != State::kOff &&
-            session_->owner == Session::Owner::kDirect) {
-          Close();
-        }
-      }
-      return;
+      break;
     case ::selection::mojom::Action::Tag::kInlineFulfillment:
       // Fulfillment must have a channel.
       if (!channel) {
@@ -1921,9 +2018,32 @@ void SelectionOverlayController::ExecuteSuggestedAction(
             "Channel interface does not match.");
         return;
       }
-      if (session_->metrics_logger) {
-        session_->metrics_logger->RecordSuggestionAccepted(*matched_suggestion);
+      break;
+  }
+
+  if (session_->metrics_logger) {
+    session_->metrics_logger->RecordSuggestionAccepted(*matched_suggestion);
+  }
+  // Panel-owned sessions are pinned to Gemini, so only persist the last-used
+  // endpoint for direct sessions where the user can choose.
+  if (session_->owner == Session::Owner::kDirect &&
+      session_->active_endpoint_id.has_value()) {
+    pref_service_->SetInteger(prefs::kGlicSelectionOverlayLastEndpoint,
+                              static_cast<int>(*session_->active_endpoint_id));
+  }
+
+  switch (tag) {
+    case ::selection::mojom::Action::Tag::kHandoff: {
+      base::WeakPtr<SelectionOverlayController> weak_this =
+          weak_factory_.GetWeakPtr();
+      matched_suggestion->Execute(mojo::GenericPendingAssociatedReceiver());
+      if (weak_this && state() != State::kOff &&
+          session_->owner == Session::Owner::kDirect) {
+        Close();
       }
+      return;
+    }
+    case ::selection::mojom::Action::Tag::kInlineFulfillment:
       matched_suggestion->Execute(std::move(channel));
       return;
   }
