@@ -128,6 +128,7 @@ source_set("internal") {
   public_deps += [ "//components/policy/core/common:internal" ]
   deps += [
     "//google_apis",
+    "//google_apis/gcm",
     "//net",
     "//third_party/icu",
   ]
@@ -239,6 +240,7 @@ source_set("unit_tests") {
     "//components/url_formatter",
     "//components/url_matcher",
     "//google_apis",
+    "//google_apis/gcm",
     "//net",
     "//services/network:test_support",
     "//testing/gmock",

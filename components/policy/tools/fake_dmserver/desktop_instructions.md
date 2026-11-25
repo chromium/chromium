@@ -70,8 +70,8 @@ Optional arguments:
 ### Step 3: Launch Chrome
 
 When launching Chromium or Chrome, tell it to use your local server. Use
-`--use-fake-dmserver` to configure default DMServer and real-time reporting
-URLs, and automatically enable cloud management:
+`--use-fake-dmserver` to configure default DMServer, real-time reporting, and
+FCM push endpoints, and automatically enable cloud management:
 
 ```bash
 ./out/Default/chrome --use-fake-dmserver
@@ -115,11 +115,13 @@ Note that some features only work with `--use-fake-dmserver`.
 ### Step 4: Test Your Feature
 
 Use server logs for debugging. `policies.json` will auto-reload without
-needing to restart the server. When Chrome is launched with the GCM flags
-above (`--gcm-mcs-endpoint`, `--gcm-checkin-url`, `--gcm-registration-url`),
-changes to `policies.json` also push invalidations to Chrome automatically;
-otherwise (such as with `--use-fake-dmserver` alone), click "Reload policies"
-on `chrome://policy` to fetch updated policies.
+needing to restart the server.
+
+Changes to `policies.json` also push invalidations to Chrome automatically when
+Chrome uses the mock FCM server. This is the case with `--use-fake-dmserver`, or
+with the GCM flags above (`--gcm-mcs-endpoint`, `--gcm-checkin-url`,
+`--gcm-registration-url`). Otherwise, click "Reload policies" on
+`chrome://policy` to fetch updated policies.
 
 Browser reports, profile reports, and real-time reporting events are saved in
 `$HOME/dmserver_data`.

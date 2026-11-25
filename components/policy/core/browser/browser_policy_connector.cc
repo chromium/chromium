@@ -33,6 +33,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
+#include "google_apis/gcm/engine/gservices_switches.h"
 
 namespace policy {
 
@@ -42,6 +43,11 @@ const char kDefaultFakeDmserverUrl[] =
     "http://127.0.0.1:6112/device_management";
 constexpr char kDefaultFakeDmserverRealtimeReportingUrl[] =
     "http://127.0.0.1:6112/realtime_reporting";
+const char kDefaultFakeDmserverGcmMcsEndpointUrl[] = "http://127.0.0.1:6113";
+const char kDefaultFakeDmserverGcmCheckinUrl[] =
+    "http://127.0.0.1:6112/gcm_checkin";
+const char kDefaultFakeDmserverGcmRegistrationUrl[] =
+    "http://127.0.0.1:6112/gcm_register";
 
 // The URL for the device management server.
 const char kDefaultDeviceManagementServerUrl[] =
@@ -64,7 +70,23 @@ DeviceManagementService* g_device_management_service_for_testing = nullptr;
 
 BrowserPolicyConnector::BrowserPolicyConnector(
     const HandlerListFactory& handler_list_factory)
-    : BrowserPolicyConnectorBase(handler_list_factory) {}
+    : BrowserPolicyConnectorBase(handler_list_factory) {
+  if (IsFakeDmserverEnabled()) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (!command_line->HasSwitch(::switches::kGCMMCSEndpoint)) {
+      command_line->AppendSwitchASCII(::switches::kGCMMCSEndpoint,
+                                      kDefaultFakeDmserverGcmMcsEndpointUrl);
+    }
+    if (!command_line->HasSwitch(::switches::kGCMCheckinURL)) {
+      command_line->AppendSwitchASCII(::switches::kGCMCheckinURL,
+                                      kDefaultFakeDmserverGcmCheckinUrl);
+    }
+    if (!command_line->HasSwitch(::switches::kGCMRegistrationURL)) {
+      command_line->AppendSwitchASCII(::switches::kGCMRegistrationURL,
+                                      kDefaultFakeDmserverGcmRegistrationUrl);
+    }
+  }
+}
 
 BrowserPolicyConnector::~BrowserPolicyConnector() = default;
 

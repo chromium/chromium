@@ -14,6 +14,7 @@
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/core/common/schema.h"
+#include "google_apis/gcm/engine/gservices_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,6 +78,64 @@ TEST(BrowserPolicyConnectorTest, ExplicitUrlOverridesPrecedeFakeDmserver) {
             "http://127.0.0.1:9999/custom_dm");
   EXPECT_EQ(connector.GetRealtimeReportingUrl(),
             "http://127.0.0.1:9999/custom_realtime");
+}
+
+TEST(BrowserPolicyConnectorTest, GcmEndpointsNotSetWithoutFakeDmserver) {
+  base::test::TaskEnvironment task_environment;
+  base::test::ScopedCommandLine scoped_command_line;
+  TestBrowserPolicyConnector connector;
+  EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kGCMMCSEndpoint));
+  EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kGCMCheckinURL));
+  EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kGCMRegistrationURL));
+}
+
+TEST(BrowserPolicyConnectorTest, UseFakeDmserverSetsDefaultGcmEndpoints) {
+  base::test::TaskEnvironment task_environment;
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kUseFakeDmserver);
+  EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kGCMMCSEndpoint));
+  EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kGCMCheckinURL));
+  EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kGCMRegistrationURL));
+  TestBrowserPolicyConnector connector;
+  EXPECT_EQ(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                ::switches::kGCMMCSEndpoint),
+            "http://127.0.0.1:6113");
+  EXPECT_EQ(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                ::switches::kGCMCheckinURL),
+            "http://127.0.0.1:6112/gcm_checkin");
+  EXPECT_EQ(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                ::switches::kGCMRegistrationURL),
+            "http://127.0.0.1:6112/gcm_register");
+}
+
+TEST(BrowserPolicyConnectorTest, ExplicitGcmEndpointsPrecedeFakeDmserver) {
+  base::test::TaskEnvironment task_environment;
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kUseFakeDmserver);
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ::switches::kGCMMCSEndpoint, "http://127.0.0.1:9999");
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ::switches::kGCMCheckinURL, "http://127.0.0.1:9998");
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ::switches::kGCMRegistrationURL, "http://127.0.0.1:9997");
+  TestBrowserPolicyConnector connector;
+  EXPECT_EQ(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                ::switches::kGCMMCSEndpoint),
+            "http://127.0.0.1:9999");
+  EXPECT_EQ(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                ::switches::kGCMCheckinURL),
+            "http://127.0.0.1:9998");
+  EXPECT_EQ(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                ::switches::kGCMRegistrationURL),
+            "http://127.0.0.1:9997");
 }
 #endif  // BUILDFLAG(ALLOW_FAKE_DMSERVER)
 

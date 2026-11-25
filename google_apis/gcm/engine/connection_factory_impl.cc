@@ -8,17 +8,20 @@
 #include <string>
 
 #include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "google_apis/gcm/engine/connection_handler_impl.h"
+#include "google_apis/gcm/engine/gservices_switches.h"
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/proxy_fallback.h"
 #include "net/log/net_log_source_type.h"
@@ -49,6 +52,14 @@ bool ShouldRestorePreviousBackoff(const base::TimeTicks& login_time,
                                   const base::TimeTicks& now_ticks) {
   return !login_time.is_null() &&
          now_ticks - login_time <= base::Seconds(kConnectionResetWindowSecs);
+}
+
+// Plaintext is for tests, or localhost when --gcm-mcs-endpoint is explicitly
+// set on the command line (e.g. for fake_dmserver).
+bool IsPlaintextAllowedOutsideTests(const GURL& endpoint) {
+  return net::IsLocalhost(endpoint) &&
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kGCMMCSEndpoint);
 }
 
 }  // namespace
@@ -355,7 +366,7 @@ void ConnectionFactoryImpl::StartConnection(bool ignore_connection_failure) {
   network::mojom::ProxyResolvingSocketOptionsPtr options =
       network::mojom::ProxyResolvingSocketOptions::New();
   options->use_tls = current_endpoint.SchemeIsCryptographic();
-  if (!options->use_tls) {
+  if (!options->use_tls && !IsPlaintextAllowedOutsideTests(current_endpoint)) {
     CHECK_IS_TEST();
   }
   // |current_endpoint| is always a Google URL, so this NetworkAnonymizationKey
