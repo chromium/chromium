@@ -54,6 +54,8 @@ import java.util.function.Function;
  * wraps {@link VerticalTabListCoordinator} to adapt it to the {@link SideUiContainer} interface,
  * separating container-level layout and sizing concerns from the tab list itself.
  *
+ * <p>The tab list is built the first time the rail is shown and is kept while the rail is hidden.
+ *
  * <p>The user-resized rail width belongs to this window. It is loaded from shared prefs once, at
  * construction, and is written back when the user resizes the rail and whenever this window becomes
  * the top resumed activity, so that a new window starts with the width of the last active window.
@@ -68,7 +70,6 @@ public class VerticalTabsSideUiCoordinator
     private final WindowAndroid mWindowAndroid;
     private final FrameLayout mRootView;
     private final @AnchorSide int mAnchorSide;
-    private final VerticalTabListCoordinator mTabListCoordinator;
     private final VerticalTabRailCollapseController mCollapseController;
     private final @Px int mExpandedViewWidth;
     private final @Px int mCollapsedViewWidth;
@@ -77,6 +78,10 @@ public class VerticalTabsSideUiCoordinator
     private final SettableNonNullObservableSupplier<Boolean> mIsVerticalTabsActiveSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mIsAutoHiddenSupplier =
             ObservableSuppliers.createNonNull(false);
+
+    private @Nullable Function<VerticalTabRailCollapseController, VerticalTabListCoordinator>
+            mTabListCoordinatorFactory;
+    private @Nullable VerticalTabListCoordinator mTabListCoordinator;
 
     // Whether the vertical tab is set to visible via UI. Remains true even if it is temporarily
     // hidden by other conditions such as narrow window i.e. |mIsAutoHiddenSupplier.get()| is true.
@@ -120,7 +125,7 @@ public class VerticalTabsSideUiCoordinator
                         this::applyRailCollapseState,
                         this::applyCollapseButtonEnabled,
                         windowAndroid);
-        mTabListCoordinator = tabListCoordinatorFactory.apply(mCollapseController);
+        mTabListCoordinatorFactory = tabListCoordinatorFactory;
         mIsVerticalTabsActiveSupplier = isVerticalTabsActiveSupplier;
         mCommittedResizeWidthDp = VerticalTabUtils.getUserResizedWidthDpFromSharedPref();
 
@@ -129,7 +134,6 @@ public class VerticalTabsSideUiCoordinator
                 new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT));
-        mRootView.addView(mTabListCoordinator.getView());
         mExpandedViewWidth = ViewUtils.dpToPx(activity, VIEW_WIDTH_DP);
         mCollapsedViewWidth = ViewUtils.dpToPx(activity, COLLAPSED_WIDTH_DP);
         mMinManualWidth = ViewUtils.dpToPx(activity, VerticalTabUtils.MIN_EXPANDED_WIDTH_DP);
@@ -139,8 +143,6 @@ public class VerticalTabsSideUiCoordinator
                         mSideUiCoordinator.updateUi(
                                 new UiUpdateRequest(
                                         getSideUiId(), /* suppressAnimations= */ false)));
-        mTabListCoordinator.setExternalDragObserver(mExternalDragObserver);
-
         mSideUiCoordinator.addObserver(this);
         mSideUiCoordinator.registerSideUiContainer(this);
         mWindowAndroid.addActivityStateObserver(this);
@@ -152,7 +154,9 @@ public class VerticalTabsSideUiCoordinator
 
     public void setVisible(boolean show, boolean suppressAnimations) {
         mManualVisible = show;
-        if (!show) {
+        if (show) {
+            maybeBuildTabList();
+        } else {
             updateAutoHiddenState(false);
         }
         mSideUiCoordinator.updateUi(new UiUpdateRequest(getSideUiId(), suppressAnimations));
@@ -173,22 +177,28 @@ public class VerticalTabsSideUiCoordinator
         mSideUiCoordinator.unregisterSideUiContainer(this);
         mWindowAndroid.removeActivityStateObserver(this);
         mCollapseController.setRailStateChangeDelegate(null);
-        // Cleared before destroying the list on purpose: the list reports an in-progress drag as
-        // ended when destroyed, and collapse state deferral should stay on so that nothing is
-        // applied to a half-destroyed list.
-        mTabListCoordinator.setExternalDragObserver(null);
-        mTabListCoordinator.destroy();
+        mTabListCoordinatorFactory = null;
+        if (mTabListCoordinator != null) {
+            // Cleared before destroying the list on purpose: the list reports an in-progress drag
+            // as ended when destroyed, and collapse state deferral should stay on so that nothing
+            // is applied to a half-destroyed list.
+            mTabListCoordinator.setExternalDragObserver(null);
+            mTabListCoordinator.destroy();
+            mTabListCoordinator = null;
+        }
         mCollapseController.destroy();
         mIsVerticalTabsActiveSupplier.set(false);
     }
 
     /** Requests keyboard focus on the Vertical Tabs rail. */
     public void requestKeyboardFocus() {
+        if (mTabListCoordinator == null) return;
         mTabListCoordinator.requestKeyboardFocus();
     }
 
     /** Returns whether the Vertical Tabs rail contains keyboard focus. */
     public boolean containsKeyboardFocus() {
+        if (mTabListCoordinator == null) return false;
         View view = mTabListCoordinator.getView();
         return view != null && view.hasFocus();
     }
@@ -205,7 +215,7 @@ public class VerticalTabsSideUiCoordinator
      * @return Whether the context menu was successfully opened.
      */
     public boolean openKeyboardFocusedContextMenu() {
-        if (!containsKeyboardFocus()) {
+        if (mTabListCoordinator == null || !containsKeyboardFocus()) {
             return false;
         }
         return mTabListCoordinator.openKeyboardFocusedContextMenu();
@@ -219,11 +229,24 @@ public class VerticalTabsSideUiCoordinator
         return mSideUiCoordinator.canShowSideUi(SideUiId.VERTICAL_TABS);
     }
 
+    private void maybeBuildTabList() {
+        Function<VerticalTabRailCollapseController, VerticalTabListCoordinator> factory =
+                mTabListCoordinatorFactory;
+        if (factory == null) return;
+        mTabListCoordinatorFactory = null;
+        VerticalTabListCoordinator tabListCoordinator = factory.apply(mCollapseController);
+        mRootView.addView(tabListCoordinator.getView());
+        tabListCoordinator.setExternalDragObserver(mExternalDragObserver);
+        mTabListCoordinator = tabListCoordinator;
+    }
+
     private void applyRailCollapseState(@RailCollapseState int railCollapseState) {
+        if (mTabListCoordinator == null) return;
         mTabListCoordinator.setRailCollapseState(railCollapseState);
     }
 
     private void applyCollapseButtonEnabled(boolean enabled) {
+        if (mTabListCoordinator == null) return;
         mTabListCoordinator.setCollapseButtonEnabled(enabled);
     }
 
@@ -263,7 +286,11 @@ public class VerticalTabsSideUiCoordinator
     private void unfreezeIfNoExternalDrag() {
         // A new drag may have started, or this coordinator been destroyed, before this ran. In the
         // latter case, unregistering already resumed the Side UI updates.
-        if (mIsDestroyed || mTabListCoordinator.isExternalDragInProgress()) return;
+        if (mIsDestroyed
+                || mTabListCoordinator == null
+                || mTabListCoordinator.isExternalDragInProgress()) {
+            return;
+        }
         // Resume first so the rail gets its new width, then apply the latest collapse state once;
         // no frame is drawn in between.
         mSideUiCoordinator.resumeSideUiUpdates(getSideUiId());
@@ -430,7 +457,7 @@ public class VerticalTabsSideUiCoordinator
     public @Nullable Transition onPreSideUiSpecsChange(
             SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         // A frozen rail keeps its rendered width, so there is nothing to animate.
-        if (isFrozen()) return null;
+        if (mTabListCoordinator == null || isFrozen()) return null;
 
         int side = getAnchorSide();
         // The rail's contents follow the width the rail is rendered at, which is wider than the
@@ -464,11 +491,13 @@ public class VerticalTabsSideUiCoordinator
     @Override
     public void onSideUiSpecsChangeStarted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         mCollapseController.applyEffectiveState();
+        if (mTabListCoordinator == null) return;
         mTabListCoordinator.setVerticalTabsReservedWidth(sideUiSpecs.getReservedWidth(mAnchorSide));
     }
 
     @Override
     public void onSideUiSpecsChangeCompleted(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+        if (mTabListCoordinator == null) return;
         mTabListCoordinator.setInTransition(false);
     }
 
@@ -508,5 +537,9 @@ public class VerticalTabsSideUiCoordinator
     @RailCollapseState
     int getRailCollapseStateForTesting() {
         return mCollapseController.getEffectiveRailCollapseState();
+    }
+
+    VerticalTabRailCollapseController getCollapseControllerForTesting() {
+        return mCollapseController;
     }
 }

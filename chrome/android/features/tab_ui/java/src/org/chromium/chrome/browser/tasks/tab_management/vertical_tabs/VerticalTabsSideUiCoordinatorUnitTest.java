@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsSideUiCoordinator.VIEW_WIDTH_DP;
@@ -87,6 +89,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Mock private WindowAndroid mMockWindowAndroid;
 
     private VerticalTabRailCollapseController mCollapseController;
+    private int mTabListFactoryCallCount;
     private VerticalTabsSideUiCoordinator mCoordinator;
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
@@ -133,10 +136,12 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                         mMockWindowAndroid,
                         mMockSideUiCoordinator,
                         collapseController -> {
-                            mCollapseController = collapseController;
+                            mTabListFactoryCallCount++;
+                            assertSame(mCollapseController, collapseController);
                             return mMockTabListCoordinator;
                         },
                         mIsVerticalTabsActiveSupplier);
+        mCollapseController = mCoordinator.getCollapseControllerForTesting();
     }
 
     @After
@@ -367,6 +372,8 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testPinRailWhenHoverExpanded() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
+        clearInvocations(mMockSideUiCoordinator);
         // Start in COLLAPSED
         mCollapseController.toggleCollapseState();
         assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
@@ -468,6 +475,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testOnPreSideUiSpecsChange_Resize() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         SideUiSpecs currentSpecs = new SideUiSpecs(mExpandedRailWidth, 0);
         when(mMockSideUiCoordinator.getCurrentSideUiSpecs()).thenReturn(currentSpecs);
 
@@ -487,6 +495,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testOnPreSideUiSpecsChange_OnlyTargetsRailViews() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         // Place the rail next to views outside of it (e.g. the toolbar and the bookmark bar).
         FrameLayout windowRoot = new FrameLayout(mActivity);
         FrameLayout outsideContainer = new FrameLayout(mActivity);
@@ -520,6 +529,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testOnPreSideUiSpecsChange_HoverEnterFollowsRenderedWidth() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         // Collapsed and not overlaying anything yet.
         when(mMockSideUiCoordinator.getCurrentSideUiSpecs())
                 .thenReturn(specs(mCollapsedRailWidth, mCollapsedRailWidth));
@@ -537,6 +547,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testOnPreSideUiSpecsChange_PinningHoverExpandedRailKeepsRailStill() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         // Expanded on hover over the web contents.
         when(mMockSideUiCoordinator.getCurrentSideUiSpecs())
                 .thenReturn(specs(mCollapsedRailWidth, mExpandedRailWidth));
@@ -552,6 +563,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testOnPreSideUiSpecsChange_PinningHoverExpandedRailToDifferentWidthAnimates() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         // Expanded on hover over the web contents, at the fixed hover width.
         when(mMockSideUiCoordinator.getCurrentSideUiSpecs())
                 .thenReturn(specs(mCollapsedRailWidth, mExpandedRailWidth));
@@ -570,6 +582,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testOnSideUiSpecsChangeCompleted_ResetsInTransition() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         SideUiSpecs newSpecs = new SideUiSpecs(mCollapsedRailWidth, 0);
         mCoordinator.onSideUiSpecsChangeCompleted(
                 newSpecs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
@@ -582,6 +595,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testOnPreSideUiSpecsChange_Show() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         SideUiSpecs currentSpecs = new SideUiSpecs(0, 0);
         when(mMockSideUiCoordinator.getCurrentSideUiSpecs()).thenReturn(currentSpecs);
 
@@ -595,6 +609,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testOnPreSideUiSpecsChange_Hide() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         SideUiSpecs currentSpecs = new SideUiSpecs(mExpandedRailWidth, 0);
         when(mMockSideUiCoordinator.getCurrentSideUiSpecs()).thenReturn(currentSpecs);
 
@@ -608,6 +623,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testDeferredStateApplication_OnSideUiSpecsChangeStarted() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         // Trigger collapse request
         mCollapseController.toggleCollapseState();
 
@@ -625,6 +641,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testNarrowWindow_AutoCollapsesAndDisablesButton() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         // When window is narrow (< 504dp), determineShowableSize returns collapsed width and
         // auto-collapses.
         setWindowWidthPx(mNarrowWindowWidth);
@@ -656,6 +673,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testNarrowWindow_AlreadyCollapsed_ReenablesButtonOnWindowExpanded() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         // Collapse rail manually while in wide window.
         mCollapseController.toggleCollapseState();
         clearInvocations(mMockTabListCoordinator);
@@ -679,6 +697,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
     public void testAutoResize_ScalesWidthWithWindow() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         setWindowWidthPx(mMediumWindowWidth);
         int minWebContentsWidthPx =
                 ViewUtils.dpToPx(mActivity, SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP);
@@ -703,6 +722,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
     public void testAutoResize_BelowMinWebContents_HidesVerticalTabs() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         @Px int hiddenWindowWidth = ViewUtils.dpToPx(mActivity, 400);
         setWindowWidthPx(hiddenWindowWidth);
         assertShowableWidth(0, hiddenWindowWidth);
@@ -717,6 +737,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
     public void testAutoResize_NarrowWindowThreshold_CollapsesRail() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         // Threshold: max(412 + 92, round(92 / 0.33)) = 504dp.
         // 503dp (< 504dp) -> Narrow: Rail collapses and collapse button is disabled.
         @Px int narrowWidthPx = ViewUtils.dpToPx(mActivity, 503);
@@ -745,6 +766,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testRequestKeyboardFocus_DelegatesToTabListCoordinator() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         mCoordinator.requestKeyboardFocus();
         verify(mMockTabListCoordinator).requestKeyboardFocus();
     }
@@ -762,6 +784,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testContainsKeyboardFocus() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         assertFalse(mCoordinator.containsKeyboardFocus());
 
         mTabListView.setFocusableInTouchMode(true);
@@ -774,6 +797,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testOpenKeyboardFocusedContextMenu_DelegatesToTabListCoordinator() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         // Without focus, returns false without delegating.
         assertFalse(mCoordinator.openKeyboardFocusedContextMenu());
         verify(mMockTabListCoordinator, never()).openKeyboardFocusedContextMenu();
@@ -933,9 +957,6 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         enableManualResize();
         mCoordinator.destroy();
         VerticalTabUtils.setUserResizedWidthDpInSharedPref(300);
-        // The previous tab list view is still attached to the destroyed coordinator's root view.
-        mTabListView = new View(mActivity);
-        when(mMockTabListCoordinator.getView()).thenReturn(mTabListView);
 
         createCoordinator();
 
@@ -964,6 +985,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testExternalDragStarted_PausesSideUiAndDefersCollapseState() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         ExternalDragObserver observer = captureExternalDragObserver();
 
         observer.onExternalDragStarted();
@@ -978,6 +1000,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testExternalDragEnded_ResumesSideUiThenAppliesCollapseStateOnPostedTask() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         ExternalDragObserver observer = captureExternalDragObserver();
         observer.onExternalDragStarted();
         mCollapseController.setWindowWidthBoundary(WindowWidthBoundary.FORCED_COLLAPSED);
@@ -998,6 +1021,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testExternalDragEnded_NewDragBeforePostedTask_StaysFrozen() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         ExternalDragObserver observer = captureExternalDragObserver();
         observer.onExternalDragStarted();
         observer.onExternalDragEnded();
@@ -1021,6 +1045,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testExternalDragEnded_DestroyedBeforePostedTask_DoesNotResume() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         ExternalDragObserver observer = captureExternalDragObserver();
         observer.onExternalDragStarted();
         observer.onExternalDragEnded();
@@ -1035,6 +1060,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testDestroy_ClearsExternalDragObserverBeforeDestroyingList() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         mCoordinator.destroy();
 
         InOrder inOrder = inOrder(mMockTabListCoordinator);
@@ -1044,6 +1070,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     public void testOnPreSideUiSpecsChange_Frozen_NoTransition() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         when(mMockSideUiCoordinator.areSideUiUpdatesPaused(SideUiId.VERTICAL_TABS))
                 .thenReturn(true);
         SideUiSpecs currentSpecs = new SideUiSpecs(mExpandedRailWidth, 0);
@@ -1056,6 +1083,70 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                         newSpecs,
                         UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ false)));
         verify(mMockTabListCoordinator, never()).setInTransition(true);
+    }
+
+    @Test
+    public void testTabList_NotBuiltUntilShown() {
+        assertEquals(0, mTabListFactoryCallCount);
+        assertEquals(0, ((ViewGroup) mCoordinator.getView()).getChildCount());
+
+        mCoordinator.setVisible(/* show= */ false, /* suppressAnimations= */ false);
+        assertEquals(0, mTabListFactoryCallCount);
+    }
+
+    @Test
+    public void testTabList_BuiltOnceOnFirstShowAndReused() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
+        assertEquals(1, mTabListFactoryCallCount);
+        ViewGroup rootView = (ViewGroup) mCoordinator.getView();
+        assertEquals(1, rootView.getChildCount());
+        assertEquals(mTabListView, rootView.getChildAt(0));
+
+        mCoordinator.setVisible(/* show= */ false, /* suppressAnimations= */ false);
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
+        assertEquals(1, mTabListFactoryCallCount);
+        assertEquals(1, rootView.getChildCount());
+    }
+
+    @Test
+    public void testTabList_BuiltBeforeSideUiUpdate() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
+
+        InOrder inOrder = inOrder(mMockTabListCoordinator, mMockSideUiCoordinator);
+        inOrder.verify(mMockTabListCoordinator).setExternalDragObserver(any());
+        inOrder.verify(mMockSideUiCoordinator).updateUi(any(UiUpdateRequest.class));
+    }
+
+    @Test
+    public void testDestroy_BeforeTabListBuilt() {
+        mCoordinator.destroy();
+
+        assertEquals(0, mTabListFactoryCallCount);
+        verifyNoInteractions(mMockTabListCoordinator);
+        verify(mMockSideUiCoordinator).unregisterSideUiContainer(mCoordinator);
+    }
+
+    @Test
+    public void testCallsBeforeTabListBuilt_DoNotReachTabList() {
+        mCoordinator.requestKeyboardFocus();
+        assertFalse(mCoordinator.containsKeyboardFocus());
+        assertFalse(mCoordinator.openKeyboardFocusedContextMenu());
+        mCollapseController.toggleCollapseState();
+        mCoordinator.onSideUiSpecsChangeStarted(
+                new SideUiSpecs(/* leftContainerWidth= */ 0, /* rightContainerWidth= */ 0),
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
+        mCoordinator.onSideUiSpecsChangeCompleted(
+                new SideUiSpecs(/* leftContainerWidth= */ 0, /* rightContainerWidth= */ 0),
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
+        when(mMockSideUiCoordinator.getCurrentSideUiSpecs())
+                .thenReturn(new SideUiSpecs(mExpandedRailWidth, /* rightContainerWidth= */ 0));
+        assertNull(
+                mCoordinator.onPreSideUiSpecsChange(
+                        new SideUiSpecs(mCollapsedRailWidth, /* rightContainerWidth= */ 0),
+                        UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true)));
+
+        assertEquals(0, mTabListFactoryCallCount);
+        verifyNoInteractions(mMockTabListCoordinator);
     }
 
     private void enableManualResize() {
