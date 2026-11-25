@@ -5201,8 +5201,7 @@ TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_ServerCard) {
 
 // Tests that showing the personal context notice records an impression for
 // AmbientAutofill.
-TEST_F(AutofillExternalDelegateTest,
-       OnSuggestionsShown_PersonalContextNotice_AmbientAutofill) {
+TEST_F(AutofillExternalDelegateTest, OnSuggestionsShown_PersonalContextNotice) {
   IssueOnQuery();
   ON_CALL(autofill_client(), GetSessionIdForCurrentAutofillSuggestions)
       .WillByDefault(Return(AutofillClient::SuggestionUiSessionId(1)));
@@ -5247,86 +5246,14 @@ TEST_F(AutofillExternalDelegateTest,
             2);
 }
 
-// Tests that showing the personal context notice records an impression for
-// AtMemory.
-TEST_F(AutofillExternalDelegateTest,
-       OnSuggestionsShown_PersonalContextNotice_AtMemory) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
-  ON_CALL(autofill_client(), GetSessionIdForCurrentAutofillSuggestions)
-      .WillByDefault(Return(AutofillClient::SuggestionUiSessionId(1)));
-  EXPECT_EQ(autofill_client()
-                .GetPersonalContextFirstRunService()
-                ->at_memory_notice_impressions(),
-            0);
-
-  external_delegate().OnSuggestionsShown(
-      std::vector<Suggestion>{
-          Suggestion(SuggestionType::kPersonalContextNotice)},
-      /*metadata=*/{});
-
-  EXPECT_EQ(autofill_client()
-                .GetPersonalContextFirstRunService()
-                ->at_memory_notice_impressions(),
-            1);
-
-  // Showing suggestions again in the same session should not increment.
-  external_delegate().OnSuggestionsShown(
-      std::vector<Suggestion>{
-          Suggestion(SuggestionType::kPersonalContextNotice)},
-      /*metadata=*/{});
-
-  EXPECT_EQ(autofill_client()
-                .GetPersonalContextFirstRunService()
-                ->at_memory_notice_impressions(),
-            1);
-
-  // Hiding and showing again should increment if we generate a new session ID.
-  external_delegate().OnSuggestionsHidden(SuggestionHidingReason::kTabGone);
-  ON_CALL(autofill_client(), GetSessionIdForCurrentAutofillSuggestions)
-      .WillByDefault(Return(AutofillClient::SuggestionUiSessionId(2)));
-  external_delegate().OnSuggestionsShown(
-      std::vector<Suggestion>{
-          Suggestion(SuggestionType::kPersonalContextNotice)},
-      /*metadata=*/{});
-
-  EXPECT_EQ(autofill_client()
-                .GetPersonalContextFirstRunService()
-                ->at_memory_notice_impressions(),
-            2);
-}
-
 // Tests that the personal context notice is removed and the pref is updated for
 // ambient autofill.
-TEST_F(AutofillExternalDelegateTest,
-       RemoveSuggestion_PersonalContextNotice_AmbientAutofill) {
+TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_PersonalContextNotice) {
   EXPECT_FALSE(autofill_client()
                    .GetPersonalContextFirstRunService()
                    ->is_ambient_autofill_notice_acknowledged());
   EXPECT_TRUE(external_delegate().RemoveSuggestion(
       Suggestion(SuggestionType::kPersonalContextNotice)));
-  EXPECT_TRUE(autofill_client()
-                  .GetPersonalContextFirstRunService()
-                  ->is_ambient_autofill_notice_acknowledged());
-  EXPECT_FALSE(autofill_client()
-                   .GetPersonalContextFirstRunService()
-                   ->is_at_memory_notice_acknowledged());
-}
-
-// Tests that the personal context notice is removed and the pref is updated for
-// AtMemory.
-TEST_F(AutofillExternalDelegateTest,
-       RemoveSuggestion_PersonalContextNotice_AtMemory) {
-  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
-  EXPECT_FALSE(autofill_client()
-                   .GetPersonalContextFirstRunService()
-                   ->is_at_memory_notice_acknowledged());
-  EXPECT_TRUE(external_delegate().RemoveSuggestion(
-      Suggestion(SuggestionType::kPersonalContextNotice)));
-  EXPECT_TRUE(autofill_client()
-                  .GetPersonalContextFirstRunService()
-                  ->is_at_memory_notice_acknowledged());
-  // Acknowledging the AtMemory notice also implicitly acknowledges the
-  // Ambient Autofill notice.
   EXPECT_TRUE(autofill_client()
                   .GetPersonalContextFirstRunService()
                   ->is_ambient_autofill_notice_acknowledged());

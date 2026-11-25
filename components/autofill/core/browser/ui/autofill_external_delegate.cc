@@ -725,13 +725,8 @@ void AutofillExternalDelegate::OnSuggestionsShown(
         std::optional<AutofillClient::SuggestionUiSessionId> session_id =
             manager_->client().GetSessionIdForCurrentAutofillSuggestions();
         if (session_id) {
-          if (IsAtMemoryTriggerSource(trigger_source_)) {
-            service->RecordAtMemoryNoticeImpression(
-                session_id->GetUnsafeValue());
-          } else {
-            service->RecordAmbientAutofillNoticeImpression(
-                session_id->GetUnsafeValue());
-          }
+          service->RecordAmbientAutofillNoticeImpression(
+              session_id->GetUnsafeValue());
         }
       }
     }
@@ -1339,18 +1334,11 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
       return true;
     }
     // This suggestion type represents a notice about the usage of personal
-    // context in ambient autofill and AtMemory. The user can acknowledge it to
-    // dismiss it.
+    // context in ambient autofill. The user can acknowledge it to dismiss it.
     case SuggestionType::kPersonalContextNotice: {
       if (personal_context::PersonalContextFirstRunService* service =
               manager_->client().GetPersonalContextFirstRunService()) {
-        if (IsAtMemoryTriggerSource(trigger_source_)) {
-          service->MarkPersonalContextInAtMemoryNoticeAsAcknowledged();
-        } else {
-          // This assumes only autofill and AtMemory embed this notice. If this
-          // changes in the future, this needs to be updated.
-          service->MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
-        }
+        service->MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
       }
       return true;
     }
