@@ -5,8 +5,12 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -28,8 +32,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -190,6 +197,42 @@ public class TabSwitcherLayoutPTTest {
         TabModelSelector selector = currentStation.getTabModelSelector();
         return currentStation
                 .clickTabSwitcherButtonTo()
+                .enterStateAnd(new TabThumbnailsCapturedCarryOn(selector, /* isIncognito= */ false))
+                .arriveAt(RegularTabSwitcherStation.from(selector));
+    }
+
+    /**
+     * Enters the regular Tab Switcher via {@link View#performClick()}, making sure all tabs have a
+     * thumbnail.
+     *
+     * <p>Under {@link EnableAnimations}, synthetic {@code ACTION_DOWN} starts the tab switcher
+     * button's ripple animation, which on slow software-rendered emulators can delay Espresso's tap
+     * past {@code longPressTimeout} and trigger the long-press action menu instead of a click (see
+     * https://crbug.com/583007524).
+     */
+    private RegularTabSwitcherStation enterRegularHtsWithThumbnailCheckingViaPerformClick(
+            CtaPageStation currentStation) {
+        TabModelSelector selector = currentStation.getTabModelSelector();
+        return currentStation
+                .toolbar
+                .tabSwitcherButtonElement
+                .performViewActionTo(
+                        new ViewAction() {
+                            @Override
+                            public Matcher<View> getConstraints() {
+                                return allOf(isDisplayed(), isEnabled(), isClickable());
+                            }
+
+                            @Override
+                            public String getDescription() {
+                                return "performClick";
+                            }
+
+                            @Override
+                            public void perform(UiController uiController, View view) {
+                                assertTrue(view.performClick());
+                            }
+                        })
                 .enterStateAnd(new TabThumbnailsCapturedCarryOn(selector, /* isIncognito= */ false))
                 .arriveAt(RegularTabSwitcherStation.from(selector));
     }
@@ -785,7 +828,8 @@ public class TabSwitcherLayoutPTTest {
             Supplier<BasePageStation.Builder<T>> destinationBuiderFactory,
             Runnable resetHTSStateOnUiThread,
             boolean canGarbageCollectBitmaps) {
-        RegularTabSwitcherStation tabSwitcher = enterRegularHtsWithThumbnailChecking(page);
+        RegularTabSwitcherStation tabSwitcher =
+                enterRegularHtsWithThumbnailCheckingViaPerformClick(page);
 
         // TODO(crbug.com/324919909): Migrate this to a HubTabSwitcherCardFacility with a tab
         // thumbnail as a view element.
@@ -817,7 +861,7 @@ public class TabSwitcherLayoutPTTest {
             assertFalse(canBeGarbageCollected(mBitmap));
         }
 
-        tabSwitcher = enterRegularHtsWithThumbnailChecking(page);
+        tabSwitcher = enterRegularHtsWithThumbnailCheckingViaPerformClick(page);
         return tabSwitcher.leaveHubToPreviousTabViaBack(destinationBuiderFactory.get());
     }
 
