@@ -42,6 +42,11 @@ namespace net::device_bound_sessions {
 // TODO(crbug.com/516490575): Remove once this has shipped to stable.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsRequireSameSiteRefresh);
 
+// Kill switch for enforcing the subdomain .well-known check when a DBSC
+// session refresh widens `scope.include_site` to true.
+// TODO(crbug.com/589696009): Remove once this has shipped to stable.
+NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsCheckSubdomainOnRefresh);
+
 class SessionService;
 class RegistrationRequestParam;
 

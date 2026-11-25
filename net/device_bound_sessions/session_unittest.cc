@@ -1436,6 +1436,34 @@ TEST_F(SessionTest, IsVisibleToOriginRefreshEndpointExcludeOnly) {
   EXPECT_TRUE(session->IncludesUrl(GURL("https://example.test/")));
 }
 
+TEST_F(SessionTest, IncludesSiteFalse) {
+  SessionParams params = CreateValidParams();
+  params.scope.include_site = false;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(params));
+  EXPECT_FALSE(session->includes_site());
+
+  proto::Session sproto = session->ToProto();
+  sproto.set_wrapped_key("mock_wrapped_key");
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> restored,
+                       Session::CreateFromProto(sproto));
+  EXPECT_FALSE(restored->includes_site());
+}
+
+TEST_F(SessionTest, IncludesSiteTrue) {
+  SessionParams params = CreateValidParams();
+  params.scope.include_site = true;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(params));
+  EXPECT_TRUE(session->includes_site());
+
+  proto::Session sproto = session->ToProto();
+  sproto.set_wrapped_key("mock_wrapped_key");
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> restored,
+                       Session::CreateFromProto(sproto));
+  EXPECT_TRUE(restored->includes_site());
+}
+
 }  // namespace
 
 }  // namespace net::device_bound_sessions

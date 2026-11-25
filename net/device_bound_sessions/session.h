@@ -164,6 +164,7 @@ class NET_EXPORT Session {
   bool CanSetBoundCookie(DbscRequest& request) const;
 
   const url::Origin& origin() const { return inclusion_rules_.origin(); }
+  bool includes_site() const { return inclusion_rules_.includes_site(); }
 
   const std::vector<std::string>& allowed_refresh_initiators() {
     return allowed_refresh_initiators_;

@@ -30,6 +30,9 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kTooManyChallenges:
     case kSessionDeletedDuringRefresh:
     case kCrossSiteRefreshSessionConfig:
+    case kSubdomainRegistrationWellKnownUnavailable:
+    case kSubdomainRegistrationUnauthorized:
+    case kSubdomainRegistrationWellKnownMalformed:
       return DeletionReason::kRefreshFatalError;
     case kInvalidConfigJson:
     case kInvalidSessionId:
@@ -65,6 +68,7 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kNoCredentials:
     case kInvalidScopeIncludeSite:
     case kMissingScopeIncludeSite:
+    case kCrossOriginRegistrationSiteNotIncluded:
       return DeletionReason::kInvalidSessionParams;
     case kNetError:
     case kProxyError:
@@ -76,9 +80,6 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     // Registration-only errors never trigger session deletion.
     case kSigningKeyGenerationError:
     case kAttestationKeyGenerationError:
-    case kSubdomainRegistrationWellKnownUnavailable:
-    case kSubdomainRegistrationUnauthorized:
-    case kSubdomainRegistrationWellKnownMalformed:
     case kFederatedNotAuthorizedByProvider:
     case kFederatedNotAuthorizedByRelyingParty:
     case kSessionProviderWellKnownUnavailable:
@@ -97,7 +98,6 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kRegistrationAttemptedChallenge:
     case kInvalidFederatedSessionProviderFailedToRestoreKey:
     case kFailedToUnwrapKey:
-    case kCrossOriginRegistrationSiteNotIncluded:
     case kInvalidPreProvisionedKeyInitiatorMissing:
     case kPreProvisionedKeyAccessNotGranted:
     case kPreProvisionedKeyNotFound:
@@ -159,13 +159,14 @@ bool SessionError::IsServerError() const {
     case kMissingScopeIncludeSite:
     case kBoundCookieSetForbidden:
     case kCrossSiteRefreshSessionConfig:
+    case kSubdomainRegistrationWellKnownUnavailable:
+    case kSubdomainRegistrationUnauthorized:
+    case kSubdomainRegistrationWellKnownMalformed:
+    case kCrossOriginRegistrationSiteNotIncluded:
       return true;
     // Registration-only errors never get reported to the server.
     case kSigningKeyGenerationError:
     case kAttestationKeyGenerationError:
-    case kSubdomainRegistrationWellKnownUnavailable:
-    case kSubdomainRegistrationUnauthorized:
-    case kSubdomainRegistrationWellKnownMalformed:
     case kFederatedNotAuthorizedByProvider:
     case kFederatedNotAuthorizedByRelyingParty:
     case kSessionProviderWellKnownUnavailable:
@@ -184,7 +185,6 @@ bool SessionError::IsServerError() const {
     case kRegistrationAttemptedChallenge:
     case kInvalidFederatedSessionProviderFailedToRestoreKey:
     case kFailedToUnwrapKey:
-    case kCrossOriginRegistrationSiteNotIncluded:
     case kInvalidPreProvisionedKeyInitiatorMissing:
     case kPreProvisionedKeyAccessNotGranted:
     case kPreProvisionedKeyNotFound:
@@ -241,6 +241,10 @@ std::optional<RefreshResult> SessionError::GetRefreshResult() const {
     case kInvalidScopeIncludeSite:
     case kMissingScopeIncludeSite:
     case kCrossSiteRefreshSessionConfig:
+    case kSubdomainRegistrationWellKnownUnavailable:
+    case kSubdomainRegistrationUnauthorized:
+    case kSubdomainRegistrationWellKnownMalformed:
+    case kCrossOriginRegistrationSiteNotIncluded:
       return RefreshResult::kFatalError;
 
     // Specific cases
@@ -262,9 +266,6 @@ std::optional<RefreshResult> SessionError::GetRefreshResult() const {
     // Registration-only errors
     case kSigningKeyGenerationError:
     case kAttestationKeyGenerationError:
-    case kSubdomainRegistrationWellKnownUnavailable:
-    case kSubdomainRegistrationUnauthorized:
-    case kSubdomainRegistrationWellKnownMalformed:
     case kFederatedNotAuthorizedByProvider:
     case kFederatedNotAuthorizedByRelyingParty:
     case kSessionProviderWellKnownUnavailable:
@@ -283,7 +284,6 @@ std::optional<RefreshResult> SessionError::GetRefreshResult() const {
     case kRegistrationAttemptedChallenge:
     case kInvalidFederatedSessionProviderFailedToRestoreKey:
     case kFailedToUnwrapKey:
-    case kCrossOriginRegistrationSiteNotIncluded:
     case kInvalidPreProvisionedKeyInitiatorMissing:
     case kPreProvisionedKeyAccessNotGranted:
     case kPreProvisionedKeyNotFound:

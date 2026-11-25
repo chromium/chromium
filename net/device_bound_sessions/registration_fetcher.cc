@@ -64,6 +64,9 @@ namespace net::device_bound_sessions {
 BASE_FEATURE(kDeviceBoundSessionsRequireSameSiteRefresh,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeviceBoundSessionsCheckSubdomainOnRefresh,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 constexpr char kSessionIdHeaderName[] = "Sec-Secure-Session-Id";
@@ -1154,24 +1157,16 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     }
 
-    // Session::CreateIfValid confirms that the registration endpoint is
-    // same-site with the scope origin and allowed to register a session for the
-    // scope origin. But for cross-origin same-site registrations, we still need
-    // to validate that this subdomain is allowed to register a session for the
-    // scope origin via a .well-known check.
-    if (features::kDeviceBoundSessionsCheckSubdomainRegistration.Get() &&
-        !IsForRefreshRequest() && params.scope.include_site &&
-        // We compare hosts rather than origins here because the DBSC spec
-        // (https://w3c.github.io/webappsec-dbsc/#algo-create-session) defines
-        // the scope of .well-known files to be the host.
-        // Skip all validations if the fetcher endpoint is not a subdomain but
-        // rather the top-level site (which matches the origin when including
-        // the site).
-        final_registration_url.host() != session->origin().host()) {
+    // `Session::CreateIfValid()` confirms that the serving endpoint is
+    // same-site with the scope origin and allowed to set a session for the
+    // scope origin. For cross-origin same-site registrations and
+    // scope-widening refreshes, we still need to validate that this subdomain
+    // is authorized for the scope origin via a .well-known check.
+    if (ShouldCheckSubdomainRegistration(final_registration_url, *session)) {
       GURL well_known_url = CreateWellKnownUrl(session->origin());
       url_fetcher_ = std::make_unique<URLFetcher>(
           context_, well_known_url, referring_origin_, net_log_source_,
-          /*is_refresh=*/false, GetRequestPriority(), GetTimeout());
+          IsForRefreshRequest(), GetRequestPriority(), GetTimeout());
       ConfigureWellKnownRequest(url_fetcher_->request());
       url_fetcher_->Start(base::BindOnce(
           &RegistrationFetcherImpl::
@@ -1322,6 +1317,42 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     return IsForRefreshRequest() && attempts_made_ == 1 &&
            base::FeatureList::IsEnabled(
                features::kDeviceBoundSessionsRetryTransientRefreshErrors);
+  }
+
+  bool ShouldCheckSubdomainRegistration(const GURL& final_registration_url,
+                                        const Session& new_session) const {
+    if (!features::kDeviceBoundSessionsCheckSubdomainRegistration.Get()) {
+      return false;
+    }
+    if (!new_session.includes_site()) {
+      return false;
+    }
+    // We compare hosts rather than origins here because the DBSC spec
+    // (https://w3c.github.io/webappsec-dbsc/#algo-create-session) defines
+    // the scope of .well-known files to be the host.
+    // Skip all validations if the serving endpoint is not a subdomain but
+    // rather the top-level site (which matches the origin when including
+    // the site).
+    if (final_registration_url.host() == new_session.origin().host()) {
+      return false;
+    }
+    if (!IsForRefreshRequest()) {
+      return true;
+    }
+    // Checking scope-widening refreshes currently diverges from the DBSC spec
+    // (https://w3c.github.io/webappsec-dbsc/#algo-create-session).
+    // TODO(crbug.com/589696317): Propose a spec update.
+    if (!base::FeatureList::IsEnabled(
+            kDeviceBoundSessionsCheckSubdomainOnRefresh)) {
+      return false;
+    }
+    // If the session being refreshed already included the entire site, apex
+    // authorization was already established when the session was created (or
+    // widened), so avoid an extra .well-known network round-trip on routine
+    // refreshes.
+    const Session* existing_session = session_service_->GetSession(SessionKey{
+        SchemefulSite(fetcher_endpoint_), Session::Id(*session_identifier_)});
+    return !existing_session || !existing_session->includes_site();
   }
 
   //// This section of fields is state passed into the constructor. ////

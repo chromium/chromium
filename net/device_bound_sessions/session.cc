@@ -615,6 +615,10 @@ void Session::InformOfRefreshResult(bool was_proactive,
     case kInvalidFederatedKey:
     case kSessionDeletedDuringRefresh:
     case kCrossSiteRefreshSessionConfig:
+    case kSubdomainRegistrationWellKnownUnavailable:
+    case kSubdomainRegistrationUnauthorized:
+    case kSubdomainRegistrationWellKnownMalformed:
+    case kCrossOriginRegistrationSiteNotIncluded:
 
     // We do not want to back off on many network connection errors
     // (e.g. internet disconnected), so we do not hit our maximum
@@ -635,9 +639,6 @@ void Session::InformOfRefreshResult(bool was_proactive,
     // Registration-only errors
     case kSigningKeyGenerationError:
     case kAttestationKeyGenerationError:
-    case kSubdomainRegistrationWellKnownUnavailable:
-    case kSubdomainRegistrationUnauthorized:
-    case kSubdomainRegistrationWellKnownMalformed:
     case kFederatedNotAuthorizedByProvider:
     case kFederatedNotAuthorizedByRelyingParty:
     case kSessionProviderWellKnownUnavailable:
@@ -651,7 +652,6 @@ void Session::InformOfRefreshResult(bool was_proactive,
     case kRegistrationAttemptedChallenge:
     case kInvalidFederatedSessionProviderFailedToRestoreKey:
     case kFailedToUnwrapKey:
-    case kCrossOriginRegistrationSiteNotIncluded:
     case kInvalidPreProvisionedKeyInitiatorMissing:
     case kPreProvisionedKeyAccessNotGranted:
     case kPreProvisionedKeyNotFound:

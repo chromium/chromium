@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Device Bound Session Credentials: Subdomain .well-known check on scope-widening refresh</title>
+<link rel="help" href="https://w3c.github.io/webappsec-dbsc/#algo-create-session">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="helper.js" type="module"></script>
+
+<script type="module">
+  import {
+    addCookieAndSessionCleanup,
+    configureServer,
+    documentHasCookie,
+    expireCookie,
+    setupShardedServerState,
+    waitForCookie
+  } from "./helper.js";
+
+  async function waitForRefresh(cookieAndAttributes, cookieAndValue, verifyUrl) {
+    const refreshed = await new Promise(resolve => {
+      async function tryRefresh() {
+        expireCookie(cookieAndAttributes);
+        assert_false(documentHasCookie(cookieAndValue));
+        const authResponseAfterExpiry =
+            await fetch(verifyUrl, {credentials: "include"});
+        if (authResponseAfterExpiry.status == 200) {
+          resolve(true);
+          return;
+        }
+        step_timeout(tryRefresh, 100);
+      }
+
+      tryRefresh();
+    });
+
+    assert_true(refreshed);
+  }
+
+  async function runRefreshWidenTest(t, subdomain, expectWidened) {
+    await setupShardedServerState();
+    const expectedCookieAndValue = "auth_cookie=abcdef0123";
+    const expectedCookieAttributes =
+        `Domain=${location.hostname};Path=/device-bound-session-credentials`;
+    const expectedCookieAndAttributes =
+        `${expectedCookieAndValue};${expectedCookieAttributes}`;
+    addCookieAndSessionCleanup(t);
+
+    // .well-known/device-bound-sessions hardcodes www as allowed, but not www1.
+    const loginUrl =
+        new URL("/device-bound-session-credentials/login.py", location);
+    loginUrl.hostname = `${subdomain}.${location.hostname}`;
+    const subdomainVerifyUrl = new URL(
+        "/device-bound-session-credentials/verify_authenticated.py", location);
+    subdomainVerifyUrl.hostname = `${subdomain}.${location.hostname}`;
+
+    // Register an origin-scoped session on the subdomain first, which does not
+    // require a .well-known check.
+    await configureServer({
+      "scopeOrigin": loginUrl.origin,
+      "includeSite": false,
+      "cookieDetails": [
+        {
+          "nameAndValue": expectedCookieAndValue,
+          "attributes": expectedCookieAttributes
+        }
+      ]
+    });
+
+    const loginResponse =
+        await fetch(loginUrl.toString(), {credentials: "include"});
+    assert_equals(loginResponse.status, 200);
+    await waitForCookie(expectedCookieAndValue, /*expectCookie=*/true);
+
+    // Confirm the origin-scoped session is active on the subdomain and does
+    // not cover the parent origin yet.
+    await waitForRefresh(
+        expectedCookieAndAttributes, expectedCookieAndValue,
+        subdomainVerifyUrl.toString());
+    expireCookie(expectedCookieAndAttributes);
+    assert_false(documentHasCookie(expectedCookieAndValue));
+    const parentBeforeWiden = await fetch("verify_authenticated.py");
+    assert_equals(parentBeforeWiden.status, 403);
+    assert_false(documentHasCookie(expectedCookieAndValue));
+
+    // Reconfigure the server so the next refresh attempts to widen scope to
+    // the whole site, then trigger a refresh on the subdomain.
+    await configureServer({
+      "scopeOrigin": location.origin,
+      "includeSite": true
+    });
+    // Even when widening fails the .well-known check and terminates the
+    // session, the refresh HTTP response itself still sets the cookie in the
+    // jar before the new config is rejected, so the restarted request succeeds.
+    const widenResponse =
+        await fetch(subdomainVerifyUrl.toString(), {credentials: "include"});
+    assert_equals(widenResponse.status, 200);
+    assert_true(documentHasCookie(expectedCookieAndValue));
+
+    // Expire the cookie again. If the subdomain was authorized by .well-known,
+    // the widened session refreshes on the parent origin; otherwise, the
+    // session was terminated and refreshes on neither the parent nor subdomain.
+    expireCookie(expectedCookieAndAttributes);
+    assert_false(documentHasCookie(expectedCookieAndValue));
+    const parentAfterWiden = await fetch("verify_authenticated.py");
+    assert_equals(parentAfterWiden.status, expectWidened ? 200 : 403);
+    assert_equals(documentHasCookie(expectedCookieAndValue), expectWidened);
+
+    if (!expectWidened) {
+      const subdomainAfterFailedWiden =
+          await fetch(subdomainVerifyUrl.toString(), {credentials: "include"});
+      assert_equals(subdomainAfterFailedWiden.status, 403);
+      assert_false(documentHasCookie(expectedCookieAndValue));
+    }
+  }
+
+  promise_test(async t => {
+    await runRefreshWidenTest(t, /*subdomain=*/"www1", /*expectWidened=*/false);
+  }, "Refresh fails to widen scope to site without .well-known");
+
+  promise_test(async t => {
+    await runRefreshWidenTest(t, /*subdomain=*/"www", /*expectWidened=*/true);
+  }, "Refresh widens scope to site with .well-known");
+</script>

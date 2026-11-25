@@ -77,6 +77,7 @@ class NET_EXPORT SessionInclusionRules final {
 
   bool may_include_site_for_testing() const { return may_include_site_; }
   const url::Origin& origin() const { return origin_; }
+  bool includes_site() const { return include_site_.has_value(); }
 
   size_t num_url_rules_for_testing() const;
 

@@ -41,6 +41,7 @@
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/sign.h"
 #include "net/base/features.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_access_result.h"
@@ -346,12 +347,20 @@ class RegistrationTest : public TestWithTaskEnvironment {
     return std::get<1>(future.Take());
   }
 
-  std::unique_ptr<Session> CreateTestSession(std::string session_identifier) {
+  // Creates a session with `refresh_url` as the refresh endpoint and the origin
+  // of `scope_url` as the scope origin. Both default to `GetBaseURL()`.
+  std::unique_ptr<Session> CreateTestSession(
+      std::string session_identifier,
+      std::optional<GURL> refresh_url = std::nullopt,
+      std::optional<GURL> scope_url = std::nullopt,
+      bool include_site = false) {
+    GURL scope = scope_url.value_or(GetBaseURL());
     return std::move(*Session::CreateIfValid(SessionParams{
         .session_id = std::move(session_identifier),
-        .fetcher_url = GetBaseURL(),
-        .refresh_url = GetBaseURL().spec(),
-        .scope = {.origin = url::Origin::Create(GetBaseURL()).Serialize()},
+        .fetcher_url = scope,
+        .refresh_url = refresh_url.value_or(GetBaseURL()).spec(),
+        .scope = {.include_site = include_site,
+                  .origin = url::Origin::Create(scope).Serialize()},
     }));
   }
 
@@ -474,7 +483,7 @@ std::unique_ptr<test_server::HttpResponse> ReturnForHostAndPath(
   if (it == request.headers.end()) {
     return nullptr;
   }
-  if (it->second.find(host) == std::string::npos) {
+  if (HostPortPair::FromString(it->second).host() != host) {
     return nullptr;
   }
   if (request.relative_url != path) {
@@ -4486,8 +4495,6 @@ class RegistrationFederatedRedirectTest : public RegistrationTest {
                                                 R"json({
                               "provider_origin": "https://provider.a.test:$1"
                             })json")));
-    // Registered last, because `ReturnForHostAndPath()` also matches the
-    // subdomains of a.test.
     server_.RegisterRequestHandler(base::BindRepeating(
         &ReturnForHostAndPath, "a.test", "/.well-known/device-bound-sessions",
         base::BindRepeating(&ReturnWellKnown,
@@ -5038,7 +5045,10 @@ TEST_F(RegistrationTest, RegistrationNoRetryTransientError) {
       "Net.DeviceBoundSessions.Refresh.Network.Result.FirstAttempt", 0);
 }
 
-class RegistrationRefreshRedirectTest : public RegistrationTest {
+// Refreshes a session whose refresh endpoint is on a.test or one of its
+// subdomains and checks which session configs the refresh may return, possibly
+// after redirects.
+class RegistrationRefreshTest : public RegistrationTest {
  protected:
   static constexpr char kCrossSiteValidJson[] = R"json({
     "session_identifier": "session_id",
@@ -5049,6 +5059,9 @@ class RegistrationRefreshRedirectTest : public RegistrationTest {
       "attributes": "Domain=b.test; Path=/; Secure; SameSite=None"
     }]
   })json";
+
+  static constexpr char kSubdomainWellKnownHistogram[] =
+      "Net.DeviceBoundSessions.SubdomainWellKnown.Network.Result";
 
   void AddRedirect(std::string_view from_host,
                    std::string_view from_path,
@@ -5067,16 +5080,77 @@ class RegistrationRefreshRedirectTest : public RegistrationTest {
         base::BindRepeating(&ReturnResponse, HTTP_OK, std::move(body))));
   }
 
-  RegistrationResult FetchRefresh(std::string_view host = "a.test") {
-    return FetchWithExistingKey(
-        RegistrationRequestParam::CreateForTesting(
-            server_.GetURL(host, "/refresh"), kSessionIdentifier, kChallenge,
-            /*authorization=*/std::nullopt),
-        CreateSigningKey());
+  // Serves a session config that includes the whole a.test site at `host` +
+  // `path`.
+  void AddSiteScopedResponse(std::string_view host, std::string_view path) {
+    server_.RegisterRequestHandler(base::BindRepeating(
+        &ReturnForHostAndPath, host, path,
+        base::BindRepeating(&ReturnSubdomainResponse, &server_)));
   }
+
+  // Serves `handler` at `host` + "/.well-known/device-bound-sessions".
+  void AddWellKnown(
+      std::string_view host,
+      test_server::EmbeddedTestServer::HandleRequestCallback handler) {
+    server_.RegisterRequestHandler(base::BindRepeating(
+        &ReturnForHostAndPath, host, "/.well-known/device-bound-sessions",
+        std::move(handler)));
+  }
+
+  // Refreshes a session with the refresh endpoint on `refresh_host` and the
+  // scope origin on `scope_host` (defaults to `refresh_host`).
+  RegistrationResult FetchRefresh(std::string_view refresh_host = "a.test",
+                                  bool include_site = false,
+                                  std::string_view scope_host = "") {
+    if (scope_host.empty()) {
+      scope_host = refresh_host;
+    }
+    std::unique_ptr<Session> session = CreateTestSession(
+        kSessionIdentifier, server_.GetURL(refresh_host, "/refresh"),
+        server_.GetURL(scope_host, "/"), include_site);
+    session->set_cached_challenge(kChallenge);
+    const SessionKey session_key{SchemefulSite(session->refresh_url()),
+                                 session->id()};
+    ON_CALL(session_service(), GetSession(session_key))
+        .WillByDefault(Return(session.get()));
+    RegistrationResult result = FetchWithExistingKey(
+        RegistrationRequestParam::CreateForRefresh(*session),
+        CreateSigningKey());
+    // `session` is destroyed on return, so stop handing it out.
+    ON_CALL(session_service(), GetSession(session_key))
+        .WillByDefault(Return(nullptr));
+    return result;
+  }
+
+  void ExpectRefreshNetLogStatus(std::string_view expected_status) {
+    std::vector<NetLogEntry> entries = net_log_observer_.GetEntriesWithType(
+        NetLogEventType::DBSC_REFRESH_RESULT);
+    ASSERT_EQ(entries.size(), 1u);
+    EXPECT_THAT(entries[0].params,
+                DictionaryHasValue("status", base::Value(expected_status)));
+  }
+
+  // Refreshes an origin-scoped session on subdomain.a.test that tries to widen
+  // its scope to the whole site, and expects the .well-known check to fail.
+  void ExpectWideningRefreshFails(
+      test_server::EmbeddedTestServer::HandleRequestCallback well_known_handler,
+      SessionError::ErrorType expected_error) {
+    AddWellKnown("a.test", std::move(well_known_handler));
+    AddSiteScopedResponse("subdomain.a.test", "/refresh");
+    ASSERT_TRUE(server_.Start());
+
+    RegistrationResult result = FetchRefresh("subdomain.a.test");
+    const SessionError* error = result.SessionErrorForTesting();
+    ASSERT_NE(error, nullptr);
+    EXPECT_EQ(error->type, expected_error);
+    ExpectRefreshNetLogStatus("session_ended");
+  }
+
+  RecordingNetLogObserver net_log_observer_;
+  base::HistogramTester histogram_tester_;
 };
 
-TEST_F(RegistrationRefreshRedirectTest, CrossSiteConfigRejected) {
+TEST_F(RegistrationRefreshTest, CrossSiteConfigRejected) {
   AddRedirect("a.test", "/refresh", "b.test", "/planted");
   AddResponse("b.test", "/planted", kCrossSiteValidJson);
   ASSERT_TRUE(server_.Start());
@@ -5087,8 +5161,7 @@ TEST_F(RegistrationRefreshRedirectTest, CrossSiteConfigRejected) {
             SessionError::kCrossSiteRefreshSessionConfig);
 }
 
-TEST_F(RegistrationRefreshRedirectTest,
-       CrossSiteContinueFalseTerminatesSession) {
+TEST_F(RegistrationRefreshTest, CrossSiteContinueFalseTerminatesSession) {
   AddRedirect("a.test", "/refresh", "b.test", "/terminate");
   AddResponse(
       "b.test", "/terminate",
@@ -5101,7 +5174,7 @@ TEST_F(RegistrationRefreshRedirectTest,
             SessionError::kServerRequestedTermination);
 }
 
-TEST_F(RegistrationRefreshRedirectTest, CrossSiteEmptyResponseAllowed) {
+TEST_F(RegistrationRefreshTest, CrossSiteEmptyResponseAllowed) {
   AddRedirect("a.test", "/refresh", "b.test", "/empty");
   AddResponse("b.test", "/empty", "");
   ASSERT_TRUE(server_.Start());
@@ -5111,19 +5184,17 @@ TEST_F(RegistrationRefreshRedirectTest, CrossSiteEmptyResponseAllowed) {
   result.NoSessionConfigChangeForTesting();
 }
 
-TEST_F(RegistrationRefreshRedirectTest, CrossSiteBounceBackAllowed) {
+TEST_F(RegistrationRefreshTest, CrossSiteBounceBackAllowed) {
   AddRedirect("a.test", "/refresh", "b.test", "/bounce");
   AddRedirect("b.test", "/bounce", "a.test", "/final");
-  server_.RegisterRequestHandler(base::BindRepeating(
-      &ReturnForHostAndPath, "a.test", "/final",
-      base::BindRepeating(&ReturnSubdomainResponse, &server_)));
+  AddSiteScopedResponse("a.test", "/final");
   ASSERT_TRUE(server_.Start());
 
   RegistrationResult result = FetchRefresh();
   EXPECT_EQ(result.SessionErrorForTesting(), nullptr);
 }
 
-TEST_F(RegistrationRefreshRedirectTest, SameSiteSubdomainAllowed) {
+TEST_F(RegistrationRefreshTest, SameSiteSubdomainAllowed) {
   AddRedirect("sub1.a.test", "/refresh", "sub2.a.test", "/final");
   AddResponse("sub2.a.test", "/final", R"json({
     "session_identifier": "session_id",
@@ -5140,8 +5211,7 @@ TEST_F(RegistrationRefreshRedirectTest, SameSiteSubdomainAllowed) {
   EXPECT_EQ(result.SessionErrorForTesting(), nullptr);
 }
 
-TEST_F(RegistrationRefreshRedirectTest,
-       CrossSiteAllowedWhenKillSwitchDisabled) {
+TEST_F(RegistrationRefreshTest, CrossSiteAllowedWhenKillSwitchDisabled) {
   AddScopedFeatureList().InitAndDisableFeature(
       kDeviceBoundSessionsRequireSameSiteRefresh);
   AddRedirect("a.test", "/refresh", "b.test", "/planted");
@@ -5152,6 +5222,147 @@ TEST_F(RegistrationRefreshRedirectTest,
   EXPECT_EQ(result.SessionErrorForTesting(), nullptr);
   EXPECT_EQ(result.SessionForTesting().origin(),
             url::Origin::Create(server_.GetURL("b.test", "/")));
+}
+
+TEST_F(RegistrationRefreshTest, WidensIncludeSiteAllowed) {
+  AddWellKnown(
+      "a.test",
+      base::BindRepeating(
+          &ReturnWellKnown,
+          R"json({"registering_origins": ["https://subdomain.a.test:$1"]})json"));
+  AddSiteScopedResponse("subdomain.a.test", "/refresh");
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result = FetchRefresh("subdomain.a.test");
+  EXPECT_TRUE(result.SessionForTesting().includes_site());
+  ExpectRefreshNetLogStatus("refreshed");
+  histogram_tester_.ExpectUniqueSample(kSubdomainWellKnownHistogram, HTTP_OK,
+                                       1);
+}
+
+TEST_F(RegistrationRefreshTest, WidensIncludeSiteWellKnownUnavailable) {
+  ExpectWideningRefreshFails(
+      base::BindRepeating(&ReturnResponse, HTTP_NOT_FOUND, ""),
+      SessionError::kSubdomainRegistrationWellKnownUnavailable);
+}
+
+TEST_F(RegistrationRefreshTest,
+       WidensIncludeSiteWellKnownServerErrorTerminatesSession) {
+  ExpectWideningRefreshFails(
+      base::BindRepeating(&ReturnResponse, HTTP_INTERNAL_SERVER_ERROR, ""),
+      SessionError::kSubdomainRegistrationWellKnownUnavailable);
+  histogram_tester_.ExpectUniqueSample(kSubdomainWellKnownHistogram,
+                                       HTTP_INTERNAL_SERVER_ERROR, 1);
+}
+
+TEST_F(RegistrationRefreshTest,
+       WidensIncludeSiteWellKnownNetErrorTerminatesSession) {
+  ExpectWideningRefreshFails(
+      base::BindRepeating(&ReturnInvalidResponse),
+      SessionError::kSubdomainRegistrationWellKnownUnavailable);
+  histogram_tester_.ExpectUniqueSample(kSubdomainWellKnownHistogram,
+                                       net::ERR_INVALID_HTTP_RESPONSE, 1);
+}
+
+TEST_F(RegistrationRefreshTest, WidensIncludeSiteWellKnownMalformed) {
+  ExpectWideningRefreshFails(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, "invalid JSON"),
+      SessionError::kSubdomainRegistrationWellKnownMalformed);
+}
+
+TEST_F(RegistrationRefreshTest, WidensIncludeSiteUnauthorized) {
+  ExpectWideningRefreshFails(
+      base::BindRepeating(
+          &ReturnWellKnown,
+          R"json({"registering_origins": ["https://other.a.test:$1"]})json"),
+      SessionError::kSubdomainRegistrationUnauthorized);
+}
+
+TEST_F(RegistrationRefreshTest,
+       WidensIncludeSiteAllowedWhenKillSwitchDisabled) {
+  AddScopedFeatureList().InitAndDisableFeature(
+      kDeviceBoundSessionsCheckSubdomainOnRefresh);
+  AddWellKnown("a.test",
+               base::BindRepeating(&ReturnResponse, HTTP_NOT_FOUND, ""));
+  AddSiteScopedResponse("subdomain.a.test", "/refresh");
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result = FetchRefresh("subdomain.a.test");
+  EXPECT_TRUE(result.SessionForTesting().includes_site());
+  histogram_tester_.ExpectTotalCount(kSubdomainWellKnownHistogram, 0);
+}
+
+TEST_F(RegistrationRefreshTest, AlreadyIncludesSiteSkipsWellKnown) {
+  AddWellKnown("a.test",
+               base::BindRepeating(&ReturnResponse, HTTP_NOT_FOUND, ""));
+  AddSiteScopedResponse("subdomain.a.test", "/refresh");
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result =
+      FetchRefresh("subdomain.a.test", /*include_site=*/true,
+                   /*scope_host=*/"a.test");
+  EXPECT_TRUE(result.SessionForTesting().includes_site());
+  histogram_tester_.ExpectTotalCount(kSubdomainWellKnownHistogram, 0);
+}
+
+TEST_F(RegistrationRefreshTest, ChecksWellKnownWhenSessionNotFound) {
+  AddWellKnown("a.test",
+               base::BindRepeating(&ReturnResponse, HTTP_NOT_FOUND, ""));
+  AddSiteScopedResponse("subdomain.a.test", "/refresh");
+  ASSERT_TRUE(server_.Start());
+
+  // Simulates the session being deleted while the refresh request is in flight
+  // (`SessionService::GetSession()` returns nullptr).
+  RegistrationResult result = FetchWithExistingKey(
+      RegistrationRequestParam::CreateForTesting(
+          server_.GetURL("subdomain.a.test", "/refresh"), kSessionIdentifier,
+          kChallenge, /*authorization=*/std::nullopt),
+      CreateSigningKey());
+  ASSERT_NE(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(result.SessionErrorForTesting()->type,
+            SessionError::kSubdomainRegistrationWellKnownUnavailable);
+  ExpectRefreshNetLogStatus("session_ended");
+  histogram_tester_.ExpectUniqueSample(kSubdomainWellKnownHistogram,
+                                       HTTP_NOT_FOUND, 1);
+}
+
+TEST_F(RegistrationRefreshTest, SameSiteRedirectToSubdomainChecksWellKnown) {
+  AddRedirect("a.test", "/refresh", "subdomain.a.test", "/final");
+  AddSiteScopedResponse("subdomain.a.test", "/final");
+  AddWellKnown("a.test",
+               base::BindRepeating(&ReturnResponse, HTTP_NOT_FOUND, ""));
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result = FetchRefresh();
+  ASSERT_NE(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(result.SessionErrorForTesting()->type,
+            SessionError::kSubdomainRegistrationWellKnownUnavailable);
+  histogram_tester_.ExpectUniqueSample(kSubdomainWellKnownHistogram,
+                                       HTTP_NOT_FOUND, 1);
+}
+
+TEST_F(RegistrationRefreshTest, SameSiteRedirectToApexSkipsWellKnown) {
+  AddRedirect("subdomain.a.test", "/refresh", "a.test", "/final");
+  AddSiteScopedResponse("a.test", "/final");
+  AddWellKnown("a.test",
+               base::BindRepeating(&ReturnResponse, HTTP_NOT_FOUND, ""));
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result = FetchRefresh("subdomain.a.test");
+  EXPECT_TRUE(result.SessionForTesting().includes_site());
+  histogram_tester_.ExpectTotalCount(kSubdomainWellKnownHistogram, 0);
+}
+
+TEST_F(RegistrationRefreshTest, CrossOriginScopeWithoutIncludeSiteRejected) {
+  AddResponse("subdomain.a.test", "/refresh",
+              kSubdomainValidJsonIncludeSiteFalse);
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result = FetchRefresh("subdomain.a.test");
+  ASSERT_NE(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(result.SessionErrorForTesting()->type,
+            SessionError::kCrossOriginRegistrationSiteNotIncluded);
+  ExpectRefreshNetLogStatus("session_ended");
 }
 
 class RegistrationTimeoutTest : public TestWithTaskEnvironment {
