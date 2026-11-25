@@ -76,6 +76,19 @@ public class InputStateTest {
     }
 
     @Test
+    public void testWillFulfillInAim() {
+        InputStateBuilder builder = new InputStateBuilder();
+        InputState aimState = builder.build();
+        assertTrue(aimState.willFulfillInAim);
+
+        InputState srpState = builder.withWillFulfillInAim(false).build();
+        assertFalse(srpState.willFulfillInAim);
+        assertNotEquals(aimState, srpState);
+        assertNotEquals(aimState.hashCode(), srpState.hashCode());
+        assertEquals(srpState, new InputStateBuilder(srpState).build());
+    }
+
+    @Test
     public void testVisibilityAndEnablement() {
         InputState state =
                 new InputStateBuilder()

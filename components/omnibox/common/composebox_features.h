@@ -68,8 +68,12 @@ BASE_DECLARE_FEATURE(kDynamicAimFulfillmentRealbox);
 // If enabled, dynamically routes Omnibox Composebox queries between SRP and AIM
 // based on active tools, models, and inputs.
 BASE_DECLARE_FEATURE(kDynamicAimFulfillmentOmnibox);
-// Main switch for dynamic AIM fulfillment, and the settings both surfaces
-// share. A surface uses dynamic AIM fulfillment only if this feature and that
+// If enabled, dynamically routes Android Omnibox Composebox ("Fusebox" in the
+// Android code) queries (phones, tablets and Aluminium) between SRP and AIM
+// based on active tools, models, and inputs.
+BASE_DECLARE_FEATURE(kDynamicAimFulfillmentAndroidOmnibox);
+// Main switch for dynamic AIM fulfillment, and the settings all surfaces share.
+// A surface uses dynamic AIM fulfillment only if this feature and that
 // surface's feature above are both enabled; with this feature disabled, every
 // composebox query routes to AIM as before.
 BASE_DECLARE_FEATURE(kDynamicAimFulfillment);
@@ -81,11 +85,12 @@ extern const base::FeatureParam<std::string> kDynamicAimFulfillmentSrpInputMode;
 // Whether to use the mode sent by the server, when present, instead of
 // `srp_input_mode`.
 extern const base::FeatureParam<bool> kDynamicAimFulfillmentUseServerInputRules;
-// Whether dynamic AIM fulfillment is enabled for the Realbox / Omnibox
-// Composebox: `kDynamicAimFulfillment` and the surface's feature are both
-// enabled.
+// Whether dynamic AIM fulfillment is enabled for the Realbox / Omnibox /
+// Android Omnibox Composebox: `kDynamicAimFulfillment` and the surface's
+// feature are both enabled.
 bool IsDynamicAimFulfillmentEnabledForRealbox();
 bool IsDynamicAimFulfillmentEnabledForOmnibox();
+bool IsDynamicAimFulfillmentEnabledForAndroidOmnibox();
 
 // If enabled, clicking outside the Realbox Composebox closes the suggestions
 // dropdown and restores page interaction while keeping the Composebox open.

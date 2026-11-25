@@ -69,6 +69,9 @@ class ComposeboxQueryControllerBridge
   bool IsPdfUploadEligible();
   void SetActiveTool(omnibox::ToolMode tool_mode);
   void SetActiveModel(omnibox::ModelMode model_mode);
+  // Enters AI Mode explicitly (e.g. from the AI Mode button). Leaving it needs
+  // no separate call: clearing the model with `SetActiveModel()` does that.
+  void EnterExplicitAimMode();
 
   std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
   CreateLensOverlaySuggestInputs() const;

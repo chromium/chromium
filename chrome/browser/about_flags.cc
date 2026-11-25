@@ -14060,6 +14060,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDynamicAimFulfillmentOmniboxDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kDynamicAimFulfillmentOmnibox)},
 
+    {"dynamic-aim-fulfillment-android-omnibox",
+     flag_descriptions::kDynamicAimFulfillmentAndroidOmniboxName,
+     flag_descriptions::kDynamicAimFulfillmentAndroidOmniboxDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kDynamicAimFulfillmentAndroidOmnibox)},
+
     {"dynamic-aim-fulfillment-realbox",
      flag_descriptions::kDynamicAimFulfillmentRealboxName,
      flag_descriptions::kDynamicAimFulfillmentRealboxDescription,

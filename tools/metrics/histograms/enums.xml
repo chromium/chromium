@@ -10240,6 +10240,7 @@ from previous Chrome versions.
   <int value="-1414531531" label="NtpModulesRedesignedLayout:disabled"/>
   <int value="-1414399047" label="BlockCrossPartitionBlobUrlFetching:enabled"/>
   <int value="-1414207639" label="RequestDesktopSiteDefaultsLogging:enabled"/>
+  <int value="-1413639156" label="DynamicAimFulfillmentAndroidOmnibox:enabled"/>
   <int value="-1413102021" label="DisableInstanceLimit:disabled"/>
   <int value="-1413083800" label="EnableSwipeToSwitchPane:enabled"/>
   <int value="-1412920508"
@@ -22029,6 +22030,7 @@ from previous Chrome versions.
   <int value="2073113207" label="SensorContentSetting:disabled"/>
   <int value="2073207038" label="PrivacyGuideAiSettings:enabled"/>
   <int value="2073762173" label="ToolbarPhoneCleanup:disabled"/>
+  <int value="2073904853" label="DynamicAimFulfillmentAndroidOmnibox:disabled"/>
   <int value="2074475824" label="tab-link-drag-drop:enabled"/>
   <int value="2075207488" label="AutomaticPasswordGeneration:disabled"/>
   <int value="2075686131" label="AndroidExtendedKeyboardShortcuts:enabled"/>

@@ -38,6 +38,7 @@ public class InputStateBuilder {
     private @ModelMode int[] mDisabledModels = new int[0];
     private byte @Nullable [][] mModelConfigs;
     private byte @Nullable [] mModelSectionConfig;
+    private boolean mWillFulfillInAim = true;
 
     public InputStateBuilder() {}
 
@@ -60,6 +61,7 @@ public class InputStateBuilder {
         mDisabledModels = toIntArray(other.disabledModels);
         withModelConfigs(other.getModelConfigs().toArray(new ModelConfig[0]));
         withModelSectionConfig(other.getModelSectionConfig());
+        mWillFulfillInAim = other.willFulfillInAim;
     }
 
     private static int[] toIntArray(Collection<Integer> collection) {
@@ -193,6 +195,11 @@ public class InputStateBuilder {
         return withModelSectionConfig(modelSectionConfig.toByteArray());
     }
 
+    public InputStateBuilder withWillFulfillInAim(boolean willFulfillInAim) {
+        mWillFulfillInAim = willFulfillInAim;
+        return this;
+    }
+
     public InputState build() {
         return new InputState(
                 mHintText,
@@ -212,6 +219,7 @@ public class InputStateBuilder {
                 mAllowedModels,
                 mDisabledModels,
                 mModelConfigs,
-                mModelSectionConfig);
+                mModelSectionConfig,
+                mWillFulfillInAim);
     }
 }

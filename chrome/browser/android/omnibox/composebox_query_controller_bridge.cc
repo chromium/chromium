@@ -46,6 +46,7 @@
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
@@ -471,6 +472,12 @@ void ComposeboxQueryControllerBridge::SetActiveModel(
   }
 }
 
+void ComposeboxQueryControllerBridge::EnterExplicitAimMode() {
+  if (input_state_model_) {
+    input_state_model_->EnterAimMode();
+  }
+}
+
 std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
 ComposeboxQueryControllerBridge::CreateLensOverlaySuggestInputs() const {
   std::optional<lens::proto::LensOverlaySuggestInputs> suggest_inputs =
@@ -647,7 +654,7 @@ void ComposeboxQueryControllerBridge::OnInputStateChanged(
           tools_section_config, state.active_model, state.GetDefaultModel(),
           state.allowed_models, state.disabled_models,
           base::android::ToJavaArrayOfByteArray(env, model_configs),
-          model_section_config);
+          model_section_config, state.will_fulfill_in_aim);
 
   Java_ComposeboxQueryControllerBridge_onInputStateChanged(env, java_obj_,
                                                            j_input_state);
@@ -710,6 +717,9 @@ void ComposeboxQueryControllerBridge::InitializeInputStateModel() {
       *session_handle_, config_ptr ? *config_ptr : omnibox::SearchboxConfig(),
       GURL(), profile_ ? profile_->IsOffTheRecord() : false, is_signed_in,
       browser_identity_matches_aim_identity);
+  if (omnibox::IsDynamicAimFulfillmentEnabledForAndroidOmnibox()) {
+    input_state_model_->EnableDynamicAimFulfillment();
+  }
   input_state_subscription_ = input_state_model_->Subscribe(
       base::BindRepeating(&ComposeboxQueryControllerBridge::OnInputStateChanged,
                           weak_ptr_factory_.GetWeakPtr()));

@@ -12,23 +12,37 @@ namespace omnibox {
 TEST(ComposeboxFeaturesTest, DynamicAimFulfillmentOffByDefault) {
   EXPECT_FALSE(IsDynamicAimFulfillmentEnabledForRealbox());
   EXPECT_FALSE(IsDynamicAimFulfillmentEnabledForOmnibox());
+  EXPECT_FALSE(IsDynamicAimFulfillmentEnabledForAndroidOmnibox());
 }
 
 TEST(ComposeboxFeaturesTest, DynamicAimFulfillmentNeedsMainSwitch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {kDynamicAimFulfillmentRealbox, kDynamicAimFulfillmentOmnibox},
+      {kDynamicAimFulfillmentRealbox, kDynamicAimFulfillmentOmnibox,
+       kDynamicAimFulfillmentAndroidOmnibox},
       {kDynamicAimFulfillment});
   EXPECT_FALSE(IsDynamicAimFulfillmentEnabledForRealbox());
   EXPECT_FALSE(IsDynamicAimFulfillmentEnabledForOmnibox());
+  EXPECT_FALSE(IsDynamicAimFulfillmentEnabledForAndroidOmnibox());
 }
 
 TEST(ComposeboxFeaturesTest, DynamicAimFulfillmentNeedsSurfaceFeature) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {kDynamicAimFulfillment, kDynamicAimFulfillmentRealbox},
-      {kDynamicAimFulfillmentOmnibox});
+      {kDynamicAimFulfillmentOmnibox, kDynamicAimFulfillmentAndroidOmnibox});
   EXPECT_TRUE(IsDynamicAimFulfillmentEnabledForRealbox());
+  EXPECT_FALSE(IsDynamicAimFulfillmentEnabledForOmnibox());
+  EXPECT_FALSE(IsDynamicAimFulfillmentEnabledForAndroidOmnibox());
+}
+
+TEST(ComposeboxFeaturesTest, DynamicAimFulfillmentAndroidOmnibox) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kDynamicAimFulfillment, kDynamicAimFulfillmentAndroidOmnibox},
+      {kDynamicAimFulfillmentRealbox, kDynamicAimFulfillmentOmnibox});
+  EXPECT_TRUE(IsDynamicAimFulfillmentEnabledForAndroidOmnibox());
+  EXPECT_FALSE(IsDynamicAimFulfillmentEnabledForRealbox());
   EXPECT_FALSE(IsDynamicAimFulfillmentEnabledForOmnibox());
 }
 

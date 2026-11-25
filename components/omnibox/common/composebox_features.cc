@@ -37,6 +37,8 @@ BASE_FEATURE(kComposeboxPersistentAimButtonWithX,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDynamicAimFulfillmentRealbox, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDynamicAimFulfillmentOmnibox, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDynamicAimFulfillmentAndroidOmnibox,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDynamicAimFulfillment, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kComposeboxRealboxOutsideClick, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSuggestRequestSendsMultifileCgiParam,
@@ -107,6 +109,11 @@ bool IsDynamicAimFulfillmentEnabledForRealbox() {
 bool IsDynamicAimFulfillmentEnabledForOmnibox() {
   return base::FeatureList::IsEnabled(kDynamicAimFulfillment) &&
          base::FeatureList::IsEnabled(kDynamicAimFulfillmentOmnibox);
+}
+
+bool IsDynamicAimFulfillmentEnabledForAndroidOmnibox() {
+  return base::FeatureList::IsEnabled(kDynamicAimFulfillment) &&
+         base::FeatureList::IsEnabled(kDynamicAimFulfillmentAndroidOmnibox);
 }
 
 bool IsTabDeselectionInComposeboxEnabled() {

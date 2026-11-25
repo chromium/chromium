@@ -3299,6 +3299,15 @@
     "expiry_milestone": 165
   },
   {
+    "name": "dynamic-aim-fulfillment-android-omnibox",
+    "owners": [
+      "caitc@google.com",
+      "skym@chromium.org",
+      "chrome-desktop-search@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "dynamic-aim-fulfillment-omnibox",
     "owners": [
       "shomizoe@google.com",

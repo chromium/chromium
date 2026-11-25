@@ -52,6 +52,12 @@ public class InputState {
     public final List<@ModelMode Integer> allowedModels;
     public final List<@ModelMode Integer> disabledModels;
 
+    /**
+     * Whether the query will go to AI Mode rather than the Search results page. Always true unless
+     * the surface opted in to dynamic AIM fulfillment.
+     */
+    public final boolean willFulfillInAim;
+
     // Raw buffers and parsed lazy fields must be kept mutually exclusive.
     private byte @Nullable [][] mRawInputTypeConfigs;
     private byte @Nullable [][] mRawToolConfigs;
@@ -85,7 +91,8 @@ public class InputState {
             @JniType("std::vector<omnibox::ModelMode>") @ModelMode int[] allowedModels,
             @JniType("std::vector<omnibox::ModelMode>") @ModelMode int[] disabledModels,
             byte @Nullable [][] modelConfigs,
-            @JniType("std::vector<uint8_t>") byte @Nullable [] modelSectionConfig) {
+            @JniType("std::vector<uint8_t>") byte @Nullable [] modelSectionConfig,
+            boolean willFulfillInAim) {
         this.hintText = hintText;
 
         this.allowedInputTypes = toList(allowedInputTypes);
@@ -107,6 +114,8 @@ public class InputState {
         this.disabledModels = toList(disabledModels);
         this.mRawModelConfigs = modelConfigs;
         this.mRawModelSectionConfig = modelSectionConfig;
+
+        this.willFulfillInAim = willFulfillInAim;
     }
 
     public List<InputTypeConfig> getInputTypeConfigs() {
@@ -201,7 +210,8 @@ public class InputState {
                 && Objects.equals(allowedModels, that.allowedModels)
                 && Objects.equals(disabledModels, that.disabledModels)
                 && Objects.equals(getModelConfigs(), that.getModelConfigs())
-                && Objects.equals(getModelSectionConfig(), that.getModelSectionConfig());
+                && Objects.equals(getModelSectionConfig(), that.getModelSectionConfig())
+                && willFulfillInAim == that.willFulfillInAim;
     }
 
     @Override
@@ -224,7 +234,8 @@ public class InputState {
                 allowedModels,
                 disabledModels,
                 getModelConfigs(),
-                getModelSectionConfig());
+                getModelSectionConfig(),
+                willFulfillInAim);
     }
 
     /**

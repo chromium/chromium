@@ -237,6 +237,15 @@ public class ComposeboxQueryControllerBridge {
     }
 
     /**
+     * Enters AI Mode explicitly, e.g. from the AI Mode button. To leave it, clear the model with
+     * {@link #setActiveModel} and {@code MODEL_MODE_UNSPECIFIED}.
+     */
+    public void enterExplicitAimMode() {
+        ComposeboxQueryControllerBridgeJni.get()
+                .enterExplicitAimMode(assumeNonNull(mNativeInstance));
+    }
+
+    /**
      * /** Returns an observable supplier for the current input state. This object contains the
      * allowed and disabled tools, models, and inputs. Updates are tied to the underlying C++
      * ContextualSearchSessionHandle, and may not be during other types of sessions. Callers should
@@ -331,5 +340,7 @@ public class ComposeboxQueryControllerBridge {
         void setActiveModel(
                 JniPtr<NativeComposeboxQueryControllerBridge> self,
                 @ModelMode @JniType("omnibox::ModelMode") int modelMode);
+
+        void enterExplicitAimMode(JniPtr<NativeComposeboxQueryControllerBridge> self);
     }
 }

@@ -2373,13 +2373,19 @@ inline constexpr char kDynamicAimFulfillmentName[] = "Dynamic AIM Fulfillment";
 inline constexpr char kDynamicAimFulfillmentDescription[] =
     "Main switch for dynamic AIM fulfillment, routing Composebox queries to "
     "the Search results page unless active tools, models, or inputs require "
-    "AI Mode. Must be enabled alongside the per-surface (Realbox or Omnibox) "
-    "flag.";
+    "AI Mode. Must be enabled alongside the per-surface (Realbox, Omnibox or "
+    "Android Omnibox) flag.";
 
 inline constexpr char kDynamicAimFulfillmentOmniboxName[] =
     "Dynamic AIM Fulfillment (Omnibox)";
 inline constexpr char kDynamicAimFulfillmentOmniboxDescription[] =
     "Enables dynamic AIM fulfillment in the WebUI Omnibox Composebox. "
+    "Requires Dynamic AIM Fulfillment to also be enabled.";
+
+inline constexpr char kDynamicAimFulfillmentAndroidOmniboxName[] =
+    "Dynamic AIM Fulfillment (Android Omnibox)";
+inline constexpr char kDynamicAimFulfillmentAndroidOmniboxDescription[] =
+    "Enables dynamic AIM fulfillment in the Android Omnibox Composebox. "
     "Requires Dynamic AIM Fulfillment to also be enabled.";
 
 inline constexpr char kDynamicAimFulfillmentRealboxName[] =

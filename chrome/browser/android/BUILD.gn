@@ -918,6 +918,7 @@ if (is_android) {
       "//components/module_installer/android:native",
       "//components/offline_pages/task",
       "//components/omnibox/browser",
+      "//components/omnibox/common:features",
       "//components/optimization_guide/core:features",
       "//components/page_info/android",
       "//components/page_info/core:proto",
