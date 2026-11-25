@@ -231,7 +231,14 @@ class TabUsageScenarioTrackerBrowserTest : public InProcessBrowserTest {
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
-IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
+// TODO(crbug.com/590236375): Chronically flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BasicNavigations DISABLED_BasicNavigations
+#else
+#define MAYBE_BasicNavigations BasicNavigations
+#endif
+IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
+                       MAYBE_BasicNavigations) {
   // Test with only one visible tab and one top level navigation.
   auto* content0 = browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_TRUE(content::NavigateToURL(
