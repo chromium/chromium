@@ -609,7 +609,8 @@ std::optional<BrowserRootView::DropIndex> TabGroupView::GetLinkDropIndex(
   // Use the position along drag axis to find the child view being dragged over.
   const int header_end = is_horizontal ? group_header_->bounds().right()
                                        : group_header_->bounds().bottom();
-  const int loc_coord = is_horizontal ? loc_in_group.x() : loc_in_group.y();
+  const int loc_coord =
+      is_horizontal ? GetMirroredXInView(loc_in_group.x()) : loc_in_group.y();
   const int header_center = is_horizontal
                                 ? group_header_->bounds().CenterPoint().x()
                                 : group_header_->bounds().CenterPoint().y();
@@ -640,7 +641,9 @@ std::optional<BrowserRootView::DropIndex> TabGroupView::GetLinkDropIndex(
     // consider this drag as a before/after rather than over.
     constexpr double kDragOverMargins = 0.2;
     std::optional<DragPositionHint> hint;
-    const int child_coord = is_horizontal ? loc_in_child.x() : loc_in_child.y();
+    const int child_coord = is_horizontal
+                                ? view->GetMirroredXInView(loc_in_child.x())
+                                : loc_in_child.y();
     const int child_size = is_horizontal ? view->width() : view->height();
     if (child_coord < child_size * kDragOverMargins) {
       hint = DragPositionHint::kBefore;

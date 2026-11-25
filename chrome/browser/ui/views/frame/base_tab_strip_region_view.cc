@@ -371,17 +371,20 @@ std::optional<BrowserRootView::DropIndex> BaseTabStripRegionView::GetDropIndex(
     gfx::Point loc_in_pinned = views::View::ConvertPointToTarget(
         this, pinned_container, event.location());
     if (orientation_ == TabStripOrientation::kHorizontal) {
-      if (loc_in_pinned.x() < 0) {
-        return pinned_container->GetLinkDropIndex(gfx::Point(0, 0));
-      } else if (loc_in_pinned.x() >= 0 &&
-                 loc_in_pinned.x() < pinned_container->width()) {
+      const int logical_x =
+          pinned_container->GetMirroredXInView(loc_in_pinned.x());
+      if (logical_x < 0) {
+        return pinned_container->GetLinkDropIndex(
+            gfx::Point(pinned_container->GetMirroredXInView(0), 0));
+      } else if (logical_x < pinned_container->width()) {
         return pinned_container->GetLinkDropIndex(loc_in_pinned);
       }
     } else {
       // If the point is above the pinned container, return the beginning of the
       // container.
       if (loc_in_pinned.y() < 0) {
-        return pinned_container->GetLinkDropIndex(gfx::Point(0, 0));
+        return pinned_container->GetLinkDropIndex(
+            gfx::Point(pinned_container->GetMirroredXInView(0), 0));
       } else if (loc_in_pinned.y() >= 0 &&
                  loc_in_pinned.y() < pinned_container->height()) {
         return pinned_container->GetLinkDropIndex(loc_in_pinned);
@@ -395,10 +398,12 @@ std::optional<BrowserRootView::DropIndex> BaseTabStripRegionView::GetDropIndex(
     gfx::Point loc_in_unpinned = views::View::ConvertPointToTarget(
         this, unpinned_container, event.location());
     if (orientation_ == TabStripOrientation::kHorizontal) {
-      if (loc_in_unpinned.x() < 0) {
-        return unpinned_container->GetLinkDropIndex(gfx::Point(0, 0));
-      } else if (loc_in_unpinned.x() >= 0 &&
-                 loc_in_unpinned.x() < unpinned_container->width()) {
+      const int logical_x =
+          unpinned_container->GetMirroredXInView(loc_in_unpinned.x());
+      if (logical_x < 0) {
+        return unpinned_container->GetLinkDropIndex(
+            gfx::Point(unpinned_container->GetMirroredXInView(0), 0));
+      } else if (logical_x < unpinned_container->width()) {
         return unpinned_container->GetLinkDropIndex(loc_in_unpinned);
       }
     } else {
@@ -416,8 +421,9 @@ std::optional<BrowserRootView::DropIndex> BaseTabStripRegionView::GetDropIndex(
   // If it's at the end, return the end of the unpinned container.
   if (unpinned_container) {
     if (orientation_ == TabStripOrientation::kHorizontal) {
-      return unpinned_container->GetLinkDropIndex(
-          gfx::Point(unpinned_container->width(), 0));
+      return unpinned_container->GetLinkDropIndex(gfx::Point(
+          unpinned_container->GetMirroredXInView(unpinned_container->width()),
+          0));
     } else {
       return unpinned_container->GetLinkDropIndex(
           gfx::Point(0, unpinned_container->height()));

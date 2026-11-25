@@ -383,7 +383,8 @@ UnpinnedTabContainerView::GetLinkDropIndex(const gfx::Point& loc_in_container) {
     auto* view = child_node->view();
     CHECK(view);
     if (is_horizontal) {
-      if (loc_in_container.x() >= view->bounds().right()) {
+      const int logical_x = GetMirroredXInView(loc_in_container.x());
+      if (logical_x >= view->bounds().right()) {
         continue;
       }
     } else {
@@ -399,7 +400,7 @@ UnpinnedTabContainerView::GetLinkDropIndex(const gfx::Point& loc_in_container) {
             this, group_view, loc_in_container);
         const bool is_leading =
             is_horizontal
-                ? loc_in_group.x() <
+                ? group_view->GetMirroredXInView(loc_in_group.x()) <
                       group_view->group_header()->bounds().CenterPoint().x()
                 : loc_in_group.y() <
                       group_view->group_header()->bounds().CenterPoint().y();
@@ -420,7 +421,9 @@ UnpinnedTabContainerView::GetLinkDropIndex(const gfx::Point& loc_in_container) {
     // consider this drag as a before/after rather than over.
     constexpr double kDragOverMargins = 0.2;
     std::optional<DragPositionHint> hint;
-    const int child_coord = is_horizontal ? loc_in_child.x() : loc_in_child.y();
+    const int child_coord = is_horizontal
+                                ? view->GetMirroredXInView(loc_in_child.x())
+                                : loc_in_child.y();
     const int child_size = is_horizontal ? view->width() : view->height();
     if (child_coord < child_size * kDragOverMargins) {
       hint = DragPositionHint::kBefore;

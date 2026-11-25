@@ -5,6 +5,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/command_line.h"
+#include "base/i18n/base_i18n_switches.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -94,13 +96,14 @@ class TabStripLinkDragTest
 
   gfx::Point GetStartEdgeLocation(views::View* view) {
     return GetParam() == TabStripOrientation::kHorizontal
-               ? gfx::Point(2, view->height() / 2)
+               ? gfx::Point(view->GetMirroredXInView(2), view->height() / 2)
                : gfx::Point(view->width() / 2, 2);
   }
 
   gfx::Point GetEndEdgeLocation(views::View* view) {
     return GetParam() == TabStripOrientation::kHorizontal
-               ? gfx::Point(view->width() - 2, view->height() / 2)
+               ? gfx::Point(view->GetMirroredXInView(view->width() - 2),
+                            view->height() / 2)
                : gfx::Point(view->width() / 2, view->height() - 2);
   }
 
@@ -139,9 +142,13 @@ class TabStripLinkDragTest
   }
 
   SplitTabView* WaitForSplitView() {
+    return WaitForSplitView(*unpinned_container());
+  }
+
+  SplitTabView* WaitForSplitView(views::View& container) {
     SplitTabView* split_view = nullptr;
     EXPECT_TRUE(base::test::RunUntil([&]() {
-      for (views::View* child : unpinned_container()->children()) {
+      for (views::View* child : container.children()) {
         if (auto* v = views::AsViewClass<SplitTabView>(child)) {
           split_view = v;
           return v->height() > 20;
@@ -531,4 +538,165 @@ IN_PROC_BROWSER_TEST_P(TabStripLinkDragTest, ExpandOnHoverOnLinkDrag) {
   v_region_view->HandleDragExited();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !v_region_view->is_expanded_on_hover(); }));
+}
+
+class TabStripLinkDragRTLTest : public TabStripLinkDragTest {
+ public:
+  using DropIndex = BrowserRootView::DropIndex;
+  using enum DropIndex::GroupInclusion;
+  using enum DropIndex::RelativeToIndex;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    TabStripLinkDragTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kForceUIDirection,
+                                    switches::kForceDirectionRTL);
+    command_line->AppendSwitchASCII(switches::kForceTextDirection,
+                                    switches::kForceDirectionRTL);
+  }
+
+  gfx::Point GetSplitQuarterLocation(const SplitTabView* split_view,
+                                     int quarter) const {
+    return gfx::Point(quarter * split_view->width() / 4,
+                      split_view->height() / 2);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabStripLinkDragRTLTest,
+                         testing::Values(TabStripOrientation::kHorizontal,
+                                         TabStripOrientation::kVertical));
+
+IN_PROC_BROWSER_TEST_P(TabStripLinkDragRTLTest, DropInPinnedAndUnpinnedTabs) {
+  EnsureTabCount(4);
+  tab_strip_model()->SetTabPinned(0, true);
+  tab_strip_model()->SetTabPinned(1, true);
+  RunScheduledLayouts();
+  auto pinned_views = WaitForPinnedTabs(2);
+  auto unpinned_views = WaitForTabs(2);
+  ASSERT_EQ(pinned_views.size(), 2u);
+  ASSERT_EQ(unpinned_views.size(), 2u);
+  const bool is_horizontal = GetParam() == TabStripOrientation::kHorizontal;
+  const gfx::Point before_pinned_loc =
+      is_horizontal ? gfx::Point(pinned_container()->width() + 5,
+                                 pinned_container()->height() / 2)
+                    : gfx::Point(pinned_container()->width() / 2, -5);
+  const gfx::Point unpinned_start_loc =
+      is_horizontal ? gfx::Point(unpinned_views[0]->GetMirroredXInView(
+                                     unpinned_views[0]->width() / 8),
+                                 unpinned_views[0]->height() / 2)
+                    : GetStartEdgeLocation(unpinned_views[0]);
+  const gfx::Point after_unpinned_loc =
+      is_horizontal ? gfx::Point(-10, unpinned_container()->height() / 2)
+                    : gfx::Point(unpinned_container()->width() / 2,
+                                 unpinned_container()->height() + 10);
+
+  auto drop_before_pinned =
+      GetDropIndexAt(pinned_container(), before_pinned_loc);
+  auto drop_pinned_replace =
+      GetDropIndexAt(pinned_views[1], GetCenterLocation(pinned_views[1]));
+  auto drop_unpinned_start =
+      GetDropIndexAt(unpinned_views[0], unpinned_start_loc);
+  auto drop_unpinned_end =
+      GetDropIndexAt(unpinned_views[0], GetEndEdgeLocation(unpinned_views[0]));
+  auto drop_unpinned_replace =
+      GetDropIndexAt(unpinned_views[1], GetCenterLocation(unpinned_views[1]));
+  auto drop_after_unpinned =
+      GetDropIndexAt(unpinned_container(), after_unpinned_loc);
+
+  EXPECT_EQ(drop_before_pinned, (DropIndex{0, kInsertBeforeIndex}));
+  EXPECT_EQ(drop_pinned_replace, (DropIndex{1, kReplaceIndex}));
+  EXPECT_EQ(drop_unpinned_start, (DropIndex{2, kInsertBeforeIndex}));
+  EXPECT_EQ(drop_unpinned_end, (DropIndex{3, kInsertBeforeIndex}));
+  EXPECT_EQ(drop_unpinned_replace, (DropIndex{3, kReplaceIndex}));
+  EXPECT_EQ(drop_after_unpinned, (DropIndex{4, kInsertBeforeIndex}));
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripLinkDragRTLTest, DropInGroups) {
+  EnsureTabCount(3);
+  auto tab_views = WaitForTabs(3);
+  ASSERT_EQ(tab_views.size(), 3u);
+  tab_strip_model()->AddToNewGroup({0, 1});
+  RunScheduledLayouts();
+  auto* group_view = WaitForGroupView();
+  ASSERT_TRUE(group_view);
+  auto* header = group_view->group_header();
+
+  auto drop_header_start = GetDropIndexAt(header, GetStartEdgeLocation(header));
+  auto drop_header_end = GetDropIndexAt(header, GetEndEdgeLocation(header));
+  auto drop_first_end =
+      GetDropIndexAt(tab_views[0], GetEndEdgeLocation(tab_views[0]));
+  auto drop_last_end =
+      GetDropIndexAt(tab_views[1], GetEndEdgeLocation(tab_views[1]));
+
+  EXPECT_EQ(drop_header_start,
+            (DropIndex{0, kInsertBeforeIndex, kDontIncludeInGroup}));
+  EXPECT_EQ(drop_header_end,
+            (DropIndex{0, kInsertBeforeIndex, kIncludeInGroup}));
+  EXPECT_EQ(drop_first_end,
+            (DropIndex{1, kInsertBeforeIndex, kIncludeInGroup}));
+  EXPECT_EQ(drop_last_end,
+            (DropIndex{2, kInsertBeforeIndex, kDontIncludeInGroup}));
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripLinkDragRTLTest, DropInCollapsedGroups) {
+  EnsureTabCount(3);
+  tab_strip_model()->ActivateTabAt(
+      2, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  const TabGroup* group = tab_strip_model()->group_model()->GetTabGroup(
+      tab_strip_model()->AddToNewGroup({0, 1}));
+  vertical_tab_strip_controller()->ToggleTabGroupCollapsedState(
+      group, ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+  RunScheduledLayouts();
+  auto* collapsed_group = WaitForGroupView(/*collapsed=*/true);
+  ASSERT_TRUE(collapsed_group);
+  auto* header = collapsed_group->group_header();
+
+  auto drop_start = GetDropIndexAt(header, GetStartEdgeLocation(header));
+  auto drop_end = GetDropIndexAt(header, GetEndEdgeLocation(header));
+
+  EXPECT_EQ(drop_start,
+            (DropIndex{0, kInsertBeforeIndex, kDontIncludeInGroup}));
+  EXPECT_EQ(drop_end, (DropIndex{2, kInsertBeforeIndex, kDontIncludeInGroup}));
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripLinkDragRTLTest, DropInSplitTabs) {
+  EnsureTabCount(1);
+  AppendSplitTab();
+  ASSERT_EQ(tab_strip_model()->count(), 3);
+  RunScheduledLayouts();
+  auto* split = WaitForSplitView();
+  ASSERT_TRUE(split);
+
+  auto drop_start = GetDropIndexAt(split, GetStartEdgeLocation(split));
+  auto drop_end = GetDropIndexAt(split, GetEndEdgeLocation(split));
+  auto drop_first = GetDropIndexAt(split, GetSplitQuarterLocation(split, 3));
+  auto drop_second = GetDropIndexAt(split, GetSplitQuarterLocation(split, 1));
+
+  EXPECT_EQ(drop_start, (DropIndex{1, kInsertBeforeIndex}));
+  EXPECT_EQ(drop_end, (DropIndex{3, kInsertBeforeIndex}));
+  EXPECT_EQ(drop_first, (DropIndex{1, kReplaceIndex}));
+  EXPECT_EQ(drop_second, (DropIndex{2, kReplaceIndex}));
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripLinkDragRTLTest, DropInGroupedSplitTabs) {
+  EnsureTabCount(1);
+  AppendSplitTab();
+  ASSERT_EQ(tab_strip_model()->count(), 3);
+  tab_strip_model()->AddToNewGroup({1, 2});
+  RunScheduledLayouts();
+  auto* group_view = WaitForGroupView();
+  ASSERT_TRUE(group_view);
+  auto* split = WaitForSplitView(*group_view);
+  ASSERT_TRUE(split);
+
+  auto drop_start = GetDropIndexAt(split, GetStartEdgeLocation(split));
+  auto drop_end = GetDropIndexAt(split, GetEndEdgeLocation(split));
+  auto drop_first = GetDropIndexAt(split, GetSplitQuarterLocation(split, 3));
+  auto drop_second = GetDropIndexAt(split, GetSplitQuarterLocation(split, 1));
+
+  EXPECT_EQ(drop_start, (DropIndex{1, kInsertBeforeIndex}));
+  EXPECT_EQ(drop_end, (DropIndex{3, kInsertBeforeIndex}));
+  EXPECT_EQ(drop_first, (DropIndex{1, kReplaceIndex}));
+  EXPECT_EQ(drop_second, (DropIndex{2, kReplaceIndex}));
 }
