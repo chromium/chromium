@@ -326,6 +326,7 @@ void GlicDrivePickerManager::LaunchPicker(
   active_owner_token_ = owner_token;
   active_expected_gaia_ = expected_gaia;
   callback_ = std::move(callback);
+  picker_launch_time_ = base::TimeTicks::Now();
 
   // Resolve the top-level widget hosting the Glic WebUI first so we can prefer
   // anchoring to the browser window that actually owns this Glic side panel
@@ -413,6 +414,17 @@ void GlicDrivePickerManager::OnError(
                 OutcomeForHostError(error));
 }
 
+void GlicDrivePickerManager::OnPickerLoaded() {
+  if (picker_launch_time_.is_null()) {
+    return;
+  }
+  // Justification: The Drive picker is only supported for the consumer Gemini
+  // provider, so there is nothing to split by provider.
+  base::UmaHistogramMediumTimes("Glic.DrivePicker.TimeToLoad",
+                                base::TimeTicks::Now() - picker_launch_time_);
+  picker_launch_time_ = base::TimeTicks();
+}
+
 void GlicDrivePickerManager::OnPickerDisconnected() {
   FinishRequest(base::unexpected(GlicDrivePickerError::kLoadFailed),
                 GlicDrivePickerOutcome::kPickerDisconnected);
@@ -458,6 +470,7 @@ void GlicDrivePickerManager::FinishRequestWithError(
 void GlicDrivePickerManager::Cleanup() {
   active_owner_token_ = base::UnguessableToken();
   active_expected_gaia_ = GaiaId();
+  picker_launch_time_ = base::TimeTicks();
   account_watcher_.reset();
   result_handler_receiver_.reset();
   if (controller_) {

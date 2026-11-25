@@ -31,7 +31,7 @@ export interface GooglePicker {
   DocsViewMode: {GRID: string, LIST: string};
   ViewId: {DOCS: string};
   Feature: {MULTISELECT_ENABLED: string};
-  Action: {PICKED: string, CANCEL: string};
+  Action: {PICKED: string, CANCEL: string, LOADED: string};
   Response: {ACTION: string, DOCUMENTS: string};
   Document: {
     ID: string,
@@ -80,9 +80,10 @@ export interface GooglePickerResponse {
 }
 
 export interface DrivePickerApiProxy {
+  // `onLoaded` is invoked when the picker reports that it has rendered.
   showPicker(
-      oauthToken: string, apiKey: string, appId: string,
-      isGlic?: boolean): Promise<SanitizedDriveFile[]|'CANCEL'>;
+      oauthToken: string, apiKey: string, appId: string, isGlic?: boolean,
+      onLoaded?: () => void): Promise<SanitizedDriveFile[]|'CANCEL'>;
 }
 
 export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
@@ -139,8 +140,8 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
   }
 
   async showPicker(
-      oauthToken: string, apiKey: string, appId: string,
-      isGlic = false): Promise<SanitizedDriveFile[]|'CANCEL'> {
+      oauthToken: string, apiKey: string, appId: string, isGlic = false,
+      onLoaded?: () => void): Promise<SanitizedDriveFile[]|'CANCEL'> {
     if (this.pickerActive_) {
       throw DrivePickerError.kAlreadyActive;
     }
@@ -191,6 +192,7 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
       if (appId) {
         builder.setAppId(appId);
       }
+      let settled = false;
       const picker =
           builder
               // The origin is set to chrome://drive-picker-host to
@@ -201,15 +203,25 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
               .setSize(window.innerWidth, window.innerHeight)
               .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
               .setCallback((data: GooglePickerResponse) => {
+                if (settled) {
+                  return;
+                }
                 const action = data[google.picker.Response.ACTION];
 
+                if (action === google.picker.Action.LOADED) {
+                  onLoaded?.();
+                  return;
+                }
+
                 if (action === google.picker.Action.CANCEL) {
+                  settled = true;
                   this.pickerActive_ = false;
                   resolve('CANCEL');
                   return;
                 }
 
                 if (action === google.picker.Action.PICKED) {
+                  settled = true;
                   this.pickerActive_ = false;
                   try {
                     resolve(this.handleSelection_(data, isGlic));

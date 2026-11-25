@@ -58,7 +58,8 @@ enum DrivePickerError {
   kUnknown,
 };
 
-// Interface for handling the result of the Drive Picker selection.
+// Browser-side handler for the result of the Drive Picker selection.
+// Passed to chrome-untrusted://drive-picker-host (Renderer -> Browser).
 interface DrivePickerResultHandler {
   // Called when the user successfully selects one or more files.
   // `files` are returned in the order they were selected.
@@ -69,4 +70,11 @@ interface DrivePickerResultHandler {
 
   // Called when an error occurs during the picker flow.
   OnError(DrivePickerError error);
+
+  // Called by chrome-untrusted://drive-picker-host when the picker has rendered
+  // and the user can start picking files. This is a progress signal, not a
+  // result: one of the methods above still follows. It is not called if the
+  // picker fails before rendering, and the handler must tolerate it being
+  // called more than once.
+  OnPickerLoaded();
 };

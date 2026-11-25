@@ -99,7 +99,11 @@ export class DrivePickerHostUntrustedAppElement extends
 
     try {
       const result = await this.drivePickerApiProxy_.showPicker(
-          keys.oauthToken, keys.apiKey, keys.appId, keys.isGlic);
+          keys.oauthToken, keys.apiKey, keys.appId, keys.isGlic, () => {
+            if (this.resultHandler_ === resultHandler) {
+              resultHandler.onPickerLoaded();
+            }
+          });
 
       if (!this.resultHandler_) {
         return;

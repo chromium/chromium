@@ -808,6 +808,25 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   </summary>
 </histogram>
 
+<histogram name="Glic.DrivePicker.TimeToLoad" units="ms"
+    expires_after="2027-05-23">
+<!-- Allowed unsplittable: The Drive picker is only supported for the consumer Gemini provider. -->
+
+  <owner>birnie@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Desktop only. Time from GlicDrivePickerManager::LaunchPicker() opening
+    Chrome's modal Google Drive picker (covering WebUI creation, OAuth access
+    token fetch, and Google Picker API script and UI load) until the picker
+    reports that it has rendered (google.picker.Action.LOADED). Recorded at most
+    once per opened picker. Not recorded when a request is rejected before
+    opening, or if the picker fails or closes before loading (note that
+    Glic.DrivePicker.Outcome also counts pre-open rejections and shares
+    account/policy/anchor buckets between pre-open rejections and mid-session
+    aborts, so its total count is not a direct opened-picker denominator).
+  </summary>
+</histogram>
+
 <histogram name="Glic.EntryPoint.Status" enum="GlicEntryPointStatus"
     expires_after="2027-04-04">
   <owner>sanaakbani@google.com</owner>

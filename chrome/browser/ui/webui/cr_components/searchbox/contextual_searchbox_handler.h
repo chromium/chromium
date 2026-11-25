@@ -277,6 +277,7 @@ class ContextualSearchboxHandler
       std::vector<drive_picker_host::mojom::DriveFilePtr> files) override;
   void OnCancel() override;
   void OnError(drive_picker_host::mojom::DrivePickerError error) override;
+  void OnPickerLoaded() override;
 #endif
 
   // Returns true if smart tab sharing is active for the current query.

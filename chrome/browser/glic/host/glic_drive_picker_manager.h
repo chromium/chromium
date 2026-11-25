@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/glic/host/glic_drive_picker_account_util.h"
@@ -176,6 +177,7 @@ class GlicDrivePickerManager
       std::vector<drive_picker_host::mojom::DriveFilePtr> files) override;
   void OnCancel() override;
   void OnError(drive_picker_host::mojom::DrivePickerError error) override;
+  void OnPickerLoaded() override;
 
   std::optional<GlicDrivePickerError> ValidateRequest(
       const GaiaId& expected_gaia,
@@ -212,6 +214,9 @@ class GlicDrivePickerManager
   base::UnguessableToken active_owner_token_;
   GaiaId active_expected_gaia_;
   ShowCallback callback_;
+  // When the active picker was launched. Null when no picker is active, or
+  // once its load time has been recorded.
+  base::TimeTicks picker_launch_time_;
   mojo::Receiver<drive_picker_host::mojom::DrivePickerResultHandler>
       result_handler_receiver_{this};
   std::unique_ptr<DrivePickerAccountWatcher> account_watcher_;

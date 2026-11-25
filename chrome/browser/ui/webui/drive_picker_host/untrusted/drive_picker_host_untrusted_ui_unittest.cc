@@ -67,6 +67,7 @@ class MockResultHandler
               OnError,
               (drive_picker_host::mojom::DrivePickerError),
               (override));
+  MOCK_METHOD(void, OnPickerLoaded, (), (override));
 
  private:
   mojo::Receiver<drive_picker_host::mojom::DrivePickerResultHandler> receiver_{

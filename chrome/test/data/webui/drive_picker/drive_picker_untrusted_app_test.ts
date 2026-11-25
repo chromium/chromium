@@ -56,13 +56,16 @@ class TestPageHandler extends TestBrowserProxy implements PageHandlerInterface {
 class TestDrivePickerApiProxy extends TestBrowserProxy implements
     DrivePickerApiProxy {
   pickerResolver = new PromiseResolver<SanitizedDriveFile[]|'CANCEL'>();
+  onLoaded: (() => void)|null = null;
 
   constructor() {
     super(['showPicker']);
   }
 
-  showPicker(oauthToken: string, apiKey: string, appId: string, isGlic = false):
-      Promise<SanitizedDriveFile[]|'CANCEL'> {
+  showPicker(
+      oauthToken: string, apiKey: string, appId: string, isGlic = false,
+      onLoaded?: () => void): Promise<SanitizedDriveFile[]|'CANCEL'> {
+    this.onLoaded = onLoaded ?? null;
     this.methodCalled('showPicker', [oauthToken, apiKey, appId, isGlic]);
     return this.pickerResolver.promise;
   }
@@ -73,7 +76,7 @@ class TestResultHandler extends TestBrowserProxy implements
   receiver = new DrivePickerResultHandlerReceiver(this);
 
   constructor() {
-    super(['onSelection', 'onCancel', 'onError']);
+    super(['onSelection', 'onCancel', 'onError', 'onPickerLoaded']);
   }
 
   onSelection(files: DriveFile[]) {
@@ -86,6 +89,10 @@ class TestResultHandler extends TestBrowserProxy implements
 
   onError(error: DrivePickerError) {
     this.methodCalled('onError', error);
+  }
+
+  onPickerLoaded() {
+    this.methodCalled('onPickerLoaded');
   }
 }
 
@@ -191,6 +198,10 @@ suite('DrivePickerHostUntrustedAppTest', function() {
     const glicArgs = await apiProxy.whenCalled('showPicker');
     assertDeepEquals(['token-1', 'key-1', '', true], glicArgs);
     assertTrue(document.body.classList.contains('glic-picker'));
+
+    // The picker rendering is forwarded to the result handler.
+    apiProxy.onLoaded!();
+    await glicResultHandler.whenCalled('onPickerLoaded');
 
     const sampleFile: SanitizedDriveFile = {
       id: 'file-1',
@@ -359,7 +370,7 @@ suite('DrivePickerHostUntrustedAppTest', function() {
           DocsViewMode: {GRID: 'grid', LIST: 'list'},
           ViewId: {DOCS: 'all'},
           Feature: {MULTISELECT_ENABLED: 'multiselectEnabled'},
-          Action: {PICKED: 'picked', CANCEL: 'cancel'},
+          Action: {PICKED: 'picked', CANCEL: 'cancel', LOADED: 'loaded'},
           Response: {ACTION: 'action', DOCUMENTS: 'docs'},
           Document: {
             ID: 'id',
@@ -382,7 +393,9 @@ suite('DrivePickerHostUntrustedAppTest', function() {
 
         // 1. Glic mode: 5 labeled tabs, setMaxItems(10), omitted setAppId, and
         // partial sanitization retains valid document when another fails.
-        const glicPromise = realProxy.showPicker('tok', 'key', '', true);
+        let loadedCount = 0;
+        const glicPromise =
+            realProxy.showPicker('tok', 'key', '', true, () => loadedCount++);
         await microtasksFinished();
         assertEquals(5, capturedViews.length);
         assertEquals('list', capturedViews[0]!.mode);
@@ -397,6 +410,11 @@ suite('DrivePickerHostUntrustedAppTest', function() {
         assertEquals(true, capturedViews[4]!.starred);
         assertEquals(10, capturedMaxItems);
         assertEquals(null, capturedAppId);
+
+        // `LOADED` is reported without ending the picker session.
+        assertEquals(0, loadedCount);
+        capturedCallback({action: 'loaded'});
+        assertEquals(1, loadedCount);
 
         capturedCallback({
           action: 'picked',
@@ -422,6 +440,10 @@ suite('DrivePickerHostUntrustedAppTest', function() {
         assertEquals(1, glicResult.length);
         assertEquals('valid-file-1', glicResult[0]!.id);
 
+        // Late `LOADED` after settlement does not invoke `onLoaded` again.
+        capturedCallback({action: 'loaded'});
+        assertEquals(1, loadedCount);
+
         // 2. Non-Glic mode: 1 unlabeled tab, setAppId called, and fail-fast on
         // invalid document in multi-select.
         capturedViews = [];
@@ -434,6 +456,8 @@ suite('DrivePickerHostUntrustedAppTest', function() {
         assertEquals(undefined, capturedViews[0]!.label);
         assertEquals(null, capturedMaxItems);
         assertEquals('12345', capturedAppId);
+        // `LOADED` is a safe no-op when `onLoaded` is omitted.
+        capturedCallback({action: 'loaded'});
         capturedCallback({
           action: 'picked',
           docs: [

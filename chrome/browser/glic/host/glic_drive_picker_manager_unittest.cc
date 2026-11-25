@@ -539,6 +539,38 @@ TEST_F(GlicDrivePickerManagerTest, OnPickerClosedResolvesEmptySelection) {
   ExpectOutcome(GlicDrivePickerOutcome::kDialogClosed);
 }
 
+TEST_F(GlicDrivePickerManagerTest, OnPickerLoadedRecordsTimeToLoadOnce) {
+  // Closing before OnPickerLoaded() records no sample and does not block
+  // subsequent pickers on the same profile-scoped manager from recording.
+  base::test::TestFuture<ShowResult> pre_load_cancel_future;
+  OpenPicker(base::UnguessableToken::Create(), pre_load_cancel_future);
+  active_controller_->result_handler()->OnCancel();
+  ASSERT_TRUE(pre_load_cancel_future.Get().has_value());
+  histogram_tester_.ExpectTotalCount("Glic.DrivePicker.TimeToLoad", 0);
+
+  base::test::TestFuture<ShowResult> future;
+  OpenPicker(base::UnguessableToken::Create(), future);
+
+  active_controller_->result_handler()->OnPickerLoaded();
+  active_controller_->result_handler()->OnPickerLoaded();
+  active_controller_->result_handler().FlushForTesting();
+  histogram_tester_.ExpectTotalCount("Glic.DrivePicker.TimeToLoad", 1);
+
+  // Loading does not end the request.
+  EXPECT_FALSE(future.IsReady());
+  active_controller_->result_handler()->OnCancel();
+  ASSERT_TRUE(future.Get().has_value());
+  histogram_tester_.ExpectTotalCount("Glic.DrivePicker.TimeToLoad", 1);
+
+  base::test::TestFuture<ShowResult> second_future;
+  OpenPicker(base::UnguessableToken::Create(), second_future);
+  active_controller_->result_handler()->OnPickerLoaded();
+  active_controller_->result_handler().FlushForTesting();
+  histogram_tester_.ExpectTotalCount("Glic.DrivePicker.TimeToLoad", 2);
+  active_controller_->result_handler()->OnCancel();
+  ASSERT_TRUE(second_future.Get().has_value());
+}
+
 TEST_F(GlicDrivePickerManagerTest, OnPickerDisconnectedFailsWithLoadFailed) {
   base::test::TestFuture<ShowResult> future;
   OpenPicker(base::UnguessableToken::Create(), future);

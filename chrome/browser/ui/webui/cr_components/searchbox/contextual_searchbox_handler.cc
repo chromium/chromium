@@ -1549,6 +1549,8 @@ void ContextualSearchboxHandler::OnError(
   }
   CleanupDrivePicker();
 }
+
+void ContextualSearchboxHandler::OnPickerLoaded() {}
 #endif
 
 void ContextualSearchboxHandler::CleanupDrivePicker() {
