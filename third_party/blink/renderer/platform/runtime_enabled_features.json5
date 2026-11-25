@@ -6295,6 +6295,12 @@
       status: "stable",
     },
     {
+      // Skip pseudo-element inline leaves in AbstractLineBox::PositionForPoint.
+      // See https://crbug.com/589812279
+      name: "SelectionLineSkipPseudoElement",
+      status: "stable",
+    },
+    {
       // https://issues.chromium.org/issues/40502558
       name: "SelectionRemoveRangeNotFoundError",
       status: "stable",
