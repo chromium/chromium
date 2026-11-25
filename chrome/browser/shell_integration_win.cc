@@ -145,7 +145,9 @@ std::wstring GetExpectedAppId(const base::CommandLine& command_line,
   } else {
     profile_subdir = base::FilePath(base::ASCIIToWide(chrome::kInitialProfile));
   }
-  CHECK(!profile_subdir.empty(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/586454679): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!profile_subdir.empty());
 
   base::FilePath profile_path = user_data_dir.Append(profile_subdir);
   std::wstring prefix;
