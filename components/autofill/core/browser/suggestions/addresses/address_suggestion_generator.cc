@@ -230,7 +230,7 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
       profiles, [](const AutofillProfile& profile) { return &profile; });
   return AutofillProfile::CreateInferredLabels(
       profile_ptrs, field_types, {trigger_field_type},
-      /*minimal_fields_shown=*/1, app_locale.tag_string());
+      /*minimal_fields_shown=*/1, app_locale);
 }
 
 // For each profile in `profiles`, returns a vector of `Suggestion::labels` to

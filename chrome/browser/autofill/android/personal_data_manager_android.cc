@@ -305,7 +305,7 @@ PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
 
   return profile.ConstructInferredLabel(
       label_fields, /*num_fields_to_use=*/label_fields.size(),
-      g_browser_process->GetApplicationLocale());
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
 }
 
 std::vector<ScopedJavaLocalRef<jobject>>
@@ -501,7 +501,7 @@ std::vector<std::u16string> PersonalDataManagerAndroid::GetProfileLabels(
       profiles,
       address_only ? std::make_optional(suggested_fields) : std::nullopt,
       /*excluded_fields=*/{NAME_FULL}, minimal_fields_shown,
-      g_browser_process->GetApplicationLocale());
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
 }
 
 // static

@@ -294,8 +294,8 @@ AddressEntryList GenerateAddressList(const autofill::AddressDataManager& adm) {
       adm.GetProfilesForSettings();
 
   std::vector<std::u16string> labels =
-      autofill::AutofillProfile::CreateDifferentiatingLabels(
-          profiles, ExtensionsBrowserClient::Get()->GetApplicationLocale());
+      autofill::AutofillProfile::CreateDifferentiatingLabels(profiles,
+                                                             adm.app_locale());
   CHECK_EQ(labels.size(), profiles.size(), base::NotFatalUntil::M161);
 
   AddressEntryList list;

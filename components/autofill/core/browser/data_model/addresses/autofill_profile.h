@@ -36,6 +36,10 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 class AutofillProfileComparator;
@@ -282,7 +286,7 @@ class AutofillProfile : public FormGroup {
   // 5. Company name.
   static std::vector<std::u16string> CreateDifferentiatingLabels(
       base::span<const AutofillProfile* const> profiles,
-      std::string_view app_locale);
+      const base::i18n::LanguageTag& app_locale);
 
   // Creates inferred labels for `profiles`, according to the rules above and
   // stores them in `labels`. The inferred labels both provide a way to
@@ -303,7 +307,7 @@ class AutofillProfile : public FormGroup {
       const std::optional<FieldTypeSet> suggested_fields,
       FieldTypeSet excluded_fields,
       size_t minimal_fields_shown,
-      std::string_view app_locale);
+      const base::i18n::LanguageTag& app_locale);
 
   // Builds inferred label from the first `num_fields_to_include` non-empty
   // fields in `label_fields`. Uses as many fields as possible if there are not
@@ -311,7 +315,7 @@ class AutofillProfile : public FormGroup {
   std::u16string ConstructInferredLabel(
       base::span<const FieldType> label_fields,
       size_t num_fields_to_include,
-      std::string_view app_locale) const;
+      const base::i18n::LanguageTag& app_locale) const;
 
   const std::string& language_code() const { return language_code_; }
   void set_language_code(std::string language_code) {
@@ -412,7 +416,7 @@ class AutofillProfile : public FormGroup {
       const std::list<size_t>& indices,
       const std::vector<FieldType>& field_types,
       size_t num_fields_to_include,
-      std::string_view app_locale,
+      const base::i18n::LanguageTag& app_locale,
       std::vector<std::u16string>& labels);
 
   // Utilities for listing and lookup of the data members that constitute

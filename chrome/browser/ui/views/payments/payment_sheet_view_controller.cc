@@ -810,7 +810,7 @@ PaymentSheetViewController::CreateContactInfoRow() {
   const std::u16string preview =
       state()->contact_profiles()[0]->ConstructInferredLabel(
           kLabelFields, std::size(kLabelFields),
-          std::string(state()->GetApplicationLocale().tag_string()));
+          state()->GetApplicationLocale());
   if (state()->contact_profiles().size() == 1) {
     return builder.CreateWithButton(preview,
                                     l10n_util::GetStringUTF16(IDS_CHOOSE),

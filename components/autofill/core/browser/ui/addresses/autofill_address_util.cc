@@ -303,7 +303,7 @@ std::u16string GetProfileDescription(
 
   return profile.ConstructInferredLabel(kDetailsFields,
                                         /*num_fields_to_include=*/2,
-                                        ui_language_code.tag_string());
+                                        ui_language_code);
 }
 
 std::vector<ProfileValueDifference> GetProfileDifferenceForUi(

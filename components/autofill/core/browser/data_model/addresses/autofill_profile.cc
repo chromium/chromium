@@ -876,7 +876,7 @@ AutofillProfile::DefaultDistinguishingFieldsForLabels() {
 // static
 std::vector<std::u16string> AutofillProfile::CreateDifferentiatingLabels(
     base::span<const AutofillProfile* const> profiles,
-    std::string_view app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   const size_t kMinimalFieldsShown = 2;
   return CreateInferredLabels(profiles, /*suggested_fields=*/std::nullopt,
                               /*excluded_fields=*/{}, kMinimalFieldsShown,
@@ -889,7 +889,7 @@ std::vector<std::u16string> AutofillProfile::CreateInferredLabels(
     const std::optional<FieldTypeSet> suggested_fields,
     FieldTypeSet excluded_fields,
     size_t minimal_fields_shown,
-    std::string_view app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   std::vector<FieldType> fields_to_use;
   std::vector<FieldType> suggested_fields_types =
       suggested_fields
@@ -931,7 +931,7 @@ std::vector<std::u16string> AutofillProfile::CreateInferredLabels(
 std::u16string AutofillProfile::ConstructInferredLabel(
     base::span<const FieldType> included_fields,
     size_t num_fields_to_use,
-    std::string_view app_locale) const {
+    const base::i18n::LanguageTag& app_locale) const {
   // TODO(estade): use libaddressinput?
   std::u16string separator =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
@@ -951,16 +951,19 @@ std::u16string AutofillProfile::ConstructInferredLabel(
       continue;
     }
 
-    std::u16string field_value = GetInfo(included_fields[i], app_locale);
+    std::u16string field_value =
+        GetInfo(included_fields[i], app_locale.tag_string());
     if (field_value.empty()) {
       continue;
     }
-    trimmed_profile.SetInfo(included_fields[i], field_value, app_locale);
+    trimmed_profile.SetInfo(included_fields[i], field_value,
+                            app_locale.tag_string());
     --num_fields_to_use;
   }
 
   std::unique_ptr<AddressData> address_data =
-      i18n::CreateAddressDataFromAutofillProfile(trimmed_profile, app_locale);
+      i18n::CreateAddressDataFromAutofillProfile(trimmed_profile,
+                                                 app_locale.tag_string());
   std::string address_line;
   ::i18n::addressinput::GetFormattedNationalAddressLine(*address_data,
                                                         &address_line);
@@ -974,7 +977,7 @@ std::u16string AutofillProfile::ConstructInferredLabel(
     if (*it == PHONE_HOME_WHOLE_NUMBER) {
       field_value = GetRawInfo(*it);
     } else {
-      field_value = GetInfo(*it, app_locale);
+      field_value = GetInfo(*it, app_locale.tag_string());
     }
     if (field_value.empty()) {
       continue;
@@ -1075,7 +1078,7 @@ void AutofillProfile::CreateInferredLabelsHelper(
     const std::list<size_t>& indices,
     const std::vector<FieldType>& field_types,
     size_t num_fields_to_include,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     std::vector<std::u16string>& labels) {
   // For efficiency, we first construct a map of fields to their text values and
   // each value's frequency.
@@ -1087,7 +1090,8 @@ void AutofillProfile::CreateInferredLabelsHelper(
 
     for (const auto& it : indices) {
       const AutofillProfile* profile = profiles[it];
-      std::u16string field_text = profile->GetInfo(field_type, app_locale);
+      std::u16string field_text =
+          profile->GetInfo(field_type, app_locale.tag_string());
 
       // If this label is not already in the map, add it with frequency 0.
       if (!field_text_frequencies.contains(field_text)) {
@@ -1113,7 +1117,8 @@ void AutofillProfile::CreateInferredLabelsHelper(
     bool found_differentiating_field = false;
     for (FieldType field_type : field_types) {
       // Skip over empty fields.
-      std::u16string field_text = profile->GetInfo(field_type, app_locale);
+      std::u16string field_text =
+          profile->GetInfo(field_type, app_locale.tag_string());
       if (field_text.empty()) {
         continue;
       }

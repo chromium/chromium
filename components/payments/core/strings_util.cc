@@ -4,8 +4,6 @@
 
 #include "components/payments/core/strings_util.h"
 
-#include <string>
-
 #include "base/i18n/language_tag.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -31,7 +29,7 @@ std::u16string GetShippingAddressLabelFromAutofillProfile(
   };
 
   return profile.ConstructInferredLabel(kLabelFields, std::size(kLabelFields),
-                                        std::string(locale.tag_string()));
+                                        locale);
 }
 
 std::u16string GetShippingAddressSelectorInfoMessage(
