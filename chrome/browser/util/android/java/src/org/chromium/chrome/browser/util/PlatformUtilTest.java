@@ -9,6 +9,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Application;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.DocumentsContract;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -40,7 +41,7 @@ public class PlatformUtilTest {
         Assert.assertNotNull(intent);
         Assert.assertEquals(Intent.ACTION_VIEW, intent.getAction());
         Assert.assertEquals(Uri.parse(EXTENSION_CONTENT_URI_STRING), intent.getData());
-        Assert.assertEquals("*/*", intent.getType());
+        Assert.assertEquals(DocumentsContract.Document.MIME_TYPE_DIR, intent.getType());
         Assert.assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0);
     }
 }

@@ -8,6 +8,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.DocumentsContract;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
@@ -25,7 +26,8 @@ public class PlatformUtil {
     static void showItemInFolder(@JniType("std::string") String contentUriString) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.parse(contentUriString), "*/*");
+        intent.setDataAndType(
+                Uri.parse(contentUriString), DocumentsContract.Document.MIME_TYPE_DIR);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         try {
