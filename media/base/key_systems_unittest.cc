@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
@@ -344,7 +345,7 @@ class KeySystemsTest : public testing::Test {
 
     SetMediaClient(&test_media_client_);
 
-    key_systems_ = std::make_unique<KeySystemsImpl>(base::BindOnce(
+    key_systems_ = std::make_unique<KeySystemsImpl>(base::BindRepeating(
         &KeySystemsTest::RegisterKeySystemsSupport, base::Unretained(this)));
   }
 
@@ -388,11 +389,21 @@ class KeySystemsTest : public testing::Test {
                                                std::move(pending_key_systems));
   }
 
-  void DeferInitialUpdateAndReinitialize() {
+  void DeferInitialUpdateAndReinitialize(
+      RequestKeySystemCapabilitiesCB request_cb = base::NullCallback()) {
     test_media_client_.SetDeferInitialUpdate(true);
-    key_systems_ = std::make_unique<KeySystemsImpl>(base::BindOnce(
-        &KeySystemsTest::RegisterKeySystemsSupport, base::Unretained(this)));
+    key_systems_ = std::make_unique<KeySystemsImpl>(
+        base::BindRepeating(&KeySystemsTest::RegisterKeySystemsSupport,
+                            base::Unretained(this)),
+        std::move(request_cb));
     AddContainerAndCodecMasksForTest();
+  }
+
+  void ResetKeySystemSupport() { key_systems_->ResetKeySystemSupport(); }
+
+  bool IsSupportedInitDataType(const std::string& key_system,
+                               EmeInitDataType init_data_type) {
+    return key_systems_->IsSupportedInitDataType(key_system, init_data_type);
   }
 
   std::unique_ptr<KeySystemSupportRegistration> RegisterKeySystemsSupport(
@@ -1181,6 +1192,8 @@ TEST_F(KeySystemsTest, UpdateIfNeeded_PendingLazyKeySystemQueuesAndResolves) {
 // software capabilities are known statically while hardware secure capabilities
 // require a pending background check).
 TEST_F(KeySystemsTest, UpdateIfNeeded_StaticSoftwareWithLazyHardware) {
+  DeferInitialUpdateAndReinitialize();
+
   // 1st Broadcast: kExternal has a pending hardware check so it is in
   // pending_key_systems (and withheld from KeySystemInfos until finalized).
   // kUsesAes is fully resolved and not pending.
@@ -1262,6 +1275,227 @@ TEST_F(KeySystemsTest, UpdateIfNeeded_DualLazySoftwareAndHardware) {
   // Callback is drained and resolved.
   EXPECT_TRUE(lazy_called);
   EXPECT_TRUE(IsSupportedKeySystem(kDualLazyKeySystem));
+}
+
+// Every query of a non-ClearKey key system is reported to the browser: before
+// the first update, and also when the key system is not pending. The browser
+// ignores repeated requests, so there is no need to remember them here.
+TEST_F(KeySystemsTest, UpdateIfNeeded_RequestsKeySystems) {
+  const std::string kPendingKeySystem = "x-org.example.pending";
+  const std::string kStaticKeySystem = "x-org.example.static";
+  std::vector<std::string> requested;
+  DeferInitialUpdateAndReinitialize(base::BindLambdaForTesting(
+      [&](const std::string& key_system) { requested.push_back(key_system); }));
+  int resolved = 0;
+  auto done_cb = [&resolved] {
+    return base::BindOnce([](int* count) { ++*count; }, &resolved);
+  };
+
+  // Before the first update: non-ClearKey queries immediately notify the
+  // browser without waiting for the initial broadcast, while Clear Key and
+  // empty strings do not.
+  UpdateIfNeeded(kExternal, done_cb());
+  UpdateIfNeeded(kUsesAes, done_cb());
+  UpdateIfNeeded(kClearKeyKeySystem, done_cb());
+  UpdateIfNeeded(std::string(), done_cb());
+  EXPECT_EQ(resolved, 0);
+  EXPECT_EQ(requested, std::vector<std::string>({kExternal, kUsesAes}));
+
+  KeySystemInfos initial_systems;
+  initial_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  initial_systems.emplace_back(
+      std::make_unique<AesKeySystemInfo>(kStaticKeySystem));
+  NotifyPendingLazyUpdate(std::move(initial_systems),
+                          {kExternal, kPendingKeySystem});
+  // `kUsesAes`, `kClearKeyKeySystem`, and `""` resolve; `kExternal` waits.
+  EXPECT_EQ(resolved, 3);
+
+  // After the first update: a pending sub-key system queues, a non-pending key
+  // system resolves immediately, and all of them notify the browser, including
+  // key systems that were queried before.
+  UpdateIfNeeded(kPendingKeySystem + ".sub", done_cb());
+  UpdateIfNeeded(kStaticKeySystem, done_cb());
+  UpdateIfNeeded(kExternal, done_cb());
+  UpdateIfNeeded(kUsesAes, done_cb());
+  EXPECT_EQ(resolved, 5);
+  EXPECT_EQ(requested, std::vector<std::string>(
+                           {kExternal, kUsesAes, kPendingKeySystem + ".sub",
+                            kStaticKeySystem, kExternal, kUsesAes}));
+
+  KeySystemInfos final_systems;
+  final_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  final_systems.emplace_back(
+      std::make_unique<AesKeySystemInfo>(kStaticKeySystem));
+  final_systems.emplace_back(std::make_unique<ExternalKeySystemInfo>());
+  final_systems.emplace_back(
+      std::make_unique<AesKeySystemInfo>(kPendingKeySystem));
+  NotifyPendingLazyUpdate(std::move(final_systems),
+                          /*pending_key_systems=*/{});
+  EXPECT_EQ(resolved, 8);
+}
+
+// If a key system is queried before its CDM is registered, the browser ignores
+// the request. Once the CDM is registered (e.g. by a component update), the key
+// system becomes pending, and a retry must request it again. Otherwise nothing
+// would start its capability check and the retry would wait forever.
+TEST_F(KeySystemsTest, UpdateIfNeeded_LateRegisteredKeySystemReRequested) {
+  const std::string kLateLazyKeySystem = "x-org.example.latelazy";
+  std::vector<std::string> requested;
+  DeferInitialUpdateAndReinitialize(base::BindLambdaForTesting(
+      [&](const std::string& key_system) { requested.push_back(key_system); }));
+  int resolved = 0;
+  auto done_cb = [&resolved] {
+    return base::BindOnce([](int* count) { ++*count; }, &resolved);
+  };
+
+  // The initial update does not have `kLateLazyKeySystem`.
+  KeySystemInfos initial_systems;
+  initial_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  NotifyPendingLazyUpdate(std::move(initial_systems),
+                          /*pending_key_systems=*/{});
+
+  // A query before the registration resolves immediately, as unsupported.
+  UpdateIfNeeded(kLateLazyKeySystem, done_cb());
+  EXPECT_EQ(resolved, 1);
+  EXPECT_FALSE(IsSupportedKeySystem(kLateLazyKeySystem));
+  EXPECT_EQ(requested, std::vector<std::string>({kLateLazyKeySystem}));
+
+  // The CDM is registered: `kLateLazyKeySystem` is now pending.
+  KeySystemInfos registered_systems;
+  registered_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  NotifyPendingLazyUpdate(std::move(registered_systems), {kLateLazyKeySystem});
+
+  // The retry requests `kLateLazyKeySystem` again and waits for it.
+  UpdateIfNeeded(kLateLazyKeySystem, done_cb());
+  EXPECT_EQ(resolved, 1);
+  EXPECT_EQ(requested,
+            std::vector<std::string>({kLateLazyKeySystem, kLateLazyKeySystem}));
+
+  KeySystemInfos final_systems;
+  final_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  final_systems.emplace_back(
+      std::make_unique<AesKeySystemInfo>(kLateLazyKeySystem));
+  NotifyPendingLazyUpdate(std::move(final_systems),
+                          /*pending_key_systems=*/{});
+  EXPECT_EQ(resolved, 2);
+  EXPECT_TRUE(IsSupportedKeySystem(kLateLazyKeySystem));
+}
+
+// If a previously finalized key system becomes pending again (e.g. when
+// hardware secure checks become allowed after software secure capabilities were
+// already reported), its existing KeySystemInfo stays available so existing
+// MediaKeySystemAccess instances keep working while new queries wait for the
+// pending check to complete.
+TEST_F(KeySystemsTest, UpdateIfNeeded_RetainsKnownKeySystemWhilePendingAgain) {
+  DeferInitialUpdateAndReinitialize();
+
+  // 1st update: `kExternal` is finalized with software secure codecs only.
+  KeySystemInfos sw_only_systems;
+  sw_only_systems.emplace_back(std::make_unique<ExternalKeySystemInfo>(
+      /*supported_codecs=*/TEST_CODEC_FOO_VIDEO,
+      /*supported_hw_secure_codecs=*/EME_CODEC_NONE));
+  NotifyPendingLazyUpdate(std::move(sw_only_systems),
+                          /*pending_key_systems=*/{});
+  EXPECT_TRUE(IsSupportedKeySystem(kExternal));
+  EXPECT_EQ(
+      (EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kNotAllowed}),
+      GetVideoContentTypeConfigRule(kVideoFoo, foovideo_codec(), kExternal));
+  EXPECT_EQ(EmeConfig::UnsupportedRule(),
+            GetVideoContentTypeConfigRule(kVideoFoo, securefoovideo_codec(),
+                                          kExternal));
+
+  // 2nd update: `kExternal` becomes pending again (withheld from
+  // `key_systems`). Existing queries keep working, while a new UpdateIfNeeded()
+  // call waits for the pending check.
+  NotifyPendingLazyUpdate(/*key_systems=*/{}, {kExternal});
+  EXPECT_TRUE(IsSupportedKeySystem(kExternal));
+  EXPECT_EQ(
+      (EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kNotAllowed}),
+      GetVideoContentTypeConfigRule(kVideoFoo, foovideo_codec(), kExternal));
+
+  bool queued_resolved = false;
+  UpdateIfNeeded(kExternal,
+                 base::BindOnce([](bool* f) { *f = true; }, &queued_resolved));
+  EXPECT_FALSE(queued_resolved);
+
+  // 3rd update: hardware check completes, replacing the retained entry with
+  // both software and hardware secure codecs and draining the queued callback.
+  KeySystemInfos sw_and_hw_systems;
+  sw_and_hw_systems.emplace_back(std::make_unique<ExternalKeySystemInfo>(
+      /*supported_codecs=*/TEST_CODEC_FOO_VIDEO,
+      /*supported_hw_secure_codecs=*/TEST_CODEC_FOO_SECURE_VIDEO));
+  NotifyPendingLazyUpdate(std::move(sw_and_hw_systems),
+                          /*pending_key_systems=*/{});
+  EXPECT_TRUE(queued_resolved);
+  EXPECT_EQ((EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kRequired}),
+            GetVideoContentTypeConfigRule(kVideoFoo, securefoovideo_codec(),
+                                          kExternal));
+
+  // 4th update: when omitted without being pending, `kExternal` is removed.
+  NotifyPendingLazyUpdate(/*key_systems=*/{}, /*pending_key_systems=*/{});
+  EXPECT_FALSE(IsSupportedKeySystem(kExternal));
+}
+
+// ResetKeySystemSupport() keeps previously finalized KeySystemInfo entries
+// queryable for surviving MediaKeys/MediaKeySession instances, lazily
+// re-registers on the next UpdateIfNeeded(), and returns false (instead of
+// crashing) from IsSupportedInitDataType() if a key system is later omitted.
+TEST_F(KeySystemsTest,
+       ResetKeySystemSupport_PreservesKnownKeySystemsAndReobserves) {
+  std::vector<std::string> requested;
+  DeferInitialUpdateAndReinitialize(base::BindLambdaForTesting(
+      [&requested](const std::string& ks) { requested.push_back(ks); }));
+
+  const std::string kLateLazyKeySystem = "org.example.latelazy";
+  KeySystemInfos doc1_systems;
+  doc1_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
+  NotifyPendingLazyUpdate(std::move(doc1_systems), {kLateLazyKeySystem});
+  EXPECT_TRUE(IsSupportedInitDataType(kUsesAes, EmeInitDataType::WEBM));
+
+  ResetKeySystemSupport();
+
+  // Surviving sessions can still check initDataType before the new document
+  // touches EME.
+  EXPECT_TRUE(IsSupportedInitDataType(kUsesAes, EmeInitDataType::WEBM));
+  EXPECT_TRUE(
+      IsSupportedInitDataType(kClearKeyKeySystem, EmeInitDataType::WEBM));
+
+  // Querying in the new document lazily re-registers, pipelines a fresh
+  // request, and waits for the new document's initial snapshot.
+  bool resolved = false;
+  UpdateIfNeeded(kLateLazyKeySystem,
+                 base::BindOnce([](bool* f) { *f = true; }, &resolved));
+  EXPECT_FALSE(resolved);
+  EXPECT_EQ(requested, std::vector<std::string>({kLateLazyKeySystem}));
+
+  // New document omits `kUsesAes` and finalizes `kLateLazyKeySystem`.
+  KeySystemInfos doc2_systems;
+  doc2_systems.emplace_back(
+      std::make_unique<AesKeySystemInfo>(kLateLazyKeySystem));
+  NotifyPendingLazyUpdate(std::move(doc2_systems), /*pending_key_systems=*/{});
+  EXPECT_TRUE(resolved);
+  EXPECT_TRUE(IsSupportedKeySystem(kLateLazyKeySystem));
+  EXPECT_FALSE(IsSupportedInitDataType(kUsesAes, EmeInitDataType::WEBM));
+}
+
+// ResetKeySystemSupport() runs the UpdateIfNeeded() callbacks that are still
+// waiting, since the updates they wait for will not arrive. The callbacks run
+// asynchronously, because ResetKeySystemSupport() can be called when it is not
+// safe to run them, e.g. while a navigation is being committed.
+TEST_F(KeySystemsTest, ResetKeySystemSupport_RunsPendingCallbacksAsync) {
+  // No update is received before the reset.
+  DeferInitialUpdateAndReinitialize();
+  base::RunLoop run_loop;
+  UpdateIfNeeded(kExternal, run_loop.QuitClosure());
+
+  // The callback does not run synchronously.
+  ResetKeySystemSupport();
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+
+  run_loop.Run();
+  // Only Clear Key is supported, since no update was received.
+  EXPECT_FALSE(IsSupportedKeySystem(kExternal));
+  EXPECT_TRUE(IsSupportedKeySystem(kClearKeyKeySystem));
 }
 
 }  // namespace media

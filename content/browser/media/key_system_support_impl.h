@@ -47,12 +47,20 @@ class CONTENT_EXPORT KeySystemSupportImpl final
   void SetGetKeySystemCapabilitiesUpdateCbForTesting(
       GetKeySystemCapabilitiesUpdateCB get_support_cb_for_testing);
 
+  // If set, `request_cb_for_testing` gets the requests instead of
+  // `CdmRegistryImpl`.
+  using RequestKeySystemCapabilitiesCB =
+      base::RepeatingCallback<void(const std::string& key_system)>;
+  void SetRequestKeySystemCapabilitiesCbForTesting(
+      RequestKeySystemCapabilitiesCB request_cb_for_testing);
+
   // Binds the `receiver` to `this`.
   void Bind(mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver);
 
   // media::mojom::KeySystemSupport implementation.
   void SetObserver(mojo::PendingRemote<media::mojom::KeySystemSupportObserver>
                        observer) final;
+  void RequestKeySystemCapabilities(const std::string& key_system) final;
 
  private:
   friend class KeySystemSupportImplTest;
@@ -84,6 +92,7 @@ class CONTENT_EXPORT KeySystemSupportImpl final
       KeySystemCapabilities key_system_capabilities);
 
   GetKeySystemCapabilitiesUpdateCB get_support_cb_for_testing_;
+  RequestKeySystemCapabilitiesCB request_cb_for_testing_;
   mojo::Receiver<KeySystemSupport> key_system_support_receiver_{this};
   mojo::Remote<media::mojom::KeySystemSupportObserver> observer_remote_;
   std::optional<KeySystemCapabilities> key_system_capabilities_;

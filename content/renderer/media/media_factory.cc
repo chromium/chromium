@@ -797,6 +797,10 @@ media::mojom::RemoterFactory* MediaFactory::GetRemoterFactory() {
 
 std::unique_ptr<media::KeySystemSupportRegistration>
 MediaFactory::GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) {
+  // Embedders using Mojo `KeySystemSupport` (e.g. Chrome) implement this via
+  // `content::ObserveKeySystemSupportUpdate()`, which calls
+  // `BindKeySystemSupport()`. Other embedders report key systems directly
+  // without binding `key_system_support_`.
   return GetContentClient()->renderer()->GetSupportedKeySystems(render_frame_,
                                                                 std::move(cb));
 }
@@ -805,10 +809,52 @@ media::KeySystems* MediaFactory::GetKeySystems() {
   if (!key_systems_) {
     // Safe to use base::Unretained(this) because `key_systems_` is owned by
     // `this`.
-    key_systems_ = std::make_unique<media::KeySystemsImpl>(base::BindOnce(
-        &MediaFactory::GetSupportedKeySystems, base::Unretained(this)));
+    key_systems_ = std::make_unique<media::KeySystemsImpl>(
+        base::BindRepeating(&MediaFactory::GetSupportedKeySystems,
+                            base::Unretained(this)),
+        base::BindRepeating(&MediaFactory::RequestKeySystemCapabilities,
+                            base::Unretained(this)));
   }
   return key_systems_.get();
+}
+
+media::mojom::KeySystemSupport* MediaFactory::BindKeySystemSupport() {
+  // Called at most once per document via `ObserveKeySystemSupportUpdate()`.
+  // Retained here so `RequestKeySystemCapabilities()` shares the same pipe, as
+  // browser-side `KeySystemSupportImpl` ignores extra connections for the same
+  // document. If key system support is not present, the browser will never bind
+  // the other end of this request and the interface will be disconnected;
+  // `key_system_support_` remains bound (disconnected) until
+  // `ResetKeySystemSupport()` resets it for a new document.
+  CHECK(!key_system_support_);
+  GetInterfaceBroker().GetInterface(
+      key_system_support_.BindNewPipeAndPassReceiver(
+          render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia)));
+  return key_system_support_.get();
+}
+
+void MediaFactory::ResetKeySystemSupport() {
+  // Only the connection is per document. `key_systems_`,
+  // `web_encrypted_media_client_` and `cdm_factory_` stay alive, because
+  // objects created in the old document can still use them. For example, a
+  // `MediaKeys` object survives when the new document reuses the window of the
+  // initial empty document.
+  if (key_systems_) {
+    key_systems_->ResetKeySystemSupport();
+  }
+  key_system_support_.reset();
+}
+
+void MediaFactory::RequestKeySystemCapabilities(const std::string& key_system) {
+  // Only called by `key_systems_` after `GetSupportedKeySystems()` has run for
+  // the current document:
+  // - If the embedder does not use Mojo `KeySystemSupport`,
+  //   `key_system_support_` is never bound.
+  // - If key system support is not present (or the browser closed the pipe),
+  //   `key_system_support_` is bound but disconnected.
+  if (key_system_support_.is_bound() && key_system_support_.is_connected()) {
+    key_system_support_->RequestKeySystemCapabilities(key_system);
+  }
 }
 
 media::CdmFactory* MediaFactory::GetCdmFactory() {

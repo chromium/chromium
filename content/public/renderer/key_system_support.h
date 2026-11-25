@@ -20,10 +20,11 @@ using KeySystemCapabilities =
     base::flat_map<std::string, media::KeySystemCapability>;
 using KeySystemSupportCB = base::RepeatingCallback<void(KeySystemCapabilities)>;
 
-// Observes key system support updates. The callback `cb` will be called with
-// the current key system support, then called every time the key system support
-// changes. If the connection to the browser closes, `cb` is called one last
-// time with pending capabilities reported as unsupported.
+// Observes key system support updates for `render_frame`'s current document.
+// Must be called at most once per document. The callback `cb` will be called
+// with the current key system support, then called every time the key system
+// support changes. If the connection to the browser closes, `cb` is called one
+// last time with pending capabilities reported as unsupported.
 CONTENT_EXPORT std::unique_ptr<media::KeySystemSupportRegistration>
 ObserveKeySystemSupportUpdate(content::RenderFrame* render_frame,
                               media::KeySystemSupportCB cb);

@@ -72,8 +72,8 @@ interface KeySystemSupportObserver {
   OnKeySystemSupportUpdated(map<string, KeySystemCapability> key_systems);
 };
 
-// Browser process singleton that a renderer process can use to subscribe to
-// key system updates.
+// Per-document browser process interface used by a renderer frame to observe
+// and request key system support.
 interface KeySystemSupport {
   // Sets an observer to observe key system support updates. KeySystemSupport
   // implementation is in the browser process, as it maintains the list of
@@ -81,4 +81,11 @@ interface KeySystemSupport {
   // browser process because the render process is sandboxed. KeySystemSupport
   // clients run in the renderer process.
   SetObserver(pending_remote<KeySystemSupportObserver> observer);
+
+  // Requests the capabilities of `key_system` (which may be a sub key system),
+  // starting any lazy capability checks for all its robustness levels. Results
+  // are delivered to the observer. `key_system` comes from an untrusted
+  // renderer and is only matched against browser-registered CDMs; unknown or
+  // already-requested key systems are ignored.
+  RequestKeySystemCapabilities(string key_system);
 };

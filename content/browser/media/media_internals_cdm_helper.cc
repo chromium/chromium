@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/task/bind_post_task.h"
 #include "base/values.h"
 #include "content/browser/media/media_internals.h"
 #include "content/public/browser/web_ui.h"
@@ -149,21 +150,31 @@ MediaInternalsCdmHelper::MediaInternalsCdmHelper() = default;
 MediaInternalsCdmHelper::~MediaInternalsCdmHelper() = default;
 
 void MediaInternalsCdmHelper::GetRegisteredCdms() {
-  // Ok to trigger hw secure capability check since this page is for debugging
-  // only and not part of the normal user flow.
+  // Ok to trigger capability checks for all registered CDMs since this page is
+  // for debugging only and not part of the normal user flow. Post the callback
+  // to avoid re-entering CdmRegistryImpl synchronously from inside its observer
+  // notification when RequestKeySystemCapabilities() is called.
   cb_subscription_ =
       CdmRegistryImpl::GetInstance()->ObserveKeySystemCapabilities(
           /*allow_hw_secure_capability_check=*/true,
-          base::BindRepeating(
+          base::BindPostTaskToCurrentDefault(base::BindRepeating(
               &MediaInternalsCdmHelper::OnKeySystemCapabilitiesUpdated,
-              weak_factory_.GetWeakPtr()));
+              weak_factory_.GetWeakPtr())));
 }
 
-// Ignore results since we'll get them from CdmRegistryImpl directly. CDMs still
-// being lazily initialized show up as "Uninitialized" until the next update.
+// Request any pending key systems (including CDMs registered later via
+// component update) before reading the registered CDM list. CDMs still being
+// lazily initialized show up as "Uninitialized" until the next update.
 void MediaInternalsCdmHelper::OnKeySystemCapabilitiesUpdated(
-    KeySystemCapabilities /*capabilities*/) {
-  auto cdms = CdmRegistryImpl::GetInstance()->GetRegisteredCdms();
+    KeySystemCapabilities capabilities) {
+  auto* cdm_registry = CdmRegistryImpl::GetInstance();
+  for (const auto& [key_system, capability] : capabilities) {
+    if (capability.IsPending()) {
+      cdm_registry->RequestKeySystemCapabilities(key_system);
+    }
+  }
+
+  auto cdms = cdm_registry->GetRegisteredCdms();
 
   base::ListValue cdm_list;
   for (const auto& cdm_info : cdms) {

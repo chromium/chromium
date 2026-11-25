@@ -5184,7 +5184,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     The status of the CDM capability query. This can be used to inspect the
     reason when no capability reported. Reported at most once per browser
-    session per key system when EME query is triggered by a website.
+    session when an EME query for {KeySystem} is triggered by a website. Before
+    M159, it was reported for all key systems on the first EME query for any key
+    system.
   </summary>
   <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
 </histogram>
@@ -5195,7 +5197,9 @@ chromium-metrics-reviews@google.com.
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The CdmInfo::Status of {KeySystem} hardware secure CDM capability. Reported
-    at most once per browser session when EME query is triggered by a website.
+    at most once per browser session when an EME query for {KeySystem} is
+    triggered by a website. Before M159, it was reported for all key systems on
+    the first EME query for any key system.
   </summary>
   <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
 </histogram>
@@ -5205,10 +5209,11 @@ chromium-metrics-reviews@google.com.
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    When hardware secure decryption is enabled, whether {KeySystem} hardware
-    secure decryption is actually supported by the platform (device). Reported
-    at most once per browser session when EME query is triggered by a website,
-    and when {KeySystem} hardware secure CDM was registered.
+    When {KeySystem} hardware secure CdmInfo::Status is kEnabled, whether
+    {KeySystem} hardware secure decryption is supported by the platform
+    (device). Reported at most once per browser session when an EME query for
+    {KeySystem} is triggered by a website. Before M159, it was reported for all
+    key systems on the first EME query for any key system.
   </summary>
   <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
 </histogram>
@@ -5218,10 +5223,11 @@ chromium-metrics-reviews@google.com.
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    When hardware secure decryption is enabled and supported by {KeySystem},
+    When {KeySystem} hardware secure decryption is enabled and supported,
     whether {VideoCodec} video codec is supported by the platform (device).
-    Reported at most once per browser session when EME query is triggered by a
-    website, and when {KeySystem} hardware secure CDM was registered.
+    Reported at most once per browser session when an EME query for {KeySystem}
+    is triggered by a website. Before M159, it was reported for all key systems
+    on the first EME query for any key system.
   </summary>
   <token key="KeySystem" variants="KeySystemForHardwareSecureOnly"/>
   <token key="VideoCodec" variants="VideoCodec"/>

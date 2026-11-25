@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_CDM_REGISTRY_IMPL_H_
 
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -20,6 +21,7 @@
 #include "content/public/common/cdm_info.h"
 #include "media/base/cdm_capability.h"
 #include "media/base/key_system_capability.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace content {
@@ -61,11 +63,16 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
   std::unique_ptr<CdmInfo> GetCdmInfo(const std::string& key_system,
                                       CdmInfo::Robustness robustness) const;
 
-  // Observes key system capabilities updates. Capabilities still being lazily
-  // initialized are reported with CdmCapabilityQueryStatus::kPending, and `cb`
-  // is called again once they are finalized. The `cb` is always called on the
-  // original thread this function was called on. If
-  // `allow_hw_secure_capability_check` is true, then `this` is allowed to check
+  // Observes key system capabilities updates. `cb` is called with the current
+  // capabilities and again whenever they change, always on the original thread
+  // this function was called on:
+  // - Capabilities that do not need lazy initialization (e.g. software secure
+  //   CDMs with known capabilities) are reported immediately, even if their key
+  //   system has not been requested.
+  // - Capabilities that need lazy initialization are reported with
+  //   CdmCapabilityQueryStatus::kPending until their key system is requested
+  //   via RequestKeySystemCapabilities() and initialization finishes.
+  // If `allow_hw_secure_capability_check` is true, `this` is allowed to check
   // capability for hardware secure key systems.
   //
   // Returns a `base::CallbackListSubscription` which is owned by the caller. If
@@ -73,6 +80,16 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
   base::CallbackListSubscription ObserveKeySystemCapabilities(
       bool allow_hw_secure_capability_check,
       KeySystemCapabilitiesUpdateCB cb);
+
+  // Called when `key_system` is queried, e.g. by a page that calls
+  // requestMediaKeySystemAccess(). Starts the lazy initialization of the
+  // registered key systems that match `key_system` (which may be a sub key
+  // system), for all robustness levels. Observers are notified when the results
+  // are ready. If there is no observer yet, the lazy initialization starts when
+  // the first one is added. Requesting the same key system again does nothing.
+  // `key_system` may come from a renderer, so strings that match no registered
+  // CDM are ignored.
+  void RequestKeySystemCapabilities(const std::string& key_system);
 
  private:
   // Make the test a friend class so it could create CdmRegistryImpl directly,
@@ -90,12 +107,16 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
       const std::string& key_system,
       CdmInfo::Robustness robustness);
 
-  // Returns the capability for `key_system` with robustness `robustness`, or
-  // `kPending` if lazy initialization is still in progress, or `kUnknown` if
-  // finalized without a capability. Also reports UMA once finalized.
+  // Returns the capability for `key_system` with robustness `robustness`,
+  // `kPending` if lazy initialization is allowed and either has not started yet
+  // or is in progress, or `kUnknown` if no capability is supported. Also
+  // reports UMA once finalized.
   media::CdmCapabilityOrStatus GetCapabilityOrStatus(
       const std::string& key_system,
       CdmInfo::Robustness robustness);
+
+  // Returns whether capability checks are allowed for `robustness`.
+  bool IsCapabilityCheckAllowed(CdmInfo::Robustness robustness) const;
 
   // Attempts to finalize KeySystemCapabilities. May lazy initialize CDM
   // capabilities asynchronously if needed.
@@ -145,6 +166,26 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
   // Returns the capabailities for all registered key systems.
   KeySystemCapabilities GetKeySystemCapabilities();
 
+  // Reports whether the software secure CDM is available. Only reported once
+  // per browser session per `key_system`, unless the availability changes, e.g.
+  // when the CDM is component updated.
+  // TODO(crbug.com/573454556): Explore simplifying or replacing this UMA.
+  void ReportSoftwareSecureCdmAvailableUMA(const std::string& key_system,
+                                           bool available);
+
+  // Reports the status and capabilities of the hardware secure CDM. Only
+  // reported once per browser session per `key_system`.
+  void ReportHardwareSecureCapabilityStatusUMA(
+      const std::string& key_system,
+      CdmInfo::Status status,
+      const media::CdmCapability* hw_secure_capability);
+
+  // Reports the status of the hardware secure capability query. Only reported
+  // once per browser session per `key_system`.
+  void ReportHardwareSecureCapabilityQueryStatusUMA(
+      const std::string& key_system,
+      media::CdmCapabilityQueryStatus capability_query_status);
+
   // Sets callbacks to query for secure capability for testing.
   using CapabilityCB =
       base::RepeatingCallback<void(const std::string&,
@@ -164,6 +205,21 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
   // Key system and robustness pairs pending CdmCapability lazy initialization.
   std::set<std::pair<std::string, CdmInfo::Robustness>>
       pending_lazy_initializations_;
+
+  // Registered key systems requested via RequestKeySystemCapabilities(). Lazy
+  // initialization only starts for these. Never cleared: the capabilities are
+  // shared by all observers.
+  absl::flat_hash_set<std::string> requested_key_systems_;
+
+  // Tracks already-reported UMA state per key system so histograms are not
+  // emitted repeatedly across capability updates.
+  // TODO(crbug.com/573454556): Simplify the UMA reporting and remove these.
+  absl::flat_hash_map<std::string, bool> last_reported_sw_cdm_availability_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::flat_hash_set<std::string> reported_hw_status_key_systems_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::flat_hash_set<std::string> reported_hw_query_status_key_systems_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Callback for testing to avoid device dependency.
   CapabilityCB capability_cb_for_testing_;

@@ -83,10 +83,15 @@
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #include "base/test/test_future.h"
+#include "content/public/common/content_client.h"
 #include "content/public/renderer/key_system_support.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "media/base/cdm_capability.h"
 #include "media/base/key_system_capability.h"
+#include "media/base/key_system_info.h"
+#include "media/base/media_client.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #endif
 
 using blink::WebURLRequest;
@@ -1524,17 +1529,142 @@ class FakeKeySystemSupport : public media::mojom::KeySystemSupport {
     observer_.reset();
   }
 
+  void UpdateCapabilities(KeySystemCapabilities capabilities) {
+    capabilities_ = std::move(capabilities);
+    observer_->OnKeySystemSupportUpdated(capabilities_);
+  }
+
+  void set_on_request_cb(
+      base::RepeatingCallback<void(std::string)> on_request_cb) {
+    on_request_cb_ = std::move(on_request_cb);
+  }
+
+  const std::vector<std::string>& requested_key_systems() const {
+    return requested_key_systems_;
+  }
+
   // media::mojom::KeySystemSupport
   void SetObserver(mojo::PendingRemote<media::mojom::KeySystemSupportObserver>
                        observer) override {
     observer_.Bind(std::move(observer));
     observer_->OnKeySystemSupportUpdated(capabilities_);
   }
+  void RequestKeySystemCapabilities(const std::string& key_system) override {
+    requested_key_systems_.push_back(key_system);
+    if (on_request_cb_) {
+      on_request_cb_.Run(key_system);
+    }
+  }
 
  private:
-  const KeySystemCapabilities capabilities_;
+  KeySystemCapabilities capabilities_;
+  std::vector<std::string> requested_key_systems_;
+  base::RepeatingCallback<void(std::string)> on_request_cb_;
   mojo::Receiver<media::mojom::KeySystemSupport> receiver_{this};
   mojo::Remote<media::mojom::KeySystemSupportObserver> observer_;
+};
+
+class TestKeySystemInfo : public media::KeySystemInfo {
+ public:
+  explicit TestKeySystemInfo(std::string key_system)
+      : key_system_(std::move(key_system)) {}
+
+  std::string GetBaseKeySystemName() const override { return key_system_; }
+  bool IsSupportedInitDataType(media::EmeInitDataType) const override {
+    return true;
+  }
+  media::EmeConfig::Rule GetEncryptionSchemeConfigRule(
+      media::EncryptionScheme) const override {
+    return media::EmeConfig::SupportedRule();
+  }
+  media::SupportedCodecs GetSupportedCodecs() const override {
+    return media::EME_CODEC_ALL;
+  }
+  media::EmeConfig::Rule GetRobustnessConfigRule(const std::string&,
+                                                 media::EmeMediaType,
+                                                 const std::string&,
+                                                 const bool*) const override {
+    return media::EmeConfig::SupportedRule();
+  }
+  media::EmeConfig::Rule GetPersistentLicenseSessionSupport() const override {
+    return media::EmeConfig::UnsupportedRule();
+  }
+  media::EmeFeatureSupport GetPersistentStateSupport() const override {
+    return media::EmeFeatureSupport::NOT_SUPPORTED;
+  }
+  media::EmeFeatureSupport GetDistinctiveIdentifierSupport() const override {
+    return media::EmeFeatureSupport::REQUESTABLE;
+  }
+  bool UseAesDecryptor() const override { return true; }
+
+ private:
+  const std::string key_system_;
+};
+
+class FakeMediaClient : public media::MediaClient {
+ public:
+  bool IsDecoderSupportedAudioType(const media::AudioType&) override {
+    return true;
+  }
+  bool IsDecoderSupportedVideoType(const media::VideoType&) override {
+    return true;
+  }
+  bool IsEncoderSupportedVideoType(const media::VideoType&) override {
+    return true;
+  }
+  bool IsSupportedBitstreamAudioCodec(media::AudioCodec) override {
+    return false;
+  }
+  bool ShouldSuppressAudioTracks() override { return false; }
+  std::optional<media::AudioRendererAlgorithmParameters>
+  GetAudioRendererAlgorithmParameters(media::AudioParameters) override {
+    return std::nullopt;
+  }
+  media::ExternalMemoryAllocator* GetMediaAllocator() override {
+    return nullptr;
+  }
+};
+
+class KeySystemSupportContentRendererClient : public ContentRendererClient {
+ public:
+  std::unique_ptr<media::KeySystemSupportRegistration> GetSupportedKeySystems(
+      RenderFrame* render_frame,
+      media::GetSupportedKeySystemsCB cb) override {
+    return ObserveKeySystemSupportUpdate(
+        render_frame,
+        base::BindRepeating(
+            [](media::GetSupportedKeySystemsCB cb,
+               KeySystemCapabilities capabilities) {
+              media::KeySystemInfos key_systems;
+              base::flat_set<std::string> pending_key_systems;
+              for (const auto& [key_system, capability] : capabilities) {
+                if (capability.IsPending()) {
+                  pending_key_systems.insert(key_system);
+                  continue;
+                }
+                if (capability.sw_cdm_capability_or_status.has_value()) {
+                  key_systems.push_back(
+                      std::make_unique<TestKeySystemInfo>(key_system));
+                }
+              }
+              cb.Run(std::move(key_systems), std::move(pending_key_systems));
+            },
+            std::move(cb)));
+  }
+};
+
+class SameDocumentNavigationWaiter : public RenderFrameObserver {
+ public:
+  explicit SameDocumentNavigationWaiter(RenderFrame* render_frame)
+      : RenderFrameObserver(render_frame) {}
+
+  void Wait() { run_loop_.Run(); }
+
+  void DidFinishSameDocumentNavigation() override { run_loop_.Quit(); }
+  void OnDestruct() override {}
+
+ private:
+  base::RunLoop run_loop_;
 };
 
 }  // namespace
@@ -1570,6 +1700,241 @@ TEST_F(RenderFrameImplTest, KeySystemSupportDisconnectResolvesPending) {
 
   GetMainRenderFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
       media::mojom::KeySystemSupport::Name_, {});
+}
+
+// Navigating to a new document in the same RenderFrameImpl (both from the
+// initial empty document to a same-origin document with reused
+// BrowserInterfaceBroker, and across subsequent commits that reset
+// BrowserInterfaceBroker) drops the old document's KeySystemSupport connection.
+// Requests in flight and objects retained from the old document keep working,
+// and the new document rebinds and requests previously unqueried key systems.
+TEST_F(RenderFrameImplTest, KeySystemSupportRebindsAfterNavigation) {
+  constexpr char kLazyKeySystem[] = "com.example.foo";
+  constexpr char kPermKeySystem[] = "com.example.perm";
+  FakeMediaClient media_client;
+  media::SetMediaClient(&media_client);
+  KeySystemSupportContentRendererClient renderer_client;
+  ContentRendererClient* old_renderer_client =
+      SetRendererClientForTesting(&renderer_client);
+
+  // `src='javascript:void 0'` keeps `sub` on its initial empty document so the
+  // first same-origin commit reuses `LocalDOMWindow` and
+  // `BrowserInterfaceBroker`.
+  LoadHTMLWithUrlOverride(
+      "<iframe id='sub' src='javascript:void 0' "
+      "allow='encrypted-media *'></iframe>",
+      kAutoplayTestOrigin);
+  blink::WebLocalFrame* sub_web_frame =
+      GetMainFrame()->FirstChild()->ToWebLocalFrame();
+  RenderFrame* sub_frame = RenderFrame::FromWebFrame(sub_web_frame);
+  mojo::ScopedMessagePipeHandle held_permission_pipe;
+
+  base::ScopedClosureRunner cleanup(base::BindLambdaForTesting([&] {
+    sub_frame->GetBrowserInterfaceBroker().SetBinderForTesting(
+        media::mojom::KeySystemSupport::Name_, {});
+    sub_frame->GetBrowserInterfaceBroker().SetBinderForTesting(
+        blink::mojom::PermissionService::Name_, {});
+    SetRendererClientForTesting(old_renderer_client);
+    media::SetMediaClient(nullptr);
+  }));
+
+  // Hold the PermissionService pipe open so an in-flight RequestPermission()
+  // call stays suspended until the navigation fails it.
+  base::test::TestFuture<void> permission_requested;
+  sub_frame->GetBrowserInterfaceBroker().SetBinderForTesting(
+      blink::mojom::PermissionService::Name_,
+      base::BindLambdaForTesting([&](mojo::ScopedMessagePipeHandle pipe) {
+        held_permission_pipe = std::move(pipe);
+        if (!permission_requested.IsReady()) {
+          permission_requested.SetValue();
+        }
+      }));
+
+  auto make_capabilities = [&](bool lazy_finalized) {
+    KeySystemCapabilities capabilities;
+    capabilities.emplace(
+        kLazyKeySystem,
+        media::KeySystemCapability(
+            lazy_finalized
+                ? media::CdmCapabilityOrStatus(media::CdmCapability())
+                : base::unexpected(media::CdmCapabilityQueryStatus::kPending),
+            base::unexpected(media::CdmCapabilityQueryStatus::kUnknown)));
+    capabilities.emplace(
+        kPermKeySystem,
+        media::KeySystemCapability(
+            media::CdmCapability(),
+            base::unexpected(media::CdmCapabilityQueryStatus::kUnknown)));
+    return capabilities;
+  };
+
+  // Document 1 (`sub_frame`'s initial empty document `about:blank`, inheriting
+  // `kAutoplayTestOrigin`): retain a ClearKey MediaKeySystemAccess in the
+  // parent window and leave a `kPermKeySystem` permission check in flight,
+  // without ever querying `kLazyKeySystem`.
+  FakeKeySystemSupport doc1_support(
+      make_capabilities(/*lazy_finalized=*/false));
+  base::test::TestFuture<std::string> requested_in_doc1;
+  doc1_support.set_on_request_cb(requested_in_doc1.GetRepeatingCallback());
+  sub_frame->GetBrowserInterfaceBroker().SetBinderForTesting(
+      media::mojom::KeySystemSupport::Name_,
+      base::BindRepeating(&FakeKeySystemSupport::Bind,
+                          base::Unretained(&doc1_support)));
+  v8::HandleScope handle_scope(Isolate());
+  v8::Local<v8::Context> doc1_context = sub_web_frame->MainWorldScriptContext();
+  {
+    SameDocumentNavigationWaiter waiter(GetMainRenderFrame());
+    ExecuteJavaScriptForTests(
+        "const subWin = document.getElementById('sub').contentWindow;"
+        "subWin.navigator.requestMediaKeySystemAccess('org.w3.clearkey', [{"
+        "  initDataTypes: ['webm'],"
+        "  audioCapabilities: [{contentType: 'audio/webm; codecs=\"opus\"'}]"
+        "}]).then((access) => {"
+        "  window.doc1Access = access;"
+        "  return access.createMediaKeys();"
+        "}).then((mediaKeys) => {"
+        "  window.doc1MediaKeys = mediaKeys;"
+        "  subWin.navigator.requestMediaKeySystemAccess('com.example.perm', [{"
+        "    initDataTypes: ['cenc'],"
+        "    distinctiveIdentifier: 'required',"
+        "    audioCapabilities: [{contentType: 'audio/webm; codecs=\"opus\"'}]"
+        "  }]).then(() => { window.doc1PermResult = 'OK'; },"
+        "           () => { window.doc1PermResult = 'REJECTED'; });"
+        "  location.hash = 'DOC1_OK';"
+        "}, () => { location.hash = 'DOC1_ERR'; });");
+    waiter.Wait();
+  }
+  ASSERT_EQ("DOC1_OK", GURL(GetMainFrame()->GetDocument().Url()).GetRef());
+  EXPECT_EQ(kPermKeySystem, requested_in_doc1.Take());
+  ASSERT_TRUE(permission_requested.Wait());
+
+  // Commit a same-origin document in `sub_frame` (from the initial empty
+  // document, so `should_reset_browser_interface_broker` is false).
+  FakeKeySystemSupport doc2_support(
+      make_capabilities(/*lazy_finalized=*/false));
+  base::test::TestFuture<std::string> requested_in_doc2;
+  doc2_support.set_on_request_cb(requested_in_doc2.GetRepeatingCallback());
+  sub_frame->GetBrowserInterfaceBroker().SetBinderForTesting(
+      media::mojom::KeySystemSupport::Name_, {});
+  sub_frame->GetBrowserInterfaceBroker().SetBinderForTesting(
+      media::mojom::KeySystemSupport::Name_,
+      base::BindRepeating(&FakeKeySystemSupport::Bind,
+                          base::Unretained(&doc2_support)));
+  doc1_support.Disconnect();
+  {
+    // Within the same document after disconnect, `key_system_support_` stays
+    // bound (disconnected) without rebinding `doc2_support`, and unqueried
+    // pending key systems reject cleanly instead of hanging.
+    SameDocumentNavigationWaiter waiter(GetMainRenderFrame());
+    ExecuteJavaScriptForTests(
+        "document.getElementById('sub').contentWindow.navigator"
+        ".requestMediaKeySystemAccess('com.example.foo', [{"
+        "  initDataTypes: ['cenc'],"
+        "  audioCapabilities: [{contentType: 'audio/webm; codecs=\"opus\"'}]"
+        "}]).then(() => { location.hash = 'DOC1_DISCONNECTED_UNEXPECTED_OK'; },"
+        "         () => { location.hash = 'DOC1_DISCONNECTED_REJECTED'; });");
+    waiter.Wait();
+  }
+  EXPECT_EQ("DOC1_DISCONNECTED_REJECTED",
+            GURL(GetMainFrame()->GetDocument().Url()).GetRef());
+  EXPECT_FALSE(requested_in_doc2.IsReady());
+
+  auto* test_sub_frame = static_cast<TestRenderFrame*>(sub_frame);
+  std::ignore = test_sub_frame->TakeLastBrowserInterfaceBrokerReceiver();
+  {
+    FrameLoadWaiter load_waiter(sub_frame);
+    test_sub_frame->SetHTMLOverrideForNextNavigation("<html></html>");
+    ExecuteJavaScriptForTests(
+        "document.getElementById('sub').src = 'https://www.google.com/doc2';");
+    load_waiter.Wait();
+  }
+  ASSERT_FALSE(
+      test_sub_frame->TakeLastBrowserInterfaceBrokerReceiver().is_valid());
+  ASSERT_EQ(doc1_context, sub_web_frame->MainWorldScriptContext());
+
+  // The navigation failed the permission check that was in flight in Document
+  // 1, so that request is rejected instead of being left unsettled. The
+  // MediaKeySystemAccess retained from Document 1 can still create MediaKeys.
+  {
+    SameDocumentNavigationWaiter waiter(GetMainRenderFrame());
+    ExecuteJavaScriptForTests(
+        "window.doc1Access.createMediaKeys().then("
+        "  () => { location.hash = 'CDM_OK_PERM_' + window.doc1PermResult; },"
+        "  () => { location.hash = 'CDM_ERR'; });");
+    waiter.Wait();
+  }
+  EXPECT_EQ("CDM_OK_PERM_REJECTED",
+            GURL(GetMainFrame()->GetDocument().Url()).GetRef());
+
+  // A MediaKeys created in Document 1 survives in the reused LocalDOMWindow and
+  // can still call createSession() + generateRequest() without dangling
+  // KeySystems pointers.
+  {
+    SameDocumentNavigationWaiter waiter(GetMainRenderFrame());
+    ExecuteJavaScriptForTests(
+        "window.doc1MediaKeys.createSession()"
+        "  .generateRequest('webm', new Uint8Array([1])).then("
+        "    () => { location.hash = 'OLD_SESSION_OK'; },"
+        "    () => { location.hash = 'OLD_SESSION_ERR'; });");
+    waiter.Wait();
+  }
+  EXPECT_EQ("OLD_SESSION_OK",
+            GURL(GetMainFrame()->GetDocument().Url()).GetRef());
+
+  // Document 2 queries `kLazyKeySystem`, rebinding KeySystemSupport and
+  // resolving once capabilities arrive.
+  {
+    SameDocumentNavigationWaiter waiter(sub_frame);
+    ExecuteJavaScriptForTests(
+        "const subWin2 = document.getElementById('sub').contentWindow;"
+        "subWin2.navigator.requestMediaKeySystemAccess('com.example.foo', [{"
+        "  initDataTypes: ['cenc'],"
+        "  audioCapabilities: [{contentType: 'audio/webm; codecs=\"opus\"'}]"
+        "}]).then(() => { subWin2.location.hash = 'DOC2_OK'; },"
+        "         () => { subWin2.location.hash = 'DOC2_ERR'; });");
+    EXPECT_EQ(kLazyKeySystem, requested_in_doc2.Take());
+    doc2_support.UpdateCapabilities(make_capabilities(/*lazy_finalized=*/true));
+    waiter.Wait();
+  }
+  EXPECT_EQ("DOC2_OK", GURL(sub_web_frame->GetDocument().Url()).GetRef());
+
+  // Commit a third document in `sub_frame` (no longer on the initial empty
+  // document, so `should_reset_browser_interface_broker` is true) and verify
+  // rebinding works there too.
+  FakeKeySystemSupport doc3_support(
+      make_capabilities(/*lazy_finalized=*/false));
+  base::test::TestFuture<std::string> requested_in_doc3;
+  doc3_support.set_on_request_cb(requested_in_doc3.GetRepeatingCallback());
+  sub_frame->GetBrowserInterfaceBroker().SetBinderForTesting(
+      media::mojom::KeySystemSupport::Name_, {});
+  sub_frame->GetBrowserInterfaceBroker().SetBinderForTesting(
+      media::mojom::KeySystemSupport::Name_,
+      base::BindRepeating(&FakeKeySystemSupport::Bind,
+                          base::Unretained(&doc3_support)));
+  doc2_support.Disconnect();
+  {
+    FrameLoadWaiter load_waiter(sub_frame);
+    test_sub_frame->SetHTMLOverrideForNextNavigation("<html></html>");
+    ExecuteJavaScriptForTests(
+        "document.getElementById('sub').src = 'https://www.google.com/doc3';");
+    load_waiter.Wait();
+  }
+  ASSERT_TRUE(
+      test_sub_frame->TakeLastBrowserInterfaceBrokerReceiver().is_valid());
+  ASSERT_NE(doc1_context, sub_web_frame->MainWorldScriptContext());
+  {
+    SameDocumentNavigationWaiter waiter(sub_frame);
+    ExecuteJavaScriptForTests(
+        "const subWin3 = document.getElementById('sub').contentWindow;"
+        "subWin3.navigator.requestMediaKeySystemAccess('com.example.foo', [{"
+        "  initDataTypes: ['cenc'],"
+        "  audioCapabilities: [{contentType: 'audio/webm; codecs=\"opus\"'}]"
+        "}]).then(() => { subWin3.location.hash = 'DOC3_OK'; },"
+        "         () => { subWin3.location.hash = 'DOC3_ERR'; });");
+    EXPECT_EQ(kLazyKeySystem, requested_in_doc3.Take());
+    doc3_support.UpdateCapabilities(make_capabilities(/*lazy_finalized=*/true));
+    waiter.Wait();
+  }
+  EXPECT_EQ("DOC3_OK", GURL(sub_web_frame->GetDocument().Url()).GetRef());
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_ANDROID)

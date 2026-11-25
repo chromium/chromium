@@ -16,7 +16,7 @@ namespace content {
 namespace {
 
 // All key systems must have either software or hardware secure capability
-// supported, or have a capability query in progress.
+// supported, or have a pending capability query.
 bool IsValidKeySystemCapabilities(const KeySystemCapabilities& capabilities) {
   for (const auto& entry : capabilities) {
     auto& capability = entry.second;
@@ -40,6 +40,11 @@ KeySystemSupportImpl::~KeySystemSupportImpl() = default;
 void KeySystemSupportImpl::SetGetKeySystemCapabilitiesUpdateCbForTesting(
     GetKeySystemCapabilitiesUpdateCB get_support_cb_for_testing) {
   get_support_cb_for_testing_ = std::move(get_support_cb_for_testing);
+}
+
+void KeySystemSupportImpl::SetRequestKeySystemCapabilitiesCbForTesting(
+    RequestKeySystemCapabilitiesCB request_cb_for_testing) {
+  request_cb_for_testing_ = std::move(request_cb_for_testing);
 }
 
 void KeySystemSupportImpl::Bind(
@@ -85,6 +90,17 @@ void KeySystemSupportImpl::SetObserver(
   if (!cb_subscription_) {
     ObserveKeySystemCapabilities();
   }
+}
+
+void KeySystemSupportImpl::RequestKeySystemCapabilities(
+    const std::string& key_system) {
+  DVLOG(3) << __func__ << ": " << key_system;
+
+  if (request_cb_for_testing_) {
+    request_cb_for_testing_.Run(key_system);
+    return;
+  }
+  CdmRegistryImpl::GetInstance()->RequestKeySystemCapabilities(key_system);
 }
 
 // Initializes permissions values from the

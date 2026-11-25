@@ -118,7 +118,8 @@ enum class CdmCapabilityQueryStatus {
   kNoMediaDrmSupport = 11,
   // Creation of IMFExtendedDRMTypeSupport failed.
   kMediaFoundationGetExtendedDRMTypeSupportFailed = 12,
-  // Capability query still in progress.
+  // Lazy capability check has not started yet (key system not requested) or is
+  // still in progress.
   kPending = 13,
   kMaxValue = kPending,
 };

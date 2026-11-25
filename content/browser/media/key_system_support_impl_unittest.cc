@@ -347,4 +347,17 @@ TEST_F(KeySystemSupportImplTest, PendingCapabilityCheck) {
             media::CdmCapabilityQueryStatus::kPending);
 }
 
+TEST_F(KeySystemSupportImplTest, RequestKeySystemCapabilities) {
+  base::MockCallback<KeySystemSupportImpl::RequestKeySystemCapabilitiesCB>
+      request_cb;
+  KeySystemSupportImpl::GetForCurrentDocument(main_rfh())
+      ->SetRequestKeySystemCapabilitiesCbForTesting(request_cb.Get());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(request_cb, Run(std::string(kTestKeySystem)))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  key_system_support_->RequestKeySystemCapabilities(kTestKeySystem);
+  run_loop.Run();
+}
+
 }  // namespace content

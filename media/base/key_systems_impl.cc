@@ -11,10 +11,12 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/eme_constants.h"
 #include "media/base/key_system_names.h"
@@ -223,8 +225,10 @@ static bool CanBlock(const KeySystemInfo& key_system_info) {
 
 }  // namespace
 
-KeySystemsImpl::KeySystemsImpl(RegisterKeySystemsSupportCB cb)
-    : register_key_systems_support_cb_(std::move(cb)) {
+KeySystemsImpl::KeySystemsImpl(RegisterKeySystemsSupportCB cb,
+                               RequestKeySystemCapabilitiesCB request_cb)
+    : register_key_systems_support_cb_(std::move(cb)),
+      request_key_system_capabilities_cb_(std::move(request_cb)) {
   Initialize();
 }
 
@@ -241,25 +245,72 @@ void KeySystemsImpl::Initialize() {
   UpdateSupportedKeySystems();
 }
 
+void KeySystemsImpl::ResetKeySystemSupport() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  // Stop observing. `key_system_info_vector_` is kept, so that the key systems
+  // known so far stay usable until the next update.
+  weak_factory_.InvalidateWeakPtrs();
+  key_system_support_registration_.reset();
+  is_registered_ = false;
+  awaiting_initial_update_ = true;
+  pending_key_systems_.clear();
+
+  if (!has_updated_) {
+    // No update was received, so only Clear Key is supported.
+    has_updated_ = true;
+    key_system_info_vector_.push_back(
+        std::make_unique<ClearKeyKeySystemInfo>());
+  }
+
+  // The updates that the pending callbacks are waiting for will not arrive.
+  // Run the callbacks, so that they do not wait forever. Post them because the
+  // caller may not expect them to run synchronously, e.g. when this is called
+  // while a navigation is being committed.
+  for (auto& [key_system, done_cb] : std::exchange(pending_callbacks_, {})) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(done_cb));
+  }
+}
+
 void KeySystemsImpl::UpdateSupportedKeySystems() {
-  if (!GetMediaClient()) {
+  is_registered_ = true;
+  if (!GetMediaClient() || !register_key_systems_support_cb_) {
     OnSupportedKeySystemsUpdated(/*key_systems=*/{},
                                  /*pending_key_systems=*/{});
     return;
   }
 
-  key_system_support_registration_ =
-      std::move(register_key_systems_support_cb_)
-          .Run(
-              base::BindRepeating(&KeySystemsImpl::OnSupportedKeySystemsUpdated,
-                                  weak_factory_.GetWeakPtr()));
+  key_system_support_registration_ = register_key_systems_support_cb_.Run(
+      base::BindRepeating(&KeySystemsImpl::OnSupportedKeySystemsUpdated,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void KeySystemsImpl::UpdateIfNeeded(const std::string& key_system,
                                     base::OnceClosure done_cb) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (has_updated_ && !IsKeySystemPending(key_system)) {
+  // Start observing again after ResetKeySystemSupport().
+  if (!is_registered_) {
+    UpdateSupportedKeySystems();
+  }
+
+  // Notify the browser whenever a non-ClearKey key system is queried so it can
+  // start lazy capability checks and report hardware secure UMA for queried
+  // key systems. Neither `pending_key_systems_` nor `key_system_info_vector_`
+  // can skip duplicates here: when hardware secure decryption is disabled, a
+  // key system can already be in `key_system_info_vector_` (software-only
+  // Widevine) or in neither (hardware-only PlayReady) before its first query,
+  // and the browser still needs that first query to report UMA. The browser
+  // ignores repeated requests.
+  // TODO(crbug.com/489920801): Deduplicate requests per document once
+  // observation moves to content/.
+  if (request_key_system_capabilities_cb_ && !key_system.empty() &&
+      !IsClearKey(key_system)) {
+    request_key_system_capabilities_cb_.Run(key_system);
+  }
+
+  if (!awaiting_initial_update_ && !IsKeySystemPending(key_system)) {
     std::move(done_cb).Run();
     return;
   }
@@ -335,6 +386,7 @@ void KeySystemsImpl::OnSupportedKeySystemsUpdated(
     base::flat_set<std::string> pending_key_systems) {
   DVLOG(1) << __func__;
 
+  awaiting_initial_update_ = false;
   has_updated_ = true;
   pending_key_systems_ = std::move(pending_key_systems);
 
@@ -362,6 +414,29 @@ void KeySystemsImpl::OnSupportedKeySystemsUpdated(
 
 void KeySystemsImpl::ProcessSupportedKeySystems(KeySystemInfos key_systems) {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  // `key_systems` omits any key system that is currently in
+  // `pending_key_systems_`.
+  for (const auto& info : key_systems) {
+    DCHECK(!pending_key_systems_.contains(info->GetBaseKeySystemName()));
+  }
+
+  // A key system that was already in `key_system_info_vector_` can become
+  // pending again later (for example, software secure capabilities were
+  // reported first, and a hardware secure check becomes pending once hardware
+  // checks are allowed or a hardware CDM is registered). Keep its previous
+  // `KeySystemInfo` while that check runs:
+  // - Existing `MediaKeySystemAccess` / `MediaKeys` objects keep working
+  //   because synchronous `KeySystems` queries still find the known
+  //   capabilities.
+  // - New `UpdateIfNeeded()` calls still wait because the key system is in
+  //   `pending_key_systems_`. Once the check finishes, the next update
+  //   replaces this entry.
+  for (auto& info : key_system_info_vector_) {
+    if (pending_key_systems_.contains(info->GetBaseKeySystemName())) {
+      key_systems.push_back(std::move(info));
+    }
+  }
 
   // Clear `key_system_info_vector_` before repopulating it.
   key_system_info_vector_.clear();
@@ -460,7 +535,10 @@ bool KeySystemsImpl::IsSupportedInitDataType(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   const auto* key_system_info = GetKeySystemInfo(key_system);
-  CHECK(key_system_info);
+  if (!key_system_info) {
+    // A later update after ResetKeySystemSupport() may omit `key_system`.
+    return false;
+  }
 
   return key_system_info->IsSupportedInitDataType(init_data_type);
 }

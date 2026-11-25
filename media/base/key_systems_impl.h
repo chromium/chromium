@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
@@ -30,18 +31,40 @@ namespace media {
 // TODO(b/321307544): Rename this callback to more appropriate name e.g.
 // GetSupportedKeySystemsCB.
 using RegisterKeySystemsSupportCB =
-    base::OnceCallback<std::unique_ptr<KeySystemSupportRegistration>(
+    base::RepeatingCallback<std::unique_ptr<KeySystemSupportRegistration>(
         GetSupportedKeySystemsCB)>;
+
+// Tells the browser that `key_system` was queried, so that it starts the lazy
+// capability checks of that key system.
+using RequestKeySystemCapabilitiesCB =
+    base::RepeatingCallback<void(const std::string& key_system)>;
 
 // An implementation of KeySystems that provides functionality to query
 // registered key systems.
 class MEDIA_EXPORT KeySystemsImpl : public KeySystems {
  public:
-  explicit KeySystemsImpl(RegisterKeySystemsSupportCB cb);
+  // `request_cb`, if non-null, is run every time a non-ClearKey key system is
+  // passed to UpdateIfNeeded().
+  explicit KeySystemsImpl(
+      RegisterKeySystemsSupportCB cb,
+      RequestKeySystemCapabilitiesCB request_cb = base::NullCallback());
   ~KeySystemsImpl() override;
 
   KeySystemsImpl(const KeySystemsImpl&) = delete;
   KeySystemsImpl& operator=(const KeySystemsImpl&) = delete;
+
+  // Stops observing key system support. Called when the updates stop coming,
+  // e.g. because the frame navigated and its connection to the browser is gone.
+  // - The next UpdateIfNeeded() call starts observing again, and waits for the
+  //   first update.
+  // - Until that update, the key systems known so far stay usable, e.g. by a
+  //   MediaKeys object created earlier.
+  // - UpdateIfNeeded() callbacks that are still waiting are run asynchronously,
+  //   with the key systems known so far.
+  // TODO(crbug.com/489920801): Consider letting the owner (content/) observe
+  // key system support and push updates here, so that media/ does not need to
+  // know when to stop and restart observing.
+  void ResetKeySystemSupport();
 
   // Implementation of KeySystems interface.
   void UpdateIfNeeded(const std::string& key_system,
@@ -95,7 +118,7 @@ class MEDIA_EXPORT KeySystemsImpl : public KeySystems {
 
   const KeySystemInfo* GetKeySystemInfo(const std::string& key_system) const;
 
-  // Returns whether a capability query for `key_system` is still in progress.
+  // Returns whether a capability query for `key_system` is pending.
   bool IsKeySystemPending(const std::string& key_system) const;
 
   void RegisterMimeType(const std::string& mime_type, SupportedCodecs codecs);
@@ -113,16 +136,27 @@ class MEDIA_EXPORT KeySystemsImpl : public KeySystems {
                                 const std::string& container_mime_type,
                                 const std::string& codec_string) const;
 
-  // Whether the initial supported key systems update has been received.
+  // Whether at least one supported key systems update has been received.
   bool has_updated_ = false;
+
+  // Whether we are observing key system support, and whether we are still
+  // waiting for the first update since we started observing. Both are reset by
+  // ResetKeySystemSupport().
+  bool is_registered_ = false;
+  bool awaiting_initial_update_ = true;
 
   // Pending UpdateIfNeeded() callbacks, with the key system each is waiting on.
   std::vector<std::pair<std::string, base::OnceClosure>> pending_callbacks_;
 
-  // Key systems with a capability query still in progress.
+  // Key systems with a pending capability check (not started yet or still in
+  // progress). UpdateIfNeeded() waits for them.
+  // TODO(crbug.com/489920801): Consider keeping the pending state in
+  // KeySystemInfo instead of in a separate set.
   base::flat_set<std::string> pending_key_systems_;
 
-  // Vector of KeySystemInfo.
+  // Supported key systems. An entry can also be in `pending_key_systems_` if a
+  // previously reported key system later gained a pending check; see
+  // ProcessSupportedKeySystems().
   KeySystemInfos key_system_info_vector_;
 
   // This member should only be modified by RegisterMimeType().
@@ -142,6 +176,8 @@ class MEDIA_EXPORT KeySystemsImpl : public KeySystems {
 
   // Callback that is used to initialize key systems.
   RegisterKeySystemsSupportCB register_key_systems_support_cb_;
+
+  RequestKeySystemCapabilitiesCB request_key_system_capabilities_cb_;
 
   base::WeakPtrFactory<KeySystemsImpl> weak_factory_{this};
 };

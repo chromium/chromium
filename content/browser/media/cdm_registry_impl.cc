@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/task/bind_post_task.h"
 #include "base/types/expected.h"
@@ -52,31 +51,6 @@ bool MatchKeySystem(const CdmInfo& cdm_info, const std::string& key_system) {
           media::IsSubKeySystemOf(key_system, cdm_info.key_system));
 }
 
-// Reports whether the software secure CDM is available. Only reported once per
-// browser session per `key_system`, unless the availability changes, e.g. when
-// the CDM is component updated.
-// TODO(crbug.com/573454556): Explore simplifying or replacing this UMA.
-void ReportSoftwareSecureCdmAvailableUMA(const std::string& key_system,
-                                         bool available) {
-  // Track the last reported availability for `key_system` so that the same
-  // value is not reported again on every key system capabilities update.
-  static base::NoDestructor<absl::flat_hash_map<std::string, bool>>
-      last_reported_availability;
-  auto [it, inserted] =
-      last_reported_availability->try_emplace(key_system, available);
-  if (!inserted && it->second == available) {
-    return;
-  }
-  it->second = available;
-
-  // Use GetKeySystemNameForUMA() without specifying `use_hw_secure_codecs` for
-  // backward compatibility.
-  base::UmaHistogramBoolean("Media.EME." +
-                                media::GetKeySystemNameForUMA(key_system) +
-                                ".LibraryCdmAvailable",
-                            available);
-}
-
 constexpr media::VideoCodec kVideoCodecsToReportToUma[] = {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     media::VideoCodec::kH264,
@@ -88,63 +62,6 @@ constexpr media::VideoCodec kVideoCodecsToReportToUma[] = {
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
     media::VideoCodec::kVP9, media::VideoCodec::kAV1};
-
-// Reports the status and capabilities of the hardware secure CDM. Only reported
-// once per browser session per `key_system`.
-void ReportHardwareSecureCapabilityStatusUMA(
-    const std::string& key_system,
-    CdmInfo::Status status,
-    const media::CdmCapability* hw_secure_capability) {
-  // Use a set to track whether the UMA has been reported for `key_system` to
-  // make sure we only report once.
-  static base::NoDestructor<absl::flat_hash_set<std::string>>
-      reported_key_systems;
-  if (!reported_key_systems->insert(key_system).second) {
-    return;
-  }
-
-  auto uma_prefix =
-      "Media.EME." +
-      media::GetKeySystemNameForUMA(key_system, /*use_hw_secure_codecs=*/true);
-
-  // Report whether hardware secure decryption is disabled and if so why.
-  base::UmaHistogramEnumeration(uma_prefix + ".CdmInfoStatus", status);
-
-  // When hardware secure decryption is enabled, report whether it is supported.
-  if (status == CdmInfo::Status::kEnabled) {
-    base::UmaHistogramBoolean(uma_prefix + ".Support", hw_secure_capability);
-    // When supported, report whether a particular video codec is supported.
-    if (hw_secure_capability) {
-      const auto& video_codecs = hw_secure_capability->video_codecs;
-      for (const auto& video_codec : kVideoCodecsToReportToUma) {
-        bool is_supported = video_codecs.count(video_codec);
-        base::UmaHistogramBoolean(
-            uma_prefix + ".Support." + media::GetCodecNameForUMA(video_codec),
-            is_supported);
-      }
-    }
-  }
-}
-
-// Reports the status of the hardware secure capability query. Only reported
-// once per browser session per `key_system`.
-void ReportHardwareSecureCapabilityQueryStatusUMA(
-    const std::string& key_system,
-    media::CdmCapabilityQueryStatus capability_query_status) {
-  // Use a set to track whether the UMA has been reported for `key_system` to
-  // make sure we only report once.
-  static base::NoDestructor<absl::flat_hash_set<std::string>>
-      reported_key_systems;
-  if (!reported_key_systems->insert(key_system).second) {
-    return;
-  }
-
-  auto uma_prefix =
-      "Media.EME." +
-      media::GetKeySystemNameForUMA(key_system, /*use_hw_secure_codecs=*/true);
-  base::UmaHistogramEnumeration(uma_prefix + ".CdmCapabilityQueryStatus",
-                                capability_query_status);
-}
 
 bool IsEnabled(CdmInfo::Status status) {
   return status == CdmInfo::Status::kEnabled ||
@@ -380,6 +297,55 @@ base::CallbackListSubscription CdmRegistryImpl::ObserveKeySystemCapabilities(
   return subscription;
 }
 
+void CdmRegistryImpl::RequestKeySystemCapabilities(
+    const std::string& key_system) {
+  DVLOG(2) << __func__ << ": key_system=" << key_system;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Find registered key systems matching `key_system` (exact or sub key
+  // system). Unlike MatchKeySystem(), this does not check
+  // `supports_sub_key_systems` because KeySystemsImpl::IsKeySystemPending()
+  // waits on any sub key system of a pending base key system; skipping lazy
+  // initialization here would leave that query waiting forever. Unmatched
+  // strings are ignored.
+  // TODO(crbug.com/489920801): Switch to MatchKeySystem() once
+  // KeySystemsImpl::IsKeySystemPending() checks sub key system support via
+  // KeySystemInfo.
+  std::vector<std::string> newly_requested;
+  for (const auto& cdm : cdms_) {
+    if ((cdm.key_system == key_system ||
+         media::IsSubKeySystemOf(key_system, cdm.key_system)) &&
+        requested_key_systems_.insert(cdm.key_system).second) {
+      newly_requested.push_back(cdm.key_system);
+    }
+  }
+  if (newly_requested.empty()) {
+    return;
+  }
+
+  // No observer to notify yet. Like AttemptToFinalizeKeySystemCapabilities(),
+  // defer lazy initialization until ObserveKeySystemCapabilities() is called,
+  // and clear `key_system_capabilities_` so that call re-evaluates instead of
+  // returning a stale `kPending` snapshot.
+  if (key_system_capabilities_update_callbacks_.empty()) {
+    key_system_capabilities_.reset();
+    return;
+  }
+
+  for (const auto& requested_key_system : newly_requested) {
+    for (const auto robustness : {CdmInfo::Robustness::kSoftwareSecure,
+                                  CdmInfo::Robustness::kHardwareSecure}) {
+      AttemptToFinalizeKeySystemCapability(requested_key_system, robustness);
+    }
+  }
+
+  // Re-evaluate capabilities (also recording hardware secure UMA for newly
+  // requested key systems) and notify observers if anything changed
+  // synchronously, e.g. after a GPU change that disabled hardware security
+  // without an observer notification.
+  UpdateAndNotifyKeySystemCapabilities();
+}
+
 std::pair<std::optional<media::CdmCapability>, CdmInfo::Status>
 CdmRegistryImpl::GetCapability(const std::string& key_system,
                                CdmInfo::Robustness robustness) {
@@ -461,18 +427,21 @@ media::CdmCapabilityOrStatus CdmRegistryImpl::GetCapabilityOrStatus(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto [capability, status] = GetCapability(key_system, robustness);
-
-  // A capability is pending only while its lazy initialization is in progress
-  // and the CDM is still uninitialized. The status may change during that
-  // time, e.g. if SetHardwareSecureCdmStatus() disables hardware secure CDMs.
-  if (status == CdmInfo::Status::kUninitialized &&
-      pending_lazy_initializations_.contains({key_system, robustness})) {
-    return base::unexpected(media::CdmCapabilityQueryStatus::kPending);
+  if (status == CdmInfo::Status::kUninitialized) {
+    // Uninitialized capabilities are pending while lazy initialization is
+    // allowed (whether not started yet or in progress). If hardware secure
+    // checks are not allowed, report `kUnknown` so queries do not wait.
+    return IsCapabilityCheckAllowed(robustness)
+               ? base::unexpected(media::CdmCapabilityQueryStatus::kPending)
+               : base::unexpected(media::CdmCapabilityQueryStatus::kUnknown);
   }
 
+  // `status` is finalized here. Only report hardware secure UMA for requested
+  // key systems, since unrequested ones never run lazy initialization and would
+  // skew the metric toward non-lazy statuses (e.g. disabled).
   if (robustness == CdmInfo::Robustness::kSoftwareSecure) {
     ReportSoftwareSecureCdmAvailableUMA(key_system, capability.has_value());
-  } else {
+  } else if (requested_key_systems_.contains(key_system)) {
     ReportHardwareSecureCapabilityStatusUMA(key_system, status,
                                             base::OptionalToPtr(capability));
   }
@@ -481,6 +450,13 @@ media::CdmCapabilityOrStatus CdmRegistryImpl::GetCapabilityOrStatus(
     return std::move(capability).value();
   }
   return base::unexpected(media::CdmCapabilityQueryStatus::kUnknown);
+}
+
+bool CdmRegistryImpl::IsCapabilityCheckAllowed(
+    CdmInfo::Robustness robustness) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return robustness == CdmInfo::Robustness::kSoftwareSecure ||
+         allow_hw_secure_capability_check_;
 }
 
 void CdmRegistryImpl::AttemptToFinalizeKeySystemCapabilities() {
@@ -513,9 +489,9 @@ void CdmRegistryImpl::AttemptToFinalizeKeySystemCapabilities() {
     }
   }
 
-  // Notify observers right away. Capabilities still being lazily initialized
-  // are reported as kPending, and OnCapabilityInitialized() notifies again as
-  // each of them completes.
+  // Notify observers right away. Lazy capabilities that have not started yet
+  // or are still in progress are reported as kPending.
+  // OnCapabilityInitialized() notifies again as each lazy check finishes.
   UpdateAndNotifyKeySystemCapabilities();
 }
 
@@ -540,10 +516,8 @@ void CdmRegistryImpl::AttemptToFinalizeKeySystemCapability(
     return;
   }
 
-  if (robustness == CdmInfo::Robustness::kHardwareSecure &&
-      !allow_hw_secure_capability_check_) {
-    DVLOG(1) << robustness
-             << " Not allowed to get hardware secure capability for "
+  if (!IsCapabilityCheckAllowed(robustness)) {
+    DVLOG(1) << robustness << " Not allowed to get capability for "
              << key_system;
     return;
   }
@@ -557,6 +531,13 @@ void CdmRegistryImpl::AttemptToFinalizeKeySystemCapability(
     }
     FinalizeCapability(key_system, robustness, cdm_capability_or_status,
                        status);
+    return;
+  }
+
+  // Lazy initialization only starts once `key_system` is requested.
+  if (!requested_key_systems_.contains(key_system)) {
+    DVLOG(1) << robustness << " capability not requested yet for "
+             << key_system;
     return;
   }
 
@@ -709,8 +690,9 @@ KeySystemCapabilities CdmRegistryImpl::GetKeySystemCapabilities() {
         GetCapabilityOrStatus(key_system, CdmInfo::Robustness::kSoftwareSecure),
         GetCapabilityOrStatus(key_system,
                               CdmInfo::Robustness::kHardwareSecure));
-    // Key systems with a capability query in progress are included so that
-    // renderers can wait for them instead of treating them as unsupported.
+    // Include key systems with a pending capability (not started yet or still
+    // in progress) so renderers know to request and wait for them instead of
+    // treating them as unsupported.
     if (capability.sw_cdm_capability_or_status.has_value() ||
         capability.hw_cdm_capability_or_status.has_value() ||
         capability.IsPending()) {
@@ -719,6 +701,77 @@ KeySystemCapabilities CdmRegistryImpl::GetKeySystemCapabilities() {
   }
 
   return key_system_capabilities;
+}
+
+void CdmRegistryImpl::ReportSoftwareSecureCdmAvailableUMA(
+    const std::string& key_system,
+    bool available) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Track the last reported availability for `key_system` so that the same
+  // value is not reported again on every key system capabilities update.
+  auto [it, inserted] =
+      last_reported_sw_cdm_availability_.try_emplace(key_system, available);
+  if (!inserted && it->second == available) {
+    return;
+  }
+  it->second = available;
+
+  // Use GetKeySystemNameForUMA() without specifying `use_hw_secure_codecs` for
+  // backward compatibility.
+  base::UmaHistogramBoolean("Media.EME." +
+                                media::GetKeySystemNameForUMA(key_system) +
+                                ".LibraryCdmAvailable",
+                            available);
+}
+
+void CdmRegistryImpl::ReportHardwareSecureCapabilityStatusUMA(
+    const std::string& key_system,
+    CdmInfo::Status status,
+    const media::CdmCapability* hw_secure_capability) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!reported_hw_status_key_systems_.insert(key_system).second) {
+    return;
+  }
+
+  auto uma_prefix =
+      "Media.EME." +
+      media::GetKeySystemNameForUMA(key_system, /*use_hw_secure_codecs=*/true);
+
+  // Report whether hardware secure decryption is disabled and if so why.
+  base::UmaHistogramEnumeration(uma_prefix + ".CdmInfoStatus", status);
+
+  // When hardware secure decryption is enabled, report whether it is supported.
+  if (status == CdmInfo::Status::kEnabled) {
+    base::UmaHistogramBoolean(uma_prefix + ".Support", hw_secure_capability);
+    // When supported, report whether a particular video codec is supported.
+    if (hw_secure_capability) {
+      const auto& video_codecs = hw_secure_capability->video_codecs;
+      for (const auto& video_codec : kVideoCodecsToReportToUma) {
+        bool is_supported = video_codecs.count(video_codec);
+        base::UmaHistogramBoolean(
+            uma_prefix + ".Support." + media::GetCodecNameForUMA(video_codec),
+            is_supported);
+      }
+    }
+  }
+}
+
+void CdmRegistryImpl::ReportHardwareSecureCapabilityQueryStatusUMA(
+    const std::string& key_system,
+    media::CdmCapabilityQueryStatus capability_query_status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!reported_hw_query_status_key_systems_.insert(key_system).second) {
+    return;
+  }
+
+  auto uma_prefix =
+      "Media.EME." +
+      media::GetKeySystemNameForUMA(key_system, /*use_hw_secure_codecs=*/true);
+  base::UmaHistogramEnumeration(uma_prefix + ".CdmCapabilityQueryStatus",
+                                capability_query_status);
 }
 
 void CdmRegistryImpl::SetCapabilityCBForTesting(CapabilityCB cb) {

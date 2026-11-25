@@ -6,6 +6,7 @@
 #define CONTENT_RENDERER_MEDIA_MEDIA_FACTORY_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -24,6 +25,7 @@
 #include "media/mojo/buildflags.h"
 #include "media/mojo/clients/mojo_renderer_factory.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
+#include "media/mojo/mojom/key_system_support.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/public/platform/web_set_sink_id_callbacks.h"
@@ -61,6 +63,7 @@ namespace media {
 class CdmFactory;
 class DecoderFactory;
 class DefaultDecoderFactory;
+class KeySystemsImpl;
 class MediaLog;
 class MediaObserver;
 class RemotePlaybackClientWrapper;
@@ -119,6 +122,17 @@ class MediaFactory {
   // Can be dereferenced only on the media thread.
   base::WeakPtr<media::DecoderFactory> GetDecoderFactory();
 
+  // Binds and returns `key_system_support_`. Called at most once per document
+  // via `content::ObserveKeySystemSupportUpdate()`. Retained here so
+  // `RequestKeySystemCapabilities()` shares the same pipe, as browser-side
+  // `KeySystemSupportImpl` ignores extra connections for the same document.
+  media::mojom::KeySystemSupport* BindKeySystemSupport();
+
+  // Called when a new document commits in `render_frame_`. Drops the
+  // connection to the old document's `KeySystemSupport` in the browser, which
+  // is per document. The next EME query connects to the new document's one.
+  void ResetKeySystemSupport();
+
  private:
   // Initializes `decoder_factory_` if it hasn't been initialized yet.
   void EnsureDecoderFactory();
@@ -158,6 +172,10 @@ class MediaFactory {
 
   media::KeySystems* GetKeySystems();
 
+  // Requests the capabilities of `key_system` from the browser, on the
+  // connection that set the observer.
+  void RequestKeySystemCapabilities(const std::string& key_system);
+
   media::CdmFactory* GetCdmFactory();
 
   media::mojom::InterfaceFactory* GetMediaInterfaceFactory();
@@ -181,10 +199,14 @@ class MediaFactory {
   raw_ptr<media::RendererWebMediaPlayerDelegate, DanglingUntriaged>
       media_player_delegate_ = nullptr;
 
-  // The `KeySystems` to be used by `web_encrypted_media_client_`. This object
-  // must outlive `web_encrypted_media_client_` and `cdm_factory_` since they
-  // reference it.
-  std::unique_ptr<media::KeySystems> key_systems_;
+  // Connection to the current document's `KeySystemSupport` in the browser.
+  // Declared before `key_systems_`, which uses it to request key systems.
+  mojo::Remote<media::mojom::KeySystemSupport> key_system_support_;
+
+  // The `KeySystemsImpl` to be used by `web_encrypted_media_client_`. This
+  // object must outlive `web_encrypted_media_client_` and `cdm_factory_` since
+  // they reference it.
+  std::unique_ptr<media::KeySystemsImpl> key_systems_;
 
   // The CDM and decoder factory attached to this frame, lazily initialized.
   std::unique_ptr<media::DefaultDecoderFactory> decoder_factory_;

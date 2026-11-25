@@ -59,6 +59,7 @@
 #include "content/renderer/navigation_client.h"
 #include "media/base/routing_token_callback.h"
 #include "media/base/speech_recognition_client.h"
+#include "media/mojo/mojom/key_system_support.mojom-forward.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -718,6 +719,9 @@ class CONTENT_EXPORT RenderFrameImpl
   }
 
   base::WeakPtr<media::DecoderFactory> GetMediaDecoderFactory();
+
+  // See MediaFactory::BindKeySystemSupport().
+  media::mojom::KeySystemSupport* BindKeySystemSupport();
 
   // Returns a blink::ChildURLLoaderFactoryBundle which can be used to request
   // subresources for this frame.

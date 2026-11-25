@@ -3945,6 +3945,13 @@ void RenderFrameImpl::DidCommitNavigation(
     render_accessibility_manager_->CloseConnection();
   }
 
+  // Drop the old document's `KeySystemSupport` connection. This is needed even
+  // when `BrowserInterfaceBroker` is reused (e.g. navigating from the initial
+  // empty document to a same-origin document), since browser-side
+  // `KeySystemSupportImpl` (`DocumentUserData`) is destroyed on every
+  // cross-document commit.
+  media_factory_.ResetKeySystemSupport();
+
   // Notify the MediaPermissionDispatcher that its connection will be closed
   // due to a navigation to a different document.
   if (media_permission_dispatcher_) {
@@ -6592,6 +6599,10 @@ url::Origin RenderFrameImpl::GetSecurityOriginOfTopFrame() {
 
 base::WeakPtr<media::DecoderFactory> RenderFrameImpl::GetMediaDecoderFactory() {
   return media_factory_.GetDecoderFactory();
+}
+
+media::mojom::KeySystemSupport* RenderFrameImpl::BindKeySystemSupport() {
+  return media_factory_.BindKeySystemSupport();
 }
 
 gfx::Rect RenderFrameImpl::ConvertViewportToWindow(const gfx::Rect& rect) {

@@ -11,7 +11,6 @@
 #include "media/base/cdm_capability.h"
 #include "media/base/key_systems_support_registration.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/platform/task_type.h"
 
@@ -81,14 +80,12 @@ ObserveKeySystemSupportUpdate(content::RenderFrame* render_frame,
                               media::KeySystemSupportCB cb) {
   DVLOG(1) << __func__;
 
-  // `key_system_support` will stay alive as long as the returned value of this
-  // function is not destructed by the caller.
-  mojo::Remote<media::mojom::KeySystemSupport> key_system_support;
   RenderFrameImpl* impl = static_cast<RenderFrameImpl*>(render_frame);
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       impl->GetTaskRunner(blink::TaskType::kInternalMedia);
-  impl->GetBrowserInterfaceBroker().GetInterface(
-      key_system_support.BindNewPipeAndPassReceiver(task_runner));
+  // The frame keeps the connection alive to request key system capabilities.
+  media::mojom::KeySystemSupport* key_system_support =
+      impl->BindKeySystemSupport();
 
   mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_remote;
   std::unique_ptr<media::KeySystemSupportRegistration>
