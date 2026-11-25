@@ -654,8 +654,9 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
       base::test::ScopedFeatureList& scoped_feature_list) {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     // Force-enable the ClientHintsFormFactors feature, so that the header is
-    // represented in the various header counts.
-    feature_list->InitFromCommandLine(kDefaultFeatures, "");
+    // represented in the various header counts. Disable Prewarm so background
+    // DSE prewarm prerenders do not skew ClientHints.FetchLatency_* counts.
+    feature_list->InitFromCommandLine(kDefaultFeatures, "Prewarm");
     scoped_feature_list.InitWithFeatureList(std::move(feature_list));
   }
 
@@ -4318,8 +4319,10 @@ class UaReductionBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     std::unique_ptr<base::FeatureList> feature_list =
         std::make_unique<base::FeatureList>();
+    // Disable Prewarm so background DSE prewarm prerenders do not skew
+    // Navigation.UserAgentStringType counts.
     feature_list->InitFromCommandLine("CriticalClientHint,UACHOverrideBlank",
-                                      "");
+                                      "Prewarm");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
     InProcessBrowserTest::SetUp();
