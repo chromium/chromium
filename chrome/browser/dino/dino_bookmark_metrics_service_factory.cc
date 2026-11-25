@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/dino/dino_bookmark_metrics_service.h"
+#include "chrome/browser/dino/dino_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 
@@ -63,6 +64,11 @@ DinoBookmarkMetricsServiceFactory::DinoBookmarkMetricsServiceFactory()
 
 DinoBookmarkMetricsServiceFactory::~DinoBookmarkMetricsServiceFactory() =
     default;
+
+void DinoBookmarkMetricsServiceFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  dino::RegisterProfilePrefs(registry);
+}
 
 std::unique_ptr<KeyedService>
 DinoBookmarkMetricsServiceFactory::BuildServiceInstanceForBrowserContext(

@@ -40,6 +40,8 @@ class DinoBookmarkMetricsServiceFactory : public ProfileKeyedServiceFactory {
   ~DinoBookmarkMetricsServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
