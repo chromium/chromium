@@ -4,6 +4,11 @@
 
 #include "components/signin/core/browser/account_preview_data_service_impl.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/json/values_util.h"
 #include "base/run_loop.h"
@@ -17,6 +22,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
+#include "build/build_config.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -27,13 +33,16 @@
 #include "components/signin/core/browser/account_preview_data_fetcher.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/core/browser/account_preview_data_test_util.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -148,6 +157,46 @@ class AccountPreviewDataServiceTest : public testing::Test {
     mock_network_context_ = nullptr;
     network_delay_helper_ = nullptr;
     service_.reset();
+  }
+
+  // Marks `account` as a confirmed regular consumer account (not managed and
+  // not a child account) and returns the updated `AccountInfo`.
+  AccountInfo ConfirmAccountIsRegular(const AccountInfo& account) {
+    AccountInfo updated_account =
+        AccountInfo::Builder(account)
+            .SetHostedDomain(signin::constants::kNoHostedDomainFound)
+            .SetIsChildAccount(signin::Tribool::kFalse)
+            .Build();
+    identity_test_env_.UpdateAccountInfoForAccount(updated_account);
+    return updated_account;
+  }
+
+  // Makes a confirmed regular account available for `email` with a refresh
+  // token.
+  AccountInfo MakeRegularAccountAvailable(std::string_view email) {
+    AccountInfo account = identity_test_env_.MakeAccountAvailable(
+        identity_test_env_.CreateAccountAvailabilityOptionsBuilder()
+            .WithoutRefreshToken()
+            .Build(email));
+    ConfirmAccountIsRegular(account);
+    return identity_test_env_.MakeAccountAvailable(
+        identity_test_env_.CreateAccountAvailabilityOptionsBuilder().Build(
+            email));
+  }
+
+  // Makes a confirmed regular primary account available for `email` at
+  // `consent_level`.
+  AccountInfo MakeRegularPrimaryAccountAvailable(std::string_view email,
+                                                 ConsentLevel consent_level) {
+    AccountInfo account = identity_test_env_.MakeAccountAvailable(
+        identity_test_env_.CreateAccountAvailabilityOptionsBuilder()
+            .WithoutRefreshToken()
+            .Build(email));
+    ConfirmAccountIsRegular(account);
+    return identity_test_env_.MakeAccountAvailable(
+        identity_test_env_.CreateAccountAvailabilityOptionsBuilder()
+            .AsPrimary(consent_level)
+            .Build(email));
   }
 
  protected:
@@ -1133,7 +1182,7 @@ TEST_F(AccountPreviewDataServiceTest,
   // Sign in and trigger fetch with a different account.
   base::RunLoop run_loop;
   service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
-  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+  AccountInfo account = MakeRegularPrimaryAccountAvailable(
       "user@gmail.com", ConsentLevel::kSignin);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   identity_test_env_.SetCookieAccounts(
@@ -1162,7 +1211,7 @@ TEST_F(AccountPreviewDataServiceTest,
   MockSuccessfulFetch(&test_url_loader_factory_);
   base::RunLoop run_loop;
   service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
-  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+  AccountInfo account = MakeRegularPrimaryAccountAvailable(
       "user@gmail.com", ConsentLevel::kSignin);
   run_loop.Run();
 
@@ -1629,7 +1678,7 @@ TEST_F(AccountPreviewDataServiceTest,
 
   base::RunLoop run_loop;
   service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
-  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+  AccountInfo account = MakeRegularPrimaryAccountAvailable(
       "user@gmail.com", ConsentLevel::kSignin);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   identity_test_env_.SetCookieAccounts(
@@ -1707,10 +1756,9 @@ TEST_F(AccountPreviewDataServiceTest,
 
   base::RunLoop run_loop;
   service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
-  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+  AccountInfo primary = MakeRegularPrimaryAccountAvailable(
       "primary@gmail.com", ConsentLevel::kSignin);
-  AccountInfo secondary =
-      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+  AccountInfo secondary = MakeRegularAccountAvailable("secondary@gmail.com");
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   identity_test_env_.SetCookieAccounts(
       {{std::string(primary.GetEmail()), primary.GetGaiaId()},
@@ -1763,10 +1811,9 @@ TEST_F(AccountPreviewDataServiceTest,
 
   base::RunLoop run_loop;
   service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
-  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+  AccountInfo primary = MakeRegularPrimaryAccountAvailable(
       "primary@gmail.com", ConsentLevel::kSignin);
-  AccountInfo secondary =
-      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+  AccountInfo secondary = MakeRegularAccountAvailable("secondary@gmail.com");
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   identity_test_env_.SetCookieAccounts(
       {{std::string(primary.GetEmail()), primary.GetGaiaId()},
@@ -1786,10 +1833,9 @@ TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForSwitching) {
   signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
 
   AllDataAvailableWaiter waiter(service_.get());
-  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+  AccountInfo primary = MakeRegularPrimaryAccountAvailable(
       "primary@gmail.com", ConsentLevel::kSignin);
-  AccountInfo secondary =
-      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+  AccountInfo secondary = MakeRegularAccountAvailable("secondary@gmail.com");
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   identity_test_env_.SetCookieAccounts(
       {{std::string(primary.GetEmail()), primary.GetGaiaId()},
@@ -1829,10 +1875,9 @@ TEST_F(AccountPreviewDataServiceTest,
   signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
 
   AllDataAvailableWaiter waiter(service_.get());
-  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+  AccountInfo primary = MakeRegularPrimaryAccountAvailable(
       "primary@gmail.com", ConsentLevel::kSignin);
-  AccountInfo secondary =
-      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+  AccountInfo secondary = MakeRegularAccountAvailable("secondary@gmail.com");
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   identity_test_env_.SetCookieAccounts(
       {{std::string(primary.GetEmail()), primary.GetGaiaId()},
@@ -1870,10 +1915,9 @@ TEST_F(AccountPreviewDataServiceTest,
   signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
 
   AllDataAvailableWaiter waiter(service_.get());
-  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+  AccountInfo primary = MakeRegularPrimaryAccountAvailable(
       "primary@gmail.com", ConsentLevel::kSignin);
-  AccountInfo secondary =
-      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+  AccountInfo secondary = MakeRegularAccountAvailable("secondary@gmail.com");
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   identity_test_env_.SetCookieAccounts(
       {{std::string(primary.GetEmail()), primary.GetGaiaId()},
@@ -1903,8 +1947,8 @@ TEST_F(AccountPreviewDataServiceTest,
   signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
 
   AllDataAvailableWaiter waiter(service_.get());
-  AccountInfo acc1 = identity_test_env_.MakeAccountAvailable("acc1@gmail.com");
-  AccountInfo acc2 = identity_test_env_.MakeAccountAvailable("acc2@gmail.com");
+  AccountInfo acc1 = MakeRegularAccountAvailable("acc1@gmail.com");
+  AccountInfo acc2 = MakeRegularAccountAvailable("acc2@gmail.com");
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   identity_test_env_.SetCookieAccounts(
       {{std::string(acc1.GetEmail()), acc1.GetGaiaId()},
@@ -1977,10 +2021,10 @@ TEST_F(AccountPreviewDataServiceTest,
   signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
 
   AllDataAvailableWaiter waiter(service_.get());
-  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+  AccountInfo primary = MakeRegularPrimaryAccountAvailable(
       "primary@gmail.com", ConsentLevel::kSignin);
-  AccountInfo sec1 = identity_test_env_.MakeAccountAvailable("sec1@gmail.com");
-  AccountInfo sec2 = identity_test_env_.MakeAccountAvailable("sec2@gmail.com");
+  AccountInfo sec1 = MakeRegularAccountAvailable("sec1@gmail.com");
+  AccountInfo sec2 = MakeRegularAccountAvailable("sec2@gmail.com");
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   identity_test_env_.SetCookieAccounts(
       {{std::string(primary.GetEmail()), primary.GetGaiaId()},
@@ -2024,9 +2068,9 @@ TEST_F(AccountPreviewDataServiceTest,
   signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
 
   AllDataAvailableWaiter waiter(service_.get());
-  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+  AccountInfo primary = MakeRegularPrimaryAccountAvailable(
       "primary@gmail.com", ConsentLevel::kSignin);
-  AccountInfo sec = identity_test_env_.MakeAccountAvailable("sec@gmail.com");
+  AccountInfo sec = MakeRegularAccountAvailable("sec@gmail.com");
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   identity_test_env_.SetCookieAccounts(
       {{std::string(primary.GetEmail()), primary.GetGaiaId()},
@@ -3289,10 +3333,8 @@ TEST_F(AccountPreviewDataServiceTest,
   service_->SetAllDataAvailableCallbackForTesting(
       all_data_available_loop.QuitClosure());
 
-  AccountInfo account1 =
-      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
-  AccountInfo account2 =
-      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  AccountInfo account1 = MakeRegularAccountAvailable("account1@gmail.com");
+  AccountInfo account2 = MakeRegularAccountAvailable("account2@gmail.com");
 
   all_data_available_loop.Run();
 
@@ -3346,8 +3388,7 @@ TEST_F(AccountPreviewDataServiceTest,
   MockSuccessfulFetch(&test_url_loader_factory_);
   base::RunLoop run_loop;
   service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
-  AccountInfo account1 =
-      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  AccountInfo account1 = MakeRegularAccountAvailable("account1@gmail.com");
   run_loop.Run();
 
   // Make account2 available without caching (mock fails fetch).
@@ -3355,8 +3396,7 @@ TEST_F(AccountPreviewDataServiceTest,
   MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
   base::RunLoop run_loop_fail;
   service_->SetFetchCompleteCallbackForTesting(run_loop_fail.QuitClosure());
-  AccountInfo account2 =
-      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  AccountInfo account2 = MakeRegularAccountAvailable("account2@gmail.com");
   run_loop_fail.Run();
 
   EXPECT_FALSE(
@@ -3382,10 +3422,8 @@ TEST_F(AccountPreviewDataServiceTest,
   network_delay_helper_ = nullptr;
   service_.reset();
 
-  AccountInfo account1 =
-      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
-  AccountInfo account2 =
-      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  AccountInfo account1 = MakeRegularAccountAvailable("account1@gmail.com");
+  AccountInfo account2 = MakeRegularAccountAvailable("account2@gmail.com");
 
   // Simulate tokens not loaded yet.
   identity_test_env_.ResetToAccountsNotYetLoadedFromDiskState();
@@ -3442,10 +3480,8 @@ TEST_F(
   network_delay_helper_ = nullptr;
   service_.reset();
 
-  AccountInfo account1 =
-      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
-  AccountInfo account2 =
-      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  AccountInfo account1 = MakeRegularAccountAvailable("account1@gmail.com");
+  AccountInfo account2 = MakeRegularAccountAvailable("account2@gmail.com");
 
   // Simulate tokens not loaded yet.
   identity_test_env_.ResetToAccountsNotYetLoadedFromDiskState();
@@ -3754,10 +3790,8 @@ TEST_F(
   signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
 
   AllDataAvailableWaiter waiter(service_.get());
-  AccountInfo account1 =
-      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
-  AccountInfo account2 =
-      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  AccountInfo account1 = MakeRegularAccountAvailable("account1@gmail.com");
+  AccountInfo account2 = MakeRegularAccountAvailable("account2@gmail.com");
   static_cast<TestSigninClient*>(identity_test_env_.signin_client())
       ->set_accounts_signed_in_on_other_profiles({account1.GetGaiaId()});
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -3784,10 +3818,9 @@ TEST_F(AccountPreviewDataServiceTest,
   signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
 
   AllDataAvailableWaiter waiter(service_.get());
-  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+  AccountInfo primary = MakeRegularPrimaryAccountAvailable(
       "primary@gmail.com", ConsentLevel::kSignin);
-  AccountInfo secondary =
-      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+  AccountInfo secondary = MakeRegularAccountAvailable("secondary@gmail.com");
   static_cast<TestSigninClient*>(identity_test_env_.signin_client())
       ->set_accounts_signed_in_on_other_profiles({secondary.GetGaiaId()});
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -3813,6 +3846,138 @@ TEST_F(AccountPreviewDataServiceTest,
       AccountSwitchingSelectionOutcome::
           kWouldNotShowSecondarySignedInOnOtherProfile,
       1);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSigninTreatsUnknownManagementAsNonRegular) {
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AllDataAvailableWaiter waiter(service_.get());
+  AccountInfo acc1 = MakeRegularAccountAvailable("acc1@gmail.com");
+  // `acc2` has known non-child status, but unknown management status.
+  AccountInfo acc2 = identity_test_env_.MakeAccountAvailable(
+      identity_test_env_.CreateAccountAvailabilityOptionsBuilder()
+          .WithoutRefreshToken()
+          .Build("acc2@gmail.com"));
+  identity_test_env_.UpdateAccountInfoForAccount(
+      AccountInfo::Builder(acc2)
+          .SetIsChildAccount(signin::Tribool::kFalse)
+          .Build());
+  acc2 = identity_test_env_.MakeAccountAvailable("acc2@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(acc1.GetEmail()), acc1.GetGaiaId()},
+       {std::string(acc2.GetEmail()), acc2.GetGaiaId()}});
+#endif
+
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 0});
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 50});
+  waiter.Wait();
+
+  // Unknown management status is treated as non-regular, so `acc2` is not
+  // offered over `acc1`.
+  EXPECT_THAT(service_->GetPreferredAccountForSignin(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, acc1.GetGaiaId())));
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSigninTreatsUnknownChildAsNonRegular) {
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AllDataAvailableWaiter waiter(service_.get());
+  AccountInfo acc1 = MakeRegularAccountAvailable("acc1@gmail.com");
+  // `acc2` has known non-managed status, but unknown child status.
+  AccountInfo acc2 = identity_test_env_.MakeAccountAvailable(
+      identity_test_env_.CreateAccountAvailabilityOptionsBuilder()
+          .WithoutRefreshToken()
+          .Build("acc2@gmail.com"));
+  identity_test_env_.UpdateAccountInfoForAccount(
+      AccountInfo::Builder(acc2)
+          .SetHostedDomain(signin::constants::kNoHostedDomainFound)
+          .Build());
+  acc2 = identity_test_env_.MakeAccountAvailable("acc2@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(acc1.GetEmail()), acc1.GetGaiaId()},
+       {std::string(acc2.GetEmail()), acc2.GetGaiaId()}});
+#endif
+
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 0});
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 50});
+  waiter.Wait();
+
+  // Unknown child status is treated as non-regular, so `acc2` is not offered
+  // over `acc1`.
+  EXPECT_THAT(service_->GetPreferredAccountForSignin(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, acc1.GetGaiaId())));
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSwitchingTreatsUnknownStatusAsNonRegular) {
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AllDataAvailableWaiter waiter(service_.get());
+  // `primary` starts with unknown management/child status.
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@gmail.com", ConsentLevel::kSignin);
+  AccountInfo sec = MakeRegularAccountAvailable("sec@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+       {std::string(sec.GetEmail()), sec.GetGaiaId()}});
+#endif
+
+  const std::vector<DevicePreview> other_devices = {DevicePreview{
+      .cache_guid = "other_device",
+      .last_updated = base::Time::Now(),
+      .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE}};
+
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 0});
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 50},
+                          other_devices);
+  waiter.Wait();
+
+  EXPECT_EQ(service_->GetPreferredAccountForSwitching(), std::nullopt);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSwitchingSkipsSecondaryWithUnknownStatus) {
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AllDataAvailableWaiter waiter(service_.get());
+  AccountInfo primary = MakeRegularPrimaryAccountAvailable(
+      "primary@gmail.com", ConsentLevel::kSignin);
+  AccountInfo sec1 = identity_test_env_.MakeAccountAvailable("sec1@gmail.com");
+  AccountInfo sec2 = MakeRegularAccountAvailable("sec2@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+       {std::string(sec1.GetEmail()), sec1.GetGaiaId()},
+       {std::string(sec2.GetEmail()), sec2.GetGaiaId()}});
+#endif
+
+  const std::vector<DevicePreview> other_devices = {DevicePreview{
+      .cache_guid = "other_device",
+      .last_updated = base::Time::Now(),
+      .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE}};
+
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 0});
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 100},
+                          other_devices);
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 50},
+                          other_devices);
+  waiter.Wait();
+
+  // `sec1` has unknown status, so it is skipped and `sec2` is selected.
+  EXPECT_THAT(service_->GetPreferredAccountForSwitching(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, sec2.GetGaiaId())));
 }
 
 }  // namespace signin

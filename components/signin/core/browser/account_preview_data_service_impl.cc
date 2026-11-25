@@ -904,8 +904,11 @@ AccountPreviewDataServiceImpl::GetHeuristicContexts() const {
 #endif
         .preview_data = preview_data,
         .is_primary = is_primary,
-        .is_managed = account.IsManaged() == signin::Tribool::kTrue,
-        .is_child = account.IsChildAccount() == signin::Tribool::kTrue,
+        // Treat unknown management or child status as managed/child until
+        // confirmed otherwise so non-regular accounts are never offered before
+        // their status is known.
+        .is_managed = account.IsManaged() != signin::Tribool::kFalse,
+        .is_child = account.IsChildAccount() != signin::Tribool::kFalse,
 #if BUILDFLAG(IS_ANDROID)
         .is_external_app_primary = external_app_account.has_value() &&
                                    *external_app_account == account.GetGaiaId(),
