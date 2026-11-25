@@ -17,6 +17,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -221,6 +222,10 @@ class GeminiContainerMediatorTabHelperObserver
   // Badge.
   BOOL _hasTriggeredGeminiLiveIPH;
   BOOL _hasTriggeredGeminiLiveNewBadge;
+  // Whether the "What can Gemini do" suggestion was shown during the current
+  // Gemini session. Its feature engagement trigger event is recorded once when
+  // the session ends, so the suggestion stays visible for the whole session.
+  BOOL _hasShownWhatCanGeminiDoSuggestion;
   // State manager for container UI state transitions.
   GeminiContainerUIStateManager* _stateManager;
   // Observer for `WebStateList` active `WebState` changes.
@@ -451,7 +456,12 @@ class GeminiContainerMediatorTabHelperObserver
       tracker->Dismissed(feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature);
       _hasTriggeredGeminiLiveNewBadge = NO;
     }
+    if (_hasShownWhatCanGeminiDoSuggestion) {
+      tracker->NotifyEvent(
+          feature_engagement::events::kIOSGeminiWhatCanGeminiDoTriggered);
+    }
   }
+  _hasShownWhatCanGeminiDoSuggestion = NO;
 
   [self cancelPageContextGeneration];
   [_stateManager reset];
@@ -1104,6 +1114,13 @@ class GeminiContainerMediatorTabHelperObserver
   ++_zeroStateSuggestionsRequestID;
   [self.zeroStateConsumer setZeroStateSuggestions:suggestions];
   [self updateZeroStateMediumDetentHeight];
+
+  for (ZeroStateSuggestion* suggestion in suggestions) {
+    if (suggestion.type == gemini::InputType::kWhatCanGeminiDo) {
+      _hasShownWhatCanGeminiDoSuggestion = YES;
+      break;
+    }
+  }
 }
 
 // Returns whether the page context of `tabHelper` can be attached: the user

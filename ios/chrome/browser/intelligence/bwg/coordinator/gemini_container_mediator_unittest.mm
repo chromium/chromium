@@ -18,6 +18,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/prefs/pref_service.h"
@@ -1832,6 +1833,104 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_OCMOCK_VERIFY(mock_zero_state_consumer);
   EXPECT_EQ(std::optional<NSInteger>(kReducedHeight),
             fake_container_handler.mediumDetentHeight);
+}
+
+// Tests that the "What can Gemini do" trigger event is recorded exactly once
+// per Gemini session in which the suggestion was shown, regardless of how many
+// times suggestions are fetched during that session.
+TEST_F(GeminiContainerMediatorTest,
+       TestWhatCanGeminiDoTriggerRecordedOncePerSession) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration,
+       kZeroStateSuggestions, kZeroStateSuggestionsCentralization,
+       kZeroStateSuggestionsWCGD},
+      {});
+
+  auto* mock_tracker = static_cast<feature_engagement::test::MockTracker*>(
+      feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
+  ON_CALL(*mock_tracker, WouldTriggerHelpUI(testing::Ref(
+                             feature_engagement::kIPHiOSGeminiWhatCanGeminiDo)))
+      .WillByDefault(testing::Return(true));
+
+  FakeGeminiZeroStateConsumer* zero_state_consumer =
+      [[FakeGeminiZeroStateConsumer alloc] init];
+  mediator_.zeroStateConsumer = zero_state_consumer;
+
+  web::FakeWebState* web_state = AppendActiveWebState();
+  web_state->SetCurrentURL(GURL("https://example.com"));
+  web_state->SetVisibleURL(GURL("https://example.com"));
+  web_state->SetContentsMimeType("text/html");
+  web_state->WasShown();
+  web_state->SetLoading(true);
+
+  // Nothing is recorded while the session is ongoing, so the suggestion stays
+  // visible across fetches within the session.
+  EXPECT_CALL(
+      *mock_tracker,
+      NotifyEvent(
+          feature_engagement::events::kIOSGeminiWhatCanGeminiDoTriggered))
+      .Times(0);
+  [mediator_ didPresentContainer];
+  [mediator_ fetchZeroStateSuggestions:startup_state_];
+  [mediator_ fetchZeroStateSuggestions:startup_state_];
+  testing::Mock::VerifyAndClearExpectations(mock_tracker);
+
+  EXPECT_CALL(
+      *mock_tracker,
+      NotifyEvent(
+          feature_engagement::events::kIOSGeminiWhatCanGeminiDoTriggered))
+      .Times(1);
+  [mediator_ onFloatyDismiss];
+  testing::Mock::VerifyAndClearExpectations(mock_tracker);
+
+  // A later dismissal without the suggestion being shown again records
+  // nothing.
+  EXPECT_CALL(
+      *mock_tracker,
+      NotifyEvent(
+          feature_engagement::events::kIOSGeminiWhatCanGeminiDoTriggered))
+      .Times(0);
+  [mediator_ onFloatyDismiss];
+}
+
+// Tests that the "What can Gemini do" trigger event is not recorded when the
+// suggestion was not shown during the Gemini session.
+TEST_F(GeminiContainerMediatorTest,
+       TestWhatCanGeminiDoTriggerNotRecordedWhenNotShown) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration,
+       kZeroStateSuggestions, kZeroStateSuggestionsCentralization,
+       kZeroStateSuggestionsWCGD},
+      {});
+
+  auto* mock_tracker = static_cast<feature_engagement::test::MockTracker*>(
+      feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
+  // The user already tapped the suggestion or saw it in 5 sessions.
+  ON_CALL(*mock_tracker, WouldTriggerHelpUI(testing::Ref(
+                             feature_engagement::kIPHiOSGeminiWhatCanGeminiDo)))
+      .WillByDefault(testing::Return(false));
+
+  FakeGeminiZeroStateConsumer* zero_state_consumer =
+      [[FakeGeminiZeroStateConsumer alloc] init];
+  mediator_.zeroStateConsumer = zero_state_consumer;
+
+  web::FakeWebState* web_state = AppendActiveWebState();
+  web_state->SetCurrentURL(GURL("https://example.com"));
+  web_state->SetVisibleURL(GURL("https://example.com"));
+  web_state->SetContentsMimeType("text/html");
+  web_state->WasShown();
+  web_state->SetLoading(true);
+
+  EXPECT_CALL(
+      *mock_tracker,
+      NotifyEvent(
+          feature_engagement::events::kIOSGeminiWhatCanGeminiDoTriggered))
+      .Times(0);
+  [mediator_ didPresentContainer];
+  [mediator_ fetchZeroStateSuggestions:startup_state_];
+  [mediator_ onFloatyDismiss];
 }
 
 // Test that entering the Tab Grid minimizes the assistant container and stops

@@ -3601,8 +3601,8 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(LESS_THAN, 5), /*window=*/kMaxWindowPeriod,
                     /*storage=*/kMaxStoragePeriod);
     config.used =
-        EventConfig(events::kIOSGeminiWhatCanGeminiDoTapped, kAlwaysTrue,
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+        EventConfig(events::kIOSGeminiWhatCanGeminiDoTapped,
+                    Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
     return config;
   }
 
