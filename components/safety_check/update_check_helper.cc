@@ -41,6 +41,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         data:
           "No data is sent with the request."
         destination: GOOGLE_OWNED_SERVICE
+        legacy_api_url: "https://connectivitycheck.gstatic.com/generate_204"
       }
       policy {
         cookies_allowed: NO
