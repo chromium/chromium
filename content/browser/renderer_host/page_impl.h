@@ -39,6 +39,7 @@
 #endif
 
 namespace cc {
+struct BrowserControlsAnimationParams;
 struct BrowserControlsOffsetTagModifications;
 }  // namespace cc
 
@@ -201,6 +202,11 @@ class CONTENT_EXPORT PageImpl : public Page {
       bool animate,
       const std::optional<cc::BrowserControlsOffsetTagModifications>&
           offset_tag_modifications);
+
+  // Starts an animation of the browser controls visible heights in the
+  // renderer of this Page's main frame. ControlsInBrowser must be enabled.
+  void StartBrowserControlsAnimation(
+      const cc::BrowserControlsAnimationParams& params);
 
   float GetPageScaleFactor() const;
 

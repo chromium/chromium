@@ -352,4 +352,50 @@ public class TabBrowserControlsConstraintsHelperTest {
         mVisibilityDelegate.set(BrowserControlsState.SHOWN);
         Mockito.verify(mTab, Mockito.times(1)).willShowBrowserControls();
     }
+
+    @Test
+    public void testStartBrowserControlsAnimation_forwardsParams() {
+        TabBrowserControlsConstraintsHelper.startBrowserControlsAnimation(
+                mTab,
+                /* targetTopVisibleHeight= */ 100f,
+                /* targetBottomVisibleHeight= */ 50f,
+                /* durationMs= */ 200L,
+                /* x1= */ 0.25f,
+                /* y1= */ -0.5f,
+                /* x2= */ 0.75f,
+                /* y2= */ 1.5f);
+        Mockito.verify(mJniMock)
+                .startBrowserControlsAnimation(
+                        mWebContents, 100f, 50f, 200L, 0.25f, -0.5f, 0.75f, 1.5f);
+    }
+
+    @Test
+    public void testStartBrowserControlsAnimation_noWebContents() {
+        Mockito.when(mTab.getWebContents()).thenReturn(null);
+        TabBrowserControlsConstraintsHelper.startBrowserControlsAnimation(
+                mTab,
+                /* targetTopVisibleHeight= */ 100f,
+                /* targetBottomVisibleHeight= */ 50f,
+                /* durationMs= */ 200L,
+                /* x1= */ 0.4f,
+                /* y1= */ 0f,
+                /* x2= */ 0.2f,
+                /* y2= */ 1f);
+        Mockito.verifyNoInteractions(mJniMock);
+    }
+
+    @Test
+    public void testStartBrowserControlsAnimation_destroyedTab() {
+        Mockito.when(mTab.isDestroyed()).thenReturn(true);
+        TabBrowserControlsConstraintsHelper.startBrowserControlsAnimation(
+                mTab,
+                /* targetTopVisibleHeight= */ 100f,
+                /* targetBottomVisibleHeight= */ 50f,
+                /* durationMs= */ 200L,
+                /* x1= */ 0.4f,
+                /* y1= */ 0f,
+                /* x2= */ 0.2f,
+                /* y2= */ 1f);
+        Mockito.verifyNoInteractions(mJniMock);
+    }
 }

@@ -119,6 +119,50 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         helper.update(current, animate);
     }
 
+    /**
+     * Starts an animation of the browser controls visible heights in the renderer. Only valid when
+     * ControlsInBrowser is enabled. The animation eases along the cubic bezier from (0, 0) to (1,
+     * 1) with control points (x1, y1) and (x2, y2).
+     *
+     * <p>Calling this with ControlsInBrowser disabled, or with arguments that violate the
+     * constraints below, crashes the browser process.
+     *
+     * @param tab The tab whose renderer should animate.
+     * @param targetTopVisibleHeight Top controls visible height at the end of the animation, in
+     *     physical pixels. Must be finite.
+     * @param targetBottomVisibleHeight Bottom controls visible height at the end of the animation,
+     *     in physical pixels. Must be finite.
+     * @param durationMs Duration of the animation. Zero applies the targets on the next frame. Must
+     *     not be negative.
+     * @param x1 X coordinate of the first control point. Must be in [0, 1].
+     * @param y1 Y coordinate of the first control point. Must be finite.
+     * @param x2 X coordinate of the second control point. Must be in [0, 1].
+     * @param y2 Y coordinate of the second control point. Must be finite.
+     */
+    public static void startBrowserControlsAnimation(
+            Tab tab,
+            float targetTopVisibleHeight,
+            float targetBottomVisibleHeight,
+            long durationMs,
+            float x1,
+            float y1,
+            float x2,
+            float y2) {
+        if (tab.isDestroyed()) return;
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) return;
+        TabBrowserControlsConstraintsHelperJni.get()
+                .startBrowserControlsAnimation(
+                        webContents,
+                        targetTopVisibleHeight,
+                        targetBottomVisibleHeight,
+                        durationMs,
+                        x1,
+                        y1,
+                        x2,
+                        y2);
+    }
+
     /** Constructor */
     private TabBrowserControlsConstraintsHelper(Tab tab) {
         mOffsetTagsInfo = new BrowserControlsOffsetTagsInfo(null, null, null);
@@ -308,5 +352,15 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                 int current,
                 boolean animate,
                 BrowserControlsOffsetTagModifications offsetTagsInfo);
+
+        void startBrowserControlsAnimation(
+                @JniType("content::WebContents*") WebContents webContents,
+                float targetTopControlsVisibleHeight,
+                float targetBottomControlsVisibleHeight,
+                long durationMs,
+                float curveX1,
+                float curveY1,
+                float curveX2,
+                float curveY2);
     }
 }

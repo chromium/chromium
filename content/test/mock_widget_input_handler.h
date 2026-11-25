@@ -39,6 +39,7 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   class DispatchedIMEMessage;
   class DispatchedRequestCompositionUpdatesMessage;
   class DispatchedFinishComposingMessage;
+  class DispatchedStartBrowserControlsAnimationMessage;
 
   // Abstract storage of a received call on the MockWidgetInputHandler
   // interface.
@@ -72,6 +73,11 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
     // Cast this to a DispatchedFinishComposingMessage if it is one,
     // null otherwise.
     virtual DispatchedFinishComposingMessage* ToFinishComposing();
+
+    // Cast this to a DispatchedStartBrowserControlsAnimationMessage if it is
+    // one, null otherwise.
+    virtual DispatchedStartBrowserControlsAnimationMessage*
+    ToStartBrowserControlsAnimation();
 
     // Return the name associated with this message. It will either match
     // the message call name (eg. MouseCaptureLost) or the name of an
@@ -245,6 +251,29 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
 
    private:
     const bool keep_selection_;
+  };
+
+  // A DispatchedMessage that stores the StartBrowserControlsAnimation
+  // parameters that were invoked with.
+  class DispatchedStartBrowserControlsAnimationMessage
+      : public DispatchedMessage {
+   public:
+    explicit DispatchedStartBrowserControlsAnimationMessage(
+        const cc::BrowserControlsAnimationParams& params);
+    DispatchedStartBrowserControlsAnimationMessage(
+        const DispatchedStartBrowserControlsAnimationMessage&) = delete;
+    DispatchedStartBrowserControlsAnimationMessage& operator=(
+        const DispatchedStartBrowserControlsAnimationMessage&) = delete;
+    ~DispatchedStartBrowserControlsAnimationMessage() override;
+
+    // Override and return |this|.
+    DispatchedStartBrowserControlsAnimationMessage*
+    ToStartBrowserControlsAnimation() override;
+
+    const cc::BrowserControlsAnimationParams& params() const { return params_; }
+
+   private:
+    const cc::BrowserControlsAnimationParams params_;
   };
 
   // blink::mojom::WidgetInputHandler override.

@@ -23,6 +23,8 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
+#include "cc/input/browser_controls_animation_params.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/browser/media/audio_stream_monitor.h"
@@ -70,10 +72,12 @@
 #include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_content_client.h"
 #include "content/public/test/test_utils.h"
+#include "content/test/mock_widget_input_handler.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_page_broadcast.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
+#include "content/test/test_render_widget_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -101,6 +105,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/font_render_params.h"
+#include "ui/gfx/geometry/cubic_bezier.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -2945,6 +2950,55 @@ TEST_F(WebContentsImplTest, MediaWakeLock) {
 
   // Verify that all the wake locks have been released.
   EXPECT_FALSE(has_audio_wake_lock());
+}
+
+TEST_F(WebContentsImplTest, StartBrowserControlsAnimation) {
+  base::test::ScopedFeatureList feature_list(::features::kControlsInBrowser);
+  NavigateAndCommit(GURL("https://www.example.com"));
+  auto* widget_host = static_cast<TestRenderWidgetHost*>(
+      main_test_rfh()->GetRenderWidgetHost());
+  MockWidgetInputHandler* input_handler =
+      widget_host->GetMockWidgetInputHandler();
+  input_handler->GetAndResetDispatchedMessages();
+
+  contents()->StartBrowserControlsAnimation(cc::BrowserControlsAnimationParams{
+      .target_top_controls_visible_height = 100.f,
+      .target_bottom_controls_visible_height = 50.f,
+      .duration = base::Milliseconds(200),
+      .curve = gfx::CubicBezier(0.25, -0.5, 0.75, 1.5),
+  });
+
+  MockWidgetInputHandler::MessageVector messages =
+      input_handler->GetAndResetDispatchedMessages();
+  ASSERT_EQ(1u, messages.size());
+  MockWidgetInputHandler::DispatchedStartBrowserControlsAnimationMessage*
+      message = messages[0]->ToStartBrowserControlsAnimation();
+  ASSERT_TRUE(message);
+  const cc::BrowserControlsAnimationParams& sent = message->params();
+  EXPECT_EQ(100.f, sent.target_top_controls_visible_height);
+  EXPECT_EQ(50.f, sent.target_bottom_controls_visible_height);
+  EXPECT_EQ(base::Milliseconds(200), sent.duration);
+  EXPECT_DOUBLE_EQ(0.25, sent.curve.GetX1());
+  EXPECT_DOUBLE_EQ(-0.5, sent.curve.GetY1());
+  EXPECT_DOUBLE_EQ(0.75, sent.curve.GetX2());
+  EXPECT_DOUBLE_EQ(1.5, sent.curve.GetY2());
+}
+
+TEST_F(WebContentsImplTest, StartBrowserControlsAnimationIgnoredWhenNotLive) {
+  base::test::ScopedFeatureList feature_list(::features::kControlsInBrowser);
+  NavigateAndCommit(GURL("https://www.example.com"));
+  auto* widget_host = static_cast<TestRenderWidgetHost*>(
+      main_test_rfh()->GetRenderWidgetHost());
+  MockWidgetInputHandler* input_handler =
+      widget_host->GetMockWidgetInputHandler();
+  main_test_rfh()->GetProcess()->SimulateCrash();
+  ASSERT_FALSE(main_test_rfh()->IsRenderFrameLive());
+  input_handler->GetAndResetDispatchedMessages();
+
+  contents()->StartBrowserControlsAnimation(
+      cc::BrowserControlsAnimationParams());
+
+  EXPECT_TRUE(input_handler->GetAndResetDispatchedMessages().empty());
 }
 
 TEST_F(WebContentsImplTest, MarkAudible) {

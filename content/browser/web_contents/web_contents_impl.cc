@@ -13269,6 +13269,11 @@ void WebContentsImpl::UpdateBrowserControlsState(
                                               offset_tag_modifications);
 }
 
+void WebContentsImpl::StartBrowserControlsAnimation(
+    const cc::BrowserControlsAnimationParams& params) {
+  GetPrimaryPage().StartBrowserControlsAnimation(params);
+}
+
 void WebContentsImpl::SetSupportsDraggableRegions(
     bool supports_draggable_regions) {
   supports_draggable_regions_ = supports_draggable_regions;

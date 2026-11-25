@@ -87,6 +87,7 @@ struct RendererPreferences;
 }  // namespace blink
 
 namespace cc {
+struct BrowserControlsAnimationParams;
 struct BrowserControlsOffsetTagModifications;
 }  // namespace cc
 
@@ -1780,6 +1781,13 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       bool animate,
       const std::optional<cc::BrowserControlsOffsetTagModifications>&
           offset_tag_modifications) = 0;
+
+  // Starts an animation of the browser controls visible heights in the
+  // renderer of the primary page. See cc::BrowserControlsAnimationParams for
+  // the target heights, duration and easing curve. Does nothing if the primary
+  // main frame's renderer isn't live. ControlsInBrowser must be enabled.
+  virtual void StartBrowserControlsAnimation(
+      const cc::BrowserControlsAnimationParams& params) = 0;
 
   // Indicates that the primary main frame should collect draggable regions set
   // using the app-region CSS property.

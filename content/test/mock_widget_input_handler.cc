@@ -163,7 +163,10 @@ void MockWidgetInputHandler::UpdateBrowserControlsState(
         offset_tag_modifications) {}
 
 void MockWidgetInputHandler::StartBrowserControlsAnimation(
-    const cc::BrowserControlsAnimationParams& params) {}
+    const cc::BrowserControlsAnimationParams& params) {
+  dispatched_messages_.emplace_back(
+      std::make_unique<DispatchedStartBrowserControlsAnimationMessage>(params));
+}
 
 void MockWidgetInputHandler::FlushReceiverForTesting() {
   DCHECK(receiver_.is_bound());
@@ -200,6 +203,11 @@ MockWidgetInputHandler::DispatchedMessage::ToRequestCompositionUpdates() {
 
 MockWidgetInputHandler::DispatchedFinishComposingMessage*
 MockWidgetInputHandler::DispatchedMessage::ToFinishComposing() {
+  return nullptr;
+}
+
+MockWidgetInputHandler::DispatchedStartBrowserControlsAnimationMessage*
+MockWidgetInputHandler::DispatchedMessage::ToStartBrowserControlsAnimation() {
   return nullptr;
 }
 
@@ -348,6 +356,20 @@ MockWidgetInputHandler::DispatchedFinishComposingMessage::
 
 MockWidgetInputHandler::DispatchedFinishComposingMessage*
 MockWidgetInputHandler::DispatchedFinishComposingMessage::ToFinishComposing() {
+  return this;
+}
+
+MockWidgetInputHandler::DispatchedStartBrowserControlsAnimationMessage::
+    DispatchedStartBrowserControlsAnimationMessage(
+        const cc::BrowserControlsAnimationParams& params)
+    : DispatchedMessage("StartBrowserControlsAnimation"), params_(params) {}
+
+MockWidgetInputHandler::DispatchedStartBrowserControlsAnimationMessage::
+    ~DispatchedStartBrowserControlsAnimationMessage() = default;
+
+MockWidgetInputHandler::DispatchedStartBrowserControlsAnimationMessage*
+MockWidgetInputHandler::DispatchedStartBrowserControlsAnimationMessage::
+    ToStartBrowserControlsAnimation() {
   return this;
 }
 

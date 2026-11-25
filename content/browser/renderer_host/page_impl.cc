@@ -348,6 +348,15 @@ void PageImpl::UpdateBrowserControlsState(
       constraints, current, animate, offset_tag_modifications);
 }
 
+void PageImpl::StartBrowserControlsAnimation(
+    const cc::BrowserControlsAnimationParams& params) {
+  if (!GetMainDocument().IsRenderFrameLive()) {
+    return;
+  }
+  GetMainDocument().GetRenderWidgetHost()->StartBrowserControlsAnimation(
+      params);
+}
+
 float PageImpl::GetPageScaleFactor() const {
   return GetMainDocument().GetPageScaleFactor();
 }
