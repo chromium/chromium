@@ -2689,7 +2689,7 @@ source_set("browser_tests") {
     "//components/enterprise:test_support",
     "//components/enterprise/browser/promotion",
     "//components/enterprise/device_trust/core:device_trust_service",
-    "//components/enterprise/isolated_mode",
+    "//components/enterprise/isolated_mode:test_support",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/javascript_dialogs",

@@ -64,8 +64,7 @@
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -411,26 +410,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, UpdateNoPermissions) {
 class ExtensionTabsIncognitoOrIsolatedModeTest
     : public ExtensionTabsTest,
       public testing::WithParamInterface<bool> {
- public:
-  ExtensionTabsIncognitoOrIsolatedModeTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        enterprise_isolated_mode::kEnableEnterpriseIsolatedMode, GetParam());
-  }
-
- protected:
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    ExtensionTabsTest::SetUpBrowserContextKeyedServices(context);
-    if (GetParam()) {
-      Profile::FromBrowserContext(context)->GetPrefs()->SetInteger(
-          enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-          static_cast<int>(
-              enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
-    }
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_{GetParam()};
 };
 
 IN_PROC_BROWSER_TEST_P(ExtensionTabsIncognitoOrIsolatedModeTest,

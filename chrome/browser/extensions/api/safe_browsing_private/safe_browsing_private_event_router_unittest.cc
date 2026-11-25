@@ -23,9 +23,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
-#include "components/prefs/pref_service.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -105,7 +103,6 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
     profile_ = profile_manager_.CreateTestingProfile(
         "test-user", IdentityTestEnvironmentProfileAdaptor::
                          GetIdentityTestEnvironmentFactories());
-    AdjustProfilePrefs();
     event_router_ = extensions::CreateAndUseTestEventRouter(profile_);
     SafeBrowsingPrivateEventRouterFactory::GetInstance()->SetTestingFactory(
         profile_, base::BindRepeating(
@@ -154,8 +151,6 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   }
 
  protected:
-  virtual void AdjustProfilePrefs() {}
-
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
@@ -183,21 +178,9 @@ class SafeBrowsingPrivateEventRouterTest
 
 class SafeBrowsingPrivateEventRouterIsolatedModeTest
     : public SafeBrowsingPrivateEventRouterTest {
- public:
-  SafeBrowsingPrivateEventRouterIsolatedModeTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-  }
-
- protected:
-  void AdjustProfilePrefs() override {
-    profile_->GetPrefs()->SetInteger(
-        enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-        static_cast<int>(
-            enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
+ private:
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
 };
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected_Warned) {

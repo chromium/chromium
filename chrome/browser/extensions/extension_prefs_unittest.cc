@@ -15,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
@@ -24,8 +23,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -1790,14 +1788,10 @@ TEST_F(ExtensionPrefsSimpleTest, IncognitoSettingStoredInIncognitoPref) {
 // the "isolated_mode" pref, and that ExtensionPrefValueMap uses the Isolated
 // Mode setting when Enterprise Isolated Mode replaces Incognito.
 TEST_F(ExtensionPrefsSimpleTest, IsolatedModeSettingStoredInIsolatedModePref) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode;
   content::BrowserTaskEnvironment task_environment;
   auto profile = std::make_unique<TestingProfile>();
-  profile->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
   TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault(),
                            std::move(profile));
   std::string extension_id = prefs.AddExtension("Test Extension")->id();

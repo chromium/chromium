@@ -3,15 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
-#include "components/prefs/pref_service.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -39,23 +36,6 @@ namespace extensions {
 class IncognitoApiTest : public ExtensionApiTest,
                          public testing::WithParamInterface<bool> {
  public:
-  IncognitoApiTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        enterprise_isolated_mode::kEnableEnterpriseIsolatedMode,
-        IsEnterpriseIsolatedMode());
-  }
-
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    ExtensionApiTest::SetUpBrowserContextKeyedServices(context);
-    if (IsEnterpriseIsolatedMode()) {
-      Profile::FromBrowserContext(context)->GetPrefs()->SetInteger(
-          enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-          static_cast<int>(
-              enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
-    }
-  }
-
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -65,7 +45,8 @@ class IncognitoApiTest : public ExtensionApiTest,
   bool IsEnterpriseIsolatedMode() const { return GetParam(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_{IsEnterpriseIsolatedMode()};
 };
 
 INSTANTIATE_TEST_SUITE_P(
