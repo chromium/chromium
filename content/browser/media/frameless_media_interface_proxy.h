@@ -10,6 +10,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
@@ -33,7 +34,7 @@ class RenderProcessHost;
 // It is used in cases without a frame context, namely by WebRTC, WebCodecs
 // (which may be operating in a worker context), and for early querying of
 // supported codecs.
-class FramelessMediaInterfaceProxy final
+class CONTENT_EXPORT FramelessMediaInterfaceProxy final
     : public media::mojom::InterfaceFactory {
  public:
   explicit FramelessMediaInterfaceProxy(RenderProcessHost* render_process_host);
@@ -85,6 +86,8 @@ class FramelessMediaInterfaceProxy final
                  CreateCdmCallback callback) final;
 
  private:
+  friend class MediaInterfaceProxyTest;
+
   media::mojom::InterfaceFactory* GetMediaInterfaceFactory();
   void ConnectToMediaService();
   void OnMediaServiceConnectionError();

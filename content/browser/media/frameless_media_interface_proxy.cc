@@ -57,8 +57,14 @@ void FramelessMediaInterfaceProxy::CreateVideoDecoder(
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // The browser process cannot act as a proxy for video decoding and clients
-  // should not attempt to use it that way.
-  CHECK(!dst_video_decoder, base::NotFatalUntil::M160);
+  // should not attempt to use it that way. Since `InterfaceFactory` is exposed
+  // to untrusted renderers, reject a non-null `dst_video_decoder` as a bad
+  // Mojo message.
+  if (dst_video_decoder) {
+    receivers_.ReportBadMessage(
+        "CreateVideoDecoder() called with unexpected dst_video_decoder.");
+    return;
+  }
 
   InterfaceFactory* factory = GetMediaInterfaceFactory();
   if (!factory)

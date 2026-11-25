@@ -39,6 +39,8 @@ class MediaInterfaceFactoryHolder {
   media::mojom::InterfaceFactory* Get();
 
  private:
+  friend class MediaInterfaceProxyTest;
+
   void ConnectToMediaService();
 
   MediaServiceGetter media_service_getter_;

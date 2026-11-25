@@ -7,6 +7,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -14,8 +16,10 @@
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/media/cdm_registry_impl.h"
+#include "content/browser/media/frameless_media_interface_proxy.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/pseudonymization_salt.h"
@@ -29,12 +33,16 @@
 #include "media/base/cdm_config.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/media_log.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
+#include "media/mojo/mojom/video_decoder.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
@@ -53,6 +61,60 @@ namespace content {
 namespace {
 
 const char kTestKeySystem[] = "org.chromium.externalclearkey.mediafoundation";
+
+class MockInterfaceFactory : public media::mojom::InterfaceFactory {
+ public:
+  void CreateAudioDecoder(
+      mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) override {}
+  void CreateVideoDecoder(
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder)
+      override {
+    ++create_video_decoder_count_;
+    last_dst_video_decoder_valid_ = dst_video_decoder.is_valid();
+  }
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
+  void CreateVideoDecoderWithTracker(
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::mojom::VideoDecoderTracker> tracker) override {
+  }
+#endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
+  void CreateAudioEncoder(
+      mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) override {}
+  void CreateDefaultRenderer(
+      const std::string& audio_device_id,
+      mojo::PendingReceiver<media::mojom::Renderer> receiver) override {}
+#if BUILDFLAG(ENABLE_CAST_RENDERER)
+  void CreateCastRenderer(
+      const base::UnguessableToken& overlay_plane_id,
+      mojo::PendingReceiver<media::mojom::Renderer> receiver) override {}
+#endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
+#if BUILDFLAG(IS_ANDROID)
+  void CreateFlingingRenderer(
+      const std::string& presentation_id,
+      mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
+          client_extension,
+      mojo::PendingReceiver<media::mojom::Renderer> receiver) override {}
+#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
+  void CreateMediaFoundationRenderer(
+      mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
+      mojo::PendingReceiver<media::mojom::Renderer> receiver,
+      mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+          renderer_extension_receiver) override {}
+#endif  // BUILDFLAG(IS_WIN)
+  void CreateCdm(const media::CdmConfig& cdm_config,
+                 CreateCdmCallback callback) override {}
+
+  int create_video_decoder_count() const { return create_video_decoder_count_; }
+  bool last_dst_video_decoder_valid() const {
+    return last_dst_video_decoder_valid_;
+  }
+
+ private:
+  int create_video_decoder_count_ = 0;
+  bool last_dst_video_decoder_valid_ = false;
+};
 
 #if BUILDFLAG(IS_WIN)
 class MockMediaFoundationInterfaceFactory
@@ -110,6 +172,20 @@ class MediaInterfaceProxyTest : public RenderViewHostTestHarness {
   void TearDown() override {
     ResetSaltForTesting();
     RenderViewHostTestHarness::TearDown();
+  }
+
+  void SetMediaInterfaceFactoryRemote(
+      mojo::PendingRemote<media::mojom::InterfaceFactory> factory_remote) {
+    auto* proxy =
+        MediaInterfaceProxy::GetOrCreateForCurrentDocument(main_rfh());
+    proxy->media_interface_factory_ptr_->interface_factory_remote_.Bind(
+        std::move(factory_remote));
+  }
+
+  void SetFramelessInterfaceFactoryRemote(
+      FramelessMediaInterfaceProxy& frameless_proxy,
+      mojo::PendingRemote<media::mojom::InterfaceFactory> factory_remote) {
+    frameless_proxy.interface_factory_remote_.Bind(std::move(factory_remote));
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -485,5 +561,145 @@ TEST_F(MediaInterfaceProxyTest,
   run_loop.Run();
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(MediaInterfaceProxyTest,
+       CreateVideoDecoder_RejectsNonNullDstVideoDecoder) {
+  MockInterfaceFactory mock_factory;
+  mojo::Receiver<media::mojom::InterfaceFactory> factory_receiver(
+      &mock_factory);
+  SetMediaInterfaceFactoryRemote(factory_receiver.BindNewPipeAndPassRemote());
+
+  auto factory = GetMediaInterfaceFactory();
+  ASSERT_TRUE(factory.is_bound());
+
+  mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder;
+  std::ignore = dst_video_decoder.InitWithNewPipeAndPassReceiver();
+  mojo::Remote<media::mojom::VideoDecoder> video_decoder;
+
+  // A renderer must not supply `dst_video_decoder` to the browser process;
+  // only the browser itself populates the OOP video decoder remote when
+  // forwarding to the media service.
+  mojo::test::BadMessageObserver bad_message_observer;
+  factory->CreateVideoDecoder(video_decoder.BindNewPipeAndPassReceiver(),
+                              std::move(dst_video_decoder));
+  factory.FlushForTesting();
+
+  EXPECT_TRUE(bad_message_observer.got_bad_message());
+  if (bad_message_observer.got_bad_message()) {
+    EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+                testing::HasSubstr("dst_video_decoder"));
+  }
+  EXPECT_FALSE(factory.is_connected());
+  EXPECT_EQ(mock_factory.create_video_decoder_count(), 0);
+}
+
+TEST_F(MediaInterfaceProxyTest, CreateVideoDecoder_AllowsNullDstVideoDecoder) {
+  MockInterfaceFactory mock_factory;
+  mojo::Receiver<media::mojom::InterfaceFactory> factory_receiver(
+      &mock_factory);
+  SetMediaInterfaceFactoryRemote(factory_receiver.BindNewPipeAndPassRemote());
+
+  auto factory = GetMediaInterfaceFactory();
+  ASSERT_TRUE(factory.is_bound());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::Remote<media::mojom::VideoDecoder> video_decoder;
+  factory->CreateVideoDecoder(video_decoder.BindNewPipeAndPassReceiver(),
+                              /*dst_video_decoder=*/{});
+  factory.FlushForTesting();
+  factory_receiver.FlushForTesting();
+
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+  EXPECT_TRUE(factory.is_connected());
+  EXPECT_EQ(mock_factory.create_video_decoder_count(), 1);
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
+  EXPECT_TRUE(mock_factory.last_dst_video_decoder_valid());
+#else
+  EXPECT_FALSE(mock_factory.last_dst_video_decoder_valid());
+#endif
+}
+
+TEST_F(MediaInterfaceProxyTest,
+       FramelessCreateVideoDecoder_RejectsNonNullDstVideoDecoder) {
+  MockInterfaceFactory mock_factory;
+  mojo::Receiver<media::mojom::InterfaceFactory> factory_receiver(
+      &mock_factory);
+
+  FramelessMediaInterfaceProxy frameless_proxy(main_rfh()->GetProcess());
+  SetFramelessInterfaceFactoryRemote(
+      frameless_proxy, factory_receiver.BindNewPipeAndPassRemote());
+
+  mojo::Remote<media::mojom::InterfaceFactory> factory;
+  frameless_proxy.Add(factory.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(factory.is_bound());
+
+  mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder;
+  std::ignore = dst_video_decoder.InitWithNewPipeAndPassReceiver();
+  mojo::Remote<media::mojom::VideoDecoder> video_decoder;
+
+  // Workers/WebRTC using FramelessMediaInterfaceProxy must also be rejected
+  // with a Mojo bad message if they pass a non-null `dst_video_decoder`.
+  mojo::test::BadMessageObserver bad_message_observer;
+  factory->CreateVideoDecoder(video_decoder.BindNewPipeAndPassReceiver(),
+                              std::move(dst_video_decoder));
+  factory.FlushForTesting();
+
+  EXPECT_TRUE(bad_message_observer.got_bad_message());
+  if (bad_message_observer.got_bad_message()) {
+    EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+                testing::HasSubstr("dst_video_decoder"));
+  }
+  EXPECT_FALSE(factory.is_connected());
+  EXPECT_EQ(mock_factory.create_video_decoder_count(), 0);
+}
+
+TEST_F(MediaInterfaceProxyTest,
+       FramelessCreateVideoDecoder_AllowsNullDstVideoDecoder) {
+  MockInterfaceFactory mock_factory;
+  mojo::Receiver<media::mojom::InterfaceFactory> factory_receiver(
+      &mock_factory);
+
+  FramelessMediaInterfaceProxy frameless_proxy(main_rfh()->GetProcess());
+  SetFramelessInterfaceFactoryRemote(
+      frameless_proxy, factory_receiver.BindNewPipeAndPassRemote());
+
+  mojo::Remote<media::mojom::InterfaceFactory> factory;
+  frameless_proxy.Add(factory.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(factory.is_bound());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  // Verify normal Mojo dispatch with a null `dst_video_decoder`.
+  mojo::Remote<media::mojom::VideoDecoder> mojo_video_decoder;
+  factory->CreateVideoDecoder(mojo_video_decoder.BindNewPipeAndPassReceiver(),
+                              /*dst_video_decoder=*/{});
+  factory.FlushForTesting();
+  factory_receiver.FlushForTesting();
+
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+  EXPECT_TRUE(factory.is_connected());
+  EXPECT_EQ(mock_factory.create_video_decoder_count(), 1);
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
+  EXPECT_TRUE(mock_factory.last_dst_video_decoder_valid());
+#else
+  EXPECT_FALSE(mock_factory.last_dst_video_decoder_valid());
+#endif
+
+  // Also verify direct in-browser C++ calls outside Mojo message dispatch
+  // (matching the GpuDataManagerImplPrivate codec-querying call pattern).
+  mojo::Remote<media::mojom::VideoDecoder> direct_video_decoder;
+  frameless_proxy.CreateVideoDecoder(
+      direct_video_decoder.BindNewPipeAndPassReceiver(),
+      /*dst_video_decoder=*/{});
+  factory_receiver.FlushForTesting();
+
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+  EXPECT_EQ(mock_factory.create_video_decoder_count(), 2);
+#if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
+  EXPECT_TRUE(mock_factory.last_dst_video_decoder_valid());
+#else
+  EXPECT_FALSE(mock_factory.last_dst_video_decoder_valid());
+#endif
+}
 
 }  // namespace content
