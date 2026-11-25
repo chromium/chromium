@@ -5,8 +5,11 @@
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet.h"
 
 #include <memory>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
@@ -22,6 +25,7 @@
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope_proxy.h"
 #include "third_party/blink/renderer/platform/graphics/paint_generated_image.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "v8/include/v8-exception.h"
 
 namespace blink {
 class TestPaintWorklet : public PaintWorklet {
@@ -108,9 +112,15 @@ class PaintWorkletTest : public PageTestBase {
     EXPECT_EQ(num_paints_before_switch, expected_num_paints_before_switch);
   }
 
+  void TerminateProxy() {
+    if (proxy_) {
+      proxy_->TerminateWorkletGlobalScope();
+      proxy_ = nullptr;
+    }
+  }
+
   void TearDown() override {
-    proxy_->TerminateWorkletGlobalScope();
-    proxy_ = nullptr;
+    TerminateProxy();
     PageTestBase::TearDown();
   }
 
@@ -618,6 +628,115 @@ TEST_F(PaintWorkletTest, InvalidatedDefinitionNotAddedAsPending) {
   // Verify the generator was not registered as pending for an already-invalid
   // definition.
   EXPECT_FALSE(HasPendingGenerator(paint_worklet_to_test, "foo"));
+}
+
+TEST_F(PaintWorkletTest, ConstructorExceptionDoesNotPropagate) {
+  PaintWorkletGlobalScope* global_scope = GetProxy()->global_scope();
+  ScriptState* worklet_script_state =
+      global_scope->ScriptController()->GetScriptState();
+  ClassicScript::CreateUnspecifiedScript(R"JS(
+    globalThis.ctorCalls = 0;
+    globalThis.throwingPaintCalls = 0;
+    globalThis.validPaintCalls = 0;
+    globalThis.stringifiedInWorklet = false;
+    registerPaint('throwing-ctor', class {
+      constructor() {
+        ++globalThis.ctorCalls;
+        throw {
+          toString() {
+            globalThis.stringifiedInWorklet =
+                typeof PaintWorkletGlobalScope !== 'undefined' &&
+                typeof window === 'undefined';
+            return 'ctor-error';
+          }
+        };
+      }
+      paint(ctx, size) {
+        ++globalThis.throwingPaintCalls;
+        ctx.fillRect(0, 0, size.width, size.height);
+      }
+    });
+    registerPaint('valid-paint', class {
+      paint(ctx, size) {
+        ++globalThis.validPaintCalls;
+        ctx.fillRect(0, 0, size.width, size.height);
+      }
+    });
+  )JS")
+      ->RunScriptOnScriptState(worklet_script_state);
+
+  CSSPaintDefinition* throwing_definition =
+      global_scope->FindDefinition("throwing-ctor");
+  ASSERT_TRUE(throwing_definition);
+  CSSPaintDefinition* valid_definition =
+      global_scope->FindDefinition("valid-paint");
+  ASSERT_TRUE(valid_definition);
+
+  const LayoutObject& layout_object =
+      static_cast<const LayoutObject&>(*GetImageResourceObserver());
+  const gfx::SizeF container_size(100, 100);
+  const float zoom = layout_object.Style().EffectiveZoom();
+  auto make_style_map = [&](const CSSPaintDefinition* def) {
+    return MakeGarbageCollected<PrepopulatedComputedStylePropertyMap>(
+        layout_object.GetDocument(), layout_object.Style(),
+        def->NativeInvalidationProperties(),
+        def->CustomInvalidationProperties());
+  };
+  StylePropertyMapReadOnly* throwing_style_map =
+      make_style_map(throwing_definition);
+  StylePropertyMapReadOnly* valid_style_map = make_style_map(valid_definition);
+
+  ScriptState* main_script_state = ToScriptStateForMainWorld(&GetFrame());
+  ASSERT_TRUE(main_script_state);
+  {
+    ScriptState::Scope main_scope(main_script_state);
+    v8::TryCatch outer_try_catch(main_script_state->GetIsolate());
+
+    EXPECT_TRUE(throwing_definition
+                    ->Paint(container_size, zoom, throwing_style_map, nullptr)
+                    .empty());
+    EXPECT_FALSE(outer_try_catch.HasCaught());
+
+    // Subsequent paints after a failed constructor return an empty record
+    // without re-invoking the constructor or propagating an exception.
+    EXPECT_TRUE(throwing_definition
+                    ->Paint(container_size, zoom, throwing_style_map, nullptr)
+                    .empty());
+    EXPECT_FALSE(outer_try_catch.HasCaught());
+
+    // Valid definitions in the same global scope continue to paint normally.
+    EXPECT_FALSE(
+        valid_definition->Paint(container_size, zoom, valid_style_map, nullptr)
+            .empty());
+    EXPECT_FALSE(outer_try_catch.HasCaught());
+  }
+
+  {
+    ScriptState::Scope worklet_scope(worklet_script_state);
+    auto eval_worklet_expr = [&](const char* expr) {
+      ScriptEvaluationResult result =
+          ClassicScript::CreateUnspecifiedScript(expr)
+              ->RunScriptOnScriptStateAndReturnValue(
+                  worklet_script_state,
+                  ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+      EXPECT_EQ(result.GetResultType(),
+                ScriptEvaluationResult::ResultType::kSuccess)
+          << expr;
+      return result.GetResultType() ==
+                 ScriptEvaluationResult::ResultType::kSuccess &&
+             result.GetSuccessValue()->IsTrue();
+    };
+    EXPECT_TRUE(eval_worklet_expr("globalThis.ctorCalls === 1"));
+    EXPECT_TRUE(eval_worklet_expr("globalThis.throwingPaintCalls === 0"));
+    EXPECT_TRUE(eval_worklet_expr("globalThis.stringifiedInWorklet === true"));
+    EXPECT_TRUE(eval_worklet_expr("globalThis.validPaintCalls === 1"));
+  }
+
+  // Painting after the worklet context is invalidated returns an empty record.
+  TerminateProxy();
+  EXPECT_TRUE(
+      valid_definition->Paint(container_size, zoom, valid_style_map, nullptr)
+          .empty());
 }
 
 }  // namespace blink
