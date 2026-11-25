@@ -1188,8 +1188,9 @@ void UpdateServiceImplImpl::UpdateAll(
       base::BindRepeating(
           [](base::flat_map<std::string, UpdateEndEvent>* events_by_app_id,
              const UpdateState& update_state) {
-            if (events_by_app_id->contains(update_state.app_id)) {
-              UpdateEndEvent& event = events_by_app_id->at(update_state.app_id);
+            if (const auto it = events_by_app_id->find(update_state.app_id);
+                it != events_by_app_id->end()) {
+              UpdateEndEvent& event = it->second;
               if (update_state.error_category !=
                   UpdateService::ErrorCategory::kNone) {
                 event.AddError({.category = std::to_underlying(

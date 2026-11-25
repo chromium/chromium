@@ -5306,9 +5306,9 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
   EXPECT_CALL(observer, OnEvent(_))
       .WillRepeatedly([](const CrxUpdateItem& item) {
         if (item.state == ComponentState::kUpToDate) {
-          ASSERT_TRUE(item.custom_updatecheck_data.contains("_example"));
-          EXPECT_EQ("example_value",
-                    item.custom_updatecheck_data.at("_example"));
+          const auto it = item.custom_updatecheck_data.find("_example");
+          ASSERT_NE(it, item.custom_updatecheck_data.end());
+          EXPECT_EQ("example_value", it->second);
         }
       });
 

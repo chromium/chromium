@@ -291,10 +291,11 @@ TEST_F(BackgroundDownloaderTest, DISABLED_ServerHangup) {
   // Otherwise, send the first half of the data before hanging up.
   request_handler_ =
       base::BindLambdaForTesting([&](const HttpRequest& request) {
-        if (request.headers.contains("Range")) {
+        if (const auto it = request.headers.find("Range");
+            it != request.headers.end()) {
           EXPECT_EQ(request.headers.at("If-Range"), "42");
           const size_t lower_range =
-              ParseRangeHeaderFirstBytePosition(request.headers.at("Range"));
+              ParseRangeHeaderFirstBytePosition(it->second);
           EXPECT_LE(lower_range, data.size());
 
           std::unique_ptr<BasicHttpResponse> response =
@@ -574,10 +575,11 @@ TEST_F(BackgroundDownloaderCrashingClientTest, DISABLED_ClientCrash) {
   // client process.
   request_handler_ =
       base::BindLambdaForTesting([&](const HttpRequest& request) {
-        if (request.headers.contains("Range")) {
+        if (const auto it = request.headers.find("Range");
+            it != request.headers.end()) {
           EXPECT_EQ(request.headers.at("If-Range"), "42");
           const size_t lower_range =
-              ParseRangeHeaderFirstBytePosition(request.headers.at("Range"));
+              ParseRangeHeaderFirstBytePosition(it->second);
           EXPECT_LE(lower_range, data.size());
 
           std::unique_ptr<BasicHttpResponse> response =

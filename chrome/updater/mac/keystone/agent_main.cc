@@ -84,7 +84,6 @@ class KSAgentApp : public App {
       const std::string& app_id,
       base::OnceCallback<void(UpdaterScope scope)> callback) const;
 
-  bool HasSwitch(const std::string& arg) const;
   std::string SwitchValue(const std::string& arg) const;
 
   void UpdateApp(const std::string& app_id);
@@ -122,12 +121,9 @@ void KSAgentApp::ChooseServiceForApp(
       app_id, std::move(callback)));
 }
 
-bool KSAgentApp::HasSwitch(const std::string& arg) const {
-  return switches_.contains(arg);
-}
-
 std::string KSAgentApp::SwitchValue(const std::string& arg) const {
-  return HasSwitch(arg) ? switches_.at(arg) : std::string();
+  const auto it = switches_.find(arg);
+  return it != switches_.end() ? it->second : std::string();
 }
 
 void KSAgentApp::RecordUpdateResult(

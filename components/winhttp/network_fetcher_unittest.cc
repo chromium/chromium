@@ -107,9 +107,9 @@ TEST(WinHttpNetworkFetcher, GZip) {
       [](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-        if (!request.headers.contains("Accept-Encoding") ||
-            request.headers.at("Accept-Encoding").find("gzip") ==
-                std::string::npos) {
+        const auto it = request.headers.find("Accept-Encoding");
+        if (it == request.headers.end() ||
+            it->second.find("gzip") == std::string::npos) {
           ADD_FAILURE() << "gzip `Accept-Encoding` not found in request";
           response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
           return response;

@@ -264,10 +264,10 @@ class BackgroundDownloaderSharedSessionImpl {
       return false;
     }
 
-    if (results_.contains(url)) {
+    if (const auto it = results_.find(url); it != results_.end()) {
       // The download was completed by this
       // BackgroundDownloaderSharedSessionImpl, thus the metrics are available.
-      DownloadResult result = results_.at(url);
+      DownloadResult result = it->second;
       callback.Run(result.is_handled, result.result, result.download_metrics);
     } else {
       int64_t download_size = -1;
@@ -333,11 +333,14 @@ class BackgroundDownloaderSharedSessionImpl {
                           int64_t total_bytes) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    bool had_result = results_.contains(url);
     // An existing entry may hold the download time, the only metric that
     // `OnMetricsCollected()` records.
-    const uint64_t download_time_ms =
-        had_result ? results_.at(url).download_metrics.download_time_ms : 0;
+    bool had_result = false;
+    uint64_t download_time_ms = 0;
+    if (const auto it = results_.find(url); it != results_.end()) {
+      had_result = true;
+      download_time_ms = it->second.download_metrics.download_time_ms;
+    }
     results_.insert_or_assign(
         url,
         DownloadResult{
@@ -360,8 +363,12 @@ class BackgroundDownloaderSharedSessionImpl {
   void OnMetricsCollected(const GURL& url, uint64_t download_time_ms) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    bool had_result = results_.contains(url);
-    DownloadResult result = had_result ? results_.at(url) : DownloadResult{};
+    bool had_result = false;
+    DownloadResult result;
+    if (const auto it = results_.find(url); it != results_.end()) {
+      had_result = true;
+      result = it->second;
+    }
     result.download_metrics.download_time_ms = download_time_ms;
     results_.insert_or_assign(url, std::move(result));
 
@@ -376,13 +383,15 @@ class BackgroundDownloaderSharedSessionImpl {
   // the download is retrieved from cache.
   void OnDownloadResultReady(const GURL& url) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    CHECK(results_.contains(url));
+    const auto result_it = results_.find(url);
+    CHECK(result_it != results_.end());
 
-    bool requestor_known = downloads_.contains(url);
+    const auto download_it = downloads_.find(url);
+    const bool requestor_known = download_it != downloads_.end();
     if (requestor_known) {
-      DownloadResult result = results_.at(url);
-      downloads_.at(url).Run(result.is_handled, result.result,
-                             result.download_metrics);
+      DownloadResult result = result_it->second;
+      download_it->second.Run(result.is_handled, result.result,
+                              result.download_metrics);
       results_.erase(url);
       downloads_.erase(url);
       if (last_progress_times_.contains(url)) {
@@ -446,12 +455,13 @@ class BackgroundDownloaderSharedSessionImpl {
       }
 
       const GURL url = GURLWithNSURL([task originalRequest].URL);
-      if (!last_progress_times_.contains(url)) {
+      const auto it = last_progress_times_.find(url);
+      if (it == last_progress_times_.end()) {
         // If the last progress time is unknown it should be set to now so that
         // the task can be cleaned even if it fails to send a progress update.
         filtered_progresses.emplace(url, now);
       } else {
-        base::Time last_progress_time = last_progress_times_.at(url);
+        base::Time last_progress_time = it->second;
         if (now - last_progress_time > kNoProgressTimeout) {
           [task cancel];
         } else {

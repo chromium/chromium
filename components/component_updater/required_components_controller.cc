@@ -75,11 +75,12 @@ void RequiredComponentsController::ToCrxComponent(
 void RequiredComponentsController::OnEvent(
     const update_client::CrxUpdateItem& update_item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!requested_components_.contains(update_item.id)) {
+  const auto it = requested_components_.find(update_item.id);
+  if (it == requested_components_.end()) {
     return;
   }
 
-  const std::string& name = requested_components_[update_item.id];
+  const std::string& name = it->second;
 
   switch (update_item.state) {
     case update_client::ComponentState::kUpToDate:
@@ -98,7 +99,7 @@ void RequiredComponentsController::OnEvent(
   }
 
   ready_components_.insert(name);
-  requested_components_.erase(update_item.id);
+  requested_components_.erase(it);
 
   if (requested_components_.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

@@ -145,6 +145,8 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
       [&](scoped_refptr<
           private_verification_tokens::PrivateVerificationTokensIssuerConfig>
               got) {
+        // Quits `run_loop` on every return, including failed assertions.
+        base::ScopedClosureRunner quit_run_loop(run_loop.QuitClosure());
         callback_called = true;
         ASSERT_TRUE(got);
         EXPECT_THAT(got->config(), testing::SizeIs(2));
@@ -161,9 +163,10 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
                           base::ToVector<uint8_t>(decoded_proof_a),
                           future_expiration.time, 1};
 
-        EXPECT_TRUE(got->config().contains(origin_a));
+        const auto config_a_it = got->config().find(origin_a);
+        ASSERT_NE(config_a_it, got->config().end());
         const private_verification_tokens::IssuerConfig& config_a =
-            got->config().at(origin_a);
+            config_a_it->second;
         EXPECT_EQ(config_a.issuer_request_url,
                   GURL("https://a.example/pvt/issue"));
         EXPECT_EQ(config_a.batch_size, 4);
@@ -187,9 +190,10 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
                           base::ToVector<uint8_t>(decoded_proof_b),
                           future_expiration.time, 1};
 
-        EXPECT_TRUE(got->config().contains(origin_b));
+        const auto config_b_it = got->config().find(origin_b);
+        ASSERT_NE(config_b_it, got->config().end());
         const private_verification_tokens::IssuerConfig& config_b =
-            got->config().at(origin_b);
+            config_b_it->second;
         EXPECT_EQ(config_b.issuer_request_url,
                   GURL("https://b.example/pvt/issue"));
         EXPECT_EQ(config_b.batch_size, 3);
@@ -199,8 +203,6 @@ TEST_F(PrivateVerificationTokensInstallerPolicyTest, ParsesValidJson) {
                         url::Origin::Create(GURL("https://sub1.b.example")),
                         url::Origin::Create(GURL("https://sub2.b.example"))));
         EXPECT_EQ(config_b.deployment_id, "dep-b");
-
-        run_loop.Quit();
       };
 
   auto policy = std::make_unique<PrivateVerificationTokensInstallerPolicy>(

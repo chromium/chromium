@@ -208,8 +208,10 @@ class IntegrationTests : public ::testing::Test {
           std::string policy_type;
           ASSERT_TRUE(base::Base64Decode(file_name, &policy_type))
               << "Unexpected file name in policy cache: " << file_name;
-          ASSERT_TRUE(policy_value_map.contains(policy_type))
+          const auto it = policy_value_map.find(policy_type);
+          ASSERT_NE(it, policy_value_map.end())
               << "Unexpected persisted policy type: " << policy_type;
+          const std::string& expected_policy_value = it->second;
           ASSERT_TRUE(base::DirectoryExists(name))
               << "Cached policy type is not a directory";
 
@@ -227,8 +229,7 @@ class IntegrationTests : public ::testing::Test {
               policy_data.ParseFromString(cached_response.policy_data()));
 
           EXPECT_EQ(policy_data.policy_type(), policy_type);
-          EXPECT_EQ(policy_data.policy_value(),
-                    policy_value_map.at(policy_type));
+          EXPECT_EQ(policy_data.policy_value(), expected_policy_value);
         });
     EXPECT_TRUE(has_cached_policy_info);
   }
