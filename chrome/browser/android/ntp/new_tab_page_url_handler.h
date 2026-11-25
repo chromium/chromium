@@ -14,11 +14,24 @@ class BrowserContext;
 namespace chrome {
 namespace android {
 
-// Rewrites old-style Android NTP URLs and legacy bookmark URLs.
-//  - chrome://newtab              -> chrome-native://newtab
-//  - chrome-native://bookmarks/#  -> chrome-native://bookmarks/folder/
+// Rewrites Android native page URLs for NTP, History, and Bookmarks:
+//  - `chrome://newtab` -> `chrome-native://newtab` (or WebUI NTP on desktop
+//    Android when enabled)
+//  - `chrome-native://history` -> `chrome://history` (on desktop Android when
+//    enabled)
+//  - Translates bidirectionally between `chrome-native://bookmarks/` (including
+//    `/folder/<id>` and `#<id>`) and `chrome://bookmarks/` (including `?id=`
+//    and `?q=`) based on `kUseWebUiBookmarksAndroid`.
 bool HandleAndroidNativePageURL(GURL* url,
                                 content::BrowserContext* browser_context);
+
+// Reverse handler for `HandleAndroidNativePageURL()` that allows the displayed
+// virtual URL to update when rewriting between `chrome-native://` and
+// `chrome://` URLs for Bookmarks and History, while preserving
+// `chrome://newtab` virtual URLs.
+bool HandleAndroidNativePageURLReverse(
+    GURL* url,
+    content::BrowserContext* browser_context);
 
 }  // namespace android
 }  // namespace chrome

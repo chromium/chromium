@@ -350,4 +350,50 @@ public class NativePageTest {
         FrozenNativePage frozen = FrozenNativePage.freeze(page);
         Assert.assertEquals(initiatorOrigin, frozen.getInitiatorOrigin());
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USE_WEB_UI_BOOKMARKS_ANDROID)
+    public void testBookmarksPage_WebUiEnabled_ReturnsNone() {
+        for (String spec :
+                new String[] {"chrome://bookmarks/", "chrome-native://bookmarks/folder/123"}) {
+            GURL url = new GURL(spec);
+            for (boolean isIncognito : new boolean[] {false, true}) {
+                Assert.assertEquals(
+                        "WebUI bookmarks enabled should route to WebContents WebUI: " + spec,
+                        NativePageType.NONE,
+                        NativePage.nativePageType(
+                                url,
+                                /* candidatePage= */ null,
+                                isIncognito,
+                                /* preferReuse= */ false,
+                                /* hasPdfDownload= */ false));
+                Assert.assertFalse(
+                        "isNativePageUrl() should be false with WebUI bookmarks enabled: " + spec,
+                        NativePage.isNativePageUrl(url, isIncognito, /* hasPdfDownload= */ false));
+            }
+        }
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.USE_WEB_UI_BOOKMARKS_ANDROID)
+    public void testBookmarksPage_WebUiDisabled_ReturnsNative() {
+        for (String spec :
+                new String[] {"chrome://bookmarks/", "chrome-native://bookmarks/folder/123"}) {
+            GURL url = new GURL(spec);
+            for (boolean isIncognito : new boolean[] {false, true}) {
+                Assert.assertEquals(
+                        "WebUI bookmarks disabled should route to native BookmarkPage: " + spec,
+                        NativePageType.BOOKMARKS,
+                        NativePage.nativePageType(
+                                url,
+                                /* candidatePage= */ null,
+                                isIncognito,
+                                /* preferReuse= */ false,
+                                /* hasPdfDownload= */ false));
+                Assert.assertTrue(
+                        "isNativePageUrl() should be true with WebUI bookmarks disabled: " + spec,
+                        NativePage.isNativePageUrl(url, isIncognito, /* hasPdfDownload= */ false));
+            }
+        }
+    }
 }

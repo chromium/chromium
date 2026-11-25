@@ -1351,6 +1351,7 @@ source_set("unit_tests") {
     "//ui/base",
     "//ui/base:features",
     "//ui/menus",
+    "//ui/webui:buildflags",
     "//url",
   ]
 }

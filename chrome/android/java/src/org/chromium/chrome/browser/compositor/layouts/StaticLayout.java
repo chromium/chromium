@@ -319,6 +319,15 @@ public class StaticLayout extends Layout {
                     }
 
                     @Override
+                    public void onUrlUpdated(Tab tab) {
+                        if (mModel.get(LayoutTab.TAB_ID) == tab.getId()
+                                && canUseLiveTexture(tab)
+                                        != mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE)) {
+                            updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
+                        }
+                    }
+
+                    @Override
                     public void onBackgroundColorChanged(Tab tab, int color) {
                         updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
                     }

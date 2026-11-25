@@ -397,6 +397,74 @@ public class StaticLayoutUnitTest {
     }
 
     @Test
+    public void testTabOnUrlUpdated_NativeAndWebUiTransition() {
+        // Transition active tab from regular/WebUI URL to chrome-native:// URL.
+        doReturn(new GURL("chrome-native://bookmarks/")).when(mTab1).getUrl();
+        mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
+        assertFalse(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
+        verify(mTabContentManager)
+                .updateVisibleIds(eq(Collections.singletonList(TAB1_ID)), eq(TAB1_ID));
+
+        reset(mTabContentManager);
+
+        // Transition back to chrome:// WebUI URL.
+        doReturn(new GURL("chrome://bookmarks/")).when(mTab1).getUrl();
+        mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
+        assertTrue(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
+        verify(mTabContentManager).updateVisibleIds(eq(Collections.emptyList()), eq(TAB1_ID));
+    }
+
+    @Test
+    public void testTabOnUrlUpdated_IsNativePageToggle() {
+        // Toggle isNativePage() on a chrome:// URL (without changing URL scheme).
+        doReturn(new GURL("chrome://bookmarks/")).when(mTab1).getUrl();
+        doReturn(true).when(mTab1).isNativePage();
+        NativePage nativePage = mock(NativePage.class);
+        doReturn(BACKGROUND_COLOR).when(nativePage).getBackgroundColor();
+        doReturn(nativePage).when(mTab1).getNativePage();
+        mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
+        assertFalse(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
+        verify(mTabContentManager)
+                .updateVisibleIds(eq(Collections.singletonList(TAB1_ID)), eq(TAB1_ID));
+
+        reset(mTabContentManager);
+
+        doReturn(false).when(mTab1).isNativePage();
+        doReturn(null).when(mTab1).getNativePage();
+        mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
+        assertTrue(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
+        verify(mTabContentManager).updateVisibleIds(eq(Collections.emptyList()), eq(TAB1_ID));
+    }
+
+    @Test
+    public void testTabOnUrlUpdated_NoOpWhenLiveTextureUnchanged() {
+        doReturn(new GURL(TAB2_URL)).when(mTab1).getUrl();
+        mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
+        assertTrue(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
+        verify(mTabContentManager, never()).updateVisibleIds(any(), anyInt());
+    }
+
+    @Test
+    public void testTabOnUrlUpdated_NoOpForNonActiveTab() {
+        // mTab1 is active; updating mTab2's URL across scheme boundaries must not affect mModel.
+        doReturn(new GURL("chrome-native://bookmarks/")).when(mTab2).getUrl();
+        mTabObserverCaptor.getValue().onUrlUpdated(mTab2);
+        assertTrue(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
+        verify(mTabContentManager, never()).updateVisibleIds(any(), anyInt());
+    }
+
+    @Test
+    public void testTabOnUrlUpdated_NoOpWhenHiddenInvalidTabId() {
+        mStaticLayout.doneHiding();
+        assertEquals(Tab.INVALID_TAB_ID, mModel.get(LayoutTab.TAB_ID));
+
+        doReturn(new GURL("chrome-native://bookmarks/")).when(mTab1).getUrl();
+        mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
+        assertTrue(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
+        verify(mTabContentManager, never()).updateVisibleIds(any(), anyInt());
+    }
+
+    @Test
     public void testTabOnBackgroundColorChanged() {
         mModel.set(LayoutTab.BACKGROUND_COLOR, Color.WHITE);
 
