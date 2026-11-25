@@ -352,6 +352,7 @@ void PasswordProtectionRequest::SendRequestWithToken(
             "URL and referrer of the current page, password form action, and "
             "iframe structure."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://sb-ssl.google.com/safebrowsing/clientreport/login"
         }
         policy {
           cookies_allowed: YES
