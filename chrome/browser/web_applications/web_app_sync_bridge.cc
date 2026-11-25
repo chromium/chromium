@@ -188,7 +188,9 @@ void WebAppSyncBridge::SetProvider(base::PassKey<WebAppProvider> pass_key,
 
 [[nodiscard]] ScopedRegistryUpdate WebAppSyncBridge::BeginUpdate(
     CommitCallback callback) {
-  CHECK(database_->is_opened(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/589657736): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(database_->is_opened());
 
   CHECK(!is_in_update_, base::NotFatalUntil::M162);
   is_in_update_ = true;
