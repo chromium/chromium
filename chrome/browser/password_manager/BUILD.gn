@@ -441,7 +441,6 @@ source_set("unit_tests") {
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/passwords",
     "//chrome/browser/webauthn",
-    "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",
     "//components/actor/core",
@@ -521,9 +520,11 @@ source_set("unit_tests") {
       "//chrome/browser/glic/test_support",
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/signin",
+      "//chrome/browser/signin:identity_test_support",
       "//chrome/browser/signin:test_support",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/views:layout_provider",
       "//components/optimization_guide/core",
       "//components/optimization_guide/core:model_execution_test_support",
       "//components/password_manager/core/browser/actor_login:actor_login_service_impl",
@@ -541,6 +542,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin:identity_test_support",
       "//chrome/common:constants",
       "//components/metrics",
       "//components/password_manager/core/browser:test_support",
@@ -599,7 +601,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/passwords/password_change:password_change_toast",
       "//chrome/common",
       "//chrome/common:constants",
-      "//chrome/test:test_support",
+      "//chrome/test/base:ui_test_utils",
       "//components/affiliations/core/browser:test_support",
       "//components/autofill/content/browser",
       "//components/autofill/content/browser:test_support",
@@ -638,6 +640,7 @@ if (!is_android) {
       "//ui/base",
       "//ui/events:test_support",
       "//ui/views",
+      "//ui/views:test_support",
       "//url",
     ]
   }
@@ -676,7 +679,7 @@ if (!is_android) {
         "//chrome/browser/ui/passwords",
         "//chrome/browser/ui/passwords:impl",
         "//chrome/common:constants",
-        "//chrome/test:test_support",
+        "//chrome/test/base:ui_test_utils",
         "//chrome/test/user_education:impl",
         "//components/autofill/content/browser",
         "//components/autofill/content/browser:test_support",
@@ -707,6 +710,8 @@ if (!is_android) {
       if (!is_chromeos) {
         sources += [ "web_app_profile_switcher_interactive_uitest.cc" ]
         deps += [
+          "//chrome/browser/notifications:test_support",
+          "//chrome/browser/profiles:profile_test_util",
           "//chrome/browser/ui/profiles",
           "//chrome/browser/ui/web_applications",
           "//chrome/browser/ui/web_applications:test_support",
@@ -714,6 +719,7 @@ if (!is_android) {
           "//chrome/browser/web_applications",
           "//chrome/browser/web_applications:web_applications_test_support",
           "//chrome/test/base:chrome_test_utils",
+          "//chrome/test/base:interactive_test_utils",
         ]
       }
     }
@@ -740,7 +746,6 @@ if (!is_android) {
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui:tab_dialogs",
       "//chrome/browser/ui/passwords",
-      "//chrome/test:test_support",
       "//components/autofill/core/common",
       "//components/optimization_guide/core:features",
       "//components/password_manager/core/browser",
