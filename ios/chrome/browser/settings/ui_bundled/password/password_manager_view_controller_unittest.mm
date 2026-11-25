@@ -1382,6 +1382,9 @@ TEST_F(PasswordManagerViewControllerTest, ManageAccountHeaderIsBeingUpdated) {
 
   [GetPasswordManagerViewController() setSavingPasswordsToAccount:YES];
 
+  // The header should be updated without reloading the whole table, which
+  // would recreate the `TableViewModel`.
+  EXPECT_EQ(model, GetPasswordManagerViewController().tableViewModel);
   EXPECT_NSEQ(l10n_util::GetNSString(
                   IDS_IOS_SAVE_PASSWORDS_PASSKEYS_MANAGE_ACCOUNT_HEADER),
               header.text);

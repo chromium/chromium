@@ -811,14 +811,24 @@ void AppendSectionToModel(TableViewModel* model,
     return;
   }
   _savingPasswordsToAccount = savingPasswordsToAccount;
-  // No need to reload before the view is loaded, as loading the view triggers a
-  // data reload.
-  if (self.viewLoaded) {
-    [self populateManageAccountLinkItemContent];
-    // TODO(crbug.com/416468488): Check if it is possible to only update the
-    // items affected by this mutation instead of reloading data.
-    [self reloadData];
+  // No need to update the UI before the view is loaded, as loading the view
+  // triggers a data reload.
+  if (!self.viewLoaded) {
+    return;
   }
+  [self populateManageAccountLinkItemContent];
+
+  // Only the manage account header depends on `_savingPasswordsToAccount`. If
+  // its section isn't shown, the updated item is used once it's added.
+  const PasswordSectionIdentifier sectionIdentifier =
+      SectionIdentifierManageAccountHeader;
+  TableViewModel* model = self.tableViewModel;
+  if (![model hasSectionForSectionIdentifier:sectionIdentifier]) {
+    return;
+  }
+  NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
+  [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:section]
+                withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)setAllowsAddPassword:(BOOL)allowsAddPassword {
