@@ -48,6 +48,7 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -512,6 +513,8 @@ public class SeamlessSigninTest {
     @Test
     @MediumTest
     public void testDefaultAccountErrorScreenShown_swipingDownDismissesSheet() {
+        // TODO(https://crbug.com/590535524): Flaky with AccountManagerFacade source.
+        Assume.assumeTrue("https://crbug.com/590535524", mIsIdentityManagerSourceOfAccounts);
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
