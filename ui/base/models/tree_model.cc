@@ -5,7 +5,6 @@
 #include "ui/base/models/tree_model.h"
 
 #include <algorithm>
-#include <iterator>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -124,27 +123,6 @@ void TreeModel::NotifyObserverTreeNodeRemoved(TreeModelNode* parent,
 
 void TreeModel::NotifyObserverTreeNodeChanged(TreeModelNode* node) {
   observer_list_.Notify(&TreeModelObserver::TreeNodeChanged, this, node);
-}
-
-TreeModel::Nodes TreeModel::GetChildren(const TreeModelNode* parent) const {
-  CHECK(parent);
-  const auto& children = parent->children();
-  Nodes nodes;
-  nodes.reserve(children.size());
-  std::ranges::transform(children, std::back_inserter(nodes),
-                         &TreeModelNode::TreeNodes::value_type::get);
-  return nodes;
-}
-
-std::optional<size_t> TreeModel::GetIndexOf(TreeModelNode* parent,
-                                            TreeModelNode* child) const {
-  CHECK(parent);
-  return parent->GetIndexOf(child);
-}
-
-TreeModelNode* TreeModel::GetParent(TreeModelNode* node) const {
-  CHECK(node);
-  return node->parent();
 }
 
 void TreeModel::AddObserver(TreeModelObserver* observer) {

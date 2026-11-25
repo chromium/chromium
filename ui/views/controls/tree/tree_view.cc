@@ -188,8 +188,8 @@ void TreeView::StartEditing(TreeModelNode* node) {
   // Cancel the current edit.
   CancelEdit();
   // Make sure all ancestors are expanded.
-  if (model_->GetParent(node)) {
-    Expand(model_->GetParent(node));
+  if (node->parent()) {
+    Expand(node->parent());
   }
   // Select the node, else if the user commits the edit the selection reverts.
   SetSelectedNode(node);
@@ -335,9 +335,8 @@ void TreeView::ExpandAll(TreeModelNode* node) {
   // Expand the node.
   bool expanded_at_least_one = ExpandImpl(node);
   // And recursively expand all the children.
-  const auto& children = model_->GetChildren(node);
-  for (TreeModelNode* child : std::views::reverse(children)) {
-    if (ExpandImpl(child)) {
+  for (const auto& child : std::views::reverse(node->children())) {
+    if (ExpandImpl(child.get())) {
       expanded_at_least_one = true;
     }
   }
@@ -382,8 +381,9 @@ void TreeView::SetRootShown(bool root_shown) {
   }
   root_shown_ = root_shown;
   if (!root_shown_ && (selected_node_ == &root_ || active_node_ == &root_)) {
-    const auto& children = model_->GetChildren(root_.model_node());
-    TreeModelNode* first_child = children.empty() ? nullptr : children.front();
+    const auto& children = root_.model_node()->children();
+    TreeModelNode* first_child =
+        children.empty() ? nullptr : children.front().get();
     if (selected_node_ == &root_) {
       UpdateSelection(first_child, SelectionType::kActiveAndSelected);
     } else if (active_node_ == &root_) {
@@ -561,9 +561,8 @@ void TreeView::TreeNodeAdded(TreeModel* model,
     return;
   }
 
-  const auto& children = model_->GetChildren(parent);
   auto child = std::make_unique<InternalNode>();
-  ConfigureInternalNode(children[index], child.get());
+  ConfigureInternalNode(parent->children()[index].get(), child.get());
   std::unique_ptr<AXVirtualView> ax_view =
       CreateAndSetAccessibilityView(child.get());
   UpdateAccessiblePositionalProperties(child.get());
@@ -625,10 +624,10 @@ void TreeView::TreeNodeRemoved(TreeModel* model,
 
   if (reset_selected_node || reset_active_node) {
     // Replace invalidated states with the nearest valid node.
-    const auto& children = model_->GetChildren(parent);
+    const auto& children = parent->children();
     TreeModelNode* nearest_node = nullptr;
     if (!children.empty()) {
-      nearest_node = children[std::min(index, children.size() - 1)];
+      nearest_node = children[std::min(index, children.size() - 1)].get();
     } else if (parent != root_.model_node() || root_shown_) {
       nearest_node = parent;
     }
@@ -852,8 +851,8 @@ void TreeView::OnBlur() {
 void TreeView::UpdateSelection(TreeModelNode* model_node,
                                SelectionType selection_type) {
   CancelEdit();
-  if (model_node && model_->GetParent(model_node)) {
-    Expand(model_->GetParent(model_node));
+  if (model_node && model_node->parent()) {
+    Expand(model_node->parent());
   }
   if (model_node && model_node == root_.model_node() && !root_shown_) {
     return;  // Ignore requests for the root when not shown.
@@ -948,9 +947,9 @@ void TreeView::LoadChildren(InternalNode* node) {
   CHECK(node->children().empty(), base::NotFatalUntil::M163);
   CHECK(!node->loaded_children(), base::NotFatalUntil::M163);
   node->set_loaded_children(true);
-  for (auto* model_child : model_->GetChildren(node->model_node())) {
+  for (const auto& model_child : node->model_node()->children()) {
     std::unique_ptr<InternalNode> child = std::make_unique<InternalNode>();
-    ConfigureInternalNode(model_child, child.get());
+    ConfigureInternalNode(model_child.get(), child.get());
     std::unique_ptr<AXVirtualView> ax_view =
         CreateAndSetAccessibilityView(child.get());
     auto* added_node = node->Add(std::move(child));
@@ -992,8 +991,7 @@ void TreeView::UpdateAccessiblePositionalProperties(InternalNode* node) {
     // Per the ARIA Spec, aria-posinset and aria-setsize are 1-based
     // not 0-based.
     size_t pos_in_parent = node->parent()->GetIndexOf(node).value() + 1;
-    size_t sibling_size =
-        model_->GetChildren(node->parent()->model_node()).size();
+    size_t sibling_size = node->parent()->model_node()->children().size();
     accessibility_view->SetPosInSet(static_cast<int32_t>(pos_in_parent));
     accessibility_view->SetSetSize(static_cast<int32_t>(sibling_size));
   }
@@ -1187,7 +1185,7 @@ void TreeView::PaintRow(gfx::Canvas* canvas,
     }
   }
 
-  if (!model_->GetChildren(node->model_node()).empty()) {
+  if (!node->model_node()->children().empty()) {
     PaintExpandControl(canvas, bounds, node->is_expanded());
   }
 
@@ -1283,8 +1281,9 @@ TreeView::InternalNode* TreeView::GetInternalNodeForModelNode(
   if (model_node == root_.model_node()) {
     return &root_;
   }
+  CHECK(model_node);
   InternalNode* parent_internal_node =
-      GetInternalNodeForModelNode(model_->GetParent(model_node), create_type);
+      GetInternalNodeForModelNode(model_node->parent(), create_type);
   if (!parent_internal_node) {
     return nullptr;
   }
@@ -1295,8 +1294,7 @@ TreeView::InternalNode* TreeView::GetInternalNodeForModelNode(
     LoadChildren(parent_internal_node);
   }
   size_t index =
-      model_->GetIndexOf(parent_internal_node->model_node(), model_node)
-          .value();
+      parent_internal_node->model_node()->GetIndexOf(model_node).value();
   return parent_internal_node->children()[index].get();
 }
 
@@ -1506,7 +1504,8 @@ void TreeView::ExpandOrSelectChild() {
 }
 
 bool TreeView::ExpandImpl(TreeModelNode* model_node) {
-  TreeModelNode* parent = model_->GetParent(model_node);
+  CHECK(model_node);
+  TreeModelNode* parent = model_node->parent();
   if (!parent) {
     // Node should be the root.
     CHECK_EQ(root_.model_node(), model_node, base::NotFatalUntil::M163);
@@ -1541,7 +1540,7 @@ PrefixSelector* TreeView::GetPrefixSelector() {
 
 bool TreeView::IsPointInExpandControl(InternalNode* node,
                                       const gfx::Point& point) {
-  if (model_->GetChildren(node->model_node()).empty()) {
+  if (node->model_node()->children().empty()) {
     return false;
   }
 

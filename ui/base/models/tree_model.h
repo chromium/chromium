@@ -103,8 +103,6 @@ class COMPONENT_EXPORT(UI_BASE) TreeModelObserver {
 
 class COMPONENT_EXPORT(UI_BASE) TreeModel {
  public:
-  using Nodes = std::vector<TreeModelNode*>;
-
   explicit TreeModel(std::unique_ptr<TreeModelNode> root);
   TreeModel(const TreeModel&) = delete;
   TreeModel& operator=(const TreeModel&) = delete;
@@ -138,16 +136,6 @@ class COMPONENT_EXPORT(UI_BASE) TreeModel {
   void NotifyObserverTreeNodeAdded(TreeModelNode* parent, size_t index);
   void NotifyObserverTreeNodeRemoved(TreeModelNode* parent, size_t index);
   void NotifyObserverTreeNodeChanged(TreeModelNode* node);
-
-  // Returns the children of |parent|.
-  Nodes GetChildren(const TreeModelNode* parent) const;
-
-  // Returns the index of |child| in |parent|.
-  std::optional<size_t> GetIndexOf(TreeModelNode* parent,
-                                   TreeModelNode* child) const;
-
-  // Returns the parent of |node|, or NULL if |node| is the root.
-  TreeModelNode* GetParent(TreeModelNode* node) const;
 
   // Adds an observer of the model.
   void AddObserver(TreeModelObserver* observer);
