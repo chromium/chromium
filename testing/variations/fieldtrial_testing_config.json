@@ -16206,6 +16206,21 @@
             ]
         }
     ],
+    "PinUser32AndGdi32InAvailabilityCheck": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PinUser32AndGdi32InAvailabilityCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "PinweaverPasswords": [
         {
             "platforms": [
