@@ -179,7 +179,7 @@ void FormSubmissionTracker::ElementDisappeared(
 void FormSubmissionTracker::TrackAutofilledElement(FieldRendererId field_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   const WebFormControlElement element =
-      form_util::GetFormControlByRendererId(field_id);
+      form_util::GetFormControlByRendererId(GetDocument(), field_id);
   if (!element) {
     return;
   }
@@ -195,9 +195,10 @@ void FormSubmissionTracker::TrackAutofilledElement(FieldRendererId field_id) {
 void FormSubmissionTracker::TrackAutofilledElement(
     const base::flat_map<FieldRendererId, FormRendererId>&
         filled_fields_and_forms) {
-  auto field_is_owned = [](const std::pair<FieldRendererId, FormRendererId>&
-                               filled_field_and_form) {
-    return !form_util::GetFormByRendererId(filled_field_and_form.second)
+  auto field_is_owned = [&](const std::pair<FieldRendererId, FormRendererId>&
+                                filled_field_and_form) {
+    return !form_util::GetFormByRendererId(GetDocument(),
+                                           filled_field_and_form.second)
                 .IsNull();
   };
   if (auto it = std::ranges::find_if(filled_fields_and_forms, field_is_owned);
@@ -206,11 +207,9 @@ void FormSubmissionTracker::TrackAutofilledElement(
     if (base::FeatureList::IsEnabled(
             features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
       TrackAutofilledElement(filled_field_id);
-    } else if (WebFormElement form =
-                   form_util::GetFormByRendererId(filled_form_id)) {
+    } else if (WebFormElement form = form_util::GetFormByRendererId(
+                   GetDocument(), filled_form_id)) {
       UpdateLastInteractedElement(form);
-    } else {
-      NOTREACHED();
     }
   } else {
     for (const auto& [filled_field_id, filled_form_id] :
@@ -219,10 +218,9 @@ void FormSubmissionTracker::TrackAutofilledElement(
               features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
         TrackAutofilledElement(filled_field_id);
       } else if (WebFormControlElement control_element =
-                     form_util::GetFormControlByRendererId(filled_field_id)) {
+                     form_util::GetFormControlByRendererId(GetDocument(),
+                                                           filled_field_id)) {
         UpdateLastInteractedElement(control_element);
-      } else {
-        NOTREACHED();
       }
     }
   }
@@ -292,12 +290,12 @@ void FormSubmissionTracker::FormControlDidChangeImpl(
     FieldRendererId element_id,
     ElementDidChangeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
+  WebDocument document = GetDocument();
   WebFormControlElement element =
-      form_util::GetFormControlByRendererId(element_id);
+      form_util::GetFormControlByRendererId(document, element_id);
   // This function may be called asynchronously, so a navigation may have
   // happened. Since this event isn't submission-related, we can ignore it.
-  if (WebDocument document = GetDocument();
-      !document || !element || document != element.GetDocument()) {
+  if (!document || !element || document != element.GetDocument()) {
     return;
   }
   WebFormElement form = element.GetOwningFormForAutofill();
@@ -423,6 +421,12 @@ void FormSubmissionTracker::WillDetach(blink::DetachReason detach_reason) {
 void FormSubmissionTracker::WillSendSubmitEvent(const WebFormElement& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_submission_tracker_sequence_checker_);
   CHECK(form);
+  if (base::FeatureList::IsEnabled(features::kAutofillRequireSameDocument) &&
+      form.GetDocument() != GetDocument()) {
+    // The `form`'s `invalid` event handler may have moved the `form` element to
+    // another document.
+    return;
+  }
   // TODO(crbug.com/40281981): Figure out if this is still needed, and document
   // the reason, otherwise remove.
   UpdateLastInteractedElement(form);
@@ -534,7 +538,7 @@ void FormSubmissionTracker::FireSubmissionIfFormDisappear(
 bool FormSubmissionTracker::CanInferFormSubmitted() {
   if (last_interacted_.form_id) {
     WebFormElement last_interacted_form =
-        form_util::GetFormByRendererId(last_interacted_.form_id);
+        form_util::GetFormByRendererId(GetDocument(), last_interacted_.form_id);
     // Infer submission if the form was removed or all its elements are hidden.
     return !last_interacted_form ||
            std::ranges::none_of(
@@ -544,7 +548,7 @@ bool FormSubmissionTracker::CanInferFormSubmitted() {
   if (last_interacted_.formless_element_id) {
     WebFormControlElement last_interacted_formless_element =
         form_util::GetFormControlByRendererId(
-            last_interacted_.formless_element_id);
+            GetDocument(), last_interacted_.formless_element_id);
     // Infer submission if the field was removed or it's hidden.
     return !last_interacted_formless_element ||
            !last_interacted_formless_element.IsFocusable();
@@ -567,13 +571,14 @@ void FormSubmissionTracker::TrackElement(mojom::SubmissionSource source) {
       base::BindOnce(&FormSubmissionTracker::ElementWasHiddenOrRemoved,
                      base::Unretained(this), source);
 
+  WebDocument document = GetDocument();
   if (WebFormElement last_interacted_form =
-          form_util::GetFormByRendererId(last_interacted_.form_id)) {
+          form_util::GetFormByRendererId(document, last_interacted_.form_id)) {
     form_element_observer_ = blink::WebFormElementObserver::Create(
         last_interacted_form, std::move(callback));
   } else if (WebFormControlElement last_interacted_formless_element =
                  form_util::GetFormControlByRendererId(
-                     last_interacted_.formless_element_id)) {
+                     document, last_interacted_.formless_element_id)) {
     form_element_observer_ = blink::WebFormElementObserver::Create(
         last_interacted_formless_element, std::move(callback));
   }
@@ -695,28 +700,29 @@ void FormSubmissionTracker::UpdateLastInteractedElement(
     std::variant<WebFormElement, WebFormControlElement> element) {
   ResetLastInteractedElements();
 
-  // `document` is the WebDocument of `element`'s element. It is not
-  // necessarily the same as the current frame's document.
-  WebDocument document = std::visit(
+  std::visit(
       absl::Overload{
           [this](WebFormElement form) {
             CHECK(form);
             last_interacted_.form_id = form_util::GetFormRendererId(form);
-            return form.GetDocument();
           },
           [this](WebFormControlElement form_control) {
             CHECK(form_control);
             last_interacted_.formless_element_id =
                 form_util::GetFieldRendererId(form_control);
-            return form_control.GetDocument();
           },
       },
       element);
-  CHECK(document);
 
-  // We use the element's `document`, not the current frame's document, because
-  // `element_id` may refer to an element that is not in the current frame's
-  // document.
+  WebDocument document =
+      base::FeatureList::IsEnabled(features::kAutofillRequireSameDocument)
+          ? GetDocument()
+          : std::visit(
+                [](const auto& e) {
+                  CHECK(e);
+                  return e.GetDocument();
+                },
+                element);
   last_interacted_.saved_state = autofill_agent_->ExtractFormData(
       document, last_interacted_.form_id,
       CallTimerState::CallSite::kUpdateLastInteractedElement);

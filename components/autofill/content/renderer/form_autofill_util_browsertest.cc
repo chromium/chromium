@@ -329,14 +329,20 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   }
 
   std::optional<FormAndField> FindFormAndFieldForFormControlElement(
+      WebDocument document,
       WebFormControlElement control) {
     return form_util::FindFormAndFieldForFormControlElement(
-        control, [&](const WebDocument& document, FormRendererId form_id) {
-          return form_util::ExtractFormData(
-              document, form_id, field_data_manager(), kCallTimerStateDummy,
-              /*button_titles_cache=*/nullptr,
-              /*custom_controls=*/{});
+        document, control, [&](const WebDocument& doc, FormRendererId form_id) {
+          return form_util::ExtractFormData(doc, form_id, field_data_manager(),
+                                            kCallTimerStateDummy,
+                                            /*button_titles_cache=*/nullptr,
+                                            /*custom_controls=*/{});
         });
+  }
+
+  std::optional<FormAndField> FindFormAndFieldForFormControlElement(
+      WebFormControlElement control) {
+    return FindFormAndFieldForFormControlElement(GetDocument(), control);
   }
 
   FieldDataManager& field_data_manager() { return *field_data_manager_; }
@@ -689,7 +695,7 @@ TEST_P(InferLabelForElementParameterizedTest, InferLabelForElementTest) {
       GetFormControlElementById(GetDocument(), "target");
   FormFieldData field;
   field.set_renderer_id(GetFieldRendererId(form_target));
-  InferLabelForElementsForTesting(base::span_from_ref(field));
+  InferLabelForElementsForTesting(GetDocument(), base::span_from_ref(field));
   EXPECT_EQ(field.label(), expected_label);
 }
 
@@ -769,7 +775,7 @@ TEST_P(InferLabelSourceParameterizedTest, InferLabelSourceTest) {
       GetFormControlElementById(GetDocument(), "target");
   FormFieldData field;
   field.set_renderer_id(GetFieldRendererId(form_target));
-  InferLabelForElementsForTesting(base::span_from_ref(field));
+  InferLabelForElementsForTesting(GetDocument(), base::span_from_ref(field));
   EXPECT_EQ(field.label_source(), expected_label_source);
 }
 
@@ -1094,15 +1100,16 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
 
 TEST_F(FormAutofillUtilsTest, FindFormByUniqueId) {
   LoadHTML("<body><form id='form1'></form><form id='form2'></form></body>");
-  std::vector<WebFormElement> forms = GetDocument().Forms();
+  WebDocument doc = GetDocument();
+  std::vector<WebFormElement> forms = doc.Forms();
 
   for (const auto& form : forms)
-    EXPECT_EQ(form, GetFormByRendererId(GetFormRendererId(form)));
+    EXPECT_EQ(form, GetFormByRendererId(doc, GetFormRendererId(form)));
 
   // Expect null form element for non-existing form id.
   FormRendererId non_existing_form_id(GetFormRendererId(forms[0]).value() +
                                       1000);
-  EXPECT_FALSE(GetFormByRendererId(non_existing_form_id));
+  EXPECT_FALSE(GetFormByRendererId(doc, non_existing_form_id));
 }
 
 // Used in ParameterizedGetFormControlByRendererIdTest.
@@ -1136,7 +1143,8 @@ TEST_P(ParameterizedGetFormControlByRendererIdTest,
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(GetParam().expectation,
-            queried_field == GetFormControlByRendererId(queried_field_id));
+            queried_field ==
+                GetFormControlByRendererId(GetDocument(), queried_field_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1426,7 +1434,8 @@ TEST_F(FormAutofillUtilsTest,
   ASSERT_TRUE(input);
   ASSERT_NE(child_doc.GetFrame(), nullptr);
 
-  EXPECT_NE(FindFormAndFieldForFormControlElement(input), std::nullopt);
+  EXPECT_NE(FindFormAndFieldForFormControlElement(child_doc, input),
+            std::nullopt);
   EXPECT_TRUE(base::test::RunUntil([&] { return !child_doc.GetFrame(); }));
 }
 
@@ -2627,7 +2636,8 @@ TEST_F(FormAutofillUtilsTest, ContentEditableWritingSuggestionsFalseInherited) {
          </body>)");
   WebElement content_editable = GetDocument().GetElementById("my-id");
   ASSERT_TRUE(content_editable);
-  std::optional<FormData> form = FindFormForContentEditable(content_editable);
+  std::optional<FormData> form =
+      FindFormForContentEditable(GetDocument(), content_editable);
   ASSERT_EQ(form->fields().size(), 1u);
   const FormFieldData& field = form->fields()[0];
   EXPECT_FALSE(field.allows_writing_suggestions());
@@ -2640,7 +2650,8 @@ TEST_F(FormAutofillUtilsTest, ContentEditableWritingSuggestionsFalse) {
          </body>)");
   WebElement content_editable = GetDocument().GetElementById("my-id");
   ASSERT_TRUE(content_editable);
-  std::optional<FormData> form = FindFormForContentEditable(content_editable);
+  std::optional<FormData> form =
+      FindFormForContentEditable(GetDocument(), content_editable);
   ASSERT_EQ(form->fields().size(), 1u);
   const FormFieldData& field = form->fields()[0];
   EXPECT_FALSE(field.allows_writing_suggestions());
@@ -2659,7 +2670,8 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
          </body>)");
   WebElement content_editable = GetDocument().GetElementById("my-id");
   ASSERT_TRUE(content_editable);
-  std::optional<FormData> form = FindFormForContentEditable(content_editable);
+  std::optional<FormData> form =
+      FindFormForContentEditable(GetDocument(), content_editable);
   ASSERT_EQ(form->fields().size(), 1u);
   const FormFieldData& field = form->fields()[0];
   EXPECT_TRUE(form->renderer_id());
@@ -2687,7 +2699,8 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableAbridgedSuccess) {
          </body>)");
   WebElement content_editable = GetDocument().GetElementById("my-id");
   ASSERT_TRUE(content_editable);
-  std::optional<FormData> form = FindFormForContentEditable(content_editable);
+  std::optional<FormData> form =
+      FindFormForContentEditable(GetDocument(), content_editable);
   ASSERT_EQ(form->fields().size(), 1u);
   const FormFieldData& field = form->fields()[0];
   EXPECT_TRUE(form->renderer_id());
@@ -2729,10 +2742,10 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableFailures) {
          <textarea id=ce4 contenteditable><div contenteditable></textarea>
          </body>)");
   WebDocument doc = GetDocument();
-  EXPECT_FALSE(FindFormForContentEditable(doc.GetElementById("ce1")));
-  EXPECT_FALSE(FindFormForContentEditable(doc.GetElementById("ce2")));
-  EXPECT_FALSE(FindFormForContentEditable(doc.GetElementById("ce3")));
-  EXPECT_FALSE(FindFormForContentEditable(doc.GetElementById("ce4")));
+  EXPECT_FALSE(FindFormForContentEditable(doc, doc.GetElementById("ce1")));
+  EXPECT_FALSE(FindFormForContentEditable(doc, doc.GetElementById("ce2")));
+  EXPECT_FALSE(FindFormForContentEditable(doc, doc.GetElementById("ce3")));
+  EXPECT_FALSE(FindFormForContentEditable(doc, doc.GetElementById("ce4")));
 }
 
 // Tests that GetFieldRendererId() returns valid and unique `FieldRendererId`s
@@ -2759,7 +2772,7 @@ TEST_F(FormAutofillUtilsTest, GetFieldRendererId_ContentEditable) {
   EXPECT_EQ(id1, FieldRendererId(ce1.GetDomNodeId()));
   EXPECT_EQ(id2, FieldRendererId(ce2.GetDomNodeId()));
 
-  EXPECT_THAT(FindFormForContentEditable(ce1),
+  EXPECT_THAT(FindFormForContentEditable(GetDocument(), ce1),
               Optional(Property(
                   &FormData::fields,
                   ElementsAre(Property(&FormFieldData::renderer_id, id1)))));
@@ -3285,8 +3298,8 @@ TEST_P(FormAutofillUtilsTest_AdmissibleUrls,
 // Tests that <div contenteditable> can be extracted from admissible URLs.
 TEST_P(FormAutofillUtilsTest_AdmissibleUrls, FindFormForContentEditable) {
   LoadHTMLWithUrlOverride(R"(<div id=ce contenteditable></div>)", Url());
-  std::optional<FormData> form =
-      FindFormForContentEditable(GetDocument().GetElementById("ce"));
+  std::optional<FormData> form = FindFormForContentEditable(
+      GetDocument(), GetDocument().GetElementById("ce"));
   if (extractable()) {
     EXPECT_NE(form, std::nullopt);
   } else {
@@ -3468,10 +3481,12 @@ FormData FindForm(const blink::WebFormControlElement& element) {
       .last_dom_content_loaded = {},
   };
 
+  WebDocument document = element.GetDocument();
   if (auto p = form_util::FindFormAndFieldForFormControlElement(
-          element, [&](const WebDocument& document, FormRendererId form_id) {
+          document, element,
+          [&](const WebDocument& doc, FormRendererId form_id) {
             return form_util::ExtractFormData(
-                document, form_id, *base::MakeRefCounted<FieldDataManager>(),
+                doc, form_id, *base::MakeRefCounted<FieldDataManager>(),
                 kExtractFormDataCallTimerStateDummy,
                 /*button_titles_cache=*/nullptr, /*custom_controls=*/{});
           })) {
@@ -7951,6 +7966,218 @@ TEST_F(FormAutofillUtilsTest,
   ASSERT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"window.autofillEventCount",
                                                  &event_count));
   EXPECT_EQ(event_count, 1);
+}
+
+class FormAutofillUtilsCrossDocumentTest : public FormAutofillUtilsTest {
+ public:
+  void SetUp() override {
+    FormAutofillUtilsTest::SetUp();
+    LoadHTML(R"(
+      <form id="main_form">
+        <input id="main_input">
+      </form>
+      <input id="main_unowned">
+      <div id="main_ce" contenteditable></div>
+      <iframe id="iframe" srcdoc="
+        <form id='iframe_form'><input id='iframe_owned'></form>
+        <input id='iframe_unowned'>
+        <div id='iframe_custom'></div>
+        <div id='iframe_ce' contenteditable></div>
+      "></iframe>
+    )");
+    ASSERT_NE(GetDocument(), GetIframeDocumentById(GetDocument(), "iframe"));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillRequireSameDocument};
+};
+
+// Tests that `GetFormByRendererId()`, `GetFormControlByRendererId()`, and
+// `GetContentEditableByRendererId()` ignore elements belonging to another
+// document or when passed a null document.
+TEST_F(FormAutofillUtilsCrossDocumentTest, GetByRendererId) {
+  WebDocument main_doc = GetDocument();
+  WebDocument iframe_doc = GetIframeDocumentById(main_doc, "iframe");
+  WebFormElement main_form = GetFormElementById(main_doc, "main_form");
+  WebFormControlElement main_input =
+      GetFormControlElementById(main_doc, "main_input");
+  WebElement main_ce = GetElementById(main_doc, "main_ce");
+  WebFormElement iframe_form = GetFormElementById(iframe_doc, "iframe_form");
+  WebFormControlElement iframe_owned =
+      GetFormControlElementById(iframe_doc, "iframe_owned");
+  WebElement iframe_ce = GetElementById(iframe_doc, "iframe_ce");
+
+  // Same-document lookups succeed.
+  EXPECT_EQ(GetFormByRendererId(main_doc, GetFormRendererId(main_form)),
+            main_form);
+  EXPECT_EQ(
+      GetFormControlByRendererId(main_doc, GetFieldRendererId(main_input)),
+      main_input);
+  EXPECT_EQ(
+      GetContentEditableByRendererId(main_doc, GetFieldRendererId(main_ce)),
+      main_ce);
+  EXPECT_EQ(GetFormByRendererId(iframe_doc, GetFormRendererId(iframe_form)),
+            iframe_form);
+  EXPECT_EQ(
+      GetFormControlByRendererId(iframe_doc, GetFieldRendererId(iframe_owned)),
+      iframe_owned);
+  EXPECT_EQ(
+      GetContentEditableByRendererId(iframe_doc, GetFieldRendererId(iframe_ce)),
+      iframe_ce);
+
+  // Cross-document lookups return null.
+  EXPECT_FALSE(GetFormByRendererId(main_doc, GetFormRendererId(iframe_form)));
+  EXPECT_FALSE(
+      GetFormControlByRendererId(main_doc, GetFieldRendererId(iframe_owned)));
+  EXPECT_FALSE(
+      GetContentEditableByRendererId(main_doc, GetFieldRendererId(iframe_ce)));
+  EXPECT_FALSE(GetFormByRendererId(iframe_doc, GetFormRendererId(main_form)));
+  EXPECT_FALSE(
+      GetFormControlByRendererId(iframe_doc, GetFieldRendererId(main_input)));
+  EXPECT_FALSE(
+      GetContentEditableByRendererId(iframe_doc, GetFieldRendererId(main_ce)));
+
+  // Null-document lookups return null.
+  EXPECT_FALSE(
+      GetFormByRendererId(WebDocument(), GetFormRendererId(main_form)));
+  EXPECT_FALSE(GetFormControlByRendererId(WebDocument(),
+                                          GetFieldRendererId(main_input)));
+  EXPECT_FALSE(GetContentEditableByRendererId(WebDocument(),
+                                              GetFieldRendererId(main_ce)));
+}
+
+// Tests that `GetOwnedFormControls()` and `GetOwnedAutofillableFormControls()`
+// return only controls from the given document and reject cross-document or
+// null documents.
+TEST_F(FormAutofillUtilsCrossDocumentTest, GetOwnedFormControls) {
+  WebDocument main_doc = GetDocument();
+  WebDocument iframe_doc = GetIframeDocumentById(main_doc, "iframe");
+  WebFormElement main_form = GetFormElementById(main_doc, "main_form");
+  WebFormControlElement main_input =
+      GetFormControlElementById(main_doc, "main_input");
+  WebFormControlElement main_unowned =
+      GetFormControlElementById(main_doc, "main_unowned");
+  WebFormElement iframe_form = GetFormElementById(iframe_doc, "iframe_form");
+
+  EXPECT_THAT(GetOwnedFormControls(main_doc, main_form),
+              ElementsAre(main_input));
+  EXPECT_THAT(GetOwnedAutofillableFormControls(main_doc, main_form),
+              ElementsAre(main_input));
+  EXPECT_THAT(GetOwnedFormControls(main_doc, WebFormElement()),
+              ElementsAre(main_unowned));
+  EXPECT_THAT(GetOwnedAutofillableFormControls(main_doc, WebFormElement()),
+              ElementsAre(main_unowned));
+
+  EXPECT_THAT(GetOwnedFormControls(main_doc, iframe_form), IsEmpty());
+  EXPECT_THAT(GetOwnedAutofillableFormControls(main_doc, iframe_form),
+              IsEmpty());
+  EXPECT_THAT(GetOwnedFormControls(iframe_doc, main_form), IsEmpty());
+  EXPECT_THAT(GetOwnedAutofillableFormControls(iframe_doc, main_form),
+              IsEmpty());
+
+  EXPECT_THAT(GetOwnedFormControls(WebDocument(), main_form), IsEmpty());
+  EXPECT_THAT(GetOwnedFormControls(WebDocument(), WebFormElement()), IsEmpty());
+  EXPECT_THAT(GetOwnedAutofillableFormControls(WebDocument(), main_form),
+              IsEmpty());
+  EXPECT_THAT(GetOwnedAutofillableFormControls(WebDocument(), WebFormElement()),
+              IsEmpty());
+}
+
+// Tests that `ExtractFormData()` rejects a form from another document, rejects
+// a null document, and ignores custom form controls from another document.
+TEST_F(FormAutofillUtilsCrossDocumentTest, ExtractFormData) {
+  WebDocument main_doc = GetDocument();
+  WebDocument iframe_doc = GetIframeDocumentById(main_doc, "iframe");
+  WebFormElement main_form = GetFormElementById(main_doc, "main_form");
+
+  EXPECT_FALSE(ExtractFormData(GetFormElementById(iframe_doc, "iframe_form")));
+  EXPECT_FALSE(form_util::ExtractFormData(
+      WebDocument(), FormRendererId(), field_data_manager(),
+      kCallTimerStateDummy, /*button_titles_cache=*/nullptr,
+      /*custom_controls=*/{}));
+  EXPECT_FALSE(form_util::ExtractFormData(
+      WebDocument(), GetFormRendererId(main_form), field_data_manager(),
+      kCallTimerStateDummy, /*button_titles_cache=*/nullptr,
+      /*custom_controls=*/{}));
+
+  std::optional<FormData> extracted_main = ExtractFormData(
+      main_form, {CustomFormControl{.canonical_dom_node = GetElementById(
+                                        iframe_doc, "iframe_custom")}});
+  ASSERT_TRUE(extracted_main);
+  EXPECT_THAT(extracted_main->fields(),
+              ElementsAre(Property(&FormFieldData::renderer_id,
+                                   GetFieldRendererId(GetFormControlElementById(
+                                       main_doc, "main_input")))));
+}
+
+// Tests that `FindFormAndFieldForFormControlElement()` accepts same-document
+// elements and rejects cross-document or null documents.
+TEST_F(FormAutofillUtilsCrossDocumentTest,
+       FindFormAndFieldForFormControlElement) {
+  WebDocument main_doc = GetDocument();
+  WebDocument iframe_doc = GetIframeDocumentById(main_doc, "iframe");
+  WebFormControlElement main_input =
+      GetFormControlElementById(main_doc, "main_input");
+  WebFormControlElement main_unowned =
+      GetFormControlElementById(main_doc, "main_unowned");
+
+  EXPECT_TRUE(FindFormAndFieldForFormControlElement(main_doc, main_input));
+  EXPECT_TRUE(FindFormAndFieldForFormControlElement(main_doc, main_unowned));
+  EXPECT_FALSE(FindFormAndFieldForFormControlElement(
+      GetFormControlElementById(iframe_doc, "iframe_owned")));
+  EXPECT_FALSE(FindFormAndFieldForFormControlElement(
+      GetFormControlElementById(iframe_doc, "iframe_unowned")));
+  EXPECT_FALSE(
+      FindFormAndFieldForFormControlElement(WebDocument(), main_input));
+  EXPECT_FALSE(
+      FindFormAndFieldForFormControlElement(WebDocument(), main_unowned));
+}
+
+// Tests that `FindFormForContentEditable()` accepts same-document elements and
+// rejects cross-document or null inputs.
+TEST_F(FormAutofillUtilsCrossDocumentTest, FindFormForContentEditable) {
+  WebDocument main_doc = GetDocument();
+  WebDocument iframe_doc = GetIframeDocumentById(main_doc, "iframe");
+  WebElement main_ce = GetElementById(main_doc, "main_ce");
+
+  EXPECT_TRUE(FindFormForContentEditable(main_doc, main_ce));
+  EXPECT_FALSE(FindFormForContentEditable(
+      main_doc, GetElementById(iframe_doc, "iframe_ce")));
+  EXPECT_FALSE(FindFormForContentEditable(main_doc, WebElement()));
+  EXPECT_FALSE(FindFormForContentEditable(WebDocument(), main_ce));
+  EXPECT_FALSE(FindFormForContentEditable(WebDocument(), WebElement()));
+}
+
+// Tests that `ApplyFieldsAction()` fills only fields belonging to the given
+// document.
+TEST_F(FormAutofillUtilsCrossDocumentTest, ApplyFieldsAction) {
+  WebDocument main_doc = GetDocument();
+  WebDocument iframe_doc = GetIframeDocumentById(main_doc, "iframe");
+  WebFormControlElement main_input =
+      GetFormControlElementById(main_doc, "main_input");
+  WebFormControlElement iframe_owned =
+      GetFormControlElementById(iframe_doc, "iframe_owned");
+
+  FormFieldData main_field;
+  main_field.set_renderer_id(GetFieldRendererId(main_input));
+  main_field.set_value(u"main_value");
+  FormFieldData::FillData main_fill(main_field);
+  main_fill.is_autofilled = true;
+
+  FormFieldData iframe_field;
+  iframe_field.set_renderer_id(GetFieldRendererId(iframe_owned));
+  iframe_field.set_value(u"iframe_value");
+  FormFieldData::FillData iframe_fill(iframe_field);
+  iframe_fill.is_autofilled = true;
+
+  std::vector<std::pair<FieldRendererId, WebAutofillState>> filled =
+      form_util::ApplyFieldsAction(
+          main_doc, {main_fill, iframe_fill}, mojom::FormActionType::kFill,
+          mojom::ActionPersistence::kFill, field_data_manager());
+  EXPECT_THAT(filled, ElementsAre(Pair(GetFieldRendererId(main_input), _)));
+  EXPECT_EQ(main_input.Value().Utf16(), u"main_value");
+  EXPECT_EQ(iframe_owned.Value().Utf16(), u"");
 }
 
 }  // namespace

@@ -1088,6 +1088,11 @@ BASE_FEATURE(kAutofillReplaceFormElementObserver,
 BASE_FEATURE(kAutofillRequireFocusInFrameForSuggestions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch: When enabled, renderer-side Autofill functions require elements
+// to belong to the expected `blink::WebDocument` (e.g., when looking up
+// elements by renderer ID or extracting/finding forms).
+BASE_FEATURE(kAutofillRequireSameDocument, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Kill switch: If enabled, `AutofillPopupControllerImpl` and
 // `AutofillKeyboardAccessoryControllerImpl` reset `barrier_for_accepting_` when
 // datalist values are updated via `UpdateDataListValues()`.

@@ -301,7 +301,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   bool IsPrerendering() const;
 
   blink::WebFormControlElement last_queried_element() const {
-    return form_util::GetFormControlByRendererId(last_queried_element_id_);
+    return form_util::GetFormControlByRendererId(GetDocument(),
+                                                 last_queried_element_id_);
   }
 
   FieldDataManager& field_data_manager() const {
@@ -315,9 +316,11 @@ class AutofillAgent : public content::RenderFrameObserver,
   CustomFormControlScriptExecutor* custom_form_control_script_executor();
 
   // Extracts the `FormData` for the form with `form_id` (or the unowned form if
-  // `form_id.is_null()`) in `document`, including any custom form controls
-  // detected by `custom_form_control_script_executor()`.
-  std::optional<FormData> ExtractFormData(const blink::WebDocument& document,
+  // `form_id.is_null()`), including any custom form controls detected by
+  // `custom_form_control_script_executor()`.
+  // TODO(crbug.com/417307428): Remove the `document` parameter once
+  // `features::kAutofillRequireSameDocument` is cleaned up.
+  std::optional<FormData> ExtractFormData(blink::WebDocument document,
                                           FormRendererId form_id,
                                           CallTimerState::CallSite call_site);
 
@@ -479,8 +482,10 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // Extracts custom form controls in the current document and returns those
   // belonging to `form_id` (or the unowned form if `form_id.is_null()`).
+  // TODO(crbug.com/417307428): Remove the `document` parameter once
+  // `features::kAutofillRequireSameDocument` is cleaned up.
   std::vector<CustomFormControl> ExtractCustomFormControlsForForm(
-      const blink::WebDocument& document,
+      blink::WebDocument document,
       FormRendererId form_id);
 
   // Hides any currently showing Autofill popup.

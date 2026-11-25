@@ -281,8 +281,9 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill(
 
   // Discard the detection window if the anchor element disappeared or changed
   // substantially during the timer run.
+  blink::WebDocument document = web_frame_->GetDocument();
   blink::WebFormControlElement trigger_element =
-      form_util::GetFormControlByRendererId(trigger_element_id);
+      form_util::GetFormControlByRendererId(document, trigger_element_id);
   if (!trigger_element || !IsPossibleAnchorElement(trigger_element)) {
     return;
   }
@@ -309,7 +310,7 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill(
     // (2) Ignore fields that were removed from the DOM or are hidden (e.g.
     // hidden billing fields synced from shipping fields).
     blink::WebFormControlElement element =
-        form_util::GetFormControlByRendererId(record.field_id);
+        form_util::GetFormControlByRendererId(document, record.field_id);
     if (!element || !element.IsFocusable()) {
       continue;
     }

@@ -352,7 +352,7 @@ TEST_F(AutofillAgentTest, ExtractFormData_CustomFormControls) {
         }
       )"));
   std::optional<FormData> form = autofill_agent().ExtractFormData(
-      GetMainFrame()->GetDocument(), GetFormRendererIdById("f"),
+      GetDocument(), GetFormRendererIdById("f"),
       CallTimerState::CallSite::kExtractForm);
   EXPECT_THAT(form, Optional(HasFieldsWithIdAttributes(u"custom", u"input")));
 }

@@ -41,6 +41,7 @@
 #endif
 
 namespace blink {
+class WebDocument;
 class WebInputElement;
 }
 
@@ -109,6 +110,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Callers should not store the returned value longer than a function scope.
   mojom::PasswordManagerDriver* unsafe_driver();
+
+  blink::WebDocument GetDocument() const;
 
   // mojom::PasswordAutofillAgent:
   void ApplyFillDataOnParsingCompletion(
@@ -392,7 +395,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
     // Call this to notify the gatekeeper that the user interacted with the
     // page.
-    void OnUserGesture();
+    void OnUserGesture(const blink::WebDocument& document);
 
     // Call this to reset the gatekeeper on a new page navigation.
     void Reset();

@@ -27,6 +27,10 @@
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-forward.h"
 #include "third_party/blink/public/web/web_input_element.h"
 
+namespace blink {
+class WebDocument;
+}
+
 namespace autofill {
 
 class PasswordAutofillAgent;
@@ -143,6 +147,8 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
 
   // Callers should not store the returned value longer than a function scope.
   mojom::PasswordGenerationDriver* unsafe_driver();
+
+  blink::WebDocument GetDocument() const;
 
   // RenderFrameObserver:
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;

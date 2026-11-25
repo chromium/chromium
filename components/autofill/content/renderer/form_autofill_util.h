@@ -71,18 +71,16 @@ namespace form_util {
 // heuristics for a given form element.
 using ButtonTitlesCache = base::flat_map<FormRendererId, ButtonTitleList>;
 
-// Extracts FormData from the form element with `form_id`, or the unowned form
-// if `form_id.is_null()`. `custom_controls` are the custom form controls owned
-// by the form; they are converted to `FormFieldData` and merged with the
-// standard autofillable form controls in DOM order into the extracted
-// `FormData::fields()`.
+// Extracts FormData from the form element with `form_id` in `document`, or the
+// unowned form of `document` if `form_id.is_null()`. `custom_controls` are the
+// custom form controls owned by the form; they are converted to `FormFieldData`
+// and merged with the standard autofillable form controls in DOM order into the
+// extracted `FormData::fields()`.
 //
-// The document must be the one we want to extract fields from. In other words:
-// Do not blindly pass "some" WebDocument for `document`! If `form_id` is
-// non-null, `document` must obviously be the form element's document. As a
-// rule of thumb, avoid passing "the current frame's document" but instead,
-// whenever possible, pass WebForm[Control]Element::GetDocument() of the form or
-// of the field whose form that we want to extract.
+// `document` should be the frame/agent's current `WebDocument` (e.g.,
+// `AutofillAgent::GetDocument()`). Returns `std::nullopt` if `document` is null
+// or if `form_id` is non-null and does not refer to an accessible `<form>`
+// element in `document`.
 std::optional<FormData> ExtractFormData(
     const blink::WebDocument& document,
     FormRendererId form_id,
@@ -169,22 +167,28 @@ struct FormAndField {
   const FormFieldData& field;
 };
 
-// Extracts the FormData that represents the form of `element` using
-// `extract_form_fn`. If that form cannot be extracted (e.g., because it is too
-// large), falls back to a single-field form that contains `element`. If however
-// `element` is not autofillable, returns nullopt.
+// Extracts the FormData that represents the form of `element` in `document`
+// using `extract_form_fn`. If that form cannot be extracted (e.g., because it
+// is too large), falls back to a single-field form that contains `element`. If
+// `element` does not belong to `document`, is not accessible, or is not
+// autofillable, returns nullopt.
+// TODO(crbug.com/417307428): Remove the `const blink::WebDocument&` parameter
+// from `extract_form_fn` once `features::kAutofillRequireSameDocument` is
+// cleaned up.
 std::optional<FormAndField> FindFormAndFieldForFormControlElement(
+    blink::WebDocument document,
     const blink::WebFormControlElement& element,
     base::FunctionRef<std::optional<FormData>(const blink::WebDocument&,
                                               FormRendererId)> extract_form_fn);
 
 // Creates a FormData containing a single field out of a contenteditable
-// non-form element. The FormData is synthetic in the sense that it does not
-// correspond to any other DOM element. It is also conceptually distinct from
-// the unowned form (i.e., the collection of form control elements that aren't
-// owned by any form).
+// non-form element in `document`. The FormData is synthetic in the sense that
+// it does not correspond to any other DOM element. It is also conceptually
+// distinct from the unowned form (i.e., the collection of form control elements
+// that aren't owned by any form).
 //
-// Returns `std::nullopt` if `contenteditable`:
+// Returns `std::nullopt` if `content_editable`:
+// - is null or does not belong to `document`.
 // - is a WebFormElement; otherwise, there could be two FormData objects with
 //   identical renderer ID referring to different conceptual forms: the one for
 //   the contenteditable and an actual <form>.
@@ -198,6 +202,7 @@ std::optional<FormAndField> FindFormAndFieldForFormControlElement(
 // renderer ID. This is collision-free with the renderer IDs of any other form
 // in the document because DomNodeIds are unique among all DOM elements.
 std::optional<FormData> FindFormForContentEditable(
+    blink::WebDocument document,
     const blink::WebElement& content_editable);
 
 // Fills or previews the fields represented by `fields`.
@@ -267,19 +272,23 @@ ButtonTitleList GetButtonTitles(
     base::span<const blink::WebFormControlElement> owned_controls,
     ButtonTitlesCache* button_titles_cache);
 
-// Returns the form element by unique renderer id. Returns the null element if
-// there is no form with the |form_renderer_id|.
-blink::WebFormElement GetFormByRendererId(FormRendererId form_renderer_id);
+// Returns the accessible form element in `document` with unique renderer id
+// `form_renderer_id`, or the null element if none exists in `document`.
+blink::WebFormElement GetFormByRendererId(const blink::WebDocument& document,
+                                          FormRendererId form_renderer_id);
 
-// Returns the form control element by unique renderer id.
-// |form_to_be_searched| could be used as an optimization to only search for
-// elements in it, but doesn't guarantee that the returned element will belong
-// to it. Returns the null element if there is no element with the
-// |queried_form_control| renderer id.
+// Returns the accessible form control element in `document` with unique
+// renderer id `queried_form_control`, or the null element if none exists in
+// `document`.
 blink::WebFormControlElement GetFormControlByRendererId(
+    const blink::WebDocument& document,
     FieldRendererId queried_form_control);
 
+// Returns the accessible contenteditable element in `document` with unique
+// renderer id `field_renderer_id`, or the null element if none exists in
+// `document`.
 blink::WebElement GetContentEditableByRendererId(
+    const blink::WebDocument& document,
     FieldRendererId field_renderer_id);
 
 std::string GetAutocompleteAttribute(const blink::WebElement& element);
@@ -387,7 +396,8 @@ std::u16string GetAriaLabelForTesting(const blink::WebDocument& document,
                                       const blink::WebElement& element);
 std::u16string GetAriaDescriptionForTesting(const blink::WebDocument& document,
                                             const blink::WebElement& element);
-void InferLabelForElementsForTesting(base::span<FormFieldData> fields);
+void InferLabelForElementsForTesting(const blink::WebDocument& document,
+                                     base::span<FormFieldData> fields);
 std::u16string FindChildTextWithIgnoreListForTesting(
     const blink::WebNode& node,
     const std::set<blink::WebNode>& divs_to_skip);

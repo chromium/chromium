@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
@@ -15,9 +16,11 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_input_element.h"
@@ -32,18 +35,22 @@ namespace {
 // It looks for a hidden input field within the same form that has the
 // "email-verification-token" autocomplete attribute.
 blink::WebFormControlElement FindTokenFieldForEmailField(
+    blink::WebDocument document,
     FieldRendererId email_field_id) {
   // Get the email element and its owning form.
   blink::WebFormControlElement email_element =
-      form_util::GetFormControlByRendererId(email_field_id);
+      form_util::GetFormControlByRendererId(document, email_field_id);
   if (!email_element) {
     return blink::WebFormControlElement();
   }
   blink::WebFormElement form_element = email_element.GetOwningFormForAutofill();
 
   // Scan all control elements in the form to find the hidden token field.
-  for (const auto& control_element : form_util::GetOwnedFormControls(
-           email_element.GetDocument(), form_element)) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillRequireSameDocument)) {
+    document = email_element.GetDocument();
+  }
+  for (const auto& control_element :
+       form_util::GetOwnedFormControls(document, form_element)) {
     // The Email Verification specification requires `<input type="hidden">`
     // (`kInputHidden`). `<input hidden>` (HTML `hidden` attribute) is also
     // supported for resilience against common developer mistakes and markup
@@ -79,7 +86,7 @@ void EmailVerificationHandler::GetNonceForEmailVerification(
     FieldRendererId email_field_id,
     GetNonceForEmailVerificationCallback callback) {
   blink::WebFormControlElement token_element =
-      FindTokenFieldForEmailField(email_field_id);
+      FindTokenFieldForEmailField(agent_->GetDocument(), email_field_id);
   if (token_element) {
     // Read the element's internal cryptographic nonce rather than the `nonce`
     // content attribute, which is cleared upon insertion into a document with
@@ -100,7 +107,7 @@ void EmailVerificationHandler::StoreEmailVerificationToken(
   }
 
   blink::WebFormControlElement token_element =
-      FindTokenFieldForEmailField(email_field_id);
+      FindTokenFieldForEmailField(agent_->GetDocument(), email_field_id);
   if (!token_element) {
     return;
   }
@@ -116,10 +123,11 @@ void EmailVerificationHandler::WillSendSubmitEvent(
   if (email_verification_tokens_.empty() || form.IsNull()) {
     return;
   }
+  blink::WebDocument document = agent_->GetDocument();
 
   for (const auto& [email_field_id, info] : email_verification_tokens_) {
     blink::WebFormControlElement email_element =
-        form_util::GetFormControlByRendererId(email_field_id);
+        form_util::GetFormControlByRendererId(document, email_field_id);
     if (email_element && email_element.GetOwningFormForAutofill() == form) {
       // To prevent sharing an Email Verification Token (EVT) generated for a
       // different email address (e.g., if the user edited the email field,
@@ -134,7 +142,7 @@ void EmailVerificationHandler::WillSendSubmitEvent(
       }
 
       blink::WebFormControlElement element =
-          form_util::GetFormControlByRendererId(info.token_field_id);
+          form_util::GetFormControlByRendererId(document, info.token_field_id);
       if (!element) {
         continue;
       }

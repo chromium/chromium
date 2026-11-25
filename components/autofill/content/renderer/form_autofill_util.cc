@@ -226,13 +226,18 @@ template <typename WebElementType, typename RendererId>
   requires(std::derived_from<WebElementType, WebElement> &&
            (std::same_as<RendererId, FormRendererId> ||
             std::same_as<RendererId, FieldRendererId>))
-WebElementType GetElementByRendererId(RendererId renderer_id) {
+WebElementType GetElementByRendererId(const WebDocument& document,
+                                      RendererId renderer_id) {
   if (!renderer_id) {
     return WebElementType();
   }
   WebNode node = WebNode::FromDomNodeId(*renderer_id);
   WebElementType element = node.DynamicTo<WebElementType>();
-  return element && IsAccessible(element) && element.GetDocument().GetFrame()
+  return element && IsAccessible(element) &&
+                 (!base::FeatureList::IsEnabled(
+                      features::kAutofillRequireSameDocument)
+                      ? element.GetDocument().GetFrame() != nullptr
+                      : element.GetDocument() == document)
              ? element
              : WebElementType();
 }
@@ -1067,7 +1072,8 @@ std::optional<InferredLabel> InferLabelForElement(
   return std::nullopt;
 }
 
-void InferLabelForElements(base::span<FormFieldData> fields) {
+void InferLabelForElements(const WebDocument& document,
+                           base::span<FormFieldData> fields) {
   if (fields.empty()) {
     return;
   }
@@ -1076,7 +1082,7 @@ void InferLabelForElements(base::span<FormFieldData> fields) {
   for (FormFieldData& field : fields) {
     if (field.label().empty()) {
       WebFormControlElement control =
-          GetFormControlByRendererId(field.renderer_id());
+          GetFormControlByRendererId(document, field.renderer_id());
       if (!control) {
         continue;
       }
@@ -2066,6 +2072,7 @@ bool IsLikelyCaptchaIframe(const WebElement& element) {
 // `form_element` represents the form that the `fields` and `custom_controls`
 // are associated with - or null for the unowned form.
 std::vector<FormFieldData> MergeFieldsWithCustomFormControls(
+    const WebDocument& document,
     const WebFormElement& form_element,
     std::vector<FormFieldData> fields,
     base::span<const CustomFormControl> custom_controls) {
@@ -2074,9 +2081,19 @@ std::vector<FormFieldData> MergeFieldsWithCustomFormControls(
   }
   std::vector<FormFieldData> custom_fields =
       base::ToVector(custom_controls, &CustomFormControlToFormField);
-  auto to_web_node = [](const FormFieldData& field) {
-    return WebNode::FromDomNodeId(*field.renderer_id());
+  auto to_web_node = [&](const FormFieldData& field) -> WebNode {
+    return base::FeatureList::IsEnabled(features::kAutofillRequireSameDocument)
+               ? GetElementByRendererId<WebElement>(document,
+                                                    field.renderer_id())
+               : WebNode::FromDomNodeId(*field.renderer_id());
   };
+  if (base::FeatureList::IsEnabled(features::kAutofillRequireSameDocument)) {
+    auto is_missing = [&](const FormFieldData& field) {
+      return !to_web_node(field);
+    };
+    std::erase_if(fields, is_missing);
+    std::erase_if(custom_fields, is_missing);
+  }
   auto is_dom_predecessor = [&](const WebNode& x, const WebNode& y) {
     return IsDOMPredecessor(x, y, form_element);
   };
@@ -2096,6 +2113,7 @@ std::vector<FormFieldData> MergeFieldsWithCustomFormControls(
 // `child_frames[i].predecessor` to the field index of the last field in
 // `fields` that precedes the `i`th child frame.
 std::vector<FrameTokenWithPredecessor> ExtractChildFrames(
+    const WebDocument& document,
     const WebFormElement& form_element,
     base::span<const WebElement> iframe_elements,
     base::span<const FormFieldData> fields) {
@@ -2106,7 +2124,16 @@ std::vector<FrameTokenWithPredecessor> ExtractChildFrames(
   for (size_t i = 0; i < fields.size() && next_iframe < iframe_elements.size();
        ++i) {
     // Finds the first frame that succeeds `fields[i]`.
-    WebNode field = WebNode::FromDomNodeId(*fields[i].renderer_id());
+    WebNode field =
+        base::FeatureList::IsEnabled(features::kAutofillRequireSameDocument)
+            ? GetElementByRendererId<WebElement>(document,
+                                                 fields[i].renderer_id())
+            : WebNode::FromDomNodeId(*fields[i].renderer_id());
+    if (!field) {
+      // `field` may be null if layout updates during extraction disconnected
+      // the element.
+      continue;
+    }
     while (
         next_iframe < iframe_elements.size() &&
         !IsDOMPredecessor(field, iframe_elements[next_iframe], form_element)) {
@@ -2145,7 +2172,11 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     const FieldDataManager& field_data_manager,
     ButtonTitlesCache* button_titles_cache,
     base::span<const CustomFormControl> custom_controls) {
-  WebFormElement form_element = GetFormByRendererId(form_id);
+  if (base::FeatureList::IsEnabled(features::kAutofillRequireSameDocument) &&
+      !document) {
+    return std::nullopt;
+  }
+  WebFormElement form_element = GetFormByRendererId(document, form_id);
   if (form_id.is_null() != form_element.IsNull()) {
     return std::nullopt;
   }
@@ -2186,20 +2217,20 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   MatchLabelsAndFields(document, fields);
 
   // Infers field labels from other tags or <labels> without for="...".
-  InferLabelForElements(fields);
+  InferLabelForElements(document, fields);
 
   // TODO(crbug.com/582617845): Label inference only works for standard form
   // controls. Consider generalising it and calling
   // `MergeFieldsWithCustomFormControls()` earlier.
-  fields = MergeFieldsWithCustomFormControls(form_element, std::move(fields),
-                                             custom_controls);
+  fields = MergeFieldsWithCustomFormControls(
+      document, form_element, std::move(fields), custom_controls);
 
   // Extracts child frames of `form_element` (or `document` if unowned) and
   // computes their field predecessors in `fields`.
   std::vector<WebElement> iframe_elements =
       GetIframeElements(document, form_element);
   std::vector<FrameTokenWithPredecessor> child_frames =
-      ExtractChildFrames(form_element, iframe_elements, fields);
+      ExtractChildFrames(document, form_element, iframe_elements, fields);
 
   if (fields.empty() && iframe_elements.empty()) {
     return std::nullopt;
@@ -2474,6 +2505,10 @@ base::i18n::TextDirection GetTextDirectionForElement(
 std::vector<WebFormControlElement> GetOwnedFormControls(
     const WebDocument& document,
     const WebFormElement& form_element) {
+  if (base::FeatureList::IsEnabled(features::kAutofillRequireSameDocument) &&
+      (!document || (form_element && form_element.GetDocument() != document))) {
+    return {};
+  }
   std::vector<WebFormControlElement> form_controls;
   if (form_element) {
     form_controls = form_element.GetFormControlElements();  // nocheck
@@ -2510,6 +2545,7 @@ WebFormElement GetOutermostAncestorFormElement(WebNode n) {
 }
 
 std::optional<FormAndField> FindFormAndFieldForFormControlElement(
+    WebDocument document,
     const WebFormControlElement& element,
     base::FunctionRef<std::optional<FormData>(const WebDocument&,
                                               FormRendererId)>
@@ -2520,7 +2556,12 @@ std::optional<FormAndField> FindFormAndFieldForFormControlElement(
     return std::nullopt;
   }
 
-  WebDocument document = element.GetDocument();
+  if (!base::FeatureList::IsEnabled(features::kAutofillRequireSameDocument)) {
+    document = element.GetDocument();
+  } else if (element.GetDocument() != document) {
+    return std::nullopt;
+  }
+
   if (!IsAdmissibleUrl(document.Url())) {
     return std::nullopt;
   }
@@ -2627,8 +2668,13 @@ std::optional<FormAndField> FindFormAndFieldForFormControlElement(
 }
 
 std::optional<FormData> FindFormForContentEditable(
+    WebDocument document,
     const WebElement& content_editable) {
-  WebDocument document = content_editable.GetDocument();
+  if (!base::FeatureList::IsEnabled(features::kAutofillRequireSameDocument)) {
+    document = content_editable.GetDocument();
+  } else if (!content_editable || content_editable.GetDocument() != document) {
+    return std::nullopt;
+  }
 
   if (content_editable.DynamicTo<WebFormElement>() ||
       content_editable.DynamicTo<WebFormControlElement>() ||
@@ -2722,7 +2768,7 @@ std::vector<std::pair<FieldRendererId, WebAutofillState>> ApplyFieldsAction(
   // Step 0: Find the focused and the unfocused fields to fill.
   for (const FormFieldData::FillData& field : fields) {
     WebFormControlElement element =
-        GetFormControlByRendererId(field.renderer_id);
+        GetFormControlByRendererId(document, field.renderer_id);
     if (!element) {
       continue;
     }
@@ -2814,9 +2860,10 @@ void DispatchAutofillEvent(blink::WebDocument document,
   }
 
   std::vector<std::pair<WebFormControlElement, WebString>> autofill_values =
-      base::ToVector(fields, [](const FormFieldData::FillData& field) {
-        return std::pair(GetFormControlByRendererId(field.renderer_id),
-                         WebString::FromUtf16(field.value));
+      base::ToVector(fields, [&](const FormFieldData::FillData& field) {
+        return std::pair(
+            GetFormControlByRendererId(document, field.renderer_id),
+            WebString::FromUtf16(field.value));
       });
   std::erase_if(autofill_values, [&](const auto& p) {
     const WebFormControlElement& control = p.first;
@@ -2893,18 +2940,24 @@ ButtonTitleList GetButtonTitles(
   return button_titles;
 }
 
-WebFormElement GetFormByRendererId(FormRendererId form_renderer_id) {
-  return GetElementByRendererId<WebFormElement>(form_renderer_id);
+WebFormElement GetFormByRendererId(const WebDocument& document,
+                                   FormRendererId form_renderer_id) {
+  return GetElementByRendererId<WebFormElement>(document, form_renderer_id);
 }
 
 WebFormControlElement GetFormControlByRendererId(
+    const WebDocument& document,
     FieldRendererId queried_form_control) {
-  return GetElementByRendererId<WebFormControlElement>(queried_form_control);
+  return GetElementByRendererId<WebFormControlElement>(document,
+                                                       queried_form_control);
 }
 
-WebElement GetContentEditableByRendererId(FieldRendererId field_renderer_id) {
+WebElement GetContentEditableByRendererId(const WebDocument& document,
+                                          FieldRendererId field_renderer_id) {
   WebElement field =
-      WebNode::FromDomNodeId(*field_renderer_id).DynamicTo<WebElement>();
+      base::FeatureList::IsEnabled(features::kAutofillRequireSameDocument)
+          ? GetElementByRendererId<WebElement>(document, field_renderer_id)
+          : WebNode::FromDomNodeId(*field_renderer_id).DynamicTo<WebElement>();
   return field && field.IsContentEditable() ? field : WebElement();
 }
 
@@ -3133,8 +3186,9 @@ std::u16string GetAriaDescriptionForTesting(  // IN-TEST
 }
 
 void InferLabelForElementsForTesting(  // IN-TEST
+    const WebDocument& document,
     base::span<FormFieldData> fields) {
-  InferLabelForElements(fields);
+  InferLabelForElements(document, fields);
 }
 
 std::vector<WebFormControlElement> GetOwnedFormControlsForTesting(  // IN-TEST

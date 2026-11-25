@@ -470,7 +470,8 @@ void PasswordGenerationAgent::FoundFormEligibleForGeneration(
 
   if (mark_generation_element_) {
     WebFormControlElement new_password_input =
-        form_util::GetFormControlByRendererId(form.new_password_renderer_id);
+        form_util::GetFormControlByRendererId(GetDocument(),
+                                              form.new_password_renderer_id);
     if (new_password_input) {
       // Mark the input element with renderer id
       // |form.new_password_renderer_id|.
@@ -534,9 +535,7 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
         last_focused_password_element,
         generation_data->confirmation_password_renderer_id, /*form_cache=*/{});
   } else {
-    auto* frame = unsafe_render_frame();
-    blink::WebDocument document =
-        frame ? frame->GetWebFrame()->GetDocument() : WebDocument();
+    blink::WebDocument document = GetDocument();
     if (!document) {
       return false;
     }
@@ -888,7 +887,7 @@ void PasswordGenerationAgent::MaybeCreateCurrentGenerationItem(
 
     WebFormControlElement confirmation_password =
         form_util::GetFormControlByRendererId(
-            confirmation_password_renderer_id);
+            GetDocument(), confirmation_password_renderer_id);
 
     if (confirmation_password) {
       WebInputElement input =
@@ -927,6 +926,12 @@ mojom::PasswordGenerationDriver* PasswordGenerationAgent::unsafe_driver() {
   }
 
   return password_generation_client_.get();
+}
+
+WebDocument PasswordGenerationAgent::GetDocument() const {
+  return unsafe_render_frame() && unsafe_render_frame()->GetWebFrame()
+             ? unsafe_render_frame()->GetWebFrame()->GetDocument()
+             : WebDocument();
 }
 
 void PasswordGenerationAgent::LogMessage(Logger::StringID message_id) {
