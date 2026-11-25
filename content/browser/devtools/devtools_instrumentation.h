@@ -108,13 +108,6 @@ struct DevtoolsOverriddenOutputParams {
   bool accept_language_overridden = false;
 };
 
-// Applies network request overrides to the auction worklet's network
-// request. Will set `network_instrumentation_enabled` to true if there is a
-// network handler listening. Also handles whether cache is disabled or not.
-void ApplyAuctionNetworkRequestOverrides(FrameTreeNode* frame_tree_node,
-                                         network::ResourceRequest* request,
-                                         bool* network_instrumentation_enabled);
-
 // If this function overrides the `User-Agent` header value, it sets
 // `devtools_user_agent_overridden` to true; otherwise, false. If
 // this function overrides the `Accept-Language` header, it sets
@@ -321,23 +314,6 @@ void OnPrefetchActivationBeaconResponseReceived(
     const GURL& url,
     const network::mojom::URLResponseHead& head);
 void OnPrefetchActivationBeaconRequestComplete(
-    FrameTreeNodeId frame_tree_node_id,
-    const std::string& request_id,
-    const network::URLLoaderCompletionStatus& status);
-
-void OnAuctionWorkletNetworkRequestWillBeSent(
-    FrameTreeNodeId frame_tree_node_id,
-    const network::ResourceRequest& request,
-    base::TimeTicks timestamp);
-
-void OnAuctionWorkletNetworkResponseReceived(
-    FrameTreeNodeId frame_tree_node_id,
-    const std::string& request_id,
-    const std::string& loader_id,
-    const GURL& request_url,
-    const network::mojom::URLResponseHead& headers);
-
-void OnAuctionWorkletNetworkRequestComplete(
     FrameTreeNodeId frame_tree_node_id,
     const std::string& request_id,
     const network::URLLoaderCompletionStatus& status);

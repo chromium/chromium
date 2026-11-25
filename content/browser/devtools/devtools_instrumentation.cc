@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/to_string.h"
 #include "base/trace_event/traced_value.h"
 #include "base/unguessable_token.h"
 #include "components/download/public/common/download_create_info.h"
@@ -1854,25 +1853,6 @@ void ApplyExtraHeadersForWebSocket(
   }
 }
 
-void ApplyAuctionNetworkRequestOverrides(
-    FrameTreeNode* frame_tree_node,
-    network::ResourceRequest* request,
-    bool* network_instrumentation_enabled) {
-  bool disable_cache = false;
-  DevToolsAgentHostImpl* agent_host =
-      GetDevToolsAgentHostForNetworkOverrides(frame_tree_node);
-  if (!agent_host) {
-    return;
-  }
-  ApplyNetworkRequestOverrides(agent_host, request->url, &request->headers,
-                               &disable_cache, network_instrumentation_enabled,
-                               &request->skip_service_worker, nullptr, nullptr,
-                               nullptr);
-  if (disable_cache) {
-    request->load_flags = net::LOAD_BYPASS_CACHE;
-  }
-}
-
 void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
     const GURL& url,
@@ -2188,72 +2168,6 @@ WillCreateURLLoaderFactoryParams::ForWorkerMainScript(
   // the ancestor frame for the worker.
   return WillCreateURLLoaderFactoryParams::ForFrame(
       &ancestor_render_frame_host);
-}
-
-void OnAuctionWorkletNetworkRequestWillBeSent(
-    FrameTreeNodeId frame_tree_node_id,
-    const network::ResourceRequest& request,
-    base::TimeTicks timestamp) {
-  if (request.devtools_request_id->empty()) {
-    return;
-  }
-
-  network::mojom::URLRequestDevToolsInfoPtr request_info =
-      network::ExtractDevToolsInfo(request);
-
-  GURL initiator_url;
-  if (request.request_initiator.has_value()) {
-    initiator_url = request.request_initiator->GetURL();
-  }
-  // if we cannot get the loader_id from the parent, use an empty string.
-  std::string loader_id = "";
-  if (frame_tree_node_id) {
-    FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-
-    if (ftn == nullptr) {
-      return;
-    }
-    const std::optional<base::UnguessableToken>& devtools_navigation_token =
-        ftn->current_frame_host()->GetDevToolsNavigationToken();
-
-    if (devtools_navigation_token.has_value()) {
-      loader_id = devtools_navigation_token->ToString();
-    }
-
-    DispatchToAgents(
-        frame_tree_node_id, &protocol::NetworkHandler::RequestSent,
-        /*request_id=*/request.devtools_request_id.value(),
-        /*loader_id=*/loader_id, request.headers, *request_info,
-        /*initiator_type=*/protocol::Network::Initiator::TypeEnum::Other,
-        initiator_url,
-        /*initiator_devtools_request_id=*/"", /*frame_token=*/std::nullopt,
-        timestamp);
-  }
-}
-
-void OnAuctionWorkletNetworkResponseReceived(
-    FrameTreeNodeId frame_tree_node_id,
-    const std::string& request_id,
-    const std::string& loader_id,
-    const GURL& request_url,
-    const network::mojom::URLResponseHead& headers) {
-  network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
-      network::ExtractDevToolsInfo(headers);
-  DispatchToAgents(frame_tree_node_id,
-                   &protocol::NetworkHandler::ResponseReceived, request_id,
-                   loader_id, request_url,
-                   /*resource_type=*/protocol::Network::ResourceTypeEnum::Other,
-                   *head_info, base::ToString(frame_tree_node_id));
-}
-
-void OnAuctionWorkletNetworkRequestComplete(
-    FrameTreeNodeId frame_tree_node_id,
-    const std::string& request_id,
-    const network::URLLoaderCompletionStatus& status) {
-  DispatchToAgents(frame_tree_node_id,
-                   &protocol::NetworkHandler::LoadingComplete, request_id,
-                   /*resource_type=*/protocol::Network::ResourceTypeEnum::Other,
-                   status);
 }
 
 void OnNavigationRequestWillBeSent(
