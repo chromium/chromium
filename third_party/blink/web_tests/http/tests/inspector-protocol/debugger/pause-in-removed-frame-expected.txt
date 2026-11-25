@@ -1,0 +1,10 @@
+Tests pause functionality in detached frame.
+Set timer for test function.
+Script execution paused.
+Call stack:
+    0) window.removeIframe (pause-in-removed-frame.js:6)
+    1) onXhrLoad (:8000/inspector-protocol/debugger/resources/removed-frame-child.html:12)
+    2) sendRequest (:8000/inspector-protocol/debugger/resources/removed-frame-child.html:16)
+    3) testFunction (pause-in-removed-frame.js:13)
+Script execution resumed.
+
