@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_H_
 
+#include <memory>
+
 #include "services/webnn/public/cpp/webgpu_context_properties.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -22,6 +24,7 @@ namespace blink {
 
 class MLContextOptions;
 class ScriptState;
+class WebGraphicsContext3DProvider;
 
 // This class represents the "Machine Learning" object "navigator.ml" used by
 // the WebNN API. See https://www.w3.org/TR/webnn/#api-ml.
@@ -41,6 +44,13 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
   ScriptPromise<MLContext> createContext(ScriptState* state,
                                          MLContextOptions* option,
                                          ExceptionState& exception_state);
+
+  static void InitializeWebGpuContextFromProviderForTesting(
+      ExecutionContext* execution_context,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      webnn::WebGpuContextHelperOnceCallback callback,
+      std::unique_ptr<WebGraphicsContext3DProvider> context_provider);
+
  private:
   // Reset the remote of `WebNNContextProvider` if the remote is cut off from
   // its receiver.

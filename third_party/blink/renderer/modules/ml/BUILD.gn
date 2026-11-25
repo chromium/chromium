@@ -4,6 +4,7 @@
 
 import("//services/webnn/public/webnn_features.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
+import("//ui/gl/features.gni")
 
 blink_modules_sources("ml") {
   sources = [
@@ -87,6 +88,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    "//services/webnn/public/cpp",
     "//services/webnn/public/cpp:buildflags",
     "//services/webnn/public/mojom:mojom_blink",
     "//testing/gmock",
@@ -99,4 +101,14 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",
   ]
+
+  if (use_dawn) {
+    sources += [ "ml_test.cc" ]
+    deps += [
+      "//gpu/command_buffer/client:webgpu_interface",
+      "//third_party/dawn/include/dawn:headers",
+      "//third_party/dawn/src/dawn/native",
+      "//third_party/dawn/src/dawn/wire",
+    ]
+  }
 }

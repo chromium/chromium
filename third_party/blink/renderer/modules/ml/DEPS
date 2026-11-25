@@ -38,5 +38,8 @@ specific_include_rules = {
   # Required to check if SyncPointGraphValidation is enabled.
   "ml_tensor\\.cc" : [
     "+gpu/config/gpu_finch_features.h"
-  ]
+  ],
+  "ml_test\\.cc" : [
+    "+gpu/command_buffer/client/webgpu_interface_stub.h",
+  ],
 }

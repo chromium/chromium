@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/modules/ml/ml.h"
 
+#include <memory>
+#include <utility>
+
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "services/webnn/public/cpp/in_process_context_provider.h"
@@ -84,31 +87,78 @@ WebGPUExecutionContextToken GetExecutionContextToken(
   NOTREACHED();
 }
 
-void OnWebGpuDeviceRequested(
-    scoped_refptr<DawnControlClientHolder> dawn_control_client,
-    webnn::WebGpuContextHelperOnceCallback callback,
-    wgpu::Device device) {
-  wgpu::Device wgpu_device = std::move(device);
+// Move-only wrapper around a `DawnControlClientHolder` which ensures that
+// `Destroy()` is called before the last reference to the holder is dropped.
+class ScopedDawnControlClient {
+ public:
+  explicit ScopedDawnControlClient(
+      scoped_refptr<DawnControlClientHolder> dawn_control_client)
+      : dawn_control_client_(std::move(dawn_control_client)) {}
+
+  ScopedDawnControlClient(ScopedDawnControlClient&&) = default;
+  ScopedDawnControlClient& operator=(ScopedDawnControlClient&&) = delete;
+  ScopedDawnControlClient(const ScopedDawnControlClient&) = delete;
+  ScopedDawnControlClient& operator=(const ScopedDawnControlClient&) = delete;
+
+  ~ScopedDawnControlClient() {
+    if (dawn_control_client_) {
+      dawn_control_client_->Destroy();
+    }
+  }
+
+  DawnControlClientHolder* get() const { return dawn_control_client_.get(); }
+  DawnControlClientHolder* operator->() const {
+    return dawn_control_client_.get();
+  }
+
+ private:
+  scoped_refptr<DawnControlClientHolder> dawn_control_client_;
+};
+
+// Ref-counted wrapper around a `wgpu::Device` which ensures it is released
+// before `DawnControlClientHolder::Destroy()` tears down the underlying WebGPU
+// channel.
+class WebGpuContextHolder : public RefCounted<WebGpuContextHolder> {
+ public:
+  WebGpuContextHolder(ScopedDawnControlClient dawn_control_client,
+                      wgpu::Device device)
+      : dawn_control_client_(std::move(dawn_control_client)),
+        device_(std::move(device)) {}
+
+  WebGpuContextHolder(const WebGpuContextHolder&) = delete;
+  WebGpuContextHolder& operator=(const WebGpuContextHolder&) = delete;
+
+  void Flush() const { dawn_control_client_->Flush(); }
+
+ private:
+  friend class RefCounted<WebGpuContextHolder>;
+  ~WebGpuContextHolder() { device_ = nullptr; }
+
+  ScopedDawnControlClient dawn_control_client_;
+  wgpu::Device device_;
+};
+
+void OnWebGpuDeviceRequested(ScopedDawnControlClient dawn_control_client,
+                             webnn::WebGpuContextHelperOnceCallback callback,
+                             wgpu::Device device) {
+  WGPUDevice c_device = device.Get();
+  auto context_holder = base::MakeRefCounted<WebGpuContextHolder>(
+      std::move(dawn_control_client), std::move(device));
   std::move(callback).Run(webnn::WebGpuContextProperties{
-      // Explicitly retain references to both `DawnControlClientHolder` and
-      // `wgpu::Device` within this closure so that the underlying GPU
-      // command buffer channel and Dawn device remain alive throughout the
-      // entire lifetime of the WebNN context, while invoking Flush() when
-      // requested by LiteRT.
-      .webgpu_flush = blink::BindRepeating(
-          [](const scoped_refptr<DawnControlClientHolder>& dawn_control_client,
-             const wgpu::Device& /*wgpu_device*/) {
-            dawn_control_client->Flush();
-          },
-          dawn_control_client, wgpu_device),
-      .wgpu_device = wgpu_device.Get(),
+      // Explicitly retain `WebGpuContextHolder` within this closure so that the
+      // underlying GPU command buffer channel and Dawn device remain alive
+      // throughout the entire lifetime of the WebNN context, while invoking
+      // Flush() when requested by LiteRT and deferring context provider
+      // teardown via `DawnControlClientHolder::Destroy()`.
+      .webgpu_flush = blink::BindRepeating(&WebGpuContextHolder::Flush,
+                                           std::move(context_holder)),
+      .wgpu_device = c_device,
       .dawn_procs = &dawn::wire::client::GetProcs()});
 }
 
-void OnWebGpuAdapterRequested(
-    scoped_refptr<DawnControlClientHolder> dawn_control_client,
-    webnn::WebGpuContextHelperOnceCallback callback,
-    wgpu::Adapter adapter) {
+void OnWebGpuAdapterRequested(ScopedDawnControlClient dawn_control_client,
+                              webnn::WebGpuContextHelperOnceCallback callback,
+                              wgpu::Adapter adapter) {
   Vector<wgpu::FeatureName> required_features;
   // Enable FP16 shader execution.
   if (adapter.HasFeature(wgpu::FeatureName::ShaderF16)) {
@@ -141,24 +191,27 @@ void OnWebGpuAdapterRequested(
     dawn_desc.requiredLimits = &adapter_limits;
   }
 
-  auto dawn_control_client_for_device = dawn_control_client;
+  scoped_refptr<DawnControlClientHolder> dawn_control_client_for_flush =
+      dawn_control_client.get();
   auto* device_callback = BindWGPUOnceCallback(
-      [](scoped_refptr<DawnControlClientHolder> dawn_control_client,
+      [](ScopedDawnControlClient dawn_control_client,
          webnn::WebGpuContextHelperOnceCallback callback,
          wgpu::RequestDeviceStatus status, wgpu::Device device,
          wgpu::StringView /*message*/) {
         if (status != wgpu::RequestDeviceStatus::Success || !device) {
+          device = nullptr;
           std::move(callback).Run(webnn::WebGpuContextProperties());
           return;
         }
         OnWebGpuDeviceRequested(std::move(dawn_control_client),
                                 std::move(callback), std::move(device));
       },
-      dawn_control_client, std::move(callback));
+      std::move(dawn_control_client), std::move(callback));
   adapter.RequestDevice(&dawn_desc, wgpu::CallbackMode::AllowProcessEvents,
                         device_callback->UnboundCallback(),
                         device_callback->AsUserdata());
-  dawn_control_client_for_device->Flush();
+  adapter = nullptr;
+  dawn_control_client_for_flush->Flush();
 }
 
 void OnWebGpuContextProviderCreated(
@@ -174,8 +227,8 @@ void OnWebGpuContextProviderCreated(
   context_provider->WebGPUInterface()->SetWebGPUExecutionContextToken(
       execution_context_token);
 
-  auto dawn_control_client =
-      DawnControlClientHolder::Create(std::move(context_provider), task_runner);
+  ScopedDawnControlClient dawn_control_client(DawnControlClientHolder::Create(
+      std::move(context_provider), task_runner));
   wgpu::Instance instance = dawn_control_client->GetWGPUInstance();
   if (!instance) {
     std::move(callback).Run(webnn::WebGpuContextProperties());
@@ -185,24 +238,26 @@ void OnWebGpuContextProviderCreated(
   // TODO(crbug.com/524317888): Pass the requested power preference from
   // `MLContextOptions` to `dawn_options.powerPreference`.
   wgpu::RequestAdapterOptions dawn_options = {};
-  auto dawn_control_client_for_adapter = dawn_control_client;
+  scoped_refptr<DawnControlClientHolder> dawn_control_client_for_flush =
+      dawn_control_client.get();
   auto* adapter_callback = BindWGPUOnceCallback(
-      [](scoped_refptr<DawnControlClientHolder> dawn_control_client,
+      [](ScopedDawnControlClient dawn_control_client,
          webnn::WebGpuContextHelperOnceCallback callback,
          wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
          wgpu::StringView /*message*/) {
         if (status != wgpu::RequestAdapterStatus::Success || !adapter) {
+          adapter = nullptr;
           std::move(callback).Run(webnn::WebGpuContextProperties());
           return;
         }
         OnWebGpuAdapterRequested(std::move(dawn_control_client),
                                  std::move(callback), std::move(adapter));
       },
-      dawn_control_client, std::move(callback));
+      std::move(dawn_control_client), std::move(callback));
   instance.RequestAdapter(&dawn_options, wgpu::CallbackMode::AllowProcessEvents,
                           adapter_callback->UnboundCallback(),
                           adapter_callback->AsUserdata());
-  dawn_control_client_for_adapter->Flush();
+  dawn_control_client_for_flush->Flush();
 }
 
 // Asynchronously creates a WebGPU 3D graphics context provider, requests a GPU
@@ -243,8 +298,7 @@ void InitializeWebGpuAsyncContext(
 ML::ML(ExecutionContext* execution_context)
     : ExecutionContextClient(execution_context),
       in_process_context_provider_(execution_context),
-      webnn_context_provider_(execution_context) {
-}
+      webnn_context_provider_(execution_context) {}
 
 void ML::Trace(Visitor* visitor) const {
   visitor->Trace(webnn_context_provider_);
@@ -459,6 +513,21 @@ void ML::GetWebGpuContextHelper(
                                GetExecutionContextToken(execution_context),
                                std::move(callback));
 #endif  // !BUILDFLAG(USE_DAWN)
+}
+
+// static
+void ML::InitializeWebGpuContextFromProviderForTesting(
+    ExecutionContext* execution_context,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    webnn::WebGpuContextHelperOnceCallback callback,
+    std::unique_ptr<WebGraphicsContext3DProvider> context_provider) {
+#if !BUILDFLAG(USE_DAWN)
+  std::move(callback).Run(webnn::WebGpuContextProperties());
+#else
+  OnWebGpuContextProviderCreated(
+      std::move(task_runner), GetExecutionContextToken(execution_context),
+      std::move(callback), std::move(context_provider));
+#endif
 }
 
 }  // namespace blink
