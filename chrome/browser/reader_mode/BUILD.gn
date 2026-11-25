@@ -19,8 +19,8 @@ source_set("reader_mode") {
 
   if (is_android) {
     sources += [
-      "../android/reader_mode/reader_mode_ui_handle_android.h",
       "reader_mode_service_factory_android.h",
+      "reader_mode_ui_handle_android.h",
     ]
   }
 }
@@ -44,8 +44,8 @@ source_set("impl") {
 
   if (is_android) {
     sources += [
-      "../android/reader_mode/reader_mode_ui_handle_android.cc",
       "reader_mode_service_factory_android.cc",
+      "reader_mode_ui_handle_android.cc",
       "tab_utils_android.cc",
     ]
     deps += [

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_READER_MODE_READER_MODE_UI_HANDLE_ANDROID_H_
-#define CHROME_BROWSER_ANDROID_READER_MODE_READER_MODE_UI_HANDLE_ANDROID_H_
+#ifndef CHROME_BROWSER_READER_MODE_READER_MODE_UI_HANDLE_ANDROID_H_
+#define CHROME_BROWSER_READER_MODE_READER_MODE_UI_HANDLE_ANDROID_H_
 
 #include "base/memory/raw_ptr.h"
 #include "components/web_distiller/core/distiller_ui_handle.h"
@@ -35,4 +35,4 @@ class ReaderModeUIHandleAndroid : public web_distiller::DistillerUIHandle {
 
 }  // namespace reader_mode::android
 
-#endif  // CHROME_BROWSER_ANDROID_READER_MODE_READER_MODE_UI_HANDLE_ANDROID_H_
+#endif  // CHROME_BROWSER_READER_MODE_READER_MODE_UI_HANDLE_ANDROID_H_

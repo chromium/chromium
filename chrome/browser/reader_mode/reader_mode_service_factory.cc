@@ -20,7 +20,7 @@
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/reader_mode/reader_mode_ui_handle_android.h"
+#include "chrome/browser/reader_mode/reader_mode_ui_handle_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace reader_mode {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/reader_mode/reader_mode_ui_handle_android.h"
+#include "chrome/browser/reader_mode/reader_mode_ui_handle_android.h"
 
 #include "base/notimplemented.h"
 

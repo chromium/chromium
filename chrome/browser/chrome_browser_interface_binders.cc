@@ -105,9 +105,9 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/reader_mode/reader_mode_ui_handle_android.h"
 #include "chrome/browser/facilitated_payments/payment_link_handler_binder.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher.h"
+#include "chrome/browser/reader_mode/reader_mode_ui_handle_android.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom.h"
