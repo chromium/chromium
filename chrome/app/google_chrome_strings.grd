@@ -3531,6 +3531,42 @@ If this page isn’t working as expected, try allowing optimization.
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_DISMISS_ACTIVE_SEARCH_IN_TAB" desc="The label of the context menu item for dismissing the active search in the current tab and removing the contextual tasks ephemeral toolbar button when the side panel is closed.">
         Dismiss active search in this tab
       </message>
+      <if expr="not use_titlecase">
+        <message name="IDS_TAB_CXMENU_GOOGLE_SEARCH_SHARE" desc="The label of the tab context menu submenu for sharing the selected tab or tabs with Google Search. [ICU Syntax]">
+          {NUM_TABS, plural,
+            =1 {Share tab with Google Search}
+            other {Share # tabs with Google Search}}
+        </message>
+        <message name="IDS_TAB_CXMENU_GOOGLE_SEARCH_START_NEW_THREAD" desc="The label of the 'Start new thread with Google Search' item in the Google Search tab context submenu.">
+          Start new thread with Google Search
+        </message>
+        <message name="IDS_TAB_CXMENU_GOOGLE_SEARCH_UNSHARE" desc="The label of the tab context menu item for unsharing the selected tab or tabs with Google Search. [ICU Syntax]">
+          {NUM_TABS, plural,
+            =1 {Unshare tab with Google Search}
+            other {Unshare # tabs with Google Search}}
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_TAB_CXMENU_GOOGLE_SEARCH_SHARE" desc="In Title Case: The label of the tab context menu submenu for sharing the selected tab or tabs with Google Search. [ICU Syntax]">
+          {NUM_TABS, plural,
+            =1 {Share Tab with Google Search}
+            other {Share # Tabs with Google Search}}
+        </message>
+        <message name="IDS_TAB_CXMENU_GOOGLE_SEARCH_START_NEW_THREAD" desc="In Title Case: The label of the 'Start New Thread with Google Search' item in the Google Search tab context submenu.">
+          Start New Thread with Google Search
+        </message>
+        <message name="IDS_TAB_CXMENU_GOOGLE_SEARCH_UNSHARE" desc="In Title Case: The label of the tab context menu item for unsharing the selected tab or tabs with Google Search. [ICU Syntax]">
+          {NUM_TABS, plural,
+            =1 {Unshare Tab with Google Search}
+            other {Unshare # Tabs with Google Search}}
+        </message>
+      </if>
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GOOGLE_SEARCH_SHARING" desc="Extra tool tip text, when the tab's context is being shared with Google Search.">
+        You're sharing this tab with Google Search
+      </message>
+      <message name="IDS_TAB_AX_LABEL_GOOGLE_SEARCH_SHARING" is_accessibility_with_no_ui="true" desc="Accessibility label text, when the tab is sharing data with Google Search. Example: 'Wikipedia - You're sharing this tab with Google Search'">
+        <ph name="WINDOW_TITLE">$1<ex>Wikipedia</ex></ph> - You're sharing this tab with Google Search
+      </message>
       <!-- Enterprise device signals disclaimer -->
       <message name="IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_TITLE" desc="Title of an enterprise device signals collection disclaimer modal dialog. The dialog is shown on Chrome startup to managed Chrome users who have not previously acknowledged device signals collection.">
         Your work secured on Chrome
