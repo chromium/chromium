@@ -200,6 +200,7 @@
 <translation id="1547610699249301703">שיתוף סיסמאות</translation>
 <translation id="1554043146674176775">‏השבתת מצב AI</translation>
 <translation id="1554477036522844996">חלון חדש</translation>
+<translation id="1555014818414775661">הוספת תמונות</translation>
 <translation id="1557806604681757705">המחשב שלך</translation>
 <translation id="1558391695376153246">סגירת כרטיסיות מצב אנונימי</translation>
 <translation id="1560153516220021659">הכפתור המשני בסרגל הכלים מכווץ</translation>
@@ -360,6 +361,7 @@
 <translation id="2015722694326466240">רוצה להציג את הסיסמאות? תחילה עליך להגדיר קוד גישה במכשיר.</translation>
 <translation id="201759455285471444">הרחבה של קבוצת הכרטיסיות.</translation>
 <translation id="2022431790688770637">‏ניהול ההצעות של Gemini</translation>
+<translation id="2023265063803387188">‏‫Gemini לא זמין במצב פרטי</translation>
 <translation id="2031515492007104071">הרמה הבאה</translation>
 <translation id="2044394949148788042">פתיחה של תצוגת הכרטיסיות</translation>
 <translation id="2044681667265133332">החשבון <ph name="USER_EMAIL" /> מנוהל על ידי <ph name="HOSTED_DOMAIN" />, שיכול להיות שיש לו גישה לחלק מהמידע. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -912,7 +914,6 @@
 <translation id="3857113360369572832">‏פותחים את <ph name="BEGIN_BOLD" />הגדרות Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">שם</translation>
 <translation id="386224966259596343">‏יש אפשרות לשמור את הפרטים האלה ב-Wallet בפעם הבאה שממלאים טופס רלוונטי.</translation>
-<translation id="3868495844258915202">‏הצגת כתובת ה-URL המלאה</translation>
 <translation id="3870931306085184145">לא נשמרו סיסמאות בשביל <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">איך עושים זאת?</translation>
 <translation id="3878657761594430423">כלי לאיסוף גיליונות</translation>
@@ -1008,7 +1009,6 @@
 <translation id="4158491215857439601">מנהל הסיסמאות</translation>
 <translation id="4159430626587776301">הצגת ביקורות על מוצרים שעיינת בהם לאחרונה</translation>
 <translation id="4161488339191275792">אפשר ליצור קבוצות של כרטיסיות כדי לארגן את הכרטיסיות הפתוחות</translation>
-<translation id="4162616958842974809">הוספת תמונה</translation>
 <translation id="4163699139741158298">{count,plural, =1{הסימנייה נשמרה בתיקייה ‘{title}'. היא שמורה רק במכשיר הזה.}one{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}two{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}other{‫{count} סימניות נשמרו בתיקייה ‘{title}'. הן שמורות רק במכשיר הזה.}}</translation>
 <translation id="4164514562270305824">מחיקה אוטומטית של הורדות</translation>
 <translation id="4165986682804962316">הגדרות לאתרים</translation>

@@ -668,7 +668,6 @@
 <translation id="2126374524350484896">Приказ во PDF:</translation>
 <translation id="2127090458081644412">Лозинката е зачувана на уредов</translation>
 <translation id="2127747486437921899">Курзив</translation>
-<translation id="2129163794581571479">Овозможено од Gemini со „Лична интелигенција“. Вашите барања, наслови на страници и URL-адреси може да се прегледуваат за да се подобри „Подобрено автоматско пополнување“. <ph name="BEGIN_LINK" />Управувајте со поставките<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Шаблоните што ги назначивте не може да се применат бидејќи правилото DnsOverHttpsMode не е поставено.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Долниот лист со „Овозможете автоматско пополнување за плаќања“ е отворен на целосна висина.</translation>
@@ -1218,7 +1217,6 @@
 <translation id="3041584414879052436">Списокот со издавачи на „Купете сега, платете подоцна“ е затворен.</translation>
 <translation id="3041612393474885105">Информации за сертификат</translation>
 <translation id="3041835740069544003">Отсега Chrome може да открива и да пополнува повеќе формулари со „Попаметно разбирање на формулари“. За да се направи тоа, содржините и URL-адресите на страниците може да се обработуваат во приватен простор во облакот. Управувајте во „Поставки“.</translation>
-<translation id="3047054686095898948">Зачувајте ги вашите податоци во <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> и завршувајте ги работите побрзо, како пополнувањето формулари во производите на Google. Може <ph name="BEGIN_LINK" />да управувате со вашите податоци<ph name="END_LINK" /> во <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> за <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Историја на „Пристап оддалеку за Chrome“, вклучително временски печати, хостови и ID на сесии на клиент</translation>
 <translation id="3052868890529250114">Обично се поврзувате на сајтовите безбедно, но овој пат Chrome не можеше да користи безбедна врска. Напаѓач можеби се обидува да прислушува или да ја измени вашата мрежна врска. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> попуст на <ph name="PRODUCT_NAME" /></translation>
@@ -1589,7 +1587,6 @@
 <translation id="3655670868607891010">Доколку ова го гледате често, обидете се со овие <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Ревизија</translation>
 <translation id="3659521826520353662">Веб-сајтови дефинирани од администраторот што се отвораат, заедно со времето на отворање: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">Овозможено од Gemini со „Лична интелигенција“. <ph name="BEGIN_LINK" />Управувајте со поставките<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Пребарајте повеќе опции за купување од други продавници што го продаваат овој производ.</translation>
 <translation id="3664782872746246217">Клучни зборови:</translation>
 <translation id="3670030362669914947">Број</translation>
@@ -1868,7 +1865,6 @@
 <translation id="4112140312785995938">Премотај наназад</translation>
 <translation id="4114007503059268298">Дали сакате да ја зачувате картичкава во вашата сметка на Google и на уредов?</translation>
 <translation id="4114146879518089587">Продолжи кон сајтот</translation>
-<translation id="4115378294792113321">Магента</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Обемот на политиката не е поддржан.</translation>
@@ -3452,6 +3448,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">Најавени сте со сметката</translation>
 <translation id="6732087373923685049">камера</translation>
+<translation id="6736243959894955139">Адреса</translation>
 <translation id="6738516213925468394">Податоците се шифрирани со вашата <ph name="BEGIN_LINK" />лозинка за синхронизација<ph name="END_LINK" /> на <ph name="TIME" />. Внесете ја за да започне синхронизацијата.</translation>
 <translation id="6740851646645036700">Засега го достигнавте ограничувањето за помош за пишување. Обидете се повторно подоцна.</translation>
 <translation id="674375294223700098">Непозната грешка со сертификат на сервер.</translation>

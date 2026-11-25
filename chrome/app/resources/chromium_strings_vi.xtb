@@ -123,7 +123,6 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium đề xuất tạm dừng thẻ làm chậm trình duyệt của bạn}other{Chromium đề xuất tạm dừng các thẻ làm chậm trình duyệt của bạn}}</translation>
 <translation id="2307973900865360088">Ghim vào thanh Dock</translation>
 <translation id="2313870531055795960">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chromium. Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chrome cũng có thể gửi các URL đến tính năng Duyệt web an toàn, bao gồm cả các đoạn nội dung trên trang.</translation>
-<translation id="2350411688004301551">Chuyển sang Gemini Enterprise</translation>
 <translation id="2356070529366658676">Yêu cầu</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2361918034042471035">Tiện ích "<ph name="EXTENSION_NAME" />" muốn bạn đăng nhập vào Chromium</translation>
@@ -173,7 +172,6 @@
 <translation id="2846251086934905009">Lỗi cài đặt: Chưa hoàn tất trình cài đặt. Hoạt động cài đặt đã bị huỷ.</translation>
 <translation id="2850691299438350830">Giúp bạn an toàn trên Chrome và có thể dùng để cải thiện mức độ bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập</translation>
 <translation id="2885378588091291677">Trình quản lý tác vụ</translation>
-<translation id="2898830646167954300">Chuyển về trợ lý Gemini không được quản lý</translation>
 <translation id="2910007522516064972">Giới thiệu về &amp;Chromium</translation>
 <translation id="2915996080311180594">Khởi động lại sau</translation>
 <translation id="2933336679234709858">Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chromium vào Tài khoản Google của bạn.</translation>
@@ -359,7 +357,6 @@
 <translation id="4950660488495335294">Với các hồ sơ trên Chromium, bạn có thể tách biệt mọi nội dung của mình khi dùng trình duyệt này. Hãy tạo hồ sơ cho bạn bè và gia đình hoặc phân tách nội dung công việc với nội dung giải trí.</translation>
 <translation id="4992938037305302429">Tài khoản của bạn trong Chromium</translation>
 <translation id="5123973130450702873">Chromium cần có quyền theo dõi cử chỉ tay của bạn</translation>
-<translation id="5139546603444206048">Bạn có thể chuyển sang trợ lý Gemini ban đầu được liên kết với Tài khoản Google của bạn và không do <ph name="DOMAIN" /> quản lý. Câu trả lời sẽ không còn dựa trên các tệp hoặc dịch vụ do <ph name="DOMAIN" /> quản lý và nhật ký trò chuyện của bạn sẽ không được chuyển sang tài khoản mới. Tính năng này có thể không phù hợp để dùng cho công việc. Bạn cần chạy lại Chromium để chuyển đổi.</translation>
 <translation id="5141988424377517949">Gần đây bạn không truy cập trang web này. Chromium đã xoá <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Đăng nhập vào Chromium</translation>
 <translation id="5174969993834422967">Bạn thường chặn các thông báo. Để trang web này có thể gửi thông báo cho bạn, hãy nhấp vào biểu tượng thông báo ở góc bên phải của thanh vị trí.</translation>
@@ -713,7 +710,6 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8447525028100794994">Tìm hiểu thêm về cách tìm kiếm bằng tính năng Tìm kiếm hình ảnh trong Chromium</translation>
 <translation id="8453117565092476964">Tệp lưu trữ trình cài đặt bị hỏng hoặc không hợp lệ. Hãy tải xuống Chromium lại lần nữa.</translation>
 <translation id="8471947159125090285">Để sử dụng và lưu dữ liệu Chromium trong Tài khoản Google, hãy xác minh danh tính của bạn</translation>
-<translation id="8473541503127475913">Chạy lại Chromium để chuyển đổi</translation>
 <translation id="8482493977473846331">Hiện lời nhắc đăng nhập vào Chromium</translation>
 <translation id="8493179195440786826">Chromium đã lỗi thời</translation>
 <translation id="850264194101621529">Cảm ơn bạn đã chọn Chromium làm trình duyệt mặc định!</translation>
@@ -747,7 +743,6 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8906384069222226849">Chromium yêu cầu Windows 10 phiên bản 1809 trở lên.</translation>
 <translation id="8907580949721785412">Chromium đang cố gắng hiển thị mật khẩu. Nhập mật khẩu Windows của bạn để cho phép thực hiện việc này.</translation>
 <translation id="8910309838319708610">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi trong khi duyệt web bằng Chế độ AI của Tìm kiếm</translation>
-<translation id="8915682436012075700">Trình duyệt được quản lý này có thể sử dụng trợ lý Gemini được thiết lập <ph name="DOMAIN" /> cho công việc. Trợ lý này có thể tìm kiếm thông tin và đưa ra câu trả lời dựa trên các tệp và dịch vụ đã được phê duyệt của tổ chức này. Bạn không nên sử dụng tính năng này với hồ sơ cá nhân. Nhật ký trò chuyện sẽ không được chuyển sang tài khoản mới. Bạn cần chạy lại Chromium để chuyển đổi.</translation>
 <translation id="8932992523185907506">Chromium không còn là trình duyệt mặc định của bạn. Đặt Chromium làm trình duyệt mặc định?</translation>
 <translation id="8941642502866065432">Không thể cập nhật Chromium</translation>
 <translation id="8944232836376404813">Hành động này sẽ:

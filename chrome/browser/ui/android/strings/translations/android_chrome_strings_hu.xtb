@@ -150,7 +150,6 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="1543035591122163372">Jelentkezzen be, hogy hozzáférhessen a <ph name="DEVICE_TYPE" /> származó jelszavakhoz és sok máshoz</translation>
 <translation id="1544084554881119930">A fizetési módok és a címek nem lesznek titkosítva. A Chrome böngészési előzményei nem lesznek szinkronizálva.
 Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
-<translation id="1544826120773021464">Google-fiókjának kezeléséhez koppintson a „Fiók kezelése” gombra</translation>
 <translation id="1549000191223877751">Áthelyezés másik ablakba</translation>
 <translation id="1553358976309200471">A Chrome böngésző frissítése</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> a következőre: „<ph name="SEARCH_TERMS" />”</translation>
@@ -167,7 +166,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, tartalmat megosztó lap</translation>
 <translation id="1601378265092360672">A böngészési adatok közé tartoznak a böngészési előzmények, a cookie-k és egyéb webhelyadatok, a gyorsítótárazott képek és fájlok, valamint a megnyitott lapok.</translation>
 <translation id="160275202205869636">Bekapcsolva: a rendszer használja a Google-fiókjában lévő adatokat, és ment oda újakat. Kikapcsolva: a rendszer csak az eszközre menti az adatokat.</translation>
-<translation id="160403827062749147">Üdvözli a Google Chrome, a világ legbiztonságosabb böngészője</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 kijelölt elem eltávolítása}other{# kijelölt elem eltávolítása}}</translation>
 <translation id="1639239467298939599">Betöltés</translation>
 <translation id="1641113438599504367">Biztonságos Böngészés</translation>
@@ -866,7 +864,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4374192654218566997">\n\nA következő adatokat is eltávolíthatja erről az eszközről:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Ha a probléma továbbra is fennáll, más módon is próbálkozhat a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyen való folytatással.</translation>
-<translation id="4381351546374507910">Jelentkezzen be, hogy minden eszközén hozzáférhessen a könyvjelzőihez, jelszavaihoz és az automatikus kitöltési adatokhoz.</translation>
 <translation id="4384468725000734951">A Sogou használata a kereséshez</translation>
 <translation id="4387647248986092471">Autóprofil-zárolás létrehozása</translation>
 <translation id="4387817230000841154">Letöltések megnyitása</translation>
@@ -1908,7 +1905,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8210770465353466621">Itt láthatja majd a lapjait</translation>
 <translation id="8212799748012101103">A Keresés a lapok között megnyitása</translation>
 <translation id="8215740705341534369">Oldalsó lap</translation>
-<translation id="8218622182176210845">Fiók kezelése</translation>
 <translation id="8221985041778490865">Böngészési adatok törlése…</translation>
 <translation id="8223642481677794647">A hírcsatornakártya menüje</translation>
 <translation id="82296173028782770">Keresőkifejezés szerkesztése: <ph name="SEARCH_QUERY" /></translation>

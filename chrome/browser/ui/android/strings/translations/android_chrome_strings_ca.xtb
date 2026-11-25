@@ -150,7 +150,6 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1543035591122163372">Inicia la sessió per obtenir les teves contrasenyes i més de <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Les formes de pagament i les adreces no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.
 Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
-<translation id="1544826120773021464">Per gestionar el teu Compte de Google, toca el botó Gestiona el compte</translation>
 <translation id="1549000191223877751">Mou a l'altra finestra</translation>
 <translation id="1553358976309200471">Actualitza Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> per a <ph name="SEARCH_TERMS" /></translation>
@@ -167,7 +166,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, pestanya de compartició</translation>
 <translation id="1601378265092360672">Les dades de navegació inclouen l'historial de navegació, les galetes i altres dades de llocs web, les imatges i els fitxers desats a la memòria cau, i les pestanyes obertes</translation>
 <translation id="160275202205869636">Quan l'opció està activada, utilitza i desa les dades al teu Compte de Google. Quan està desactivada, les dades només es desen en aquest dispositiu.</translation>
-<translation id="160403827062749147">Et donem la benvinguda a Google Chrome, el navegador més segur del món</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Suprimeix 1 element seleccionat}other{Suprimeix # elements seleccionats}}</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
 <translation id="1641113438599504367">Navegació segura</translation>
@@ -866,7 +864,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4374192654218566997">\n\nTambé pots suprimir aquestes dades d'aquest dispositiu:</translation>
 <translation id="4378154925671717803">Telèfon</translation>
 <translation id="4380055775103003110">Si el problema persisteix, pots provar altres maneres de continuar a <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
-<translation id="4381351546374507910">Inicia la sessió per obtenir les teves adreces d'interès, contrasenyes i informació d'Emplenament automàtic en tots els teus dispositius.</translation>
 <translation id="4384468725000734951">S'utilitza Sogou per a la cerca</translation>
 <translation id="4387647248986092471">Crea un bloqueig de perfil al cotxe</translation>
 <translation id="4387817230000841154">Obre les baixades</translation>
@@ -1908,7 +1905,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8210770465353466621">Trobaràs les teves pestanyes aquí</translation>
 <translation id="8212799748012101103">Obre la cerca de pestanyes</translation>
 <translation id="8215740705341534369">Full lateral</translation>
-<translation id="8218622182176210845">Gestiona el compte</translation>
 <translation id="8221985041778490865">S'estan suprimint les dades de navegació</translation>
 <translation id="8223642481677794647">Menú de la targeta del tauler</translation>
 <translation id="82296173028782770">Edita la consulta de cerca: <ph name="SEARCH_QUERY" /></translation>

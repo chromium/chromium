@@ -143,7 +143,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2307973900865360088">Hou gedok</translation>
 <translation id="2309047409763057870">Dit is 'n sekondêre installering van Chrome en kan nie jou verstekblaaier gemaak word nie.</translation>
 <translation id="2345992953227471816">Chrome het bevind dat hierdie uitbreidings wanware bevat:</translation>
-<translation id="2350411688004301551">Skakel oor na Gemini Enterprise</translation>
 <translation id="2358140144860869442">Meld aan by Chrome om jou leeslys en meer op al jou toestelle te kry</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2403703063067034158">Aanskakelingsfout: ’n ander geval of opstelling word tans gebruik; probeer weer later.</translation>
@@ -201,7 +200,6 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="2876628302275096482">Kom meer te wete oor <ph name="BEGIN_LINK" />hoe Chrome jou data privaat hou<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Taakbestuurder</translation>
 <translation id="2888126860611144412">Meer oor Chrome</translation>
-<translation id="2898830646167954300">Skakel terug na jou onbestuurde Gemini-assistent</translation>
 <translation id="2915996080311180594">Herbegin later</translation>
 <translation id="2926952073016206995">Chrome het kameratoestemming vir hierdie werf nodig</translation>
 <translation id="2945997411976714835">Installeerfout: Die installeerderproses kon nie begin nie.</translation>
@@ -424,7 +422,6 @@ Sommige kenmerke kan dalk onbeskikbaar wees. Spesifiseer 'n ander profielgids of
 <translation id="5271833978500241046">Gebruik hulle saam met ander Gemini-kenmerke in Chrome</translation>
 <translation id="5320351714793324716">As jy webkoekies toelaat, kan Chrome hulle met vooraflaai gebruik</translation>
 <translation id="5321325624576443340">Google Lens is nie beskikbaar nie. Probeer later weer.</translation>
-<translation id="5336664042114176802">Jy kan oorskakel na die Gemini-assistent wat oorspronklik met jou Google-rekening geassosieer is en nie deur <ph name="DOMAIN" /> bestuur word nie. Antwoorde sal nie meer gegrond wees op lêers of dienste wat deur <ph name="DOMAIN" /> bestuur word nie en jou kletsgeskiedenis sal nie oorgedra word nie. Dit is dalk nie geskik om vir werk te gebruik nie. Chrome moet herbegin word om oor te skakel.</translation>
 <translation id="5346389065299425353">Voeg verskeie oortjies, lêers en nutsgoed by om dieper te soek</translation>
 <translation id="5353252989841766347">Voer wagwoorde van Chrome af uit</translation>
 <translation id="5368118228313795342">Ekstra kode: <ph name="EXTRA_CODE" />.</translation>
@@ -543,7 +540,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6438015621983209660">Verleng Verbeterde Veiligblaai met Chrome op jou foon</translation>
 <translation id="6442774133615368941">Koop, vertaal en identifiseer wat jy sien met jou kamera in die Chrome iOS-app</translation>
 <translation id="6446105560007692480">om met Chrome te soek of in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> te pasmaak</translation>
-<translation id="6447943657065463998">Hierdie bestuurde blaaier kan ’n Gemini-assistent gebruik wat deur <ph name="DOMAIN" /> vir werk opgestel is. Dit kan inligting soek en antwoorde verskaf wat op die organisasie se lêers en goedgekeurde dienste gegrond is. Dit word dalk nie aanbeveel om dit met ’n persoonlike profiel te gebruik nie. Kletsgeskiedenis sal nie oorgedra word nie. Chrome moet herbegin word om oor te skakel.</translation>
 <translation id="6448835208126432197">Gebruik kortpadsleutel om ’n deel van die skerm in Gemini in Chrome te kies.</translation>
 <translation id="6473905796280459355">Gaan na die Meer oor Chrome-bladsy</translation>
 <translation id="6481963882741794338">Koppel Chrome en ander Google-dienste vir personalisering en ander doeleindes</translation>
@@ -714,7 +710,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8064965390968184078">1. Klik <ph name="BUTTON_LABEL" /> hier onder
 2. Klik <ph name="BUTTON_2" /> in jou Windows-instellings
 3. Klik <ph name="BUTTON_3" /> in die Windows-kennisgewing om Chrome vir kitstoegang op jou taakbalk vas te speld</translation>
-<translation id="8066474819446975249">Herbegin Chrome om oor te skakel</translation>
 <translation id="8074398340364918139">Om ’n spesifieke Chrome-kenmerk of -uitbreiding te soek, moet jy sy kortpad in die adresbalk tik, gevolg deur jou gekose sleutelbordsleutel</translation>
 <translation id="8077579734294125741">Ander Chrome-profiele</translation>
 <translation id="8086881907087796310">Installering het misluk omdat jou rekenaar nie aan die minimum hardewarevereistes voldoen nie.</translation>

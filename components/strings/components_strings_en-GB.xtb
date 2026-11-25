@@ -667,7 +667,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2126374524350484896">PDF producer:</translation>
 <translation id="2127090458081644412">Password saved to this device</translation>
 <translation id="2127747486437921899">Italic</translation>
-<translation id="2129163794581571479">Powered by Gemini with Personal Intelligence. Your requests, page titles and URLs may be reviewed to improve enhanced autofill. <ph name="BEGIN_LINK" />Manage settings<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">The templates that you've specified may not be applied due to the DnsOverHttpsMode policy not being set.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2131006834960167560">Enable payments autofill opened at full height.</translation>
@@ -1217,7 +1216,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3041584414879052436">List of buy-now, pay-later issuers is closed.</translation>
 <translation id="3041612393474885105">Certificate Information</translation>
 <translation id="3041835740069544003">Chrome can now detect and fill more forms with Smarter form understanding. To do this, page content and URLs can be processed in a private space in the cloud. Manage in settings.</translation>
-<translation id="3047054686095898948">Save your info in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> and get things done faster, like filling forms across Google products. You can <ph name="BEGIN_LINK" />manage your info<ph name="END_LINK" /> in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> for <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Chrome Remote Desktop history, including timestamps, hosts and client session ids</translation>
 <translation id="3052868890529250114">You usually connect to sites securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> price drop on <ph name="PRODUCT_NAME" /></translation>
@@ -1588,7 +1586,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3655670868607891010">If you're seeing this frequently, try these <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revision</translation>
 <translation id="3659521826520353662">Which administrator-defined websites are visited and when: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">Powered by Gemini with Personal Intelligence. <ph name="BEGIN_LINK" />Manage settings<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Search more buying options from other shops that sell this product.</translation>
 <translation id="3664782872746246217">Keywords:</translation>
 <translation id="3670030362669914947">Number</translation>
@@ -1867,7 +1864,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4112140312785995938">Seek backwards</translation>
 <translation id="4114007503059268298">Do you want to save this card in your Google Account and on this device?</translation>
 <translation id="4114146879518089587">Continue to site</translation>
-<translation id="4115378294792113321">Magenta</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Policy scope is not supported.</translation>
@@ -3451,6 +3447,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">Signed in with account</translation>
 <translation id="6732087373923685049">camera</translation>
+<translation id="6736243959894955139">Address</translation>
 <translation id="6738516213925468394">Your data was encrypted with your <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" /> on <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="6740851646645036700">You've reached your writing help limit for now. Please try again later.</translation>
 <translation id="674375294223700098">Unknown server certificate error.</translation>

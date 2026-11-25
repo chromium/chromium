@@ -150,7 +150,6 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="1543035591122163372">Inicia sesión para acceder aos teus contrasinais e moito máis desde <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Os enderezos e os métodos de pago non se encriptarán. Tampouco se sincronizará o historial de navegación de Chrome.
 Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase de acceso. Google non recibirá nin almacenará a frase de acceso. Se a esqueces ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
-<translation id="1544826120773021464">Para xestionar a túa conta de Google, toca o botón Xestionar conta</translation>
 <translation id="1549000191223877751">Mover a outra ventá</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> para "<ph name="SEARCH_TERMS" />"</translation>
@@ -167,7 +166,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, pestana de uso compartido</translation>
 <translation id="1601378265092360672">Inclúen o teu historial de navegación, as cookies e outros datos dos sitios, as imaxes e os ficheiros almacenados na memoria caché e as pestanas abertas</translation>
 <translation id="160275202205869636">Se esta opción está activada, podes utilizar e gardar os datos na túa Conta de Google. Cando está desactivada, os datos gárdanse só no dispositivo.</translation>
-<translation id="160403827062749147">Dámosche a benvida a Google Chrome, o navegador máis seguro do mundo</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Quitar 1 elemento seleccionado}other{Quitar # elementos seleccionados}}</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
@@ -866,7 +864,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4374192654218566997">\n\nTamén podes quitar os seguintes deste dispositivo:</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4380055775103003110">Se o problema persiste, podes probar outras maneiras de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
-<translation id="4381351546374507910">Inicia sesión para poder acceder aos marcadores, contrasinais e información de autocompletar en todos os teus dispositivos.</translation>
 <translation id="4384468725000734951">Uso de Sogou para a busca</translation>
 <translation id="4387647248986092471">Crear un bloqueo do perfil do coche</translation>
 <translation id="4387817230000841154">Abrir Descargas</translation>
@@ -1908,7 +1905,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8210770465353466621">Aquí atoparás as túas pestanas</translation>
 <translation id="8212799748012101103">Abrir a función Busca de pestanas</translation>
 <translation id="8215740705341534369">Panel lateral</translation>
-<translation id="8218622182176210845">Xestiona a túa conta</translation>
 <translation id="8221985041778490865">Eliminando datos de navegación</translation>
 <translation id="8223642481677794647">Menú da tarxeta do feed</translation>
 <translation id="82296173028782770">Editar a busca: <ph name="SEARCH_QUERY" /></translation>

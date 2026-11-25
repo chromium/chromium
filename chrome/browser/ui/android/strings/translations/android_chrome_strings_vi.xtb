@@ -150,7 +150,6 @@
 <translation id="1543035591122163372">Đăng nhập để sử dụng mật khẩu và các nội dung khác trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Địa chỉ và phương thức thanh toán sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
 Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu trên Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
-<translation id="1544826120773021464">Để quản lý Tài khoản Google của bạn, hãy nhấn vào nút "Quản lý tài khoản"</translation>
 <translation id="1549000191223877751">Di chuyển đến cửa sổ khác</translation>
 <translation id="1553358976309200471">Cập nhật Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> cho "<ph name="SEARCH_TERMS" />"</translation>
@@ -167,7 +166,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Thẻ đang chia sẻ</translation>
 <translation id="1601378265092360672">Dữ liệu duyệt web bao gồm nhật ký duyệt web, cookie và dữ liệu khác của trang web, tệp và hình ảnh được lưu vào bộ nhớ đệm, cũng như các thẻ đang mở</translation>
 <translation id="160275202205869636">Khi bật, bạn có thể sử dụng và lưu dữ liệu trên Chrome vào Tài khoản Google của mình. Khi tắt, dữ liệu trên Chrome sẽ chỉ được lưu trên thiết bị này.</translation>
-<translation id="160403827062749147">Chào mừng bạn đến với Google Chrome, trình duyệt web an toàn nhất thế giới</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Xóa 1 mục đã chọn}other{Xóa # mục đã chọn}}</translation>
 <translation id="1639239467298939599">Đang tải</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
@@ -866,7 +864,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4374192654218566997">\n\nBạn cũng có thể xoá dữ liệu này khỏi thiết bị này:</translation>
 <translation id="4378154925671717803">Điện thoại</translation>
 <translation id="4380055775103003110">Nếu sự cố này vẫn tiếp diễn, bạn có thể thử các cách khác để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
-<translation id="4381351546374507910">Đăng nhập để sử dụng dấu trang, mật khẩu và thông tin Tự động điền trên mọi thiết bị của bạn.</translation>
 <translation id="4384468725000734951">Sử dụng Sogou để tìm kiếm</translation>
 <translation id="4387647248986092471">Tạo phương thức khoá hồ sơ cho ô tô</translation>
 <translation id="4387817230000841154">Mở Tệp đã tải xuống</translation>
@@ -1908,7 +1905,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8210770465353466621">Các thẻ của bạn sẽ xuất hiện ở đây</translation>
 <translation id="8212799748012101103">Mở tính năng Tìm thẻ</translation>
 <translation id="8215740705341534369">Bảng bên</translation>
-<translation id="8218622182176210845">Quản lý tài khoản của bạn</translation>
 <translation id="8221985041778490865">Đang xoá dữ liệu duyệt web</translation>
 <translation id="8223642481677794647">Trình đơn thẻ nguồn cấp dữ liệu</translation>
 <translation id="82296173028782770">Chỉnh sửa cụm từ tìm kiếm: <ph name="SEARCH_QUERY" /></translation>

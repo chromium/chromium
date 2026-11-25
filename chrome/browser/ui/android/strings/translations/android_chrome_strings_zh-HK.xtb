@@ -150,7 +150,6 @@
 <translation id="1543035591122163372">登入即可在<ph name="DEVICE_TYPE" />上取用密碼及其他內容</translation>
 <translation id="1544084554881119930">系統將不會加密你的付款方法和地址，Chrome 上的瀏覽記錄將不會同步。
 只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
-<translation id="1544826120773021464">如要管理 Google 帳戶，請輕按「管理帳戶」按鈕</translation>
 <translation id="1549000191223877751">移至其他視窗</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1554352084785952638">透過<ph name="SEARCH_ENGINE" />搜尋「<ph name="SEARCH_TERMS" />」</translation>
@@ -167,7 +166,6 @@
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />，分享緊內容嘅分頁</translation>
 <translation id="1601378265092360672">瀏覽資料包括瀏覽記錄、Cookie 和其他網站資料、快取圖片和檔案，以及已開啟的分頁</translation>
 <translation id="160275202205869636">開啟時，可在 Google 帳戶中使用及儲存資料。關閉後，資料只會儲存至此裝置。</translation>
-<translation id="160403827062749147">歡迎使用全球最安全的瀏覽器 - Google Chrome</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{移除 1 個已選取的項目}other{移除 # 個已選取的項目}}</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
@@ -866,7 +864,6 @@
 <translation id="4374192654218566997">\n\n你也可以從此裝置移除資料：</translation>
 <translation id="4378154925671717803">電話號碼</translation>
 <translation id="4380055775103003110">如果此問題持續發生，你可嘗試在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
-<translation id="4381351546374507910">登入帳戶即可在你的所有裝置上存取書籤、密碼和自動填入資料。</translation>
 <translation id="4384468725000734951">使用「搜狗」搜尋內容</translation>
 <translation id="4387647248986092471">建立汽車個人檔案鎖定</translation>
 <translation id="4387817230000841154">開啟下載檔案</translation>
@@ -1908,7 +1905,6 @@
 <translation id="8210770465353466621">分頁會在這裡顯示</translation>
 <translation id="8212799748012101103">開啟分頁搜尋</translation>
 <translation id="8215740705341534369">側邊工作表</translation>
-<translation id="8218622182176210845">管理您的帳戶</translation>
 <translation id="8221985041778490865">正在刪除瀏覽資料</translation>
 <translation id="8223642481677794647">資訊提供卡選單</translation>
 <translation id="82296173028782770">編輯搜尋查詢：<ph name="SEARCH_QUERY" /></translation>

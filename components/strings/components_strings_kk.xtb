@@ -667,7 +667,6 @@
 <translation id="2126374524350484896">PDF жасаушы:</translation>
 <translation id="2127090458081644412">Құпия сөз осы құрылғыға сақталды</translation>
 <translation id="2127747486437921899">Көлбеу</translation>
-<translation id="2129163794581571479">Gemini-дағы Personal Intelligence арқылы істейді. Сұрауларыңыз, бет атаулары мен URL мекенжайлары дұрысталған автотолтыру функциясын жақсарту үшін тексерілуі мүмкін. <ph name="BEGIN_LINK" />Параметрлерді басқару<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">DnsOverHttpsMode саясаты орнатылмағандықтан, сіз көрсеткен үлгілер қолданылмауы мүмкін.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">"Төлемдерді автотолтыру функциясы қосу" беті толық ашылды.</translation>
@@ -1217,7 +1216,6 @@
 <translation id="3041584414879052436">Бөліп төлеу қызметтері бар экран жабылған.</translation>
 <translation id="3041612393474885105">Сертификат ақпараты</translation>
 <translation id="3041835740069544003">Chrome енді үлгіні жақсырақ түсіну арқылы көбірек үлгіні анықтап, толтыра алады. Ол үшін бет контенті мен URL мекенжайлары бұлттағы құпия кеңістікте өңделуі мүмкін. "Параметрлер" бөлімінен реттеуге болады.</translation>
-<translation id="3047054686095898948">Ақпаратыңызды <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> қызметіне сақтау арқылы үлгілерді толтыру секілді Google өнімдеріндегі әрекеттерді жылдам орындай аласыз. <ph name="ACCOUNT" /> аккаунтыңызға арналған <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> қызметінде <ph name="BEGIN_LINK" />ақпаратыңызды басқара<ph name="END_LINK" /> аласыз.</translation>
 <translation id="305162504811187366">Chrome Remote Desktop тарихы, соның ішінде уақыт белгілері, хостар мен клиент сеансының идентификаторлары</translation>
 <translation id="3052868890529250114">Әдетте сайттарға қауіпсіз қосыласыз, бірақ Chrome бұл жолы қауіпсіз байланысты пайдалана алмады. Шабуылдаушы желі байланысыңызды ұстап қалуға немесе өзгертуге әрекет жасауы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> бағасы <ph name="PRICE_DROP" /> арзандады.</translation>
@@ -1587,7 +1585,6 @@
 <translation id="3655670868607891010">Бұны жиі көрсеңіз, <ph name="HELP_LINK" /> сілтемесін пайдаланып көріңіз.</translation>
 <translation id="3658742229777143148">Қарап шығу</translation>
 <translation id="3659521826520353662">Әкімшілер белгілейтін мына веб-сайттарға біреу кіргені және қашан кіргені: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">Gemini-дағы Personal Intelligence арқылы істейді. <ph name="BEGIN_LINK" />Параметрлерді басқару<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Осы тауар сатылатын басқа дүкендердегі көбірек сатып алу опциясын іздеу.</translation>
 <translation id="3664782872746246217">Кілтсөздер:</translation>
 <translation id="3670030362669914947">Нөмір</translation>
@@ -1866,7 +1863,6 @@
 <translation id="4112140312785995938">Артқа</translation>
 <translation id="4114007503059268298">Бұл картаны Google аккаунтына және осы құрылғыға сақтағыңыз келе ме?</translation>
 <translation id="4114146879518089587">Сайтқа кіру</translation>
-<translation id="4115378294792113321">Күлгін</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Саясат аясына қолдау көрсетілмеген.</translation>
@@ -3450,6 +3446,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">Аккаунтпен кірді</translation>
 <translation id="6732087373923685049">камера</translation>
+<translation id="6736243959894955139">Мекенжай</translation>
 <translation id="6738516213925468394">Деректеріңіз <ph name="TIME" /> күні <ph name="BEGIN_LINK" />синхрондаудың құпия фразасымен<ph name="END_LINK" /> шифрланған. Синхрондау үшін оны енгізіңіз.</translation>
 <translation id="6740851646645036700">"Жазуға көмек керек" шегіне жеттіңіз. Кейінірек қайталап көріңіз.</translation>
 <translation id="674375294223700098">Белгісіз сервер сертификатының қатесі.</translation>

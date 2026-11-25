@@ -141,7 +141,6 @@
 <translation id="2307973900865360088">Ghim vào thanh Dock</translation>
 <translation id="2309047409763057870">Đây là cài đặt thứ cấp của Google Chrome và không thể trở thành trình duyệt mặc định của bạn.</translation>
 <translation id="2345992953227471816">Chrome nhận thấy rằng các tiện ích này chứa phần mềm độc hại:</translation>
-<translation id="2350411688004301551">Chuyển sang Gemini Enterprise</translation>
 <translation id="2358140144860869442">Để sử dụng danh sách đọc và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2403703063067034158">Lỗi khi khởi động: một phiên bản thiết lập khác đang chạy, vui lòng thử lại sau.</translation>
@@ -199,7 +198,6 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="2876628302275096482">Tìm hiểu thêm về <ph name="BEGIN_LINK" />cách Chrome bảo mật dữ liệu của bạn<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Trình quản lý tác vụ</translation>
 <translation id="2888126860611144412">Giới thiệu về Chrome</translation>
-<translation id="2898830646167954300">Chuyển về trợ lý Gemini không được quản lý</translation>
 <translation id="2915996080311180594">Khởi động lại sau</translation>
 <translation id="2926952073016206995">Chrome cần có quyền truy cập máy ảnh đối với trang web này</translation>
 <translation id="2945997411976714835">Lỗi cài đặt: Trình cài đặt không thể bắt đầu quá trình.</translation>
@@ -422,7 +420,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5271833978500241046">Sử dụng các kỹ năng này cùng với các tính năng khác của Gemini trong Chrome</translation>
 <translation id="5320351714793324716">Nếu bạn cho phép cookie thì Chrome có thể dùng các cookie này khi tải trước</translation>
 <translation id="5321325624576443340">Không dùng được Google Ống kính. Hãy thử lại sau.</translation>
-<translation id="5336664042114176802">Bạn có thể chuyển sang trợ lý Gemini ban đầu được liên kết với Tài khoản Google của bạn và không do <ph name="DOMAIN" /> quản lý. Câu trả lời sẽ không còn dựa trên các tệp hoặc dịch vụ do <ph name="DOMAIN" /> quản lý và nhật ký trò chuyện của bạn sẽ không được chuyển sang tài khoản mới. Tính năng này có thể không phù hợp để dùng cho công việc. Bạn cần chạy lại Chrome để chuyển đổi.</translation>
 <translation id="5346389065299425353">Mở rộng phạm vi tìm kiếm bằng cách thêm nhiều thẻ, tệp và công cụ</translation>
 <translation id="5353252989841766347">Xuất mật khẩu từ Chrome</translation>
 <translation id="5368118228313795342">Mã bổ sung: <ph name="EXTRA_CODE" />.</translation>
@@ -539,7 +536,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6438015621983209660">Mở rộng phạm vi của tính năng Duyệt web an toàn có tăng cường bảo vệ với Chrome trên điện thoại</translation>
 <translation id="6442774133615368941">Mua sắm, dịch văn bản và nhận dạng những thứ bạn thấy bằng camera trên ứng dụng Chrome dành cho iOS</translation>
 <translation id="6446105560007692480">để tìm kiếm bằng Chrome hoặc tuỳ chỉnh trong phần <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" /></translation>
-<translation id="6447943657065463998">Trình duyệt được quản lý này có thể sử dụng trợ lý Gemini được thiết lập <ph name="DOMAIN" /> cho công việc. Trợ lý này có thể tìm kiếm thông tin và đưa ra câu trả lời dựa trên các tệp và dịch vụ đã được phê duyệt của tổ chức này. Bạn không nên sử dụng tính năng này với hồ sơ cá nhân. Nhật ký trò chuyện sẽ không được chuyển sang tài khoản mới. Bạn cần chạy lại Chrome để chuyển đổi.</translation>
 <translation id="6448835208126432197">Để chọn một phần màn hình trong Gemini trong Chrome, hãy dùng phím tắt.</translation>
 <translation id="6473905796280459355">Chuyển đến trang Giới thiệu về Chrome</translation>
 <translation id="6481963882741794338">Liên kết Chrome và các dịch vụ khác của Google cho mục đích cá nhân hoá và các mục đích khác</translation>
@@ -710,7 +706,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8064965390968184078">1. Nhấp vào <ph name="BUTTON_LABEL" /> bên dưới
 2. Nhấp vào <ph name="BUTTON_2" /> trong phần cài đặt Windows
 3. Nhấp vào <ph name="BUTTON_3" /> trong thông báo của Windows để ghim Chrome vào thanh tác vụ giúp truy cập nhanh</translation>
-<translation id="8066474819446975249">Chạy lại Chrome để chuyển đổi</translation>
 <translation id="8074398340364918139">Để tìm kiếm một tính năng hoặc tiện ích cụ thể của Chrome, hãy nhập lối tắt của tính năng hoặc tiện ích đó vào thanh địa chỉ, sau đó nhấn phím bạn chọn trên bàn phím</translation>
 <translation id="8077579734294125741">Các hồ sơ khác trên Chrome</translation>
 <translation id="8086881907087796310">Cài đặt không thành công vì máy tính của bạn không đáp ứng được các yêu cầu tối thiểu về phần cứng.</translation>

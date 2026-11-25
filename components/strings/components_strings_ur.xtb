@@ -667,7 +667,6 @@
 <translation id="2126374524350484896">‏PDF پروڈیوسر:</translation>
 <translation id="2127090458081644412">پاس ورڈ اس آلے پر محفوظ ہو گیا</translation>
 <translation id="2127747486437921899">ترچھا</translation>
-<translation id="2129163794581571479">‏ذاتی ذہانت کے ساتھ Gemini کے ذریعے تقویت یافتہ۔ بہتر کردہ آٹو فل کو بہتر بنانے کے لیے آپ کی درخواستوں، صفحہ کے عنوانات اور URLs کا جائزہ لیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />ترتیبات کا نظم کریں<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">‏ہو سکتا ہے کہ آپ کے ذریعے متعینہ تمثیلات DnsOverHttpsMode پالیسی سیٹ نہ ہونے کی وجہ سے لاگو نہ ہو۔</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">'ادائیگیوں کے آٹو فل کو فعال کریں' پوری اسکرین پر کھلا ہے۔</translation>
@@ -1217,7 +1216,6 @@
 <translation id="3041584414879052436">ابھی خریدیں، ادائیگی بعد میں کریں جاری کنندگان کی فہرست بند ہے۔</translation>
 <translation id="3041612393474885105">سرٹیفکیٹ کی معلومات</translation>
 <translation id="3041835740069544003">‏‫Chrome اب فارم کی بہتر اور ذہین سمجھ بوجھ کے ساتھ مزید فارمز کا پتا لگا سکتا ہے اور انہیں پُر کر سکتا ہے۔ ایسا کرنے کے لیے، صفحہ کے مواد اور URLs پر کلاؤڈ میں پرائیویٹ اسپیس میں کارروائی کی جا سکتی ہے۔ ترتیبات میں نظم کریں۔</translation>
-<translation id="3047054686095898948">‏اپنی معلومات کو <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> میں محفوظ کریں اور Google پروڈکٹس پر فارمز پُر کرنے جیسے کام تیزی سے کریں۔ آپ <ph name="ACCOUNT" /> کے لیے <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> میں <ph name="BEGIN_LINK" />اپنی معلومات کا نظم<ph name="END_LINK" /> کر سکتے ہیں</translation>
 <translation id="305162504811187366">‏بشمول ٹائم سٹیمپس، میزبانوں اور کلائنٹ سیشن IDs کے Chrome ریموٹ ڈیسک ٹاپ کی سرگزشت</translation>
 <translation id="3052868890529250114">‏آپ ان سائٹس سے عموماً محفوظ طریقے سے منسلک ہوتے ہیں لیکن اس مرتبہ Chrome محفوظ کنکشن کا استعمال نہیں کر سکا۔ کوئی حملہ آور آپ کے نیٹ ورک کنکشن کی جاسوسی یا اس میں ترمیم کرنے کی کوشش کر سکتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> سے قیمت میں <ph name="PRICE_DROP" /> گراوٹ</translation>
@@ -1589,7 +1587,6 @@
 <translation id="3655670868607891010">اگر یہ آپ کو اکثر نظر آتا ہے تو یہ <ph name="HELP_LINK" /> آزمائیں۔</translation>
 <translation id="3658742229777143148">نظرثانی</translation>
 <translation id="3659521826520353662">ایڈمنسٹریٹر کی وضاحت کردہ کون سی ویب سائٹ دیکھی گئی ہے اور کب: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">‏ذاتی ذہانت کے ساتھ Gemini کے ذریعے تقویت یافتہ۔ <ph name="BEGIN_LINK" />ترتیبات کا نظم کریں<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">اس پروڈکٹ کو بیچنے والے دوسرے اسٹورز سے خریداری کے مزید اختیارات تلاش کریں۔</translation>
 <translation id="3664782872746246217">کلیدی الفاظ:</translation>
 <translation id="3670030362669914947">نمبر</translation>
@@ -1868,7 +1865,6 @@
 <translation id="4112140312785995938">پیچھے کریں</translation>
 <translation id="4114007503059268298">‏کیا آپ اس کارڈ کو اپنے Google اکاؤنٹ اور اس آلہ میں محفوظ کرنا چاہتے ہیں؟</translation>
 <translation id="4114146879518089587">سائٹ پر جاری رکھیں</translation>
-<translation id="4115378294792113321">میجنٹا</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">پالیسی کا دائرۂ کار تعاون یافتہ نہیں ہے۔</translation>
@@ -3453,6 +3449,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">اکاؤنٹ کے ساتھ سائن ان کیا گیا</translation>
 <translation id="6732087373923685049">کیمرا</translation>
+<translation id="6736243959894955139">پتہ</translation>
 <translation id="6738516213925468394">آپ کے ڈیٹا کی آپ کے <ph name="BEGIN_LINK" />مطابقت پذیر پاس فریز<ph name="END_LINK" /> کے ساتھ <ph name="TIME" /> کو مرموز کاری کی گئی تھی۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>
 <translation id="6740851646645036700">آپ ابھی کے لیے اپنی تحریری مدد کی حد کو پہنچ گئے ہیں۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="674375294223700098">سرور سرٹیفکیٹ میں نامعلوم خرابی۔</translation>

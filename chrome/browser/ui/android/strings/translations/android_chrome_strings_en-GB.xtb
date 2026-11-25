@@ -150,7 +150,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1543035591122163372">Sign in to get your passwords and more from <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Payment methods and addresses won't be encrypted. Browsing history from Chrome won't sync.
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
-<translation id="1544826120773021464">To manage your Google Account, tap the 'Manage account' button</translation>
 <translation id="1549000191223877751">Move to other window</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> for '<ph name="SEARCH_TERMS" />'</translation>
@@ -167,7 +166,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, sharing tab</translation>
 <translation id="1601378265092360672">Browsing data includes your browsing history, cookies and other site data, cached images and files and open tabs</translation>
 <translation id="160275202205869636">When on, use and save data in your Google Account. When off, data is saved only to this device.</translation>
-<translation id="160403827062749147">Welcome to Google Chrome, the world's safest browser</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remove 1 selected item}other{Remove # selected items}}</translation>
 <translation id="1639239467298939599">Loading</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -866,7 +864,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4374192654218566997">\n\nYou can also remove this data from this device:</translation>
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4380055775103003110">If this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
-<translation id="4381351546374507910">Sign in to get your bookmarks, passwords and Autofill information across all your devices.</translation>
 <translation id="4384468725000734951">Using Sogou for search</translation>
 <translation id="4387647248986092471">Create a car profile lock</translation>
 <translation id="4387817230000841154">Open downloads</translation>
@@ -1907,7 +1904,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8210770465353466621">You'll find your tabs here</translation>
 <translation id="8212799748012101103">Open tab search</translation>
 <translation id="8215740705341534369">Side sheet</translation>
-<translation id="8218622182176210845">Manage your account</translation>
 <translation id="8221985041778490865">Deleting browsing data</translation>
 <translation id="8223642481677794647">Feed card menu</translation>
 <translation id="82296173028782770">Edit search query: <ph name="SEARCH_QUERY" /></translation>

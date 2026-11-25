@@ -210,7 +210,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1202116106683864634">Jeste li sigurni da želite izbrisati ovaj pristupni ključ?</translation>
 <translation id="1202892408424955784">Praćeni proizvodi</translation>
 <translation id="1203247227716551969">Potvrdite račun</translation>
-<translation id="120368089816228251">Muzička nota</translation>
 <translation id="1203942045716040624">Dijeljeni radnik: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Sigurnosni kôd je na stražnjoj strani kartice</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Izbriši grupu}one{Izbriši grupe}few{Izbriši grupe}other{Izbriši grupe}}</translation>
@@ -367,7 +366,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1386966479075994683">Proširivanje kartica</translation>
 <translation id="1388253969141979417">Dozvoljeno je korištenje vašeg mikrofona</translation>
 <translation id="139013308650923562">Dozvoljeno je koristiti fontove instalirane na uređaju</translation>
-<translation id="1393283411312835250">Sunce i oblaci</translation>
 <translation id="1396120028054416908">Nazad na stranicu <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Greška prilikom postavljanja štampača</translation>
 <translation id="1398853756734560583">Povećaj maksimalno</translation>
@@ -427,7 +425,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1464047267926346987">Pohranjujte lozinke, oznake i drugo</translation>
 <translation id="1465176863081977902">K&amp;opiraj adresu audiozapisa</translation>
 <translation id="146522654774760805">Lozinke i automatsko popunjavanje</translation>
-<translation id="1465827627707997754">Komad pice</translation>
 <translation id="1467005863208369884">Nije moguće potvrditi fajl jer je Sigurno pregledanje isključeno</translation>
 <translation id="1467432559032391204">Lijevo</translation>
 <translation id="1468571364034902819">Nije moguće koristiti ovaj profil</translation>
@@ -528,7 +525,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1573127087832371028">Opišite problem</translation>
 <translation id="1573415331092567032">Korištenje ove prečice izvan Chromea</translation>
 <translation id="1574335334663388774">Aplikacija <ph name="APP_NAME" /> verzije <ph name="APP_VERSION" /> je već instalirana na uređaju</translation>
-<translation id="1576594961618857597">Zadani bijeli avatar</translation>
 <translation id="1578488449637163638">Tamno</translation>
 <translation id="157931050206866263">Saznajte više o skeniranju na zlonamjerni softver</translation>
 <translation id="1581962803218266616">Prikaži u Tražiocu</translation>
@@ -846,7 +842,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1913749768968678106">Emitiraj, sačuvaj i dijeli</translation>
 <translation id="19147273405311768">Vraćanje alatne trake na zadane postavke</translation>
 <translation id="1915307458270490472">Prekini vezu</translation>
-<translation id="1916502483199172559">Zadani crveni avatar</translation>
 <translation id="1916770123977586577">Da primijenite ažurirane postavke na ovoj web lokaciji, ponovo učitajte stranicu.</translation>
 <translation id="1917766536967060661">Odmah ćete izgubiti pristup grupi kartica "<ph name="GROUP_NAME" />", a <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) više neće moći stupati u interakciju s vama na Googleovim uslugama.</translation>
 <translation id="1918141783557917887">&amp;Manje</translation>
@@ -1171,7 +1166,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="2270668657177045040">Web lokacija i njene poddomene mogu vidjeti koje su povezane web aplikacije instalirane na uređaju.</translation>
 <translation id="2271452184061378400">Grupe kartica se pohranjuju ovdje</translation>
 <translation id="2271986192355138465">Saznajte kako instalirati web aplikacije</translation>
-<translation id="2272570998639520080">Čaša s martinijem</translation>
 <translation id="2275352532065325930">Položaj Pretraživanja kartica</translation>
 <translation id="227763434929139750">Nemoj dozvoliti web lokacijama da koriste senzore kretanja ili svjetlosti</translation>
 <translation id="2278193750452754829">Ekstenzije su dozvoljene na ovoj web lokaciji. Otvaranje menija odabirom</translation>
@@ -1494,7 +1488,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="2637852492915204064">Zatvori pretraživanje kartica</translation>
 <translation id="263796568413910992">Pitajte pretraživač <ph name="SEARCH_ENGINE_NAME" /> ili upišite URL</translation>
 <translation id="2640299212685523844">Koristi GTK</translation>
-<translation id="2642111877055905627">Nogometna lopta</translation>
 <translation id="2642206811783203764">Uvijek na <ph name="SITE_NAME" /></translation>
 <translation id="2643379881528582459">Ako Chromium pronađe jednu od vaših lozinki u javnom narušavanju podataka, može vam ponuditi da promijeni lozinku za vas ako ste prijavljeni</translation>
 <translation id="2643698698624765890">Upravljajte svojim ekstenzijama klikom na stavku Ekstenzije u meniju Prozor.</translation>
@@ -1952,7 +1945,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="3134312457920437826">Nije moguće instalirati ekstenziju jer koristi nepodržanu verziju deklaracije.</translation>
 <translation id="3134393957315651797">Odaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />. Opis eksperimenta: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3134822828309700120">Dozvolite drugim aplikacijama Gemini da pregledaju na daljinu s bilo kojeg uređaja</translation>
-<translation id="3139925690611372679">Zadani žuti avatar</translation>
 <translation id="314095642664111744">Isključi fokus</translation>
 <translation id="3141093262818886744">Ipak otvori</translation>
 <translation id="3141318088920353606">Slušanje…</translation>
@@ -2037,7 +2029,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="3222066309010235055">Prikazivanje unaprijed: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3223109931751684474">Uklonite pristup pristupnim ključevima na uređaju</translation>
 <translation id="3224803532980286809">Google će vidjeti samo ono što je vidljivo vama</translation>
-<translation id="3225084153129302039">Zadani ljubičasti avatar</translation>
 <translation id="3225741048815287955"><ph name="BEGIN_BOLD_1" />Kartice se dijele radi relevantnijih odgovora.<ph name="END_BOLD_1" /> Google koristi sadržaj i URL dijeljenih kartica. Trenutna kartica se dijeli u novim chatovima. Možete promijeniti ovu postavku bilo kada. <ph name="BEGIN_BOLD_2" />Podaci vaše organizacije su privatni i zaštićeni.<ph name="END_BOLD_2" /> Neće se koristiti za poboljšavanje generativnih AI modela.</translation>
 <translation id="3226249862705569834">Senzori koji se koriste</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -2251,7 +2242,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="3436118221454753036">Pitajte AI način rada</translation>
 <translation id="3437397693214267762">Pogledajte Outlook Calendar te SharePoint i OneDrive fajlove</translation>
 <translation id="3437494162908353428">Alati za programere nisu dozvoljeni za ovaj URL.</translation>
-<translation id="3438633801274389918">Nindža</translation>
 <translation id="3439153939049640737">Uvijek dozvoli host računaru <ph name="HOST" /> da pristupi mikrofonu</translation>
 <translation id="3439970425423980614">Otvaranje PDF-a u Pregledu</translation>
 <translation id="3440478087746699229">Unutrašnje</translation>
@@ -2837,7 +2827,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="4034824040120875894">Štampač</translation>
 <translation id="4035758313003622889">Upravi&amp;telj zadataka</translation>
 <translation id="4035877632587724847">Nemoj dozvoliti</translation>
-<translation id="4037084878352560732">Konj</translation>
 <translation id="4040041015953651705">Jezik s kojeg se prevodi</translation>
 <translation id="4040854068229263729">&amp;Ukloni iz rječnika</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Izađi sa stranice}one{Izađi sa stranica}few{Izađi sa stranica}other{Izađi sa stranica}}</translation>
@@ -2927,6 +2916,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – lijevi prikaz</translation>
 <translation id="4156532396656021084">&amp;Upravljajte pretraživačima i prečicama</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
+<translation id="4165077084524712774">Više alata</translation>
 <translation id="4165986682804962316">Postavke web lokacije</translation>
 <translation id="4167924027691268367">Više radnji za prečicu za <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> čiji se broj završava sa <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -2959,7 +2949,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="4203065553461038553">Naziv fajla ili lokacije je predug</translation>
 <translation id="4203769790323223880">Kamera nije dozvoljena</translation>
 <translation id="4204415812590935863">Trenutno nije moguće kreirati temu.</translation>
-<translation id="4206144641569145248">Vanzemaljac</translation>
 <translation id="4206323443866416204">Izvještaj o povratnim informacijama</translation>
 <translation id="4206585797409671301">Dozvoljeno je prikazivanje zahtjeva</translation>
 <translation id="4207638506590582629"><ph name="DEVICE_NAME" /> (<ph name="LAST_ACTIVE_TIME" />)</translation>
@@ -3072,6 +3061,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="4312866146174492540">Blokiraj (zadano)</translation>
 <translation id="4316850752623536204">Web lokacija programera</translation>
 <translation id="4319441675152393296">Kliknite na ikonu ekstenzije da pročitate i promijenite <ph name="HOST" /></translation>
+<translation id="4320177379694898372">Nema internetske veze</translation>
 <translation id="432160826079505197">Prikazivanje fajla <ph name="FILE_NAME" /> u Tražiocu</translation>
 <translation id="4322394346347055525">Zatvori ostale kartice</translation>
 <translation id="4322400254469690320">Pronađite fajl <ph name="FILENAME" /> u funkciji <ph name="FEATURE_NAME" /></translation>
@@ -3214,7 +3204,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="4472533928615930332"><ph name="INDEX" />. generirana slika; predmet: <ph name="SUBJECT" />; stil: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Započnite</translation>
 <translation id="4474155171896946103">Označi sve kartice...</translation>
-<translation id="4476590490540813026">Sportistkinja</translation>
 <translation id="4476659815936224889">Da skenirate ovaj kôd, možete koristiti aplikaciju za skeniranje QR kodova na telefonu ili neke aplikacije s kamerom.</translation>
 <translation id="4477015793815781985">Uključite Ctrl, Alt, ili ⌘</translation>
 <translation id="4478161224666880173">Na ovoj web lokaciji možete koristiti račun s web lokacije <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />. Da nastavite, prijavite se na <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -3267,7 +3256,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="4540780316273593836">Nešto nije uredu</translation>
 <translation id="4541396589393395475">Funkciju je onemogućila vaša organizacija</translation>
 <translation id="4542520061254486227">Očitavati vaše podatke na web lokaciji <ph name="WEBSITE_1" /> i <ph name="WEBSITE_2" /></translation>
-<translation id="4544174279960331769">Zadani plavi avatar</translation>
 <translation id="4545028762441890696">Da ga omogućite, prihvatite nova odobrenja:</translation>
 <translation id="4545759655004063573">Nije moguće sačuvati jer nema dovoljno odobrenja. Sačuvajte na drugoj lokaciji.</translation>
 <translation id="4549791035683739768">Na vašem sigurnosnom ključu nisu pohranjeni otisci prstiju</translation>
@@ -3650,7 +3638,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4951966678293618079">Nikada ne pohranjuj lozinke za ovu web lokaciju</translation>
 <translation id="4952628481830269193">Prikaži traku oznaka</translation>
-<translation id="4953808748584563296">Zadani narandžasti avatar</translation>
 <translation id="4954652437333037880">Fajl</translation>
 <translation id="4954831709600868883">Pitajte o: <ph name="TEXT" /></translation>
 <translation id="4956593309300508411">Zaustaviti dijeljenje?</translation>
@@ -3886,7 +3873,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="5225463052809312700">Uključi kameru</translation>
 <translation id="5226253862147382094">Pregledajte ažuriranja logotipa i URL-a</translation>
 <translation id="5226514125747186">Oko ikona web lokacija se prikazuje tačkasta kružnica. <ph name="BEGIN_LINK" />Saznajte više o neaktivnim karticama<ph name="END_LINK" /></translation>
-<translation id="5227679487546032910">Zadani tirkizni avatar</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Poništiti grupisanje grupe kartica?}one{Poništiti grupisanje grupa kartica?}few{Poništiti grupisanje grupa kartica?}other{Poništiti grupisanje grupa kartica?}}</translation>
 <translation id="5230516054153933099">Prozor</translation>
 <translation id="5231255476752743708">Chromeu je potrebna pomoć da promijeni lozinku</translation>
@@ -3929,7 +3915,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="527335345740023523">Trenutno imate <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> i drugo. Vaša organizacija, <ph name="ACCOUNT_MANAGER" />, moći će vidjeti ove podatke i upravljati njima.</translation>
 <translation id="5273806377963980154">Uredite URL web lokacije</translation>
 <translation id="5275338516105640560">Dugme sačuvane grupe kartica</translation>
-<translation id="5275352920323889391">Pas</translation>
 <translation id="5275946508817197540">Sigurnosne postavke ne dozvoljavaju instalaciju izoliranih web aplikacija. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Isključi zvuk kartice</translation>
 <translation id="527605982717517565">Uvijek omogući JavaScript na web lokaciji <ph name="HOST" /></translation>
@@ -4255,7 +4240,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="5643191124441701136">Sigurnosni kôd je na prednjoj strani kartice</translation>
 <translation id="5645369002069651355">Potvrđivanje adrese e-pošte</translation>
 <translation id="5646376287012673985">Lokacija</translation>
-<translation id="5646558797914161501">Biznismen</translation>
 <translation id="5647989922796038257">Dijeli i sve audio izlaze</translation>
 <translation id="5648166631817621825">Posljednjih 7 dana</translation>
 <translation id="5654226590297731684">{NUM_SITES,plural, =1{Uklonjena su odobrenja za 1 web lokaciju}one{Uklonjena su odobrenja za {NUM_SITES} web lokaciju}few{Uklonjena su odobrenja za {NUM_SITES} web lokacije}other{Uklonjena su odobrenja za {NUM_SITES} web lokacija}}</translation>
@@ -4611,7 +4595,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="6086418630711763366">Možete navigirati stranicama pomoću kursora za tekst. Pritisnite Ctrl i <ph name="KEY" /> da isključite.</translation>
 <translation id="6086846494333236931">Instalirao administrator</translation>
 <translation id="6087286598828478206">Blokirati i napustiti grupu?</translation>
-<translation id="6087960857463881712">Oduševljeno lice</translation>
 <translation id="608819668983150122">Potvrdite identitet da sačuvate i koristite pristupne ključeve na uređaju</translation>
 <translation id="6088475950266477163">Postav&amp;ke</translation>
 <translation id="608912389580139775">Da dodate ovu stranicu na listu za čitanje, kliknite na ikonu Oznaka</translation>
@@ -4860,7 +4843,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="6356893102071098867">Provjerite jeste li odabrali pravi račun</translation>
 <translation id="6357305427698525450">Neki podržani linkovi će se i dalje otvarati u aplikaciji <ph name="APP_NAME" /> ili <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Drugi stabilni identifikatori (npr. hashevi ili UUID-ovi)</translation>
-<translation id="6357830294871526418">Kartice na drugim uređajima</translation>
 <translation id="6358884629796491903">Zmaj</translation>
 <translation id="6362853299801475928">&amp;Prijavi problem...</translation>
 <translation id="6365069501305898914">Facebook</translation>
@@ -4893,7 +4875,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="6395423953133416962">Pošalji <ph name="BEGIN_LINK1" />sistemske informacije<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />metriku<ph name="END_LINK2" /></translation>
 <translation id="6398765197997659313">Napusti prikaz preko cijelog ekrana</translation>
 <translation id="639880411171387127">Odabir Google Objektiva. Brisanje odabira Google Objektiva pritiskanjem Entera ili Backspacea</translation>
-<translation id="6399774419735315745">Špijunka</translation>
 <translation id="6400360390396538896">Uvijek na <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Ukloni fokus s grupe kartica</translation>
 <translation id="6402042774506839496">Da saznate zašto, kontaktirajte programera aplikacije</translation>
@@ -5421,7 +5402,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6959882218873172284">POST zahtjev</translation>
 <translation id="6961327401577924850">Web lokacije obično pretražuju Bluetooth uređaje radi funkcija kao što je postavljanje ili sinhroniziranje pratilice male potrošnje energije, uređaja za praćenje zdravlja ili fitnesa ili pametnog svjetla</translation>
 <translation id="6964239097707154771">su programski dodaci za Chrome koji vam mogu pomoći da obavite više zadataka</translation>
-<translation id="6964390816189577014">Junak</translation>
 <translation id="6964760285928603117">Ukloni iz grupe</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6965607054907047032">Oslobodite memoriju na osnovu neaktivnosti kartica</translation>
@@ -6267,7 +6247,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="7910768399700579500">&amp;Novi folder</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7913805372428124107">Da dobijete kartice s uređaja <ph name="DEVICE" />, prijavite se i sinhronizirajte historiju. Također ćete dobiti svoje lozinke i druge stavke na svim svojim uređajima. Sinhronizaciju možete zaustaviti bilo kada u postavkama. Google može personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>
-<translation id="7915478442339169507">Dozvolite pristup web lokaciji</translation>
 <translation id="7918928051723770926">Zadatak je završen</translation>
 <translation id="7919123827536834358">Automatski prevedi ove jezike</translation>
 <translation id="7920363873148656176">Web lokacija <ph name="ORIGIN" /> može pregledati <ph name="FILENAME" /></translation>
@@ -6427,7 +6406,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8061244502316511332">Ova kartica koristi mikrofon</translation>
 <translation id="8061464966246066292">Visoki kontrast</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 list papira}one{{COUNT} list papira}few{{COUNT} lista papira}other{{COUNT} listova papira}}</translation>
-<translation id="8063235345342641131">Zadani zeleni avatar</translation>
 <translation id="8071432093239591881">Odštampaj kao sliku</translation>
 <translation id="8075044377771022666">Podnožje</translation>
 <translation id="8076835018653442223">Administrator je onemogućio pristup lokalnim fajlovima na vašem uređaju</translation>
@@ -6478,7 +6456,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8118860139461251237">Upravljanje preuzimanjima</translation>
 <translation id="8121537075864592453">Prikaz preko cijelog ekrana je onemogućen</translation>
 <translation id="8123087650856503231">Napravite sigurnosnu kopiju lozinki, oznaka i drugih stavki da ih možete lako dobiti na svim svojim uređajima</translation>
-<translation id="81238879832906896">Žuto-bijeli cvijet</translation>
 <translation id="8123975449645947908">Listaj nazad</translation>
 <translation id="8125651784723647184">Dijeljenjem lozinke upravlja vaš administrator</translation>
 <translation id="8126498026310640675">Da dobijete historiju s uređaja <ph name="DEVICE" />, prijavite se i sinhronizirajte historiju i kartice s računom <ph name="EMAIL" />. Također ćete dobiti svoje oznake i druge stavke na svim svojim uređajima. Sinhronizaciju možete zaustaviti bilo kada u postavkama. Google može personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>
@@ -7132,7 +7109,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="8837072669197607689">Dozvoli u izoliranom načinu rada</translation>
 <translation id="8837573527470979311">Zamijeni donjim prikazom</translation>
 <translation id="8838601485495657486">Neprovidno</translation>
-<translation id="8838770651474809439">Hamburger</translation>
 <translation id="883924185304953854">Pretraživanje po slici</translation>
 <translation id="8839975272851327869">{ITEM_COUNT,plural, =1{1 stavka je sačuvana samo na ovom uređaju. Da je koristite na drugim uređajima, sačuvajte je na Google računu. Ovo će također izbrisati sve duplikate.}one{{ITEM_COUNT} stavka je sačuvana samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu. Ovo će također izbrisati sve duplikate.}few{{ITEM_COUNT} stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu. Ovo će također izbrisati sve duplikate.}other{{ITEM_COUNT} stavki je sačuvano samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu. Ovo će također izbrisati sve duplikate.}}</translation>
 <translation id="8841843049738266382">Čitanje i mijenjanje korisnika s liste dozvoljenih</translation>
@@ -7445,7 +7421,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="9207434080086272167">Sunčano</translation>
 <translation id="9207990187617864000">umjetno, inteligencija, pisanje, pomoć, pomoćnik, pretraživanje, asistent, chat, upit, Gemini, AI</translation>
 <translation id="9212565256020141627">Dijeljenje slike s Geminijem nije uspjelo. Pokušajte ponovo ili s drugom slikom.</translation>
-<translation id="9214695392875603905">Kolačić</translation>
 <translation id="9215293857209265904">Dodana je ekstenzija "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="9218430445555521422">Postavi kao zadano</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (nepodržana aplikacija)</translation>

@@ -668,7 +668,6 @@
 <translation id="2126374524350484896">โปรแกรมสร้าง PDF:</translation>
 <translation id="2127090458081644412">บันทึกรหัสผ่านไว้ในอุปกรณ์นี้แล้ว</translation>
 <translation id="2127747486437921899">ตัวเอียง</translation>
-<translation id="2129163794581571479">ขับเคลื่อนโดย Gemini ที่มี Personal Intelligence ระบบอาจตรวจสอบคำขอ ชื่อหน้า และ URL เพื่อปรับปรุงการป้อนข้อความอัตโนมัติที่ดียิ่งขึ้น <ph name="BEGIN_LINK" />จัดการการตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">เทมเพลตที่คุณระบุอาจใช้ไม่ได้เนื่องจากไม่มีการตั้งค่านโยบาย DnsOverHttpsMode ไว้</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">เปิด "เปิดใช้การป้อนข้อความอัตโนมัติในการชำระเงิน" แบบเต็มความสูงแล้ว</translation>
@@ -1218,7 +1217,6 @@
 <translation id="3041584414879052436">รายชื่อผู้ออกบริการ "ซื้อก่อน จ่ายทีหลัง" ปิดอยู่</translation>
 <translation id="3041612393474885105">ข้อมูลในใบรับรอง</translation>
 <translation id="3041835740069544003">ตอนนี้ Chrome สามารถตรวจหาและกรอกแบบฟอร์มได้มากขึ้นด้วยการทำความเข้าใจแบบฟอร์มที่ชาญฉลาดยิ่งขึ้น โดยระบบจะประมวลผลเนื้อหาและ URL ของหน้าเว็บในพื้นที่ส่วนตัวในระบบคลาวด์ ซึ่งสามารถจัดการได้ในการตั้งค่า</translation>
-<translation id="3047054686095898948">บันทึกข้อมูลใน <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> เพื่อทำสิ่งต่างๆ ให้เสร็จเร็วขึ้น เช่น การกรอกแบบฟอร์มในผลิตภัณฑ์ต่างๆ ของ Google คุณสามารถ<ph name="BEGIN_LINK" />จัดการข้อมูล<ph name="END_LINK" />ใน <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> สำหรับ <ph name="ACCOUNT" /> ได้</translation>
 <translation id="305162504811187366">ประวัติการใช้ Chrome Remote Desktop รวมถึงการประทับเวลา โฮสต์ และรหัสเซสชันไคลเอ็นต์</translation>
 <translation id="3052868890529250114">โดยปกติคุณจะเชื่อมต่อกับเว็บไซต์ต่างๆ อย่างปลอดภัย แต่ Chrome ไม่สามารถใช้การเชื่อมต่อที่ปลอดภัยได้ในขณะนี้ ผู้โจมตีอาจกำลังพยายามดักฟังหรือแก้ไขการเชื่อมต่อเครือข่ายของคุณ <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">ลดราคา <ph name="PRICE_DROP" /> สำหรับ <ph name="PRODUCT_NAME" /></translation>
@@ -1588,7 +1586,6 @@
 <translation id="3655670868607891010">หากคุณเห็นข้อความนี้บ่อยๆ ให้ลองไปที่ <ph name="HELP_LINK" /></translation>
 <translation id="3658742229777143148">การแก้ไข</translation>
 <translation id="3659521826520353662">เข้าชมเว็บไซต์ใดบ้างที่ผู้ดูแลระบบกำหนดไว้และเมื่อใด: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">ขับเคลื่อนโดย Gemini ที่มี Personal Intelligence <ph name="BEGIN_LINK" />จัดการการตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">ค้นหาตัวเลือกการซื้อเพิ่มเติมจากร้านค้าอื่นๆ ที่ขายผลิตภัณฑ์นี้</translation>
 <translation id="3664782872746246217">คีย์เวิร์ด:</translation>
 <translation id="3670030362669914947">หมายเลข</translation>
@@ -1867,7 +1864,6 @@
 <translation id="4112140312785995938">ย้อนกลับ</translation>
 <translation id="4114007503059268298">ต้องการบันทึกบัตรนี้ไว้ในบัญชี Google และในอุปกรณ์นี้ไหม</translation>
 <translation id="4114146879518089587">ไปที่เว็บไซต์</translation>
-<translation id="4115378294792113321">สีม่วงแดง</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">ขอบข่ายนโยบายไม่ได้รับการสนับสนุน</translation>
@@ -3451,6 +3447,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">ลงชื่อเข้าใช้ด้วยบัญชี</translation>
 <translation id="6732087373923685049">กล้อง</translation>
+<translation id="6736243959894955139">ที่อยู่</translation>
 <translation id="6738516213925468394">ข้อมูลของคุณเข้ารหัสไว้ด้วย<ph name="BEGIN_LINK" />พาสเฟรสการซิงค์<ph name="END_LINK" />เมื่อ <ph name="TIME" /> ป้อนพาสเฟรสเพื่อเริ่มซิงค์</translation>
 <translation id="6740851646645036700">ขณะนี้คุณขอความช่วยเหลือในการเขียนถึงขีดจำกัดแล้ว โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="674375294223700098">ข้อผิดพลาดใบรับรองของเซิร์ฟเวอร์ที่ไม่รู้จัก</translation>

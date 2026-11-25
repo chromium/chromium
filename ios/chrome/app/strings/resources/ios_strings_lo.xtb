@@ -200,6 +200,7 @@
 <translation id="1547610699249301703">ແບ່ງປັນລະຫັດຜ່ານ</translation>
 <translation id="1554043146674176775">ປິດໂໝດ AI</translation>
 <translation id="1554477036522844996">ໜ້າຈໍໃໝ່</translation>
+<translation id="1555014818414775661">ເພີ່ມຮູບ</translation>
 <translation id="1557806604681757705">ຄອມພິວເຕີຂອງທ່ານ</translation>
 <translation id="1558391695376153246">ປິດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="1560153516220021659">ປຸ່ມແຖບເຄື່ອງມືຮອງທີ່ຫຍໍ້ລົງ</translation>
@@ -913,7 +914,6 @@
 <translation id="3857113360369572832">ເປີດ <ph name="BEGIN_BOLD" />ການຕັ້ງຄ່າ Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">ຊື່</translation>
 <translation id="386224966259596343">ທ່ານຈະມີໂອກາດບັນທຶກຂໍ້ມູນນີ້ໃສ່ໃນ Wallet ເມື່ອທ່ານຕື່ມຂໍ້ມູນໃສ່ແບບຟອມທີ່ກ່ຽວຂ້ອງໃນເທື່ອຕໍ່ໄປ.</translation>
-<translation id="3868495844258915202">ສະແດງ URL ແບບເຕັມ</translation>
 <translation id="3870931306085184145">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">ສະແດງວິທີໃຫ້ຂ້ອຍເບິ່ງ</translation>
 <translation id="3878657761594430423">ຕົວຈັບຊີດ</translation>
@@ -1009,7 +1009,6 @@
 <translation id="4158491215857439601">ຕົວຈັດການລະຫັດຜ່ານ</translation>
 <translation id="4159430626587776301">ເບິ່ງຄຳຕິຊົມສຳລັບສິນຄ້າທີ່ທ່ານຫາກໍເລືອກເບິ່ງເມື່ອບໍ່ດົນມານີ້</translation>
 <translation id="4161488339191275792">ສ້າງກຸ່ມແຖບເພື່ອຈັດລະບຽບແຖບທີ່ເປີດຢູ່ຂອງທ່ານ</translation>
-<translation id="4162616958842974809">ເພີ່ມຮູບພາບ</translation>
 <translation id="4163699139741158298">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ "{title}" ແລ້ວ. ໂດຍຈະບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ.}other{ບັນທຶກບຸກມາກ {count} ລາຍການໃສ່ "{title}" ແລ້ວ. ໂດຍຈະບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ.}}</translation>
 <translation id="4164514562270305824">ລຶບການດາວໂຫຼດອັດຕະໂນມັດ</translation>
 <translation id="4165986682804962316">ການຕັ້ງຄ່າເວັບໄຊທ໌</translation>

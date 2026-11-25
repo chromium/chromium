@@ -143,7 +143,6 @@
 <translation id="2307973900865360088">Manter na barra de aplicacións</translation>
 <translation id="2309047409763057870">Esta é unha instalación secundaria de Google Chrome e non se pode converter no teu navegador predeterminado.</translation>
 <translation id="2345992953227471816">Chrome detectou que estas extensións conteñen software malicioso:</translation>
-<translation id="2350411688004301551">Cambiar a Gemini Enterprise</translation>
 <translation id="2358140144860869442">Para poder acceder á lista de lectura e a outros datos en todos os teus dispositivos, inicia sesión en Chrome</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2403703063067034158">Produciuse un erro de inicio do sistema: Estase executando outra instancia de configuración. Téntao de novo máis tarde.</translation>
@@ -201,7 +200,6 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="2876628302275096482">Máis información sobre <ph name="BEGIN_LINK" />como protexe Chrome a privacidade dos teus datos<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Xestor de tarefas</translation>
 <translation id="2888126860611144412">Acerca de Chrome</translation>
-<translation id="2898830646167954300">Volver ao teu asistente de Gemini non xestionado</translation>
 <translation id="2915996080311180594">Reiniciar máis tarde</translation>
 <translation id="2926952073016206995">Chrome necesita permiso de acceso á cámara para este sitio</translation>
 <translation id="2945997411976714835">Erro de instalación: Non se puido iniciar o proceso do instalador.</translation>
@@ -424,7 +422,6 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="5271833978500241046">Úsaas xunto con outras funcións de Gemini en Chrome</translation>
 <translation id="5320351714793324716">Se permites o uso de cookies, Chrome poderá utilizalas para as precargas</translation>
 <translation id="5321325624576443340">Google Lens non está dispoñible. Téntao de novo máis tarde.</translation>
-<translation id="5336664042114176802">Podes cambiar ao asistente de Gemini que estea asociado orixinalmente á túa Conta de Google e que non xestione <ph name="DOMAIN" />. As respostas deixarán de basearse en ficheiros ou servizos xestionados por <ph name="DOMAIN" /> e o teu historial de chats non se transferirá. É posible que non sexa adecuado para o traballo. Para facer o cambio, cómpre reiniciar Chrome.</translation>
 <translation id="5346389065299425353">Engade varias pestanas, ficheiros e ferramentas para afondar na busca</translation>
 <translation id="5353252989841766347">Exportar contrasinais de Chrome</translation>
 <translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
@@ -543,7 +540,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6438015621983209660">Amplía a función Navegación segura mellorada con Chrome no teléfono</translation>
 <translation id="6442774133615368941">Fai compras, traduce contido e identifica o que vexas coa cámara na aplicación Chrome para iOS</translation>
 <translation id="6446105560007692480">para facer buscas con Chrome ou personalizar as opcións en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /></translation>
-<translation id="6447943657065463998">Este navegador xestionado pode usar un asistente de Gemini que <ph name="DOMAIN" /> configurase para o traballo. Pode atopar información e ofrecer respostas baseadas nos ficheiros e nos servizos aprobados da organización. Non se recomenda usalo cun perfil persoal. Non se transferirá o historial de chats. Para facer o cambio, cómpre reiniciar Chrome.</translation>
 <translation id="6448835208126432197">Para seleccionar unha parte da pantalla en Gemini en Chrome, usa o atallo de teclado.</translation>
 <translation id="6473905796280459355">Ir á páxina Acerca de Chrome</translation>
 <translation id="6481963882741794338">Vincula Chrome e outros servizos de Google para beneficiarte da personalización, entre outras cousas</translation>
@@ -714,7 +710,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8064965390968184078">1. Fai clic na opción <ph name="BUTTON_LABEL" /> que aparece máis abaixo
 2. Fai clic en <ph name="BUTTON_2" /> dentro da configuración de Windows
 3. Fai clic en <ph name="BUTTON_3" /> na notificación de Windows para fixar Chrome na barra de tarefas e poder acceder ao navegador rapidamente</translation>
-<translation id="8066474819446975249">Reiniciar Chrome para cambiar</translation>
 <translation id="8074398340364918139">Para buscar unha extensión ou función específica de Chrome, escribe o seu atallo na barra de enderezos, seguido da tecla que seleccionases</translation>
 <translation id="8077579734294125741">Outros perfís de Chrome</translation>
 <translation id="8086881907087796310">Produciuse un erro na instalación porque o teu ordenador non cumpre os requisitos mínimos de hardware.</translation>

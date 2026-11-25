@@ -122,7 +122,6 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium 建議暫停導致瀏覽器運作緩慢的分頁}other{Chromium 建議暫停導致瀏覽器運作緩慢的分頁}}</translation>
 <translation id="2307973900865360088">保留在 Dock 上</translation>
 <translation id="2313870531055795960">可使用儲存在 Chromium 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chromium 可能也會將網址 (包括部分網頁內容) 傳送給安全瀏覽功能。</translation>
-<translation id="2350411688004301551">切換至 Gemini Enterprise</translation>
 <translation id="2356070529366658676">詢問</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2361918034042471035">擴充功能「<ph name="EXTENSION_NAME" />」要求你登入 Chromium</translation>
@@ -172,7 +171,6 @@
 <translation id="2846251086934905009">安裝錯誤：安裝程式未完整執行。安裝作業已取消。</translation>
 <translation id="2850691299438350830">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chromium 使用體驗，也有助於提升其他 Google 應用程式的安全機制</translation>
 <translation id="2885378588091291677">工作管理員</translation>
-<translation id="2898830646167954300">切換回非受管的 Gemini 助理</translation>
 <translation id="2910007522516064972">關於 Chromium(&amp;C)</translation>
 <translation id="2915996080311180594">稍後再重新啟動</translation>
 <translation id="2933336679234709858">系統會使用通關密語加密資料。如要將 Chromium 資料儲存到 Google 帳戶，或使用帳戶中的 Chromium 資料，請輸入通關密語。</translation>
@@ -358,7 +356,6 @@
 <translation id="4950660488495335294">你可以運用 Chromium 設定檔分隔各種 Chromium 資料，例如建立親朋好友各自的專屬設定檔，或是依工作和娛樂需要建立不同設定檔。</translation>
 <translation id="4992938037305302429">你在 Chromium 中的帳戶</translation>
 <translation id="5123973130450702873">Chromium 需要相關權限才能追蹤手勢</translation>
-<translation id="5139546603444206048">你可以切換回原本與 Google 帳戶相關聯，且不受「<ph name="DOMAIN" />」管理的 Gemini 助理。回覆將不再以受「<ph name="DOMAIN" />」管理的檔案或服務為基準，對話記錄也不會保留。可能不適合用於工作。切換時必須重新啟動 Chromium。</translation>
 <translation id="5141988424377517949">由於近期並未造訪，Chromium 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />權限。</translation>
 <translation id="5171868502429358653">登入 Chromium</translation>
 <translation id="5174969993834422967">系統已按照你的使用習慣封鎖通知。如要允許這個網站傳送通知，請點選網址列右上角的通知圖示。</translation>
@@ -710,7 +707,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8447525028100794994">進一步瞭解如何透過 Chromium 使用圖片搜尋功能</translation>
 <translation id="8453117565092476964">安裝程式封存檔案已毀損或無效，請重新下載 Chromium。</translation>
 <translation id="8471947159125090285">如要將 Chromium 資料儲存到 Google 帳戶，或使用帳戶中的 Chromium 資料，請驗證身分</translation>
-<translation id="8473541503127475913">重新啟動 Chromium 即可切換</translation>
 <translation id="8482493977473846331">顯示登入 Chromium 的提示</translation>
 <translation id="8493179195440786826">Chromium 版本過舊</translation>
 <translation id="850264194101621529">感謝你選擇 Chromium 為預設瀏覽器！</translation>
@@ -744,7 +740,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8906384069222226849">Chromium 僅支援 Windows 10 1809 以上版本。</translation>
 <translation id="8907580949721785412">Chromium 現在會嘗試顯示密碼。如果你同意的話，請輸入你的 Windows 密碼。</translation>
 <translation id="8910309838319708610">大功告成！現在使用搜尋 AI 模式，就能在瀏覽網頁時輕鬆提問</translation>
-<translation id="8915682436012075700">這個受管理的瀏覽器可以使用由「<ph name="DOMAIN" />」設定的工作用 Gemini 助理。這個助理能搜尋資訊，並根據貴機構的檔案和核准的服務提供基準解答。不建議搭配個人設定檔使用。對話記錄不會一併轉移。切換時必須重新啟動 Chromium。</translation>
 <translation id="8932992523185907506">Chromium 已不再是預設瀏覽器。將 Chromium 設為預設瀏覽器？</translation>
 <translation id="8941642502866065432">無法更新 Chromium</translation>
 <translation id="8944232836376404813">這個動作會：

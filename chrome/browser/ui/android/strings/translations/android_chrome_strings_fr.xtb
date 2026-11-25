@@ -150,7 +150,6 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="1543035591122163372">Connectez-vous pour accéder sur <ph name="DEVICE_TYPE" /> à vos mots de passe et bien plus</translation>
 <translation id="1544084554881119930">Les adresses et les modes de paiement ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.
 Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
-<translation id="1544826120773021464">Pour gérer votre compte Google, appuyez sur le bouton "Gérer le compte"</translation>
 <translation id="1549000191223877751">Déplacer vers autre fenêtre</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> : "<ph name="SEARCH_TERMS" />"</translation>
@@ -167,7 +166,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, onglet avec partage en cours</translation>
 <translation id="1601378265092360672">Les données de navigation incluent votre historique de navigation, les cookies et autres données des sites, les images et fichiers mis en cache, ainsi que les onglets ouverts</translation>
 <translation id="160275202205869636">Activez l'option pour utiliser et sauvegarder les données dans votre compte Google. Désactivez-la pour n'enregistrer les données que sur l'appareil.</translation>
-<translation id="160403827062749147">Bienvenue dans Google Chrome, le navigateur le plus sûr au monde</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Supprimer 1 élément sélectionné}one{Supprimer # élément sélectionné}other{Supprimer # éléments sélectionnés}}</translation>
 <translation id="1639239467298939599">Chargement en cours…</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
@@ -866,7 +864,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4374192654218566997">\n\nVous pouvez aussi supprimer ces données de cet appareil :</translation>
 <translation id="4378154925671717803">Téléphone</translation>
 <translation id="4380055775103003110">Si le problème persiste, vous pouvez essayer d'autres méthodes afin de poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
-<translation id="4381351546374507910">Connectez-vous pour accéder à vos favoris, vos mots de passe et vos informations de saisie automatique sur tous vos appareils.</translation>
 <translation id="4384468725000734951">Utilisation de Sogou pour les recherches</translation>
 <translation id="4387647248986092471">Créer un verrouillage du profil de voiture</translation>
 <translation id="4387817230000841154">Ouvrir Téléchargements</translation>
@@ -1908,7 +1905,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8210770465353466621">Vos onglets s'afficheront ici</translation>
 <translation id="8212799748012101103">Ouvrir la recherche dans les onglets</translation>
 <translation id="8215740705341534369">Feuille latérale</translation>
-<translation id="8218622182176210845">Gérer votre compte</translation>
 <translation id="8221985041778490865">Suppression en cours des données de navigation</translation>
 <translation id="8223642481677794647">Menu de la carte de flux</translation>
 <translation id="82296173028782770">Modifier la requête de recherche : <ph name="SEARCH_QUERY" /></translation>

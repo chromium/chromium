@@ -210,7 +210,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1202116106683864634">Yakin ingin menghapus kunci sandi ini?</translation>
 <translation id="1202892408424955784">Produk yang dipantau</translation>
 <translation id="1203247227716551969">Verifikasi Akun Anda</translation>
-<translation id="120368089816228251">Not balok</translation>
 <translation id="1203942045716040624">Pekerja Bersama: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Kode keamanan ada di bagian belakang kartu</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Hapus grup}other{Hapus grup}}</translation>
@@ -367,7 +366,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1386966479075994683">Luaskan Tab</translation>
 <translation id="1388253969141979417">Diizinkan menggunakan mikrofon Anda</translation>
 <translation id="139013308650923562">Diizinkan menggunakan font yang diinstal di perangkat Anda</translation>
-<translation id="1393283411312835250">Matahari dan awan</translation>
 <translation id="1396120028054416908">Kembali ke <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Terjadi error saat menyiapkan printer</translation>
 <translation id="1398853756734560583">Perbesar</translation>
@@ -427,7 +425,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1464047267926346987">Simpan sandi, bookmark, dan lainnya</translation>
 <translation id="1465176863081977902">S&amp;alin Alamat Audio</translation>
 <translation id="146522654774760805">Sandi dan isi otomatis</translation>
-<translation id="1465827627707997754">Irisan pizza</translation>
 <translation id="1467005863208369884">File ini tidak dapat diverifikasi karena Safe Browsing nonaktif</translation>
 <translation id="1467432559032391204">Kiri</translation>
 <translation id="1468571364034902819">Tidak dapat menggunakan profil ini</translation>
@@ -528,7 +525,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1573127087832371028">Jelaskan masalahnya</translation>
 <translation id="1573415331092567032">Gunakan pintasan ini di luar Chrome</translation>
 <translation id="1574335334663388774"><ph name="APP_NAME" /> versi <ph name="APP_VERSION" /> telah diinstal di perangkat ini</translation>
-<translation id="1576594961618857597">Avatar putih default</translation>
 <translation id="1578488449637163638">Gelap</translation>
 <translation id="157931050206866263">Pelajari pemindaian malware lebih lanjut</translation>
 <translation id="1581962803218266616">Tampilkan di Penemu</translation>
@@ -848,7 +844,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1913749768968678106">Transmisikan, simpan, dan bagikan</translation>
 <translation id="19147273405311768">Reset toolbar ke setelan default</translation>
 <translation id="1915307458270490472">Akhiri</translation>
-<translation id="1916502483199172559">Avatar merah default</translation>
 <translation id="1916770123977586577">Untuk menerapkan setelan yang telah diupdate pada situs ini, muat ulang halaman ini</translation>
 <translation id="1917766536967060661">Anda akan segera kehilangan akses ke grup tab “<ph name="GROUP_NAME" />”, dan <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) tidak akan dapat lagi berinteraksi dengan Anda di berbagai layanan Google.</translation>
 <translation id="1918141783557917887">&amp;Lebih kecil</translation>
@@ -1173,7 +1168,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="2270668657177045040">Situs dan subdomainnya dapat melihat aplikasi web terkait yang diinstal di perangkat Anda.</translation>
 <translation id="2271452184061378400">Grup tab Anda disimpan di sini</translation>
 <translation id="2271986192355138465">Pelajari cara menginstal aplikasi web</translation>
-<translation id="2272570998639520080">Gelas martini</translation>
 <translation id="2275352532065325930">Posisi penelusuran tab</translation>
 <translation id="227763434929139750">Jangan izinkan situs menggunakan sensor gerakan atau cahaya</translation>
 <translation id="2278193750452754829">Ekstensi diizinkan di situs ini. Pilih untuk membuka menu</translation>
@@ -1496,7 +1490,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="2637852492915204064">Tutup Penelusuran Tab</translation>
 <translation id="263796568413910992">Tanya <ph name="SEARCH_ENGINE_NAME" /> atau ketik URL</translation>
 <translation id="2640299212685523844">Gunakan GTK</translation>
-<translation id="2642111877055905627">Bola sepak</translation>
 <translation id="2642206811783203764">Selalu di <ph name="SITE_NAME" /></translation>
 <translation id="2643379881528582459">Jika Chromium menemukan salah satu sandi Anda dalam pelanggaran data publik, Chromium dapat menawarkan untuk mengubah sandi Anda jika Anda sedang login</translation>
 <translation id="2643698698624765890">Kelola ekstensi Anda dengan mengklik Ekstensi pada menu Window.</translation>
@@ -1954,7 +1947,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="3134312457920437826">Tidak dapat menginstal ekstensi karena ekstensi menggunakan versi manifes yang tidak didukung.</translation>
 <translation id="3134393957315651797">Pilih status eksperimen untuk eksperimen <ph name="EXPERIMENT_NAME" />. Deskripsi eksperimen: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3134822828309700120">Izinkan aplikasi Gemini lain menjelajah dari jarak jauh dari perangkat apa pun</translation>
-<translation id="3139925690611372679">Avatar kuning default</translation>
 <translation id="314095642664111744">Nonaktifkan fokus</translation>
 <translation id="3141093262818886744">Tetap buka</translation>
 <translation id="3141318088920353606">Mendengarkan...</translation>
@@ -2039,7 +2031,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="3222066309010235055">Tampilan sebelumnya: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3223109931751684474">Hapus akses ke kunci sandi Anda di perangkat ini</translation>
 <translation id="3224803532980286809">Google hanya akan melihat apa yang terlihat oleh Anda</translation>
-<translation id="3225084153129302039">Avatar ungu default</translation>
 <translation id="3225741048815287955"><ph name="BEGIN_BOLD_1" />Tab dibagikan untuk menghasilkan jawaban yang lebih relevan.<ph name="END_BOLD_1" /> Google menggunakan konten dan URL tab yang dibagikan. Tab Anda saat ini dibagikan di percakapan baru. Anda dapat mengubah setelan ini kapan saja. <ph name="BEGIN_BOLD_2" />Privasi dan keamanan data organisasi Anda tetap terjaga.<ph name="END_BOLD_2" /> Data Anda tidak akan digunakan untuk meningkatkan kualitas model AI generatif.</translation>
 <translation id="3226249862705569834">Sensor yang sedang digunakan</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -2253,7 +2244,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="3436118221454753036">Mode Tanya AI</translation>
 <translation id="3437397693214267762">Lihat Kalender Outlook serta file SharePoint dan OneDrive Anda</translation>
 <translation id="3437494162908353428">DevTools tidak diizinkan untuk URL ini.</translation>
-<translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Selalu izinkan <ph name="HOST" /> mengakses mikrofon Anda</translation>
 <translation id="3439970425423980614">Membuka PDF dalam Pratinjau</translation>
 <translation id="3440478087746699229">Internal</translation>
@@ -2839,7 +2829,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4035758313003622889">&amp;Pengelola tugas</translation>
 <translation id="4035877632587724847">Jangan izinkan</translation>
-<translation id="4037084878352560732">Kuda</translation>
 <translation id="4040041015953651705">Bahasa sumber</translation>
 <translation id="4040854068229263729">&amp;Hapus dari kamus</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Keluar dari Halaman}other{Keluar dari Halaman}}</translation>
@@ -2929,6 +2918,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> — Tampilan kiri</translation>
 <translation id="4156532396656021084">&amp;Kelola Mesin Telusur dan Pintasan</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
+<translation id="4165077084524712774">Alat lainnya</translation>
 <translation id="4165986682804962316">Setelan situs</translation>
 <translation id="4167924027691268367">Tindakan lainnya untuk pintasan <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> diakhiri dengan <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -2961,7 +2951,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="4203065553461038553">Nama atau lokasi file terlalu panjang</translation>
 <translation id="4203769790323223880">Kamera tidak diizinkan</translation>
 <translation id="4204415812590935863">Tidak dapat membuat tema untuk saat ini.</translation>
-<translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Laporan Masukan</translation>
 <translation id="4206585797409671301">Diizinkan menampilkan permintaan</translation>
 <translation id="4207638506590582629"><ph name="DEVICE_NAME" /> (<ph name="LAST_ACTIVE_TIME" />)</translation>
@@ -3074,6 +3063,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="4312866146174492540">Blokir (default)</translation>
 <translation id="4316850752623536204">Situs Web Pengembang</translation>
 <translation id="4319441675152393296">Klik ikon ekstensi ini untuk membaca dan mengubah <ph name="HOST" /></translation>
+<translation id="4320177379694898372">Tidak ada koneksi internet</translation>
 <translation id="432160826079505197">Tampilkan <ph name="FILE_NAME" /> di Finder</translation>
 <translation id="4322394346347055525">Tutup Tab Lain</translation>
 <translation id="4322400254469690320">Temukan <ph name="FILENAME" /> Anda di folder <ph name="FEATURE_NAME" /></translation>
@@ -3216,7 +3206,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="4472533928615930332">Gambar <ph name="SUBJECT" /> yang dihasilkan <ph name="INDEX" />, dalam gaya <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Memulai</translation>
 <translation id="4474155171896946103">Bookmark semua tab...</translation>
-<translation id="4476590490540813026">Atlet</translation>
 <translation id="4476659815936224889">Untuk memindai kode ini, Anda dapat menggunakan aplikasi pemindai QR di ponsel, atau beberapa aplikasi kamera.</translation>
 <translation id="4477015793815781985">Sertakan Ctrl, Alt, atau ⌘</translation>
 <translation id="4478161224666880173">Anda dapat menggunakan akun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> Anda di situs ini. Untuk melanjutkan, login ke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -3269,7 +3258,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="4540780316273593836">Terjadi Error</translation>
 <translation id="4541396589393395475">Fitur ini dinonaktifkan oleh organisasi Anda</translation>
 <translation id="4542520061254486227">Membaca data Anda di <ph name="WEBSITE_1" /> dan <ph name="WEBSITE_2" /></translation>
-<translation id="4544174279960331769">Avatar biru default</translation>
 <translation id="4545028762441890696">Untuk mengaktifkannya kembali, setujui izin baru:</translation>
 <translation id="4545759655004063573">Tidak dapat menyimpan karena izin tidak memadai. Simpan ke lokasi lain.</translation>
 <translation id="4549791035683739768">Tidak ada sidik jari yang tersimpan di kunci keamanan Anda</translation>
@@ -3652,7 +3640,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="495170559598752135">Tindakan</translation>
 <translation id="4951966678293618079">Jangan pernah menyimpan sandi untuk situs ini</translation>
 <translation id="4952628481830269193">Tampilkan kolom bookmark</translation>
-<translation id="4953808748584563296">Avatar oranye default</translation>
 <translation id="4954652437333037880">File</translation>
 <translation id="4954831709600868883">Tanyakan <ph name="TEXT" /></translation>
 <translation id="4956593309300508411">Berhenti Berbagi?</translation>
@@ -3888,7 +3875,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="5225463052809312700">Aktifkan kamera</translation>
 <translation id="5226253862147382094">Tinjau pembaruan logo dan URL</translation>
 <translation id="5226514125747186">Lingkaran terputus-putus akan muncul di sekitar ikon situs. <ph name="BEGIN_LINK" />Pelajari lebih lanjut tab tidak aktif<ph name="END_LINK" /></translation>
-<translation id="5227679487546032910">Avatar biru kehijauan default</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Pisahkan grup tab?}other{Pisahkan grup tab?}}</translation>
 <translation id="5230516054153933099">Jendela</translation>
 <translation id="5231255476752743708">Chrome perlu bantuan untuk mengubah sandi Anda</translation>
@@ -3931,7 +3917,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="527335345740023523">Saat ini Anda memiliki <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" />, dan lainnya. Organisasi Anda, <ph name="ACCOUNT_MANAGER" />, akan dapat melihat dan mengelola data ini.</translation>
 <translation id="5273806377963980154">Edit URL situs</translation>
 <translation id="5275338516105640560">Tombol Grup Tab Tersimpan</translation>
-<translation id="5275352920323889391">Anjing</translation>
 <translation id="5275946508817197540">Preferensi keamanan Anda tidak mengizinkan penginstalan Aplikasi Web Terisolasi. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Nonaktifkan tab</translation>
 <translation id="527605982717517565">Selalu izinkan JavaScript di <ph name="HOST" /></translation>
@@ -4257,7 +4242,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="5643191124441701136">Kode keamanan ada di bagian depan kartu</translation>
 <translation id="5645369002069651355">Memverifikasi email</translation>
 <translation id="5646376287012673985">Lokasi</translation>
-<translation id="5646558797914161501">Pengusaha</translation>
 <translation id="5647989922796038257">Bagikan juga semua output audio</translation>
 <translation id="5648166631817621825">7 hari terakhir</translation>
 <translation id="5654226590297731684">{NUM_SITES,plural, =1{Izin dihapus untuk 1 situs}other{Izin dihapus untuk {NUM_SITES} situs}}</translation>
@@ -4613,7 +4597,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="6086418630711763366">Anda dapat membuka halaman dengan kursor teks. Tekan Ctrl + <ph name="KEY" /> untuk mematikan.</translation>
 <translation id="6086846494333236931">Dipasang oleh administrator Anda</translation>
 <translation id="6087286598828478206">Blokir dan keluar dari grup?</translation>
-<translation id="6087960857463881712">Wajah keren</translation>
 <translation id="608819668983150122">Verifikasi diri Anda untuk menyimpan dan menggunakan kunci sandi Anda di perangkat ini</translation>
 <translation id="6088475950266477163">Setela&amp;n</translation>
 <translation id="608912389580139775">Untuk menambahkan halaman ini ke daftar bacaan, klik ikon Bookmark</translation>
@@ -4862,7 +4845,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="6356893102071098867">Pastikan Anda memilih akun yang benar</translation>
 <translation id="6357305427698525450">Beberapa link yang didukung akan tetap dibuka di <ph name="APP_NAME" /> atau <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">ID Stabil Lainnya (mis., Hash atau UUID)</translation>
-<translation id="6357830294871526418">Tab di perangkat lain</translation>
 <translation id="6358884629796491903">Naga</translation>
 <translation id="6362853299801475928">&amp;Melaporkan masalah...</translation>
 <translation id="6365069501305898914">Facebook</translation>
@@ -4895,7 +4877,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="6395423953133416962">Kirim <ph name="BEGIN_LINK1" />informasi sistem<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />metrik<ph name="END_LINK2" /></translation>
 <translation id="6398765197997659313">Keluar dari tampilan layar penuh</translation>
 <translation id="639880411171387127">Pilihan Google Lens Anda. Tekan enter atau backspace untuk menghapus pilihan Google Lens</translation>
-<translation id="6399774419735315745">Mata-mata</translation>
 <translation id="6400360390396538896">Selalu di <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Batalkan fokus grup tab</translation>
 <translation id="6402042774506839496">Untuk mengetahui alasannya, hubungi developer aplikasi</translation>
@@ -5419,7 +5400,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6959882218873172284">Permintaan POST</translation>
 <translation id="6961327401577924850">Situs biasanya mencari perangkat Bluetooth untuk fitur seperti penyiapan atau sinkronisasi beacon hemat energi, pelacak kesehatan atau kebugaran, atau bohlam lampu smart</translation>
 <translation id="6964239097707154771">adalah add-on untuk Chrome yang dapat membantu Anda melakukan lebih banyak hal</translation>
-<translation id="6964390816189577014">Hero</translation>
 <translation id="6964760285928603117">Hapus dari Grup</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6965607054907047032">Kosongkan memori menurut tab yang tidak aktif</translation>
@@ -6265,7 +6245,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="7910768399700579500">&amp;Map baru</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7913805372428124107">Untuk mengakses tab dari <ph name="DEVICE" />, login dan sinkronkan histori. Anda juga akan mendapatkan sandi dan data lainnya di semua perangkat Anda. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
-<translation id="7915478442339169507">Izinkan akses situs</translation>
 <translation id="7918928051723770926">Tugas selesai</translation>
 <translation id="7919123827536834358">Terjemahkan bahasa ini secara otomatis</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> dapat melihat <ph name="FILENAME" /></translation>
@@ -6425,7 +6404,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8061244502316511332">Tab ini menggunakan mikrofon Anda</translation>
 <translation id="8061464966246066292">Kontras tinggi</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 lembar kertas}other{{COUNT} lembar kertas}}</translation>
-<translation id="8063235345342641131">Avatar hijau default</translation>
 <translation id="8071432093239591881">Cetak sebagai gambar</translation>
 <translation id="8075044377771022666">Footer</translation>
 <translation id="8076835018653442223">Akses ke file lokal di perangkat Anda dinonaktifkan oleh administrator</translation>
@@ -6476,7 +6454,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8118860139461251237">Mengelola download Anda</translation>
 <translation id="8121537075864592453">Layar penuh dinonaktifkan</translation>
 <translation id="8123087650856503231">Cadangkan sandi, bookmark, dan lainnya, sehingga Anda dapat dengan mudah mendapatkannya di semua perangkat Anda</translation>
-<translation id="81238879832906896">Bunga kuning dan putih</translation>
 <translation id="8123975449645947908">Scroll mundur</translation>
 <translation id="8125651784723647184">Berbagi sandi dikelola oleh administrator Anda</translation>
 <translation id="8126498026310640675">Untuk mengakses histori dari <ph name="DEVICE" />, login dan sinkronkan histori serta tab Anda ke <ph name="EMAIL" />. Anda juga akan mendapatkan bookmark dan data lainnya di semua perangkat Anda. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
@@ -7130,7 +7107,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8837072669197607689">Izinkan dalam mode Terisolasi</translation>
 <translation id="8837573527470979311">Tukar dengan Tampilan Bawah</translation>
 <translation id="8838601485495657486">Buram</translation>
-<translation id="8838770651474809439">Hamburger</translation>
 <translation id="883924185304953854">Telusuri pakai gambar</translation>
 <translation id="8839975272851327869">{ITEM_COUNT,plural, =1{1 item hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan item di Akun Google Anda. Tindakan ini juga akan menghapus duplikat.}other{{ITEM_COUNT} item hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan item di Akun Google Anda. Tindakan ini juga akan menghapus duplikat.}}</translation>
 <translation id="8841843049738266382">Membaca dan mengubah pengguna yang diizinkan</translation>
@@ -7443,7 +7419,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9207434080086272167">Cerah</translation>
 <translation id="9207990187617864000">kecerdasan, buatan, penulisan, dukungan, bantuan, penelusuran, asisten, chat, kueri, perintah, Gemini, AI</translation>
 <translation id="9212565256020141627">Tidak dapat membagikan gambar ke Gemini. Coba lagi atau gunakan gambar lain.</translation>
-<translation id="9214695392875603905">Kue mangkok</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ditambahkan</translation>
 <translation id="9218430445555521422">Jadikan default</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (aplikasi tidak didukung)</translation>

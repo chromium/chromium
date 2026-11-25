@@ -667,7 +667,6 @@
 <translation id="2126374524350484896">PDF 轉換工具：</translation>
 <translation id="2127090458081644412">已將密碼儲存到這部裝置</translation>
 <translation id="2127747486437921899">斜體</translation>
-<translation id="2129163794581571479">採用 Gemini 個人化智慧服務。你的要求、網頁標題和網址可能會送交人工審查，以改進強化版自動填入功能。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">你並未設定 DnsOverHttpsMode 政策，因此系統無法套用你指定的範本。</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2131006834960167560">「啟用付款資訊自動填入功能」已完全展開。</translation>
@@ -1217,7 +1216,6 @@
 <translation id="3041584414879052436">「先買後付」發卡機構清單已關閉。</translation>
 <translation id="3041612393474885105">憑證資訊</translation>
 <translation id="3041835740069544003">Chrome 現在具有「智慧型表單理解」功能，可以偵測更多表單及填寫相關內容。這項功能會透過雲端私人空間處理網頁內容與網址，你可以前往「設定」管理這項功能。</translation>
-<translation id="3047054686095898948">將資訊儲存在 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />，處理事務更有效率，例如在 Google 產品中輕鬆填寫表單。你可以前往 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> <ph name="BEGIN_LINK" />管理 <ph name="ACCOUNT" /> 的資訊<ph name="END_LINK" /></translation>
 <translation id="305162504811187366">Chrome 遠端桌面歷史記錄，包括時間戳記、主機和用戶端工作階段 ID</translation>
 <translation id="3052868890529250114">你通常可以經由安全連線前往網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖竊聽或修改你的網路連線。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">「<ph name="PRODUCT_NAME" />」降價 <ph name="PRICE_DROP" /></translation>
@@ -1587,7 +1585,6 @@
 <translation id="3655670868607891010">如果你經常看到這個頁面，請參考這些說明：<ph name="HELP_LINK" />。</translation>
 <translation id="3658742229777143148">修訂版本</translation>
 <translation id="3659521826520353662">造訪過哪些管理員定義的網站和造訪時間：<ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">採用 Gemini 個人化智慧服務。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">搜尋其他販售這項產品的商店，查看更多購買選項。</translation>
 <translation id="3664782872746246217">關鍵字：</translation>
 <translation id="3670030362669914947">號碼</translation>
@@ -1866,7 +1863,6 @@
 <translation id="4112140312785995938">倒轉</translation>
 <translation id="4114007503059268298">要將這張卡儲存到 Google 帳戶和這部裝置上嗎？</translation>
 <translation id="4114146879518089587">繼續造訪網站</translation>
-<translation id="4115378294792113321">洋紅色</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">系統不支援這項政策的範圍。</translation>
@@ -3450,6 +3446,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">成功登入帳戶</translation>
 <translation id="6732087373923685049">攝影機</translation>
+<translation id="6736243959894955139">位址</translation>
 <translation id="6738516213925468394">你在 <ph name="TIME" />已使用<ph name="BEGIN_LINK" />同步通關密語<ph name="END_LINK" />將資料加密。如要開始同步處理資料，請輸入通關密語。</translation>
 <translation id="6740851646645036700">「幫我寫」功能目前已達使用上限，請稍後再試。</translation>
 <translation id="674375294223700098">不明的伺服器憑證錯誤。</translation>

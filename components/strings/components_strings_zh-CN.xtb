@@ -668,7 +668,6 @@
 <translation id="2126374524350484896">PDF 制作工具：</translation>
 <translation id="2127090458081644412">密码已保存到此设备</translation>
 <translation id="2127747486437921899">斜体</translation>
-<translation id="2129163794581571479">由 Gemini 中的个性化智能服务提供支持。为改进增强型自动填充功能，我们可能会审核您的请求、网页标题和网址。<ph name="BEGIN_LINK" />管理设置<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策未设置。</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">“启用支付信息自动填充”底部动作条已以最大高度显示。</translation>
@@ -1218,7 +1217,6 @@
 <translation id="3041584414879052436">“先买后付”发卡机构列表已关闭。</translation>
 <translation id="3041612393474885105">证书信息</translation>
 <translation id="3041835740069544003">现在，Chrome 可以更智能地理解表单，从而检测和填充更多表单。为此，系统可能会在云端的私密空间中处理网页内容和网址。您可以在“设置”中进行管理。</translation>
-<translation id="3047054686095898948">在 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />中保存信息可以提升效率，例如在不同 Google 产品中快速填写表单。您可在 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />中<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /> <ph name="ACCOUNT" /> 的信息</translation>
 <translation id="305162504811187366">Chrome 远程桌面历史记录，包括时间戳、主机和客户端会话 ID</translation>
 <translation id="3052868890529250114">您通常可以安全地连接到网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图对您的网络连接进行窃听或修改。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />降价 <ph name="PRICE_DROP" /></translation>
@@ -1585,7 +1583,6 @@
 <translation id="3655670868607891010">如果您频繁遇到此问题，请尝试这些<ph name="HELP_LINK" />。</translation>
 <translation id="3658742229777143148">修订版本</translation>
 <translation id="3659521826520353662">访问了哪些管理员定义的网站以及访问时间：<ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">由 Gemini 中的个性化智能服务提供支持。<ph name="BEGIN_LINK" />管理设置<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">搜索销售此商品的其他商店的更多购买选项。</translation>
 <translation id="3664782872746246217">关键字：</translation>
 <translation id="3670030362669914947">号码</translation>
@@ -1864,7 +1861,6 @@
 <translation id="4112140312785995938">快退</translation>
 <translation id="4114007503059268298">要将这张卡的信息保存到您的 Google 账号中和此设备上吗？</translation>
 <translation id="4114146879518089587">继续访问网站</translation>
-<translation id="4115378294792113321">洋红色</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">政策范围不受支持。</translation>
@@ -3447,6 +3443,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">已使用账号登录</translation>
 <translation id="6732087373923685049">摄像头</translation>
+<translation id="6736243959894955139">地址</translation>
 <translation id="6738516213925468394">您的数据已于 <ph name="TIME" />使用您的<ph name="BEGIN_LINK" />同步密码<ph name="END_LINK" />加密。输入该密码即可开始同步。</translation>
 <translation id="6740851646645036700">您目前已达到“帮我写”请求次数上限。请稍后再试。</translation>
 <translation id="674375294223700098">未知的服务器证书错误。</translation>

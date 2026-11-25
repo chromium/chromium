@@ -123,7 +123,6 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{A Chromium a böngészőt lassító lap szüneteltetését javasolja}other{A Chromium a böngészőt lassító lapok szüneteltetését javasolja}}</translation>
 <translation id="2307973900865360088">Megtartás a Dockban</translation>
 <translation id="2313870531055795960">Ellenőrzi az URL-eket a Chromiumban a nem biztonságos webhelyekről tárolt lista alapján. Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chromium elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
-<translation id="2350411688004301551">Váltás a Gemini Enterprise szolgáltatásra</translation>
 <translation id="2356070529366658676">Kérés</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2361918034042471035">A(z) „<ph name="EXTENSION_NAME" />” bővítmény arra kéri, hogy jelentkezzen be a Chromiumba</translation>
@@ -173,7 +172,6 @@
 <translation id="2846251086934905009">Telepítési hiba: A telepítő nem fejezte be a folyamatot. A telepítés megszakadt.</translation>
 <translation id="2850691299438350830">Gondoskodik a biztonságáról a Chromiumban, és használható a biztonság növelésére más Google-alkalmazásokban olyankor, amikor Ön be van jelentkezve.</translation>
 <translation id="2885378588091291677">Feladatkezelő</translation>
-<translation id="2898830646167954300">Visszaváltás a nem felügyelt Gemini asszisztensre</translation>
 <translation id="2910007522516064972">A &amp;Chromium névjegye</translation>
 <translation id="2915996080311180594">Újraindítás később</translation>
 <translation id="2933336679234709858">Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókjában Chromium-adatokat szeretne használni és menteni.</translation>
@@ -359,7 +357,6 @@
 <translation id="4950660488495335294">A Chromium-profilokkal különválaszthatja minden Chromium-anyagát. Létrehozhat profilokat ismerőseinek és családtagjainak, vagy elkülönítheti egymástól a munkát és a szórakozást.</translation>
 <translation id="4992938037305302429">Az Ön fiókja a Chromiumban</translation>
 <translation id="5123973130450702873">A Chromiumnak engedélyre van szüksége ahhoz, hogy követhesse az Ön kézmozgását</translation>
-<translation id="5139546603444206048">Átválthat a saját Google-fiókjához eredetileg társított, nem a(z) <ph name="DOMAIN" /> által kezelt Gemini asszisztensre. A válaszok a továbbiakban nem a(z) <ph name="DOMAIN" /> által kezelt fájlokon vagy szolgáltatásokon fognak alapulni, és a csevegési előzmények nem kerülnek át. Előfordulhat, hogy az asszisztens nem alkalmas munkavégzésre. A váltáshoz újra kell indítani a Chromiumot.</translation>
 <translation id="5141988424377517949">Nem látogatta meg mostanában. A Chromium eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Bejelentkezés a Chromiumba</translation>
 <translation id="5174969993834422967">Ön általában letiltja az értesítéseket. Ha azt szeretné, hogy ez a webhely küldjön értesítéseket, kattintson a helysáv jobb sarkában lévő értesítési ikonra.</translation>
@@ -711,7 +708,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8447525028100794994">További információ a képkeresőről a Chromiumban</translation>
 <translation id="8453117565092476964">A telepítő tömörített állománya megsérült vagy érvénytelen. Kérjük, töltse le újra a Chromium böngészőt.</translation>
 <translation id="8471947159125090285">Ha Chromium-adatokat szeretne használni és tárolni Google-fiókjában, igazolja személyazonosságát.</translation>
-<translation id="8473541503127475913">A váltáshoz indítsa újra a Chromiumot</translation>
 <translation id="8482493977473846331">Értesítéseket jelenít meg a Chromiumba való bejelentkezéshez</translation>
 <translation id="8493179195440786826">A Chromium elavult</translation>
 <translation id="850264194101621529">Köszönjük, hogy a Chromiumot választotta alapértelmezett böngészőként!</translation>
@@ -745,7 +741,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8906384069222226849">A Chromium futtatásához a Windows 10 1809-es vagy újabb verziója szükséges.</translation>
 <translation id="8907580949721785412">A Chromium megkísérli megjeleníteni a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="8910309838319708610">Sikerült! Mostantól egyszerűen tehet fel kérdéseket böngészés közben a Kereső AI-módjával.</translation>
-<translation id="8915682436012075700">Ez a felügyelt böngésző használhatja a(z) <ph name="DOMAIN" /> által munkához beállított Gemini asszisztenst. Az asszisztens információkat kereshet, és a szervezet fájljain és jóváhagyott szolgáltatásain alapuló válaszokat adhat. Személyes profillal való használata nem javasolt. A csevegési előzmények nem kerülnek átvitelre. A váltáshoz újra kell indítani a Chromiumot.</translation>
 <translation id="8932992523185907506">Már nem a Chromium az alapértelmezett böngésző. Beállítja a Chromiumot alapértelmezett böngészőként?</translation>
 <translation id="8941642502866065432">Nem sikerült a Chromium frissítése</translation>
 <translation id="8944232836376404813">Ez a művelet:

@@ -150,7 +150,6 @@ Ga naar <ph name="BEGIN_LINK2" />Google-services<ph name="END_LINK2" /> voor mee
 <translation id="1543035591122163372">Log in om onder andere je wachtwoorden van <ph name="DEVICE_TYPE" /> te gebruiken</translation>
 <translation id="1544084554881119930">Betaalmethoden en adressen worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.
 Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet gestuurd naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
-<translation id="1544826120773021464">Tik op de knop 'Account beheren' om je Google-account te beheren</translation>
 <translation id="1549000191223877751">Naar ander venster</translation>
 <translation id="1553358976309200471">Chrome updaten</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> voor '<ph name="SEARCH_TERMS" />'</translation>
@@ -167,7 +166,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, tabblad voor content delen</translation>
 <translation id="1601378265092360672">Browsegegevens omvatten je browsegeschiedenis, cookies en andere sitegegevens, gecachete afbeeldingen en bestanden, en geopende tabbladen</translation>
 <translation id="160275202205869636">Als dit aanstaat, kun je gegevens gebruiken en opslaan in je Google-account. Staat dit uit, dan worden gegevens alleen opgeslagen op dit apparaat.</translation>
-<translation id="160403827062749147">Welkom bij Google Chrome, de best beveiligde browser ter wereld</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 geselecteerd item verwijderen}other{# geselecteerde items verwijderen}}</translation>
 <translation id="1639239467298939599">Laden</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -866,7 +864,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4374192654218566997">\n\nJe kunt deze gegevens ook verwijderen van dit apparaat:</translation>
 <translation id="4378154925671717803">Telefoon</translation>
 <translation id="4380055775103003110">Als dit probleem zich blijft voordoen, kun je andere manieren proberen om door te gaan op <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
-<translation id="4381351546374507910">Log in om je bookmarks, wachtwoorden en informatie voor automatisch invullen op al je apparaten te krijgen.</translation>
 <translation id="4384468725000734951">Sogou wordt gebruikt om te zoeken</translation>
 <translation id="4387647248986092471">Profielvergrendeling voor auto instellen</translation>
 <translation id="4387817230000841154">Downloads openen</translation>
@@ -1908,7 +1905,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8210770465353466621">Hier vind je je tabbladen</translation>
 <translation id="8212799748012101103">Tabbladen doorzoeken openen</translation>
 <translation id="8215740705341534369">Zijblad</translation>
-<translation id="8218622182176210845">Je account beheren</translation>
 <translation id="8221985041778490865">Browsegegevens verwijderen</translation>
 <translation id="8223642481677794647">Feedkaartmenu</translation>
 <translation id="82296173028782770">Zoekopdracht bewerken: <ph name="SEARCH_QUERY" /></translation>

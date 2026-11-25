@@ -200,6 +200,7 @@
 <translation id="1547610699249301703">Partilhe palavras-passe</translation>
 <translation id="1554043146674176775">Desativar Modo IA</translation>
 <translation id="1554477036522844996">Nova janela</translation>
+<translation id="1555014818414775661">Adicionar imagens</translation>
 <translation id="1557806604681757705">seu computador</translation>
 <translation id="1558391695376153246">Fechar sep. de nav. anónima</translation>
 <translation id="1560153516220021659">Botão da barra de ferramentas secundária reduzido</translation>
@@ -913,7 +914,6 @@
 <translation id="3857113360369572832">Abra as <ph name="BEGIN_BOLD" />Definições do Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="386224966259596343">Vai ter a oportunidade de guardar estas informações na Carteira da próxima vez que preencher um formulário relevante.</translation>
-<translation id="3868495844258915202">Mostrar URL completo</translation>
 <translation id="3870931306085184145">Nenhuma palavra-passe guardada para <ph name="DOMAIN" />.</translation>
 <translation id="3875783148670536197">Mostrar-me como</translation>
 <translation id="3878657761594430423">Controlo da página</translation>
@@ -1009,7 +1009,6 @@
 <translation id="4158491215857439601">Gestor de Palavras-passe</translation>
 <translation id="4159430626587776301">Veja críticas sobre produtos que procurou recentemente</translation>
 <translation id="4161488339191275792">Crie grupos de separadores para organizar os separadores abertos</translation>
-<translation id="4162616958842974809">Adicionar imagem</translation>
 <translation id="4163699139741158298">{count,plural, =1{Marcador guardado em "{title}". Está guardado apenas neste dispositivo.}other{{count} marcadores guardados em "{title}". Estão guardados apenas neste dispositivo.}}</translation>
 <translation id="4164514562270305824">Eliminar automaticamente as transferências</translation>
 <translation id="4165986682804962316">Definições de sites</translation>

@@ -139,7 +139,6 @@
 <translation id="2307973900865360088">Mantén al Dock</translation>
 <translation id="2309047409763057870">Aquesta és una instal·lació secundària de Google Chrome i no pot definir-se com a navegador predeterminat.</translation>
 <translation id="2345992953227471816">Chrome ha detectat que aquestes extensions contenen programari maliciós:</translation>
-<translation id="2350411688004301551">Canvia a Gemini Enterprise</translation>
 <translation id="2358140144860869442">Per obtenir la teva llista de lectura i altres dades en tots els dispositius, inicia la sessió a Chrome</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2403703063067034158">Error d'inici: s'està executant una altra instància de la configuració. Torna-ho a provar més tard.</translation>
@@ -197,7 +196,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="2876628302275096482">Més informació sobre <ph name="BEGIN_LINK" />com Chrome manté la privadesa de les teves dades<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Gestor de tasques</translation>
 <translation id="2888126860611144412">Sobre Chrome</translation>
-<translation id="2898830646167954300">Torna a l'assistent de Gemini no gestionat</translation>
 <translation id="2915996080311180594">Reinicia més tard</translation>
 <translation id="2926952073016206995">Chrome necessita permís d'accés a la càmera per a aquest lloc web</translation>
 <translation id="2945997411976714835">Error d'instal·lació: no s'ha pogut iniciar el procés d'instal·lació.</translation>
@@ -418,7 +416,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5271833978500241046">Utilitza-les juntament amb altres funcions de Gemini a Chrome</translation>
 <translation id="5320351714793324716">Si permets les galetes, Chrome pot utilitzar-les en la precàrrega</translation>
 <translation id="5321325624576443340">Google Lens no està disponible. Torna-ho a provar més tard.</translation>
-<translation id="5336664042114176802">Pots canviar a l'assistent de Gemini associat originalment al teu Compte de Google i que no gestiona <ph name="DOMAIN" />. Les respostes ja no es basaran en els fitxers ni els serveis gestionats per <ph name="DOMAIN" /> i l'historial de xats no es transferirà. És possible que no sigui adequat utilitzar-lo a la feina. Per canviar, cal reiniciar Chrome.</translation>
 <translation id="5346389065299425353">Aprofundeix en la cerca afegint diverses pestanyes, fitxers i eines</translation>
 <translation id="5353252989841766347">Exporteu contrasenyes de Chrome</translation>
 <translation id="5368118228313795342">Codi addicional: <ph name="EXTRA_CODE" />.</translation>
@@ -535,7 +532,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6438015621983209660">Amplia la funció Navegació segura millorada amb Chrome al telèfon</translation>
 <translation id="6442774133615368941">Compra, tradueix i identifica el que veus amb la càmera a l'aplicació Chrome per a iOS</translation>
 <translation id="6446105560007692480">per cercar amb Chrome o personalitzar-ho a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" /></translation>
-<translation id="6447943657065463998">Aquest navegador gestionat pot utilitzar un assistent de Gemini que <ph name="DOMAIN" /> ha configurat per a la feina. Pot cercar informació i proporcionar respostes basades en els fitxers i els serveis aprovats de l'organització. És possible que no sigui recomanable utilitzar-lo amb un perfil personal. L'historial de xats no es transferirà. Per canviar, cal reiniciar Chrome.</translation>
 <translation id="6448835208126432197">Per seleccionar una part de la pantalla a Gemini a Chrome, utilitza les tecles de drecera.</translation>
 <translation id="6473905796280459355">Ves a la pàgina Sobre Chrome</translation>
 <translation id="6481963882741794338">Enllaça Chrome i altres serveis de Google per a la personalització i altres finalitats</translation>
@@ -706,7 +702,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="8064965390968184078">1. Fes clic a <ph name="BUTTON_LABEL" /> a continuació.
 2. Fes clic a <ph name="BUTTON_2" /> a la configuració de Windows.
 3. Fes clic a <ph name="BUTTON_3" /> a la notificació de Windows per fixar Chrome a la barra de tasques i accedir-hi ràpidament</translation>
-<translation id="8066474819446975249">Reinicia Chrome per canviar</translation>
 <translation id="8074398340364918139">Per cercar una funció o una extensió específiques de Chrome, escriu la seva drecera a la barra d'adreces, seguida de la tecla que hagis seleccionat</translation>
 <translation id="8077579734294125741">Altres perfils de Chrome</translation>
 <translation id="8086881907087796310">La instal·lació ha fallat perquè l'ordinador no compleix els requisits mínims de maquinari.</translation>

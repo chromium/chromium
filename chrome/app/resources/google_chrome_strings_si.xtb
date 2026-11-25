@@ -143,7 +143,6 @@
 <translation id="2307973900865360088">ඩොකයේ තබන්න</translation>
 <translation id="2309047409763057870">මෙය Google Chrome හි දෙවන ස්ථාපනයක් වන අතර, ඔබේ පෙරනිමි බ්‍රව්සරය කළ නොහැකිය.</translation>
 <translation id="2345992953227471816">මෙම දිගුවල අනිෂ්ට මෘදුකාංග අඩංගු බව Chrome සොයා ගෙන ඇත:</translation>
-<translation id="2350411688004301551">Gemini Enterprise වෙත මාරු වන්න</translation>
 <translation id="2358140144860869442">ඔබේ සියලු උපාංග මත ඔබේ කියවීම් ලැයිස්තුව සහ තවත් දේ ලබා ගැනීමට, Chrome තුළට පුරන්න</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
 <translation id="2403703063067034158">ආරම්භක දෝෂය: පිහිටුවීමේ තවත් අවස්ථාවක් දැනට ධාවනය වේ, පසුව නැවත උත්සාහ කරන්න.</translation>
@@ -201,7 +200,6 @@
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ඔබේ දත්ත පෞද්ගලිකව තබා ගන්නා ආකාරය<ph name="END_LINK" /> පිළිබඳව තව දැන ගන්න</translation>
 <translation id="2885378588091291677">කාර්ය කළමණාකරු</translation>
 <translation id="2888126860611144412">Chrome ගැන</translation>
-<translation id="2898830646167954300">ඔබේ කළමනාකරණය නොකළ Gemini සහායක වෙත ආපසු යන්න</translation>
 <translation id="2915996080311180594">පසුව යළි අරඹන්න</translation>
 <translation id="2926952073016206995">මෙම අඩවිය සඳහා Chrome හට කැමරා අවසරය අවශ්‍යයි</translation>
 <translation id="2945997411976714835">ස්ථාපන දෝෂය: ස්ථාපක ක්‍රියාවලිය ආරම්භ කිරීමට අසමත් විය.</translation>
@@ -423,7 +421,6 @@
 <translation id="5271833978500241046">Chrome හි අනෙකුත් Gemini විශේෂාංග සමග ඒවා භාවිතා කරන්න</translation>
 <translation id="5320351714793324716">ඔබ කුකීවලට ඉඩ දෙන්නේ නම්, පූර්ව පූරණය කිරීමේ දී Chrome ඒවා භාවිත කිරීමට ඉඩ ඇත.</translation>
 <translation id="5321325624576443340">Google Lens ලබා ගත නොහැක. පසුව නැවත උත්සාහ කරන්න.</translation>
-<translation id="5336664042114176802">ඔබට මුලින් ඔබේ Google ගිණුම සමග සම්බන්ධ වූ සහ <ph name="DOMAIN" /> විසින් කළමනාකරණය නොකරන Gemini සහායක වෙත මාරු විය හැක. පිළිතුරු තවදුරටත් <ph name="DOMAIN" /> විසින් කළමනාකරණය කරන ගොනු හෝ සේවාවන්හි පදනම් නොවන අතර ඔබේ කතාබස් ඉතිහාසය ගෙන නොයනු ඇත. එය වැඩ සඳහා භාවිතා කිරීමට සුදුසු නොවිය හැක. මාරු වීමට Chrome නැවත දියත් කිරීම අවශ්‍ය වේ.</translation>
 <translation id="5346389065299425353">බහු පටිති, ගොනු සහ මෙවලම් එක් කිරීමෙන් ඔබේ සෙවීම ගැඹුරු කරන්න</translation>
 <translation id="5353252989841766347">Chrome වෙතින් මුරපද නිර්යාත කරන්න</translation>
 <translation id="5368118228313795342">අමතර කේතය: <ph name="EXTRA_CODE" />.</translation>
@@ -542,7 +539,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6438015621983209660">ඔබේ දුරකථනයේ Chrome සමග ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම දීර්ඝ කරන්න</translation>
 <translation id="6442774133615368941">Chrome iOS යෙදුම මත ඔබේ කැමරාව සමග ඔබ දකින දේ සාප්පු යන්න, පරිවර්තනය කරන්න සහ හඳුනා ගන්න</translation>
 <translation id="6446105560007692480">Chrome සමග සෙවීමට හෝ <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ අභිරුචිකරණය කිරීමට</translation>
-<translation id="6447943657065463998">මෙම කළමනාකරණය කළ බ්‍රව්සරයට <ph name="DOMAIN" /> විසින් වැඩ සඳහා පිහිටුවා ඇති Gemini සහායකයෙකු භාවිතා කළ හැක. එයට තොරතුරු සොයා ගැනීමට සහ සංවිධානයේ ගොනු සහ අනුමත සේවාවන් තුළ පදනම් වූ පිළිතුරු සැපයීමට හැක. පුද්ගලික පැතිකඩක් සමග එය භාවිතා කිරීම නිර්දේශ නොකළ හැක. කතාබස් ඉතිහාසය ගෙන යන්නේ නැත. මාරු වීමට Chrome නැවත දියත් කිරීම අවශ්‍ය වේ.</translation>
 <translation id="6448835208126432197">Chrome හි Gemini හි තිරයේ කොටසක් තේරීමට, යතුරුපුවරු කෙටිමඟ භාවිතා කරන්න.</translation>
 <translation id="6473905796280459355">Chrome ගැන පිටුවට යන්න</translation>
 <translation id="6481963882741794338">පුද්ගලායන සහ වෙනත් අරමුණු සඳහා Chrome සහ වෙනත් Google සේවා සම්බන්‍ධ කරන්න</translation>
@@ -712,7 +708,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064965390968184078">1. පහත <ph name="BUTTON_LABEL" /> ක්ලික් කරන්න ඔබේ Windows සැකසීම් තුළ <ph name="BUTTON_2" /> ක්ලික් කරන්න
 3. ඉක්මන් ප්‍රවේශය සඳහා Chrome ඔබේ කාර්ය තීරුවට ඇමිණීමට Windows දැනුම්දීම තුළ <ph name="BUTTON_3" /> ක්ලික් කරන්න</translation>
-<translation id="8066474819446975249">මාරු වීමට Chrome යළි දියත් කරන්න</translation>
 <translation id="8074398340364918139">නිශ්චිත Chrome විශේෂාංගයක් හෝ දිගුවක් සෙවීමට, ලිපින තීරුවේ එහි කෙටිමඟ ටයිප් කරන්න, ඉන්පසු ඔබ තෝරා ගත් යතුරුපුවරු යතුර</translation>
 <translation id="8077579734294125741">වෙනත් Chrome පැතිකඩ</translation>
 <translation id="8086881907087796310">ඔබේ පරිගණකය අවම දෘඪාංග අවශ්‍යතා සපුරා නොමැති නිසා ස්ථාපනය අසමත් විය.</translation>

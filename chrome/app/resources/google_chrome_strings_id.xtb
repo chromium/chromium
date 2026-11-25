@@ -139,7 +139,6 @@
 <translation id="2307973900865360088">Simpan di Dok</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan Google Chrome sekunder, dan tidak dapat digunakan sebagai browser default.</translation>
 <translation id="2345992953227471816">Chrome menemukan bahwa ekstensi berikut berisi malware:</translation>
-<translation id="2350411688004301551">Beralih ke Gemini Enterprise</translation>
 <translation id="2358140144860869442">Untuk mendapatkan daftar bacaan dan data lainnya di semua perangkat Anda, login ke Chrome</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2403703063067034158">Error saat sistem dimulai: instance penyiapan lain sedang berjalan, coba lagi nanti.</translation>
@@ -197,7 +196,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="2876628302275096482">Pelajari lebih lanjut <ph name="BEGIN_LINK" />cara Chrome menjaga privasi data Anda<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Pengelola Tugas</translation>
 <translation id="2888126860611144412">Tentang Chrome</translation>
-<translation id="2898830646167954300">Beralih kembali ke asisten Gemini yang tidak dikelola</translation>
 <translation id="2915996080311180594">Mulai Ulang Nanti</translation>
 <translation id="2926952073016206995">Chrome memerlukan izin kamera untuk situs ini</translation>
 <translation id="2945997411976714835">Error penginstalan: Proses penginstal gagal dimulai.</translation>
@@ -418,7 +416,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5271833978500241046">Gunakan bersama fitur Gemini lainnya di Chrome</translation>
 <translation id="5320351714793324716">Jika Anda mengizinkan cookie, Chrome dapat menggunakannya saat melakukan pramuat</translation>
 <translation id="5321325624576443340">Google Lens tidak tersedia. Coba lagi nanti.</translation>
-<translation id="5336664042114176802">Anda dapat beralih ke asisten Gemini yang awalnya dikaitkan dengan Akun Google Anda dan tidak dikelola oleh <ph name="DOMAIN" />. Jawaban tidak akan lagi didasarkan pada file atau layanan yang dikelola oleh <ph name="DOMAIN" /> dan histori percakapan Anda tidak akan dipindahkan. Asisten ini mungkin tidak cocok digunakan untuk keperluan pekerjaan. Beralih memerlukan peluncuran kembali Chrome.</translation>
 <translation id="5346389065299425353">Perdalam penelusuran Anda dengan menambahkan beberapa tab, file, dan alat</translation>
 <translation id="5353252989841766347">Ekspor Sandi dari Chrome</translation>
 <translation id="5368118228313795342">Kode tambahan: <ph name="EXTRA_CODE" />.</translation>
@@ -535,7 +532,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6438015621983209660">Manfaatkan Safe Browsing yang Disempurnakan dengan Chrome di ponsel</translation>
 <translation id="6442774133615368941">Gunakan kamera di aplikasi Chrome versi iOS untuk berbelanja, menerjemahkan teks, dan mengidentifikasi objek yang Anda lihat</translation>
 <translation id="6446105560007692480">untuk menelusuri dengan Chrome atau menyesuaikan di <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" /></translation>
-<translation id="6447943657065463998">Browser terkelola ini dapat menggunakan asisten Gemini yang disiapkan untuk kantor oleh <ph name="DOMAIN" />. Gemini dapat menemukan info dan memberikan jawaban yang didasarkan pada file dan layanan yang disetujui organisasi. Penggunaan dengan profil pribadi mungkin tidak disarankan. Histori percakapan tidak akan dipindahkan. Beralih memerlukan peluncuran kembali Chrome.</translation>
 <translation id="6448835208126432197">Gunakan pintasan keyboard untuk memilih bagian tertentu dari layar di Gemini di Chrome.</translation>
 <translation id="6473905796280459355">Buka halaman Tentang Chrome</translation>
 <translation id="6481963882741794338">Tautkan Chrome dan layanan Google lainnya untuk personalisasi dan tujuan lainnya</translation>
@@ -704,7 +700,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="80471789339884597">Terima kasih telah menginstal. Anda harus memulai ulang semua browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064965390968184078">1. Klik <ph name="BUTTON_LABEL" /> di bawah Klik <ph name="BUTTON_2" /> di setelan Windows Klik <ph name="BUTTON_3" /> di notifikasi Windows untuk menyematkan Chrome ke taskbar agar dapat diakses dengan cepat</translation>
-<translation id="8066474819446975249">Luncurkan kembali Chrome untuk beralih</translation>
 <translation id="8074398340364918139">Untuk menelusuri fitur atau ekstensi Chrome tertentu, ketik pintasannya di kolom URL diikuti tombol keyboard pilihan Anda</translation>
 <translation id="8077579734294125741">Profil Chrome lainnya</translation>
 <translation id="8086881907087796310">Penginstalan gagal karena komputer Anda tidak memenuhi persyaratan hardware minimum.</translation>

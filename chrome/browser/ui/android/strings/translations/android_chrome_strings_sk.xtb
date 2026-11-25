@@ -150,7 +150,6 @@
 <translation id="1543035591122163372">Prihláste sa a získajte tak svoje heslá a ďalšie položky zo zariadenia (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="1544084554881119930">Spôsoby platby a adresy nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.
 Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
-<translation id="1544826120773021464">Ak chcete spravovať svoj účet Google, klepnite na tlačidlo Spravovať účet</translation>
 <translation id="1549000191223877751">Prejsť do druhého okna</translation>
 <translation id="1553358976309200471">Aktualizovať Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> pre výraz „<ph name="SEARCH_TERMS" />“</translation>
@@ -167,7 +166,6 @@
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, karta na zdieľanie</translation>
 <translation id="1601378265092360672">Dáta prehliadania zahŕňajú históriu prehliadania, súbory cookie a ďalšie dáta webov, obrázky a súbory vo vyrovnávacej pamäti a otvorené karty</translation>
 <translation id="160275202205869636">Keď je toto nastavenie zapnuté, údaje používate a ukladáte vo svojom účte Google. Keď je vypnuté, údaje sa ukladajú iba do tohto zariadenia.</translation>
-<translation id="160403827062749147">Víta vás Google Chrome, najbezpečnejší prehliadač na svete</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Odstrániť 1 vybranú položku}few{Odstrániť # vybrané položky}many{Odstrániť # vybranej položky}other{Odstrániť # vybraných položiek}}</translation>
 <translation id="1639239467298939599">Načítava sa</translation>
 <translation id="1641113438599504367">Bezpečné prehliadanie</translation>
@@ -866,7 +864,6 @@
 <translation id="4374192654218566997">\n\nZ tohto zariadenia môžete odstrániť aj tieto údaje:</translation>
 <translation id="4378154925671717803">Telefón</translation>
 <translation id="4380055775103003110">Ak sa tento problém opakuje, môžete skúsiť ďalšie spôsoby, ako pokračovať na webe <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
-<translation id="4381351546374507910">Prihláste sa, aby ste mali vo všetkých svojich zariadeniach k dispozícii svoje záložky, heslá a informácie automatického dopĺňania.</translation>
 <translation id="4384468725000734951">Na vyhľadávanie sa používa Sogou</translation>
 <translation id="4387647248986092471">Vytvoriť zámku profilu auta</translation>
 <translation id="4387817230000841154">Otvorenie stiahnutých súborov</translation>
@@ -1908,7 +1905,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8210770465353466621">Tu nájdete svoje karty</translation>
 <translation id="8212799748012101103">Otvoriť vyhľadávanie kariet</translation>
 <translation id="8215740705341534369">Bočný hárok</translation>
-<translation id="8218622182176210845">Spravujte svoj účet</translation>
 <translation id="8221985041778490865">Odstraňujú sa dáta prehliadania</translation>
 <translation id="8223642481677794647">Ponuka karty feedu</translation>
 <translation id="82296173028782770">Upraviť vyhľadávací dopyt <ph name="SEARCH_QUERY" /></translation>

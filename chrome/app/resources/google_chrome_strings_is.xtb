@@ -143,7 +143,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2307973900865360088">Hafa í dokku</translation>
 <translation id="2309047409763057870">Þetta er aukaleg uppsetning á Google Chrome sem ekki er hægt að gera að sjálfgefnum vafra.</translation>
 <translation id="2345992953227471816">Chrome komst að því að eftirfarandi viðbætur innihalda spilliforrit:</translation>
-<translation id="2350411688004301551">Skipta yfir í Gemini Enterprise</translation>
 <translation id="2358140144860869442">Skráðu þig inn á Chrome til að fá aðgang að leslistanum þínum og fleiru í öllum tækjunum þínum</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2403703063067034158">Villa í ræsingu: annað tilvik af uppsetningu er í keyrslu, reyndu aftur síðar.</translation>
@@ -201,7 +200,6 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="2876628302275096482">Nánar um <ph name="BEGIN_LINK" />hvernig Chrome heldur gögnunum þínum leyndum<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Verkstjórn</translation>
 <translation id="2888126860611144412">Um Chrome</translation>
-<translation id="2898830646167954300">Skipta aftur yfir í óstýrða Gemini-hjálparann þinn</translation>
 <translation id="2915996080311180594">Endurræsa seinna</translation>
 <translation id="2926952073016206995">Chrome verður að fá leyfi fyrir myndavél fyrir þetta vefsvæði</translation>
 <translation id="2945997411976714835">Uppsetningarvilla: Ekki tókst að ræsa ferli uppsetningarforrits.</translation>
@@ -424,7 +422,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 <translation id="5271833978500241046">Notaðu hana samhliða öðrum Gemini-eiginleikum í Chrome</translation>
 <translation id="5320351714793324716">Ef þú leyfir fótspor kann Chrome að nota þau við forhleðslu</translation>
 <translation id="5321325624576443340">Google-linsa er ekki tiltæk. Reyndu aftur síðar.</translation>
-<translation id="5336664042114176802">Þú getur skipt yfir í Gemini-hjálparann sem var upphaflega tengdur við Google-reikninginn þinn og er ekki stýrt af <ph name="DOMAIN" />. Svör verða ekki lengur byggð á skrám eða þjónustum sem <ph name="DOMAIN" /> stýrir og spjallferillinn þinn verður ekki fluttur. Það er hugsanlega ekki hentugt til notkunar í vinnu. Þú þarft að endurræsa Chrome til að skipta.</translation>
 <translation id="5346389065299425353">Dýpkaðu leitina þína með því að bæta við mörgum flipum, skrám og verkfærum</translation>
 <translation id="5353252989841766347">Flytja út aðgangsorð úr Chrome</translation>
 <translation id="5368118228313795342">Viðbótarkóði: <ph name="EXTRA_CODE" />.</translation>
@@ -543,7 +540,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6438015621983209660">Framlengdu Enn öruggari vefskoðun með Chrome í símanum þínum</translation>
 <translation id="6442774133615368941">Notaðu myndavélina þína í Chrome iOS-forritinu til að versla, þýða og bera kennsl á það sem þú sérð</translation>
 <translation id="6446105560007692480">til að leita með Chrome eða sérsníða í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" /></translation>
-<translation id="6447943657065463998">Þessi stýrði vafri getur notað Gemini-hjálpara sem <ph name="DOMAIN" /> setti upp fyrir vinnu. Hann getur fundið upplýsingar og veitt svör sem byggð eru á skrám fyrirtækisins og samþykktum þjónustum. Ekki er mælt með að hjálparinn sé notaður á persónulegum prófíl. Spjallferill verður ekki fluttur. Þú þarft að endurræsa Chrome til að skipta.</translation>
 <translation id="6448835208126432197">Notaðu flýtilykil til að velja hluta af skjánum í Gemini í Chrome.</translation>
 <translation id="6473905796280459355">Fara á síðuna Um Chrome</translation>
 <translation id="6481963882741794338">Tengdu Chrome við aðrar Google-þjónustur til að sérsníða upplifun þína og fleira</translation>
@@ -713,7 +709,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064965390968184078">1. Smelltu á <ph name="BUTTON_LABEL" /> hér fyrir neðan
 2. Smelltu á <ph name="BUTTON_2" /> í Windows-stillingunum Smelltu á <ph name="BUTTON_3" /> í Windows-tilkynningunni til að festa Chrome við forritastikuna þína til að auðvelda aðgang</translation>
-<translation id="8066474819446975249">Endurræsa Chrome til að skipta</translation>
 <translation id="8074398340364918139">Til að leita að tilteknum eiginleika eða viðbót Chrome skaltu slá inn flýtileiðina í veffangastikuna og ýta svo á valinn flýtilykil</translation>
 <translation id="8077579734294125741">Aðrir Chrome-prófílar</translation>
 <translation id="8086881907087796310">Uppsetning mistókst vegna þess að tölvan þín uppfyllir ekki lágmarksskilyrði um vélbúnað.</translation>

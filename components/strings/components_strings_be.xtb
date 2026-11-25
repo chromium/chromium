@@ -667,7 +667,6 @@
 <translation id="2126374524350484896">Пераўтваральнік PDF:</translation>
 <translation id="2127090458081644412">Пароль захаваны на гэтай прыладзе</translation>
 <translation id="2127747486437921899">Курсіў</translation>
-<translation id="2129163794581571479">Выкарыстоўваецца Gemini з персаналізаваным інтэлектам. Вашы запыты, загалоўкі старонак і URL-адрасы могуць разглядацца спецыялістамі для ўдасканалення палепшанага аўтазапаўнення. <ph name="BEGIN_LINK" />Кіраваць наладамі<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Зададзеныя вамі шаблоны могуць не прымяніцца, бо палітыка DnsOverHttpsMode не вызначана.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Акно "Уключыць аўтазапаўненне плацежных даных" адкрыта на ўсю вышыню.</translation>
@@ -1218,7 +1217,6 @@
 <translation id="3041584414879052436">Спіс эмітэнтаў, якія прапануюць куплю ў растэрміноўку, закрыты.</translation>
 <translation id="3041612393474885105">Інфармацыя аб сертыфікаце</translation>
 <translation id="3041835740069544003">Chrome цяпер можа выяўляць і запаўняць больш форм дзякуючы палепшанаму распазнаванню форм. Для гэтага URL-адрасы і змесціва старонак могуць апрацоўвацца ў прыватнай прасторы ў воблаку. Змяніць гэты параметр можна ў наладах.</translation>
-<translation id="3047054686095898948">Выкарыстоўвайце <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> для захавання сваіх звестак. Гэта паскорыць працу ў розных прадуктах Google, напрыклад запаўненне форм. Вы можаце <ph name="BEGIN_LINK" />кіраваць сваёй інфармацыяй<ph name="END_LINK" /> у сэрвісе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />" для ўліковага запісу <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Гісторыю Аддаленага працоўнага стала Chrome, у тым ліку меткі часу, хосты і ідэнтыфікатары сеансаў кліентаў</translation>
 <translation id="3052868890529250114">Звычайна падключэнне да сайтаў абаронена, але ў гэты раз Chrome не ўдалося ўстанавіць бяспечнае падключэнне. Магчыма, зламыснік спрабуе перахапіць або змяніць ваша падключэнне да сеткі. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш пра гэта папярэджанне<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Зніжэнне цаны на <ph name="PRODUCT_NAME" /> на <ph name="PRICE_DROP" /></translation>
@@ -1588,7 +1586,6 @@
 <translation id="3655670868607891010">Калі вы часта бачыце гэта паведамленне, паспрабуйце наступнае: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Рэдакцыя</translation>
 <translation id="3659521826520353662">Якія вызначаныя адміністратарам вэб-сайты наведваюцца і калі: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">Выкарыстоўваецца Gemini з персаналізаваным інтэлектам. <ph name="BEGIN_LINK" />Кіраваць наладамі<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Вы можаце шукаць прапановы пэўнага тавару ад іншых крам, якія яго прадаюць.</translation>
 <translation id="3664782872746246217">Ключавыя словы:</translation>
 <translation id="3670030362669914947">Нумар</translation>
@@ -1867,7 +1864,6 @@
 <translation id="4112140312785995938">Перайсці назад</translation>
 <translation id="4114007503059268298">Захаваць гэту картку ў вашым Уліковым запісе Google і на гэтай прыладзе?</translation>
 <translation id="4114146879518089587">Перайсці на сайт</translation>
-<translation id="4115378294792113321">Пурпурны</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Вобласць прымянення палітыкі не падтрымліваецца.</translation>
@@ -3450,6 +3446,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">Выкананы ўваход ва ўліковы запіс</translation>
 <translation id="6732087373923685049">камера</translation>
+<translation id="6736243959894955139">Адрас</translation>
 <translation id="6738516213925468394">Даныя былі зашыфраваны з дапамогай <ph name="BEGIN_LINK" />фразы-пароля для сінхранізацыі<ph name="END_LINK" /> <ph name="TIME" />. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="6740851646645036700">Вы дасягнулі часовага ліміту на дапамогу з напісаннем. Паўтарыце спробу пазней.</translation>
 <translation id="674375294223700098">Невядомая памылка сертыфіката сервера.</translation>

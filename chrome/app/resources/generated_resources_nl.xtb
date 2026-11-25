@@ -210,7 +210,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1202116106683864634">Weet je zeker dat je deze toegangscode wilt verwijderen?</translation>
 <translation id="1202892408424955784">Gevolgde producten</translation>
 <translation id="1203247227716551969">Je account laten verifiëren</translation>
-<translation id="120368089816228251">Muzieknoot</translation>
 <translation id="1203942045716040624">Gedeelde worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">De beveiligingscode staat op de achterkant van je kaart</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Groep verwijderen}other{Groepen verwijderen}}</translation>
@@ -367,7 +366,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1386966479075994683">Tabbladen uitvouwen</translation>
 <translation id="1388253969141979417">Toestemming om je microfoon te gebruiken</translation>
 <translation id="139013308650923562">Mogen lettertypen gebruiken die zijn geïnstalleerd op je apparaat</translation>
-<translation id="1393283411312835250">Zon en wolken</translation>
 <translation id="1396120028054416908">Terug naar <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Fout bij instellen van printer</translation>
 <translation id="1398853756734560583">Maximaliseren</translation>
@@ -426,7 +424,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1464047267926346987">Sla onder andere je wachtwoorden en bookmarks op</translation>
 <translation id="1465176863081977902">Adres van audio k&amp;opiëren</translation>
 <translation id="146522654774760805">Wachtwoorden en automatisch invullen</translation>
-<translation id="1465827627707997754">Pizzapunt</translation>
 <translation id="1467005863208369884">Dit bestand kan niet worden geverifieerd omdat Safe Browsing uitstaat</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="1468571364034902819">Dit profiel kan niet worden gebruikt</translation>
@@ -527,7 +524,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1573127087832371028">Beschrijf het probleem</translation>
 <translation id="1573415331092567032">Deze sneltoets buiten Chrome gebruiken</translation>
 <translation id="1574335334663388774"><ph name="APP_NAME" /> versie <ph name="APP_VERSION" /> is al geïnstalleerd op dit apparaat</translation>
-<translation id="1576594961618857597">Standaard witte avatar</translation>
 <translation id="1578488449637163638">Donker</translation>
 <translation id="157931050206866263">Meer informatie over malwarescans</translation>
 <translation id="1581962803218266616">Toon in Finder</translation>
@@ -839,7 +835,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1913749768968678106">Casten, opslaan en delen</translation>
 <translation id="19147273405311768">Werkbalk resetten naar standaardinstellingen</translation>
 <translation id="1915307458270490472">Ophangen</translation>
-<translation id="1916502483199172559">Standaard rode avatar</translation>
 <translation id="1916770123977586577">Laad deze pagina opnieuw om je geüpdatete instellingen toe te passen op deze site</translation>
 <translation id="1917766536967060661">Je raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) kan niet meer met jou communiceren via Google-services.</translation>
 <translation id="1918141783557917887">&amp;Kleiner</translation>
@@ -1161,7 +1156,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="2270668657177045040">Een site en de bijbehorende subdomeinen kunnen zien welke gerelateerde web-apps op je apparaat zijn geïnstalleerd.</translation>
 <translation id="2271452184061378400">Je tabbladgroepen worden hier opgeslagen</translation>
 <translation id="2271986192355138465">Meer informatie over hoe je web-apps installeert</translation>
-<translation id="2272570998639520080">Martiniglas</translation>
 <translation id="2275352532065325930">Positie van Tabbladen doorzoeken</translation>
 <translation id="227763434929139750">Niet toestaan dat sites bewegings- of lichtsensoren gebruiken</translation>
 <translation id="2278193750452754829">Extensies zijn toegestaan op deze site. Selecteer om het menu te openen.</translation>
@@ -1484,7 +1478,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2637852492915204064">Tabbladen doorzoeken sluiten</translation>
 <translation id="263796568413910992">Vraag het aan <ph name="SEARCH_ENGINE_NAME" /> of typ een URL</translation>
 <translation id="2640299212685523844">GTK gebruiken</translation>
-<translation id="2642111877055905627">Voetbal</translation>
 <translation id="2642206811783203764">Altijd op <ph name="SITE_NAME" /></translation>
 <translation id="2643379881528582459">Als Chromium een van je wachtwoorden bij een openbaar gegevenslek vindt, kan Chromium aanbieden om je wachtwoord te wijzigen als je bent ingelogd</translation>
 <translation id="2643698698624765890">Je kunt je extensies beheren door in het paginamenu te klikken op 'Extensies'.</translation>
@@ -1942,7 +1935,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3134312457920437826">Kan de extensie niet installeren omdat deze een niet-ondersteunde manifestversie gebruikt.</translation>
 <translation id="3134393957315651797">Selecteer de experimentstatus voor het experiment <ph name="EXPERIMENT_NAME" />. Beschrijving experiment: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3134822828309700120">Andere Gemini-apps op afstand laten browsen vanaf elk apparaat</translation>
-<translation id="3139925690611372679">Standaard gele avatar</translation>
 <translation id="314095642664111744">Focus uitzetten</translation>
 <translation id="3141093262818886744">Toch openen</translation>
 <translation id="3141318088920353606">Luisteren…</translation>
@@ -2025,7 +2017,6 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3222066309010235055">PreRender: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3223109931751684474">Toegang tot je toegangssleutels intrekken voor dit apparaat</translation>
 <translation id="3224803532980286809">Google ziet alleen wat zichtbaar is voor jou</translation>
-<translation id="3225084153129302039">Standaard paarse avatar</translation>
 <translation id="3225741048815287955"><ph name="BEGIN_BOLD_1" />Tabbladen worden gedeeld voor relevantere antwoorden.<ph name="END_BOLD_1" /> Google gebruikt de content en URL van gedeelde tabbladen. Je huidige tabblad wordt gedeeld in nieuwe gesprekken. Je kunt deze instelling op elk moment aanpassen. <ph name="BEGIN_BOLD_2" />De gegevens van je organisatie zijn privé en beschermd.<ph name="END_BOLD_2" /> De gegevens worden niet gebruikt om generatieve AI-modellen te verbeteren.</translation>
 <translation id="3226249862705569834">Sensoren in gebruik</translation>
 <translation id="3227137524299004712">Microfoon</translation>
@@ -2239,7 +2230,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3436118221454753036">Vragen aan AI-modus</translation>
 <translation id="3437397693214267762">Je Outlook Agenda en SharePoint- en OneDrive-bestanden bekijken</translation>
 <translation id="3437494162908353428">DevTools zijn niet toegestaan voor deze URL.</translation>
-<translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> altijd toegang tot je microfoon geven</translation>
 <translation id="3439970425423980614">Pdf openen in voorbeeldweergave</translation>
 <translation id="3440478087746699229">Intern</translation>
@@ -2825,7 +2815,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4035758313003622889">&amp;Taakbeheer</translation>
 <translation id="4035877632587724847">Niet toestaan</translation>
-<translation id="4037084878352560732">Paard</translation>
 <translation id="4040041015953651705">Taal om uit te vertalen</translation>
 <translation id="4040854068229263729">&amp;Verwijderen uit woordenboek</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Pagina afsluiten}other{Pagina's afsluiten}}</translation>
@@ -2914,6 +2903,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" />: weergave links</translation>
 <translation id="4156532396656021084">&amp;Zoekmachines en snelkoppelingen beheren</translation>
 <translation id="4157869833395312646">Microsoft SGC (Server Gated Cryptography)</translation>
+<translation id="4165077084524712774">Meer tools</translation>
 <translation id="4165986682804962316">Site-instellingen</translation>
 <translation id="4167924027691268367">Meer acties voor snelkoppeling <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> eindigend op <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -2946,7 +2936,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4203065553461038553">Bestandsnaam of -locatie is te lang</translation>
 <translation id="4203769790323223880">Camera niet toegestaan</translation>
 <translation id="4204415812590935863">Kan nu geen thema maken.</translation>
-<translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
 <translation id="4206585797409671301">Toestemming om verzoeken te tonen</translation>
 <translation id="4207638506590582629"><ph name="DEVICE_NAME" /> (<ph name="LAST_ACTIVE_TIME" />)</translation>
@@ -3059,6 +3048,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4312866146174492540">Blokkeren (standaard)</translation>
 <translation id="4316850752623536204">Website van ontwikkelaar</translation>
 <translation id="4319441675152393296">Klik op het icoon van deze extensie om <ph name="HOST" /> te lezen en te wijzigen</translation>
+<translation id="4320177379694898372">Geen internetverbinding</translation>
 <translation id="432160826079505197"><ph name="FILE_NAME" /> tonen in Finder</translation>
 <translation id="4322394346347055525">Andere tabbladen sluiten</translation>
 <translation id="4322400254469690320">Je vindt je <ph name="FILENAME" /> in de map <ph name="FEATURE_NAME" /></translation>
@@ -3201,7 +3191,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4472533928615930332">Afbeelding <ph name="INDEX" /> van <ph name="SUBJECT" /> gegenereerd, in de stijl <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4474155171896946103">Bookmark toevoegen aan alle tabbladen...</translation>
-<translation id="4476590490540813026">Atlete</translation>
 <translation id="4476659815936224889">Je kunt een QR-scanner-app op je telefoon of sommige camera-apps gebruiken om deze code te scannen.</translation>
 <translation id="4477015793815781985">Neem Ctrl, Alt of ⌘ op</translation>
 <translation id="4478161224666880173">Je kunt je <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-account gebruiken op deze site. Als je wilt doorgaan, log je in op <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -3254,7 +3243,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4540780316273593836">Er is iets misgegaan</translation>
 <translation id="4541396589393395475">Deze functie is uitgezet door je organisatie</translation>
 <translation id="4542520061254486227">Je gegevens voor <ph name="WEBSITE_1" /> en <ph name="WEBSITE_2" /> lezen</translation>
-<translation id="4544174279960331769">Standaard blauwe avatar</translation>
 <translation id="4545028762441890696">Accepteer de nieuwe rechten om de extensie weer aan te zetten:</translation>
 <translation id="4545759655004063573">Kan niet opslaan vanwege onvoldoende rechten. Sla op een andere locatie op.</translation>
 <translation id="4549791035683739768">Je beveiligingssleutel heeft geen opgeslagen vingerafdrukken</translation>
@@ -3636,7 +3624,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="495170559598752135">Acties</translation>
 <translation id="4951966678293618079">Nooit wachtwoorden opslaan voor deze site</translation>
 <translation id="4952628481830269193">Bookmarkbalk tonen</translation>
-<translation id="4953808748584563296">Standaard oranje avatar</translation>
 <translation id="4954652437333037880">Archief</translation>
 <translation id="4954831709600868883">Stel een vraag over <ph name="TEXT" /></translation>
 <translation id="4956593309300508411">Delen stoppen?</translation>
@@ -3872,7 +3859,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="5225463052809312700">Camera aanzetten</translation>
 <translation id="5226253862147382094">Updates voor logo en URL controleren</translation>
 <translation id="5226514125747186">Er verschijnt een gestippelde cirkel rond site-iconen. <ph name="BEGIN_LINK" />Meer informatie over inactieve tabbladen<ph name="END_LINK" /></translation>
-<translation id="5227679487546032910">Standaard blauwgroene avatar</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Groepering van tabbladgroep ongedaan maken?}other{Groepering van tabbladgroepen ongedaan maken?}}</translation>
 <translation id="5230516054153933099">Venster</translation>
 <translation id="5231255476752743708">Chrome heeft hulp nodig om je wachtwoord te wijzigen</translation>
@@ -3915,7 +3901,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="527335345740023523">Je hebt op dit moment onder meer <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> en <ph name="NUMBERED_ITEM_3" />. Je organisatie, <ph name="ACCOUNT_MANAGER" />, kan deze gegevens bekijken en beheren.</translation>
 <translation id="5273806377963980154">Site-URL bewerken</translation>
 <translation id="5275338516105640560">Knop Tabbladgroep opgeslagen</translation>
-<translation id="5275352920323889391">Hond</translation>
 <translation id="5275946508817197540">Op basis van je beveiligingsvoorkeuren kunnen geïsoleerde web-apps niet worden geïnstalleerd. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Tabblad dempen</translation>
 <translation id="527605982717517565">JavaScript altijd toestaan op <ph name="HOST" /></translation>
@@ -4238,7 +4223,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="5643191124441701136">De beveiligingscode staat op de voorkant van je kaart</translation>
 <translation id="5645369002069651355">E-mailadres verifiëren</translation>
 <translation id="5646376287012673985">Locatie</translation>
-<translation id="5646558797914161501">Zakenman</translation>
 <translation id="5647989922796038257">Ook alle audio-uitvoer delen</translation>
 <translation id="5648166631817621825">Afgelopen 7 dagen</translation>
 <translation id="5654226590297731684">{NUM_SITES,plural, =1{Rechten verwijderd voor 1 site}other{Rechten verwijderd voor {NUM_SITES} sites}}</translation>
@@ -4593,7 +4577,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6086418630711763366">Je kunt navigeren op pagina's met een tekstcursor. Druk op Ctrl + <ph name="KEY" /> om dit uit te zetten.</translation>
 <translation id="6086846494333236931">Geïnstalleerd door je beheerder</translation>
 <translation id="6087286598828478206">Blokkeren en groep verlaten?</translation>
-<translation id="6087960857463881712">Geweldig gezicht</translation>
 <translation id="608819668983150122">Laat verifiëren dat jij het bent om je toegangssleutels op dit apparaat op te slaan en te gebruiken</translation>
 <translation id="6088475950266477163">Instellin&amp;gen</translation>
 <translation id="608912389580139775">Klik op het icoon Bookmark om deze pagina aan je leeslijst toe te voegen</translation>
@@ -4842,7 +4825,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6356893102071098867">Check of je het juiste account hebt gekozen</translation>
 <translation id="6357305427698525450">Bepaalde ondersteunde links worden nog steeds geopend in <ph name="APP_NAME" /> of <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Andere stabiele ID's (bijvoorbeeld hashes of UUID's)</translation>
-<translation id="6357830294871526418">Tabbladen op andere apparaten</translation>
 <translation id="6358884629796491903">Draak</translation>
 <translation id="6362853299801475928">&amp;Een probleem melden...</translation>
 <translation id="6365069501305898914">Facebook</translation>
@@ -4875,7 +4857,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />Systeeminformatie<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />statistische gegevens<ph name="END_LINK2" /> verzenden</translation>
 <translation id="6398765197997659313">Volledig scherm sluiten</translation>
 <translation id="639880411171387127">Je Google Lens-selectie. Druk op Enter of Backspace om je Google Lens-selectie te verwijderen</translation>
-<translation id="6399774419735315745">Spionne</translation>
 <translation id="6400360390396538896">Altijd op <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Focus van tabbladgroep verwijderen</translation>
 <translation id="6402042774506839496">Neem contact op met de app-ontwikkelaar voor meer informatie</translation>
@@ -5399,7 +5380,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6959882218873172284">POST-verzoek</translation>
 <translation id="6961327401577924850">Sites zoeken meestal naar bluetooth-apparaten voor functies zoals het instellen of synchroniseren van een Bluetooth Low Energy-beacon, een gezondheids- of fitnesstracker, of een smartlamp</translation>
 <translation id="6964239097707154771">zijn add-ons voor Chrome waarmee je meer kunt doen</translation>
-<translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Uit groep verwijderen</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965607054907047032">Geheugen vrijmaken op basis van inactiviteit van tabbladen</translation>
@@ -6245,7 +6225,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="7910768399700579500">&amp;Nieuwe map</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7913805372428124107">Log in en synchroniseer je geschiedenis om de tabbladen van <ph name="DEVICE" /> te krijgen. Je kunt ook onder andere je wachtwoorden op al je apparaten gebruiken. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
-<translation id="7915478442339169507">Sitetoezicht toestaan</translation>
 <translation id="7918928051723770926">Taak afgerond</translation>
 <translation id="7919123827536834358">Deze talen automatisch vertalen</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekijken</translation>
@@ -6405,7 +6384,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8061244502316511332">Dit tabblad gebruikt je microfoon</translation>
 <translation id="8061464966246066292">Hoog contrast</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 vel papier}other{{COUNT} vellen papier}}</translation>
-<translation id="8063235345342641131">Standaard groene avatar</translation>
 <translation id="8071432093239591881">Afdrukken als afbeelding</translation>
 <translation id="8075044377771022666">Voettekst</translation>
 <translation id="8076835018653442223">Toegang tot lokale bestanden op je apparaat is ingetrokken door je beheerder</translation>
@@ -6456,7 +6434,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8118860139461251237">Je downloads beheren</translation>
 <translation id="8121537075864592453">Volledig scherm uitgezet</translation>
 <translation id="8123087650856503231">Maak een back-up van onder andere je wachtwoorden en bookmarks, zodat je ze makkelijk op al je apparaten kunt gebruiken</translation>
-<translation id="81238879832906896">Geel-witte bloem</translation>
 <translation id="8123975449645947908">Terugscrollen</translation>
 <translation id="8125651784723647184">Wachtwoord delen wordt beheerd door je beheerder</translation>
 <translation id="8126498026310640675">Als je je geschiedenis van <ph name="DEVICE" /> wilt krijgen, log je in en synchroniseer je je geschiedenis en tabbladen met <ph name="EMAIL" />. Je kunt ook onder andere je bookmarks op al je apparaten gebruiken. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
@@ -7111,7 +7088,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8837072669197607689">Toestaan in geïsoleerde modus</translation>
 <translation id="8837573527470979311">Wisselen met weergave onderaan</translation>
 <translation id="8838601485495657486">Ondoorzichtig</translation>
-<translation id="8838770651474809439">Hamburger</translation>
 <translation id="883924185304953854">Zoeken op afbeelding</translation>
 <translation id="8839975272851327869">{ITEM_COUNT,plural, =1{1 item wordt alleen op dit apparaat opgeslagen. Als je het wilt gebruiken op je andere apparaten, sla je het op in je Google-account. Hiermee worden ook eventuele duplicaten opgeschoond.}other{{ITEM_COUNT} items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account. Hiermee worden ook eventuele duplicaten opgeschoond.}}</translation>
 <translation id="8841843049738266382">Gebruikers op de toelatingslijst lezen en wijzigen</translation>
@@ -7424,7 +7400,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9207434080086272167">Zonnig</translation>
 <translation id="9207990187617864000">artificial, intelligence, schrijven, hulp, helper, zoeken, assistent, chat, query, prompt, Gemini, AI</translation>
 <translation id="9212565256020141627">Kan de afbeelding niet delen met Gemini. Probeer het opnieuw of probeer een andere afbeelding.</translation>
-<translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">'<ph name="EXTENSION_NAME" />' toegevoegd</translation>
 <translation id="9218430445555521422">Instellen als standaard</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (niet-ondersteunde app)</translation>

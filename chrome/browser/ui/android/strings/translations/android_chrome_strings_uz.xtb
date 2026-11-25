@@ -150,7 +150,6 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="1543035591122163372">Parollar va boshqa maʼlumotlaringizni <ph name="DEVICE_TYPE" /> qurilmasidan olish uchun hisobingizga kiring</translation>
 <translation id="1544084554881119930">Toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
 Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
-<translation id="1544826120773021464">Google hisobingizni boshqarish uchun “Hisobni boshqarish” tugmasini bosing</translation>
 <translation id="1549000191223877751">Boshqa oynaga o‘tkazish</translation>
 <translation id="1553358976309200471">Chrome‘ni yangilash</translation>
 <translation id="1554352084785952638">“<ph name="SEARCH_TERMS" />” uchun <ph name="SEARCH_ENGINE" /></translation>
@@ -167,7 +166,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, kontenti ulashilayotgan varaq</translation>
 <translation id="1601378265092360672">Brauzer maʼlumotlariga brauzer tarixi, cookie fayllar va boshqa sayt maʼlumotlari, keshlangan rasmlar va fayllar hamda ochiq varaqlar kiradi</translation>
 <translation id="160275202205869636">Yoniq boʻlsa, maʼlumotlar Google hisobida saqlanadi va ishlatiladi Oʻchiq boʻlsa, maʼlumotlar faqat shu qurilmada saqlanadi.</translation>
-<translation id="160403827062749147">Dunyodagi eng xavfsiz brauzer – Google Chromega xush kelibsiz!</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Tanlangan 1 ta elementni olib tashlash}other{Tanlangan # ta elementni olib tashlash}}</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
@@ -866,7 +864,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4374192654218566997">\n\nBu maʼlumotlarni qurilmadan olib tashlash ham mumkin:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Muammo qayta takrorlansa, <ph name="SITE_ETLD_PLUS_ONE" /> orqali boshqa usulda davom eting.</translation>
-<translation id="4381351546374507910">Barcha qurilmalaringizda bukmarklar, parollar va avtomatik kiritish maʼlumotlaridan foydalanish uchun hisobingizga kiring.</translation>
 <translation id="4384468725000734951">Asosiy qidiruv tizimi – Sogou</translation>
 <translation id="4387647248986092471">Avtomobil profil qulfini yaratish</translation>
 <translation id="4387817230000841154">Yuklanmalarni ochish</translation>
@@ -1908,7 +1905,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8210770465353466621">Brauzer varaqlari shu yerda chiqadi</translation>
 <translation id="8212799748012101103">Varaqlar ichidan qidiruvni ochish</translation>
 <translation id="8215740705341534369">Yon ekran</translation>
-<translation id="8218622182176210845">Hisobingizni boshqaring</translation>
 <translation id="8221985041778490865">Brauzer maʼlumotlari oʻchirilmoqda</translation>
 <translation id="8223642481677794647">Quyi bildirgi menyu</translation>
 <translation id="82296173028782770">Qidiruv soʻrovini tahrirlash: <ph name="SEARCH_QUERY" /></translation>

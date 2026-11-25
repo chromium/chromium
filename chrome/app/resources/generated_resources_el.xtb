@@ -210,7 +210,6 @@
 <translation id="1202116106683864634">Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτό το κλειδί πρόσβασης;</translation>
 <translation id="1202892408424955784">Προϊόντα παρακολούθησης</translation>
 <translation id="1203247227716551969">Επαλήθευση του λογαριασμού σας</translation>
-<translation id="120368089816228251">Μουσική νότα</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Ο κωδικός ασφαλείας βρίσκεται στο πίσω μέρος της κάρτας σας</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Διαγραφή ομάδας}other{Διαγραφή ομάδων}}</translation>
@@ -367,7 +366,6 @@
 <translation id="1386966479075994683">Ανάπτυξη καρτελών</translation>
 <translation id="1388253969141979417">Επιτρέπεται να χρησιμοποιούν το μικρόφωνό σας</translation>
 <translation id="139013308650923562">Να επιτρέπεται η χρήση των γραμματοσειρών που είναι εγκατεστημένες στη συσκευή σας</translation>
-<translation id="1393283411312835250">Ήλιος και σύννεφα</translation>
 <translation id="1396120028054416908">Επιστροφή στον φάκελο <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Σφάλμα κατά τη ρύθμιση του εκτυπωτή</translation>
 <translation id="1398853756734560583">Μεγιστοποίηση</translation>
@@ -427,7 +425,6 @@
 <translation id="1464047267926346987">Αποθηκεύστε κωδικούς πρόσβασης, σελιδοδείκτες και άλλα</translation>
 <translation id="1465176863081977902">Α&amp;ντιγραφή διεύθυνσης ήχου</translation>
 <translation id="146522654774760805">Κωδικοί πρόσβασης και αυτόματη συμπλήρωση</translation>
-<translation id="1465827627707997754">Κομμάτι πίτσα</translation>
 <translation id="1467005863208369884">Δεν είναι δυνατή η επαλήθευση αυτού του αρχείου, επειδή η Ασφαλής περιήγηση είναι απενεργοποιημένη.</translation>
 <translation id="1467432559032391204">Αριστερά</translation>
 <translation id="1468571364034902819">Δεν είναι δυνατή η χρήση αυτού του προφίλ</translation>
@@ -528,7 +525,6 @@
 <translation id="1573127087832371028">Περιγραφή του ζητήματος</translation>
 <translation id="1573415331092567032">Χρήση αυτής της συντόμευσης εκτός του Chrome</translation>
 <translation id="1574335334663388774">Η εφαρμογή <ph name="APP_NAME" /> έκδοση <ph name="APP_VERSION" /> είναι ήδη εγκατεστημένη σε αυτή τη συσκευή</translation>
-<translation id="1576594961618857597">Προεπιλεγμένο λευκό avatar</translation>
 <translation id="1578488449637163638">Σκούρο</translation>
 <translation id="157931050206866263">Μάθετε περισσότερα σχετικά με τις σαρώσεις για κακόβουλα προγράμματα</translation>
 <translation id="1581962803218266616">Εμφάνιση στο Finder</translation>
@@ -849,7 +845,6 @@
 <translation id="1913749768968678106">Μετάδοση, αποθήκευση και κοινοποίηση</translation>
 <translation id="19147273405311768">Επαναφορά γραμμής εργαλείων στις προεπιλεγμένες ρυθμίσεις</translation>
 <translation id="1915307458270490472">Τερματισμός κλήσης</translation>
-<translation id="1916502483199172559">Προεπιλεγμένο κόκκινο avatar</translation>
 <translation id="1916770123977586577">Προκειμένου να εφαρμοστούν οι ενημερωμένες ρυθμίσεις σας σε αυτόν τον ιστότοπο, επαναλάβετε τη φόρτωση αυτής της σελίδες</translation>
 <translation id="1917766536967060661">Θα χάσετε αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /> και ο χρήστης <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) δεν θα μπορεί πλέον να αλληλεπιδράσει μαζί σας στις υπηρεσίες Google.</translation>
 <translation id="1918141783557917887">&amp;Σμίκρυνση</translation>
@@ -1174,7 +1169,6 @@
 <translation id="2270668657177045040">Ένας ιστότοπος και οι υποτομείς του μπορούν να δουν ποιες σχετικές εφαρμογές ιστού είναι εγκατεστημένες στη συσκευή σας.</translation>
 <translation id="2271452184061378400">Οι ομάδες καρτελών αποθηκεύονται εδώ</translation>
 <translation id="2271986192355138465">Μάθετε πώς να εγκαθιστάτε εφαρμογές ιστού</translation>
-<translation id="2272570998639520080">Ποτήρι μαρτίνι</translation>
 <translation id="2275352532065325930">Θέση Αναζήτησης καρτελών</translation>
 <translation id="227763434929139750">Να μην επιτρέπεται στους ιστοτόπους να χρησιμοποιούν αισθητήρες κίνησης ή φωτός</translation>
 <translation id="2278193750452754829">Οι επεκτάσεις επιτρέπονται σε αυτόν τον ιστότοπο. Επιλέξτε για άνοιγμα του μενού</translation>
@@ -1497,7 +1491,6 @@
 <translation id="2637852492915204064">Κλείσιμο Αναζήτησης καρτελών</translation>
 <translation id="263796568413910992">Ρωτήστε την <ph name="SEARCH_ENGINE_NAME" /> ή πληκτρολογήστε ένα URL</translation>
 <translation id="2640299212685523844">Χρήση GTK</translation>
-<translation id="2642111877055905627">Μπάλα ποδοσφαίρου</translation>
 <translation id="2642206811783203764">Πάντα στο <ph name="SITE_NAME" /></translation>
 <translation id="2643379881528582459">Εάν το Chromium εντοπίσει έναν από τους κωδικούς πρόσβασής σας σε μια δημόσια παραβίαση δεδομένων, μπορεί να σας προτείνει να αλλάξει τον κωδικό πρόσβασης για εσάς, εφόσον είστε συνδεδεμένοι</translation>
 <translation id="2643698698624765890">Διαχειριστείτε τις επεκτάσεις σας, κάνοντας κλικ στην επιλογή "Επεκτάσεις" στο μενού "Παράθυρο".</translation>
@@ -1955,7 +1948,6 @@
 <translation id="3134312457920437826">Δεν είναι δυνατή η εγκατάσταση της επέκτασης, επειδή χρησιμοποιεί μη υποστηριζόμενη έκδοση μανιφέστου.</translation>
 <translation id="3134393957315651797">Επιλέξτε κατάσταση πειράματος για το πείραμα <ph name="EXPERIMENT_NAME" />. Περιγραφή πειράματος: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3134822828309700120">Επιτρέψτε την εξ αποστάσεως περιήγηση σε άλλες εφαρμογές Gemini από οποιαδήποτε συσκευή</translation>
-<translation id="3139925690611372679">Προεπιλεγμένο κίτρινο avatar</translation>
 <translation id="314095642664111744">Απενεργοποίηση εστίασης</translation>
 <translation id="3141093262818886744">Άνοιγμα ούτως ή άλλως</translation>
 <translation id="3141318088920353606">Ακρόαση…</translation>
@@ -2040,7 +2032,6 @@
 <translation id="3222066309010235055">Απόδοση λειτουργίας εκ των προτέρων: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3223109931751684474">Κατάργηση της πρόσβασης αυτής της συσκευής στα κλειδιά πρόσβασης</translation>
 <translation id="3224803532980286809">Η Google θα βλέπει μόνο ό,τι είναι ορατό σε εσάς</translation>
-<translation id="3225084153129302039">Προεπιλεγμένο μοβ avatar</translation>
 <translation id="3225741048815287955"><ph name="BEGIN_BOLD_1" />Οι καρτέλες κοινοποιούνται για να λαμβάνετε πιο σχετικές απαντήσεις<ph name="END_BOLD_1" /> Η Google χρησιμοποιεί το περιεχόμενο και τα URL των κοινόχρηστων καρτελών. Η τρέχουσα καρτέλα σας κοινοποιείται σε νέες συνομιλίες. Μπορείτε να αλλάξετε αυτή τη ρύθμιση ανά πάσα στιγμή. <ph name="BEGIN_BOLD_2" />Τα δεδομένα του οργανισμού σας είναι απόρρητα και ασφαλή.<ph name="END_BOLD_2" /> Δεν θα χρησιμοποιηθούν για τη βελτίωση των μοντέλων παραγωγικού AI.</translation>
 <translation id="3226249862705569834">Οι αισθητήρες χρησιμοποιούνται</translation>
 <translation id="3227137524299004712">Μικρόφωνο</translation>
@@ -2254,7 +2245,6 @@
 <translation id="3436118221454753036">Ερώτηση στη Λειτουργία AI</translation>
 <translation id="3437397693214267762">Εμφάνιση του Ημερολογίου Outlook και των αρχείων SharePoint και OneDrive</translation>
 <translation id="3437494162908353428">Τα Εργαλεία για προγραμματιστές δεν επιτρέπονται για αυτό το URL.</translation>
-<translation id="3438633801274389918">Νίντζα</translation>
 <translation id="3439153939049640737">Να επιτρέπεται πάντα στο <ph name="HOST" /> η πρόσβαση στο μικρόφωνό σας</translation>
 <translation id="3439970425423980614">Άνοιγμα PDF σε προεπισκόπηση</translation>
 <translation id="3440478087746699229">Εσωτερική</translation>
@@ -2840,7 +2830,6 @@
 <translation id="4034824040120875894">Εκτυπωτής</translation>
 <translation id="4035758313003622889">Δια&amp;χείριση εργασιών</translation>
 <translation id="4035877632587724847">Να μην επιτραπεί</translation>
-<translation id="4037084878352560732">Άλογο</translation>
 <translation id="4040041015953651705">Γλώσσα από την οποία θα γίνει η μετάφραση</translation>
 <translation id="4040854068229263729">&amp;Κατάργηση από το λεξικό</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Έξοδος από τη σελίδα}other{Έξοδος από τις σελίδες}}</translation>
@@ -2930,6 +2919,7 @@
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - Προβολή στα αριστερά</translation>
 <translation id="4156532396656021084">&amp;Διαχείριση μηχανών αναζήτησης και συντομεύσεων</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
+<translation id="4165077084524712774">Περισσότερα εργαλεία</translation>
 <translation id="4165986682804962316">Ρυθμίσεις ιστότοπου</translation>
 <translation id="4167924027691268367">Περισσότερες ενέργειες για τη συντόμευση <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> που λήγει σε <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -2962,7 +2952,6 @@
 <translation id="4203065553461038553">Το όνομα ή η τοποθεσία του αρχείου είναι πολύ μεγάλα</translation>
 <translation id="4203769790323223880">Η πρόσβαση στην κάμερα δεν επιτράπηκε</translation>
 <translation id="4204415812590935863">Δεν είναι δυνατή η δημιουργία θέματος αυτή τη στιγμή.</translation>
-<translation id="4206144641569145248">Εξωγήινος</translation>
 <translation id="4206323443866416204">Αναφορά σχολίων</translation>
 <translation id="4206585797409671301">Επιτρέπεται η εμφάνιση αιτημάτων</translation>
 <translation id="4207638506590582629"><ph name="DEVICE_NAME" /> (<ph name="LAST_ACTIVE_TIME" />)</translation>
@@ -3075,6 +3064,7 @@
 <translation id="4312866146174492540">Αποκλεισμός (προεπιλογή)</translation>
 <translation id="4316850752623536204">Ιστότοπος προγραμματιστή</translation>
 <translation id="4319441675152393296">Κάντε κλικ στο εικονίδιο αυτής της επέκτασης για ανάγνωση και αλλαγή του <ph name="HOST" /></translation>
+<translation id="4320177379694898372">Χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="432160826079505197">Εμφάνιση αρχείου <ph name="FILE_NAME" /> στο Finder</translation>
 <translation id="4322394346347055525">Κλείσιμο Άλλων Καρτελών</translation>
 <translation id="4322400254469690320">Βρείτε το αρχείο <ph name="FILENAME" /> στον φάκελο <ph name="FEATURE_NAME" /></translation>
@@ -3217,7 +3207,6 @@
 <translation id="4472533928615930332">Δημιουργήθηκε εικόνα <ph name="INDEX" /> σχετικά με <ph name="SUBJECT" />, σε στιλ <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Έναρξη</translation>
 <translation id="4474155171896946103">Δημιουργία σελιδοδείκτη για όλες τις καρτέλες...</translation>
-<translation id="4476590490540813026">Αθλήτρια</translation>
 <translation id="4476659815936224889">Για να σαρώσετε αυτόν τον κωδικό, μπορείτε να χρησιμοποιήσετε μια εφαρμογή σαρωτή QR στο τηλέφωνό σας ή ορισμένες εφαρμογές κάμερας.</translation>
 <translation id="4477015793815781985">Συμπεριλάβετε το Ctrl, το Alt ή το ⌘</translation>
 <translation id="4478161224666880173">Μπορείτε να χρησιμοποιήσετε τον λογαριασμό σας <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> σε αυτόν τον ιστότοπο. Για να συνεχίσετε, συνδεθείτε στο <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -3270,7 +3259,6 @@
 <translation id="4540780316273593836">Παρουσιάστηκε κάποιο πρόβλημα</translation>
 <translation id="4541396589393395475">Αυτή η λειτουργία είναι απενεργοποιημένη από τον οργανισμό σας</translation>
 <translation id="4542520061254486227">Ανάγνωση των δεδομένων σας στο <ph name="WEBSITE_1" /> και στο <ph name="WEBSITE_2" /></translation>
-<translation id="4544174279960331769">Προεπιλεγμένο μπλε avatar</translation>
 <translation id="4545028762441890696">Για να την ενεργοποιήσετε ξανά, αποδεχτείτε τις νέες άδειες:</translation>
 <translation id="4545759655004063573">Δεν είναι δυνατή η αποθήκευση λόγω ανεπαρκών αδειών. Κάντε αποθήκευση σε άλλη τοποθεσία.</translation>
 <translation id="4549791035683739768">Δεν υπάρχουν αποθηκευμένα μοναδικά χαρακτηριστικά στο κλειδί ασφαλείας σας.</translation>
@@ -3653,7 +3641,6 @@
 <translation id="495170559598752135">Ενέργειες</translation>
 <translation id="4951966678293618079">Να μην γίνεται ποτέ αποθήκευση των κωδικών πρόσβασης για αυτόν τον ιστότοπο</translation>
 <translation id="4952628481830269193">Εμφάνιση γραμμής σελιδοδεικτών</translation>
-<translation id="4953808748584563296">Προεπιλεγμένο πορτοκαλί avatar</translation>
 <translation id="4954652437333037880">Αρχείο</translation>
 <translation id="4954831709600868883">Ερώτηση για <ph name="TEXT" /></translation>
 <translation id="4956593309300508411">Διακοπή κοινής χρήσης;</translation>
@@ -3889,7 +3876,6 @@
 <translation id="5225463052809312700">Ενεργοποίηση κάμερας</translation>
 <translation id="5226253862147382094">Έλεγχος ενημερώσεων λογότυπου και URL</translation>
 <translation id="5226514125747186">Εμφανίζεται ένας διακεκομμένος κύκλος γύρω από τα εικονίδια ιστοτόπων. <ph name="BEGIN_LINK" />Μάθετε περισσότερα σχετικά με τις ανενεργές καρτέλες<ph name="END_LINK" /></translation>
-<translation id="5227679487546032910">Προεπιλεγμένο γαλαζοπράσινο avatar</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Να καταργηθεί η ομαδοποίηση της ομάδας καρτελών;}other{Να καταργηθεί η ομαδοποίηση των ομάδων καρτελών;}}</translation>
 <translation id="5230516054153933099">Παράθυρο</translation>
 <translation id="5231255476752743708">Το Chrome χρειάζεται βοήθεια για την αλλαγή του κωδικού πρόσβασής σας</translation>
@@ -3932,7 +3918,6 @@
 <translation id="527335345740023523">Αυτή τη στιγμή έχετε <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> και άλλα. Ο οργανισμός σας, <ph name="ACCOUNT_MANAGER" />, θα μπορεί να βλέπει και να διαχειρίζεται αυτά τα δεδομένα.</translation>
 <translation id="5273806377963980154">Επεξεργασία URL ιστοτόπου</translation>
 <translation id="5275338516105640560">Κουμπί αποθηκευμένης ομάδας καρτελών</translation>
-<translation id="5275352920323889391">Σκύλος</translation>
 <translation id="5275946508817197540">Οι προτιμήσεις ασφαλείας δεν επιτρέπουν την εγκατάσταση απομονωμένων εφαρμογών ιστού. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Σίγαση καρτέλας</translation>
 <translation id="527605982717517565">Να επιτρέπεται πάντα το JavaScript στο <ph name="HOST" /></translation>
@@ -4259,7 +4244,6 @@
 <translation id="5643191124441701136">Ο κωδικός ασφαλείας βρίσκεται στο μπροστινό μέρος της κάρτας σας</translation>
 <translation id="5645369002069651355">Επαλήθευση διεύθυνσης ηλεκτρονικού ταχυδρομείου σε εξέλιξη</translation>
 <translation id="5646376287012673985">Τοποθεσία</translation>
-<translation id="5646558797914161501">Επιχειρηματίας</translation>
 <translation id="5647989922796038257">Να γίνει επίσης κοινοποίηση όλων των εξόδων ήχου</translation>
 <translation id="5648166631817621825">Τελευταίες 7 ημέρες</translation>
 <translation id="5654226590297731684">{NUM_SITES,plural, =1{Καταργήθηκαν οι άδειες για 1 ιστότοπο}other{Καταργήθηκαν οι άδειες για {NUM_SITES} ιστοτόπους}}</translation>
@@ -4615,7 +4599,6 @@
 <translation id="6086418630711763366">Μπορείτε να πλοηγηθείτε σε σελίδες με δείκτη κειμένου. Πατήστε Ctrl + <ph name="KEY" /> για απενεργοποίηση.</translation>
 <translation id="6086846494333236931">Εγκαταστάθηκε από το διαχειριστή σας</translation>
 <translation id="6087286598828478206">Αποκλεισμός και αποχώρηση από την ομάδα;</translation>
-<translation id="6087960857463881712">Καταπληκτικό πρόσωπο</translation>
 <translation id="608819668983150122">Επαληθεύστε την ταυτότητά σας, για να αποθηκεύσετε και να χρησιμοποιήσετε τα κλειδιά πρόσβασης σε αυτή τη συσκευή</translation>
 <translation id="6088475950266477163">Ρυθμίσε&amp;ις</translation>
 <translation id="608912389580139775">Για να προσθέσετε αυτήν τη σελίδα στη λίστα ανάγνωσής σας, κάντε κλικ στο εικονίδιο σελιδοδείκτη</translation>
@@ -4864,7 +4847,6 @@
 <translation id="6356893102071098867">Ελέγξτε ότι έχετε επιλέξει τον σωστό λογαριασμό</translation>
 <translation id="6357305427698525450">Ορισμένοι υποστηριζόμενοι σύνδεσμοι θα εξακολουθούν να ανοίγουν στην εφαρμογή <ph name="APP_NAME" /> ή την εφαρμογή  <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Άλλα σταθερά αναγνωριστικά (π.χ. Κατακερματισμοί ή UUID)</translation>
-<translation id="6357830294871526418">Καρτέλες σε άλλες συσκευές</translation>
 <translation id="6358884629796491903">Δράκος</translation>
 <translation id="6362853299801475928">&amp;Αναφορά προβλήματος...</translation>
 <translation id="6365069501305898914">Facebook</translation>
@@ -4897,7 +4879,6 @@
 <translation id="6395423953133416962">Αποστολή <ph name="BEGIN_LINK1" />πληροφοριών συστήματος<ph name="END_LINK1" /> και <ph name="BEGIN_LINK2" />μετρήσεων<ph name="END_LINK2" /></translation>
 <translation id="6398765197997659313">Έξοδος από πλήρη οθόνη</translation>
 <translation id="639880411171387127">Η επιλογή σας στο Google Lens. Πατήστε το πλήκτρο enter ή το πλήκτρο backspace για να διαγράψετε την επιλογή σας στο Google Lens</translation>
-<translation id="6399774419735315745">Κατάσκοπος</translation>
 <translation id="6400360390396538896">Πάντα σε <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Κατάργηση εστίασης στην ομάδα καρτελών</translation>
 <translation id="6402042774506839496">Για να μάθετε τον λόγο, επικοινωνήστε με τον προγραμματιστή της εφαρμογής</translation>
@@ -5421,7 +5402,6 @@
 <translation id="6959882218873172284">Αίτημα POST</translation>
 <translation id="6961327401577924850">Οι ιστότοποι συνήθως αναζητούν συσκευές Bluetooth για λειτουργίες όπως η ρύθμιση ή ο συγχρονισμός ενός beacon χαμηλής ενέργειας, ενός συστήματος παρακολούθησης υγείας ή φυσικής κατάστασης ή ενός λαμπτήρα έξυπνου φωτισμού.</translation>
 <translation id="6964239097707154771">είναι πρόσθετα για το Chrome που μπορούν να σας βοηθήσουν να ολοκληρώσετε περισσότερες ενέργειες</translation>
-<translation id="6964390816189577014">Ήρωας</translation>
 <translation id="6964760285928603117">Κατάργηση από την ομάδα</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965607054907047032">Ελευθερώστε μνήμη με βάση την αδράνεια της καρτέλας</translation>
@@ -6267,7 +6247,6 @@
 <translation id="7910768399700579500">Νέος &amp;φάκελος</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7913805372428124107">Για να λάβετε τις καρτέλες από τη συσκευή <ph name="DEVICE" />, συνδεθείτε και συγχρονίστε το ιστορικό σας. Θα έχετε επίσης πρόσβαση στους κωδικούς πρόσβασής σας και σε άλλα στοιχεία σε όλες τις συσκευές σας. Μπορείτε να διακόψετε τον συγχρονισμό ανά πάσα στιγμή στις ρυθμίσεις. Η Google μπορεί να εξατομικεύει την Αναζήτηση και άλλες υπηρεσίες με βάση το ιστορικό σας.</translation>
-<translation id="7915478442339169507">Να επιτρέπεται η πρόσβαση στον ιστότοπο</translation>
 <translation id="7918928051723770926">Η εργασία ολοκληρώθηκε</translation>
 <translation id="7919123827536834358">Αυτόματη μετάφραση αυτών των γλωσσών</translation>
 <translation id="7920363873148656176">Το <ph name="ORIGIN" /> μπορεί να προβάλλει το <ph name="FILENAME" /></translation>
@@ -6427,7 +6406,6 @@
 <translation id="8061244502316511332">Η συγκεκριμένη καρτέλα χρησιμοποιεί το μικρόφωνό σας</translation>
 <translation id="8061464966246066292">Υψηλή αντίθεση</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 φύλλο χαρτιού}other{{COUNT} φύλλα χαρτιού}}</translation>
-<translation id="8063235345342641131">Προεπιλεγμένο πράσινο avatar</translation>
 <translation id="8071432093239591881">Εκτύπωση ως εικόνα</translation>
 <translation id="8075044377771022666">Υποσέλιδο</translation>
 <translation id="8076835018653442223">Η πρόσβαση στα τοπικά αρχεία στη συσκευή σας έχει απενεργοποιηθεί από τον διαχειριστή σας</translation>
@@ -6478,7 +6456,6 @@
 <translation id="8118860139461251237">Διαχείριση των λήψεών σας</translation>
 <translation id="8121537075864592453">Η πλήρης οθόνη είναι απενεργοποιημένη</translation>
 <translation id="8123087650856503231">Δημιουργήστε αντίγραφα ασφαλείας για τους κωδικούς πρόσβασης, τους σελιδοδείκτες και άλλα στοιχεία, ώστε να μπορείτε να τα έχετε εύκολα σε όλες τις συσκευές σας</translation>
-<translation id="81238879832906896">Κίτρινο και λευκό λουλούδι</translation>
 <translation id="8123975449645947908">Κύλιση προς τα πίσω</translation>
 <translation id="8125651784723647184">Η διαχείριση της κοινοποίησης κωδικών πρόσβασης γίνεται από τον διαχειριστή σας</translation>
 <translation id="8126498026310640675">Για να λάβετε το ιστορικό από τη συσκευή <ph name="DEVICE" />, συνδεθείτε και συγχρονίστε το ιστορικό και τις καρτέλες σας με το <ph name="EMAIL" />. Θα έχετε επίσης πρόσβαση στους σελιδοδείκτες σας και σε άλλα στοιχεία σε όλες τις συσκευές σας. Μπορείτε να διακόψετε τον συγχρονισμό ανά πάσα στιγμή στις ρυθμίσεις. Η Google μπορεί να εξατομικεύει την Αναζήτηση και άλλες υπηρεσίες με βάση το ιστορικό σας.</translation>
@@ -7130,7 +7107,6 @@
 <translation id="8837072669197607689">Να επιτρέπεται στη Λειτουργία απομόνωσης</translation>
 <translation id="8837573527470979311">Αντικατάσταση με την προβολή στο κάτω μέρος</translation>
 <translation id="8838601485495657486">Αδιαφανές</translation>
-<translation id="8838770651474809439">Χάμπουργκερ</translation>
 <translation id="883924185304953854">Αναζήτηση με εικόνα</translation>
 <translation id="8839975272851327869">{ITEM_COUNT,plural, =1{1 στοιχείο έχει αποθηκευτεί μόνο σε αυτή τη συσκευή. Για να το χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε το στον Λογαριασμό σας Google. Με αυτή την ενέργεια θα διαγραφούν επίσης τυχόν διπλότυπα.}other{{ITEM_COUNT} στοιχεία έχουν αποθηκευτεί μόνο σε αυτή τη συσκευή. Για να τα χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τα στον Λογαριασμό σας Google. Με αυτή την ενέργεια θα διαγραφούν επίσης τυχόν διπλότυπα.}}</translation>
 <translation id="8841843049738266382">Ανάγνωση και αλλαγή χρηστών λίστας επιτρεπομένων</translation>
@@ -7443,7 +7419,6 @@
 <translation id="9207434080086272167">Ηλιόλουστη</translation>
 <translation id="9207990187617864000">τεχνητή, νοημοσύνη, συγγραφή, βοήθεια, βοηθός, αναζήτηση, συνομιλία, ερώτημα, προτροπή, Gemini, AI</translation>
 <translation id="9212565256020141627">Δεν ήταν δυνατή η κοινή χρήση της εικόνας στο Gemini. Δοκιμάστε ξανά ή δοκιμάστε άλλη εικόνα.</translation>
-<translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">Προστέθηκε η επέκταση "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="9218430445555521422">Ορισμός ως προεπιλογή</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (μη υποστηριζόμενη εφαρμογή)</translation>

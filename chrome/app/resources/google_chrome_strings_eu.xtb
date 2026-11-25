@@ -143,7 +143,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2307973900865360088">Mantendu Dock-ean</translation>
 <translation id="2309047409763057870">Google Chrome-ren bigarren mailako instalazio bat da hau; beraz, ezin duzu ezarri arakatzaile lehenetsi gisa.</translation>
 <translation id="2345992953227471816">Luzapenok malwarea dutela hauteman du Chrome-k:</translation>
-<translation id="2350411688004301551">Aldatu Gemini Enterprise-ra</translation>
 <translation id="2358140144860869442">Irakurketa-zerrenda eta bestelako datuak gailu guztietan eskuratzeko, hasi saioa Chrome-n</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2403703063067034158">Abiarazte-errorea: konfigurazioaren beste instantzia bat exekutatzen ari da. Saiatu berriro geroago.</translation>
@@ -201,7 +200,6 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="2876628302275096482">Lortu <ph name="BEGIN_LINK" />Chrome-k zure datuen pribatutasuna babesteko duen moduari<ph name="END_LINK" /> buruzko informazio gehiago</translation>
 <translation id="2885378588091291677">Zereginen kudeatzailea</translation>
 <translation id="2888126860611144412">Chrome-ri buruz</translation>
-<translation id="2898830646167954300">Itzuli kudeatu gabeko Gemini laguntzailera</translation>
 <translation id="2915996080311180594">Berrabiarazi geroago</translation>
 <translation id="2926952073016206995">Chrome-k kamera erabiltzeko baimena behar du webgune honetan</translation>
 <translation id="2945997411976714835">Instalazio-errorea: instalatzailearen prozesua ezin izan da hasi.</translation>
@@ -423,7 +421,6 @@ Agian eginbide batzuk ez dira erabilgarri egongo. Zehaztu profilaren beste direk
 <translation id="5271833978500241046">Erabili Chrome-ko Gemini-ren beste eginbide batzuekin batera</translation>
 <translation id="5320351714793324716">Cookieak onartzen badituzu, baliteke Chrome-k haiek erabiltzea orriak aurrez kargatzeko</translation>
 <translation id="5321325624576443340">Google Lens ez dago erabilgarri. Saiatu berriro geroago.</translation>
-<translation id="5336664042114176802"><ph name="DOMAIN" /> erakundeak kudeatzen ez duen eta aurrez zure Google-ko kontuarekin lotuta zegoen Gemini laguntzailera alda zaitezke. Aurrerantzean, erantzunak ez dira oinarrituko <ph name="DOMAIN" /> enpresak kudeatutako fitxategi edo zerbitzuetan, eta ez da mantenduko elkarrizketa-historia. Baliteke lanerako egokia ez izatea. Aldatzeko, Chrome berriro exekutatu behar da.</translation>
 <translation id="5346389065299425353">Sakondu bilaketan fitxa, fitxategi eta tresna bat baino gehiago gehituta</translation>
 <translation id="5353252989841766347">Esportatu pasahitzak Chrome-tik</translation>
 <translation id="5368118228313795342">Kode gehigarria: <ph name="EXTRA_CODE" />.</translation>
@@ -542,7 +539,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6438015621983209660">Hedatu Arakatze seguru hobetua telefonoan Chrome-rekin</translation>
 <translation id="6442774133615368941">arakatu produktuak, itzuli testua eta identifikatu ikusten duzuna kamerarekin iOS-erako Chrome aplikazioan</translation>
 <translation id="6446105560007692480">Chrome-rekin bilatzeko edo <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalean pertsonalizatzeko</translation>
-<translation id="6447943657065463998">Kudeatutako arakatzaile honek <ph name="DOMAIN" /> erakundeak lanerako konfiguratutako Gemini laguntzaile bat erabil dezake. Erakundearen fitxategietan eta onartutako zerbitzuetan oinarrituta informazioa aurkitu eta erantzunak eman ditzake. Agian ez da gomendagarria profil pertsonal batekin erabiltzea. Elkarrizketa-historia ez da mantenduko. Aldatzeko, Chrome berriro exekutatu behar da.</translation>
 <translation id="6448835208126432197">Chrome-ko Gemini-n pantailaren zati bat hautatzeko, erabili lasterbidea.</translation>
 <translation id="6473905796280459355">Joan "Chrome-ri buruz" orrira</translation>
 <translation id="6481963882741794338">Lotu Chrome eta Google-ren beste zerbitzuak pertsonalizaziorako eta bestelako helburuetarako</translation>
@@ -713,7 +709,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8064965390968184078">1. Sakatu beheko <ph name="BUTTON_LABEL" />.
 2. Sakatu <ph name="BUTTON_2" /> Windows-en ezarpenetan.
 3. Chrome zereginen barran ainguratzeko eta bizkor atzitzeko, sakatu <ph name="BUTTON_3" /> Windows-en jakinarazpenean.</translation>
-<translation id="8066474819446975249">Aldatzeko, exekutatu Chrome berriro</translation>
 <translation id="8074398340364918139">Chrome-ren eginbide edo luzapen jakin bat bilatzeko, idatzi haren lasterbidea helbide-barran eta, ondoren, sakatu hautatutako tekla</translation>
 <translation id="8077579734294125741">Chrome-ko beste profilak</translation>
 <translation id="8086881907087796310">Instalazioak huts egin du, ordenagailuak hardwarearen gutxieneko eskakizunak betetzen ez dituelako.</translation>

@@ -150,7 +150,6 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="1543035591122163372">Identifikohu për të marrë fjalëkalimet e tua etj. nga <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Mënyrat e pagesës dhe adresat nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.
 Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
-<translation id="1544826120773021464">Për të menaxhuar "Llogarinë tënde të Google", prek butonin "Menaxho llogarinë"</translation>
 <translation id="1549000191223877751">Zhvendose te dritarja tjetër</translation>
 <translation id="1553358976309200471">Përditëso Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> për "<ph name="SEARCH_TERMS" />"</translation>
@@ -167,7 +166,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, skeda duke ndarë përmbajtjen</translation>
 <translation id="1601378265092360672">Të dhënat e shfletimit përfshijnë historikun e shfletimit, kukit dhe të dhënat e tjera të sajteve, imazhet dhe skedarët e ruajtur në memorien specifike dhe skedat e hapura</translation>
 <translation id="160275202205869636">Kur është aktivizuar, të dhënat përdoren dhe ruhen në "Llogarinë tënde të Google". Kur është çaktivizuar, të dhënat ruhen vetëm në këtë pajisje.</translation>
-<translation id="160403827062749147">Mirë se vjen në Google Chrome, shfletuesi më i sigurt në botë</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Hiq 1 artikull të zgjedhur}other{Hiq # artikuj të zgjedhur}}</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
 <translation id="1641113438599504367">Shfletimi i sigurt</translation>
@@ -866,7 +864,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4374192654218566997">\n\nGjithashtu mund t'i heqësh këto të dhëna nga kjo pajisje:</translation>
 <translation id="4378154925671717803">Telefoni</translation>
 <translation id="4380055775103003110">Nëse ky problem vazhdon të ndodhë, mund të provosh mënyra të tjera për të vazhduar në <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
-<translation id="4381351546374507910">Identifikohu për të marrë faqeshënuesit, fjalëkalimet dhe informacionet e "Plotësimit automatik" në të gjitha pajisjet e tua.</translation>
 <translation id="4384468725000734951">Po përdor Sogou për kërkimin</translation>
 <translation id="4387647248986092471">Krijo një kyçje të profilit të makinës</translation>
 <translation id="4387817230000841154">Hap "Shkarkimet"</translation>
@@ -1908,7 +1905,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8210770465353466621">Këtu do të gjesh skedat e tua</translation>
 <translation id="8212799748012101103">Hap "Kërkimin e skedës"</translation>
 <translation id="8215740705341534369">Fleta anësore</translation>
-<translation id="8218622182176210845">Menaxho llogarinë tënde</translation>
 <translation id="8221985041778490865">Të dhënat e shfletimit po fshihen</translation>
 <translation id="8223642481677794647">Menyja e kartave të furnizimit</translation>
 <translation id="82296173028782770">Modifiko përmbajtjen e kërkimit: <ph name="SEARCH_QUERY" /></translation>

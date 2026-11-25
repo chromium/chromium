@@ -200,6 +200,7 @@
 <translation id="1547610699249301703">पासवर्ड शेअर करा</translation>
 <translation id="1554043146674176775">AI मोड बंद करा</translation>
 <translation id="1554477036522844996">नवीन विंडो</translation>
+<translation id="1555014818414775661">इमेज जोडा</translation>
 <translation id="1557806604681757705">तुमचा काँप्युटर</translation>
 <translation id="1558391695376153246">गुप्त टॅब बंद करा</translation>
 <translation id="1560153516220021659">कोलॅप्स केलेले दुय्यम टूलबार बटण</translation>
@@ -913,7 +914,6 @@
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari सेटिंग्ज<ph name="END_BOLD" /> उघडा</translation>
 <translation id="3858860766373142691">नाव</translation>
 <translation id="386224966259596343">तुम्ही पुढील वेळी सुसंबद्ध फॉर्म भरता, तेव्हा तुम्हाला ही माहिती Wallet मध्ये सेव्ह करण्याची संधी मिळेल.</translation>
-<translation id="3868495844258915202">संपूर्ण URL दाखवा</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> साठी सेव्ह केलेले पासवर्ड नाहीत</translation>
 <translation id="3875783148670536197">मला कसे ते दाखवा</translation>
 <translation id="3878657761594430423">शीट ग्रॅबर</translation>
@@ -1009,7 +1009,6 @@
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4159430626587776301">तुम्ही अलीकडे ब्राउझ केलेल्या उत्पादनांची पुनरावलोकने पहा</translation>
 <translation id="4161488339191275792">तुमचे उघडे असलेले टॅब संगतवार लावण्यासाठी टॅब गट तयार करा</translation>
-<translation id="4162616958842974809">इमेज जोडा</translation>
 <translation id="4163699139741158298">{count,plural, =1{बुकमार्क "{title}" मध्ये सेव्ह केला आहे. तो फक्त या डिव्हाइसवर सेव्ह केला आहे.}other{{count} बुकमार्क "{title}" मध्ये सेव्ह केले आहेत. ते फक्त या डिव्हाइसवर सेव्ह केले आहेत.}}</translation>
 <translation id="4164514562270305824">डाउनलोड आपोआप हटवणे</translation>
 <translation id="4165986682804962316">साइट सेटिंग्ज</translation>

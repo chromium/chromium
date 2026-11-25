@@ -143,7 +143,6 @@
 <translation id="2307973900865360088">保留在 Dock</translation>
 <translation id="2309047409763057870">這是以並行形式安裝的第二個 Google Chrome，因此無法設定為您的預設瀏覽器。</translation>
 <translation id="2345992953227471816">Chrome 發現以下擴充程式含有惡意軟件：</translation>
-<translation id="2350411688004301551">切換至 Gemini Enterprise</translation>
 <translation id="2358140144860869442">如要在你的所有裝置上取用閱讀清單及其他設定，請登入 Chrome</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2403703063067034158">啟動錯誤：目前正在執行其他設定操作，請稍後再試。</translation>
@@ -201,7 +200,6 @@
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何確保你的資料保密<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2888126860611144412">關於 Chrome</translation>
-<translation id="2898830646167954300">切換回非受管 Gemini 助理</translation>
 <translation id="2915996080311180594">稍後重新開機</translation>
 <translation id="2926952073016206995">Chrome 需要相機權限，才能執行此網站要求的功能</translation>
 <translation id="2945997411976714835">安裝錯誤：安裝程式程序無法開始。</translation>
@@ -423,7 +421,6 @@
 <translation id="5271833978500241046">在 Chrome 中與其他 Gemini 功能一併使用</translation>
 <translation id="5320351714793324716">如果你允許 Cookie，Chrome 可能會在預先載入時使用 Cookie</translation>
 <translation id="5321325624576443340">無法使用「Google 智能鏡頭」，請稍後再試。</translation>
-<translation id="5336664042114176802">你可以切換至原本與 Google 帳戶關聯且不受 <ph name="DOMAIN" /> 管理的 Gemini 助理。答覆將不再以 <ph name="DOMAIN" /> 管理的檔案或服務為基礎，對話記錄亦不會保留，因此可能不適合用於工作。切換需要重新啟動 Chrome。</translation>
 <translation id="5346389065299425353">新增多個分頁、檔案和工具，進一步搜尋所需資訊</translation>
 <translation id="5353252989841766347">從 Chrome 中匯出密碼</translation>
 <translation id="5368118228313795342">額外代碼：<ph name="EXTRA_CODE" />。</translation>
@@ -542,7 +539,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6438015621983209660">透過手機的 Chrome 擴大「強化安全瀏覽」範圍</translation>
 <translation id="6442774133615368941">在 iOS 版 Chrome 應用程式中使用相機購物、翻譯及識別所見內容</translation>
 <translation id="6446105560007692480">即可使用 Chrome 搜尋，或在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中自訂</translation>
-<translation id="6447943657065463998">此受管瀏覽器可使用由 <ph name="DOMAIN" /> 為工作設定的 Gemini 助理，根據機構檔案和獲核准服務尋找資料並提供答案。不建議透過個人設定檔使用。對話記錄不會保留。切換需要重新啟動 Chrome。</translation>
 <translation id="6448835208126432197">如要在 Chrome 版 Gemini 中選取部分畫面，請使用鍵盤快速鍵。</translation>
 <translation id="6473905796280459355">前往「關於 Chrome」頁面</translation>
 <translation id="6481963882741794338">連結 Chrome 和其他 Google 服務，用於個人化和其他用途</translation>
@@ -713,7 +709,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8064965390968184078">1. 點擊下方的 [<ph name="BUTTON_LABEL" />]
 2. 在 Windows 設定中點擊 [<ph name="BUTTON_2" />]
 3.在 Windows 通知中點擊 [<ph name="BUTTON_3" />] 以將 Chrome 固定至工作列，方便快速取用</translation>
-<translation id="8066474819446975249">重新啟動 Chrome 以切換</translation>
 <translation id="8074398340364918139">如要搜尋特定 Chrome 功能或擴充程式，請在網址列中輸入捷徑，然後按下你選取的鍵盤按鍵</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
 <translation id="8086881907087796310">由於你的電腦不符合最低硬件要求，因此安裝失敗。</translation>

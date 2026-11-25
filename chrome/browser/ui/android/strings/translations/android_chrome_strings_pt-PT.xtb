@@ -150,7 +150,6 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="1543035591122163372">Inicie sessão para ter acesso às suas palavras-passe e muito mais do <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Os métodos de pagamento e as moradas não são encriptados. O histórico de navegação do Chrome não é sincronizado.
 Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
-<translation id="1544826120773021464">Para gerir a sua Conta Google, toque no botão "Gerir conta".</translation>
 <translation id="1549000191223877751">Mover para outra janela</translation>
 <translation id="1553358976309200471">Atualizar o Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> "<ph name="SEARCH_TERMS" />"</translation>
@@ -167,7 +166,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, separador a partilhar</translation>
 <translation id="1601378265092360672">Os dados de navegação incluem o histórico de navegação, os cookies e outros dados de sites, as imagens e os ficheiros em cache, bem como os separadores abertos</translation>
 <translation id="160275202205869636">Quando esta opção está ativada, use e guarde os dados na sua Conta Google. Quando está desativada, os dados são guardados apenas neste dispositivo.</translation>
-<translation id="160403827062749147">Damos-lhe as boas-vindas ao Google Chrome, o navegador mais seguro do mundo</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remover 1 item selecionado}other{Remover # itens selecionados}}</translation>
 <translation id="1639239467298939599">A carregar…</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
@@ -866,7 +864,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4374192654218566997">\n\nTambém pode remover estes dados deste dispositivo:</translation>
 <translation id="4378154925671717803">Telemóvel</translation>
 <translation id="4380055775103003110">Se este problema continuar a acontecer, pode experimentar outras formas de continuar em <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
-<translation id="4381351546374507910">Inicie sessão para obter os seus marcadores, palavras-passe e informações de preenchimento automático em todos os seus dispositivos.</translation>
 <translation id="4384468725000734951">A utilizar o Sogou para pesquisa</translation>
 <translation id="4387647248986092471">Criar bloqueio do perfil do carro</translation>
 <translation id="4387817230000841154">Abrir Transferências</translation>
@@ -1908,7 +1905,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8210770465353466621">Os seus separadores vão ser apresentados aqui</translation>
 <translation id="8212799748012101103">Abrir pesquisa de separadores</translation>
 <translation id="8215740705341534369">Secção lateral</translation>
-<translation id="8218622182176210845">Faça a gestão da sua conta</translation>
 <translation id="8221985041778490865">A eliminar os dados de navegação</translation>
 <translation id="8223642481677794647">Menu do cartão do feed</translation>
 <translation id="82296173028782770">Edite a consulta de pesquisa: <ph name="SEARCH_QUERY" /></translation>

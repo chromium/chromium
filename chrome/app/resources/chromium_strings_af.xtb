@@ -125,7 +125,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium beveel aan dat jy die oortjie wat jou blaaier stadig maak, onderbreek}other{Chromium beveel aan dat jy die oortjies wat jou blaaier stadig maak, onderbreek}}</translation>
 <translation id="2307973900865360088">Hou gedok</translation>
 <translation id="2313870531055795960">Vergelyk URL'e met 'n lys onveilige werwe wat in Chromium geberg is. As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chromium dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur.</translation>
-<translation id="2350411688004301551">Skakel oor na Gemini Enterprise</translation>
 <translation id="2356070529366658676">Vra</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2361918034042471035">Die uitbreiding “<ph name="EXTENSION_NAME" />” wil hê dat jy by Chromium moet aanmeld</translation>
@@ -175,7 +174,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2846251086934905009">Installeerfout: Die installeerder is nie voltooi nie. Die installasie is gestaak.</translation>
 <translation id="2850691299438350830">Hou jou veilig op Chromium en kan gebruik word om jou sekuriteit in ander Google-programme te verbeter wanneer jy aangemeld is</translation>
 <translation id="2885378588091291677">Taakbestuurder</translation>
-<translation id="2898830646167954300">Skakel terug na jou onbestuurde Gemini-assistent</translation>
 <translation id="2910007522516064972">Meer oor Chromium</translation>
 <translation id="2915996080311180594">Herbegin later</translation>
 <translation id="2933336679234709858">Jou data is met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou Google-rekening te gebruik en te stoor.</translation>
@@ -361,7 +359,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4950660488495335294">Met Chromium-profiele kan jy al jou Chromium-goed skei. Skep profiele vir vriende en familielede, of verdeel tussen werk en pret.</translation>
 <translation id="4992938037305302429">Jou rekening in Chromium</translation>
 <translation id="5123973130450702873">Chromium benodig toestemming om jou hande na te spoor</translation>
-<translation id="5139546603444206048">Jy kan oorskakel na die Gemini-assistent wat oorspronklik met jou Google-rekening geassosieer is en nie deur <ph name="DOMAIN" /> bestuur word nie. Antwoorde sal nie meer gegrond wees op lêers of dienste wat deur <ph name="DOMAIN" /> bestuur word nie en jou kletsgeskiedenis sal nie oorgedra word nie. Dit is dalk nie geskik om vir werk te gebruik nie. Chromium moet herbegin word om oor te skakel.</translation>
 <translation id="5141988424377517949">Jy het nie onlangs die webwerf besoek nie. Chromium het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> verwyder.</translation>
 <translation id="5171868502429358653">Meld by Chromium aan</translation>
 <translation id="5174969993834422967">Jy blokkeer gewoonlik kennisgewings. Klik die kennisgewing-ikoon in die regter hoek van jou liggingbalk sodat dié werf jou in kennis kan stel.</translation>
@@ -715,7 +712,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8447525028100794994">Kry meer inligting oor hoe om met Prentsoektog in Chromium te soek</translation>
 <translation id="8453117565092476964">Die installeerderargief is korrup of ongeldig. Laai Chromium asseblief weer af.</translation>
 <translation id="8471947159125090285">Verifieer dis jy om Chromium-data in jou Google-rekening te gebruik en te stoor</translation>
-<translation id="8473541503127475913">Herbegin Chromium om oor te skakel</translation>
 <translation id="8482493977473846331">Wys porboodskappe om by Chromium aan te meld</translation>
 <translation id="8493179195440786826">Chromium is verouderd</translation>
 <translation id="850264194101621529">Dankie dat jy Chromium as jou verstekblaaier gekies het!</translation>
@@ -749,7 +745,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8906384069222226849">Chromium vereis Windows 10-weergawe 1809 of nuwer.</translation>
 <translation id="8907580949721785412">Chromium probeer tans om wagwoorde te wys. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="8910309838319708610">Sukses! Jy kan nou maklik vrae vra terwyl jy met Search-KI-modus blaai</translation>
-<translation id="8915682436012075700">Hierdie bestuurde blaaier kan ’n Gemini-assistent gebruik wat deur <ph name="DOMAIN" /> vir werk opgestel is. Dit kan inligting soek en antwoorde verskaf wat op die organisasie se lêers en goedgekeurde dienste gegrond is. Dit word dalk nie aanbeveel om dit met ’n persoonlike profiel te gebruik nie. Kletsgeskiedenis sal nie oorgedra word nie. Chromium moet herbegin word om oor te skakel.</translation>
 <translation id="8932992523185907506">Chromium is nie meer jou verstekblaaier nie. Maak Chromium die verstekblaaier?</translation>
 <translation id="8941642502866065432">Kan nie Chromium opdateer nie</translation>
 <translation id="8944232836376404813">Hierdie handeling sal:

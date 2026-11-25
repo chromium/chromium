@@ -668,7 +668,6 @@
 <translation id="2126374524350484896">‏האפליקציה שהמירה ל-PDF:</translation>
 <translation id="2127090458081644412">הסיסמה נשמרה במכשיר הזה</translation>
 <translation id="2127747486437921899">נטוי</translation>
-<translation id="2129163794581571479">‏מבוסס על Gemini עם AI מותאם אישית. כדי לייעל את המילוי האוטומטי המשופר, יכול להיות שהבקשות, כותרות הדפים וכתובות ה-URL ייבדקו. <ph name="BEGIN_LINK" />ניהול ההגדרות<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">‏לא ניתן להחיל את התבניות שבחרת, מפני שמדיניות DnsOverHttpsMode לא הוגדרה.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">האפשרות "הפעלת מילוי אוטומטי של פרטי תשלום" נפתחה בגובה מלא.</translation>
@@ -823,6 +822,7 @@
 <translation id="2356941001189392209">‏רשימה חלקית של כתובות URL של דפים עם אירועי שימוש בטכנולוגיה מדור קודם שביקרת בהם</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{כרטיסייה אחת תשותף}one{‫{NUM_TABS} כרטיסיות ישותפו}two{‫{NUM_TABS} כרטיסיות ישותפו}other{‫{NUM_TABS} כרטיסיות ישותפו}}</translation>
 <translation id="2357481397660644965">המכשיר שלך מנוהל על ידי <ph name="DEVICE_MANAGER" /> והחשבון שלך מנוהל על ידי <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">‏בכרטיסייה הזו מופיעה התשובה של חיפוש Google שמבוסס על AI</translation>
 <translation id="2359629602545592467">מטבעות מרובים</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="236000571258713023">כלי רכב</translation>
@@ -1142,6 +1142,7 @@
 <translation id="2925032407415783182">‏שמירת הכרטיס לאירוע ב-Wallet</translation>
 <translation id="2925454999967523701">‏הכפתור ליצירת מסמך, מפעילים אותו כדי ליצור במהירות מסמך חדש ב-Google Docs</translation>
 <translation id="2925673989565098301">שיטת משלוח</translation>
+<translation id="2927328994673424423">לפני שבועיים</translation>
 <translation id="2928426578619531300">משויך על ידי משתמש</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}two{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">כרטיסייה מהמכשיר הנוסף</translation>
@@ -1216,7 +1217,6 @@
 <translation id="3041584414879052436">‏רשימת המנפיקים של האפשרות "קונים עכשיו, משלמים אחר כך (BNPL)" סגורה.</translation>
 <translation id="3041612393474885105">פרטי אישור</translation>
 <translation id="3041835740069544003">‏עכשיו Chrome יכול לזהות ולמלא יותר טפסים באמצעות מילוי אוטומטי חכם יותר. הוא פשוט משתמש בתוכן ובכתובות ה-URL של הדפים, שעוברים עיבוד במרחב פרטי בענן. אפשר לנהל את זה בהגדרות.</translation>
-<translation id="3047054686095898948">‏כדי לבצע פעולות כמו מילוי טפסים מהר יותר בכל מוצרי Google, צריך לשמור את הפרטים ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />. אפשר <ph name="BEGIN_LINK" />לערוך את הפרטים<ph name="END_LINK" /> האלה ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> בחשבון <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">‏ההיסטוריה של Chrome Remote Desktop, כולל חותמות זמן, מארחים ומזהי סשנים של לקוחות</translation>
 <translation id="3052868890529250114">‏לרוב החיבור לאתרים מאובטח, אבל הפעם ל-Chrome אין אפשרות להשתמש בחיבור מאובטח. יכול להיות שתוקף מנסה לצותת לחיבור לרשת או לשנות אותו. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">הנחה בסך <ph name="PRICE_DROP" /> על <ph name="PRODUCT_NAME" /></translation>
@@ -1587,7 +1587,6 @@
 <translation id="3655670868607891010">אם נתקלת בזה לעתים קרובות, כדאי לנסות את ה<ph name="HELP_LINK" /> האלה.</translation>
 <translation id="3658742229777143148">גרסה קודמת</translation>
 <translation id="3659521826520353662">אתרים בהגדרת האדמין שבהם מבקרים, וזמני הביקורים: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">‏מבוסס על Gemini עם AI מותאם אישית. <ph name="BEGIN_LINK" />ניהול ההגדרות<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">חיפוש של אפשרויות קנייה נוספות בחנויות אחרות שמוכרות את המוצר הזה.</translation>
 <translation id="3664782872746246217">מילות מפתח:</translation>
 <translation id="3670030362669914947">מספר</translation>
@@ -1866,7 +1865,6 @@
 <translation id="4112140312785995938">הרצה לאחור</translation>
 <translation id="4114007503059268298">‏רוצה לשמור את פרטי הכרטיס בחשבון Google שלך ובמכשיר הזה?</translation>
 <translation id="4114146879518089587">המשך לאתר</translation>
-<translation id="4115378294792113321">מג'נטה</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">היקף המדיניות אינו נתמך.</translation>
@@ -3454,6 +3452,7 @@ Del</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">נכנסת באמצעות החשבון</translation>
 <translation id="6732087373923685049">מצלמה</translation>
+<translation id="6736243959894955139">כתובת</translation>
 <translation id="6738516213925468394">הנתונים שלך הוצפנו באמצעות <ph name="BEGIN_LINK" />ביטוי סיסמה לסנכרון<ph name="END_LINK" /> בתאריך <ph name="TIME" />. צריך להזין אותו כדי להתחיל את הסנכרון.</translation>
 <translation id="6740851646645036700">הגעת למגבלת העזרה בכתיבה. אפשר לנסות שוב אחר כך.</translation>
 <translation id="674375294223700098">שגיאת אישור שרת לא ידוע.</translation>

@@ -668,7 +668,6 @@
 <translation id="2126374524350484896">PDF მწარმოებელი:</translation>
 <translation id="2127090458081644412">პაროლი შენახულია ამ მოწყობილობაში</translation>
 <translation id="2127747486437921899">დახრილი</translation>
-<translation id="2129163794581571479">უზრუნველყოფს Gemini-ს პერსონალური ინტელექტი. თქვენი მოთხოვნები, გვერდის სათაურები და URL-ები შეიძლება გადამოწმდეს გაუმჯობესებული ავტომატური შევსების ფუნქციის დასახვეწად. <ph name="BEGIN_LINK" />პარამეტრების მართვა<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">თქვენ მიერ მითითებული შაბლონების მისადაგება შეიძლება ვერ მოხერხდეს „DnsOverHttpsMode“ წესების განუსაზღვრელობის გამო.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">გადახდების ავტომატური შევსების ჩართვა გახსნილია სრულ სიმაღლეზე.</translation>
@@ -1218,7 +1217,6 @@
 <translation id="3041584414879052436">„იყიდეთ ახლა, გადაიხადეთ მოგვიანებით“ გამცემების სია დაიხურა.</translation>
 <translation id="3041612393474885105">სერტიფიკატის ინფორმაცია</translation>
 <translation id="3041835740069544003">Chrome-ს ფორმების უფრო ჭკვიანი აღქმის მეშვეობით ახლა კიდევ უფრო მეტი ფორმის ამოცნობა და შევსება შეუძლია. ამისათვის გვერდის შინაარსი და URL-მისამართები შეიძლება დამუშავდეს ღრუბლოვან სერვერზე არსებულ კერძო სივრცეში. მართეთ პარამეტრებში.</translation>
-<translation id="3047054686095898948">შეინახეთ თქვენი ინფორმაცია <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />ში და უფრო სწრაფად შეასრულეთ ამოცანები, მაგალითად, შეავსეთ ფორმები Google პროდუქტებში. შეგიძლიათ <ph name="BEGIN_LINK" />მართოთ თქვენი ინფორმაცია<ph name="END_LINK" /> <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />ში ამ ანგარიშისთვის: <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Chrome-ის დისტანციური სამუშაო დაფის ისტორია, მათ შორის დროის ანაბეჭდები, ჰოსტები და კლიენტთა სესიების ID-ები</translation>
 <translation id="3052868890529250114">საიტებს, როგორც წესი, დაცულად უკავშირდებით, თუმცა Chrome-მა ამჯერად ვერ დაამყარა უსაფრთხო კავშირი. თავდამსხმელს შეეძლება თქვენს ქსელის კავშირზე თვალთვალი ან მისი შეცვლა. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი ამ გაფრთხილების შესახებ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-ზე ფასის <ph name="PRICE_DROP" />-ით შემცირება</translation>
@@ -1589,7 +1587,6 @@
 <translation id="3655670868607891010">თუ ამას ხშირად ხედავთ, სცადეთ ეს <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">რედაქცია</translation>
 <translation id="3659521826520353662">ადმინისტრატორის მიერ განსაზღვრული რომელი ვებსაიტები არის მონახულებული და როდის: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">უზრუნველყოფს Gemini-ს პერსონალური ინტელექტი. <ph name="BEGIN_LINK" />პარამეტრების მართვა<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">მოიძიეთ შეძენის სხვა ვარიანტები სხვა მაღაზიებიდან, რომლებიც ამ პროდუქტს ყიდის.</translation>
 <translation id="3664782872746246217">საკვანძო სიტყვები:</translation>
 <translation id="3670030362669914947">ნომერი</translation>
@@ -1868,7 +1865,6 @@
 <translation id="4112140312785995938">უკან გადახვევა</translation>
 <translation id="4114007503059268298">გსურთ, შეინახოთ ეს ბარათი თქვენს Google ანგარიშში და ამ მოწყობილობაზე?</translation>
 <translation id="4114146879518089587">საიტზე გადასვლა</translation>
-<translation id="4115378294792113321">მაგენტა</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">წესის მასშტაბი არ არის მხარდაჭერილი.</translation>
@@ -3452,6 +3448,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">ავტორიზებული ანგარიში</translation>
 <translation id="6732087373923685049">კამერა</translation>
+<translation id="6736243959894955139">მისამართი</translation>
 <translation id="6738516213925468394"><ph name="TIME" />-დან თქვენი მონაცემები დაშიფრულია <ph name="BEGIN_LINK" />სინქრონიზაციის საიდუმლო ფრაზით<ph name="END_LINK" />. შეიყვანეთ ის სინქრონიზაციის დასაწყებად.</translation>
 <translation id="6740851646645036700">დაწერაში დახმარების ლიმიტი ამ დროისთვის ამოწურეთ. სცადეთ მოგვიანებით.</translation>
 <translation id="674375294223700098">უცნობი სერვერის სერტიფიკატის შეცდომა.</translation>

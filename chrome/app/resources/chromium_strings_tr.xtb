@@ -122,7 +122,6 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium, tarayıcınızı yavaşlatan sekmeyi duraklatmanızı öneriyor}other{Chromium, tarayıcınızı yavaşlatan sekmeleri duraklatmanızı öneriyor}}</translation>
 <translation id="2307973900865360088">Dock'ta tut</translation>
 <translation id="2313870531055795960">URL'leri, Chromium'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chromium, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
-<translation id="2350411688004301551">Gemini Enterprise'a geç</translation>
 <translation id="2356070529366658676">Sor</translation>
 <translation id="2359808026110333948">Devam</translation>
 <translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" uzantısı, Chromium'da oturum açmanızı istiyor</translation>
@@ -172,7 +171,6 @@
 <translation id="2846251086934905009">Yükleme hatası: Yükleyici tamamlanmadı. Yükleme işlemi iptal edildi.</translation>
 <translation id="2850691299438350830">Chromium'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarında güvenliğinizi artırmak için kullanılabilir.</translation>
 <translation id="2885378588091291677">Görev Yöneticisi</translation>
-<translation id="2898830646167954300">Yönetilmeyen Gemini asistanınıza geri dönün</translation>
 <translation id="2910007522516064972">&amp;Chromium hakkında</translation>
 <translation id="2915996080311180594">Daha Sonra Yeniden Başlat</translation>
 <translation id="2933336679234709858">Verileriniz parolanızla şifrelenir. Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için parolanızı girin.</translation>
@@ -356,7 +354,6 @@
 <translation id="4950660488495335294">Chromium profilleri ile tüm Chromium öğelerinizi ayırabilirsiniz. Arkadaşlar ve aile için profil oluşturun veya iş ile eğlenceyi ayırın.</translation>
 <translation id="4992938037305302429">Chromium'daki Hesabınız</translation>
 <translation id="5123973130450702873">Chromium'un ellerinizi takip etmek için izne ihtiyacı var</translation>
-<translation id="5139546603444206048">Başlangıçta Google Hesabınızla ilişkilendirilmiş olan ve <ph name="DOMAIN" /> tarafından yönetilmeyen Gemini asistanına geçebilirsiniz. Yanıtlar artık <ph name="DOMAIN" /> tarafından yönetilen dosyalara veya hizmetlere dayalı olmayacak ve sohbet geçmişiniz aktarılmayacak. İş amaçlı kullanıma uygun olmayabilir. Geçiş yapmak için Chromium'un yeniden başlatılması gerekir.</translation>
 <translation id="5141988424377517949">Son zamanlarda ziyaret etmediniz. Chromium; <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="PERMISSION_3" /> iznini kaldırdı.</translation>
 <translation id="5171868502429358653">Chromium'da Oturum Açın</translation>
 <translation id="5174969993834422967">Genelde bildirimleri engelliyorsunuz. Bu sitenin size bildirim göndermesine izin vermek için konum çubuğunuzun sağ köşesindeki bildirim simgesini tıklayın.</translation>
@@ -710,7 +707,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8447525028100794994">Chromium'da görsel arama ile arama yapma hakkında daha fazla bilgi</translation>
 <translation id="8453117565092476964">Yükleyici arşivi bozuk veya geçersiz. Lütfen Chromium'u yeniden indirin.</translation>
 <translation id="8471947159125090285">Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın</translation>
-<translation id="8473541503127475913">Geçiş yapmak için Chromium'u yeniden başlatın</translation>
 <translation id="8482493977473846331">Chromium'da oturum açmak için istekleri gösterir</translation>
 <translation id="8493179195440786826">Chromium Sürümü Eski</translation>
 <translation id="850264194101621529">Chrome'u varsayılan tarayıcınız olarak seçtiğiniz için teşekkür ederiz.</translation>
@@ -744,7 +740,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8906384069222226849">Chromium için Windows 10'un 1809 veya sonraki sürümleri gerekir.</translation>
 <translation id="8907580949721785412">Chromium şifreleri göstermeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="8910309838319708610">İşlem tamamlandı. Arama AI Modu ile artık göz atarken kolayca soru sorabilirsiniz</translation>
-<translation id="8915682436012075700">Bu yönetilen tarayıcı, <ph name="DOMAIN" /> tarafından iş için yapılandırılmış bir Gemini asistanını kullanabilir. Kuruluşun dosyalarına ve onaylı hizmetlerine dayanarak bilgi bulabilir ve yanıt verebilir. Kişisel profille kullanılması önerilmeyebilir. Sohbet geçmişi aktarılmaz. Geçiş yapmak için Chromium'un yeniden başlatılması gerekir.</translation>
 <translation id="8932992523185907506">Chromium artık varsayılan tarayıcınız değil. Chromium varsayılan tarayıcı olsun mu?</translation>
 <translation id="8941642502866065432">Chromium güncellenemiyor</translation>
 <translation id="8944232836376404813">Bu işlem ile:

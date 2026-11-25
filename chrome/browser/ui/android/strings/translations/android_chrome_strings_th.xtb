@@ -150,7 +150,6 @@
 <translation id="1543035591122163372">ลงชื่อเข้าใช้เพื่อรับรหัสผ่านและอื่นๆ จาก <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">จะไม่มีการเข้ารหัสวิธีการชำระเงินและที่อยู่ ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์
 เฉพาะผู้ที่มีพาสเฟรสของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บพาสเฟรสดังกล่าว หากลืมพาสเฟรสหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
-<translation id="1544826120773021464">หากต้องการจัดการบัญชี Google ให้แตะปุ่ม "จัดการบัญชี"</translation>
 <translation id="1549000191223877751">ย้ายไปยังหน้าต่างอื่น</translation>
 <translation id="1553358976309200471">อัปเดต Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> สำหรับ "<ph name="SEARCH_TERMS" />"</translation>
@@ -167,7 +166,6 @@
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, แท็บการแชร์</translation>
 <translation id="1601378265092360672">ข้อมูลการท่องเว็บประกอบด้วยประวัติการท่องเว็บ คุกกี้และข้อมูลเว็บไซต์อื่นๆ รูปภาพและไฟล์ที่แคชไว้ รวมถึงแท็บที่เปิดอยู่</translation>
 <translation id="160275202205869636">เมื่อเปิดไว้ ระบบจะใช้และบันทึกข้อมูลในบัญชี Google ของคุณ เมื่อปิดไว้ ระบบจะบันทึกข้อมูลในอุปกรณ์เครื่องนี้เท่านั้น</translation>
-<translation id="160403827062749147">ยินดีต้อนรับสู่ Google Chrome เบราว์เซอร์ที่ปลอดภัยที่สุดในโลก</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{นำ 1 รายการที่เลือกออก}other{นำ # รายการที่เลือกออก}}</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1641113438599504367">Google Safe Browsing</translation>
@@ -866,7 +864,6 @@
 <translation id="4374192654218566997">\n\nคุณยังนำข้อมูลนี้ออกจากอุปกรณ์นี้ได้ด้วย</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
 <translation id="4380055775103003110">หากปัญหานี้ยังเกิดขึ้นอยู่ คุณสามารถลองดำเนินการต่อใน <ph name="SITE_ETLD_PLUS_ONE" /> ด้วยวิธีอื่นๆ ได้</translation>
-<translation id="4381351546374507910">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์ก รหัสผ่าน และข้อมูลการป้อนข้อความอัตโนมัติในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="4384468725000734951">กำลังใช้ Sogou ในการค้นหา</translation>
 <translation id="4387647248986092471">สร้างการล็อกโปรไฟล์รถยนต์</translation>
 <translation id="4387817230000841154">เปิดการดาวน์โหลด</translation>
@@ -1908,7 +1905,6 @@
 <translation id="8210770465353466621">คุณจะเห็นแท็บที่นี่</translation>
 <translation id="8212799748012101103">เปิดการค้นหาแท็บ</translation>
 <translation id="8215740705341534369">ชีตด้านข้าง</translation>
-<translation id="8218622182176210845">จัดการบัญชีของคุณ</translation>
 <translation id="8221985041778490865">กำลังลบข้อมูลการท่องเว็บ</translation>
 <translation id="8223642481677794647">เมนูของการ์ดฟีด</translation>
 <translation id="82296173028782770">แก้ไขคำค้นหา: <ph name="SEARCH_QUERY" /></translation>

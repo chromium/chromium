@@ -668,7 +668,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2126374524350484896">PDF failo rengėjas:</translation>
 <translation id="2127090458081644412">Slaptažodis išsaugotas šiame įrenginyje</translation>
 <translation id="2127747486437921899">Kursyvas</translation>
-<translation id="2129163794581571479">Teikia „Gemini“ su Asmeniniu intelektu. Užklausos, puslapių pavadinimai ir URL gali būti peržiūrėti siekiant patobulinti išmanųjį automatinį pildymą. <ph name="BEGIN_LINK" />Tvarkyti nustatymus<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Jūsų nurodyti šablonai gali būti netaikomi dėl to, kad nenustatyta „DnsOverHttpsMode“ politika.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Mokėjimų automatinio pildymo įgalinimo lapas atidarytas per visą ekrano aukštį.</translation>
@@ -1218,7 +1217,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3041584414879052436">Paslaugos „Pirkite dabar, mokėkite vėliau“ išdavėjų sąrašas uždarytas.</translation>
 <translation id="3041612393474885105">Sertifikato informacija</translation>
 <translation id="3041835740069544003">Dabar „Chrome“ gali aptikti ir užpildyti daugiau formų, naudodama išmanesnį formų atpažinimą. Kad tai būtų galima padaryti, puslapio turinys ir URL gali būti apdorojami privačioje erdvėje debesyje. Tvarkykite nustatymuose.</translation>
-<translation id="3047054686095898948">Išsaugokite informaciją „<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />“ ir sparčiau atlikite užduotis, pvz., užpildykite formas „Google“ produktuose. Galite <ph name="BEGIN_LINK" />tvarkyti informaciją<ph name="END_LINK" /> sistemoje „<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />“ (<ph name="ACCOUNT" />)</translation>
 <translation id="305162504811187366">„Chrome“ nuotolinio kompiuterio valdymo istorija, įskaitant laiko žymes, prieglobas ir klientų seansų ID</translation>
 <translation id="3052868890529250114">Paprastai saugiai prisijungiate prie svetainių, bet šį kartą „Chrome“ nepavyko naudoti saugaus ryšio. Atakos vykdytojas gali bandyti stebėti arba keisti tinklo ryšį. <ph name="BEGIN_LEARN_MORE_LINK" />Sužinokite daugiau apie šį perspėjimą<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138">„<ph name="PRODUCT_NAME" />“ <ph name="PRICE_DROP" /> kainos sumažėjimas</translation>
@@ -1590,7 +1588,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3655670868607891010">Jei tai rodoma dažnai, išbandykite <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Peržiūrėtas ir pataisytas leidimas</translation>
 <translation id="3659521826520353662">Kokiose administratoriaus nustatytose svetainėse lankomasi ir kada: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">Teikia „Gemini“ su Asmeniniu intelektu. <ph name="BEGIN_LINK" />Tvarkyti nustatymus<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Ieškokite daugiau pirkimo parinkčių kitose parduotuvėse, kuriose parduodamas šis produktas.</translation>
 <translation id="3664782872746246217">Raktiniai žodžiai:</translation>
 <translation id="3670030362669914947">Numeris</translation>
@@ -1869,7 +1866,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4112140312785995938">Prasukti atgal</translation>
 <translation id="4114007503059268298">Ar norite išsaugoti šią kortelę „Google“ paskyroje ir šiame įrenginyje?</translation>
 <translation id="4114146879518089587">Eiti į svetainę</translation>
-<translation id="4115378294792113321">Purpurinė</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Politikos aprėptis nepalaikoma.</translation>
@@ -3453,6 +3449,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">Prisijungta naudojant paskyrą</translation>
 <translation id="6732087373923685049">fotoaparatas</translation>
+<translation id="6736243959894955139">Adresas</translation>
 <translation id="6738516213925468394"><ph name="TIME" /> duomenys buvo užšifruoti naudojant <ph name="BEGIN_LINK" />sinchronizavimo slaptafrazę<ph name="END_LINK" />. Įveskite ją, kad pradėtumėte sinchronizuoti.</translation>
 <translation id="6740851646645036700">Kol kas pasiekėte rašymo pagalbos apribojimą. Vėliau bandykite dar kartą.</translation>
 <translation id="674375294223700098">Nežinoma serverio sertifikato klaida.</translation>

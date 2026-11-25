@@ -150,7 +150,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1543035591122163372">ログインすると、<ph name="DEVICE_TYPE" /> で保存したパスワードなどを使用できます</translation>
 <translation id="1544084554881119930">お支払い方法と住所は暗号化されません。また、Chrome の閲覧履歴は同期されません。
 パスフレーズを知っているユーザーだけが暗号化されたデータを見ることができます。パスフレーズは Google には送信されず、保存されることもありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />してください。</translation>
-<translation id="1544826120773021464">Google アカウントを管理するには、[アカウントを管理] をタップします。</translation>
 <translation id="1549000191223877751">他のウィンドウに移動</translation>
 <translation id="1553358976309200471">Chrome を更新</translation>
 <translation id="1554352084785952638">「<ph name="SEARCH_TERMS" />」を <ph name="SEARCH_ENGINE" /></translation>
@@ -167,7 +166,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />、共有タブ</translation>
 <translation id="1601378265092360672">閲覧データには、閲覧履歴、Cookie やその他のサイトデータ、キャッシュされた画像とファイル、開いているタブが含まれます</translation>
 <translation id="160275202205869636">オンにすると、Google アカウントのデータが使用、保存されます。オフにすると、データはこのデバイスのみに保存されます。</translation>
-<translation id="160403827062749147">世界で最も安全なブラウザ、Google Chrome へようこそ</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{選択された 1 件のアイテムを削除します}other{選択された # 件のアイテムを削除します}}</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
@@ -866,7 +864,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4374192654218566997">\n\nこのデバイスから次のデータも削除できます。</translation>
 <translation id="4378154925671717803">電話</translation>
 <translation id="4380055775103003110">問題が解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
-<translation id="4381351546374507910">ログインすると、すべてのデバイスで同じブックマーク、パスワード、自動入力情報を使用できます。</translation>
 <translation id="4384468725000734951">検索に Sogou を使用します</translation>
 <translation id="4387647248986092471">車のプロフィールのロックを作成</translation>
 <translation id="4387817230000841154">ダウンロードを開く</translation>
@@ -1908,7 +1905,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8210770465353466621">ここにタブが表示されます</translation>
 <translation id="8212799748012101103">タブ検索を開く</translation>
 <translation id="8215740705341534369">サイドシート</translation>
-<translation id="8218622182176210845">アカウントを管理</translation>
 <translation id="8221985041778490865">閲覧履歴データを削除しています</translation>
 <translation id="8223642481677794647">フィードカード メニュー</translation>
 <translation id="82296173028782770">検索語句「<ph name="SEARCH_QUERY" />」を編集します</translation>

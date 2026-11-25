@@ -125,7 +125,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium recomienda pausar la pestaña que ralentiza tu navegador}other{Chromium recomienda pausar las pestañas que ralentizan tu navegador}}</translation>
 <translation id="2307973900865360088">Mantener en el Dock</translation>
 <translation id="2313870531055795960">Comprueba las URLs guardadas en Chromium con una lista de sitios que no son seguros. Si un sitio intenta robarte tu contraseña o si te descargas un archivo dañino, puede que Chromium también envíe URLs, así como fragmentos de contenido de la página, a Navegación segura.</translation>
-<translation id="2350411688004301551">Cambiar a Gemini Enterprise</translation>
 <translation id="2356070529366658676">Preguntar</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2361918034042471035">La extensión "<ph name="EXTENSION_NAME" />" quiere que inicies sesión en Chromium</translation>
@@ -175,7 +174,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2846251086934905009">Error de instalación: no se ha completado el proceso de instalación. Se ha cancelado la instalación.</translation>
 <translation id="2850691299438350830">Te protege en Chromium y se puede usar para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión.</translation>
 <translation id="2885378588091291677">Administrador de tareas</translation>
-<translation id="2898830646167954300">Volver a tu asistente Gemini no gestionado</translation>
 <translation id="2910007522516064972">Información de &amp;Chromium</translation>
 <translation id="2915996080311180594">Reiniciar más tarde</translation>
 <translation id="2933336679234709858">Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y guardar datos de Chromium en tu cuenta de Google.</translation>
@@ -361,7 +359,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4950660488495335294">Con los perfiles de Chromium, puedes separar todos tus elementos de Chromium. Crea perfiles para amigos y familiares, o un perfil de trabajo y otro de ocio.</translation>
 <translation id="4992938037305302429">Tu cuenta en Chromium</translation>
 <translation id="5123973130450702873">Chromium necesita permiso para hacer seguimiento de tus manos</translation>
-<translation id="5139546603444206048">Puedes cambiar al asistente Gemini asociado originalmente a tu cuenta de Google y no gestionado por <ph name="DOMAIN" />. Las respuestas ya no se basarán en archivos o servicios gestionados por <ph name="DOMAIN" /> y tu historial de conversaciones no se transferirá. Puede que no sea adecuado para el trabajo. Para cambiar, debes reiniciar Chromium.</translation>
 <translation id="5141988424377517949">No has visitado el sitio recientemente. Chromium ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Inicia sesión en Chromium</translation>
 <translation id="5174969993834422967">Sueles bloquear las notificaciones. Para permitir que este sitio te envíe notificaciones, haz clic en el icono de notificación que aparece en la esquina derecha de la barra de direcciones.</translation>
@@ -715,7 +712,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8447525028100794994">Más información sobre cómo usar la búsqueda por imágenes en Chromium</translation>
 <translation id="8453117565092476964">El archivo de instalación está dañado o no es válido. Vuelve a descargar Chromium.</translation>
 <translation id="8471947159125090285">Para usar y guardar los datos de Chromium en tu cuenta de Google, verifica tu identidad</translation>
-<translation id="8473541503127475913">Reiniciar Chromium para cambiar</translation>
 <translation id="8482493977473846331">Muestra solicitudes para iniciar sesión en Chromium</translation>
 <translation id="8493179195440786826">Chromium no está actualizado</translation>
 <translation id="850264194101621529">Gracias por elegir Chromium como navegador predeterminado.</translation>
@@ -749,7 +745,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8906384069222226849">Chromium requiere Windows 10 (versión 1809) o una versión posterior.</translation>
 <translation id="8907580949721785412">Chromium está intentando mostrar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="8910309838319708610">¡Listo! Ahora puedes hacer preguntas fácilmente mientras navegas con el Modo IA de la Búsqueda.</translation>
-<translation id="8915682436012075700">Este navegador gestionado puede usar un asistente de Gemini configurado para el trabajo por <ph name="DOMAIN" />. Puede encontrar información y ofrecer respuestas basadas en los archivos y los servicios aprobados de la organización. No se recomienda usarlo con un perfil personal. El historial de conversaciones no se transferirá. Para cambiar, debes reiniciar Chromium.</translation>
 <translation id="8932992523185907506">Chromium ya no es tu navegador predeterminado. ¿Establecer Chromium como navegador predeterminado?</translation>
 <translation id="8941642502866065432">No se puede actualizar Chromium</translation>
 <translation id="8944232836376404813">Con esta acción:

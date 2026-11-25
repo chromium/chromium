@@ -143,7 +143,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2307973900865360088">Keep in Dock</translation>
 <translation id="2309047409763057870">This is a secondary installation of Google Chrome, and cannot be made your default browser.</translation>
 <translation id="2345992953227471816">Chrome found that these extensions contain malware:</translation>
-<translation id="2350411688004301551">Switch to Gemini Enterprise</translation>
 <translation id="2358140144860869442">To get your reading list and more on all your devices, sign in to Chrome</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2403703063067034158">Startup error: Another instance of setup is currently running, please try again later.</translation>
@@ -201,7 +200,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="2876628302275096482">Learn more about <ph name="BEGIN_LINK" />how Chrome keeps your data private<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Task manager</translation>
 <translation id="2888126860611144412">About Chrome</translation>
-<translation id="2898830646167954300">Switch back to your unmanaged Gemini assistant</translation>
 <translation id="2915996080311180594">Restart later</translation>
 <translation id="2926952073016206995">Chrome needs camera permission for this site</translation>
 <translation id="2945997411976714835">Install error: The installer process failed to start.</translation>
@@ -424,7 +422,6 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5271833978500241046">Use them alongside other Gemini features in Chrome</translation>
 <translation id="5320351714793324716">If you allow cookies, Chrome may use them when preloading.</translation>
 <translation id="5321325624576443340">Google Lens is not available. Please try again later.</translation>
-<translation id="5336664042114176802">You can switch to the Gemini assistant originally associated with your Google Account and not managed by <ph name="DOMAIN" />. Answers will no longer be grounded in files or services managed by <ph name="DOMAIN" /> and your chat history won't carry over. It may not be suitable to use for work. Switching requires relaunching Chrome.</translation>
 <translation id="5346389065299425353">Deepen your search by adding multiple tabs, files and tools</translation>
 <translation id="5353252989841766347">Export Passwords From Chrome</translation>
 <translation id="5368118228313795342">Extra code: <ph name="EXTRA_CODE" />.</translation>
@@ -543,7 +540,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6438015621983209660">Extend Enhanced Safe Browsing with Chrome on your phone</translation>
 <translation id="6442774133615368941">Shop, translate and identify what you see with your camera on the Chrome iOS app</translation>
 <translation id="6446105560007692480">to search with Chrome or customise in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /></translation>
-<translation id="6447943657065463998">This managed browser can use a Gemini assistant set up for work by <ph name="DOMAIN" />. It can find info and provide answers grounded in the organisation's files and approved services. Using it with a personal profile may not be recommended. Chat history won't carry over. Switching requires relaunching Chrome.</translation>
 <translation id="6448835208126432197">To select part of the screen in Gemini in Chrome, use keyboard shortcut.</translation>
 <translation id="6473905796280459355">Go to the About Chrome page</translation>
 <translation id="6481963882741794338">Link Chrome and other Google services for personalisation and other purposes</translation>
@@ -714,7 +710,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8064965390968184078">1. Click <ph name="BUTTON_LABEL" /> below
 2. Click <ph name="BUTTON_2" /> in your Windows settings
 3. Click <ph name="BUTTON_3" /> in the Windows notification to pin Chrome to your taskbar for quick access</translation>
-<translation id="8066474819446975249">Relaunch Chrome to switch</translation>
 <translation id="8074398340364918139">To search a specific Chrome feature or extension, type its shortcut in the address bar, followed by your selected keyboard key</translation>
 <translation id="8077579734294125741">Other Chrome profiles</translation>
 <translation id="8086881907087796310">Installation failed because your computer does not meet the minimum hardware requirements.</translation>

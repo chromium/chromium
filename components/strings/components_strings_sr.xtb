@@ -668,7 +668,6 @@
 <translation id="2126374524350484896">Апликација за прављење PDF докумената:</translation>
 <translation id="2127090458081644412">Лозинка је сачувана на овом уређају</translation>
 <translation id="2127747486437921899">Курзив</translation>
-<translation id="2129163794581571479">Омогућава Gemini са Персонализованом интелигенцијом. Захтеви, наслови страница и URL-ови могу да се прегледају ради побољшања побољшаног аутоматског попуњавања. <ph name="BEGIN_LINK" />Управљајте подешавањима<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Није могуће применити шаблоне које сте навели јер DnsOverHttpsMode смернице нису подешене.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Дијалог Омогућите аутоматско попуњавање за плаћања отворен је на целом екрану.</translation>
@@ -1218,7 +1217,6 @@
 <translation id="3041584414879052436">Листа издавалаца опције Купите одмах, платите касније је затворена.</translation>
 <translation id="3041612393474885105">Информације о сертификату</translation>
 <translation id="3041835740069544003">Chrome сада може да открива и попуњава више образаца захваљујући функцији Боље разумевање образаца. Садржај странице и URL-ови у ту сврху могу да се обрађују у приватном простору у клауду. Управљајте овом опцијом у подешавањима.</translation>
-<translation id="3047054686095898948">Сачувајте информације у услузи <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> и брже обављајте ствари попут попуњавања образаца у Google производима. Можете да <ph name="BEGIN_LINK" />управљате информацијама<ph name="END_LINK" /> у услузи <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> за налог <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Историја Chrome удаљеног рачунара, укључујући временске ознаке, ИД-еве сесија хостова и клијената</translation>
 <translation id="3052868890529250114">Обично се безбедно повезујете са сајтовима, али Chrome овог пута не може да користи безбедну везу. Нападач можда покушава да шпијунира или измени мрежну везу. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Снижење од <ph name="PRICE_DROP" /> за:<ph name="PRODUCT_NAME" /></translation>
@@ -1589,7 +1587,6 @@
 <translation id="3655670868607891010">Ако вам се ово често приказује, можда вам помогну следећи <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Ревизија</translation>
 <translation id="3659521826520353662">Који веб-сајтови које је дефинисао администратор се посећују и када: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">Омогућава Gemini са Персонализованом интелигенцијом. <ph name="BEGIN_LINK" />Управљајте подешавањима<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Претражите још опција куповине у другим продавницама које продају овај производ.</translation>
 <translation id="3664782872746246217">Кључне речи:</translation>
 <translation id="3670030362669914947">Број</translation>
@@ -1868,7 +1865,6 @@
 <translation id="4112140312785995938">Премотај уназад</translation>
 <translation id="4114007503059268298">Да ли желите да сачувате ову картицу на Google налогу и на овом уређају?</translation>
 <translation id="4114146879518089587">Настави на сајт</translation>
-<translation id="4115378294792113321">Циклама</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Опсег смерница није подржан.</translation>
@@ -3451,6 +3447,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">Пријављени сте помоћу налога</translation>
 <translation id="6732087373923685049">камера</translation>
+<translation id="6736243959894955139">Адреса</translation>
 <translation id="6738516213925468394">Подаци су шифровани помоћу <ph name="BEGIN_LINK" />приступне фразе<ph name="END_LINK" /> (<ph name="TIME" />). Унесите је да бисте започели синхронизацију.</translation>
 <translation id="6740851646645036700">Достигли сте ограничење помоћи за писање. Пробајте поново касније.</translation>
 <translation id="674375294223700098">Непозната грешка сертификата сервера.</translation>

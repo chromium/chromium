@@ -200,6 +200,7 @@
 <translation id="1547610699249301703">Kongsi kata laluan</translation>
 <translation id="1554043146674176775">Matikan AI Mode</translation>
 <translation id="1554477036522844996">Tetingkap Baharu</translation>
+<translation id="1555014818414775661">Tambahkan imej</translation>
 <translation id="1557806604681757705">komputer anda</translation>
 <translation id="1558391695376153246">Tutup tab Inkognito</translation>
 <translation id="1560153516220021659">Butang bar alat kedua dikuncupkan</translation>
@@ -913,7 +914,6 @@
 <translation id="3857113360369572832">Buka <ph name="BEGIN_BOLD" />Tetapan Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="386224966259596343">Anda akan berpeluang menyimpan maklumat ini pada Wallet apabila anda mengisi borang yang berkaitan pada masa hadapan.</translation>
-<translation id="3868495844258915202">Tunjukkan URL penuh</translation>
 <translation id="3870931306085184145">Tiada kata laluan yang disimpan untuk <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Tunjukkan Caranya</translation>
 <translation id="3878657761594430423">Penangkap helaian</translation>
@@ -1009,7 +1009,6 @@
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4159430626587776301">Lihat ulasan untuk produk yang telah anda semak imbas baru-baru ini</translation>
 <translation id="4161488339191275792">Buat kumpulan tab untuk mengatur tab terbuka anda</translation>
-<translation id="4162616958842974809">Tambahkan Imej</translation>
 <translation id="4163699139741158298">{count,plural, =1{Penanda halaman disimpan pada "{title}". Penanda halaman ini disimpan pada peranti ini sahaja.}other{{count} penanda halaman disimpan pada "{title}". Penanda halaman ini disimpan pada peranti ini sahaja.}}</translation>
 <translation id="4164514562270305824">Autopadam Muat Turun</translation>
 <translation id="4165986682804962316">Tetapan tapak</translation>

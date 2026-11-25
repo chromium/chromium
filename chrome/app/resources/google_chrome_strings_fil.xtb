@@ -143,7 +143,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2307973900865360088">Panatilihin sa Dock</translation>
 <translation id="2309047409763057870">Pangalawang pag-install ito ng Google Chrome at hindi ito maaaring gawing iyong default na browser.</translation>
 <translation id="2345992953227471816">Napag-alaman ng Chrome na naglalaman ng malware ang mga extension na ito:</translation>
-<translation id="2350411688004301551">Lumipat sa Gemini Enterprise</translation>
 <translation id="2358140144860869442">Para makuha ang iyong listahan ng babasahin at higit pa sa lahat ng device mo, mag-sign in sa Chrome</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2403703063067034158">Nagkaroon ng error sa startup: May tumatakbo nang isa pang instance ng pag-set up, pakisubukan ulit sa ibang pagkakataon.</translation>
@@ -201,7 +200,6 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="2876628302275096482">Matuto pa tungkol sa kung <ph name="BEGIN_LINK" />paano pinapanatiling pribado ng Chrome ang iyong data<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2888126860611144412">Tungkol sa Chrome</translation>
-<translation id="2898830646167954300">Bumalik sa iyong hindi pinapamahalaang Gemini assistant</translation>
 <translation id="2915996080311180594">I-restart sa Ibang Pagkakataon</translation>
 <translation id="2926952073016206995">Kailangan ng Chrome ng pahintulot sa camera para sa site na ito</translation>
 <translation id="2945997411976714835">Error sa pag-install: Hindi nagsimula ang proseso ng installer.</translation>
@@ -424,7 +422,6 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="5271833978500241046">Gamitin ang mga ito kasama ng iba pang feature ng Gemini sa Chrome</translation>
 <translation id="5320351714793324716">Kung papayagan mo ang cookies, posibleng gamitin ng Chrome ang mga ito kapag nagpi-preload</translation>
 <translation id="5321325624576443340">Hindi available ang Google Lens. Subukan ulit sa ibang pagkakataon.</translation>
-<translation id="5336664042114176802">Puwede kang lumipat sa Gemini assistant na orihinal na nauugnay sa iyong Google Account at hindi pinapamahalaan ng <ph name="DOMAIN" />. Hindi na ibabatay ang mga sagot sa mga file o serbisyong pinapamahalaan ng <ph name="DOMAIN" /> at hindi maililipat ang iyong history ng chat. Posibleng hindi ito naaangkop na gamitin para sa trabaho. Nire-require sa paglipat na ilunsad ulit ang Chrome.</translation>
 <translation id="5346389065299425353">Palalimin ang iyong paghahanap sa pamamagitan ng pagdaragdag ng maraming tab, file, at tool</translation>
 <translation id="5353252989841766347">Mag-export ng Mga Password mula sa Chrome</translation>
 <translation id="5368118228313795342">Dagdag na code: <ph name="EXTRA_CODE" />.</translation>
@@ -543,7 +540,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6438015621983209660">I-extend ang Pinahusay na Ligtas na Pag-browse gamit ang Chrome sa iyong telepono</translation>
 <translation id="6442774133615368941">Bilhin, isalin, at tukuyin ang nakikita mo gamit ang iyong camera sa Chrome iOS app</translation>
 <translation id="6446105560007692480">para maghanap gamit ang Chrome o mag-customize sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" /></translation>
-<translation id="6447943657065463998">Puwedeng gumamit ang pinapamahalaang browser na ito ng Gemini assistant na na-set up para sa trabaho ng <ph name="DOMAIN" />. Puwede itong maghanap ng impormasyon at magbigay ng mga sagot na nakabatay sa mga file at naaprubahang serbisyo ng organisasyon. Posibleng hindi inirerekomenda ang paggamit nito sa personal na profile. Hindi maililipat ang history ng chat. Nire-require sa paglipat na ilunsad ulit ang Chrome.</translation>
 <translation id="6448835208126432197">Para pumili ng bahagi ng screen sa Gemini sa Chrome, gamitin ang keyboard shortcut.</translation>
 <translation id="6473905796280459355">Pumunta sa page na Tungkol sa Chrome</translation>
 <translation id="6481963882741794338">I-link ang Chrome at iba pang serbisyo ng Google para sa pag-personalize at iba pang layunin</translation>
@@ -714,7 +710,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8064965390968184078">1. I-click ang <ph name="BUTTON_LABEL" /> sa ibaba
 2. I-click ang <ph name="BUTTON_2" /> sa iyong mga setting ng Windows
 3. I-click ang <ph name="BUTTON_3" /> sa notification ng Windows para i-pin ang Chrome sa iyong taskbar para sa mabilis na pag-access</translation>
-<translation id="8066474819446975249">Ilunsad ulit ang Chrome para lumipat</translation>
 <translation id="8074398340364918139">Para maghanap ng partikular na feature o extension ng Chrome, i-type ang shortcut nito sa address bar, kasunod ang iyong napiling keyboard key</translation>
 <translation id="8077579734294125741">Iba pang Profile sa Chrome</translation>
 <translation id="8086881907087796310">Hindi na-install dahil hindi natutugunan ng iyong computer ang mga minimum na requirement sa hardware.</translation>

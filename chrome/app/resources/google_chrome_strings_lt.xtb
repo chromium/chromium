@@ -143,7 +143,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2307973900865360088">Palikti doke</translation>
 <translation id="2309047409763057870">Tai yra antrinis „Google Chrome“ diegimas, todėl ji negali būti nustatyta kaip numatytoji naršyklė.</translation>
 <translation id="2345992953227471816">„Chrome“ aptiko kenkėjišką programą šiuose plėtiniuose:</translation>
-<translation id="2350411688004301551">Perjungti į „Gemini Enterprise“</translation>
 <translation id="2358140144860869442">Jei norite pasiekti skaitymo sąrašą ir kt. visuose įrenginiuose, prisijunkite prie „Chrome“</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2403703063067034158">Paleisties klaida: šiuo metu vykdoma kita sąrankos kopija. Vėliau bandykite dar kartą.</translation>
@@ -201,7 +200,6 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="2876628302275096482">Sužinokite daugiau, <ph name="BEGIN_LINK" />kaip „Chrome“ užtikrina jūsų duomenų privatumą<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Užduočių tvarkytuvė</translation>
 <translation id="2888126860611144412">Apie „Chrome“</translation>
-<translation id="2898830646167954300">Perjungti atgal į nevaldomą „Gemini“ padėjėją</translation>
 <translation id="2915996080311180594">Paleisti iš naujo vėliau</translation>
 <translation id="2926952073016206995">„Chrome“ reikalingas fotoaparato leidimas šioje svetainėje</translation>
 <translation id="2945997411976714835">Diegimo klaida: nepavyko pradėti diegimo programos proceso.</translation>
@@ -424,7 +422,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="5271833978500241046">Naudokite juos kartu su kitomis „Gemini“ funkcijomis naršyklėje „Chrome“</translation>
 <translation id="5320351714793324716">Jei leisite slapukus, „Chrome“ gali naudoti juos iš anksto įkeldama puslapius</translation>
 <translation id="5321325624576443340">„Google Lens“ nepasiekiama. Vėliau bandykite dar kartą.</translation>
-<translation id="5336664042114176802">Galite perjungti į „Gemini“ padėjėją, kuris iš pradžių buvo susietas su jūsų „Google“ paskyra ir kurio netvarko „<ph name="DOMAIN" />“. Atsakymai nebebus pagrįsti failais ar paslaugomis, kuriuos tvarko „<ph name="DOMAIN" />“, o jūsų pokalbių istorija nebus perkelta. Jis gali būti netinkamas naudoti darbe. Norint perjungti, reikia iš naujo paleisti „Chrome“.</translation>
 <translation id="5346389065299425353">Išplėskite paiešką pridėdami kelis skirtukus, failus ir įrankius</translation>
 <translation id="5353252989841766347">Slaptažodžių eksportavimas iš „Chrome“</translation>
 <translation id="5368118228313795342">Papildomas kodas: <ph name="EXTRA_CODE" />.</translation>
@@ -543,7 +540,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6438015621983209660">Sustiprinto saugaus naršymo išplėtimas naudojant „Chrome“ telefone</translation>
 <translation id="6442774133615368941">Apsipirkite, verskite ir nustatykite, ką matote, naudodami fotoaparatą „Chrome“ „iOS“ programoje</translation>
 <translation id="6446105560007692480">kad galėtumėte ieškoti naudodami „Chrome“ arba tinkinti <ph name="BEGIN_LINK" />nustatymuose<ph name="END_LINK" /></translation>
-<translation id="6447943657065463998">Ši tvarkoma naršyklė gali naudoti „Gemini“ padėjėją, kurį darbui nustatė <ph name="DOMAIN" />. Jis gali rasti informacijos ir pateikti atsakymų, pagrįstų organizacijos failais ir patvirtintomis paslaugomis. Nerekomenduojama jo naudoti su asmeniniu profiliu. Pokalbių istorija nebus perkelta. Norint perjungti, reikia iš naujo paleisti „Chrome“.</translation>
 <translation id="6448835208126432197">Jei norite pasirinkti ekrano dalį „Gemini“ naršyklėje „Chrome“, naudokite sparčiuosius klavišus.</translation>
 <translation id="6473905796280459355">Eiti į puslapį „Apie „Chrome“</translation>
 <translation id="6481963882741794338">Susiekite „Chrome“ ir kitas „Google“ paslaugas, kad būtų galima suasmeninti ir kitais tikslais</translation>
@@ -714,7 +710,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8064965390968184078">1. Spustelėkite toliau pateiktą mygtuką „<ph name="BUTTON_LABEL" />“.
 2. Spustelėkite „<ph name="BUTTON_2" />“ „Windows“ nustatymuose.
 3. Spustelėkite mygtuką „<ph name="BUTTON_3" />“ „Windows“ pranešime, kad prisegtumėte „Chrome“ prie užduočių juostos ir galėtumėte sparčiai ją pasiekti.</translation>
-<translation id="8066474819446975249">Paleiskite „Chrome“ iš naujo, kad perjungtumėte</translation>
 <translation id="8074398340364918139">Jei norite ieškoti konkrečios „Chrome“ funkcijos ar plėtinio, įveskite šaukinį adreso juostoje ir paspauskite pasirinktą klaviatūros klavišą</translation>
 <translation id="8077579734294125741">Kiti „Chrome“ profiliai</translation>
 <translation id="8086881907087796310">Įdiegti nepavyko, nes kompiuteris neatitinka minimalių aparatinės įrangos reikalavimų.</translation>

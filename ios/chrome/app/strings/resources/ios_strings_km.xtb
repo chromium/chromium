@@ -200,6 +200,7 @@
 <translation id="1547610699249301703">ចែករំលែក​ពាក្យ​សម្ងាត់</translation>
 <translation id="1554043146674176775">បិទ​មុខងារ AI</translation>
 <translation id="1554477036522844996">វិនដូ​ថ្មី</translation>
+<translation id="1555014818414775661">បញ្ចូលរូបភាព</translation>
 <translation id="1557806604681757705">កុំព្យូទ័ររបស់អ្នក</translation>
 <translation id="1558391695376153246">បិទ​ផ្ទាំងឯកជន</translation>
 <translation id="1560153516220021659">ប៊ូតុង​របារឧបករណ៍​បន្ទាប់បន្សំ​ដែលបាន​បង្រួម</translation>
@@ -913,7 +914,6 @@
 <translation id="3857113360369572832">បើក <ph name="BEGIN_BOLD" />Safari Settings<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">ឈ្មោះ</translation>
 <translation id="386224966259596343">អ្នកនឹងមានឱកាសរក្សាទុកព័ត៌មាននេះទៅក្នុង Wallet នៅពេលអ្នកបំពេញទម្រង់បែបបទដែលពាក់ព័ន្ធនៅពេលក្រោយ។</translation>
-<translation id="3868495844258915202">បង្ហាញ URL ពេញលេញ</translation>
 <translation id="3870931306085184145">មិនមាន​ពាក្យសម្ងាត់​ដែលបាន​រក្សាទុក​សម្រាប់ <ph name="DOMAIN" /> ទេ</translation>
 <translation id="3875783148670536197">បង្ហាញខ្ញុំ​អំពី​របៀប</translation>
 <translation id="3878657761594430423">កម្មវិធី​ស្រង់យក​ទិន្នន័យសន្លឹក</translation>
@@ -1009,7 +1009,6 @@
 <translation id="4158491215857439601">កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់</translation>
 <translation id="4159430626587776301">ឃើញ​មតិវាយតម្លៃ​អំពី​ផលិតផល​ដែលអ្នក​បានរុករក​នាពេលថ្មីៗ</translation>
 <translation id="4161488339191275792">បង្កើត​ក្រុមផ្ទាំង ដើម្បី​រៀបចំ​ផ្ទាំងដែល​អ្នកបើក</translation>
-<translation id="4162616958842974809">បញ្ចូល​រូបភាព</translation>
 <translation id="4163699139741158298">{count,plural, =1{បានរក្សាទុក​ចំណាំ​ទៅក្នុង "{title}"។ ចំណាំនេះ​ត្រូវបាន​រក្សាទុក​តែនៅក្នុង​ឧបករណ៍នេះ​ប៉ុណ្ណោះ។}other{បានរក្សាទុក​ចំណាំ​ចំនួន {count} ទៅក្នុង "{title}"។ ចំណាំ​ទាំងនេះ​ត្រូវបាន​រក្សាទុក​តែនៅក្នុង​ឧបករណ៍នេះ​ប៉ុណ្ណោះ។}}</translation>
 <translation id="4164514562270305824">លុបអ្វីដែលបានទាញយកដោយស្វ័យប្រវត្តិ</translation>
 <translation id="4165986682804962316">ការកំណត់គេហទំព័រ</translation>

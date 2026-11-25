@@ -200,6 +200,7 @@
 <translation id="1547610699249301703">Կիսվեք գաղտնաբառերով</translation>
 <translation id="1554043146674176775">Անջատել ԱԲ ռեժիմը</translation>
 <translation id="1554477036522844996">Նոր պատուհան</translation>
+<translation id="1555014818414775661">Ավելացնել պատկերներ</translation>
 <translation id="1557806604681757705">ձեր համակարգչից</translation>
 <translation id="1558391695376153246">Փակել ինկոգնիտո ներդիրները</translation>
 <translation id="1560153516220021659">Ծալված երկրորդական գործիքագոտու կոճակ</translation>
@@ -913,7 +914,6 @@
 <translation id="3857113360369572832">Բացեք <ph name="BEGIN_BOLD" />Safari-ի կարգավորումները<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="386224966259596343">Հաջորդ անգամ, երբ համապատասխան ձև լրացնեք, կկարողանաք պահել այս տեղեկությունները Wallet-ում։</translation>
-<translation id="3868495844258915202">Ցույց տալ ամբողջ URL-ը</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> տիրույթի համար պահված գաղտնաբառեր չկան</translation>
 <translation id="3875783148670536197">Ցույց տալ, թե ինչպես</translation>
 <translation id="3878657761594430423">Աղյուսակների արտահանիչ</translation>
@@ -1009,7 +1009,6 @@
 <translation id="4158491215857439601">Գաղտնաբառերի կառավարիչ</translation>
 <translation id="4159430626587776301">Տեսեք վերջերս ձեր դիտարկած ապրանքների մասին կարծիքները</translation>
 <translation id="4161488339191275792">Ստեղծեք ներդիրների խմբեր՝ ձեր բաց ներդիրները կազմակերպելու համար</translation>
-<translation id="4162616958842974809">Ավելացնել պատկեր</translation>
 <translation id="4163699139741158298">{count,plural, =1{Էջանիշը պահվեց «{title}» պանակում։ Այն պահվում է միայն այս սարքում։}one{{count} էջանիշ պահվեց «{title}» պանակում։ Այն պահվում է միայն այս սարքում։}other{{count} էջանիշ պահվեց «{title}» պանակում։ Դրանք պահվում են միայն այս սարքում։}}</translation>
 <translation id="4164514562270305824">Ներբեռնումների ավտոմատ ջնջում</translation>
 <translation id="4165986682804962316">Կայքի կարգավորումներ</translation>

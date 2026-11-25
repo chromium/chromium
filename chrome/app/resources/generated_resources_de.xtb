@@ -209,7 +209,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1202116106683864634">Möchtest du diesen Passkey wirklich löschen?</translation>
 <translation id="1202892408424955784">Beobachtete Produkte</translation>
 <translation id="1203247227716551969">Konto bestätigen</translation>
-<translation id="120368089816228251">Musiknote</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Der Sicherheitscode befindet sich auf der Rückseite deiner Karte</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Gruppe löschen}other{Gruppen löschen}}</translation>
@@ -363,7 +362,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1386966479075994683">Tabs maximieren</translation>
 <translation id="1388253969141979417">Dürfen mein Mikrofon verwenden</translation>
 <translation id="139013308650923562">Darf auf meinem Gerät installierte Schriftarten verwenden</translation>
-<translation id="1393283411312835250">Sonne und Wolken</translation>
 <translation id="1396120028054416908">Zurück zu „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="1396139853388185343">Fehler beim Einrichten des Druckers</translation>
 <translation id="1398853756734560583">Maximieren</translation>
@@ -422,7 +420,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1464047267926346987">Passwörter, Lesezeichen und mehr speichern</translation>
 <translation id="1465176863081977902">Audioadresse k&amp;opieren</translation>
 <translation id="146522654774760805">Passwörter und Autofill</translation>
-<translation id="1465827627707997754">Pizzascheibe</translation>
 <translation id="1467005863208369884">Diese Datei kann nicht überprüft werden, weil Safe Browsing deaktiviert ist</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="1468571364034902819">Dieses Profil kann nicht verwendet werden</translation>
@@ -522,7 +519,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1573127087832371028">Bitte schildere das Problem</translation>
 <translation id="1573415331092567032">Diese Tastenkombination außerhalb von Chrome verwenden</translation>
 <translation id="1574335334663388774">Version <ph name="APP_VERSION" /> von <ph name="APP_NAME" /> ist bereits auf diesem Gerät installiert</translation>
-<translation id="1576594961618857597">Weißer Standardavatar</translation>
 <translation id="1578488449637163638">Dunkel</translation>
 <translation id="157931050206866263">Weitere Informationen zu Malware-Scans</translation>
 <translation id="1581962803218266616">Im Finder anzeigen</translation>
@@ -833,7 +829,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1913749768968678106">Streamen, speichern und teilen</translation>
 <translation id="19147273405311768">Symbolleiste auf Standardeinstellungen zurücksetzen</translation>
 <translation id="1915307458270490472">Auflegen</translation>
-<translation id="1916502483199172559">Roter Standardavatar</translation>
 <translation id="1916770123977586577">Lade diese Seite neu, um die aktualisierten Einstellungen für diese Website zu übernehmen</translation>
 <translation id="1917766536967060661">Du verlierst dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) kann nicht mehr über Google-Dienste mit dir interagieren.</translation>
 <translation id="1918141783557917887">&amp;Kleiner</translation>
@@ -1154,7 +1149,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="2270668657177045040">Eine Website und ihre Subdomains können sehen, welche ähnlichen Webanwendungen auf deinem Gerät installiert sind.</translation>
 <translation id="2271452184061378400">Hier werden deine Tabgruppen gespeichert</translation>
 <translation id="2271986192355138465">Informationen zum Installieren von Web-Apps</translation>
-<translation id="2272570998639520080">Martiniglas</translation>
 <translation id="2275352532065325930">Position der Tab-Suche</translation>
 <translation id="227763434929139750">Websites dürfen keine Bewegungs- oder Lichtsensoren verwenden</translation>
 <translation id="2278193750452754829">Erweiterungen sind auf dieser Website zulässig. Wähle den Button aus, um das Menü zu öffnen.</translation>
@@ -1474,7 +1468,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="2637852492915204064">Tab-Suche schließen</translation>
 <translation id="263796568413910992"><ph name="SEARCH_ENGINE_NAME" /> fragen oder URL eingeben</translation>
 <translation id="2640299212685523844">GTK verwenden</translation>
-<translation id="2642111877055905627">Fußball</translation>
 <translation id="2642206811783203764">Immer auf <ph name="SITE_NAME" /></translation>
 <translation id="2643379881528582459">Sollte Chromium eines deiner Passwörter bei einer öffentlichen Datenpanne finden, wird dir angeboten, dein Passwort zu ändern, sofern du in deinem Konto angemeldet bist</translation>
 <translation id="2643698698624765890">Klicke zum Verwalten deiner Erweiterungen im Menü „Fenster“ auf „Erweiterungen“.</translation>
@@ -1928,7 +1921,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="3134312457920437826">Die Erweiterung kann nicht installiert werden, da sie eine nicht unterstützte Manifestversion verwendet.</translation>
 <translation id="3134393957315651797">Wähle den Teststatus für den Test „<ph name="EXPERIMENT_NAME" />“ aus. Testbeschreibung: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3134822828309700120">Anderen Gemini-Apps Remote-Browsing von jedem Gerät aus erlauben</translation>
-<translation id="3139925690611372679">Gelber Standardavatar</translation>
 <translation id="314095642664111744">Fokus deaktivieren</translation>
 <translation id="3141093262818886744">Trotzdem öffnen</translation>
 <translation id="3141318088920353606">Jetzt sprechen…</translation>
@@ -2010,7 +2002,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="3222066309010235055">Vorab rendern: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3223109931751684474">Zugriff auf deine Passkeys auf diesem Gerät entfernen</translation>
 <translation id="3224803532980286809">Google sieht nur, was für dich sichtbar ist</translation>
-<translation id="3225084153129302039">Lila Standardavatar</translation>
 <translation id="3226249862705569834">Verwendete Sensoren</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3227701057281907159">Patchen</translation>
@@ -2220,7 +2211,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="3436118221454753036">Im KI-Modus fragen</translation>
 <translation id="3437397693214267762">Outlook-Kalender sowie SharePoint- und OneDrive-Dateien aufrufen</translation>
 <translation id="3437494162908353428">Entwicklertools sind für diese URL nicht zulässig.</translation>
-<translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> immer Zugriff auf dein Mikrofon gestatten</translation>
 <translation id="3439970425423980614">PDF-Vorschau wird geöffnet...</translation>
 <translation id="3440478087746699229">Intern</translation>
@@ -2802,7 +2792,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4034824040120875894">Drucker</translation>
 <translation id="4035758313003622889">&amp;Taskmanager</translation>
 <translation id="4035877632587724847">Nicht zulassen</translation>
-<translation id="4037084878352560732">Pferd</translation>
 <translation id="4040041015953651705">Ausgangssprache</translation>
 <translation id="4040854068229263729">&amp;Aus Wörterbuch entfernen</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Seite verlassen}other{Seiten verlassen}}</translation>
@@ -2892,6 +2881,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – Ansicht links</translation>
 <translation id="4156532396656021084">Suchmaschinen und Kürzel &amp;verwalten</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
+<translation id="4165077084524712774">Weitere Tools</translation>
 <translation id="4165986682804962316">Website-Einstellungen</translation>
 <translation id="4167924027691268367">Weitere Aktionen für das Textkürzel „<ph name="SHORTCUT_TITLE" />“</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> mit den Endziffern <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -2924,7 +2914,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4203065553461038553">Dateiname oder Speicherort zu lang</translation>
 <translation id="4203769790323223880">Kameranutzung nicht zulässig</translation>
 <translation id="4204415812590935863">Design kann momentan nicht erstellt werden.</translation>
-<translation id="4206144641569145248">Außerirdischer</translation>
 <translation id="4206323443866416204">Feedbackbericht</translation>
 <translation id="4206585797409671301">Dürfen Anfragen anzeigen</translation>
 <translation id="4207638506590582629"><ph name="DEVICE_NAME" /> (<ph name="LAST_ACTIVE_TIME" />)</translation>
@@ -3036,6 +3025,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4312866146174492540">Blockieren (Standard)</translation>
 <translation id="4316850752623536204">Website des Entwicklers</translation>
 <translation id="4319441675152393296">Klicke auf das Symbol dieser Erweiterung, um das Abrufen und Ändern von Daten auf <ph name="HOST" /> zu erlauben</translation>
+<translation id="4320177379694898372">Keine Internetverbindung</translation>
 <translation id="432160826079505197">„<ph name="FILE_NAME" />“ in Finder anzeigen</translation>
 <translation id="4322394346347055525">Andere Tabs schließen</translation>
 <translation id="4322400254469690320">Du findest <ph name="FILENAME" /> im Ordner „<ph name="FEATURE_NAME" />“</translation>
@@ -3178,7 +3168,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4472533928615930332">Bild <ph name="INDEX" /> von <ph name="SUBJECT" /> wurde im Stil „<ph name="STYLE" />“ generiert</translation>
 <translation id="4472575034687746823">Jetzt starten</translation>
 <translation id="4474155171896946103">Alle Tabs als Lesezeichen speichern...</translation>
-<translation id="4476590490540813026">Athletin</translation>
 <translation id="4476659815936224889">Du kannst eine QR-Scanner-App oder bestimmte Kamera-Apps auf deinem Smartphone verwenden, um diesen Code zu scannen.</translation>
 <translation id="4477015793815781985">Verwende Strg, Alt oder ⌘</translation>
 <translation id="4478161224666880173">Du kannst dein <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-Konto auf dieser Website verwenden. Melde dich bei <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> an, um fortzufahren.</translation>
@@ -3230,7 +3219,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4540780316273593836">Ein Problem ist aufgetreten</translation>
 <translation id="4541396589393395475">Diese Funktion wurde von deiner Organisation deaktiviert</translation>
 <translation id="4542520061254486227">Deine Daten auf <ph name="WEBSITE_1" /> und <ph name="WEBSITE_2" /> lesen</translation>
-<translation id="4544174279960331769">Blauer Standardavatar</translation>
 <translation id="4545028762441890696">Akzeptiere die neuen Berechtigungen, um die Erweiterung wieder zu aktivieren:</translation>
 <translation id="4545759655004063573">Speichern aufgrund unzureichender Berechtigungen nicht möglich. Wähle bitte einen anderen Speicherort aus.</translation>
 <translation id="4549791035683739768">Auf deinem Sicherheitsschlüssel sind keine Fingerabdrücke gespeichert</translation>
@@ -3610,7 +3598,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="495170559598752135">Aktionen</translation>
 <translation id="4951966678293618079">Passwörter für diese Website niemals speichern</translation>
 <translation id="4952628481830269193">Lesezeichenleiste einblenden</translation>
-<translation id="4953808748584563296">Orangefarbener Standardavatar</translation>
 <translation id="4954652437333037880">Datei</translation>
 <translation id="4954831709600868883">Eine Frage zu <ph name="TEXT" /> stellen</translation>
 <translation id="4956593309300508411">Freigabe beenden?</translation>
@@ -3846,7 +3833,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5225463052809312700">Kamera einschalten</translation>
 <translation id="5226253862147382094">Aktualisierung des Logos und der URL überprüfen</translation>
 <translation id="5226514125747186">Ein gepunkteter Kreis erscheint um Websitesymbole. <ph name="BEGIN_LINK" />Weitere Informationen zu inaktiven Tabs<ph name="END_LINK" /></translation>
-<translation id="5227679487546032910">Blaugrüner Standardavatar</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Tabgruppe aufheben?}other{Tabgruppen aufheben?}}</translation>
 <translation id="5230516054153933099">Fenster</translation>
 <translation id="5231255476752743708">Chrome benötigt Hilfe beim Ändern deines Passworts</translation>
@@ -3889,7 +3875,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="527335345740023523">Du hast derzeit u. a. <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> und <ph name="NUMBERED_ITEM_3" />. Deine Organisation (<ph name="ACCOUNT_MANAGER" />) kann diese Daten einsehen und verwalten.</translation>
 <translation id="5273806377963980154">Website-URL bearbeiten</translation>
 <translation id="5275338516105640560">Button „Gespeicherte Tabgruppe“</translation>
-<translation id="5275352920323889391">Hund</translation>
 <translation id="5275946508817197540">Deine Sicherheitseinstellungen lassen die Installation isolierter Web-Apps nicht zu. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Stummschalten</translation>
 <translation id="527605982717517565">JavaScript auf <ph name="HOST" /> immer zulassen</translation>
@@ -4212,7 +4197,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5643191124441701136">Der Sicherheitscode befindet sich auf der Vorderseite deiner Karte</translation>
 <translation id="5645369002069651355">E‑Mail-Adresse wird geprüft</translation>
 <translation id="5646376287012673985">Standort</translation>
-<translation id="5646558797914161501">Geschäftsmann</translation>
 <translation id="5647989922796038257">Auch jede Audioausgabe teilen</translation>
 <translation id="5648166631817621825">Letzte 7 Tage</translation>
 <translation id="5654226590297731684">{NUM_SITES,plural, =1{Berechtigungen für 1 Website entzogen}other{Berechtigungen für {NUM_SITES} Websites entzogen}}</translation>
@@ -4567,7 +4551,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6086418630711763366">Du kannst dich mit einem Textcursor auf den Seiten bewegen. Wenn du die Tastaturnavigation deaktivieren möchtest, drücke Strg + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">Von deinem Administrator installiert</translation>
 <translation id="6087286598828478206">Blockieren und Gruppe verlassen?</translation>
-<translation id="6087960857463881712">Cooles Gesicht</translation>
 <translation id="608819668983150122">Bestätige deine Identität, um deine Passkeys auf diesem Gerät zu speichern und zu verwenden</translation>
 <translation id="6088475950266477163">Einstellun&amp;gen</translation>
 <translation id="608912389580139775">Wenn du deiner Leseliste diese Seite hinzufügen möchtest, klicke auf das Lesezeichensymbol</translation>
@@ -4814,7 +4797,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6356893102071098867">Prüfe, ob du das richtige Konto ausgewählt hast</translation>
 <translation id="6357305427698525450">Einige unterstützte Links werden weiterhin in <ph name="APP_NAME" /> oder <ph name="APP_NAME_2" /> geöffnet.</translation>
 <translation id="6357750620525943720">Andere stabile Kennungen (z. B. Hashes oder UUIDs)</translation>
-<translation id="6357830294871526418">Tabs auf anderen Geräten</translation>
 <translation id="6358884629796491903">Drache</translation>
 <translation id="6362853299801475928">P&amp;roblem melden...</translation>
 <translation id="6365069501305898914">Facebook</translation>
@@ -4847,7 +4829,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />Systeminformationen<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />Messwerte<ph name="END_LINK2" /> senden</translation>
 <translation id="6398765197997659313">Vollbildmodus beenden</translation>
 <translation id="639880411171387127">Deine Google Lens-Auswahl. Drücke die Eingabetaste oder die Rücktaste, um deine Google Lens-Auswahl zu löschen.</translation>
-<translation id="6399774419735315745">Spionin</translation>
 <translation id="6400360390396538896">Immer auf <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Fokus auf Tabgruppe aufheben</translation>
 <translation id="6402042774506839496">Wende dich an den App-Entwickler, um den Grund zu erfahren</translation>
@@ -5369,7 +5350,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6959882218873172284">POST-Anfrage</translation>
 <translation id="6961327401577924850">Websites verwenden Bluetooth-Geräte normalerweise für Funktionen wie das Einrichten oder Synchronisieren eines LE-Beacons, eines Gesundheits- oder Fitnesstrackers oder einer intelligenten Lampe</translation>
 <translation id="6964239097707154771">sind Add-ons für Chrome, mit denen du noch mehr erledigen kannst</translation>
-<translation id="6964390816189577014">Held</translation>
 <translation id="6964760285928603117">Aus Gruppe entfernen</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965607054907047032">Arbeitsspeicher auf Grundlage der Inaktivität von Tabs freigeben</translation>
@@ -6211,7 +6191,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="7910768399700579500">&amp;Neuer Ordner</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7913805372428124107">Wenn du deine Tabs von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine Passwörter und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
-<translation id="7915478442339169507">Websitezugriff zulassen</translation>
 <translation id="7918928051723770926">Aufgabe abgeschlossen</translation>
 <translation id="7919123827536834358">Diese Sprachen automatisch übersetzen</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> darf <ph name="FILENAME" /> aufrufen</translation>
@@ -6368,7 +6347,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8061244502316511332">Dieser Tab verwendet dein Mikrofon</translation>
 <translation id="8061464966246066292">Hoher Kontrast</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 Blatt Papier}other{{COUNT} Blätter Papier}}</translation>
-<translation id="8063235345342641131">Grüner Standardavatar</translation>
 <translation id="8071432093239591881">Als Bild drucken</translation>
 <translation id="8075044377771022666">Fußzeile</translation>
 <translation id="8076835018653442223">Der Zugriff auf lokale Dateien auf deinem Gerät wurde von deinem Administrator deaktiviert</translation>
@@ -6419,7 +6397,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8118860139461251237">Downloads verwalten</translation>
 <translation id="8121537075864592453">Vollbildmodus deaktiviert</translation>
 <translation id="8123087650856503231">Sichere deine Passwörter, Lesezeichen und andere Daten, damit du sie ganz einfach auf allen deinen Geräten abrufen kannst</translation>
-<translation id="81238879832906896">Gelbe und weiße Blume</translation>
 <translation id="8123975449645947908">Zurückscrollen</translation>
 <translation id="8125651784723647184">Das Teilen von Passwörtern wird von deinem Administrator verwaltet</translation>
 <translation id="8126498026310640675">Wenn du deinen Verlauf von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst dann auch auf allen deinen Geräten auf deine Lesezeichen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
@@ -7070,7 +7047,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8837072669197607689">Im isolierten Modus zulassen</translation>
 <translation id="8837573527470979311">Mit unterer Ansicht tauschen</translation>
 <translation id="8838601485495657486">Opak</translation>
-<translation id="8838770651474809439">Hamburger</translation>
 <translation id="883924185304953854">Suche anhand von Bildern</translation>
 <translation id="8839975272851327869">{ITEM_COUNT,plural, =1{1 Element ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto. Dadurch werden auch alle Duplikate entfernt.}other{{ITEM_COUNT} Elemente sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto. Dadurch werden auch alle Duplikate entfernt.}}</translation>
 <translation id="8841843049738266382">Nutzer auf der Zulassungsliste ansehen und ändern</translation>
@@ -7382,7 +7358,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9207434080086272167">Sonnig</translation>
 <translation id="9207990187617864000">Künstlich, Intelligenz, schreiben, Hilfe, Helfer, Suche, Assistent, Chat, Abfrage, Prompt, Gemini, KI</translation>
 <translation id="9212565256020141627">Das Bild konnte nicht mit Gemini geteilt werden. Versuche es noch einmal oder verwende ein anderes Bild.</translation>
-<translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" hinzugefügt</translation>
 <translation id="9218430445555521422">Als Standard festlegen</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (nicht unterstützte App)</translation>

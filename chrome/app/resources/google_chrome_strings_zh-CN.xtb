@@ -139,7 +139,6 @@
 <translation id="2307973900865360088">保留在程序坞中</translation>
 <translation id="2309047409763057870">这是 Google Chrome 的并行安装，您无法将此浏览器设为默认浏览器。</translation>
 <translation id="2345992953227471816">Chrome 发现这些扩展程序包含恶意软件：</translation>
-<translation id="2350411688004301551">切换至 Gemini Enterprise</translation>
 <translation id="2358140144860869442">如需在您的所有设备上获取阅读清单等内容，请登录 Chrome</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2403703063067034158">启动错误：另一个设置实例目前正在运行，请稍后重试。</translation>
@@ -197,7 +196,6 @@
 <translation id="2876628302275096482">详细了解 <ph name="BEGIN_LINK" />Chrome 如何确保您数据的私密性<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2888126860611144412">关于 Chrome</translation>
-<translation id="2898830646167954300">切换回非受管的 Gemini 助理</translation>
 <translation id="2915996080311180594">暂不重启</translation>
 <translation id="2926952073016206995">Chrome 需要为此网站授予摄像头权限</translation>
 <translation id="2945997411976714835">安装时出错：安装程序进程未能启动。</translation>
@@ -418,7 +416,6 @@
 <translation id="5271833978500241046">在 Chrome 中与其他 Gemini 功能搭配使用</translation>
 <translation id="5320351714793324716">如果您允许使用 Cookie，Chrome 便可能会使用 Cookie 进行预加载</translation>
 <translation id="5321325624576443340">Google 智能镜头不可用。请稍后再试。</translation>
-<translation id="5336664042114176802">您可以切换到最初与您的 Google 账号关联且不受 <ph name="DOMAIN" /> 管理的 Gemini 助理。回答将不再基于由 <ph name="DOMAIN" /> 管理的文件或服务，并且您的对话记录不会继续保留。它可能不适合供工作使用。切换需要重新启动 Chrome。</translation>
 <translation id="5346389065299425353">添加多个标签页、文件和工具，让搜索更深入、更精准</translation>
 <translation id="5353252989841766347">从 Chrome 中导出密码</translation>
 <translation id="5368118228313795342">额外代码：<ph name="EXTRA_CODE" />。</translation>
@@ -535,7 +532,6 @@
 <translation id="6438015621983209660">借助 Chrome 在手机上使用增强型安全浏览功能</translation>
 <translation id="6442774133615368941">在 iOS 版 Chrome 应用中，借助摄像头轻松购买、翻译和识别所见内容</translation>
 <translation id="6446105560007692480">即可使用 Chrome 搜索，也可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中自定义</translation>
-<translation id="6447943657065463998">这款受管理的浏览器可以使用由 <ph name="DOMAIN" /> 设置的工作用 Gemini 助理。它能根据组织的文件和已获批准的服务查找信息并提供回答。不建议将其与个人资料配套使用。对话记录不会继续保留。切换需要重新启动 Chrome。</translation>
 <translation id="6448835208126432197">可以使用键盘快捷键在 Chrome 中的 Gemini 中选择屏幕上的部分内容。</translation>
 <translation id="6473905796280459355">前往“关于 Chrome”页面</translation>
 <translation id="6481963882741794338">关联 Chrome 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
@@ -706,7 +702,6 @@
 <translation id="8064965390968184078">1. 点击下方的“<ph name="BUTTON_LABEL" />”
 2. 在 Windows 设置中点击“<ph name="BUTTON_2" />”
 3. 点击 Windows 通知中的“<ph name="BUTTON_3" />”，将 Chrome 固定到任务栏，以便快速访问</translation>
-<translation id="8066474819446975249">重新启动 Chrome 即可切换</translation>
 <translation id="8074398340364918139">若要在特定的 Chrome 功能或扩展程序中进行搜索，请先在地址栏中输入相应的快捷字词，然后按下您选择的键盘按键</translation>
 <translation id="8077579734294125741">其他 Chrome 个人资料</translation>
 <translation id="8086881907087796310">安装失败，因为您的计算机未达到最低硬件要求。</translation>

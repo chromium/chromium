@@ -668,7 +668,6 @@
 <translation id="2126374524350484896">PDF файлът е създаден със:</translation>
 <translation id="2127090458081644412">Паролата е запазена на това устройство</translation>
 <translation id="2127747486437921899">Курсив</translation>
-<translation id="2129163794581571479">Предоставя се от Gemini с Personal Intelligence. Заявките, заглавията и URL адресите на страниците ви може да бъдат прегледани с цел усъвършенстване на подобреното автоматично попълване. <ph name="BEGIN_LINK" />Управление на настройките<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Прилагането на посочените от вас шаблони не е възможно, тъй като правилото DnsOverHttpsMode не е зададено.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2131006834960167560">Подканата за активиране на автоматичното попълване на данни за плащане е отворена на пълната височина.</translation>
@@ -1218,7 +1217,6 @@
 <translation id="3041584414879052436">Списъкът с доставчици на услуги от типа „Купете сега, платете по-късно“ е затворен.</translation>
 <translation id="3041612393474885105">Информация за сертификата</translation>
 <translation id="3041835740069544003">Chrome вече може да разпознава и попълва повече формуляри благодарение на функцията „По-интелигентно разбиране на формуляри“. За целта съдържанието и URL адресите на страниците могат да се обработват в частно пространство в облака. Управлявайте ги в настройките.</translation>
-<translation id="3047054686095898948">Запазете информацията си в <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> и извършвайте по-бързо различни неща, като например попълване на формуляри в продуктите на Google. Можете <ph name="BEGIN_LINK" />да управлявате информацията си<ph name="END_LINK" /> в <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> за <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Историята на „Отдалечен работен плот на Chrome“, включително клейма за дата и час, хостове и идентификатори за клиентски сесии.</translation>
 <translation id="3052868890529250114">Обикновено се свързвате със сайтовете по сигурен начин, но този път Chrome не успя да използва защитена връзка. Възможно е хакер да се опитва да следи или промени връзката ви с мрежата. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече за това предупреждение<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Понижение на цената на <ph name="PRODUCT_NAME" /> в размер на <ph name="PRICE_DROP" /></translation>
@@ -1589,7 +1587,6 @@
 <translation id="3655670868607891010">Ако виждате това често, опитайте <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Ревизия</translation>
 <translation id="3659521826520353662">Кои дефинирани от администратора уебсайтове са посетени и кога: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">Предоставя се от Gemini с Personal Intelligence. <ph name="BEGIN_LINK" />Управление на настройките<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Потърсете още опции за купуване от други магазини, в които се продава този продукт.</translation>
 <translation id="3664782872746246217">Ключови думи:</translation>
 <translation id="3670030362669914947">Номер</translation>
@@ -1868,7 +1865,6 @@
 <translation id="4112140312785995938">Придвижване назад</translation>
 <translation id="4114007503059268298">Искате ли тази карта да се запази на устройството и в профила ви в Google?</translation>
 <translation id="4114146879518089587">Напред към сайта</translation>
-<translation id="4115378294792113321">пурпурно</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Обхватът на правилата не се поддържа.</translation>
@@ -3452,6 +3448,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">Влизане в профил</translation>
 <translation id="6732087373923685049">камера</translation>
+<translation id="6736243959894955139">Адрес</translation>
 <translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="6740851646645036700">Достигнахте моментното ограничение за помощ при писане. Опитайте отново по-късно.</translation>
 <translation id="674375294223700098">Неизвестна грешка в сертификата на сървъра.</translation>

@@ -668,7 +668,6 @@
 <translation id="2126374524350484896">PDF форматына өзгөртүүчү кызмат:</translation>
 <translation id="2127090458081644412">Сырсөз бул түзмөккө сакталды</translation>
 <translation id="2127747486437921899">Жантык</translation>
-<translation id="2129163794581571479">Жеке ЖИ камтылган Gemini менен иштейт. Өркүндөтүлгөн автотолтурууну жакшыртуу үчүн сурамдарыңызды, беттердин аталыштарын жана URL даректерин текшерип турабыз. <ph name="BEGIN_LINK" />Параметрлерди тескөө<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Сиз көрсөткөн үлгүлөрдү колдонууга болбойт, анткени DnsOverHttpsMode саясаты коюлган эмес.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Төлөмдөрдү автотолтурууну иштетүү толук экранда ачылды.</translation>
@@ -1218,7 +1217,6 @@
 <translation id="3041584414879052436">Бөлүп төлөөнү сунуштаган "Азыр сатып ал, кийин төлө" камсыздоочулардын тизмеси жабык.</translation>
 <translation id="3041612393474885105">Тастыктама маалыматы</translation>
 <translation id="3041835740069544003">Chrome эми формаларды оңоюраак толтуруп, көбүрөөк формаларды аныктап, толтура алат. Бул үчүн беттин контенти жана URL даректери булуттагы купуя мейкиндикте иштетилиши мүмкүн. Параметрлерди жөндөөлөрдөн өзгөртсөңүз болот.</translation>
-<translation id="3047054686095898948">Маалыматыңызды <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> кызматына сактап, Google кызматтарында формаларды толтуруу сыяктуу иштерди тезирээк бүтүрүңүз. <ph name="ACCOUNT" /> үчүн <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> кызматында <ph name="BEGIN_LINK" />маалыматыңызды тескей аласыз<ph name="END_LINK" /></translation>
 <translation id="305162504811187366">Chrome Алыскы иштактанын таржымалы, анын ичинде убакыт белгилери, хосттор жана кардарлардын сеанстарынын идентификаторлору</translation>
 <translation id="3052868890529250114">Адатта сайттарга коопсуз туташасыз, бирок Chrome бул жолу коопсуз туташууну колдоно алган жок. Чабуулчу тармак туташууңузга көз салып же өзгөртүүгө аракет кылышы мүмкүн. <ph name="BEGIN_LEARN_MORE_LINK" />Бул эскертүү жөнүндө кеңири маалымат алыңыз<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> <ph name="PRICE_DROP" /> арзандайт</translation>
@@ -1588,7 +1586,6 @@
 <translation id="3655670868607891010">Эгер бул нерсе улам-улам көрүнө берсе, буларды <ph name="HELP_LINK" /> байкап көрүңүз.</translation>
 <translation id="3658742229777143148">Карап чыгуу</translation>
 <translation id="3659521826520353662">Администратор аныктаган кайсы вебсайттардын качан ачылганы: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">Жеке ЖИ камтылган Gemini менен иштейт. <ph name="BEGIN_LINK" />Параметрлерди тескөө<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Бул товарды саткан башка дүкөндөрдө сатып алуу варианттарын издөө</translation>
 <translation id="3664782872746246217">Ачкыч сөздөр:</translation>
 <translation id="3670030362669914947">Сан</translation>
@@ -1867,7 +1864,6 @@
 <translation id="4112140312785995938">Артка түрдүрүү</translation>
 <translation id="4114007503059268298">Бул карточка Google аккаунтуңузда жана ушул түзмөктө сакталсынбы?</translation>
 <translation id="4114146879518089587">Сайтта улантуу</translation>
-<translation id="4115378294792113321">Маджента</translation>
 <translation id="4116701314593212016">JIS B7 (91mm x 128mm)</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Саясат чеги колдоого алынбайт.</translation>
@@ -3451,6 +3447,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">Аккаунт менен кирди</translation>
 <translation id="6732087373923685049">камера</translation>
+<translation id="6736243959894955139">Дареги</translation>
 <translation id="6738516213925468394">Дайын-даректериңиз <ph name="BEGIN_LINK" />шайкештирүүчү өткөрүүчү сүйлөм<ph name="END_LINK" /> менен <ph name="TIME" /> шифрлеген. Шайкештирип баштоо үчүн, аны киргизиңиз.</translation>
 <translation id="6740851646645036700">Азырынча жазуу боюнча жардамдын чегине жеттиңиз. Кийинчерээк кайталап көрүңүз.</translation>
 <translation id="674375294223700098">Сервер тастыктамасынын белгисиз катасы.</translation>

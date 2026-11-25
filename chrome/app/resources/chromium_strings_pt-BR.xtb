@@ -123,7 +123,6 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{O Chromium recomenda pausar a guia que está deixando o navegador mais lento}one{O Chromium recomenda pausar a guia que está deixando o navegador mais lento}other{O Chromium recomenda pausar as guias que estão deixando o navegador mais lento}}</translation>
 <translation id="2307973900865360088">Manter no Dock</translation>
 <translation id="2313870531055795960">Confere se os URLs estão em uma lista de sites não seguros armazenada no Chromium. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chromium também poderá enviar os URLs, incluindo partes do conteúdo da página, para o Navegação segura.</translation>
-<translation id="2350411688004301551">Mudar para o Gemini Enterprise</translation>
 <translation id="2356070529366658676">Perguntar</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2361918034042471035">A extensão "<ph name="EXTENSION_NAME" />" quer que você faça login no Chromium</translation>
@@ -173,7 +172,6 @@
 <translation id="2846251086934905009">Erro de instalação: a instalação não foi concluída. A instalação foi cancelada.</translation>
 <translation id="2850691299438350830">Protege você no Chromium e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada</translation>
 <translation id="2885378588091291677">Gerenciador de tarefas</translation>
-<translation id="2898830646167954300">Voltar para o assistente Gemini não gerenciado</translation>
 <translation id="2910007522516064972">Sobre o &amp;Chromium</translation>
 <translation id="2915996080311180594">Reiniciar mais tarde</translation>
 <translation id="2933336679234709858">Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os dados do Chromium na sua Conta do Google.</translation>
@@ -357,7 +355,6 @@
 <translation id="4950660488495335294">Você pode usar os perfis do Chromium para separar todos seus dados nele. Crie perfis para amigos e familiares ou separe trabalho de lazer.</translation>
 <translation id="4992938037305302429">Sua conta no Chromium</translation>
 <translation id="5123973130450702873">O Chromium precisa de permissão para rastrear suas mãos</translation>
-<translation id="5139546603444206048">Você pode mudar para o assistente Gemini originalmente associado à sua Conta do Google e não gerenciado por <ph name="DOMAIN" />. As respostas não serão mais baseadas em arquivos ou serviços gerenciados por <ph name="DOMAIN" />, e seu histórico de chat não será transferido. Talvez ele não seja adequado para uso no trabalho. Para mudar, é necessário reiniciar o Chromium.</translation>
 <translation id="5141988424377517949">Você não visitou os sites recentemente. O Chromium removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Faça login no Chromium</translation>
 <translation id="5174969993834422967">Você geralmente bloqueia notificações. Para permitir que este site envie notificações, clique no ícone de notificação no canto direito da barra de local.</translation>
@@ -707,7 +704,6 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8447525028100794994">Saiba mais sobre como usar a pesquisa por imagens no Chromium</translation>
 <translation id="8453117565092476964">O arquivo de instalação está corrompido ou não é válido. Baixe o Chromium novamente.</translation>
 <translation id="8471947159125090285">Confirme sua identidade para usar e salvar dados do Chromium na sua Conta do Google</translation>
-<translation id="8473541503127475913">Reinicie o Chromium para trocar</translation>
 <translation id="8482493977473846331">Mostra solicitações para fazer login no Chromium</translation>
 <translation id="8493179195440786826">O Chromium está desatualizado</translation>
 <translation id="850264194101621529">Agradecemos por escolher o Chromium como seu navegador padrão.</translation>
@@ -741,7 +737,6 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8906384069222226849">O Chromium exige o Windows 10 versão 1809 ou mais recente.</translation>
 <translation id="8907580949721785412">O Chromium está tentando mostrar senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="8910309838319708610">Pronto. Agora você pode fazer perguntas com facilidade enquanto navega com o Modo IA de Pesquisa</translation>
-<translation id="8915682436012075700">Este navegador gerenciado pode usar um assistente do Gemini configurado para o trabalho por <ph name="DOMAIN" />. Ele pode encontrar informações e dar respostas com base nos arquivos e serviços aprovados da organização. Não é recomendável usar com um perfil pessoal. O histórico de conversas não será transferido. Para mudar, é necessário reiniciar o Chromium.</translation>
 <translation id="8932992523185907506">O Chromium não é mais seu navegador padrão. Definir o Chromium como navegador padrão?</translation>
 <translation id="8941642502866065432">Não é possível atualizar o Chromium</translation>
 <translation id="8944232836376404813">Essa ação vai:

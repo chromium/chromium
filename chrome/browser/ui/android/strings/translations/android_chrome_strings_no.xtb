@@ -150,7 +150,6 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="1543035591122163372">Logg på for å få passordene dine med mer fra <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Betalingsmåter og adresser krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.
 Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
-<translation id="1544826120773021464">For å administrere Google-kontoen din, trykk på «Administrer kontoen»-knappen</translation>
 <translation id="1549000191223877751">Flytt til det andre vinduet</translation>
 <translation id="1553358976309200471">Oppdater Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> for «<ph name="SEARCH_TERMS" />»</translation>
@@ -167,7 +166,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, delingsfane</translation>
 <translation id="1601378265092360672">Nettlesingsdata omfatter nettleserloggen, informasjonskapsler og andre nettstedsdata, bufrede bilder og filer samt åpne faner</translation>
 <translation id="160275202205869636">Når dette er på, kan du bruke og lagre data i Google-kontoen din. Når dette er slått av, lagres data bare på denne enheten.</translation>
-<translation id="160403827062749147">Velkommen til Google Chrome – verdens sikreste nettleser</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Fjern 1 valgt element}other{Fjern # valgte elementer}}</translation>
 <translation id="1639239467298939599">Laster inn</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -866,7 +864,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4374192654218566997">\n\nDu kan også fjerne disse dataene fra denne enheten:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Hvis problemet vedvarer, kan du prøve å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måter.</translation>
-<translation id="4381351546374507910">Logg på for å få bokmerker, passord og autofyllinformasjon på alle enhetene dine.</translation>
 <translation id="4384468725000734951">Bruker Sogou til å søke</translation>
 <translation id="4387647248986092471">Lag en profillås for bilen</translation>
 <translation id="4387817230000841154">Åpne Nedlastinger</translation>
@@ -1908,7 +1905,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8210770465353466621">Her finner du fanene dine</translation>
 <translation id="8212799748012101103">Åpne fanesøket</translation>
 <translation id="8215740705341534369">Sidefelt</translation>
-<translation id="8218622182176210845">Administrer kontoen din</translation>
 <translation id="8221985041778490865">Sletter nettlesingsdata</translation>
 <translation id="8223642481677794647">Feedkortmeny</translation>
 <translation id="82296173028782770">Endre søket: <ph name="SEARCH_QUERY" /></translation>

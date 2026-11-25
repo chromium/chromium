@@ -125,7 +125,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Inirerekomenda ng Chromium na i-pause ang tab na nagpapabagal sa iyong browser}one{Inirerekomenda ng Chromium na i-pause ang mga tab na nagpapabagal sa iyong browser}other{Inirerekomenda ng Chromium na i-pause ang mga tab na nagpapabagal sa iyong browser}}</translation>
 <translation id="2307973900865360088">Panatilihin sa Dock</translation>
 <translation id="2313870531055795960">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chromium. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chromium sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page.</translation>
-<translation id="2350411688004301551">Lumipat sa Gemini Enterprise</translation>
 <translation id="2356070529366658676">Magtanong</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2361918034042471035">Gusto ng extension na "<ph name="EXTENSION_NAME" />" na mag-sign in ka sa Chromium</translation>
@@ -175,7 +174,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2846251086934905009">Error sa pag-install: Hindi natapos ang installer. Na-abort ang pag-install.</translation>
 <translation id="2850691299438350830">Pinapanatili kang ligtas sa Chromium at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka</translation>
 <translation id="2885378588091291677">Task Manager</translation>
-<translation id="2898830646167954300">Bumalik sa iyong hindi pinapamahalaang Gemini assistant</translation>
 <translation id="2910007522516064972">Tungkol sa &amp;Chromium</translation>
 <translation id="2915996080311180594">I-restart sa Ibang Pagkakataon</translation>
 <translation id="2933336679234709858">Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at ma-save ang data sa Chromium sa iyong Google Account.</translation>
@@ -361,7 +359,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4950660488495335294">Gamit ang mga profile sa Chromium, magagawa mong paghiwalayin ang lahat ng iyong bagay-bagay sa Chromium. Gumawa ng mga profile para sa mga kaibigan at kapamilya, o gumawa ng magkahiwalay na profile para sa trabaho at kasiyahan.</translation>
 <translation id="4992938037305302429">Iyong Account sa Chromium</translation>
 <translation id="5123973130450702873">Kailangan ng Chromium ng pahintulot para i-track ang iyong mga kamay</translation>
-<translation id="5139546603444206048">Puwede kang lumipat sa Gemini assistant na orihinal na nauugnay sa iyong Google Account at hindi pinapamahalaan ng <ph name="DOMAIN" />. Hindi na ibabatay ang mga sagot sa mga file o serbisyong pinapamahalaan ng <ph name="DOMAIN" /> at hindi maililipat ang iyong history ng chat. Posibleng hindi ito naaangkop na gamitin para sa trabaho. Nire-require sa paglipat na ilunsad ulit ang Chromium.</translation>
 <translation id="5141988424377517949">Hindi mo ito binisita kamakailan. Inalis ng Chromium ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Mag-sign In sa Chromium</translation>
 <translation id="5174969993834422967">Kadalasan mong bina-block ang mga notification. Para hayaan ang site na itong abisuhan ka, i-click ang icon ng notification sa kanang sulok ng iyong bar ng lokasyon.</translation>
@@ -715,7 +712,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8447525028100794994">Matuto pa tungkol sa paghahanap gamit ang Paghahanap ng Larawan sa Chromium</translation>
 <translation id="8453117565092476964">Sira o di-wasto ang archive ng installer. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="8471947159125090285">Para magamit at ma-save ang data ng Chromium sa iyong Google Account, i-verify na ikaw ito</translation>
-<translation id="8473541503127475913">Ilunsad ulit ang Chromium para lumipat</translation>
 <translation id="8482493977473846331">Nagpapakita ng mga prompt na mag-sign in sa Chromium</translation>
 <translation id="8493179195440786826">Luma na ang Chromium</translation>
 <translation id="850264194101621529">Salamat sa pagpili sa Chromium bilang iyong default browser!</translation>
@@ -749,7 +745,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8906384069222226849">Nagre-require ang Chromium ng Windows 10 na bersyon 1809 o mas bago.</translation>
 <translation id="8907580949721785412">Sinusubukan ng Chromium na ipakita ang mga password. I-type ang password sa Windows upang payagan ito.</translation>
 <translation id="8910309838319708610">Tagumpay! Madali ka na ngayong makakapagtanong habang nagba-browse ka gamit ang AI Mode ng Search</translation>
-<translation id="8915682436012075700">Puwedeng gumamit ang pinapamahalaang browser na ito ng Gemini assistant na na-set up para sa trabaho ng <ph name="DOMAIN" />. Puwede itong maghanap ng impormasyon at magbigay ng mga sagot na nakabatay sa mga file at naaprubahang serbisyo ng organisasyon. Posibleng hindi inirerekomenda ang paggamit nito sa personal na profile. Hindi maililipat ang history ng chat. Nire-require sa paglipat na ilunsad ulit ang Chromium.</translation>
 <translation id="8932992523185907506">Hindi na Chromium ang iyong default browser. Gawing default browser ang Chromium?</translation>
 <translation id="8941642502866065432">Hindi ma-update ang Chromium</translation>
 <translation id="8944232836376404813">Magagawa ng aksyong ito na:

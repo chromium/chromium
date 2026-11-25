@@ -200,6 +200,7 @@
 <translation id="1547610699249301703">პაროლების გაზიარება</translation>
 <translation id="1554043146674176775">ხელოვნური ინტელექტის რეჟიმის გამორთვა</translation>
 <translation id="1554477036522844996">ახალი ფანჯარა</translation>
+<translation id="1555014818414775661">სურათების დამატება</translation>
 <translation id="1557806604681757705">თქვენი კომპიუტერიდან</translation>
 <translation id="1558391695376153246">ინკოგნ. ჩანართების დახურვა</translation>
 <translation id="1560153516220021659">ხელსაწყოთა ზოლის მეორეული ღილაკი ჩაიკეცა</translation>
@@ -913,7 +914,6 @@
 <translation id="3857113360369572832">გახსენით <ph name="BEGIN_BOLD" />Safari-ს პარამეტრები<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">სახელი</translation>
 <translation id="386224966259596343">შესაბამისი ფორმის შევსებისას, მომავალში, გექნებათ შესაძლებლობა, შეინახოთ ეს ინფორმაცია საფულეში.</translation>
-<translation id="3868495844258915202">სრული URL-ის ჩვენება</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" />-ისთვის შენახული პაროლები არ არის</translation>
 <translation id="3875783148670536197">ინსტრუქციის ნახვა</translation>
 <translation id="3878657761594430423">ფურცლის შემგროვებელი</translation>
@@ -1009,7 +1009,6 @@
 <translation id="4158491215857439601">პაროლების მმართველი</translation>
 <translation id="4159430626587776301">იხილეთ თქვენ მიერ ბოლოს დათვალიერებული პროდუქტების მიმოხილვები</translation>
 <translation id="4161488339191275792">შექმენით ჩანართების ჯგუფები გახსნილი ჩანართების ორგანიზებისთვის</translation>
-<translation id="4162616958842974809">სურათის დამატება</translation>
 <translation id="4163699139741158298">{count,plural, =1{სანიშნე შენახულია „{title}“-ში. ის შენახულია მხოლოდ ამ მოწყობილობაზე.}other{{count} სანიშნე შენახულია „{title}“-ში. ისინი შენახულია მხოლოდ ამ მოწყობილობაზე.}}</translation>
 <translation id="4164514562270305824">ჩამოტვირთვების ავტომატური წაშლა</translation>
 <translation id="4165986682804962316">საიტის პარამეტრები</translation>

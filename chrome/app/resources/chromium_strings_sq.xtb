@@ -124,7 +124,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium rekomandon vendosjen në pauzë të skedës që ngadalëson shfletuesin}other{Chromium rekomandon vendosjen në pauzë të skedave që ngadalësojnë shfletuesin}}</translation>
 <translation id="2307973900865360088">Mbaje në "Stacion"</translation>
 <translation id="2313870531055795960">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chromium. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chromium mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqes, te "Shfletimi i sigurt".</translation>
-<translation id="2350411688004301551">Kalo te Gemini Enterprise</translation>
 <translation id="2356070529366658676">Pyet</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2361918034042471035">Shtesa "<ph name="EXTENSION_NAME" />" kërkon që të identifikohesh në Chromium</translation>
@@ -174,7 +173,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2846251086934905009">Gabim gjatë instalimit: Instaluesi nuk përfundoi. Instalimi është ndërprerë.</translation>
 <translation id="2850691299438350830">Të mban të sigurt në Chromium dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je i identifikuar</translation>
 <translation id="2885378588091291677">Menaxheri i detyrave</translation>
-<translation id="2898830646167954300">Kalo përsëri tek asistenti yt i pamenaxhuar i Gemini</translation>
 <translation id="2910007522516064972">Rreth &amp;Chromium</translation>
 <translation id="2915996080311180594">Rinise më vonë</translation>
 <translation id="2933336679234709858">Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë për të përdorur dhe ruajtur të dhënat e Chromium në "Llogarinë tënde të Google".</translation>
@@ -360,7 +358,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4950660488495335294">Me profilet e Chromium, mund t'i ndash të gjitha gjërat e tua të Chromium. Krijo profile për miqtë dhe familjen ose ndaje punën nga argëtimi.</translation>
 <translation id="4992938037305302429">Llogaria jote në Chromium</translation>
 <translation id="5123973130450702873">Chromium ka nevojë për leje për të gjurmuar duart e tua</translation>
-<translation id="5139546603444206048">Mund të kalosh tek asistenti i Gemini i lidhur fillimisht me "Llogarinë tënde të Google" dhe që nuk menaxhohet nga <ph name="DOMAIN" />. Përgjigjet nuk do të bazohen më në skedarët ose shërbimet e menaxhuara nga <ph name="DOMAIN" /> dhe historiku i bisedave nuk do të transferohet. Mund të mos jetë i përshtatshëm për t'u përdorur për punë. Ndërrimi kërkon nisjen sërish të Chromium.</translation>
 <translation id="5141988424377517949">Nuk ke vizituar së fundi. Chromium ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />", "<ph name="PERMISSION_3" />".</translation>
 <translation id="5171868502429358653">Identifikohu në Chromium</translation>
 <translation id="5174969993834422967">Ti i bllokon zakonisht njoftimet. Për ta lejuar këtë sajt që të të njoftojë, kliko tek ikona e njoftimit në këndin e djathtë të shiritit të vendndodhjes.</translation>
@@ -712,7 +709,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8447525028100794994">Mëso më shumë rreth kërkimit me "Kërkimin e imazheve" në Chromium</translation>
 <translation id="8453117565092476964">Arkivi i instaluesit është i dëmtuar ose i pavlefshëm. Shkarkoje Chromium përsëri.</translation>
 <translation id="8471947159125090285">Për të përdorur dhe për të ruajtur të dhënat e Chromium në "Llogarinë tënde të Google", verifiko që je ti</translation>
-<translation id="8473541503127475913">Nis sërish Chromium për të bërë ndërrimin</translation>
 <translation id="8482493977473846331">Shfaq kërkesat për t'u identifikuar në Chromium</translation>
 <translation id="8493179195440786826">Chromium nuk është i përditësuar</translation>
 <translation id="850264194101621529">Faleminderit që zgjodhe Chromium si shfletuesin tënd të parazgjedhur!</translation>
@@ -746,7 +742,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8906384069222226849">Chromium kërkon Windows 10, versioni 1809 ose një version më të lartë.</translation>
 <translation id="8907580949721785412">Chromium po përpiqet të shfaqë fjalëkalime. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="8910309838319708610">Me sukses! Tani mund të bësh me lehtësi pyetje ndërkohë që shfleton me "Modalitetin e IA-së" të "Kërko"</translation>
-<translation id="8915682436012075700">Ky shfletues i menaxhuar mund të përdorë një asistent të Gemini të konfiguruar për punë nga <ph name="DOMAIN" />. Ai mund të gjejë informacione dhe të japë përgjigje të bazuara në skedarët e organizatës dhe shërbimet e miratuara. Përdorimi i tij me një profil personal mund të mos rekomandohet. Historiku i bisedës nuk do të transferohet. Ndërrimi kërkon nisjen sërish të Chromium.</translation>
 <translation id="8932992523185907506">Chromium nuk është më shfletuesi yt i parazgjedhur. Të bëhet Chromium shfletuesi yt i parazgjedhur?</translation>
 <translation id="8941642502866065432">Chromium nuk mund të përditësohet</translation>
 <translation id="8944232836376404813">Ky veprim:

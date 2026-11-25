@@ -125,7 +125,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium mælir með því að gera hlé á flipanum sem er að hægja á vafranum þínum}one{Chromium mælir með því að gera hlé á flipunum sem eru að hægja á vafranum þínum}other{Chromium mælir með því að gera hlé á flipunum sem eru að hægja á vafranum þínum}}</translation>
 <translation id="2307973900865360088">Hafa í dokku</translation>
 <translation id="2313870531055795960">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chromium. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chromium einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
-<translation id="2350411688004301551">Skipta yfir í Gemini Enterprise</translation>
 <translation id="2356070529366658676">Spyrja</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2361918034042471035">Viðbótin „<ph name="EXTENSION_NAME" />“ vill að þú skráir þig inn á Chromium</translation>
@@ -175,7 +174,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2846251086934905009">Uppsetningarvilla: Uppsetningarforrit lauk ekki verki sínu. Hætt var við uppsetningu.</translation>
 <translation id="2850691299438350830">Tryggir öryggi þitt í Chromium og kann að vera notað til að auka öryggi þitt í öðrum Google-forritum þegar þú hefur skráð þig inn.</translation>
 <translation id="2885378588091291677">Verkstjórn</translation>
-<translation id="2898830646167954300">Skipta aftur yfir í óstýrða Gemini-hjálparann þinn</translation>
 <translation id="2910007522516064972">Um &amp;Chromium</translation>
 <translation id="2915996080311180594">Endurræsa seinna</translation>
 <translation id="2933336679234709858">Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota og vista Chromium-gögn á Google-reikningnum þínum.</translation>
@@ -361,7 +359,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4950660488495335294">Þú getur aðskilið allt efnið þitt á Chromium með Chromium-prófílum. Stofnaðu prófíla fyrir vini og fjölskyldu eða skiptu á milli vinnu og afþreyingar.</translation>
 <translation id="4992938037305302429">Reikningurinn þinn í Chromium</translation>
 <translation id="5123973130450702873">Chromium þarf heimild til að rekja handahreyfingar þínar</translation>
-<translation id="5139546603444206048">Þú getur skipt yfir í Gemini-hjálparann sem var upphaflega tengdur við Google-reikninginn þinn og er ekki stýrt af <ph name="DOMAIN" />. Svör verða ekki lengur byggð á skrám eða þjónustum sem <ph name="DOMAIN" /> stýrir og spjallferillinn þinn verður ekki fluttur. Það er hugsanlega ekki hentugt til notkunar í vinnu. Endurræsa þarf Chromium til að skipta.</translation>
 <translation id="5141988424377517949">Þú hefur ekki skoðað vefsvæðið nýlega. Chromium fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Skráðu þig inn á Chromium</translation>
 <translation id="5174969993834422967">Þú lokar yfirleitt á tilkynningar. Smelltu á tilkynningatáknið í hægra horni veffangastikunnar til að leyfa vefsvæðinu að senda þér tilkynningar.</translation>
@@ -714,7 +711,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8447525028100794994">Nánar um myndaleit í Chromium</translation>
 <translation id="8453117565092476964">Uppsetningarsafnskráin er skemmd eða ógild. Sæktu Chromium aftur.</translation>
 <translation id="8471947159125090285">Staðfestu að þetta sért þú til að nota og vista Chromium-gögn á Google-reikningnum þínum</translation>
-<translation id="8473541503127475913">Endurræstu Chromium til að skipta</translation>
 <translation id="8482493977473846331">Sýna innskráningartilkynningar í Chromium</translation>
 <translation id="8493179195440786826">Chromium er úrelt</translation>
 <translation id="850264194101621529">Takk fyrir að velja Chromium sem sjálfgefinn vafra!</translation>
@@ -748,7 +744,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8906384069222226849">Chromium krefst Windows 10 útgáfu 1809 eða nýrri.</translation>
 <translation id="8907580949721785412">Chromium er að reyna að sýna aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að heimila þetta.</translation>
 <translation id="8910309838319708610">Tókst! Nú geturðu spurt spurninga á einfaldan máta á meðan þú vafrar með gervigreindarstillingu fyrir „Leit“</translation>
-<translation id="8915682436012075700">Þessi stýrði vafri getur notað Gemini-hjálpara sem <ph name="DOMAIN" /> setti upp fyrir vinnu. Hann getur fundið upplýsingar og veitt svör sem byggð eru á skrám fyrirtækisins og samþykktum þjónustum. Ekki er mælt með að hjálparinn sé notaður á persónulegum prófíl. Spjallferill verður ekki fluttur. Endurræsa þarf Chromium til að skipta.</translation>
 <translation id="8932992523185907506">Chromium er ekki lengur sjálfgefni vafrinn þinn. Gera Chromium að sjálfgefnum vafra?</translation>
 <translation id="8941642502866065432">Ekki var hægt að uppfæra Chromium</translation>
 <translation id="8944232836376404813">Þessi aðgerð mun:

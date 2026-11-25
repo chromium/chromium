@@ -210,7 +210,6 @@
 <translation id="1202116106683864634">Удалить этот ключ доступа?</translation>
 <translation id="1202892408424955784">Отслеживаемые товары</translation>
 <translation id="1203247227716551969">Подтвердите аккаунт</translation>
-<translation id="120368089816228251">Ноты</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Защитный код можно найти на обратной стороне карты</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Удалить группу}one{Удалить группы}few{Удалить группы}many{Удалить группы}other{Удалить группы}}</translation>
@@ -367,7 +366,6 @@
 <translation id="1386966479075994683">Развернуть вкладки</translation>
 <translation id="1388253969141979417">Разрешить сайтам использовать микрофон</translation>
 <translation id="139013308650923562">Сайты, которым разрешено использовать шрифты, установленные на устройстве</translation>
-<translation id="1393283411312835250">Солнце и облака</translation>
 <translation id="1396120028054416908">Вернуться в папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="1396139853388185343">Не удалось настроить принтер</translation>
 <translation id="1398853756734560583">Развернуть</translation>
@@ -426,7 +424,6 @@
 <translation id="1464047267926346987">Сохраняйте пароли, закладки и другие данные.</translation>
 <translation id="1465176863081977902">&amp;Копировать URL аудио</translation>
 <translation id="146522654774760805">Пароли и автозаполнение</translation>
-<translation id="1465827627707997754">Кусок пиццы</translation>
 <translation id="1467005863208369884">Невозможно проверить файл, так как Безопасный просмотр отключен.</translation>
 <translation id="1467432559032391204">Слева</translation>
 <translation id="1468571364034902819">Нельзя использовать этот профиль</translation>
@@ -527,7 +524,6 @@
 <translation id="1573127087832371028">Опишите проблему</translation>
 <translation id="1573415331092567032">Использовать это сочетание клавиш за пределами Chrome</translation>
 <translation id="1574335334663388774">На этом устройстве уже установлено приложение "<ph name="APP_NAME" />" (версия: <ph name="APP_VERSION" />).</translation>
-<translation id="1576594961618857597">Аватар по умолчанию (белый)</translation>
 <translation id="1578488449637163638">Тёмная</translation>
 <translation id="157931050206866263">Узнайте больше о сканировании вредоносного ПО</translation>
 <translation id="1581962803218266616">Показать в Finder</translation>
@@ -839,7 +835,6 @@
 <translation id="1913749768968678106">Транслировать, сохранить, поделиться</translation>
 <translation id="19147273405311768">Сбросить настройки панели инструментов</translation>
 <translation id="1915307458270490472">Завершить</translation>
-<translation id="1916502483199172559">Аватар по умолчанию (красный)</translation>
 <translation id="1916770123977586577">Чтобы применить к сайту новые настройки, перезагрузите страницу</translation>
 <translation id="1917766536967060661">Вы сразу потеряете доступ к группе вкладок "<ph name="GROUP_NAME" />", а <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) больше не сможет взаимодействовать с вами в сервисах Google.</translation>
 <translation id="1918141783557917887">&amp;Мельче</translation>
@@ -1161,7 +1156,6 @@
 <translation id="2270668657177045040">Сайт и его субдомены могут определять, какие связанные с ними веб-приложения есть на вашем устройстве.</translation>
 <translation id="2271452184061378400">Здесь находятся группы вкладок</translation>
 <translation id="2271986192355138465">Подробнее об установке веб-приложений…</translation>
-<translation id="2272570998639520080">Бокал мартини</translation>
 <translation id="2275352532065325930">Расположение поиска по вкладкам</translation>
 <translation id="227763434929139750">Запретить сайтам использовать датчики движения и освещенности</translation>
 <translation id="2278193750452754829">На этом сайте можно использовать расширения. Выберите, чтобы открыть меню.</translation>
@@ -1484,7 +1478,6 @@
 <translation id="2637852492915204064">Закрыть поиск по вкладкам</translation>
 <translation id="263796568413910992">Спросите <ph name="SEARCH_ENGINE_NAME" /> или введите URL</translation>
 <translation id="2640299212685523844">Использовать тему GTK</translation>
-<translation id="2642111877055905627">Футбольный мяч</translation>
 <translation id="2642206811783203764">Всегда включено для <ph name="SITE_NAME" /></translation>
 <translation id="2643379881528582459">Если ваш пароль окажется в открытом доступе из-за утечки данных, Chromium может предложить его заменить (необходимо выполнить вход)</translation>
 <translation id="2643698698624765890">Управлять расширениями можно на вкладке "Расширения" в меню "Окно".</translation>
@@ -1942,7 +1935,6 @@
 <translation id="3134312457920437826">Не удалось установить расширение, так как в нем используется неподдерживаемая версия манифеста.</translation>
 <translation id="3134393957315651797">Выберите состояние для эксперимента "<ph name="EXPERIMENT_NAME" />". Описание эксперимента: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3134822828309700120">Разрешить другим приложениям Gemini искать информацию в интернете удаленно с любого устройства</translation>
-<translation id="3139925690611372679">Аватар по умолчанию (желтый)</translation>
 <translation id="314095642664111744">Отключить выделение</translation>
 <translation id="3141093262818886744">Все равно открыть</translation>
 <translation id="3141318088920353606">Говорите</translation>
@@ -2027,7 +2019,6 @@
 <translation id="3222066309010235055">Предварительная обработка: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3223109931751684474">Запретить использование ключей доступа на этом устройстве</translation>
 <translation id="3224803532980286809">Google будет видеть только то, что видно вам.</translation>
-<translation id="3225084153129302039">Аватар по умолчанию (фиолетовый)</translation>
 <translation id="3225741048815287955"><ph name="BEGIN_BOLD_1" />Чтобы ответы были более точными, Google получает доступ к вкладкам.<ph name="END_BOLD_1" /> Google использует содержимое и URL вкладок, к которым предоставлен доступ. В новых чатах разрешен доступ к текущей вкладке. Эту настройку можно изменить в любой момент. <ph name="BEGIN_BOLD_2" />Данные вашей организации защищены и остаются конфиденциальными.<ph name="END_BOLD_2" /> Они не будут использоваться для улучшения моделей генеративного ИИ.</translation>
 <translation id="3226249862705569834">Используемые датчики</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -2241,7 +2232,6 @@
 <translation id="3436118221454753036">Спросите в режиме ИИ</translation>
 <translation id="3437397693214267762">Добавьте сюда календарь Outlook и файлы из SharePoint и OneDrive</translation>
 <translation id="3437494162908353428">Для этого URL инструменты разработчика запрещены.</translation>
-<translation id="3438633801274389918">Ниндзя</translation>
 <translation id="3439153939049640737">Всегда предоставлять <ph name="HOST" /> доступ к моему микрофону</translation>
 <translation id="3439970425423980614">Открытие PDF для просмотра</translation>
 <translation id="3440478087746699229">внутреннее устройство</translation>
@@ -2827,7 +2817,6 @@
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4035758313003622889">&amp;Диспетчер задач</translation>
 <translation id="4035877632587724847">Запретить</translation>
-<translation id="4037084878352560732">Лошадь</translation>
 <translation id="4040041015953651705">Исходный язык</translation>
 <translation id="4040854068229263729">&amp;Удалить из словаря</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Закрыть страницу}one{Закрыть страницы}few{Закрыть страницы}many{Закрыть страницы}other{Закрыть страницы}}</translation>
@@ -2917,6 +2906,7 @@
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" />: левое окно</translation>
 <translation id="4156532396656021084">&amp;Управление поисковыми системами и сочетаниями клавиш</translation>
 <translation id="4157869833395312646">Серверное шифрование Microsoft</translation>
+<translation id="4165077084524712774">Ещё инструменты</translation>
 <translation id="4165986682804962316">Настройки сайтов</translation>
 <translation id="4167924027691268367">Другие действия для быстрой команды "<ph name="SHORTCUT_TITLE" />"</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> (последние цифры номера: <ph name="LAST_FOUR_DIGITS" />)</translation>
@@ -2949,7 +2939,6 @@
 <translation id="4203065553461038553">Слишком длинное название файла или путь к нему</translation>
 <translation id="4203769790323223880">Доступ к камере запрещен</translation>
 <translation id="4204415812590935863">Сейчас невозможно создать тему</translation>
-<translation id="4206144641569145248">Инопланетянин</translation>
 <translation id="4206323443866416204">Отправка отзыва</translation>
 <translation id="4206585797409671301">Сайтам разрешено показывать запросы</translation>
 <translation id="4207638506590582629"><ph name="DEVICE_NAME" /> (<ph name="LAST_ACTIVE_TIME" />)</translation>
@@ -3062,6 +3051,7 @@
 <translation id="4312866146174492540">Блокировать (по умолчанию)</translation>
 <translation id="4316850752623536204">Сайт разработчика</translation>
 <translation id="4319441675152393296">Нажмите на значок расширения, чтобы разрешить чтение и изменение данных <ph name="HOST" />.</translation>
+<translation id="4320177379694898372">Нет подключения к интернету</translation>
 <translation id="432160826079505197">Показать файл "<ph name="FILE_NAME" />" в Finder</translation>
 <translation id="4322394346347055525">Закрыть другие вкладки</translation>
 <translation id="4322400254469690320">Файл "<ph name="FILENAME" />" будет сохранен в папке "<ph name="FEATURE_NAME" />".</translation>
@@ -3204,7 +3194,6 @@
 <translation id="4472533928615930332">Сгенерированное изображение: <ph name="INDEX" />. Объект: <ph name="SUBJECT" />. Стиль: <ph name="STYLE" />.</translation>
 <translation id="4472575034687746823">Начать</translation>
 <translation id="4474155171896946103">Добавить все вкладки в закладки…</translation>
-<translation id="4476590490540813026">Спортсмен</translation>
 <translation id="4476659815936224889">Этот код можно сканировать с помощью специального приложения или камеры на телефоне (если такая возможность поддерживается)</translation>
 <translation id="4477015793815781985">Комбинация должна начинаться с Ctrl, Alt или ⌘</translation>
 <translation id="4478161224666880173">Вы можете использовать аккаунт <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на этом сайте. Чтобы продолжить, войдите в аккаунт <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -3257,7 +3246,6 @@
 <translation id="4540780316273593836">Произошла ошибка.</translation>
 <translation id="4541396589393395475">В вашей организации эта функция отключена.</translation>
 <translation id="4542520061254486227">Просмотр данных на сайтах <ph name="WEBSITE_1" /> и <ph name="WEBSITE_2" /></translation>
-<translation id="4544174279960331769">Аватар по умолчанию (синий)</translation>
 <translation id="4545028762441890696">Чтобы снова включить его, предоставьте новые разрешения:</translation>
 <translation id="4545759655004063573">Не удается сохранить файл: нет прав. Выберите другой каталог.</translation>
 <translation id="4549791035683739768">На вашем электронном ключе нет сохраненных отпечатков пальцев.</translation>
@@ -3639,7 +3627,6 @@
 <translation id="495170559598752135">Действия</translation>
 <translation id="4951966678293618079">Никогда не сохранять пароли для этого сайта</translation>
 <translation id="4952628481830269193">Показать панель закладок</translation>
-<translation id="4953808748584563296">Аватар по умолчанию (оранжевый)</translation>
 <translation id="4954652437333037880">Файл</translation>
 <translation id="4954831709600868883">Задайте вопрос по теме "<ph name="TEXT" />"</translation>
 <translation id="4956593309300508411">Закрыть доступ?</translation>
@@ -3875,7 +3862,6 @@
 <translation id="5225463052809312700">Включить камеру</translation>
 <translation id="5226253862147382094">Проверьте новый логотип и URL</translation>
 <translation id="5226514125747186">Значки сайтов будут обведены пунктирным кругом. Подробнее <ph name="BEGIN_LINK" />о неактивных вкладках<ph name="END_LINK" />…</translation>
-<translation id="5227679487546032910">Аватар по умолчанию (сине-зеленый)</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Расформировать группу вкладок?}one{Расформировать группы вкладок?}few{Расформировать группы вкладок?}many{Расформировать группы вкладок?}other{Расформировать группы вкладок?}}</translation>
 <translation id="5230516054153933099">Окно</translation>
 <translation id="5231255476752743708">Chrome не может сменить пароль</translation>
@@ -3918,7 +3904,6 @@
 <translation id="527335345740023523">В вашем профиле есть <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> и другие данные. Организация <ph name="ACCOUNT_MANAGER" /> сможет просматривать их и управлять ими.</translation>
 <translation id="5273806377963980154">Изменить URL сайта</translation>
 <translation id="5275338516105640560">Кнопка сохраненных групп вкладок</translation>
-<translation id="5275352920323889391">Собака</translation>
 <translation id="5275946508817197540">Ваши настройки безопасности запрещают установку изолированных веб-приложений. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Отключение звука на вкладке</translation>
 <translation id="527605982717517565">Всегда разрешать JavaScript для сайта <ph name="HOST" /></translation>
@@ -4244,7 +4229,6 @@
 <translation id="5643191124441701136">Защитный код можно найти на лицевой стороне карты</translation>
 <translation id="5645369002069651355">Проверка адреса электронной почты</translation>
 <translation id="5646376287012673985">Местоположение</translation>
-<translation id="5646558797914161501">Бизнесмен</translation>
 <translation id="5647989922796038257">Также передавать аудио со всех подключенных звуковых устройств</translation>
 <translation id="5648166631817621825">Последние 7 дней</translation>
 <translation id="5654226590297731684">{NUM_SITES,plural, =1{Разрешения отозваны у 1 сайта}one{Разрешения отозваны у {NUM_SITES} сайта}few{Разрешения отозваны у {NUM_SITES} сайтов}many{Разрешения отозваны у {NUM_SITES} сайтов}other{Разрешения отозваны у {NUM_SITES} сайта}}</translation>
@@ -4600,7 +4584,6 @@
 <translation id="6086418630711763366">Вы сможете использовать курсор для навигации по страницам. Чтобы выключить эту функцию, нажмите Ctrl + <ph name="KEY" />.</translation>
 <translation id="6086846494333236931">Установлено администратором</translation>
 <translation id="6087286598828478206">Заблокировать и выйти из группы?</translation>
-<translation id="6087960857463881712">Модник</translation>
 <translation id="608819668983150122">Чтобы сохранять и использовать ключи доступа на этом устройстве, подтвердите личность.</translation>
 <translation id="6088475950266477163">Н&amp;астройки</translation>
 <translation id="608912389580139775">Чтобы добавить эту страницу в свой список для чтения, нажмите на значок закладки.</translation>
@@ -4849,7 +4832,6 @@
 <translation id="6356893102071098867">Убедитесь, что выбрали нужный аккаунт.</translation>
 <translation id="6357305427698525450">Некоторые поддерживаемые ссылки будут по-прежнему открываться в приложениях "<ph name="APP_NAME" />" и "<ph name="APP_NAME_2" />".</translation>
 <translation id="6357750620525943720">Другие постоянные идентификаторы (например, хеши или UUID)</translation>
-<translation id="6357830294871526418">Вкладки на других устройствах</translation>
 <translation id="6358884629796491903">Дракон</translation>
 <translation id="6362853299801475928">&amp;Сообщить о проблеме...</translation>
 <translation id="6365069501305898914">Facebook</translation>
@@ -4882,7 +4864,6 @@
 <translation id="6395423953133416962">Отправлять <ph name="BEGIN_LINK1" />сведения о системе<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />значения показателей<ph name="END_LINK2" /></translation>
 <translation id="6398765197997659313">Обычный режим</translation>
 <translation id="639880411171387127">Выделенный через Google Объектив объект. Чтобы удалить выбор, нажмите "Ввод" или Backspace.</translation>
-<translation id="6399774419735315745">Шпион</translation>
 <translation id="6400360390396538896">Всегда включено для <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Отменить фокус на группе вкладок</translation>
 <translation id="6402042774506839496">Чтобы узнать причину, свяжитесь с разработчиком приложения.</translation>
@@ -5412,7 +5393,6 @@
 <translation id="6959882218873172284">Запрос POST</translation>
 <translation id="6961327401577924850">Обычно сайты ищут устройства Bluetooth, чтобы настроить маячок, фитнес-трекер или умную лампочку, синхронизировать данные и т. д.</translation>
 <translation id="6964239097707154771">это дополнения для Chrome, которые повышают функциональность браузера.</translation>
-<translation id="6964390816189577014">Герой</translation>
 <translation id="6964760285928603117">Удалить из группы</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6965607054907047032">Освобождать память, удаляя данные неактивных вкладок</translation>
@@ -6258,7 +6238,6 @@
 <translation id="7910768399700579500">&amp;Новая папка</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7913805372428124107">Чтобы видеть вкладки с <ph name="DEVICE" />, войдите в аккаунт и синхронизируйте историю. Пароли и другие сведения также появятся на всех устройствах. Синхронизацию можно в любой момент отключить в настройках. Google может персонализировать Поиск и другие сервисы с учетом истории.</translation>
-<translation id="7915478442339169507">Разрешить доступ к сайтам</translation>
 <translation id="7918928051723770926">Готово</translation>
 <translation id="7919123827536834358">Автоматически переводить страницы на этих языках</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> может просматривать файл "<ph name="FILENAME" />".</translation>
@@ -6418,7 +6397,6 @@
 <translation id="8061244502316511332">На этой вкладке используется ваш микрофон</translation>
 <translation id="8061464966246066292">Высокая контрастность</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 лист бумаги}one{{COUNT} лист бумаги}few{{COUNT} листа бумаги}many{{COUNT} листов бумаги}other{{COUNT} листа бумаги}}</translation>
-<translation id="8063235345342641131">Аватар по умолчанию (зеленый)</translation>
 <translation id="8071432093239591881">Печатать как изображение</translation>
 <translation id="8075044377771022666">Нижний колонтитул</translation>
 <translation id="8076835018653442223">Доступ к локальным файлам на вашем устройстве отключен администратором.</translation>
@@ -6469,7 +6447,6 @@
 <translation id="8118860139461251237">Управление скачанными файлами</translation>
 <translation id="8121537075864592453">Полноэкранный режим отключен</translation>
 <translation id="8123087650856503231">Копируйте пароли, закладки и другие данные в аккаунт, чтобы их можно было без труда находить на любом устройстве.</translation>
-<translation id="81238879832906896">Цветок (желтый с белым)</translation>
 <translation id="8123975449645947908">Прокрутить назад</translation>
 <translation id="8125651784723647184">Обменом паролями управляет администратор</translation>
 <translation id="8126498026310640675">Чтобы видеть историю с <ph name="DEVICE" />, войдите в аккаунт <ph name="EMAIL" /> и синхронизируйте историю и вкладки. Закладки и другие сведения также появятся на всех устройствах. Синхронизацию можно в любой момент отключить в настройках. Google может персонализировать Поиск и другие сервисы с учетом истории.</translation>
@@ -7123,7 +7100,6 @@
 <translation id="8837072669197607689">Разрешить в изолированном режиме</translation>
 <translation id="8837573527470979311">Поменять местами с нижним окном</translation>
 <translation id="8838601485495657486">Непрозрачный</translation>
-<translation id="8838770651474809439">Гамбургер</translation>
 <translation id="883924185304953854">Поиск по картинке</translation>
 <translation id="8839975272851327869">{ITEM_COUNT,plural, =1{1 объект доступен только на этом устройстве. Добавьте его в аккаунт Google, чтобы использовать на других устройствах. Если появятся дубликаты, они будут удалены.}one{{ITEM_COUNT} объект доступен только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах. Если появятся дубликаты, они будут удалены.}few{{ITEM_COUNT} объекта доступны только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах. Если появятся дубликаты, они будут удалены.}many{{ITEM_COUNT} объектов доступны только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах. Если появятся дубликаты, они будут удалены.}other{{ITEM_COUNT} объекта доступны только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах. Если появятся дубликаты, они будут удалены.}}</translation>
 <translation id="8841843049738266382">Читать и изменять список разрешенных пользователей</translation>
@@ -7436,7 +7412,6 @@
 <translation id="9207434080086272167">Солнечное</translation>
 <translation id="9207990187617864000">искусственный, интеллект, написать, помощь, помощник, поиск, ассистент, чат, запрос, Gemini, ИИ</translation>
 <translation id="9212565256020141627">Не удалось отправить изображение в Gemini. Повторите попытку или используйте другую картинку.</translation>
-<translation id="9214695392875603905">Кекс</translation>
 <translation id="9215293857209265904">Добавлено расширение или приложение: <ph name="EXTENSION_NAME" /></translation>
 <translation id="9218430445555521422">Использовать по умолчанию</translation>
 <translation id="9218842937876577955">"<ph name="APP_NAME" />" (не поддерживается)</translation>

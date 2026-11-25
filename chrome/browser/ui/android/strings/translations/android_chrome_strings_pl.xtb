@@ -150,7 +150,6 @@ W <ph name="BEGIN_LINK2" />usługach Google<ph name="END_LINK2" /> znajdziesz w
 <translation id="1543035591122163372">Zaloguj się, aby mieć dostęp do haseł oraz innych danych na <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Formy płatności i adresy nie będą zaszyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
 Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazowe. Nie jest ono wysyłane do Google ani tam przechowywane. Jeśli je zapomnisz lub postanowisz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
-<translation id="1544826120773021464">Aby zarządzać kontem Google, kliknij przycisk „Zarządzaj kontem”</translation>
 <translation id="1549000191223877751">Przenieś do innego okna</translation>
 <translation id="1553358976309200471">Zaktualizuj Chrome</translation>
 <translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> dla „<ph name="SEARCH_TERMS" />”</translation>
@@ -167,7 +166,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, karta udostępniania</translation>
 <translation id="1601378265092360672">Dane przeglądania obejmują historię przeglądania, pliki cookie i inne dane witryn, obrazy i pliki przechowywane w pamięci podręcznej oraz otwarte karty</translation>
 <translation id="160275202205869636">Gdy opcja jest włączona, możesz używać danych i zapisywać je na swoim koncie Google. Gdy jest wyłączona, dane są zapisywane tylko na tym urządzeniu.</translation>
-<translation id="160403827062749147">Witamy w Google Chrome, najbezpieczniejszej przeglądarce na świecie</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Usuń 1 wybrany element}few{Usuń # wybrane elementy}many{Usuń # wybranych elementów}other{Usuń # wybranego elementu}}</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
 <translation id="1641113438599504367">Bezpieczne przeglądanie</translation>
@@ -866,7 +864,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="4374192654218566997">\n\nMożesz też usunąć te dane z tego urządzenia:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Jeśli problem będzie się powtarzał, możesz wypróbować inne sposoby logowania w witrynie <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
-<translation id="4381351546374507910">Zaloguj się, aby mieć dostęp do zakładek, haseł i informacji autouzupełniania na wszystkich swoich urządzeniach.</translation>
 <translation id="4384468725000734951">Korzystam z wyszukiwarki Sogou</translation>
 <translation id="4387647248986092471">Utwórz blokadę profilu samochodu</translation>
 <translation id="4387817230000841154">Otwórz Pobrane</translation>
@@ -1908,7 +1905,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8210770465353466621">Tu znajdziesz swoje karty</translation>
 <translation id="8212799748012101103">Otwórz wyszukiwanie kart</translation>
 <translation id="8215740705341534369">Plansza boczna</translation>
-<translation id="8218622182176210845">Zarządzaj kontem</translation>
 <translation id="8221985041778490865">Usuwam dane przeglądania</translation>
 <translation id="8223642481677794647">Menu karty kanału</translation>
 <translation id="82296173028782770">Edytuj zapytanie: <ph name="SEARCH_QUERY" /></translation>

@@ -210,7 +210,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1202116106683864634">Er du sikker på at du vil slette denne sikkerhetsnøkkelen?</translation>
 <translation id="1202892408424955784">Sporede produkter</translation>
 <translation id="1203247227716551969">Bekreft kontoen din</translation>
-<translation id="120368089816228251">Note</translation>
 <translation id="1203942045716040624">Delt arbeider: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Sikkerhetskoden finner du på baksiden av kortet</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Slett gruppen}other{Slett gruppene}}</translation>
@@ -367,7 +366,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1386966479075994683">Vis faner</translation>
 <translation id="1388253969141979417">Nettsteder som har lov til å bruke mikrofonen din</translation>
 <translation id="139013308650923562">Får bruke skrifttyper som er installert på enheten</translation>
-<translation id="1393283411312835250">Sol og skyer</translation>
 <translation id="1396120028054416908">Tilbake til <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Feil ved konfigurasjonen av skriveren</translation>
 <translation id="1398853756734560583">Maksimer</translation>
@@ -427,7 +425,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1464047267926346987">Lagre passord, bokmerker med mer</translation>
 <translation id="1465176863081977902">K&amp;opiér lydadressen</translation>
 <translation id="146522654774760805">Passord og autofyll</translation>
-<translation id="1465827627707997754">Pizzastykke</translation>
 <translation id="1467005863208369884">Denne filen kan ikke bekreftes fordi Safe Browsing er av</translation>
 <translation id="1467432559032391204">Venstre</translation>
 <translation id="1468571364034902819">Du kan ikke bruke denne profilen</translation>
@@ -528,7 +525,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1573127087832371028">Beskriv problemet</translation>
 <translation id="1573415331092567032">Bruk denne snarveien utenfor Chrome</translation>
 <translation id="1574335334663388774"><ph name="APP_NAME" /> versjon <ph name="APP_VERSION" /> er allerede installert på denne enheten</translation>
-<translation id="1576594961618857597">Hvitt standardbrukerbilde</translation>
 <translation id="1578488449637163638">Mørk</translation>
 <translation id="157931050206866263">Finn ut mer om skanning etter skadelig programvare</translation>
 <translation id="1581962803218266616">Vis i Finder</translation>
@@ -846,7 +842,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1913749768968678106">Cast, lagre og del</translation>
 <translation id="19147273405311768">Tilbakestill verktøylinjen til standardinnstillingene</translation>
 <translation id="1915307458270490472">Legg på</translation>
-<translation id="1916502483199172559">Rødt standardbrukerbilde</translation>
 <translation id="1916770123977586577">Last inn denne siden på nytt for å ta i bruk de oppdaterte innstillingene dine på dette nettstedet.</translation>
 <translation id="1917766536967060661">Du mister umiddelbart tilgangen til fanegruppen «<ph name="GROUP_NAME" />», og <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) kan ikke samhandle med deg i Google-tjenester lenger.</translation>
 <translation id="1918141783557917887">&amp;Mindre</translation>
@@ -1171,7 +1166,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="2270668657177045040">Et nettsted og dets underdomener kan se hvilke relaterte nettapper som er installert på enheten din.</translation>
 <translation id="2271452184061378400">Fanegruppene dine lagres her</translation>
 <translation id="2271986192355138465">Finn ut hvordan du installerer nettprogrammer</translation>
-<translation id="2272570998639520080">Martiniglass</translation>
 <translation id="2275352532065325930">Plassering av fanesøk</translation>
 <translation id="227763434929139750">Ikke la nettsteder bruke bevegelses- eller lyssensorer</translation>
 <translation id="2278193750452754829">Utvidelser er tillatt på dette nettstedet. Velg for å åpne menyen</translation>
@@ -1494,7 +1488,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="2637852492915204064">Lukk fanesøket</translation>
 <translation id="263796568413910992">Spør <ph name="SEARCH_ENGINE_NAME" />, eller skriv inn en nettadresse</translation>
 <translation id="2640299212685523844">Bruk GTK</translation>
-<translation id="2642111877055905627">Fotball</translation>
 <translation id="2642206811783203764">Alltid på <ph name="SITE_NAME" /></translation>
 <translation id="2643379881528582459">Hvis Chromium finner et av passordene dine i et offentlig databrudd, kan den tilby å endre passordet for deg hvis du er logget på</translation>
 <translation id="2643698698624765890">Du kan administrere utvidelsene dine ved å klikke på Utvidelser i vindusmenyen.</translation>
@@ -1952,7 +1945,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="3134312457920437826">Kan ikke installere utvidelsen, fordi den bruker en manifestversjon som ikke støttes.</translation>
 <translation id="3134393957315651797">Velg eksperimenttilstand for <ph name="EXPERIMENT_NAME" />-eksperimentet. Beskrivelse av eksperimentet: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3134822828309700120">La andre Gemini-apper surfe eksternt fra alle enheter</translation>
-<translation id="3139925690611372679">Gult standardbrukerbilde</translation>
 <translation id="314095642664111744">Slå av fokus</translation>
 <translation id="3141093262818886744">Åpne likevel</translation>
 <translation id="3141318088920353606">Lytter …</translation>
@@ -2037,7 +2029,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="3222066309010235055">Forhåndsgjengivelse: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3223109931751684474">Fjern tilgangen til passnøklene dine på denne enheten</translation>
 <translation id="3224803532980286809">Google ser bare det som er synlig for deg</translation>
-<translation id="3225084153129302039">Fiolett standardbrukerbilde</translation>
 <translation id="3225741048815287955"><ph name="BEGIN_BOLD_1" />Faner deles for å gi deg mer relevante svar.<ph name="END_BOLD_1" /> Google bruker innholdet i og nettadressen til delte faner. Den aktive fanen deles i nye chatter. Du kan endre denne innstillingen når som helst. <ph name="BEGIN_BOLD_2" />Dataene til organisasjonen din er private og sikre.<ph name="END_BOLD_2" /> De brukes ikke til å forbedre generative AI-modeller.</translation>
 <translation id="3226249862705569834">Sensorer i bruk</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -2251,7 +2242,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="3436118221454753036">Spør AI-modus</translation>
 <translation id="3437397693214267762">Se Outlook-kalenderen og SharePoint- og OneDrive-filene dine</translation>
 <translation id="3437494162908353428">Utviklerverktøy er ikke tillatt for denne nettadressen.</translation>
-<translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Tillat alltid at <ph name="HOST" /> bruker mikrofonen din</translation>
 <translation id="3439970425423980614">Åpner PDF i forhåndsvisning</translation>
 <translation id="3440478087746699229">Internt</translation>
@@ -2835,7 +2825,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4034824040120875894">Skriver</translation>
 <translation id="4035758313003622889">&amp;Oppgavebehandling</translation>
 <translation id="4035877632587724847">Ikke tillat</translation>
-<translation id="4037084878352560732">Hest</translation>
 <translation id="4040041015953651705">Språket du vil oversette fra</translation>
 <translation id="4040854068229263729">&amp;Fjern fra ordlisten</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Lukk siden}other{Lukk sidene}}</translation>
@@ -2925,6 +2914,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – venstre visning</translation>
 <translation id="4156532396656021084">&amp;Administrer Søkemotorer og Snarveier</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
+<translation id="4165077084524712774">Flere verktøy</translation>
 <translation id="4165986682804962316">Nettstedsinnstillinger</translation>
 <translation id="4167924027691268367">Flere handlinger for <ph name="SHORTCUT_TITLE" />-snarveien</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> som slutter på <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -2957,7 +2947,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4203065553461038553">Filnavnet eller -plasseringen er for lang</translation>
 <translation id="4203769790323223880">Kamera er ikke tillatt</translation>
 <translation id="4204415812590935863">Kan ikke opprette noe tema akkurat nå.</translation>
-<translation id="4206144641569145248">Romvesen</translation>
 <translation id="4206323443866416204">Tilbakemeldingsrapport</translation>
 <translation id="4206585797409671301">Tillatt å vise forespørsler</translation>
 <translation id="4207638506590582629"><ph name="DEVICE_NAME" /> (<ph name="LAST_ACTIVE_TIME" />)</translation>
@@ -3070,6 +3059,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4312866146174492540">Blokkér (standard)</translation>
 <translation id="4316850752623536204">Utviklernettsted</translation>
 <translation id="4319441675152393296">Klikk på ikonet for denne utvidelsen for å lese og endre <ph name="HOST" /></translation>
+<translation id="4320177379694898372">Ingen internettilkobling</translation>
 <translation id="432160826079505197">Vis <ph name="FILE_NAME" /> i Finder</translation>
 <translation id="4322394346347055525">Lukk andre faner</translation>
 <translation id="4322400254469690320">Finn <ph name="FILENAME" /> i <ph name="FEATURE_NAME" />-mappen</translation>
@@ -3212,7 +3202,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4472533928615930332">Generert bilde <ph name="INDEX" /> av <ph name="SUBJECT" /> i <ph name="STYLE" />-stil</translation>
 <translation id="4472575034687746823">Kom i gang</translation>
 <translation id="4474155171896946103">Bokmerk alle fanene</translation>
-<translation id="4476590490540813026">Idrettsutøver</translation>
 <translation id="4476659815936224889">For å skanne denne koden kan du bruke en QR-skanningsapp på telefonen eller enkelte kameraapper.</translation>
 <translation id="4477015793815781985">Inkluder Ctrl, Alt eller ⌘</translation>
 <translation id="4478161224666880173">Du kan bruke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-kontoen din på dette nettstedet. For å fortsette, logg på <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -3265,7 +3254,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4540780316273593836">Noe gikk galt</translation>
 <translation id="4541396589393395475">Organisasjonen din har deaktivert denne funksjonen</translation>
 <translation id="4542520061254486227">Les dataene dine på <ph name="WEBSITE_1" /> og <ph name="WEBSITE_2" /></translation>
-<translation id="4544174279960331769">Blått standardbrukerbilde</translation>
 <translation id="4545028762441890696">For å aktivere den igjen, godta de nye tillatelsene:</translation>
 <translation id="4545759655004063573">Manglende tillatelser gjør lagring umulig her. Lagre på et annet sted.</translation>
 <translation id="4549791035683739768">Det er ikke lagret noen fingeravtrykk på sikkerhetsnøkkelen</translation>
@@ -3647,7 +3635,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4951966678293618079">Lagre aldri passord for dette nettstedet</translation>
 <translation id="4952628481830269193">Vis bokmerkeraden</translation>
-<translation id="4953808748584563296">Oransje standardbrukerbilde</translation>
 <translation id="4954652437333037880">Arkiv</translation>
 <translation id="4954831709600868883">Spør om <ph name="TEXT" /></translation>
 <translation id="4956593309300508411">Vil du slutte å dele?</translation>
@@ -3883,7 +3870,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="5225463052809312700">Slå på kameraet</translation>
 <translation id="5226253862147382094">Gjennomgå oppdateringer av logo og nettadresse</translation>
 <translation id="5226514125747186">En stiplet sirkel vises rundt nettstedsikoner. <ph name="BEGIN_LINK" />Finn ut mer om inaktive faner<ph name="END_LINK" /></translation>
-<translation id="5227679487546032910">Blågrønt standardbrukerbilde</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Vil du oppheve fanegruppen?}other{Vil du oppheve fanegruppene?}}</translation>
 <translation id="5230516054153933099">Vindu</translation>
 <translation id="5231255476752743708">Chrome trenger hjelp med å endre passordet ditt</translation>
@@ -3926,7 +3912,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="527335345740023523">Du har for øyeblikket <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> med mer. Organisasjonen din, <ph name="ACCOUNT_MANAGER" />, kommer til å kunne se og administrere disse dataene</translation>
 <translation id="5273806377963980154">Rediger nettstedets nettadresse</translation>
 <translation id="5275338516105640560">Knapp for lagret fanegruppe</translation>
-<translation id="5275352920323889391">Hund</translation>
 <translation id="5275946508817197540">Sikkerhetsinnstillingene tillater ikke installering av isolerte nettapper. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Slå av lyden for fanen</translation>
 <translation id="527605982717517565">Tillat alltid JavaScript på <ph name="HOST" /></translation>
@@ -4251,7 +4236,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="5643191124441701136">Sikkerhetskoden finner du på forsiden av kortet</translation>
 <translation id="5645369002069651355">Bekrefter e-postadressen</translation>
 <translation id="5646376287012673985">Posisjon</translation>
-<translation id="5646558797914161501">Forretningsmann</translation>
 <translation id="5647989922796038257">Del også alle lydutganger</translation>
 <translation id="5648166631817621825">Siste 7 dager</translation>
 <translation id="5654226590297731684">{NUM_SITES,plural, =1{Fjernet tillatelser for 1 nettsted}other{Fjernet tillatelser for {NUM_SITES} nettsteder}}</translation>
@@ -4607,7 +4591,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="6086418630711763366">Du kan navigere på sider med en tekstmarkør. Trykk på Ctrl + <ph name="KEY" /> for å slå av dette.</translation>
 <translation id="6086846494333236931">Installert av administratoren din</translation>
 <translation id="6087286598828478206">Vil du blokkere og forlate gruppen?</translation>
-<translation id="6087960857463881712">Fantastisk-fjes</translation>
 <translation id="608819668983150122">Bekreft at det er deg, for å lagre og bruke passnøklene dine på denne enheten</translation>
 <translation id="6088475950266477163">Innstillin&amp;ger</translation>
 <translation id="608912389580139775">For å legge til denne siden på leselisten din, klikk på Bokmerke-ikonet</translation>
@@ -4856,7 +4839,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="6356893102071098867">Sjekk at du har valgt riktig konto</translation>
 <translation id="6357305427698525450">Noen støttede linker åpnes fremdeles i <ph name="APP_NAME" /> eller <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Andre stabile identifikatorer (f.eks. hash-verdier eller UUID-er)</translation>
-<translation id="6357830294871526418">Faner på andre enheter</translation>
 <translation id="6358884629796491903">Drage</translation>
 <translation id="6362853299801475928">&amp;Rapportér et problem</translation>
 <translation id="6365069501305898914">Facebook</translation>
@@ -4889,7 +4871,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="6395423953133416962">Send <ph name="BEGIN_LINK1" />systeminformasjon<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />-målinger<ph name="END_LINK2" /></translation>
 <translation id="6398765197997659313">Avslutt fullskjerm</translation>
 <translation id="639880411171387127">Google Lens-valget ditt. Trykk på Enter eller tilbaketasten for å slette Google Lens-valget ditt</translation>
-<translation id="6399774419735315745">Spion</translation>
 <translation id="6400360390396538896">Alltid på <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Avslutt fokusering på fanegruppen</translation>
 <translation id="6402042774506839496">Kontakt apputvikleren for å finne ut hvorfor</translation>
@@ -5413,7 +5394,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6959882218873172284">POST-forespørsel</translation>
 <translation id="6961327401577924850">Nettsteder ser vanligvis etter Bluetooth-enheter for å kunne tilby funksjoner som å konfigurere eller synkronisere lavenergi-beacons, helse- eller treningsarmbånd eller smartlyspærer</translation>
 <translation id="6964239097707154771">er tillegg for Chrome som kan hjelpe deg med å gjøre mer</translation>
-<translation id="6964390816189577014">Helt</translation>
 <translation id="6964760285928603117">Fjern fra gruppen</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965607054907047032">Frigjør minne basert på inaktivitet på faner</translation>
@@ -6259,7 +6239,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="7910768399700579500">&amp;Ny mappe</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7913805372428124107">Logg på og synkroniser loggen for å få fanene fra <ph name="DEVICE" />. Du får også passordene med mer på alle enheter. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen.</translation>
-<translation id="7915478442339169507">Tillat tilgang til nettsted</translation>
 <translation id="7918928051723770926">Oppgaven er fullført</translation>
 <translation id="7919123827536834358">Oversett disse språkene automatisk</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> kan se <ph name="FILENAME" /></translation>
@@ -6419,7 +6398,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8061244502316511332">Denne fanen bruker mikrofonen din</translation>
 <translation id="8061464966246066292">Høy kontrast</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 ark}other{{COUNT} ark}}</translation>
-<translation id="8063235345342641131">Grønt standardbrukerbilde</translation>
 <translation id="8071432093239591881">Skriv ut som bilde</translation>
 <translation id="8075044377771022666">Bunntekst</translation>
 <translation id="8076835018653442223">Administratoren din har deaktivert tilgang til lokale filer på enheten din</translation>
@@ -6470,7 +6448,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8118860139461251237">administrere nedlastingene dine</translation>
 <translation id="8121537075864592453">Fullskjerm er deaktivert</translation>
 <translation id="8123087650856503231">Sikkerhetskopier passordene, bokmerkene dine med mer, slik at du enkelt kan få dem på alle enhetene dine</translation>
-<translation id="81238879832906896">Gul og hvit blomst</translation>
 <translation id="8123975449645947908">Rull bakover</translation>
 <translation id="8125651784723647184">Passorddeling administreres av administratoren din</translation>
 <translation id="8126498026310640675">For å få loggen fra <ph name="DEVICE" />, logg på og synkroniser loggen og fanene til <ph name="EMAIL" />. Du får også bokmerkene med mer på alle enheter. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen.</translation>
@@ -7124,7 +7101,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8837072669197607689">Tillat i isolert modus</translation>
 <translation id="8837573527470979311">Bytt med nederste visning</translation>
 <translation id="8838601485495657486">Ugjennomsiktig</translation>
-<translation id="8838770651474809439">Hamburger</translation>
 <translation id="883924185304953854">Søk med bilder</translation>
 <translation id="8839975272851327869">{ITEM_COUNT,plural, =1{1 element er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din. Eventuelle duplikater fjernes også.}other{{ITEM_COUNT} element er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din. Eventuelle duplikater fjernes også.}}</translation>
 <translation id="8841843049738266382">Lese og endre brukere på godkjenningslisten</translation>
@@ -7437,7 +7413,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9207434080086272167">Sol</translation>
 <translation id="9207990187617864000">kunstig, intelligens, skriving, hjelp, hjelper, søk, assistent, chat, spørsmål, forespørsel, Gemini, AI</translation>
 <translation id="9212565256020141627">Kunne ikke dele bildet med Gemini. Prøv på nytt, eller velg et annet bilde.</translation>
-<translation id="9214695392875603905">Cupcake</translation>
 <translation id="9215293857209265904">«<ph name="EXTENSION_NAME" />» ble lagt til</translation>
 <translation id="9218430445555521422">Angi som standard</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (appen støttes ikke)</translation>

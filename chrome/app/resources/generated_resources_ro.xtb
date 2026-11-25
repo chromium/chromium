@@ -210,7 +210,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1202116106683864634">Sigur vrei să ștergi această cheie de acces?</translation>
 <translation id="1202892408424955784">Produse urmărite</translation>
 <translation id="1203247227716551969">Confirmă-ți contul</translation>
-<translation id="120368089816228251">Notă muzicală</translation>
 <translation id="1203942045716040624">Worker folosit în comun: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Codul de securitate se află pe spatele cardului</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Șterge grupul}few{Șterge grupurile}other{Șterge grupurile}}</translation>
@@ -367,7 +366,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1386966479075994683">Extinde filele</translation>
 <translation id="1388253969141979417">Au permisiunea de a folosi microfonul</translation>
 <translation id="139013308650923562">Au permisiunea de a folosi fonturile instalate pe dispozitiv</translation>
-<translation id="1393283411312835250">Soare și nori</translation>
 <translation id="1396120028054416908">Înapoi la <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Eroare la configurarea imprimantei</translation>
 <translation id="1398853756734560583">Maximizează</translation>
@@ -426,7 +424,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1464047267926346987">Stochează parolele, marcajele și multe altele</translation>
 <translation id="1465176863081977902">C&amp;opiază adresa conținutului audio</translation>
 <translation id="146522654774760805">Parole și completare automată</translation>
-<translation id="1465827627707997754">Felie de pizza</translation>
 <translation id="1467005863208369884">Fișierul nu poate fi confirmat deoarece Navigarea sigură este dezactivată</translation>
 <translation id="1467432559032391204">Stânga</translation>
 <translation id="1468571364034902819">Nu se poate folosi acest profil</translation>
@@ -527,7 +524,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1573127087832371028">Descrie problema</translation>
 <translation id="1573415331092567032">Folosește această comandă rapidă în afara browserului Chrome</translation>
 <translation id="1574335334663388774">Versiunea <ph name="APP_NAME" /> <ph name="APP_VERSION" /> este deja instalată pe acest dispozitiv</translation>
-<translation id="1576594961618857597">Avatar alb prestabilit</translation>
 <translation id="1578488449637163638">Întunecat</translation>
 <translation id="157931050206866263">Află mai multe despre scanarea împotriva programelor malware</translation>
 <translation id="1581962803218266616">Afișează în Finder</translation>
@@ -839,7 +835,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1913749768968678106">Proiectează, salvează și trimite</translation>
 <translation id="19147273405311768">Resetează bara de instrumente la setările prestabilite</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
-<translation id="1916502483199172559">Avatar roșu prestabilit</translation>
 <translation id="1916770123977586577">Ca să aplici setările actualizate pentru acest site, reîncarcă pagina</translation>
 <translation id="1917766536967060661">Vei pierde imediat accesul la grupul de file <ph name="GROUP_NAME" />, iar <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) nu va mai putea să interacționeze cu tine în serviciile Google.</translation>
 <translation id="1918141783557917887">&amp;Mai mic</translation>
@@ -1161,7 +1156,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="2270668657177045040">Un site și subdomeniile sale pot vedea ce aplicații web asociate sunt instalate pe dispozitiv.</translation>
 <translation id="2271452184061378400">Grupurile de file se salvează aici</translation>
 <translation id="2271986192355138465">Află cum să instalezi aplicații web</translation>
-<translation id="2272570998639520080">Pahar de martini</translation>
 <translation id="2275352532065325930">Poziția opțiunii Căutarea filelor</translation>
 <translation id="227763434929139750">Nu permit site-urilor să folosească senzorii de mișcare sau de lumină</translation>
 <translation id="2278193750452754829">Extensiile sunt permise pe acest site. Selectează pentru a deschide meniul</translation>
@@ -1484,7 +1478,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="2637852492915204064">Închide căutarea filelor</translation>
 <translation id="263796568413910992">Întreabă <ph name="SEARCH_ENGINE_NAME" /> sau introdu o adresă URL</translation>
 <translation id="2640299212685523844">Folosește GTK</translation>
-<translation id="2642111877055905627">Minge de fotbal</translation>
 <translation id="2642206811783203764">Activat permanent <ph name="SITE_NAME" /></translation>
 <translation id="2643379881528582459">Dacă Chromium găsește una dintre parolele tale într-o încălcare a securității datelor publice, se poate oferi să-ți schimbe parola dacă te-ai conectat</translation>
 <translation id="2643698698624765890">Gestionați extensiile făcând clic pe Extensii în meniul Window (Fereastră).</translation>
@@ -1942,7 +1935,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="3134312457920437826">Nu se poate instala extensia deoarece folosește o versiune a manifestului care nu este acceptată.</translation>
 <translation id="3134393957315651797">Selectează starea experimentului pentru experimentul <ph name="EXPERIMENT_NAME" />. Descrierea experimentului: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3134822828309700120">Permite altor aplicații Gemini să navigheze de la distanță de pe orice dispozitiv</translation>
-<translation id="3139925690611372679">Avatar galben prestabilit</translation>
 <translation id="314095642664111744">Dezactivează modul Focalizare</translation>
 <translation id="3141093262818886744">Deschide oricum</translation>
 <translation id="3141318088920353606">Se ascultă...</translation>
@@ -2026,7 +2018,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="3222066309010235055">Program de redare în avans: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3223109931751684474">Elimină accesul la cheile de acces de pe acest dispozitiv</translation>
 <translation id="3224803532980286809">Google va vedea numai ce este vizibil pentru tine</translation>
-<translation id="3225084153129302039">Avatar violet prestabilit</translation>
 <translation id="3225741048815287955"><ph name="BEGIN_BOLD_1" />Se permite accesul la file pentru răspunsuri mai relevante.<ph name="END_BOLD_1" /> Google folosește conținutul și adresa URL ale filelor la care s-a permis accesul. Fila actuală este trimisă în chaturile noi. Poți modifica oricând această setare. <ph name="BEGIN_BOLD_2" />Datele organizației tale sunt private și securizate.<ph name="END_BOLD_2" /> Nu se vor folosi pentru îmbunătățirea modelelor de AI generativ.</translation>
 <translation id="3226249862705569834">Senzori în uz</translation>
 <translation id="3227137524299004712">Microfon</translation>
@@ -2240,7 +2231,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="3436118221454753036">Întreabă Modul AI</translation>
 <translation id="3437397693214267762">Vezi Calendarul Outlook și fișierele SharePoint și OneDrive</translation>
 <translation id="3437494162908353428">DevTools nu este permis pentru această adresă URL.</translation>
-<translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Permiteți întotdeauna accesul <ph name="HOST" /> la microfonul dvs.</translation>
 <translation id="3439970425423980614">Se deschide PDF în Previzualizare</translation>
 <translation id="3440478087746699229">Internă</translation>
@@ -2826,7 +2816,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="4034824040120875894">Imprimantă</translation>
 <translation id="4035758313003622889">&amp;Manager de activități</translation>
 <translation id="4035877632587724847">Nu permite</translation>
-<translation id="4037084878352560732">Cal</translation>
 <translation id="4040041015953651705">Limba din care se traduce</translation>
 <translation id="4040854068229263729">&amp;Elimină din dicționar</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Închide pagina}few{Închide paginile}other{Închide paginile}}</translation>
@@ -2916,6 +2905,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> – vedere din stânga</translation>
 <translation id="4156532396656021084">&amp;Gestionează motoarele de căutare și comenzile rapide</translation>
 <translation id="4157869833395312646">Criptografie Microsoft bazată pe server</translation>
+<translation id="4165077084524712774">Mai multe instrumente</translation>
 <translation id="4165986682804962316">Setări pentru site-uri</translation>
 <translation id="4167924027691268367">Mai multe acțiuni pentru comanda rapidă <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> care se termină în <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -2948,7 +2938,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="4203065553461038553">Numele sau locația fișierului este prea lungă</translation>
 <translation id="4203769790323223880">Folosirea camerei foto nu este permisă</translation>
 <translation id="4204415812590935863">Momentan, nu se poate crea o temă.</translation>
-<translation id="4206144641569145248">Extraterestru</translation>
 <translation id="4206323443866416204">Raport de feedback</translation>
 <translation id="4206585797409671301">Are permisiunea de a afișa solicitări</translation>
 <translation id="4207638506590582629"><ph name="DEVICE_NAME" /> (<ph name="LAST_ACTIVE_TIME" />)</translation>
@@ -3061,6 +3050,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="4312866146174492540">Blochează (în mod prestabilit)</translation>
 <translation id="4316850752623536204">Site-ul dezvoltatorului</translation>
 <translation id="4319441675152393296">Dă clic pe pictograma extensiei pentru a permite citirea și modificările la <ph name="HOST" /></translation>
+<translation id="4320177379694898372">Nu există conexiune la internet</translation>
 <translation id="432160826079505197">Afișează <ph name="FILE_NAME" /> în Finder</translation>
 <translation id="4322394346347055525">Închide celelalte file</translation>
 <translation id="4322400254469690320">Găsește <ph name="FILENAME" /> în dosarul <ph name="FEATURE_NAME" /></translation>
@@ -3203,7 +3193,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="4472533928615930332">Imaginea generată <ph name="INDEX" /> din <ph name="SUBJECT" />, în stilul <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Începeți</translation>
 <translation id="4474155171896946103">Marchează toate filele...</translation>
-<translation id="4476590490540813026">Atletă</translation>
 <translation id="4476659815936224889">Pentru a scana codul, poți folosi o aplicație de scanare a codurilor QR pe telefon sau anumite aplicații pentru camera foto.</translation>
 <translation id="4477015793815781985">Include Ctrl, Alt sau ⌘</translation>
 <translation id="4478161224666880173">Poți folosi contul <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> pe acest site. Pentru a continua, conectează-te la <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -3256,7 +3245,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="4540780316273593836">A apărut o eroare</translation>
 <translation id="4541396589393395475">Această funcție este dezactivată de organizația ta</translation>
 <translation id="4542520061254486227">Citește datele de pe <ph name="WEBSITE_1" /> și de pe <ph name="WEBSITE_2" /></translation>
-<translation id="4544174279960331769">Avatar albastru prestabilit</translation>
 <translation id="4545028762441890696">Pentru a o reactiva, acceptă permisiunile noi:</translation>
 <translation id="4545759655004063573">Nu se poate salva din cauza permisiunilor insuficiente. Salvați în altă locație.</translation>
 <translation id="4549791035683739768">Cheia de securitate nu are amprente stocate.</translation>
@@ -3638,7 +3626,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="495170559598752135">Acțiuni</translation>
 <translation id="4951966678293618079">Nu salva niciodată parolele pentru acest site</translation>
 <translation id="4952628481830269193">Afișează bara de marcaje</translation>
-<translation id="4953808748584563296">Avatar portocaliu prestabilit</translation>
 <translation id="4954652437333037880">Fișier</translation>
 <translation id="4954831709600868883">Întreabă despre <ph name="TEXT" /></translation>
 <translation id="4956593309300508411">Nu mai permiți accesul?</translation>
@@ -3874,7 +3861,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="5225463052809312700">Activează camera foto</translation>
 <translation id="5226253862147382094">Examinează actualizările siglei și ale adresei URL</translation>
 <translation id="5226514125747186">Va apărea un cerc punctat în jurul pictogramelor site-ului. <ph name="BEGIN_LINK" />Află mai multe despre filele inactive<ph name="END_LINK" /></translation>
-<translation id="5227679487546032910">Avatar turcoaz prestabilit</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Anulezi grupul de file?}few{Anulezi grupurile de file?}other{Anulezi grupurile de file?}}</translation>
 <translation id="5230516054153933099">Fereastră</translation>
 <translation id="5231255476752743708">Chrome are nevoie de ajutor pentru a schimba parola</translation>
@@ -3917,7 +3903,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="527335345740023523">Momentan ai <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> și altele. Organizația ta, <ph name="ACCOUNT_MANAGER" />, va putea să vadă și să gestioneze aceste date.</translation>
 <translation id="5273806377963980154">Editează adresa URL a site-ului</translation>
 <translation id="5275338516105640560">Butonul grupului de file salvat</translation>
-<translation id="5275352920323889391">Câine</translation>
 <translation id="5275946508817197540">Preferințele tale de securitate nu permit instalarea aplicațiilor web izolate. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Dezactivează sunetul filei</translation>
 <translation id="527605982717517565">Permite întotdeauna JavaScript pe <ph name="HOST" /></translation>
@@ -4242,7 +4227,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="5643191124441701136">Codul de securitate se află pe partea din față a cardului</translation>
 <translation id="5645369002069651355">Se confirmă adresa de e-mail</translation>
 <translation id="5646376287012673985">Locație</translation>
-<translation id="5646558797914161501">Om de afaceri</translation>
 <translation id="5647989922796038257">Permite accesul și la toate ieșirile audio</translation>
 <translation id="5648166631817621825">Ultimele 7 zile</translation>
 <translation id="5654226590297731684">{NUM_SITES,plural, =1{S-au eliminat permisiunile pentru un site}few{S-au eliminat permisiunile pentru {NUM_SITES} site-uri}other{S-au eliminat permisiunile pentru {NUM_SITES} de site-uri}}</translation>
@@ -4598,7 +4582,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="6086418630711763366">Poți să navighezi în pagini folosind cursorul pentru text. Apasă Ctrl + <ph name="KEY" /> pentru a dezactiva.</translation>
 <translation id="6086846494333236931">Instalată de administrator</translation>
 <translation id="6087286598828478206">Blochezi și ieși din grup?</translation>
-<translation id="6087960857463881712">Față extraordinară</translation>
 <translation id="608819668983150122">Confirmă-ți identitatea pentru a salva și a folosi cheile de acces pe acest dispozitiv</translation>
 <translation id="6088475950266477163">Setă&amp;ri</translation>
 <translation id="608912389580139775">Pentru a adăuga pagina în lista de lecturi, dă clic pe pictograma Marcaj</translation>
@@ -4847,7 +4830,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="6356893102071098867">Verifică dacă ai ales contul corect</translation>
 <translation id="6357305427698525450">Unele linkuri acceptate se vor deschide în continuare în <ph name="APP_NAME" /> sau <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Alți identificatori stabili (de exemplu, valori hash sau ID-uri UUID).</translation>
-<translation id="6357830294871526418">File de pe alte dispozitive</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="6362853299801475928">&amp;Raportează o problemă...</translation>
 <translation id="6365069501305898914">Facebook</translation>
@@ -4880,7 +4862,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="6395423953133416962">Trimiteți <ph name="BEGIN_LINK2" />valori<ph name="END_LINK2" /> și <ph name="BEGIN_LINK1" />informații de sistem<ph name="END_LINK1" /></translation>
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
 <translation id="639880411171387127">Selecția ta din Google Lens. Apasă pe Enter sau pe Backspace pentru a șterge selecția Google Lens</translation>
-<translation id="6399774419735315745">Spioană</translation>
 <translation id="6400360390396538896">Activat permanent <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Anulează focalizarea pentru grupul de file</translation>
 <translation id="6402042774506839496">Pentru a afla de ce, contactează dezvoltatorul aplicației</translation>
@@ -5406,7 +5387,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6959882218873172284">Solicitare POST</translation>
 <translation id="6961327401577924850">Site-urile caută de obicei dispozitive Bluetooth pentru funcții cum ar fi configurarea sau sincronizarea unui semnalizator cu consum redus de energie, a unui tracker de sănătate sau fitness ori a unui bec inteligent</translation>
 <translation id="6964239097707154771">sunt suplimente pentru Chrome care te pot ajuta să faci mai multe</translation>
-<translation id="6964390816189577014">Erou</translation>
 <translation id="6964760285928603117">Elimină din grup</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965607054907047032">Eliberează memorie în funcție de inactivitatea filei</translation>
@@ -6252,7 +6232,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="7910768399700579500">Dosar &amp;nou</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7913805372428124107">Pentru a accesa filele de pe <ph name="DEVICE" />, conectează-te și sincronizează istoricul. În plus, vei putea accesa parolele și multe altele pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
-<translation id="7915478442339169507">Permite accesul la site</translation>
 <translation id="7918928051723770926">Activitate finalizată</translation>
 <translation id="7919123827536834358">Tradu automat aceste limbi</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> poate să vadă <ph name="FILENAME" /></translation>
@@ -6412,7 +6391,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8061244502316511332">Această filă folosește microfonul</translation>
 <translation id="8061464966246066292">Contrast ridicat</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{O coală de hârtie}few{{COUNT} coli de hârtie}other{{COUNT} de coli de hârtie}}</translation>
-<translation id="8063235345342641131">Avatar verde prestabilit</translation>
 <translation id="8071432093239591881">Printează ca imagine</translation>
 <translation id="8075044377771022666">Subsol</translation>
 <translation id="8076835018653442223">Accesul la fișierele de pe dispozitiv este dezactivat de administrator</translation>
@@ -6463,7 +6441,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8118860139461251237">Gestionează descărcările</translation>
 <translation id="8121537075864592453">Ecranul complet este dezactivat</translation>
 <translation id="8123087650856503231">Fă backup parolelor, marcajelor și altor date ca să le poți accesa cu ușurință pe toate dispozitivele</translation>
-<translation id="81238879832906896">Floare galbenă și albă</translation>
 <translation id="8123975449645947908">Derulează înapoi</translation>
 <translation id="8125651784723647184">Permiterea accesului la parolă este gestionată de administrator</translation>
 <translation id="8126498026310640675">Pentru a accesa istoricul de pe <ph name="DEVICE" />, conectează-te și sincronizează istoricul și filele cu <ph name="EMAIL" />. În plus, vei putea accesa marcajele și alte date pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
@@ -7117,7 +7094,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8837072669197607689">Permite în modul izolat</translation>
 <translation id="8837573527470979311">Schimbă cu afișarea de jos</translation>
 <translation id="8838601485495657486">Opac</translation>
-<translation id="8838770651474809439">Hamburger</translation>
 <translation id="883924185304953854">Căutare după imagine</translation>
 <translation id="8839975272851327869">{ITEM_COUNT,plural, =1{Un element se salvează numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul Google. Astfel, vor fi eliminate și dublurile.}few{{ITEM_COUNT} elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google. Astfel, vor fi eliminate și dublurile.}other{{ITEM_COUNT} de elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google. Astfel, vor fi eliminate și dublurile.}}</translation>
 <translation id="8841843049738266382">Citește și modifică utilizatorii trecuți în lista cu acces permis</translation>
@@ -7430,7 +7406,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9207434080086272167">Însorit</translation>
 <translation id="9207990187617864000">artificială, inteligență, scris, ajutor, asistent, căutare, chat, solicitare, interogare, Gemini, AI</translation>
 <translation id="9212565256020141627">Imaginea nu a putut fi trimisă către Gemini. Încercați din nou sau folosiți altă imagine.</translation>
-<translation id="9214695392875603905">Brioșă</translation>
 <translation id="9215293857209265904">S-a adăugat „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="9218430445555521422">Setează ca prestabilit</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (aplicație neacceptată)</translation>

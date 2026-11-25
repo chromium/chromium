@@ -149,6 +149,7 @@
 <translation id="2482846200327569645">‏הדפדפן כבר מחובר לחשבון של <ph name="EXISTING_USER" />. כדי להפריד בין נתוני הגלישה של החשבונות, עליך להיכנס לפרופיל שלך ב-Chromium בתור <ph name="USER_EMAIL_ADDRESS" />. הסימניות ופריטים נוספים יופיעו במכשיר <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">הסרה</translation>
 <translation id="2513154137948333830">נדרשת הפעלה מחדש: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">הארגון שלך</translation>
 <translation id="2521391734665471391">‏סגירת מצב AI בחיפוש Google</translation>
 <translation id="2523492931736391680">‏עבודה מאובטחת ב-Chrome</translation>
 <translation id="2534365042754120737">‏כדי להגן על הנתונים שלך, כדאי לאפשר ל-Chrome להסיר הרשאות מאתרים שלא נכנסת אליהם לאחרונה. המערכת תמשיך לשלוח התראות.</translation>
@@ -227,6 +228,7 @@
 <translation id="3140883423282498090">‏השינויים ייכנסו לתוקף בפעם הבאה ש-Google Chrome יופעל מחדש.</translation>
 <translation id="3149510190863420837">‏אפליקציות Chrome</translation>
 <translation id="3161522574479303604">כל השפות</translation>
+<translation id="3183555099201190073">‏גישה לחיפוש Google מכל כרטיסייה</translation>
 <translation id="318555301233810762">‏הדפדפן כבר מחובר לחשבון של <ph name="EXISTING_USER" />. כדי להפריד בין נתוני הגלישה של החשבונות, עליך להיכנס לפרופיל שלך ב-Chromium בתור <ph name="USER_EMAIL_ADDRESS" />. הסימניות ופריטים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="319199214552513804">‏כדי לקבל גישה לתוסף הזה ולנתונים נוספים בכל המחשבים, צריך להיכנס ל-Chrome</translation>
 <translation id="3196187562065225381">‏Chrome חסם את ההורדה הזאת כי הקובץ מסוכן</translation>
@@ -306,6 +308,7 @@
 <translation id="4053720452172726777">‏פעולות נוספות ב-Google Chrome</translation>
 <translation id="408393047846373801">‏כדי לקבל גישה לסיסמאות ולנתונים נוספים בכל המכשירים שלך, כדאי להיכנס ל-Chrome. לאחר הכניסה, הסיסמה הזו תישמר בחשבון שלך ב-Google.</translation>
 <translation id="4102173024714616627">‏תוספים הם רכיבים נוספים שמאפשרים לך להתאים אישית את Chrome. תוספים עוזרים לך להתאים את Chrome לצרכים שלך, בין אם זה לשמור על הסדר או לפשט משימות יומיומיות.</translation>
+<translation id="4103543596018881622">‏"חיפוש Google ב-Chrome" הוצמד לסרגל הכלים.</translation>
 <translation id="4110895483821904099">‏הגדרת הפרופיל החדש שלך ב-Chrome</translation>
 <translation id="4111566860456076004">‏‫Chrome לא יכול לאמת את מקור התוסף הזה, ויכול להיות שהוא לא בטוח. צריך להסיר אותו מ-Chrome כדי לא לאפשר לו יותר לראות ולשנות את הנתונים שלך באתרים שאליהם תתבצע כניסה, כולל הפרטים האישיים שלך.</translation>
 <translation id="4148957013307229264">מתקין...</translation>
@@ -517,6 +520,7 @@
 <translation id="6321592572353357376">‏התוסף "<ph name="EXTENSION_NAME" />" מבקש ממך להיכנס ל-Chrome</translation>
 <translation id="6326175484149238433">‏הסרה מ-Chrome</translation>
 <translation id="6339888439788291743">‏אותו קיצור דרך, עם סמל חדש: כדי לשאול שאלות במהלך הגלישה בחיפוש Google במצב AI, עליך ללחוץ עליו.</translation>
+<translation id="6349304688246983183">‏משהו לא ברור? חיפוש Google כאן, וקל להשתמש בו בזמן הגלישה</translation>
 <translation id="63540178978900677">‏‫Chrome לא מוגדר יותר כדפדפן ברירת המחדל. אני רוצה ש-Chrome יהיה דפדפן ברירת המחדל</translation>
 <translation id="6357670763064300993">‏‫Gemini Enterprise ב-Chrome</translation>
 <translation id="6360449101159168105">‏בזמן שהכרטיסייה הזו לא הייתה פעילה, התפנה זיכרון כדי ש-Chrome ימשיך לפעול במהירות. ניתן לבחור להחריג תמיד את האתר הזה כדי שיישאר במצב פעיל.</translation>

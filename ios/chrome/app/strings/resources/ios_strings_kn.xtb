@@ -200,6 +200,7 @@
 <translation id="1547610699249301703">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="1554043146674176775">AI ಮೋಡ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1554477036522844996">ಹೊಸ ವಿಂಡೋ</translation>
+<translation id="1555014818414775661">ಚಿತ್ರಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="1557806604681757705">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್</translation>
 <translation id="1558391695376153246">ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="1560153516220021659">ಕುಗ್ಗಿಸಲಾದ ಸೆಕೆಂಡರಿ ಟೂಲ್‌ಬಾರ್ ಬಟನ್</translation>
@@ -913,7 +914,6 @@
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="END_BOLD" /> ತೆರೆಯಿರಿ</translation>
 <translation id="3858860766373142691">ಹೆಸರು</translation>
 <translation id="386224966259596343">ಮುಂದಿನ ಬಾರಿ ನೀವು ಸಂಬಂಧಿತ ಫಾರ್ಮ್ ಅನ್ನು ಭರ್ತಿ ಮಾಡಿದಾಗ ಈ ಮಾಹಿತಿಯನ್ನು Wallet ನಲ್ಲಿ ಸೇವ್ ಮಾಡುವ ಅವಕಾಶವನ್ನು ನೀವು ಹೊಂದಿರುತ್ತೀರಿ.</translation>
-<translation id="3868495844258915202">ಸಂಪೂರ್ಣ URL ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> ಸೈಟ್‌ಗಾಗಿ ಯಾವುದೇ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="3875783148670536197">ಹೇಗೆಂದು ನನಗೆ ತೋರಿಸಿ</translation>
 <translation id="3878657761594430423">ಶೀಟ್ ಗ್ರಾಬರ್</translation>
@@ -1009,7 +1009,6 @@
 <translation id="4158491215857439601">Password Manager</translation>
 <translation id="4159430626587776301">ನೀವು ಇತ್ತೀಚೆಗೆ ಬ್ರೌಸ್ ಮಾಡಿದ ಉತ್ಪನ್ನಗಳ ಕುರಿತ ವಿಮರ್ಶೆಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="4161488339191275792">ನಿಮ್ಮ ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಆಯೋಜಿಸಲು ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ರಚಿಸಿ</translation>
-<translation id="4162616958842974809">ಚಿತ್ರವನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4163699139741158298">{count,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು "{title}" ಗೆ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ.}one{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು "{title}" ಗೆ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ.}other{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು "{title}" ಗೆ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ಅವುಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ.}}</translation>
 <translation id="4164514562270305824">ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ಸ್ವಯಂ ಅಳಿಸಿ</translation>
 <translation id="4165986682804962316">ಸೈಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>

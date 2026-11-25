@@ -200,6 +200,7 @@
 <translation id="1547610699249301703">Parolları paylaşın</translation>
 <translation id="1554043146674176775">Sİ rejimini deaktiv edin</translation>
 <translation id="1554477036522844996">Yeni Pəncərə</translation>
+<translation id="1555014818414775661">Şəkil əlavə edin</translation>
 <translation id="1557806604681757705">kompüteriniz</translation>
 <translation id="1558391695376153246">Anonim tabları qapadın</translation>
 <translation id="1560153516220021659">Yığcamlaşdırılmış ikinci dərəcəli alətlər paneli düyməsi</translation>
@@ -913,7 +914,6 @@
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari ayarlarını<ph name="END_BOLD" /> açın</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="386224966259596343">Növbəti dəfə müvafiq formanı doldurduğunuz zaman bu məlumatı Pulqabıda yadda saxlamaq şansınız olacaq.</translation>
-<translation id="3868495844258915202">Tam URL-i göstərin</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" /> üçün parollar yadda saxlanıldı</translation>
 <translation id="3875783148670536197">İstifadə Qaydasını Göstərin</translation>
 <translation id="3878657761594430423">Vərəq tutucu</translation>
@@ -1009,7 +1009,6 @@
 <translation id="4158491215857439601">Parol meneceri</translation>
 <translation id="4159430626587776301">Bu yaxınlarda baxdığınız məhsullar üçün rəylərə nəzər salın</translation>
 <translation id="4161488339191275792">Açıq tabları nizamlamaq üçün tab qrupları yaradın</translation>
-<translation id="4162616958842974809">Şəkil əlavə edin</translation>
 <translation id="4163699139741158298">{count,plural, =1{Əlfəcin "{title}" bölməsində yadda saxlandı. O, yalnız bu cihazda yadda saxlanır.}other{{count} əlfəcin "{title}" bölməsində yadda saxlandı. Onlar yalnız bu cihazda yadda saxlanır.}}</translation>
 <translation id="4164514562270305824">Endirmələri avtomatik silin</translation>
 <translation id="4165986682804962316">Sayt ayarları</translation>

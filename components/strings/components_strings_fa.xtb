@@ -668,7 +668,6 @@
 <translation id="2126374524350484896">‏تولیدکننده PDF:</translation>
 <translation id="2127090458081644412">گذرواژه در این دستگاه ذخیره شد</translation>
 <translation id="2127747486437921899">ایتالیک</translation>
-<translation id="2129163794581571479">‏با پشتیبانی Gemini با «هوش شخصی‌سازی‌شده». درخواست‌های شما، عنوان‌های صفحه، و نشانی‌های وب ممکن است برای بهبود تکمیل خودکار بهبودیافته بازبینی شوند. <ph name="BEGIN_LINK" />مدیریت تنظیمات<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">‏چون خط‌مشی DnsOverHttpsMode تنظیم نشده است، ممکن است الگوهایی که مشخص کردید اعمال نشوند.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">«فعال کردن تکمیل خودکار پرداخت‌ها» به‌صورت کامل باز شده است.</translation>
@@ -1219,7 +1218,6 @@
 <translation id="3041584414879052436">فهرست صادرکنندگان «الآن خریدن، پراخت بعداً» بسته شده است.</translation>
 <translation id="3041612393474885105">اطلاعات گواهی</translation>
 <translation id="3041835740069544003">‏‫Chrome اکنون می‌تواند فرم‌های بیشتری را با «درک هوشمند فرم» تشخیص دهد و پر کند. برای انجام این کار، محتوا و نشانی‌های وب صفحه می‌توانند در یک فضای خصوصی در فضای ابری پردازش شوند. در تنظیمات مدیریت کنید.</translation>
-<translation id="3047054686095898948">‏اطلاعاتتان را در <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> ذخیره کنید تا کارهایی مانند پر کردن فرم‌ها در محصولات Google را سریع‌تر انجام دهید. در <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> مربوط به <ph name="ACCOUNT" /> می‌توانید <ph name="BEGIN_LINK" />اطلاعاتتان را مدیریت کنید<ph name="END_LINK" /></translation>
 <translation id="305162504811187366">‏سابقه «رایانه ازدور Chrome»، ازجمله مُهرهای زمان، میزبان‌ها، و شناسه‌های جلسه کارخواه</translation>
 <translation id="3052868890529250114">‏معمولاً ازطریق اتصال ایمن به سایت‌ها متصل می‌شوید، اما این بار Chrome نتوانست از اتصال ایمن استفاده کند. ممکن است مهاجمی درحال تلاش برای استراق سمع یا تغییر اتصال شبکه شما باشد. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> کاهش قیمت <ph name="PRODUCT_NAME" /></translation>
@@ -1590,7 +1588,6 @@
 <translation id="3655670868607891010">اگر مکرراً با این مشکل مواجه می‌شوید، <ph name="HELP_LINK" /> را امتحان کنید.</translation>
 <translation id="3658742229777143148">ویرایش</translation>
 <translation id="3659521826520353662">سایت‌های تعریف‌شده توسط سرپرست که بازدید شده است و زمان بازدید: <ph name="ALLOWLISTED_WEBSITES" /></translation>
-<translation id="3663760610864720538">‏با پشتیبانی Gemini با «هوش شخصی‌سازی‌شده». <ph name="BEGIN_LINK" />مدیریت تنظیمات<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">گزینه‌های خرید بیشتری را در سایر فروشگاه‌هایی که این محصول را می‌فروشند جستجو کنید.</translation>
 <translation id="3664782872746246217">کلیدواژه‌ها:</translation>
 <translation id="3670030362669914947">عدد</translation>
@@ -1869,7 +1866,6 @@
 <translation id="4112140312785995938">رفتن به عقب</translation>
 <translation id="4114007503059268298">‏می‌خواهید این کارت در «حساب Google» شما و این دستگاه ذخیره شود؟</translation>
 <translation id="4114146879518089587">رفتن به سایت</translation>
-<translation id="4115378294792113321">سرخابی</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">محدوده خط‌مشی پشتیبانی نمی‌شود.</translation>
@@ -3453,6 +3449,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="672853333773293432">با حساب وارد سیستم شد</translation>
 <translation id="6732087373923685049">دوربین</translation>
+<translation id="6736243959894955139">نشانی</translation>
 <translation id="6738516213925468394">داده‌ها با  <ph name="BEGIN_LINK" />گذرعبارت همگام‌سازی<ph name="END_LINK" /> شما در <ph name="TIME" /> رمز می‌شود. برای شروع همگام‌سازی، آن را وارد کنید.</translation>
 <translation id="6740851646645036700">به سقف مجاز کمک در نوشتن رسیده‌اید. بعداً دوباره امتحان کنید.</translation>
 <translation id="674375294223700098">خطای ناشناس گواهی سرور.</translation>

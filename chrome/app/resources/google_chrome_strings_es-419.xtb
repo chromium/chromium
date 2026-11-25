@@ -139,7 +139,6 @@
 <translation id="2307973900865360088">Mantener en el Dock</translation>
 <translation id="2309047409763057870">Como esta es una instalación secundaria de Google Chrome, no puede establecerse como tu navegador predeterminado.</translation>
 <translation id="2345992953227471816">Chrome detectó que las siguientes extensiones contienen software malicioso:</translation>
-<translation id="2350411688004301551">Cambia a Gemini Enterprise</translation>
 <translation id="2358140144860869442">Para obtener tu lista de lectura y más en todos tus dispositivos, accede a Chrome</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2403703063067034158">Error de inicio: Se está ejecutando otra instancia de configuración. Vuelve a intentarlo más tarde.</translation>
@@ -197,7 +196,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo Chrome mantiene la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Administrador de tareas</translation>
 <translation id="2888126860611144412">Acerca de Chrome</translation>
-<translation id="2898830646167954300">Vuelve a cambiar a tu asistente de Gemini no administrado</translation>
 <translation id="2915996080311180594">Reiniciar más tarde</translation>
 <translation id="2926952073016206995">Chrome necesita permiso de acceso a la cámara para este sitio.</translation>
 <translation id="2945997411976714835">Error de instalación: No se pudo iniciar el proceso del instalador.</translation>
@@ -418,7 +416,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="5271833978500241046">Úsalas junto con otras funciones de Gemini en Chrome</translation>
 <translation id="5320351714793324716">Si permites las cookies, Chrome puede usarlas cuando realice la precarga</translation>
 <translation id="5321325624576443340">Google Lens no está disponible. Vuelve a intentarlo más tarde.</translation>
-<translation id="5336664042114176802">Puedes cambiar al asistente de Gemini asociado originalmente con tu Cuenta de Google y que <ph name="DOMAIN" /> no administre. Las respuestas ya no se basarán en los archivos o servicios que <ph name="DOMAIN" /> administre y no se transferirá tu historial de chat. Es posible que no sea adecuado para el trabajo. Para cambiar, debes reiniciar Chrome.</translation>
 <translation id="5346389065299425353">Profundiza tu búsqueda agregando varias pestañas, archivos y herramientas</translation>
 <translation id="5353252989841766347">Exportar contraseñas desde Chrome</translation>
 <translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
@@ -535,7 +532,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="6438015621983209660">Extiende la Navegación segura mejorada con Chrome en tu teléfono</translation>
 <translation id="6442774133615368941">Compra, identifica y traduce lo que ves con la cámara en la app de Chrome para iOS</translation>
 <translation id="6446105560007692480">para buscar con Chrome o personalizar en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /></translation>
-<translation id="6447943657065463998">Este navegador administrado puede usar un asistente de Gemini que <ph name="DOMAIN" /> configure para el trabajo. Puede encontrar información y proporcionar respuestas basadas en los archivos y servicios aprobados de la organización. No se recomienda usarlo con un perfil personal. No se transferirá el historial de chat. Para cambiar, debes reiniciar Chrome.</translation>
 <translation id="6448835208126432197">Para seleccionar una parte de la pantalla en Gemini en Chrome, usa la combinación de teclas.</translation>
 <translation id="6473905796280459355">Ir a la página Acerca de Chrome</translation>
 <translation id="6481963882741794338">Vincula Chrome y otros servicios de Google para la personalización y otros fines</translation>
@@ -706,7 +702,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="8064965390968184078">1. Haz clic en <ph name="BUTTON_LABEL" /> a continuación.
 2. Haz clic en <ph name="BUTTON_2" /> en la configuración de Windows.
 3. Haz clic en <ph name="BUTTON_3" /> en la notificación de Windows para fijar Chrome a la barra de tareas y acceder rápidamente.</translation>
-<translation id="8066474819446975249">Reiniciar Chrome para cambiar</translation>
 <translation id="8074398340364918139">Para buscar una función o extensión específica de Chrome, escribe su atajo en la barra de direcciones, seguido de la tecla que seleccionaste</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
 <translation id="8086881907087796310">La instalación falló porque tu computadora no cumple con los requisitos mínimos de hardware.</translation>
