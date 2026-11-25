@@ -19,6 +19,7 @@ import {browserProxyFactory, MostVisitedPageHandlerRemote} from 'chrome://resour
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {AudioProcessorService} from 'chrome://resources/cr_components/search/audio_processor.service.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
+import type {SearchboxIconElement} from 'chrome://resources/cr_components/searchbox/searchbox_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {FreStage, KeywordType, SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -1790,52 +1791,30 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       });
 
   test('switches searchboxIcon between light and dark mode', async () => {
-    const originalMatchMedia = window.matchMedia;
-    const fakeMediaQuery = Object.assign(new EventTarget(), {
-      matches: false,
-      media: '(prefers-color-scheme: dark)',
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-    }) as unknown as MediaQueryList & {matches: boolean};
-    window.matchMedia = (query: string) =>
-        query === '(prefers-color-scheme: dark)' ?
-        fakeMediaQuery :
-        originalMatchMedia.call(window, query);
-
-    try {
-      const themedOmnibox =
-          document.createElement('omnibox-everywhere-omnibox');
-      document.body.appendChild(themedOmnibox);
-      themedOmnibox.searchEngineInfo = {
-        placeholderText: 'Search Google or type a URL',
-        iconPath:
-            '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
-        darkModeIconPath:
-            '//resources/cr_components/searchbox/icons/google_g_cr23.svg',
-      };
-      await microtasksFinished();
-
-      assertEquals(
+    omnibox.searchEngineInfo = {
+      placeholderText: 'Search Google or type a URL',
+      iconPath:
           '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
-          themedOmnibox.$.input.searchboxIcon);
-
-      fakeMediaQuery.matches = true;
-      fakeMediaQuery.dispatchEvent(new Event('change'));
-      await microtasksFinished();
-      assertEquals(
+      darkModeIconPath:
           '//resources/cr_components/searchbox/icons/google_g_cr23.svg',
-          themedOmnibox.$.input.searchboxIcon);
+    };
+    await microtasksFinished();
 
-      fakeMediaQuery.matches = false;
-      fakeMediaQuery.dispatchEvent(new Event('change'));
-      await microtasksFinished();
-      assertEquals(
-          '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
-          themedOmnibox.$.input.searchboxIcon);
-    } finally {
-      window.matchMedia = originalMatchMedia;
-    }
+    assertEquals(
+        '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+        omnibox.$.input.searchboxIcon);
+
+    omnibox.isDarkMode = true;
+    await microtasksFinished();
+    assertEquals(
+        '//resources/cr_components/searchbox/icons/google_g_cr23.svg',
+        omnibox.$.input.searchboxIcon);
+
+    omnibox.isDarkMode = false;
+    await microtasksFinished();
+    assertEquals(
+        '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+        omnibox.$.input.searchboxIcon);
   });
 
   suite('OverflowMenu', () => {
@@ -2821,8 +2800,9 @@ suite('OmniboxEverywhereAppTest', () => {
     const dialog =
         app.shadowRoot.querySelector<HTMLDialogElement>('#voiceSearchDialog');
     assertTrue(!!dialog);
-    const gIcon = app.shadowRoot.querySelector('#voiceSearchGIcon');
-    assertTrue(!!gIcon);
+    const voiceIcon =
+        app.shadowRoot.querySelector<SearchboxIconElement>('#voiceSearchIcon');
+    assertTrue(!!voiceIcon);
     const voiceSearch =
         app.shadowRoot.querySelector<ComposeboxVoiceSearchElement>(
             '#voiceSearch');
@@ -2840,6 +2820,125 @@ suite('OmniboxEverywhereAppTest', () => {
     assertEquals('4', app.style.getPropertyValue('--transcript-lines'));
     assertEquals(232, dialog.offsetHeight);
   });
+
+  test(
+      'voice search overlay icon follows search engine info and dark mode',
+      async () => {
+        const originalMatchMedia = window.matchMedia;
+        const mediaQuery = Object.assign(new EventTarget(), {
+          matches: false,
+          media: '(prefers-color-scheme: dark)',
+          onchange: null,
+          addListener: () => {},
+          removeListener: () => {},
+        }) as unknown as MediaQueryList &
+            {matches: boolean};
+        window.matchMedia = (query: string) =>
+            query === '(prefers-color-scheme: dark)' ?
+            mediaQuery :
+            originalMatchMedia.call(window, query);
+        try {
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          const themedApp = document.createElement('omnibox-everywhere-app');
+          document.body.appendChild(themedApp);
+          await microtasksFinished();
+
+          const searchbox =
+              themedApp.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+          searchbox.fire('open-voice-search');
+          await microtasksFinished();
+
+          const icon = themedApp.shadowRoot.querySelector<SearchboxIconElement>(
+              '#voiceSearchIcon')!;
+          assertTrue(!!icon);
+          assertTrue(icon.inSearchbox);
+          assertEquals(
+              '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+              icon.defaultIcon);
+          assertEquals(
+              '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+              searchbox.$.input.searchboxIcon);
+
+          mediaQuery.matches = true;
+          mediaQuery.dispatchEvent(new Event('change'));
+          await microtasksFinished();
+          assertEquals(
+              '//resources/cr_components/searchbox/icons/google_g_cr23.svg',
+              icon.defaultIcon);
+          assertEquals(
+              '//resources/cr_components/searchbox/icons/google_g_cr23.svg',
+              searchbox.$.input.searchboxIcon);
+
+          mediaQuery.matches = false;
+          mediaQuery.dispatchEvent(new Event('change'));
+          await microtasksFinished();
+          assertEquals(
+              '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+              icon.defaultIcon);
+          assertEquals(
+              '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+              searchbox.$.input.searchboxIcon);
+
+          const nonGoogleIcon =
+              'chrome://favicon2/?iconUrl=https%3A%2F%2Fexample.com';
+          testProxy.page.setSearchEngineInfo({
+            placeholderText: 'Search Example or type a URL',
+            iconPath: nonGoogleIcon,
+            darkModeIconPath: nonGoogleIcon,
+          });
+          await testProxy.page.$.flushForTesting();
+          await microtasksFinished();
+          assertEquals(nonGoogleIcon, icon.defaultIcon);
+
+          // Removing the DSE while dictating in searchbox mode closes the
+          // overlay since spoken queries have no default search engine.
+          testProxy.page.setSearchEngineInfo(null);
+          await testProxy.page.$.flushForTesting();
+          await microtasksFinished();
+          assertFalse(
+              !!themedApp.shadowRoot.querySelector('#voiceSearchDialog'));
+
+          // In composebox mode, voice search submits to AI Mode, so clearing
+          // the DSE keeps the overlay open and falls back to the search loupe.
+          testProxy.page.setSearchEngineInfo({
+            placeholderText: 'Search Example or type a URL',
+            iconPath: nonGoogleIcon,
+            darkModeIconPath: nonGoogleIcon,
+          });
+          await testProxy.page.$.flushForTesting();
+          await microtasksFinished();
+          searchbox.fire(
+              'open-composebox', {text: '', files: [], mode: 0, model: 0});
+          await microtasksFinished();
+          themedApp.shadowRoot.querySelector('omnibox-everywhere-composebox')!
+              .fire('open-voice-search');
+          await microtasksFinished();
+          const composeboxIcon =
+              themedApp.shadowRoot.querySelector<SearchboxIconElement>(
+                  '#voiceSearchIcon')!;
+          assertEquals(nonGoogleIcon, composeboxIcon.defaultIcon);
+
+          testProxy.page.setSearchEngineInfo(null);
+          await testProxy.page.$.flushForTesting();
+          await microtasksFinished();
+          assertTrue(
+              !!themedApp.shadowRoot.querySelector('#voiceSearchDialog'));
+          assertEquals(
+              '//resources/cr_components/searchbox/icons/search_cr23.svg',
+              composeboxIcon.defaultIcon);
+
+          // Closing composebox (e.g. when AI Mode becomes ineligible) also
+          // closes the voice search overlay so an AI Mode dictation does not
+          // carry over into searchbox mode.
+          testProxy.page.updateAimPopupEligibility(false);
+          await testProxy.page.$.flushForTesting();
+          await microtasksFinished();
+          assertFalse(
+              !!themedApp.shadowRoot.querySelector('#voiceSearchDialog'));
+        } finally {
+          window.matchMedia = originalMatchMedia;
+        }
+      });
 
   test(
       'clicking voice search button opens voice search dialog overlay and handles permission prompt',

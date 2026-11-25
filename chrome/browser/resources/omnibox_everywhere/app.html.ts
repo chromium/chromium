@@ -32,6 +32,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
         .inVoiceSearchMode="${this.showVoiceSearchOverlay_}"
         .contextManagementInComposeboxEnabled="${
             this.contextManagementInComposeboxEnabled_}"
+        .isDarkMode="${this.isDarkMode_}"
         .searchEngineInfo="${this.searchEngineInfo_}">
     </omnibox-everywhere-omnibox>
   `}
@@ -82,7 +83,9 @@ ${this.showVoiceSearchOverlay_ ? html`
       @click="${this.onVoiceSearchDialogClick_}">
     <div id="voiceSearchCardContainer">
       ${!this.hasVoiceSearchError_ ? html`
-        <div id="voiceSearchGIcon" aria-hidden="true"></div>
+        <cr-searchbox-icon id="voiceSearchIcon" in-searchbox
+            default-icon="${this.voiceSearchIcon_()}" aria-hidden="true">
+        </cr-searchbox-icon>
         <search-animated-glow id="voiceSearchGlow"
             .coloredTicTacVoiceAnimationEnabled="${true}"
             .isListening="${this.voiceSearchListening_}"

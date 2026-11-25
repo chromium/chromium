@@ -10,6 +10,7 @@ import '/strings.m.js';
 import '//resources/cr_components/composebox/composebox_voice_search.js';
 import '//resources/cr_components/most_visited/most_visited.js';
 import '//resources/cr_components/search/animated_glow.js';
+import '//resources/cr_components/searchbox/searchbox_icon.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 
@@ -34,6 +35,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {OmniboxEverywhereComposeboxElement} from './composebox.js';
 import type {ShowHotkeyDropdownDetail} from './fre_chin.js';
+import {getSearchEngineIconPath} from './omnibox.js';
 import type {OmniboxEverywhereOmniboxElement} from './omnibox.js';
 import {browserProxyFactory} from './omnibox_everywhere.mojom-webui.js';
 import type {ComposeboxInitialState} from './omnibox_everywhere.mojom-webui.js';
@@ -104,6 +106,7 @@ export class OmniboxEverywhereAppElement extends
       isComposeboxMode_: {type: Boolean},
       searchboxLayoutMode_: {type: String},
       searchEngineInfo_: {type: Object},
+      isDarkMode_: {type: Boolean},
       showVoiceSearchOverlay_: {
         type: Boolean,
         reflect: true,
@@ -167,6 +170,7 @@ export class OmniboxEverywhereAppElement extends
   // because the omnibox element is re-created on every mode switch.
   protected accessor searchEngineInfo_: SearchEngineInfo|null|undefined =
       getInitialSearchEngineInfo();
+  protected accessor isDarkMode_: boolean = false;
   protected accessor showVoiceSearchOverlay_: boolean = false;
   protected accessor hasVoiceSearchError_: boolean = false;
   protected accessor voiceSearchTranscript_: string = '';
@@ -206,6 +210,8 @@ export class OmniboxEverywhereAppElement extends
   // return the view back to the Searchbox instead of leaving an empty
   // Composebox open.
   private contextUploadOriginWasSearchbox_: boolean = false;
+  private darkModeMediaQuery_: MediaQueryList =
+      window.matchMedia('(prefers-color-scheme: dark)');
   private eventTracker_ = new EventTracker();
   private mostVisitedListenerId_: number|null = null;
   private searchboxListenerIds_: number[] = [];
@@ -222,6 +228,9 @@ export class OmniboxEverywhereAppElement extends
   override connectedCallback() {
     super.connectedCallback();
     ColorChangeUpdater.forDocument().refreshColorsCss();
+    this.updateDarkMode_();
+    this.eventTracker_.add(
+        this.darkModeMediaQuery_, 'change', () => this.updateDarkMode_());
     this.isActive_ = !this.isPersistentMode_ || document.hasFocus();
     this.eventTracker_.add(window, 'focus', this.onWindowFocus_.bind(this));
     this.eventTracker_.add(window, 'blur', this.onWindowBlur_.bind(this));
@@ -348,6 +357,10 @@ export class OmniboxEverywhereAppElement extends
         this.callbackRouter_.setSearchEngineInfo.addListener(
             (info: SearchEngineInfo|null) => {
               this.searchEngineInfo_ = info;
+              if (info === null && !this.isComposeboxMode_ &&
+                  this.showVoiceSearchOverlay_) {
+                this.onVoiceSearchOverlayClose_();
+              }
             }),
     );
 
@@ -631,6 +644,9 @@ export class OmniboxEverywhereAppElement extends
   protected async onCloseComposebox_() {
     this.isPendingContextUpload_ = false;
     this.contextUploadOriginWasSearchbox_ = false;
+    if (this.showVoiceSearchOverlay_) {
+      this.onVoiceSearchOverlayClose_();
+    }
     this.setIsComposebox_(false);
     await this.updateComplete;
     if (!this.isResting_()) {
@@ -829,6 +845,14 @@ export class OmniboxEverywhereAppElement extends
       return;
     }
     this.focusActiveInput_();
+  }
+
+  protected voiceSearchIcon_(): string {
+    return getSearchEngineIconPath(this.searchEngineInfo_, this.isDarkMode_);
+  }
+
+  private updateDarkMode_() {
+    this.isDarkMode_ = this.darkModeMediaQuery_.matches;
   }
 
   // TODO(b/540973063): Extract common voice search lifecycle handling into
