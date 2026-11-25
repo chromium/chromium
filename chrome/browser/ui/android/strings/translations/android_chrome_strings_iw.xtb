@@ -207,6 +207,7 @@
 <translation id="1807709131360304325">פתיחת חלון חדש</translation>
 <translation id="1812027881030482584">ל-<ph name="SITE_ETLD_PLUS_ONE" /> אין אפשרות להמשיך להשתמש ב-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1815975907734103433">‫<ph name="TAB_TITLE" />, כרטיסייה שהתוכן בה מוקלט</translation>
+<translation id="1817594121551034302">קיצור דרך בסרגל הכתובות</translation>
 <translation id="1819443852740954262">פתיחת כל החלונות בחלון אנונימי</translation>
 <translation id="1820408774134375111">גיליון תחתון של כניסה</translation>
 <translation id="1824902652744048041">לוחצים על מחיקת נתוני הגלישה</translation>
@@ -831,6 +832,7 @@
 <translation id="4283234489712362947">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית במצב "תמונה בתוך תמונה"</translation>
 <translation id="4285498937028063278">ביטול ההצמדה</translation>
 <translation id="4285846616383034558">‏קובצי cookie, מטמון ונתונים נוספים מאתרים</translation>
+<translation id="429016203314124112">‏מנוע החיפוש שבחרת ישמש כברירת מחדל ב-Chrome</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />להפעלת נעילת המסך בהגדרות Android<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">הטלפון שלך</translation>
 <translation id="4295640788982898778">‏התוספים שלך נשמרים בחשבון Google, אבל יכול להיות שיימחקו נתונים מהתוספים שנשמרו רק במכשיר הזה.</translation>
@@ -1047,6 +1049,7 @@
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{נבחר חלון <ph name="WINDOW_COUNT_ONE" />}one{נבחרו <ph name="WINDOW_COUNT_NORMAL" /> חלונות}two{נבחרו <ph name="WINDOW_COUNT_NORMAL" /> חלונות}other{נבחרו <ph name="WINDOW_COUNT_NORMAL" /> חלונות}}</translation>
 <translation id="5058506215037547387">תצוגה מקדימה של הדף</translation>
 <translation id="506254248375231072">אין כרטיסיות</translation>
+<translation id="5065494736868031814">בסרגל הכלים</translation>
 <translation id="5075939510584558547">שמירה ללא הצפנה</translation>
 <translation id="5078638979202084724">יצירת סימנייה לכל הכרטיסיות</translation>
 <translation id="5085038751173179818">‏צריך להיכנס לחשבון באתר הזה וב-Chrome כדי שהסימניות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
@@ -1262,6 +1265,7 @@
 <translation id="5992182727984874868">‏‫<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> Chrome הסיר את ההרשאות האלה כי לא נכנסת לאחרונה</translation>
 <translation id="5995726099713306770">להוריד שוב את הדף?</translation>
 <translation id="6000066717592683814">‏להמשיך להשתמש ב-Google</translation>
+<translation id="6000860861660592745">הבחירה נשמרה</translation>
 <translation id="6002122790816966947">המכשירים שלך</translation>
 <translation id="6011308810877101166">שיפור של ההצעות לחיפוש</translation>
 <translation id="6013305291643746595">בתהליך מיון לפי הפריט הישן ביותר</translation>
@@ -1288,6 +1292,7 @@
 <translation id="6095578583683628124">‏אם Google הוא גם מנוע החיפוש המוגדר אצלך כברירת מחדל, יוצגו לך הצעות משופרות ורלוונטיות מבחינת הקשר.</translation>
 <translation id="6104768972315313991">‏קוד QR שנוצר</translation>
 <translation id="610630277578876674">פתיחת קישורים בהודעות במהירות ועוד</translation>
+<translation id="6110067234345111822">‏בהתאם לחוק באזור שלך, עליך לבחור את מנוע החיפוש שישמש אותך ב-Chrome</translation>
 <translation id="6112702117600201073">רענון הדף מתבצע</translation>
 <translation id="612221930823678863">כתובת אתר עם <ph name="QUERY" /> במקום שאילתה</translation>
 <translation id="6122831415929794347">להשבית את 'גלישה בטוחה'?</translation>
@@ -1434,6 +1439,7 @@
 <translation id="6573096386450695060">אני רוצה לאפשר תמיד</translation>
 <translation id="657480975869429144">‏גרסה חדשה של Chrome זמינה להורדה</translation>
 <translation id="658099107946526506">כדי למנוע גישה לא רצויה, אפשר להגן על הגלישה הפרטית באמצעות קוד אימות</translation>
+<translation id="65829135876155327">תקופה</translation>
 <translation id="6583199322650523874">סימון הדף הנוכחי בסימנייה</translation>
 <translation id="6588043302623806746">‏שימוש ב-DNS מאובטח</translation>
 <translation id="6590471736817333463">חיסכון של עד 60% בשימוש בחבילת הגלישה</translation>
@@ -1454,6 +1460,7 @@
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929">פתיחה ב-<ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">אני רוצה לקבל התראות</translation>
+<translation id="6670742294143102726">כדי להוסיף כרטיסיות לחיפוש, צריך לבחור אחת או יותר</translation>
 <translation id="6671495933530132209">העתקת התמונה</translation>
 <translation id="6672697278890207089">הזן את משפט הסיסמה</translation>
 <translation id="6675622031235530028">‏כדי לצאת, לוחצים לחיצה ארוכה על Ctrl+Q</translation>
@@ -1585,6 +1592,7 @@
 <translation id="7119984597597798764">סגירה של <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">‏כניסה ל-Chrome</translation>
 <translation id="7130633106249192408">מחיקת נתוני הגלישה מהמכשיר הזה</translation>
+<translation id="7134511521562699550">בסרגל הכתובות</translation>
 <translation id="7136694880210472378">הגדרה כברירת מחדל</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{נבדקו הרשאות של אתר אחד}one{נבדקו ההרשאות של # אתרים}two{נבדקו ההרשאות של # אתרים}other{נבדקו ההרשאות של # אתרים}}</translation>
 <translation id="7138678301420049075">אחר</translation>
@@ -1617,6 +1625,7 @@
 <translation id="7196455519852483601">‏אפשר למחוק חלק מההיסטוריה, קובצי ה-Cookie, נתוני האתרים ונתונים נוספים. אפשר גם לבחור למחוק את הכול</translation>
 <translation id="7197682514647286393">מחיקה מהירה של נתוני הגלישה</translation>
 <translation id="719791532916917144">מקש קיצור</translation>
+<translation id="7198747540865146057">איזה מנוע חיפוש להגדיר כברירת מחדל?</translation>
 <translation id="7203150201908454328">מורחב</translation>
 <translation id="7207760545532569765">שחזור של <ph name="TAB_COUNT" /> כרטיסיות ככרטיסיות חדשות ברקע.</translation>
 <translation id="7217781228893594884">‏כרטיסיות פרטיות ננעלות כשסוגרים את Chrome</translation>
@@ -1834,6 +1843,7 @@
 <translation id="8036587585440959897">‏חלק מהתוספים יכולים להוסיף מנועי חיפוש ל-Chrome.</translation>
 <translation id="8037750541064988519">נותרו <ph name="DAYS" /> ימים</translation>
 <translation id="8037801708772278989">התבצעה בדיקה עכשיו</translation>
+<translation id="8038975372993801438">סינון לפי תקופה</translation>
 <translation id="804335162455518893">‏לא נמצא כרטיס SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) של מצב אנונימי}one{<ph name="TAB_COUNT_NORMAL" /> כרטיסיות של מצב אנונימי}two{<ph name="TAB_COUNT_NORMAL" /> כרטיסיות של מצב אנונימי}other{<ph name="TAB_COUNT_NORMAL" /> כרטיסיות של מצב אנונימי}}</translation>
 <translation id="8051695050440594747">‏‎<ph name="MEGABYTES" />MB זמינים</translation>
@@ -1929,6 +1939,7 @@
 <translation id="8368001212524806591">מעקב אחר המחיר</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{קבוצת כרטיסיות אחת (<ph name="TAB_GROUPS_ONE" />)}one{‫<ph name="TAB_GROUPS_MANY" /> קבוצות של כרטיסיות}two{‫<ph name="TAB_GROUPS_MANY" /> קבוצות של כרטיסיות}other{‫<ph name="TAB_GROUPS_MANY" /> קבוצות של כרטיסיות}}</translation>
 <translation id="8387617938027387193">אימות הזהות שלך</translation>
+<translation id="8392241619862061825">‏הצגת קיצור דרך ל-Gemini</translation>
 <translation id="8393700583063109961">שליחת הודעה</translation>
 <translation id="8398389123831319859">כדי לעבור למצב פרטי, לוחצים לחיצה כפולה ולוחצים לחיצה ארוכה</translation>
 <translation id="8401904657382223224">סינון לפי מארח</translation>
@@ -2010,6 +2021,7 @@
 <translation id="8639963783467694461">הגדרות מילוי אוטומטי</translation>
 <translation id="8642256427178803328">‏מפעילים את האפשרות "נעילת הכרטיסיות הפרטיות כשיוצאים מ-Chrome"</translation>
 <translation id="8644482734962137770">‏‫Gemini צריך הרשאה להשתמש ב-Chrome</translation>
+<translation id="8653883575875371543">‏הצגת Gemini בסרגל הכלים</translation>
 <translation id="8662474268934425487">כניסה אל <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">שם הקובץ כבר קיים</translation>
 <translation id="8676276370198826499">יש לך אפשרות להירשם לאתר <ph name="SITE_ETLD_PLUS_ONE" /> עם החשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
