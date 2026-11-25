@@ -273,7 +273,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
   private panelOpenState = PanelOpenState.CLOSED;
 
   private handler: WebClientHandlerRemote;
-  private isDestroyed = false;
 
   constructor(
       public webClient: GlicWebClient,
@@ -282,9 +281,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
         new WebClientHandlerRemote(),
         {prefix: 'WebClientHandler', hangOnDisconnect: true});
     this.handler.onConnectionError.addListener(() => {
-      if (this.isDestroyed) {
-        return;
-      }
       console.warn(`Mojo connection error in glic host`);
     });
     const receiver = this.handler.$.bindNewPipeAndPassReceiver();
@@ -334,22 +330,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
 
   getHandler(): WebClientHandlerRemote {
     return this.handler;
-  }
-
-  destroy() {
-    this.isDestroyed = true;
-    this.dataTransferActionsBlockedNoticesSubject.complete();
-    this.pinCandidates?.setObsolete();
-    this.actorClient.destroyActor();
-    this.skillsClient.destroySkills();
-    this.annotationClient.destroyAnnotation();
-    this.geicClient.destroy();
-    this.suggestionsClient.destroySuggestions();
-    this.experimentalTriggeringClient.destroy();
-    if (this.webClientReceiver) {
-      this.webClientReceiver.$.close();
-      this.webClientReceiver = undefined;
-    }
   }
 
   async webClientCreated(clientCapabilities: Set<ClientCapabilities>) {

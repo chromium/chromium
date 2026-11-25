@@ -42,17 +42,6 @@ export class GlicBrowserHostZeroStateSuggestions implements
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  destroySuggestions(): void {
-    if (this.handler) {
-      this.handler.$.close();
-      this.handler = undefined;
-    }
-    if (this.clientReceiver) {
-      this.clientReceiver.$.close();
-      this.clientReceiver = undefined;
-    }
-  }
-
   getZeroStateSuggestions?(options?: ZeroStateSuggestionsOptions):
       ObservableValue<ZeroStateSuggestionsV2> {
     options = options ?? {

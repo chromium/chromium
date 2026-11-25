@@ -32,14 +32,6 @@ export class GlicBrowserHostGeic implements GeicBrowserHost {
     this.handler = handler;
   }
 
-  destroy(): void {
-    if (this.handlerRemote) {
-      this.handlerRemote.$.close();
-      this.handlerRemote = undefined;
-    }
-    this.handler = undefined;
-  }
-
   async openSignInTab(options?: OpenSignInTabOptions):
       Promise<OpenSignInTabResult> {
     const mojoOptions = options ? {

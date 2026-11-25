@@ -34,7 +34,7 @@ const CONFIRMATION_RESPONSE_TIMEOUT_MS = 30 * 1000;
 export class GlicBrowserHostExperimentalTriggering implements
     ExperimentalTriggeringClientInterface,
     GlicExperimentalTriggeringBrowserHost {
-  // TODO(csharrison): Apply the same teardown and timeout handling used for
+  // TODO(csharrison): Apply the same timeout handling used for
   // `confirmationResponsesSubject` here, so that an upload which never
   // completes can't leave the browser's reply callback pending.
   private readonly uploadEncryptedScreenshotRequestsSubject =
@@ -44,14 +44,6 @@ export class GlicBrowserHostExperimentalTriggering implements
   private webClient?: WebClient;
   private clientReceiver?: ExperimentalTriggeringClientReceiver;
   private enableStructuredYieldMetadata: boolean|null = null;
-  private readonly updateHandlers =
-      new Map<ExperimentalTriggeringUpdatesHandlerRemote, Subscriber>();
-  // Settles in-flight `submitExperimentalTriggeringConfirmationResponse()`
-  // calls. Tracked so that each call is guaranteed to settle exactly once,
-  // even if the web client never invokes onComplete(), or if this host is
-  // destroyed while a response is in flight.
-  private readonly pendingConfirmationResponses =
-      new Set<(applied: boolean) => void>();
 
   initialize(webClient: WebClient, handler: WebClientHandlerRemote) {
     this.webClient = webClient;
@@ -59,28 +51,6 @@ export class GlicBrowserHostExperimentalTriggering implements
     this.clientReceiver = new ExperimentalTriggeringClientReceiver(this);
     handler.createExperimentalTriggeringClient(
         this.clientReceiver.$.bindNewPipeAndPassRemote());
-  }
-
-  destroy(): void {
-    if (this.clientReceiver) {
-      this.clientReceiver.$.close();
-      this.clientReceiver = undefined;
-    }
-    for (const [handler, subscriber] of this.updateHandlers) {
-      handler.$.close();
-      subscriber.unsubscribe();
-    }
-    this.updateHandlers.clear();
-    // Settle any in-flight confirmation responses as unapplied, and complete
-    // the subject so that subscribers are notified and cleaned up rather than
-    // waiting on requests that can no longer be answered.
-    for (const settle of Array.from(this.pendingConfirmationResponses)) {
-      settle(false);
-    }
-    this.pendingConfirmationResponses.clear();
-    if (!this.confirmationResponsesSubject.isStopped()) {
-      this.confirmationResponsesSubject.complete();
-    }
   }
 
   async getExperimentalTriggeringUpdates(
@@ -105,7 +75,6 @@ export class GlicBrowserHostExperimentalTriggering implements
         return;
       }
       completed = true;
-      this.updateHandlers.delete(handler);
       subscriber?.unsubscribe();
       subscriber = undefined;
     };
@@ -141,9 +110,6 @@ export class GlicBrowserHostExperimentalTriggering implements
       },
     });
 
-    if (!completed) {
-      this.updateHandlers.set(handler, subscriber);
-    }
     return {success: true};
   }
 
@@ -159,23 +125,23 @@ export class GlicBrowserHostExperimentalTriggering implements
 
   async submitExperimentalTriggeringConfirmationResponse(response: number[]):
       Promise<{accepted: boolean}> {
-    if (this.confirmationResponsesSubject.isStopped() ||
-        !this.confirmationResponsesSubject.hasActiveSubscription()) {
+    if (!this.confirmationResponsesSubject.hasActiveSubscription()) {
       return {accepted: false};
     }
     const buffer = new Uint8Array(response).buffer;
     const {promise, resolve} = Promise.withResolvers<boolean>();
     // Resolves the reply on whichever happens first: the client calling
-    // onComplete(), the timeout below, or destroy(). Later calls are no-ops,
-    // so the client cannot resolve the same request twice.
+    // onComplete() or the timeout below. Later calls are no-ops, so the client
+    // cannot resolve the same request twice.
+    let settled = false;
     const settle = (applied: boolean) => {
-      if (!this.pendingConfirmationResponses.delete(settle)) {
+      if (settled) {
         return;
       }
+      settled = true;
       clearTimeout(timeoutId);
       resolve(applied);
     };
-    this.pendingConfirmationResponses.add(settle);
     // Only ever read from `settle`, which cannot run until after the request
     // is emitted below.
     const timeoutId = setTimeout(() => {

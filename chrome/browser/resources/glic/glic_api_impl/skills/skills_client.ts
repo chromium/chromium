@@ -137,17 +137,6 @@ export class GlicBrowserHostSkills implements SkillsClientInterface,
         this.skillsClientReceiver.$.bindNewPipeAndPassRemote());
   }
 
-  destroySkills(): void {
-    if (this.skillsHandler) {
-      this.skillsHandler.$.close();
-      this.skillsHandler = undefined;
-    }
-    if (this.skillsClientReceiver) {
-      this.skillsClientReceiver.$.close();
-      this.skillsClientReceiver = undefined;
-    }
-  }
-
   getSkillsHandler(): SkillsHandlerRemote {
     assert(this.skillsHandler);
     return this.skillsHandler;

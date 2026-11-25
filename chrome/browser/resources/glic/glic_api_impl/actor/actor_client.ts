@@ -163,17 +163,6 @@ export class GlicBrowserHostActor implements ActorClientInterface,
     }
   }
 
-  destroyActor(): void {
-    if (this.actorHandler) {
-      this.actorHandler.$.close();
-      this.actorHandler = undefined;
-    }
-    if (this.actorClientReceiver) {
-      this.actorClientReceiver.$.close();
-      this.actorClientReceiver = undefined;
-    }
-  }
-
   setActorTaskState(taskId: number, state: ActorTaskState): void {
     const stateObs =
         this.getActorTaskState?.(taskId) as ObservableValueImpl<ActorTaskState>|

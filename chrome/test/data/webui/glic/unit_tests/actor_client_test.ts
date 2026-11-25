@@ -27,7 +27,6 @@ suite('GlicBrowserHostActorPerformActions', () => {
   });
 
   teardown(() => {
-    actor.destroyActor();
     router.$.close();
   });
 

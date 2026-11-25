@@ -32,16 +32,6 @@ export class GlicBrowserHostAnnotation implements Partial<GlicBrowserHost> {
     this.handler = handler;
   }
 
-  destroyAnnotation(): void {
-    if (this.annotationHandler) {
-      this.annotationHandler.$.close();
-      this.annotationHandler = undefined;
-    }
-    this.handler = undefined;
-    this.scrollTo = undefined;
-    this.dropScrollToHighlight = undefined;
-  }
-
   async scrollTo?(params: ScrollToParams): Promise<void> {
     function getMojoSelector(): ScrollToSelectorMojo {
       const {selector} = params;
