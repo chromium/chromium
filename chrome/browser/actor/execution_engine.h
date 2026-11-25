@@ -28,6 +28,7 @@
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/buildflags.h"
 #include "components/actor/core/aggregated_journal.h"
@@ -80,10 +81,8 @@ namespace actor {
 class ActorSurface;
 class ActorTask;
 class AutofillSelectionDialogEventHandler;
-struct InterceptedJavaScriptDialog;
+class ExecutionEngineDispatcher;
 class ToolRequest;
-class ToolResult;
-struct ToolResultWithLatencyInfo;
 namespace ui {
 class UiEventDispatcher;
 }
@@ -382,10 +381,6 @@ class ExecutionEngine : public ToolDelegate,
 
   void SetState(State state);
 
-  // Starts the next action by calling SafetyChecksForNextAction(). Must only be
-  // called if there is a next action.
-  void KickOffNextAction();
-
   // Performs safety checks for next action. This is asynchronous.
   void SafetyChecksForNextAction();
 
@@ -409,22 +404,22 @@ class ExecutionEngine : public ToolDelegate,
   void FinishToolInvokeWithDialogs(
       ToolResult tool_result,
       std::vector<InterceptedJavaScriptDialog> javascript_dialogs);
-  void FinishedUiPostInvoke(mojom::ActionResultPtr result);
+  void FinishedUiPostInvoke(ToolResultWithLatencyInfo execute_result,
+                            mojom::ActionResultPtr ui_result);
 
-  void CompleteActions(mojom::ActionResultPtr result,
-                       std::optional<size_t> action_index);
-  void CompleteActions(
+  void ProcessNextFromDispatcher();
+  // Starts the next action by calling SafetyChecksForNextAction(). Must only be
+  // called if there is a next action.
+  void StartExecutingNewRequest();
+  void ReportResultAndStartNext(
       ToolResult tool_result,
-      std::optional<size_t> action_index,
-      std::vector<InterceptedJavaScriptDialog> javascript_dialogs);
+      std::vector<InterceptedJavaScriptDialog> javascript_dialogs = {});
+  void CompleteActCall(std::vector<ToolResultWithLatencyInfo> results);
+  void RetryCompleteActCallWhenObservationSettled();
 
   // Returns the next action that will be started when ExecuteNextAction is
   // reached.
   const ToolRequest& GetNextAction() const;
-
-  // Maps an index in `action_sequence_` to an index in `action_results_` by
-  // counting how many original (non-follow-up) actions preceded it.
-  size_t GetResultIndexForAction(size_t action_index) const;
 
   // Processes the affiliation service results for the given `source_origin`.
   // and saves it into `affiliated_origin_map_`.
@@ -433,9 +428,8 @@ class ExecutionEngine : public ToolDelegate,
                               const std::vector<affiliations::Facet>& results,
                               bool success);
 
-  // Returns the index / action that was last executed and is still in progress.
-  // It is an error to call this when an action is not in progress.
-  size_t InProgressActionIndex() const;
+  // Returns the action that was last executed and is still in progress. It is
+  // an error to call this when an action is not in progress.
   const ToolRequest& GetInProgressAction() const;
 
   // Returns the surface `request` validates against, looked up in this task's
@@ -547,12 +541,14 @@ class ExecutionEngine : public ToolDelegate,
 
   base::flat_map<url::Origin, url::Origin> affiliated_origin_map_;
 
-  std::vector<std::unique_ptr<ToolRequest>> action_sequence_;
+  std::unique_ptr<ExecutionEngineDispatcher> dispatcher_;
+  std::unique_ptr<ToolRequest> executing_request_;
+  // Only set after `CompleteActCall` is invoked; needed because async
+  // observation deferral there can require re-calling `CompleteActCall` on
+  // completion or from cancellation.
+  std::optional<std::vector<ToolResultWithLatencyInfo>> completed_results_;
   ActCallback act_callback_;
 
-  // The index of the next action that will be started when ExecuteNextAction is
-  // reached.
-  size_t next_action_index_ = 0;
   base::TimeTicks action_start_time_;
 
   // The raw navigation ID of the page before the tool was invoked.
@@ -562,13 +558,10 @@ class ExecutionEngine : public ToolDelegate,
   // completes.
   std::optional<mojom::ActionResultCode> external_tool_failure_reason_;
 
-  // True while `CompleteActions()` is draining a pending deferred observation.
+  // True while `CompleteActCall()` is draining a pending deferred observation.
   // Prevents `TabsCanOpenNewWebContents()` and `FailCurrentTool()` from
   // treating a tool as still in progress.
   bool is_settling_pending_observation_ = false;
-
-  // The results for actions so far.
-  std::vector<ToolResultWithLatencyInfo> action_results_;
 
   // Manages the registration lifetime of this engine's OriginGatingChecker with
   // the OriginGatingService. Automatically unregisters the checker upon
