@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -157,6 +158,28 @@ void RTCEncodedAudioUnderlyingSource::OnFrameFromSource(
     realm_thread_type_lease_.emplace(base::ThreadType::kAudioProcessing);
   }
   GetController()->Enqueue(encoded_frame);
+}
+
+CrossThreadRepeatingFunction<
+    void(std::unique_ptr<webrtc::TransformableAudioFrameInterface>)>
+RTCEncodedAudioUnderlyingSource::CreateTransformerCallback() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  return CrossThreadBindRepeating(
+      [](scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+         const CrossThreadHandle<RTCEncodedAudioUnderlyingSource>& source,
+         std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame) {
+        if (!task_runner->BelongsToCurrentThread()) {
+          DVLOG(1) << "Dropped frame posted to incorrect task runner. This can "
+                      "happen during transfer.";
+          return;
+        }
+        auto* raw_source =
+            MakeUnwrappingCrossThreadHandle(source).GetOnCreationThread();
+        if (raw_source) {
+          raw_source->OnFrameFromSource(std::move(frame));
+        }
+      },
+      task_runner_, MakeCrossThreadHandle(this));
 }
 
 void RTCEncodedAudioUnderlyingSource::Close() {

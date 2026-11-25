@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -222,6 +223,28 @@ void RTCEncodedVideoUnderlyingSource::ClearPendingKeyFrameRequests() {
     request->resolver->Detach();
   }
   pending_keyframe_requests_.clear();
+}
+
+CrossThreadRepeatingFunction<
+    void(std::unique_ptr<webrtc::TransformableVideoFrameInterface>)>
+RTCEncodedVideoUnderlyingSource::CreateTransformerCallback() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  return CrossThreadBindRepeating(
+      [](scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+         const CrossThreadHandle<RTCEncodedVideoUnderlyingSource>& source,
+         std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame) {
+        if (!task_runner->BelongsToCurrentThread()) {
+          DVLOG(1) << "Dropped frame posted to incorrect task runner. This can "
+                      "happen during transfer.";
+          return;
+        }
+        auto* raw_source =
+            MakeUnwrappingCrossThreadHandle(source).GetOnCreationThread();
+        if (raw_source) {
+          raw_source->OnFrameFromSource(std::move(frame));
+        }
+      },
+      task_runner_, MakeCrossThreadHandle(this));
 }
 
 void RTCEncodedVideoUnderlyingSource::Close() {

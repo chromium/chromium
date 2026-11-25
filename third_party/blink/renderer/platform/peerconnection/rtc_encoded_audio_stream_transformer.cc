@@ -106,24 +106,37 @@ void RTCEncodedAudioStreamTransformer::Broker::
 
 void RTCEncodedAudioStreamTransformer::Broker::TransformFrameOnSourceTaskRunner(
     std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame) {
-  base::AutoLock locker(transformer_lock_);
-  if (transformer_) {
-    transformer_->TransformFrame(std::move(frame));
+  InternalTransformerCallback callback;
+  {
+    base::AutoLock locker(transformer_lock_);
+    if (transformer_) {
+      callback = transformer_->GetTransformerCallback();
+    }
+  }
+  if (callback) {
+    callback.Run(std::move(frame));
   }
 }
 
 void RTCEncodedAudioStreamTransformer::Broker::SetTransformerCallback(
     TransformerCallback callback) {
-  base::AutoLock locker(transformer_lock_);
-  if (transformer_) {
-    transformer_->SetTransformerCallback(std::move(callback));
+  InternalTransformerCallback old_callback;
+  {
+    base::AutoLock locker(transformer_lock_);
+    if (transformer_) {
+      old_callback = transformer_->SetTransformerCallbackInternal(
+          ConvertToBaseRepeatingCallback(std::move(callback)));
+    }
   }
 }
 
 void RTCEncodedAudioStreamTransformer::Broker::ResetTransformerCallback() {
-  base::AutoLock locker(transformer_lock_);
-  if (transformer_) {
-    transformer_->ResetTransformerCallback();
+  InternalTransformerCallback old_callback;
+  {
+    base::AutoLock locker(transformer_lock_);
+    if (transformer_) {
+      old_callback = transformer_->TakeTransformerCallback();
+    }
   }
 }
 
@@ -188,13 +201,33 @@ void RTCEncodedAudioStreamTransformer::UnregisterTransformedFrameCallback() {
   send_frame_to_sink_cb_ = nullptr;
 }
 
+RTCEncodedAudioStreamTransformer::InternalTransformerCallback
+RTCEncodedAudioStreamTransformer::GetTransformerCallback() {
+  base::AutoLock locker(source_lock_);
+  return transformer_callback_;
+}
+
+RTCEncodedAudioStreamTransformer::InternalTransformerCallback
+RTCEncodedAudioStreamTransformer::SetTransformerCallbackInternal(
+    InternalTransformerCallback callback) {
+  base::AutoLock locker(source_lock_);
+  return std::exchange(transformer_callback_, std::move(callback));
+}
+
+RTCEncodedAudioStreamTransformer::InternalTransformerCallback
+RTCEncodedAudioStreamTransformer::TakeTransformerCallback() {
+  base::AutoLock locker(source_lock_);
+  return std::exchange(transformer_callback_, InternalTransformerCallback());
+}
+
 void RTCEncodedAudioStreamTransformer::TransformFrame(
     std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame) {
-  base::AutoLock locker(source_lock_);
+  InternalTransformerCallback callback = GetTransformerCallback();
   // If no transformer callback has been set, drop the frame.
-  if (!transformer_callback_)
+  if (!callback) {
     return;
-  transformer_callback_.Run(std::move(frame));
+  }
+  callback.Run(std::move(frame));
 }
 
 void RTCEncodedAudioStreamTransformer::SendFrameToSink(
@@ -222,13 +255,12 @@ void RTCEncodedAudioStreamTransformer::StopShortCircuiting() {
 
 void RTCEncodedAudioStreamTransformer::SetTransformerCallback(
     TransformerCallback callback) {
-  base::AutoLock locker(source_lock_);
-  transformer_callback_ = std::move(callback);
+  SetTransformerCallbackInternal(
+      ConvertToBaseRepeatingCallback(std::move(callback)));
 }
 
 void RTCEncodedAudioStreamTransformer::ResetTransformerCallback() {
-  base::AutoLock locker(source_lock_);
-  transformer_callback_.Reset();
+  TakeTransformerCallback();
 }
 
 bool RTCEncodedAudioStreamTransformer::HasTransformerCallback() {

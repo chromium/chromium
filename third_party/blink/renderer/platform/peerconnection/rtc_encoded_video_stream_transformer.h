@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 #include <utility>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -114,9 +114,19 @@ class PLATFORM_EXPORT RTCEncodedVideoStreamTransformer {
       std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame);
 
   // Set a callback to be invoked on every untransformed frame. Is threadsafe.
+  // If non-null, any frames buffered before the callback was set are replayed
+  // synchronously. If null, buffered frames are left untouched.
+  // The callback runs with no transformer locks held (so it may re-enter the
+  // transformer/broker), may run concurrently on multiple threads (e.g. during
+  // a task runner change), and may still be invoked after
+  // ResetTransformerCallback() or transformer destruction returns by a thread
+  // that already copied it. Callers must ensure the callback is safe to run on
+  // any thread without dereferencing thread-bound objects on the wrong thread.
   void SetTransformerCallback(TransformerCallback);
 
-  // Removes the callback. Is threadsafe.
+  // Removes the callback. Is threadsafe. Prevents future frames from acquiring
+  // the callback, but does not wait for any in-flight invocation that already
+  // copied the callback to finish.
   void ResetTransformerCallback();
 
   // Returns true if a callback has been set with SetTransformerCallback(),
@@ -147,7 +157,35 @@ class PLATFORM_EXPORT RTCEncodedVideoStreamTransformer {
   void StopShortCircuiting();
 
  private:
-  void LogMessage(const std::string& message);
+  using InternalTransformerCallback = base::RepeatingCallback<void(
+      std::unique_ptr<webrtc::TransformableVideoFrameInterface>)>;
+
+  // Replays `buffered_frames` through `callback` if `callback` is non-null.
+  // Must be called with no transformer locks held.
+  static void ReplayBufferedFrames(
+      const InternalTransformerCallback& callback,
+      Vector<std::unique_ptr<webrtc::TransformableVideoFrameInterface>>
+          buffered_frames);
+
+  // Returns a copy of `transformer_callback_` if one is set, leaving `frame`
+  // untouched for the caller to invoke outside any locks. Otherwise returns a
+  // null callback after either buffering `frame` (if below kMaxBufferedFrames),
+  // leaving `frame` unconsumed for the caller to drop (if the buffer is full),
+  // or forwarding `frame` directly to the sink (if short-circuiting).
+  InternalTransformerCallback PrepareTransformFrame(
+      std::unique_ptr<webrtc::TransformableVideoFrameInterface>& frame);
+
+  // Replaces `transformer_callback_` and, when the new callback is non-null,
+  // drains `buffered_frames_`. Returns the previous callback (to be destroyed
+  // outside locks) and any drained buffered frames (to be replayed outside
+  // locks).
+  std::pair<InternalTransformerCallback,
+            Vector<std::unique_ptr<webrtc::TransformableVideoFrameInterface>>>
+  SetTransformerCallbackInternal(InternalTransformerCallback callback);
+
+  // Clears `transformer_callback_` and returns the previous callback so it can
+  // be destroyed outside locks.
+  InternalTransformerCallback TakeTransformerCallback();
 
   const scoped_refptr<Broker> broker_;
   const webrtc::scoped_refptr<webrtc::FrameTransformerInterface> delegate_;
@@ -163,7 +201,7 @@ class PLATFORM_EXPORT RTCEncodedVideoStreamTransformer {
 
   // source_lock_ must be taken *before* sink_lock_ to avoid deadlock.
   base::Lock source_lock_;
-  TransformerCallback transformer_callback_ GUARDED_BY(source_lock_);
+  InternalTransformerCallback transformer_callback_ GUARDED_BY(source_lock_);
 };
 
 }  // namespace blink

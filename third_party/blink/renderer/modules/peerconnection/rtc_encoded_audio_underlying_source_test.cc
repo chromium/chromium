@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -231,6 +233,67 @@ TEST_F(RTCEncodedAudioUnderlyingSourceTest,
   EXPECT_CALL(disconnect_callback_, Run()).Times(1);
   EXPECT_EQ(optimizer.PerformInProcessOptimization(v8_scope.GetScriptState()),
             nullptr);
+}
+
+TEST_F(RTCEncodedAudioUnderlyingSourceTest,
+       TransformerCallbackDropsFrameOnWrongThread) {
+  auto background_runner = base::ThreadPool::CreateSingleThreadTaskRunner({});
+
+  CrossThreadRepeatingFunction<void(
+      std::unique_ptr<webrtc::TransformableAudioFrameInterface>)>
+      callback;
+  {
+    V8TestingScope v8_scope;
+    ScriptState* script_state = v8_scope.GetScriptState();
+    auto* source = CreateSource(script_state);
+    auto* stream = ReadableStream::CreateWithCountQueueingStrategy(script_state,
+                                                                   source, 0);
+    callback = source->CreateTransformerCallback();
+
+    NonThrowableExceptionState exception_state;
+    auto* reader =
+        stream->GetDefaultReaderForTesting(script_state, exception_state);
+    ScriptPromiseTester read_tester(
+        script_state, reader->read(script_state, exception_state));
+
+    // Invoking on a different thread must drop the frame without touching the
+    // source (unwrapping the CrossThreadHandle on a non-creation thread would
+    // hit a CHECK).
+    base::RunLoop wrong_thread_loop;
+    background_runner->PostTaskAndReply(
+        FROM_HERE,
+        base::BindOnce(
+            [](decltype(callback)* cb) {
+              cb->Run(std::make_unique<
+                      NiceMock<webrtc::MockTransformableAudioFrame>>());
+            },
+            base::Unretained(&callback)),
+        wrong_thread_loop.QuitClosure());
+    wrong_thread_loop.Run();
+    EXPECT_FALSE(read_tester.IsFulfilled());
+
+    // Invoking on the creation thread delivers the frame normally.
+    callback.Run(
+        std::make_unique<NiceMock<webrtc::MockTransformableAudioFrame>>());
+    read_tester.WaitUntilSettled();
+    EXPECT_TRUE(read_tester.IsFulfilled());
+
+    EXPECT_CALL(disconnect_callback_, Run());
+  }
+
+  // Invoking on a different thread after the context has been destroyed must
+  // still safely drop the frame without dereferencing the source.
+  base::RunLoop after_destroy_loop;
+  background_runner->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          [](decltype(callback)* cb) {
+            cb->Run(std::make_unique<
+                    NiceMock<webrtc::MockTransformableAudioFrame>>());
+          },
+          base::Unretained(&callback)),
+      after_destroy_loop.QuitClosure());
+  after_destroy_loop.Run();
 }
 
 }  // namespace blink

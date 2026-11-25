@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -101,9 +102,17 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
       std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame);
 
   // Set a callback to be invoked on every untransformed frame. Is threadsafe.
+  // The callback runs with no transformer locks held (so it may re-enter the
+  // transformer/broker), may run concurrently on multiple threads (e.g. during
+  // a task runner change), and may still be invoked after
+  // ResetTransformerCallback() or transformer destruction returns by a thread
+  // that already copied it. Callers must ensure the callback is safe to run on
+  // any thread without dereferencing thread-bound objects on the wrong thread.
   void SetTransformerCallback(TransformerCallback);
 
-  // Removes the callback. Is threadsafe.
+  // Removes the callback. Is threadsafe. Prevents future frames from acquiring
+  // the callback, but does not wait for any in-flight invocation that already
+  // copied the callback to finish.
   void ResetTransformerCallback();
 
   // Returns true if a callback has been set with SetTransformerCallback(),
@@ -130,13 +139,29 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
   void StopShortCircuiting();
 
  private:
+  using InternalTransformerCallback = base::RepeatingCallback<void(
+      std::unique_ptr<webrtc::TransformableAudioFrameInterface>)>;
+
+  // Returns a copy of `transformer_callback_` so callers can invoke it outside
+  // any locks.
+  InternalTransformerCallback GetTransformerCallback();
+
+  // Replaces `transformer_callback_` and returns the previous callback so it
+  // can be destroyed outside locks.
+  InternalTransformerCallback SetTransformerCallbackInternal(
+      InternalTransformerCallback callback);
+
+  // Clears `transformer_callback_` and returns the previous callback so it can
+  // be destroyed outside locks.
+  InternalTransformerCallback TakeTransformerCallback();
+
   const scoped_refptr<Broker> broker_;
   const webrtc::scoped_refptr<webrtc::FrameTransformerInterface> delegate_;
   mutable base::Lock sink_lock_;
   webrtc::scoped_refptr<webrtc::TransformedFrameCallback> send_frame_to_sink_cb_
       GUARDED_BY(sink_lock_);
   base::Lock source_lock_;
-  TransformerCallback transformer_callback_ GUARDED_BY(source_lock_);
+  InternalTransformerCallback transformer_callback_ GUARDED_BY(source_lock_);
   bool short_circuit_ GUARDED_BY(sink_lock_) = false;
 };
 

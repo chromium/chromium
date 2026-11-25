@@ -57,6 +57,14 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
 
   void OnFrameFromSource(
       std::unique_ptr<webrtc::TransformableAudioFrameInterface>);
+
+  // Creates a transformer callback that checks whether it is running on this
+  // source's task runner before touching the source object. Safe to invoke on
+  // any thread even if the source's heap has terminated.
+  CrossThreadRepeatingFunction<
+      void(std::unique_ptr<webrtc::TransformableAudioFrameInterface>)>
+  CreateTransformerCallback();
+
   void Close();
 
   // Called on any thread to indicate the source is being transferred to an

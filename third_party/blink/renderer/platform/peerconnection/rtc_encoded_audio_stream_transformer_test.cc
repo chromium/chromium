@@ -146,4 +146,95 @@ TEST_F(RTCEncodedAudioStreamTransformerTest,
       webrtc_callback_2);
 }
 
+TEST_F(RTCEncodedAudioStreamTransformerTest,
+       ReentrantSendFrameToSinkDuringTransformFrame) {
+  scoped_refptr<RTCEncodedAudioStreamTransformer::Broker> broker =
+      encoded_audio_stream_transformer_.GetBroker();
+  broker->SetTransformerCallback(CrossThreadBindRepeating(
+      [](scoped_refptr<RTCEncodedAudioStreamTransformer::Broker> broker,
+         std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame) {
+        broker->SendFrameToSink(std::move(frame));
+      },
+      broker));
+
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame);
+  broker->TransformFrameOnSourceTaskRunner(nullptr);
+}
+
+TEST_F(RTCEncodedAudioStreamTransformerTest,
+       TransformerDestroyedDuringTransformFrame) {
+  auto transformer =
+      std::make_unique<RTCEncodedAudioStreamTransformer>(main_task_runner_);
+  scoped_refptr<RTCEncodedAudioStreamTransformer::Broker> broker =
+      transformer->GetBroker();
+  bool callback_invoked = false;
+  broker->SetTransformerCallback(CrossThreadBindRepeating(
+      [](std::unique_ptr<RTCEncodedAudioStreamTransformer>* transformer,
+         scoped_refptr<RTCEncodedAudioStreamTransformer::Broker> broker,
+         bool* callback_invoked,
+         std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame) {
+        *callback_invoked = true;
+        transformer->reset();
+        broker->SendFrameToSink(std::move(frame));
+      },
+      CrossThreadUnretained(&transformer), broker,
+      CrossThreadUnretained(&callback_invoked)));
+
+  broker->TransformFrameOnSourceTaskRunner(nullptr);
+  EXPECT_TRUE(callback_invoked);
+  EXPECT_EQ(transformer, nullptr);
+}
+
+TEST_F(RTCEncodedAudioStreamTransformerTest,
+       ReentrantResetTransformerCallbackDuringTransformFrame) {
+  scoped_refptr<RTCEncodedAudioStreamTransformer::Broker> broker =
+      encoded_audio_stream_transformer_.GetBroker();
+  int callback_count = 0;
+  broker->SetTransformerCallback(CrossThreadBindRepeating(
+      [](scoped_refptr<RTCEncodedAudioStreamTransformer::Broker> broker,
+         int* callback_count,
+         std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame) {
+        ++(*callback_count);
+        broker->ResetTransformerCallback();
+      },
+      broker, CrossThreadUnretained(&callback_count)));
+
+  broker->TransformFrameOnSourceTaskRunner(nullptr);
+  EXPECT_EQ(callback_count, 1);
+  EXPECT_FALSE(encoded_audio_stream_transformer_.HasTransformerCallback());
+
+  // Subsequent frames must not invoke the reset callback.
+  broker->TransformFrameOnSourceTaskRunner(nullptr);
+  EXPECT_EQ(callback_count, 1);
+}
+
+TEST_F(RTCEncodedAudioStreamTransformerTest,
+       ReentrantSetTransformerCallbackDuringTransformFrame) {
+  scoped_refptr<RTCEncodedAudioStreamTransformer::Broker> broker =
+      encoded_audio_stream_transformer_.GetBroker();
+  int first_callback_count = 0;
+  int second_callback_count = 0;
+  broker->SetTransformerCallback(CrossThreadBindRepeating(
+      [](scoped_refptr<RTCEncodedAudioStreamTransformer::Broker> broker,
+         int* first_callback_count, int* second_callback_count,
+         std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame) {
+        ++(*first_callback_count);
+        broker->SetTransformerCallback(CrossThreadBindRepeating(
+            [](int* second_callback_count,
+               std::unique_ptr<webrtc::TransformableAudioFrameInterface>
+                   frame) { ++(*second_callback_count); },
+            CrossThreadUnretained(second_callback_count)));
+      },
+      broker, CrossThreadUnretained(&first_callback_count),
+      CrossThreadUnretained(&second_callback_count)));
+
+  broker->TransformFrameOnSourceTaskRunner(nullptr);
+  EXPECT_EQ(first_callback_count, 1);
+  EXPECT_EQ(second_callback_count, 0);
+
+  broker->TransformFrameOnSourceTaskRunner(nullptr);
+  EXPECT_EQ(first_callback_count, 1);
+  EXPECT_EQ(second_callback_count, 1);
+}
+
 }  // namespace blink

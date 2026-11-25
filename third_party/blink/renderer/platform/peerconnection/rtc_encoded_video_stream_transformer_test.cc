@@ -384,4 +384,164 @@ TEST_P(RTCEncodedVideoStreamTransformerTest, WorkerOutlivesDelegate) {
   std::move(metronome_callback)();
 }
 
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       ReentrantSendFrameToSinkDuringTransformFrame) {
+  scoped_refptr<RTCEncodedVideoStreamTransformer::Broker> broker =
+      encoded_video_stream_transformer_.GetBroker();
+  broker->SetTransformerCallback(CrossThreadBindRepeating(
+      [](scoped_refptr<RTCEncodedVideoStreamTransformer::Broker> broker,
+         std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame) {
+        broker->SendFrameToSink(std::move(frame));
+      },
+      broker));
+
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame);
+  broker->TransformFrameOnSourceTaskRunner(CreateMockFrame());
+}
+
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       TransformerDestroyedDuringTransformFrame) {
+  auto transformer = std::make_unique<RTCEncodedVideoStreamTransformer>(
+      main_task_runner_, nullptr);
+  scoped_refptr<RTCEncodedVideoStreamTransformer::Broker> broker =
+      transformer->GetBroker();
+  bool callback_invoked = false;
+  broker->SetTransformerCallback(CrossThreadBindRepeating(
+      [](std::unique_ptr<RTCEncodedVideoStreamTransformer>* transformer,
+         scoped_refptr<RTCEncodedVideoStreamTransformer::Broker> broker,
+         bool* callback_invoked,
+         std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame) {
+        *callback_invoked = true;
+        transformer->reset();
+        broker->SendFrameToSink(std::move(frame));
+      },
+      CrossThreadUnretained(&transformer), broker,
+      CrossThreadUnretained(&callback_invoked)));
+
+  broker->TransformFrameOnSourceTaskRunner(CreateMockFrame());
+  EXPECT_TRUE(callback_invoked);
+  EXPECT_EQ(transformer, nullptr);
+}
+
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       ReentrantSendFrameToSinkDuringSetTransformerCallback) {
+  scoped_refptr<RTCEncodedVideoStreamTransformer::Broker> broker =
+      encoded_video_stream_transformer_.GetBroker();
+
+  // Buffer frames before setting a transform callback.
+  const size_t transform_count = 3;
+  for (size_t i = 0; i < transform_count; ++i) {
+    broker->TransformFrameOnSourceTaskRunner(CreateMockFrame());
+  }
+
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame).Times(transform_count);
+  broker->SetTransformerCallback(CrossThreadBindRepeating(
+      [](scoped_refptr<RTCEncodedVideoStreamTransformer::Broker> broker,
+         std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame) {
+        broker->SendFrameToSink(std::move(frame));
+      },
+      broker));
+}
+
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       TransformerDestroyedDuringSetTransformerCallback) {
+  auto transformer = std::make_unique<RTCEncodedVideoStreamTransformer>(
+      main_task_runner_, nullptr);
+  scoped_refptr<RTCEncodedVideoStreamTransformer::Broker> broker =
+      transformer->GetBroker();
+
+  // Buffer frames before setting a transform callback.
+  broker->TransformFrameOnSourceTaskRunner(CreateMockFrame());
+  broker->TransformFrameOnSourceTaskRunner(CreateMockFrame());
+
+  int callback_count = 0;
+  broker->SetTransformerCallback(CrossThreadBindRepeating(
+      [](std::unique_ptr<RTCEncodedVideoStreamTransformer>* transformer,
+         scoped_refptr<RTCEncodedVideoStreamTransformer::Broker> broker,
+         int* callback_count,
+         std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame) {
+        ++(*callback_count);
+        transformer->reset();
+        broker->SendFrameToSink(std::move(frame));
+      },
+      CrossThreadUnretained(&transformer), broker,
+      CrossThreadUnretained(&callback_count)));
+
+  EXPECT_EQ(callback_count, 2);
+  EXPECT_EQ(transformer, nullptr);
+}
+
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       ReentrantResetTransformerCallbackDuringTransformFrame) {
+  scoped_refptr<RTCEncodedVideoStreamTransformer::Broker> broker =
+      encoded_video_stream_transformer_.GetBroker();
+  int callback_count = 0;
+  broker->SetTransformerCallback(CrossThreadBindRepeating(
+      [](scoped_refptr<RTCEncodedVideoStreamTransformer::Broker> broker,
+         int* callback_count,
+         std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame) {
+        ++(*callback_count);
+        broker->ResetTransformerCallback();
+      },
+      broker, CrossThreadUnretained(&callback_count)));
+
+  broker->TransformFrameOnSourceTaskRunner(CreateMockFrame());
+  EXPECT_EQ(callback_count, 1);
+  EXPECT_FALSE(encoded_video_stream_transformer_.HasTransformerCallback());
+
+  // Subsequent frames must not invoke the reset callback.
+  broker->TransformFrameOnSourceTaskRunner(CreateMockFrame());
+  EXPECT_EQ(callback_count, 1);
+}
+
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       ReentrantSetTransformerCallbackDuringTransformFrame) {
+  scoped_refptr<RTCEncodedVideoStreamTransformer::Broker> broker =
+      encoded_video_stream_transformer_.GetBroker();
+  int first_callback_count = 0;
+  int second_callback_count = 0;
+  broker->SetTransformerCallback(CrossThreadBindRepeating(
+      [](scoped_refptr<RTCEncodedVideoStreamTransformer::Broker> broker,
+         int* first_callback_count, int* second_callback_count,
+         std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame) {
+        ++(*first_callback_count);
+        broker->SetTransformerCallback(CrossThreadBindRepeating(
+            [](int* second_callback_count,
+               std::unique_ptr<webrtc::TransformableVideoFrameInterface>
+                   frame) { ++(*second_callback_count); },
+            CrossThreadUnretained(second_callback_count)));
+      },
+      broker, CrossThreadUnretained(&first_callback_count),
+      CrossThreadUnretained(&second_callback_count)));
+
+  broker->TransformFrameOnSourceTaskRunner(CreateMockFrame());
+  EXPECT_EQ(first_callback_count, 1);
+  EXPECT_EQ(second_callback_count, 0);
+
+  broker->TransformFrameOnSourceTaskRunner(CreateMockFrame());
+  EXPECT_EQ(first_callback_count, 1);
+  EXPECT_EQ(second_callback_count, 1);
+}
+
+TEST_P(RTCEncodedVideoStreamTransformerTest,
+       NullSetTransformerCallbackPreservesBufferedFrames) {
+  scoped_refptr<RTCEncodedVideoStreamTransformer::Broker> broker =
+      encoded_video_stream_transformer_.GetBroker();
+
+  const size_t transform_count = 3;
+  for (size_t i = 0; i < transform_count; ++i) {
+    broker->TransformFrameOnSourceTaskRunner(CreateMockFrame());
+  }
+
+  // Setting a null callback must not discard buffered frames.
+  broker->SetTransformerCallback(
+      RTCEncodedVideoStreamTransformer::TransformerCallback());
+
+  EXPECT_CALL(mock_transformer_callback_holder_, OnEncodedFrame)
+      .Times(transform_count);
+  broker->SetTransformerCallback(CrossThreadBindRepeating(
+      &MockTransformerCallbackHolder::OnEncodedFrame,
+      CrossThreadUnretained(&mock_transformer_callback_holder_)));
+}
+
 }  // namespace blink

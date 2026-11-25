@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 
-#include <inttypes.h>
-
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -42,6 +40,11 @@ using webrtc::Metronome;
 // 60fps) should be a reasonable upperbound to JS contention slowing down
 // shortcircuiting/setting transforms.
 const size_t kMaxBufferedFrames = 60;
+
+void LogMessage(const std::string& message) {
+  blink::WebRtcLogMessage(
+      base::StringPrintf("EncodedVideoStreamTransformer::%s", message.c_str()));
+}
 
 // This class handles the metronome-related tasks for the transformer delegate.
 // It is ref-counted and decoupled from the delegate's lifecycle to avoid
@@ -243,24 +246,49 @@ void RTCEncodedVideoStreamTransformer::Broker::
 
 void RTCEncodedVideoStreamTransformer::Broker::TransformFrameOnSourceTaskRunner(
     std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame) {
-  base::AutoLock locker(transformer_lock_);
-  if (transformer_) {
-    transformer_->TransformFrame(std::move(frame));
+  InternalTransformerCallback callback;
+  {
+    base::AutoLock locker(transformer_lock_);
+    if (transformer_) {
+      callback = transformer_->PrepareTransformFrame(frame);
+    }
+  }
+  if (callback) {
+    callback.Run(std::move(frame));
   }
 }
 
 void RTCEncodedVideoStreamTransformer::Broker::SetTransformerCallback(
     TransformerCallback callback) {
-  base::AutoLock locker(transformer_lock_);
-  if (transformer_) {
-    transformer_->SetTransformerCallback(std::move(callback));
+  InternalTransformerCallback base_callback =
+      ConvertToBaseRepeatingCallback(std::move(callback));
+  InternalTransformerCallback old_callback;
+  Vector<std::unique_ptr<webrtc::TransformableVideoFrameInterface>>
+      buffered_frames;
+  bool has_transformer = false;
+  {
+    base::AutoLock locker(transformer_lock_);
+    if (transformer_) {
+      has_transformer = true;
+      auto [prev_callback, frames] =
+          transformer_->SetTransformerCallbackInternal(base_callback);
+      old_callback = std::move(prev_callback);
+      buffered_frames = std::move(frames);
+    }
+  }
+  old_callback.Reset();
+  if (has_transformer) {
+    ReplayBufferedFrames(base_callback, std::move(buffered_frames));
   }
 }
 
 void RTCEncodedVideoStreamTransformer::Broker::ResetTransformerCallback() {
-  base::AutoLock locker(transformer_lock_);
-  if (transformer_) {
-    transformer_->ResetTransformerCallback();
+  InternalTransformerCallback old_callback;
+  {
+    base::AutoLock locker(transformer_lock_);
+    if (transformer_) {
+      old_callback = transformer_->TakeTransformerCallback();
+    }
   }
 }
 
@@ -341,36 +369,45 @@ void RTCEncodedVideoStreamTransformer::UnregisterTransformedFrameSinkCallback(
   }
 }
 
+RTCEncodedVideoStreamTransformer::InternalTransformerCallback
+RTCEncodedVideoStreamTransformer::PrepareTransformFrame(
+    std::unique_ptr<webrtc::TransformableVideoFrameInterface>& frame) {
+  {
+    base::AutoLock locker(source_lock_);
+    if (transformer_callback_) {
+      return transformer_callback_;
+    }
+    base::AutoLock sink_locker(sink_lock_);
+    if (!short_circuit_) {
+      // Still waiting to see if we'll get a transformer_callback_ or will
+      // end up short_circuit_ing, so buffer the frames.
+      if (buffered_frames_.size() < kMaxBufferedFrames) {
+        buffered_frames_.push_back(std::move(frame));
+      } else if ((dropped_frames_count_++ % 100) == 0) {
+        LogMessage(base::StringPrintf(
+            "TransformFrame reached kMaxBufferedFrames, dropped %d frames.",
+            dropped_frames_count_));
+      }
+      return {};
+    }
+  }
+  // Already started short circuiting - frame must have been in-flight.
+  // Just forward straight back. This may land after some later
+  // short-circuited frames but that should be fine - it's just like they
+  // arrived on the network out of order.
+  LogMessage(
+      "TransformFrame received frame after starting shortcircuiting. Sending "
+      "straight back.");
+  SendFrameToSink(std::move(frame));
+  return {};
+}
+
 void RTCEncodedVideoStreamTransformer::TransformFrame(
     std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame) {
-  base::AutoLock locker(source_lock_);
-  if (!transformer_callback_) {
-    {
-      base::AutoLock sink_locker(sink_lock_);
-      if (!short_circuit_) {
-        // Still waiting to see if we'll get a transformer_callback_ or will
-        // end up short_circuit_ing, so buffer the frames.
-        if (buffered_frames_.size() < kMaxBufferedFrames) {
-          buffered_frames_.push_back(std::move(frame));
-        } else if ((dropped_frames_count_++ % 100) == 0) {
-          LogMessage(base::StringPrintf(
-              "TransformFrame reached kMaxBufferedFrames, dropped %d frames.",
-              dropped_frames_count_));
-        }
-        return;
-      }
-    }
-    // Already started short circuiting - frame must have been in-flight.
-    // Just forward straight back. This may land after some later
-    // short-circuited frames but that should be fine - it's just like they
-    // arrived on the network out of order.
-    LogMessage(
-        "TransformFrame received frame after starting shortcircuiting. Sending "
-        "straight back.");
-    SendFrameToSink(std::move(frame));
-    return;
+  InternalTransformerCallback callback = PrepareTransformFrame(frame);
+  if (callback) {
+    callback.Run(std::move(frame));
   }
-  transformer_callback_.Run(std::move(frame));
 }
 
 void RTCEncodedVideoStreamTransformer::SendFrameToSink(
@@ -426,34 +463,66 @@ void RTCEncodedVideoStreamTransformer::StopShortCircuiting() {
   }
 }
 
-void RTCEncodedVideoStreamTransformer::SetTransformerCallback(
-    TransformerCallback callback) {
-  base::AutoLock locker(source_lock_);
-  transformer_callback_ = std::move(callback);
-
-  // Drain the frames which arrived before we knew if there would be
-  // a transform or we should just shortcircuit straight through.
-  Vector<std::unique_ptr<webrtc::TransformableVideoFrameInterface>>
-      buffered_frames;
-  {
-    base::AutoLock sink_locker(sink_lock_);
-    // Swap buffered_frames_ with a local variable, to allow releasing
-    // sink_lock_ before invoking transformer_callback_, in case it
-    // synchronously calls SendFrameToSink(). We've already set
-    // transformer_callback_, so no more frames will be added to the buffer.
-    std::swap(buffered_frames_, buffered_frames);
+// static
+void RTCEncodedVideoStreamTransformer::ReplayBufferedFrames(
+    const InternalTransformerCallback& callback,
+    Vector<std::unique_ptr<webrtc::TransformableVideoFrameInterface>>
+        buffered_frames) {
+  if (!callback) {
+    return;
   }
   LogMessage(
       base::StringPrintf("SetTransformerCallback replaying %d buffered frames",
                          buffered_frames.size()));
   for (auto& buffered_frame : buffered_frames) {
-    transformer_callback_.Run(std::move(buffered_frame));
+    callback.Run(std::move(buffered_frame));
   }
 }
 
-void RTCEncodedVideoStreamTransformer::ResetTransformerCallback() {
+std::pair<RTCEncodedVideoStreamTransformer::InternalTransformerCallback,
+          Vector<std::unique_ptr<webrtc::TransformableVideoFrameInterface>>>
+RTCEncodedVideoStreamTransformer::SetTransformerCallbackInternal(
+    InternalTransformerCallback callback) {
+  InternalTransformerCallback old_callback;
+  Vector<std::unique_ptr<webrtc::TransformableVideoFrameInterface>>
+      buffered_frames;
+  {
+    base::AutoLock locker(source_lock_);
+    old_callback = std::exchange(transformer_callback_, std::move(callback));
+
+    if (transformer_callback_) {
+      // Drain the frames which arrived before we knew if there would be
+      // a transform or we should just shortcircuit straight through.
+      base::AutoLock sink_locker(sink_lock_);
+      // Swap buffered_frames_ with a local variable, to allow releasing
+      // sink_lock_ and source_lock_ before invoking the callback, in case it
+      // synchronously re-enters the transformer (e.g. calling
+      // SendFrameToSink()). We've already set transformer_callback_, so no
+      // more frames will be added to the buffer.
+      std::swap(buffered_frames_, buffered_frames);
+    }
+  }
+  return {std::move(old_callback), std::move(buffered_frames)};
+}
+
+RTCEncodedVideoStreamTransformer::InternalTransformerCallback
+RTCEncodedVideoStreamTransformer::TakeTransformerCallback() {
   base::AutoLock locker(source_lock_);
-  transformer_callback_.Reset();
+  return std::exchange(transformer_callback_, InternalTransformerCallback());
+}
+
+void RTCEncodedVideoStreamTransformer::SetTransformerCallback(
+    TransformerCallback callback) {
+  InternalTransformerCallback base_callback =
+      ConvertToBaseRepeatingCallback(std::move(callback));
+  auto [old_callback, buffered_frames] =
+      SetTransformerCallbackInternal(base_callback);
+  old_callback.Reset();
+  ReplayBufferedFrames(base_callback, std::move(buffered_frames));
+}
+
+void RTCEncodedVideoStreamTransformer::ResetTransformerCallback() {
+  TakeTransformerCallback();
 }
 
 bool RTCEncodedVideoStreamTransformer::HasTransformerCallback() {
@@ -485,12 +554,6 @@ void RTCEncodedVideoStreamTransformer::SetSourceTaskRunner(
 scoped_refptr<RTCEncodedVideoStreamTransformer::Broker>
 RTCEncodedVideoStreamTransformer::GetBroker() {
   return broker_;
-}
-
-void RTCEncodedVideoStreamTransformer::LogMessage(const std::string& message) {
-  blink::WebRtcLogMessage(base::StringPrintf(
-      "EncodedVideoStreamTransformer::%s [this=0x%" PRIXPTR "]",
-      message.c_str(), reinterpret_cast<uintptr_t>(this)));
 }
 
 }  // namespace blink

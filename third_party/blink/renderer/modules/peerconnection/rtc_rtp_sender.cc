@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender.h"
 
-#include <inttypes.h>
-
 #include <memory>
 #include <optional>
 #include <string>
@@ -1232,14 +1230,17 @@ void RTCRtpSender::SetAudioUnderlyingSource(
     // no reason to continue.
     return;
   }
+  TransformerCallback callback =
+      new_underlying_source->CreateTransformerCallback();
   {
     base::AutoLock locker(audio_underlying_source_lock_);
     audio_from_encoder_underlying_source_->OnSourceTransferStarted();
     audio_from_encoder_underlying_source_ = new_underlying_source;
-    encoded_audio_transformer_->SetTransformerCallback(CrossThreadBindRepeating(
-        &RTCEncodedAudioUnderlyingSource::OnFrameFromSource,
-        audio_from_encoder_underlying_source_));
   }
+  // Safe outside `audio_underlying_source_lock_`: transfer runs at most once,
+  // ContextDestroyed() does not touch the transformer, and the broker has its
+  // own lock.
+  encoded_audio_transformer_->SetTransformerCallback(std::move(callback));
 
   encoded_audio_transformer_->SetSourceTaskRunner(
       std::move(new_source_task_runner));
@@ -1264,6 +1265,7 @@ RTCInsertableStreams* RTCRtpSender::CreateEncodedAudioStreams(
 
   encoded_streams_ = RTCInsertableStreams::Create();
 
+  TransformerCallback callback;
   {
     base::AutoLock locker(audio_underlying_source_lock_);
     DCHECK(!audio_from_encoder_underlying_source_);
@@ -1292,11 +1294,10 @@ RTCInsertableStreams* RTCRtpSender::CreateEncodedAudioStreams(
                 std::move(set_underlying_source),
                 std::move(disconnect_callback)));
     encoded_streams_->setReadable(readable_stream);
-
-    encoded_audio_transformer_->SetTransformerCallback(CrossThreadBindRepeating(
-        &RTCEncodedAudioUnderlyingSource::OnFrameFromSource,
-        audio_from_encoder_underlying_source_));
+    callback =
+        audio_from_encoder_underlying_source_->CreateTransformerCallback();
   }
+  encoded_audio_transformer_->SetTransformerCallback(std::move(callback));
 
   WritableStream* writable_stream;
   {
@@ -1341,14 +1342,17 @@ void RTCRtpSender::SetVideoUnderlyingSource(
     // no reason to continue.
     return;
   }
+  RTCEncodedVideoStreamTransformer::TransformerCallback callback =
+      new_underlying_source->CreateTransformerCallback();
   {
     base::AutoLock locker(video_underlying_source_lock_);
     video_from_encoder_underlying_source_->OnSourceTransferStarted();
     video_from_encoder_underlying_source_ = new_underlying_source;
-    encoded_video_transformer_->SetTransformerCallback(CrossThreadBindRepeating(
-        &RTCEncodedVideoUnderlyingSource::OnFrameFromSource,
-        video_from_encoder_underlying_source_));
   }
+  // Safe outside `video_underlying_source_lock_`: transfer runs at most once,
+  // ContextDestroyed() does not touch the transformer, and the broker has its
+  // own lock.
+  encoded_video_transformer_->SetTransformerCallback(std::move(callback));
 
   encoded_video_transformer_->SetSourceTaskRunner(
       std::move(new_source_task_runner));
@@ -1433,6 +1437,7 @@ RTCInsertableStreams* RTCRtpSender::CreateEncodedVideoStreams(
 
   encoded_streams_ = RTCInsertableStreams::Create();
 
+  RTCEncodedVideoStreamTransformer::TransformerCallback callback;
   {
     base::AutoLock locker(video_underlying_source_lock_);
     DCHECK(!video_from_encoder_underlying_source_);
@@ -1461,11 +1466,10 @@ RTCInsertableStreams* RTCRtpSender::CreateEncodedVideoStreams(
                 std::move(set_underlying_source),
                 std::move(disconnect_callback)));
     encoded_streams_->setReadable(readable_stream);
-
-    encoded_video_transformer_->SetTransformerCallback(CrossThreadBindRepeating(
-        &RTCEncodedVideoUnderlyingSource::OnFrameFromSource,
-        video_from_encoder_underlying_source_));
+    callback =
+        video_from_encoder_underlying_source_->CreateTransformerCallback();
   }
+  encoded_video_transformer_->SetTransformerCallback(std::move(callback));
 
   WritableStream* writable_stream;
   {
@@ -1653,9 +1657,7 @@ void RTCRtpSender::GenerateKeyFrame(
 }
 
 void RTCRtpSender::LogMessage(const std::string& message) {
-  blink::WebRtcLogMessage(
-      base::StringPrintf("RtpSndr::%s [this=0x%" PRIXPTR "]", message.c_str(),
-                         reinterpret_cast<uintptr_t>(this)));
+  blink::WebRtcLogMessage(base::StringPrintf("RtpSndr::%s", message.c_str()));
 }
 
 }  // namespace blink

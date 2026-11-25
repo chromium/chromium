@@ -76,6 +76,14 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSource
 
   void OnFrameFromSource(
       std::unique_ptr<webrtc::TransformableVideoFrameInterface>);
+
+  // Creates a transformer callback that checks whether it is running on this
+  // source's task runner before touching the source object. Safe to invoke on
+  // any thread even if the source's heap has terminated.
+  CrossThreadRepeatingFunction<
+      void(std::unique_ptr<webrtc::TransformableVideoFrameInterface>)>
+  CreateTransformerCallback();
+
   void Close();
   void AddPendingKeyFrameRequest(Vector<String> rids,
                                  ScriptPromiseResolver<IDLUndefined>* resolver);
