@@ -92,3 +92,55 @@ multi_builder_test(async (t, builder, otherBuilder) => {
   assert_throws_js(
       TypeError, () => builder.gatherElements(input, indicesFromOtherBuilder));
 }, '[gatherElements] Throw if indices is from another builder');
+
+validateOperandRankOutOfRange('gatherElements', 'input', (builder, input) => {
+  const indices = builder.input('indices', {
+    dataType: 'int32',
+    shape: Array(input.shape.length).fill(kExampleDimSize)
+  });
+  return builder.gatherElements(input, indices);
+});
+
+validateOperandRankOutOfRange(
+    'gatherElements', 'indices', (builder, indices) => {
+      // Per
+      // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-gatherelements,
+      // indices's rank must equal input's rank, so input is built with the
+      // same (out-of-range) rank as indices to isolate the indices rank
+      // violation.
+      const input = builder.input('input', {
+        dataType: 'float32',
+        shape: Array(indices.shape.length).fill(kExampleDimSize)
+      });
+      return builder.gatherElements(input, indices);
+    });
+
+// Cartesian iteration over (input rank, indices rank) pairs allowed by
+// opSupportLimits. gatherElements requires indices.rank == input.rank, so
+// only the diagonal is a valid combination. Uses uniform [kExampleDimSize]
+// dims; all dims of `input` and `indices` match so no per-axis size mismatch.
+promise_test(async t => {
+  const opLimits = context.opSupportLimits().gatherElements;
+  if (!opLimits)
+    return;
+  const {min: inputMin, max: inputMax} = opLimits.input.rankRange;
+  const {min: indicesMin, max: indicesMax} = opLimits.indices.rankRange;
+  const globalRankMax = getGlobalRankMax();
+  const inputDataTypeInfo = pickSupportedDataTypeInfo(opLimits.input);
+  const indicesDataTypeInfo = pickSupportedDataTypeInfo(opLimits.indices);
+  if (!inputDataTypeInfo || !indicesDataTypeInfo)
+    return;
+  const rankMin = Math.max(inputMin, indicesMin);
+  const rankMax = Math.min(inputMax, indicesMax);
+  for (let rank = rankMin; rank <= rankMax; rank++) {
+    const builder = new MLGraphBuilder(context);
+    const input = buildInputOperand(builder, 'input', inputDataTypeInfo,
+                                    Array(rank).fill(kExampleDimSize));
+    const indices = buildInputOperand(builder, 'indices', indicesDataTypeInfo,
+                                      Array(rank).fill(kExampleDimSize));
+    const output = builder.gatherElements(input, indices);
+    assert_true(
+        output instanceof MLOperand,
+        `(input rank ${rank}, indices rank ${rank}) should be accepted`);
+  }
+}, '[gatherElements] accept every (input rank, indices rank) pair allowed by opSupportLimits');

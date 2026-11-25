@@ -118,3 +118,51 @@ promise_test(async t => {
   assert_throws_with_label(
       () => builder.gather(input, indices, options), regrexp);
 }, '[gather] throw if the output tensor byte length exceeds limit');
+
+validateOperandRankOutOfRange('gather', 'input', (builder, input) => {
+  const indices =
+      builder.input('indices', {dataType: 'int32', shape: [kExampleDimSize]});
+  return builder.gather(input, indices);
+});
+
+validateOperandRankOutOfRange('gather', 'indices', (builder, indices) => {
+  const input =
+      builder.input('input', {dataType: 'float32', shape: [kExampleDimSize]});
+  return builder.gather(input, indices);
+});
+
+// Cartesian iteration over (input rank, indices rank) pairs allowed by
+// opSupportLimits. Uses uniform [kExampleDimSize] dims; skips pairs whose
+// resulting output rank (= input.rank + indices.rank - 1, with default
+// axis = 0) would exceed the output rankRange max.
+promise_test(async t => {
+  const opLimits = context.opSupportLimits().gather;
+  if (!opLimits)
+    return;
+  const {min: inputMin, max: inputMax} = opLimits.input.rankRange;
+  const {min: indicesMin, max: indicesMax} = opLimits.indices.rankRange;
+  const inputDataTypeInfo = pickSupportedDataTypeInfo(opLimits.input);
+  const indicesDataTypeInfo = pickSupportedDataTypeInfo(opLimits.indices);
+  if (!inputDataTypeInfo || !indicesDataTypeInfo)
+    return;
+  const {max: outputRankMax} = opLimits.output.rankRange;
+  for (let inputRank = inputMin; inputRank <= inputMax; inputRank++) {
+    for (let indicesRank = indicesMin; indicesRank <= indicesMax;
+         indicesRank++) {
+      // With the default axis = 0, output rank = input rank - 1 + indices
+      // rank. Skip pairs whose output rank would exceed the global max.
+      if (inputRank - 1 + indicesRank > outputRankMax)
+        continue;
+      const builder = new MLGraphBuilder(context);
+      const input = buildInputOperand(builder, 'input', inputDataTypeInfo,
+                                      Array(inputRank).fill(kExampleDimSize));
+      const indices =
+          buildInputOperand(builder, 'indices', indicesDataTypeInfo,
+                            Array(indicesRank).fill(kExampleDimSize));
+      const output = builder.gather(input, indices);
+      assert_true(output instanceof MLOperand,
+                  `(input rank ${inputRank}, indices rank ${
+                      indicesRank}) should be accepted`);
+    }
+  }
+}, '[gather] accept every (input rank, indices rank) pair allowed by opSupportLimits');
