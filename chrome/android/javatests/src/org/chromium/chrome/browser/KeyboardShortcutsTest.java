@@ -4,8 +4,16 @@
 
 package org.chromium.chrome.browser;
 
+import static android.view.KeyEvent.KEYCODE_EQUALS;
+import static android.view.KeyEvent.KEYCODE_I;
+import static android.view.KeyEvent.KEYCODE_TAB;
+import static android.view.KeyEvent.META_ALT_ON;
+import static android.view.KeyEvent.META_CTRL_ON;
+import static android.view.KeyEvent.META_SHIFT_ON;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyBoolean;
@@ -17,15 +25,19 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.SystemClock;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.KeyboardShortcutInfo;
 
+import androidx.annotation.StringRes;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,8 +61,11 @@ import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.util.KeyEventUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -89,6 +104,11 @@ public class KeyboardShortcutsTest {
 
         FeedbackPolicyManager.setInstanceForTesting(mFeedbackPolicyManager);
         when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(true);
+    }
+
+    @After
+    public void tearDown() {
+        VerticalTabUtils.resetSharedPrefsForTesting();
     }
 
     @Test
@@ -642,6 +662,82 @@ public class KeyboardShortcutsTest {
                         /* isCurrentTabVisible= */ true));
         verify(mMenuOrKeyboardActionController, times(1))
                 .onMenuOrKeyboardAction(eq(R.id.dev_tools_inspect), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(UiAndroidFeatures.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS)
+    public void testCreateShortcutGroup_UnifiedShortcutsEnabled() {
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        Context baseContext = ApplicationProvider.getApplicationContext();
+        Configuration config = new Configuration(baseContext.getResources().getConfiguration());
+        config.smallestScreenWidthDp = 600;
+        Context ctx = baseContext.createConfigurationContext(config);
+        VerticalTabUtils.setVerticalTabsEnabled(true);
+        VerticalTabUtils.setIsVerticalTabsEligibleForTesting(false);
+        List<KeyboardShortcutGroup> groups = KeyboardShortcuts.createShortcutGroup(ctx);
+        List<String> groupLabels = new ArrayList<>(groups.size());
+        for (KeyboardShortcutGroup group : groups) {
+            groupLabels.add(group.getLabel().toString());
+        }
+        assertEquals(
+                List.of(
+                        ctx.getString(R.string.keyboard_shortcut_tab_group_header),
+                        ctx.getString(R.string.keyboard_shortcut_tab_navigation_group_header),
+                        ctx.getString(R.string.keyboard_shortcut_chrome_feature_group_header),
+                        ctx.getString(R.string.keyboard_shortcut_webpage_group_header),
+                        ctx.getString(R.string.keyboard_shortcut_developer_group_header)),
+                groupLabels);
+        int ctrlShift = META_CTRL_ON | META_SHIFT_ON;
+        assertNull(
+                findShortcut(
+                        groups.get(0), R.string.keyboard_shortcut_toggle_vertical_tabs_collapse));
+        assertShortcut(
+                groups.get(1), R.string.keyboard_shortcut_next_tab, KEYCODE_TAB, META_CTRL_ON);
+        assertShortcut(
+                groups.get(2),
+                R.string.keyboard_shortcut_toggle_bookmark_bar,
+                KeyEvent.KEYCODE_B,
+                ctrlShift);
+        assertShortcut(
+                groups.get(2),
+                R.string.keyboard_shortcut_scroll_to_top,
+                KeyEvent.KEYCODE_DPAD_UP,
+                META_CTRL_ON | META_ALT_ON);
+        assertShortcut(
+                groups.get(3), R.string.keyboard_shortcut_zoom_in, KEYCODE_EQUALS, META_CTRL_ON);
+        assertShortcut(
+                groups.get(4), R.string.keyboard_shortcut_developer_tools, KEYCODE_I, ctrlShift);
+        VerticalTabUtils.setIsVerticalTabsEligibleForTesting(true);
+        KeyboardShortcutGroup tabGroup = KeyboardShortcuts.createShortcutGroup(ctx).get(0);
+        assertShortcut(
+                tabGroup,
+                R.string.keyboard_shortcut_toggle_vertical_tabs_collapse,
+                KeyEvent.KEYCODE_L,
+                ctrlShift);
+    }
+
+    private static void assertShortcut(
+            KeyboardShortcutGroup group,
+            @StringRes int labelResId,
+            int expectedKeyCode,
+            int expectedModifiers) {
+        KeyboardShortcutInfo match = findShortcut(group, labelResId);
+        assertNotNull(
+                "Expected shortcut in group: "
+                        + ApplicationProvider.getApplicationContext().getString(labelResId),
+                match);
+        assertEquals(expectedKeyCode, match.getKeycode());
+        assertEquals(expectedModifiers, match.getModifiers());
+    }
+
+    private static KeyboardShortcutInfo findShortcut(
+            KeyboardShortcutGroup group, @StringRes int labelResId) {
+        String label = ApplicationProvider.getApplicationContext().getString(labelResId);
+        for (KeyboardShortcutInfo item : group.getItems()) {
+            if (label.contentEquals(item.getLabel())) return item;
+        }
+        return null;
     }
 
     private void testOpenBookmarks(

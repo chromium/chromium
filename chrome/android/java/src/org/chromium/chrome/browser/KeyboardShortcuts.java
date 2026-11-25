@@ -11,6 +11,7 @@ import static org.chromium.base.ui.KeyboardUtils.SHIFT;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.KeyboardShortcutInfo;
@@ -425,6 +426,7 @@ public class KeyboardShortcuts {
 
     // Adds all shortcuts to KEYBOARD_SHORTCUT_DEFINITION_MAP to be referenced by
     // createShortcutGroup() and KEYBOARD_SHORTCUT_SEMANTIC_MAP to be referenced by onKeyDown().
+    // LINT.IfChange(KeyboardShortcutsHelperDefinitions)
     static {
         // Tab control shortcuts (keyboard_shortcut_tab_group_header).
         new KeyboardShortcutDefinition(
@@ -843,6 +845,8 @@ public class KeyboardShortcuts {
                 new KeyCombo(KeyEvent.KEYCODE_O, KeyEvent.META_CTRL_ON));
     }
 
+    // LINT.ThenChange(:KeyboardShortcutsHelperUnified)
+
     /**
      * This should be called from the Activity's dispatchKeyEvent() to handle keyboard shortcuts.
      *
@@ -979,6 +983,11 @@ public class KeyboardShortcuts {
      * @return a list of shortcuts organized into groups.
      */
     public static List<KeyboardShortcutGroup> createShortcutGroup(Context context) {
+        if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+            return createUnifiedShortcutGroup(context);
+        }
+
+        // LINT.IfChange(KeyboardShortcutsHelperLegacy)
         LinkedHashMap<Integer, KeyboardShortcutGroup> shortcutGroupsById = new LinkedHashMap<>();
         for (KeyboardShortcutDefinition shortcutDefinition :
                 KEYBOARD_SHORTCUT_DEFINITION_MAP.values()) {
@@ -1078,8 +1087,141 @@ public class KeyboardShortcuts {
                     KeyEvent.KEYCODE_ESCAPE,
                     KeyEvent.META_CTRL_ON);
         }
+        // LINT.ThenChange(:KeyboardShortcutsHelperUnified)
         return new ArrayList<>(shortcutGroupsById.values());
     }
+
+    // LINT.IfChange(KeyboardShortcutsHelperUnified)
+    private static List<KeyboardShortcutGroup> createUnifiedShortcutGroup(Context context) {
+        ShortcutGroupBuilder builder = new ShortcutGroupBuilder(context);
+        KeyboardShortcutGroup tabs =
+                builder.startGroup(R.string.keyboard_shortcut_tab_group_header);
+        builder.add(tabs, R.string.keyboard_shortcut_open_new_window, ChromeCommandIds.NEW_WINDOW);
+        builder.add(tabs, R.string.keyboard_shortcut_close_window, ChromeCommandIds.CLOSE_WINDOW);
+        builder.add(tabs, R.string.keyboard_shortcut_quit_chrome, ChromeCommandIds.EXIT);
+        builder.add(tabs, R.string.keyboard_shortcut_open_new_tab, ChromeCommandIds.NEW_TAB);
+        builder.add(tabs, R.string.keyboard_shortcut_reopen_new_tab, ChromeCommandIds.RESTORE_TAB);
+        builder.add(
+                tabs,
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? R.string.keyboard_shortcut_new_incognito_window
+                        : R.string.keyboard_shortcut_new_incognito_tab,
+                ChromeCommandIds.NEW_INCOGNITO_WINDOW);
+        builder.add(tabs, R.string.keyboard_shortcut_reload_page, ChromeCommandIds.RELOAD);
+        builder.add(
+                tabs,
+                R.string.keyboard_shortcut_reload_no_cache,
+                ChromeCommandIds.RELOAD_BYPASSING_CACHE);
+        builder.add(tabs, R.string.keyboard_shortcut_close_tab, ChromeCommandIds.CLOSE_TAB);
+        builder.add(tabs, R.string.keyboard_shortcut_tab_search, ChromeCommandIds.TAB_SEARCH);
+        if (VerticalTabUtils.isVerticalTabsEnabled(context)) {
+            builder.add(
+                    tabs,
+                    R.string.keyboard_shortcut_toggle_vertical_tabs_collapse,
+                    ChromeCommandIds.TOGGLE_VERTICAL_TABS_COLLAPSE);
+        }
+        KeyboardShortcutGroup nav =
+                builder.startGroup(R.string.keyboard_shortcut_tab_navigation_group_header);
+        builder.add(nav, R.string.keyboard_shortcut_next_tab, ChromeCommandIds.CYCLE_TO_NEXT_TAB);
+        builder.add(nav, R.string.keyboard_shortcut_prev_tab, ChromeCommandIds.CYCLE_TO_PREV_TAB);
+        builder.add(nav, R.string.keyboard_shortcut_specific_tab, ChromeCommandIds.SELECT_TAB_0);
+        builder.add(nav, R.string.keyboard_shortcut_last_tab, ChromeCommandIds.SELECT_LAST_TAB);
+        builder.add(
+                nav,
+                R.string.keyboard_shortcut_toggle_multiselect,
+                ChromeCommandIds.TOGGLE_MULTISELECT);
+        KeyboardShortcutGroup features =
+                builder.startGroup(R.string.keyboard_shortcut_chrome_feature_group_header);
+        builder.add(
+                features, R.string.keyboard_shortcut_address_bar, ChromeCommandIds.FOCUS_LOCATION);
+        builder.add(features, R.string.keyboard_shortcut_search, ChromeCommandIds.FOCUS_SEARCH);
+        builder.add(features, R.string.keyboard_shortcut_find_bar, ChromeCommandIds.FIND);
+        builder.add(features, R.string.keyboard_shortcut_open_menu, ChromeCommandIds.SHOW_APP_MENU);
+        builder.add(
+                features,
+                R.string.keyboard_shortcut_show_downloads,
+                ChromeCommandIds.SHOW_DOWNLOADS);
+        builder.add(
+                features,
+                R.string.keyboard_shortcut_toggle_caret_browsing,
+                ChromeCommandIds.CARET_BROWSING_TOGGLE);
+        builder.add(
+                features,
+                R.string.keyboard_shortcut_history_manager,
+                ChromeCommandIds.SHOW_HISTORY);
+        builder.add(features, R.string.keyboard_shortcut_history_go_back, ChromeCommandIds.BACK);
+        builder.add(
+                features, R.string.keyboard_shortcut_history_go_forward, ChromeCommandIds.FORWARD);
+        builder.add(
+                features,
+                R.string.keyboard_shortcut_clear_browsing_data,
+                ChromeCommandIds.CLEAR_BROWSING_DATA);
+        builder.add(
+                features,
+                R.string.keyboard_shortcut_bookmark_page,
+                ChromeCommandIds.BOOKMARK_THIS_TAB);
+        builder.add(
+                features,
+                R.string.keyboard_shortcut_bookmark_manager,
+                ChromeCommandIds.SHOW_BOOKMARK_MANAGER);
+        // Scroll to top and scroll to bottom are handled in Blink
+        // (third_party/blink/renderer/core/input/keyboard_event_manager.cc).
+        builder.addKeyCombo(
+                features,
+                R.string.keyboard_shortcut_scroll_to_top,
+                KeyEvent.KEYCODE_DPAD_UP,
+                KeyEvent.META_CTRL_ON | KeyEvent.META_ALT_ON);
+        builder.addKeyCombo(
+                features,
+                R.string.keyboard_shortcut_scroll_to_bottom,
+                KeyEvent.KEYCODE_DPAD_DOWN,
+                KeyEvent.META_CTRL_ON | KeyEvent.META_ALT_ON);
+        if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(context)) {
+            builder.add(
+                    features,
+                    R.string.keyboard_shortcut_toggle_bookmark_bar,
+                    ChromeCommandIds.SHOW_BOOKMARK_BAR);
+        }
+        if (FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
+            builder.add(
+                    features, R.string.keyboard_shortcut_send_feedback, ChromeCommandIds.FEEDBACK);
+        }
+        KeyboardShortcutGroup page =
+                builder.startGroup(R.string.keyboard_shortcut_webpage_group_header);
+        builder.add(page, R.string.keyboard_shortcut_print_page, ChromeCommandIds.PRINT);
+        builder.add(page, R.string.keyboard_shortcut_save_page, ChromeCommandIds.SAVE_PAGE);
+        builder.add(page, R.string.keyboard_shortcut_zoom_in, ChromeCommandIds.ZOOM_PLUS);
+        builder.add(page, R.string.keyboard_shortcut_zoom_out, ChromeCommandIds.ZOOM_MINUS);
+        builder.add(page, R.string.keyboard_shortcut_reset_zoom, ChromeCommandIds.ZOOM_NORMAL);
+        builder.add(
+                page,
+                R.string.keyboard_shortcut_help_center,
+                ChromeCommandIds.HELP_PAGE_VIA_KEYBOARD);
+        KeyboardShortcutGroup dev =
+                builder.startGroup(R.string.keyboard_shortcut_developer_group_header);
+        if (DevToolsWindowAndroid.isDevToolsAvailable(context)) {
+            builder.add(dev, R.string.keyboard_shortcut_view_source, ChromeCommandIds.VIEW_SOURCE);
+            builder.add(
+                    dev, R.string.keyboard_shortcut_developer_tools, ChromeCommandIds.DEV_TOOLS);
+            builder.add(
+                    dev,
+                    R.string.keyboard_shortcut_developer_tools_console,
+                    ChromeCommandIds.DEV_TOOLS_CONSOLE);
+            builder.add(
+                    dev,
+                    R.string.keyboard_shortcut_developer_tools_inspect,
+                    ChromeCommandIds.DEV_TOOLS_INSPECT);
+        }
+        if (TaskManager.isEnabled()) {
+            builder.add(
+                    dev,
+                    R.string.keyboard_shortcut_task_manager,
+                    ChromeCommandIds.TASK_MANAGER_SHORTCUT);
+        }
+        return builder.build();
+    }
+
+    // LINT.ThenChange(:KeyboardShortcutsHelperDefinitions, :KeyboardShortcutsHelperLegacy)
 
     private static void addShortcut(
             Context context,
@@ -1094,6 +1236,50 @@ public class KeyboardShortcuts {
         KeyboardShortcutGroup shortcutGroup = shortcutGroupsById.get(groupId);
         shortcutGroup.addItem(
                 new KeyboardShortcutInfo(context.getString(resId), keyCode, keyModifier));
+    }
+
+    @NullMarked
+    private static class ShortcutGroupBuilder {
+        private final Context mContext;
+        private final SparseArray<KeyCombo> mAccelerators;
+        private final List<KeyboardShortcutGroup> mGroups = new ArrayList<>();
+
+        ShortcutGroupBuilder(Context context) {
+            mContext = context;
+            int[] data = KeyboardShortcutsJni.get().getAccelerators();
+            assert data.length % 3 == 0;
+            mAccelerators = new SparseArray<>(data.length / 3);
+            for (int i = 0; i < data.length; i += 3) {
+                mAccelerators.put(data[i], new KeyCombo(data[i + 1], data[i + 2]));
+            }
+        }
+
+        KeyboardShortcutGroup startGroup(@StringRes int groupResId) {
+            KeyboardShortcutGroup group = new KeyboardShortcutGroup(mContext.getString(groupResId));
+            mGroups.add(group);
+            return group;
+        }
+
+        void add(KeyboardShortcutGroup group, @StringRes int labelResId, int commandId) {
+            KeyCombo combo = mAccelerators.get(commandId);
+            assert combo != null;
+            addKeyCombo(group, labelResId, combo.mKeyCode, combo.mModifier);
+        }
+
+        void addKeyCombo(
+                KeyboardShortcutGroup group,
+                @StringRes int labelResId,
+                int keyCode,
+                int modifiers) {
+            assert mGroups.contains(group);
+            group.addItem(
+                    new KeyboardShortcutInfo(mContext.getString(labelResId), keyCode, modifiers));
+        }
+
+        List<KeyboardShortcutGroup> build() {
+            mGroups.removeIf(group -> group.getItems().isEmpty());
+            return mGroups;
+        }
     }
 
     /**
@@ -1512,5 +1698,8 @@ public class KeyboardShortcuts {
     public interface Natives {
         @JniType("std::u16string")
         String getShortcutTextForCommandId(int commandId);
+
+        @JniType("std::vector<int32_t>")
+        int[] getAccelerators();
     }
 }
