@@ -631,6 +631,7 @@ void NetworkTimeTracker::CheckTime() {
             "determines that it doesn't have an accurate timestamp."
           data: "None"
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "http://clients2.google.com/time/1/current"
         }
         policy {
           cookies_allowed: NO
