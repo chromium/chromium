@@ -243,8 +243,10 @@ void IOSTabGroupSyncDelegate::CloseLocalTabGroup(
     return;
   }
 
+  // Closing all the tabs destroys the group, so clear the pointer to it first
+  // to avoid leaving it dangling.
   CloseAllWebStatesInGroup(*tab_group_info.web_state_list,
-                           tab_group_info.tab_group,
+                           tab_group_info.tab_group.ExtractAsDangling(),
                            WebStateList::ClosingReason::kDefault);
 }
 

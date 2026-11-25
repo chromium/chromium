@@ -214,9 +214,10 @@ NSString* CreationText(base::Time creation_date) {
   LocalTabGroupInfo tabGroupInfo = GetLocalTabGroupInfo(_browserList, *group);
   if (tabGroupInfo.tab_group) {
     // Delete the group and tabs in the group locally. It automatically updates
-    // the tab group sync service.
+    // the tab group sync service. Closing all the tabs destroys the group, so
+    // clear the pointer to it first to avoid leaving it dangling.
     CloseAllWebStatesInGroup(*tabGroupInfo.web_state_list,
-                             tabGroupInfo.tab_group,
+                             tabGroupInfo.tab_group.ExtractAsDangling(),
                              WebStateList::ClosingReason::kUserAction);
   } else {
     // The group doesn't exist locally. Delete the group from the tab group
