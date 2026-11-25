@@ -501,6 +501,33 @@ void RemoveRenderPassesOptimized(FrameData* frame) {
   }
 }
 
+// Returns the unbounded element's surface that `render_surface`'s render target
+// chain reaches (`render_surface` itself included), if the unbounded element
+// feature is enabled and that surface draws a pass (it is the root of the
+// unbounded frame). Returns null otherwise.
+const RenderSurfaceImpl* FindDrawnUnboundedRenderTarget(
+    const RenderSurfaceImpl& render_surface,
+    const LayerTreeSettings& settings) {
+  if (!settings.enable_unbounded_element) {
+    return nullptr;
+  }
+  const RenderSurfaceImpl* surface = &render_surface;
+  while (!surface->IsUnbounded()) {
+    const RenderSurfaceImpl* target = surface->render_target();
+    CHECK(target);
+    // The root surface is its own render target.
+    if (target == surface) {
+      return nullptr;
+    }
+    surface = target;
+  }
+  if (!surface->contributes_to_drawn_surface() &&
+      !surface->CopyOfOutputRequired()) {
+    return nullptr;
+  }
+  return surface;
+}
+
 #define VERBOSE_LOG() \
   VLOG_IF(3, VerboseLogEnabled()) << ClientNameForVerboseLog() << ": "
 
@@ -1348,9 +1375,13 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
     const auto& view_transition_element_resource_id =
         render_surface->ViewTransitionElementResourceId();
     if (should_draw_into_render_pass) {
-      auto& target_list = render_surface->IsUnbounded()
-                              ? frame->unbounded_render_passes
-                              : frame->render_passes;
+      // A render surface whose render target chain reaches an unbounded
+      // element's surface draws into the unbounded frame, so its render pass
+      // goes there with its RenderPassDrawQuad.
+      auto& target_list =
+          FindDrawnUnboundedRenderTarget(*render_surface, settings_)
+              ? frame->unbounded_render_passes
+              : frame->render_passes;
 
       // Create a capture render pass if we're in the capture phase for this
       // render surface.

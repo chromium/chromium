@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<link rel="author" href="mailto:avivkiss@chromium.org">
+<link rel="help" href="https://crbug.com/586551518">
+<link rel="match" href="descendant-render-surface-ref.html">
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/unbounded-utils.js"></script>
+
+<!-- A composited filter gives the descendant its own render surface inside
+     the unbounded element's surface. -->
+<style>
+  #target {
+    position: absolute;
+    top: 100px;
+    left: 100px;
+    width: 200px;
+    height: 200px;
+    background: green;
+  }
+  #child {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    width: 100px;
+    height: 100px;
+    background: magenta;
+    will-change: filter;
+    filter: invert(1);
+  }
+</style>
+
+<div id="target" unbounded><div id="child"></div></div>
