@@ -296,8 +296,10 @@ class RuntimeEventRouter {
   // - If `wait_for_lazy_context` is true and the extension's background
   //   context isn't ready, the event is queued on the `LazyContextTaskQueue`,
   //   which starts an unstarted background context. So listeners that the
-  //   background context registers while starting up receive the event. See
-  //   `RuntimeAPI::OnExtensionEnabled()` for when `kEnable` callers set it.
+  //   background context registers while starting up receive the event.
+  //   `RuntimeAPI` always sets it for `kInstall` and `kUpdate`. For the other
+  //   reasons, it sets it when the extension's service worker hasn't run since
+  //   the last install or update.
   static void DispatchOnExtensionLoadedEvent(
       MayBeDangling<void> context_id,
       const ExtensionId& extension_id,

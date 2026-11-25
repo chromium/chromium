@@ -706,7 +706,7 @@ TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceTest,
 }
 
 // Test fixture like `RuntimeAPIOnExtensionLoadedPrecedenceTest`, but for a
-// service worker extension, to verify when enable events wait for the
+// service worker extension, to verify when lifecycle events wait for the
 // service worker to start.
 class RuntimeAPIEnableLazyContextTest
     : public RuntimeAPIOnExtensionLoadedPrecedenceTest {
@@ -816,6 +816,29 @@ TEST_F(RuntimeAPIEnableLazyContextTest,
   EXPECT_THAT(GetOnExtensionLoadedDetails(observer), testing::IsEmpty());
 }
 
+// Verifies that when an extension whose service worker has already run is
+// reloaded, `runtime.onExtensionLoaded` with reason `kReload` doesn't wait for
+// the worker. It reaches `EventRouter` in the task that the reload posted.
+TEST_F(RuntimeAPIEnableLazyContextTest, ReloadWhenWorkerAlreadyRanDoesNotWait) {
+  // Activate the extension with a service worker that has already run once.
+  // A dispatch that waited would stay queued until the worker is registered,
+  // which doesn't happen in this test environment.
+  SetHasStartedServiceWorker();
+  task_queue()->ActivateExtension(extension());
+
+  // Add the listeners, so that a dispatch that doesn't wait reaches
+  // `EventRouter`.
+  AddEnableEventListeners();
+
+  // Reload the extension, then let the posted dispatches run.
+  TestEventRouterObserver observer(EventRouter::Get(browser_context()));
+  NotifyReloaded();
+  RunPostedDispatchTasks();
+
+  EXPECT_THAT(GetOnExtensionLoadedDetails(observer),
+              testing::ElementsAre(testing::Pair("reload", "")));
+}
+
 // A `TestExtensionsBrowserClient` that reports that the browser was updated
 // since the last run.
 class BrowserUpdateTestExtensionsBrowserClient
@@ -882,6 +905,70 @@ TEST_F(RuntimeAPIOnExtensionLoadedPrecedenceAfterBrowserUpdateTest,
               testing::ElementsAre(testing::Pair("update", "0.0.1")));
   EXPECT_THAT(GetOnInstalledReasons(observer),
               testing::UnorderedElementsAre("chrome_update", "update"));
+}
+
+// Test fixture like `RuntimeAPIEnableLazyContextTest`, for the first browser
+// startup after a browser update, to verify when `runtime.onExtensionLoaded`
+// with reason `kBrowserUpdate` waits for the service worker to start.
+class RuntimeAPIBrowserUpdateLazyContextTest
+    : public RuntimeAPIEnableLazyContextTest {
+ public:
+  void SetUp() override {
+    SetExtensionsBrowserClient(
+        std::make_unique<BrowserUpdateTestExtensionsBrowserClient>());
+    // `RuntimeAPI` checks `DidVersionUpdate()` when `SetUp()` creates it.
+    RuntimeAPIEnableLazyContextTest::SetUp();
+  }
+};
+
+// Verifies that when an extension whose service worker hasn't run since the
+// last install or update loads during the first browser startup after a
+// browser update, `runtime.onExtensionLoaded` with reason `kBrowserUpdate`
+// waits for the worker. The install or update cleared the extension's
+// persisted listeners, so the event would be dropped if it didn't wait for the
+// worker to register them again.
+TEST_F(RuntimeAPIBrowserUpdateLazyContextTest,
+       LoadWhenWorkerHasNotRunWaitsForWorker) {
+  // Activate the extension. With no registered worker info, a dispatch that
+  // waits stays queued until the worker is registered, which doesn't happen in
+  // this test environment.
+  task_queue()->ActivateExtension(extension());
+
+  // Add the listeners, so that a dispatch that doesn't wait reaches
+  // `EventRouter`.
+  AddEnableEventListeners();
+
+  // Load the extension during startup, then let the posted dispatches run.
+  TestEventRouterObserver observer(EventRouter::Get(browser_context()));
+  NotifyLoaded();
+  RunPostedDispatchTasks();
+
+  EXPECT_THAT(GetOnExtensionLoadedDetails(observer), testing::IsEmpty());
+}
+
+// Verifies that when an extension whose service worker has already run loads
+// during the first browser startup after a browser update,
+// `runtime.onExtensionLoaded` with reason `kBrowserUpdate` doesn't wait for
+// the worker. It reaches `EventRouter` in the task that the load posted.
+TEST_F(RuntimeAPIBrowserUpdateLazyContextTest,
+       LoadWhenWorkerAlreadyRanDoesNotWait) {
+  // Activate the extension with a service worker that has already run once.
+  // A dispatch that waited would stay queued until the worker is registered,
+  // which doesn't happen in this test environment.
+  SetHasStartedServiceWorker();
+  task_queue()->ActivateExtension(extension());
+
+  // Add the listeners, so that a dispatch that doesn't wait reaches
+  // `EventRouter`.
+  AddEnableEventListeners();
+
+  // Load the extension during startup, then let the posted dispatches run.
+  TestEventRouterObserver observer(EventRouter::Get(browser_context()));
+  NotifyLoaded();
+  RunPostedDispatchTasks();
+
+  EXPECT_THAT(GetOnExtensionLoadedDetails(observer),
+              testing::ElementsAre(testing::Pair("browser_update", "")));
 }
 
 }  // namespace extensions

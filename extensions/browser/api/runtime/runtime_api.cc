@@ -259,7 +259,11 @@ bool ExtensionContextMatchesFilter(
 }
 
 // Returns true if `extension` is service worker-based and its worker hasn't
-// run since the extension was last installed or updated.
+// run since the extension was last installed or updated. Installing or
+// updating clears the extension's persisted event listeners (see
+// `ExtensionPrefs::FinishExtensionInfoPrefs()`). Only the worker's next run
+// registers them again, so lifecycle events wait for the worker while this is
+// true.
 bool ServiceWorkerHasNotRunSinceInstallOrUpdate(
     content::BrowserContext* context,
     const Extension& extension) {
@@ -499,14 +503,17 @@ void RuntimeAPI::OnExtensionReloaded(content::BrowserContext* browser_context,
   }
 
   // Dispatch `runtime.onExtensionLoaded` with reason `kReload` when the
-  // extension is reloaded.
+  // extension is reloaded. Wait for the service worker if it hasn't run since
+  // the last install or update.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&RuntimeEventRouter::DispatchOnExtensionLoadedEvent,
                      base::UnsafeDangling(static_cast<void*>(browser_context_)),
                      extension->id(), api::runtime::OnLoadedReason::kReload,
                      /*previous_version=*/std::nullopt,
-                     /*wait_for_lazy_context=*/false));
+                     /*wait_for_lazy_context=*/
+                     ServiceWorkerHasNotRunSinceInstallOrUpdate(
+                         browser_context_, *extension)));
 }
 
 void RuntimeAPI::OnExtensionUninstalled(
@@ -1036,10 +1043,20 @@ void RuntimeAPI::MaybeDispatchStartupLoadedEvent(
     return;
   }
 
+  // The extension is still enabled, since an unload would have removed it from
+  // `pending_startup_load_extensions_` above.
+  const Extension* extension = ExtensionRegistry::Get(browser_context_)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
+  CHECK(extension);
+
+  // Wait for the service worker if it hasn't run since the last install or
+  // update, for example because Chrome exited before the worker started.
   RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
       browser_context_.get(), extension_id, reason,
       /*previous_version=*/std::nullopt,
-      /*wait_for_lazy_context=*/false);
+      /*wait_for_lazy_context=*/
+      ServiceWorkerHasNotRunSinceInstallOrUpdate(browser_context_, *extension));
 }
 
 ExtensionFunction::ResponseAction RuntimeGetBackgroundPageFunction::Run() {

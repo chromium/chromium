@@ -1913,6 +1913,46 @@ class RuntimeLifecycleEventsApiTest : public RuntimeApiTest {
         observation_{/*observer=*/this};
   };
 
+  // Terminates the first extension that is installed while this observer
+  // exists, in the same task as its install, after the extension was added to
+  // the registry. This is as if the extension's process crashed before its
+  // service worker first ran.
+  class TerminateOnInstalledObserver : public ExtensionRegistryObserver {
+   public:
+    TerminateOnInstalledObserver(ExtensionRegistry* registry,
+                                 ExtensionRegistrar* registrar)
+        : registrar_(registrar) {
+      observation_.Observe(registry);
+    }
+    ~TerminateOnInstalledObserver() override = default;
+
+    TerminateOnInstalledObserver(const TerminateOnInstalledObserver&) = delete;
+    TerminateOnInstalledObserver& operator=(
+        const TerminateOnInstalledObserver&) = delete;
+
+    // The id of the extension that was terminated, or empty if none was.
+    const ExtensionId& terminated_extension_id() const {
+      return terminated_extension_id_;
+    }
+
+    // `ExtensionRegistryObserver`:
+    void OnExtensionInstalled(content::BrowserContext* browser_context,
+                              const Extension* extension,
+                              bool is_update) override {
+      if (!terminated_extension_id_.empty()) {
+        return;
+      }
+      terminated_extension_id_ = extension->id();
+      registrar_->TerminateExtension(terminated_extension_id_);
+    }
+
+   private:
+    const raw_ptr<ExtensionRegistrar> registrar_;
+    ExtensionId terminated_extension_id_;
+    base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+        observation_{/*observer=*/this};
+  };
+
   // Writes an extension with `version` to `dir` whose service worker sends a
   // test message for each event it receives:
   // - `chrome.runtime.onInstalled`: `"installed:<reason>:<previousVersion>"`
@@ -2045,6 +2085,22 @@ class RuntimeLifecycleEventsApiTest : public RuntimeApiTest {
       registration_observer_->WaitForRegistrationStored();
     }
 
+    CommitPrefsAndFlushFileTasksOnAndroid();
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
+
+  // Commits preferences to disk and flushes background
+  // `base::ThreadPoolInstance` file tasks on Android, where `PRE_` browser
+  // tests do not perform a graceful shutdown. This keeps the extension
+  // installed across browser restart.
+  //
+  // `WaitForExtensionPersistedBeforeRestartOnAndroid()` calls this after it
+  // waits for the service worker registration to be stored. Call this
+  // directly only when the extension has no stored registration to wait for,
+  // for example when it was terminated before its service worker first ran.
+  // In that case the registration wait could hang the test.
+  void CommitPrefsAndFlushFileTasksOnAndroid() {
+#if BUILDFLAG(IS_ANDROID)
     // Android does not perform a graceful shutdown in browser tests. Commit
     // preferences to disk and flush background ThreadPool file tasks (e.g. from
     // `CrxInstaller` and `StateStore`) so the extension registration and
@@ -2075,6 +2131,43 @@ class RuntimeLifecycleEventsApiTest : public RuntimeApiTest {
       SCOPED_TRACE("Waiting for posted tasks");
       run_loop.Run();
     }
+  }
+
+  // Installs the extension in `crx` and terminates it in the same task, right
+  // after the install adds it to the registry, so its service worker never
+  // starts. Sets `extension_id` to the id of the terminated extension. Call
+  // this with `ASSERT_NO_FATAL_FAILURE()`.
+  void InstallAndTerminateBeforeWorkerRan(const base::FilePath& crx,
+                                          ExtensionId& extension_id) {
+    // The tasks that the install posts to dispatch `chrome.runtime.onInstalled`
+    // and `chrome.runtime.onExtensionLoaded` run while the extension is
+    // terminated, so they don't start the service worker.
+    service_worker_test_utils::TestServiceWorkerTaskQueueObserver
+        worker_observer;
+    TerminateOnInstalledObserver terminate_on_installed(extension_registry(),
+                                                        extension_registrar());
+    InstallExtension(crx, /*expected_change=*/0);
+    extension_id = terminate_on_installed.terminated_extension_id();
+    ASSERT_TRUE(
+        extension_registry()->terminated_extensions().Contains(extension_id));
+    RunPostedTasks();
+
+    // Terminating the extension unregisters its service worker. Wait for that
+    // to finish, because a user reloads the extension or restarts the browser
+    // only later. For example, a reload while the unregistration is still
+    // pending can abort the new worker registration, which drops the queued
+    // event.
+    {
+      SCOPED_TRACE("Waiting for the service worker to be unregistered");
+      worker_observer.WaitForWorkerUnregistered(extension_id);
+    }
+
+    // Check that the service worker didn't run.
+    bool has_started_service_worker = false;
+    ExtensionPrefs::Get(profile())->ReadPrefAsBoolean(
+        extension_id, kPrefHasStartedServiceWorker,
+        &has_started_service_worker);
+    ASSERT_FALSE(has_started_service_worker);
   }
 
  private:
@@ -3061,6 +3154,43 @@ IN_PROC_BROWSER_TEST_F(RuntimeReloadLifecycleEventsApiTest,
   EXPECT_FALSE(loaded_enable_failure_listener.was_satisfied());
 }
 
+// Test that when a packed extension that was terminated before its service
+// worker first ran is reloaded and:
+// - `chrome.runtime.onExtensionLoaded` is fired with reason `"reload"`.
+// - Neither `chrome.runtime.onInstalled` nor `chrome.runtime.onEnabled` is
+//   fired.
+// The install cleared the extension's persisted event listeners, so the test
+// ensures the event waits for the worker to register them again.
+IN_PROC_BROWSER_TEST_F(RuntimeReloadLifecycleEventsApiTest,
+                       OnExtensionLoadedOnPackedReloadBeforeWorkerRan) {
+  TestExtensionDir dir;
+  WriteReloadTestExtension(dir);
+  base::FilePath crx = dir.Pack("reload.crx");
+  ASSERT_FALSE(crx.empty());
+
+  // Install the extension and terminate it before its service worker runs.
+  ExtensionId extension_id;
+  ASSERT_NO_FATAL_FAILURE(
+      InstallAndTerminateBeforeWorkerRan(crx, extension_id));
+
+  // Reload the terminated extension and verify that `onExtensionLoaded` is
+  // fired with `"loaded:reload"`.
+  ExtensionTestMessageListener reloaded_listener("loaded:reload");
+  reloaded_listener.set_failure_message("installed");
+  ExtensionTestMessageListener enabled_failure_listener("enabled");
+  extension_registrar()->ReloadExtension(extension_id);
+  {
+    SCOPED_TRACE("Waiting for reloaded event message");
+    EXPECT_TRUE(reloaded_listener.WaitUntilSatisfied());
+  }
+
+  // Round-trip a script through the service worker so that a late `"enabled"`
+  // message would have arrived, then verify that it didn't.
+  ASSERT_EQ("done", ExecuteScriptInBackgroundPage(
+                        extension_id, "chrome.test.sendScriptResult('done');"));
+  EXPECT_FALSE(enabled_failure_listener.was_satisfied());
+}
+
 // Test that when a terminated unpacked extension is reloaded:
 // - `chrome.runtime.onInstalled` and `chrome.runtime.onExtensionLoaded` are
 //   fired with reason `"update"`, because unpacked reloads go through the
@@ -3249,6 +3379,59 @@ IN_PROC_BROWSER_TEST_F(RuntimeStartupLifecycleEventsApiTest,
       profile(), extension->id(), kGetReasonScript,
       BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
   EXPECT_EQ("startup", result);
+}
+
+// Installs an extension and terminates it before its service worker first runs,
+// so that the browser restarts with the extension's persisted event listeners
+// cleared and `kPrefHasStartedServiceWorker` unset. This is as if the browser
+// exited right after the install.
+IN_PROC_BROWSER_TEST_F(RuntimeStartupLifecycleEventsApiTest,
+                       PRE_OnExtensionLoadedOnStartupBeforeWorkerRan) {
+  TestExtensionDir dir;
+  dir.WriteManifest(R"(
+    {
+      "name": "Lifecycle Events Startup Before Worker Ran Test",
+      "version": "1.0",
+      "manifest_version": 3,
+      "background": {
+        "service_worker": "worker.js"
+      }
+    }
+  )");
+  dir.WriteFile(FILE_PATH_LITERAL("worker.js"), R"(
+    chrome.runtime.onInstalled.addListener(() => {
+      chrome.test.sendMessage('installed');
+    });
+    chrome.runtime.onExtensionLoaded.addListener((details) => {
+      chrome.test.sendMessage(`loaded:${details.reason}`);
+    });
+    chrome.runtime.onEnabled.addListener(() => {
+      chrome.test.sendMessage('enabled');
+    });
+  )");
+  base::FilePath crx = dir.Pack("startup.crx");
+  ASSERT_FALSE(crx.empty());
+
+  // Install the extension and terminate it before its service worker runs.
+  ExtensionId extension_id;
+  ASSERT_NO_FATAL_FAILURE(
+      InstallAndTerminateBeforeWorkerRan(crx, extension_id));
+
+  CommitPrefsAndFlushFileTasksOnAndroid();
+}
+
+// Test that `chrome.runtime.onExtensionLoaded` is fired with reason `"startup"`
+// when the browser starts up with an extension whose service worker hasn't run
+// since its install, and neither `onInstalled` nor `onEnabled` is fired. The
+// install cleared the extension's persisted event listeners, so the event must
+// wait for the worker to register them again.
+IN_PROC_BROWSER_TEST_F(RuntimeStartupLifecycleEventsApiTest,
+                       OnExtensionLoadedOnStartupBeforeWorkerRan) {
+  {
+    SCOPED_TRACE("Waiting for startup extension loaded event message");
+    EXPECT_TRUE(startup_listener()->WaitUntilSatisfied());
+  }
+  EXPECT_FALSE(enabled_failure_listener()->was_satisfied());
 }
 
 // Test fixture for browser update lifecycle events where Chrome indicates
