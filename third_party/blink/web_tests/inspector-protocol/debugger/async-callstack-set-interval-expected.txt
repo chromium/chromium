@@ -1,0 +1,25 @@
+Tests asynchronous call stacks for setInterval.
+Set timer for test function.
+Call stack 1:
+callback at :12:14
+--setInterval--
+testFunction at async-callstack-set-interval.js:6:23
+--setTimeout--
+scheduleTestFunction at async-callstack-set-interval.js:24:10
+(anonymous) at :0:0
+Call stack 2:
+callback at :14:14
+--setInterval--
+testFunction at async-callstack-set-interval.js:6:23
+--setTimeout--
+scheduleTestFunction at async-callstack-set-interval.js:24:10
+(anonymous) at :0:0
+Call stack 3:
+callback at :17:14
+--setInterval--
+testFunction at async-callstack-set-interval.js:6:23
+--setTimeout--
+scheduleTestFunction at async-callstack-set-interval.js:24:10
+(anonymous) at :0:0
+Final count: 3
+
