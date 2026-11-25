@@ -50,7 +50,9 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
   protected accessor showOverlay_: boolean = false;
   protected accessor overlayAnimationState_: 'entry'|'exit'|'none' = 'none';
   protected accessor imageSrc_: string = '';
-  protected accessor objectFit_: ObjectFit = 'contain';
+  // Null for the generated look so app.css picks the fit from the frame's
+  // aspect ratio as the page's <img> box changes size.
+  private accessor objectFit_: ObjectFit|null = 'contain';
   protected accessor showWatermark_: boolean = false;
   private accessor watermarkEnabledString: string = 'false';
 
@@ -61,6 +63,10 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.initialize_();
+  }
+
+  protected getImageStyle_(): string {
+    return this.objectFit_ === null ? '' : `object-fit: ${this.objectFit_};`;
   }
 
   protected onMotionComplete_() {
@@ -123,7 +129,7 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
 
         URL.revokeObjectURL(this.imageSrc_);
         this.imageSrc_ = imageData.value;
-        this.objectFit_ = this.computeObjectFitForReplacement_(img);
+        this.objectFit_ = null;
         this.showWatermark_ = this.watermarkEnabledString === 'true';
         await this.updateComplete;
       }
@@ -137,20 +143,6 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
   private startAnimation_() {
     this.showOverlay_ = true;
     this.overlayAnimationState_ = 'entry';
-  }
-
-  private computeObjectFitForReplacement_(
-      image: {naturalWidth: number, naturalHeight: number}): 'contain'|'cover' {
-    const {naturalWidth, naturalHeight} = image;
-    if (naturalWidth !== naturalHeight) {
-      return 'contain';
-    }
-    const {clientWidth, clientHeight} = document.documentElement;
-    if (clientWidth === 0 || clientHeight === 0) {
-      return 'contain';
-    }
-    const aspectRatio = clientWidth / clientHeight;
-    return 0.5 <= aspectRatio && aspectRatio <= 1.0 ? 'cover' : 'contain';
   }
 }
 

@@ -8,8 +8,7 @@ import type {IndigoImageReplacementAppElement} from './app.js';
 
 export function getHtml(this: IndigoImageReplacementAppElement) {
   return html`<!--_html_template_start_-->
-<img id="image" .src="${this.imageSrc_}"
-    .style="object-fit: ${this.objectFit_};">
+<img id="image" .src="${this.imageSrc_}" style="${this.getImageStyle_()}">
 
 ${this.showWatermark_ ? html`
   <div id="watermark">ai</div>

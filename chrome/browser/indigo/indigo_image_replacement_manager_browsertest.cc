@@ -215,6 +215,17 @@ bool WaitUntilReplacementImageSrcMatches(content::RenderFrameHost* rfh,
       .ExtractBool();
 }
 
+std::string GetReplacementObjectFit(content::RenderFrameHost* rfh) {
+  return content::EvalJs(rfh, R"js(
+    (() => {
+      const app = document.body.querySelector('indigo-image-replacement-app');
+      const img = app.shadowRoot.getElementById('image');
+      return window.getComputedStyle(img).objectFit;
+    })()
+  )js")
+      .ExtractString();
+}
+
 bool WaitForOverlayToHide(content::RenderFrameHost* rfh) {
   return content::EvalJs(rfh, R"js(
     (async () => {
@@ -2308,14 +2319,84 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest, ObjectFit) {
   mock_replacement.WaitForRenderReplacement();
 
   // Verify that the object-fit style is set correctly on the image.
-  EXPECT_EQ("fill", content::EvalJs(subframe.get(), R"js(
-        (() => {
-          const app =
-              document.body.querySelector('indigo-image-replacement-app');
-          const img = app.shadowRoot.getElementById('image');
-          return window.getComputedStyle(img).objectFit;
-        })()
-      )js"));
+  EXPECT_EQ("fill", GetReplacementObjectFit(subframe.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       ReplacementObjectFitFollowsFrameSize) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement primary(web_contents, /*frame_index=*/0);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> primary_receiver(
+      &primary);
+  manager->RegisterImageReplacement(
+      primary_receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/true);
+  primary.WaitForStartReplacement();
+
+  // Simulate a copy on a display:none <img>, whose frame is 0x0 when the look
+  // arrives.
+  MockImageReplacement copy(web_contents, /*frame_index=*/1);
+  mojo::AssociatedReceiver<blink::mojom::ImageReplacement> copy_receiver(&copy);
+  manager->RegisterImageReplacement(
+      copy_receiver.BindNewEndpointAndPassDedicatedRemote(),
+      /*is_primary=*/false);
+  copy.WaitForStartReplacement();
+  primary.WaitForRenderReplacement();
+  copy.WaitForRenderReplacement();
+
+  constexpr char kResizeCopy[] =
+      "document.querySelectorAll('iframe')[1].style.cssText = $1;";
+  ASSERT_TRUE(content::ExecJs(
+      web_contents, content::JsReplace(kResizeCopy, "width: 0; height: 0;")));
+  content::RenderFrameHostWrapper copy_frame(
+      content::ChildFrameAt(main_rfh.get(), 1));
+  ASSERT_TRUE(copy_frame.get());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return content::EvalJs(copy_frame.get(),
+                           "innerWidth === 0 && innerHeight === 0")
+        .ExtractBool();
+  }));
+
+  const GURL generated_url(
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAD"
+      "UlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.WaitForGenerateRequest();
+  fake_api_.SendSuccessResponse(generated_url);
+  ASSERT_TRUE(WaitUntilReplacementImageSrcMatches(copy_frame.get(),
+                                                  generated_url.spec()));
+
+  auto resize_copy_and_wait_for_fit = [&](const std::string& size,
+                                          const std::string& fit) {
+    if (!content::ExecJs(web_contents, content::JsReplace(kResizeCopy, size))) {
+      return false;
+    }
+    return base::test::RunUntil(
+        [&] { return GetReplacementObjectFit(copy_frame.get()) == fit; });
+  };
+  // The page lays the <img> out in boxes of different aspect ratios. Generated
+  // looks cover boxes from 1:2 to 1:1.
+  EXPECT_TRUE(
+      resize_copy_and_wait_for_fit("width: 200px; height: 300px;", "cover"));
+  EXPECT_TRUE(
+      resize_copy_and_wait_for_fit("width: 300px; height: 150px;", "contain"));
+  EXPECT_TRUE(
+      resize_copy_and_wait_for_fit("width: 150px; height: 300px;", "cover"));
+  EXPECT_TRUE(
+      resize_copy_and_wait_for_fit("width: 140px; height: 300px;", "contain"));
+  EXPECT_TRUE(
+      resize_copy_and_wait_for_fit("width: 200px; height: 200px;", "cover"));
+  EXPECT_TRUE(
+      resize_copy_and_wait_for_fit("width: 210px; height: 200px;", "contain"));
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
