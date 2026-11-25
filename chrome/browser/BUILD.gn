@@ -1489,6 +1489,7 @@ source_set("core") {
       "icon_loader_android.cc",
       "incognito/android/incognito_utils_android.cc",
       "memory_details_android.cc",
+      "platform_util.cc",
       "platform_util_android.cc",
       "shell_integration_android.cc",
     ]
@@ -5089,8 +5090,12 @@ source_set("core_unit_tests") {
   ]
 
   if (is_android) {
-    sources += [ "chrome_content_browser_client_android_unittest.cc" ]
+    sources += [
+      "chrome_content_browser_client_android_unittest.cc",
+      "platform_util_android_unittest.cc",
+    ]
     deps += [
+      ":platform_util_internal",
       "//chrome/browser/android",
       "//chrome/browser/android:web_contents_theme_client",
     ]

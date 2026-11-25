@@ -6,11 +6,15 @@
 
 #include <jni.h>
 
+#include <optional>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/notimplemented.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -20,10 +24,37 @@
 #include "chrome/browser/util/jni_headers/PlatformUtil_jni.h"
 
 namespace platform_util {
-namespace internal {
 namespace {
-bool g_shell_operations_allowed = true;
+
+// DocumentsUI has no item-selection intent, so OpenItem(..., OPEN_FOLDER) and
+// ShowItemInFolder() share the same ACTION_VIEW + MIME_TYPE_DIR intent on
+// `path` directly (no DirName()): directory URIs open that folder, while
+// DocumentsUI pops file URIs off its stack to open their parent folder.
+void ShowContentUriInFolder(const base::FilePath& path) {
+  std::optional<base::FilePath> content_uri = base::ResolveToContentUri(path);
+  if (!content_uri) {
+    return;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  PlatformUtilJni::showItemInFolder(env, content_uri->value());
+}
+
 }  // namespace
+
+namespace internal {
+
+void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
+  switch (type) {
+    case OPEN_FILE:
+      // Note: platform_util.cc still invokes OpenItem()'s callback with
+      // OPEN_SUCCEEDED after this returns.
+      NOTIMPLEMENTED();
+      return;
+    case OPEN_FOLDER:
+      ShowContentUriInFolder(path);
+      return;
+  }
+}
 
 }  // namespace internal
 
@@ -31,23 +62,14 @@ bool g_shell_operations_allowed = true;
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
   // Skip opening the folder in some browser tests.
-  if (!internal::g_shell_operations_allowed) {
+  if (!internal::AreShellOperationsAllowed()) {
     return;
   }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  std::optional<base::FilePath> contentUri =
-      base::ResolveToContentUri(full_path);
-  if (!contentUri) {
-    return;
-  }
-  PlatformUtilJni::showItemInFolder(env, contentUri->value());
-}
-
-void OpenItem(Profile* profile,
-              const base::FilePath& full_path,
-              OpenItemType item_type,
-              OpenOperationCallback callback) {
-  NOTIMPLEMENTED();
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&ShowContentUriInFolder, full_path));
 }
 
 void OpenExternal(const GURL& url) {
@@ -79,6 +101,6 @@ bool IsVisible(gfx::NativeView view) {
   return true;
 }
 
-} // namespace platform_util
+}  // namespace platform_util
 
 DEFINE_JNI(PlatformUtil)
