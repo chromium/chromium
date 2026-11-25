@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -81,6 +82,8 @@ struct PLATFORM_EXPORT DecodedWebFont {
 //   validation fails).
 PLATFORM_EXPORT base::expected<DecodedWebFont, String> DecodeWebFont(
     SegmentedBuffer* buffer);
+PLATFORM_EXPORT base::expected<DecodedWebFont, String> DecodeWebFont(
+    base::span<const uint8_t> data);
 
 }  // namespace blink
 

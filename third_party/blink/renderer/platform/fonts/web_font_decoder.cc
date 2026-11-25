@@ -271,24 +271,31 @@ base::expected<DecodedWebFont, String> DecodeWebFont(SegmentedBuffer* buffer) {
         Format("Web font size more than {}MB", kMaxDecompressedSizeMb));
   }
 
+  SegmentedBuffer::DeprecatedFlatData flattened_buffer(buffer);
+  return DecodeWebFont(base::as_byte_span(flattened_buffer));
+}
+
+base::expected<DecodedWebFont, String> DecodeWebFont(
+    base::span<const uint8_t> data) {
+  if (data.size() > kMaxDecompressedSize) {
+    return base::unexpected(
+        Format("Web font size more than {}MB", kMaxDecompressedSizeMb));
+  }
+
   // Most web fonts are compressed, so the result can be much larger than
   // the original.
   std::unique_ptr<ots::ExpandingMemoryStream> output =
-      std::make_unique<ots::ExpandingMemoryStream>(buffer->size(),
+      std::make_unique<ots::ExpandingMemoryStream>(data.size(),
                                                    kMaxDecompressedSize);
   BlinkOTSContext ots_context;
-  SegmentedBuffer::DeprecatedFlatData flattened_buffer(buffer);
 
   bool ok;
   std::unique_ptr<IftPatcher> ift_patcher;
   if (RuntimeEnabledFeatures::IncrementalFontTransferEnabled()) {
-    ok = DecodeFontWithIft(ots_context, base::as_byte_span(flattened_buffer),
-                           output.get(), ift_patcher);
+    ok = DecodeFontWithIft(ots_context, data, output.get(), ift_patcher);
   } else {
     TRACE_EVENT("blink", "DecodeFont");
-    ok = ots_context.Process(
-        output.get(), reinterpret_cast<const uint8_t*>(flattened_buffer.data()),
-        buffer->size());
+    ok = ots_context.Process(output.get(), data.data(), data.size());
   }
 
   if (!ok) {
