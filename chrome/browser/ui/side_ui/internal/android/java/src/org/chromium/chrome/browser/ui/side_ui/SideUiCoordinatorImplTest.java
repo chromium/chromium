@@ -104,6 +104,7 @@ public class SideUiCoordinatorImplTest {
     private Activity mTestActivity;
     private ViewGroup mLeftAnchorContainer;
     private ViewGroup mRightAnchorContainer;
+    private FrameLayout mResizeHandleContainer;
     private View mSideUiContainerView;
     private SideUiCoordinatorImpl mCoordinator;
 
@@ -158,6 +159,7 @@ public class SideUiCoordinatorImplTest {
                         mTabModelSelector);
         mLeftAnchorContainer = (ViewGroup) anchorContainerParent.getChildAt(0);
         mRightAnchorContainer = (ViewGroup) anchorContainerParent.getChildAt(1);
+        mResizeHandleContainer = (FrameLayout) anchorContainerParent.getChildAt(2);
 
         // Initialize the SideUiContainer View.
         mSideUiContainerView = new View(mTestActivity);
@@ -1134,22 +1136,26 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
-    public void testDestroy_ClearsCurrentSideUiSpecs() {
+    public void testDestroy_ClearsCurrentState() {
         var sideUiContainer =
                 new TestSideUiContainer(
                         mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        sideUiContainer.mSupportsManualResize = true;
         mCoordinator.registerSideUiContainer(sideUiContainer);
         mCoordinator.updateUi(
                 new UiUpdateRequest(
                         sideUiContainer.getSideUiId(),
                         /* suppressAnimations= */ true,
                         UpdateReason.SIDE_UI_REQUEST));
+        View resizeHandleView = mCoordinator.getResizeHandleViewForTesting(AnchorSide.RIGHT);
+        assertNotNull(resizeHandleView);
         assertNotEquals(0, mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.RIGHT));
 
         mCoordinator.destroy();
 
         assertEquals(0, mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.RIGHT));
         assertEquals(0, mCoordinator.getCurrentSideUiSpecs().getRenderedWidth(AnchorSide.RIGHT));
+        assertNull(resizeHandleView.getParent());
     }
 
     @Test
@@ -1674,8 +1680,6 @@ public class SideUiCoordinatorImplTest {
                         mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
         sideUiContainer.mSupportsManualResize = true;
         mCoordinator.registerSideUiContainer(sideUiContainer);
-
-        // The handle is only created once there is a resizable container showing.
         assertNull(mCoordinator.getResizeHandleViewForTesting(AnchorSide.RIGHT));
 
         UiUpdateRequest uiUpdateRequest =
@@ -1684,24 +1688,51 @@ public class SideUiCoordinatorImplTest {
                         /* suppressAnimations= */ true,
                         UpdateReason.SIDE_UI_REQUEST);
         mCoordinator.updateUi(uiUpdateRequest);
-
         View resizeHandleView = mCoordinator.getResizeHandleViewForTesting(AnchorSide.RIGHT);
         assertNotNull(resizeHandleView);
         assertEquals(View.VISIBLE, resizeHandleView.getVisibility());
-        assertEquals(mRightAnchorContainer, resizeHandleView.getParent());
-        // The handle must be on top of the container's View to receive touch events.
+        assertEquals(mResizeHandleContainer, resizeHandleView.getParent());
         assertEquals(
-                resizeHandleView,
-                mRightAnchorContainer.getChildAt(mRightAnchorContainer.getChildCount() - 1));
+                WINDOW_SIZE_PX.getWidth()
+                        - mCoordinator.getCurrentSideUiSpecs().getRenderedWidth(AnchorSide.RIGHT),
+                resizeHandleView.getLeft());
+        assertEquals(
+                ((MarginLayoutParams) mRightAnchorContainer.getLayoutParams()).topMargin,
+                resizeHandleView.getTop());
+        assertEquals(WINDOW_SIZE_PX.getHeight(), resizeHandleView.getBottom());
+
+        // An animated resize moves the handle to the anchor container's new inner edge.
+        sideUiContainer.mMaxWidthDp += 100;
+        requestUiUpdate(sideUiContainer, /* suppressAnimations= */ false);
+        mCoordinator.endAnimations();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(
+                WINDOW_SIZE_PX.getWidth()
+                        - mCoordinator.getCurrentSideUiSpecs().getRenderedWidth(AnchorSide.RIGHT),
+                resizeHandleView.getLeft());
 
         // A container that stops being resizable hides the handle, but keeps it laid out.
         sideUiContainer.mSupportsManualResize = false;
         mCoordinator.updateUi(uiUpdateRequest);
         assertEquals(View.INVISIBLE, resizeHandleView.getVisibility());
 
-        // Closing the container removes the handle along with the container's View.
-        sideUiContainer.mHasContentForTabMap.put(mTab, false);
+        // Animated close slides the handle out while visible, then hides it without removing it.
+        sideUiContainer.mSupportsManualResize = true;
         mCoordinator.updateUi(uiUpdateRequest);
+        sideUiContainer.mHasContentForTabMap.put(mTab, false);
+        requestUiUpdate(sideUiContainer, /* suppressAnimations= */ false);
+        assertEquals(View.VISIBLE, resizeHandleView.getVisibility());
+        assertEquals(
+                mRightAnchorContainer.getTranslationX(),
+                resizeHandleView.getTranslationX(),
+                /* delta= */ 0f);
+        mCoordinator.endAnimations();
+        assertEquals(
+                resizeHandleView, mCoordinator.getResizeHandleViewForTesting(AnchorSide.RIGHT));
+        assertEquals(View.INVISIBLE, resizeHandleView.getVisibility());
+
+        // Unregistering the container removes the handle.
+        mCoordinator.unregisterSideUiContainer(sideUiContainer);
         assertNull(mCoordinator.getResizeHandleViewForTesting(AnchorSide.RIGHT));
         assertNull(resizeHandleView.getParent());
     }

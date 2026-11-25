@@ -15,7 +15,9 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.content.res.Resources;
 import android.transition.ChangeBounds;
+import android.transition.ChangeTransform;
 import android.transition.Transition;
+import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -45,6 +47,9 @@ import java.util.List;
 /** Unit tests for {@link SideUiResizeHandleView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SideUiResizeHandleViewTest {
+    private static final int PARENT_WIDTH_PX = 1000;
+    private static final int CONTAINER_WIDTH_PX = 240;
+    private static final int CONTAINER_HEIGHT_PX = 600;
     private static final int HANDLE_WIDTH_PX = 36;
     private static final int BAR_INSET_PX = 9;
 
@@ -53,18 +58,14 @@ public class SideUiResizeHandleViewTest {
     @Mock private View.OnTouchListener mOnTouchListener;
 
     private Context mContext;
-    private FrameLayout mParent;
+    private FrameLayout mResizeHandleContainer;
 
     @Before
     public void setUp() {
         mContext = Robolectric.buildActivity(TestActivity.class).setup().get();
-        mParent = new FrameLayout(mContext);
+        mResizeHandleContainer = new FrameLayout(mContext);
     }
 
-    /**
-     * Returns a handle view with the Side UI defaults for the handle's width and the bar's
-     * position.
-     */
     private SideUiResizeHandleView createHandleView(@AnchorSide int anchorSide) {
         return createHandleView(
                 anchorSide,
@@ -83,7 +84,7 @@ public class SideUiResizeHandleViewTest {
                         LayoutInflater.from(mContext)
                                 .inflate(
                                         R.layout.side_ui_resize_handle,
-                                        mParent,
+                                        mResizeHandleContainer,
                                         /* attachToRoot= */ false);
         handleView.initialize(
                 anchorSide,
@@ -91,7 +92,17 @@ public class SideUiResizeHandleViewTest {
                 containerBarInsetPx,
                 contentDescriptionRes,
                 mOnTouchListener);
+        mResizeHandleContainer.addView(handleView);
+        handleView.updatePosition(CONTAINER_WIDTH_PX, /* containerTopMarginPx= */ 0);
+        layoutViews();
         return handleView;
+    }
+
+    private void layoutViews() {
+        mResizeHandleContainer.measure(
+                View.MeasureSpec.makeMeasureSpec(PARENT_WIDTH_PX, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(CONTAINER_HEIGHT_PX, View.MeasureSpec.EXACTLY));
+        mResizeHandleContainer.layout(0, 0, PARENT_WIDTH_PX, CONTAINER_HEIGHT_PX);
     }
 
     private int getDimenPx(@DimenRes int dimenRes) {
@@ -103,8 +114,9 @@ public class SideUiResizeHandleViewTest {
         SideUiResizeHandleView handleView = createHandleView(AnchorSide.LEFT);
 
         var layoutParams = (FrameLayout.LayoutParams) handleView.getLayoutParams();
+        assertEquals(View.INVISIBLE, handleView.getVisibility());
         assertEquals(getDimenPx(R.dimen.side_ui_resize_handle_width), layoutParams.width);
-        assertEquals(Gravity.RIGHT, layoutParams.gravity);
+        assertEquals(Gravity.LEFT | Gravity.TOP, layoutParams.gravity);
         assertNull(handleView.getContentDescription());
         assertNotNull(handleView.getPointerIcon());
     }
@@ -120,9 +132,41 @@ public class SideUiResizeHandleViewTest {
 
         var layoutParams = (FrameLayout.LayoutParams) handleView.getLayoutParams();
         assertEquals(HANDLE_WIDTH_PX, layoutParams.width);
-        assertEquals(Gravity.LEFT, layoutParams.gravity);
+        assertEquals(Gravity.RIGHT | Gravity.TOP, layoutParams.gravity);
         assertEquals(
                 mContext.getString(android.R.string.untitled), handleView.getContentDescription());
+    }
+
+    @Test
+    public void testUpdatePosition_LeftAnchor() {
+        SideUiResizeHandleView handleView = createHandleView(AnchorSide.LEFT);
+        assertEquals(CONTAINER_WIDTH_PX, handleView.getRight());
+        assertEquals(0, handleView.getTop());
+        assertEquals(CONTAINER_HEIGHT_PX, handleView.getBottom());
+
+        handleView.updatePosition(
+                /* containerRenderedWidthPx= */ 320, /* containerTopMarginPx= */ 100);
+        layoutViews();
+        assertEquals(320, handleView.getRight());
+        assertEquals(100, handleView.getTop());
+        assertEquals(CONTAINER_HEIGHT_PX, handleView.getBottom());
+
+        // AnchorSide is physical, so the layout direction doesn't move the handle.
+        mResizeHandleContainer.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        layoutViews();
+        assertEquals(320, handleView.getRight());
+    }
+
+    @Test
+    public void testUpdatePosition_RightAnchor() {
+        SideUiResizeHandleView handleView = createHandleView(AnchorSide.RIGHT);
+
+        assertEquals(PARENT_WIDTH_PX - CONTAINER_WIDTH_PX, handleView.getLeft());
+
+        // AnchorSide is physical, so the layout direction doesn't move the handle.
+        mResizeHandleContainer.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        layoutViews();
+        assertEquals(PARENT_WIDTH_PX - CONTAINER_WIDTH_PX, handleView.getLeft());
     }
 
     @Test
@@ -173,34 +217,17 @@ public class SideUiResizeHandleViewTest {
     }
 
     @Test
-    public void testCreateResizeTransition_TargetsShownHandle() {
+    public void testCreateTransition() {
         SideUiResizeHandleView handleView = createHandleView(AnchorSide.LEFT);
 
-        Transition transition = handleView.createResizeTransition();
+        Transition transition = handleView.createTransition();
 
-        assertTrue(transition instanceof ChangeBounds);
-        assertEquals(List.of(handleView), transition.getTargets());
-    }
-
-    @Test
-    public void testCreateResizeTransition_TargetsInvisibleHandle() {
-        SideUiResizeHandleView handleView = createHandleView(AnchorSide.LEFT);
-        handleView.setVisibility(View.INVISIBLE);
-
-        // The handle is still targeted, so that it moves from its laid-out position if the update
-        // makes the container resizable again.
-        Transition transition = handleView.createResizeTransition();
-
-        assertTrue(transition instanceof ChangeBounds);
-        assertEquals(List.of(handleView), transition.getTargets());
-    }
-
-    @Test
-    public void testCreateResizeTransition_NullWhenGone() {
-        SideUiResizeHandleView handleView = createHandleView(AnchorSide.LEFT);
-        handleView.setVisibility(View.GONE);
-
-        assertNull(handleView.createResizeTransition());
+        assertTrue(transition instanceof TransitionSet);
+        TransitionSet transitionSet = (TransitionSet) transition;
+        assertEquals(List.of(handleView), transitionSet.getTargets());
+        assertEquals(2, transitionSet.getTransitionCount());
+        assertTrue(transitionSet.getTransitionAt(0) instanceof ChangeBounds);
+        assertTrue(transitionSet.getTransitionAt(1) instanceof ChangeTransform);
     }
 
     @Test
@@ -213,6 +240,7 @@ public class SideUiResizeHandleViewTest {
     @Test
     public void testDispatchesTouchToListener() {
         SideUiResizeHandleView handleView = createHandleView(AnchorSide.LEFT);
+        handleView.setVisibility(View.VISIBLE);
         MotionEvent event =
                 MotionEvent.obtain(
                         /* downTime= */ 0,

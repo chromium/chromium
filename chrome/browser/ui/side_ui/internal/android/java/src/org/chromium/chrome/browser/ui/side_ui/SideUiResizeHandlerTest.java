@@ -18,8 +18,8 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.ui.side_ui.SideUiResizeHandler.TOUCH_STATE_HISTOGRAM;
 
 import android.content.Context;
-import android.transition.ChangeBounds;
 import android.transition.Transition;
+import android.transition.TransitionSet;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
@@ -49,6 +49,7 @@ import java.util.List;
 /** Unit tests for {@link SideUiResizeHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SideUiResizeHandlerTest {
+    private static final int PARENT_WIDTH_PX = 1000;
     private static final int CONTAINER_WIDTH_PX = 240;
     private static final int CONTAINER_HEIGHT_PX = 600;
 
@@ -74,20 +75,26 @@ public class SideUiResizeHandlerTest {
         mAnchorContainerParent = new FrameLayout(mContext);
         mAnchorContainer = new FrameLayout(mContext);
         mAnchorContainerParent.addView(mAnchorContainer);
-        // The handle is only shown while its anchor container is taking up space.
-        mAnchorContainer.layout(0, 0, CONTAINER_WIDTH_PX, CONTAINER_HEIGHT_PX);
         mResizeHandleContainer = new FrameLayout(mContext);
-        mAnchorContainerParent.addView(mResizeHandleContainer);
+        mAnchorContainerParent.addView(
+                mResizeHandleContainer,
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT));
     }
 
     private SideUiResizeHandler createHandler(@AnchorSide int anchorSide) {
         when(mSideUiContainer.getAnchorSide()).thenReturn(anchorSide);
-        return new SideUiResizeHandler(
-                mContext,
-                mAnchorContainer,
-                mResizeHandleContainer,
-                mSideUiContainer,
-                mSideUiCoordinator);
+        var handler =
+                new SideUiResizeHandler(
+                        mContext,
+                        mAnchorContainer,
+                        mResizeHandleContainer,
+                        mSideUiContainer,
+                        mSideUiCoordinator);
+        // The handle is only shown while its anchor container is taking up space.
+        handler.setContainerRenderedWidth(CONTAINER_WIDTH_PX);
+        return handler;
     }
 
     private SideUiResizeHandler createShownHandler(@AnchorSide int anchorSide) {
@@ -95,7 +102,15 @@ public class SideUiResizeHandlerTest {
         when(mSideUiContainer.supportsManualResize()).thenReturn(true);
         handler.onUiUpdateCompleted();
         assertNotNull(handler.getHandleViewForTesting());
+        layoutViews();
         return handler;
+    }
+
+    private void layoutViews() {
+        mAnchorContainerParent.measure(
+                View.MeasureSpec.makeMeasureSpec(PARENT_WIDTH_PX, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(CONTAINER_HEIGHT_PX, View.MeasureSpec.EXACTLY));
+        mAnchorContainerParent.layout(0, 0, PARENT_WIDTH_PX, CONTAINER_HEIGHT_PX);
     }
 
     private void dispatch(SideUiResizeHandler handler, int action, float x) {
@@ -156,33 +171,83 @@ public class SideUiResizeHandlerTest {
         View handleView = handler.getHandleViewForTesting();
         assertNotNull(handleView);
         assertEquals(View.VISIBLE, handleView.getVisibility());
-        assertEquals(mAnchorContainer, handleView.getParent());
+        assertEquals(mResizeHandleContainer, handleView.getParent());
         verify(mSideUiContainer).getResizeHandleWidthPx();
         verify(mSideUiContainer).getResizeHandleBarInsetPx();
     }
 
     @Test
-    public void testHandleViewIsHiddenWhenResizeUnsupported() {
+    public void testSetContainerRenderedWidthAndTopMargin_UpdatesHandlePosition() {
+        SideUiResizeHandler handler = createShownHandler(AnchorSide.LEFT);
+        View handleView = handler.getHandleViewForTesting();
+        int initialLeft = handleView.getLeft();
+        assertEquals(0, handleView.getTop());
+
+        handler.setContainerRenderedWidth(CONTAINER_WIDTH_PX + 80);
+        handler.setContainerTopMargin(100);
+        layoutViews();
+        assertEquals(initialLeft + 80, handleView.getLeft());
+        assertEquals(100, handleView.getTop());
+        assertEquals(CONTAINER_HEIGHT_PX, handleView.getBottom());
+    }
+
+    @Test
+    public void testHandleViewVisibility() {
         SideUiResizeHandler handler = createShownHandler(AnchorSide.LEFT);
         View handleView = handler.getHandleViewForTesting();
 
         when(mSideUiContainer.supportsManualResize()).thenReturn(false);
         handler.onUiUpdateCompleted();
-
         assertEquals(View.INVISIBLE, handleView.getVisibility());
-        // The handle stays attached so that it doesn't need to be recreated.
-        assertEquals(mAnchorContainer, handleView.getParent());
-    }
+        assertEquals(mResizeHandleContainer, handleView.getParent());
 
-    @Test
-    public void testHandleViewIsGoneWhenAnchorContainerNotShown() {
-        SideUiResizeHandler handler = createShownHandler(AnchorSide.LEFT);
-        View handleView = handler.getHandleViewForTesting();
+        when(mSideUiContainer.supportsManualResize()).thenReturn(true);
+        mAnchorContainer.setVisibility(View.INVISIBLE);
+        handler.onUiUpdateCompleted();
+        assertEquals(View.INVISIBLE, handleView.getVisibility());
+
+        mAnchorContainer.setVisibility(View.VISIBLE);
+        handler.onUiUpdateCompleted();
+        assertEquals(View.VISIBLE, handleView.getVisibility());
 
         mAnchorContainer.setVisibility(View.GONE);
         handler.onUiUpdateCompleted();
+        assertEquals(View.INVISIBLE, handleView.getVisibility());
 
-        assertEquals(View.GONE, handleView.getVisibility());
+        mAnchorContainer.setVisibility(View.VISIBLE);
+        handler.setContainerRenderedWidth(0);
+        handler.onUiUpdateCompleted();
+        assertEquals(View.INVISIBLE, handleView.getVisibility());
+    }
+
+    @Test
+    public void testOnUiUpdateCompleted_MirrorsAnchorContainerTranslation() {
+        SideUiResizeHandler handler = createShownHandler(AnchorSide.LEFT);
+        View handleView = handler.getHandleViewForTesting();
+        assertEquals(0f, handleView.getTranslationX(), /* delta= */ 0f);
+
+        mAnchorContainer.setTranslationX(-CONTAINER_WIDTH_PX);
+        handler.onUiUpdateCompleted();
+        assertEquals(-CONTAINER_WIDTH_PX, handleView.getTranslationX(), /* delta= */ 0f);
+
+        mAnchorContainer.setTranslationX(0);
+        handler.onUiUpdateCompleted();
+        assertEquals(0f, handleView.getTranslationX(), /* delta= */ 0f);
+    }
+
+    @Test
+    public void testOnContainerViewDetached_InterruptsDragAndHidesHandle() {
+        SideUiResizeHandler handler = createShownHandler(AnchorSide.LEFT);
+        View handleView = handler.getHandleViewForTesting();
+        dispatch(handler, MotionEvent.ACTION_DOWN, 100f);
+        assertNotNull(mResizeHandleContainer.getPointerIcon());
+
+        mAnchorContainer.setVisibility(View.GONE);
+        handler.onContainerViewDetached();
+
+        assertNull(mResizeHandleContainer.getPointerIcon());
+        assertEquals(View.INVISIBLE, handleView.getVisibility());
+        assertEquals(handleView, handler.getHandleViewForTesting());
     }
 
     @Test
@@ -194,33 +259,21 @@ public class SideUiResizeHandlerTest {
 
         assertNull(handler.getHandleViewForTesting());
         assertNull(handleView.getParent());
-        assertEquals(0, mAnchorContainer.getChildCount());
     }
 
     @Test
-    public void testCreateResizeTransition_TargetsShownHandle() {
+    public void testCreateTransition() {
+        assertNull(createHandler(AnchorSide.LEFT).createTransition());
+
         SideUiResizeHandler handler = createShownHandler(AnchorSide.LEFT);
         View handleView = handler.getHandleViewForTesting();
+        mAnchorContainer.setTranslationX(-CONTAINER_WIDTH_PX);
 
-        Transition transition = handler.createResizeTransition();
+        Transition transition = handler.createTransition();
 
-        assertTrue(transition instanceof ChangeBounds);
+        assertTrue(transition instanceof TransitionSet);
         assertEquals(List.of(handleView), transition.getTargets());
-    }
-
-    @Test
-    public void testCreateResizeTransition_NullWithoutLaidOutHandle() {
-        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
-        assertNull(handler.createResizeTransition());
-
-        // Show the handle and then hide the anchor container, so that the handle exists but is
-        // GONE.
-        when(mSideUiContainer.supportsManualResize()).thenReturn(true);
-        handler.onUiUpdateCompleted();
-        mAnchorContainer.setVisibility(View.GONE);
-        handler.onUiUpdateCompleted();
-
-        assertNull(handler.createResizeTransition());
+        assertEquals(-CONTAINER_WIDTH_PX, handleView.getTranslationX(), /* delta= */ 0f);
     }
 
     @Test

@@ -231,14 +231,19 @@ final class SideUiCoordinatorImpl
         mSideUiContainers.sort((c1, c2) -> c1.getSideUiId() - c2.getSideUiId());
 
         @AnchorSide int anchorSide = sideUiContainer.getAnchorSide();
-        mResizeHandlers.put(
-                anchorSide,
+        ViewGroup anchorContainer = assumeNonNull(mAnchorContainers.get(anchorSide));
+        var resizeHandler =
                 new SideUiResizeHandler(
                         mParentActivity,
-                        assumeNonNull(mAnchorContainers.get(anchorSide)),
+                        anchorContainer,
                         mResizeHandleContainer,
                         sideUiContainer,
-                        /* sideUiCoordinator= */ this));
+                        /* sideUiCoordinator= */ this);
+        resizeHandler.setContainerRenderedWidth(
+                getCurrentSideUiSpecsInternal().getRenderedWidth(anchorSide));
+        resizeHandler.setContainerTopMargin(
+                ((MarginLayoutParams) anchorContainer.getLayoutParams()).topMargin);
+        mResizeHandlers.put(anchorSide, resizeHandler);
     }
 
     @Override
@@ -322,6 +327,9 @@ final class SideUiCoordinatorImpl
         }
         mCallbackController.destroy();
         mSideUiContainers.clear();
+        for (SideUiResizeHandler resizeHandler : mResizeHandlers.values()) {
+            resizeHandler.destroyHandleView();
+        }
         mResizeHandlers.clear();
         mPausedSideUiSizes.clear();
         mCurrentSideUiSpecs = new SideUiSpecs(Map.of());
@@ -421,6 +429,7 @@ final class SideUiCoordinatorImpl
                 container.setVisibility(visibility);
             }
         }
+        updateResizeHandles();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -556,6 +565,21 @@ final class SideUiCoordinatorImpl
         for (SideUiResizeHandler resizeHandler : mResizeHandlers.values()) {
             resizeHandler.onUiUpdateCompleted();
         }
+    }
+
+    private void setRenderedWidth(SideUiContainer sideUiContainer, @Px int renderedWidth) {
+        sideUiContainer.setRenderedWidth(renderedWidth);
+        SideUiResizeHandler resizeHandler = mResizeHandlers.get(sideUiContainer.getAnchorSide());
+        if (resizeHandler != null) resizeHandler.setContainerRenderedWidth(renderedWidth);
+    }
+
+    private void setTopMargin(@AnchorSide int side, @Px int topMargin) {
+        ViewGroup anchorContainer = assumeNonNull(mAnchorContainers.get(side));
+        var layoutParams = (MarginLayoutParams) anchorContainer.getLayoutParams();
+        layoutParams.topMargin = topMargin;
+        anchorContainer.setLayoutParams(layoutParams);
+        SideUiResizeHandler resizeHandler = mResizeHandlers.get(side);
+        if (resizeHandler != null) resizeHandler.setContainerTopMargin(topMargin);
     }
 
     private boolean hasConflictingAnchorSides(SideUiContainer sideUiContainer) {
@@ -862,11 +886,11 @@ final class SideUiCoordinatorImpl
             transitionSet.addTransition(
                     SideUiContainerTransition.createContainerTransition(
                             anchorContainer, side, oldRenderedWidth, newRenderedWidth));
-            // Move the resize handle along with the container's inner edge on resize. Showing and
-            // hiding slide the whole anchor container, which already moves the handle.
+            // Created after createContainerTransition, which sets any starting offscreen
+            // translation on anchorContainer.
             SideUiResizeHandler resizeHandler = mResizeHandlers.get(side);
-            if (resizeHandler != null && oldRenderedWidth > 0 && newRenderedWidth > 0) {
-                Transition handleTransition = resizeHandler.createResizeTransition();
+            if (resizeHandler != null) {
+                Transition handleTransition = resizeHandler.createTransition();
                 if (handleTransition != null) transitionSet.addTransition(handleTransition);
             }
         }
@@ -935,10 +959,7 @@ final class SideUiCoordinatorImpl
                             && uiUpdateSpecs.mNewSpecs.getHeightType(side)
                                     != HeightType.NOT_APPLICABLE);
             willUpdateBothWidthHeight |= (willUpdateWidth && willUpdateHeight);
-            ViewGroup anchorContainer = assumeNonNull(mAnchorContainers.get(side));
-            var layoutParams = (MarginLayoutParams) anchorContainer.getLayoutParams();
-            layoutParams.topMargin = topMargin;
-            anchorContainer.setLayoutParams(layoutParams);
+            setTopMargin(side, topMargin);
         }
 
         if (transitionSet != null && !willUpdateBothWidthHeight) {
@@ -969,7 +990,7 @@ final class SideUiCoordinatorImpl
             // For resize, we set it after beginDelayedTransition.
             // For hide, it's set after the transition ends.
             if (newRenderedWidth != 0 && oldRenderedWidth == 0) {
-                sideUiContainer.setRenderedWidth(newRenderedWidth);
+                setRenderedWidth(sideUiContainer, newRenderedWidth);
             }
         }
 
@@ -989,7 +1010,7 @@ final class SideUiCoordinatorImpl
                                     assumeNonNull(getSideUiContainerBySide(anchorSide));
                             if (newReservedWidth == 0) {
                                 detachSideUiContainerView(sideUiContainer);
-                                sideUiContainer.setRenderedWidth(0);
+                                setRenderedWidth(sideUiContainer, 0);
                             }
                         }
 
@@ -1025,6 +1046,14 @@ final class SideUiCoordinatorImpl
                     anchorSide,
                     oldRenderedWidth,
                     newRenderedWidth);
+            // triggerContainerTransition updates resize width directly; hide (0) is deferred to
+            // onTransitionEndCallback so the handle slides out from its current edge.
+            if (newRenderedWidth > 0) {
+                SideUiResizeHandler resizeHandler = mResizeHandlers.get(anchorSide);
+                if (resizeHandler != null) {
+                    resizeHandler.setContainerRenderedWidth(newRenderedWidth);
+                }
+            }
         }
 
         mSideUiObserverNotifier.notifySideUiSpecsChangeStarted(
@@ -1052,7 +1081,7 @@ final class SideUiCoordinatorImpl
             } else {
                 detachSideUiContainerView(sideUiContainer);
             }
-            sideUiContainer.setRenderedWidth(entry.getValue().mRenderedWidth);
+            setRenderedWidth(sideUiContainer, entry.getValue().mRenderedWidth);
         }
 
         // Trigger a synchronous measure and layout pass to apply the new SideUiSpecs to the layout
@@ -1155,14 +1184,11 @@ final class SideUiCoordinatorImpl
                 : "SideUiContainer was attached to an unknown group.";
 
         anchorContainer.removeView(sideUiContainerView);
-
-        // The resize handle is only meaningful while the container is attached, and the assert
-        // below requires the anchor container to be empty.
-        SideUiResizeHandler resizeHandler = mResizeHandlers.get(sideUiContainer.getAnchorSide());
-        if (resizeHandler != null) resizeHandler.destroyHandleView();
-
         assert anchorContainer.getChildCount() == 0;
         anchorContainer.setVisibility(View.GONE);
+
+        SideUiResizeHandler resizeHandler = mResizeHandlers.get(sideUiContainer.getAnchorSide());
+        if (resizeHandler != null) resizeHandler.onContainerViewDetached();
     }
 
     private void updateBrowserControlsVisibility(SideUiSpecs newSideUiSpecs) {

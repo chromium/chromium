@@ -38,8 +38,10 @@ import java.util.Arrays;
  * on it into {@link SideUiContainer#onResizeLive} and {@link SideUiContainer#onResizeCommitted}
  * calls.
  *
- * <p>The handle {@link View} is created lazily the first time the bound container is resizable, and
- * is removed when the container's {@link View} is detached from the anchor container.
+ * <p>The handle {@link View} lives in {@link #mResizeHandleContainer} above the anchor containers,
+ * created lazily once the bound container is shown or animating open while resizable, and removed
+ * when the container is unregistered. It mirrors the anchor container's position, visibility and
+ * translation.
  *
  * <p>A drag on the handle starts on {@link MotionEvent#ACTION_DOWN} and ends on {@link
  * MotionEvent#ACTION_UP} or {@link MotionEvent#ACTION_CANCEL}. It only starts resizing the
@@ -112,6 +114,8 @@ import java.util.Arrays;
     private final SideUiCoordinator mSideUiCoordinator;
 
     private @Nullable SideUiResizeHandleView mHandleView;
+    private @Px int mContainerRenderedWidthPx;
+    private @Px int mContainerTopMarginPx;
 
     /** The raw X coordinate where the in-progress drag started, or null if there isn't one. */
     private @Nullable Float mDragStartRawX;
@@ -141,10 +145,9 @@ import java.util.Arrays;
 
     /**
      * @param context The {@link Context} used to create the handle {@link View}.
-     * @param anchorContainer The anchor container that hosts the handle.
-     * @param resizeHandleContainer The container above the anchor containers. It covers the Side UI
-     *     and web contents, and shows the resize pointer icon while a drag moves the pointer off
-     *     the handle.
+     * @param anchorContainer The anchor container whose inner edge the handle tracks.
+     * @param resizeHandleContainer The container above the anchor containers that hosts the resize
+     *     handles and drag pointer icon.
      * @param container The {@link SideUiContainer} this handler serves.
      * @param sideUiCoordinator The {@link SideUiCoordinator} notified after each drag event.
      */
@@ -163,62 +166,50 @@ import java.util.Arrays;
         Arrays.fill(mLastRecordTimeMs, NO_MOVE_RECORDED);
     }
 
-    /** Syncs the handle with the bound container's state after a UI update. */
     /* package */ void onUiUpdateCompleted() {
-        if (!isAnchorContainerShown()) {
-            if (mHandleView != null) mHandleView.setVisibility(View.GONE);
-            return;
+        if (isAnchorContainerShown()) {
+            ensureHandleView();
         }
+        syncHandleWithContainer();
+    }
 
-        if (!mContainer.supportsManualResize()) {
-            // Use INVISIBLE rather than GONE, so that the handle keeps being laid out at the
-            // container's current inner edge. If an animated resize makes the container resizable
-            // again (e.g. pinning a hover-expanded rail), ChangeBounds then animates the handle
-            // from the old edge to the new one, instead of the handle popping up at the new edge.
-            if (mHandleView != null) mHandleView.setVisibility(View.INVISIBLE);
-            return;
+    /* package */ void setContainerRenderedWidth(@Px int containerRenderedWidthPx) {
+        mContainerRenderedWidthPx = containerRenderedWidthPx;
+        if (containerRenderedWidthPx > 0) {
+            ensureHandleView();
         }
-
-        if (mHandleView == null) {
-            mHandleView =
-                    (SideUiResizeHandleView)
-                            LayoutInflater.from(mContext)
-                                    .inflate(
-                                            R.layout.side_ui_resize_handle,
-                                            mAnchorContainer,
-                                            /* attachToRoot= */ false);
-            mHandleView.initialize(
-                    mAnchorSide,
-                    mContainer.getResizeHandleWidthPx(),
-                    mContainer.getResizeHandleBarInsetPx(),
-                    mContainer.getResizeHandleContentDescriptionRes(),
-                    /* onTouchListener= */ this);
-            mAnchorContainer.addView(mHandleView);
-        }
-
-        mHandleView.setVisibility(View.VISIBLE);
-        // The container's View is added after the handle when the container is (re)attached, so
-        // keep the handle on top to make sure it receives touch events.
-        if (mAnchorContainer.getChildAt(mAnchorContainer.getChildCount() - 1) != mHandleView) {
-            mHandleView.bringToFront();
+        if (mHandleView != null) {
+            mHandleView.updatePosition(mContainerRenderedWidthPx, mContainerTopMarginPx);
         }
     }
 
-    /** Removes the handle when the bound container's {@link View} is detached. */
+    /* package */ void setContainerTopMargin(@Px int containerTopMarginPx) {
+        mContainerTopMarginPx = containerTopMarginPx;
+        if (mHandleView != null) {
+            mHandleView.updatePosition(mContainerRenderedWidthPx, mContainerTopMarginPx);
+        }
+    }
+
+    /* package */ void onContainerViewDetached() {
+        interruptDrag();
+        onUiUpdateCompleted();
+    }
+
     /* package */ void destroyHandleView() {
         interruptDrag();
         if (mHandleView == null) return;
 
-        mAnchorContainer.removeView(mHandleView);
+        mResizeHandleContainer.removeView(mHandleView);
         mHandleView = null;
     }
 
-    /**
-     * Returns a {@link Transition} that moves the handle along with the container's inner edge
-     * during an animated resize, or null if the handle isn't laid out.
-     */
-    /* package */ @Nullable Transition createResizeTransition() {
-        return mHandleView == null ? null : mHandleView.createResizeTransition();
+    /* package */ @Nullable Transition createTransition() {
+        ensureHandleView();
+        if (mHandleView == null) return null;
+        // createContainerTransition sets starting translation before beginDelayedTransition
+        // snapshots starting values, while syncHandleWithContainer runs after.
+        mHandleView.setTranslationX(mAnchorContainer.getTranslationX());
+        return mHandleView.createTransition();
     }
 
     // View.OnTouchListener implementation:
@@ -319,9 +310,8 @@ import java.util.Arrays;
         return Math.abs(event.getRawX() - assumeNonNull(mDragStartRawX)) >= touchSlopPx;
     }
 
-    /** Returns whether the anchor container is currently taking up space. */
     private boolean isAnchorContainerShown() {
-        return mAnchorContainer.getVisibility() != View.GONE && mAnchorContainer.getWidth() > 0;
+        return mAnchorContainer.getVisibility() == View.VISIBLE && mContainerRenderedWidthPx > 0;
     }
 
     /** Returns whether a drag is in progress, whether or not it is resizing yet. */
@@ -357,6 +347,38 @@ import java.util.Arrays;
         mDragStartWidthPx = null;
         mIsResizing = false;
         mResizeHandleContainer.setPointerIcon(null);
+    }
+
+    private void ensureHandleView() {
+        if (mHandleView != null || !mContainer.supportsManualResize()) return;
+
+        mHandleView =
+                (SideUiResizeHandleView)
+                        LayoutInflater.from(mContext)
+                                .inflate(
+                                        R.layout.side_ui_resize_handle,
+                                        mResizeHandleContainer,
+                                        /* attachToRoot= */ false);
+        mHandleView.initialize(
+                mAnchorSide,
+                mContainer.getResizeHandleWidthPx(),
+                mContainer.getResizeHandleBarInsetPx(),
+                mContainer.getResizeHandleContentDescriptionRes(),
+                /* onTouchListener= */ this);
+        mResizeHandleContainer.addView(mHandleView);
+        mHandleView.updatePosition(mContainerRenderedWidthPx, mContainerTopMarginPx);
+    }
+
+    private void syncHandleWithContainer() {
+        if (mHandleView == null) return;
+
+        // Use INVISIBLE rather than GONE, so that the handle keeps being laid out at the anchor
+        // container's inner edge, and transitions can animate it from there.
+        mHandleView.setVisibility(
+                isAnchorContainerShown() && mContainer.supportsManualResize()
+                        ? View.VISIBLE
+                        : View.INVISIBLE);
+        mHandleView.setTranslationX(mAnchorContainer.getTranslationX());
     }
 
     /** Returns the width implied by the pointer position of {@code event}, without clamping. */

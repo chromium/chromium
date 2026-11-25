@@ -5,13 +5,14 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- The strip's width and gravity are set at runtime by
-     SideUiResizeHandleView. -->
+<!-- Width and gravity are set by SideUiResizeHandleView. Starts invisible so
+     transitions can capture its starting state before it is shown. -->
 <org.chromium.chrome.browser.ui.side_ui.SideUiResizeHandleView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/side_ui_resize_handle"
     android:layout_width="@dimen/side_ui_resize_handle_width"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:visibility="invisible">
 
     <View
         android:id="@+id/side_ui_resize_handle_bar"
