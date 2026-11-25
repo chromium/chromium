@@ -36,7 +36,7 @@ suite('OrganizerPanelAppTest', () => {
     loadTimeData.resetForTesting({
       audioMuted: 'Audio muted',
       clearSearch: 'Clear search',
-      close: 'Close',
+      close: 'Close tab search',
       closeSplitView: 'Close split view: $1, $2',
       closeTab: 'Close $1',
       collapse: 'Collapse',

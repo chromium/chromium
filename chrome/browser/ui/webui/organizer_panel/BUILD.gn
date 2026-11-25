@@ -71,7 +71,6 @@ source_set("organizer_panel") {
     "//components/prefs",
     "//components/saved_tab_groups/public",
     "//components/signin/public/base",
-    "//components/strings:components_strings",
     "//components/sync_sessions",
     "//components/tab_groups",
     "//components/tabs:public",

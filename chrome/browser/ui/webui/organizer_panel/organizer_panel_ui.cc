@@ -27,7 +27,6 @@
 #include "chrome/grit/organizer_panel_resources.h"
 #include "chrome/grit/organizer_panel_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -79,7 +78,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
   static constexpr webui::LocalizedString kStrings[] = {
       {"audioMuted", IDS_ORGANIZER_PANEL_AUDIO_MUTED},
       {"clearSearch", IDS_CLEAR_SEARCH},
-      {"close", IDS_CLOSE},
+      {"close", IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH},
       {"closeSplitView", IDS_ORGANIZER_PANEL_CLOSE_SPLIT_VIEW},
       {"closeTab", IDS_ORGANIZER_PANEL_CLOSE_TAB},
       {"collapse", IDS_ORGANIZER_PANEL_COLLAPSE},
