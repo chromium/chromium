@@ -48,9 +48,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
-#include "components/autofill/core/browser/at_memory/at_memory_manager.h"
-#include "components/autofill/core/browser/at_memory/at_memory_search_state.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -1399,37 +1396,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return;
   }
 
-  if (IsAtMemoryTriggerSource(trigger_source)) {
-    const GURL& main_frame_url = client().GetLastCommittedPrimaryMainFrameURL();
-    const GURL& field_url = field.origin().GetURL();
-    std::string debug_reason;
-    if (!MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, client(),
-                                  main_frame_url, std::nullopt,
-                                  &debug_reason)) {
-      LogAtMemorySuppression(AtMemoryAction::kTriggerSearchUI, log_manager(),
-                             debug_reason);
-      return;
-    }
-    if (!MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, client(),
-                                  field_url, std::nullopt, &debug_reason)) {
-      LogAtMemorySuppression(AtMemoryAction::kTriggerSearchUI, log_manager(),
-                             debug_reason);
-      return;
-    }
-  }
-
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source);
-
-  if (AtMemoryManager* amm = client().GetAtMemoryManager();
-      amm && IsAtMemoryTriggerSource(trigger_source)) {
-    AtMemorySearchState state = amm->GetStateForField(
-        field.global_id(), field.origin(), trigger_source);
-
-    // Show suggestions with a search bar to start the flow.
-    external_delegate_->OnSuggestionsReturned(
-        field, std::move(state.suggestions), std::move(state.filter));
-    return;
-  }
 
   // TODO(crbug.com/409962888): Cleanup once the new logic is launched.
   if (!base::FeatureList::IsEnabled(
@@ -2523,12 +2490,6 @@ void BrowserAutofillManager::DidShowSuggestions(
 
   auto [form_structure, autofill_field] =
       FindMutableFormAndField(form_id, field_id);
-
-  if (AtMemoryManager* amm = client().GetAtMemoryManager()) {
-    amm->OnPopupShown(*this, form_id, field_id, trigger_source, metadata,
-                      update_suggestions_callback,
-                      driver().GetPageUkmSourceId());
-  }
 
   const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
                                                         &Suggestion::type);
