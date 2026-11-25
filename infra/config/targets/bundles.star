@@ -3748,7 +3748,6 @@ targets.bundle(
 targets.bundle(
     name = "gpu_dawn_telemetry_tests_fxc",
     targets = [
-        "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
         "gpu_dawn_webgpu_cts_fxc",
     ],
 )
@@ -3756,7 +3755,6 @@ targets.bundle(
 targets.bundle(
     name = "gpu_dawn_telemetry_win_x64_tests",
     targets = [
-        "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
         "gpu_dawn_webgpu_cts",
         "gpu_dawn_webgpu_cts_fxc",
     ],
@@ -3788,6 +3786,12 @@ targets.bundle(
                     "--xvfb",
                     "--extra-browser-args=--use-vulkan=swiftshader --use-angle=swiftshader",
                 ],
+                win_args = [
+                    # TODO(crbug.com/541312843): Rename this suite or split the
+                    # Windows variant out since this technically runs with WARP
+                    # rather than SwiftShader.
+                    "--extra-browser-args=--ignore-gpu-blocklist",
+                ],
                 swarming = targets.swarming(
                     shards = 2,
                 ),
@@ -3806,6 +3810,12 @@ targets.bundle(
                 linux_args = [
                     "--xvfb",
                     "--extra-browser-args=--use-vulkan=swiftshader --use-angle=swiftshader",
+                ],
+                win_args = [
+                    # TODO(crbug.com/541312843): Rename this suite or split the
+                    # Windows variant out since this technically runs with WARP
+                    # rather than SwiftShader.
+                    "--extra-browser-args=--ignore-gpu-blocklist",
                 ],
                 swarming = targets.swarming(
                     shards = 2,
