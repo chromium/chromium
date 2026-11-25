@@ -974,13 +974,6 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
   LayoutInputNode first_child = Node().FirstChild();
 
   BlockChildIterator child_iterator(first_child, GetBreakToken());
-
-  // If this layout is blocked by a display-lock, then we pretend this node has
-  // no children and that there are no break tokens. Due to this, we skip layout
-  // on these children.
-  if (Node().ChildLayoutBlockedByDisplayLock())
-    child_iterator = BlockChildIterator(BlockNode(nullptr), nullptr);
-
   BlockNode placeholder_child(nullptr);
   BlockChildIterator::Entry entry;
   for (entry = child_iterator.NextChild(); !entry.AtEnd();

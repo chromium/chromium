@@ -153,7 +153,11 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   }
 
   const BlockBreakToken* PreviousBreakToken() const {
-    return To<BlockBreakToken>(previous_break_token_);
+    const auto* break_token = To<BlockBreakToken>(previous_break_token_);
+    // There should be no break tokens if the node is display-locked, since that
+    // makes it monolithic.
+    DCHECK(!break_token || !Node().ChildLayoutBlockedByDisplayLock());
+    return break_token;
   }
 
   // Use the block-size setters/getters further down instead of the inherited
