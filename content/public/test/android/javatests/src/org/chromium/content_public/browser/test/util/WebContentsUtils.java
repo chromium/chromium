@@ -73,6 +73,25 @@ public class WebContentsUtils {
     }
 
     /**
+     * Pastes the contents of the clipboard into the currently focused frame of `webContents`.
+     *
+     * @param webContents The WebContents to paste into.
+     */
+    public static void paste(WebContents webContents) {
+        ThreadUtils.runOnUiThreadBlocking(() -> ((WebContentsImpl) webContents).paste());
+    }
+
+    /**
+     * Pastes the contents of the clipboard as plain text into the currently focused frame of
+     * `webContents`.
+     *
+     * @param webContents The WebContents to paste into.
+     */
+    public static void pasteAsPlainText(WebContents webContents) {
+        ThreadUtils.runOnUiThreadBlocking(() -> ((WebContentsImpl) webContents).pasteAsPlainText());
+    }
+
+    /**
      * Returns {@link ImeAdapter} instance associated with a given {@link WebContents}.
      *
      * @param webContents The WebContents in use.

@@ -1555,13 +1555,21 @@ bool AwContentBrowserClient::IsAndroidAdvancedProtectionEnabled() {
 
 bool AwContentBrowserClient::IsClipboardPasteAllowed(
     content::RenderFrameHost* render_frame_host) {
-  // Require browser-observed recent user interaction, mirroring the first prong
-  // of ChromeContentBrowserClient::IsClipboardPasteAllowed().
-  // WebView intentionally has no CLIPBOARD_READ_WRITE grant flow yet
+  // Require browser-observed recent user interaction and that the requesting
+  // frame has focus, mirroring the first prong of
+  // ChromeContentBrowserClient::IsClipboardPasteAllowed(). WebView
+  // intentionally has no CLIPBOARD_READ_WRITE grant flow yet
   // (crbug.com/1271620), so there is no permission-based prong to mirror.
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-  return web_contents && web_contents->HasRecentInteraction();
+  if (!web_contents || !web_contents->HasRecentInteraction()) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(features::kWebViewRestrictClipboardPaste)) {
+    // Kill-switch for the logic below in case it causes breakage.
+    return true;
+  }
+  return render_frame_host->IsFocused();
 }
 
 }  // namespace android_webview

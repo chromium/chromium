@@ -426,6 +426,10 @@ BASE_FEATURE(kWebViewRemoveInstantAppSupport,
 // enabled.
 BASE_FEATURE(kWebViewRenderDocument, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, clipboard paste is restricted to focused frames and requires
+// a browser-observed user paste command in addition to user interaction.
+BASE_FEATURE(kWebViewRestrictClipboardPaste, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables using a single shared gpu::SharedContextState across all
 // OutputSurfaceProviderWebView instances.
 BASE_FEATURE(kWebViewSingleSharedContextState,

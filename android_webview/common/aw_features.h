@@ -112,6 +112,7 @@ BASE_DECLARE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel);
 BASE_DECLARE_FEATURE(kWebViewRelaxDataDirLocking);
 BASE_DECLARE_FEATURE(kWebViewRemoveInstantAppSupport);
 BASE_DECLARE_FEATURE(kWebViewRenderDocument);
+BASE_DECLARE_FEATURE(kWebViewRestrictClipboardPaste);
 BASE_DECLARE_FEATURE(kWebViewSaveStateIncludeHeaders);
 BASE_DECLARE_FEATURE(kWebViewSetDownloadFaviconsEnabled);
 BASE_DECLARE_FEATURE(kWebViewSingleSharedContextState);

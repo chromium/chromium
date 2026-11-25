@@ -1633,6 +1633,9 @@ public final class ProductionSupportedFlagList {
                         + " policies on parcel allocation failures. This means that more Mojo"
                         + " messages will utilize shared memory rather than falling back to"
                         + " potentially slow OS transports (e.g. sockets)."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_RESTRICT_CLIPBOARD_PASTE,
+                "Restricts clipboard paste to focused frames."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

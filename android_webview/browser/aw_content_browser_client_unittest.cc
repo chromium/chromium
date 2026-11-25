@@ -222,6 +222,10 @@ TEST_F(AwContentBrowserClientTest,
   EXPECT_TRUE(client_.AllowNonActivatedCrossOriginPaintHolding());
 }
 
+TEST_F(AwContentBrowserClientTest, IsClipboardPasteAllowedNullHost) {
+  EXPECT_FALSE(client_.IsClipboardPasteAllowed(nullptr));
+}
+
 }  // namespace
 
 }  // namespace android_webview
