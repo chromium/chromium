@@ -324,19 +324,33 @@ void OpenTabHelper::MaybeSetInitiatorOrigin(const ExtensionFunction& function,
     return;
   }
 
-  // Leave `initiator_origin` unset for `chrome://` URLs (such as
-  // `chrome://newtab`) so URL overrides (e.g. a third-party NTP extension whose
-  // page is not listed in `web_accessible_resources`) continue to load when
-  // another extension opens a new tab. `chrome://` URLs cannot server-redirect
-  // to network schemes.
-  if (navigate_params.url.SchemeIs(content::kChromeUIScheme)) {
+  // Without an opener relationship, `about:blank` tabs should commit with an
+  // opaque origin rather than inheriting the extension's origin.
+  if (navigate_params.url.IsAboutBlank()) {
+    navigate_params.initiator_origin = url::Origin();
     return;
   }
 
-  // Without an opener relationship, `about:blank` tabs should commit with an
-  // opaque origin rather than inheriting the extension's origin.
-  navigate_params.initiator_origin =
-      navigate_params.url.IsAboutBlank() ? url::Origin() : extension->origin();
+  // Leave `initiator_origin` unset (browser-initiated) for URLs whose loading
+  // depends on the navigation having no cross-origin initiator:
+  // - `chrome://` URLs, so URL overrides (e.g. a third-party NTP extension
+  //   whose page is not listed in `web_accessible_resources`) load when
+  //   another extension opens a new tab.
+  // - `chrome-extension://` URLs, so another extension's pages that are not
+  //   listed in `web_accessible_resources` load (crbug.com/586047471).
+  // `view-source:` URLs load the wrapped URL, so check that instead.
+  // Other schemes keep the extension as initiator; e.g. external protocol
+  // handling relies on it to attribute and gate the launch.
+  const GURL& url = navigate_params.url;
+  const GURL effective_url = url.SchemeIs(content::kViewSourceScheme)
+                                 ? GURL(url.GetContentPiece())
+                                 : url;
+  if (effective_url.SchemeIs(content::kChromeUIScheme) ||
+      effective_url.SchemeIs(kExtensionScheme)) {
+    return;
+  }
+
+  navigate_params.initiator_origin = extension->origin();
 }
 
 }  // namespace extensions

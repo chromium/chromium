@@ -2787,7 +2787,9 @@ source_set("browser_tests") {
     }
   } else {
     deps += [
+      "//chrome/browser:shell_integration",
       "//chrome/browser/extensions/api/contextual_tasks_private:browser_tests",
+      "//chrome/browser/external_protocol",
       "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_tabstrip",

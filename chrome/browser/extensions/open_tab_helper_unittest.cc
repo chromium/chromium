@@ -114,6 +114,141 @@ TEST_F(OpenTabHelperUnitTest, MaybeSetInitiatorOrigin_ChromeUrlLeavesNullopt) {
   EXPECT_FALSE(params.initiator_origin.has_value());
 }
 
+// Regression test for crbug.com/586047471.
+TEST_F(OpenTabHelperUnitTest,
+       MaybeSetInitiatorOrigin_OtherExtensionUrlLeavesNullopt) {
+  auto extension = ExtensionBuilder("test_ext").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension);
+
+  auto other_extension = ExtensionBuilder("other_ext").Build();
+  NavigateParams params(profile(),
+                        other_extension->GetResourceURL("viewer.html"),
+                        ui::PAGE_TRANSITION_LINK);
+  OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+
+  EXPECT_FALSE(params.initiator_origin.has_value());
+}
+
+// All `chrome-extension://` URLs, including the calling extension's own pages,
+// leave `initiator_origin` unset.
+TEST_F(OpenTabHelperUnitTest,
+       MaybeSetInitiatorOrigin_ExtensionUrlsLeaveNullopt) {
+  auto extension = ExtensionBuilder("test_ext").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension);
+
+  for (const GURL& url :
+       {GURL("chrome-extension://abcdefghijklmnopabcdefghijklmnop/page.html"),
+        extension->GetResourceURL("page.html")}) {
+    SCOPED_TRACE(url);
+    NavigateParams params(profile(), url, ui::PAGE_TRANSITION_LINK);
+    OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+    EXPECT_FALSE(params.initiator_origin.has_value());
+  }
+}
+
+TEST_F(OpenTabHelperUnitTest,
+       MaybeSetInitiatorOrigin_DataAndFileUrlsSetExtensionOrigin) {
+  auto extension = ExtensionBuilder("test_ext").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension);
+
+  for (const char* url : {"data:text/html,hello", "file:///tmp/test.html"}) {
+    SCOPED_TRACE(url);
+    NavigateParams params(profile(), GURL(url), ui::PAGE_TRANSITION_LINK);
+    OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+    EXPECT_EQ(params.initiator_origin, extension->origin());
+  }
+}
+
+TEST_F(OpenTabHelperUnitTest,
+       MaybeSetInitiatorOrigin_BlobAndFileSystemUrlsSetExtensionOrigin) {
+  auto extension = ExtensionBuilder("test_ext").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension);
+
+  for (const char* url :
+       {"blob:chrome-extension://abcdefghijklmnopabcdefghijklmnop/"
+        "12345678-1234-1234-1234-123456789abc",
+        "blob:https://example.com/12345678-1234-1234-1234-123456789abc",
+        "filesystem:chrome-extension://abcdefghijklmnopabcdefghijklmnop/"
+        "temporary/page.html",
+        "filesystem:https://example.com/temporary/page.html",
+        "view-source:filesystem:chrome-extension://"
+        "abcdefghijklmnopabcdefghijklmnop/temporary/page.html"}) {
+    SCOPED_TRACE(url);
+    NavigateParams params(profile(), GURL(url), ui::PAGE_TRANSITION_LINK);
+    OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+    EXPECT_EQ(params.initiator_origin, extension->origin());
+  }
+}
+
+TEST_F(OpenTabHelperUnitTest,
+       MaybeSetInitiatorOrigin_ExternalProtocolUrlsSetExtensionOrigin) {
+  auto extension = ExtensionBuilder("test_ext").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension);
+
+  for (const char* url : {"mailto:user@example.com", "local+app://open",
+                          "custom-scheme://action"}) {
+    SCOPED_TRACE(url);
+    NavigateParams params(profile(), GURL(url), ui::PAGE_TRANSITION_LINK);
+    OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+    EXPECT_EQ(params.initiator_origin, extension->origin());
+  }
+}
+
+// `view-source:` URLs load the wrapped URL, so `initiator_origin` should be set
+// when the wrapped URL would set it.
+TEST_F(OpenTabHelperUnitTest,
+       MaybeSetInitiatorOrigin_ViewSourceUrlSetsExtensionOrigin) {
+  auto extension = ExtensionBuilder("test_ext").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension);
+
+  for (const char* url :
+       {"view-source:https://example.com/", "view-source:http://example.com/",
+        "view-source:file:///tmp/test.html"}) {
+    SCOPED_TRACE(url);
+    NavigateParams params(profile(), GURL(url), ui::PAGE_TRANSITION_LINK);
+    OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+    EXPECT_EQ(params.initiator_origin, extension->origin());
+  }
+}
+
+// `view-source:` URLs wrapping `chrome-extension://` or `chrome://` URLs should
+// leave `initiator_origin` unset, the same as the wrapped URL would.
+TEST_F(OpenTabHelperUnitTest,
+       MaybeSetInitiatorOrigin_ViewSourceExtensionAndChromeUrlsLeaveNullopt) {
+  auto extension = ExtensionBuilder("test_ext").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension);
+
+  for (const char* url :
+       {"view-source:chrome-extension://abcdefghijklmnopabcdefghijklmnop/"
+        "page.html",
+        "view-source:chrome://version/"}) {
+    SCOPED_TRACE(url);
+    NavigateParams params(profile(), GURL(url), ui::PAGE_TRANSITION_LINK);
+    OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+    EXPECT_FALSE(params.initiator_origin.has_value());
+  }
+}
+
+TEST_F(OpenTabHelperUnitTest,
+       MaybeSetInitiatorOrigin_HttpUrlSetsExtensionOrigin) {
+  auto extension = ExtensionBuilder("test_ext").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension);
+
+  NavigateParams params(profile(), GURL("http://example.com/"),
+                        ui::PAGE_TRANSITION_LINK);
+  OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+
+  EXPECT_EQ(params.initiator_origin, extension->origin());
+}
+
 TEST_F(OpenTabHelperUnitTest,
        MaybeSetInitiatorOrigin_PdfExtensionLeavesUnchanged) {
   auto pdf_extension = ExtensionBuilder("pdf_ext")

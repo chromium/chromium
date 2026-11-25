@@ -8,6 +8,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -100,6 +101,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -128,10 +130,12 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -293,6 +297,52 @@ class ExtensionTabsTest : public ExtensionApiTest {
   content::WebContents* OpenUrlAndWaitForLoad(const GURL& url) {
     NavigateToURLInNewTab(url);
     return GetActiveWebContents();
+  }
+
+  // Loads a target extension, creates a `blob:` URL in its origin, and then has
+  // a different extension open that URL with `chrome.tabs.create()`. Sets
+  // `blob_url` to the created URL and `created_tab` to the new tab once it
+  // stops loading.
+  void OpenOtherExtensionBlobUrlWithTabsCreate(
+      GURL* blob_url,
+      content::WebContents** created_tab) {
+    TestExtensionDir target_dir;
+    target_dir.WriteManifest(R"({
+      "name": "Target Extension",
+      "version": "1.0",
+      "manifest_version": 3
+    })");
+    target_dir.WriteFile(FILE_PATH_LITERAL("page.html"),
+                         "<html><body>Page</body></html>");
+    const Extension* target_extension =
+        LoadExtension(target_dir.UnpackedPath());
+    ASSERT_TRUE(target_extension);
+
+    ASSERT_TRUE(content::NavigateToURL(
+        GetActiveWebContents(), target_extension->GetResourceURL("page.html")));
+    *blob_url = GURL(content::EvalJs(GetActiveWebContents(),
+                                     "URL.createObjectURL(new Blob(["
+                                     "'<body>blob</body>'], {type: "
+                                     "'text/html'}))")
+                         .ExtractString());
+    ASSERT_TRUE(blob_url->SchemeIsBlob());
+
+    scoped_refptr<const Extension> caller_extension =
+        ExtensionBuilder("CallerExtension").Build();
+    auto function = base::MakeRefCounted<TabsCreateFunction>();
+    function->set_extension(caller_extension.get());
+    const std::string args =
+        base::StringPrintf(R"([{"url": "%s"}])", blob_url->spec().c_str());
+    base::DictValue result =
+        utils::ToDict(utils::RunFunctionAndReturnSingleResult(function.get(),
+                                                              args, profile()));
+
+    std::optional<int> tab_id = result.FindInt(extension_misc::kId);
+    ASSERT_TRUE(tab_id.has_value());
+    ASSERT_TRUE(ExtensionTabUtil::GetTabById(
+        *tab_id, profile(), /*include_incognito=*/false, created_tab));
+    ASSERT_TRUE(*created_tab);
+    content::WaitForLoadStop(*created_tab);
   }
 
   base::ListValue RunQueryFunction(const Extension* extension,
@@ -5636,6 +5686,56 @@ IN_PROC_BROWSER_TEST_F(
             content::EvalJs(created_tab, "document.body.textContent"));
 }
 
+// Verifies that `chrome.tabs.create()` with a `view-source:` URL wrapping an
+// HTTP(S) URL also sets `initiator_origin`, so `SameSite=Strict` cookies are
+// excluded across a 301 cross-site redirect.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionTabsTest,
+    TabsCreate_ViewSource_ExcludesSameSiteStrictCookiesOnCrossSiteRedirect) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL set_cookies_url = embedded_test_server()->GetURL(
+      "a.com",
+      "/set-cookie?strict_cookie=1;SameSite=Strict&lax_cookie=1;SameSite=Lax");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), set_cookies_url));
+
+  const GURL target_url =
+      embedded_test_server()->GetURL("a.com", "/echoheader?Cookie");
+  const GURL redirect_url = embedded_test_server()->GetURL(
+      "b.com", "/server-redirect-301?" + target_url.spec());
+  const GURL view_source_url(std::string(content::kViewSourceScheme) + ":" +
+                             redirect_url.spec());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsCreateViewSourceInitiatorTest").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension.get());
+
+  const std::string args =
+      base::StringPrintf(R"([{"url": "%s"}])", view_source_url.spec().c_str());
+  base::DictValue result = utils::ToDict(
+      utils::RunFunctionAndReturnSingleResult(function.get(), args, profile()));
+
+  std::optional<int> tab_id = result.FindInt(extension_misc::kId);
+  ASSERT_TRUE(tab_id.has_value());
+  content::WebContents* created_tab = nullptr;
+  ASSERT_TRUE(ExtensionTabUtil::GetTabById(
+      *tab_id, profile(), /*include_incognito=*/false, &created_tab));
+  ASSERT_TRUE(created_tab);
+  ASSERT_TRUE(content::WaitForLoadStop(created_tab));
+
+  ASSERT_TRUE(created_tab->GetController().GetLastCommittedEntry());
+  EXPECT_TRUE(
+      created_tab->GetController().GetLastCommittedEntry()->IsViewSourceMode());
+  EXPECT_EQ(
+      GURL(std::string(content::kViewSourceScheme) + ":" + target_url.spec()),
+      created_tab->GetLastCommittedURL());
+  const std::string page_text =
+      content::EvalJs(created_tab, "document.body.textContent").ExtractString();
+  EXPECT_THAT(page_text, testing::HasSubstr("lax_cookie=1"));
+  EXPECT_THAT(page_text, testing::Not(testing::HasSubstr("strict_cookie")));
+}
+
 // Regression test for crbug.com/415848455: verifies that
 // `chrome.windows.create()` (without `setSelfAsOpener`) sets `initiator_origin`
 // to the calling extension's origin so `SameSite=Strict` cookies are excluded
@@ -5731,6 +5831,170 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
             content::EvalJs(created_tab, "document.body.textContent.trim()"));
 }
 
+// Parameterized on the extension API (`chrome.tabs.create()` or
+// `chrome.windows.create()`) used to open the new tab.
+class ExtensionTabsOpenOtherExtensionPageTest
+    : public ExtensionTabsTest,
+      public testing::WithParamInterface<std::string> {};
+
+// Regression test for crbug.com/586047471: verifies that an extension can open
+// another extension's page that is not listed in `web_accessible_resources`
+// via `chrome.tabs.create()` or `chrome.windows.create()` from its service
+// worker.
+IN_PROC_BROWSER_TEST_P(ExtensionTabsOpenOtherExtensionPageTest,
+                       NonWebAccessiblePageLoads) {
+  TestExtensionDir target_dir;
+  target_dir.WriteManifest(R"({
+    "name": "Target Extension",
+    "version": "1.0",
+    "manifest_version": 3
+  })");
+  target_dir.WriteFile(FILE_PATH_LITERAL("viewer.html"),
+                       "<html><body>Viewer</body></html>");
+  const Extension* target_extension = LoadExtension(target_dir.UnpackedPath());
+  ASSERT_TRUE(target_extension);
+  const GURL target_url = target_extension->GetResourceURL("viewer.html");
+
+  TestExtensionDir caller_dir;
+  caller_dir.WriteManifest(R"({
+    "name": "Caller Extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "background": {
+      "service_worker": "background.js"
+    }
+  })");
+  caller_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      base::StringPrintf("%s({url: '%s'});", GetParam().c_str(),
+                         target_url.spec().c_str()));
+
+  content::TestNavigationObserver nav_observer(target_url);
+  nav_observer.StartWatchingNewWebContents();
+  ASSERT_TRUE(LoadExtension(caller_dir.UnpackedPath()));
+  nav_observer.Wait();
+
+  EXPECT_EQ(net::OK, nav_observer.last_net_error_code())
+      << net::ErrorToString(nav_observer.last_net_error_code());
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExtensionTabsOpenOtherExtensionPageTest,
+                         testing::Values("chrome.tabs.create",
+                                         "chrome.windows.create"),
+                         [](const testing::TestParamInfo<std::string>& info) {
+                           return info.param == "chrome.tabs.create"
+                                      ? "TabsCreate"
+                                      : "WindowsCreate";
+                         });
+
+// Verifies that `chrome.tabs.create()` cannot open a `blob:` URL of another
+// extension's origin: with the calling extension as `initiator_origin`,
+// `ExtensionNavigationThrottle` blocks the cross-origin `blob:` navigation.
+// `DisabledKillswitchAllowsOtherExtensionBlobUrl` below covers the behavior
+// without an initiator.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsCreate_OtherExtensionBlobUrlIsBlocked) {
+  GURL blob_url;
+  content::WebContents* created_tab = nullptr;
+  ASSERT_NO_FATAL_FAILURE(
+      OpenOtherExtensionBlobUrlWithTabsCreate(&blob_url, &created_tab));
+
+  EXPECT_NE(blob_url, created_tab->GetLastCommittedURL());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+namespace {
+
+// Reports that Chrome is not the default handler for any scheme, so that the
+// external protocol flow proceeds to the confirmation dialog.
+class NotDefaultSchemeClientWorker
+    : public shell_integration::DefaultSchemeClientWorker {
+ public:
+  explicit NotDefaultSchemeClientWorker(const GURL& url)
+      : shell_integration::DefaultSchemeClientWorker(url) {}
+
+ private:
+  ~NotDefaultSchemeClientWorker() override = default;
+
+  shell_integration::DefaultWebClientState CheckIsDefaultImpl() override {
+    return shell_integration::NOT_DEFAULT;
+  }
+  std::u16string GetDefaultClientNameImpl() override { return u"TestApp"; }
+  void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override {
+    std::move(on_finished_callback).Run();
+  }
+};
+
+// Captures the `initiating_origin` passed to the external protocol dialog.
+class InitiatingOriginCapturingExternalProtocolDelegate
+    : public ExternalProtocolHandler::Delegate {
+ public:
+  InitiatingOriginCapturingExternalProtocolDelegate() {
+    ExternalProtocolHandler::SetDelegateForTesting(this);
+  }
+  ~InitiatingOriginCapturingExternalProtocolDelegate() override {
+    ExternalProtocolHandler::SetDelegateForTesting(nullptr);
+  }
+
+  // Waits for the dialog and returns the `initiating_origin` passed to it.
+  std::optional<url::Origin> WaitForDialog() {
+    run_loop_.Run();
+    return initiating_origin_;
+  }
+
+  // ExternalProtocolHandler::Delegate:
+  scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
+      const GURL& url) override {
+    return base::MakeRefCounted<NotDefaultSchemeClientWorker>(url);
+  }
+  ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
+                                                    Profile* profile) override {
+    return ExternalProtocolHandler::UNKNOWN;
+  }
+  void BlockRequest() override {}
+  void RunExternalProtocolDialog(
+      const GURL& url,
+      content::WebContents* web_contents,
+      ui::PageTransition page_transition,
+      bool has_user_gesture,
+      const std::optional<url::Origin>& initiating_origin,
+      const std::u16string& program_name) override {
+    initiating_origin_ = initiating_origin;
+    run_loop_.Quit();
+  }
+  void LaunchUrlWithoutSecurityCheck(
+      const GURL& url,
+      content::WebContents* web_contents) override {}
+  void FinishedProcessingCheck() override {}
+
+ private:
+  base::RunLoop run_loop_;
+  std::optional<url::Origin> initiating_origin_;
+};
+
+}  // namespace
+
+// Verifies that `chrome.tabs.create()` with an external protocol URL passes the
+// calling extension's origin to the external protocol handler, which uses it to
+// attribute and gate the launch.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsCreate_ExternalProtocolPassesExtensionOrigin) {
+  InitiatingOriginCapturingExternalProtocolDelegate delegate;
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("ExternalProtocolInitiatorTest").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension.get());
+
+  ASSERT_TRUE(utils::RunFunctionAndReturnSingleResult(
+      function.get(), R"([{"url": "custom-scheme://action"}])", profile()));
+
+  EXPECT_EQ(extension->origin(), delegate.WaitForDialog());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Verifies that `chrome.tabs.create({url: 'about:blank'})` commits an opaque
 // origin rather than inheriting the calling extension's origin.
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
@@ -5820,6 +6084,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsInitiatorKillswitchTest,
     nav_observer.Wait();
     EXPECT_FALSE(nav_observer.last_initiator_origin().has_value());
   }
+}
+
+// Verifies that with `kExtensionOpenTabSetInitiatorOrigin` disabled (no
+// `initiator_origin`), `chrome.tabs.create()` can open a `blob:` URL of another
+// extension's origin. This is the control for
+// `ExtensionTabsTest.TabsCreate_OtherExtensionBlobUrlIsBlocked`.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsInitiatorKillswitchTest,
+                       DisabledKillswitchAllowsOtherExtensionBlobUrl) {
+  GURL blob_url;
+  content::WebContents* created_tab = nullptr;
+  ASSERT_NO_FATAL_FAILURE(
+      OpenOtherExtensionBlobUrlWithTabsCreate(&blob_url, &created_tab));
+
+  EXPECT_EQ(blob_url, created_tab->GetLastCommittedURL());
+  EXPECT_EQ("blob", content::EvalJs(created_tab, "document.body.textContent"));
 }
 
 // Verifies that WindowsGetAllFunction includes standalone WindowControllers
