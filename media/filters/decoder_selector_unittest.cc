@@ -2,23 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/filters/decoder_selector.h"
+
 #include <memory>
 #include <tuple>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "media/base/callback_registry.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
-#include "media/filters/decoder_selector.h"
 #include "media/filters/decrypting_demuxer_stream.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -139,6 +145,19 @@ class AudioDecoderSelectorTestParam {
   static void ExpectNotInitialize(MockDecoder* decoder) {
     EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _)).Times(0);
   }
+
+  static void ExpectInitializeDeferred(MockDecoder* decoder,
+                                       AudioDecoder::InitCB* captured_init_cb,
+                                       base::RepeatingClosure on_initialize) {
+    EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _))
+        .WillRepeatedly([captured_init_cb, on_initialize](
+                            const AudioDecoderConfig&, CdmContext*,
+                            AudioDecoder::InitCB& init_cb,
+                            const AudioDecoder::OutputCB&, const WaitingCB&) {
+          *captured_init_cb = std::move(init_cb);
+          on_initialize.Run();
+        });
+  }
 };
 
 // Allocate storage for the member variables.
@@ -186,6 +205,57 @@ class VideoDecoderSelectorTestParam {
   static void ExpectNotInitialize(MockDecoder* decoder) {
     EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _, _)).Times(0);
   }
+
+  static void ExpectInitializeDeferred(MockDecoder* decoder,
+                                       VideoDecoder::InitCB* captured_init_cb,
+                                       base::RepeatingClosure on_initialize) {
+    EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _, _))
+        .WillRepeatedly([captured_init_cb, on_initialize](
+                            const VideoDecoderConfig&, bool, CdmContext*,
+                            VideoDecoder::InitCB& init_cb,
+                            const VideoDecoder::OutputCB&, const WaitingCB&) {
+          *captured_init_cb = std::move(init_cb);
+          on_initialize.Run();
+        });
+  }
+};
+
+// Mock decoder wrapper that tracks live instances to verify synchronous
+// destruction when DecoderSelector is destroyed.
+template <typename BaseMockDecoder>
+class LiveTrackingMockDecoder : public BaseMockDecoder {
+ public:
+  LiveTrackingMockDecoder(bool is_platform_decoder,
+                          bool supports_decryption,
+                          int decoder_id,
+                          int* live_count)
+      : BaseMockDecoder(is_platform_decoder, supports_decryption, decoder_id),
+        live_count_(live_count) {
+    ++(*live_count_);
+  }
+
+  ~LiveTrackingMockDecoder() override { --(*live_count_); }
+
+ private:
+  raw_ptr<int> live_count_;
+};
+
+// CallbackRegistration wrapper that notifies when unregistered while still
+// delegating to a real CallbackRegistry registration.
+class TrackingCallbackRegistration : public CallbackRegistration {
+ public:
+  TrackingCallbackRegistration(std::unique_ptr<CallbackRegistration> inner,
+                               bool* destroyed)
+      : inner_(std::move(inner)), destroyed_(destroyed) {}
+
+  ~TrackingCallbackRegistration() override {
+    inner_.reset();
+    *destroyed_ = true;
+  }
+
+ private:
+  std::unique_ptr<CallbackRegistration> inner_;
+  raw_ptr<bool> destroyed_;
 };
 
 // Allocate storate for the member variables.
@@ -291,6 +361,10 @@ class DecoderSelectorTest : public ::testing::Test {
   }
 
   std::vector<std::unique_ptr<Decoder>> CreateDecoders() {
+    if (custom_create_decoders_cb_) {
+      return custom_create_decoders_cb_.Run();
+    }
+
     std::vector<std::unique_ptr<Decoder>> decoders;
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -404,6 +478,8 @@ class DecoderSelectorTest : public ::testing::Test {
   bool use_decrypting_decoder_ = false;
   bool is_selecting_ = false;
   std::vector<MockDecoderArgs> mock_decoders_to_create_;
+  typename Selector::CreateDecodersCB custom_create_decoders_cb_;
+  base::WeakPtrFactory<Self> weak_factory_{this};
 };
 
 using VideoDecoderSelectorTest =
@@ -842,6 +918,138 @@ TEST_F(VideoDecoderSelectorTest, EncryptedStream_PrioritizePlatformDecoders) {
   this->SelectNextDecoder();
   EXPECT_CALL(*this, NoDecoderSelected(DecoderStatus::Codes::kFailed));
   this->SelectNextDecoder();
+}
+
+// Regression test for https://crbug.com/589800510: destroying DecoderSelector
+// after a decoder finishes initializing (while delivery of SelectDecoderCB is
+// still pending on the task runner) must synchronously destroy both the
+// selected Decoder and DecryptingDemuxerStream so they cannot outlive
+// CdmContext / CallbackRegistry.
+TYPED_TEST(DecoderSelectorTest,
+           DestroyWhileDeliveryPending_DecryptingDemuxerStream) {
+  using Decoder = typename TestFixture::Decoder;
+  using MockDecoder = typename TestFixture::MockDecoder;
+  using TrackedDecoder = StrictMock<LiveTrackingMockDecoder<MockDecoder>>;
+
+  int live_decoders = 0;
+  typename Decoder::InitCB captured_init_cb;
+  base::RunLoop init_run_loop;
+  this->custom_create_decoders_cb_ =
+      base::BindLambdaForTesting([&live_decoders, &captured_init_cb,
+                                  quit_cb = init_run_loop.QuitClosure()]() {
+        std::vector<std::unique_ptr<Decoder>> decoders;
+        auto decoder = std::make_unique<TrackedDecoder>(
+            /*is_platform_decoder=*/false, /*supports_decryption=*/false,
+            kDecoder1, &live_decoders);
+        TypeParam::ExpectInitializeDeferred(decoder.get(), &captured_init_cb,
+                                            quit_cb);
+        decoders.push_back(std::move(decoder));
+        return decoders;
+      });
+
+  auto event_callbacks =
+      std::make_unique<CallbackRegistry<CdmContext::EventCB::RunType>>();
+  bool registration_destroyed = false;
+
+  this->CreateCdmContext(kDecryptOnly);
+  EXPECT_CALL(*this->cdm_context_, RegisterEventCB(_))
+      .WillOnce([&](CdmContext::EventCB cb) {
+        return std::make_unique<TrackingCallbackRegistration>(
+            event_callbacks->Register(std::move(cb)), &registration_destroyed);
+      });
+  EXPECT_CALL(*this->decryptor_, CancelDecrypt(_));
+
+  this->UseEncryptedDecoderConfig();
+  this->CreateDecoderSelector();
+
+  // Mirror DecoderStream, which binds OnDecoderSelected with a WeakPtr.
+  this->decoder_selector_->BeginDecoderSelection(
+      base::BindOnce(&TestFixture::OnDecoderSelectedThunk,
+                     this->weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&TestFixture::OnOutput, base::Unretained(this)));
+  init_run_loop.Run();
+
+  // DecryptingDemuxerStream initialized and the clear decoder is awaiting
+  // initialization completion.
+  ASSERT_TRUE(captured_init_cb);
+  EXPECT_EQ(live_decoders, 1);
+  EXPECT_FALSE(registration_destroyed);
+
+  // Complete decoder initialization; this posts delivery of the selected
+  // decoder and DecryptingDemuxerStream to the task runner.
+  std::move(captured_init_cb).Run(DecoderStatus::Codes::kOk);
+
+  // Simulate pipeline teardown (e.g. ~DecoderStream) running before the posted
+  // delivery task executes.
+  this->weak_factory_.InvalidateWeakPtrs();
+  this->decoder_selector_.reset();
+
+  // Both the selected decoder and DecryptingDemuxerStream must already be
+  // destroyed before CdmContext / CallbackRegistry are torn down.
+  EXPECT_EQ(live_decoders, 0);
+  EXPECT_TRUE(registration_destroyed);
+  testing::Mock::VerifyAndClearExpectations(this->decryptor_.get());
+
+  // Simulate DestructionHelper destroying CdmContext / AesDecryptor while the
+  // cancelled delivery task is still queued on the media task runner.
+  event_callbacks.reset();
+  this->cdm_context_.reset();
+  this->decryptor_.reset();
+
+  // Drain the queued cancelled delivery task; it must not touch the destroyed
+  // CallbackRegistry or Decryptor.
+  base::RunLoop flush_run_loop;
+  this->task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, flush_run_loop.QuitClosure());
+  flush_run_loop.Run();
+}
+
+// Verifies that destroying DecoderSelector while delivery of a selected
+// decoder is pending destroys the decoder synchronously and aborts selection
+// with kFailed if the caller's callback is still active.
+TYPED_TEST(DecoderSelectorTest, DestroyWhileDeliveryPending_AbortsSelection) {
+  using Decoder = typename TestFixture::Decoder;
+  using MockDecoder = typename TestFixture::MockDecoder;
+  using TrackedDecoder = StrictMock<LiveTrackingMockDecoder<MockDecoder>>;
+
+  int live_decoders = 0;
+  typename Decoder::InitCB captured_init_cb;
+  base::RunLoop init_run_loop;
+  this->custom_create_decoders_cb_ =
+      base::BindLambdaForTesting([&live_decoders, &captured_init_cb,
+                                  quit_cb = init_run_loop.QuitClosure()]() {
+        std::vector<std::unique_ptr<Decoder>> decoders;
+        auto decoder = std::make_unique<TrackedDecoder>(
+            /*is_platform_decoder=*/false, /*supports_decryption=*/false,
+            kDecoder1, &live_decoders);
+        TypeParam::ExpectInitializeDeferred(decoder.get(), &captured_init_cb,
+                                            quit_cb);
+        decoders.push_back(std::move(decoder));
+        return decoders;
+      });
+
+  this->UseClearDecoderConfig();
+  this->CreateDecoderSelector();
+
+  this->decoder_selector_->BeginDecoderSelection(
+      base::BindOnce(&TestFixture::OnDecoderSelectedThunk,
+                     base::Unretained(this)),
+      base::BindRepeating(&TestFixture::OnOutput, base::Unretained(this)));
+  init_run_loop.Run();
+
+  ASSERT_TRUE(captured_init_cb);
+  EXPECT_EQ(live_decoders, 1);
+
+  std::move(captured_init_cb).Run(DecoderStatus::Codes::kOk);
+
+  // Destroy DecoderSelector before the posted delivery task runs.
+  this->decoder_selector_.reset();
+  EXPECT_EQ(live_decoders, 0);
+
+  base::RunLoop abort_run_loop;
+  EXPECT_CALL(*this, NoDecoderSelected(DecoderStatus::Codes::kFailed))
+      .WillOnce(base::test::RunClosure(abort_run_loop.QuitClosure()));
+  abort_run_loop.Run();
 }
 
 }  // namespace media
