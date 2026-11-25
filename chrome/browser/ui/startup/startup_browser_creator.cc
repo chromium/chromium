@@ -401,6 +401,24 @@ bool CanOpenWebApp(Profile* profile) {
          apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile);
 }
 
+// Opens `url` in an app window for the --app switch: a standalone window with
+// no tab strip that isn't associated with an installed web app.
+bool LaunchAppShortcutWindow(const base::CommandLine& command_line,
+                             chrome::startup::IsFirstRun is_first_run,
+                             const GURL& url,
+                             Profile* profile) {
+  const content::WebContents* web_contents =
+      apps::OpenExtensionAppShortcutWindow(profile, url);
+  if (!web_contents) {
+    return false;
+  }
+  web_app::startup::FinalizeWebAppLaunch(
+      web_app::startup::OpenMode::kInWindowByUrl, command_line, is_first_run,
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents),
+      apps::LaunchContainer::kLaunchContainerWindow);
+  return true;
+}
+
 // Handles the --app switch.
 bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
                                   const base::FilePath& cur_dir,
@@ -430,17 +448,21 @@ bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
         content::ChildProcessSecurityPolicy::GetInstance();
     if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kFileScheme) ||
         policy->IsWebSafeScheme(url.GetScheme())) {
-      const content::WebContents* web_contents =
-          apps::OpenExtensionAppShortcutWindow(profile, url);
-      if (web_contents) {
-        web_app::startup::FinalizeWebAppLaunch(
-            web_app::startup::OpenMode::kInWindowByUrl, command_line,
-            is_first_run,
-            GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-                web_contents),
-            apps::LaunchContainer::kLaunchContainerWindow);
+#if !BUILDFLAG(IS_CHROMEOS)
+      // Open the URL in an installed web app whose scope contains it, so the
+      // window gets the app's identity (e.g. taskbar grouping). Hosted
+      // extension apps keep using the shortcut window path.
+      if (CanOpenWebApp(profile) && !extensions::ExtensionRegistry::Get(profile)
+                                         ->enabled_extensions()
+                                         .GetAppByURL(url)) {
+        web_app::startup::HandleWebAppLaunchByUrl(
+            command_line, cur_dir, profile, is_first_run, url,
+            base::BindOnce(base::IgnoreResult(&LaunchAppShortcutWindow),
+                           command_line, is_first_run, url));
         return true;
       }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+      return LaunchAppShortcutWindow(command_line, is_first_run, url, profile);
     }
   }
   return false;

@@ -58,6 +58,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #include "chrome/browser/ui/cocoa/confirm_quit_panel_controller.h"
@@ -444,6 +445,18 @@ class AppControllerWebAppBrowserTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kApp, GetAppURL());
+  }
+
+  void SetUpOnMainThread() override {
+    // The --app window may open after startup, once the web app registry has
+    // loaded. It may already exist by now even though browser() wasn't set.
+    if (!browser()) {
+      std::vector<BrowserWindowInterface*> browsers =
+          GetAllBrowserWindowInterfaces();
+      SetBrowser(browsers.empty() ? ui_test_utils::WaitForBrowserToOpen()
+                                  : browsers[0]);
+    }
+    InProcessBrowserTest::SetUpOnMainThread();
   }
 
   std::string GetAppURL() const {

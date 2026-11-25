@@ -12,6 +12,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 
 class BrowserWindowInterface;
+class GURL;
 class Profile;
 
 namespace base {
@@ -43,6 +44,18 @@ bool MaybeHandleWebAppLaunch(const base::CommandLine& command_line,
                              const base::FilePath& cur_dir,
                              Profile* profile,
                              chrome::startup::IsFirstRun is_first_run);
+
+// Handles a launch for a `command_line` that includes --app=`url`, where `url`
+// has already been validated. If `url` is in the scope of an installed web app
+// that opens in a dedicated window, opens `url` in a new window of that app.
+// Otherwise, runs `fallback`. Since the web app registry may not be loaded yet,
+// either may happen asynchronously.
+void HandleWebAppLaunchByUrl(const base::CommandLine& command_line,
+                             const base::FilePath& cur_dir,
+                             Profile* profile,
+                             chrome::startup::IsFirstRun is_first_run,
+                             const GURL& url,
+                             base::OnceCallback<void(Profile*)> fallback);
 
 // Final handling after a web app has been launched.
 void FinalizeWebAppLaunch(std::optional<OpenMode> app_open_mode,

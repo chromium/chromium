@@ -40,18 +40,23 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/webapps/common/web_app_id.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace web_app::startup {
@@ -66,6 +71,28 @@ base::OnceClosure& GetStartupDoneCallback() {
 base::OnceClosure& GetBrowserShutdownCompleteCallback() {
   static base::NoDestructor<base::OnceClosure> instance;
   return *instance;
+}
+
+bool CanStartWebAppLaunch() {
+  // Ensure keep alive registry is available and is not shutting down before
+  // attempting a web apps launch.
+  KeepAliveRegistry* keep_alive_registry = KeepAliveRegistry::GetInstance();
+  return keep_alive_registry && !keep_alive_registry->IsShuttingDown();
+}
+
+// Returns the installed web app that should handle --app=`url`, if any. Only
+// apps that open in a dedicated window and are already integrated with the OS
+// are considered, so that launching never adds OS integration on its own.
+std::optional<webapps::AppId> FindWebAppForAppUrl(
+    const WebAppRegistrar& registrar,
+    const GURL& url) {
+  std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
+      url, WebAppFilter::OpensInDedicatedWindow());
+  if (!app_id || registrar.GetInstallState(*app_id) !=
+                     proto::INSTALLED_WITH_OS_INTEGRATION) {
+    return std::nullopt;
+  }
+  return app_id;
 }
 
 // Encapsulates web app startup logic. This object keeps itself alive via ref
@@ -89,16 +116,14 @@ class StartupWebAppCreator
       return false;
     }
 
-    // Ensure keep alive registry is available and is not shutting down before
-    // attempting a web apps launch.
-    KeepAliveRegistry* keep_alive_registry = KeepAliveRegistry::GetInstance();
-    if (!keep_alive_registry || keep_alive_registry->IsShuttingDown()) {
+    if (!CanStartWebAppLaunch()) {
       return false;
     }
 
-    scoped_refptr<StartupWebAppCreator> web_app_startup =
-        base::AdoptRef(new StartupWebAppCreator(
-            command_line, cur_dir, profile, is_first_run, std::move(app_id)));
+    scoped_refptr<StartupWebAppCreator> web_app_startup = base::AdoptRef(
+        new StartupWebAppCreator(command_line, cur_dir, profile, is_first_run,
+                                 std::move(app_id), /*app_url=*/GURL(),
+                                 /*url_fallback=*/base::NullCallback()));
     // Even though the launch commands can be scheduled before the provider is
     // started, there is logic filtering out incorrect file & protocol launches
     // that happens without locks first, and that has to wait until the database
@@ -107,6 +132,35 @@ class StartupWebAppCreator
         FROM_HERE,
         base::BindOnce(&StartupWebAppCreator::Start, web_app_startup));
     return true;
+  }
+
+  // Factory to create a `StartupWebAppCreator` to handle --app=`url`. See
+  // `web_app::startup::HandleWebAppLaunchByUrl()`.
+  static void HandleWebAppLaunchByUrl(
+      const base::CommandLine& command_line,
+      const base::FilePath& cur_dir,
+      Profile* profile,
+      chrome::startup::IsFirstRun is_first_run,
+      const GURL& url,
+      base::OnceCallback<void(Profile*)> fallback) {
+    CHECK(url.is_valid());
+    WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
+    // When the registry is already loaded and no app matches, run `fallback`
+    // synchronously.
+    if (!CanStartWebAppLaunch() || !provider ||
+        (provider->on_registry_ready().is_signaled() &&
+         !FindWebAppForAppUrl(provider->registrar_unsafe(), url))) {
+      std::move(fallback).Run(profile);
+      return;
+    }
+
+    scoped_refptr<StartupWebAppCreator> web_app_startup =
+        base::AdoptRef(new StartupWebAppCreator(
+            command_line, cur_dir, profile, is_first_run,
+            /*app_id=*/webapps::AppId(), url, std::move(fallback)));
+    provider->on_registry_ready().Post(
+        FROM_HERE,
+        base::BindOnce(&StartupWebAppCreator::Start, web_app_startup));
   }
 
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
@@ -123,12 +177,16 @@ class StartupWebAppCreator
                        const base::FilePath& cur_dir,
                        Profile* profile,
                        chrome::startup::IsFirstRun is_first_run,
-                       webapps::AppId app_id)
+                       webapps::AppId app_id,
+                       GURL app_url,
+                       base::OnceCallback<void(Profile*)> url_fallback)
       : command_line_(command_line),
         cur_dir_(cur_dir),
         profile_(profile),
         is_first_run_(is_first_run),
         app_id_(std::move(app_id)),
+        app_url_(std::move(app_url)),
+        url_fallback_(std::move(url_fallback)),
         provider_(WebAppProvider::GetForWebApps(profile_)),
         profile_keep_alive_(std::make_unique<ScopedProfileKeepAlive>(
             profile,
@@ -150,6 +208,11 @@ class StartupWebAppCreator
   }
 
   void Start() {
+    if (app_url_.is_valid()) {
+      LaunchAppByUrl();
+      return;
+    }
+
     if (MaybeLaunchProtocolHandler() == LaunchResult::kHandled) {
       return;
     }
@@ -191,6 +254,36 @@ class StartupWebAppCreator
           base::BindOnce(&StartupWebAppCreator::OnAppLaunched,
                          base::WrapRefCounted(this)));
     }
+  }
+
+  // Handles --app=`app_url_`: opens `app_url_` in a new window of the installed
+  // web app whose scope contains it, or runs `url_fallback_` if there is no
+  // such app.
+  void LaunchAppByUrl() {
+    CHECK(provider_->on_registry_ready().is_signaled());
+    std::optional<webapps::AppId> app_id =
+        FindWebAppForAppUrl(provider_->registrar_unsafe(), app_url_);
+    if (!app_id) {
+      std::move(url_fallback_).Run(profile_);
+      return;
+    }
+
+    app_id_ = std::move(*app_id);
+    open_mode_ = OpenMode::kInWindowByUrl;
+    apps::AppLaunchParams params =
+        WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
+            app_id_, command_line_, cur_dir_,
+            /*protocol_handler_launch_url=*/std::nullopt,
+            /*file_launch_url=*/std::nullopt, /*launch_files=*/{});
+    params.container = apps::LaunchContainer::kLaunchContainerWindow;
+    // Open a new window rather than reusing an existing one, like --app=<url>
+    // did before it supported installed web apps. Apps with prevent-close
+    // enabled still reuse their only window.
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
+    params.override_url = app_url_;
+    provider_->scheduler().LaunchAppWithCustomParams(
+        std::move(params), base::BindOnce(&StartupWebAppCreator::OnAppLaunched,
+                                          base::WrapRefCounted(this)));
   }
 
   // Determines if the launch is a protocol handler launch. If so, takes
@@ -348,8 +441,14 @@ class StartupWebAppCreator
   const raw_ptr<Profile> profile_;
   chrome::startup::IsFirstRun is_first_run_;
 
-  // The app id for this launch, corresponding to --app-id on the command line.
-  const webapps::AppId app_id_;
+  // The app id for this launch, corresponding to --app-id on the command line,
+  // or the app found for `app_url_`.
+  webapps::AppId app_id_;
+
+  // If valid, this launch is for --app=`app_url_`. `url_fallback_` runs if no
+  // installed app handles `app_url_`.
+  const GURL app_url_;
+  base::OnceCallback<void(Profile*)> url_fallback_;
 
   raw_ptr<WebAppProvider> provider_;
 
@@ -382,6 +481,16 @@ bool MaybeHandleWebAppLaunch(const base::CommandLine& command_line,
                              chrome::startup::IsFirstRun is_first_run) {
   return StartupWebAppCreator::MaybeHandleWebAppLaunch(command_line, cur_dir,
                                                        profile, is_first_run);
+}
+
+void HandleWebAppLaunchByUrl(const base::CommandLine& command_line,
+                             const base::FilePath& cur_dir,
+                             Profile* profile,
+                             chrome::startup::IsFirstRun is_first_run,
+                             const GURL& url,
+                             base::OnceCallback<void(Profile*)> fallback) {
+  StartupWebAppCreator::HandleWebAppLaunchByUrl(
+      command_line, cur_dir, profile, is_first_run, url, std::move(fallback));
 }
 
 void FinalizeWebAppLaunch(std::optional<OpenMode> app_open_mode,

@@ -166,7 +166,9 @@
 #include "chrome/browser/ui/views/web_apps/protocol_handler_launch_dialog_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -3254,6 +3256,143 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+// Tests --app=<url> when <url> may be in the scope of an installed web app.
+class StartupBrowserWebAppUrlLaunchTest : public InProcessBrowserTest {
+ protected:
+  static constexpr char kAppStartUrl[] = "https://app.example.com/scope/";
+  static constexpr char kInScopeUrl[] =
+      "https://app.example.com/scope/room.html";
+  static constexpr char kOutOfScopeUrl[] = "https://app.example.com/other.html";
+
+  Profile* profile() { return browser()->GetProfile(); }
+
+  webapps::AppId InstallApp(web_app::mojom::UserDisplayMode display_mode,
+                            bool with_os_integration = true) {
+    std::unique_ptr<web_app::WebAppInstallInfo> info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            GURL(kAppStartUrl));
+    info->scope = GURL(kAppStartUrl);
+    info->title = u"Test App";
+    info->user_display_mode = display_mode;
+    if (with_os_integration) {
+      return web_app::test::InstallWebApp(profile(), std::move(info));
+    }
+    return web_app::test::InstallWebAppWithoutOsIntegration(profile(),
+                                                            std::move(info));
+  }
+
+  // Processes a command line with --app=`url` and returns the window opened.
+  BrowserWindowInterface* LaunchAppUrl(const GURL& url) {
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitchASCII(switches::kApp, url.spec());
+    EXPECT_TRUE(StartupBrowserCreator().Start(
+        command_line, g_browser_process->profile_manager()->user_data_dir(),
+        {profile(), StartupProfileMode::kBrowserWindow},
+        /*last_opened_profiles=*/{}));
+    return browser_created_observer.Wait();
+  }
+
+  static GURL GetActiveUrl(BrowserWindowInterface* browser) {
+    return browser->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL();
+  }
+
+ private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
+#if BUILDFLAG(IS_WIN)
+  base::ScopedPathOverride override_start_dir{base::DIR_START_MENU};
+#endif  // BUILDFLAG(IS_WIN)
+};
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlLaunchTest,
+                       InScopeUrlOpensNewWebAppWindow) {
+  const webapps::AppId app_id =
+      InstallApp(web_app::mojom::UserDisplayMode::kStandalone);
+
+  BrowserWindowInterface* const app_browser = LaunchAppUrl(GURL(kInScopeUrl));
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+  EXPECT_EQ(GURL(kInScopeUrl), GetActiveUrl(app_browser));
+
+  // Launching again opens another window rather than reusing the first.
+  BrowserWindowInterface* const app_browser2 = LaunchAppUrl(GURL(kInScopeUrl));
+  EXPECT_NE(app_browser, app_browser2);
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser2, app_id));
+  EXPECT_EQ(GURL(kInScopeUrl), GetActiveUrl(app_browser2));
+  EXPECT_EQ(3u, ProfileBrowserCollection::GetForProfile(profile())->GetSize());
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlLaunchTest,
+                       OutOfScopeUrlOpensShortcutWindow) {
+  InstallApp(web_app::mojom::UserDisplayMode::kStandalone);
+
+  BrowserWindowInterface* const app_browser =
+      LaunchAppUrl(GURL(kOutOfScopeUrl));
+  EXPECT_EQ(BrowserWindowInterface::TYPE_APP, app_browser->GetType());
+  EXPECT_FALSE(web_app::AppBrowserController::IsWebApp(app_browser));
+  EXPECT_EQ(GURL(kOutOfScopeUrl), GetActiveUrl(app_browser));
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlLaunchTest,
+                       InScopeUrlOfBrowserTabAppOpensShortcutWindow) {
+  InstallApp(web_app::mojom::UserDisplayMode::kBrowser);
+
+  BrowserWindowInterface* const app_browser = LaunchAppUrl(GURL(kInScopeUrl));
+  EXPECT_EQ(BrowserWindowInterface::TYPE_APP, app_browser->GetType());
+  EXPECT_FALSE(web_app::AppBrowserController::IsWebApp(app_browser));
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlLaunchTest,
+                       InScopeUrlOfAppWithoutOsIntegrationOpensShortcutWindow) {
+  const webapps::AppId app_id =
+      InstallApp(web_app::mojom::UserDisplayMode::kStandalone,
+                 /*with_os_integration=*/false);
+
+  BrowserWindowInterface* const app_browser = LaunchAppUrl(GURL(kInScopeUrl));
+  EXPECT_EQ(BrowserWindowInterface::TYPE_APP, app_browser->GetType());
+  EXPECT_FALSE(web_app::AppBrowserController::IsWebApp(app_browser));
+  EXPECT_EQ(
+      web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+      WebAppProvider::GetForTest(profile())->registrar_unsafe().GetInstallState(
+          app_id));
+}
+
+// Tests --app=<url> on the command line that starts the browser, when the web
+// app registry is not loaded yet.
+class StartupBrowserWebAppUrlLaunchAtStartupTest
+    : public StartupBrowserWebAppUrlLaunchTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    StartupBrowserWebAppUrlLaunchTest::SetUpCommandLine(command_line);
+    if (GetTestPreCount() == 0) {
+      command_line->AppendSwitchASCII(switches::kApp, kInScopeUrl);
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlLaunchAtStartupTest,
+                       PRE_InScopeUrlOpensWebAppWindow) {
+  InstallApp(web_app::mojom::UserDisplayMode::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlLaunchAtStartupTest,
+                       InScopeUrlOpensWebAppWindow) {
+  // The app window may open after the test starts.
+  if (!browser()) {
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
+    SetBrowser(browser_created_observer.Wait());
+  }
+  WebAppProvider* const provider = WebAppProvider::GetForTest(profile());
+  web_app::test::WaitUntilWebAppProviderAndSubsystemsReady(provider);
+  const std::optional<webapps::AppId> app_id =
+      provider->registrar_unsafe().FindBestAppWithUrlInScope(
+          GURL(kInScopeUrl), web_app::WebAppFilter::OpensInDedicatedWindow());
+  ASSERT_TRUE(app_id);
+
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser(), *app_id));
+  EXPECT_EQ(GURL(kInScopeUrl), GetActiveUrl(browser()));
+  EXPECT_EQ(1u, ProfileBrowserCollection::GetForProfile(profile())->GetSize());
+}
 
 class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
  protected:
