@@ -83,6 +83,8 @@ void TreeModelNode::AddImpl(std::unique_ptr<TreeModelNode> node, size_t index) {
                    std::move(node));
 }
 
+TreeModelObserver::~TreeModelObserver() = default;
+
 TreeModel::TreeModel(std::unique_ptr<TreeModelNode> root)
     : root_(std::move(root)) {}
 
@@ -100,7 +102,8 @@ std::unique_ptr<TreeModelNode> TreeModel::Remove(TreeModelNode* parent,
                                                  size_t index) {
   CHECK(parent);
   std::unique_ptr<TreeModelNode> owned_node = parent->Remove(index);
-  NotifyObserverTreeNodeRemoved(parent, index);
+  observer_list_.Notify(&TreeModelObserver::TreeNodeRemoved, this, parent,
+                        index);
   return owned_node;
 }
 
@@ -108,21 +111,6 @@ std::unique_ptr<TreeModelNode> TreeModel::Remove(TreeModelNode* parent,
                                                  TreeModelNode* node) {
   CHECK(parent);
   return Remove(parent, parent->GetIndexOf(node).value());
-}
-
-void TreeModel::NotifyObserverTreeNodeAdded(TreeModelNode* parent,
-                                            size_t index) {
-  observer_list_.Notify(&TreeModelObserver::TreeNodeAdded, this, parent, index);
-}
-
-void TreeModel::NotifyObserverTreeNodeRemoved(TreeModelNode* parent,
-                                              size_t index) {
-  observer_list_.Notify(&TreeModelObserver::TreeNodeRemoved, this, parent,
-                        index);
-}
-
-void TreeModel::NotifyObserverTreeNodeChanged(TreeModelNode* node) {
-  observer_list_.Notify(&TreeModelObserver::TreeNodeChanged, this, node);
 }
 
 void TreeModel::AddObserver(TreeModelObserver* observer) {
@@ -136,7 +124,7 @@ void TreeModel::RemoveObserver(TreeModelObserver* observer) {
 void TreeModel::SetTitle(TreeModelNode* node, const std::u16string& title) {
   CHECK(node);
   node->SetTitle(title);
-  NotifyObserverTreeNodeChanged(node);
+  observer_list_.Notify(&TreeModelObserver::TreeNodeChanged, this, node);
 }
 
 void TreeModel::AddImpl(TreeModelNode* parent,
@@ -145,7 +133,7 @@ void TreeModel::AddImpl(TreeModelNode* parent,
   CHECK(parent);
   CHECK(node);
   parent->Add(std::move(node), index);
-  NotifyObserverTreeNodeAdded(parent, index);
+  observer_list_.Notify(&TreeModelObserver::TreeNodeAdded, this, parent, index);
 }
 
 }  // namespace ui

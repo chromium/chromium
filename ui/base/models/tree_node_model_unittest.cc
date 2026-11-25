@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,7 +69,8 @@ using TestNode = TreeNodeWithValue<int>;
 TEST_F(TreeNodeModelTest, AddNode) {
   TreeModel model(std::make_unique<TreeModelNode>());
   TreeModelNode* root = model.GetRoot();
-  model.AddObserver(this);
+  base::ScopedObservation<TreeModel, TreeModelObserver> observation(this);
+  observation.Observe(&model);
 
   TreeModelNode* child1 = model.Add(root, std::make_unique<TreeModelNode>(), 0);
 
@@ -91,7 +93,8 @@ TEST_F(TreeNodeModelTest, AddNode) {
 TEST_F(TreeNodeModelTest, RemoveNode) {
   TreeModel model(std::make_unique<TreeModelNode>());
   TreeModelNode* root = model.GetRoot();
-  model.AddObserver(this);
+  base::ScopedObservation<TreeModel, TreeModelObserver> observation(this);
+  observation.Observe(&model);
 
   TreeModelNode* child1 = root->Add(std::make_unique<TreeModelNode>(), 0);
 
@@ -248,7 +251,8 @@ TEST_F(TreeNodeModelTest, GetTotalNodeCount) {
 TEST_F(TreeNodeModelTest, SetTitle) {
   TreeModel model(std::make_unique<TreeModelNode>(u"root"));
   TreeModelNode* root = model.GetRoot();
-  model.AddObserver(this);
+  base::ScopedObservation<TreeModel, TreeModelObserver> observation(this);
+  observation.Observe(&model);
 
   const std::u16string title(u"root2");
   model.SetTitle(root, title);

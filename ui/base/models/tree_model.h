@@ -15,6 +15,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 namespace ui {
 
@@ -80,23 +81,24 @@ class COMPONENT_EXPORT(UI_BASE) TreeModelNode {
 };
 
 // Observer for the TreeModel. Notified of significant events to the model.
-class COMPONENT_EXPORT(UI_BASE) TreeModelObserver {
+class COMPONENT_EXPORT(UI_BASE) TreeModelObserver
+    : public base::CheckedObserver {
  public:
-  // Notification that nodes were added to the specified parent.
+  // Notification that a node was added to `parent` at `index`.
   virtual void TreeNodeAdded(TreeModel* model,
                              TreeModelNode* parent,
                              size_t index) {}
 
-  // Notification that nodes were removed from the specified parent.
+  // Notification that a node was removed from `parent` at `index`.
   virtual void TreeNodeRemoved(TreeModel* model,
                                TreeModelNode* parent,
                                size_t index) {}
 
-  // Notification that the contents of a node has changed.
+  // Notification that the contents of `node` have changed.
   virtual void TreeNodeChanged(TreeModel* model, TreeModelNode* node) {}
 
  protected:
-  virtual ~TreeModelObserver() {}
+  ~TreeModelObserver() override;
 };
 
 // TreeModel ------------------------------------------------------------------
@@ -133,10 +135,6 @@ class COMPONENT_EXPORT(UI_BASE) TreeModel {
   std::unique_ptr<TreeModelNode> Remove(TreeModelNode* parent,
                                         TreeModelNode* node);
 
-  void NotifyObserverTreeNodeAdded(TreeModelNode* parent, size_t index);
-  void NotifyObserverTreeNodeRemoved(TreeModelNode* parent, size_t index);
-  void NotifyObserverTreeNodeChanged(TreeModelNode* node);
-
   // Adds an observer of the model.
   void AddObserver(TreeModelObserver* observer);
 
@@ -152,7 +150,7 @@ class COMPONENT_EXPORT(UI_BASE) TreeModel {
                std::unique_ptr<TreeModelNode> node,
                size_t index);
 
-  base::ObserverList<TreeModelObserver>::Unchecked observer_list_;
+  base::ObserverList<TreeModelObserver, /*check_empty=*/true> observer_list_;
   std::unique_ptr<TreeModelNode> root_;
 };
 
