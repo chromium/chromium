@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_omnibox_controller.h"
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/page_action/page_action_enums.h"
 #include "chrome/browser/ui/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
@@ -39,8 +41,11 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
@@ -140,11 +145,12 @@ class ReadAnythingOmniboxControllerTestBase
     run_loop.Run();
   }
 
-  void NavigateToDistillablePage() {
+  void NavigateToDistillablePage(
+      std::string_view path = "/long_text_page.html") {
     if (!embedded_test_server()->Started()) {
       ASSERT_TRUE(embedded_test_server()->Start());
     }
-    GURL url = embedded_test_server()->GetURL("/long_text_page.html");
+    GURL url = embedded_test_server()->GetURL(path);
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
         ->AddHintForTesting(
             url, optimization_guide::proto::READER_MODE_ELIGIBLE,
@@ -235,8 +241,8 @@ IN_PROC_BROWSER_TEST_F(
   MockLongDwellTime();
   NavigateToDistillablePage();
 
-  WaitForChipShowing(false);
-  ExpectPageActionStateImmediate(true);
+  WaitForPageActionShowing(true);
+  EXPECT_FALSE(GetCurrentPageActionState().chip_showing);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
@@ -262,9 +268,87 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
   // 4th page: chip should collapse (icon only, chip not showing).
   MockLongDwellTime();
   NavigateToDistillablePage();
-  WaitForChipShowing(false);
-  ExpectPageActionStateImmediate(true);
+  WaitForPageActionShowing(true);
+  EXPECT_FALSE(GetCurrentPageActionState().chip_showing);
   EXPECT_EQ(GetOmniboxIgnoredCount(), 3);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
+                       PrimaryPageChanged_HidesBeforeCheckCompletes) {
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForPageActionShowing(true);
+  auto* const user_ed = BrowserUserEducationInterface::From(browser());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return user_ed->IsFeaturePromoActive(
+        feature_engagement::kIPHReadingModePageActionLabelFeature);
+  }));
+
+  // The previous page's entry point and IPH don't linger while the new page is
+  // checked.
+  ASSERT_TRUE(NavigateToURL(browser(), GURL("https://www.example.com")));
+  ExpectPageActionStateImmediate(false);
+  EXPECT_FALSE(user_ed->IsFeaturePromoActive(
+      feature_engagement::kIPHReadingModePageActionLabelFeature));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingOmniboxControllerBrowserTest,
+    PrimaryPageChanged_RecordsShownMetricsOnConsecutiveDistillablePages) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForChipShowing(true);
+
+  // Use a different URL so the page action metrics see a new page.
+  NavigateToDistillablePage("/long_text_page.html?page=2");
+  ExpectPageActionStateImmediate(false);
+  WaitForChipShowing(true);
+
+  // Navigate away so the second page logs its UKM.
+  ASSERT_TRUE(NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.ReadingMode.Icon.CTR2",
+      page_actions::PageActionCTREvent::kShown, 2);
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.ReadingMode.Chip.CTR2",
+      page_actions::PageActionCTREvent::kShown, 2);
+
+  using UkmEntry = ukm::builders::Accessibility_ReadAnything_OmniboxEntryPoint;
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  // The initial about:blank page also logs an entry if its check finishes
+  // before the first navigation, so only check the distillable pages.
+  std::erase_if(entries, [&](const ukm::mojom::UkmEntry* entry) {
+    const ukm::UkmSource* source =
+        ukm_recorder.GetSourceForSourceId(entry->source_id);
+    return !source || !source->url().SchemeIsHTTPOrHTTPS();
+  });
+  ASSERT_EQ(entries.size(), 2u);
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kShownName, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingOmniboxControllerBrowserTest,
+    PrimaryPageChanged_CollapsingChipDoesNotRecordShownOnNewPage) {
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForChipShowing(true);
+  // The next ignore collapses the chip.
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount, 2);
+
+  base::HistogramTester histogram_tester;
+  MockLongDwellTime();
+  ASSERT_TRUE(NavigateToURL(browser(), GURL("https://www.example.com")));
+  EXPECT_EQ(GetOmniboxIgnoredCount(), 3);
+
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.ReadingMode.Icon.CTR2",
+      page_actions::PageActionCTREvent::kShown, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,

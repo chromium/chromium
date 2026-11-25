@@ -411,7 +411,10 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
 
   page_actions::PageActionController* page_action_controller =
       page_actions::PageActionController::From(tab);
-  if (!page_action_controller) {
+  // The action isn't registered when the window has no location bar, e.g. in
+  // unit tests.
+  if (!page_action_controller ||
+      !page_action_controller->ActionExists(kActionSidePanelShowReadAnything)) {
     return;
   }
   auto* const user_ed = BrowserUserEducationInterface::From(bwi);

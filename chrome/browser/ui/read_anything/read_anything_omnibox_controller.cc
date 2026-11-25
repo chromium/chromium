@@ -154,16 +154,21 @@ void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {
   was_last_checked_page_distillable_ = false;
   was_page_checked_ = false;
   last_close_reason_.reset();
+
+  // Hide the previous page's entry point before UpdateIgnored() can collapse
+  // the chip, so page action metrics don't count it as shown on the new page.
+  const bool was_showing = GetCurrentPageActionState().showing;
+  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
+      /*should_show_page_action=*/false, tab_);
+  // The entry point re-shows after RM is closed, but it wasn't ignored if it
+  // was used on this page.
+  UpdateIgnored(was_showing && !was_triggered);
+  entry_point_shown_time_ = base::TimeTicks();
   if (IsIrrelevant()) {
-    entry_point_shown_time_ = base::TimeTicks();
     return;
   }
 
   StopTimers();
-  // The entry point re-shows after RM is closed, but it wasn't ignored if it
-  // was used on this page.
-  UpdateIgnored(GetCurrentPageActionState().showing && !was_triggered);
-  entry_point_shown_time_ = base::TimeTicks();
   DebounceCheckSuggestion();
 }
 
