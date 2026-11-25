@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
@@ -85,42 +86,74 @@ public class TabGroupListCoordinatorUnitTest {
         mTabListFaviconProvider.destroy();
     }
 
-    @Test
-    public void testForeignFavicon() {
-        FaviconResolver resolver =
-                TabGroupListFaviconResolverFactory.build(
-                        mActivity, mProfile, mTabListFaviconProvider);
-        resolver.resolve(JUnitTestGURLs.URL_1, mCallback);
-        verify(mFaviconHelperJniMock)
-                .getForeignFaviconImageForURL(
-                        anyLong(),
-                        any(),
-                        any(),
-                        anyInt(),
-                        anyBoolean(),
-                        mFaviconImageCallbackCaptor.capture());
+    private void verifyFaviconLookup(
+            boolean isLocal, boolean started, @Nullable Bitmap resolvedBitmap) {
+        if (isLocal) {
+            when(mFaviconHelperJniMock.getLocalFaviconImageForURL(
+                            eq(FAKE_NATIVE_PTR), any(), any(), anyInt(), anyBoolean(), any()))
+                    .thenReturn(started);
+        } else {
+            when(mFaviconHelperJniMock.getForeignFaviconImageForURL(
+                            eq(FAKE_NATIVE_PTR), any(), any(), anyInt(), anyBoolean(), any()))
+                    .thenReturn(started);
+        }
 
-        mFaviconImageCallbackCaptor.getValue().onFaviconAvailable(mBitmap, JUnitTestGURLs.URL_2);
+        FaviconResolver resolver =
+                isLocal
+                        ? TabGroupListFaviconResolverFactory.buildLocal(
+                                mActivity, mProfile, mTabListFaviconProvider)
+                        : TabGroupListFaviconResolverFactory.build(
+                                mActivity, mProfile, mTabListFaviconProvider);
+        resolver.resolve(JUnitTestGURLs.URL_1, mCallback);
+
+        verify(mFaviconHelperJniMock).init();
+        if (isLocal) {
+            verify(mFaviconHelperJniMock)
+                    .getLocalFaviconImageForURL(
+                            eq(FAKE_NATIVE_PTR),
+                            any(),
+                            any(),
+                            anyInt(),
+                            anyBoolean(),
+                            mFaviconImageCallbackCaptor.capture());
+        } else {
+            verify(mFaviconHelperJniMock)
+                    .getForeignFaviconImageForURL(
+                            eq(FAKE_NATIVE_PTR),
+                            any(),
+                            any(),
+                            anyInt(),
+                            anyBoolean(),
+                            mFaviconImageCallbackCaptor.capture());
+        }
+
+        if (started) {
+            mFaviconImageCallbackCaptor
+                    .getValue()
+                    .onFaviconAvailable(resolvedBitmap, JUnitTestGURLs.URL_2);
+        }
+        verify(mFaviconHelperJniMock).destroy(FAKE_NATIVE_PTR);
         verify(mCallback).onResult(notNull());
     }
 
     @Test
-    public void testFallbackFavicon() {
-        FaviconResolver resolver =
-                TabGroupListFaviconResolverFactory.build(
-                        mActivity, mProfile, mTabListFaviconProvider);
-        resolver.resolve(JUnitTestGURLs.URL_1, mCallback);
-        verify(mFaviconHelperJniMock)
-                .getForeignFaviconImageForURL(
-                        anyLong(),
-                        any(),
-                        any(),
-                        anyInt(),
-                        anyBoolean(),
-                        mFaviconImageCallbackCaptor.capture());
+    public void testForeignFavicon() {
+        verifyFaviconLookup(/* isLocal= */ false, /* started= */ true, mBitmap);
+    }
 
-        mFaviconImageCallbackCaptor.getValue().onFaviconAvailable(null, JUnitTestGURLs.URL_2);
-        verify(mCallback).onResult(notNull());
+    @Test
+    public void testForeignFavicon_FailedStart() {
+        verifyFaviconLookup(/* isLocal= */ false, /* started= */ false, null);
+    }
+
+    @Test
+    public void testLocalFavicon() {
+        verifyFaviconLookup(/* isLocal= */ true, /* started= */ true, mBitmap);
+    }
+
+    @Test
+    public void testFallbackFavicon() {
+        verifyFaviconLookup(/* isLocal= */ false, /* started= */ true, null);
     }
 
     @Test

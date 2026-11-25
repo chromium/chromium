@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -30,12 +31,19 @@ public class TabGroupListFaviconResolverFactory {
         /**
          * Asynchronously resolves the favicon for the specified URL using a particular strategy.
          *
+         * @param faviconHelper The {@link FaviconHelper} used to perform the lookup.
          * @param profile The user profile.
          * @param url The url for which the favicon should be resolved.
          * @param faviconSizePx The desired size of the favicon bitmap in pixels.
          * @param callback An observer to be notified asynchronously using the now resolved favicon.
+         * @return Whether the asynchronous lookup was started and the callback will be invoked.
          */
-        void resolve(Profile profile, GURL url, int faviconSizePx, FaviconImageCallback callback);
+        boolean resolve(
+                FaviconHelper faviconHelper,
+                Profile profile,
+                GURL url,
+                int faviconSizePx,
+                FaviconImageCallback callback);
     }
 
     /**
@@ -71,17 +79,23 @@ public class TabGroupListFaviconResolverFactory {
                 TabGroupListFaviconResolverFactory::resolveLocalFavicon);
     }
 
-    private static void resolveForeignFavicon(
-            Profile profile, GURL url, int faviconSizePx, FaviconImageCallback callback) {
-        FaviconHelper faviconHelper = new FaviconHelper();
-        faviconHelper.getForeignFaviconImageForURL(
+    private static boolean resolveForeignFavicon(
+            FaviconHelper faviconHelper,
+            Profile profile,
+            GURL url,
+            int faviconSizePx,
+            FaviconImageCallback callback) {
+        return faviconHelper.getForeignFaviconImageForURL(
                 profile, url, faviconSizePx, /* fallbackToHost= */ true, callback);
     }
 
-    private static void resolveLocalFavicon(
-            Profile profile, GURL url, int faviconSizePx, FaviconImageCallback callback) {
-        FaviconHelper faviconHelper = new FaviconHelper();
-        faviconHelper.getLocalFaviconImageForURL(
+    private static boolean resolveLocalFavicon(
+            FaviconHelper faviconHelper,
+            Profile profile,
+            GURL url,
+            int faviconSizePx,
+            FaviconImageCallback callback) {
+        return faviconHelper.getLocalFaviconImageForURL(
                 profile, url, faviconSizePx, /* fallbackToHost= */ true, callback);
     }
 
@@ -114,17 +128,21 @@ public class TabGroupListFaviconResolverFactory {
         FaviconHelper faviconHelper = new FaviconHelper();
         FaviconImageCallback faviconImageCallback =
                 (Bitmap bitmap, GURL ignored) -> {
-                    onFavicon(context, fallbackProvider, callback, bitmap);
                     faviconHelper.destroy();
+                    onFavicon(context, fallbackProvider, callback, bitmap);
                 };
-        resolveFavicon.resolve(profile, url, faviconSizePixels, faviconImageCallback);
+        if (!resolveFavicon.resolve(
+                faviconHelper, profile, url, faviconSizePixels, faviconImageCallback)) {
+            faviconHelper.destroy();
+            onFavicon(context, fallbackProvider, callback, null);
+        }
     }
 
     private static void onFavicon(
             Context context,
             TabListFaviconProvider fallbackProvider,
             Callback<Drawable> callback,
-            Bitmap bitmap) {
+            @Nullable Bitmap bitmap) {
         final Drawable drawable;
         if (bitmap == null) {
             drawable =
