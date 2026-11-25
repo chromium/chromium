@@ -330,7 +330,9 @@ size_t MotionEventAndroid::GetPointerCount() const {
 }
 
 int MotionEventAndroid::GetPointerId(size_t pointer_index) const {
-  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/588128492): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_LT(pointer_index, GetPointerCount());
   if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerId(pointer_index);
   }
