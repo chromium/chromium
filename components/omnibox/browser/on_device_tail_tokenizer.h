@@ -102,8 +102,9 @@ class OnDeviceTailTokenizer {
       const std::string& raw_string,
       std::vector<std::pair<std::string, TokenId>>* token_and_ids) const;
 
-  // Insert token and its ID to tokens <-> IDs maps.
-  void InsertTokenToMaps(const std::string& token);
+  // Inserts token and its ID into tokens <-> IDs maps. Returns false if the
+  // token is already present.
+  bool InsertTokenToMaps(const std::string& token);
 
   // Maps for tokens <-> IDs.
   base::flat_map<std::string, TokenId> token_to_id_;

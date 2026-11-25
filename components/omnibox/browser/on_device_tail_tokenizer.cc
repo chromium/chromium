@@ -8,11 +8,12 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -34,21 +35,9 @@ static constexpr char kEndQueryToken[] = "</Q>";
 static constexpr char kEmptyPreviousQueryToken[] = "<NPQ>";
 static constexpr char kUnknownToken[] = "<UNK>";
 
-std::ostream& operator<<(std::ostream& os,
-                         const base::flat_set<std::string>& tokens) {
-  if (tokens.empty()) {
-    return os;
-  }
-
-  auto iter = tokens.begin();
-  os << *iter;
-  ++iter;
-
-  for (; iter != tokens.end(); iter++) {
-    os << ", " << *iter;
-  }
-  return os;
-}
+constexpr auto kControlTokens = base::MakeFixedFlatSet<std::string_view>(
+    {kBeginQueryToken, kEndQueryToken, kEmptyPreviousQueryToken,
+     kUnknownToken});
 
 }  // namespace
 
@@ -70,10 +59,6 @@ bool OnDeviceTailTokenizer::Init(const base::FilePath& vocabulary_filepath) {
     return false;
   }
 
-  base::flat_set<std::string> control_tokens = {
-      kBeginQueryToken, kEndQueryToken, kEmptyPreviousQueryToken,
-      kUnknownToken};
-
   std::string token;
   max_token_length_ = 0;
 
@@ -83,6 +68,7 @@ bool OnDeviceTailTokenizer::Init(const base::FilePath& vocabulary_filepath) {
     InsertTokenToMaps(token);
   }
 
+  size_t found_control_tokens = 0;
   std::stringstream vocabulary(vocabulary_content);
   while (std::getline(vocabulary, token)) {
     if (token.empty()) {
@@ -90,24 +76,30 @@ bool OnDeviceTailTokenizer::Init(const base::FilePath& vocabulary_filepath) {
     }
 
     // Duplicate tokens are not allowed.
-    if (token_to_id_.find(token) != token_to_id_.end()) {
+    if (!InsertTokenToMaps(token)) {
       Reset();
       DVLOG(1) << "Duplicate token found: " << token;
       return false;
     }
 
-    InsertTokenToMaps(token);
-    if (control_tokens.find(token) != control_tokens.end()) {
-      control_tokens.erase(token);
+    if (kControlTokens.contains(token)) {
+      ++found_control_tokens;
     } else {
       max_token_length_ = std::max<size_t>(max_token_length_, token.size());
     }
   }
 
   // A valid vocabulary should include all control tokens.
-  if (!control_tokens.empty()) {
+  if (found_control_tokens != kControlTokens.size()) {
+    std::vector<std::string_view> missing_tokens;
+    for (std::string_view control_token : kControlTokens) {
+      if (!token_to_id_.contains(control_token)) {
+        missing_tokens.push_back(control_token);
+      }
+    }
     Reset();
-    DVLOG(1) << "Missing following control tokens: " << control_tokens;
+    DVLOG(1) << "Missing following control tokens: "
+             << base::JoinString(missing_tokens, ", ");
     return false;
   }
 
@@ -189,10 +181,7 @@ bool OnDeviceTailTokenizer::IsTokenPrintable(TokenId token_id) const {
   // control token. Note other multi-char tokens which are extracted from
   // queries are always printable.
   if (static_cast<size_t>(token_id) >= kNumSingleChar) {
-    return token_id != TokenToId(kBeginQueryToken) &&
-           token_id != TokenToId(kEndQueryToken) &&
-           token_id != TokenToId(kEmptyPreviousQueryToken) &&
-           token_id != TokenToId(kUnknownToken);
+    return !kControlTokens.contains(id_to_token_[token_id]);
   }
   return base::IsAsciiPrintable(static_cast<char>(token_id));
 }
@@ -278,9 +267,12 @@ void OnDeviceTailTokenizer::CreatePrefixTokenization(
   }
 }
 
-void OnDeviceTailTokenizer::InsertTokenToMaps(const std::string& token) {
+bool OnDeviceTailTokenizer::InsertTokenToMaps(const std::string& token) {
   DCHECK(!token.empty());
-  token_to_id_.insert({token, id_to_token_.size()});
-  id_to_token_.push_back(std::move(token));
+  if (!token_to_id_.try_emplace(token, id_to_token_.size()).second) {
+    return false;
+  }
+  id_to_token_.push_back(token);
   DCHECK_EQ(token_to_id_.size(), id_to_token_.size());
+  return true;
 }
