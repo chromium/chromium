@@ -21,6 +21,8 @@
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_payment_method_delegate.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -80,6 +82,7 @@ inline constexpr const char kUmaTouchToFillIbanTriggerOutcome[] =
 inline constexpr const char kUmaTouchToFillLoyaltyCardTriggerOutcome[] =
     "Autofill.TouchToFill.LoyaltyCard.TriggerOutcome";
 
+class AutofillField;
 class BrowserAutofillManager;
 class FormStructure;
 
@@ -224,9 +227,16 @@ class TouchToFillPaymentMethodDelegateAndroidImpl
   DryRunResult DryRunForCreditCard(const AutofillField& field,
                                    const FormStructure& form);
 
-  // Returns a DryRunResult with the user's fillable affiliated loyalty cards,
-  // or an error reason if TTF should not be triggered.
-  DryRunResult DryRunForAffiliatedLoyaltyCard();
+  // Returns a `DryRunResult` with the user's fillable affiliated loyalty cards
+  // for `field`, or an error reason if TTF should not be triggered.
+  DryRunResult DryRunForAffiliatedLoyaltyCard(const AutofillField& field);
+
+  void OnCreditCardScannedImpl(FormGlobalId form_id,
+                               FieldGlobalId field_id,
+                               const CreditCard& card);
+
+  base::WeakPtr<TouchToFillPaymentMethodDelegateAndroidImpl>
+  GetSelectionWeakPtr();
 
   void LogTriggerOutcomeMetrics(const FormGlobalId& form_id,
                                 const FieldGlobalId& field_id,
@@ -235,14 +245,21 @@ class TouchToFillPaymentMethodDelegateAndroidImpl
   TouchToFillState ttf_payment_method_state_ = TouchToFillState::kShouldShow;
 
   const raw_ref<BrowserAutofillManager> manager_;
-  FormData query_form_;
-  FormFieldData query_field_;
+  // TODO(crbug.com/589641745): Move per-sheet state into a session struct.
+  FormGlobalId query_form_id_;
+  FieldGlobalId query_field_id_;
+  // The origin of the field `query_field_id_`. Only used if
+  // `features::kAutofillTouchToFillPaymentsBindTargetFieldIds` is disabled.
+  url::Origin query_field_origin_;
   bool dismissed_by_user_ = false;
 
   BnplCallbacks bnpl_callbacks_;
 
   base::WeakPtrFactory<TouchToFillPaymentMethodDelegateAndroidImpl>
       weak_ptr_factory_{this};
+  // Invalidated on `Reset()` to cancel pending asynchronous filling callbacks.
+  base::WeakPtrFactory<TouchToFillPaymentMethodDelegateAndroidImpl>
+      selection_weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

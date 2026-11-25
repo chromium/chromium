@@ -359,6 +359,13 @@ BASE_FEATURE(kAutofillSkipSaveCardForTabModalPopup,
 // When enabled, eWallet accounts are synced from the Google Payments servers
 // and displayed on the payment methods settings page.
 BASE_FEATURE(kAutofillSyncEwalletAccounts, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Kill switch for binding the Touch To Fill payment method target to the form
+// and field for which the sheet was shown. When disabled, selections fill the
+// most recently queried form and field instead.
+// TODO(crbug.com/584778198): Clean up after M163 branch.
+BASE_FEATURE(kAutofillTouchToFillPaymentsBindTargetFieldIds,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Controls offering credit card upload to Google Payments. Cannot ever be

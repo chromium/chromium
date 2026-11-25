@@ -10,10 +10,12 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
@@ -28,6 +30,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -412,10 +415,7 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplUnitTest,
   base::OnceCallback<void(const CreditCard&)> captured_callback;
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnUserDecisionToUseBnpl)
-      .WillOnce([&](std::optional<uint64_t> amount,
-                    base::OnceCallback<void(const CreditCard&)> callback) {
-        captured_callback = std::move(callback);
-      });
+      .WillOnce(MoveArg<1>(&captured_callback));
 
   touch_to_fill_delegate_->BnplSuggestionSelected(
       /*extracted_amount=*/12345);
@@ -443,10 +443,7 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplUnitTest,
   base::OnceCallback<void(const CreditCard&)> captured_callback;
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnUserDecisionToUseBnpl)
-      .WillOnce([&](std::optional<uint64_t> amount,
-                    base::OnceCallback<void(const CreditCard&)> callback) {
-        captured_callback = std::move(callback);
-      });
+      .WillOnce(MoveArg<1>(&captured_callback));
 
   touch_to_fill_delegate_->BnplSuggestionSelected(
       /*extracted_amount=*/12345);
@@ -454,6 +451,78 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplUnitTest,
 
   // Expect FillOrPreviewForm is not called after delegate is reset.
   autofill_manager().set_touch_to_fill_payment_method_delegate(nullptr);
+  EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
+
+  std::move(captured_callback).Run(test_card);
+}
+
+TEST_F(TouchToFillPaymentMethodDelegateAndroidImplUnitTest,
+       BnplSuggestionSelected_PreservesTargetFieldAcrossSubsequentShowAttempt) {
+  CreditCard test_card = test::GetCreditCard();
+
+  ConfigureForCreditCards(test_card);
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  base::OnceCallback<void(const CreditCard&)> captured_callback;
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnUserDecisionToUseBnpl)
+      .WillOnce(MoveArg<1>(&captured_callback));
+
+  touch_to_fill_delegate_->BnplSuggestionSelected(
+      /*extracted_amount=*/12345);
+  ASSERT_TRUE(captured_callback);
+
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/false,
+                                       /*should_reshow=*/false);
+
+  FormData other_form = test::CreateTestUnclassifiedFormData();
+  autofill_manager().OnFormsSeen({other_form}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
+  EXPECT_FALSE(touch_to_fill_delegate_->TryToShowTouchToFill(
+      other_form, other_form.fields()[0]));
+
+  test_api(*autofill_client().GetValuablesDataManager())
+      .AddLoyaltyCard(test::CreateLoyaltyCard());
+  FormData loyalty_form = test::CreateTestLoyaltyCardFormData();
+  autofill_manager().OnFormsSeen({loyalty_form}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(
+                  SuggestionHidingReason::kOverlappingWithTouchToFillSurface,
+                  testing::Eq(std::nullopt)));
+  EXPECT_TRUE(touch_to_fill_delegate_->ShowTouchToFillForAllLoyaltyCards(
+      loyalty_form, loyalty_form.fields()[0]));
+
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewForm(
+                  mojom::ActionPersistence::kFill, form_.global_id(),
+                  form_.fields()[0].global_id(), FillingProduct::kCreditCard,
+                  ::testing::VariantWith<const CreditCard*>(Pointee(test_card)),
+                  AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet,
+                  /*require_user_confirmation=*/false, _));
+
+  std::move(captured_callback).Run(test_card);
+}
+
+TEST_F(TouchToFillPaymentMethodDelegateAndroidImplUnitTest,
+       BnplSuggestionSelected_CallbackDoesNothingAfterReset) {
+  CreditCard test_card = test::GetCreditCard();
+
+  ConfigureForCreditCards(test_card);
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  base::OnceCallback<void(const CreditCard&)> captured_callback;
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnUserDecisionToUseBnpl)
+      .WillOnce(MoveArg<1>(&captured_callback));
+
+  touch_to_fill_delegate_->BnplSuggestionSelected(
+      /*extracted_amount=*/12345);
+  ASSERT_TRUE(captured_callback);
+
+  touch_to_fill_delegate_->Reset();
+  TryToShowTouchToFill(/*expected_success=*/true);
+
   EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
 
   std::move(captured_callback).Run(test_card);
@@ -1284,13 +1353,88 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplCreditCardUnitTest, OnBnplTosA
   touch_to_fill_delegate_->OnBnplTosAccepted();
 }
 
+TEST_F(TouchToFillPaymentMethodDelegateAndroidImplCreditCardUnitTest,
+       ScanCreditCardCallbackPreservesTargetFieldAcrossSubsequentShowAttempt) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  payments::PaymentsAutofillClient::CreditCardScanCallback scan_callback;
+  EXPECT_CALL(payments_autofill_client(), ScanCreditCard)
+      .WillOnce(MoveArg<0>(&scan_callback));
+  touch_to_fill_delegate_->ScanCreditCard();
+  ASSERT_TRUE(scan_callback);
+
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/false,
+                                       /*should_reshow=*/false);
+  FormData other_form = test::CreateTestUnclassifiedFormData();
+  autofill_manager().OnFormsSeen({other_form}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
+  EXPECT_FALSE(touch_to_fill_delegate_->TryToShowTouchToFill(
+      other_form, other_form.fields()[0]));
+
+  CreditCard credit_card = test::GetCreditCard();
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewForm(
+          mojom::ActionPersistence::kFill, form_.global_id(),
+          form_.fields()[0].global_id(), FillingProduct::kCreditCard,
+          ::testing::VariantWith<const CreditCard*>(Pointee(credit_card)),
+          AutofillTriggerSource::kScanCreditCard,
+          /*require_user_confirmation=*/false, _));
+
+  std::move(scan_callback).Run(credit_card);
+}
+
+TEST_F(TouchToFillPaymentMethodDelegateAndroidImplCreditCardUnitTest,
+       ScanCreditCardCallbackDoesNothingAfterReset) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  payments::PaymentsAutofillClient::CreditCardScanCallback scan_callback;
+  EXPECT_CALL(payments_autofill_client(), ScanCreditCard)
+      .WillOnce(MoveArg<0>(&scan_callback));
+  touch_to_fill_delegate_->ScanCreditCard();
+  ASSERT_TRUE(scan_callback);
+
+  touch_to_fill_delegate_->Reset();
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
+  std::move(scan_callback).Run(test::GetCreditCard());
+  EXPECT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());
+}
+
+TEST_F(TouchToFillPaymentMethodDelegateAndroidImplCreditCardUnitTest,
+       AutofillUsedAfterTouchToFillDismissalPreservesFormAfterRejectedShow) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true,
+                                       /*should_reshow=*/false);
+
+  FormData other_form = test::CreateTestUnclassifiedFormData();
+  autofill_manager().OnFormsSeen({other_form}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
+  EXPECT_FALSE(touch_to_fill_delegate_->TryToShowTouchToFill(
+      other_form, other_form.fields()[0]));
+
+  // Simulate that the original form was autofilled by other means.
+  FormStructure submitted_form(form_);
+  for (const std::unique_ptr<AutofillField>& field : submitted_form) {
+    field->AddFieldModifier(FieldModifier::kAutofill);
+  }
+
+  touch_to_fill_delegate_->LogMetricsAfterSubmission(submitted_form);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.TouchToFill.CreditCard.AutofillUsedAfterTouchToFillDismissal",
+      true, 1);
+}
+
 class TouchToFillPaymentMethodDelegateAndroidImplIbanUnitTest
     : public TouchToFillPaymentMethodDelegateAndroidImplUnitTest {
  protected:
   void SetUp() override {
     TouchToFillPaymentMethodDelegateAndroidImplUnitTest::SetUp();
-    ConfigureForIbans();
+    iban_guid_ = Iban::Guid(ConfigureForIbans());
   }
+
+  Iban::Guid iban_guid_;
 };
 
 TEST_F(TouchToFillPaymentMethodDelegateAndroidImplIbanUnitTest,
@@ -1383,6 +1527,153 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplIbanUnitTest,
   EXPECT_CALL(*payments_autofill_client().GetIbanAccessManager(), FetchValue);
   touch_to_fill_delegate_->IbanSuggestionSelected(
       Iban::InstrumentId(instrument_id));
+}
+
+TEST_F(TouchToFillPaymentMethodDelegateAndroidImplIbanUnitTest,
+       LocalIbanSelectionPreservesTargetFieldAcrossCrossOriginFocusChange) {
+  FormFieldData main_frame_field = test::CreateTestFormField(
+      "Name", "name", "", FormControlType::kInputText);
+  main_frame_field.set_host_frame(test::MakeLocalFrameToken());
+  main_frame_field.set_renderer_id(test::MakeFieldRendererId());
+  main_frame_field.set_origin(
+      url::Origin::Create(GURL("https://top-frame.example")));
+  main_frame_field.set_is_focusable(true);
+  test_api(form_).Insert(0, std::move(main_frame_field));
+  test_api(form_).field(1).set_host_frame(test::MakeLocalFrameToken());
+  test_api(form_).field(1).set_renderer_id(test::MakeFieldRendererId());
+  test_api(form_).field(1).set_origin(
+      url::Origin::Create(GURL("https://iban-provider.example")));
+  autofill_manager().OnFormsSeen({form_}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
+  const FormFieldData& main_field = form_.fields()[0];
+  const FormFieldData& embedded_field = form_.fields()[1];
+
+  EXPECT_TRUE(
+      touch_to_fill_delegate_->TryToShowTouchToFill(form_, embedded_field));
+
+  IbanAccessManager::OnIbanFetchedCallback fetch_callback;
+  EXPECT_CALL(*payments_autofill_client().GetIbanAccessManager(),
+              FetchValue(_, _))
+      .WillOnce(MoveArg<1>(&fetch_callback));
+  touch_to_fill_delegate_->IbanSuggestionSelected(iban_guid_);
+  ASSERT_TRUE(fetch_callback);
+
+  EXPECT_FALSE(
+      touch_to_fill_delegate_->TryToShowTouchToFill(form_, main_field));
+
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewField(_, _, _, main_field.global_id(), _, _, _))
+      .Times(0);
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewField(mojom::ActionPersistence::kFill,
+                                 mojom::FieldActionType::kReplaceAll,
+                                 form_.global_id(), embedded_field.global_id(),
+                                 std::u16string(test::kIbanValue16),
+                                 FillingProduct::kIban, Optional(IBAN_VALUE)))
+      .Times(1);
+
+  std::move(fetch_callback).Run(std::u16string(test::kIbanValue16));
+}
+
+TEST_F(TouchToFillPaymentMethodDelegateAndroidImplIbanUnitTest,
+       ServerIbanSelectionPreservesTargetFieldWhenAnotherSheetShown) {
+  autofill_client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .SetSyncingForTest(true);
+  long instrument_id = 123245678L;
+  Iban server_iban = test::GetServerIban();
+  server_iban.set_identifier(Iban::InstrumentId(instrument_id));
+  autofill_client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .AddServerIban(server_iban);
+
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  IbanAccessManager::OnIbanFetchedCallback fetch_callback;
+  EXPECT_CALL(*payments_autofill_client().GetIbanAccessManager(),
+              FetchValue(_, _))
+      .WillOnce(MoveArg<1>(&fetch_callback));
+  touch_to_fill_delegate_->IbanSuggestionSelected(
+      Iban::InstrumentId(instrument_id));
+  ASSERT_TRUE(fetch_callback);
+
+  test_api(*autofill_client().GetValuablesDataManager())
+      .AddLoyaltyCard(test::CreateLoyaltyCard());
+  FormData loyalty_form = test::CreateTestLoyaltyCardFormData();
+  autofill_manager().OnFormsSeen({loyalty_form}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(
+                  SuggestionHidingReason::kOverlappingWithTouchToFillSurface,
+                  testing::Eq(std::nullopt)));
+  EXPECT_TRUE(touch_to_fill_delegate_->ShowTouchToFillForAllLoyaltyCards(
+      loyalty_form, loyalty_form.fields()[0]));
+
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAll, form_.global_id(),
+                         form_.fields()[0].global_id(),
+                         std::u16string(test::kIbanValue16),
+                         FillingProduct::kIban, Optional(IBAN_VALUE)));
+
+  std::move(fetch_callback).Run(std::u16string(test::kIbanValue16));
+}
+
+TEST_F(TouchToFillPaymentMethodDelegateAndroidImplIbanUnitTest,
+       StaleIbanFetchCallbackDoesNothingAfterReset) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  IbanAccessManager::OnIbanFetchedCallback stale_fetch_callback;
+  EXPECT_CALL(*payments_autofill_client().GetIbanAccessManager(),
+              FetchValue(_, _))
+      .WillOnce(MoveArg<1>(&stale_fetch_callback));
+  touch_to_fill_delegate_->IbanSuggestionSelected(iban_guid_);
+  ASSERT_TRUE(stale_fetch_callback);
+
+  // Resetting the delegate (e.g. on navigation) invalidates in-flight callbacks
+  // from the previous page, even after Touch To Fill is shown again.
+  touch_to_fill_delegate_->Reset();
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  EXPECT_CALL(autofill_manager(), FillOrPreviewField).Times(0);
+  std::move(stale_fetch_callback).Run(std::u16string(test::kIbanValue16));
+  testing::Mock::VerifyAndClearExpectations(&autofill_manager());
+
+  // Selecting an IBAN on the reshown sheet still fills as expected.
+  IbanAccessManager::OnIbanFetchedCallback new_fetch_callback;
+  EXPECT_CALL(*payments_autofill_client().GetIbanAccessManager(),
+              FetchValue(_, _))
+      .WillOnce(MoveArg<1>(&new_fetch_callback));
+  touch_to_fill_delegate_->IbanSuggestionSelected(iban_guid_);
+  ASSERT_TRUE(new_fetch_callback);
+
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAll, form_.global_id(),
+                         form_.fields()[0].global_id(),
+                         std::u16string(test::kIbanValue16),
+                         FillingProduct::kIban, Optional(IBAN_VALUE)));
+  std::move(new_fetch_callback).Run(std::u16string(test::kIbanValue16));
+}
+
+TEST_F(TouchToFillPaymentMethodDelegateAndroidImplIbanUnitTest,
+       IbanSelectionDoesNotFillOnFetchFailure) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  IbanAccessManager::OnIbanFetchedCallback fetch_callback;
+  EXPECT_CALL(*payments_autofill_client().GetIbanAccessManager(),
+              FetchValue(_, _))
+      .WillOnce(MoveArg<1>(&fetch_callback));
+  touch_to_fill_delegate_->IbanSuggestionSelected(iban_guid_);
+  ASSERT_TRUE(fetch_callback);
+
+  EXPECT_CALL(autofill_manager(), FillOrPreviewField).Times(0);
+  std::move(fetch_callback)
+      .Run(base::unexpected(IbanAccessManager::FailureReason::kFetchFailed));
 }
 
 class TouchToFillPaymentMethodDelegateAndroidImplLoyaltyCardUnitTest
@@ -1509,6 +1800,21 @@ TEST_F(
   EXPECT_CALL(autofill_manager(),
               LogAndRecordLoyaltyCardFill(kLoyaltyCard, _, _));
   touch_to_fill_delegate_->LoyaltyCardSuggestionSelected(kLoyaltyCard);
+}
+
+TEST_F(TouchToFillPaymentMethodDelegateAndroidImplLoyaltyCardUnitTest,
+       IntendsToShowTouchToFillChecksTargetFieldOrigin) {
+  IntendsToShowTouchToFill(/*expected_success=*/true);
+
+  test_api(form_).field(0).set_origin(
+      url::Origin::Create(GURL("https://embedded-subframe.example")));
+  autofill_manager().OnFormsSeen({form_}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
+
+  EXPECT_FALSE(touch_to_fill_delegate_->IntendsToShowTouchToFill(
+      form_.global_id(), form_.fields()[0].global_id()));
+  EXPECT_FALSE(
+      touch_to_fill_delegate_->TryToShowTouchToFill(form_, form_.fields()[0]));
 }
 
 class TouchToFillPaymentMethodDelegateAndroidImplEmailOrLoyaltyCardUnitTest
