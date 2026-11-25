@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -71,12 +72,14 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -89,6 +92,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/view_utils.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -723,7 +727,7 @@ void PaymentHandlerWebFlowViewController::SetHeaderColorsAndOriginLabelText() {
   }
 
   SetHeaderColors(header_view(), origin_label_.get(), progress_bar_.get(),
-                  close_button_.get(), theme_color);
+                  close_button_.get(), location_icon_view(), theme_color);
 
   if (permission_dashboard_view() && header_view() &&
       header_view()->GetWidget()) {
@@ -757,17 +761,14 @@ PaymentHandlerWebFlowViewController::GetActiveWebContents() const {
 
 SkColor PaymentHandlerWebFlowViewController::
     GetIconLabelBubbleSurroundingForegroundColor() const {
-  // TODO(crbug.com/549701781): The payment dialog header supports custom HTML
-  // head theme colors, while this icon view currently ignores them in favor of
-  // default Chrome theme colors.
+  if (std::optional<SkColor> bg = GetLocationIconThemeBackgroundColor()) {
+    return GetContrastingHeaderIconColor(*bg);
+  }
   return header_view()->GetColorProvider()->GetColor(kColorOmniboxText);
 }
 
 SkColor PaymentHandlerWebFlowViewController::GetIconLabelBubbleBackgroundColor()
     const {
-  // TODO(crbug.com/549701781): The payment dialog header supports custom HTML
-  // head theme colors, while this icon view currently ignores them in favor of
-  // default Chrome theme colors.
   return header_view()->GetColorProvider()->GetColor(
       ui::kColorDialogBackground);
 }
@@ -782,11 +783,30 @@ bool PaymentHandlerWebFlowViewController::IsEditingOrEmpty() const {
 
 SkColor PaymentHandlerWebFlowViewController::GetSecurityChipColor(
     security_state::SecurityLevel security_level) const {
+  if (std::optional<SkColor> bg = GetLocationIconThemeBackgroundColor()) {
+    return security_level == security_state::DANGEROUS
+               ? color_utils::PickGoogleColor(
+                     gfx::kGoogleRed600, *bg,
+                     color_utils::kMinimumVisibleContrastRatio)
+               : GetContrastingHeaderIconColor(*bg);
+  }
   ui::ColorId id = kColorOmniboxText;
   if (security_level == security_state::DANGEROUS) {
     id = kColorOmniboxSecurityChipDangerous;
   }
   return header_view()->GetColorProvider()->GetColor(id);
+}
+
+std::optional<SkColor>
+PaymentHandlerWebFlowViewController::GetLocationIconThemeBackgroundColor()
+    const {
+  const auto* icon_view = views::AsViewClass<PaymentHandlerLocationIconView>(
+      location_icon_view_tracker_.view());
+  if (!icon_view || !icon_view->GetWidget() ||
+      !icon_view->theme_color().has_value()) {
+    return std::nullopt;
+  }
+  return GetEffectiveHeaderBackgroundColor(icon_view, icon_view->theme_color());
 }
 
 LocationIconView* PaymentHandlerWebFlowViewController::location_icon_view() {
