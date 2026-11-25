@@ -267,7 +267,9 @@ void ProfileMenuView::OnGuestProfileButtonClicked() {
   if (!perform_menu_actions()) {
     return;
   }
-  CHECK(profiles::IsGuestModeEnabled(profile()), base::NotFatalUntil::M162);
+  // TODO(crbug.com/590230957): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(profiles::IsGuestModeEnabled(profile()));
   profiles::SwitchToGuestProfile();
 }
 
