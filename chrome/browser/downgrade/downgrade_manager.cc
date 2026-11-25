@@ -184,22 +184,25 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
     return false;
 
   const base::Version& current_version = version_info::GetVersion();
+  // Return before `UserDataSnapshotEnabled()` to avoid synchronous OS
+  // enterprise device checks on warm same-version startups.
+  if (current_version == *last_version) {
+    return false;
+  }
 
   const bool user_data_snapshot_enabled =
       delegate->UserDataSnapshotEnabled() || g_snapshots_enabled_for_testing;
 
   if (!user_data_snapshot_enabled) {
-    if (current_version >= *last_version)
-      return false;  // Same version or upgrade.
+    if (current_version > *last_version) {
+      return false;  // Upgrade.
+    }
 
     type_ = GetDowngradeType(user_data_dir, current_version, *last_version);
     CHECK(type_ == Type::kAdministrativeWipe || type_ == Type::kUnsupported,
           base::NotFatalUntil::M161);
     return type_ == Type::kAdministrativeWipe;
   }
-
-  if (current_version == *last_version)
-    return false;  // Nothing to do if the version has not changed.
 
   if (current_version < *last_version) {
     type_ = GetDowngradeTypeWithSnapshot(user_data_dir, current_version,

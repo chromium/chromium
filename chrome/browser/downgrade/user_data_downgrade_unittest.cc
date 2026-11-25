@@ -5,6 +5,7 @@
 #include "chrome/browser/downgrade/user_data_downgrade.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
@@ -13,7 +14,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/downgrade/downgrade_manager.h"
+#include "chrome/browser/downgrade/downgrade_manager_delegate.h"
 #include "chrome/browser/downgrade/snapshot_file_collector.h"
+#include "chrome/browser/downgrade/snapshot_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -221,5 +225,58 @@ TEST(UserDataDowngradeTests, CollectUserDataItemsIncludesClientIdBackup) {
                   SnapshotItemDetails::ItemType::kFile, 0)));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+namespace {
+
+class MockDowngradeManagerDelegate : public DowngradeManagerDelegate {
+ public:
+  // DowngradeManagerDelegate:
+  int GetMaxNumberOfSnapshots() const override { return 0; }
+  MOCK_METHOD(bool, UserDataSnapshotEnabled, (), (const, override));
+  base::FilePath GetDiskCacheDir() const override { return {}; }
+  std::vector<SnapshotItemDetails> GetUserDataSnapshotItems() const override {
+    return {};
+  }
+  std::vector<SnapshotItemDetails> GetProfileSnapshotItems() const override {
+    return {};
+  }
+};
+
+class DowngradeManagerTest : public testing::Test {
+ protected:
+  void SetUp() override { ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir()); }
+  const base::FilePath& dir() const { return user_data_dir_.GetPath(); }
+
+  base::ScopedTempDir user_data_dir_;
+  testing::StrictMock<MockDowngradeManagerDelegate> delegate_;
+};
+
+}  // namespace
+
+TEST_F(DowngradeManagerTest, SkipSnapshotCheckOnSameVersion) {
+  DowngradeManager().UpdateLastVersion(dir());
+  ASSERT_TRUE(GetLastVersion(dir()).has_value());
+  EXPECT_FALSE(DowngradeManager().PrepareUserDataDirectoryForCurrentVersion(
+      dir(), &delegate_));
+}
+
+TEST_F(DowngradeManagerTest, QuerySnapshotSupportOnUpgrade) {
+  ASSERT_TRUE(base::WriteFile(GetLastVersionFile(dir()), "1.0.0.0"));
+  EXPECT_CALL(delegate_, UserDataSnapshotEnabled())
+      .WillOnce(testing::Return(false));
+  EXPECT_FALSE(DowngradeManager().PrepareUserDataDirectoryForCurrentVersion(
+      dir(), &delegate_));
+}
+
+TEST_F(DowngradeManagerTest, QuerySnapshotSupportOnDowngrade) {
+  ASSERT_TRUE(base::WriteFile(GetLastVersionFile(dir()), "9999.0.0.0"));
+  const base::FilePath snap = dir().Append(kSnapshotsDir).AppendASCII("1.0.0");
+  ASSERT_TRUE(base::CreateDirectory(snap));
+  ASSERT_TRUE(base::WriteFile(snap.Append(kDowngradeLastVersionFile), ""));
+  EXPECT_CALL(delegate_, UserDataSnapshotEnabled())
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(DowngradeManager().PrepareUserDataDirectoryForCurrentVersion(
+      dir(), &delegate_));
+}
 
 }  // namespace downgrade
