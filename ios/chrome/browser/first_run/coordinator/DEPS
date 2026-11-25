@@ -8,6 +8,7 @@ include_rules = [
   "+ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/intelligence/features",
+  "+ios/chrome/browser/promos_manager/coordinator/promos_manager_ui_handler.h",
   "+ios/chrome/browser/regional_capabilities/model",
   "+ios/chrome/browser/safari_data_import/model/features.h",
   "+ios/chrome/browser/screen/ui_bundled",

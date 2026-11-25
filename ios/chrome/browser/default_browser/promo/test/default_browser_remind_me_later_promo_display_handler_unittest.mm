@@ -65,6 +65,12 @@
 - (void)showAccountSwitchingPromo {
 }
 
+- (void)showDeferredFirstRunPromo {
+}
+
+- (void)hideDeferredFirstRunPromo {
+}
+
 @end
 
 class DefaultBrowserRemindMeLaterPromoDisplayHandlerTest : public PlatformTest {

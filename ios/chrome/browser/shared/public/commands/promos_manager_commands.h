@@ -48,6 +48,12 @@ enum class CredentialProviderPromoTrigger;
 // Shows the smart account switching startup promo.
 - (void)showAccountSwitchingPromo;
 
+// Shows the screens that were deferred during First Run.
+- (void)showDeferredFirstRunPromo;
+
+// Hides the screens that were deferred during First Run.
+- (void)hideDeferredFirstRunPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_PROMOS_MANAGER_COMMANDS_H_

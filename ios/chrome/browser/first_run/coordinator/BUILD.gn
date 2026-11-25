@@ -4,6 +4,8 @@
 
 source_set("coordinator") {
   sources = [
+    "deferred_first_run_coordinator.h",
+    "deferred_first_run_coordinator.mm",
     "first_run_coordinator.h",
     "first_run_coordinator.mm",
   ]
@@ -14,6 +16,7 @@ source_set("coordinator") {
     "//components/feature_engagement/public",
     "//components/metrics",
     "//components/prefs",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
@@ -35,6 +38,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/first_run/resources",
     "//ios/chrome/browser/first_run/tos/coordinator",
     "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/promos_manager/coordinator:promos",
     "//ios/chrome/browser/screen/ui_bundled:screen_provider",
     "//ios/chrome/browser/screen/ui_bundled:screen_type",
     "//ios/chrome/browser/search_engine_choice/coordinator",
@@ -66,10 +70,12 @@ source_set("coordinator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "deferred_first_run_coordinator_unittest.mm",
     "first_run_post_action_provider_unittest.mm",
     "first_run_screen_provider_unittest.mm",
   ]
   deps = [
+    ":coordinator",
     ":first_run_provider",
     "//base",
     "//base/test:test_support",
@@ -78,9 +84,11 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/regional_capabilities:test_support",
     "//components/search_engines",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/policy/model:test_support",
+    "//ios/chrome/browser/promos_manager/coordinator:promos",
     "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/safari_data_import/model:features",
     "//ios/chrome/browser/screen/ui_bundled:screen_provider",
@@ -88,16 +96,23 @@ source_set("unit_tests") {
     "//ios/chrome/browser/screen/ui_bundled:screen_type",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 

@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/enterprise/enterprise_dialog/coordinator/enterprise_dialog_coordinator.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
+#import "ios/chrome/browser/first_run/coordinator/deferred_first_run_coordinator.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/google_one/coordinator/google_one_coordinator.h"
@@ -302,6 +303,7 @@ const char kContextPanelDismissedHistogram[] =
   CredentialSuggestionBottomSheetCoordinator*
       _credentialSuggestionBottomSheetCoordinator;
   DefaultBrowserGenericPromoCoordinator* _defaultBrowserGenericPromoCoordinator;
+  DeferredFirstRunCoordinator* _deferredFirstRunCoordinator;
   DockingPromoCoordinator* _dockingPromoCoordinator;
   DownloadListCoordinator* _downloadListCoordinator;
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
@@ -408,6 +410,7 @@ const char kContextPanelDismissedHistogram[] =
   [self dismissContextualPanelEntrypointIPH:NO];
   [self hideCountryCodePicker];
   [self hidePromo];
+  [self hideDeferredFirstRunPromo];
   [self dismissDockingPromo];
   if (IsDownloadListEnabled()) {
     [self hideDownloadList];
@@ -2264,6 +2267,23 @@ const char kContextPanelDismissedHistogram[] =
   [credentialProviderPromoHandler
       showCredentialProviderPromoWithTrigger:trigger
                              promosUIHandler:_promosManagerCoordinator];
+}
+
+- (void)showDeferredFirstRunPromo {
+  CHECK(!_browser->GetProfile()->IsOffTheRecord());
+  if (_deferredFirstRunCoordinator) {
+    return;
+  }
+  _deferredFirstRunCoordinator = [[DeferredFirstRunCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser];
+  _deferredFirstRunCoordinator.promosUIHandler = _promosManagerCoordinator;
+  [_deferredFirstRunCoordinator start];
+}
+
+- (void)hideDeferredFirstRunPromo {
+  [_deferredFirstRunCoordinator stop];
+  _deferredFirstRunCoordinator = nil;
 }
 
 #pragma mark - QuickDeleteCommands

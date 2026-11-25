@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/download/coordinator/download_list_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/pass_kit_coordinator.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
+#import "ios/chrome/browser/first_run/coordinator/deferred_first_run_coordinator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actor_overlay_coordinator.h"
 #import "ios/chrome/browser/picture_in_picture/coordinator/picture_in_picture_coordinator.h"
@@ -1015,6 +1016,39 @@ TEST_F(BrowserModalHostTest, StartsUpdatesAndStopsActorOverlayCoordinator) {
   OCMExpect([mock_coordinator stop]);
   [handler hideActorOverlay];
   EXPECT_OCMOCK_VERIFY(class_mock);
+}
+
+// Tests that `-showDeferredFirstRunPromo` starts `DeferredFirstRunCoordinator`
+// and ignores duplicate calls while active, and that
+// `-hideDeferredFirstRunPromo` stops it.
+TEST_F(BrowserModalHostTest, StartsAndDismissesDeferredFirstRunCoordinator) {
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<PromosManagerCommands> promos_handler =
+      HandlerForProtocol(dispatcher, PromosManagerCommands);
+
+  id class_mock = OCMClassMock([DeferredFirstRunCoordinator class]);
+  DeferredFirstRunCoordinator* mock_coordinator = class_mock;
+  OCMExpect([class_mock alloc]).andReturn(class_mock);
+  OCMExpect([[class_mock ignoringNonObjectArgs]
+                initWithBaseViewController:base_view_controller_
+                                   browser:browser_.get()])
+      .andReturn(mock_coordinator);
+  OCMExpect([mock_coordinator setPromosUIHandler:[OCMArg any]]);
+  OCMExpect([mock_coordinator start]);
+
+  [promos_handler showDeferredFirstRunPromo];
+  EXPECT_OCMOCK_VERIFY(class_mock);
+
+  // Calling `-showDeferredFirstRunPromo` while already active should be a
+  // no-op.
+  OCMReject([class_mock alloc]);
+  [promos_handler showDeferredFirstRunPromo];
+  EXPECT_OCMOCK_VERIFY(class_mock);
+
+  OCMExpect([mock_coordinator stop]);
+  [promos_handler hideDeferredFirstRunPromo];
+  EXPECT_OCMOCK_VERIFY(class_mock);
+  [class_mock stopMocking];
 }
 
 namespace {
