@@ -1675,6 +1675,24 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
             commitPendingClosures(/* notifyIfEmpty= */ false);
 
+            // Record the second tab's position so that we can notify didMoveTab() for it later,
+            // if needed.
+            //
+            // We don't need to notify didMoveTab() for the first tab because
+            // TabStripCollection::CreateSplit inserts the SplitTabCollection at the first tab's
+            // position and moves the second tab immediately after it.
+            //
+            // If the second tab is after the first tab, only the second tab will be relocated
+            // relative to other tabs, and we don't need to notify didMoveTab() for the first tab.
+            //
+            // If the second tab is before the first tab, the first tab's index only shifts left
+            // by 1 as a passive result of the second tab moving past it. This is the same as
+            // moving the second tab using moveTab(), where we don't notify didMoveTab() for the
+            // first tab. Therefore, we also don't need to notify didMoveTab() for the first tab
+            // for creating a Split View.
+            Tab secondTab = tabs.get(1);
+            int oldSecondTabIndex = indexOf(secondTab);
+
             SplitTabId splitTabId = SplitTabId.generateNew();
             TabCollectionTabModelImplJni.get()
                     .createSplit(
@@ -1687,6 +1705,24 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             if (supportsPendingClosures()) {
                 mPendingTabClosureManager.resetState();
             }
+
+            // Notify didMoveTab() if the secondTab changed position.
+            //
+            // We should invoke didMoveTab() before onSplitTabAdded() to accurately reflect how a
+            // Split View is created: move the second tab first if necessary, then create a Split
+            // View. This invocation order also matches that on Windows/Mac/Linux.
+            int newSecondTabIndex = indexOf(secondTab);
+            if (newSecondTabIndex != oldSecondTabIndex) {
+                for (TabModelObserver obs : mTabModelObservers) {
+                    obs.didMoveTab(secondTab, newSecondTabIndex, oldSecondTabIndex);
+                }
+            }
+
+            List<Tab> splitTabs = List.copyOf(tabs);
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.onSplitTabAdded(splitTabId, splitTabs, visualData);
+            }
+
             return splitTabId;
         }
     }
@@ -1697,14 +1733,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         if (mNativeTabCollectionTabModelImplPtr == null) return;
 
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
-            TabCollectionTabModelImplJni.get()
-                    .unsplit(mNativeTabCollectionTabModelImplPtr, splitTabId);
-
-            // Unsplitting moves the child tabs into the parent collection in place without adding,
-            // removing, or reordering tabs in the flat tab list. Because mTabsList only caches the
-            // flat ordered List<Tab> (and PendingTabClosureManager only tracks that flat list), we
-            // don't need to call invalidateCache(), commitPendingClosures(), or
-            // mPendingTabClosureManager.resetState().
+            unsplitInternal(splitTabId);
         }
     }
 
@@ -2326,6 +2355,19 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         if (updatePendingTabClosureManager) commitPendingClosures(/* notifyIfEmpty= */ false);
 
+        // Unsplit any Split Views containing tabs being removed before mutating
+        // TabStripCollection, mTabIdToTabs, or mCurrentTabSupplier so observers see a consistent
+        // TabModel state. If both tabs in a Split View are being removed, the Split View's first
+        // tab in "tabsToRemove" will cause the Split View to be unsplit.
+        for (Tab tab : tabsToRemove) {
+            assert mTabIdToTabs.indexOfKey(tab.getId()) >= 0 : "Tab not found in tab model.";
+
+            SplitTabId splitTabId = tab.getSplitTabId();
+            if (splitTabId != null) {
+                unsplitInternal(splitTabId);
+            }
+        }
+
         Tab nearbyTab = null;
         boolean nextIsIncognito =
                 nextTab == null
@@ -2727,6 +2769,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             }
         }
 
+        // TODO(crbug.com/585322223, crbug.com/585322252): Handle tabs in a Split View (e.g., move
+        // both tabs atomically via TabStripCollection::MoveTabsRecursive with
+        // TabCollection::Type::SPLIT for reorder/pin/group operations, or unsplit before moving a
+        // single tab).
         int finalIndex =
                 TabCollectionTabModelImplJni.get()
                         .moveTabRecursive(
@@ -2792,6 +2838,23 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             for (TabModelObserver obs : mTabModelObservers) {
                 obs.didChangePinState(tab);
             }
+        }
+    }
+
+    private void unsplitInternal(SplitTabId splitTabId) {
+        // Unsplitting moves the child tabs into the parent collection in place without adding,
+        // removing, or reordering tabs in the flat tab list. Because mTabsList only caches the flat
+        // ordered List<Tab> (and PendingTabClosureManager only tracks that flat list),
+        // commitPendingClosures(), invalidateCache(), and mPendingTabClosureManager.resetState()
+        // are intentionally omitted here.
+        List<Tab> unsplitTabs =
+                TabCollectionTabModelImplJni.get()
+                        .unsplit(assertNonNull(mNativeTabCollectionTabModelImplPtr), splitTabId);
+        if (unsplitTabs.isEmpty()) return;
+
+        List<Tab> removedTabs = List.copyOf(unsplitTabs);
+        for (TabModelObserver obs : mTabModelObservers) {
+            obs.onSplitTabRemoved(splitTabId, removedTabs);
         }
     }
 
@@ -3107,7 +3170,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 @JniType("std::vector<tabs::TabInterface*>") List<Tab> tabs,
                 @JniType("split_tabs::SplitTabVisualData") SplitTabVisualData visualData);
 
-        void unsplit(
+        @JniType("std::vector<TabAndroid*>")
+        List<Tab> unsplit(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
                 @JniType("split_tabs::SplitTabId") SplitTabId splitTabId);
 

@@ -14,6 +14,10 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#include "components/split_tabs/android/split_tab_id_jni_conversion.h"
+#include "components/split_tabs/android/split_tab_visual_data_jni_conversion.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -233,6 +237,23 @@ void TabModelObserverJniBridge::OnTabGroupVisualsChanged(base::Token group_id) {
   CHECK(!tab_group_id.is_empty());
   for (auto& observer : model_observers_) {
     observer.OnTabGroupVisualsChanged(tab_group_id);
+  }
+}
+
+void TabModelObserverJniBridge::OnSplitTabAdded(
+    const split_tabs::SplitTabId& split_id,
+    const std::vector<tabs::TabInterface*>& tabs,
+    const split_tabs::SplitTabVisualData& visual_data) {
+  for (auto& observer : interface_observers_) {
+    observer.OnSplitTabAdded(*tab_model_, split_id, tabs, visual_data);
+  }
+}
+
+void TabModelObserverJniBridge::OnSplitTabRemoved(
+    const split_tabs::SplitTabId& split_id,
+    const std::vector<tabs::TabInterface*>& tabs) {
+  for (auto& observer : interface_observers_) {
+    observer.OnSplitTabRemoved(*tab_model_, split_id, tabs);
   }
 }
 

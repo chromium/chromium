@@ -71,6 +71,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -264,7 +265,7 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    public void testRemoveTab_TabInSplitView() {
+    public void testRemoveTab_TabInSplitView_UnsplitAndNotifyOnSplitTabRemoved() {
         // Arrange:
         Tab tab1 = createTab();
         Tab tab2 = createTab();
@@ -276,10 +277,19 @@ public class TabCollectionTabModelImplTest {
                         () -> mRegularModel.createSplit(List.of(tab1, tab2), visualData));
         assertNotNull(splitTabId);
 
+        var modelObserver = new TestTabModelObserver();
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.addObserver(modelObserver));
+        assertTrue(modelObserver.mEvents.isEmpty());
+
         // Act:
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeTab(tab1));
 
         // Assert:
+        assertEquals(
+                List.of(
+                        new TestTabModelObserver.SplitTabRemovedEvent(
+                                splitTabId, List.of(tab1, tab2))),
+                modelObserver.mEvents);
         assertNull(tab1.getSplitTabId());
         assertNull(tab2.getSplitTabId());
         assertTrue(ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits).isEmpty());
@@ -287,7 +297,11 @@ public class TabCollectionTabModelImplTest {
                 ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.getSplitTabData(splitTabId)));
 
         // Cleanup:
-        ThreadUtils.runOnUiThreadBlocking(tab1::destroy);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tab1.destroy();
+                    mRegularModel.removeObserver(modelObserver);
+                });
     }
 
     @Test
@@ -477,6 +491,108 @@ public class TabCollectionTabModelImplTest {
         assertEquals("Incorrect tab is selected after removal.", tab2, getCurrentTab());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseTab_SingleTabInSplitView_NotifyOnSplitTabRemoved() {
+        // Arrange:
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        var visualData =
+                new SplitTabVisualData(
+                        SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+        SplitTabId splitTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, tab2), visualData));
+        assertNotNull(splitTabId);
+
+        var modelObserver = new TestTabModelObserver();
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.addObserver(modelObserver));
+        assertTrue(modelObserver.mEvents.isEmpty());
+
+        // Act:
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mRegularModel
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTab(tab1).allowUndo(false).build(),
+                                        /* allowDialog= */ false));
+
+        // Assert:
+        assertEquals(
+                List.of(
+                        new TestTabModelObserver.SplitTabRemovedEvent(
+                                splitTabId, List.of(tab1, tab2))),
+                modelObserver.mEvents);
+        assertNull(tab2.getSplitTabId());
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits).isEmpty());
+
+        // Cleanup:
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.removeObserver(modelObserver));
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseTabs_PrecedingTabAndSplitView_ModelConsistentInOnSplitTabRemoved() {
+        // Arrange:
+        Tab tab0 = getTabAt(/* index= */ 0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+        var visualData =
+                new SplitTabVisualData(
+                        SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+        SplitTabId splitTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, tab2), visualData));
+        assertNotNull(splitTabId);
+
+        var modelObserver =
+                new TestTabModelObserver(
+                        /* onSplitTabRemovedCallback= */ () -> {
+                            List<Tab> expectedTabs = List.of(tab0, tab1, tab2, tab3);
+                            assertEquals(expectedTabs.size(), mRegularModel.getCount());
+                            assertEquals(
+                                    Integer.valueOf(expectedTabs.size()),
+                                    mRegularModel.getTabCountSupplier().get());
+                            for (int i = 0; i < expectedTabs.size(); i++) {
+                                Tab tab = expectedTabs.get(i);
+                                assertEquals(tab, mRegularModel.getTabById(tab.getId()));
+                                assertEquals(i, mRegularModel.indexOf(tab));
+                            }
+                            assertNull(tab1.getSplitTabId());
+                            assertNull(tab2.getSplitTabId());
+                            assertTrue(mRegularModel.listSplits().isEmpty());
+                            assertNull(mRegularModel.getSplitTabData(splitTabId));
+                        });
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.addObserver(modelObserver));
+        assertTrue(modelObserver.mEvents.isEmpty());
+
+        // Act:
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mRegularModel
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTabs(List.of(tab0, tab1, tab2))
+                                                .allowUndo(false)
+                                                .build(),
+                                        /* allowDialog= */ false));
+
+        // Assert:
+        assertEquals(
+                List.of(
+                        new TestTabModelObserver.SplitTabRemovedEvent(
+                                splitTabId, List.of(tab1, tab2))),
+                modelObserver.mEvents);
+        assertTabsInOrderAre(List.of(tab3));
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits).isEmpty());
+
+        // Cleanup:
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.removeObserver(modelObserver));
     }
 
     @Test
@@ -5053,7 +5169,7 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    public void testCreateSplit_AdjacentTabs() {
+    public void testCreateSplit_AdjacentTabs_CreateSplitAndNotifyOnSplitTabAdded() {
         // Arrange:
         Tab tab1 = createTab();
         Tab tab2 = createTab();
@@ -5063,6 +5179,10 @@ public class TabCollectionTabModelImplTest {
         assertNull(tab1.getSplitTabId());
         assertNull(tab2.getSplitTabId());
         assertTrue(ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits).isEmpty());
+
+        var modelObserver = new TestTabModelObserver();
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.addObserver(modelObserver));
+        assertTrue(modelObserver.mEvents.isEmpty());
 
         // Act:
         SplitTabId splitTabId =
@@ -5080,11 +5200,20 @@ public class TabCollectionTabModelImplTest {
         assertEquals(
                 expectedSplitTabData,
                 ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.getSplitTabData(splitTabId)));
+        assertEquals(
+                List.of(
+                        new TestTabModelObserver.SplitTabAddedEvent(
+                                splitTabId, List.of(tab1, tab2), visualData)),
+                modelObserver.mEvents);
+
+        // Cleanup:
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.removeObserver(modelObserver));
     }
 
     @Test
     @MediumTest
-    public void testCreateSplit_NonadjacentTabs_SecondTabIsAfterFirstTab() {
+    public void
+            testCreateSplit_NonadjacentTabs_SecondTabIsAfterFirstTab_NotifyDidMoveTabAndOnSplitTabAdded() {
         // Arrange:
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -5094,6 +5223,10 @@ public class TabCollectionTabModelImplTest {
         var visualData =
                 new SplitTabVisualData(
                         SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+
+        var modelObserver = new TestTabModelObserver();
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.addObserver(modelObserver));
+        assertTrue(modelObserver.mEvents.isEmpty());
 
         // Act:
         SplitTabId splitTabId =
@@ -5110,11 +5243,22 @@ public class TabCollectionTabModelImplTest {
         assertEquals(
                 expectedSplitTabData,
                 ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.getSplitTabData(splitTabId)));
+        assertEquals(
+                List.of(
+                        new TestTabModelObserver.DidMoveTabEvent(
+                                tab3, /* newIndex= */ 2, /* oldIndex= */ 3),
+                        new TestTabModelObserver.SplitTabAddedEvent(
+                                splitTabId, List.of(tab1, tab3), visualData)),
+                modelObserver.mEvents);
+
+        // Cleanup:
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.removeObserver(modelObserver));
     }
 
     @Test
     @MediumTest
-    public void testCreateSplit_NonadjacentTabs_SecondTabIsBeforeFirstTab() {
+    public void
+            testCreateSplit_NonadjacentTabs_SecondTabIsBeforeFirstTab_NotifyDidMoveTabAndOnSplitTabAdded() {
         // Arrange:
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -5124,6 +5268,10 @@ public class TabCollectionTabModelImplTest {
         var visualData =
                 new SplitTabVisualData(
                         SplitTabLayout.STACKED, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+
+        var modelObserver = new TestTabModelObserver();
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.addObserver(modelObserver));
+        assertTrue(modelObserver.mEvents.isEmpty());
 
         // Act:
         SplitTabId splitTabId =
@@ -5140,6 +5288,16 @@ public class TabCollectionTabModelImplTest {
         assertEquals(
                 expectedSplitTabData,
                 ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.getSplitTabData(splitTabId)));
+        assertEquals(
+                List.of(
+                        new TestTabModelObserver.DidMoveTabEvent(
+                                tab1, /* newIndex= */ 3, /* oldIndex= */ 1),
+                        new TestTabModelObserver.SplitTabAddedEvent(
+                                splitTabId, List.of(tab3, tab1), visualData)),
+                modelObserver.mEvents);
+
+        // Cleanup:
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.removeObserver(modelObserver));
     }
 
     @Test
@@ -5178,7 +5336,7 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    public void testCreateSplit_IncognitoTabModel() {
+    public void testCreateSplitAndUnsplit_IncognitoTabModel() {
         // Arrange:
         IncognitoNewTabPageStation incognitoPage =
                 mInitialPageStation.openNewIncognitoTabOrWindowFast();
@@ -5198,15 +5356,16 @@ public class TabCollectionTabModelImplTest {
         var visualData =
                 new SplitTabVisualData(
                         SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+        var modelObserver = new TestTabModelObserver();
+        ThreadUtils.runOnUiThreadBlocking(() -> incognitoModel.addObserver(modelObserver));
+        assertTrue(modelObserver.mEvents.isEmpty());
 
-        // Act:
+        // Act & Assert: createSplit
         SplitTabId splitTabId =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 incognitoModel.createSplit(
                                         List.of(incognitoTab1, incognitoTab2), visualData));
-
-        // Assert:
         assertNotNull(splitTabId);
         assertEquals(splitTabId, incognitoTab1.getSplitTabId());
         assertEquals(splitTabId, incognitoTab2.getSplitTabId());
@@ -5220,6 +5379,24 @@ public class TabCollectionTabModelImplTest {
                 expectedSplitTabData,
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> incognitoModel.getSplitTabData(splitTabId)));
+        assertEquals(
+                List.of(
+                        new TestTabModelObserver.SplitTabAddedEvent(
+                                splitTabId, List.of(incognitoTab1, incognitoTab2), visualData)),
+                modelObserver.mEvents);
+
+        // Act & Assert: unsplit
+        ThreadUtils.runOnUiThreadBlocking(() -> incognitoModel.unsplit(splitTabId));
+        assertEquals(
+                List.of(
+                        new TestTabModelObserver.SplitTabAddedEvent(
+                                splitTabId, List.of(incognitoTab1, incognitoTab2), visualData),
+                        new TestTabModelObserver.SplitTabRemovedEvent(
+                                splitTabId, List.of(incognitoTab1, incognitoTab2))),
+                modelObserver.mEvents);
+
+        // Cleanup:
+        ThreadUtils.runOnUiThreadBlocking(() -> incognitoModel.removeObserver(modelObserver));
     }
 
     @Test
@@ -5247,7 +5424,7 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    public void testUnsplit_SeparateTabsInPlace() {
+    public void testUnsplit_SeparateTabsInPlaceAndNotifyOnSplitTabRemoved() {
         // Arrange:
         Tab tab0 = getTabAt(/* index= */ 0);
         Tab tab1 = createTab();
@@ -5262,15 +5439,20 @@ public class TabCollectionTabModelImplTest {
         assertNotNull(splitTabId);
         assertTabsInOrderAre(List.of(tab0, tab1, tab3, tab2));
 
+        var modelObserver = new TestTabModelObserver();
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.addObserver(modelObserver));
+        assertTrue(modelObserver.mEvents.isEmpty());
+
         // Act & Assert:
-        // Unsplitting a non-existent SplitTabId is a no-op.
+        // Unsplitting a non-existent SplitTabId is a no-op and does not notify observers.
         ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.unsplit(SplitTabId.generateNew()));
         assertEquals(splitTabId, tab1.getSplitTabId());
         assertEquals(splitTabId, tab3.getSplitTabId());
         assertEquals(
                 Set.of(splitTabId), ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits));
+        assertTrue(modelObserver.mEvents.isEmpty());
 
-        // Unsplitting the existing Split View separates tabs in place.
+        // Unsplitting the existing Split View separates tabs in place and notifies observers.
         ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.unsplit(splitTabId));
         assertTabsInOrderAre(List.of(tab0, tab1, tab3, tab2));
         assertEquals(
@@ -5280,6 +5462,14 @@ public class TabCollectionTabModelImplTest {
         assertNull(tab1.getSplitTabId());
         assertNull(tab3.getSplitTabId());
         assertTrue(ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits).isEmpty());
+        assertEquals(
+                List.of(
+                        new TestTabModelObserver.SplitTabRemovedEvent(
+                                splitTabId, List.of(tab1, tab3))),
+                modelObserver.mEvents);
+
+        // Cleanup:
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.removeObserver(modelObserver));
     }
 
     @Test
@@ -5320,5 +5510,114 @@ public class TabCollectionTabModelImplTest {
         assertFalse(closedTab.isDestroyed());
         ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.cancelTabClosure(closedTab.getId()));
         assertTabsInOrderAre(List.of(tab0, tab1, tab2, closedTab));
+    }
+
+    private static final class TestTabModelObserver implements TabModelObserver {
+        private interface Event {}
+
+        private static final class DidMoveTabEvent implements Event {
+            private final Tab mTab;
+            private final int mNewIndex;
+            private final int mOldIndex;
+
+            DidMoveTabEvent(Tab tab, int newIndex, int oldIndex) {
+                mTab = tab;
+                mNewIndex = newIndex;
+                mOldIndex = oldIndex;
+            }
+
+            @Override
+            public boolean equals(@Nullable Object obj) {
+                return obj instanceof DidMoveTabEvent other
+                        && Objects.equals(mTab, other.mTab)
+                        && mNewIndex == other.mNewIndex
+                        && mOldIndex == other.mOldIndex;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(mTab, mNewIndex, mOldIndex);
+            }
+        }
+
+        private static final class SplitTabAddedEvent implements Event {
+            private final SplitTabId mSplitId;
+            private final List<Tab> mTabs;
+            private final SplitTabVisualData mVisualData;
+
+            SplitTabAddedEvent(SplitTabId splitId, List<Tab> tabs, SplitTabVisualData visualData) {
+                mSplitId = splitId;
+                mTabs = List.copyOf(tabs);
+                mVisualData = visualData;
+            }
+
+            @Override
+            public boolean equals(@Nullable Object obj) {
+                return obj instanceof SplitTabAddedEvent other
+                        && Objects.equals(mSplitId, other.mSplitId)
+                        && Objects.equals(mTabs, other.mTabs)
+                        && Objects.equals(mVisualData, other.mVisualData);
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(mSplitId, mTabs, mVisualData);
+            }
+        }
+
+        private static final class SplitTabRemovedEvent implements Event {
+            private final SplitTabId mSplitId;
+            private final List<Tab> mTabs;
+
+            SplitTabRemovedEvent(SplitTabId splitId, List<Tab> tabs) {
+                mSplitId = splitId;
+                mTabs = List.copyOf(tabs);
+            }
+
+            @Override
+            public boolean equals(@Nullable Object obj) {
+                return obj instanceof SplitTabRemovedEvent other
+                        && Objects.equals(mSplitId, other.mSplitId)
+                        && Objects.equals(mTabs, other.mTabs);
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(mSplitId, mTabs);
+            }
+        }
+
+        /** Recorded observer events in invocation order. */
+        private final List<Event> mEvents = new ArrayList<>();
+
+        /** Optional callback invoked during {@link #onSplitTabRemoved} to assert live state. */
+        private final @Nullable Runnable mOnSplitTabRemovedCallback;
+
+        TestTabModelObserver() {
+            this(/* onSplitTabRemovedCallback= */ null);
+        }
+
+        TestTabModelObserver(@Nullable Runnable onSplitTabRemovedCallback) {
+            mOnSplitTabRemovedCallback = onSplitTabRemovedCallback;
+        }
+
+        @Override
+        public void didMoveTab(Tab tab, int newIndex, int curIndex) {
+            mEvents.add(new DidMoveTabEvent(tab, newIndex, curIndex));
+        }
+
+        @Override
+        public void onSplitTabAdded(
+                SplitTabId splitId, List<Tab> tabs, SplitTabVisualData visualData) {
+            mEvents.add(new SplitTabAddedEvent(splitId, tabs, visualData));
+        }
+
+        @Override
+        public void onSplitTabRemoved(SplitTabId splitId, List<Tab> tabs) {
+            mEvents.add(new SplitTabRemovedEvent(splitId, tabs));
+            if (mOnSplitTabRemovedCallback != null) {
+                mOnSplitTabRemovedCallback.run();
+            }
+        }
     }
 }

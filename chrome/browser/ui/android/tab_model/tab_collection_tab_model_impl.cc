@@ -63,6 +63,17 @@ size_t ClampIfMovingToHigherIndex(const std::optional<size_t>& current_index,
              : new_index;
 }
 
+std::vector<TabAndroid*> GetTabsInSplit(
+    const SplitTabCollection& split_collection) {
+  std::vector<TabInterface*> tabs = split_collection.data()->ListTabs();
+  std::vector<TabAndroid*> android_tabs;
+  android_tabs.reserve(tabs.size());
+  for (TabInterface* tab : tabs) {
+    android_tabs.push_back(TabAndroid::FromTabInterface(tab));
+  }
+  return android_tabs;
+}
+
 }  // namespace
 
 TabCollectionTabModelImpl::TabCollectionTabModelImpl(Profile* profile)
@@ -115,6 +126,10 @@ void TabCollectionTabModelImpl::RemoveTab(TabAndroid* tab) {
   // TabStripCollection requires SplitTabCollection instances to hold >= 2 tabs
   // so if a tab is in SplitTabCollection, we should "unsplit" before removing
   // the tab.
+  //
+  // Note that Java code may choose to explicitly "unsplit" before calling this
+  // function, but we want to keep the "unsplit" logic here to guarantee
+  // invariants in TabStripCollection.
   if (std::optional<split_tabs::SplitTabId> split_id = tab->GetSplit()) {
     tab_strip_collection_->Unsplit(*split_id);
   }
@@ -394,8 +409,17 @@ void TabCollectionTabModelImpl::CreateSplit(
   tab_strip_collection_->CreateSplit(split_id, tabs, std::move(visual_data));
 }
 
-void TabCollectionTabModelImpl::Unsplit(split_tabs::SplitTabId split_id) {
+std::vector<TabAndroid*> TabCollectionTabModelImpl::Unsplit(
+    split_tabs::SplitTabId split_id) {
+  SplitTabCollection* split_collection =
+      tab_strip_collection_->GetSplitTabCollection(split_id);
+  if (!split_collection) {
+    return {};
+  }
+
+  std::vector<TabAndroid*> android_tabs = GetTabsInSplit(*split_collection);
   tab_strip_collection_->Unsplit(split_id);
+  return android_tabs;
 }
 
 jni_zero::ScopedJavaLocalRef<JSplitTabData>
@@ -408,16 +432,9 @@ TabCollectionTabModelImpl::GetSplitTabData(
     return nullptr;
   }
 
-  split_tabs::SplitTabData* data = split_collection->data();
-  std::vector<TabInterface*> tabs = data->ListTabs();
-  std::vector<TabAndroid*> android_tabs;
-  android_tabs.reserve(tabs.size());
-  for (TabInterface* tab : tabs) {
-    android_tabs.push_back(TabAndroid::FromTabInterface(tab));
-  }
-
-  return SplitTabDataJni::New(env, data->id(), std::move(android_tabs),
-                              *data->visual_data());
+  const split_tabs::SplitTabData* data = split_collection->data();
+  return SplitTabDataJni::New(
+      env, data->id(), GetTabsInSplit(*split_collection), *data->visual_data());
 }
 
 std::set<split_tabs::SplitTabId> TabCollectionTabModelImpl::ListSplits() const {

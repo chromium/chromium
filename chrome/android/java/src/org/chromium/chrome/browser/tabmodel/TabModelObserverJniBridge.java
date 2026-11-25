@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.components.split_tabs.SplitTabId;
+import org.chromium.components.split_tabs.SplitTabVisualData;
 
 import java.util.Arrays;
 import java.util.List;
@@ -217,6 +219,21 @@ class TabModelObserverJniBridge implements TabModelObserver, TabGroupObserver {
         TabModelObserverJniBridgeJni.get().tabRemoved(mNativeTabModelObserverJniBridge, tab);
     }
 
+    @Override
+    public final void onSplitTabAdded(
+            SplitTabId splitId, List<Tab> tabs, SplitTabVisualData visualData) {
+        assert mNativeTabModelObserverJniBridge != null;
+        TabModelObserverJniBridgeJni.get()
+                .onSplitTabAdded(mNativeTabModelObserverJniBridge, splitId, tabs, visualData);
+    }
+
+    @Override
+    public final void onSplitTabRemoved(SplitTabId splitId, List<Tab> tabs) {
+        assert mNativeTabModelObserverJniBridge != null;
+        TabModelObserverJniBridgeJni.get()
+                .onSplitTabRemoved(mNativeTabModelObserverJniBridge, splitId, tabs);
+    }
+
     // TabGroupObserver implementation.
 
     @Override
@@ -367,6 +384,17 @@ class TabModelObserverJniBridge implements TabModelObserver, TabGroupObserver {
         void onTabGroupVisualsChanged(
                 JniPtr<NativeTabModelObserverJniBridge> self,
                 @JniType("base::Token") Token groupId);
+
+        void onSplitTabAdded(
+                JniPtr<NativeTabModelObserverJniBridge> self,
+                @JniType("split_tabs::SplitTabId") SplitTabId splitId,
+                @JniType("std::vector<tabs::TabInterface*>") List<Tab> tabs,
+                @JniType("split_tabs::SplitTabVisualData") SplitTabVisualData visualData);
+
+        void onSplitTabRemoved(
+                JniPtr<NativeTabModelObserverJniBridge> self,
+                @JniType("split_tabs::SplitTabId") SplitTabId splitId,
+                @JniType("std::vector<tabs::TabInterface*>") List<Tab> tabs);
 
         void onWillActiveStateChange(
                 JniPtr<NativeTabModelObserverJniBridge> self,

@@ -22,6 +22,15 @@ namespace base {
 class Token;
 }  // namespace base
 
+namespace split_tabs {
+class SplitTabId;
+class SplitTabVisualData;
+}  // namespace split_tabs
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 // Bridges calls between the C++ and the Java TabModelObservers. Functions in
 // this class do little more than translating between Java TabModelObserver
 // notifications to native TabModelObserver notifications.
@@ -84,6 +93,13 @@ class TabModelObserverJniBridge {
   void OnTabGroupMoved(base::Token group_id);
 
   void OnTabGroupVisualsChanged(base::Token group_id);
+
+  void OnSplitTabAdded(const split_tabs::SplitTabId& split_id,
+                       const std::vector<tabs::TabInterface*>& tabs,
+                       const split_tabs::SplitTabVisualData& visual_data);
+
+  void OnSplitTabRemoved(const split_tabs::SplitTabId& split_id,
+                         const std::vector<tabs::TabInterface*>& tabs);
 
   void OnWillActiveStateChange(TabModel* tab_model, bool active);
   void OnDidActiveStateChange(TabModel* tab_model, bool active);

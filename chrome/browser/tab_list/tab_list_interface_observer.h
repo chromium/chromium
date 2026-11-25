@@ -95,8 +95,6 @@ class TabListInterfaceObserver : public base::CheckedObserver {
   // `tabs`: The tabs in the Split View, ordered by pane position (matching
   //     their contiguous index order in `tab_list`).
   // `visual_data`: The initial `SplitTabVisualData`.
-  //
-  // TODO(crbug.com/585322669): Support this notification on Android.
   virtual void OnSplitTabAdded(
       TabListInterface& tab_list,
       split_tabs::SplitTabId split_id,
@@ -110,8 +108,6 @@ class TabListInterfaceObserver : public base::CheckedObserver {
   // `tabs`: The tabs that belonged to the Split View, ordered by their pane
   //     position prior to removal (matching their contiguous index order in
   //     `tab_list`).
-  //
-  // TODO(crbug.com/585322669): Support this notification on Android.
   virtual void OnSplitTabRemoved(TabListInterface& tab_list,
                                  split_tabs::SplitTabId split_id,
                                  const std::vector<tabs::TabInterface*>& tabs) {

@@ -10,6 +10,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.components.split_tabs.SplitTabId;
+import org.chromium.components.split_tabs.SplitTabVisualData;
 
 import java.util.List;
 
@@ -268,6 +270,28 @@ public interface TabModelObserver {
             boolean isUndoable) {
         onFinishingMultipleTabClosure(tabs, canRestore);
     }
+
+    // Split View
+
+    /**
+     * Called when a Split View is added to the {@link TabModel}.
+     *
+     * @param splitId The {@link SplitTabId} identifying the newly-added Split View.
+     * @param tabs The {@link Tab}s in the Split View, ordered by pane position (matching their
+     *     contiguous index order in the {@link TabModel}).
+     * @param visualData The initial {@link SplitTabVisualData}.
+     */
+    default void onSplitTabAdded(
+            SplitTabId splitId, List<Tab> tabs, SplitTabVisualData visualData) {}
+
+    /**
+     * Called when a Split View is removed from the {@link TabModel}.
+     *
+     * @param splitId The {@link SplitTabId} of the removed Split View.
+     * @param tabs The {@link Tab}s that belonged to the Split View, ordered by their pane position
+     *     prior to removal (matching their contiguous index order in the {@link TabModel}).
+     */
+    default void onSplitTabRemoved(SplitTabId splitId, List<Tab> tabs) {}
 
     // Misc
 

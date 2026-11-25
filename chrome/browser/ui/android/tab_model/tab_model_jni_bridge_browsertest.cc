@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/android/tab_android.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
+#include "chrome/browser/tab_list/tab_removed_reason.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -216,6 +218,32 @@ class MockTabListInterfaceObserver : public TabListInterfaceObserver {
   MOCK_METHOD(void,
               OnTabAdded,
               (TabListInterface & tab_list, tabs::TabInterface* tab, int index),
+              (override));
+  MOCK_METHOD(void,
+              OnTabRemoved,
+              (TabListInterface & tab_list,
+               tabs::TabInterface* tab,
+               TabRemovedReason removed_reason),
+              (override));
+  MOCK_METHOD(void,
+              OnTabMoved,
+              (TabListInterface & tab_list,
+               tabs::TabInterface* tab,
+               int from_index,
+               int to_index),
+              (override));
+  MOCK_METHOD(void,
+              OnSplitTabAdded,
+              (TabListInterface & tab_list,
+               split_tabs::SplitTabId split_id,
+               const std::vector<tabs::TabInterface*>& tabs,
+               const split_tabs::SplitTabVisualData& visual_data),
+              (override));
+  MOCK_METHOD(void,
+              OnSplitTabRemoved,
+              (TabListInterface & tab_list,
+               split_tabs::SplitTabId split_id,
+               const std::vector<tabs::TabInterface*>& tabs),
               (override));
 };
 
@@ -775,6 +803,168 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, Unsplit) {
   ASSERT_EQ(tab_list->GetTabCount(), 2);
   EXPECT_EQ(tab_list->GetTab(/*index=*/0), tab_a);
   EXPECT_EQ(tab_list->GetTab(/*index=*/1), tab_b);
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest,
+                       ObserverOnSplitTabAdded_AdjacentTabs) {
+  chrome::android::ScopedJavaDrivenFeatureForTesting enable_split_view(
+      chrome::android::kEnableAndroidSplitView, true);
+
+  // Arrange:
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+
+  tabs::TabInterface* tab_a = tab_list->GetTab(/*index=*/0);
+  tabs::TabInterface* tab_b =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/-1);
+  ASSERT_TRUE(tab_a);
+  ASSERT_TRUE(tab_b);
+
+  testing::StrictMock<MockTabListInterfaceObserver> observer;
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      observation(&observer);
+  observation.Observe(tab_list);
+
+  const split_tabs::SplitTabVisualData expected_visual_data(
+      split_tabs::SplitTabLayout::kSideBySide, /*split_ratio=*/0.4);
+
+  std::optional<split_tabs::SplitTabId> observed_split_id;
+  EXPECT_CALL(observer, OnTabMoved).Times(0);
+  EXPECT_CALL(observer, OnSplitTabAdded(testing::Ref(*tab_list), testing::_,
+                                        testing::ElementsAre(tab_a, tab_b),
+                                        expected_visual_data))
+      .WillOnce(testing::SaveArg<1>(&observed_split_id));
+
+  // Act:
+  std::optional<split_tabs::SplitTabId> split_id = tab_list->CreateSplit(
+      {tab_a->GetHandle(), tab_b->GetHandle()}, expected_visual_data);
+
+  // Assert:
+  ASSERT_TRUE(split_id.has_value());
+  EXPECT_EQ(observed_split_id, split_id);
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest,
+                       ObserverOnSplitTabAdded_NonadjacentTabs) {
+  chrome::android::ScopedJavaDrivenFeatureForTesting enable_split_view(
+      chrome::android::kEnableAndroidSplitView, true);
+
+  // Arrange:
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+
+  tabs::TabInterface* tab_0 = tab_list->GetTab(/*index=*/0);
+  tabs::TabInterface* tab_1 =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+  tabs::TabInterface* tab_2 =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/2);
+  tabs::TabInterface* tab_3 =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/3);
+  ASSERT_TRUE(tab_0);
+  ASSERT_TRUE(tab_1);
+  ASSERT_TRUE(tab_2);
+  ASSERT_TRUE(tab_3);
+  ASSERT_THAT(tab_list->GetAllTabs(),
+              testing::ElementsAre(tab_0, tab_1, tab_2, tab_3));
+
+  testing::StrictMock<MockTabListInterfaceObserver> observer;
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      observation(&observer);
+  observation.Observe(tab_list);
+
+  const split_tabs::SplitTabVisualData expected_visual_data(
+      split_tabs::SplitTabLayout::kStacked, /*split_ratio=*/0.6);
+
+  std::optional<split_tabs::SplitTabId> observed_split_id;
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(observer, OnTabMoved(testing::Ref(*tab_list), tab_3,
+                                     /*from_index=*/3, /*to_index=*/1));
+    EXPECT_CALL(observer, OnSplitTabAdded(testing::Ref(*tab_list), testing::_,
+                                          testing::ElementsAre(tab_0, tab_3),
+                                          expected_visual_data))
+        .WillOnce(testing::SaveArg<1>(&observed_split_id));
+  }
+
+  // Act:
+  std::optional<split_tabs::SplitTabId> split_id = tab_list->CreateSplit(
+      {tab_0->GetHandle(), tab_3->GetHandle()}, expected_visual_data);
+
+  // Assert:
+  ASSERT_TRUE(split_id.has_value());
+  EXPECT_EQ(observed_split_id, split_id);
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest,
+                       ObserverOnSplitTabRemoved_TriggeredOnUnsplit) {
+  chrome::android::ScopedJavaDrivenFeatureForTesting enable_split_view(
+      chrome::android::kEnableAndroidSplitView, true);
+
+  // Arrange:
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+
+  tabs::TabInterface* tab_a = tab_list->GetTab(/*index=*/0);
+  tabs::TabInterface* tab_b =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/-1);
+  ASSERT_TRUE(tab_a);
+  ASSERT_TRUE(tab_b);
+
+  const split_tabs::SplitTabVisualData visual_data(
+      split_tabs::SplitTabLayout::kSideBySide, /*split_ratio=*/0.4);
+  std::optional<split_tabs::SplitTabId> split_id = tab_list->CreateSplit(
+      {tab_a->GetHandle(), tab_b->GetHandle()}, visual_data);
+  ASSERT_TRUE(split_id.has_value());
+
+  testing::StrictMock<MockTabListInterfaceObserver> observer;
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      observation(&observer);
+  observation.Observe(tab_list);
+
+  EXPECT_CALL(observer, OnSplitTabRemoved(testing::Ref(*tab_list), *split_id,
+                                          testing::ElementsAre(tab_a, tab_b)));
+
+  // Act:
+  tab_list->Unsplit(*split_id);
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest,
+                       ObserverOnSplitTabRemoved_TriggeredOnTabRemoval) {
+  chrome::android::ScopedJavaDrivenFeatureForTesting enable_split_view(
+      chrome::android::kEnableAndroidSplitView, true);
+
+  // Arrange:
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+
+  tabs::TabInterface* tab_a = tab_list->GetTab(/*index=*/0);
+  tabs::TabInterface* tab_b =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/-1);
+  ASSERT_TRUE(tab_a);
+  ASSERT_TRUE(tab_b);
+
+  const split_tabs::SplitTabVisualData visual_data(
+      split_tabs::SplitTabLayout::kSideBySide, /*split_ratio=*/0.5);
+  std::optional<split_tabs::SplitTabId> split_id = tab_list->CreateSplit(
+      {tab_a->GetHandle(), tab_b->GetHandle()}, visual_data);
+  ASSERT_TRUE(split_id.has_value());
+
+  testing::StrictMock<MockTabListInterfaceObserver> observer;
+  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
+      observation(&observer);
+  observation.Observe(tab_list);
+
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(observer,
+                OnSplitTabRemoved(testing::Ref(*tab_list), *split_id,
+                                  testing::ElementsAre(tab_a, tab_b)));
+    EXPECT_CALL(observer, OnTabRemoved(testing::Ref(*tab_list), tab_a,
+                                       TabRemovedReason::kDeleted));
+  }
+
+  // Act:
+  tab_list->CloseTab(tab_a->GetHandle());
 }
 
 }  // namespace
