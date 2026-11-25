@@ -15,6 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsSnapHintAction;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -121,6 +122,16 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
                         topControlsMinHeightOffsetY,
                         bottomControlsOffsetY,
                         bottomControlsMinHeightOffsetY);
+    }
+
+    @Override
+    public void onBrowserControlsSnapHintChanged(
+            @BrowserControlsSnapHintAction int action,
+            float slowness,
+            boolean isScrollEndOrInertial) {
+        if (isDestroyed()) return;
+        TabBrowserControlsOffsetHelper.get(mTab)
+                .notifyControlsSnapHintChanged(action, slowness, isScrollEndOrInertial);
     }
 
     @Override

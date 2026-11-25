@@ -6,8 +6,10 @@
 
 #include <cmath>
 
+#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -283,6 +285,11 @@ void RenderFrameMetadataObserverImpl::ReportScrollJankStats(
 
 void RenderFrameMetadataObserverImpl::ReportBrowserControlsSnapHint(
     const cc::BrowserControlsSnapHint& hint) {
+  // Snap hints are only used when the browser process owns the browser
+  // controls position, so don't send them otherwise.
+  if (!base::FeatureList::IsEnabled(::features::kControlsInBrowser)) {
+    return;
+  }
   render_frame_metadata_observer_client_->ReportBrowserControlsSnapHint(hint);
 }
 #endif

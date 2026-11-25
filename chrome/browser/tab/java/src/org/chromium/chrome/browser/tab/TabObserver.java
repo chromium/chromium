@@ -9,8 +9,10 @@ import android.graphics.Bitmap;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsSnapHintAction;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
@@ -18,6 +20,7 @@ import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
@@ -386,7 +389,16 @@ public interface TabObserver {
             int bottomControlsMinHeightOffsetY) {}
 
     /**
-     * @see BrowserControlsStateProvider.Observer#onControlsConstraintsChanged
+     * @see ViewAndroidDelegate#onBrowserControlsSnapHintChanged
+     */
+    default void onBrowserControlsSnapHintChanged(
+            Tab tab,
+            @BrowserControlsSnapHintAction int action,
+            float slowness,
+            boolean isScrollEndOrInertial) {}
+
+    /**
+     * @see BrowserControlsStateProvider.Observer#onOffsetTagsInfoChanged
      */
     default void onOffsetTagsInfoChanged(
             Tab tab,

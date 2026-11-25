@@ -37,6 +37,12 @@ class TestViewAndroidDelegate {
   gfx::Size GetLastCustomCursorSize() const;
   gfx::Point GetLastCustomCursorHotspot() const;
 
+  // The browser controls snap hints delivered to the Java delegate.
+  int GetSnapHintChangedCount() const;
+  int GetLastSnapHintAction() const;
+  float GetLastSnapHintSlowness() const;
+  bool GetLastSnapHintIsScrollEndOrInertial() const;
+
   // Sets the container view coordinates. `SetupTestDelegate()` must be called
   // first, and this must not be called after `ClearContainerView()`.
   void SetContainerLocation(const gfx::Point& window_location,

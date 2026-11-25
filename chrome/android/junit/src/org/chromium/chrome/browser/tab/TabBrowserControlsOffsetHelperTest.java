@@ -18,6 +18,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.cc.input.BrowserControlsSnapHintAction;
 
 /** Unit tests for {@link TabBrowserControlsOffsetHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -143,5 +144,30 @@ public class TabBrowserControlsOffsetHelperTest {
         Assert.assertEquals(0, mHelper.topControlsOffset());
         Assert.assertEquals(0, mHelper.contentOffset());
         Assert.assertEquals(0, mHelper.bottomControlsOffset());
+    }
+
+    @Test
+    public void testNotifyControlsSnapHintChanged() {
+        mHelper.notifyControlsSnapHintChanged(
+                BrowserControlsSnapHintAction.CAN_HIDE,
+                /* slowness= */ 0.25f,
+                /* isScrollEndOrInertial= */ false);
+        Mockito.verify(mDispatchedTabObserver)
+                .onBrowserControlsSnapHintChanged(
+                        mTab,
+                        BrowserControlsSnapHintAction.CAN_HIDE,
+                        /* slowness= */ 0.25f,
+                        /* isScrollEndOrInertial= */ false);
+
+        mHelper.notifyControlsSnapHintChanged(
+                BrowserControlsSnapHintAction.MUST_SHOW,
+                /* slowness= */ 1f,
+                /* isScrollEndOrInertial= */ true);
+        Mockito.verify(mDispatchedTabObserver)
+                .onBrowserControlsSnapHintChanged(
+                        mTab,
+                        BrowserControlsSnapHintAction.MUST_SHOW,
+                        /* slowness= */ 1f,
+                        /* isScrollEndOrInertial= */ true);
     }
 }

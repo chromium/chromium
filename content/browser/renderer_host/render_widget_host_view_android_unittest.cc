@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "cc/input/browser_controls_snap_hint.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/slim/layer.h"
 #include "components/input/render_input_router.mojom.h"
@@ -410,6 +411,39 @@ TEST_F(RenderWidgetHostViewAndroidTest,
   // 3. Transition back to hidden/occluded (capture finishes).
   rwhva->WasOccluded();
   EXPECT_FALSE(rwhva->IsShowing());
+}
+
+// Tests that a browser controls snap hint from the renderer reaches the Java
+// ViewAndroidDelegate through JNI.
+TEST_F(RenderWidgetHostViewAndroidTest,
+       BrowserControlsSnapHintForwardedToJava) {
+  ui::TestViewAndroidDelegate test_view_android_delegate;
+  test_view_android_delegate.SetupTestDelegate(GetNativeView());
+
+  cc::BrowserControlsSnapHint hint;
+  hint.action = cc::BrowserControlsSnapHint::Action::kCanHide;
+  hint.slowness = 0.25f;
+  hint.is_scroll_end_or_inertial = true;
+  render_widget_host_view_android()->OnReportBrowserControlsSnapHint(hint);
+
+  EXPECT_EQ(1, test_view_android_delegate.GetSnapHintChangedCount());
+  EXPECT_EQ(static_cast<int>(cc::BrowserControlsSnapHint::Action::kCanHide),
+            test_view_android_delegate.GetLastSnapHintAction());
+  EXPECT_FLOAT_EQ(0.25f, test_view_android_delegate.GetLastSnapHintSlowness());
+  EXPECT_TRUE(
+      test_view_android_delegate.GetLastSnapHintIsScrollEndOrInertial());
+
+  hint.action = cc::BrowserControlsSnapHint::Action::kMustShow;
+  hint.slowness = 1.0f;
+  hint.is_scroll_end_or_inertial = false;
+  render_widget_host_view_android()->OnReportBrowserControlsSnapHint(hint);
+
+  EXPECT_EQ(2, test_view_android_delegate.GetSnapHintChangedCount());
+  EXPECT_EQ(static_cast<int>(cc::BrowserControlsSnapHint::Action::kMustShow),
+            test_view_android_delegate.GetLastSnapHintAction());
+  EXPECT_FLOAT_EQ(1.0f, test_view_android_delegate.GetLastSnapHintSlowness());
+  EXPECT_FALSE(
+      test_view_android_delegate.GetLastSnapHintIsScrollEndOrInertial());
 }
 
 // Tests insetting the Visual Viewport.

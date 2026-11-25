@@ -34,6 +34,11 @@ public class TestViewAndroidDelegate extends ViewAndroidDelegate {
     private int mLastCustomCursorHotspotX;
     private int mLastCustomCursorHotspotY;
 
+    private int mSnapHintChangedCount;
+    private int mLastSnapHintAction;
+    private float mLastSnapHintSlowness;
+    private boolean mLastSnapHintIsScrollEndOrInertial;
+
     /**
      * @param containerView {@link ViewGroup} to be used as a container view.
      */
@@ -113,6 +118,36 @@ public class TestViewAndroidDelegate extends ViewAndroidDelegate {
     @CalledByNative
     private int getLastCustomCursorHotspotY() {
         return mLastCustomCursorHotspotY;
+    }
+
+    @Override
+    public void onBrowserControlsSnapHintChanged(
+            int action, float slowness, boolean isScrollEndOrInertial) {
+        super.onBrowserControlsSnapHintChanged(action, slowness, isScrollEndOrInertial);
+        mSnapHintChangedCount++;
+        mLastSnapHintAction = action;
+        mLastSnapHintSlowness = slowness;
+        mLastSnapHintIsScrollEndOrInertial = isScrollEndOrInertial;
+    }
+
+    @CalledByNative
+    private int getSnapHintChangedCount() {
+        return mSnapHintChangedCount;
+    }
+
+    @CalledByNative
+    private int getLastSnapHintAction() {
+        return mLastSnapHintAction;
+    }
+
+    @CalledByNative
+    private float getLastSnapHintSlowness() {
+        return mLastSnapHintSlowness;
+    }
+
+    @CalledByNative
+    private boolean getLastSnapHintIsScrollEndOrInertial() {
+        return mLastSnapHintIsScrollEndOrInertial;
     }
 
     @CalledByNative

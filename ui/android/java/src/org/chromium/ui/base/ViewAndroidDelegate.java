@@ -488,6 +488,20 @@ public class ViewAndroidDelegate {
             int bottomControlsMinHeightOffsetY) {}
 
     /**
+     * Called when the renderer's browser controls snap hint changes. Only called when
+     * kControlsInBrowser is enabled.
+     *
+     * @param action Whether the controls must show, can show, or can hide. A
+     *     cc::BrowserControlsSnapHint::Action value.
+     * @param slowness How long animating the controls would take at the current scroll velocity,
+     *     relative to the maximum animation duration, in [0, 1].
+     * @param isScrollEndOrInertial Whether the user has lifted their finger.
+     */
+    @CalledByNative
+    public void onBrowserControlsSnapHintChanged(
+            int action, float slowness, boolean isScrollEndOrInertial) {}
+
+    /**
      * @return The Visual Viewport bottom inset in pixels.
      */
     @CalledByNative

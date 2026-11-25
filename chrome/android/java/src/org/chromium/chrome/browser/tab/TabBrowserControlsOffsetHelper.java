@@ -10,6 +10,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsSnapHintAction;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -97,6 +98,24 @@ public class TabBrowserControlsOffsetHelper implements TabObserver, UserData {
         mBottomControlsOffset = bottomControlsOffset;
         mBottomControlsMinHeightOffset = bottomControlsMinHeightOffset;
         notifyControlsOffsetChanged();
+    }
+
+    /**
+     * Forwards a browser controls snap hint from the renderer to the tab observers.
+     *
+     * @param action Whether the controls must show, can show, or can hide.
+     * @param slowness How long animating the controls would take at the current scroll velocity,
+     *     relative to the maximum animation duration, in [0, 1].
+     * @param isScrollEndOrInertial Whether the user has lifted their finger.
+     */
+    void notifyControlsSnapHintChanged(
+            @BrowserControlsSnapHintAction int action,
+            float slowness,
+            boolean isScrollEndOrInertial) {
+        for (TabObserver observer : mTab.getTabObservers()) {
+            observer.onBrowserControlsSnapHintChanged(
+                    mTab, action, slowness, isScrollEndOrInertial);
+        }
     }
 
     private void notifyControlsOffsetChanged() {

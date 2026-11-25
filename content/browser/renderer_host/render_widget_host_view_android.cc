@@ -37,6 +37,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/math_util.h"
+#include "cc/input/browser_controls_snap_hint.h"
 #include "cc/slim/layer.h"
 #include "components/input/cursor_manager.h"
 #include "components/input/events_helper.h"
@@ -1254,6 +1255,15 @@ void RenderWidgetHostViewAndroid::OnReportScrollJankStats(
     uint32_t total_frames,
     uint32_t janky_frames) {
   ReportScrollJankStats(total_frames, janky_frames);
+}
+
+void RenderWidgetHostViewAndroid::OnReportBrowserControlsSnapHint(
+    const cc::BrowserControlsSnapHint& hint) {
+  // `slowness` is a unitless ratio, so unlike the offsets above it is not
+  // scaled by the DIP scale.
+  view_.OnBrowserControlsSnapHintChanged(static_cast<int>(hint.action),
+                                         hint.slowness,
+                                         hint.is_scroll_end_or_inertial);
 }
 
 void RenderWidgetHostViewAndroid::Focus() {

@@ -9,6 +9,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -36,6 +38,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.cc.input.BrowserControlsSnapHintAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
@@ -170,5 +173,34 @@ public class TabViewAndroidDelegateTest {
         mViewAndroidDelegate.autofill(new SparseArray<>());
         verify(mTab, never()).changeWebContentBackgroundColor(anyInt());
         verify(mTab, never()).autofill(any());
+    }
+
+    @Test
+    public void testOnBrowserControlsSnapHintChanged_forwardsToOffsetHelper() {
+        TabBrowserControlsOffsetHelper helper = mock(TabBrowserControlsOffsetHelper.class);
+        TabBrowserControlsOffsetHelper.setInstanceForTesting(helper);
+
+        mViewAndroidDelegate.onBrowserControlsSnapHintChanged(
+                BrowserControlsSnapHintAction.CAN_SHOW,
+                /* slowness= */ 0.5f,
+                /* isScrollEndOrInertial= */ true);
+        verify(helper)
+                .notifyControlsSnapHintChanged(
+                        BrowserControlsSnapHintAction.CAN_SHOW,
+                        /* slowness= */ 0.5f,
+                        /* isScrollEndOrInertial= */ true);
+    }
+
+    @Test
+    public void testOnBrowserControlsSnapHintChanged_ignoredAfterDestroy() {
+        TabBrowserControlsOffsetHelper helper = mock(TabBrowserControlsOffsetHelper.class);
+        TabBrowserControlsOffsetHelper.setInstanceForTesting(helper);
+
+        mViewAndroidDelegate.destroy();
+        mViewAndroidDelegate.onBrowserControlsSnapHintChanged(
+                BrowserControlsSnapHintAction.CAN_HIDE,
+                /* slowness= */ 0.5f,
+                /* isScrollEndOrInertial= */ false);
+        verify(helper, never()).notifyControlsSnapHintChanged(anyInt(), anyFloat(), anyBoolean());
     }
 }

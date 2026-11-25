@@ -668,6 +668,19 @@ void ViewAndroid::OnVerticalScrollDirectionChanged(bool direction_up,
       env, delegate, direction_up, current_scroll_ratio);
 }
 
+void ViewAndroid::OnBrowserControlsSnapHintChanged(
+    int action,
+    float slowness,
+    bool is_scroll_end_or_inertial) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate(env));
+  if (delegate.is_null()) {
+    return;
+  }
+  Java_ViewAndroidDelegate_onBrowserControlsSnapHintChanged(
+      env, delegate, action, slowness, is_scroll_end_or_inertial);
+}
+
 void ViewAndroid::OnSizeChanged(int width, int height) {
   // Match-parent view must not receive size events.
   CHECK(!match_parent(), base::NotFatalUntil::M163);

@@ -197,6 +197,11 @@ class UI_ANDROID_EXPORT ViewAndroid {
   // if page is not scrollable, though this should not be called in that case.
   void OnVerticalScrollDirectionChanged(bool direction_up,
                                         float current_scroll_ratio);
+  // Forwards a browser controls snap hint from the renderer. |action| is a
+  // cc::BrowserControlsSnapHint::Action and |slowness| is in [0, 1].
+  void OnBrowserControlsSnapHintChanged(int action,
+                                        float slowness,
+                                        bool is_scroll_end_or_inertial);
   void OnControlsResizeViewChanged(bool controls_resize_view);
   void DispatchWindowPositionChange();
 

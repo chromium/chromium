@@ -1152,7 +1152,10 @@ cc_test("cc_perftests") {
 
 if (is_android) {
   java_cpp_enum("cc_android_java_enums_srcjar") {
-    sources = [ "//cc/input/browser_controls_state.h" ]
+    sources = [
+      "//cc/input/browser_controls_snap_hint.h",
+      "//cc/input/browser_controls_state.h",
+    ]
   }
 
   generate_jni("cc_jni_headers") {

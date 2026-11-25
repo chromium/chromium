@@ -28,6 +28,7 @@ import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsSnapHintAction;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -70,6 +71,23 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
      */
     private static final int CONTROLS_ANIMATION_DURATION_MS = 200;
 
+    // TODO(peilinwang): Remove the suppression once the snap hint is used.
+    @SuppressWarnings("UnusedVariable")
+    private static final class SnapHint {
+        public final @BrowserControlsSnapHintAction int action;
+        public final float slowness;
+        public final boolean isScrollEndOrInertial;
+
+        SnapHint(
+                @BrowserControlsSnapHintAction int action,
+                float slowness,
+                boolean isScrollEndOrInertial) {
+            this.action = action;
+            this.slowness = slowness;
+            this.isScrollEndOrInertial = isScrollEndOrInertial;
+        }
+    }
+
     private final Activity mActivity;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
     @ControlsPosition private int mControlsPosition;
@@ -103,6 +121,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     private int mRendererBottomControlsMinHeightOffset;
     private boolean mRendererTopControlsMinHeightChanged;
     private boolean mRendererBottomControlsMinHeightChanged;
+
+    // TODO(peilinwang): Remove the suppression once the snap hint is used.
+    @SuppressWarnings("UnusedVariable")
+    private @Nullable SnapHint mSnapHint;
 
     private @Nullable ActivityTabTabObserver mActiveTabObserver;
 
@@ -296,6 +318,17 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                     }
 
                     @Override
+                    public void onBrowserControlsSnapHintChanged(
+                            Tab tab,
+                            @BrowserControlsSnapHintAction int action,
+                            float slowness,
+                            boolean isScrollEndOrInertial) {
+                        if (tab == getTab() && tab.isUserInteractable() && !tab.isNativePage()) {
+                            onSnapHintChanged(action, slowness, isScrollEndOrInertial);
+                        }
+                    }
+
+                    @Override
                     public void onOffsetTagsInfoChanged(
                             Tab tab,
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
@@ -372,10 +405,19 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         return mTab;
     }
 
+    private void onSnapHintChanged(
+            @BrowserControlsSnapHintAction int action,
+            float slowness,
+            boolean isScrollEndOrInertial) {
+        // TODO(peilinwang): Decide whether to animate the controls based on the hint.
+        mSnapHint = new SnapHint(action, slowness, isScrollEndOrInertial);
+    }
+
     private void setTab(@Nullable Tab tab) {
         Tab previousTab = getTab();
         mTab = tab;
         if (previousTab != tab) {
+            mSnapHint = null;
             if (tab != null) {
                 mBrowserVisibilityDelegate.showControlsTransient();
                 if (tab.isUserInteractable()) restoreControlsPositions();

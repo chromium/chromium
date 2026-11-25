@@ -12,6 +12,9 @@ namespace cc {
 // Describes a browser controls snap animation hint produced by
 // BrowserControlsSnapAnimationController.
 struct CC_EXPORT BrowserControlsSnapHint {
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.cc.input
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: BrowserControlsSnapHintAction
   enum class Action {
     // Viewport is in the always-shown region; controls must be shown
     // regardless of scroll direction or threshold.

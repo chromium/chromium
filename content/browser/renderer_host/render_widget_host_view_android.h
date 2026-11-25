@@ -60,6 +60,7 @@
 
 namespace cc {
 struct BrowserControlsOffsetTags;
+struct BrowserControlsSnapHint;
 }
 
 namespace cc::slim {
@@ -445,6 +446,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       const gfx::PointF& root_scroll_offset) override;
   void OnReportScrollJankStats(uint32_t total_frames,
                                uint32_t janky_frames) override;
+  void OnReportBrowserControlsSnapHint(
+      const cc::BrowserControlsSnapHint& hint) override;
 
   void WasEvicted();
   bool IsClosing() const { return in_shutdown_; }

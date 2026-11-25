@@ -53,6 +53,31 @@ gfx::Point TestViewAndroidDelegate::GetLastCustomCursorHotspot() const {
                         env, j_delegate_));
 }
 
+int TestViewAndroidDelegate::GetSnapHintChangedCount() const {
+  CHECK(j_delegate_);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TestViewAndroidDelegate_getSnapHintChangedCount(env, j_delegate_);
+}
+
+int TestViewAndroidDelegate::GetLastSnapHintAction() const {
+  CHECK(j_delegate_);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TestViewAndroidDelegate_getLastSnapHintAction(env, j_delegate_);
+}
+
+float TestViewAndroidDelegate::GetLastSnapHintSlowness() const {
+  CHECK(j_delegate_);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TestViewAndroidDelegate_getLastSnapHintSlowness(env, j_delegate_);
+}
+
+bool TestViewAndroidDelegate::GetLastSnapHintIsScrollEndOrInertial() const {
+  CHECK(j_delegate_);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TestViewAndroidDelegate_getLastSnapHintIsScrollEndOrInertial(
+      env, j_delegate_);
+}
+
 void TestViewAndroidDelegate::SetContainerLocation(
     const gfx::Point& window_location,
     const gfx::Point& screen_location) {
