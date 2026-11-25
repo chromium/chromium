@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
@@ -320,28 +321,26 @@ Sanitizer::Action HTMLConstructionSite::SanitizeAndReturnAction(
 
 ActiveTemplateInvocation* HTMLConstructionSite::CurrentActiveTemplateInvocation(
     Node* node_being_inserted) const {
-  if (!RuntimeEnabledFeatures::MutationObserverActiveTemplateEnabled()) {
+  if (open_elements_.OpenTemplates().empty() ||
+      !RuntimeEnabledFeatures::MutationObserverActiveTemplateEnabled()) {
     return nullptr;
   }
-  if (!IsEmpty()) {
-    HTMLStackItem* item = open_elements_.TopStackItem();
-    if (item && node_being_inserted && item->GetNode() == node_being_inserted) {
-      item = item->NextItemInStack();
+  for (const auto& item : std::views::reverse(open_elements_.OpenTemplates())) {
+    if (node_being_inserted && item->GetNode() == node_being_inserted) {
+      continue;
     }
-    for (; item; item = item->NextItemInStack()) {
-      auto* template_element = DynamicTo<HTMLTemplateElement>(item->GetNode());
-      if (!template_element) {
-        continue;
+    auto* template_element = DynamicTo<HTMLTemplateElement>(item->GetNode());
+    if (!template_element) {
+      continue;
+    }
+    if (Patch* patch = template_element->GetPatch()) {
+      if (!patch->IsExternal()) {
+        return patch->invocation();
       }
-      if (Patch* patch = template_element->GetPatch()) {
-        if (!patch->IsExternal()) {
-          return patch->invocation();
-        }
-        return nullptr;
-      }
-      if (!template_element->IsShadowRootModeTemplate()) {
-        return nullptr;
-      }
+      return nullptr;
+    }
+    if (!template_element->IsShadowRootModeTemplate()) {
+      return nullptr;
     }
   }
   return nullptr;

@@ -123,6 +123,9 @@ class HTMLElementStack {
   bool HasOnlyOneElement() const;
   bool SecondElementIsHTMLBodyElement() const;
   bool HasTemplateInHTMLScope() const;
+  const HeapVector<Member<HTMLStackItem>>& OpenTemplates() const {
+    return open_templates_;
+  }
   Element* HtmlElement() const;
   Element* BodyElement() const;
 
@@ -152,7 +155,8 @@ class HTMLElementStack {
   Member<ContainerNode> root_node_;
   Member<Element> head_element_;
   Member<Element> body_element_;
-  unsigned stack_depth_;
+  HeapVector<Member<HTMLStackItem>> open_templates_;
+  unsigned stack_depth_ = 0;
 };
 
 }  // namespace blink

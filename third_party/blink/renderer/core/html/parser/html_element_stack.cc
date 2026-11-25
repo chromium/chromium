@@ -157,11 +157,7 @@ inline bool IsHTMLPElement(HTMLStackItem* item) {
 
 }  // namespace
 
-HTMLElementStack::HTMLElementStack()
-    : root_node_(nullptr),
-      head_element_(nullptr),
-      body_element_(nullptr),
-      stack_depth_(0) {}
+HTMLElementStack::HTMLElementStack() = default;
 
 bool HTMLElementStack::HasOnlyOneElement() const {
   return !TopStackItem()->NextItemInStack();
@@ -194,6 +190,7 @@ void HTMLElementStack::PopAll() {
   root_node_ = nullptr;
   head_element_ = nullptr;
   body_element_ = nullptr;
+  open_templates_.clear();
   stack_depth_ = 0;
   while (top_) {
     Node& node = *TopNode();
@@ -346,6 +343,7 @@ void HTMLElementStack::InsertAbove(HTMLStackItem* item,
   DCHECK(!item->HasTagName(html_names::kHTMLTag));
   DCHECK(!item->HasTagName(html_names::kHeadTag));
   DCHECK(!item->HasTagName(html_names::kBodyTag));
+  DCHECK(!item->MatchesHTMLTag(HTMLTag::kTemplate));
   DCHECK(root_node_);
   if (item_below == top_) {
     Push(item);
@@ -403,6 +401,9 @@ HTMLStackItem* HTMLElementStack::Topmost(html_names::HTMLTag tag) const {
   // kUnknown by itself is not enough to uniquely identify a tag. This code
   // should only be called with HTMLTags other than kUnknown.
   DCHECK_NE(tag, HTMLTag::kUnknown);
+  if (tag == HTMLTag::kTemplate) {
+    return open_templates_.empty() ? nullptr : open_templates_.back().Get();
+  }
   for (HTMLStackItem* item = top_.Get(); item; item = item->NextItemInStack()) {
     if (item->IsHTMLNamespace() && tag == item->GetHTMLTag()) {
       return item;
@@ -497,7 +498,9 @@ bool HTMLElementStack::InButtonScope(html_names::HTMLTag tag) const {
 }
 
 bool HTMLElementStack::HasTemplateInHTMLScope() const {
-  return InScopeCommon<IsRootNode>(top_.Get(), HTMLTag::kTemplate);
+  DCHECK_EQ(!open_templates_.empty(),
+            InScopeCommon<IsRootNode>(top_.Get(), HTMLTag::kTemplate));
+  return !open_templates_.empty();
 }
 
 Element* HTMLElementStack::HtmlElement() const {
@@ -522,6 +525,9 @@ void HTMLElementStack::PushCommon(HTMLStackItem* item) {
   item->has_p_element_in_button_scope_ =
       IsHTMLPElement(item) || (!IsButtonScopeMarker(item) && top_ &&
                                top_->has_p_element_in_button_scope_);
+  if (item->MatchesHTMLTag(HTMLTag::kTemplate)) {
+    open_templates_.push_back(item);
+  }
   item->SetNextItemInStack(top_.Release());
   top_ = item;
 }
@@ -532,6 +538,10 @@ void HTMLElementStack::PopCommon() {
   DCHECK(!TopStackItem()->HasTagName(html_names::kBodyTag) || !body_element_);
   Top()->FinishParsingChildren();
 
+  if (TopStackItem()->MatchesHTMLTag(HTMLTag::kTemplate)) {
+    DCHECK_EQ(open_templates_.back(), TopStackItem());
+    open_templates_.pop_back();
+  }
   top_ = top_->ReleaseNextItemInStack();
 
   stack_depth_--;
@@ -540,6 +550,7 @@ void HTMLElementStack::PopCommon() {
 void HTMLElementStack::RemoveNonTopCommon(Element* element) {
   DCHECK(!IsA<HTMLHtmlElement>(element));
   DCHECK(!IsA<HTMLBodyElement>(element));
+  DCHECK(!IsA<HTMLTemplateElement>(element));
   DCHECK_NE(Top(), element);
   HeapVector<Member<HTMLStackItem>> items_above;
   for (HTMLStackItem* item = top_.Get(); item; item = item->NextItemInStack()) {
@@ -593,6 +604,8 @@ void HTMLElementStack::Replace(HTMLStackItem* old_item,
   DCHECK(old_item);
   DCHECK(new_item);
   DCHECK(!new_item->NextItemInStack());
+  DCHECK(!old_item->MatchesHTMLTag(HTMLTag::kTemplate));
+  DCHECK(!new_item->MatchesHTMLTag(HTMLTag::kTemplate));
   HTMLStackItem* previous_item = nullptr;
   HeapVector<Member<HTMLStackItem>> items_above;
   for (HTMLStackItem* item = top_.Get(); item; item = item->NextItemInStack()) {
@@ -618,6 +631,7 @@ void HTMLElementStack::Trace(Visitor* visitor) const {
   visitor->Trace(root_node_);
   visitor->Trace(head_element_);
   visitor->Trace(body_element_);
+  visitor->Trace(open_templates_);
 }
 
 #ifndef NDEBUG
