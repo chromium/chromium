@@ -501,4 +501,101 @@ TEST_F(ManifestDemuxerTest, DoesNotExposeTracksForAudioOnlyManifests) {
   ASSERT_TRUE(was_called);
 }
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+TEST_F(ManifestDemuxerTest, RejectsMp4SegmentEndingMidBox) {
+  EXPECT_CALL(*this, MockInitComplete(_)).Times(1);
+  EXPECT_CALL(*mock_engine_, OnTimeUpdate(_, _, _))
+      .WillOnce(RunOnceCallback<2>(kNoTimestamp));
+  EXPECT_CALL(*mock_engine_, FilterDemuxerStreams(_))
+      .WillRepeatedly(ReturnArg<0>());
+  EXPECT_CALL(*mock_engine_, Initialize(_, _))
+      .WillOnce(RunOnceCallback<1>(OkStatus()));
+
+  manifest_demuxer_->Initialize(
+      mock_host_.get(), base::BindOnce(&ManifestDemuxerTest::MockInitComplete,
+                                       base::Unretained(this)));
+
+  base::TimeDelta offset;
+  ASSERT_TRUE(
+      manifest_demuxer_->AddRole("test", RelaxedParserSupportedType::kMP4));
+
+  // Complete box-aligned fMP4 segment succeeds.
+  scoped_refptr<DecoderBuffer> frag_mp4 =
+      ReadTestDataFile("bear-1280x720-av_frag.mp4");
+  EXPECT_TRUE(manifest_demuxer_->AppendAndParseData("test", base::Seconds(10),
+                                                    &offset, *frag_mp4));
+
+  // Appending a segment with a trailing truncated `moof` box (declared size
+  // 256 bytes, only 16 bytes supplied) must fail rather than leaving a
+  // half-parsed box in MP4StreamParser for the next segment to complete.
+  constexpr uint8_t kTruncatedMoof[] = {
+      0x00, 0x00, 0x01, 0x00,  // box size = 256
+      'm',  'o',  'o',  'f',   // box type = moof
+      0x00, 0x00, 0x00, 0x10,  // partial mfhd
+      'm',  'f',  'h',  'd',
+  };
+  EXPECT_FALSE(manifest_demuxer_->AppendAndParseData("test", base::Seconds(10),
+                                                     &offset, kTruncatedMoof));
+}
+
+TEST_F(ManifestDemuxerTest, RejectsMp2tSegmentEndingMidPacketOrMidPesHeader) {
+  EXPECT_CALL(*this, MockInitComplete(_)).Times(1);
+  EXPECT_CALL(*mock_engine_, OnTimeUpdate(_, _, _))
+      .WillOnce(RunOnceCallback<2>(kNoTimestamp));
+  EXPECT_CALL(*mock_engine_, FilterDemuxerStreams(_))
+      .WillRepeatedly(ReturnArg<0>());
+  EXPECT_CALL(*mock_engine_, Initialize(_, _))
+      .WillOnce(RunOnceCallback<1>(OkStatus()));
+
+  manifest_demuxer_->Initialize(
+      mock_host_.get(), base::BindOnce(&ManifestDemuxerTest::MockInitComplete,
+                                       base::Unretained(this)));
+
+  base::TimeDelta offset;
+  ASSERT_TRUE(
+      manifest_demuxer_->AddRole("test", RelaxedParserSupportedType::kMP2T));
+
+  // Complete 188-byte-aligned MPEG-2 TS segment succeeds.
+  scoped_refptr<DecoderBuffer> bear_ts = ReadTestDataFile("bear-1280x720.ts");
+  base::span<const uint8_t> ts_bytes(*bear_ts);
+  EXPECT_TRUE(manifest_demuxer_->AppendAndParseData("test", base::Seconds(10),
+                                                    &offset, ts_bytes));
+
+  // Truncating a TS segment mid-188-byte packet must be rejected.
+  manifest_demuxer_->ResetParserState("test", base::Seconds(10), &offset);
+  EXPECT_FALSE(manifest_demuxer_->AppendAndParseData(
+      "test", base::Seconds(10), &offset,
+      ts_bytes.first(ts_bytes.size() - 10)));
+}
+
+TEST_F(ManifestDemuxerTest, RejectsAdtsSegmentEndingMidFrame) {
+  EXPECT_CALL(*this, MockInitComplete(_)).Times(1);
+  EXPECT_CALL(*mock_engine_, OnTimeUpdate(_, _, _))
+      .WillOnce(RunOnceCallback<2>(kNoTimestamp));
+  EXPECT_CALL(*mock_engine_, FilterDemuxerStreams(_))
+      .WillRepeatedly(ReturnArg<0>());
+  EXPECT_CALL(*mock_engine_, Initialize(_, _))
+      .WillOnce(RunOnceCallback<1>(OkStatus()));
+
+  manifest_demuxer_->Initialize(
+      mock_host_.get(), base::BindOnce(&ManifestDemuxerTest::MockInitComplete,
+                                       base::Unretained(this)));
+
+  base::TimeDelta offset;
+  ASSERT_TRUE(
+      manifest_demuxer_->AddRole("test", RelaxedParserSupportedType::kAAC));
+
+  // Complete ADTS segment succeeds.
+  scoped_refptr<DecoderBuffer> adts = ReadTestDataFile("sfx.adts");
+  base::span<const uint8_t> adts_bytes(*adts);
+  EXPECT_TRUE(manifest_demuxer_->AppendAndParseData("test", base::Seconds(10),
+                                                    &offset, adts_bytes));
+
+  // Appending a truncated ADTS frame (declared frame length > remaining bytes)
+  // must fail rather than leaving partial frame bytes in the parser queue.
+  EXPECT_FALSE(manifest_demuxer_->AppendAndParseData(
+      "test", base::Seconds(10), &offset, adts_bytes.first(20u)));
+}
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
 }  // namespace media

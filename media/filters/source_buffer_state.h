@@ -116,6 +116,10 @@ class MEDIA_EXPORT SourceBufferState {
   // Returns true if currently parsing a media segment, or false otherwise.
   bool parsing_media_segment() const { return parsing_media_segment_; }
 
+  // Returns true if the underlying StreamParser still holds incomplete box,
+  // packet, or frame bytes awaiting more data.
+  bool HasUnparsedData() const;
+
   // Returns the 'Generate Timestamps Flag' for this SourceBuffer's byte stream
   // format parser as described in the MSE Byte Stream Format Registry.
   bool generate_timestamps_flag() const {

@@ -419,6 +419,10 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // a media segment, or false otherwise.
   bool IsParsingMediaSegment(const std::string& id);
 
+  // Returns true if the source buffer associated with |id| has unparsed or
+  // incomplete container units remaining in its StreamParser.
+  bool HasUnparsedData(const std::string& id);
+
   // Returns the 'Generate Timestamps Flag', as described in the MSE Byte Stream
   // Format Registry, for the source buffer associated with |id|.
   bool GetGenerateTimestampsFlag(const std::string& id);

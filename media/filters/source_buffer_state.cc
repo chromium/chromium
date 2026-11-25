@@ -450,6 +450,10 @@ void SourceBufferState::SetAppendWindow(base::TimeDelta start,
   append_window_end_ = end;
 }
 
+bool SourceBufferState::HasUnparsedData() const {
+  return stream_parser_ && stream_parser_->HasUnparsedData();
+}
+
 void SourceBufferState::MarkEndOfStream() {
   if (stream_parser_) {
     base::TimeDelta temp_offset = timestamp_offset_;

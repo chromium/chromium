@@ -1260,6 +1260,14 @@ bool ChunkDemuxer::IsParsingMediaSegment(const std::string& id) {
   return source_state_map_[id]->parsing_media_segment();
 }
 
+bool ChunkDemuxer::HasUnparsedData(const std::string& id) {
+  base::AutoLock auto_lock(lock_);
+  DVLOG(1) << "HasUnparsedData(" << id << ")";
+  CHECK(IsValidId_Locked(id));
+
+  return source_state_map_[id]->HasUnparsedData();
+}
+
 bool ChunkDemuxer::GetGenerateTimestampsFlag(const std::string& id) {
   base::AutoLock auto_lock(lock_);
   DVLOG(1) << "GetGenerateTimestampsFlag(" << id << ")";

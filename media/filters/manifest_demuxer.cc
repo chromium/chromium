@@ -415,14 +415,15 @@ bool ManifestDemuxer::AppendAndParseData(std::string_view role,
                                          base::TimeDelta* offset,
                                          base::span<const uint8_t> data) {
   CHECK(chunk_demuxer_);
-  if (!chunk_demuxer_->AppendToParseBuffer(std::string(role), data)) {
+  const std::string role_str(role);
+  if (!chunk_demuxer_->AppendToParseBuffer(role_str, data)) {
     return false;
   }
   while (true) {
-    switch (chunk_demuxer_->RunSegmentParserLoop(
-        std::string(role), base::TimeDelta(), end, offset)) {
+    switch (chunk_demuxer_->RunSegmentParserLoop(role_str, base::TimeDelta(),
+                                                 end, offset)) {
       case StreamParser::ParseStatus::kSuccess:
-        return true;
+        return !chunk_demuxer_->HasUnparsedData(role_str);
       case StreamParser::ParseStatus::kSuccessHasMoreData:
         break;  // Keep parsing.
       default:
