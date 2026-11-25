@@ -51,6 +51,7 @@ source_set("actor") {
     "tools/click_tool_request.h",
     "tools/drag_and_release_tool_request.h",
     "tools/execute_js_tool_request.h",
+    "tools/execution_engine_dispatcher.h",
     "tools/file_picker_interceptor.h",
     "tools/file_upload_tool_request.h",
     "tools/find_and_highlight_tool_request.h",
