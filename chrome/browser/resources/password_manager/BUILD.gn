@@ -98,7 +98,6 @@ build_webui("build") {
     "notification_cards/notification_card.html.ts",
     "notification_cards/notification_card.ts",
     "notification_cards/notification_cards_browser_proxy.ts",
-    "passkeys_browser_proxy.ts",
     "password_change_details.html.ts",
     "password_change_details.ts",
     "password_details_section.html.ts",
@@ -154,6 +153,10 @@ build_webui("build") {
     "toolbar.ts",
     "user_utils_mixin.ts",
   ]
+
+  if (is_win || is_mac) {
+    ts_files += [ "passkeys_browser_proxy.ts" ]
+  }
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
