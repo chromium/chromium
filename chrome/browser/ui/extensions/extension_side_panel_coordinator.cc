@@ -271,6 +271,8 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
           weak_factory_.GetWeakPtr()),
       /*default_content_width_callback=*/base::NullCallback());
 #if BUILDFLAG(IS_ANDROID)
+  entry->SetProperty(kSidePanelTitleKey,
+                     base::UTF8ToUTF16(extension_->short_name()));
   entry->SetProperty(kSidePanelIconKey,
                      ui::ImageModel::FromImage(extension_icon_->image()));
 #endif

@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/extensions/extension_side_panel_coordinator.h"
 
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/android/device_info.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
@@ -79,6 +82,13 @@ class ExtensionSidePanelCoordinatorAndroidBrowserTest
     }));
   }
 
+  void VerifyEntryTitle(const SidePanelEntry& entry,
+                        std::u16string_view expected_title) {
+    const std::u16string* title = entry.GetProperty(kSidePanelTitleKey);
+    ASSERT_TRUE(title);
+    EXPECT_EQ(*title, expected_title);
+  }
+
   void VerifyEntryIcon(const SidePanelEntry& entry,
                        const Extension& extension) {
     const ui::ImageModel* icon = entry.GetProperty(kSidePanelIconKey);
@@ -96,9 +106,10 @@ class ExtensionSidePanelCoordinatorAndroidBrowserTest
 };
 
 // Verifies that registering an extension's SidePanelEntry on Android sets its
-// `kSidePanelIconKey` property to the extension's loaded icon.
+// `kSidePanelTitleKey` and `kSidePanelIconKey` properties to the extension's
+// short name and loaded icon.
 IN_PROC_BROWSER_TEST_F(ExtensionSidePanelCoordinatorAndroidBrowserTest,
-                       EntrySetsExtensionIconOnRegistration) {
+                       EntrySetsExtensionTitleAndIconOnRegistration) {
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
   ASSERT_TRUE(extension);
@@ -107,17 +118,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelCoordinatorAndroidBrowserTest,
 
   SidePanelEntry* entry = GetSidePanelEntry(extension->id());
   ASSERT_TRUE(entry);
+  VerifyEntryTitle(*entry, base::UTF8ToUTF16(extension->short_name()));
   VerifyEntryIcon(*entry, *extension);
 }
 
 // Verifies that dynamically registering an extension's SidePanelEntry via
-// `sidePanel.setOptions()` after initial load still populates
-// `kSidePanelIconKey`.
+// `sidePanel.setOptions()` after initial load populates `kSidePanelTitleKey`
+// (preferring `short_name` over `name`) and `kSidePanelIconKey`.
 IN_PROC_BROWSER_TEST_F(ExtensionSidePanelCoordinatorAndroidBrowserTest,
-                       EntrySetsExtensionIconWhenEnabledViaSetOptions) {
+                       EntrySetsExtensionTitleAndIconWhenEnabledViaSetOptions) {
   static constexpr char kManifest[] =
       R"({
           "name": "Extension with dynamic side panel",
+          "short_name": "Dynamic panel",
           "version": "1.0",
           "manifest_version": 3,
           "icons": {"180": "icon.png"},
@@ -144,6 +157,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelCoordinatorAndroidBrowserTest,
 
   SidePanelEntry* entry = GetSidePanelEntry(extension->id());
   ASSERT_TRUE(entry);
+  VerifyEntryTitle(*entry, u"Dynamic panel");
   VerifyEntryIcon(*entry, *extension);
 }
 
