@@ -108,6 +108,15 @@ def main():
         default=False,
         help='Use orchestrate to run tests.',
     )
+    # TODO(crbug.com/346624801): Temporary flag for Eureka to achieve a
+    # two-step migration in favor of using run_executable_test.py directly.
+    parser.add_argument(
+        '--no-publish-package',
+        action='store_true',
+        default=False,
+        help='Skip repository serving, package publishing, and package '
+        'resolution.',
+    )
 
     # Register arguments
     register_common_args(parser)
@@ -135,6 +144,7 @@ def main():
         and not runner_args.product
         and not runner_args.product_bundle
         and not runner_args.wait_for_log_pattern
+        and not runner_args.no_publish_package
         and get_host_arch() in {'x64', 'arm64'}
         and runner_args.test_type
         not in {
@@ -253,23 +263,24 @@ def main():
             runner_args.target_id,
         )
 
-        if package_deps:
-            if not runner_args.repo:
-                # Create a directory that serves as a temporary repository.
-                runner_args.repo = stack.enter_context(
-                    tempfile.TemporaryDirectory()
-                )
-                assert ensure_repository(runner_args), (
-                    'Must initialize a repository with a temporary folder.'
-                )
-                stack.enter_context(serve_repository(runner_args))
-            publish_packages(package_deps.values(), runner_args)
-            resolve_packages(package_deps.keys(), runner_args.target_id)
-        elif runner_args.repo:
-            # If there is a repo defined without packages, start the repo, so
-            # that the following runs can use it.
-            if ensure_repository(runner_args):
-                stack.enter_context(serve_repository(runner_args))
+        if not runner_args.no_publish_package:
+            if package_deps:
+                if not runner_args.repo:
+                    # Create a directory that serves as a temporary repository.
+                    runner_args.repo = stack.enter_context(
+                        tempfile.TemporaryDirectory()
+                    )
+                    assert ensure_repository(runner_args), (
+                        'Must initialize a repository with a temporary folder.'
+                    )
+                    stack.enter_context(serve_repository(runner_args))
+                publish_packages(package_deps.values(), runner_args)
+                resolve_packages(package_deps.keys(), runner_args.target_id)
+            elif runner_args.repo:
+                # If there is a repo defined without packages, start the repo,
+                # so that the following runs can use it.
+                if ensure_repository(runner_args):
+                    stack.enter_context(serve_repository(runner_args))
 
         return test_runner.run_test().returncode
 

@@ -150,6 +150,7 @@ class RunTestUnittests(unittest.TestCase):
             '--product=smart_display_eng_arrested.x64',
             '--custom-image=/abs/pb',
             '--wait-for-log-pattern=CrashIntentionally',
+            '--no-publish-package',
         ):
             with self.subTest(extra_flag=extra_flag), mock.patch.dict(
                 os.environ, {}, clear=False
@@ -184,6 +185,47 @@ class RunTestUnittests(unittest.TestCase):
                 self.assertEqual(run_test.main(), 0)
                 mock_orch.assert_not_called()
                 mock_runner.assert_called_once()
+
+    def test_no_publish_package_skips_repo_publish_and_resolve(self) -> None:
+        with mock.patch.dict(os.environ, {}, clear=False), mock.patch.object(
+            sys,
+            'argv',
+            [
+                'run_test.py',
+                'base_unittests',
+                '--device',
+                '--no-publish-package',
+                '--out-dir=/abs/out',
+            ],
+        ), mock.patch(
+            'run_test.running_unattended', return_value=False
+        ), mock.patch('run_test.LogManager'), mock.patch(
+            'run_test.update'
+        ), mock.patch('run_test.test_device_connection'), mock.patch(
+            'run_test.start_system_log'
+        ) as mock_start_log, mock.patch(
+            'run_test.ensure_repository'
+        ) as mock_ensure_repo, mock.patch(
+            'run_test.serve_repository'
+        ) as mock_serve_repo, mock.patch(
+            'run_test.publish_packages'
+        ) as mock_publish, mock.patch(
+            'run_test.resolve_packages'
+        ) as mock_resolve, mock.patch(
+            'run_test._get_test_runner'
+        ) as mock_runner:
+            os.environ.pop('FUCHSIA_NODENAME', None)
+            mock_runner.return_value.package_deps = {
+                'base_unittests': '/abs/out/base_unittests.far'
+            }
+            mock_runner.return_value.run_test.return_value.returncode = 0
+            self.assertEqual(run_test.main(), 0)
+            mock_ensure_repo.assert_not_called()
+            mock_serve_repo.assert_not_called()
+            mock_publish.assert_not_called()
+            mock_resolve.assert_not_called()
+            mock_start_log.assert_called_once()
+            mock_runner.return_value.run_test.assert_called_once()
 
 
 if __name__ == '__main__':
