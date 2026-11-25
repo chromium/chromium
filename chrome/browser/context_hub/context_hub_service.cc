@@ -55,6 +55,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -1575,14 +1576,17 @@ std::string ContextHubService::GetEffectiveAutoTabGroupsPreferences() const {
 }
 
 bool ContextHubService::SetAutoTabGroupsPreferences(std::string_view text) {
-  if (!StoreAutoTabGroupsPreferences(text)) {
+  if (!StoreAutoTabGroupsPreferences(
+          text, browser::context_hub::mojom::PreferencesChangeSource::kUser)) {
     return false;
   }
   ++auto_tab_groups_preferences_generation_;
   return true;
 }
 
-bool ContextHubService::StoreAutoTabGroupsPreferences(std::string_view text) {
+bool ContextHubService::StoreAutoTabGroupsPreferences(
+    std::string_view text,
+    browser::context_hub::mojom::PreferencesChangeSource source) {
   if (!base::FeatureList::IsEnabled(
           browser::context_hub::mojom::kAutoTabGroups)) {
     return false;
@@ -1599,7 +1603,7 @@ bool ContextHubService::StoreAutoTabGroupsPreferences(std::string_view text) {
                             trimmed);
   }
   observers_.Notify(&Observer::OnAutoTabGroupsPreferencesChanged,
-                    GetEffectiveAutoTabGroupsPreferences());
+                    GetEffectiveAutoTabGroupsPreferences(), source);
   return true;
 }
 
@@ -1962,7 +1966,9 @@ void ContextHubService::HandleAutoTabGroupsPreferenceRefinementResult(
   if (refined == GetEffectiveAutoTabGroupsPreferences()) {
     return;
   }
-  StoreAutoTabGroupsPreferences(refined);
+  StoreAutoTabGroupsPreferences(
+      refined,
+      browser::context_hub::mojom::PreferencesChangeSource::kRefinement);
 }
 
 std::vector<TabGroupEntry> ContextHubService::GetConfirmedTabGroups() const {

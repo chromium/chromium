@@ -535,6 +535,23 @@ struct TopicsFeedbackExportOptions {
   string missing_topics;
 };
 
+// Hard cap, in UTF-8 bytes, on the Auto Tab Groups preferences document.
+// Deliberately a constant rather than a feature param: the server enforces
+// the same bound, and `PageHandler.SetAutoTabGroupsPreferences` rejects longer
+// inputs as a bad message.
+const uint32 kMaxAutoTabGroupsPreferencesLength = 4000;
+
+// What changed the Auto Tab Groups preferences document. Passed with
+// `Page.OnAutoTabGroupsPreferencesChanged` so the WebUI can distinguish an
+// asynchronous model refinement (which should surface a notification) from a
+// user save or reset (even one originating in another Context Hub tab).
+enum PreferencesChangeSource {
+  // User saved or reset the preferences document.
+  kUser,
+  // Post-session model refinement updated the preferences document.
+  kRefinement,
+};
+
 // Interface for the browser process to push updates to the WebUI page.
 // Implemented in the renderer process (the Context Hub WebUI).
 interface Page {
@@ -573,6 +590,15 @@ interface Page {
   [RuntimeFeature=kRecordReplay]
   OnTranscriptUpdate(
       string text, mojo_base.mojom.TimeDelta timestamp, bool is_final);
+
+  // Notifies the WebUI whenever the effective Auto Tab Groups preferences
+  // change: a save or reset from any Context Hub page, or a model refinement.
+  // `text` is the complete document to display; `source` lets the page notify
+  // the user only about refinements. The initial document is fetched with
+  // PageHandler.GetAutoTabGroupsPreferences() and never arrives here.
+  [RuntimeFeature=kAutoTabGroups]
+  OnAutoTabGroupsPreferencesChanged(string text,
+                                    PreferencesChangeSource source);
 };
 
 // Types of user actions that can be recorded during a skill recording session.
@@ -769,6 +795,19 @@ interface PageHandler {
   // Clears stored tab group chat history.
   [RuntimeFeature=kAutoTabGroups]
   ClearTabGroupChatHistory() => ();
+
+  // Returns the effective Auto Tab Groups preferences: the document the user
+  // (or a model refinement) stored, or the default preferences when nothing is
+  // stored.
+  [RuntimeFeature=kAutoTabGroups]
+  GetAutoTabGroupsPreferences() => (string text);
+
+  // Replaces the stored Auto Tab Groups preferences with `text`. Empty text
+  // resets to the defaults. Returns false if the browser rejected the text.
+  // Text over `kMaxAutoTabGroupsPreferencesLength` bytes or invalid UTF-8 is a
+  // bad message.
+  [RuntimeFeature=kAutoTabGroups]
+  SetAutoTabGroupsPreferences(string text) => (bool success);
 
   // Sends a request to Gemini with the user command and selected memory bank
   // entry IDs, returning the assistant response along with any cited source

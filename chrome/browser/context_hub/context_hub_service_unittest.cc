@@ -153,7 +153,8 @@ class MockServiceObserver : public ContextHubService::Observer {
               (override));
   MOCK_METHOD(void,
               OnAutoTabGroupsPreferencesChanged,
-              (const std::string&),
+              (const std::string&,
+               browser::context_hub::mojom::PreferencesChangeSource),
               (override));
 };
 
@@ -3130,8 +3131,10 @@ TEST_F(ContextHubServiceTest, AutoTabGroupsPreferences_SetTrimsAndNotifies) {
   base::ScopedObservation<ContextHubService, ContextHubService::Observer>
       observation(&observer);
   observation.Observe(&service_);
-  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(
-                            "- Keep shopping tabs together."));
+  EXPECT_CALL(observer,
+              OnAutoTabGroupsPreferencesChanged(
+                  "- Keep shopping tabs together.",
+                  browser::context_hub::mojom::PreferencesChangeSource::kUser));
 
   EXPECT_TRUE(service_.SetAutoTabGroupsPreferences(
       "  - Keep shopping tabs together.\n\n"));
@@ -3152,8 +3155,15 @@ TEST_F(ContextHubServiceTest,
   observation.Observe(&service_);
   // Observers always receive the effective text, i.e. the defaults again.
   std::string notified;
-  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(_))
-      .WillOnce([&notified](const std::string& text) { notified = text; });
+  EXPECT_CALL(
+      observer,
+      OnAutoTabGroupsPreferencesChanged(
+          _, browser::context_hub::mojom::PreferencesChangeSource::kUser))
+      .WillOnce(
+          [&notified](const std::string& text,
+                      browser::context_hub::mojom::PreferencesChangeSource) {
+            notified = text;
+          });
 
   EXPECT_TRUE(service_.SetAutoTabGroupsPreferences("   "));
   EXPECT_FALSE(profile_.GetPrefs()->HasPrefPath(
@@ -3167,12 +3177,15 @@ TEST_F(ContextHubServiceTest, AutoTabGroupsPreferences_RejectsOverByteCap) {
   base::ScopedObservation<ContextHubService, ContextHubService::Observer>
       observation(&observer);
   observation.Observe(&service_);
-  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(_)).Times(0);
+  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(_, _)).Times(0);
 
   // Exactly at the cap is accepted; one byte over is rejected.
   const std::string at_cap(
       ContextHubService::kMaxAutoTabGroupsPreferencesLength, 'a');
-  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(at_cap));
+  EXPECT_CALL(
+      observer,
+      OnAutoTabGroupsPreferencesChanged(
+          at_cap, browser::context_hub::mojom::PreferencesChangeSource::kUser));
   EXPECT_TRUE(service_.SetAutoTabGroupsPreferences(at_cap));
 
   EXPECT_FALSE(service_.SetAutoTabGroupsPreferences(at_cap + "b"));
@@ -3450,8 +3463,12 @@ TEST_F(ContextHubServiceRefinementTest, CreateGroups_RefinesAndStores) {
   base::ScopedObservation<ContextHubService, ContextHubService::Observer>
       observation(&observer);
   observation.Observe(&service_);
-  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(
-                            "- Keep work and personal tabs apart."));
+  // The UI is told this was a refinement, not a user save.
+  EXPECT_CALL(
+      observer,
+      OnAutoTabGroupsPreferencesChanged(
+          "- Keep work and personal tabs apart.",
+          browser::context_hub::mojom::PreferencesChangeSource::kRefinement));
 
   optimization_guide::proto::ContextHubRequest request;
   ExpectRefinement(
@@ -3541,7 +3558,7 @@ TEST_F(ContextHubServiceRefinementTest, Refinement_UnchangedResultIsIgnored) {
   base::ScopedObservation<ContextHubService, ContextHubService::Observer>
       observation(&observer);
   observation.Observe(&service_);
-  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(_)).Times(0);
+  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(_, _)).Times(0);
 
   optimization_guide::proto::ContextHubRequest request;
   ExpectRefinement(

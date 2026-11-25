@@ -129,14 +129,17 @@ class ContextHubService : public KeyedService,
     virtual void OnMemoryBankEntriesDeleted(const std::vector<int64_t>& ids) {}
     // Called with the effective Auto Tab Groups preferences (the stored
     // document, or the defaults when nothing is stored) whenever they change.
+    // `source` says what changed them.
     virtual void OnAutoTabGroupsPreferencesChanged(
-        const std::string& effective_text) {}
+        const std::string& effective_text,
+        browser::context_hub::mojom::PreferencesChangeSource source) {}
   };
 
   // Hard cap, in UTF-8 bytes, on the Auto Tab Groups preferences document kept
-  // in the browser process. Deliberately a constant rather than a feature
-  // param: the server enforces the same bound.
-  static constexpr size_t kMaxAutoTabGroupsPreferencesLength = 4000;
+  // in the browser process. Defined in `context_hub.mojom` so the IPC bound
+  // and WebUI share the single compile-time constant.
+  static constexpr size_t kMaxAutoTabGroupsPreferencesLength =
+      browser::context_hub::mojom::kMaxAutoTabGroupsPreferencesLength;
 
   ContextHubService(
       Profile* profile,
@@ -439,8 +442,11 @@ class ContextHubService : public KeyedService,
   }
 
  private:
-  // Implements `SetAutoTabGroupsPreferences()` and the refinement write path.
-  bool StoreAutoTabGroupsPreferences(std::string_view text);
+  // Implements `SetAutoTabGroupsPreferences()` (`kUser`) and the refinement
+  // write path (`kRefinement`); reports `source` to observers.
+  bool StoreAutoTabGroupsPreferences(
+      std::string_view text,
+      browser::context_hub::mojom::PreferencesChangeSource source);
 
   // Attempts to generate 1P AutoTodos if eligible and not already in flight.
   void MaybeTriggerFirstPartyAutoTodosGeneration();

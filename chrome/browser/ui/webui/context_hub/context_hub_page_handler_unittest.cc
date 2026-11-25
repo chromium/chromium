@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -271,6 +272,11 @@ class MockPage : public browser::context_hub::mojom::Page {
   MOCK_METHOD(void,
               OnTranscriptUpdate,
               (const std::string&, base::TimeDelta, bool),
+              (override));
+  MOCK_METHOD(void,
+              OnAutoTabGroupsPreferencesChanged,
+              (const std::string&,
+               browser::context_hub::mojom::PreferencesChangeSource),
               (override));
 
  private:
@@ -2821,6 +2827,134 @@ TEST_F(ContextHubPageHandlerTest, ClearTabGroupChatHistory) {
   EXPECT_TRUE(future.Wait());
 
   EXPECT_TRUE(service->GetTabGroupChatHistory().empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, AutoTabGroupsPreferences_GetReturnsDefaults) {
+  base::test::TestFuture<const std::string&> future;
+  handler_->GetAutoTabGroupsPreferences(future.GetCallback());
+  // Nothing is stored yet, so the effective document is the defaults.
+  EXPECT_FALSE(future.Get().empty());
+  EXPECT_NE(future.Get().find("Group tabs by task"), std::string::npos);
+}
+
+TEST_F(ContextHubPageHandlerTest, AutoTabGroupsPreferences_SetNotifiesAndGets) {
+  std::string pushed;
+  // A save through the page handler is a user change.
+  EXPECT_CALL(
+      mock_page_,
+      OnAutoTabGroupsPreferencesChanged(
+          _, browser::context_hub::mojom::PreferencesChangeSource::kUser))
+      .WillOnce(
+          [&pushed](const std::string& text,
+                    browser::context_hub::mojom::PreferencesChangeSource) {
+            pushed = text;
+          });
+
+  base::test::TestFuture<bool> set_future;
+  handler_->SetAutoTabGroupsPreferences("- Keep work tabs together.",
+                                        set_future.GetCallback());
+  EXPECT_TRUE(set_future.Get());
+  mock_page_.Flush();
+  EXPECT_EQ(pushed, "- Keep work tabs together.");
+
+  base::test::TestFuture<const std::string&> get_future;
+  handler_->GetAutoTabGroupsPreferences(get_future.GetCallback());
+  EXPECT_EQ(get_future.Get(), "- Keep work tabs together.");
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextHubPageHandlerTest,
+       AutoTabGroupsPreferences_RefinementSourceIsForwarded) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  // A session: one suggested group and a follow-up prompt from the user.
+  context_hub::TabGroupEntry group{
+      .label = "Work",
+      .tab_ids = {1, 2},
+  };
+  base::test::TestFuture<void> replace_future;
+  service->ReplaceTabGroups({group}, replace_future.GetCallback());
+  ASSERT_TRUE(replace_future.Wait());
+  service->AddTabGroupChatHistoryTurn(
+      optimization_guide::proto::ChatHistoryTurn::ROLE_USER,
+      "keep work and personal separate");
+
+  EXPECT_CALL(*mock_tab_provider_, ConfirmTabGroups(_))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(
+      *GetMockOptimizationGuideService(),
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce(
+          [](optimization_guide::ModelBasedCapabilityKey feature,
+             const google::protobuf::MessageLite& request_metadata,
+             const optimization_guide::ModelExecutionOptions& options,
+             optimization_guide::OptimizationGuideModelExecutionResultCallback
+                 callback) {
+            optimization_guide::proto::ContextHubResponse response;
+            response.mutable_auto_tab_groups_preference_refinement_response()
+                ->set_preferences("- Refined.");
+            optimization_guide::proto::Any any_response;
+            any_response.set_type_url(
+                "type.googleapis.com/"
+                "optimization_guide.proto.ContextHubResponse");
+            response.SerializeToString(any_response.mutable_value());
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    base::ok(std::move(any_response)), nullptr),
+                nullptr);
+          });
+
+  // The handler forwards the service's change source via `service_observation_`
+  // so the page can tell a model refinement apart from the user's own saves.
+  EXPECT_CALL(
+      mock_page_,
+      OnAutoTabGroupsPreferencesChanged(
+          "- Refined.",
+          browser::context_hub::mojom::PreferencesChangeSource::kRefinement));
+  base::test::TestFuture<bool> confirm_future;
+  handler_->ConfirmAllTabGroups(confirm_future.GetCallback());
+  EXPECT_TRUE(confirm_future.Get());
+  mock_page_.Flush();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(ContextHubPageHandlerTest, AutoTabGroupsPreferences_SetEmptyResets) {
+  base::test::TestFuture<bool> set_future;
+  handler_->SetAutoTabGroupsPreferences("- Keep work tabs together.",
+                                        set_future.GetCallback());
+  ASSERT_TRUE(set_future.Get());
+
+  base::test::TestFuture<bool> reset_future;
+  handler_->SetAutoTabGroupsPreferences("", reset_future.GetCallback());
+  EXPECT_TRUE(reset_future.Get());
+
+  base::test::TestFuture<const std::string&> get_future;
+  handler_->GetAutoTabGroupsPreferences(get_future.GetCallback());
+  EXPECT_NE(get_future.Get().find("Group tabs by task"), std::string::npos);
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       AutoTabGroupsPreferences_TooLong_ReportsBadMessage) {
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_->SetAutoTabGroupsPreferences(
+      std::string(
+          browser::context_hub::mojom::kMaxAutoTabGroupsPreferencesLength + 1,
+          'a'),
+      base::DoNothing());
+  EXPECT_EQ("Invalid AutoTabGroups preferences",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       AutoTabGroupsPreferences_InvalidUtf8_ReportsBadMessage) {
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_->SetAutoTabGroupsPreferences("\xff\xfe", base::DoNothing());
+  EXPECT_EQ("Invalid AutoTabGroups preferences",
+            bad_message_observer.WaitForBadMessage());
 }
 
 TEST_F(ContextHubPageHandlerTest, GetAndClearMemoryBankChatHistory) {

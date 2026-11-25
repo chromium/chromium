@@ -57,6 +57,7 @@
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "chrome/common/channel_info.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/fallback_icon_style.h"
@@ -522,6 +523,43 @@ void ContextHubPageHandler::OnTranscriptUpdate(const std::string& text,
   page_->OnTranscriptUpdate(text, timestamp, is_final);
 }
 #endif
+
+void ContextHubPageHandler::OnAutoTabGroupsPreferencesChanged(
+    const std::string& effective_text,
+    browser::context_hub::mojom::PreferencesChangeSource source) {
+  page_->OnAutoTabGroupsPreferencesChanged(effective_text, source);
+}
+
+void ContextHubPageHandler::GetAutoTabGroupsPreferences(
+    GetAutoTabGroupsPreferencesCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  std::move(callback).Run(service
+                              ? service->GetEffectiveAutoTabGroupsPreferences()
+                              : std::string());
+}
+
+void ContextHubPageHandler::SetAutoTabGroupsPreferences(
+    const std::string& text,
+    SetAutoTabGroupsPreferencesCallback callback) {
+  // The WebUI measures the draft in UTF-8 bytes (TextEncoder) against the
+  // same cap and disables Save when over it, and JS Mojo bindings encode
+  // strings as UTF-8, so oversized or non-UTF-8 inputs did not come from our
+  // UI.
+  if (text.size() >
+          browser::context_hub::mojom::kMaxAutoTabGroupsPreferencesLength ||
+      !base::IsStringUTF8AllowingNoncharacters(text)) {
+    receiver_.ReportBadMessage("Invalid AutoTabGroups preferences");
+    return;
+  }
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run(false);
+    return;
+  }
+  std::move(callback).Run(service->SetAutoTabGroupsPreferences(text));
+}
 
 void ContextHubPageHandler::GenerateFirstPartyAutoTodos(
     GenerateFirstPartyAutoTodosCallback callback) {

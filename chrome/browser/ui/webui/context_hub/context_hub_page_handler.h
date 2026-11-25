@@ -107,6 +107,9 @@ class ContextHubPageHandler
       const std::optional<std::string>& note,
       const std::optional<std::string>& collection) override;
   void OnMemoryBankEntriesDeleted(const std::vector<int64_t>& ids) override;
+  void OnAutoTabGroupsPreferencesChanged(
+      const std::string& effective_text,
+      browser::context_hub::mojom::PreferencesChangeSource source) override;
 
   // browser::context_hub::mojom::PageHandler:
   void GenerateFirstPartyAutoTodos(
@@ -162,6 +165,11 @@ class ContextHubPageHandler
       ReplaceTabGroupsCallback callback) override;
   void ClearTabGroupChatHistory(
       ClearTabGroupChatHistoryCallback callback) override;
+  void GetAutoTabGroupsPreferences(
+      GetAutoTabGroupsPreferencesCallback callback) override;
+  void SetAutoTabGroupsPreferences(
+      const std::string& text,
+      SetAutoTabGroupsPreferencesCallback callback) override;
   void AskGeminiWithContext(const std::string& user_command,
                             const std::vector<int64_t>& memory_bank_entry_ids,
                             bool save_to_history,
