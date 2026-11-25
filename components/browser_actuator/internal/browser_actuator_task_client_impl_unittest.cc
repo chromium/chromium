@@ -73,8 +73,8 @@ class FakeTransportSession : public stream_transport::TransportSession {
     return base::ok();
   }
 
-  void OnMessage(stream_transport::PayloadType payload_type,
-                 std::string_view serialized_payload) override {
+  void OnWakeMessage(stream_transport::PayloadType payload_type,
+                     std::string_view serialized_payload) override {
     if (handler_) {
       handler_->OnMessage(payload_type, serialized_payload);
     }
@@ -679,8 +679,8 @@ TEST_F(BrowserActuatorTaskClientImplTest,
   TaskIngressDownstreamPayload completed;
   completed.mutable_task_completed()->set_status(TASK_COMPLETION_STATUS_FAILED);
   completed.mutable_task_completed()->set_error_message("server-abort");
-  session->OnMessage(stream_transport::PayloadType::kTaskIngress,
-                     completed.SerializeAsString());
+  session->OnWakeMessage(stream_transport::PayloadType::kTaskIngress,
+                         completed.SerializeAsString());
   EXPECT_EQ(nullptr, client_);
 }
 
@@ -798,16 +798,16 @@ TEST_F(
   EXPECT_CALL(observer_, OnTaskStarted()).Times(1);
   TaskIngressDownstreamPayload started;
   started.mutable_task_started();
-  session->OnMessage(stream_transport::PayloadType::kTaskIngress,
-                     started.SerializeAsString());
+  session->OnWakeMessage(stream_transport::PayloadType::kTaskIngress,
+                         started.SerializeAsString());
   ASSERT_EQ(local_client->state(),
             BrowserActuatorTaskClientImpl::State::kRunning);
 
   EXPECT_CALL(observer_, OnWorklogUpdate(std::string_view("Running step")));
   TaskIngressDownstreamPayload worklog;
   worklog.mutable_worklog_update()->set_step_description("Running step");
-  session->OnMessage(stream_transport::PayloadType::kTaskIngress,
-                     worklog.SerializeAsString());
+  session->OnWakeMessage(stream_transport::PayloadType::kTaskIngress,
+                         worklog.SerializeAsString());
   ::testing::Mock::VerifyAndClearExpectations(&observer_);
 
   EXPECT_CALL(observer_, OnTaskStarted).Times(0);
@@ -824,13 +824,13 @@ TEST_F(
   // Late downstream events via handler or direct delegate calls are dropped.
   TaskIngressDownstreamPayload late_worklog;
   late_worklog.mutable_worklog_update()->set_step_description("Late step");
-  retained_session.OnMessage(stream_transport::PayloadType::kTaskIngress,
-                             late_worklog.SerializeAsString());
+  retained_session.OnWakeMessage(stream_transport::PayloadType::kTaskIngress,
+                                 late_worklog.SerializeAsString());
   TaskIngressDownstreamPayload late_completed;
   late_completed.mutable_task_completed()->set_status(
       TASK_COMPLETION_STATUS_SUCCEEDED);
-  retained_session.OnMessage(stream_transport::PayloadType::kTaskIngress,
-                             late_completed.SerializeAsString());
+  retained_session.OnWakeMessage(stream_transport::PayloadType::kTaskIngress,
+                                 late_completed.SerializeAsString());
   local_client->OnWorklogUpdateEvent("Direct late step");
   local_client->OnTaskCompletedEvent(TASK_COMPLETION_STATUS_SUCCEEDED, "");
   task_environment_.FastForwardBy(base::TimeDelta());

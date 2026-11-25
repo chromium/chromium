@@ -86,7 +86,7 @@ class MockTransportSession : public stream_transport::TransportSession {
        const google::protobuf::MessageLite& message),
       (override));
   MOCK_METHOD(void,
-              OnMessage,
+              OnWakeMessage,
               (stream_transport::PayloadType payload_type,
                std::string_view serialized_payload),
               (override));
@@ -135,11 +135,13 @@ TEST_F(BrowserActuatorMessageHandlerTest,
           static_cast<stream_transport::TransportSession*>(&mock_session)));
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_session, OnMessage(stream_transport::PayloadType::kControl,
-                                        serialized_command));
+    EXPECT_CALL(mock_session,
+                OnWakeMessage(stream_transport::PayloadType::kControl,
+                              serialized_command));
     EXPECT_CALL(
         mock_session,
-        OnMessage(stream_transport::PayloadType::kExperimentalTriggering, ""));
+        OnWakeMessage(stream_transport::PayloadType::kExperimentalTriggering,
+                      ""));
   }
 
   base::test::TestFuture<
@@ -174,9 +176,10 @@ TEST_F(BrowserActuatorMessageHandlerTest,
   EXPECT_CALL(*mock_service_, GetSession("bundled_session_123"))
       .WillOnce(testing::Return(
           static_cast<stream_transport::TransportSession*>(&mock_session)));
-  EXPECT_CALL(mock_session,
-              OnMessage(stream_transport::PayloadType::kExperimentalTriggering,
-                        serialized_triggering));
+  EXPECT_CALL(
+      mock_session,
+      OnWakeMessage(stream_transport::PayloadType::kExperimentalTriggering,
+                    serialized_triggering));
 
   base::test::TestFuture<
       std::unique_ptr<components_sharing_message::ResponseMessage>>
@@ -280,21 +283,23 @@ TEST_F(BrowserActuatorMessageHandlerTest,
       .WillOnce(testing::Return(session));
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_session, OnMessage(stream_transport::PayloadType::kControl,
-                                        serialized_start))
+    EXPECT_CALL(mock_session,
+                OnWakeMessage(stream_transport::PayloadType::kControl,
+                              serialized_start))
+        .Times(1);
+    EXPECT_CALL(mock_session,
+                OnWakeMessage(
+                    stream_transport::PayloadType::kExperimentalTriggering, ""))
         .Times(1);
     EXPECT_CALL(
         mock_session,
-        OnMessage(stream_transport::PayloadType::kExperimentalTriggering, ""))
-        .Times(1);
-    EXPECT_CALL(
-        mock_session,
-        OnMessage(stream_transport::PayloadType::kExperimentalTriggering,
-                  serialized_opt_in))
+        OnWakeMessage(stream_transport::PayloadType::kExperimentalTriggering,
+                      serialized_opt_in))
         .Times(1);
   }
-  EXPECT_CALL(mock_session,
-              OnMessage(stream_transport::PayloadType::kActuation, testing::_))
+  EXPECT_CALL(
+      mock_session,
+      OnWakeMessage(stream_transport::PayloadType::kActuation, testing::_))
       .Times(0);
 
   base::test::TestFuture<
@@ -337,12 +342,14 @@ TEST_F(BrowserActuatorMessageHandlerTest,
       .WillOnce(testing::Return(
           static_cast<stream_transport::TransportSession*>(&mock_session)));
   EXPECT_CALL(*mock_service_, GetSession(testing::_)).Times(0);
-  EXPECT_CALL(mock_session, OnMessage(stream_transport::PayloadType::kControl,
-                                      serialized_start))
+  EXPECT_CALL(
+      mock_session,
+      OnWakeMessage(stream_transport::PayloadType::kControl, serialized_start))
       .Times(1);
-  EXPECT_CALL(mock_session,
-              OnMessage(stream_transport::PayloadType::kExperimentalTriggering,
-                        testing::_))
+  EXPECT_CALL(
+      mock_session,
+      OnWakeMessage(stream_transport::PayloadType::kExperimentalTriggering,
+                    testing::_))
       .Times(0);
 
   base::test::TestFuture<

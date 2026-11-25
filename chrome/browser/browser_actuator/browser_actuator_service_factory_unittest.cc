@@ -54,8 +54,8 @@ class StubTransportSession : public stream_transport::TransportSession {
                       const google::protobuf::MessageLite& message) override {
     return base::ok();
   }
-  void OnMessage(stream_transport::PayloadType payload_type,
-                 std::string_view serialized_payload) override {}
+  void OnWakeMessage(stream_transport::PayloadType payload_type,
+                     std::string_view serialized_payload) override {}
   void Close() override {}
 };
 

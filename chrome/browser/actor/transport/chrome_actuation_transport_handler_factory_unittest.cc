@@ -53,8 +53,8 @@ class FakeTransportSession : public stream_transport::TransportSession {
     return {};
   }
 
-  void OnMessage(stream_transport::PayloadType payload_type,
-                 std::string_view serialized_payload) override {}
+  void OnWakeMessage(stream_transport::PayloadType payload_type,
+                     std::string_view serialized_payload) override {}
 
   void Close() override {}
 
@@ -175,8 +175,8 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
   downstream.set_task_id("server-task-enabled");
   downstream.set_request_id("req_enabled_start");
   downstream.mutable_start_task();
-  session->OnMessage(stream_transport::PayloadType::kActuation,
-                     downstream.SerializeAsString());
+  session->OnWakeMessage(stream_transport::PayloadType::kActuation,
+                         downstream.SerializeAsString());
   EXPECT_EQ(actor_keyed_service_->GetActiveTasks().size(), 1u);
 
   actor_keyed_service_->Shutdown();

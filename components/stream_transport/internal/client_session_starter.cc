@@ -83,7 +83,7 @@ PendingTransportSessionImpl::SendUpstreamMessage(
   return {};
 }
 
-void PendingTransportSessionImpl::OnMessage(
+void PendingTransportSessionImpl::OnWakeMessage(
     PayloadType payload_type,
     std::string_view serialized_payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

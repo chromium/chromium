@@ -111,14 +111,14 @@ void BrowserActuatorMessageHandler::OnMessage(
           // that Chrome is alive.
           break;
         }
-        session->OnMessage(*payload_type, payload_bytes);
+        session->OnWakeMessage(*payload_type, payload_bytes);
         if (is_start_session &&
             base::FeatureList::IsEnabled(
                 browser_actuator::
                     kEnableBrowserActuatorForGlicExperimentalTriggering)) {
           // Dispatch an empty payload on session start so the handler
           // immediately reports live `DeviceCapabilities` upstream on wake-up.
-          session->OnMessage(
+          session->OnWakeMessage(
               stream_transport::PayloadType::kExperimentalTriggering,
               /*serialized_payload=*/"");
         }
