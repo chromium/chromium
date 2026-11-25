@@ -21,6 +21,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browsing_instance.h"
 #include "content/browser/embedder_isolation_info.h"
@@ -2596,7 +2597,16 @@ TEST_F(JitPolicyScopeTest, PolicyScopeUrlFollowsOriginAgentClusterHeader) {
 // ChromeContentBrowserClient::WillComputeSiteForNavigation()), the JITless
 // policy applies no matter what the Origin-Agent-Cluster header says, including
 // an explicit opt-out.
-TEST_F(JitPolicyScopeTest, JitlessExceptionAppliesRegardlessOfOacHeader) {
+// TODO(crbug.com/585637934): Fails on Android when run in a batch after
+// other tests; passes when retried alone.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_JitlessExceptionAppliesRegardlessOfOacHeader \
+  DISABLED_JitlessExceptionAppliesRegardlessOfOacHeader
+#else
+#define MAYBE_JitlessExceptionAppliesRegardlessOfOacHeader \
+  JitlessExceptionAppliesRegardlessOfOacHeader
+#endif
+TEST_F(JitPolicyScopeTest, MAYBE_JitlessExceptionAppliesRegardlessOfOacHeader) {
   // Mirror what the embedder does for a site with a JITless exception.
   ChildProcessSecurityPolicyImpl::GetInstance()->AddFutureIsolatedOrigins(
       {url::Origin::Create(jit_blocked_url())},
