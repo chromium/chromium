@@ -29,6 +29,20 @@ namespace glic {
 class GlicKeyedService;
 class GlicSelectionWidgetControllerDelegate;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GlicSelectionAction)
+enum class GlicSelectionAction {
+  // kNudgeShown = 0,  // Obsolete.
+  kWidgetShown = 1,
+  // kNudgeClicked = 2,  // Obsolete.
+  kWidgetClicked = 3,
+  kWidgetDismissedByButton = 4,
+  kWidgetDismissedByClickOutside = 5,
+  kMaxValue = kWidgetDismissedByClickOutside,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicSelectionAction)
+
 class GlicSelectionWidgetController
     : public GlicSelectionWidgetDelegate::ActionDelegate,
       public content_settings::Observer {

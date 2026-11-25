@@ -47,20 +47,6 @@ namespace glic {
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(GlicSelectionAction)
-enum class GlicSelectionAction {
-  // kNudgeShown = 0,  // Obsolete.
-  kWidgetShown = 1,
-  // kNudgeClicked = 2,  // Obsolete.
-  kWidgetClicked = 3,
-  kWidgetDismissedByButton = 4,
-  kWidgetDismissedByClickOutside = 5,
-  kMaxValue = kWidgetDismissedByClickOutside
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicSelectionAction)
-
 size_t CountWords(std::u16string_view text) {
   size_t count = 0;
   base::StringView16Tokenizer tokenizer(
@@ -71,31 +57,14 @@ size_t CountWords(std::u16string_view text) {
   return count;
 }
 
-// Records the widget click and invokes Glic with `selected_text`. Only
-// `GlicSelectionWidgetController` can get `auto_submit_passkey`, so it passes
-// it in.
+// Invokes Glic with `selected_text`. Only `GlicSelectionWidgetController` can
+// get `auto_submit_passkey`, so it passes it in.
 void InvokeGlicFromSelectionAffordance(
     const std::u16string& selected_text,
     content::WebContents& web_contents,
     InvokeWithAutoSubmitPasskey auto_submit_passkey) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents.GetBrowserContext());
-  const char* histogram_suffix =
-      GlicEnabling::HasConsentedForProfile(profile) ? ".PostFre" : ".PreFre";
-
-  GlicMetricReporter metric_reporter(profile);
-  metric_reporter.RecordEnumeration(
-      base::StrCat({"Selection.Action", histogram_suffix}),
-      GlicSelectionAction::kWidgetClicked);
-  metric_reporter.RecordCounts1000(
-      base::StrCat(
-          {"Selection.WidgetClicked.SelectionLength", histogram_suffix}),
-      selected_text.length());
-  metric_reporter.RecordCounts1000(
-      base::StrCat(
-          {"Selection.WidgetClicked.SelectionWordCount", histogram_suffix}),
-      CountWords(selected_text));
-
   auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(&web_contents);
   if (!tab_interface || !tab_interface->GetBrowserWindowInterface()) {
     return;
@@ -159,6 +128,23 @@ void GlicSelectionWidgetController::OnAskGemini() {
   if (!web_contents()) {
     return;
   }
+  const std::u16string selected_text = delegate_->GetSelectedText();
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  const char* histogram_suffix =
+      GlicEnabling::HasConsentedForProfile(profile) ? ".PostFre" : ".PreFre";
+  metric_reporter_.RecordEnumeration(
+      base::StrCat({"Selection.Action", histogram_suffix}),
+      GlicSelectionAction::kWidgetClicked);
+  metric_reporter_.RecordCounts1000(
+      base::StrCat(
+          {"Selection.WidgetClicked.SelectionLength", histogram_suffix}),
+      selected_text.length());
+  metric_reporter_.RecordCounts1000(
+      base::StrCat(
+          {"Selection.WidgetClicked.SelectionWordCount", histogram_suffix}),
+      CountWords(selected_text));
+
   if (base::FeatureList::IsEnabled(features::kGlicSelectionSmallChip)) {
     ShowSelectionOverlay();
     Dismiss(DismissReason::kActionTaken);
@@ -166,7 +152,7 @@ void GlicSelectionWidgetController::OnAskGemini() {
   }
   Dismiss(DismissReason::kActionTaken);
   InvokeGlicFromSelectionAffordance(
-      delegate_->GetSelectedText(), *web_contents(),
+      selected_text, *web_contents(),
       InvokeWithAutoSubmitPasskeyProvider::GetPassKey());
 }
 

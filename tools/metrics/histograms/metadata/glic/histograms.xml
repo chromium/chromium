@@ -1808,7 +1808,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.Selection.InlineCueMenuEnabled" enum="BooleanEnabled"
-    expires_after="2026-12-31">
+    expires_after="2027-06-30">
   <owner>wusirui@google.com</owner>
   <owner>naai-xfn@google.com</owner>
   <summary>
@@ -1819,7 +1819,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.Selection.RemovedDefaultBlockedSitesCount" units="sites"
-    expires_after="2026-12-31">
+    expires_after="2027-06-30">
   <owner>wusirui@google.com</owner>
   <owner>naai-xfn@google.com</owner>
   <summary>
@@ -1830,7 +1830,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.Selection.SiteExceptionsCount" units="exceptions"
-    expires_after="2027-03-28">
+    expires_after="2027-06-30">
   <owner>wusirui@google.com</owner>
   <owner>naai-xfn@google.com</owner>
   <summary>
@@ -3825,7 +3825,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Selection.Action.{FreState}"
-    enum="GlicSelectionAction" expires_after="2027-05-09">
+    enum="GlicSelectionAction" expires_after="2027-06-30">
   <owner>gklassen@chromium.org</owner>
   <owner>vollick@chromium.org</owner>
   <summary>
@@ -3842,7 +3842,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 
 <histogram
     name="Glic{GlicProvider}.Selection.WidgetClicked.SelectionLength.{FreState}"
-    units="characters" expires_after="2027-03-07">
+    units="characters" expires_after="2027-06-30">
   <owner>gklassen@chromium.org</owner>
   <owner>vollick@chromium.org</owner>
   <summary>
@@ -3858,13 +3858,12 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 
 <histogram
     name="Glic{GlicProvider}.Selection.WidgetClicked.SelectionWordCount.{FreState}"
-    units="words" expires_after="2027-03-07">
+    units="words" expires_after="2027-06-30">
   <owner>wusirui@google.com</owner>
   <owner>naai-xfn@google.com</owner>
   <summary>
     Records the number of words in the selected text when the inline cue is
-    clicked by the user. Recorded once per click on any widget action button.
-    Scope: {GlicProvider}.
+    clicked to invoke Glic or open the selection overlay. Scope: {GlicProvider}.
   </summary>
   <token key="FreState">
     <variant name="PostFre" summary="User has accepted the FRE"/>
@@ -3875,7 +3874,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 
 <histogram
     name="Glic{GlicProvider}.Selection.WidgetShown.SelectionLength.{FreState}"
-    units="characters" expires_after="2027-05-09">
+    units="characters" expires_after="2027-06-30">
   <owner>wusirui@google.com</owner>
   <owner>naai-xfn@google.com</owner>
   <summary>
@@ -3891,7 +3890,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 
 <histogram
     name="Glic{GlicProvider}.Selection.WidgetShown.SelectionWordCount.{FreState}"
-    units="words" expires_after="2026-12-31">
+    units="words" expires_after="2027-06-30">
   <owner>wusirui@google.com</owner>
   <owner>naai-xfn@google.com</owner>
   <summary>

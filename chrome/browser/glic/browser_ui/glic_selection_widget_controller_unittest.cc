@@ -190,6 +190,8 @@ TEST_F(GlicSelectionWidgetControllerTest, SelectionWordCountMetrics) {
   std::u16string text = u"   one   two\nthree\t ";
   CallOnAskGemini(text);
 
+  histogram_tester.ExpectUniqueSample("Glic.Selection.Action.PreFre",
+                                      GlicSelectionAction::kWidgetClicked, 1);
   histogram_tester.ExpectUniqueSample(
       "Glic.Selection.WidgetClicked.SelectionLength.PreFre", text.length(), 1);
   histogram_tester.ExpectUniqueSample(
@@ -378,17 +380,25 @@ TEST_F(GlicSelectionWidgetControllerTest,
 TEST_F(GlicSelectionWidgetControllerTest, OnAskGeminiWithSmallChipDismissesUI) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kGlicSelectionSmallChip);
+  base::HistogramTester histogram_tester;
 
   TestGlicSelectionWidgetController* controller = GetController();
   ASSERT_TRUE(controller);
 
-  CallOnAskGemini();
+  std::u16string text = u"   one   two\nthree\t ";
+  CallOnAskGemini(text);
 
   EXPECT_TRUE(controller->dismiss_called());
   EXPECT_EQ(GlicSelectionObserver::DismissReason::kActionTaken,
             controller->dismiss_reason());
   EXPECT_TRUE(controller->show_selection_overlay_called());
   EXPECT_FALSE(controller->dismissed_before_show_overlay());
+  histogram_tester.ExpectUniqueSample("Glic.Selection.Action.PreFre",
+                                      GlicSelectionAction::kWidgetClicked, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Selection.WidgetClicked.SelectionLength.PreFre", text.length(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Selection.WidgetClicked.SelectionWordCount.PreFre", 3, 1);
 }
 
 TEST_F(GlicSelectionWidgetControllerTest,
