@@ -8,10 +8,12 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
@@ -27,9 +29,14 @@ class PolicyFetchResponse;
 
 namespace policy {
 
+// Retries storing policy after the owner key rotation.
+BASE_DECLARE_FEATURE(kDeviceLocalAccountPolicyRetryOnOwnerKeyRotation);
+
 // CloudPolicyStore implementation for device-local account policy. Stores/loads
 // policy to/from session_manager.
-class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
+class DeviceLocalAccountPolicyStore
+    : public UserCloudPolicyStoreBase,
+      public ash::DeviceSettingsService::Observer {
  public:
   DeviceLocalAccountPolicyStore(
       const std::string& account_id,
@@ -56,6 +63,14 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
   // Loads the policy synchronously on the current thread.
   void LoadImmediately();
 
+  // ash::DeviceSettingsService::Observer:
+  void DeviceSettingsUpdated() override;
+  void OnDeviceSettingsServiceShutdown() override;
+
+  bool HasPendingOwnerKeyRotationRetryForTesting() const {
+    return !!pending_retry_policy_;
+  }
+
  protected:
   // UserCloudPolicyStoreBase:
   std::unique_ptr<CloudPolicyValidatorBase> CreateValidator(
@@ -81,8 +96,20 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
 
   // Sends the policy blob to session_manager for storing after validation.
   void OnPolicyToStoreValidated(
-      const std::string& signature_validation_public_key_unused,
+      bool allow_key_rotation_retry,
+      const std::string& signature_validation_public_key,
       CloudPolicyValidatorBase* validator);
+
+  // Schedules a retry and returns true if it started right away.
+  bool ScheduleOwnerKeyRotationRetry(
+      std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
+      const std::string& failed_public_key);
+
+  // Returns true if it started the retry after an owner key change.
+  bool MaybeStartOwnerKeyRotationRetry();
+
+  // Drops the pending retry, if any.
+  void CancelOwnerKeyRotationRetry();
 
   // Called back when a store operation completes, updates state and reloads the
   // policy if applicable.
@@ -111,6 +138,14 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
   const std::string account_id_;
   raw_ptr<ash::SessionManagerClient> session_manager_client_;
   raw_ptr<ash::DeviceSettingsService> device_settings_service_;
+
+  // Policy pending a retry after a bad signature.
+  std::unique_ptr<enterprise_management::PolicyFetchResponse>
+      pending_retry_policy_;
+  std::string pending_retry_failed_public_key_;
+  base::ScopedObservation<ash::DeviceSettingsService,
+                          ash::DeviceSettingsService::Observer>
+      device_settings_observation_{this};
 
   base::WeakPtrFactory<DeviceLocalAccountPolicyStore> weak_factory_{this};
 };

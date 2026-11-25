@@ -29,6 +29,9 @@ namespace em = enterprise_management;
 
 namespace policy {
 
+BASE_FEATURE(kDeviceLocalAccountPolicyRetryOnOwnerKeyRotation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 DeviceLocalAccountPolicyStore::DeviceLocalAccountPolicyStore(
     const std::string& account_id,
     ash::SessionManagerClient* session_manager_client,
@@ -100,12 +103,15 @@ void DeviceLocalAccountPolicyStore::Store(
 
   // Cancel all pending requests.
   weak_factory_.InvalidateWeakPtrs();
+  // A new policy supersedes the pending retry.
+  CancelOwnerKeyRotationRetry();
 
   CheckKeyAndValidate(
       true, std::make_unique<em::PolicyFetchResponse>(policy),
       true /*validate_in_background*/,
       base::BindOnce(&DeviceLocalAccountPolicyStore::OnPolicyToStoreValidated,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(),
+                     /*allow_key_rotation_retry=*/true));
 }
 
 void DeviceLocalAccountPolicyStore::ValidateLoadedPolicyBlob(
@@ -162,7 +168,8 @@ void DeviceLocalAccountPolicyStore::UpdatePolicy(
 }
 
 void DeviceLocalAccountPolicyStore::OnPolicyToStoreValidated(
-    const std::string& signature_validation_public_key_unused,
+    bool allow_key_rotation_retry,
+    const std::string& signature_validation_public_key,
     CloudPolicyValidatorBase* validator) {
   // Validator is not created when device ownership is not set up yet. Do not
   // propagate the error in such case since it is recoverable.
@@ -174,6 +181,18 @@ void DeviceLocalAccountPolicyStore::OnPolicyToStoreValidated(
 
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
+    // The owner key may have rotated but not loaded yet.
+    if (allow_key_rotation_retry &&
+        validator->status() ==
+            CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE &&
+        validator->policy() &&
+        base::FeatureList::IsEnabled(
+            kDeviceLocalAccountPolicyRetryOnOwnerKeyRotation) &&
+        ScheduleOwnerKeyRotationRetry(std::move(validator->policy()),
+                                      signature_validation_public_key)) {
+      // The retry reports the result.
+      return;
+    }
     status_ = STATUS_VALIDATION_ERROR;
     NotifyStoreError();
     return;
@@ -199,6 +218,67 @@ void DeviceLocalAccountPolicyStore::HandleStoreResult(bool success) {
   } else {
     Load();
   }
+}
+
+void DeviceLocalAccountPolicyStore::DeviceSettingsUpdated() {
+  MaybeStartOwnerKeyRotationRetry();
+}
+
+void DeviceLocalAccountPolicyStore::OnDeviceSettingsServiceShutdown() {
+  CancelOwnerKeyRotationRetry();
+}
+
+bool DeviceLocalAccountPolicyStore::ScheduleOwnerKeyRotationRetry(
+    std::unique_ptr<em::PolicyFetchResponse> policy,
+    const std::string& failed_public_key) {
+  pending_retry_policy_ = std::move(policy);
+  pending_retry_failed_public_key_ = failed_public_key;
+
+  // The key may have changed during validation.
+  if (MaybeStartOwnerKeyRotationRetry()) {
+    return true;
+  }
+
+  SYSLOG(WARNING) << "Policy signature validation failed for " << account_id_
+                  << ", waiting for the owner key to change to retry.";
+  if (!device_settings_observation_.IsObserving()) {
+    device_settings_observation_.Observe(device_settings_service_.get());
+  }
+  return false;
+}
+
+bool DeviceLocalAccountPolicyStore::MaybeStartOwnerKeyRotationRetry() {
+  if (!pending_retry_policy_) {
+    return false;
+  }
+
+  scoped_refptr<ownership::PublicKey> key =
+      device_settings_service_->GetPublicKey();
+  if (!key || key->is_empty() ||
+      key->as_string() == pending_retry_failed_public_key_) {
+    return false;
+  }
+
+  std::unique_ptr<em::PolicyFetchResponse> policy =
+      std::move(pending_retry_policy_);
+  CancelOwnerKeyRotationRetry();
+
+  SYSLOG(INFO) << "Owner key changed, retrying policy validation for "
+               << account_id_;
+  // Cancel pending requests.
+  weak_factory_.InvalidateWeakPtrs();
+  CheckKeyAndValidate(
+      true, std::move(policy), true /*validate_in_background*/,
+      base::BindOnce(&DeviceLocalAccountPolicyStore::OnPolicyToStoreValidated,
+                     weak_factory_.GetWeakPtr(),
+                     /*allow_key_rotation_retry=*/false));
+  return true;
+}
+
+void DeviceLocalAccountPolicyStore::CancelOwnerKeyRotationRetry() {
+  pending_retry_policy_.reset();
+  pending_retry_failed_public_key_.clear();
+  device_settings_observation_.Reset();
 }
 
 void DeviceLocalAccountPolicyStore::CheckKeyAndValidate(
