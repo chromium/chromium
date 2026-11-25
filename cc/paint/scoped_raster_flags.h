@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/memory/stack_allocated.h"
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/paint_export.h"
@@ -26,8 +27,8 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
   // |flags| and |image_provider| must outlive this class.
   template <class F>
     requires(std::is_same_v<F, float>)
-  ScopedRasterFlags(const PaintFlags* flags,
-                    ImageProvider* image_provider,
+  ScopedRasterFlags(const PaintFlags* flags LIFETIME_BOUND,
+                    ImageProvider* image_provider LIFETIME_BOUND,
                     const SkMatrix& ctm,
                     int max_texture_size,
                     F alpha,
@@ -66,7 +67,7 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
   // SkCanvas::saveLayer()) may outlive this object only if the caller retains
   // any stashed image decodes via ReleaseDecodedImages() until their usage
   // completes.
-  const PaintFlags* flags() const {
+  const PaintFlags* flags() const LIFETIME_BOUND {
     if (decode_failed_)
       return nullptr;
 
@@ -91,7 +92,7 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
   void AdjustStrokeIfNeeded(const SkMatrix& ctm);
   void ResolveDeferredColor(const RasterInducingValues* raster_inducing_values);
 
-  PaintFlags* MutableFlags() {
+  PaintFlags* MutableFlags() LIFETIME_BOUND {
     if (!modified_flags_)
       modified_flags_.emplace(*original_flags_);
     return &*modified_flags_;
