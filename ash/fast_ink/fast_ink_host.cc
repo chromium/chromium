@@ -4,7 +4,6 @@
 
 #include "ash/fast_ink/fast_ink_host.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "ash/fast_ink/fast_ink_host_frame_utils.h"
@@ -20,6 +19,8 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -41,14 +42,7 @@ void ClearGpuBuffer(const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
     return;
   }
 
-  gfx::Size size = mapping->Size();
-  int stride = mapping->Stride(0);
-  for (int i = 0; i < size.height(); ++i) {
-    auto row_span = mapping->GetMemoryForPlane(0).subspan(
-        base::checked_cast<size_t>(i * stride),
-        base::checked_cast<size_t>(size.width() * 4));
-    std::ranges::fill(row_span, 0);
-  }
+  mapping->GetSkPixmapForPlane(0).erase(SK_ColorTRANSPARENT);
 }
 
 }  // namespace
