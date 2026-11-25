@@ -52,6 +52,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/functional/function_ref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -142,6 +143,15 @@ class RegistryLookupCache {
     write_index_ = (write_index_ + 1) % kMaxCacheSize;
   }
 
+  // Executes a lambda while holding the cache's lock. Clears the cache as a
+  // side effect.
+  void WithLockThenClearForTesting(base::FunctionRef<void()> f) {
+    base::AutoLock scoped_lock(lock_);
+    f();
+    cache_ = {};
+    write_index_ = 0u;
+  }
+
  private:
   // Stores the input parameters and the output offset of a registry lookup.
   struct CachedRegistryLookup {
@@ -164,6 +174,11 @@ class RegistryLookupCache {
   std::array<CachedRegistryLookup, kMaxCacheSize> cache_ GUARDED_BY(lock_) = {};
   uint8_t write_index_ GUARDED_BY(lock_) = 0u;
 };
+
+RegistryLookupCache& GetLookupCache() {
+  static base::NoDestructor<RegistryLookupCache> cache;
+  return *cache;
+}
 
 // Used as the output of functions that calculate the registry in a hostname.
 // `registry` is the substring of the host containing the registry identifier
@@ -295,11 +310,11 @@ std::string_view GetDomainAndRegistryImpl(
   // 'memoize' previous instantiations of this function by using a cache. Since
   // this method can be called on dozens of sequences and threads, we make it
   // thread-safe.
-  static base::NoDestructor<RegistryLookupCache> cache;
+  RegistryLookupCache& cache = GetLookupCache();
 
   // Check for the origin in the cache.
   std::optional<std::string_view> cached_result =
-      cache->Get(host, private_filter);
+      cache.Get(host, private_filter);
   if (cached_result.has_value()) {
     return *cached_result;
   }
@@ -324,12 +339,12 @@ std::string_view GetDomainAndRegistryImpl(
   // no dot.
   const size_t dot = host.rfind('.', host.length() - registry_length - 2);
   if (dot == std::string::npos) {
-    cache->Set(host, private_filter, 0u);
+    cache.Set(host, private_filter, 0u);
     return host;
   }
 
   std::string_view result = host.substr(dot + 1);
-  cache->Set(host, private_filter, dot + 1);
+  cache.Set(host, private_filter, dot + 1);
 
   return result;
 }
@@ -629,13 +644,16 @@ std::optional<std::u16string_view> PermissiveGetHostRegistry(
   return DoPermissiveGetHostRegistry(host, unknown_filter, private_filter);
 }
 
-void ResetFindDomainGraphForTesting() {
-  g_graph = kDafsa;
+ScopedFindDomainGraphForTesting::ScopedFindDomainGraphForTesting(
+    base::span<const uint8_t> domains)
+    : previous_graph_(g_graph) {
+  CHECK(!domains.empty());
+  GetLookupCache().WithLockThenClearForTesting([&] { g_graph = domains; });
 }
 
-void SetFindDomainGraphForTesting(base::span<const uint8_t> domains) {
-  CHECK(!domains.empty());
-  g_graph = domains;
+ScopedFindDomainGraphForTesting::~ScopedFindDomainGraphForTesting() {
+  GetLookupCache().WithLockThenClearForTesting(
+      [&] { g_graph = previous_graph_; });
 }
 
 }  // namespace net::registry_controlled_domains

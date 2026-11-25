@@ -66,9 +66,6 @@ class MockPrivateInsightsService : public PrivateInsightsService {
 class StorageAccessMetricsTest : public testing::Test {
  protected:
   explicit StorageAccessMetricsTest(bool storage_access_enabled = true) {
-    // Frozen Public Suffix List; see storage_access_metrics_unittest_psl.gperf.
-    net::registry_controlled_domains::SetFindDomainGraphForTesting(
-        storage_access_api_test_psl::kDafsa);
     feature_list_.InitWithFeatureState(
         private_insights::kPrivateInsightsStorageAccess,
         storage_access_enabled);
@@ -87,7 +84,6 @@ class StorageAccessMetricsTest : public testing::Test {
   ~StorageAccessMetricsTest() override {
     service_ = nullptr;
     profile_.reset();
-    net::registry_controlled_domains::ResetFindDomainGraphForTesting();
   }
 
   std::unique_ptr<KeyedService> BuildService(content::BrowserContext* context) {
@@ -119,6 +115,9 @@ class StorageAccessMetricsTest : public testing::Test {
     return event->domain();
   }
 
+  // Frozen Public Suffix List; see storage_access_metrics_unittest_psl.gperf.
+  net::registry_controlled_domains::ScopedFindDomainGraphForTesting
+      scoped_domain_graph_{storage_access_api_test_psl::kDafsa};
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple local_state_;

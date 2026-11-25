@@ -46,15 +46,9 @@ bool IsInvalidHostname(const std::string& hostname) {
 }  // namespace
 
 class PublicSuffixUtilTest : public testing::Test {
- protected:
-  void SetUp() override {
-    net::registry_controlled_domains::SetFindDomainGraphForTesting(
-        net::test1::kDafsa);
-  }
-
-  void TearDown() override {
-    net::registry_controlled_domains::ResetFindDomainGraphForTesting();
-  }
+ private:
+  net::registry_controlled_domains::ScopedFindDomainGraphForTesting
+      scoped_domain_graph_{net::test1::kDafsa};
 };
 
 TEST_F(PublicSuffixUtilTest, KnownSuffix) {

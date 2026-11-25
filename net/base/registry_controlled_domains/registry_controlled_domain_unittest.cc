@@ -90,8 +90,7 @@ std::optional<std::string_view> GetCanonicalHostRegistryIncludingPrivate(
 class RegistryControlledDomainTest : public testing::Test {
  protected:
   void UseDomainData(base::span<const uint8_t> graph) {
-    // This is undone in TearDown.
-    SetFindDomainGraphForTesting(graph);
+    scoped_domain_graph_.emplace(graph);
   }
 
   bool CompareDomains(const std::string& url1, const std::string& url2) {
@@ -105,7 +104,8 @@ class RegistryControlledDomainTest : public testing::Test {
     return SameDomainOrHost(g1, g2, EXCLUDE_PRIVATE_REGISTRIES);
   }
 
-  void TearDown() override { ResetFindDomainGraphForTesting(); }
+ private:
+  std::optional<ScopedFindDomainGraphForTesting> scoped_domain_graph_;
 };
 
 TEST_F(RegistryControlledDomainTest, TestHostIsRegistryIdentifier) {
@@ -702,6 +702,32 @@ TEST_F(RegistryControlledDomainTest, Permissive) {
   EXPECT_EQ(u"\xFF2A\xFF50\xFF0E",
             PermissiveGetHostRegistry(u"Www.Google\xFF0E\xFF2A\xFF50\xFF0E"));
 #endif
+}
+
+TEST_F(RegistryControlledDomainTest, ScopedFindDomainGraphForTesting) {
+  // Query before overriding to also verify cache invalidation across swaps.
+  const std::string default_domain = GetDomainFromHost("a.b.bar.jp");
+  EXPECT_NE(default_domain, "a.b.bar.jp");
+  EXPECT_NE(default_domain, "b.bar.jp");
+
+  {
+    // test1 has wildcard rule `*.bar.jp`, so `a.b.bar.jp` is an eTLD+1.
+    ScopedFindDomainGraphForTesting outer(test1::kDafsa);
+    EXPECT_EQ("a.b.bar.jp", GetDomainFromHost("a.b.bar.jp"));
+
+    {
+      // test2 has exact rule `bar.jp` (non-wildcard), so `b.bar.jp` is the
+      // eTLD+1.
+      ScopedFindDomainGraphForTesting inner(test2::kDafsa);
+      EXPECT_EQ("b.bar.jp", GetDomainFromHost("a.b.bar.jp"));
+    }
+
+    // Restores outer test graph on inner scope exit.
+    EXPECT_EQ("a.b.bar.jp", GetDomainFromHost("a.b.bar.jp"));
+  }
+
+  // Restores default graph on outer scope exit.
+  EXPECT_EQ(default_domain, GetDomainFromHost("a.b.bar.jp"));
 }
 
 }  // namespace net::registry_controlled_domains

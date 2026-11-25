@@ -121,6 +121,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "net/base/net_export.h"
 
 class GURL;
@@ -305,12 +306,25 @@ NET_EXPORT std::optional<std::u16string_view> PermissiveGetHostRegistry(
     UnknownRegistryFilter unknown_filter,
     PrivateRegistryFilter private_filter);
 
-// Used for unit tests. Uses default domains.
-NET_EXPORT_PRIVATE void ResetFindDomainGraphForTesting();
+// Used for unit tests, so that a frozen list of domains is used for the
+// lifetime of this object. Restores the previous list on destruction.
+// `domains` must be non-empty and outlive this object.
+class NET_EXPORT_PRIVATE [[maybe_unused, nodiscard]]
+ScopedFindDomainGraphForTesting {
+ public:
+  explicit ScopedFindDomainGraphForTesting(base::span<const uint8_t> domains);
+  ScopedFindDomainGraphForTesting(const ScopedFindDomainGraphForTesting&) =
+      delete;
+  ScopedFindDomainGraphForTesting& operator=(
+      const ScopedFindDomainGraphForTesting&) = delete;
+  ScopedFindDomainGraphForTesting(ScopedFindDomainGraphForTesting&&) = delete;
+  ScopedFindDomainGraphForTesting& operator=(
+      ScopedFindDomainGraphForTesting&&) = delete;
+  ~ScopedFindDomainGraphForTesting();
 
-// Used for unit tests, so that a frozen list of domains is used.
-NET_EXPORT_PRIVATE void SetFindDomainGraphForTesting(
-    base::span<const uint8_t> domains);
+ private:
+  base::raw_span<const uint8_t> previous_graph_;
+};
 
 }  // namespace net::registry_controlled_domains
 

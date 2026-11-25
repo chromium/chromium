@@ -1019,15 +1019,6 @@ class StorageAccessGrantPermissionContextPrivateInsightsTest
     // order. Checked when recording, so it need not precede profile creation.
     pi_features_.InitAndEnableFeature(
         private_insights::kPrivateInsightsStorageAccess);
-    // Frozen Public Suffix List, so the reported domain does not depend on the
-    // real list; see storage_access_metrics_unittest_psl.gperf.
-    net::registry_controlled_domains::SetFindDomainGraphForTesting(
-        storage_access_api_test_psl::kDafsa);
-  }
-
-  void TearDown() override {
-    net::registry_controlled_domains::ResetFindDomainGraphForTesting();
-    StorageAccessGrantPermissionContextTest::TearDown();
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
@@ -1054,6 +1045,10 @@ class StorageAccessGrantPermissionContextPrivateInsightsTest
   }
 
   base::test::ScopedFeatureList pi_features_;
+  // Frozen Public Suffix List, so the reported domain does not depend on the
+  // real list; see storage_access_metrics_unittest_psl.gperf.
+  net::registry_controlled_domains::ScopedFindDomainGraphForTesting
+      scoped_domain_graph_{storage_access_api_test_psl::kDafsa};
   mutable TestingPrefServiceSimple local_state_;
 };
 
