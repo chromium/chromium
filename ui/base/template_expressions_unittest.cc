@@ -228,6 +228,16 @@ TEST(TemplateExpressionsTest, JSReplacementsEscape) {
   substitutions["dollarSignSample"] = "5$";
   substitutions["punctuationSample"] = "a\"b'c<d>e&f";
   substitutions["htmlSample"] = "<div>hello</div>";
+  substitutions["backslashBacktickSample"] =
+      "\\`, extra: function() { sample(); }, _template: html\\`";
+  substitutions["doubleBackslashBacktickSample"] = "\\\\`sample";
+  substitutions["trailingBackslashSample"] = "C:\\Users\\sample\\Downloads\\";
+  substitutions["leadingBacktickSample"] = "`suffix";
+  substitutions["escapedBraceSample"] = "$\\{sample}";
+  substitutions["normalUrlSample"] = "https://example.com/help?a=1&b=2";
+  substitutions["emptySample"] = "";
+  substitutions["rawLinkSample"] =
+      "<a href=\"https://example.com/?p=a\\b`c\">\\`link\\`</a>\\";
 
   const TestCase kTestCases[] = {
       // Substitution with a backtick in the replacement.
@@ -305,7 +315,57 @@ TEST(TemplateExpressionsTest, JSReplacementsEscape) {
        "<!--_html_template_end_-->\n"
        "  `,\n"
        "  is: 'foo-element',\n"
-       "});"}};
+       "});"},
+      // Backslash and double-backslash preceding backtick in standard and raw
+      // replacements.
+      {"export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    <a href=\"$i18n{backslashBacktickSample}\">Link</a>\n"
+       "    <span>$i18n{doubleBackslashBacktickSample}</span>\n"
+       "    <div>$i18nRaw{rawLinkSample}</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}",
+       "export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    <a href=\"\\\\\\`, extra: function() { sample(); }, _template: "
+       "html\\\\\\`\">Link</a>\n"
+       "    <span>\\\\\\\\\\`sample</span>\n"
+       "    <div><a href=\"https://example.com/?p=a\\\\b\\`c\">"
+       "\\\\\\`link\\\\\\`</a>\\\\</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}"},
+      // Windows paths, trailing backslashes before nested closing backticks,
+      // quoted JS helpers, and adjacent replacements, even preceding
+      // backslashes, "$\\{", and valid adjacent Lit "${...}" expressions.
+      {"export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    ${cond ? html`$i18n{trailingBackslashSample}` : ''}\n"
+       "    <div title=\"${i18n('$i18n{trailingBackslashSample}')}\">"
+       "$i18n{normalUrlSample}</div>\n"
+       "    <div>$i18n{trailingBackslashSample}$i18n{leadingBacktickSample}"
+       "</div>\n"
+       "    <div>$i18n{trailingBackslashSample}$i18n{dollarSignSample}</div>\n"
+       "    <div>\\\\$i18n{dollarSignSample}</div>\n"
+       "    <div>$i18n{escapedBraceSample}</div>\n"
+       "    <div>$$i18n{emptySample}</div>\n"
+       "    <div>$i18n{dollarSignSample}${this.unit}</div>\n"
+       "    <div>$i18n{trailingBackslashSample}${this.unit}</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}",
+       "export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    ${cond ? html`C:\\\\Users\\\\sample\\\\Downloads\\\\` : ''}\n"
+       "    <div title=\"${i18n('C:\\\\Users\\\\sample\\\\Downloads\\\\')}\">"
+       "https://example.com/help?a=1&amp;b=2</div>\n"
+       "    <div>C:\\\\Users\\\\sample\\\\Downloads\\\\\\`suffix</div>\n"
+       "    <div>C:\\\\Users\\\\sample\\\\Downloads\\\\5$</div>\n"
+       "    <div>\\\\5$</div>\n"
+       "    <div>$\\\\{sample}</div>\n"
+       "    <div>$</div>\n"
+       "    <div>5$${this.unit}</div>\n"
+       "    <div>C:\\\\Users\\\\sample\\\\Downloads\\\\${this.unit}</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}"}};
   std::string formatted;
   for (const TestCase test_case : kTestCases) {
     ASSERT_TRUE(ReplaceTemplateExpressionsInJS(test_case.js_in, substitutions,
@@ -318,8 +378,11 @@ TEST(TemplateExpressionsTest, JSReplacementsEscape) {
 TEST(TemplateExpressionsTest, JSReplacementsError) {
   TemplateReplacements substitutions;
   substitutions["test"] = "${foo + bar}";
+  substitutions["testEscapedDollar"] = R"(\${foo + bar})";
   substitutions["testa"] = "5$";
+  substitutions["testaEscaped"] = R"(5\$)";
   substitutions["testb"] = "{a + b}";
+  substitutions["empty"] = "";
 
   // All these cases should fail.
   const TestCase kTestCases[] = {
@@ -388,6 +451,88 @@ TEST(TemplateExpressionsTest, JSReplacementsError) {
        "    <div>Price is: $i18n{testa}</div>\n"
        "<!--_html_template_not_end-->\n"
        "  is: 'foo-element',\n"
+       "});",
+       ""},
+      // Replacement contains "\${" (which would leave "${" unescaped after
+      // backslash escaping).
+      {"export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    <div>$i18n{testEscapedDollar}</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}",
+       ""},
+      // 2 replacements with trailing "\$" and leading "{" create "\\${".
+      {"export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    <div>$i18n{testaEscaped}$i18n{testb}</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}",
+       ""},
+      // Replacement ending with '$' or '\$', when combined with following '{'
+      // in template content, creates "${" or "\\${".
+      {"export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    <div>Price is: $i18n{testa}{a + b}</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}",
+       ""},
+      {"export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    <div>Price is: $i18n{testaEscaped}{a + b}</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}",
+       ""},
+      // Empty replacement(s) between preceding '$' (literal or from an adjacent
+      // replacement) and following '{' in template content create "${".
+      {"export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    <div>Price is: $$i18n{empty}{a + b}</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}",
+       ""},
+      {"export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    <div>Price is: $$i18n{empty}$i18n{empty}{a + b}</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}",
+       ""},
+      {"export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    <div>Price is: $i18n{testa}$i18n{empty}{a + b}</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}",
+       ""},
+      // Template has an odd number of trailing backslashes immediately
+      // preceding $i18n.
+      {"export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    <div>\\$i18n{testa}</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}",
+       ""},
+      {"export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    <div>\\\\\\$i18n{testa}</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}",
+       ""},
+      {"export function getHtml() {\n"
+       "  return html`<!--_html_template_start_-->\n"
+       "    <div>\\$i18n{empty}</div>\n"
+       "<!--_html_template_end_-->`;\n"
+       "}",
+       ""},
+      // Polymer replacement containing "${" or "\${".
+      {"Polymer({\n"
+       "  _template: html`<!--_html_template_start_-->\n"
+       "    <div>[[Call('$i18nPolymer{test}')]]</div>\n"
+       "<!--_html_template_end_-->`,\n"
+       "});",
+       ""},
+      {"Polymer({\n"
+       "  _template: html`<!--_html_template_start_-->\n"
+       "    <div>[[Call('$i18nPolymer{testEscapedDollar}')]]</div>\n"
+       "<!--_html_template_end_-->`,\n"
        "});",
        ""},
   };
@@ -586,6 +731,7 @@ TEST(TemplateExpressionsTest, ReplaceTemplateExpressionsPolymerQuotingJS) {
   static TemplateReplacements substitutions;
   substitutions["quotesAndCommas"] = R"(don't "moo", they said)";
   substitutions["backslashes"] = R"(\ \\ \n \r \t \b \f \0)";
+  substitutions["backticks"] = R"(say `hello` and \`world\`)";
   const TestCase kTestCases[] = {
       // Case: quotesAndCommas
       {R"(<!--_html_template_start_-->
@@ -600,6 +746,13 @@ TEST(TemplateExpressionsTest, ReplaceTemplateExpressionsPolymerQuotingJS) {
        <!--_html_template_end_-->)",
        R"(<!--_html_template_start_-->
        <div>[[Call('\\\\ \\\\\\\\ \\\\n \\\\r \\\\t \\\\b \\\\f \\\\0')]]</div>
+       <!--_html_template_end_-->)"},
+      // Case: backticks and backslash-backticks
+      {R"(<!--_html_template_start_-->
+       <div>[[Call('$i18nPolymer{backticks}')]]</div>
+       <!--_html_template_end_-->)",
+       R"(<!--_html_template_start_-->
+       <div>[[Call('say \`hello\` and \\\\\`world\\\\\`')]]</div>
        <!--_html_template_end_-->)"},
   };
   std::string formatted;

@@ -54,8 +54,10 @@ std::optional<std::string> TryReplaceTemplateExpressions(
 // true on success, false on failure. On failure, |output| will not populated.
 // Replacement will fail if a single HTML template string cannot be identified
 // (e.g. not terminated, multiple _template: html`... in a single file), or if
-// executing the replacements would be unsafe (e.g. result in unescaped
-// backticks or "${" within the HTML string).
+// executing the replacements would produce an invalid or ambiguous template
+// literal (e.g. resulting in "${" or preceded by an unescaped backslash within
+// the HTML string). Backslashes and backticks within replacement values are
+// escaped for JavaScript template literals.
 // Note: Currently, this only supports the legacy Polymer syntax, i.e.:
 //     _template: html` ... `,
 COMPONENT_EXPORT(UI_BASE)

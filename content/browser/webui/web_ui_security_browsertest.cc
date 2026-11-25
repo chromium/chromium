@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
@@ -24,6 +25,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/webui_config.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_paths.h"
@@ -1328,6 +1330,102 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTestSiteIsolationDisabled,
   EXPECT_TRUE(rph->GetProcessLock().IsLockedToSite());
   EXPECT_EQ(test_url.GetWithEmptyPath(),
             rph->GetProcessLock().agent_cluster_key().GetSite());
+}
+
+namespace {
+
+constexpr char kJSTemplateHost[] = "test-js-template";
+
+class JSTemplateTestWebUIController : public WebUIController {
+ public:
+  explicit JSTemplateTestWebUIController(WebUI* web_ui)
+      : WebUIController(web_ui) {
+    WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
+        web_ui->GetWebContents()->GetBrowserContext(), kJSTemplateHost);
+    source->EnableReplaceI18nInJS();
+    source->DisableTrustedTypesCSP();
+    source->AddString("backslashAndBacktick",
+                      R"(\`; window.ranOutsideTemplate = true; //)");
+    source->AddString("trailingBackslash", R"(trailing\)");
+    source->AddString("filePath", R"(C:\Users\sample\Downloads\)");
+    source->AddString("rawMarkup", R"(<b id="raw">\`ok\`\</b>)");
+    source->AddString("polymerValue", R"(don't `run` \`this\`)");
+    source->SetRequestFilter(
+        base::BindRepeating([](const std::string& path) {
+          return path.empty() || path == "index.html" || path == "app.js";
+        }),
+        base::BindRepeating([](const std::string& path,
+                               WebUIDataSource::GotDataCallback callback) {
+          std::string body;
+          if (path == "app.js") {
+            body = R"js(
+function renderTag(strings, ...values) {
+  let out = strings[0];
+  for (let i = 0; i < values.length; ++i) {
+    out += String(values[i]) + strings[i + 1];
+  }
+  return out;
+}
+const rendered = renderTag`<!--_html_template_start_-->
+<a id="link" href="$i18n{backslashAndBacktick}">Link</a>
+${true ? renderTag`<span id="trail">$i18n{trailingBackslash}` : ''}</span>
+<div id="path">$i18n{filePath}</div>
+<div id="raw-wrap">$i18nRaw{rawMarkup}</div>
+<div id="polymer">$i18nPolymer{polymerValue}</div>
+<!--_html_template_end_-->`;
+const container = document.createElement('div');
+container.innerHTML = rendered;
+document.body.appendChild(container);
+window.moduleLoaded = true;
+)js";
+          } else {
+            body =
+                "<!doctype html><body>"
+                "<script type=\"module\" src=\"app.js\"></script>"
+                "</body>";
+          }
+          std::move(callback).Run(
+              base::MakeRefCounted<base::RefCountedString>(std::move(body)));
+        }));
+  }
+};
+
+class JSTemplateTestWebUIConfig
+    : public DefaultWebUIConfig<JSTemplateTestWebUIController> {
+ public:
+  JSTemplateTestWebUIConfig()
+      : DefaultWebUIConfig(kChromeUIScheme, kJSTemplateHost) {}
+};
+
+}  // namespace
+
+class WebUIJSTemplateExpressionsTest : public ContentBrowserTest {};
+
+// Verifies that backslashes and backticks in $i18n{}, $i18nRaw{}, and
+// $i18nPolymer{} replacements inside WebUI JS module templates do not terminate
+// the enclosing template literal and preserve literal characters when parsed by
+// V8.
+IN_PROC_BROWSER_TEST_F(WebUIJSTemplateExpressionsTest,
+                       BackslashAndBacktickEscapingInJSModule) {
+  ScopedWebUIConfigRegistration config_registration(
+      std::make_unique<JSTemplateTestWebUIConfig>());
+
+  const GURL url(GetWebUIURL(base::StrCat({kJSTemplateHost, "/index.html"})));
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(true, EvalJs(shell(), "Boolean(window.moduleLoaded)"));
+  EXPECT_EQ(false, EvalJs(shell(), "Boolean(window.ranOutsideTemplate)"));
+  EXPECT_EQ(
+      R"(\`; window.ranOutsideTemplate = true; //)",
+      EvalJs(shell(), "document.getElementById('link').getAttribute('href')"));
+  EXPECT_EQ(R"(trailing\)",
+            EvalJs(shell(), "document.getElementById('trail').textContent"));
+  EXPECT_EQ(R"(C:\Users\sample\Downloads\)",
+            EvalJs(shell(), "document.getElementById('path').textContent"));
+  EXPECT_EQ(R"(\`ok\`\)",
+            EvalJs(shell(), "document.getElementById('raw').textContent"));
+  EXPECT_EQ(R"(don\'t `run` \\`this\\`)",
+            EvalJs(shell(), "document.getElementById('polymer').textContent"));
 }
 
 }  // namespace content

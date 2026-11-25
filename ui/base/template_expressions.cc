@@ -9,6 +9,7 @@
 #include <optional>
 #include <ostream>
 #include <string_view>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -69,24 +70,23 @@ HtmlTemplate FindHtmlTemplate(std::string_view source) {
   return out;
 }
 
-// Escape quotes and backslashes ('"\).
-std::string PolymerParameterEscape(const std::string& in_string,
-                                   bool is_javascript) {
+// Escape quotes, commas, and backslashes ('",\).
+std::string PolymerParameterEscape(std::string_view in_string) {
   std::string out;
   out.reserve(in_string.size() * 2);
   for (const char c : in_string) {
     switch (c) {
       case '\\':
-        out.append(is_javascript ? R"(\\\\)" : R"(\\)");
+        out.append(R"(\\)");
         break;
       case '\'':
-        out.append(is_javascript ? R"(\\')" : R"(\')");
+        out.append(R"(\')");
         break;
       case '"':
         out.append("&quot;");
         break;
       case ',':
-        out.append(is_javascript ? R"(\\,)" : R"(\,)");
+        out.append(R"(\,)");
         break;
       default:
         out += c;
@@ -95,20 +95,36 @@ std::string PolymerParameterEscape(const std::string& in_string,
   return out;
 }
 
-bool EscapeForJS(const std::string& in_string,
+bool HasTrailingUnescapedBackslash(std::string_view str) {
+  size_t backslash_count = 0;
+  while (backslash_count < str.size() &&
+         str[str.size() - 1 - backslash_count] == '\\') {
+    ++backslash_count;
+  }
+  return (backslash_count % 2) == 1;
+}
+
+bool EscapeForJS(std::string_view in_string,
                  std::optional<char> in_previous,
                  std::string* out_string) {
   out_string->reserve(in_string.size() * 2);
-  bool last_was_dollar = in_previous && in_previous.value() == '$';
+  bool last_was_dollar = in_previous == '$';
   for (const char c : in_string) {
     switch (c) {
+      case '\\':
+        // Backslashes must be escaped so that "\`" cannot become "\\`" (a
+        // literal backslash followed by a live backtick) and a trailing "\"
+        // cannot escape the template literal's closing backtick.
+        out_string->append("\\\\");
+        break;
       case '`':
         out_string->append("\\`");
         break;
       case '{':
         // Do not allow "${".
-        if (last_was_dollar)
+        if (last_was_dollar) {
           return false;
+        }
         *out_string += c;
         break;
       default:
@@ -158,7 +174,8 @@ bool ReplaceTemplateExpressionsInternal(
 
     size_t context_end = source.find(kKeyOpen, current_pos);
     CHECK_NE(context_end, std::string::npos);
-    std::string context(source.substr(current_pos, context_end - current_pos));
+    std::string_view context =
+        source.substr(current_pos, context_end - current_pos);
     current_pos = context_end + sizeof(kKeyOpen);
 
     size_t key_end = source.find(kKeyClose, current_pos);
@@ -175,27 +192,41 @@ bool ReplaceTemplateExpressionsInternal(
         << "$i18n replacement key \"" << key << "\" not found";
 
     std::string replacement = value->second;
-    if (is_javascript) {
-      // Run JS escaping first.
-      std::optional<char> last = formatted->empty()
-                                     ? std::nullopt
-                                     : std::make_optional(formatted->back());
-      std::string escaped_replacement;
-      if (!EscapeForJS(replacement, last, &escaped_replacement))
-        return false;
-      replacement = escaped_replacement;
-    }
-
     if (context.empty()) {
       // Make the replacement HTML safe.
       replacement = base::EscapeForHTML(replacement);
     } else if (context == "Raw") {
       // Pass the replacement through unchanged.
     } else if (context == "Polymer") {
-      // Escape quotes and backslash for '$i18nPolymer{}' use (i.e. quoted).
-      replacement = PolymerParameterEscape(replacement, is_javascript);
+      // Escape quotes, commas, and backslashes for '$i18nPolymer{}' use
+      // (i.e. quoted).
+      replacement = PolymerParameterEscape(replacement);
     } else {
       NOTREACHED() << "Unknown context " << context;
+    }
+
+    const size_t after_key_pos = key_end + sizeof(kKeyClose);
+    if (is_javascript) {
+      const std::string_view remaining_after_key = source.substr(after_key_pos);
+      const bool ends_with_dollar = replacement.empty()
+                                        ? formatted->ends_with('$')
+                                        : replacement.ends_with('$');
+      if (HasTrailingUnescapedBackslash(*formatted) ||
+          (ends_with_dollar && remaining_after_key.starts_with('{'))) {
+        return false;
+      }
+
+      // Run JS escaping last so that every backslash and backtick in the final
+      // text (including those added by context escaping above) is escaped
+      // exactly once for the enclosing JS template literal.
+      std::optional<char> last = formatted->empty()
+                                     ? std::nullopt
+                                     : std::make_optional(formatted->back());
+      std::string escaped_replacement;
+      if (!EscapeForJS(replacement, last, &escaped_replacement)) {
+        return false;
+      }
+      replacement = std::move(escaped_replacement);
     }
 
 #if DCHECK_IS_ON()
@@ -209,7 +240,7 @@ bool ReplaceTemplateExpressionsInternal(
 
     formatted->append(replacement);
 
-    current_pos = key_end + sizeof(kKeyClose);
+    current_pos = after_key_pos;
   }
   return true;
 }
