@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/core/get_pointer_response.h"
+#include "chrome/browser/actor/tools/get_pointer/get_pointer_result_builder.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <optional>
@@ -11,16 +12,19 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/actor/tool_result_data.h"
+#include "chrome/browser/actor/tools/get_pointer/get_pointer_tool_result.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_context.h"
 #include "chrome/browser/actor/tools/get_pointer/pointer_crop_geometry.h"
 #include "chrome/browser/actor/tools/get_pointer/pointer_frame_redaction.h"
 #include "chrome/browser/actor/tools/get_pointer/pointer_hit_test.h"
 #include "chrome/browser/actor/tools/get_pointer/pointer_image_annotator.h"
-#include "chrome/browser/ttc/core/features.h"
-#include "chrome/browser/ttc/core/pointer_context_capturer.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
@@ -35,15 +39,10 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
-namespace ttc {
+namespace actor {
 
 namespace {
 
-using actor::AnnotatePointerImage;
-using actor::ComputePointerCropRect;
-using actor::DescribeNode;
-using actor::DescribeNodeAtPoint;
-using actor::PaintOverCrossOriginFrames;
 using optimization_guide::proto::ContentNode;
 
 // Enough to recognize what is selected; the page content has the rest.
@@ -55,12 +54,6 @@ base::DictValue RectToDict(const gfx::Rect& rect) {
       .Set("y", rect.y())
       .Set("width", rect.width())
       .Set("height", rect.height());
-}
-
-// Returns `jpeg`, the bytes of a JPEG, as the image of a response.
-VisualContent JpegContent(std::vector<uint8_t> jpeg) {
-  return VisualContent{.image_data = std::move(jpeg),
-                       .mime_type = "image/jpeg"};
 }
 
 // The most selected things described in a result; enough to tell the model
@@ -147,10 +140,10 @@ bool IsMedia(const ContentNode& node) {
   }
 }
 
-// Returns get_pointer's answer for a user who is not pointing but has made a
+// Returns get_pointer's result for a user who is not pointing but has made a
 // selection in the page's main document, or nullopt if they have not, or it
 // cannot be shown. `screenshot` shows `viewport`, which is in DIPs.
-std::optional<ToolResponse> BuildSelectionResponse(
+std::optional<GetPointerToolResult> BuildSelectionResult(
     const PointerContext& context,
     const SkBitmap& screenshot,
     const gfx::Size& viewport) {
@@ -190,9 +183,10 @@ std::optional<ToolResponse> BuildSelectionResponse(
     }
   } else {
     // Described without their identity, whatever
-    // kTtcGetPointerIncludeNodeIdentity says: the model must not be given a DOM
-    // node id that the server has not mapped to one of the node ids it knows,
-    // and the server maps those of the elements pointed at only.
+    // `GetPointerResultOptions::include_node_identity` says: the model must
+    // not be given a DOM node id that the server has not mapped to one of the
+    // node ids it knows, and the server maps those of the elements pointed at
+    // only.
     base::ListValue nodes;
     for (const ContentNode* node : range) {
       const gfx::Rect box = VisibleBox(*node);
@@ -225,7 +219,7 @@ std::optional<ToolResponse> BuildSelectionResponse(
     return std::nullopt;
   }
   description.Set("bounds", RectToDict(bounds));
-  return ToolResponse::Success(
+  return GetPointerToolResult(
       base::DictValue()
           .Set("status", "ok")
           .Set("selection", std::move(description))
@@ -233,15 +227,14 @@ std::optional<ToolResponse> BuildSelectionResponse(
           .Set("viewport", base::DictValue()
                                .Set("width", viewport.width())
                                .Set("height", viewport.height())),
-      JpegContent(std::move(*jpeg)));
+      std::move(*jpeg));
 }
 
 }  // namespace
 
-ToolResponse BuildGetPointerResponse(
-    const PointerContext& context,
-    base::span<const PointerTracker::Location> locations,
-    bool include_node_identity) {
+ToolResult BuildGetPointerResult(const PointerContext& context,
+                                 base::span<const PointerLocation> locations,
+                                 const GetPointerResultOptions& options) {
   // The viewport is what the screenshot shows, so that the points, the image
   // and the hit test all agree on what is in it. There is none if the
   // screenshot is not an image or the scale factor is not a usable number.
@@ -253,9 +246,9 @@ ToolResponse BuildGetPointerResponse(
                 1 / context.scale_factor)
           : gfx::Size();
   if (viewport.IsEmpty()) {
-    return ToolResponse::Error(
-        actor::mojom::ActionResultCode::kScreenshotCaptureFailed,
-        "The screenshot could not be read");
+    return ToolResult::Error(
+        ToolError(mojom::ActionResultCode::kScreenshotCaptureFailed,
+                  "The screenshot could not be read"));
   }
 
   // The model is not given the content of frames of other origins than the
@@ -265,32 +258,33 @@ ToolResponse BuildGetPointerResponse(
 
   // In the order the user pointed. Contains() is false for a point that is
   // not a number, so those are left out too.
-  std::vector<const PointerTracker::Location*> shown;
+  std::vector<const PointerLocation*> shown;
   std::vector<gfx::PointF> points;
-  for (const PointerTracker::Location& location : base::Reversed(locations)) {
+  for (const PointerLocation& location : base::Reversed(locations)) {
     if (gfx::RectF(gfx::SizeF(viewport)).Contains(location.point)) {
       shown.push_back(&location);
       points.push_back(location.point);
     }
   }
   if (points.empty()) {
-    if (kTtcGetPointerUseSelection.Get()) {
-      if (std::optional<ToolResponse> response =
-              BuildSelectionResponse(context, screenshot, viewport)) {
-        return std::move(*response);
+    if (options.use_selection) {
+      if (std::optional<GetPointerToolResult> result =
+              BuildSelectionResult(context, screenshot, viewport)) {
+        return ToolResult::Success(std::move(*result));
       }
     }
-    return ToolResponse::Success(
-        base::DictValue().Set("status", "no_active_pointer"));
+    return ToolResult::Success(GetPointerToolResult(
+        base::DictValue().Set("status", "no_active_pointer"),
+        /*image_data=*/{}));
   }
 
   const gfx::Rect crop = ComputePointerCropRect(points, viewport);
   std::optional<std::vector<uint8_t>> jpeg =
       AnnotatePointerImage(screenshot, crop, points, context.scale_factor);
   if (!jpeg) {
-    return ToolResponse::Error(
-        actor::mojom::ActionResultCode::kScreenshotCaptureFailed,
-        "The image of the pointer could not be made");
+    return ToolResult::Error(
+        ToolError(mojom::ActionResultCode::kScreenshotCaptureFailed,
+                  "The image of the pointer could not be made"));
   }
 
   base::ListValue point_list;
@@ -306,7 +300,7 @@ ToolResponse BuildGetPointerResponse(
                                 .Set("kind", kind);
     if (std::optional<base::DictValue> node = DescribeNodeAtPoint(
             context.page_content, points[i], context.scale_factor)) {
-      if (!include_node_identity) {
+      if (!options.include_node_identity) {
         node->Remove("dom_node_id");
         node->Remove("document_id");
       }
@@ -315,7 +309,7 @@ ToolResponse BuildGetPointerResponse(
     point_list.Append(std::move(point));
   }
 
-  return ToolResponse::Success(
+  return ToolResult::Success(GetPointerToolResult(
       base::DictValue()
           .Set("status", "ok")
           .Set("points", std::move(point_list))
@@ -323,7 +317,7 @@ ToolResponse BuildGetPointerResponse(
           .Set("viewport", base::DictValue()
                                .Set("width", viewport.width())
                                .Set("height", viewport.height())),
-      JpegContent(std::move(*jpeg)));
+      std::move(*jpeg)));
 }
 
-}  // namespace ttc
+}  // namespace actor

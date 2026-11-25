@@ -52,7 +52,7 @@ PointerContextCapturer::Result ToResult(
     return Failure(ActionResultCode::kScreenshotCaptureFailed,
                    "Could not capture the page");
   }
-  return PointerContext{
+  return actor::PointerContext{
       .screenshot = std::move(fetched.screenshot_result->screenshot_data),
       .scale_factor = scale_factor,
       .page_content = std::move(fetched.annotated_page_content_result->proto)};

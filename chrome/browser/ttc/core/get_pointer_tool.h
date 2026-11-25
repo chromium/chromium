@@ -25,11 +25,10 @@ class SessionControllerImpl;
 
 // The get_pointer tool of a session: tells the model what the user pointed at
 // during their turn, with an image of the page around it and a description of
-// the element there. See BuildGetPointerResponse() for the answer.
+// the element there. See actor::BuildGetPointerResult() for the answer.
 //
-// TODO(crbug.com/571268337): Make this an actor tool once actor tools can
-// return data and an image to the session; today they return a result code
-// and a message. The same holds for get_screenshot.
+// TODO(crbug.com/587484155): Make this an actor tool. Its answer is built by
+// code in actor already.
 class GetPointerTool {
  public:
   // The tool's feature must be enabled. `session_controller` must outlive this

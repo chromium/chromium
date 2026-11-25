@@ -26,7 +26,7 @@ namespace actor {
 //
 // Points outside the viewport count as being on its nearest edge, so that
 // there is always an answer, but nothing can be shown or found at such a
-// point; BuildGetPointerResponse() leaves them out before it gets here.
+// point; BuildGetPointerResult() leaves them out before it gets here.
 gfx::Rect ComputePointerCropRect(base::span<const gfx::PointF> points,
                                  const gfx::Size& viewport_dip);
 

@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -22,10 +23,13 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
+#include "chrome/browser/actor/tool_result_data.h"
+#include "chrome/browser/actor/tools/get_pointer/get_pointer_result_builder.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_context.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/get_pointer_metrics.h"
-#include "chrome/browser/ttc/core/get_pointer_response.h"
 #include "chrome/browser/ttc/core/page_context_util.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
@@ -41,6 +45,46 @@
 namespace ttc {
 
 namespace {
+
+// Returns `locations` as the code that builds the tool's result takes them.
+std::vector<actor::PointerLocation> ToPointerLocations(
+    const std::vector<PointerTracker::Location>& locations) {
+  return base::ToVector(
+      locations, [](const PointerTracker::Location& location) {
+        return actor::PointerLocation{.point = location.point,
+                                      .is_press = location.is_press,
+                                      .is_dwell = location.is_dwell};
+      });
+}
+
+// Returns `result`, which the actor's code built, as the tool's response.
+// TODO(crbug.com/587484155): Remove this when get_pointer is an actor tool;
+// the tool controller then converts the results of all actor tools.
+ToolResponse ToToolResponse(const actor::ToolResult& result) {
+  if (!result.Ok()) {
+    const actor::ToolError& error = *result.error();
+    return ToolResponse::Error(error.code,
+                               error.message.value_or(std::string()));
+  }
+  const actor::ToolResultData& data = CHECK_DEREF(result.data());
+  if (std::optional<actor::ToolResultImage> image = data.GetImage()) {
+    return ToolResponse::Success(
+        data.ToDict(),
+        VisualContent{.image_data = base::ToVector(image->data),
+                      .mime_type = std::string(image->mime_type)});
+  }
+  return ToolResponse::Success(data.ToDict());
+}
+
+// Builds the tool's response from `context`, what was captured of the page.
+// CPU-bound, and uses nothing bound to a thread, so it can run on a worker
+// thread.
+ToolResponse BuildResponse(const actor::PointerContext& context,
+                           const std::vector<actor::PointerLocation>& locations,
+                           const actor::GetPointerResultOptions& options) {
+  return ToToolResponse(
+      actor::BuildGetPointerResult(context, locations, options));
+}
 
 // Returns the points that get_pointer's `response` tells the model about.
 std::vector<gfx::Point> GetPointsInResponse(const ToolResponse& response) {
@@ -209,9 +253,12 @@ void GetPointerTool::OnCaptured(base::WeakPtr<content::Page> page,
   // on a spoken answer, so not to be put off either.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&BuildGetPointerResponse, std::move(context).value(),
-                     std::move(locations),
-                     kTtcGetPointerIncludeNodeIdentity.Get()),
+      base::BindOnce(
+          &BuildResponse, std::move(context).value(),
+          ToPointerLocations(locations),
+          actor::GetPointerResultOptions{
+              .include_node_identity = kTtcGetPointerIncludeNodeIdentity.Get(),
+              .use_selection = kTtcGetPointerUseSelection.Get()}),
       base::BindOnce(&GetPointerTool::OnResponseBuilt,
                      weak_factory_.GetWeakPtr(), std::move(page),
                      std::move(callback)));

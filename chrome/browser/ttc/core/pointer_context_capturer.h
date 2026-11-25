@@ -5,17 +5,14 @@
 #ifndef CHROME_BROWSER_TTC_CORE_POINTER_CONTEXT_CAPTURER_H_
 #define CHROME_BROWSER_TTC_CORE_POINTER_CONTEXT_CAPTURER_H_
 
-#include <stdint.h>
-
 #include <memory>
-#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_context.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/ttc/app/public/tool_types.h"
 
@@ -25,24 +22,12 @@ class WebContents;
 
 namespace ttc {
 
-// What get_pointer needs to know about a page to show and describe what the
-// user pointed at. Both parts are captured together, so they agree.
-struct PointerContext {
-  // A JPEG of the viewport at its natural size, i.e. in device pixels.
-  std::vector<uint8_t> screenshot;
-  // Device pixels per DIP, for both the screenshot and the geometry in
-  // `page_content`.
-  float scale_factor = 1.0f;
-  // What is on the page, with the geometry of everything in the viewport.
-  optimization_guide::proto::AnnotatedPageContent page_content;
-};
-
-// Captures a PointerContext from a WebContents, giving up if it takes too
-// long: the user is waiting on a spoken answer, and captures can stall, e.g.
-// while the window is occluded.
+// Captures an actor::PointerContext from a WebContents, giving up if it takes
+// too long: the user is waiting on a spoken answer, and captures can stall,
+// e.g. while the window is occluded.
 class PointerContextCapturer {
  public:
-  using Result = base::expected<PointerContext, ToolResponse>;
+  using Result = base::expected<actor::PointerContext, ToolResponse>;
   using Callback = base::OnceCallback<void(Result)>;
 
   // A capture that takes longer than `timeout` fails.

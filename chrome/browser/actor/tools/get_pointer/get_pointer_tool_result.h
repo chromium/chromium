@@ -32,7 +32,7 @@ struct GetPointerToolResult : public ToolResultData {
   std::optional<ToolResultImage> GetImage() const override;
   std::unique_ptr<ToolResultData> Clone() const override;
 
-  // The description.
+  // The description. BuildGetPointerResult() documents what is in it.
   base::DictValue dict;
 
   // A JPEG of the part of the page that `dict` describes. Empty if `dict`
