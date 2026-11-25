@@ -5,8 +5,11 @@
 package org.chromium.chrome.browser.site_settings;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -19,6 +22,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.view.View;
 
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
@@ -32,8 +37,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -41,16 +48,24 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.browser_ui.site_settings.ContentSettingException;
+import org.chromium.components.browser_ui.site_settings.CookiesInfo;
+import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.browser_ui.site_settings.Website;
+import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
+import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.ProviderType;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -229,5 +244,106 @@ public class AllSiteSettingsTest {
                 });
 
         settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testGroupedWebsitesDeleteIndividualSitesRefreshesAndFinishes() {
+        String originA = "https://a.example.com";
+        String originB = "https://b.example.com";
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebsitePreferenceBridge.setContentSettingCustomScope(
+                            getBrowserContextHandle(),
+                            ContentSettingsType.COOKIES,
+                            originA,
+                            "*",
+                            ContentSetting.ALLOW);
+                    WebsitePreferenceBridge.setContentSettingCustomScope(
+                            getBrowserContextHandle(),
+                            ContentSettingsType.COOKIES,
+                            originB,
+                            "*",
+                            ContentSetting.ALLOW);
+                });
+
+        Website siteA = new Website(WebsiteAddress.create(originA), null);
+        siteA.setContentSettingException(
+                ContentSettingsType.COOKIES,
+                new ContentSettingException(
+                        ContentSettingsType.COOKIES,
+                        originA,
+                        ContentSetting.ALLOW,
+                        ProviderType.PREF_PROVIDER,
+                        /* isEmbargoed= */ false));
+        siteA.setCookiesInfo(new CookiesInfo(3));
+
+        Website siteB = new Website(WebsiteAddress.create(originB), null);
+        siteB.setContentSettingException(
+                ContentSettingsType.COOKIES,
+                new ContentSettingException(
+                        ContentSettingsType.COOKIES,
+                        originB,
+                        ContentSetting.ALLOW,
+                        ProviderType.PREF_PROVIDER,
+                        /* isEmbargoed= */ false));
+
+        WebsiteGroup group = new WebsiteGroup("example.com", Arrays.asList(siteA, siteB));
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startGroupedWebsitesPreferences(group);
+
+        // Baseline: both origins and the group clear-data preference are shown.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    GroupedWebsitesSettings fragment =
+                            (GroupedWebsitesSettings) settingsActivity.getMainFragment();
+                    Preference clearDataPref =
+                            fragment.findPreference(GroupedWebsitesSettings.PREF_CLEAR_DATA);
+                    assertThat(clearDataPref).isNotNull();
+                    PreferenceCategory sitesCategory =
+                            fragment.findPreference(GroupedWebsitesSettings.PREF_SITES_IN_GROUP);
+                    assertThat(sitesCategory.getPreferenceCount()).isEqualTo(2);
+                });
+
+        // Delete the first origin via its row delete icon.
+        String deleteSiteADesc =
+                settingsActivity.getString(
+                        R.string.webstorage_delete_data_content_description,
+                        siteA.getTitleForPreferenceRow());
+        onView(withContentDescription(deleteSiteADesc)).perform(click());
+        onView(withText(R.string.website_reset)).inRoot(isDialog()).perform(click());
+
+        // Refreshing the group should drop the stale clear-data row and keep only siteB.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    GroupedWebsitesSettings fragment =
+                            (GroupedWebsitesSettings) settingsActivity.getMainFragment();
+                    PreferenceCategory sitesCategory =
+                            fragment.findPreference(GroupedWebsitesSettings.PREF_SITES_IN_GROUP);
+                    return fragment.findPreference(GroupedWebsitesSettings.PREF_CLEAR_DATA) == null
+                            && sitesCategory != null
+                            && sitesCategory.getPreferenceCount() == 1;
+                });
+
+        // Delete the last remaining origin in the group.
+        String deleteSiteBDesc =
+                settingsActivity.getString(
+                        R.string.webstorage_delete_data_content_description,
+                        siteB.getTitleForPreferenceRow());
+        onView(withContentDescription(deleteSiteBDesc)).perform(click());
+        onView(withText(R.string.website_reset)).inRoot(isDialog()).perform(click());
+
+        // GroupedWebsitesSettings should finish instead of staying open with an empty group.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        settingsActivity.isFinishing()
+                                || settingsActivity.isDestroyed()
+                                || !(settingsActivity.getMainFragment()
+                                        instanceof GroupedWebsitesSettings));
+
+        if (!settingsActivity.isFinishing() && !settingsActivity.isDestroyed()) {
+            settingsActivity.finish();
+        }
     }
 }

@@ -95,30 +95,34 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         } else if (extraGroup instanceof String domainAndRegistry) {
             mPageTitle.set(
                     getActivity().getString(R.string.domain_settings_title, domainAndRegistry));
-            WebsitePermissionsFetcher fetcher =
-                    new WebsitePermissionsFetcher(getSiteSettingsDelegate());
-            fetcher.fetchPreferencesForCategory(
-                    SiteSettingsCategory.createFromType(
-                            getSiteSettingsDelegate().getBrowserContextHandle(),
-                            SiteSettingsCategory.Type.ALL_SITES),
-                    sites -> {
-                        if (getActivity() == null) return;
-                        WebsiteGroup group = WebsiteGroup.createForDomain(domainAndRegistry, sites);
-
-                        // The Url named a group that no longer has any sites, e.g. because its
-                        // data was deleted after the entry was created. There is nothing to show,
-                        // so leave for the page that lists all groups.
-                        if (group.getWebsites().isEmpty()) {
-                            assumeNonNull(getSettingsNavigation())
-                                    .finishCurrentSettings(
-                                            this, AllSiteSettings.class, /* parentArgs= */ null);
-                            return;
-                        }
-
-                        mSiteGroup = group;
-                        displayGroupPreferences(mSiteGroup);
-                    });
+            fetchAndDisplayGroup(domainAndRegistry);
         }
+    }
+
+    private void fetchAndDisplayGroup(String domainAndRegistry) {
+        WebsitePermissionsFetcher fetcher =
+                new WebsitePermissionsFetcher(getSiteSettingsDelegate());
+        fetcher.fetchPreferencesForCategory(
+                SiteSettingsCategory.createFromType(
+                        getSiteSettingsDelegate().getBrowserContextHandle(),
+                        SiteSettingsCategory.Type.ALL_SITES),
+                sites -> {
+                    var activity = getActivity();
+                    if (activity == null || activity.isDestroyed()) return;
+                    WebsiteGroup group = WebsiteGroup.createForDomain(domainAndRegistry, sites);
+
+                    // The group no longer has any sites, e.g. because its data was deleted. There
+                    // is nothing to show, so leave for the page that lists all groups.
+                    if (group.getWebsites().isEmpty()) {
+                        assumeNonNull(getSettingsNavigation())
+                                .finishCurrentSettings(
+                                        this, AllSiteSettings.class, /* parentArgs= */ null);
+                        return;
+                    }
+
+                    mSiteGroup = group;
+                    displayGroupPreferences(mSiteGroup);
+                });
     }
 
     private void displayGroupPreferences(WebsiteGroup siteGroup) {
@@ -335,7 +339,9 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                             /* isClickable= */ true);
             preference.setOnDeleteCallback(
                     () -> {
-                        category.removePreference(preference);
+                        var activity = getActivity();
+                        if (activity == null || activity.isDestroyed()) return;
+                        fetchAndDisplayGroup(siteGroup.getDomainAndRegistry());
                     });
             category.addPreference(preference);
         }
