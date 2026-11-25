@@ -59,6 +59,7 @@ import org.chromium.components.sync.protocol.GroupData;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
@@ -447,7 +448,7 @@ public class CollaborationControllerDelegateImplUnitTest {
     public void testShowShareDialog() {
         createDelegate(FlowType.SHARE_OR_MANAGE);
         long resultCallback = 1;
-        LocalTabGroupId localId = new LocalTabGroupId(new Token(1L, 2L));
+        LocalTabGroupId localId = new LocalTabGroupId(TabGroupId.fromRawToken(new Token(1L, 2L)));
         String collaborationId = "collaborationId";
         String sessionId = "sessionId";
         String accessToken = "accessToken";
@@ -530,7 +531,7 @@ public class CollaborationControllerDelegateImplUnitTest {
     public void testLeaveSharedTabGroup() {
         createDelegate(FlowType.LEAVE_OR_DELETE);
         long resultCallback = 1;
-        LocalTabGroupId localId = new LocalTabGroupId(new Token(1L, 2L));
+        LocalTabGroupId localId = new LocalTabGroupId(TabGroupId.fromRawToken(new Token(1L, 2L)));
         String title = "title";
 
         SavedTabGroup savedGroup = new SavedTabGroup();
@@ -556,7 +557,7 @@ public class CollaborationControllerDelegateImplUnitTest {
     public void testDeleteSharedTabGroup() {
         createDelegate(FlowType.LEAVE_OR_DELETE);
         long resultCallback = 1;
-        LocalTabGroupId localId = new LocalTabGroupId(new Token(1L, 2L));
+        LocalTabGroupId localId = new LocalTabGroupId(TabGroupId.fromRawToken(new Token(1L, 2L)));
         String title = "title";
 
         SavedTabGroup savedGroup = new SavedTabGroup();

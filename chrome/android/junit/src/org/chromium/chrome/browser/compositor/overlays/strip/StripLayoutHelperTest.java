@@ -3966,7 +3966,7 @@ public class StripLayoutHelperTest {
 
     private SavedTabGroup setupTabGroupSync(Token tabGroupId) {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
-        savedTabGroup.localId = new LocalTabGroupId(tabGroupId);
+        savedTabGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId));
         SavedTabGroupTab savedTab = new SavedTabGroupTab();
         SavedTabGroupTab savedTab2 = new SavedTabGroupTab();
         savedTabGroup.savedTabs = Arrays.asList(new SavedTabGroupTab[] {savedTab, savedTab2});

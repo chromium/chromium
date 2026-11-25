@@ -93,7 +93,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         List<SavedTabGroupTab> savedTabs = List.of(savedTabGroupTab);
         SyncedGroupTestHelper helper = new SyncedGroupTestHelper(mTabGroupSyncService);
         mSavedTabGroup = helper.newTabGroup(TEST_SYNC_ID);
-        mSavedTabGroup.localId = new LocalTabGroupId(mToken);
+        mSavedTabGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(mToken));
         mSavedTabGroup.syncId = TEST_SYNC_ID;
         mSavedTabGroup.color = TEST_COLOR;
         mSavedTabGroup.title = TEST_TITLE;
@@ -233,7 +233,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
 
         SavedTabGroup restoredGroup = new SavedTabGroup();
         restoredGroup.syncId = TEST_SYNC_ID;
-        restoredGroup.localId = new LocalTabGroupId(mToken);
+        restoredGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(mToken));
         when(mTabGroupSyncService.getGroup(TEST_SYNC_ID)).thenReturn(restoredGroup);
 
         PropertyModel model = mMediator.getModel();

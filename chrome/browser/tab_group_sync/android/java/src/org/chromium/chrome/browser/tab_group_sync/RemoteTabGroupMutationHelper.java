@@ -135,20 +135,20 @@ public class RemoteTabGroupMutationHelper {
      * @param groupId The ID of the local tab group.
      */
     public void createRemoteTabGroup(LocalTabGroupId groupId) {
-        Token tabGroupId = groupId.tabGroupId;
+        TabGroupId tabGroupId = groupId.tabGroupId;
         LogUtils.log(TAG, "createRemoteTabGroup, groupId = " + tabGroupId);
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.localId = groupId;
-        savedTabGroup.title = mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
+        savedTabGroup.title = mTabModel.getTabGroupTitle(tabGroupId);
         if (savedTabGroup.title == null) {
             savedTabGroup.title = new String();
         }
-        savedTabGroup.color = mTabModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId));
+        savedTabGroup.color = mTabModel.getTabGroupColor(tabGroupId);
         if (savedTabGroup.color == TabGroupColorUtils.INVALID_COLOR_ID) {
             savedTabGroup.color = TabGroupColorId.GREY;
         }
 
-        List<Tab> tabs = mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId.tabGroupId));
+        List<Tab> tabs = mTabModel.getTabsInGroup(tabGroupId);
         for (int position = 0; position < tabs.size(); position++) {
             Tab tab = tabs.get(position);
             SavedTabGroupTab savedTab = new SavedTabGroupTab();
@@ -173,16 +173,15 @@ public class RemoteTabGroupMutationHelper {
      * @param groupId The ID the local tab group.
      */
     public void updateVisualData(LocalTabGroupId groupId) {
-        Token tabGroupId = groupId.tabGroupId;
+        TabGroupId tabGroupId = groupId.tabGroupId;
         String title = new String();
         @TabGroupColorId int color = TabGroupColorId.GREY;
-        if (mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
-            String tmpTitle = mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
+        if (mTabModel.containsTabGroup(tabGroupId)) {
+            String tmpTitle = mTabModel.getTabGroupTitle(tabGroupId);
             if (tmpTitle != null) {
                 title = tmpTitle;
             }
-            @TabGroupColorId
-            int tmpColor = mTabModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId));
+            @TabGroupColorId int tmpColor = mTabModel.getTabGroupColor(tabGroupId);
             if (tmpColor != TabGroupColorUtils.INVALID_COLOR_ID) {
                 color = tmpColor;
             }
@@ -246,8 +245,7 @@ public class RemoteTabGroupMutationHelper {
         SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
         if (group == null) return;
 
-        List<Tab> tabs =
-                mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(localGroupId.tabGroupId));
+        List<Tab> tabs = mTabModel.getTabsInGroup(localGroupId.tabGroupId);
         // We just reconciled local state with sync. The tabs should match.
         assert tabs.size() == group.savedTabs.size()
                 : "Local tab count doesn't match with remote : local #"
@@ -301,9 +299,8 @@ public class RemoteTabGroupMutationHelper {
             // where isTabGroupHiding might be set incorrectly we also check that the tab model does
             // not still contain any tabs for the tab group as that would indicate only a subset of
             // the group is being closed.
-            if (mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(localTabGroupId.tabGroupId))
-                    && !assumeNonNull(tabGroupIds.get())
-                            .contains(TabGroupId.fromRawToken(localTabGroupId.tabGroupId))) {
+            if (mTabModel.isTabGroupHiding(localTabGroupId.tabGroupId)
+                    && !assumeNonNull(tabGroupIds.get()).contains(localTabGroupId.tabGroupId)) {
                 continue;
             }
 
@@ -346,9 +343,7 @@ public class RemoteTabGroupMutationHelper {
             // to its synced group.
 
             LogUtils.log(TAG, "handleTabClosureUndone: addBackToGroup");
-            List<Tab> groupTabs =
-                    mTabModel.getTabsInGroup(
-                            TabGroupId.fromOptionalToken(localTabGroupId.tabGroupId));
+            List<Tab> groupTabs = mTabModel.getTabsInGroup(localTabGroupId.tabGroupId);
             int position = groupTabs.indexOf(tab);
             addTab(localTabGroupId, tab, position);
         }
@@ -367,8 +362,8 @@ public class RemoteTabGroupMutationHelper {
         LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
         if (localTabGroupId == null) return false;
 
-        @Nullable
-        PendingTabGroupClosure pendingClosure = mPendingTabGroupClosures.get(localTabGroupId);
+        @Nullable PendingTabGroupClosure pendingClosure =
+                mPendingTabGroupClosures.get(localTabGroupId);
 
         // A subset of tabs in a tab group is either being committed or undone. Early out and let
         // the caller handle the change appropriately.
@@ -404,8 +399,7 @@ public class RemoteTabGroupMutationHelper {
                 PostTask.postTask(
                         TaskTraits.UI_DEFAULT,
                         () -> {
-                            if (!mTabModel.containsTabGroup(
-                                    TabGroupId.fromOptionalToken(localTabGroupId.tabGroupId))) {
+                            if (!mTabModel.containsTabGroup(localTabGroupId.tabGroupId)) {
                                 return;
                             }
                             @Nullable SavedTabGroup savedGroup =

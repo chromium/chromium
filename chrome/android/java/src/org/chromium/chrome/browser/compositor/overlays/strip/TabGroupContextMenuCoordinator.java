@@ -289,7 +289,9 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             TabModel tabModel = tabModelSupplier.get();
             if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) return;
 
-            EitherGroupId eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
+            EitherGroupId eitherId =
+                    EitherGroupId.createLocalId(
+                            new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId)));
 
             if (menuId == R.id.ungroup_tab) {
                 TabUiUtils.ungroupTabGroup(tabModel, tabGroupId);

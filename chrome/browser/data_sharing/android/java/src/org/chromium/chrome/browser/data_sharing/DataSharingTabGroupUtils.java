@@ -174,7 +174,7 @@ public class DataSharingTabGroupUtils {
 
         Set<Token> tabGroupIds = new HashSet<>();
         for (LocalTabGroupId localTabGroupId : localTabGroupIds) {
-            tabGroupIds.add(localTabGroupId.tabGroupId);
+            tabGroupIds.add(localTabGroupId.tabGroupId.getToken());
         }
         HashMap<Token, Tab> parentTabMap = new HashMap<>();
         for (Tab tab : tabModel) {

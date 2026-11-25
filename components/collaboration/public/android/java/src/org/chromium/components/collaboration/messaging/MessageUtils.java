@@ -69,7 +69,7 @@ public class MessageUtils {
                         || attribution.tabGroupMetadata == null
                         || attribution.tabGroupMetadata.localTabGroupId == null
                 ? null
-                : attribution.tabGroupMetadata.localTabGroupId.tabGroupId;
+                : attribution.tabGroupMetadata.localTabGroupId.tabGroupId.getToken();
     }
 
     /** Returns the collaboration id or null. */

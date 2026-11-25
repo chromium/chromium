@@ -253,7 +253,8 @@ public class TabGroupUtilsUnitTest {
         mSavedTabGroup1.collaborationId = "collaborationId";
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
         when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(TAB_GROUP_ID1)))
+        when(mTabGroupSyncService.getGroup(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID1))))
                 .thenReturn(mSavedTabGroup1);
 
         assertTrue(areAnyTabsPartOfSharedGroup(mTabModel, List.of(mTab1, mTab2), null));
@@ -266,9 +267,11 @@ public class TabGroupUtilsUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID2);
         when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(TAB_GROUP_ID1)))
+        when(mTabGroupSyncService.getGroup(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID1))))
                 .thenReturn(mSavedTabGroup1);
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(TAB_GROUP_ID2)))
+        when(mTabGroupSyncService.getGroup(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID2))))
                 .thenReturn(mSavedTabGroup2);
 
         assertTrue(areAnyTabsPartOfSharedGroup(mTabModel, List.of(mTab1, mTab2), null));
@@ -279,7 +282,8 @@ public class TabGroupUtilsUnitTest {
         mSavedTabGroup1.collaborationId = "collaborationId";
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
         when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(TAB_GROUP_ID1)))
+        when(mTabGroupSyncService.getGroup(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID1))))
                 .thenReturn(mSavedTabGroup1);
 
         assertFalse(
@@ -413,7 +417,8 @@ public class TabGroupUtilsUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
         when(mTab2.getTabGroupId()).thenReturn(null);
         when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(TAB_GROUP_ID1)))
+        when(mTabGroupSyncService.getGroup(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID1))))
                 .thenReturn(mSavedTabGroup1);
 
         TabMovedCallback movedCallback = mock(TabMovedCallback.class);

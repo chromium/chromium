@@ -93,6 +93,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_group_sync.VersioningMessageController;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -1307,7 +1308,8 @@ public class ArchivedTabsDialogCoordinatorTest {
                 createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
         SavedTabGroup savedTabGroupLocalIdSet =
                 createSavedTabGroup(SYNC_GROUP_ID1, GROUP_TITLE1, SYNC_GROUP_COLOR1, 1, true);
-        savedTabGroupLocalIdSet.localId = new LocalTabGroupId(new Token(123L, 123L));
+        savedTabGroupLocalIdSet.localId =
+                new LocalTabGroupId(TabGroupId.fromRawToken(new Token(123L, 123L)));
 
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");

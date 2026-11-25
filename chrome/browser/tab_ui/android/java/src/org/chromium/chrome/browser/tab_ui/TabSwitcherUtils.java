@@ -124,7 +124,7 @@ public class TabSwitcherUtils {
             assert syncGroup.localId != null;
         }
 
-        Token tabGroupId = syncGroup.localId.tabGroupId;
+        Token tabGroupId = syncGroup.localId.tabGroupId.getToken();
         if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) return;
         if (isGridTabSwitcherDisabled()) {
             Tab tab =

@@ -89,7 +89,8 @@ public class TabGroupColorViewProvider implements Destroyable {
             mTransitiveSharedGroupObserver =
                     new TransitiveSharedGroupObserver(
                             tabGroupSyncService, dataSharingService, mCollaborationService);
-            mTransitiveSharedGroupObserver.setTabGroupId(groupId.getLocalId().tabGroupId);
+            mTransitiveSharedGroupObserver.setTabGroupId(
+                    groupId.getLocalId().tabGroupId.getToken());
             mTransitiveSharedGroupObserver
                     .getGroupMembersSupplier()
                     .addSyncObserverAndPostIfNonNull(mOnGroupMembersChanged);
@@ -133,7 +134,8 @@ public class TabGroupColorViewProvider implements Destroyable {
         mGroupId = groupId;
 
         if (mTransitiveSharedGroupObserver != null && groupId.isLocalId()) {
-            mTransitiveSharedGroupObserver.setTabGroupId(groupId.getLocalId().tabGroupId);
+            mTransitiveSharedGroupObserver.setTabGroupId(
+                    groupId.getLocalId().tabGroupId.getToken());
         }
     }
 

@@ -130,7 +130,7 @@ class QuickDeleteTabsFilter {
         List<Token> placeholderTabGroupIds = new ArrayList<>();
         List<Tab> placeholderExcludedTabList = new ArrayList<>();
         for (LocalTabGroupId localId : destroyedGroups.collaborationGroupsDestroyed) {
-            placeholderTabGroupIds.add(localId.tabGroupId);
+            placeholderTabGroupIds.add(localId.tabGroupId.getToken());
         }
         for (Tab tab : tabs) {
             if (tab.getTabGroupId() == null

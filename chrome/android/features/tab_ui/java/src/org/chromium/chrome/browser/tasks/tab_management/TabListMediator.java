@@ -3293,7 +3293,9 @@ public class TabListMediator implements TabListNotificationHandler {
         TabModel tabModel = getCurrentTabModelChecked();
         if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) return;
 
-        EitherGroupId eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
+        EitherGroupId eitherId =
+                EitherGroupId.createLocalId(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId)));
 
         if (menuId == R.id.close_tab_group || menuId == R.id.delete_tab_group) {
             int tabId =
@@ -3801,7 +3803,10 @@ public class TabListMediator implements TabListNotificationHandler {
         }
 
         updateTabGroupColorViewProvider(
-                EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId)), model, colorId);
+                EitherGroupId.createLocalId(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId))),
+                model,
+                colorId);
     }
 
     void updateTabGroupColorViewProvider(
@@ -3845,7 +3850,9 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param newColor The new color of the tab group.
      */
     void updateColorForChildTabs(Token tabGroupId, @TabGroupColorId int newColor) {
-        EitherGroupId eitherGroupId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
+        EitherGroupId eitherGroupId =
+                EitherGroupId.createLocalId(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId)));
         boolean foundGroup = false;
         for (int i = 0; i < mModelList.size(); i++) {
             PropertyModel childModel = mModelList.get(i).model;

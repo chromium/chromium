@@ -53,6 +53,7 @@ import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 import java.util.Map;
@@ -107,7 +108,8 @@ public class TabLabellerUnitTest {
         message.attribution.tabMetadata = new TabMessageMetadata();
         message.attribution.tabMetadata.localTabId = 1;
         message.attribution.tabGroupMetadata = new TabGroupMessageMetadata();
-        message.attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(GROUP_ID1);
+        message.attribution.tabGroupMetadata.localTabGroupId =
+                new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_ID1));
         message.collaborationEvent = CollaborationEvent.TAB_ADDED;
         return message;
     }
@@ -165,7 +167,8 @@ public class TabLabellerUnitTest {
     @Test
     public void testShowAll_DifferentTabGroup() {
         PersistentMessage message = makeStandardMessage();
-        message.attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(GROUP_ID2);
+        message.attribution.tabGroupMetadata.localTabGroupId =
+                new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_ID2));
         List<PersistentMessage> messageList = List.of(message);
         when(mMessagingBackendService.getMessagesForGroup(any(), anyInt())).thenReturn(messageList);
 

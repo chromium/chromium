@@ -81,7 +81,7 @@ public class RecentActivityActionHandlerUnitTest {
         // Setup saved tab group with a single tab.
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.syncId = SYNC_TAB_GROUP_ID;
-        savedTabGroup.localId = new LocalTabGroupId(TOKEN_1);
+        savedTabGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(TOKEN_1));
         SavedTabGroupTab savedTab = new SavedTabGroupTab();
         savedTab.syncId = SYNC_TAB_ID;
         savedTab.syncGroupId = SYNC_TAB_GROUP_ID;

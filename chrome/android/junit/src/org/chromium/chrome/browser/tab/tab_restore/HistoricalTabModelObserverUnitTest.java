@@ -737,7 +737,8 @@ public class HistoricalTabModelObserverUnitTest {
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
         mSavedTabGroup.syncId = syncId;
         mSavedTabGroup.collaborationId = collaborationId;
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId)))
+        when(mTabGroupSyncService.getGroup(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId))))
                 .thenReturn(mSavedTabGroup);
         when(mTabModel.getLazyAllTabGroupIds(any(), eq(true)))
                 .thenReturn(LazyOneshotSupplier.fromValue(Collections.emptySet()));

@@ -1849,7 +1849,8 @@ public class TabCollectionTabModelImplUnitTest {
                                         TabLaunchType.FROM_SYNC_BACKGROUND,
                                         TabCreationState.LIVE_IN_BACKGROUND);
                             }
-                            savedGroup.localId = new LocalTabGroupId(REOPENED_GROUP_ID);
+                            savedGroup.localId =
+                                    new LocalTabGroupId(TabGroupId.fromRawToken(REOPENED_GROUP_ID));
                             return null;
                         })
                 .when(mTabGroupUiActionHandler)

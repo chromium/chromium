@@ -39,6 +39,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,8 @@ import java.util.List;
 public class QuickDeleteTabsFilterTest {
     private static final long INITIAL_TIME_IN_MS = 1000;
     private static final Token TAB_GROUP_ID = new Token(3748L, 3483L);
-    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID = new LocalTabGroupId(TAB_GROUP_ID);
+    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID =
+            new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID));
 
     private QuickDeleteTabsFilter mQuickDeleteTabsFilter;
     private final List<MockTab> mMockTabList = new ArrayList<>();

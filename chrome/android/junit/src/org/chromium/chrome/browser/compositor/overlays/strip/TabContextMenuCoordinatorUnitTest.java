@@ -317,7 +317,8 @@ public class TabContextMenuCoordinatorUnitTest {
     private TabContextMenuCoordinator mTabContextMenuCoordinator;
     private OnItemClickedCallback<AnchorInfo> mOnItemClickedCallback;
     private MockTabModel mTabModel;
-    private final LocalTabGroupId mLocalId = new LocalTabGroupId(TAB_GROUP_ID);
+    private final LocalTabGroupId mLocalId =
+            new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID));
     private final SavedTabGroup mSavedTabGroup = new SavedTabGroup();
     private final SavedTabGroupTab mSavedTabGroupTab = new SavedTabGroupTab();
     @Mock private ModalDialogManager mModalDialogManager;
@@ -1299,13 +1300,13 @@ public class TabContextMenuCoordinatorUnitTest {
     @Feature("Tab Strip Context Menu")
     public void testAddToGroup_lazySubmenuProviderDefersGroupBuilding() {
         SavedTabGroup group1 = new SavedTabGroup();
-        group1.localId = new LocalTabGroupId(TAB_GROUP_ID);
+        group1.localId = new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID));
         group1.savedTabs = List.of(new SavedTabGroupTab());
         group1.title = "Group 1";
 
         Token groupToken2 = Token.createRandom();
         SavedTabGroup group2 = new SavedTabGroup();
-        group2.localId = new LocalTabGroupId(groupToken2);
+        group2.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupToken2));
         group2.savedTabs = List.of(new SavedTabGroupTab());
         group2.title = "Group 2";
 
@@ -1445,7 +1446,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         SavedTabGroup syncedGroup = new SavedTabGroup();
         syncedGroup.syncId = "sync1";
-        syncedGroup.localId = new LocalTabGroupId(TAB_GROUP_ID);
+        syncedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID));
         syncedGroup.savedTabs = List.of(new SavedTabGroupTab());
         syncedGroup.title = TAB_GROUP_TITLE;
 
@@ -1591,12 +1592,12 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.getTabAt(1)).thenReturn(tab2);
 
         SavedTabGroup group1 = new SavedTabGroup();
-        group1.localId = new LocalTabGroupId(token1);
+        group1.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
         group1.savedTabs = List.of(new SavedTabGroupTab());
         group1.title = "Group 1";
 
         SavedTabGroup group2 = new SavedTabGroup();
-        group2.localId = new LocalTabGroupId(token2);
+        group2.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token2));
         group2.savedTabs = List.of(new SavedTabGroupTab());
         group2.title = "Group 2";
 
@@ -1625,7 +1626,7 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(true);
         Token tabGroupId2 = Token.createRandom();
         SavedTabGroup savedTabGroup2 = new SavedTabGroup();
-        savedTabGroup2.localId = new LocalTabGroupId(tabGroupId2);
+        savedTabGroup2.localId = new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId2));
         SavedTabGroupTab savedTabGroupTab2 = new SavedTabGroupTab();
         savedTabGroupTab2.localId = TAB_ID_2;
         savedTabGroupTab2.url = EXAMPLE_URL;

@@ -172,7 +172,9 @@ public class StripLayoutUtils {
             TabGroupSyncService tabGroupSyncService) {
         for (StripLayoutGroupTitle groupTitle : groupTitles) {
             SavedTabGroup savedTabGroup =
-                    tabGroupSyncService.getGroup(new LocalTabGroupId(groupTitle.getTabGroupId()));
+                    tabGroupSyncService.getGroup(
+                            new LocalTabGroupId(
+                                    TabGroupId.fromRawToken(groupTitle.getTabGroupId())));
             if (savedTabGroup != null
                     && savedTabGroup.collaborationId != null
                     && savedTabGroup.collaborationId.equals(collaborationId)) {

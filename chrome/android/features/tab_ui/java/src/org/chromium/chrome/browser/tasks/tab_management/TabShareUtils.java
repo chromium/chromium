@@ -17,6 +17,7 @@ import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class TabShareUtils {
             @Nullable Token tabGroupId, @Nullable TabGroupSyncService tabGroupSyncService) {
         if (tabGroupId == null || tabGroupSyncService == null) return null;
 
-        LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
+        LocalTabGroupId localTabGroupId = new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId));
         SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(localTabGroupId);
         return savedTabGroup == null ? null : savedTabGroup.collaborationId;
     }

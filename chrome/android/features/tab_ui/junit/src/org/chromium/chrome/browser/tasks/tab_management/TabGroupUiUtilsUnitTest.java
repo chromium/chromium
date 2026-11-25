@@ -700,7 +700,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(restoredGroupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(restoredGroupId));
 
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(restoredGroupId)))
@@ -739,7 +739,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(restoredGroupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(restoredGroupId));
 
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(restoredGroupId)))
@@ -854,7 +854,7 @@ public class TabGroupUiUtilsUnitTest {
         String syncId = "sync-closing-123";
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(groupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
         savedGroup.title = "Remote Title";
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
@@ -1096,7 +1096,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(closingGroupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(closingGroupId));
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
         TabGroupUiUtils.openTabGroup(
@@ -1128,7 +1128,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup reopenedSavedGroup = new SavedTabGroup();
         reopenedSavedGroup.syncId = syncId;
-        reopenedSavedGroup.localId = new LocalTabGroupId(reopenedGroupId);
+        reopenedSavedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(reopenedGroupId));
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(reopenedSavedGroup);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(reopenedGroupId)))
                 .thenReturn(false, true);
@@ -1188,7 +1188,7 @@ public class TabGroupUiUtilsUnitTest {
         String syncId = "sync-closing-cross";
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(groupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
         savedGroup.title = "Stale Sync Title";
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
@@ -1254,7 +1254,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup reopenedSavedGroup = new SavedTabGroup();
         reopenedSavedGroup.syncId = syncId;
-        reopenedSavedGroup.localId = new LocalTabGroupId(reopenedGroupId);
+        reopenedSavedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(reopenedGroupId));
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(reopenedSavedGroup);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(reopenedGroupId)))
                 .thenReturn(false, true);
@@ -1344,7 +1344,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup reopenedSavedGroup = new SavedTabGroup();
         reopenedSavedGroup.syncId = syncId;
-        reopenedSavedGroup.localId = new LocalTabGroupId(reopenedGroupId);
+        reopenedSavedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(reopenedGroupId));
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(reopenedSavedGroup);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(reopenedGroupId)))
                 .thenReturn(false, true);
@@ -1404,7 +1404,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup reopenedSavedGroup = new SavedTabGroup();
         reopenedSavedGroup.syncId = syncId;
-        reopenedSavedGroup.localId = new LocalTabGroupId(reopenedGroupId);
+        reopenedSavedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(reopenedGroupId));
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(reopenedSavedGroup);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(reopenedGroupId)))
                 .thenReturn(false, true);
@@ -1537,7 +1537,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(groupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
@@ -1577,7 +1577,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(groupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
@@ -1606,7 +1606,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(groupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
@@ -1645,7 +1645,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(groupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
@@ -1974,7 +1974,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(groupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(List.of(mTab));
@@ -2004,7 +2004,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(groupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
         when(mTabModel.isIncognito()).thenReturn(false);
@@ -2117,7 +2117,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(restoredGroupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(restoredGroupId));
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(restoredGroupId)))
@@ -2156,7 +2156,7 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(restoredGroupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(restoredGroupId));
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
@@ -2294,11 +2294,12 @@ public class TabGroupUiUtilsUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(windowId)).thenReturn(null);
 
         SavedTabGroup savedGroup = new SavedTabGroup();
-        savedGroup.localId = new LocalTabGroupId(groupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
         SavedTabGroupTab savedTab = new SavedTabGroupTab();
         savedTab.localId = destTabId;
         savedGroup.savedTabs = List.of(savedTab);
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(groupId))).thenReturn(savedGroup);
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(TabGroupId.fromRawToken(groupId))))
+                .thenReturn(savedGroup);
         when(mTabGroupSyncService.getGroup(any(String.class))).thenReturn(savedGroup);
 
         TabMovedCallback callback = mock(TabMovedCallback.class);
@@ -2347,11 +2348,12 @@ public class TabGroupUiUtilsUnitTest {
         when(headlessSelector.isTabStateInitialized()).thenReturn(false);
 
         SavedTabGroup savedGroup = new SavedTabGroup();
-        savedGroup.localId = new LocalTabGroupId(groupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
         SavedTabGroupTab savedTab = new SavedTabGroupTab();
         savedTab.localId = destTabId;
         savedGroup.savedTabs = List.of(savedTab);
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(groupId))).thenReturn(savedGroup);
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(TabGroupId.fromRawToken(groupId))))
+                .thenReturn(savedGroup);
         when(mTabGroupSyncService.getGroup(any(String.class))).thenReturn(savedGroup);
 
         TabMovedCallback callback = mock(TabMovedCallback.class);
@@ -2440,11 +2442,12 @@ public class TabGroupUiUtilsUnitTest {
         MultiWindowUtils.setActivityByWindowIdForTesting(windowId, finishingActivity);
 
         SavedTabGroup savedGroup = new SavedTabGroup();
-        savedGroup.localId = new LocalTabGroupId(groupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
         SavedTabGroupTab savedTab = new SavedTabGroupTab();
         savedTab.localId = destTabId;
         savedGroup.savedTabs = List.of(savedTab);
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(groupId))).thenReturn(savedGroup);
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(TabGroupId.fromRawToken(groupId))))
+                .thenReturn(savedGroup);
         when(mTabGroupSyncService.getGroup(any(String.class))).thenReturn(savedGroup);
 
         TabMovedCallback callback = mock(TabMovedCallback.class);
@@ -2516,13 +2519,15 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(oldGroupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(oldGroupId));
 
         SavedTabGroup reopenedSavedGroup = new SavedTabGroup();
         reopenedSavedGroup.syncId = syncId;
-        reopenedSavedGroup.localId = new LocalTabGroupId(reopenedGroupId);
+        reopenedSavedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(reopenedGroupId));
 
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(oldGroupId))).thenReturn(savedGroup);
+        when(mTabGroupSyncService.getGroup(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(oldGroupId))))
+                .thenReturn(savedGroup);
         when(mTabGroupSyncService.getGroup(syncId))
                 .thenReturn(savedGroup, savedGroup, reopenedSavedGroup);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(oldGroupId)))
@@ -2558,7 +2563,8 @@ public class TabGroupUiUtilsUnitTest {
 
         verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(
-                        eq(new LocalTabGroupId(oldGroupId)), eq(ClosingSource.CLOSED_BY_USER));
+                        eq(new LocalTabGroupId(TabGroupId.fromRawToken(oldGroupId))),
+                        eq(ClosingSource.CLOSED_BY_USER));
         verify(mUiActionHandler).openTabGroup(syncId);
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
@@ -2593,13 +2599,15 @@ public class TabGroupUiUtilsUnitTest {
 
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = new LocalTabGroupId(oldGroupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(oldGroupId));
 
         SavedTabGroup reopenedSavedGroup = new SavedTabGroup();
         reopenedSavedGroup.syncId = syncId;
-        reopenedSavedGroup.localId = new LocalTabGroupId(reopenedGroupId);
+        reopenedSavedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(reopenedGroupId));
 
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(oldGroupId))).thenReturn(savedGroup);
+        when(mTabGroupSyncService.getGroup(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(oldGroupId))))
+                .thenReturn(savedGroup);
         when(mTabGroupSyncService.getGroup(syncId))
                 .thenReturn(savedGroup, savedGroup, reopenedSavedGroup);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(oldGroupId)))
@@ -2633,7 +2641,8 @@ public class TabGroupUiUtilsUnitTest {
 
         verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(
-                        eq(new LocalTabGroupId(oldGroupId)), eq(ClosingSource.CLOSED_BY_USER));
+                        eq(new LocalTabGroupId(TabGroupId.fromRawToken(oldGroupId))),
+                        eq(ClosingSource.CLOSED_BY_USER));
         verify(mUiActionHandler).openTabGroup(syncId);
         verify(mMultiInstanceOrchestrator)
                 .moveTabGroupToNewWindow(any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));

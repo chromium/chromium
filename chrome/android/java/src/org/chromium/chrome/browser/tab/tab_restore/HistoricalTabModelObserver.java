@@ -305,7 +305,9 @@ public class HistoricalTabModelObserver implements TabModelObserver {
             @Nullable TabGroupSyncService tabGroupSyncService, Token tabGroupId) {
         if (tabGroupSyncService == null) return false;
 
-        SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
+        SavedTabGroup savedTabGroup =
+                tabGroupSyncService.getGroup(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId)));
         if (savedTabGroup == null) return false;
 
         return !TextUtils.isEmpty(savedTabGroup.collaborationId);

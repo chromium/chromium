@@ -1044,7 +1044,7 @@ public class ActorTabStateHelperTest {
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
 
-        LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
+        LocalTabGroupId localTabGroupId = new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId));
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.localId = localTabGroupId;
 

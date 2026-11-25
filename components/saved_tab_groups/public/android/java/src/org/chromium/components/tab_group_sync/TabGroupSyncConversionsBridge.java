@@ -6,11 +6,12 @@ package org.chromium.components.tab_group_sync;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 /**
@@ -99,13 +100,15 @@ public class TabGroupSyncConversionsBridge {
     }
 
     @CalledByNative
-    private static LocalTabGroupId createJavaTabGroupId(Token groupId) {
+    private static LocalTabGroupId createJavaTabGroupId(
+            @JniType("tab_groups::TabGroupId") TabGroupId groupId) {
         assert groupId != null;
         return new LocalTabGroupId(groupId);
     }
 
     @CalledByNative
-    private static Token getNativeTabGroupId(LocalTabGroupId tabGroupId) {
+    private static @JniType("tab_groups::TabGroupId") TabGroupId getNativeTabGroupId(
+            LocalTabGroupId tabGroupId) {
         assert tabGroupId != null;
         return tabGroupId.tabGroupId;
     }

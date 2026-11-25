@@ -73,6 +73,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -470,7 +471,8 @@ public class DataSharingTabManager {
      * @param group The copy of the sync group. May not be part of the current tab model.
      */
     void displayTabGroupUi(SavedTabGroup group) {
-        mDataSharingTabGroupsDelegate.openTabGroup(assumeNonNull(group.localId).tabGroupId);
+        mDataSharingTabGroupsDelegate.openTabGroup(
+                assumeNonNull(group.localId).tabGroupId.getToken());
     }
 
     /**
@@ -506,7 +508,7 @@ public class DataSharingTabManager {
             @WindowId
             int windowId =
                     mDataSharingTabGroupsDelegate.findWindowIdForTabGroup(
-                            syncGroup.localId.tabGroupId);
+                            syncGroup.localId.tabGroupId.getToken());
             DataSharingUIDelegate uiDelegate = getUiDelegate();
             if (windowId == INVALID_WINDOW_ID || uiDelegate == null) return false;
 
@@ -555,7 +557,8 @@ public class DataSharingTabManager {
         }
         createOrManageFlow(
                 EitherGroupId.createLocalId(
-                        new LocalTabGroupId(assumeNonNull(tab.getTabGroupId()))),
+                        new LocalTabGroupId(
+                                TabGroupId.fromRawToken(assumeNonNull(tab.getTabGroupId())))),
                 entryPoint,
                 createGroupFinishedCallback);
     }

@@ -1511,7 +1511,7 @@ public class StripLayoutHelper
                             // contains the group.
 
                             @Nullable StripLayoutGroupTitle groupTitle =
-                                    findGroupTitle(localTabGroupId.tabGroupId);
+                                    findGroupTitle(localTabGroupId.tabGroupId.getToken());
                             if (groupTitle == null) return;
 
                             updateSharedTabGroupIfNeeded(groupTitle);
@@ -1525,7 +1525,7 @@ public class StripLayoutHelper
                                     mCollaborationService.getGroupData(group.collaborationId);
                             StripLayoutGroupTitle groupTitle =
                                     StripLayoutUtils.findGroupTitle(
-                                            mStripGroupTitles, group.localId.tabGroupId);
+                                            mStripGroupTitles, group.localId.tabGroupId.getToken());
                             updateOrClearSharedState(groupData, groupTitle);
                         }
                     };
@@ -2859,7 +2859,8 @@ public class StripLayoutHelper
         Token tabGroupId = groupTitle.getTabGroupId();
         if (shouldEnableGroupSharing()) {
             SavedTabGroup savedTabGroup =
-                    mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
+                    mTabGroupSyncService.getGroup(
+                            new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId)));
             if (savedTabGroup == null
                     || savedTabGroup.collaborationId == null
                     || mCollaborationService == null) {

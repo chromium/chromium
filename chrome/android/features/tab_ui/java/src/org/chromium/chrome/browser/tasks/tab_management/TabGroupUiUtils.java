@@ -150,17 +150,18 @@ public class TabGroupUiUtils {
             if (syncGroupId != null) {
                 savedGroup = syncService.getGroup(syncGroupId);
             } else if (groupId != null) {
-                savedGroup = syncService.getGroup(new LocalTabGroupId(groupId));
+                savedGroup =
+                        syncService.getGroup(new LocalTabGroupId(TabGroupId.fromRawToken(groupId)));
             }
             if (savedGroup != null) {
                 if (savedGroup.localId == null && groupId != null) {
-                    savedGroup.localId = new LocalTabGroupId(groupId);
+                    savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
                 }
                 Token effectiveGroupId =
                         groupId != null
                                 ? groupId
                                 : (savedGroup.localId != null
-                                        ? savedGroup.localId.tabGroupId
+                                        ? savedGroup.localId.tabGroupId.getToken()
                                         : null);
                 TabModel localTabModel = getTabModelForGroup(tabModel, effectiveGroupId);
                 return GroupWindowInfo.forSyncedGroup(
@@ -537,7 +538,7 @@ public class TabGroupUiUtils {
         }
         SavedTabGroup savedGroup = syncService.getGroup(syncId);
         if (savedGroup != null && savedGroup.localId != null) {
-            Token groupId = savedGroup.localId.tabGroupId;
+            Token groupId = savedGroup.localId.tabGroupId.getToken();
             commitClosingTabsForGroup(tabModel, groupId);
             TabModel targetModel = getTabModelForGroup(tabModel, groupId);
             if (targetModel != tabModel
@@ -577,7 +578,7 @@ public class TabGroupUiUtils {
         if (localId == null && syncService != null && groupInfo.syncId != null) {
             SavedTabGroup savedGroup = syncService.getGroup(groupInfo.syncId);
             if (savedGroup != null && savedGroup.localId != null) {
-                localId = savedGroup.localId.tabGroupId;
+                localId = savedGroup.localId.tabGroupId.getToken();
             }
         }
 
@@ -712,7 +713,7 @@ public class TabGroupUiUtils {
         openTabGroup(/* context= */ null, sourceTabModel, syncService, uiActionHandler, syncId);
         SavedTabGroup savedGroup = syncService.getGroup(syncId);
         return (savedGroup != null && savedGroup.localId != null)
-                ? savedGroup.localId.tabGroupId
+                ? savedGroup.localId.tabGroupId.getToken()
                 : null;
     }
 
@@ -766,7 +767,8 @@ public class TabGroupUiUtils {
         SavedTabGroup savedGroup =
                 destinationGroup.syncId != null
                         ? syncService.getGroup(destinationGroup.syncId)
-                        : syncService.getGroup(new LocalTabGroupId(localId));
+                        : syncService.getGroup(
+                                new LocalTabGroupId(TabGroupId.fromRawToken(localId)));
         if (savedGroup == null) {
             return Tab.INVALID_TAB_ID;
         }

@@ -419,7 +419,10 @@ public class TabUiUtilsUnitTest {
                 CollaborationServiceShareOrManageEntryPoint.DIALOG_TOOLBAR_BUTTON);
         verify(mDataSharingTabManager)
                 .createOrManageFlow(
-                        eq(EitherGroupId.createLocalId(new LocalTabGroupId(TAB_GROUP_ID))),
+                        eq(
+                                EitherGroupId.createLocalId(
+                                        new LocalTabGroupId(
+                                                TabGroupId.fromRawToken(TAB_GROUP_ID)))),
                         eq(CollaborationServiceShareOrManageEntryPoint.DIALOG_TOOLBAR_BUTTON),
                         any());
     }

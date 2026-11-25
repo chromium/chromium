@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link MessageUtils}. */
@@ -49,7 +50,8 @@ public class MessageUtilsUnitTest {
         PersistentMessage message = new PersistentMessage();
         message.attribution = new MessageAttribution();
         message.attribution.tabGroupMetadata = new TabGroupMessageMetadata();
-        message.attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
+        message.attribution.tabGroupMetadata.localTabGroupId =
+                new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID));
         assertEquals(TAB_GROUP_ID, MessageUtils.extractTabGroupId(message));
 
         message.attribution.tabGroupMetadata = null;
@@ -67,7 +69,8 @@ public class MessageUtilsUnitTest {
         MessageAttribution attribution = new MessageAttribution();
         message.attributions.add(attribution);
         attribution.tabGroupMetadata = new TabGroupMessageMetadata();
-        attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
+        attribution.tabGroupMetadata.localTabGroupId =
+                new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID));
         assertEquals(TAB_GROUP_ID, MessageUtils.extractTabGroupId(message));
 
         attribution.tabGroupMetadata = null;

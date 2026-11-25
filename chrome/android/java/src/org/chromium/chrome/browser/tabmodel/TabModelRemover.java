@@ -12,7 +12,6 @@ import static org.chromium.components.browser_ui.widget.ActionConfirmationResult
 import android.content.Context;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Token;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -312,13 +311,11 @@ class TabModelRemover {
         }
 
         TabModel tabModel = getTabModelInternal();
-        Token tabGroupId = savedTabGroup.localId.tabGroupId;
-        if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
+        TabGroupId tabGroupId = savedTabGroup.localId.tabGroupId;
+        if (!tabModel.containsTabGroup(tabGroupId)) {
             return new CollaborationInfo();
         }
-        String title =
-                TabGroupTitleUtils.getDisplayableTitle(
-                        mContext, tabModel, TabGroupId.fromOptionalToken(tabGroupId));
+        String title = TabGroupTitleUtils.getDisplayableTitle(mContext, tabModel, tabGroupId);
 
         CollaborationService collaborationService = getCollaborationService();
         if (collaborationService == null) {

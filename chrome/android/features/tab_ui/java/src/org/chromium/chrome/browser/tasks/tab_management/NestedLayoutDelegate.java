@@ -198,7 +198,8 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         if (headerIndex != TabModel.INVALID_TAB_INDEX) {
             PropertyModel headerModel = mModelList.get(headerIndex).model;
             EitherGroupId eitherGroupId =
-                    EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
+                    EitherGroupId.createLocalId(
+                            new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId)));
             mMediator.updateTabGroupColorViewProvider(eitherGroupId, headerModel, newColor);
         }
         // Sync the color down to the child models so decorations (like the group spine) can

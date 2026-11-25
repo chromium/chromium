@@ -8,10 +8,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.EitherId.EitherTabId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 /** Test for both sub classes of EitherId. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -41,7 +41,7 @@ public class EitherIdTest {
 
     @Test
     public void testCreatingLocalGroupId() {
-        LocalTabGroupId localTabGroupId = new LocalTabGroupId(Token.createRandom());
+        LocalTabGroupId localTabGroupId = new LocalTabGroupId(TabGroupId.generateNew());
         EitherGroupId groupId = EitherGroupId.createLocalId(localTabGroupId);
         Assert.assertTrue(groupId.isLocalId());
         Assert.assertFalse(groupId.isSyncId());

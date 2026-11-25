@@ -50,8 +50,10 @@ public class TabGroupSyncUtilsUnitTest {
     private static final int TAB_ID_3 = 2;
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final Token TOKEN_2 = new Token(5, 8);
-    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
-    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_2 = new LocalTabGroupId(TOKEN_2);
+    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 =
+            new LocalTabGroupId(TabGroupId.fromRawToken(TOKEN_1));
+    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_2 =
+            new LocalTabGroupId(TabGroupId.fromRawToken(TOKEN_2));
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

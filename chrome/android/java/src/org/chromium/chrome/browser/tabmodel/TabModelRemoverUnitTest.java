@@ -71,8 +71,10 @@ import java.util.List;
 public class TabModelRemoverUnitTest {
     private static final String COLLABORATION_ID = "collaboration";
     private static final String TAB_GROUP_TITLE = "My Title";
-    private static final LocalTabGroupId TAB_GROUP_1 = new LocalTabGroupId(new Token(1L, 2L));
-    private static final LocalTabGroupId TAB_GROUP_2 = new LocalTabGroupId(new Token(2L, 3L));
+    private static final LocalTabGroupId TAB_GROUP_1 =
+            new LocalTabGroupId(TabGroupId.fromRawToken(new Token(1L, 2L)));
+    private static final LocalTabGroupId TAB_GROUP_2 =
+            new LocalTabGroupId(TabGroupId.fromRawToken(new Token(2L, 3L)));
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -122,16 +124,14 @@ public class TabModelRemoverUnitTest {
         mTabModel.setActive(true);
 
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
-        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_1.tabGroupId)))
-                .thenReturn(true);
-        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_2.tabGroupId)))
-                .thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_1.tabGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TAB_GROUP_2.tabGroupId)).thenReturn(true);
         when(mTabModel.getTabGroupTitle(any(TabGroupId.class))).thenReturn(TAB_GROUP_TITLE);
 
         doAnswer(
                         invocation -> {
                             Tab tab = mTabModel.addTab(mNextTabId++);
-                            tab.setTabGroupId(TAB_GROUP_1.tabGroupId);
+                            tab.setTabGroupId(TAB_GROUP_1.tabGroupId.getToken());
                             return tab;
                         })
                 .when(mTabCreator)
@@ -139,9 +139,7 @@ public class TabModelRemoverUnitTest {
 
         mTabModelRemover =
                 new TabModelRemover(
-                        ContextUtils.getApplicationContext(),
-                        mModalDialogManager,
-                        () -> mTabModel);
+                        ContextUtils.getApplicationContext(), mModalDialogManager, () -> mTabModel);
         mHandlerInOrder = inOrder(mHandler);
 
         mSavedTabGroup1 = new SavedTabGroup();
@@ -181,7 +179,7 @@ public class TabModelRemoverUnitTest {
 
         Tab standaloneTab = mTabModel.addTab(mNextTabId++);
         Tab tab = mTabModel.addTab(mNextTabId++);
-        tab.setTabGroupId(TAB_GROUP_1.tabGroupId);
+        tab.setTabGroupId(TAB_GROUP_1.tabGroupId.getToken());
         mTabModel.setIndex(mTabModel.indexOf(tab), TabSelectionType.FROM_USER);
         assertEquals(1, mTabModel.index());
         assertEquals(tab, mTabModel.getTabAt(mTabModel.index()));
@@ -230,7 +228,7 @@ public class TabModelRemoverUnitTest {
                 .thenReturn(MemberRole.OWNER);
 
         Tab tab = mTabModel.addTab(mNextTabId++);
-        tab.setTabGroupId(TAB_GROUP_1.tabGroupId);
+        tab.setTabGroupId(TAB_GROUP_1.tabGroupId.getToken());
 
         mTabModelRemover.doTabRemovalFlow(mHandler, /* allowDialog= */ true);
 
@@ -276,7 +274,7 @@ public class TabModelRemoverUnitTest {
                 .thenReturn(MemberRole.MEMBER);
 
         Tab tab = mTabModel.addTab(mNextTabId++);
-        tab.setTabGroupId(TAB_GROUP_1.tabGroupId);
+        tab.setTabGroupId(TAB_GROUP_1.tabGroupId.getToken());
 
         mTabModelRemover.doTabRemovalFlow(mHandler, /* allowDialog= */ true);
 
@@ -322,7 +320,7 @@ public class TabModelRemoverUnitTest {
                 .thenReturn(MemberRole.UNKNOWN);
 
         Tab tab = mTabModel.addTab(mNextTabId++);
-        tab.setTabGroupId(TAB_GROUP_1.tabGroupId);
+        tab.setTabGroupId(TAB_GROUP_1.tabGroupId.getToken());
 
         mTabModelRemover.doTabRemovalFlow(mHandler, /* allowDialog= */ true);
 
@@ -345,9 +343,9 @@ public class TabModelRemoverUnitTest {
         when(mHandler.computeGroupsPendingDestroy()).thenReturn(groupsPendingDestroy);
 
         Tab tab = mTabModel.addTab(mNextTabId++);
-        tab.setTabGroupId(TAB_GROUP_1.tabGroupId);
+        tab.setTabGroupId(TAB_GROUP_1.tabGroupId.getToken());
         tab = mTabModel.addTab(mNextTabId++);
-        tab.setTabGroupId(TAB_GROUP_2.tabGroupId);
+        tab.setTabGroupId(TAB_GROUP_2.tabGroupId.getToken());
 
         mTabModelRemover.doTabRemovalFlow(mHandler, /* allowDialog= */ false);
 
@@ -368,7 +366,7 @@ public class TabModelRemoverUnitTest {
         when(mHandler.computeGroupsPendingDestroy()).thenReturn(groupsPendingDestroy);
 
         Tab tab = mTabModel.addTab(mNextTabId++);
-        tab.setTabGroupId(TAB_GROUP_1.tabGroupId);
+        tab.setTabGroupId(TAB_GROUP_1.tabGroupId.getToken());
 
         mTabModelRemover.doTabRemovalFlow(mHandler, /* allowDialog= */ false);
 

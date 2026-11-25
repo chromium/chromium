@@ -15,6 +15,7 @@ import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.collaboration.messaging.PersistentNotificationType;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -40,7 +41,7 @@ public class TabBubbler extends TabObjectNotificationUpdater {
     public void showAll() {
         Token tabGroupId = mTabGroupIdSupplier.get();
         if (tabGroupId == null) return;
-        LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
+        LocalTabGroupId localTabGroupId = new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId));
         EitherGroupId eitherGroupId = EitherGroupId.createLocalId(localTabGroupId);
         List<PersistentMessage> messageList =
                 mMessagingBackendService.getMessagesForGroup(

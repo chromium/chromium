@@ -39,6 +39,7 @@ import org.chromium.components.collaboration.messaging.PersistentNotificationTyp
 import org.chromium.components.collaboration.messaging.TabGroupMessageMetadata;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 import java.util.Set;
@@ -77,7 +78,8 @@ public class TabBubblerUnitTest {
         message.attribution.tabMetadata = new TabMessageMetadata();
         message.attribution.tabMetadata.localTabId = TAB_ID1;
         message.attribution.tabGroupMetadata = new TabGroupMessageMetadata();
-        message.attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(GROUP_ID1);
+        message.attribution.tabGroupMetadata.localTabGroupId =
+                new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_ID1));
         return message;
     }
 
@@ -105,7 +107,8 @@ public class TabBubblerUnitTest {
     @Test
     public void testShowAll_DifferentTabGroup() {
         PersistentMessage message = makeStandardMessage();
-        message.attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(GROUP_ID2);
+        message.attribution.tabGroupMetadata.localTabGroupId =
+                new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_ID2));
         List<PersistentMessage> messageList = List.of(message);
         when(mMessagingBackendService.getMessagesForGroup(any(), anyInt())).thenReturn(messageList);
 

@@ -1243,7 +1243,8 @@ public class TabSwitcherPaneUnitTest {
         mTabSwitcherPane.setPaneHubController(mPaneHubController);
         when(mTabSwitcherPaneCoordinator.getVisibleRange()).thenReturn(new Pair<>(0, 1));
         when(mTabSwitcherPaneCoordinator.getTabGroupIdForIndex(0)).thenReturn(mToken);
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(mToken))).thenReturn(mSavedTabGroup);
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(TabGroupId.fromRawToken(mToken))))
+                .thenReturn(mSavedTabGroup);
         mSavedTabGroup.creatorCacheGuid = "creatorCacheGuid";
         when(mTabGroupSyncService.isRemoteDevice("creatorCacheGuid")).thenReturn(true);
         when(mTabSwitcherPaneCoordinator.getViewByIndex(0)).thenReturn(mAnchorView);
@@ -1261,7 +1262,7 @@ public class TabSwitcherPaneUnitTest {
 
         // Case 2: token not in saved tab group.
         Token tabGroupId = new Token(3789L, 3478L);
-        LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
+        LocalTabGroupId localTabGroupId = new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId));
         when(mTabSwitcherPaneCoordinator.getTabGroupIdForIndex(1)).thenReturn(tabGroupId);
         when(mTabGroupSyncService.getGroup(localTabGroupId)).thenReturn(null);
         observer.onTabGroupCreated(mToken);

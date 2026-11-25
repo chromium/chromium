@@ -227,7 +227,7 @@ class TabGroupRowMediator {
         if (savedTabGroup == null || savedTabGroup.localId == null) {
             return null;
         }
-        return savedTabGroup.localId.tabGroupId;
+        return savedTabGroup.localId.tabGroupId.getToken();
     }
 
     private void cancelPendingTabClosures() {
@@ -319,7 +319,9 @@ class TabGroupRowMediator {
             eitherId = EitherGroupId.createSyncId(mGroupInfo.syncId);
         } else {
             assumeNonNull(mGroupInfo.localId);
-            eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(mGroupInfo.localId));
+            eitherId =
+                    EitherGroupId.createLocalId(
+                            new LocalTabGroupId(TabGroupId.fromRawToken(mGroupInfo.localId)));
         }
 
         mDataSharingTabManager.leaveOrDeleteFlow(

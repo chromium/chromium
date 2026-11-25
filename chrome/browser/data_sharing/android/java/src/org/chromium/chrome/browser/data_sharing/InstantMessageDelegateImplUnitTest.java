@@ -150,7 +150,9 @@ public class InstantMessageDelegateImplUnitTest {
         when(mIsActiveWindowSupplier.get()).thenReturn(false);
 
         mSyncedGroupTestHelper = new SyncedGroupTestHelper(mTabGroupSyncService);
-        SavedTabGroup group = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1, TAB_GROUP_ID);
+        SavedTabGroup group =
+                mSyncedGroupTestHelper.newTabGroup(
+                        SYNC_GROUP_ID1, TabGroupId.fromRawToken(TAB_GROUP_ID));
         group.savedTabs = SyncedGroupTestHelper.tabsFromCount(10);
         group.collaborationId = COLLABORATION_ID1;
 
@@ -170,7 +172,8 @@ public class InstantMessageDelegateImplUnitTest {
         attribution.tabMetadata = new TabMessageMetadata();
         attribution.tabMetadata.lastKnownUrl = JUnitTestGURLs.URL_1.getSpec();
         attribution.tabGroupMetadata = new TabGroupMessageMetadata();
-        attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
+        attribution.tabGroupMetadata.localTabGroupId =
+                new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID));
         attribution.tabGroupMetadata.syncTabGroupId = SYNC_GROUP_ID1;
         attribution.triggeringUser = GROUP_MEMBER1;
         InstantMessage instantMessage = new InstantMessage();

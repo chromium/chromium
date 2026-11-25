@@ -31,6 +31,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.google_apis.gaia.GaiaId;
 
 /** Unit tests for {@link TabShareUtils}. */
@@ -52,7 +53,8 @@ public class TabShareUtilsUnitTest {
     @Mock TabGroupSyncService mTabGroupSyncService;
     @Mock IdentityManager mIdentityManager;
 
-    private final LocalTabGroupId mLocalTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
+    private final LocalTabGroupId mLocalTabGroupId =
+            new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID));
     private SavedTabGroup mSavedTabGroup;
     private GroupDataOrFailureOutcome mGroupDataOutcome;
 

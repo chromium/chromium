@@ -51,6 +51,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.base.TestActivity;
 
@@ -95,7 +96,8 @@ public class TabGroupColorViewProviderUnitTest {
         mRegularColorViewProvider =
                 new TabGroupColorViewProvider(
                         activity,
-                        EitherGroupId.createLocalId(new LocalTabGroupId(REGULAR_TAB_GROUP_ID)),
+                        EitherGroupId.createLocalId(
+                                new LocalTabGroupId(TabGroupId.fromRawToken(REGULAR_TAB_GROUP_ID))),
                         /* isIncognito= */ false,
                         TabGroupColorId.RED,
                         mTabGroupSyncService,
@@ -107,7 +109,9 @@ public class TabGroupColorViewProviderUnitTest {
         mIncognitoColorViewProvider =
                 new TabGroupColorViewProvider(
                         activity,
-                        EitherGroupId.createLocalId(new LocalTabGroupId(INCOGNITO_TAB_GROUP_ID)),
+                        EitherGroupId.createLocalId(
+                                new LocalTabGroupId(
+                                        TabGroupId.fromRawToken(INCOGNITO_TAB_GROUP_ID))),
                         /* isIncognito= */ true,
                         TabGroupColorId.BLUE,
                         /* tabGroupSyncService= */ null,
@@ -128,16 +132,29 @@ public class TabGroupColorViewProviderUnitTest {
     public void testSetAndGetTabGroupId() {
         assertEquals(
                 REGULAR_TAB_GROUP_ID,
-                mRegularColorViewProvider.getTabGroupIdForTesting().getLocalId().tabGroupId);
+                mRegularColorViewProvider
+                        .getTabGroupIdForTesting()
+                        .getLocalId()
+                        .tabGroupId
+                        .getToken());
         assertEquals(
                 INCOGNITO_TAB_GROUP_ID,
-                mIncognitoColorViewProvider.getTabGroupIdForTesting().getLocalId().tabGroupId);
+                mIncognitoColorViewProvider
+                        .getTabGroupIdForTesting()
+                        .getLocalId()
+                        .tabGroupId
+                        .getToken());
 
         mRegularColorViewProvider.setTabGroupId(
-                EitherGroupId.createLocalId(new LocalTabGroupId(OTHER_TAB_GROUP_ID)));
+                EitherGroupId.createLocalId(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(OTHER_TAB_GROUP_ID))));
         assertEquals(
                 OTHER_TAB_GROUP_ID,
-                mRegularColorViewProvider.getTabGroupIdForTesting().getLocalId().tabGroupId);
+                mRegularColorViewProvider
+                        .getTabGroupIdForTesting()
+                        .getLocalId()
+                        .tabGroupId
+                        .getToken());
     }
 
     @Test
@@ -201,7 +218,8 @@ public class TabGroupColorViewProviderUnitTest {
         verifyColorViewCollaboration(TabGroupColorId.CYAN);
 
         mRegularColorViewProvider.setTabGroupId(
-                EitherGroupId.createLocalId(new LocalTabGroupId(OTHER_TAB_GROUP_ID)));
+                EitherGroupId.createLocalId(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(OTHER_TAB_GROUP_ID))));
         assertFalse(mRegularColorViewProvider.hasCollaborationId());
 
         // Verify the view is back to the unshared state.
@@ -215,7 +233,8 @@ public class TabGroupColorViewProviderUnitTest {
     @Test
     public void testColorView_NotSharedToSharedIdChange() {
         mRegularColorViewProvider.setTabGroupId(
-                EitherGroupId.createLocalId(new LocalTabGroupId(OTHER_TAB_GROUP_ID)));
+                EitherGroupId.createLocalId(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(OTHER_TAB_GROUP_ID))));
 
         verifyColorView(
                 mRegularColorViewProvider,
@@ -227,7 +246,8 @@ public class TabGroupColorViewProviderUnitTest {
         assertFalse(mRegularColorViewProvider.hasCollaborationId());
 
         mRegularColorViewProvider.setTabGroupId(
-                EitherGroupId.createLocalId(new LocalTabGroupId(REGULAR_TAB_GROUP_ID)));
+                EitherGroupId.createLocalId(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(REGULAR_TAB_GROUP_ID))));
         assertTrue(mRegularColorViewProvider.hasCollaborationId());
 
         verifyColorViewCollaboration(TabGroupColorId.CYAN);
@@ -253,7 +273,8 @@ public class TabGroupColorViewProviderUnitTest {
     private void createCollaboration() {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.collaborationId = COLLABORATION_ID1;
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(REGULAR_TAB_GROUP_ID)))
+        when(mTabGroupSyncService.getGroup(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(REGULAR_TAB_GROUP_ID))))
                 .thenReturn(savedTabGroup);
         var groupData =
                 SharedGroupTestHelper.newGroupData(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);

@@ -682,7 +682,10 @@ public class UndoGroupRestorerUnitTest {
     private SavedTabGroup stubSavedGroup(String syncId, @Nullable Token localGroupId) {
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = syncId;
-        savedGroup.localId = localGroupId != null ? new LocalTabGroupId(localGroupId) : null;
+        savedGroup.localId =
+                localGroupId != null
+                        ? new LocalTabGroupId(TabGroupId.fromRawToken(localGroupId))
+                        : null;
         when(mSyncService.getGroup(syncId)).thenReturn(savedGroup);
         return savedGroup;
     }
@@ -691,7 +694,8 @@ public class UndoGroupRestorerUnitTest {
         SavedTabGroup savedGroup = stubSavedGroup(syncId, /* localGroupId= */ null);
         doAnswer(
                         inv -> {
-                            savedGroup.localId = new LocalTabGroupId(reopenedGroupId);
+                            savedGroup.localId =
+                                    new LocalTabGroupId(TabGroupId.fromRawToken(reopenedGroupId));
                             when(mTabModel.containsTabGroup(
                                             TabGroupId.fromOptionalToken(reopenedGroupId)))
                                     .thenReturn(true);

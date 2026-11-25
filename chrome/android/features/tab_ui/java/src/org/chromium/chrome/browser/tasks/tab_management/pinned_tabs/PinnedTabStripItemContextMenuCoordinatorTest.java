@@ -96,7 +96,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
                 .thenReturn(true);
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = "sync_group_id";
-        savedGroup.localId = new LocalTabGroupId(mTabGroupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(mTabGroupId));
         SavedTabGroupTab savedTab = new SavedTabGroupTab();
         savedGroup.savedTabs.add(savedTab);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_group_id"});

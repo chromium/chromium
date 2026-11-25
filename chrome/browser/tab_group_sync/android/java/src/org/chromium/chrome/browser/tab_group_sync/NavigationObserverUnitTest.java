@@ -36,6 +36,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
@@ -50,7 +51,8 @@ public class NavigationObserverUnitTest {
     private static final int TAB_ID_2 = 6;
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final Token TOKEN_2 = new Token(4, 5);
-    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
+    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 =
+            new LocalTabGroupId(TabGroupId.fromRawToken(TOKEN_1));
     private static final GURL CHROME_HISTORY_URL = new GURL("chrome://history");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -162,7 +164,7 @@ public class NavigationObserverUnitTest {
                 /* isIncognito= */ false,
                 /* isGrouped= */ true);
         simulateNavigation(PageTransition.LINK);
-        LocalTabGroupId id2 = new LocalTabGroupId(TOKEN_2);
+        LocalTabGroupId id2 = new LocalTabGroupId(TabGroupId.fromRawToken(TOKEN_2));
         verify(mTabGroupSyncService)
                 .updateTab(eq(id2), eq(TAB_ID_2), eq(mTestTitle), eq(mTestUrl2), eq(-1));
         verify(mTabGroupSyncUtilsJni)

@@ -191,7 +191,8 @@ public class TabGridDialogMediatorUnitTest {
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
-    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID = new LocalTabGroupId(TAB_GROUP_ID);
+    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID =
+            new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID));
     private static final EitherGroupId EITHER_LOCAL_TAB_GROUP_ID =
             EitherGroupId.createLocalId(LOCAL_TAB_GROUP_ID);
 

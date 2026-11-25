@@ -77,7 +77,8 @@ public class TabGroupSyncLocalObserverUnitTest {
     private static final int TAB_ID_2 = 2;
     private static final int TAB_ID_3 = 3;
     private static final Token TOKEN_1 = new Token(2, 3);
-    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
+    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 =
+            new LocalTabGroupId(TabGroupId.fromRawToken(TOKEN_1));
     private static final String SYNC_ID = "sync_id";
     private static final String TITLE_1 = "Group Title";
     private static final String TAB_TITLE_1 = "Tab Title";

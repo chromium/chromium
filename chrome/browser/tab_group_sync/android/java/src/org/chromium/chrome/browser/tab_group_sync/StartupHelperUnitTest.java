@@ -51,7 +51,8 @@ public class StartupHelperUnitTest {
     private static final int TAB_ID_1 = 5;
     private static final int TAB_ID_2 = 6;
     private static final Token TOKEN_1 = new Token(2, 3);
-    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
+    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 =
+            new LocalTabGroupId(TabGroupId.fromRawToken(TOKEN_1));
     private static final String TAB_TITLE_1 = "Tab Title";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -118,7 +119,8 @@ public class StartupHelperUnitTest {
     private SavedTabGroup createRemoteGroupWithOneTab(Token mappedLocalId) {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         savedTabGroup.savedTabs.remove(1);
-        if (mappedLocalId != null) savedTabGroup.localId = new LocalTabGroupId(mappedLocalId);
+        if (mappedLocalId != null)
+            savedTabGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(mappedLocalId));
         String syncId = savedTabGroup.syncId;
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {syncId});
         when(mTabGroupSyncService.getGroup(savedTabGroup.localId)).thenReturn(savedTabGroup);

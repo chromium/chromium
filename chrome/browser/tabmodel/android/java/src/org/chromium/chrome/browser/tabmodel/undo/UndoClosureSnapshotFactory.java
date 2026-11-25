@@ -107,7 +107,8 @@ public final class UndoClosureSnapshotFactory {
 
                 SavedTabGroup savedGroup =
                         tabGroupSyncService != null
-                                ? tabGroupSyncService.getGroup(new LocalTabGroupId(groupId))
+                                ? tabGroupSyncService.getGroup(
+                                        new LocalTabGroupId(TabGroupId.fromRawToken(groupId)))
                                 : null;
                 String savedTabGroupSyncId = savedGroup != null ? savedGroup.syncId : null;
 

@@ -70,7 +70,8 @@ import java.util.List;
 public class TabRemoverImplUnitTest {
     private static final String SYNC_ID = "sync_id";
     private static final String COLLABORATION_ID = "collaboration_id";
-    private static final LocalTabGroupId TAB_GROUP_ID = new LocalTabGroupId(new Token(1L, 2L));
+    private static final LocalTabGroupId TAB_GROUP_ID =
+            new LocalTabGroupId(TabGroupId.fromRawToken(new Token(1L, 2L)));
     private static final String TITLE = "My title";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -125,7 +126,7 @@ public class TabRemoverImplUnitTest {
     @Test
     public void testPrepareCloseTabs() {
         Tab tab0 = mTabModel.addTab(/* id= */ 0);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId.getToken());
         TabClosureParams params = TabClosureParams.closeAllTabs().build();
 
         mTabRemoverImpl.prepareCloseTabs(
@@ -323,7 +324,7 @@ public class TabRemoverImplUnitTest {
     @Test
     public void testCloseTabsHandler_NoDialog() {
         Tab tab0 = mTabModel.addTab(/* id= */ 0);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId.getToken());
         TabClosureParams params = TabClosureParams.closeAllTabs().build();
 
         mTabRemoverImpl.closeTabs(params, /* allowDialog= */ false, mListener);
@@ -366,7 +367,7 @@ public class TabRemoverImplUnitTest {
     public void testCloseTabsHandler_SkipDialog() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId.getToken());
         TabClosureParams params = TabClosureParams.closeAllTabs().build();
 
         mTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
@@ -412,13 +413,10 @@ public class TabRemoverImplUnitTest {
     public void testCloseTabsHandler_Group_Deletion() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
-        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID.tabGroupId)))
-                .thenReturn(List.of(tab0));
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId.getToken());
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID.tabGroupId)).thenReturn(List.of(tab0));
         TabClosureParams params =
-                TabClosureParams.forCloseTabGroup(
-                                mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID.tabGroupId))
-                        .build();
+                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID.tabGroupId).build();
 
         mTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
         verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
@@ -461,7 +459,7 @@ public class TabRemoverImplUnitTest {
     public void testCloseTabsHandler_Deletion() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId.getToken());
         TabClosureParams params = TabClosureParams.closeAllTabs().build();
 
         mTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
@@ -503,7 +501,7 @@ public class TabRemoverImplUnitTest {
     public void testCloseTabsHandler_Owner() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId.getToken());
         TabClosureParams params = TabClosureParams.closeAllTabs().build();
 
         mTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
@@ -552,7 +550,7 @@ public class TabRemoverImplUnitTest {
     public void testCloseTabsHandler_Member() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId.getToken());
         TabClosureParams params = TabClosureParams.closeAllTabs().build();
 
         mTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
@@ -810,14 +808,11 @@ public class TabRemoverImplUnitTest {
     @Test
     public void testUpdateTabClosureParams_Placeholder_CloseTabGroup_PreservesIsTabGroup() {
         Tab tab0 = mTabModel.addTab(/* id= */ 0);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId.getToken());
         Tab tab1 = mTabModel.addTab(/* id= */ 1);
-        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID.tabGroupId)))
-                .thenReturn(List.of(tab0));
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID.tabGroupId)).thenReturn(List.of(tab0));
         TabClosureParams params =
-                TabClosureParams.forCloseTabGroup(
-                                mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID.tabGroupId))
-                        .build();
+                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID.tabGroupId).build();
         assertTrue("Precondition: should be a tab group closure", params.isTabGroup);
 
         TabClosureParams newParams =
@@ -917,7 +912,7 @@ public class TabRemoverImplUnitTest {
     public void testRemoveTabHandler_NoDialog() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId.getToken());
 
         mTabRemoverImpl.removeTab(tab0, /* allowDialog= */ false, mListener);
         verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(false));

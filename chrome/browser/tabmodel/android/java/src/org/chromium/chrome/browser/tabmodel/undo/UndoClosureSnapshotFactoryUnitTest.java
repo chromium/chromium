@@ -228,8 +228,10 @@ public class UndoClosureSnapshotFactoryUnitTest {
         SavedTabGroup savedGroup1 = new SavedTabGroup();
         savedGroup1.syncId = "sync-group-1";
         TabGroupSyncService syncService = mock(TabGroupSyncService.class);
-        when(syncService.getGroup(new LocalTabGroupId(GROUP_1))).thenReturn(savedGroup1);
-        when(syncService.getGroup(new LocalTabGroupId(GROUP_2))).thenReturn(null);
+        when(syncService.getGroup(new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_1))))
+                .thenReturn(savedGroup1);
+        when(syncService.getGroup(new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_2))))
+                .thenReturn(null);
 
         UndoClosureSnapshot snapshot =
                 UndoClosureSnapshotFactory.captureFromTabModel(

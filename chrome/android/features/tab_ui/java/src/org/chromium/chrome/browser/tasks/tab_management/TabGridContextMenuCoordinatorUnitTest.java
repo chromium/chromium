@@ -129,12 +129,12 @@ public class TabGridContextMenuCoordinatorUnitTest {
                 .thenReturn(true);
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = "sync_group_id";
-        savedGroup.localId = new LocalTabGroupId(mTabGroupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(mTabGroupId));
         SavedTabGroupTab savedTab = new SavedTabGroupTab();
         savedGroup.savedTabs.add(savedTab);
         SavedTabGroup otherSavedGroup = new SavedTabGroup();
         otherSavedGroup.syncId = "other_sync_group_id";
-        otherSavedGroup.localId = new LocalTabGroupId(otherGroupId);
+        otherSavedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(otherGroupId));
         SavedTabGroupTab otherSavedTab = new SavedTabGroupTab();
         otherSavedGroup.savedTabs.add(otherSavedTab);
         when(mTabGroupSyncService.getAllGroupIds())

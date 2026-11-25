@@ -172,7 +172,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         SavedTabGroup group = new SavedTabGroup();
         group.syncId = "sync_id";
         group.savedTabs = List.of(new SavedTabGroupTab());
-        group.localId = new LocalTabGroupId(Token.createRandom());
+        group.localId = new LocalTabGroupId(TabGroupId.fromRawToken(Token.createRandom()));
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_id"});
         when(mTabGroupSyncService.getGroup("sync_id")).thenReturn(group);
         assertTrue(mHandler.handleAddToGroupAction(List.of(mTab)));
@@ -187,7 +187,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         SavedTabGroup group = new SavedTabGroup();
         group.syncId = "sync_id";
         group.savedTabs = List.of(new SavedTabGroupTab());
-        group.localId = new LocalTabGroupId(currentGroupId);
+        group.localId = new LocalTabGroupId(TabGroupId.fromRawToken(currentGroupId));
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_id"});
         when(mTabGroupSyncService.getGroup("sync_id")).thenReturn(group);
 
@@ -240,7 +240,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         SavedTabGroup group = new SavedTabGroup();
         group.syncId = "sync_id";
         group.savedTabs = List.of(new SavedTabGroupTab());
-        group.localId = new LocalTabGroupId(Token.createRandom());
+        group.localId = new LocalTabGroupId(TabGroupId.fromRawToken(Token.createRandom()));
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_id"});
         when(mTabGroupSyncService.getGroup("sync_id")).thenReturn(group);
         mHandler.handleAddToGroupAction(List.of(mTab));
@@ -285,7 +285,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         SavedTabGroup group = new SavedTabGroup();
         group.syncId = "sync_id";
         group.savedTabs = List.of(new SavedTabGroupTab());
-        group.localId = new LocalTabGroupId(Token.createRandom());
+        group.localId = new LocalTabGroupId(TabGroupId.fromRawToken(Token.createRandom()));
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_id"});
         when(mTabGroupSyncService.getGroup("sync_id")).thenReturn(group);
 
@@ -303,7 +303,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         SavedTabGroup group = new SavedTabGroup();
         group.syncId = "sync_id";
         group.savedTabs = List.of(new SavedTabGroupTab());
-        group.localId = new LocalTabGroupId(currentGroupId);
+        group.localId = new LocalTabGroupId(TabGroupId.fromRawToken(currentGroupId));
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_id"});
         when(mTabGroupSyncService.getGroup("sync_id")).thenReturn(group);
 
@@ -320,7 +320,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         SavedTabGroup group = new SavedTabGroup();
         group.syncId = "sync_id";
         group.savedTabs = List.of(new SavedTabGroupTab());
-        group.localId = new LocalTabGroupId(currentGroupId);
+        group.localId = new LocalTabGroupId(TabGroupId.fromRawToken(currentGroupId));
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_id"});
         when(mTabGroupSyncService.getGroup("sync_id")).thenReturn(group);
 

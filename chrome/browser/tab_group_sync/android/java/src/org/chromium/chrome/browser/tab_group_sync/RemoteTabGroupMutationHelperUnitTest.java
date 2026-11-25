@@ -44,7 +44,8 @@ public class RemoteTabGroupMutationHelperUnitTest {
     private static final int TAB_ID_1 = 1;
     private static final int TAB_ID_2 = 2;
     private static final Token TOKEN_1 = new Token(2, 3);
-    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
+    private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 =
+            new LocalTabGroupId(TabGroupId.fromRawToken(TOKEN_1));
     private static final String TAB_TITLE_1 = "Tab Title";
     private static final GURL TAB_URL_1 = new GURL("https://google.com");
 

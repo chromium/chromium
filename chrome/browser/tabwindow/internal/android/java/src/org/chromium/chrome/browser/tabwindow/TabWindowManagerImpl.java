@@ -862,7 +862,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
                     continue;
                 }
                 if (TabGroupSyncUtils.isInCurrentWindow(
-                        tabModel, new LocalTabGroupId(tabGroupId.getToken()))) {
+                        tabModel, new LocalTabGroupId(tabGroupId))) {
                     return entry.getValue();
                 }
                 if (includeClosingGroups

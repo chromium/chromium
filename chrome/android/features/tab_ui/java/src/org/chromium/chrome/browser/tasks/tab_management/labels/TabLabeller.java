@@ -33,6 +33,7 @@ import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfi
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig.DataSharingAvatarCallback;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Collections;
 import java.util.List;
@@ -84,7 +85,7 @@ public class TabLabeller extends TabObjectLabeller<Integer> {
     protected List<PersistentMessage> getAllMessages() {
         Token tabGroupId = mTabGroupIdSupplier.get();
         if (tabGroupId == null) return Collections.emptyList();
-        LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
+        LocalTabGroupId localTabGroupId = new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId));
         EitherGroupId eitherGroupId = EitherGroupId.createLocalId(localTabGroupId);
         return mMessagingBackendService.getMessagesForGroup(
                 eitherGroupId, PersistentNotificationType.DIRTY_TAB);

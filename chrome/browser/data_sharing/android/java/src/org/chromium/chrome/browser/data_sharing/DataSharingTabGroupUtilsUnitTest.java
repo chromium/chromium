@@ -38,6 +38,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,11 +57,11 @@ public class DataSharingTabGroupUtilsUnitTest {
     private static final int TAB_ID_3 = 789;
     private static final int TAB_ID_4 = 433289;
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 =
-            new LocalTabGroupId(new Token(1L, 1L));
+            new LocalTabGroupId(TabGroupId.fromRawToken(new Token(1L, 1L)));
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_2 =
-            new LocalTabGroupId(new Token(2L, 2L));
+            new LocalTabGroupId(TabGroupId.fromRawToken(new Token(2L, 2L)));
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_3 =
-            new LocalTabGroupId(new Token(3L, 3L));
+            new LocalTabGroupId(TabGroupId.fromRawToken(new Token(3L, 3L)));
 
     @Mock private Profile mRegularProfile;
     @Mock private Profile mOtrProfile;
@@ -498,7 +499,7 @@ public class DataSharingTabGroupUtilsUnitTest {
             for (int tabId : group.tabIds) {
                 Tab tab = mockTabModel.addTab(tabId);
                 if (group.localTabGroupId != null) {
-                    tab.setTabGroupId(group.localTabGroupId.tabGroupId);
+                    tab.setTabGroupId(group.localTabGroupId.tabGroupId.getToken());
                 }
 
                 SavedTabGroupTab savedTab = new SavedTabGroupTab();
@@ -510,7 +511,7 @@ public class DataSharingTabGroupUtilsUnitTest {
             // Use hashcode as unique placeholder if non-local group.
             String groupIdString =
                     group.localTabGroupId != null
-                            ? group.localTabGroupId.tabGroupId.toString()
+                            ? group.localTabGroupId.tabGroupId.getToken().toString()
                             : String.valueOf(group.hashCode());
             savedGroup.syncId = groupIdString + SYNC_SUFFIX;
             savedGroup.localId = group.localTabGroupId;

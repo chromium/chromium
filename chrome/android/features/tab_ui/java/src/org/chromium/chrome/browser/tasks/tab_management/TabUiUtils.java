@@ -243,7 +243,8 @@ public class TabUiUtils {
         if (tabGroupSyncService == null || tabGroupId == null) return false;
 
         @Nullable SavedTabGroup savedTabGroup =
-                tabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
+                tabGroupSyncService.getGroup(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId)));
         // Don't try to show the IPH if the group is:
         // 1) Not in TabGroupSyncService for some reason.
         // 2) A shared tab group.
@@ -304,7 +305,7 @@ public class TabUiUtils {
             return;
         }
 
-        LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
+        LocalTabGroupId localTabGroupId = new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId));
         dataSharingTabManager.createOrManageFlow(
                 EitherGroupId.createLocalId(localTabGroupId), entry, CallbackUtils.emptyCallback());
     }

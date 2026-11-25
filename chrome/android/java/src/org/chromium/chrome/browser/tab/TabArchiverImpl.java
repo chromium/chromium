@@ -293,7 +293,8 @@ public class TabArchiverImpl implements TabArchiver {
         if (mTabGroupSyncService != null) {
             int archivedTabGroups = 0;
             for (Token tabGroupId : archivedTabGroupIds) {
-                LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
+                LocalTabGroupId localTabGroupId =
+                        new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId));
                 SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(localTabGroupId);
                 if (savedTabGroup != null && savedTabGroup.syncId != null) {
                     mTabGroupSyncService.updateArchivalStatus(

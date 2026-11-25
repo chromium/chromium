@@ -219,13 +219,13 @@ final class UndoGroupRestorer {
 
             LocalTabGroupId localId = savedGroup.localId;
             if (localId != null) {
-                Token localGroupId = localId.tabGroupId;
-                if (tabModel.containsTabGroup(TabGroupId.fromOptionalToken(localGroupId))) {
+                TabGroupId localGroupId = localId.tabGroupId;
+                if (tabModel.containsTabGroup(localGroupId)) {
                     mergeIntoLiveGroup(
                             tabModel,
-                            localGroupId,
+                            localGroupId.getToken(),
                             restoredTabs,
-                            tabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(localGroupId)));
+                            tabModel.getTabGroupCollapsed(localGroupId));
                 }
                 continue;
             }
@@ -317,10 +317,8 @@ final class UndoGroupRestorer {
         LocalTabGroupId localId = savedGroup.localId;
         if (localId == null) return null;
 
-        Token localGroupId = localId.tabGroupId;
-        return tabModel.containsTabGroup(TabGroupId.fromOptionalToken(localGroupId))
-                ? localGroupId
-                : null;
+        TabGroupId localGroupId = localId.tabGroupId;
+        return tabModel.containsTabGroup(localGroupId) ? localGroupId.getToken() : null;
     }
 
     private static void mergeIntoLiveGroup(

@@ -93,7 +93,8 @@ public class GroupWindowInfo {
             SavedTabGroup savedGroup,
             @GroupWindowState int state,
             List<Tab> localTabs) {
-        Token localId = savedGroup.localId != null ? savedGroup.localId.tabGroupId : null;
+        Token localId =
+                savedGroup.localId != null ? savedGroup.localId.tabGroupId.getToken() : null;
         return forLocalOrSyncedGroupInternal(
                 context, localTabModel, localId, savedGroup, state, localTabs);
     }

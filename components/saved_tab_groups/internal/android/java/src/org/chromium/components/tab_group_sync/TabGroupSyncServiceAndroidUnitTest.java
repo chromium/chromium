@@ -20,6 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -33,7 +34,7 @@ import java.util.concurrent.TimeoutException;
  */
 @JNINamespace("tab_groups")
 public class TabGroupSyncServiceAndroidUnitTest {
-    private static final Token TOKEN_1 = new Token(4, 5);
+    private static final TabGroupId TOKEN_1 = TabGroupId.fromRawToken(new Token(4, 5));
     private static final String TEST_GROUP_TITLE = "Test Group";
     private static final String TEST_GROUP_TITLE_2 = "Test Group 2";
     private static final String TEST_TAB_TITLE = "Test Tab";

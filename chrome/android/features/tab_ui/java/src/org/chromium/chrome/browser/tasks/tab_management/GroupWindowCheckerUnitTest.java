@@ -111,8 +111,8 @@ public class GroupWindowCheckerUnitTest {
         SavedTabGroup group1 = createSavedTabGroup(token1, "title1");
         SavedTabGroup group2 = createSavedTabGroup(token2, "title2");
 
-        group1.localId = new LocalTabGroupId(token1);
-        group2.localId = new LocalTabGroupId(token2);
+        group1.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
+        group2.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token2));
         group1.savedTabs.add(new SavedTabGroupTab());
         group2.savedTabs.add(new SavedTabGroupTab());
 
@@ -175,7 +175,7 @@ public class GroupWindowCheckerUnitTest {
     public void testGetSortedGroupList_deduplicatesGroupInBothSyncAndLocal() {
         Token groupId = Token.createRandom();
         SavedTabGroup group = createSavedTabGroup(groupId, "Sync Title");
-        group.localId = new LocalTabGroupId(groupId);
+        group.localId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
         group.savedTabs.add(new SavedTabGroupTab());
 
         when(mSyncService.getAllGroupIds()).thenReturn(new String[] {"sync1"});
@@ -214,7 +214,7 @@ public class GroupWindowCheckerUnitTest {
     public void testGetState_InCurrent() {
         Token token = Token.createRandom();
         SavedTabGroup group = createSavedTabGroup(token, "title1");
-        group.localId = new LocalTabGroupId(token);
+        group.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token));
 
         List<Tab> tabList = List.of(mTab1);
         when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
@@ -476,7 +476,8 @@ public class GroupWindowCheckerUnitTest {
     private SavedTabGroup createSavedTabGroup(Token token, String title) {
         SavedTabGroup tabGroup = new SavedTabGroup();
         tabGroup.syncId = "sync_" + title;
-        tabGroup.localId = token != null ? new LocalTabGroupId(token) : null;
+        tabGroup.localId =
+                token != null ? new LocalTabGroupId(TabGroupId.fromRawToken(token)) : null;
         tabGroup.savedTabs = new ArrayList<>();
         tabGroup.title = title;
         return tabGroup;
@@ -514,8 +515,8 @@ public class GroupWindowCheckerUnitTest {
         SavedTabGroup group2 = createSavedTabGroup(token2, "title2");
         group2.updateTimeMs = 200L;
 
-        group1.localId = new LocalTabGroupId(token1);
-        group2.localId = new LocalTabGroupId(token2);
+        group1.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
+        group2.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token2));
         group1.savedTabs.add(new SavedTabGroupTab());
         group2.savedTabs.add(new SavedTabGroupTab());
 
@@ -853,7 +854,7 @@ public class GroupWindowCheckerUnitTest {
     public void testInvalidate_rebuildsSnapshot() {
         Token token = Token.createRandom();
         SavedTabGroup group = createSavedTabGroup(token, "title1");
-        group.localId = new LocalTabGroupId(token);
+        group.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token));
         group.savedTabs.add(new SavedTabGroupTab());
 
         when(mSyncService.getAllGroupIds()).thenReturn(new String[] {"id1"});
@@ -919,7 +920,7 @@ public class GroupWindowCheckerUnitTest {
         Token closingToken = Token.createRandom();
         SavedTabGroup closingGroup = createSavedTabGroup(closingToken, "staleRemoteTitle");
         closingGroup.color = TabGroupColorId.BLUE;
-        closingGroup.localId = new LocalTabGroupId(closingToken);
+        closingGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(closingToken));
         closingGroup.savedTabs.add(new SavedTabGroupTab());
 
         when(mTabWindowManager.findWindowIdForTabGroup(TabGroupId.fromRawToken(closingToken), true))

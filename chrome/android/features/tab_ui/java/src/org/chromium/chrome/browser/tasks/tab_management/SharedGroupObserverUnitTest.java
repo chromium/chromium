@@ -39,6 +39,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -239,7 +240,7 @@ public class SharedGroupObserverUnitTest {
     @Test
     public void testOnSyncChanged() {
         SavedTabGroup syncGroup = new SavedTabGroup();
-        syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID);
+        syncGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID));
         syncGroup.collaborationId = null;
         when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(syncGroup);
 
@@ -270,7 +271,7 @@ public class SharedGroupObserverUnitTest {
     @Test
     public void testNoCollaborationOnInitUntilLocalIdEvent() {
         SavedTabGroup syncGroup = new SavedTabGroup();
-        syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID);
+        syncGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID));
         syncGroup.collaborationId = null;
         when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(syncGroup);
 

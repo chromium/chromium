@@ -106,7 +106,7 @@ public class TabListEditorAddToGroupActionUnitTest {
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
         SavedTabGroup savedGroup = new SavedTabGroup();
         savedGroup.syncId = "sync_group_id";
-        savedGroup.localId = new LocalTabGroupId(mTabGroupId);
+        savedGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(mTabGroupId));
         SavedTabGroupTab savedTab = new SavedTabGroupTab();
         savedGroup.savedTabs.add(savedTab);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_group_id"});
@@ -245,7 +245,8 @@ public class TabListEditorAddToGroupActionUnitTest {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.collaborationId = "collaborationId";
 
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(mTabGroupId)))
+        when(mTabGroupSyncService.getGroup(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(mTabGroupId))))
                 .thenReturn(savedTabGroup);
         when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(itemIds);
         mAction.configure(

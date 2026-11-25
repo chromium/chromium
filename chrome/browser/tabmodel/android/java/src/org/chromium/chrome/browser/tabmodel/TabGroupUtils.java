@@ -227,7 +227,7 @@ public class TabGroupUtils {
             }
             visitedGroups.add(groupId);
 
-            LocalTabGroupId localTabGroupId = new LocalTabGroupId(groupId);
+            LocalTabGroupId localTabGroupId = new LocalTabGroupId(TabGroupId.fromRawToken(groupId));
             SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(localTabGroupId);
             if (savedTabGroup == null) continue;
 

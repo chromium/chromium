@@ -83,7 +83,8 @@ public class TabGroupLabellerUnitTest {
         message.type = PersistentNotificationType.DIRTY_TAB_GROUP;
         message.attribution = new MessageAttribution();
         message.attribution.tabGroupMetadata = new TabGroupMessageMetadata();
-        message.attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(GROUP_ID1);
+        message.attribution.tabGroupMetadata.localTabGroupId =
+                new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_ID1));
         return message;
     }
 

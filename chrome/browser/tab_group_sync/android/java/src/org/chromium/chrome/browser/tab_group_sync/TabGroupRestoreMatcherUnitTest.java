@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupRestoreMatcher.Session
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -125,7 +126,7 @@ public class TabGroupRestoreMatcherUnitTest {
     @Test
     public void testAlreadyOpenGroupIsFlagged() {
         SavedTabGroup group = group("g1", A);
-        group.localId = new LocalTabGroupId(new Token(1, 2));
+        group.localId = new LocalTabGroupId(TabGroupId.fromRawToken(new Token(1, 2)));
         assertTrue(match(List.of(tab(A, "g1")), group).get(0).alreadyOpen);
     }
 
@@ -223,7 +224,7 @@ public class TabGroupRestoreMatcherUnitTest {
         List<SessionTabRef> tabs = List.of(tab(A, "g1"));
         SavedTabGroup group = group("g1", A);
         GroupMatch match = match(tabs, group).get(0);
-        group.localId = new LocalTabGroupId(new Token(1, 2));
+        group.localId = new LocalTabGroupId(TabGroupId.fromRawToken(new Token(1, 2)));
         assertFalse(TabGroupRestoreMatcher.stillMatches(match, tabs, group));
     }
 

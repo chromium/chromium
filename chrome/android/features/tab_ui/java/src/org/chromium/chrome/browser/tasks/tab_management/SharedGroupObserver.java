@@ -26,6 +26,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService.Observer;
 import org.chromium.components.tab_group_sync.TriggerSource;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 import java.util.Objects;
@@ -120,7 +121,7 @@ public class SharedGroupObserver implements Destroyable {
         mTabGroupSyncService = tabGroupSyncService;
         mDataSharingService = dataSharingService;
         mCollaborationService = collaborationService;
-        mLocalTabGroupId = new LocalTabGroupId(tabGroupId);
+        mLocalTabGroupId = new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId));
 
         @Nullable SavedTabGroup group = mTabGroupSyncService.getGroup(mLocalTabGroupId);
         if (group == null || !TabShareUtils.isCollaborationIdValid(group.collaborationId)) {

@@ -490,14 +490,14 @@ public class TabGroupItemBuilderUnitTest {
         Token token2 = Token.createRandom();
 
         SavedTabGroup group1 = new SavedTabGroup();
-        group1.localId = new LocalTabGroupId(token1);
+        group1.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
         group1.title = "Group 1";
         group1.updateTimeMs = 100L;
         group1.color = TabGroupColorId.BLUE;
         group1.savedTabs.add(new SavedTabGroupTab());
 
         SavedTabGroup group2 = new SavedTabGroup();
-        group2.localId = new LocalTabGroupId(token2);
+        group2.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token2));
         group2.title = "Group 2";
         group2.updateTimeMs = 200L;
         group2.color = TabGroupColorId.RED;
@@ -547,14 +547,14 @@ public class TabGroupItemBuilderUnitTest {
         Token token2 = Token.createRandom();
 
         SavedTabGroup group1 = new SavedTabGroup();
-        group1.localId = new LocalTabGroupId(token1);
+        group1.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
         group1.title = "Group 1";
         group1.updateTimeMs = 100L;
         group1.color = TabGroupColorId.BLUE;
         group1.savedTabs.add(new SavedTabGroupTab());
 
         SavedTabGroup group2 = new SavedTabGroup();
-        group2.localId = new LocalTabGroupId(token2);
+        group2.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token2));
         group2.title = "Group 2";
         group2.updateTimeMs = 200L;
         group2.color = TabGroupColorId.RED;
@@ -626,7 +626,7 @@ public class TabGroupItemBuilderUnitTest {
     public void testBuildSubmenuForTabGroupsParent_sharesGroupWindowChecker() {
         Token token1 = Token.createRandom();
         SavedTabGroup group1 = new SavedTabGroup();
-        group1.localId = new LocalTabGroupId(token1);
+        group1.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
         group1.title = "Group 1";
         group1.updateTimeMs = 100L;
         group1.color = TabGroupColorId.BLUE;
@@ -681,14 +681,14 @@ public class TabGroupItemBuilderUnitTest {
         Token token2 = Token.createRandom();
 
         SavedTabGroup group1 = new SavedTabGroup();
-        group1.localId = new LocalTabGroupId(token1);
+        group1.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
         group1.title = "Group 1";
         group1.updateTimeMs = 100L;
         group1.color = TabGroupColorId.BLUE;
         group1.savedTabs.add(new SavedTabGroupTab());
 
         SavedTabGroup group2 = new SavedTabGroup();
-        group2.localId = new LocalTabGroupId(token2);
+        group2.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token2));
         group2.title = "Group 2";
         group2.updateTimeMs = 200L;
         group2.color = TabGroupColorId.RED;
@@ -1016,7 +1016,7 @@ public class TabGroupItemBuilderUnitTest {
 
         SavedTabGroup localGroup = new SavedTabGroup();
         localGroup.syncId = "local_id";
-        localGroup.localId = new LocalTabGroupId(token1);
+        localGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
         localGroup.title = "Local Group";
         localGroup.color = TabGroupColorId.BLUE;
         localGroup.updateTimeMs = 100L;
@@ -1083,7 +1083,7 @@ public class TabGroupItemBuilderUnitTest {
 
         SavedTabGroup closingGroup = new SavedTabGroup();
         closingGroup.syncId = "closing_id";
-        closingGroup.localId = new LocalTabGroupId(token1);
+        closingGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
         closingGroup.title = "Saved Title";
         closingGroup.color = TabGroupColorId.BLUE;
         closingGroup.updateTimeMs = 100L;
@@ -1155,7 +1155,7 @@ public class TabGroupItemBuilderUnitTest {
 
         SavedTabGroup closingGroup = new SavedTabGroup();
         closingGroup.syncId = "closing_cross_window_id";
-        closingGroup.localId = new LocalTabGroupId(token1);
+        closingGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
         closingGroup.title = "Saved Title";
         closingGroup.color = TabGroupColorId.BLUE;
         closingGroup.updateTimeMs = 100L;
@@ -1242,7 +1242,7 @@ public class TabGroupItemBuilderUnitTest {
         Token token1 = Token.createRandom();
         SavedTabGroup hiddenGroup = new SavedTabGroup();
         hiddenGroup.syncId = "hidden_id";
-        hiddenGroup.localId = new LocalTabGroupId(token1);
+        hiddenGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
         hiddenGroup.title = "Hidden Group";
         hiddenGroup.color = TabGroupColorId.BLUE;
         hiddenGroup.savedTabs = List.of(new SavedTabGroupTab());
@@ -1289,7 +1289,7 @@ public class TabGroupItemBuilderUnitTest {
         Token token1 = Token.createRandom();
         SavedTabGroup hiddenGroup = new SavedTabGroup();
         hiddenGroup.syncId = "hidden_id";
-        hiddenGroup.localId = new LocalTabGroupId(token1);
+        hiddenGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
         hiddenGroup.title = "Hidden Group";
         hiddenGroup.color = TabGroupColorId.BLUE;
         hiddenGroup.savedTabs = List.of(new SavedTabGroupTab());
@@ -1343,7 +1343,7 @@ public class TabGroupItemBuilderUnitTest {
         Token token1 = Token.createRandom();
         SavedTabGroup headlessGroup = new SavedTabGroup();
         headlessGroup.syncId = "headless_id";
-        headlessGroup.localId = new LocalTabGroupId(token1);
+        headlessGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
         headlessGroup.title = "Headless Group";
         headlessGroup.color = TabGroupColorId.BLUE;
         headlessGroup.savedTabs = List.of(new SavedTabGroupTab());
@@ -1390,7 +1390,7 @@ public class TabGroupItemBuilderUnitTest {
         Token token1 = Token.createRandom();
         SavedTabGroup headlessGroup = new SavedTabGroup();
         headlessGroup.syncId = "headless_id";
-        headlessGroup.localId = new LocalTabGroupId(token1);
+        headlessGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(token1));
         headlessGroup.title = "Headless Group";
         headlessGroup.color = TabGroupColorId.BLUE;
         headlessGroup.savedTabs = List.of(new SavedTabGroupTab());
@@ -2383,7 +2383,7 @@ public class TabGroupItemBuilderUnitTest {
             List<SavedTabGroupTab> savedTabs) {
         SavedTabGroup group = new SavedTabGroup();
         group.syncId = syncId;
-        group.localId = new LocalTabGroupId(localToken);
+        group.localId = new LocalTabGroupId(TabGroupId.fromRawToken(localToken));
         group.title = title;
         group.color = color;
         group.updateTimeMs = updateTimeMs;

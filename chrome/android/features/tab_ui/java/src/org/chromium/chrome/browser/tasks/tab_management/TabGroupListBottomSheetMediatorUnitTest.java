@@ -149,8 +149,8 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         when(mTab2.isClosing()).thenReturn(false);
         when(mTab3.isClosing()).thenReturn(false);
 
-        mSavedTabGroup1.localId = new LocalTabGroupId(mToken1);
-        mSavedTabGroup2.localId = new LocalTabGroupId(mToken2);
+        mSavedTabGroup1.localId = new LocalTabGroupId(TabGroupId.fromRawToken(mToken1));
+        mSavedTabGroup2.localId = new LocalTabGroupId(TabGroupId.fromRawToken(mToken2));
         mSavedTabGroup3.localId = null;
 
         mSavedTabGroup1.updateTimeMs = 1L;
@@ -393,7 +393,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
 
     @Test
     public void testPopulateList_noHiddenGroups() {
-        mSavedTabGroup3.localId = new LocalTabGroupId(mToken3);
+        mSavedTabGroup3.localId = new LocalTabGroupId(TabGroupId.fromRawToken(mToken3));
 
         when(mDelegate.requestShowContent()).thenReturn(true);
         mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
@@ -420,7 +420,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     @Test
     public void testPopulateList_withGroupInAnotherWindow() {
         // Group 3 is open in another window (localId is non-null, but not in current TabModel)
-        mSavedTabGroup3.localId = new LocalTabGroupId(mToken3);
+        mSavedTabGroup3.localId = new LocalTabGroupId(TabGroupId.fromRawToken(mToken3));
 
         when(mDelegate.requestShowContent()).thenReturn(true);
         mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
@@ -437,7 +437,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
 
     @Test
     public void testPopulateList_tabsAreSubsetOfSameGroup() {
-        mSavedTabGroup3.localId = new LocalTabGroupId(mToken3);
+        mSavedTabGroup3.localId = new LocalTabGroupId(TabGroupId.fromRawToken(mToken3));
 
         when(mTab1.getTabGroupId()).thenReturn(mToken1);
         when(mTab2.getTabGroupId()).thenReturn(mToken1);

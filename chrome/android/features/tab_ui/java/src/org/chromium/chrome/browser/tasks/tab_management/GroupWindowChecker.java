@@ -128,7 +128,7 @@ public class GroupWindowChecker {
             assert savedTabGroup != null && !savedTabGroup.savedTabs.isEmpty();
 
             if (savedTabGroup.localId != null) {
-                seenGroups.add(savedTabGroup.localId.tabGroupId);
+                seenGroups.add(savedTabGroup.localId.tabGroupId.getToken());
             }
 
             @GroupWindowState int groupWindowState = getState(savedTabGroup);
@@ -142,12 +142,12 @@ public class GroupWindowChecker {
         if (!TabGroupUiUtils.isRemoteGroupOperationsEnabled() || savedTabGroup.localId == null) {
             return mCurrentTabModel;
         }
-        TabModel model = mModelByGroupId.get(savedTabGroup.localId.tabGroupId);
+        TabModel model = mModelByGroupId.get(savedTabGroup.localId.tabGroupId.getToken());
         if (model != null) {
             return model;
         }
         return TabGroupUiUtils.getTabModelForGroup(
-                mCurrentTabModel, savedTabGroup.localId.tabGroupId);
+                mCurrentTabModel, savedTabGroup.localId.tabGroupId.getToken());
     }
 
     private void addLocalTabGroups(
@@ -181,7 +181,8 @@ public class GroupWindowChecker {
     public GroupWindowInfo fromSavedTabGroup(SavedTabGroup savedTabGroup) {
         @GroupWindowState int state = getState(savedTabGroup);
         TabModel targetModel = getTabModelForGroup(savedTabGroup);
-        Token localId = savedTabGroup.localId != null ? savedTabGroup.localId.tabGroupId : null;
+        Token localId =
+                savedTabGroup.localId != null ? savedTabGroup.localId.tabGroupId.getToken() : null;
         boolean hasMatchingModel = localId != null && mModelByGroupId.get(localId) == targetModel;
         List<Tab> localTabs = hasMatchingModel ? getTabs(localId) : Collections.emptyList();
         return GroupWindowInfo.forSyncedGroup(
@@ -232,7 +233,7 @@ public class GroupWindowChecker {
             return false;
         }
         Token localGroupId =
-                savedTabGroup.localId != null ? savedTabGroup.localId.tabGroupId : null;
+                savedTabGroup.localId != null ? savedTabGroup.localId.tabGroupId.getToken() : null;
         if (localGroupId != null) {
             seenGroups.add(localGroupId);
             if (localGroupId.equals(currentGroupId)) {
@@ -301,7 +302,7 @@ public class GroupWindowChecker {
         if (savedTabGroup.localId == null) {
             return GroupWindowState.HIDDEN;
         }
-        return getState(savedTabGroup.localId.tabGroupId);
+        return getState(savedTabGroup.localId.tabGroupId.getToken());
     }
 
     /**

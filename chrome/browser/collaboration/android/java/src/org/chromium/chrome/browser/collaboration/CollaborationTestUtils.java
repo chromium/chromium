@@ -38,6 +38,7 @@ import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 import java.util.Objects;
@@ -193,10 +194,11 @@ public class CollaborationTestUtils {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         new LocalTabGroupId(
-                                cta.getTabModelSelector()
-                                        .getModel(false)
-                                        .getTabAt(0)
-                                        .getTabGroupId()));
+                                TabGroupId.fromRawToken(
+                                        cta.getTabModelSelector()
+                                                .getModel(false)
+                                                .getTabAt(0)
+                                                .getTabGroupId())));
     }
 
     /** Creates a tab group and opens the tab grid dialog. */

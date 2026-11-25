@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 
 import org.mockito.ArgumentMatcher;
 
-import org.chromium.base.Token;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -88,10 +88,10 @@ public class SyncedGroupTestHelper {
      * @param tabGroupId The local id of the group.
      * @return A new group object.
      */
-    public SavedTabGroup newTabGroup(String syncId, Token tabGroupId) {
+    public SavedTabGroup newTabGroup(String syncId, TabGroupId tabGroupId) {
         SavedTabGroup group = newTabGroup(syncId);
         group.localId = new LocalTabGroupId(tabGroupId);
-        when(mTabGroupSyncService.getGroup(argThat(matchesTabGroupToken(tabGroupId))))
+        when(mTabGroupSyncService.getGroup(argThat(matchesTabGroupId(tabGroupId))))
                 .thenReturn(group);
         return group;
     }
@@ -102,7 +102,7 @@ public class SyncedGroupTestHelper {
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(null);
     }
 
-    private ArgumentMatcher<LocalTabGroupId> matchesTabGroupToken(Token tabGroupId) {
+    private ArgumentMatcher<LocalTabGroupId> matchesTabGroupId(TabGroupId tabGroupId) {
         return localTabGroupId ->
                 localTabGroupId != null && Objects.equals(localTabGroupId.tabGroupId, tabGroupId);
     }

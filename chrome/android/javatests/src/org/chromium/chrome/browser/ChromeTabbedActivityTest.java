@@ -893,7 +893,7 @@ public class ChromeTabbedActivityTest {
         String syncId = "sync_id";
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.syncId = syncId;
-        savedTabGroup.localId = new LocalTabGroupId(tab.getTabGroupId());
+        savedTabGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(tab.getTabGroupId()));
         savedTabGroup.collaborationId = "collaboration_id";
         savedTabGroup.savedTabs = List.of(savedTab);
 

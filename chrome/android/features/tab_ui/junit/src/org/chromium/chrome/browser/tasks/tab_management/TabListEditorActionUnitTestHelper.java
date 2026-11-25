@@ -154,7 +154,8 @@ public class TabListEditorActionUnitTestHelper {
 
             if (!group.isGroup() || tabGroupSyncService == null) continue;
 
-            LocalTabGroupId localTabGroupId = new LocalTabGroupId(group.getTabGroupId());
+            LocalTabGroupId localTabGroupId =
+                    new LocalTabGroupId(TabGroupId.fromRawToken(group.getTabGroupId()));
             SavedTabGroup savedGroup = new SavedTabGroup();
             savedGroup.localId = localTabGroupId;
             savedGroup.savedTabs = savedTabs;

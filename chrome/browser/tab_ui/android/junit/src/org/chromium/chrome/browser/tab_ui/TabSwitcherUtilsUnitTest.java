@@ -105,7 +105,7 @@ public class TabSwitcherUtilsUnitTest {
         SavedTabGroup syncGroup1 = new SavedTabGroup();
         syncGroup1.syncId = SYNC_GROUP_ID1;
         SavedTabGroup syncGroup2 = new SavedTabGroup();
-        syncGroup2.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
+        syncGroup2.localId = new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID_1));
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup1);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID_1)))
                 .thenReturn(true);
@@ -132,7 +132,7 @@ public class TabSwitcherUtilsUnitTest {
     @Test
     public void testFocusTabGroup_groupDoesNotExist() {
         SavedTabGroup syncGroup = new SavedTabGroup();
-        syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
+        syncGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID_1));
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID_1)))
                 .thenReturn(false);
@@ -151,7 +151,7 @@ public class TabSwitcherUtilsUnitTest {
     @Test
     public void testFocusTabGroup_alreadyOpen() {
         SavedTabGroup syncGroup = new SavedTabGroup();
-        syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
+        syncGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID_1));
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID_1)))
                 .thenReturn(true);
@@ -217,7 +217,7 @@ public class TabSwitcherUtilsUnitTest {
     public void testFocusTabGroup_disabledOnDesktop_selectsTabAndDoesNotOpenDialog() {
         DeviceInfo.setIsDesktopForTesting(true);
         SavedTabGroup syncGroup = new SavedTabGroup();
-        syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
+        syncGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(TAB_GROUP_ID_1));
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID_1)))
                 .thenReturn(true);

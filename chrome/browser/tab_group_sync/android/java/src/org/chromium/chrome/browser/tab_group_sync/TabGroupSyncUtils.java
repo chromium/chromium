@@ -46,7 +46,7 @@ public final class TabGroupSyncUtils {
      * @param localId The ID of the tab group.
      */
     public static boolean isInCurrentWindow(TabModel tabModel, LocalTabGroupId localId) {
-        return tabModel.containsTabGroup(TabGroupId.fromOptionalToken(localId.tabGroupId));
+        return tabModel.containsTabGroup(localId.tabGroupId);
     }
 
     private static boolean isInAnyWindow(LocalTabGroupId localId, List<TabModel> tabModelList) {
@@ -61,7 +61,7 @@ public final class TabGroupSyncUtils {
     /** Util method to get a {@link LocalTabGroupId} from a tab. */
     public static @Nullable LocalTabGroupId getLocalTabGroupId(Tab tab) {
         Token tabGroupId = tab.getTabGroupId();
-        return tabGroupId == null ? null : new LocalTabGroupId(tabGroupId);
+        return tabGroupId == null ? null : new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId));
     }
 
     /** Utility method to filter out URLs not suitable for tab group sync. */

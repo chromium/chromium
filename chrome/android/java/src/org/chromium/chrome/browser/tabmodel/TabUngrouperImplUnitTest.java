@@ -53,7 +53,8 @@ import java.util.List;
 public class TabUngrouperImplUnitTest {
     private static final String SYNC_ID = "sync_id";
     private static final String COLLABORATION_ID = "collaboration_id";
-    private static final LocalTabGroupId TAB_GROUP_ID = new LocalTabGroupId(new Token(1L, 2L));
+    private static final LocalTabGroupId TAB_GROUP_ID =
+            new LocalTabGroupId(TabGroupId.fromRawToken(new Token(1L, 2L)));
     private static final String TITLE = "My title";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -93,7 +94,7 @@ public class TabUngrouperImplUnitTest {
     @Test
     public void testUngroupTabsHandler_NoDialog() {
         Tab tab0 = mTabModel.addTab(/* id= */ 0);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId.getToken());
         when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabs(
@@ -122,7 +123,7 @@ public class TabUngrouperImplUnitTest {
             testUngroupTabsHandler_UngroupTabGroup_TabGroupId_DestructionOnly_ImmediateContinue() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        Token tabGroupId = TAB_GROUP_ID.tabGroupId;
+        Token tabGroupId = TAB_GROUP_ID.tabGroupId.getToken();
         tab0.setTabGroupId(tabGroupId);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
                 .thenReturn(List.of(tab0));
@@ -176,7 +177,7 @@ public class TabUngrouperImplUnitTest {
             testUngroupTabsHandler_UngroupTabGroup_WithPlaceholderTab_DoesNotNotifyWillRemove() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        Token tabGroupId = TAB_GROUP_ID.tabGroupId;
+        Token tabGroupId = TAB_GROUP_ID.tabGroupId.getToken();
         tab0.setTabGroupId(tabGroupId);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
                 .thenReturn(List.of(tab0));
@@ -202,7 +203,7 @@ public class TabUngrouperImplUnitTest {
             testUngroupTabsHandler_UngroupTabGroup_TabGroupId_DestructionOnly_ConfirmationPositive() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        Token tabGroupId = TAB_GROUP_ID.tabGroupId;
+        Token tabGroupId = TAB_GROUP_ID.tabGroupId.getToken();
         tab0.setTabGroupId(tabGroupId);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
                 .thenReturn(List.of(tab0));
@@ -253,7 +254,7 @@ public class TabUngrouperImplUnitTest {
     public void testUngroupTabsHandler_UngroupTabGroup_TabGroupId_DestructionOnly() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        Token tabGroupId = TAB_GROUP_ID.tabGroupId;
+        Token tabGroupId = TAB_GROUP_ID.tabGroupId.getToken();
         tab0.setTabGroupId(tabGroupId);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
                 .thenReturn(List.of(tab0));
@@ -304,7 +305,7 @@ public class TabUngrouperImplUnitTest {
     public void testUngroupTabsHandler_UngroupsTabs_DestructionOnly() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId.getToken());
         when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabs(
@@ -350,7 +351,7 @@ public class TabUngrouperImplUnitTest {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
         when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId.getToken());
 
         mTabUngrouperImpl.ungroupTabs(
                 List.of(tab0), /* trailing= */ true, /* allowDialog= */ true, mListener);
@@ -399,7 +400,7 @@ public class TabUngrouperImplUnitTest {
     public void testUngroupTabsHandler_Member() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId.getToken());
         when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabs(

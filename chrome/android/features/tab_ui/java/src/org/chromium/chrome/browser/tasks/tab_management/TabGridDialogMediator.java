@@ -1123,7 +1123,9 @@ public class TabGridDialogMediator
                         mTransitiveSharedGroupObserver.getCollaborationIdSupplier().get());
 
         if (!currentTabGroupIdMatches(tabGroupId)) return;
-        EitherGroupId eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
+        EitherGroupId eitherId =
+                EitherGroupId.createLocalId(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(tabGroupId)));
 
         if (menuId == R.id.ungroup_tab || menuId == R.id.select_tabs) {
             RecordUserAction.record("TabGridDialogMenu.SelectTabs");
@@ -1525,7 +1527,7 @@ public class TabGridDialogMediator
                 || message.attribution.tabGroupMetadata.localTabGroupId == null) return;
         if (Objects.equals(
                 mCurrentTabGroupId,
-                message.attribution.tabGroupMetadata.localTabGroupId.tabGroupId)) {
+                message.attribution.tabGroupMetadata.localTabGroupId.tabGroupId.getToken())) {
             showOrUpdateCollaborationActivityMessageCard();
         }
     }
@@ -1545,7 +1547,8 @@ public class TabGridDialogMediator
         }
 
         EitherGroupId eitherGroupId =
-                EitherGroupId.createLocalId(new LocalTabGroupId(mCurrentTabGroupId));
+                EitherGroupId.createLocalId(
+                        new LocalTabGroupId(TabGroupId.fromRawToken(mCurrentTabGroupId)));
         assumeNonNull(mMessagingBackendService);
         List<PersistentMessage> messages =
                 mMessagingBackendService.getMessagesForGroup(

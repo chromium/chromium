@@ -24,6 +24,7 @@ import org.chromium.base.Token;
 import org.chromium.components.tab_group_sync.EitherId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.Arrays;
@@ -167,7 +168,9 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         // TabGroupMessageMetadata.
         TabGroupMessageMetadata tgmm = attribution.tabGroupMetadata;
         Assert.assertEquals(
-                new LocalTabGroupId(new Token(2748937106984275893L, 588177993057108452L)),
+                new LocalTabGroupId(
+                        TabGroupId.fromRawToken(
+                                new Token(2748937106984275893L, 588177993057108452L))),
                 tgmm.localTabGroupId);
         Assert.assertEquals("a1b2c3d4-e5f6-7890-1234-567890abcdef", tgmm.syncTabGroupId);
         Assert.assertEquals("last known group title", tgmm.lastKnownTitle);
@@ -211,7 +214,9 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         // TabGroupMessageMetadata of attribution 1.
         TabGroupMessageMetadata tgmm = attribution1.tabGroupMetadata;
         Assert.assertEquals(
-                new LocalTabGroupId(new Token(2748937106984275893L, 588177993057108452L)),
+                new LocalTabGroupId(
+                        TabGroupId.fromRawToken(
+                                new Token(2748937106984275893L, 588177993057108452L))),
                 tgmm.localTabGroupId);
         Assert.assertEquals("a1b2c3d4-e5f6-7890-1234-567890abcdef", tgmm.syncTabGroupId);
         Assert.assertEquals("last known group title", tgmm.lastKnownTitle);
