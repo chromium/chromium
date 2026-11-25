@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -117,7 +118,8 @@ class PaymentRequestStateTest : public testing::Test,
         std::move(app_service), web_contents_->GetPrimaryMainFrame(),
         GURL("https://example.test"), GURL("https://example.test/pay"),
         url::Origin::Create(GURL("https://example.test")), spec_->AsWeakPtr(),
-        weak_ptr_factory_.GetWeakPtr(), "en-US", &test_personal_data_manager_,
+        weak_ptr_factory_.GetWeakPtr(),
+        base::i18n::GetKnownLanguageTag("en-US"), &test_personal_data_manager_,
         test_payment_request_delegate_.GetContentWeakPtr(),
         journey_logger_.GetWeakPtr(), const_csp_checker_.GetWeakPtr());
     state_->AddObserver(this);

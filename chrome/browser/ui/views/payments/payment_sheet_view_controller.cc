@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/message_formatter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -642,7 +643,8 @@ PaymentSheetViewController::CreateShippingSectionContent(
   }
 
   return GetShippingAddressLabelWithMissingInfo(
-      AddressStyleType::SUMMARY, state()->GetApplicationLocale(), *profile,
+      AddressStyleType::SUMMARY,
+      std::string(state()->GetApplicationLocale().tag_string()), *profile,
       *(state()->profile_comparator()), accessible_content);
 }
 
@@ -687,7 +689,8 @@ PaymentSheetViewController::CreateShippingRow() {
                                     /*button_enabled=*/true);
   }
   const std::u16string label = GetShippingAddressLabelFromAutofillProfile(
-      *state()->shipping_profiles()[0], state()->GetApplicationLocale());
+      *state()->shipping_profiles()[0],
+      std::string(state()->GetApplicationLocale().tag_string()));
   if (state()->shipping_profiles().size() == 1) {
     return builder.CreateWithButton(label,
                                     l10n_util::GetStringUTF16(IDS_CHOOSE),
@@ -760,7 +763,8 @@ PaymentSheetViewController::CreateContactInfoSectionContent(
   *accessible_content = std::u16string();
   return profile && spec()
              ? payments::GetContactInfoLabel(
-                   AddressStyleType::SUMMARY, state()->GetApplicationLocale(),
+                   AddressStyleType::SUMMARY,
+                   std::string(state()->GetApplicationLocale().tag_string()),
                    *profile, spec()->request_payer_name(),
                    spec()->request_payer_email(), spec()->request_payer_phone(),
                    *(state()->profile_comparator()), accessible_content)
@@ -809,7 +813,7 @@ PaymentSheetViewController::CreateContactInfoRow() {
   const std::u16string preview =
       state()->contact_profiles()[0]->ConstructInferredLabel(
           kLabelFields, std::size(kLabelFields),
-          state()->GetApplicationLocale());
+          std::string(state()->GetApplicationLocale().tag_string()));
   if (state()->contact_profiles().size() == 1) {
     return builder.CreateWithButton(preview,
                                     l10n_util::GetStringUTF16(IDS_CHOOSE),

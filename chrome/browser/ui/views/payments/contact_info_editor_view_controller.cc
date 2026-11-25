@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/payments/contact_info_editor_view_controller.h"
 
+#include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -149,9 +151,9 @@ ContactInfoEditorViewController::GetWeakPtr() {
 void ContactInfoEditorViewController::PopulateProfile(
     autofill::AutofillProfile* profile) {
   for (const auto& field : text_fields()) {
-  profile->SetInfoWithVerificationStatus(
+    profile->SetInfoWithVerificationStatus(
         field.second.type, field.first->GetText(),
-        state()->GetApplicationLocale(),
+        state()->GetApplicationLocale().tag_string(),
         autofill::VerificationStatus::kUserVerified);
   }
 }
@@ -166,15 +168,15 @@ std::u16string ContactInfoEditorViewController::GetValueForType(
     autofill::FieldType type) {
   if (type == autofill::PHONE_HOME_WHOLE_NUMBER) {
     return autofill::i18n::GetFormattedPhoneNumberForDisplay(
-        profile, state()->GetApplicationLocale());
+        profile, std::string(state()->GetApplicationLocale().tag_string()));
   }
 
-  return profile.GetInfo(type, state()->GetApplicationLocale());
+  return profile.GetInfo(type, state()->GetApplicationLocale().tag_string());
 }
 
 ContactInfoEditorViewController::ContactInfoValidationDelegate::
     ContactInfoValidationDelegate(const EditorField& field,
-                                  const std::string& locale,
+                                  const base::i18n::LanguageTag& locale,
                                   ContactInfoEditorViewController* controller)
     : field_(field), controller_(controller), locale_(locale) {}
 
@@ -191,7 +193,7 @@ ContactInfoEditorViewController::ContactInfoValidationDelegate::Format(
     std::u16string_view text) {
   return base::UTF8ToUTF16(autofill::i18n::FormatPhoneForDisplay(
       base::UTF16ToUTF8(text),
-      autofill::AutofillCountry::CountryCodeForLocale(*locale_)));
+      autofill::AutofillCountry::CountryCodeForLocale(locale_.tag_string())));
 }
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
@@ -242,7 +244,8 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
     switch (field_.type) {
       case autofill::PHONE_HOME_WHOLE_NUMBER: {
         const std::string default_region_code =
-            autofill::AutofillCountry::CountryCodeForLocale(*locale_);
+            autofill::AutofillCountry::CountryCodeForLocale(
+                locale_.tag_string());
         if (!autofill::IsPossiblePhoneNumber(textfield->GetText(),
                                              default_region_code)) {
           is_valid = false;

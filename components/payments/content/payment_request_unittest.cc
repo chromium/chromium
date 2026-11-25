@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
@@ -56,7 +57,8 @@ class PaymentRequestValidationTest : public content::RenderViewHostTestHarness,
     ON_CALL(*delegate, GetDisplayManager())
         .WillByDefault(testing::Return(&display_manager_));
     ON_CALL(*delegate, GetApplicationLocale())
-        .WillByDefault(testing::ReturnRefOfCopy(std::string("en-US")));
+        .WillByDefault(
+            testing::ReturnRefOfCopy(base::i18n::GetKnownLanguageTag("en-US")));
     ON_CALL(*delegate, GetLastCommittedURL())
         .WillByDefault(testing::ReturnRef(page_url_));
     ON_CALL(*delegate, GetPersonalDataManager())

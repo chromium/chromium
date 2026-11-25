@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/validation_rules_storage_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer_impl.h"
 #include "components/autofill/core/browser/geo/region_data_loader_impl.h"
@@ -150,8 +153,11 @@ ChromePaymentRequestDelegate::GetPersonalDataManager() {
       GetBrowserContextOrNull());
 }
 
-const std::string& ChromePaymentRequestDelegate::GetApplicationLocale() const {
-  return g_browser_process->GetApplicationLocale();
+const base::i18n::LanguageTag&
+ChromePaymentRequestDelegate::GetApplicationLocale() const {
+  return g_browser_process->GetFeatures()
+      ->application_locale_storage()
+      ->GetTag();
 }
 
 bool ChromePaymentRequestDelegate::IsOffTheRecord() const {
@@ -279,9 +285,9 @@ ChromePaymentRequestDelegate::GetPaymentUIObserver() const {
 
 autofill::RegionDataLoader*
 ChromePaymentRequestDelegate::GetRegionDataLoader() {
-  return new autofill::RegionDataLoaderImpl(GetAddressInputSource().release(),
-                                            GetAddressInputStorage().release(),
-                                            GetApplicationLocale());
+  return new autofill::RegionDataLoaderImpl(
+      GetAddressInputSource().release(), GetAddressInputStorage().release(),
+      std::string(GetApplicationLocale().tag_string()));
 }
 
 content::BrowserContext* ChromePaymentRequestDelegate::GetBrowserContextOrNull()

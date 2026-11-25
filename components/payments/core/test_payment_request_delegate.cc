@@ -15,7 +15,7 @@ TestPaymentRequestDelegate::TestPaymentRequestDelegate(
     autofill::PersonalDataManager* personal_data_manager)
     : main_task_executor_(std::move(task_executor)),
       personal_data_manager_(personal_data_manager),
-      locale_("en-US"),
+      locale_(base::i18n::GetKnownLanguageTag("en-US")),
       last_committed_url_("https://shop.com") {}
 
 TestPaymentRequestDelegate::~TestPaymentRequestDelegate() = default;
@@ -25,7 +25,8 @@ TestPaymentRequestDelegate::GetPersonalDataManager() {
   return personal_data_manager_;
 }
 
-const std::string& TestPaymentRequestDelegate::GetApplicationLocale() const {
+const base::i18n::LanguageTag&
+TestPaymentRequestDelegate::GetApplicationLocale() const {
   return locale_;
 }
 

@@ -6,7 +6,6 @@
 #define COMPONENTS_PAYMENTS_CORE_PAYMENT_REQUEST_BASE_DELEGATE_H_
 
 #include <memory>
-#include <string>
 
 class GURL;
 
@@ -14,6 +13,10 @@ namespace autofill {
 class AddressNormalizer;
 class PersonalDataManager;
 }  // namespace autofill
+
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
 
 class PrefService;
 
@@ -29,7 +32,7 @@ class PaymentRequestBaseDelegate {
   // Cannot be null.
   virtual autofill::PersonalDataManager* GetPersonalDataManager() = 0;
 
-  virtual const std::string& GetApplicationLocale() const = 0;
+  virtual const base::i18n::LanguageTag& GetApplicationLocale() const = 0;
 
   // Returns whether the user is off-the-record.
   virtual bool IsOffTheRecord() const = 0;

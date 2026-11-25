@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -107,7 +108,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
       const url::Origin& frame_security_origin,
       base::WeakPtr<PaymentRequestSpec> spec,
       base::WeakPtr<Delegate> delegate,
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       autofill::PersonalDataManager* personal_data_manager,
       base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate,
       base::WeakPtr<JourneyLogger> journey_logger,
@@ -271,7 +272,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
     bypass_user_interaction_for_testing_ = bypass;
   }
 
-  const std::string& GetApplicationLocale();
+  const base::i18n::LanguageTag& GetApplicationLocale();
   autofill::PersonalDataManager* GetPersonalDataManager();
 
   PaymentsProfileComparator* profile_comparator() {
@@ -381,7 +382,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   // Note: This does not apply to secure payment confirmation.
   bool bypass_user_interaction_for_testing_ = false;
 
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
 
   // These WeakPtrs can be null when the webpage closes or the iframe refreshes
   // or navigates.

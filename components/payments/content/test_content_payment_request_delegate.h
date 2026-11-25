@@ -18,6 +18,9 @@ class PersonalDataManager;
 
 namespace base {
 class SingleThreadTaskExecutor;
+namespace i18n {
+class LanguageTag;
+}  // namespace i18n
 }  // namespace base
 
 namespace gfx {
@@ -59,7 +62,7 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   PaymentRequestDialog* GetDialogForTesting() override;
 
   autofill::PersonalDataManager* GetPersonalDataManager() override;
-  const std::string& GetApplicationLocale() const override;
+  const base::i18n::LanguageTag& GetApplicationLocale() const override;
   bool IsOffTheRecord() const override;
   const GURL& GetLastCommittedURL() const override;
   autofill::AddressNormalizer* GetAddressNormalizer() override;

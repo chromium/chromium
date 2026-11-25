@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/i18n/language_tag.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_ui_observer.h"
@@ -87,7 +88,10 @@ class MockContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
               GetPersonalDataManager,
               (),
               (override));
-  MOCK_METHOD(const std::string&, GetApplicationLocale, (), (override, const));
+  MOCK_METHOD(const base::i18n::LanguageTag&,
+              GetApplicationLocale,
+              (),
+              (override, const));
   MOCK_METHOD(bool, IsOffTheRecord, (), (override, const));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (override, const));
   MOCK_METHOD(autofill::AddressNormalizer*,

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/payments/core/error_strings.h"
@@ -87,8 +88,8 @@ TestContentPaymentRequestDelegate::GetPersonalDataManager() {
   return core_delegate_.GetPersonalDataManager();
 }
 
-const std::string& TestContentPaymentRequestDelegate::GetApplicationLocale()
-    const {
+const base::i18n::LanguageTag&
+TestContentPaymentRequestDelegate::GetApplicationLocale() const {
   return core_delegate_.GetApplicationLocale();
 }
 

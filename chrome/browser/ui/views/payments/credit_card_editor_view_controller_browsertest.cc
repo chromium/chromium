@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
@@ -539,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   EXPECT_EQ(1U, request->state()->available_apps().size());
   EXPECT_EQ(nullptr, request->state()->selected_app());
   EXPECT_EQ(card.GetInfo(autofill::CREDIT_CARD_NAME_FULL,
-                         request->state()->GetApplicationLocale()),
+                         request->state()->GetApplicationLocale().tag_string()),
             request->state()->available_apps()[0]->GetSublabel());
 
   OpenPaymentMethodScreen();

@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/language_tag.h"
-#include "base/i18n/tag_converters.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
@@ -168,8 +167,7 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
           autofill::GeoIpCountryCode(
               variations_service ? variations_service->GetLatestCountry()
                                  : std::string()),
-          base::i18n::GetLanguageTagFromString(state()->GetApplicationLocale())
-              .value_or(base::i18n::GetKnownLanguageTag("und")));
+          state()->GetApplicationLocale());
       if (model->countries().size() != countries_.size()) {
         UpdateCountries(model.get());
       }
@@ -379,14 +377,14 @@ std::u16string ShippingAddressEditorViewController::GetValueForType(
     autofill::FieldType type) {
   if (type == autofill::PHONE_HOME_WHOLE_NUMBER) {
     return autofill::i18n::GetFormattedPhoneNumberForDisplay(
-        profile, state()->GetApplicationLocale());
+        profile, std::string(state()->GetApplicationLocale().tag_string()));
   }
 
   if (type == autofill::ADDRESS_HOME_STATE && region_model_) {
     // For the state, check if the initial value matches either a region code or
     // a region name.
     std::u16string initial_region =
-        profile.GetInfo(type, state()->GetApplicationLocale());
+        profile.GetInfo(type, state()->GetApplicationLocale().tag_string());
     autofill::l10n::CaseInsensitiveCompare compare;
 
     for (const auto& region : region_model_->GetRegions()) {
@@ -405,12 +403,12 @@ std::u16string ShippingAddressEditorViewController::GetValueForType(
     std::string street_address_line;
     i18n::addressinput::GetStreetAddressLinesAsSingleLine(
         *autofill::i18n::CreateAddressDataFromAutofillProfile(
-            profile, state()->GetApplicationLocale()),
+            profile, std::string(state()->GetApplicationLocale().tag_string())),
         &street_address_line);
     return base::UTF8ToUTF16(street_address_line);
   }
 
-  return profile.GetInfo(type, state()->GetApplicationLocale());
+  return profile.GetInfo(type, state()->GetApplicationLocale().tag_string());
 }
 
 bool ShippingAddressEditorViewController::GetSheetId(DialogViewID* sheet_id) {
@@ -428,8 +426,7 @@ void ShippingAddressEditorViewController::UpdateCountries(
         autofill::GeoIpCountryCode(variations_service
                                        ? variations_service->GetLatestCountry()
                                        : std::string()),
-        base::i18n::GetLanguageTagFromString(state()->GetApplicationLocale())
-            .value_or(base::i18n::GetKnownLanguageTag("und")));
+        state()->GetApplicationLocale());
     model = &local_model;
   }
 
@@ -446,7 +443,8 @@ void ShippingAddressEditorViewController::UpdateCountries(
   // |chosen_country_index_|.
   if (IsEditingExistingItem()) {
     std::u16string chosen_country(temporary_profile_.GetInfo(
-        autofill::ADDRESS_HOME_COUNTRY, state()->GetApplicationLocale()));
+        autofill::ADDRESS_HOME_COUNTRY,
+        state()->GetApplicationLocale().tag_string()));
     for (chosen_country_index_ = 0; chosen_country_index_ < countries_.size();
          ++chosen_country_index_) {
       if (chosen_country == countries_[chosen_country_index_].second) {
@@ -461,9 +459,10 @@ void ShippingAddressEditorViewController::UpdateCountries(
       if (!countries_.empty()) {
         LOG(ERROR) << "Unexpected country: " << chosen_country;
         chosen_country_index_ = 0;
-        temporary_profile_.SetInfo(autofill::ADDRESS_HOME_COUNTRY,
-                                   countries_[chosen_country_index_].second,
-                                   state()->GetApplicationLocale());
+        temporary_profile_.SetInfo(
+            autofill::ADDRESS_HOME_COUNTRY,
+            countries_[chosen_country_index_].second,
+            state()->GetApplicationLocale().tag_string());
       } else {
         LOG(ERROR) << "Unexpected empty country list!";
         chosen_country_index_ = kInvalidCountryIndex;
@@ -483,9 +482,7 @@ void ShippingAddressEditorViewController::UpdateEditorFields() {
 
   std::vector<std::vector<autofill::AutofillAddressUIComponent>> components;
   autofill::GetAddressComponents(
-      chosen_country_code,
-      base::i18n::GetLanguageTagFromString(state()->GetApplicationLocale())
-          .value_or(base::i18n::GetKnownLanguageTag("und")),
+      chosen_country_code, state()->GetApplicationLocale(),
       /*include_literals=*/false, &components, &language_code_);
 
   // Insert the Country combobox at the top.
@@ -548,7 +545,7 @@ void ShippingAddressEditorViewController::OnDataChanged(bool synchronous) {
 bool ShippingAddressEditorViewController::SaveFieldsToProfile(
     autofill::AutofillProfile* profile,
     bool ignore_errors) {
-  const std::string& locale = state()->GetApplicationLocale();
+  const std::string_view locale = state()->GetApplicationLocale().tag_string();
   // The country must be set first, because the profile uses the country to
   // interpret some of the data (e.g., phone numbers) passed to SetInfo.
   views::Combobox* combobox =

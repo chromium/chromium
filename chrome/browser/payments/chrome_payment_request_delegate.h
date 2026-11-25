@@ -13,13 +13,17 @@
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace autofill {
 class RegionDataLoader;
 }  // namespace autofill
+
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace gfx {
 class Size;
@@ -50,7 +54,7 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   void ShowProcessingSpinner() override;
   void ShowLoadingView() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
-  const std::string& GetApplicationLocale() const override;
+  const base::i18n::LanguageTag& GetApplicationLocale() const override;
   bool IsOffTheRecord() const override;
   const GURL& GetLastCommittedURL() const override;
   autofill::AddressNormalizer* GetAddressNormalizer() override;

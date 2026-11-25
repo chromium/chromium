@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -325,11 +326,12 @@ void SecurePaymentConfirmationController::
   model_.set_instrument_icon(app->icon_bitmap());
 
   const mojom::PaymentItemPtr& total = app->GetTotalForSpc();
-  model_.set_total_value(
-      base::StrCat({base::UTF8ToUTF16(total->amount->currency), u" ",
-                    CurrencyFormatter(total->amount->currency,
-                                      request_->state()->GetApplicationLocale())
-                        .Format(total->amount->value)}));
+  model_.set_total_value(base::StrCat(
+      {base::UTF8ToUTF16(total->amount->currency), u" ",
+       CurrencyFormatter(
+           total->amount->currency,
+           std::string(request_->state()->GetApplicationLocale().tag_string()))
+           .Format(total->amount->value)}));
 
   model_.set_progress_bar_visible(false);
 

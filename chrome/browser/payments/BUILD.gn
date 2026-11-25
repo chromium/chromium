@@ -30,6 +30,7 @@ source_set("impl") {
 
     deps = [
       "//base",
+      "//chrome/browser:global_features",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/autofill",
       "//chrome/browser/net",
@@ -40,6 +41,7 @@ source_set("impl") {
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications",
       "//chrome/common:version_header",
+      "//components/application_locale_storage",
       "//components/payments/content",
       "//components/payments/content:utils",
       "//components/payments/core",

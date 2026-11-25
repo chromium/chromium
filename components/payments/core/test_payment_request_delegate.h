@@ -6,8 +6,8 @@
 #define COMPONENTS_PAYMENTS_CORE_TEST_PAYMENT_REQUEST_DELEGATE_H_
 
 #include <memory>
-#include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
@@ -37,7 +37,7 @@ class TestPaymentRequestDelegate : public PaymentRequestDelegate {
   void ShowProcessingSpinner() override {}
   void ShowLoadingView() override {}
   autofill::PersonalDataManager* GetPersonalDataManager() override;
-  const std::string& GetApplicationLocale() const override;
+  const base::i18n::LanguageTag& GetApplicationLocale() const override;
   bool IsOffTheRecord() const override;
   const GURL& GetLastCommittedURL() const override;
   autofill::AddressNormalizer* GetAddressNormalizer() override;
@@ -49,7 +49,7 @@ class TestPaymentRequestDelegate : public PaymentRequestDelegate {
  private:
   std::unique_ptr<base::SingleThreadTaskExecutor> main_task_executor_;
   raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
-  std::string locale_;
+  base::i18n::LanguageTag locale_;
   const GURL last_committed_url_;
   autofill::TestAddressNormalizer address_normalizer_;
 };

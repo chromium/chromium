@@ -10,8 +10,8 @@
 #include <string_view>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
 
@@ -71,7 +71,7 @@ class ContactInfoEditorViewController : public EditorViewController {
   class ContactInfoValidationDelegate : public ValidationDelegate {
    public:
     ContactInfoValidationDelegate(const EditorField& field,
-                                  const std::string& locale,
+                                  const base::i18n::LanguageTag& locale,
                                   ContactInfoEditorViewController* controller);
     ~ContactInfoValidationDelegate() override;
 
@@ -94,7 +94,7 @@ class ContactInfoEditorViewController : public EditorViewController {
     EditorField field_;
     // Outlives this class. Never null.
     raw_ptr<ContactInfoEditorViewController, DanglingUntriaged> controller_;
-    const raw_ref<const std::string> locale_;
+    const base::i18n::LanguageTag locale_;
   };
 
   // Must be the last member of a leaf class.

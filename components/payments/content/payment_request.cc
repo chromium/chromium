@@ -11,6 +11,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -266,7 +267,7 @@ void PaymentRequest::Init(
     SecurePaymentConfirmationRequestValidationError validation_result =
         ValidateSecurePaymentConfirmationRequest(
             method_data, options, frame_security_origin_,
-            delegate_->GetApplicationLocale());
+            std::string(delegate_->GetApplicationLocale().tag_string()));
     if (validation_result !=
         SecurePaymentConfirmationRequestValidationError::kOk) {
       std::string error_message =
@@ -313,7 +314,7 @@ void PaymentRequest::Init(
   spec_ = std::make_unique<PaymentRequestSpec>(
       std::move(options), std::move(details), std::move(method_data),
       /*observer=*/weak_ptr_factory_.GetWeakPtr(),
-      delegate_->GetApplicationLocale());
+      std::string(delegate_->GetApplicationLocale().tag_string()));
   state_ = std::make_unique<PaymentRequestState>(
       std::make_unique<PaymentAppService>(
           render_frame_host().GetBrowserContext()),
