@@ -76,6 +76,12 @@ class MockBus : public Bus {
                     void* user_data));
   MOCK_METHOD2(AddMatch, void(const std::string& match_rule, Error* error));
   MOCK_METHOD2(RemoveMatch, bool(const std::string& match_rule, Error* error));
+  MOCK_METHOD2(ListenForServiceOwnerChange,
+               void(const std::string& service_name,
+                    const ServiceOwnerChangeCallback& callback));
+  MOCK_METHOD2(UnlistenForServiceOwnerChange,
+               void(const std::string& service_name,
+                    const ServiceOwnerChangeCallback& callback));
   MOCK_METHOD4(TryRegisterObjectPath,
                bool(const ObjectPath& object_path,
                     const DBusObjectPathVTable* vtable,

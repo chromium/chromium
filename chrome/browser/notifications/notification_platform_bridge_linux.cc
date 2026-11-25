@@ -66,6 +66,7 @@
 #include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
 #include "components/dbus/utils/connect_to_signal.h"
+#include "components/dbus/utils/name_has_owner.h"
 #include "components/dbus/utils/read_value.h"
 #include "components/dbus/utils/variant.h"
 #include "components/dbus/xdg/portal.h"
@@ -450,7 +451,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     on_app_terminating_subscription_ =
         browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
             &NotificationPlatformBridgeLinuxImpl::OnAppTerminating,
-            weak_factory_.GetWeakPtr()));
+            bridge_weak_factory_.GetWeakPtr()));
   }
 
 #if defined(USE_GSETTINGS)
@@ -589,9 +590,31 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     }
   }
 
+  base::CallbackListSubscription AddAvailableCallback(
+      base::RepeatingClosure callback) override {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+    return available_callbacks_.Add(std::move(callback));
+  }
+
   void DisplayServiceShutDown(Profile* profile) override {}
 
   void CleanUp() {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+    ResetConnection();
+    if (bus_ && !server_owner_changed_callback_.is_null()) {
+      bus_->UnlistenForServiceOwnerChange(kFreedesktopNotificationsName,
+                                          server_owner_changed_callback_);
+    }
+    server_owner_changed_callback_.Reset();
+    bus_.reset();
+#if defined(USE_GSETTINGS)
+    gsettings_factory_.Reset();
+#endif
+  }
+
+  // Drops the state of the current connection, but keeps `bus_` so the
+  // connection can be set up again.
+  void ResetConnection() {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     if (using_portal_ && notification_proxy_) {
       for (const auto& pair : notifications_) {
@@ -604,15 +627,15 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       }
     }
     notification_proxy_ = nullptr;
-    bus_.reset();
     notifications_.clear();
     using_portal_ = false;
     portal_version_ = kPortalMinVersion;
+    capabilities_.clear();
+    server_name_.clear();
     gnome_show_banners_.reset();
 #if defined(USE_GSETTINGS)
     show_banners_signal_.Reset();
     notification_settings_.Reset();
-    gsettings_factory_.Reset();
 #endif
     weak_factory_.InvalidateWeakPtrs();
   }
@@ -697,7 +720,8 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
   void OnServiceStarted(std::optional<bool> service_started) {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-    if (!service_started.value_or(false)) {
+    server_started_ = service_started.value_or(false);
+    if (!server_started_) {
       InitPortal(ConnectionInitializationStatusCode::
                      NATIVE_NOTIFICATIONS_NOT_SUPPORTED);
       return;
@@ -1724,9 +1748,55 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       std::move(callback).Run(success);
     }
     on_connected_callbacks_.clear();
-    if (!success) {
-      CleanUp();
+    if (success) {
+      available_callbacks_.Notify();
+    } else {
+      ResetConnection();
+      WatchForServer();
     }
+  }
+
+  // Sets up the connection again once a notification server appears, e.g.
+  // when the server starts after the browser.
+  void WatchForServer() {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+    CHECK(bus_);
+    CHECK(server_owner_changed_callback_.is_null());
+    server_owner_changed_callback_ = base::BindRepeating(
+        &NotificationPlatformBridgeLinuxImpl::OnServerOwnerChanged,
+        bridge_weak_factory_.GetWeakPtr());
+    bus_->ListenForServiceOwnerChange(kFreedesktopNotificationsName,
+                                      server_owner_changed_callback_);
+    if (!server_started_) {
+      // The server may have started after the initial check.
+      dbus_utils::NameHasOwner(
+          bus_.get(), kFreedesktopNotificationsName,
+          base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnNameHasOwner,
+                         bridge_weak_factory_.GetWeakPtr()));
+    }
+  }
+
+  void OnNameHasOwner(std::optional<bool> has_owner) {
+    if (has_owner.value_or(false)) {
+      RetryInit();
+    }
+  }
+
+  void OnServerOwnerChanged(const std::string& owner) {
+    if (!owner.empty()) {
+      RetryInit();
+    }
+  }
+
+  void RetryInit() {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+    if (server_owner_changed_callback_.is_null()) {
+      return;
+    }
+    bus_->UnlistenForServiceOwnerChange(kFreedesktopNotificationsName,
+                                        server_owner_changed_callback_);
+    server_owner_changed_callback_.Reset();
+    Init();
   }
 
   void OnSignalConnected(const std::string& interface_name,
@@ -1761,6 +1831,15 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
   // SetReadyCallback().
   std::optional<bool> connected_;
   std::vector<NotificationBridgeReadyCallback> on_connected_callbacks_;
+  base::RepeatingClosureList available_callbacks_;
+
+  // Whether org.freedesktop.Notifications had an owner or was started during
+  // the last connection attempt.
+  bool server_started_ = false;
+
+  // Set while waiting for a notification server after a failed connection
+  // attempt.
+  dbus::Bus::ServiceOwnerChangeCallback server_owner_changed_callback_;
 
   // Notification servers very rarely have the 'body-images'
   // capability, so try to avoid an image copy if possible.
@@ -1812,7 +1891,12 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
   ScopedGSignal show_banners_signal_;
 #endif
 
+  // For callbacks that belong to one connection attempt. Invalidated by
+  // ResetConnection().
   base::WeakPtrFactory<NotificationPlatformBridgeLinuxImpl> weak_factory_{this};
+  // For callbacks that outlive a connection attempt.
+  base::WeakPtrFactory<NotificationPlatformBridgeLinuxImpl>
+      bridge_weak_factory_{this};
 };
 
 NotificationPlatformBridgeLinux::NotificationPlatformBridgeLinux()
@@ -1888,6 +1972,12 @@ void NotificationPlatformBridgeLinux::GetDisplayedForOrigin(
 void NotificationPlatformBridgeLinux::SetReadyCallback(
     NotificationBridgeReadyCallback callback) {
   impl_->SetReadyCallback(std::move(callback));
+}
+
+base::CallbackListSubscription
+NotificationPlatformBridgeLinux::AddAvailableCallback(
+    base::RepeatingClosure callback) {
+  return impl_->AddAvailableCallback(std::move(callback));
 }
 
 void NotificationPlatformBridgeLinux::DisplayServiceShutDown(Profile* profile) {

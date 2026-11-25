@@ -23,6 +23,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/common/notifications/notification_operation.h"
@@ -926,6 +928,10 @@ class NotificationPlatformBridgeLinuxTest : public testing::Test {
             &NotificationPlatformBridgeLinuxTest::HandleOperation,
             base::Unretained(this)));
     mock_bus_ = base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+    EXPECT_CALL(*mock_bus_.get(), ListenForServiceOwnerChange)
+        .Times(testing::AnyNumber());
+    EXPECT_CALL(*mock_bus_.get(), UnlistenForServiceOwnerChange)
+        .Times(testing::AnyNumber());
     fake_dbus_proxy_ = base::MakeRefCounted<FakeDBusProxy>(
         mock_bus_.get(), dbus::ObjectPath(DBUS_PATH_DBUS));
     fake_notification_proxy_ = base::MakeRefCounted<FakeNotificationProxy>(
@@ -1649,6 +1655,55 @@ TEST_F(NotificationPlatformBridgeLinuxTest, MissingBodyCapability) {
           .SetCapabilities(std::vector<std::string>{"actions"})
           .SetExpectInitSuccess(false)
           .SetConnectSignals(false));
+}
+
+// A notification server that starts after the browser, e.g. when the browser
+// is autostarted before the desktop's notification daemon, is used once its
+// name gets an owner.
+TEST_F(NotificationPlatformBridgeLinuxTest, ServerStartsAfterInitFailure) {
+  dbus::Bus::ServiceOwnerChangeCallback owner_changed;
+  EXPECT_CALL(*mock_bus_.get(), ListenForServiceOwnerChange(
+                                    kFreedesktopNotificationsName, testing::_))
+      .WillOnce(testing::SaveArg<1>(&owner_changed));
+  CreateNotificationBridgeLinux(TestParams()
+                                    .SetFdoNameHasOwner(false)
+                                    .SetPortalNameHasOwner(false)
+                                    .SetExpectInitSuccess(false));
+  ASSERT_FALSE(owner_changed.is_null());
+
+  base::MockCallback<base::RepeatingClosure> available;
+  auto subscription =
+      notification_bridge_linux_->AddAvailableCallback(available.Get());
+  EXPECT_CALL(available, Run());
+  fake_dbus_proxy_->SetFdoNameHasOwner(true);
+  owner_changed.Run(":1.42");
+  content::RunAllTasksUntilIdle();
+
+  notification_bridge_linux_->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, profile(),
+      NotificationBuilder("").GetResult(), nullptr);
+  content::RunAllTasksUntilIdle();
+  EXPECT_EQ(1, fake_notification_proxy_->notify_calls());
+}
+
+// Waiting for a server stops when the browser terminates.
+TEST_F(NotificationPlatformBridgeLinuxTest, StopWatchingOnAppTerminating) {
+  dbus::Bus::ServiceOwnerChangeCallback owner_changed;
+  EXPECT_CALL(*mock_bus_.get(), ListenForServiceOwnerChange(
+                                    kFreedesktopNotificationsName, testing::_))
+      .WillOnce(testing::SaveArg<1>(&owner_changed));
+  CreateNotificationBridgeLinux(TestParams()
+                                    .SetFdoNameHasOwner(false)
+                                    .SetPortalNameHasOwner(false)
+                                    .SetExpectInitSuccess(false));
+  ASSERT_FALSE(owner_changed.is_null());
+
+  EXPECT_CALL(*mock_bus_.get(),
+              UnlistenForServiceOwnerChange(kFreedesktopNotificationsName,
+                                            testing::Eq(owner_changed)));
+  // This can only run once per process.
+  browser_shutdown::NotifyAppTerminating();
+  testing::Mock::VerifyAndClearExpectations(mock_bus_.get());
 }
 
 TEST_F(NotificationPlatformBridgeLinuxTest, EscapeHtml) {

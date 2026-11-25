@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
@@ -76,6 +77,13 @@ class NotificationPlatformBridge {
   // true if |this| is ready to be used and false if initialization
   // failed. |callback| may be called directly or from a posted task.
   virtual void SetReadyCallback(NotificationBridgeReadyCallback callback) = 0;
+
+  // Adds a callback that runs each time |this| becomes ready, including after
+  // initialization failed, e.g. when a notification server starts after the
+  // browser. |callback| stops running once the returned subscription is
+  // destroyed.
+  virtual base::CallbackListSubscription AddAvailableCallback(
+      base::RepeatingClosure callback);
 
   // Called when display service for |profile| is being shut down (for example
   // if the profile is being destroyed). If |profile| is nullptr the system

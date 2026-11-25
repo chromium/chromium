@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_DELEGATOR_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
@@ -57,12 +59,20 @@ class NotificationPlatformBridgeDelegator {
   // Called when the |system_bridge_| may have been initialized.
   void OnSystemNotificationPlatformBridgeReady(bool success);
 
+  // Called when the system bridge becomes ready, possibly after its
+  // initialization failed.
+  void OnSystemNotificationPlatformBridgeAvailable();
+
   raw_ptr<Profile> profile_;
 
   // Bridge responsible for displaying notifications on the platform. The
   // message center's bridge is maintained for platforms where it is available.
   raw_ptr<NotificationPlatformBridge> message_center_bridge_;
   raw_ptr<NotificationPlatformBridge> system_bridge_;
+  base::CallbackListSubscription system_bridge_available_subscription_;
+  // IDs of notifications shown in the message center because the system bridge
+  // was unavailable.
+  std::set<std::string> message_center_fallback_ids_;
   base::OnceClosure ready_callback_;
 
   base::WeakPtrFactory<NotificationPlatformBridgeDelegator> weak_factory_{this};

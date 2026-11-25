@@ -42,6 +42,8 @@ class NotificationPlatformBridgeLinux : public NotificationPlatformBridge {
       const GURL& origin,
       GetDisplayedNotificationsCallback callback) const override;
   void SetReadyCallback(NotificationBridgeReadyCallback callback) override;
+  base::CallbackListSubscription AddAvailableCallback(
+      base::RepeatingClosure callback) override;
   void DisplayServiceShutDown(Profile* profile) override;
 
  private:

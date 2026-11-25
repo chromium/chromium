@@ -25,3 +25,8 @@ base::FilePath NotificationPlatformBridge::GetProfileBaseNameFromProfileId(
     const std::string& profile_id) {
   return base::FilePath::FromUTF8Unsafe(profile_id);
 }
+
+base::CallbackListSubscription NotificationPlatformBridge::AddAvailableCallback(
+    base::RepeatingClosure callback) {
+  return {};
+}

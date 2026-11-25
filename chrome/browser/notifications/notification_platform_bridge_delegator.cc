@@ -5,6 +5,8 @@
 #include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
 
 #include <algorithm>
+#include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -24,6 +26,8 @@
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
 #include "chrome/browser/notifications/notification_platform_bridge_message_center.h"
+#include "chrome/browser/notifications/notification_ui_manager.h"
+#include "chrome/browser/notifications/profile_notification.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -100,6 +104,11 @@ NotificationPlatformBridgeDelegator::NotificationPlatformBridgeDelegator(
   // Initialize the |system_bridge_| if system notifications are available,
   // otherwise signal that the bridge could not be initialized.
   if (system_bridge_) {
+    system_bridge_available_subscription_ =
+        system_bridge_->AddAvailableCallback(
+            base::BindRepeating(&NotificationPlatformBridgeDelegator::
+                                    OnSystemNotificationPlatformBridgeAvailable,
+                                weak_factory_.GetWeakPtr()));
     system_bridge_->SetReadyCallback(
         base::BindOnce(&NotificationPlatformBridgeDelegator::
                            OnSystemNotificationPlatformBridgeReady,
@@ -118,6 +127,24 @@ void NotificationPlatformBridgeDelegator::Display(
     std::unique_ptr<NotificationCommon::Metadata> metadata) {
   NotificationPlatformBridge* bridge = GetBridgeForType(notification_type);
   CHECK(bridge, base::NotFatalUntil::M161);
+  if (bridge == message_center_bridge_ &&
+      system_bridge_available_subscription_ &&
+      NotificationPlatformBridge::CanHandleType(notification_type)) {
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
+    // The message center removes timed-out and dismissed notifications
+    // without calling Close(), so forget the IDs it no longer shows.
+    if (NotificationUIManager* ui_manager =
+            g_browser_process->notification_ui_manager()) {
+      const std::set<std::string> displayed = ui_manager->GetAllIdsByProfile(
+          ProfileNotification::GetProfileID(profile_));
+      std::erase_if(message_center_fallback_ids_, [&](const std::string& id) {
+        return !displayed.contains(id);
+      });
+    }
+#endif
+    // Closed if the system bridge becomes available later.
+    message_center_fallback_ids_.insert(notification.id());
+  }
   bridge->Display(notification_type, profile_, notification,
                   std::move(metadata));
 }
@@ -125,6 +152,7 @@ void NotificationPlatformBridgeDelegator::Display(
 void NotificationPlatformBridgeDelegator::Close(
     NotificationHandler::Type notification_type,
     const std::string& notification_id) {
+  message_center_fallback_ids_.erase(notification_id);
   NotificationPlatformBridge* bridge = GetBridgeForType(notification_type);
   CHECK(bridge, base::NotFatalUntil::M161);
   bridge->Close(profile_, notification_id);
@@ -183,4 +211,23 @@ void NotificationPlatformBridgeDelegator::
 
   if (ready_callback_)
     std::move(ready_callback_).Run();
+}
+
+void NotificationPlatformBridgeDelegator::
+    OnSystemNotificationPlatformBridgeAvailable() {
+  // Switch back to the system bridge if it failed to initialize earlier.
+  if (system_bridge_) {
+    return;
+  }
+  system_bridge_ = GetSystemNotificationPlatformBridge(profile_);
+  if (!system_bridge_) {
+    return;
+  }
+  // Close() and GetDisplayed() now only reach the system bridge, so close the
+  // notifications that the message center shows instead of leaving them
+  // orphaned.
+  for (const std::string& id :
+       std::exchange(message_center_fallback_ids_, {})) {
+    message_center_bridge_->Close(profile_, id);
+  }
 }

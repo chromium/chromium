@@ -792,6 +792,11 @@ void TestingBrowserProcess::SetNotificationUIManager(
 }
 #endif
 
+void TestingBrowserProcess::SetNotificationPlatformBridge(
+    std::unique_ptr<NotificationPlatformBridge> notification_platform_bridge) {
+  notification_platform_bridge_ = std::move(notification_platform_bridge);
+}
+
 void TestingBrowserProcess::SetSystemNotificationHelper(
     std::unique_ptr<SystemNotificationHelper> system_notification_helper) {
   system_notification_helper_ = std::move(system_notification_helper);
