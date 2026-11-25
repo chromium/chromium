@@ -17,7 +17,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -44,9 +46,8 @@ class UiaAccessibilityEventWaiter {
 
   // Returns the notification string captured from the last notification event.
   // Only valid after Wait() returns when waiting for UIA_NotificationEventId.
-  const std::wstring& GetNotificationString() const {
-    return notification_string_;
-  }
+  std::wstring GetNotificationString() const
+      LOCKS_EXCLUDED(notification_string_lock_);
 
  private:
   // All UIA calls need to be made on a secondary MTA thread to avoid sporadic
@@ -59,8 +60,10 @@ class UiaAccessibilityEventWaiter {
     void Init(UiaAccessibilityEventWaiter* owner,
               const UiaAccessibilityWaiterInfo& info,
               base::OnceClosure initialization_loop,
+              base::RepeatingClosure event_matched,
               base::OnceClosure shutdown_loop);
 
+    void OnEventMatched();
     void SendShutdownSignal();
     void SetNotificationString(const std::wstring& str);
 
@@ -78,6 +81,7 @@ class UiaAccessibilityEventWaiter {
 
     // Thread synchronization members.
     base::OnceClosure initialization_complete_;
+    base::RepeatingClosure event_matched_;
     base::OnceClosure shutdown_complete_;
     base::WaitableEvent shutdown_signal_;
 
@@ -99,9 +103,9 @@ class UiaAccessibilityEventWaiter {
 
       ~EventHandler() override;
 
-      void Init(UiaAccessibilityEventWaiter::Thread* owner,
-                Microsoft::WRL::ComPtr<IUIAutomationElement> root);
-      void CleanUp();
+      void Init(UiaAccessibilityEventWaiter::Thread* owner)
+          LOCKS_EXCLUDED(lock_);
+      void CleanUp() LOCKS_EXCLUDED(lock_);
 
       // IUIAutomationFocusChangedEventHandler interface.
       IFACEMETHODIMP HandleFocusChangedEvent(
@@ -130,21 +134,32 @@ class UiaAccessibilityEventWaiter {
           BSTR display_string,
           BSTR activity_id) override;
 
-      // Points to the waiter to receive notifications.
-      raw_ptr<UiaAccessibilityEventWaiter::Thread> owner_ = nullptr;
-
      private:
-      bool MatchesNameRole(IUIAutomationElement* sender);
+      bool MatchesNameRole(IUIAutomationElement* sender,
+                           const std::wstring& expected_role,
+                           const std::wstring& expected_name)
+          LOCKS_EXCLUDED(lock_);
 
-      Microsoft::WRL::ComPtr<IUIAutomationElement> root_;
+      // Synchronizes COM MTA event callbacks with `CleanUp()`.
+      base::Lock lock_;
+
+      // Points to the waiter to receive notifications.
+      raw_ptr<UiaAccessibilityEventWaiter::Thread> owner_ GUARDED_BY(lock_) =
+          nullptr;
     };
     Microsoft::WRL::ComPtr<EventHandler> uia_event_handler_;
   };
 
-  Thread thread_;
+  void ShutdownThread();
+
+  mutable base::Lock notification_string_lock_;
+  std::wstring notification_string_ GUARDED_BY(notification_string_lock_);
+  base::RunLoop event_loop_;
   base::RunLoop shutdown_loop_;
+  Thread thread_;
   base::PlatformThreadHandle thread_handle_;
-  std::wstring notification_string_;
+  bool wait_called_ = false;
+  bool thread_joined_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_UIA_ACCESSIBILITY_EVENT_WAITER_H_

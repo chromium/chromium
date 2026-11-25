@@ -10,6 +10,7 @@
 #include <numeric>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -79,8 +80,8 @@ AXEventRecorderWinUia::AXEventRecorderWinUia(const AXTreeSelector& selector) {
   // Create the event thread, and pump messages via |initialization_loop| until
   // initialization is complete.
   base::RunLoop initialization_loop;
-  base::PlatformThread::Create(0, &thread_, &thread_handle_);
   thread_.Init(this, hwnd, initialization_loop, shutdown_loop_);
+  base::PlatformThread::Create(0, &thread_, &thread_handle_);
   initialization_loop.Run();
 }
 
@@ -282,10 +283,43 @@ AXEventRecorderWinUia::Thread::EventHandler::EventHandler(
 
 AXEventRecorderWinUia::Thread::EventHandler::~EventHandler() = default;
 
+AXEventRecorderWinUia::Thread::EventHandler::ScopedActiveCallback::
+    ScopedActiveCallback(EventHandler* handler)
+    : handler_(handler) {}
+
+AXEventRecorderWinUia::Thread::EventHandler::ScopedActiveCallback::
+    ~ScopedActiveCallback() {
+  if (handler_) {
+    base::AutoLock lock(handler_->lock_);
+    handler_->EndCallbackLocked();
+  }
+}
+
+bool AXEventRecorderWinUia::Thread::EventHandler::TryBeginCallbackLocked() {
+  if (!owner_ || shutdown_sentinel_received_) {
+    return false;
+  }
+  ++active_callbacks_;
+  return true;
+}
+
+void AXEventRecorderWinUia::Thread::EventHandler::EndCallbackLocked() {
+  CHECK_GT(active_callbacks_, 0u);
+  --active_callbacks_;
+  if (active_callbacks_ == 0 && shutdown_sentinel_received_ && owner_) {
+    owner_->SendShutdownSignal();
+  }
+}
+
 void AXEventRecorderWinUia::Thread::EventHandler::CleanUp() {
-  base::AutoLock lock(lock_);
-  owner_ = nullptr;
-  root_.Reset();
+  // Move `root_` to an outer local so `IUnknown::Release()` runs outside
+  // `lock_`.
+  Microsoft::WRL::ComPtr<IUIAutomationElement> root;
+  {
+    base::AutoLock lock(lock_);
+    owner_ = nullptr;
+    root = std::move(root_);
+  }
 }
 
 IFACEMETHODIMP
@@ -294,10 +328,18 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleFocusChangedEvent(
   if (!IsCallerFromAllowedModule(RETURN_ADDRESS())) {
     return S_OK;
   }
-  base::AutoLock lock(lock_);
-  if (!owner_ || !root_ || !owner_->uia_) {
-    return S_OK;
+
+  Microsoft::WRL::ComPtr<IUIAutomationElement> root;
+  Microsoft::WRL::ComPtr<IUIAutomation> uia;
+  {
+    base::AutoLock lock(lock_);
+    if (!root_ || !owner_ || !owner_->uia_ || !TryBeginCallbackLocked()) {
+      return S_OK;
+    }
+    root = root_;
+    uia = owner_->uia_;
   }
+  ScopedActiveCallback active_callback(this);
 
   base::win::ScopedSafearray id;
   sender->GetRuntimeId(id.Receive());
@@ -306,11 +348,10 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleFocusChangedEvent(
   Microsoft::WRL::ComPtr<IUIAutomationElement> element_found;
   Microsoft::WRL::ComPtr<IUIAutomationCondition> condition;
 
-  owner_->uia_->CreatePropertyCondition(UIA_RuntimeIdPropertyId, id_variant,
-                                        &condition);
+  uia->CreatePropertyCondition(UIA_RuntimeIdPropertyId, id_variant, &condition);
   CHECK(condition);
-  root_->FindFirst(TreeScope::TreeScope_Subtree, condition.Get(),
-                   &element_found);
+  root->FindFirst(TreeScope::TreeScope_Subtree, condition.Get(),
+                  &element_found);
   if (!element_found) {
     VLOG(1) << "Ignoring UIA focus event outside our frame";
     return S_OK;
@@ -325,18 +366,27 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleFocusChangedEvent(
     VARIANT tmp = id_variant.Release();
     id.Reset(V_ARRAY(&tmp));
   }
-  if (auto lock_scope = id.CreateLockScope<VT_I4>()) {
-    // Debounce focus events received from the same `sender`.
-    if (std::ranges::equal(*lock_scope, last_focused_runtime_id_)) {
-      return S_OK;
+
+  const std::string log = base::StringPrintf("AutomationFocusChanged %s",
+                                             GetSenderInfo(sender).c_str());
+
+  base::AutoLock lock(lock_);
+  if (owner_) {
+    bool debounced = false;
+    if (auto lock_scope = id.CreateLockScope<VT_I4>()) {
+      // Debounce focus events received from the same `sender`.
+      if (std::ranges::equal(*lock_scope, last_focused_runtime_id_)) {
+        debounced = true;
+      } else {
+        last_focused_runtime_id_.assign_range(*lock_scope);
+      }
     }
-
-    last_focused_runtime_id_.assign_range(*lock_scope);
+    if (!debounced) {
+      owner_->OnEvent(log);
+    }
   }
-
-  std::string log = base::StringPrintf("AutomationFocusChanged %s",
-                                       GetSenderInfo(sender).c_str());
-  owner_->OnEvent(log);
+  active_callback.Disarm();
+  EndCallbackLocked();
 
   return S_OK;
 }
@@ -349,10 +399,13 @@ AXEventRecorderWinUia::Thread::EventHandler::HandlePropertyChangedEvent(
   if (!IsCallerFromAllowedModule(RETURN_ADDRESS())) {
     return S_OK;
   }
-  base::AutoLock lock(lock_);
-  if (!owner_) {
-    return S_OK;
+  {
+    base::AutoLock lock(lock_);
+    if (!TryBeginCallbackLocked()) {
+      return S_OK;
+    }
   }
+  ScopedActiveCallback active_callback(this);
 
   std::string prop_str = UiaIdentifierToStringPretty(property_id);
   if (prop_str.empty()) {
@@ -362,7 +415,12 @@ AXEventRecorderWinUia::Thread::EventHandler::HandlePropertyChangedEvent(
 
   std::string log = base::StringPrintf("%s changed %s", prop_str.c_str(),
                                        GetSenderInfo(sender).c_str());
-  owner_->OnEvent(log);
+  base::AutoLock lock(lock_);
+  if (owner_) {
+    owner_->OnEvent(log);
+  }
+  active_callback.Disarm();
+  EndCallbackLocked();
   return S_OK;
 }
 
@@ -374,10 +432,13 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleStructureChangedEvent(
   if (!IsCallerFromAllowedModule(RETURN_ADDRESS())) {
     return S_OK;
   }
-  base::AutoLock lock(lock_);
-  if (!owner_) {
-    return S_OK;
+  {
+    base::AutoLock lock(lock_);
+    if (!TryBeginCallbackLocked()) {
+      return S_OK;
+    }
   }
+  ScopedActiveCallback active_callback(this);
 
   std::string type_str;
   switch (change_type) {
@@ -404,7 +465,12 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleStructureChangedEvent(
   std::string log =
       base::StringPrintf("StructureChanged/%s %s", type_str.c_str(),
                          GetSenderInfo(sender).c_str());
-  owner_->OnEvent(log);
+  base::AutoLock lock(lock_);
+  if (owner_) {
+    owner_->OnEvent(log);
+  }
+  active_callback.Disarm();
+  EndCallbackLocked();
   return S_OK;
 }
 
@@ -415,33 +481,47 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleAutomationEvent(
   if (!IsCallerFromAllowedModule(RETURN_ADDRESS())) {
     return S_OK;
   }
-  base::AutoLock lock(lock_);
-  if (!owner_) {
+  {
+    base::AutoLock lock(lock_);
+    if (!owner_ || shutdown_sentinel_received_) {
+      return S_OK;
+    }
+    if (event_id == owner_->shutdown_sentinel_) {
+      // This is a sentinel value that tells us the tests are finished. Defer
+      // signaling shutdown if pre-sentinel callbacks are still in flight so
+      // their events are logged before `CleanUp()` clears `owner_`.
+      shutdown_sentinel_received_ = true;
+      if (active_callbacks_ == 0) {
+        owner_->SendShutdownSignal();
+      }
+      return S_OK;
+    }
+    ++active_callbacks_;
+  }
+  ScopedActiveCallback active_callback(this);
+
+  std::string event_str = UiaIdentifierToStringPretty(event_id);
+  if (event_str.empty()) {
+    VLOG(1) << "Ignoring UIA automation event " << event_id;
     return S_OK;
   }
 
-  if (event_id == owner_->shutdown_sentinel_) {
-    // This is a sentinel value that tells us the tests are finished.
-    owner_->SendShutdownSignal();
-  } else {
-    std::string event_str = UiaIdentifierToStringPretty(event_id);
-    if (event_str.empty()) {
-      VLOG(1) << "Ignoring UIA automation event " << event_id;
-      return S_OK;
-    }
-
-    // Remove duplicate menuclosed events with no event data.
-    // The "duplicates" are benign. UIA currently duplicates *all* events for
-    // in-process listeners, and the event-recorder tries to eliminate the
-    // duplicates... but since the recorder sometimes isn't able to retrieve
-    // the role, the duplicate-elimination logic doesn't see them as
-    // duplicates in this case.
-    std::string sender_info =
-        event_id == UIA_MenuClosedEventId ? "" : GetSenderInfo(sender);
-    std::string log =
-        base::StringPrintf("%s %s", event_str.c_str(), sender_info.c_str());
+  // Remove duplicate menuclosed events with no event data.
+  // The "duplicates" are benign. UIA currently duplicates *all* events for
+  // in-process listeners, and the event-recorder tries to eliminate the
+  // duplicates... but since the recorder sometimes isn't able to retrieve
+  // the role, the duplicate-elimination logic doesn't see them as
+  // duplicates in this case.
+  std::string sender_info =
+      event_id == UIA_MenuClosedEventId ? "" : GetSenderInfo(sender);
+  std::string log =
+      base::StringPrintf("%s %s", event_str.c_str(), sender_info.c_str());
+  base::AutoLock lock(lock_);
+  if (owner_) {
     owner_->OnEvent(log);
   }
+  active_callback.Disarm();
+  EndCallbackLocked();
   return S_OK;
 }
 
@@ -453,15 +533,21 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleChangesEvent(
   if (!IsCallerFromAllowedModule(RETURN_ADDRESS())) {
     return S_OK;
   }
-  base::AutoLock lock(lock_);
-  if (!owner_) {
-    return S_OK;
+  {
+    base::AutoLock lock(lock_);
+    if (!TryBeginCallbackLocked()) {
+      return S_OK;
+    }
   }
+  ScopedActiveCallback active_callback(this);
 
+  std::string sender_info = GetSenderInfo(sender);
+  std::vector<std::string> logs;
   // SAFETY: `uia_changes` points to an array of `changes_count` elements
   // provided by the UIA framework.
   auto changes = UNSAFE_BUFFERS(base::span<UiaChangeInfo>(
       uia_changes, static_cast<size_t>(changes_count)));
+  logs.reserve(changes.size());
   for (const auto& change : changes) {
     std::string change_type_str;
     switch (change.uiaId) {
@@ -479,11 +565,18 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleChangesEvent(
         break;
     }
 
-    std::string log =
-        base::StringPrintf("Changes/%s %s", change_type_str.c_str(),
-                           GetSenderInfo(sender).c_str());
-    owner_->OnEvent(log);
+    logs.push_back(base::StringPrintf("Changes/%s %s", change_type_str.c_str(),
+                                      sender_info.c_str()));
   }
+
+  base::AutoLock lock(lock_);
+  if (owner_) {
+    for (const std::string& log : logs) {
+      owner_->OnEvent(log);
+    }
+  }
+  active_callback.Disarm();
+  EndCallbackLocked();
 
   return S_OK;
 }

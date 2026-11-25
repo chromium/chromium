@@ -7,6 +7,7 @@
 
 #include <ole2.h>
 
+#include <stddef.h>
 #include <stdint.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
@@ -99,7 +100,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWinUia
 
       ~EventHandler() override;
 
-      void CleanUp();
+      void CleanUp() LOCKS_EXCLUDED(lock_);
 
       // IUIAutomationFocusChangedEventHandler interface.
       IFACEMETHODIMP HandleFocusChangedEvent(
@@ -126,12 +127,34 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWinUia
                                         int changes_count) override;
 
      private:
+      // Tracks an in-flight non-sentinel event callback while `lock_` is
+      // released for UIA COM queries so `EndCallbackLocked()` runs on all exit
+      // paths.
+      class ScopedActiveCallback {
+       public:
+        explicit ScopedActiveCallback(EventHandler* handler);
+        ScopedActiveCallback(const ScopedActiveCallback&) = delete;
+        ScopedActiveCallback& operator=(const ScopedActiveCallback&) = delete;
+        ~ScopedActiveCallback();
+
+        void Disarm() { handler_ = nullptr; }
+
+       private:
+        raw_ptr<EventHandler> handler_;
+      };
+
+      bool TryBeginCallbackLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      void EndCallbackLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
       bool IsCallerFromAllowedModule(void* return_address);
-      std::string GetSenderInfo(IUIAutomationElement* sender);
+      std::string GetSenderInfo(IUIAutomationElement* sender)
+          LOCKS_EXCLUDED(lock_);
 
       std::pair<uintptr_t, uintptr_t> allowed_module_address_range_;
 
-      // Synchronizes COM MTA event callbacks with `CleanUp()`.
+      // Synchronizes COM MTA event callbacks with `CleanUp()` and tracks
+      // in-flight callbacks so `shutdown_sentinel_` does not trigger teardown
+      // before pre-sentinel events finish logging.
       base::Lock lock_;
 
       // Points to the event recorder to receive notifications.
@@ -140,6 +163,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWinUia
       Microsoft::WRL::ComPtr<IUIAutomationElement> root_ GUARDED_BY(lock_);
 
       std::vector<int32_t> last_focused_runtime_id_ GUARDED_BY(lock_);
+
+      size_t active_callbacks_ GUARDED_BY(lock_) = 0;
+      bool shutdown_sentinel_received_ GUARDED_BY(lock_) = false;
     };
     Microsoft::WRL::ComPtr<EventHandler> uia_event_handler_;
   };

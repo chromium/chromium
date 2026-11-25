@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace ui {
@@ -54,31 +55,29 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorder {
   }
 
   // Sets a callback which will be called on every event fired.
-  void ListenToEvents(AXEventCallback callback) {
-    callback_ = std::move(callback);
-  }
+  void ListenToEvents(AXEventCallback callback) LOCKS_EXCLUDED(on_event_lock_);
 
   // Stop listenting to events.
-  void StopListeningToEvents();
+  void StopListeningToEvents() LOCKS_EXCLUDED(on_event_lock_);
 
   // Called to ensure the event recorder has finished recording async events.
   virtual void WaitForDoneRecording() {}
 
   // Access the vector of human-readable event logs, one string per event.
-  const std::vector<std::string> GetEventLogs() const;
+  std::vector<std::string> GetEventLogs() const LOCKS_EXCLUDED(on_event_lock_);
 
  protected:
   // Called by a derived class which implements platform event handling on
   // every fired event.
-  void OnEvent(const std::string& event);
+  void OnEvent(const std::string& event) LOCKS_EXCLUDED(on_event_lock_);
 
   bool only_web_events_ = false;
   std::vector<AXPropertyFilter> property_filters_;
 
  private:
   mutable base::Lock on_event_lock_;
-  std::vector<std::string> event_logs_;
-  AXEventCallback callback_;
+  std::vector<std::string> event_logs_ GUARDED_BY(on_event_lock_);
+  AXEventCallback callback_ GUARDED_BY(on_event_lock_);
 };
 
 }  // namespace ui

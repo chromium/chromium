@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 
+#include <utility>
+
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 
@@ -12,19 +14,32 @@ namespace ui {
 AXEventRecorder::AXEventRecorder() = default;
 AXEventRecorder::~AXEventRecorder() = default;
 
+void AXEventRecorder::ListenToEvents(AXEventCallback callback) {
+  AXEventCallback old_callback;
+  {
+    base::AutoLock lock(on_event_lock_);
+    old_callback = std::exchange(callback_, std::move(callback));
+  }
+}
+
 void AXEventRecorder::StopListeningToEvents() {
-  callback_ = base::NullCallback();
+  ListenToEvents(base::NullCallback());
 }
 
 void AXEventRecorder::OnEvent(const std::string& event) {
-  base::AutoLock lock{on_event_lock_};
-  event_logs_.push_back(event);
-  if (callback_)
-    callback_.Run(event);
+  AXEventCallback callback;
+  {
+    base::AutoLock lock(on_event_lock_);
+    event_logs_.push_back(event);
+    callback = callback_;
+  }
+  if (callback) {
+    callback.Run(event);
+  }
 }
 
-const std::vector<std::string> AXEventRecorder::GetEventLogs() const {
-  base::AutoLock lock{on_event_lock_};
+std::vector<std::string> AXEventRecorder::GetEventLogs() const {
+  base::AutoLock lock(on_event_lock_);
   return event_logs_;
 }
 

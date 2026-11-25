@@ -166,11 +166,16 @@ if (!is_android) {
     }
 
     if (is_win) {
-      sources += [ "tab_strip_dump_accessibility_events_browsertest.cc" ]
+      sources += [
+        "tab_strip_dump_accessibility_events_browsertest.cc",
+        "uia_accessibility_event_waiter_browsertest.cc",
+      ]
       deps += [
+        ":uia_test_support",
         "//chrome/browser/ui:browser_tabstrip",
         "//chrome/browser/ui/tabs:features",
       ]
+      libs = [ "uiautomationcore.lib" ]
     }
   }
 
@@ -235,6 +240,7 @@ if (is_win) {
     ]
     deps = [
       "//base",
+      "//base/test:test_support",
       "//ui/accessibility",
       "//ui/views",
     ]
