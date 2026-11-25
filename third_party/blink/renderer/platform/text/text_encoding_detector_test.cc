@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "url/url_util.h"
@@ -81,12 +82,57 @@ TEST(TextEncodingDetectorTest, UrlHintHelpsEucJp) {
   EXPECT_EQ(TextEncoding("EUC-JP"), encoding)
       << "With URL hint including '.jp', it's detected as EUC-JP";
 
+  KURL url_jp_trailing_dot("http://example.co.jp./");
+  result = DetectTextEncoding(base::as_byte_span(eucjp_bytes), nullptr,
+                              url_jp_trailing_dot, nullptr, &encoding);
+  EXPECT_TRUE(result);
+  EXPECT_EQ(TextEncoding("EUC-JP"), encoding)
+      << "Trailing dot on '.jp' host should preserve the TLD hint";
+
+  KURL url_jp_trailing_dot_with_port_and_userinfo(
+      "http://a.com:x@example.co.jp.:8000/");
+  result = DetectTextEncoding(base::as_byte_span(eucjp_bytes), nullptr,
+                              url_jp_trailing_dot_with_port_and_userinfo,
+                              nullptr, &encoding);
+  EXPECT_TRUE(result);
+  EXPECT_EQ(TextEncoding("EUC-JP"), encoding)
+      << "Trailing-dot '.jp' host with port and userinfo should preserve the "
+         "TLD hint";
+
   KURL url_with_userinfo("http://a.jp:x@example.com/");
   result = DetectTextEncoding(base::as_byte_span(eucjp_bytes), nullptr,
                               url_with_userinfo, nullptr, &encoding);
   EXPECT_TRUE(result);
   EXPECT_EQ(TextEncoding("GBK"), encoding)
       << "Userinfo in URL should not spoof the TLD hint";
+
+  KURL url_with_userinfo_and_trailing_dot("http://a.jp.:x@example.com./");
+  result = DetectTextEncoding(base::as_byte_span(eucjp_bytes), nullptr,
+                              url_with_userinfo_and_trailing_dot, nullptr,
+                              &encoding);
+  EXPECT_TRUE(result);
+  EXPECT_EQ(TextEncoding("GBK"), encoding)
+      << "Userinfo in URL with trailing-dot host should not spoof the TLD hint";
+
+  for (const char* url_str :
+       {"http://jp/", "http://jp./", "http://./", "http://example.co.jp../"}) {
+    KURL edge_case_url(url_str);
+    result = DetectTextEncoding(base::as_byte_span(eucjp_bytes), nullptr,
+                                edge_case_url, nullptr, &encoding);
+    EXPECT_TRUE(result) << url_str;
+    EXPECT_EQ(TextEncoding("GBK"), encoding) << url_str;
+  }
+
+  {
+    ScopedTextEncodingDetectorTldHintStripTrailingDotForTest scoped_disable(
+        false);
+    result = DetectTextEncoding(base::as_byte_span(eucjp_bytes), nullptr,
+                                url_jp_trailing_dot, nullptr, &encoding);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(TextEncoding("GBK"), encoding)
+        << "Disabling the kill-switch flag restores prior trailing-dot "
+           "behavior";
+  }
 }
 
 TEST(TextEncodingDetectorTest, LanguageHintHelpsEucJp) {

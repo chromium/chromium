@@ -7201,6 +7201,12 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/589853631.
+      name: "TextEncodingDetectorTldHintStripTrailingDot",
+      depends_on: ["TextEncodingDetectorTldHint"],
+      status: "stable",
+    },
+    {
       name: "TextFragmentAPI",
       status: "experimental",
     },

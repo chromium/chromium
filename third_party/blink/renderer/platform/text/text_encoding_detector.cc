@@ -80,6 +80,12 @@ bool DetectTextEncoding(base::span<const uint8_t> bytes,
   std::string url_or_tld_hint;
   if (RuntimeEnabledFeatures::TextEncodingDetectorTldHintEnabled()) {
     StringView host = hint_url.Host();
+    // Strip the trailing root dot from FQDN hosts (e.g. "example.co.jp.").
+    if (host.ends_with('.') &&
+        RuntimeEnabledFeatures::
+            TextEncodingDetectorTldHintStripTrailingDotEnabled()) {
+      host.remove_suffix(1);
+    }
     if (wtf_size_t dot_index = host.rfind('.'); dot_index != kNotFound) {
       url_or_tld_hint = host.substr(dot_index + 1).Utf8();
     }
