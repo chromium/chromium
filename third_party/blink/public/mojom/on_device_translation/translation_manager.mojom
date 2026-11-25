@@ -126,6 +126,10 @@ enum CreateTranslatorError {
   // The translator cannot be created, because the translation model must be
   // downloaded and Data Saver is enabled.
   kDataSaverEnabled = 17,
+
+  // The translator cannot be created, because installing the required language
+  // packs would exceed the installed language pack count limitation.
+  kExceedsLanguagePackCountLimitation = 18,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/translate/enums.xml:TranslatorApiCreateTranslatorError)
 

@@ -380,6 +380,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="kOffline"/>
   <int value="16" label="kUnsupportedDevice"/>
   <int value="17" label="kDataSaverEnabled"/>
+  <int value="18" label="kExceedsLanguagePackCountLimitation"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/on_device_translation/translation_manager.mojom:CreateTranslatorError) -->

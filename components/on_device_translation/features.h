@@ -52,6 +52,11 @@ extern const base::FeatureParam<int> kTranslationAPIMaxInputSizeBytes;
 // Devices below this floor report the API as unavailable. 0 disables the check.
 extern const base::FeatureParam<size_t> kTranslationAPIMinPhysicalMemoryMB;
 
+// The maximum number of language packs that may be installed or registered at
+// once. A request that needs more missing packs fails before starting any
+// download. 0 or less disables the cap.
+extern const base::FeatureParam<int> kTranslationAPIMaxInstalledLanguagePacks;
+
 // Enables automatic download of language packs for on-device translation.
 BASE_DECLARE_FEATURE(kAutoDownloadTranslateLanguagePacks);
 

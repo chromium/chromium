@@ -82,6 +82,17 @@ const base::FeatureParam<size_t> kTranslationAPIMinPhysicalMemoryMB{
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
+const base::FeatureParam<int> kTranslationAPIMaxInstalledLanguagePacks{
+    &blink::features::kTranslationAPI,
+    "TranslationAPIMaxInstalledLanguagePacks",
+#if BUILDFLAG(IS_ANDROID)
+    // Each unpacked language pack uses about 80 MiB on disk.
+    3
+#else
+    0
+#endif  // BUILDFLAG(IS_ANDROID)
+};
+
 BASE_FEATURE(kAutoDownloadTranslateLanguagePacks,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

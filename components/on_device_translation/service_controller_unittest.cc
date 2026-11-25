@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/on_device_translation/public/language_pack.h"
@@ -22,6 +23,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace on_device_translation {
 namespace {
@@ -363,6 +365,126 @@ TEST_F(OnDeviceTranslationServiceControllerTest,
                                               InstallError::kDataSaverEnabled);
   EXPECT_EQ(data_saver_future.Get().error(),
             CreateTranslatorError::kDataSaverEnabled);
+}
+
+TEST_F(OnDeviceTranslationServiceControllerTest,
+       CreateTranslatorRejectsPairExceedingMaxInstalledPacks) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kTranslationAPI,
+      {{"TranslationAPIMaxInstalledLanguagePacks", "3"}});
+
+  fake_installer_->InitNow(base::DoNothing());
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kDe_En);
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Fr);
+
+  // Requesting es -> ja needs 2 new packs (en-es and en-ja), which would bring
+  // total packs to 4 > 3. Reject up front without registering either pack.
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      pivot_future;
+  service_controller_->CreateTranslator("es", "ja", pivot_future.GetCallback());
+  ASSERT_TRUE(pivot_future.IsReady());
+  EXPECT_EQ(pivot_future.Get().error(),
+            CreateTranslatorError::kExceedsLanguagePackCountLimitation);
+  EXPECT_THAT(
+      fake_installer_->RegisteredLanguagePacks(),
+      UnorderedElementsAre(LanguagePackKey::kDe_En, LanguagePackKey::kEn_Fr));
+  histogram_tester.ExpectUniqueSample(
+      "Translate.OnDeviceTranslation.DownloadExceedLimit.LanguagePair",
+      static_cast<int>(SupportedLanguage::kEs) * 1000 +
+          static_cast<int>(SupportedLanguage::kJa),
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Translate.OnDeviceTranslation.Download.LanguagePair", 0);
+
+  // Registering a 3rd pack (en-es) brings registered packs to 3 (not yet
+  // installed). A request for a 4th pack (en-ja) must still be rejected.
+  service_controller_->CreateTranslator("en", "es", base::DoNothing());
+  EXPECT_THAT(
+      fake_installer_->RegisteredLanguagePacks(),
+      UnorderedElementsAre(LanguagePackKey::kDe_En, LanguagePackKey::kEn_Fr,
+                           LanguagePackKey::kEn_Es));
+
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      fourth_pack_future;
+  service_controller_->CreateTranslator("en", "ja",
+                                        fourth_pack_future.GetCallback());
+  ASSERT_TRUE(fourth_pack_future.IsReady());
+  EXPECT_EQ(fourth_pack_future.Get().error(),
+            CreateTranslatorError::kExceedsLanguagePackCountLimitation);
+
+  // Retrying the already-registered 3rd pack (en-es) stays at 3 and is allowed.
+  fake_installer_->FailLanguagePackInstallNow(LanguagePackKey::kEn_Es);
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      retry_future;
+  service_controller_->CreateTranslator("en", "es", retry_future.GetCallback());
+  EXPECT_FALSE(retry_future.IsReady());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerTest,
+       CreateTranslatorAllowsInstalledPacksAtOrAboveLimit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kTranslationAPI,
+      {{"TranslationAPIMaxInstalledLanguagePacks", "2"}});
+
+  FakeOnDeviceTranslationService fake_service;
+  EXPECT_CALL(*mock_launcher_, Launch)
+      .WillOnce(testing::Return(
+          testing::ByMove(fake_service.BindNewPipeAndPassRemote())));
+
+  fake_installer_->InitNow(base::DoNothing());
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kDe_En);
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Es);
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Fr);
+
+  // Even when 3 packs are already installed and the cap is lowered to 2, using
+  // an already-installed pair (de -> fr) requires no new download and succeeds.
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      future;
+  service_controller_->CreateTranslator("de", "fr", future.GetCallback());
+  EXPECT_TRUE(future.Get().has_value());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerTest,
+       CreateTranslatorAllowsRetryOfRegisteredPackAboveLimit) {
+  fake_installer_->InitNow(base::DoNothing());
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kDe_En);
+  fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Es);
+
+  // Register `en-ja` before the cap is lowered, then fail its download so it
+  // stays registered without being installed.
+  service_controller_->CreateTranslator("en", "ja", base::DoNothing());
+  fake_installer_->FailLanguagePackInstallNow(LanguagePackKey::kEn_Ja);
+  ASSERT_EQ(fake_installer_->RegisteredLanguagePacks().size(), 3u);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kTranslationAPI,
+      {{"TranslationAPIMaxInstalledLanguagePacks", "2"}});
+
+  // Retrying the already-registered `en-ja` pack does not raise the count and
+  // is allowed even above the lowered cap.
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      retry_future;
+  service_controller_->CreateTranslator("en", "ja", retry_future.GetCallback());
+  EXPECT_FALSE(retry_future.IsReady());
+
+  // Requesting an unregistered pack (`en-fr`) is rejected.
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      new_pack_future;
+  service_controller_->CreateTranslator("en", "fr",
+                                        new_pack_future.GetCallback());
+  ASSERT_TRUE(new_pack_future.IsReady());
+  EXPECT_EQ(new_pack_future.Get().error(),
+            CreateTranslatorError::kExceedsLanguagePackCountLimitation);
 }
 
 TEST_F(OnDeviceTranslationServiceControllerTest,

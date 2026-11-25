@@ -61,6 +61,9 @@ String ConvertCreateTranslatorErrorToDebugString(CreateTranslatorError error) {
     case CreateTranslatorError::kDataSaverEnabled:
       return "The translation model must be downloaded, but Data Saver is "
              "enabled.";
+    case CreateTranslatorError::kExceedsLanguagePackCountLimitation:
+      return "The number of installed translation language packs exceeded the "
+             "limitation.";
   }
 }
 

@@ -346,6 +346,10 @@ blink::mojom::CreateTranslatorError GetBlinkCreateTranslateError(
     case OnDeviceTranslationController::CreateTranslatorError::
         kDataSaverEnabled:
       return blink::mojom::CreateTranslatorError::kDataSaverEnabled;
+    case OnDeviceTranslationController::CreateTranslatorError::
+        kExceedsLanguagePackCountLimitation:
+      return blink::mojom::CreateTranslatorError::
+          kExceedsLanguagePackCountLimitation;
   }
 }
 

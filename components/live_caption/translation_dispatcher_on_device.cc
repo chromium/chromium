@@ -74,6 +74,9 @@ OnDeviceTranslationErrorReason ToOnDeviceTranslationErrorReason(
     case Error::kLanguagePackDownloadFailed:
       return OnDeviceTranslationErrorReason::
           kCreateTranslatorLanguagePackDownloadFailed;
+    case Error::kExceedsLanguagePackCountLimitation:
+      return OnDeviceTranslationErrorReason::
+          kCreateTranslatorExceedsLanguagePackCountLimitation;
     case Error::kNotEnoughDiskSpace:
       return OnDeviceTranslationErrorReason::
           kCreateTranslatorNotEnoughDiskSpace;

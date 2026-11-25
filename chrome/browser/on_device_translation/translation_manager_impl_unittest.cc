@@ -192,6 +192,8 @@ TEST_F(TranslationManagerImplTest, RecordsCreateTranslatorError) {
           {ControllerError::kOffline, BlinkError::kOffline},
           {ControllerError::kUnsupportedDevice, BlinkError::kUnsupportedDevice},
           {ControllerError::kDataSaverEnabled, BlinkError::kDataSaverEnabled},
+          {ControllerError::kExceedsLanguagePackCountLimitation,
+           BlinkError::kExceedsLanguagePackCountLimitation},
       });
 
   base::HistogramTester histogram_tester;

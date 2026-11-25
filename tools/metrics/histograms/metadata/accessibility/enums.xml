@@ -2192,6 +2192,8 @@ Unknown properties are collapsed to zero. -->
   <int value="18" label="CanTranslate: Unsupported device"/>
   <int value="19" label="CreateTranslator: Unsupported device"/>
   <int value="20" label="CreateTranslator: Data Saver enabled"/>
+  <int value="21"
+      label="CreateTranslator: Exceeded language pack count limitation"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/live_caption/translation_dispatcher_on_device.h:OnDeviceTranslationErrorReason) -->

@@ -5,6 +5,7 @@
 #include "components/on_device_translation/service_controller.h"
 
 #include <algorithm>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -214,6 +215,24 @@ void OnDeviceTranslationServiceController::CreateTranslator(
   LanguagePackRequirements language_pack_requirements =
       GetLanguagePackRequirements(*best_fit_source_language,
                                   *best_fit_target_language);
+  if (!language_pack_requirements.to_be_registered_packs.empty()) {
+    const int max_packs = kTranslationAPIMaxInstalledLanguagePacks.Get();
+    if (max_packs > 0) {
+      std::set<LanguagePackKey> existing_packs =
+          installer_->InstalledLanguagePacks();
+      existing_packs.merge(installer_->RegisteredLanguagePacks());
+      if (existing_packs.size() +
+              language_pack_requirements.to_be_registered_packs.size() >
+          static_cast<size_t>(max_packs)) {
+        RecordLanguagePairUma(
+            "Translate.OnDeviceTranslation.DownloadExceedLimit.LanguagePair",
+            *best_fit_source_language, *best_fit_target_language);
+        std::move(callback).Run(base::unexpected(
+            CreateTranslatorError::kExceedsLanguagePackCountLimitation));
+        return;
+      }
+    }
+  }
   // Ask for every missing language pack, including the ones that were
   // registered before, so that a download that failed earlier is retried and
   // reports its outcome to this request.

@@ -47,6 +47,7 @@ class OnDeviceTranslationController {
     kNotEnoughDiskSpace,
     kOffline,
     kDataSaverEnabled,
+    kExceedsLanguagePackCountLimitation,
     kUnsupportedDevice,
   };
 

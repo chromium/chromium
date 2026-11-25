@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -365,7 +366,10 @@ OnDeviceTranslationInstallerImpl::RegisteredLanguagePacks() const {
     return GetLanguagePackKeysFromCommandLine();
   }
 
-  std::set<LanguagePackKey> registered_pack_keys;
+  // Language packs that wait for the checks before the download count as
+  // registered.
+  std::set<LanguagePackKey> registered_pack_keys =
+      language_pack_checks_in_progress_;
   for (const auto& it : kLanguagePackComponentConfigMap) {
     if (g_browser_process->local_state()->GetBoolean(
             GetRegisteredFlagPrefName(*it.second))) {
