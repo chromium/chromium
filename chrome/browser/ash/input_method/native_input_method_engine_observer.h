@@ -167,7 +167,6 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   void SendSurroundingTextToNativeMojoEngine(
       const SurroundingText& surrounding_text);
 
-  bool ShouldRouteToRuleBasedEngine(std::string_view engine_id) const;
   bool ShouldRouteToNativeMojoEngine(std::string_view engine_id) const;
 
   void OnConnectionFactoryBound(bool bound);

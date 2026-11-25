@@ -724,11 +724,6 @@ NativeInputMethodEngineObserver::NativeInputMethodEngineObserver(
 
 NativeInputMethodEngineObserver::~NativeInputMethodEngineObserver() = default;
 
-bool NativeInputMethodEngineObserver::ShouldRouteToRuleBasedEngine(
-    std::string_view engine_id) const {
-  return use_ime_service_ && IsRuleBasedEngine(engine_id);
-}
-
 bool NativeInputMethodEngineObserver::ShouldRouteToNativeMojoEngine(
     std::string_view engine_id) const {
   return use_ime_service_ && CanRouteToNativeMojoEngine(engine_id);
@@ -822,7 +817,7 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     ConnectToImeService(engine_id);
     // Notify the virtual keyboard extension that the IME has changed.
     ime_base_observer_->OnActivate(engine_id);
-  } else if (ShouldRouteToRuleBasedEngine(engine_id)) {
+  } else if (use_ime_service_ && IsRuleBasedEngine(engine_id)) {
     const auto new_engine_id = NormalizeRuleBasedEngineId(engine_id);
     ConnectToImeService(new_engine_id);
     // Notify the virtual keyboard extension that the IME has changed.
@@ -997,7 +992,7 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
     return;
   }
 
-  if (ShouldRouteToRuleBasedEngine(engine_id) ||
+  if ((use_ime_service_ && IsRuleBasedEngine(engine_id)) ||
       ShouldRouteToNativeMojoEngine(engine_id)) {
     if (IsInputMethodBound() && IsInputMethodConnected()) {
       // CharacterComposer only takes KEY_PRESSED events.
@@ -1050,7 +1045,7 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
 
 void NativeInputMethodEngineObserver::OnReset(const std::string& engine_id) {
   if (ShouldRouteToNativeMojoEngine(engine_id) ||
-      ShouldRouteToRuleBasedEngine(engine_id)) {
+      (use_ime_service_ && IsRuleBasedEngine(engine_id))) {
     if (IsInputMethodBound()) {
       input_method_->OnCompositionCanceledBySystem();
     }
