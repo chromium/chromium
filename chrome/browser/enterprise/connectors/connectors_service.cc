@@ -27,6 +27,7 @@
 #include "components/enterprise/connectors/core/connectors_manager_base.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -152,6 +153,13 @@ std::unique_ptr<ClientMetadata> ConnectorsService::GetBasicClientMetadata(
       reporting::GetUserDmToken(profile);
   if (profile_dm_token.has_value()) {
     metadata->mutable_profile()->set_dm_token(*profile_dm_token);
+  }
+
+  if (profile && enterprise_isolated_mode::IsCaaEnabledInIsolatedMode()) {
+    metadata->mutable_profile()->set_profile_type(
+        profile->IsEnterpriseIsolatedModeProfile()
+            ? ClientMetadata::Profile::ISOLATED
+            : ClientMetadata::Profile::REGULAR);
   }
 
   // In this case, we are just using the client metadata to indicate to

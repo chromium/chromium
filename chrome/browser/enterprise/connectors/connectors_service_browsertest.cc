@@ -31,7 +31,9 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
@@ -482,6 +484,14 @@ class ConnectorsServiceAnalysisProfileBrowserTest
     ASSERT_EQ(metadata.profile().client_id(),
               *reporting_metadata.FindStringByDottedPath("profile.clientId"));
 #endif
+
+    if (enterprise_isolated_mode::IsCaaEnabledInIsolatedMode()) {
+      ASSERT_TRUE(metadata.profile().has_profile_type());
+      ASSERT_EQ(metadata.profile().profile_type(),
+                ClientMetadata::Profile::REGULAR);
+    } else {
+      ASSERT_FALSE(metadata.profile().has_profile_type());
+    }
   }
 };
 

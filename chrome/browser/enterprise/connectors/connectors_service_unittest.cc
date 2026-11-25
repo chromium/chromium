@@ -6,6 +6,8 @@
 
 #include <tuple>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_testing_helper.h"
+#include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -27,6 +30,7 @@
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
@@ -590,6 +594,111 @@ TEST_F(ConnectorsServiceProfileTypeBrowserTest, IsEnabled) {
   EXPECT_TRUE(CreateService(lockscreen_profile())->ConnectorsEnabled());
   EXPECT_FALSE(CreateService(lockscreen_profile_otr())->ConnectorsEnabled());
 #endif
+}
+
+class ConnectorsServiceClientMetadataProfileTypeTest : public testing::Test {
+ protected:
+  TestingProfile* regular_profile() {
+    return profile_testing_helper_.regular_profile();
+  }
+  Profile* isolated_mode_profile() {
+    return profile_testing_helper_.isolated_mode_profile();
+  }
+
+ private:
+  void SetUp() override {
+    testing::Test::SetUp();
+    profile_testing_helper_.SetUp();
+  }
+
+  // Must be declared before `profile_testing_helper_` so feature flags are
+  // initialized before `BrowserTaskEnvironment` and profiles are created.
+  base::test::ScopedFeatureList scoped_feature_list_{
+      enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2};
+  ProfileTestingHelper profile_testing_helper_;
+};
+
+TEST_F(ConnectorsServiceClientMetadataProfileTypeTest,
+       BuildClientMetadata_ProfileType_ReportingOff) {
+  auto regular_metadata =
+      ConnectorsServiceFactory::GetForBrowserContext(regular_profile())
+          ->BuildClientMetadata(/*is_cloud=*/true);
+  ASSERT_TRUE(regular_metadata);
+  EXPECT_EQ(regular_metadata->profile().profile_type(),
+            ClientMetadata::Profile::REGULAR);
+
+  auto isolated_metadata =
+      ConnectorsServiceFactory::GetForBrowserContext(isolated_mode_profile())
+          ->BuildClientMetadata(/*is_cloud=*/true);
+  ASSERT_TRUE(isolated_metadata);
+  EXPECT_EQ(isolated_metadata->profile().profile_type(),
+            ClientMetadata::Profile::ISOLATED);
+}
+
+TEST_F(ConnectorsServiceClientMetadataProfileTypeTest,
+       BuildClientMetadata_ProfileType_ReportingOn) {
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken(kFakeDmToken));
+  base::ScopedClosureRunner reset_dm_token(base::BindOnce(
+      &policy::SetDMTokenForTesting, policy::DMToken::CreateEmptyToken()));
+#if !BUILDFLAG(IS_CHROMEOS)
+  policy::FakeBrowserDMTokenStorage fake_browser_dm_token_storage;
+  fake_browser_dm_token_storage.SetClientId(kFakeDeviceId);
+  policy::BrowserDMTokenStorage::SetForTesting(&fake_browser_dm_token_storage);
+  base::ScopedClosureRunner reset_dm_token_storage(
+      base::BindOnce(&policy::BrowserDMTokenStorage::SetForTesting, nullptr));
+#endif
+
+  auto enable_reporting = [](Profile* profile) {
+    profile->GetPrefs()->Set(
+        kOnSecurityEventPref,
+        *base::JSONReader::Read(R"([{"service_provider": "google"}])",
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS));
+    profile->GetPrefs()->SetInteger(kOnSecurityEventScopePref,
+                                    policy::POLICY_SCOPE_MACHINE);
+  };
+  enable_reporting(regular_profile());
+  enable_reporting(isolated_mode_profile());
+
+  auto regular_metadata =
+      ConnectorsServiceFactory::GetForBrowserContext(regular_profile())
+          ->BuildClientMetadata(/*is_cloud=*/true);
+  ASSERT_TRUE(regular_metadata);
+  EXPECT_EQ(regular_metadata->profile().profile_type(),
+            ClientMetadata::Profile::REGULAR);
+
+  auto isolated_metadata =
+      ConnectorsServiceFactory::GetForBrowserContext(isolated_mode_profile())
+          ->BuildClientMetadata(/*is_cloud=*/true);
+  ASSERT_TRUE(isolated_metadata);
+  EXPECT_EQ(isolated_metadata->profile().profile_type(),
+            ClientMetadata::Profile::ISOLATED);
+
+  auto local_regular_metadata =
+      ConnectorsServiceFactory::GetForBrowserContext(regular_profile())
+          ->BuildClientMetadata(/*is_cloud=*/false);
+  ASSERT_TRUE(local_regular_metadata);
+  EXPECT_EQ(local_regular_metadata->profile().profile_type(),
+            ClientMetadata::Profile::REGULAR);
+
+  auto local_isolated_metadata =
+      ConnectorsServiceFactory::GetForBrowserContext(isolated_mode_profile())
+          ->BuildClientMetadata(/*is_cloud=*/false);
+  ASSERT_TRUE(local_isolated_metadata);
+  EXPECT_EQ(local_isolated_metadata->profile().profile_type(),
+            ClientMetadata::Profile::ISOLATED);
+}
+
+TEST_F(ConnectorsServiceClientMetadataProfileTypeTest,
+       GetContextAsClientMetadata_ProfileType) {
+  EXPECT_FALSE(reporting::GetContextAsClientMetadata(nullptr).has_profile());
+  EXPECT_EQ(reporting::GetContextAsClientMetadata(regular_profile())
+                .profile()
+                .profile_type(),
+            ClientMetadata::Profile::REGULAR);
+  EXPECT_EQ(reporting::GetContextAsClientMetadata(isolated_mode_profile())
+                .profile()
+                .profile_type(),
+            ClientMetadata::Profile::ISOLATED);
 }
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)

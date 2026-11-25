@@ -19,6 +19,7 @@
 #include "components/account_id/account_id.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -194,6 +195,13 @@ enterprise_connectors::ClientMetadata GetContextAsClientMetadata(
 
   metadata.mutable_profile()->set_profile_path(
       profile->GetPath().AsUTF8Unsafe());
+
+  if (enterprise_isolated_mode::IsCaaEnabledInIsolatedMode()) {
+    metadata.mutable_profile()->set_profile_type(
+        profile->IsEnterpriseIsolatedModeProfile()
+            ? enterprise_connectors::ClientMetadata::Profile::ISOLATED
+            : enterprise_connectors::ClientMetadata::Profile::REGULAR);
+  }
 
   std::optional<std::string> client_id = GetUserClientId(profile);
   if (client_id)

@@ -695,6 +695,7 @@ source_set("profile_util_impl") {
     "//components/browsing_data/core",
     "//components/embedder_support:user_agent",
     "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/isolated_mode",
     "//components/keyed_service/content",
     "//components/policy/core/browser",
     "//components/policy/core/common",
