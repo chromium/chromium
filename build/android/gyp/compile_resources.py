@@ -600,9 +600,6 @@ def _PackageApk(options, build):
     if options.emit_ids_out:
         link_command += ['--emit-ids', build.emit_ids_path]
 
-    # Note: only one of --proto-format, --shared-lib or --app-as-shared-lib
-    #       can be used with recent versions of aapt2.
-
     if options.package_id:
         link_command += [
             '--package-id',
@@ -637,9 +634,15 @@ def _PackageApk(options, build):
 
     link_command += partials
 
-    # We always create a binary arsc file first, then convert to proto, so flags
-    # such as --shared-lib can be supported.
-    link_command += ['-o', build.arsc_path]
+    if options.arsc_path:
+        link_command += ['-o', build.arsc_path]
+        if options.proto_path:
+            link_command += ['--proto-output', build.proto_path]
+    else:
+        link_command += ['--proto-format', '-o', build.proto_path]
+    if options.proto_path:
+        # Omit source file paths from resources.pb to save size and time.
+        link_command += ['--exclude-sources']
 
     # aapt2 link can be slow, so run it and do some work in the meantime.
     def before_join():
@@ -674,22 +677,6 @@ def _PackageApk(options, build):
                       }}
                       '''.format(package=desired_manifest_package_name)
                 proguard_file.write(textwrap.dedent(keep_rule))
-
-    if options.proto_path:
-        logging.debug('Running aapt2 convert')
-        build_utils.CheckOutput(
-            [
-                options.aapt2_path,
-                'convert',
-                '-Othroughput',
-                '--output-format',
-                'proto',
-                '-o',
-                build.proto_path,
-                build.arsc_path,
-            ],
-            env=resource_utils.Aapt2Env(),
-        )
 
     # Sanity check that the created resources have the expected package ID.
     logging.debug('Performing sanity check')
