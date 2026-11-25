@@ -98,10 +98,12 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/autofill/autofill_ai_attribution_verification_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
@@ -1276,6 +1278,63 @@ TEST_F(ChromeAutofillClientTest,
 
   EXPECT_CALL(*bridge_ptr, HideJavaBottomSheet);
   client()->HideEmailVerificationPopup();
+}
+
+class MockAutofillAiAttributionVerificationSheetBridge
+    : public AutofillAiAttributionVerificationSheetBridge {
+ public:
+  explicit MockAutofillAiAttributionVerificationSheetBridge(
+      content::WebContents* web_contents)
+      : AutofillAiAttributionVerificationSheetBridge(web_contents) {}
+  ~MockAutofillAiAttributionVerificationSheetBridge() override = default;
+
+  MOCK_METHOD(void,
+              RequestShowContent,
+              (AutofillClient::AutofillAiVerificationDecisionCallback),
+              (override));
+};
+
+TEST_F(ChromeAutofillClientTest,
+       ShowAutofillAiAttributionVerification_DelegatesToBridge) {
+  auto mock_bridge =
+      std::make_unique<MockAutofillAiAttributionVerificationSheetBridge>(
+          web_contents());
+  MockAutofillAiAttributionVerificationSheetBridge* bridge_ptr =
+      mock_bridge.get();
+  test_api(*client()).set_autofill_ai_attribution_verification_sheet_bridge(
+      std::move(mock_bridge));
+
+  EXPECT_CALL(*bridge_ptr, RequestShowContent)
+      .WillOnce(
+          [](AutofillClient::AutofillAiVerificationDecisionCallback callback) {
+            std::move(callback).Run(
+                AutofillClient::AutofillAiVerificationDecision::kConfirm);
+          });
+
+  base::MockCallback<AutofillClient::AutofillAiVerificationDecisionCallback>
+      decision_cb;
+  EXPECT_CALL(decision_cb,
+              Run(AutofillClient::AutofillAiVerificationDecision::kConfirm));
+
+  client()->ShowAutofillAiAttributionVerification(
+      test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kPersonalContext}),
+      GURL("https://mail.google.com/mail/u/0/#inbox/1"),
+      gfx::RectF(0, 0, 10, 10), decision_cb.Get());
+}
+
+TEST_F(ChromeAutofillClientTest,
+       ShowAutofillAiAttributionVerification_LazilyCreatesBridge) {
+  base::MockCallback<AutofillClient::AutofillAiVerificationDecisionCallback>
+      decision_cb;
+  EXPECT_CALL(decision_cb,
+              Run(AutofillClient::AutofillAiVerificationDecision::kDismiss));
+
+  client()->ShowAutofillAiAttributionVerification(
+      test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kPersonalContext}),
+      GURL("https://mail.google.com/mail/u/0/#inbox/1"),
+      gfx::RectF(0, 0, 10, 10), decision_cb.Get());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -78,6 +78,7 @@ namespace autofill {
 #if BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/364089352): When //c/b/ui/android/autofill gets modularized,
 // //c/b/ui/autofill/ can depend directly on it.
+class AutofillAiAttributionVerificationSheetBridge;
 class AutofillAiSaveUpdateEntityFlowManager;
 class AutofillSnackbarControllerImpl;
 class SaveUpdateAddressProfileFlowManager;
@@ -319,6 +320,11 @@ class ChromeAutofillClient : public ContentAutofillClient {
   void ShowAutofillAiSuggestionRemovedNotification(
       const EntityInstance& entity,
       base::OnceClosure on_undo_clicked) final;
+  void ShowAutofillAiAttributionVerification(
+      const EntityInstance& entity,
+      const GURL& source_url,
+      const gfx::RectF& field_bounds,
+      AutofillAiVerificationDecisionCallback decision_cb) final;
   void ShowEmailVerifiedToast(const GURL& issuer) final;
   void ShowEmailVerificationPopup(
       const gfx::RectF& element_bounds,
@@ -438,6 +444,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutofillMessageController> autofill_message_controller_;
   std::unique_ptr<AutofillDialogController> autofill_dialog_controller_impl_;
+  std::unique_ptr<AutofillAiAttributionVerificationSheetBridge>
+      autofill_ai_attribution_verification_sheet_bridge_;
   std::unique_ptr<AutofillAiSaveUpdateEntityFlowManager>
       autofill_ai_save_update_entity_flow_manager_;
   std::unique_ptr<SaveUpdateAddressProfileFlowManager>

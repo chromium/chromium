@@ -222,6 +222,7 @@
 #include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_autofill_view_impl.h"
+#include "chrome/browser/ui/android/autofill/autofill_ai_attribution_verification_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_flow_manager.h"
 #include "chrome/browser/ui/android/autofill/autofill_dialog_controller_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_message_controller_impl.h"
@@ -1874,6 +1875,24 @@ void ChromeAutofillClient::ShowAutofillAiSuggestionRemovedNotification(
   params.action_button_callback_data = base::Value(*entity.guid());
   toast_controller->MaybeShowToast(std::move(params));
 #endif
+}
+
+void ChromeAutofillClient::ShowAutofillAiAttributionVerification(
+    const EntityInstance& entity,
+    const GURL& source_url,
+    const gfx::RectF& field_bounds,
+    AutofillAiVerificationDecisionCallback decision_cb) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!autofill_ai_attribution_verification_sheet_bridge_) {
+    autofill_ai_attribution_verification_sheet_bridge_ =
+        std::make_unique<AutofillAiAttributionVerificationSheetBridge>(
+            web_contents());
+  }
+  autofill_ai_attribution_verification_sheet_bridge_->RequestShowContent(
+      std::move(decision_cb));
+#else
+  NOTIMPLEMENTED();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ToastController* ChromeAutofillClient::GetToastController() {

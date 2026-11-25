@@ -31,6 +31,7 @@ class WebContents;
 namespace autofill {
 
 #if BUILDFLAG(IS_ANDROID)
+class AutofillAiAttributionVerificationSheetBridge;
 class AutofillSnackbarControllerImpl;
 #endif  // BUILDFLAG(IS_ANDROID)
 class EmailVerificationController;
@@ -104,6 +105,9 @@ class ChromeAutofillClientTestApi {
   }
 
 #if BUILDFLAG(IS_ANDROID)
+  void set_autofill_ai_attribution_verification_sheet_bridge(
+      std::unique_ptr<AutofillAiAttributionVerificationSheetBridge> bridge);
+
   void set_autofill_snackbar_controller(
       std::unique_ptr<AutofillSnackbarControllerImpl> controller);
 
