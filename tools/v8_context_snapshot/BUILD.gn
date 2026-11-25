@@ -103,9 +103,7 @@ if (use_v8_context_snapshot) {
         "//v8",
       ]
 
-      configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
       configs += [
-        "//build/config/compiler:thinlto_optimize_none",
         "//v8:external_startup_data",
         ":disable_icf",
       ]
