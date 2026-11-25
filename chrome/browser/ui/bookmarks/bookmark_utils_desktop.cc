@@ -496,7 +496,9 @@ void ShowBookmarkAllTabsDialog(BrowserWindowInterface* browser) {
       BookmarkEditor::EditDetails::AddFolder(parent, parent->children().size());
 
   GetURLsAndFoldersForOpenTabs(browser, &(details.bookmark_data.children));
-  CHECK(!details.bookmark_data.children.empty(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/589588953): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!details.bookmark_data.children.empty());
   BookmarkEditor::Show(browser->GetWindow()->GetNativeWindow(), profile,
                        details, BookmarkEditor::SHOW_TREE,
                        base::BindOnce(
