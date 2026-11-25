@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,12 +15,6 @@ namespace {
 
 class OfflinePageNavigationThrottleTest : public testing::Test {
  public:
-  void SetUp() override {
-    histogram_tester_ = std::make_unique<base::HistogramTester>();
-  }
-
-  base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
-
   // Creates a MockNavigationHandle and configures it based on the input param
   std::unique_ptr<content::MockNavigationHandle> MakeMockNavigationHandle(
       bool is_renderer_initiated,
@@ -50,9 +43,6 @@ class OfflinePageNavigationThrottleTest : public testing::Test {
         navigation_handle,
         content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
   }
-
- private:
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 TEST_F(OfflinePageNavigationThrottleTest, CancelOfflineRequestFromRenderer) {
@@ -66,11 +56,8 @@ TEST_F(OfflinePageNavigationThrottleTest, CancelOfflineRequestFromRenderer) {
   OfflinePageNavigationThrottle::MaybeCreateAndAdd(
       *navigation_throttle_registry);
 
-  // Checks that a non-null OfflinePageNavigationThrottle was created, and a
-  // value of true was logged to UMA.
+  // Checks that a non-null OfflinePageNavigationThrottle was created.
   ASSERT_EQ(navigation_throttle_registry->throttles().size(), 1u);
-  histogram_tester()->ExpectUniqueSample(
-      kOfflinePagesDidNavigationThrottleCancelNavigation, true, 1);
 
   // Ensure that the created throttle specifies to cancel and ignore the
   // navigation request.
@@ -90,12 +77,8 @@ TEST_F(OfflinePageNavigationThrottleTest, AllowOfflineRequestFromBrowser) {
   OfflinePageNavigationThrottle::MaybeCreateAndAdd(
       *navigation_throttle_registry);
 
-  // Checks that a OfflinePageNavigationThrottle wasn't created and instead a
-  // nullptr was returned. Additionally checks that a value of false was logged
-  // to UMA.
+  // Checks that a OfflinePageNavigationThrottle wasn't created.
   EXPECT_EQ(navigation_throttle_registry->throttles().size(), 0u);
-  histogram_tester()->ExpectUniqueSample(
-      kOfflinePagesDidNavigationThrottleCancelNavigation, false, 1);
 }
 
 TEST_F(OfflinePageNavigationThrottleTest, AllowRegularRequestFromRenderer) {
@@ -108,12 +91,8 @@ TEST_F(OfflinePageNavigationThrottleTest, AllowRegularRequestFromRenderer) {
   OfflinePageNavigationThrottle::MaybeCreateAndAdd(
       *navigation_throttle_registry);
 
-  // Checks that a OfflinePageNavigationThrottle wasn't created and instead a
-  // nullptr was returned. Additionally checks that a value of false was logged
-  // to UMA.
+  // Checks that a OfflinePageNavigationThrottle wasn't created.
   EXPECT_EQ(navigation_throttle_registry->throttles().size(), 0u);
-  histogram_tester()->ExpectUniqueSample(
-      kOfflinePagesDidNavigationThrottleCancelNavigation, false, 1);
 }
 
 TEST_F(OfflinePageNavigationThrottleTest, AllowRegularRequestFromBrowser) {
@@ -126,12 +105,8 @@ TEST_F(OfflinePageNavigationThrottleTest, AllowRegularRequestFromBrowser) {
   OfflinePageNavigationThrottle::MaybeCreateAndAdd(
       *navigation_throttle_registry);
 
-  // Checks that a OfflinePageNavigationThrottle wasn't created and instead a
-  // nullptr was returned. Additionally checks that a value of false was logged
-  // to UMA.
+  // Checks that a OfflinePageNavigationThrottle wasn't created.
   EXPECT_EQ(navigation_throttle_registry->throttles().size(), 0u);
-  histogram_tester()->ExpectUniqueSample(
-      kOfflinePagesDidNavigationThrottleCancelNavigation, false, 1);
 }
 
 }  // namespace

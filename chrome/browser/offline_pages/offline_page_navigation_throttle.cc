@@ -4,22 +4,11 @@
 
 #include "chrome/browser/offline_pages/offline_page_navigation_throttle.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "components/offline_pages/core/request_header/offline_page_header.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/http/http_request_headers.h"
 
 namespace offline_pages {
-
-const char kOfflinePagesDidNavigationThrottleCancelNavigation[] =
-    "OfflinePages.DidNavigationThrottleCancelNavigation";
-
-namespace {
-void RecordWhetherNavigationWasCanceled(bool was_navigation_canceled) {
-  base::UmaHistogramBoolean(kOfflinePagesDidNavigationThrottleCancelNavigation,
-                            was_navigation_canceled);
-}
-}  // namespace
 
 OfflinePageNavigationThrottle::OfflinePageNavigationThrottle(
     content::NavigationThrottleRegistry& registry)
@@ -45,12 +34,10 @@ void OfflinePageNavigationThrottle::MaybeCreateAndAdd(
   content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
   if (navigation_handle.IsRendererInitiated() &&
       navigation_handle.GetRequestHeaders().HasHeader(kOfflinePageHeader)) {
-    RecordWhetherNavigationWasCanceled(true);
     registry.AddThrottle(
         std::make_unique<OfflinePageNavigationThrottle>(registry));
     return;
   }
-  RecordWhetherNavigationWasCanceled(false);
 }
 
 }  // namespace offline_pages

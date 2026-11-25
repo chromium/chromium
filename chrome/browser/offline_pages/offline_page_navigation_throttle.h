@@ -9,8 +9,6 @@
 
 namespace offline_pages {
 
-extern const char kOfflinePagesDidNavigationThrottleCancelNavigation[];
-
 // OfflinePageNavigationThrottle cancels any request coming from the renderer
 // that include the "X-Chrome-offline" header.
 // TODO(crbug.com/40054839): Remove this class once OfflinePageHeader has been

@@ -60,22 +60,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.DidNavigationThrottleCancelNavigation"
-    enum="Boolean" expires_after="2024-05-19">
-  <owner>curranmax@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Whether or not the OfflinePageNavigationThrottle canceled a navigation
-    request. Requests are only canceled if and only if the navigation request
-    was initiated by the renderer and the request headers contain the
-    &quot;X-Chrome-offline&quot; header.
-
-    This histogram is recorded each time Chrome tries to create an
-    OfflinePageNavigationThrottle, which only happens on Android (since Offline
-    Pages is only enabled there).
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
