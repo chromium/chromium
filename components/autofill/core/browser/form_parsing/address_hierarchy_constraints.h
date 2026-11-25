@@ -53,16 +53,15 @@ class AddressHierarchyConstraints {
   }
 
  private:
-  void InitializeFieldTypesAndDescendants(AddressComponent* node);
-  void InitializeIncompatibilities();
-
-  const bool is_custom_hierarchy_available_for_country = false;
+  void InitializeFieldTypesAndDescendants(
+      AddressComponent* node,
+      base::flat_map<FieldType, FieldTypeSet>& descendants_and_self);
+  void InitializeIncompatibilities(
+      const base::flat_map<FieldType, FieldTypeSet>& descendants_and_self,
+      bool is_custom_hierarchy_available_for_country);
 
   // All field types existing in the address model of the specified country.
   FieldTypeSet supported_field_types_;
-
-  // All descendants of each field type, including the key field type itself.
-  base::flat_map<FieldType, FieldTypeSet> descendants_and_self_;
 
   // All field types that are incompatible with the key field type meaning that
   // those field types must not be produced by the same execution of
