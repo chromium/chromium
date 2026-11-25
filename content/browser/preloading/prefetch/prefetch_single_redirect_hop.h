@@ -81,7 +81,6 @@ class CONTENT_EXPORT PrefetchSingleRedirectHop final {
   bool IsIsolatedCookieCopyInProgress() const;
   void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
 
-  void OnInterceptorCheckCookieCopy();
   void OnIsolatedCookieCopyStart();
   void OnIsolatedCookiesReadCompleteAndWriteStart();
   void OnIsolatedCookieCopyComplete();

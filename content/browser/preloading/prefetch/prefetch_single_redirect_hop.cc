@@ -244,17 +244,6 @@ void PrefetchSingleRedirectHop::OnIsolatedCookieCopyComplete() {
   }
 }
 
-void PrefetchSingleRedirectHop::OnInterceptorCheckCookieCopy() {
-  if (!cookie_copy_start_time_) {
-    return;
-  }
-
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck",
-      base::TimeTicks::Now() - cookie_copy_start_time_.value(),
-      base::TimeDelta(), base::Seconds(5), 50);
-}
-
 void PrefetchSingleRedirectHop::SetOnCookieCopyCompleteCallback(
     base::OnceClosure callback) {
   CHECK(IsIsolatedCookieCopyInProgress(), base::NotFatalUntil::M159);

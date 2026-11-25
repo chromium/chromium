@@ -81,7 +81,6 @@ class CONTENT_EXPORT PrefetchServingHandle final {
   void OnIsolatedCookieCopyStartForTesting();
   void OnIsolatedCookiesReadCompleteAndWriteStartForTesting();
   void OnIsolatedCookieCopyCompleteForTesting();
-  void OnInterceptorCheckCookieCopyForTesting();
   void SetOnCookieCopyCompleteCallbackForTesting(base::OnceClosure callback);
 
   // Called with the result of the probe. If the probing feature is enabled,

@@ -724,25 +724,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck"
-    units="ms" expires_after="2025-03-01">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    Cross-Origin prefetches are made in an isolated network context. When the
-    prefetched link is navigated to, the cookies are copied from this isolated
-    network context to the user's default network context.
-
-    This histogram records the time from the start of the cookie copy to when
-    the URL interceptor trying to serve the prefetch checks the status of the
-    cookie copy.
-
-    Warning: this histogram was expired from 2024-09-01 to 2024-10-11; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="PrefetchProxy.AfterClick.Mainframe.CookieCopyTime" units="ms"
     expires_after="2025-03-09">
   <owner>kouhei@chromium.org</owner>

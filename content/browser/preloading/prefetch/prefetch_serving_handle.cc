@@ -118,10 +118,6 @@ bool PrefetchServingHandle::IsIsolatedCookieCopyInProgressForTesting() const {
   return GetCurrentSingleRedirectHopToServe().IsIsolatedCookieCopyInProgress();
 }
 
-void PrefetchServingHandle::OnInterceptorCheckCookieCopyForTesting() {
-  GetCurrentSingleRedirectHopToServe().OnInterceptorCheckCookieCopy();
-}
-
 void PrefetchServingHandle::
     SetOnCookieCopyCompleteCallbackForTesting(  // IN-TEST
         base::OnceClosure callback) {
@@ -344,8 +340,6 @@ void PrefetchServingHandle::ContinueOnGotPrefetchToServe(
 
       // Start the cookie copy for the next redirect hop if needed.
       current_redirect_hop.CopyIsolatedCookies();
-
-      current_redirect_hop.OnInterceptorCheckCookieCopy();
 
       if (current_redirect_hop.IsIsolatedCookieCopyInProgress()) {
         // Cookie copy is happening and this function will continue later.

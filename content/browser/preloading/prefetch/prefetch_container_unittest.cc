@@ -531,7 +531,6 @@ TEST_P(PrefetchContainerTest, CookieCopy) {
   // prefetch. If its still in progress, it registers a callback to be called
   // once the copy is complete.
   EXPECT_TRUE(serving_handle.IsIsolatedCookieCopyInProgressForTesting());
-  serving_handle.OnInterceptorCheckCookieCopyForTesting();
   task_environment()->FastForwardBy(base::Milliseconds(40));
   bool callback_called = false;
   serving_handle.SetOnCookieCopyCompleteCallbackForTesting(
@@ -549,9 +548,6 @@ TEST_P(PrefetchContainerTest, CookieCopy) {
   histogram_tester().ExpectUniqueTimeSample(
       "PrefetchProxy.AfterClick.Mainframe.CookieWriteTime",
       base::Milliseconds(60), 1);
-  histogram_tester().ExpectUniqueTimeSample(
-      "PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck",
-      base::Milliseconds(30), 1);
   histogram_tester().ExpectUniqueTimeSample(
       "PrefetchProxy.AfterClick.Mainframe.CookieCopyTime",
       base::Milliseconds(70), 1);
@@ -603,7 +599,6 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
   // prefetch. If its still in progress, it registers a callback to be called
   // once the copy is complete.
   EXPECT_TRUE(serving_handle.IsIsolatedCookieCopyInProgressForTesting());
-  serving_handle.OnInterceptorCheckCookieCopyForTesting();
   task_environment()->FastForwardBy(base::Milliseconds(40));
   bool callback_called = false;
   serving_handle.SetOnCookieCopyCompleteCallbackForTesting(
@@ -628,7 +623,6 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_TRUE(serving_handle.IsIsolatedCookieCopyInProgressForTesting());
 
-  serving_handle.OnInterceptorCheckCookieCopyForTesting();
   task_environment()->FastForwardBy(base::Milliseconds(40));
 
   callback_called = false;
@@ -653,7 +647,6 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
   task_environment()->FastForwardBy(base::Milliseconds(20));
   EXPECT_TRUE(serving_handle.IsIsolatedCookieCopyInProgressForTesting());
 
-  serving_handle.OnInterceptorCheckCookieCopyForTesting();
   task_environment()->FastForwardBy(base::Milliseconds(40));
 
   callback_called = false;
@@ -671,9 +664,6 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
   histogram_tester().ExpectUniqueTimeSample(
       "PrefetchProxy.AfterClick.Mainframe.CookieWriteTime",
       base::Milliseconds(60), 3);
-  histogram_tester().ExpectUniqueTimeSample(
-      "PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck",
-      base::Milliseconds(30), 3);
   histogram_tester().ExpectUniqueTimeSample(
       "PrefetchProxy.AfterClick.Mainframe.CookieCopyTime",
       base::Milliseconds(70), 3);
