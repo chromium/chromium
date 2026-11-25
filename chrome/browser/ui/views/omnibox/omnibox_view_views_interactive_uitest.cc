@@ -104,6 +104,7 @@
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/views_features.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -354,8 +355,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_SelectAllOnClick) {
   EXPECT_FALSE(omnibox_view->IsSelectAll());
 }
 
-// TODO(crbug.com/339098004): Flaky across multiple builders.
-IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_SelectionClipboard) {
+#if BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, SelectionClipboard) {
+  // Middle-click paste follows the desktop setting (e.g. GNOME's
+  // gtk-enable-primary-paste, which defaults to false since GNOME 50).
+  if (!ui::Clipboard::IsMiddleClickPasteEnabled()) {
+    GTEST_SKIP() << "Middle-click paste is disabled by the desktop settings.";
+  }
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
   omnibox_view->SetUserText(u"http://www.google.com/");
@@ -369,6 +375,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_SelectionClipboard) {
       ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(omnibox_view->IsSelectAll());
+  // Blurring the omnibox can change the location bar layout; let it settle
+  // before computing the click location.
+  views::test::RunScheduledLayout(omnibox_view_views);
 
   size_t cursor_position = 14;
   int cursor_x =
@@ -390,7 +399,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_SelectionClipboard) {
   EXPECT_EQ(u"http://www.goo123gle.com/", omnibox_view->GetText());
   EXPECT_EQ(17U, omnibox_view_views->GetCursorPosition());
 
-  // The omnibox can move when it gains focus, so refresh the click location.
+  // The omnibox can move when it gains focus, so let the layout settle and
+  // refresh the click location.
+  views::test::RunScheduledLayout(omnibox_view_views);
   click_location.set_x(omnibox_view_views->GetBoundsInScreen().origin().x() +
                        cursor_x + render_text->display_rect().x());
 
@@ -403,6 +414,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_SelectionClipboard) {
   EXPECT_EQ(u"http://www.goo4567123gle.com/", omnibox_view->GetText());
   EXPECT_EQ(18U, omnibox_view_views->GetCursorPosition());
 }
+#endif  // BUILDFLAG(IS_LINUX)
 
 // No touch on desktop Mac. Tracked in http://crbug.com/41150204.
 #if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
