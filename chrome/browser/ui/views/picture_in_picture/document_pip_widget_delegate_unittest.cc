@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,26 +19,41 @@
 #include "ui/views/view.h"
 
 class DocumentPipWidgetDelegateTest : public ChromeViewsTestBase {
- protected:
-  std::unique_ptr<content::WebContents> CreateChildWebContents() {
-    return content::WebContentsTester::CreateTestWebContents(&profile_,
-                                                             nullptr);
+ public:
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    profile_ = std::make_unique<TestingProfile>();
+    SetOpenerProfile(profile_.get());
   }
 
-  content::WebContents* opener() {
-    if (!opener_web_contents_) {
-      opener_web_contents_ =
-          content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-      DocumentPipHost::CreateForWebContents(opener_web_contents_.get());
-    }
-    return opener_web_contents_.get();
+  void TearDown() override {
+    opener_web_contents_.reset();
+    profile_.reset();
+    ChromeViewsTestBase::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<content::WebContents> CreateChildWebContents() {
+    return content::WebContentsTester::CreateTestWebContents(
+        opener()->GetBrowserContext(), nullptr);
+  }
+
+  void SetOpenerProfile(Profile* profile) {
+    opener_web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile, nullptr);
+    DocumentPipHost::CreateForWebContents(opener_web_contents_.get());
+  }
+
+  content::WebContents* opener() { return opener_web_contents_.get(); }
+
+  Profile* profile() {
+    return Profile::FromBrowserContext(opener()->GetBrowserContext());
   }
 
   DocumentPipHost* host() { return DocumentPipHost::FromWebContents(opener()); }
 
-  // Must be declared before |profile_| because TestingProfile may post tasks.
   content::RenderViewHostTestEnabler test_render_host_factories_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> opener_web_contents_;
 };
 
@@ -94,6 +110,24 @@ TEST_F(DocumentPipWidgetDelegateTest, WindowTitleTracksOpenerChanges) {
 
   opener_tester->SetTitle(u"");
   EXPECT_EQ(u"", delegate.GetWindowTitle());
+}
+
+TEST_F(DocumentPipWidgetDelegateTest,
+       AccessibleWindowTitleFallsBackForEmptyOpenerTitle) {
+  DocumentPipWidgetDelegate delegate(host(), CreateChildWebContents());
+
+  EXPECT_EQ(u"Untitled", delegate.GetAccessibleWindowTitle());
+  EXPECT_TRUE(delegate.GetWindowTitle().empty());
+}
+
+TEST_F(DocumentPipWidgetDelegateTest,
+       AccessibleWindowTitleIncludesProfileAnnotation) {
+  SetOpenerProfile(profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  content::WebContentsTester::For(opener())->SetTitle(u"Opener title");
+  DocumentPipWidgetDelegate delegate(host(), CreateChildWebContents());
+
+  EXPECT_EQ(u"Opener title (Incognito)", delegate.GetAccessibleWindowTitle());
+  EXPECT_EQ(u"Opener title", delegate.GetWindowTitle());
 }
 
 // Widget capability flags are locked in by the constructor: resizable but not

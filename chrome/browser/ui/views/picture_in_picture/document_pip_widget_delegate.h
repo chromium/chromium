@@ -48,6 +48,7 @@ class DocumentPipWidgetDelegate : public views::WidgetDelegate {
 
   // views::WidgetDelegate:
   std::u16string GetWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
   std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
 

@@ -9,10 +9,13 @@
 #include "base/check_deref.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -47,11 +50,31 @@ DocumentPipWidgetDelegate::GetDocumentPipContentsView() {
 }
 
 std::u16string DocumentPipWidgetDelegate::GetWindowTitle() const {
-  std::u16string title = host_->GetOpenerWebContents()->GetTitle();
+  content::WebContents* opener = host_->GetOpenerWebContents();
+  // The opener observer is detached before `host_` is destroyed.
+  if (!opener) {
+    return std::u16string();
+  }
+  std::u16string title = opener->GetTitle();
   // Match WindowMetadataController::FormatTitleForDisplay without depending on
   // the Browser-backed window metadata controller.
   base::RemoveChars(title, u"\n", &title);
   return title;
+}
+
+std::u16string DocumentPipWidgetDelegate::GetAccessibleWindowTitle() const {
+  if (!host_->GetOpenerWebContents()) {
+    return std::u16string();
+  }
+
+  // Match BrowserView's profile/session annotations without changing the
+  // visible window title.
+  std::u16string title = GetWindowTitle();
+  if (title.empty()) {
+    // Browser-backed Document PiP falls back to the default tab title.
+    title = l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE);
+  }
+  return AnnotateAccessibleWindowTitleForProfile(title, *host_->GetProfile());
 }
 
 std::unique_ptr<views::FrameView> DocumentPipWidgetDelegate::CreateFrameView(

@@ -25,10 +25,16 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -89,9 +95,11 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -1344,6 +1352,68 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
 
   // The picture-in-picture window should no longer have system focus.
   EXPECT_TRUE(widget_activation_waiter.WaitForActivationState(false));
+}
+
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
+                       AccessibleWindowNameTracksOpenerTitle) {
+  auto* profile_manager = g_browser_process->profile_manager();
+  auto* profile_entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(browser()->GetProfile()->GetPath());
+  ASSERT_TRUE(profile_entry);
+  profile_entry->SetLocalProfileName(u"Test profile",
+                                     /*is_default_name=*/false);
+  ProfileAttributesInitParams profile_params;
+  profile_params.profile_path =
+      profile_manager->user_data_dir().AppendASCII("Other profile");
+  profile_params.profile_name = u"Other profile";
+  profile_manager->GetProfileAttributesStorage().AddProfile(
+      std::move(profile_params));
+  ASSERT_GT(profile_manager->GetNumberOfProfiles(), 1u);
+
+  ASSERT_NO_FATAL_FAILURE(LoadTabAndEnterPictureInPicture(browser()));
+  auto* opener = window_controller()->GetWebContents();
+  auto* child = window_controller()->GetChildWebContents();
+  ASSERT_TRUE(child);
+  ASSERT_TRUE(content::WaitForLoadStop(child));
+  auto* widget = GetPipWidget();
+  ASSERT_TRUE(widget);
+
+  EXPECT_EQ(u"Document Picture-in-Picture - Test profile",
+            widget->GetRootView()->GetViewAccessibility().GetCachedName());
+
+  content::TitleWatcher child_title_watcher(child, u"PiP child title");
+  SetPipWindowPageTitle(opener, "PiP child title");
+  EXPECT_EQ(u"PiP child title", child_title_watcher.WaitAndGetTitle());
+  EXPECT_EQ(u"Document Picture-in-Picture - Test profile",
+            widget->GetRootView()->GetViewAccessibility().GetCachedName());
+
+  const std::u16string updated_opener_title = u"Updated opener title";
+  content::TitleWatcher opener_title_watcher(opener, updated_opener_title);
+  ASSERT_TRUE(ExecJs(opener, content::JsReplace("document.title = $1;",
+                                                updated_opener_title)));
+  ASSERT_EQ(updated_opener_title, opener_title_watcher.WaitAndGetTitle());
+  EXPECT_EQ(u"Updated opener title - Test profile",
+            widget->widget_delegate()->GetAccessibleWindowTitle());
+  // BrowserView does not observe opener title changes, so only check the
+  // updated cached name on standalone PiP.
+  if (standalone_enabled()) {
+    EXPECT_EQ(u"Updated opener title - Test profile",
+              widget->GetRootView()->GetViewAccessibility().GetCachedName());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
+                       AccessibleWindowNameIncludesIncognito) {
+  auto* incognito_browser = CreateIncognitoBrowser();
+  ASSERT_NO_FATAL_FAILURE(LoadTabAndEnterPictureInPicture(incognito_browser));
+  ASSERT_TRUE(
+      content::WaitForLoadStop(window_controller()->GetChildWebContents()));
+  auto* widget = GetPipWidget();
+  ASSERT_TRUE(widget);
+
+  EXPECT_EQ(u"Document Picture-in-Picture (Incognito)",
+            widget->GetRootView()->GetViewAccessibility().GetCachedName());
 }
 
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
