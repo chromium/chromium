@@ -884,6 +884,18 @@ ci.thin_tester(
             "webdriver_bidi_e2e_tests": [
                 targets.mixin(
                     experiment_percentage = 10,
+                    # The test depends on //chrome, so gn analyze selects it
+                    # for almost any browser change. Only run it on try
+                    # builders when WebDriver BiDi, ChromeDriver or the common
+                    # CDP backend is touched. CI builders always run it.
+                    location_filters = [
+                        "third_party/chromium-bidi/.+",
+                        "chrome/test/chromedriver/.+",
+                        "content/browser/devtools/.+",
+                        "chrome/browser/devtools/.+",
+                        "third_party/blink/public/devtools_protocol/.+",
+                        "third_party/blink/renderer/core/inspector/.+",
+                    ],
                     swarming = targets.swarming(
                         shards = 8,
                     ),

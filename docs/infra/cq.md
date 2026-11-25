@@ -360,6 +360,17 @@ attribute of the tryjob parameter to the try builder's definition e.g.
   )
 ```
 
+### Why was a test skipped on my CL even though it depends on my change?
+
+Most tests are selected by `gn analyze` based on the build graph. Some tests
+additionally declare `location_filters`: a list of path regexps (relative to
+`src/`, each must fully match) set via `targets.mixin(location_filters = ...)`
+in `//infra/config`. On try builders, such a test is only compiled and run if at
+least one file modified by the CL matches one of the regexps; otherwise its step
+shows "This test is not being run because no file affected by the CL matches its
+location_filters". CI builders and Mega CQ runs always run these tests, so
+regressions are still caught after submission.
+
 ## Flakiness
 
 The CQ can sometimes be flaky. Flakiness is when a test on the CQ fails, but

@@ -2433,6 +2433,14 @@
       {
         "experiment_percentage": 10,
         "isolate_profile_data": true,
+        "location_filters": [
+          "third_party/chromium-bidi/.+",
+          "chrome/test/chromedriver/.+",
+          "content/browser/devtools/.+",
+          "chrome/browser/devtools/.+",
+          "third_party/blink/public/devtools_protocol/.+",
+          "third_party/blink/renderer/core/inspector/.+"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
