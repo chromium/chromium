@@ -105,13 +105,6 @@ BASE_FEATURE_PARAM(bool,
                    /*name=*/"SplitMaskedDomainList",
                    /*default_value=*/false);
 
-// If this feature is enabled, the mDNS responder service responds to queries
-// for TXT records associated with
-// "Generated-Names._mdns_name_generator._udp.local" with a list of generated
-// mDNS names (random UUIDs) in the TXT record data.
-BASE_FEATURE(kMdnsResponderGeneratedNameListing,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether ORB content sniffers use the Rust implementation.
 BASE_FEATURE(kOrbSniffersInRust, base::FEATURE_DISABLED_BY_DEFAULT);
 

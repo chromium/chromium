@@ -16,7 +16,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -24,7 +23,6 @@
 #include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/connector.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -36,7 +34,6 @@
 #include "net/dns/dns_util.h"
 #include "net/dns/mock_mdns_socket_factory.h"
 #include "net/dns/public/dns_protocol.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/mdns_responder.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,11 +60,6 @@ const base::TimeDelta kDefaultTtl = base::Seconds(120);
 const int kNumAnnouncementsPerInterface = 2;
 const int kNumMaxRetriesPerResponse = 2;
 
-// Keep in sync with |kMdnsNameGeneratorServiceInstanceName| in
-// mdns_responder.cc.
-const char kMdnsNameGeneratorServiceInstanceName[] =
-    "Generated-Names._mdns_name_generator._udp.local";
-
 std::string CreateMdnsQuery(uint16_t query_id,
                             const std::string& dotted_name,
                             uint16_t qtype = net::dns_protocol::kTypeA) {
@@ -92,50 +84,6 @@ std::string CreateNegativeResponse(
   auto buf = network::mdns_helper::CreateNegativeResponse(name_addr_map);
   DCHECK(buf != nullptr);
   return std::string(buf->data(), buf->size());
-}
-
-std::string CreateResponseToMdnsNameGeneratorServiceQuery(
-    const base::TimeDelta& ttl,
-    const std::set<std::string>& names) {
-  auto buf =
-      network::mdns_helper::CreateResponseToMdnsNameGeneratorServiceQuery(
-          ttl, names);
-
-  DCHECK(buf != nullptr);
-  return std::string(buf->data(), buf->size());
-}
-
-std::string CreateResponseToMdnsNameGeneratorServiceQueryWithCacheFlush(
-    const std::set<std::string>& names) {
-  auto buf =
-      network::mdns_helper::CreateResponseToMdnsNameGeneratorServiceQuery(
-          kDefaultTtl, names);
-  // Deserialize to set the cache-flush bit before serializing again.
-  net::DnsResponse response(buf.get(), buf->size());
-  bool rv = response.InitParseWithoutQuery(buf->size());
-  DCHECK(rv);
-  DCHECK_EQ(response.answer_count(), 1u);
-  net::DnsResourceRecord txt_record;
-  rv = response.Parser().ReadRecord(&txt_record);
-  DCHECK(rv);
-  DCHECK_EQ(net::dns_protocol::kTypeTXT, txt_record.type);
-  txt_record.klass |= net::dns_protocol::kFlagCacheFlush;
-  // Parsed record does not own the RDATA. Copy the owned RDATA before
-  // constructing a new response.
-  const std::vector<uint8_t> owned_rdata = base::ToVector(txt_record.rdata);
-  txt_record.SetOwnedRdata(owned_rdata);
-  std::vector<net::DnsResourceRecord> answers(1, txt_record);
-  net::DnsResponse response_cache_flush(
-      /*id=*/0, /*is_authoritative=*/true, answers, /*authority_records=*/{},
-      /*additional_records=*/{},
-      /*query=*/std::nullopt,
-      /*rcode=*/net::dns_protocol::kRcodeNOERROR,
-      /*validate_records=*/true,
-      /*validate_names_as_internet_hostnames=*/false);
-  DCHECK(response_cache_flush.io_buffer() != nullptr);
-  base::span<uint8_t> response_bytes = response_cache_flush.io_buffer()->first(
-      response_cache_flush.io_buffer_size());
-  return std::string(base::as_string_view(response_bytes));
 }
 
 // A mock mDNS socket factory to create sockets that can fail sending or
@@ -352,35 +300,6 @@ TEST(CreateMdnsResponseTest, SingleNsecRecordAnswer) {
   EXPECT_EQ(expected_response, actual_response);
 }
 
-TEST(CreateMdnsResponseTest,
-     SingleTxtRecordAnswerToMdnsNameGeneratorServiceQuery) {
-  const uint8_t response_data[] = {
-      0x00, 0x00,  // mDNS response ID mus be zero.
-      0x84, 0x00,  // flags, response with authoritative answer
-      0x00, 0x00,  // number of questions
-      0x00, 0x01,  // number of answer rr
-      0x00, 0x00,  // number of name server rr
-      0x00, 0x00,  // number of additional rr
-      0x0f, 'G',  'e',  'n',  'e',  'r', 'a',  't', 'e', 'd', '-', 'N',
-      'a',  'm',  'e',  's',  0x14, '_', 'm',  'd', 'n', 's', '_', 'n',
-      'a',  'm',  'e',  '_',  'g',  'e', 'n',  'e', 'r', 'a', 't', 'o',
-      'r',  0x04, '_',  'u',  'd',  'p', 0x05, 'l', 'o', 'c', 'a', 'l',
-      0x00,                    // null label
-      0x00, 0x10,              // type A Record
-      0x00, 0x01,              // class IN, cache-flush bit NOT set
-      0x00, 0x00, 0x00, 0x78,  // TTL, 120 seconds
-      0x00, 0x2e,              // rdlength, 46 bytes for the following kv pairs
-      0x0d, 'n',  'a',  'm',  'e',  '0', '=',  '1', '.', 'l', 'o', 'c',
-      'a',  'l',  0x15, 'n',  'a',  'm', 'e',  '1', '=', 'w', 'w', 'w',
-      '.',  'e',  'x',  'a',  'm',  'p', 'l',  'e', '.', 'c', 'o', 'm',
-      0x09, 't',  'x',  't',  'v',  'e', 'r',  's', '=', '1'};
-  std::string expected_response(reinterpret_cast<const char*>(response_data),
-                                sizeof(response_data));
-  std::string actual_response = CreateResponseToMdnsNameGeneratorServiceQuery(
-      kDefaultTtl, {"1.local", "www.example.com"});
-  EXPECT_EQ(expected_response, actual_response);
-}
-
 class SimpleNameGenerator : public MdnsResponderManager::NameGenerator {
  public:
   std::string CreateName() override {
@@ -396,8 +315,6 @@ class MdnsResponderTest : public testing::Test {
  public:
   MdnsResponderTest()
       : failing_socket_factory_(task_environment_.GetMainThreadTaskRunner()) {
-    feature_list_.InitAndEnableFeature(
-        features::kMdnsResponderGeneratedNameListing);
     Reset();
   }
 
@@ -486,7 +403,6 @@ class MdnsResponderTest : public testing::Test {
     task_environment_.FastForwardBy(duration);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   // Overrides the current thread task runner, so we can simulate the passage
@@ -664,43 +580,6 @@ TEST_F(MdnsResponderTest, SendNegativeResponseToQueryForNonAddressRecord) {
   }
 }
 
-// Test that the mDNS responder service can respond to an mDNS name generator
-// service query with all existing names.
-TEST_F(MdnsResponderTest,
-       SendResponseToMdnsNameGeneratorServiceQueryWithAllExistingNames) {
-  const auto& addr1 = kPublicAddrs[0];
-  const auto& addr2 = kPublicAddrs[1];
-  // Let two names be created by different clients.
-  const std::string name1 = CreateNameForAddress(0, addr1);
-  const std::string name2 = CreateNameForAddress(1, addr2);
-
-  const std::string query = CreateMdnsQuery(
-      0, kMdnsNameGeneratorServiceInstanceName, net::dns_protocol::kTypeTXT);
-  // The response should contain both names.
-  const std::string expected_response1 =
-      CreateResponseToMdnsNameGeneratorServiceQuery(kDefaultTtl,
-                                                    {name1, name2});
-
-  EXPECT_CALL(socket_factory_, OnSendTo(expected_response1)).Times(1);
-  socket_factory_.SimulateReceive(base::as_byte_span(query));
-  RunUntilNoTasksRemain();
-
-  // Remove |name2|.
-  std::string expected_goodbye =
-      CreateResolutionResponse(base::TimeDelta(), {{name2, addr2}});
-  // Goodbye on both interfaces.
-  EXPECT_CALL(socket_factory_, OnSendTo(expected_goodbye)).Times(2);
-  RemoveNameForAddressAndExpectDone(1 /* client_id */, addr2);
-  RunUntilNoTasksRemain();
-
-  // The response should contain only |name1|.
-  const std::string expected_response2 =
-      CreateResponseToMdnsNameGeneratorServiceQuery(kDefaultTtl, {name1});
-  EXPECT_CALL(socket_factory_, OnSendTo(expected_response2)).Times(1);
-  socket_factory_.SimulateReceive(base::as_byte_span(query));
-  RunUntilNoTasksRemain();
-}
-
 // Test that the responder manager closes the connection after
 // an invalid IP address is given to create a name for.
 TEST_F(MdnsResponderTest,
@@ -857,131 +736,6 @@ TEST_F(MdnsResponderTest, TruncatedResponseDoesNotReadTrailingBufferBytes) {
   socket_factory_.SimulateReceive(base::as_byte_span(two_answer_response));
   RunUntilNoTasksRemain();
   EXPECT_FALSE(client_[0].is_bound());
-}
-
-// Test that we stop sending response to the mDNS name generator service queries
-// when there is an external response carrying a TXT record with the same
-// service instance name and the cache-flush bit set.
-TEST_F(MdnsResponderTest,
-       StopRespondingToGeneratorServiceQueryAfterObservingTxtNameConflict) {
-  const auto& addr = kPublicAddrs[0];
-  const std::string name = CreateNameForAddress(0, addr);
-
-  const std::string query = CreateMdnsQuery(
-      0, kMdnsNameGeneratorServiceInstanceName, net::dns_protocol::kTypeTXT);
-  // Verify that we can respond to the service query.
-  const std::string expected_response =
-      CreateResponseToMdnsNameGeneratorServiceQuery(kDefaultTtl, {name});
-  EXPECT_CALL(socket_factory_, OnSendTo(expected_response)).Times(1);
-  socket_factory_.SimulateReceive(base::as_byte_span(query));
-  RunUntilNoTasksRemain();
-
-  // Receive a conflicting response.
-  const std::string conflicting_response =
-      CreateResponseToMdnsNameGeneratorServiceQueryWithCacheFlush(
-          {"dummy.local"});
-  socket_factory_.SimulateReceive(base::as_byte_span(conflicting_response));
-  RunUntilNoTasksRemain();
-
-  // We should have stopped responding to service queries.
-  EXPECT_CALL(socket_factory_, OnSendTo(expected_response)).Times(0);
-  socket_factory_.SimulateReceive(base::as_byte_span(query));
-  RunUntilNoTasksRemain();
-}
-
-// Test that an external response with the same service instance name but
-// without the cache-flush bit set is not considered a conflict.
-TEST_F(MdnsResponderTest,
-       NoConflictResolutionIfCacheFlushBitSetInExternalResponse) {
-  const auto& addr = kPublicAddrs[0];
-  const std::string name = CreateNameForAddress(0, addr);
-
-  // Receive an external response to the same instance name but without the
-  // cache-flush bit set in the TXT record.
-  const std::string nonconflict_response =
-      CreateResponseToMdnsNameGeneratorServiceQuery(kDefaultTtl,
-                                                    {"dummy.local"});
-  socket_factory_.SimulateReceive(base::as_byte_span(nonconflict_response));
-  RunUntilNoTasksRemain();
-
-  const std::string query = CreateMdnsQuery(
-      0, kMdnsNameGeneratorServiceInstanceName, net::dns_protocol::kTypeTXT);
-  // We can still respond to the service query.
-  const std::string expected_response =
-      CreateResponseToMdnsNameGeneratorServiceQuery(kDefaultTtl, {name});
-  EXPECT_CALL(socket_factory_, OnSendTo(expected_response)).Times(1);
-  socket_factory_.SimulateReceive(base::as_byte_span(query));
-  RunUntilNoTasksRemain();
-}
-
-// Test that scheduled responses to mDNS name generator service queries can be
-// cancelled after observing conflict with external records.
-TEST_F(MdnsResponderTest,
-       CancelResponseToGeneratorServiceQueryAfterObservingTxtNameConflict) {
-  const auto& addr = kPublicAddrs[0];
-  const std::string name = CreateNameForAddress(0, addr);
-
-  // Receive a series of queries so that we have delayed responses scheduled
-  // because of rate limiting. We will also receive a conflicting response after
-  // the first response sent to cancel the subsequent ones.
-  const std::string query = CreateMdnsQuery(
-      0, kMdnsNameGeneratorServiceInstanceName, net::dns_protocol::kTypeTXT);
-  const std::string expected_response =
-      CreateResponseToMdnsNameGeneratorServiceQuery(kDefaultTtl, {name});
-  // We should have only the first response sent and the rest cancelled after
-  // encountering the conflicting.
-  EXPECT_CALL(socket_factory_, OnSendTo(expected_response)).Times(1);
-  socket_factory_.SimulateReceive(base::as_byte_span(query));
-  socket_factory_.SimulateReceive(base::as_byte_span(query));
-  socket_factory_.SimulateReceive(base::as_byte_span(query));
-  RunFor(base::Milliseconds(900));
-
-  // Receive a conflicting response.
-  const std::string conflicting_response =
-      CreateResponseToMdnsNameGeneratorServiceQueryWithCacheFlush(
-          {"dummy.local"});
-  socket_factory_.SimulateReceive(base::as_byte_span(conflicting_response));
-
-  RunUntilNoTasksRemain();
-}
-
-// Test that if we ever send any response to mDNS name generator service
-// queries, a goodbye packet is sent when the responder manager is destroyed.
-TEST_F(MdnsResponderTest,
-       SendGoodbyeForMdnsNameGeneratorServiceAfterManagerDestroyed) {
-  const auto& addr = kPublicAddrs[0];
-  const std::string name = CreateNameForAddress(0, addr);
-
-  const std::string query = CreateMdnsQuery(
-      0, kMdnsNameGeneratorServiceInstanceName, net::dns_protocol::kTypeTXT);
-  const std::string expected_response =
-      CreateResponseToMdnsNameGeneratorServiceQuery(kDefaultTtl, {name});
-  // Respond to a generator service query once.
-  EXPECT_CALL(socket_factory_, OnSendTo(expected_response)).Times(1);
-  socket_factory_.SimulateReceive(base::as_byte_span(query));
-  RunFor(base::Milliseconds(1000));
-
-  // Goodbye on both interfaces.
-  const std::string expected_goodbye =
-      CreateResponseToMdnsNameGeneratorServiceQuery(base::TimeDelta(), {name});
-  EXPECT_CALL(socket_factory_, OnSendTo(expected_goodbye)).Times(2);
-  host_manager_ = nullptr;
-  RunUntilNoTasksRemain();
-}
-
-// Test that we do not send any goodbye packet to flush TXT records of
-// owned names when the responder manager is destroyed, if we have not sent any
-// response to mDNS name generator service queries.
-TEST_F(MdnsResponderTest,
-       NoGoodbyeForMdnsNameGeneratorServiceIfNoPreviousServiceResponseSent) {
-  const auto& addr = kPublicAddrs[0];
-  const std::string name = CreateNameForAddress(0, addr);
-
-  const std::string goodbye =
-      CreateResponseToMdnsNameGeneratorServiceQuery(base::TimeDelta(), {name});
-  EXPECT_CALL(socket_factory_, OnSendTo(goodbye)).Times(0);
-  host_manager_ = nullptr;
-  RunUntilNoTasksRemain();
 }
 
 // Test that the responder host clears all name-address maps in one goodbye
@@ -1186,36 +940,6 @@ TEST_F(MdnsResponderTest, AnnouncementsAndGoodbyesAreRateLimitedPerResponse) {
   RunFor(base::Seconds(1));
   // Goodbye for 1.local.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_goodbye2)).Times(2);
-  RunUntilNoTasksRemain();
-}
-
-// Test that responses to the name generator service queries are sent following
-// the per-record rate limit, so that each message is separated by at least one
-// second.
-TEST_F(MdnsResponderTest,
-       MdnsNameGeneratorServiceResponsesAreRateLimitedPerRecord) {
-  const auto& addr = kPublicAddrs[0];
-  CreateNameForAddress(0, addr);
-  // After a name has been created for |addr|, let the responder receive
-  // queries. Their responses should be scheduled sequentially, each separated
-  // by at least one second. Note that responses to the mDNS name generator
-  // service queries have an extra delay of 20-120ms as the service instance
-  // name is shared among Chrome instances.
-  const std::string query = CreateMdnsQuery(
-      0, kMdnsNameGeneratorServiceInstanceName, net::dns_protocol::kTypeTXT);
-  socket_factory_.SimulateReceive(base::as_byte_span(query));
-  socket_factory_.SimulateReceive(base::as_byte_span(query));
-
-  const std::string expected_response =
-      CreateResponseToMdnsNameGeneratorServiceQuery(kDefaultTtl, {"0.local"});
-  // Response to the first query is sent right after the query is received.
-  EXPECT_CALL(socket_factory_, OnSendTo(expected_response)).Times(1);
-
-  // Response to the second received query will be delayed for another one
-  // second plus an extra delay of 20-120ms.
-  RunFor(base::Milliseconds(1015));
-  EXPECT_CALL(socket_factory_, OnSendTo(expected_response)).Times(1);
-
   RunUntilNoTasksRemain();
 }
 
