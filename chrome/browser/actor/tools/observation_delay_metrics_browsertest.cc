@@ -350,9 +350,7 @@ class ObservationDelayMetricsScriptToolsTest
     : public ObservationDelayMetricsTest {
  public:
   ObservationDelayMetricsScriptToolsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kWebMCP, blink::features::kWebMCPWaitForToolsUntil},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kWebMCP);
   }
   ~ObservationDelayMetricsScriptToolsTest() override = default;
 

@@ -207,9 +207,7 @@ class PageSettledMonitorScriptToolsBrowserTest
     : public PageSettledMonitorBrowserTest {
  public:
   PageSettledMonitorScriptToolsBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kWebMCP, blink::features::kWebMCPWaitForToolsUntil},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kWebMCP);
   }
 
  private:

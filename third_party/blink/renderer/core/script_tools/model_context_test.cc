@@ -1003,14 +1003,9 @@ TEST_F(ModelContextTest, ListTools) {
   EXPECT_EQ("squash", tools[2]->Name());
 }
 
-class ModelContextWaitForToolsUntilTest : public ModelContextTest {
- private:
-  ScopedWebMCPWaitForToolsUntilForTest scoped_wait_for_tools_until_{true};
-};
-
 // `waitForToolsUntil()` only tells the browser when the document's tools stop
 // and start being ready, however many promises it was given.
-TEST_F(ModelContextWaitForToolsUntilTest, NotifiesHostOnReadyTransitions) {
+TEST_F(ModelContextTest, WaitForToolsUntilNotifiesHostOnReadyTransitions) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
 
@@ -1076,7 +1071,6 @@ class ModelContextWaitForToolsUntilWarningTest : public SimTest {
 
  private:
   ScopedWebMCPForTest scoped_webmcp_{true};
-  ScopedWebMCPWaitForToolsUntilForTest scoped_wait_for_tools_until_{true};
 };
 
 // The page is warned when promises passed to `waitForToolsUntil()` keep its

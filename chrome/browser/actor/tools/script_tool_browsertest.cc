@@ -1172,10 +1172,6 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
 
 class ActorToolsTestScriptToolRegistration : public ActorToolsTestScriptTool {
  public:
-  ActorToolsTestScriptToolRegistration() {
-    features_.InitAndEnableFeature(blink::features::kWebMCPWaitForToolsUntil);
-  }
-
   // Returns the names of the script tools in an observation of the active tab,
   // as the actor's client would take it once an action completes.
   std::vector<std::string> GetObservedToolNames() {
@@ -1221,9 +1217,6 @@ class ActorToolsTestScriptToolRegistration : public ActorToolsTestScriptTool {
       "/actor/script_tool_navigate_to_deferred_registration.html";
   static constexpr char kDeferredRegistrationResultPath[] =
       "/actor/script_tool_deferred_registration_result.html";
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 // The page registers `deferred_tool` after it has loaded. The wait for the page

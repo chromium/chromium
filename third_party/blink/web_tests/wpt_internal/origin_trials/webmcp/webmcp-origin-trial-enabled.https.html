@@ -15,6 +15,10 @@ test(t => {
   assert_true("modelContext" in document, "document.modelContext should be exposed when the origin trial token is present");
 }, "document.modelContext is exposed via Origin Trial");
 test(t => {
+  assert_true("waitForToolsUntil" in ModelContext.prototype,
+      "ModelContext.waitForToolsUntil() should be exposed");
+}, "waitForToolsUntil() is exposed via Origin Trial");
+test(t => {
   assert_true("agentInvoked" in SubmitEvent.prototype,
       "SubmitEvent.agentInvoked should be exposed");
   assert_true("respondWith" in SubmitEvent.prototype,

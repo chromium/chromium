@@ -81,9 +81,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
       {switches::kEnableExperimentalWebPlatformFeatures,
        std::cref(features::kDeviceBoundSessionJsApi),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-      {switches::kEnableExperimentalWebPlatformFeatures,
-       std::cref(blink::features::kWebMCPWaitForToolsUntil),
-       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
       {switches::kEnableExperimentalWebPlatformFeatures,

@@ -34,9 +34,7 @@ using Result = ScriptToolsReadyWaiter::Result;
 class ScriptToolsReadyWaiterBrowserTest : public content::ContentBrowserTest {
  public:
   ScriptToolsReadyWaiterBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {blink::features::kWebMCP, blink::features::kWebMCPWaitForToolsUntil},
-        {});
+    feature_list_.InitAndEnableFeature(blink::features::kWebMCP);
   }
 
   void SetUpOnMainThread() override {

@@ -493,10 +493,8 @@ void ScriptToolDocumentUserData::CancelRemoteScriptTool(
 }
 
 void ScriptToolDocumentUserData::SetScriptToolsReady(bool ready) {
-  if (!IsWebMCPEnabled(render_frame_host()) ||
-      !base::FeatureList::IsEnabled(
-          blink::features::kWebMCPWaitForToolsUntil)) {
-    mojo::ReportBadMessage("WebMCPWaitForToolsUntil is not enabled.");
+  if (!IsWebMCPEnabled(render_frame_host())) {
+    mojo::ReportBadMessage("WebMCP is not enabled.");
     return;
   }
   auto& rfh = static_cast<RenderFrameHostImpl&>(render_frame_host());

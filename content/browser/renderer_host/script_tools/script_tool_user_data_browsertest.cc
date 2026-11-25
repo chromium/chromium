@@ -68,9 +68,7 @@ class ScriptToolsReadyObserver : public WebContentsObserver {
 class ScriptToolUserDataBrowserTest : public ContentBrowserTest {
  public:
   ScriptToolUserDataBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kWebMCP, blink::features::kWebMCPWaitForToolsUntil},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kWebMCP);
   }
 
   void SetUpOnMainThread() override {
@@ -257,8 +255,7 @@ IN_PROC_BROWSER_TEST_F(ScriptToolUserDataBrowserTest,
   mojo::test::BadMessageObserver bad_message_observer;
   ScriptToolDocumentUserData::GetOrCreateForCurrentDocument(child)
       ->SetScriptToolsReady(false);
-  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "WebMCPWaitForToolsUntil is not enabled.");
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(), "WebMCP is not enabled.");
 }
 
 class ScriptToolContinuationManagerBrowserTest : public ContentBrowserTest {

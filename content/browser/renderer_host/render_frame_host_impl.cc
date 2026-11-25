@@ -7182,7 +7182,7 @@ void RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation() {
   }
 
   delegate_->DOMContentLoaded(this);
-  if (base::FeatureList::IsEnabled(blink::features::kWebMCPWaitForToolsUntil)) {
+  if (base::FeatureList::IsEnabled(blink::features::kWebMCP)) {
     delegate_->ScriptToolsReadyStateChanged(this);
   }
   if (last_committed_url_.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame()) {
@@ -17344,7 +17344,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   if (navigated_to_new_document &&
       lifecycle_state() != LifecycleStateImpl::kPrerendering &&
-      base::FeatureList::IsEnabled(blink::features::kWebMCPWaitForToolsUntil)) {
+      base::FeatureList::IsEnabled(blink::features::kWebMCP)) {
     delegate_->ScriptToolsReadyStateChanged(this);
   }
 
@@ -19481,8 +19481,7 @@ bool RenderFrameHostImpl::IsDOMContentLoaded() {
 
 RenderFrameHost::ScriptToolsReadyState
 RenderFrameHostImpl::GetScriptToolsReadyState() {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebMCPWaitForToolsUntil)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kWebMCP)) {
     return ScriptToolsReadyState::kReady;
   }
   if (!IsRenderFrameLive()) {
