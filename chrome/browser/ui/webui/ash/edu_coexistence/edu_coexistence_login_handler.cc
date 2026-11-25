@@ -320,7 +320,9 @@ void EduCoexistenceLoginHandler::ConsentLogged(const base::ListValue& args) {
     return;
   }
 
-  CHECK(!in_error_state_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/589804577): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!in_error_state_);
 
   account_added_callback_ = args[0].GetString();
 
