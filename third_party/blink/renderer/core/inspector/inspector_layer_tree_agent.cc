@@ -409,6 +409,10 @@ protocol::Response InspectorLayerTreeAgent::makeSnapshot(const String& layer_id,
 protocol::Response InspectorLayerTreeAgent::loadSnapshot(
     std::unique_ptr<Array<protocol::LayerTree::PictureTile>> tiles,
     String* snapshot_id) {
+  if (!inspected_frames_->Root()->IsOutermostMainFrame()) {
+    return protocol::Response::ServerError(
+        "Operation is only supported for the main frame");
+  }
   if (tiles->empty()) {
     return protocol::Response::ServerError(
         "Invalid argument, no tiles provided");

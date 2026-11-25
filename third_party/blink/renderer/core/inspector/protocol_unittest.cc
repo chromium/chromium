@@ -9,9 +9,11 @@
 #include "skia/ext/font_utils.h"
 #include "skia/ext/skia_utils_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_layer_tree_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/layer_tree.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/graphics/picture_snapshot.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -123,7 +125,9 @@ TEST(ProtocolBinaryTest, InvalidBase64Decode) {
 
 TEST(InspectorLayerTreeSnapshotTest, LoadsAndReplaysValidSnapshot) {
   test::TaskEnvironment task_environment;
-  auto* agent = MakeGarbageCollected<InspectorLayerTreeAgent>(nullptr, nullptr);
+  DummyPageHolder page_holder;
+  auto* agent = MakeGarbageCollected<InspectorLayerTreeAgent>(
+      MakeGarbageCollected<InspectedFrames>(&page_holder.GetFrame()), nullptr);
 
   sk_sp<const SkData> data = SerializeValidPicture();
   ASSERT_TRUE(data);
@@ -159,7 +163,9 @@ TEST(InspectorLayerTreeSnapshotTest, LoadsAndReplaysValidSnapshot) {
 
 TEST(InspectorLayerTreeSnapshotTest, RejectsRuntimeShaderInSnapshot) {
   test::TaskEnvironment task_environment;
-  auto* agent = MakeGarbageCollected<InspectorLayerTreeAgent>(nullptr, nullptr);
+  DummyPageHolder page_holder;
+  auto* agent = MakeGarbageCollected<InspectorLayerTreeAgent>(
+      MakeGarbageCollected<InspectedFrames>(&page_holder.GetFrame()), nullptr);
 
   auto effect_result = SkRuntimeEffect::MakeForShader(
       SkString("half4 main(float2 p) { return half4(0, 1, 0, 1); }"));
@@ -187,7 +193,9 @@ TEST(InspectorLayerTreeSnapshotTest, RejectsRuntimeShaderInSnapshot) {
 
 TEST(InspectorLayerTreeSnapshotTest, IgnoresEmbeddedTypefaceStreamInSnapshot) {
   test::TaskEnvironment task_environment;
-  auto* agent = MakeGarbageCollected<InspectorLayerTreeAgent>(nullptr, nullptr);
+  DummyPageHolder page_holder;
+  auto* agent = MakeGarbageCollected<InspectorLayerTreeAgent>(
+      MakeGarbageCollected<InspectedFrames>(&page_holder.GetFrame()), nullptr);
 
   SkCustomTypefaceBuilder builder;
   builder.setGlyph(1, 16.0f, SkPath::Rect(SkRect::MakeWH(16, 16)));
@@ -237,7 +245,9 @@ TEST(InspectorLayerTreeSnapshotTest, IgnoresEmbeddedTypefaceStreamInSnapshot) {
 
 TEST(InspectorLayerTreeSnapshotTest, RejectsInvalidBoundsAndParameters) {
   test::TaskEnvironment task_environment;
-  auto* agent = MakeGarbageCollected<InspectorLayerTreeAgent>(nullptr, nullptr);
+  DummyPageHolder page_holder;
+  auto* agent = MakeGarbageCollected<InspectorLayerTreeAgent>(
+      MakeGarbageCollected<InspectedFrames>(&page_holder.GetFrame()), nullptr);
 
   sk_sp<const SkData> valid_data = SerializeValidPicture();
   ASSERT_TRUE(valid_data);
