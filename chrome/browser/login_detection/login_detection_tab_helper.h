@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_TAB_HELPER_H_
 #define CHROME_BROWSER_LOGIN_DETECTION_LOGIN_DETECTION_TAB_HELPER_H_
 
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/login_detection/oauth_login_detector.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -24,7 +25,16 @@ class LoginDetectionTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<LoginDetectionTabHelper> {
  public:
-  static void MaybeCreateForWebContents(content::WebContents* web_contents);
+  // Run when a non-FedCM federated login (e.g. OAuth) is detected. Popups
+  // inherit their opener's callback, and for popup logins it runs from
+  // `WebContentsDestroyed()`, so the `WebContents` may be the popup and may be
+  // going away. May be null if the embedder does not need notifications.
+  using FederatedLoginCallback =
+      base::RepeatingCallback<void(content::WebContents*)>;
+
+  static void MaybeCreateForWebContents(
+      content::WebContents* web_contents,
+      FederatedLoginCallback federated_login_callback);
 
   ~LoginDetectionTabHelper() override;
   LoginDetectionTabHelper(const LoginDetectionTabHelper&) = delete;
@@ -34,7 +44,8 @@ class LoginDetectionTabHelper
   friend class content::WebContentsUserData<LoginDetectionTabHelper>;
   FRIEND_TEST_ALL_PREFIXES(LoginDetectionTabHelperTest, PopUpOAuthLogin);
 
-  explicit LoginDetectionTabHelper(content::WebContents* web_contents);
+  LoginDetectionTabHelper(content::WebContents* web_contents,
+                          FederatedLoginCallback federated_login_callback);
 
   // Indicates this WebContents was opened as a popup, and the opener
   // WebContents had the |opener_navigation_url|.
@@ -60,6 +71,8 @@ class LoginDetectionTabHelper
 
   // Detects successful OAuth login flows.
   std::unique_ptr<OAuthLoginDetector> oauth_login_detector_;
+
+  FederatedLoginCallback federated_login_callback_;
 
   // The UKM source id for the primary page. We may need to log something in
   // WebContentsDestroyed and retrieving the UKM source ID then would be too

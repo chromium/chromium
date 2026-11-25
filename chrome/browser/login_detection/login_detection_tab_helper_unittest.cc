@@ -6,16 +6,17 @@
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/login_detection/login_detection_type.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 
@@ -29,7 +30,8 @@ class LoginDetectionTabHelperTest : public ChromeRenderViewHostTestHarness {
     scoped_feature_list_.InitAndEnableFeature(kLoginDetection);
     ChromeRenderViewHostTestHarness::SetUp();
     ResetMetricsTesters();
-    LoginDetectionTabHelper::MaybeCreateForWebContents(web_contents());
+    LoginDetectionTabHelper::MaybeCreateForWebContents(
+        web_contents(), federated_login_callback_.Get());
   }
 
   void ResetMetricsTesters() {
@@ -64,22 +66,21 @@ class LoginDetectionTabHelperTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  testing::NiceMock<
+      base::MockCallback<LoginDetectionTabHelper::FederatedLoginCallback>>
+      federated_login_callback_;
 };
 
 TEST_F(LoginDetectionTabHelperTest, NoLogin) {
-  NavigateAndCommit(GURL("https://foo.com/page.html"));
-  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
-}
+  EXPECT_CALL(federated_login_callback_, Run(testing::_)).Times(0);
 
-TEST_F(LoginDetectionTabHelperTest,
-       NoLogin_BrowserAssistedLoginHistogramNotRecorded) {
   NavigateAndCommit(GURL("https://foo.com/page.html"));
   VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
-  histogram_tester_->ExpectTotalCount(
-      "PasswordManager.BrowserAssistedLogin.Type", 0);
 }
 
 TEST_F(LoginDetectionTabHelperTest, SimpleOAuthLogin) {
+  EXPECT_CALL(federated_login_callback_, Run(testing::_)).Times(0);
+
   NavigateAndCommit(GURL("https://foo.com/page.html"));
   VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
   ResetMetricsTesters();
@@ -90,12 +91,10 @@ TEST_F(LoginDetectionTabHelperTest, SimpleOAuthLogin) {
 
   // OAuth login complete
   ResetMetricsTesters();
+  testing::Mock::VerifyAndClearExpectations(&federated_login_callback_);
+  EXPECT_CALL(federated_login_callback_, Run(web_contents())).Times(1);
   NavigateAndCommit(GURL("https://foo.com/redirect?code=secret"));
   VerifyLoginDetectionTypeMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow);
-  histogram_tester_->ExpectUniqueSample(
-      "PasswordManager.BrowserAssistedLogin.Type",
-      password_manager::metrics_util::BrowserAssistedLoginType::kNonFedCmOAuth,
-      1);
 }
 
 TEST_F(LoginDetectionTabHelperTest, NavigationToOAuthLoggedInSite) {
@@ -186,15 +185,16 @@ TEST_F(LoginDetectionTabHelperTest, InvalidOAuthLoginsWithRedirect) {
 }
 
 TEST_F(LoginDetectionTabHelperTest, PopUpOAuthLogin) {
+  EXPECT_CALL(federated_login_callback_, Run(testing::_)).Times(0);
+
   // Opener page.
   NavigateAndCommit(GURL("https://foo.com/page.html"));
   VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
   ResetMetricsTesters();
 
-  // Simulate opening a popup.
+  // Simulate opening a popup before tab helpers are initialized on it.
   std::unique_ptr<content::WebContents> popup_web_contents =
       CreateTestWebContents();
-  LoginDetectionTabHelper::MaybeCreateForWebContents(popup_web_contents.get());
   LoginDetectionTabHelper* opener_tab_helper =
       LoginDetectionTabHelper::FromWebContents(web_contents());
   opener_tab_helper->DidOpenRequestedURL(
@@ -214,6 +214,9 @@ TEST_F(LoginDetectionTabHelperTest, PopUpOAuthLogin) {
   ResetMetricsTesters();
 
   // Destroying the popup should trigger login detection.
+  testing::Mock::VerifyAndClearExpectations(&federated_login_callback_);
+  EXPECT_CALL(federated_login_callback_, Run(popup_web_contents.get()))
+      .Times(1);
   popup_web_contents.reset();
   VerifyLoginDetectionTypeMetrics(
       LoginDetectionType::kOauthPopUpFirstTimeLoginFlow);

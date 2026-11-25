@@ -4,15 +4,15 @@
 
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
 
+#include <utility>
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
 #include "chrome/browser/login_detection/login_detection_prefs.h"
 #include "chrome/browser/login_detection/login_detection_type.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/browser_context.h"
@@ -55,8 +55,6 @@ void RecordLoginDetectionMetrics(LoginDetectionType type,
   if (type == LoginDetectionType::kNoLogin) {
     return;
   }
-  password_manager::metrics_util::RecordBrowserAssistedLogin(
-      password_manager::metrics_util::BrowserAssistedLoginType::kNonFedCmOAuth);
   ukm::builders::LoginDetectionV2 builder(ukm_source_id);
   builder.SetPage_LoginType(static_cast<int64_t>(type))
       .Record(ukm::UkmRecorder::Get());
@@ -76,21 +74,25 @@ void RecordLoginDetectionMetrics(LoginDetectionType type,
 
 // static
 void LoginDetectionTabHelper::MaybeCreateForWebContents(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    FederatedLoginCallback federated_login_callback) {
   if (!web_contents->GetBrowserContext() ||
       web_contents->GetBrowserContext()->IsOffTheRecord()) {
     return;
   }
   if (!IsLoginDetectionFeatureEnabled())
     return;
-  LoginDetectionTabHelper::CreateForWebContents(web_contents);
+  LoginDetectionTabHelper::CreateForWebContents(
+      web_contents, std::move(federated_login_callback));
 }
 
 LoginDetectionTabHelper::LoginDetectionTabHelper(
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    FederatedLoginCallback federated_login_callback)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<LoginDetectionTabHelper>(*web_contents),
       oauth_login_detector_(std::make_unique<OAuthLoginDetector>()),
+      federated_login_callback_(std::move(federated_login_callback)),
       ukm_source_id_(
           web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()) {
   CHECK(IsLoginDetectionFeatureEnabled(), base::NotFatalUntil::M161);
@@ -150,7 +152,8 @@ void LoginDetectionTabHelper::DidOpenRequestedURL(
   // the tab strip, and as such tab helpers may not yet have been initialized.
   // Explicitly instantiate the login detector for the `new_contents` here to
   // ensure the popup is registered correctly.
-  LoginDetectionTabHelper::CreateForWebContents(new_contents);
+  LoginDetectionTabHelper::MaybeCreateForWebContents(new_contents,
+                                                     federated_login_callback_);
   if (auto* new_tab_helper =
           LoginDetectionTabHelper::FromWebContents(new_contents)) {
     new_tab_helper->DidOpenAsPopUp(web_contents()->GetLastCommittedURL());
@@ -181,11 +184,8 @@ void LoginDetectionTabHelper::ProcessNewSignedInSite(
   prefs::SaveSiteToOAuthSignedInList(GetPrefs(web_contents()), signedin_site);
   site_isolation::SiteIsolationPolicy::IsolateNewOAuthURL(
       web_contents()->GetBrowserContext(), signedin_site);
-
-  ChromePasswordManagerClient* password_manager_client =
-      ChromePasswordManagerClient::FromWebContents(web_contents());
-  if (password_manager_client) {
-    password_manager_client->OnNonFedCmFederatedLogin();
+  if (federated_login_callback_) {
+    federated_login_callback_.Run(web_contents());
   }
 }
 

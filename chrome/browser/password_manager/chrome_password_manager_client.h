@@ -448,7 +448,7 @@ class ChromePasswordManagerClient
     apply_client_side_prediction_override_ = true;
   }
 
-  void OnNonFedCmFederatedLogin();
+  static void NotifyNonFedCmFederatedLogin(content::WebContents* web_contents);
 
  protected:
   // Callable for tests.

@@ -395,8 +395,6 @@ TEST_F(PasswordManagerCriticalActionLoggerTest,
   // Create a popup WebContents with web_contents as its opener.
   std::unique_ptr<content::WebContents> popup_web_contents =
       CreateWebContentsWithClient();
-  ChromePasswordManagerClient* popup_client =
-      ChromePasswordManagerClient::FromWebContents(popup_web_contents.get());
   content::WebContentsTester::For(popup_web_contents.get())
       ->SetOpener(web_contents.get());
 
@@ -406,7 +404,8 @@ TEST_F(PasswordManagerCriticalActionLoggerTest,
       .WillOnce(testing::DoAll(SaveArg<0>(&recorded_entry),
                                SaveArg<1>(&recorded_nav_id)));
 
-  popup_client->OnNonFedCmFederatedLogin();
+  ChromePasswordManagerClient::NotifyNonFedCmFederatedLogin(
+      popup_web_contents.get());
 
   EXPECT_EQ(recorded_nav_id, expected_nav_id);
   EXPECT_EQ(recorded_entry.action_type,

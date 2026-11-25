@@ -74,6 +74,7 @@
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/common/browser_assisted_login_type.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
@@ -743,20 +744,48 @@ TEST_F(ChromePasswordManagerClientTest, OnNonPasswordLoginDetectedDelegation) {
   autofill::ChromeAutofillClient::CreateForWebContents(
       popup_web_contents.get());
   ChromePasswordManagerClient::CreateForWebContents(popup_web_contents.get());
-  ChromePasswordManagerClient* popup_client =
-      ChromePasswordManagerClient::FromWebContents(popup_web_contents.get());
 
   // Set the main WebContents as the opener of the popup.
   content::WebContentsTester::For(popup_web_contents.get())
       ->SetOpener(web_contents());
 
   // Trigger non-password login detection on the popup.
-  popup_client->OnNonFedCmFederatedLogin();
+  ChromePasswordManagerClient::NotifyNonFedCmFederatedLogin(
+      popup_web_contents.get());
 
   // The notification should have been delegated to the main WebContents'
   // PasswordManager, which records the histogram.
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.FederatedLogin.SavePromptPrevented", false, 1);
+}
+
+TEST_F(ChromePasswordManagerClientTest,
+       NotifyNonFedCmFederatedLoginRecordsMetricAndDelegates) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPreventPasswordManagerOnFederatedLogin);
+
+  base::HistogramTester histogram_tester;
+  ChromePasswordManagerClient::NotifyNonFedCmFederatedLogin(web_contents());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.BrowserAssistedLogin.Type",
+      password_manager::metrics_util::BrowserAssistedLoginType::kNonFedCmOAuth,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FederatedLogin.SavePromptPrevented", false, 1);
+
+  // Also verify null-safe behavior when no ChromePasswordManagerClient is
+  // attached to the WebContents.
+  std::unique_ptr<content::WebContents> bare_web_contents(
+      content::WebContentsTester::CreateTestWebContents(
+          web_contents()->GetBrowserContext(), nullptr));
+  ChromePasswordManagerClient::NotifyNonFedCmFederatedLogin(
+      bare_web_contents.get());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.BrowserAssistedLogin.Type",
+      password_manager::metrics_util::BrowserAssistedLoginType::kNonFedCmOAuth,
+      2);
 }
 
 TEST_F(ChromePasswordManagerClientTest, OnNonPasswordLoginDetectedOpenerCycle) {
@@ -772,8 +801,6 @@ TEST_F(ChromePasswordManagerClientTest, OnNonPasswordLoginDetectedOpenerCycle) {
           web_contents()->GetBrowserContext(), nullptr));
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents_a.get());
   ChromePasswordManagerClient::CreateForWebContents(web_contents_a.get());
-  ChromePasswordManagerClient* client_a =
-      ChromePasswordManagerClient::FromWebContents(web_contents_a.get());
 
   std::unique_ptr<content::WebContents> web_contents_b(
       content::WebContentsTester::CreateTestWebContents(
@@ -790,7 +817,8 @@ TEST_F(ChromePasswordManagerClientTest, OnNonPasswordLoginDetectedOpenerCycle) {
   // Trigger non-password login detection on A.
   // With the recursion removed, this will directly invoke the PasswordManager
   // on B and return immediately, without causing infinite recursion or hanging.
-  client_a->OnNonFedCmFederatedLogin();
+  ChromePasswordManagerClient::NotifyNonFedCmFederatedLogin(
+      web_contents_a.get());
 
   // B's PasswordManager should have handled the notification and recorded the
   // histogram. A's PasswordManager is not called.

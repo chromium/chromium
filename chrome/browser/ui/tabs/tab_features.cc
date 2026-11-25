@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -1476,7 +1477,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   HttpsOnlyModeTabHelper::CreateForWebContents(tab.GetContents());
 
   login_detection::LoginDetectionTabHelper::MaybeCreateForWebContents(
-      tab.GetContents());
+      tab.GetContents(),
+      base::BindRepeating(
+          &ChromePasswordManagerClient::NotifyNonFedCmFederatedLogin));
 
   if (!profile->IsOffTheRecord()) {
     HistoryClustersTabHelper::CreateForWebContents(
@@ -2157,7 +2160,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   HttpsOnlyModeTabHelper::CreateForWebContents(new_contents);
 
   login_detection::LoginDetectionTabHelper::MaybeCreateForWebContents(
-      new_contents);
+      new_contents,
+      base::BindRepeating(
+          &ChromePasswordManagerClient::NotifyNonFedCmFederatedLogin));
 
   if (!profile->IsOffTheRecord()) {
     HistoryClustersTabHelper::CreateForWebContents(

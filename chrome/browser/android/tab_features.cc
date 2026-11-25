@@ -9,6 +9,7 @@
 #include "base/android/android_info.h"
 #include "base/android/device_info.h"
 #include "base/check_is_test.h"
+#include "base/functional/bind.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/actor/actor_surface_tab_helper.h"
@@ -780,7 +781,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   HttpsOnlyModeTabHelper::CreateForWebContents(web_contents);
 
   login_detection::LoginDetectionTabHelper::MaybeCreateForWebContents(
-      web_contents);
+      web_contents,
+      base::BindRepeating(
+          &ChromePasswordManagerClient::NotifyNonFedCmFederatedLogin));
 
   if (!profile->IsOffTheRecord()) {
     HistoryClustersTabHelper::CreateForWebContents(

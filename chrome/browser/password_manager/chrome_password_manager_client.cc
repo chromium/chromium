@@ -2027,8 +2027,14 @@ void ChromePasswordManagerClient::OnFedCmFederatedLogin(bool success) {
   }
 }
 
-void ChromePasswordManagerClient::OnNonFedCmFederatedLogin() {
-  OnNonPasswordLoginDetected();
+// static
+void ChromePasswordManagerClient::NotifyNonFedCmFederatedLogin(
+    content::WebContents* web_contents) {
+  password_manager::metrics_util::RecordBrowserAssistedLogin(
+      password_manager::metrics_util::BrowserAssistedLoginType::kNonFedCmOAuth);
+  if (auto* password_manager_client = FromWebContents(web_contents)) {
+    password_manager_client->OnNonPasswordLoginDetected();
+  }
 }
 
 template <typename T>
