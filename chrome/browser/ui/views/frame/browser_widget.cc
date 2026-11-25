@@ -489,6 +489,15 @@ void BrowserWidget::SetTabDragKind(TabDragKind tab_drag_kind) {
   }
 
   tab_drag_kind_ = tab_drag_kind;
+
+  if (was_dragging_any != is_dragging_any) {
+    tab_dragging_status_changed_callbacks_.Notify(is_dragging_any);
+  }
+}
+
+base::CallbackListSubscription BrowserWidget::RegisterTabDraggingStatusChanged(
+    TabDraggingStatusChangedCallback callback) {
+  return tab_dragging_status_changed_callbacks_.Add(std::move(callback));
 }
 
 void BrowserWidget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
