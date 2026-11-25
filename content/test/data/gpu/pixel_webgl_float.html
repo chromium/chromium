@@ -14,7 +14,18 @@ the round-trip.
   }
 </style>
 <script>
-function sendResult(status) {
+function log(msg) {
+  if (window.domAutomationController && window.domAutomationController.log) {
+    window.domAutomationController.log(msg);
+  } else {
+    console.log(msg);
+  }
+}
+
+function sendResult(status, detail) {
+  if (detail) {
+    log(detail);
+  }
   if (window.domAutomationController) {
     window.domAutomationController.send(status);
   } else {
@@ -32,11 +43,21 @@ function waitForFinish() {
   }
 }
 
-function drawQuad(gl, color) {
+function drawQuad(canvasId, contextOptions, color) {
+  let element = document.getElementById(canvasId);
+  let gl = element.getContext('webgl2', contextOptions);
+  if (!gl) {
+    throw new Error(`Failed to create WebGL2 context for ${canvasId}`);
+  }
+  if (gl.isContextLost()) {
+    throw new Error(`WebGL2 context for ${canvasId} is lost on creation`);
+  }
+
   let ext = gl.getExtension('EXT_color_buffer_half_float');
   if (!ext) {
-    sendResult("FAILURE", "EXT_color_buffer_half_float not supported");
-    return;
+    throw new Error(
+        `EXT_color_buffer_half_float not supported on ${canvasId} ` +
+        `(isContextLost=${gl.isContextLost()})`);
   }
 
   gl.drawingBufferStorage(gl.RGBA16F, gl.drawingBufferWidth, gl.drawingBufferHeight);
@@ -48,21 +69,30 @@ function drawQuad(gl, color) {
       let vertShader = gl.createShader(gl.VERTEX_SHADER);
       gl.shaderSource(vertShader, vertCode);
       gl.compileShader(vertShader);
-      if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS))
-        throw new Error(gl.getShaderInfoLog(vertShader));
+      if (!gl.getShaderParameter(vertShader, gl.COMPILE_STATUS)) {
+        throw new Error(
+            `Vertex shader compile failed on ${canvasId}: ` +
+            gl.getShaderInfoLog(vertShader));
+      }
 
       let fragShader = gl.createShader(gl.FRAGMENT_SHADER);
       gl.shaderSource(fragShader, fragCode);
       gl.compileShader(fragShader);
-      if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS))
-        throw new Error(gl.getShaderInfoLog(fragShader));
+      if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
+        throw new Error(
+            `Fragment shader compile failed on ${canvasId}: ` +
+            gl.getShaderInfoLog(fragShader));
+      }
 
       let shaderProgram = gl.createProgram();
       gl.attachShader(shaderProgram, vertShader);
       gl.attachShader(shaderProgram, fragShader);
       gl.linkProgram(shaderProgram);
-      if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS))
-        throw new Error(gl.getProgramInfoLog(program));
+      if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        throw new Error(
+            `Program link failed on ${canvasId}: ` +
+            gl.getProgramInfoLog(shaderProgram));
+      }
 
       return shaderProgram;
     }
@@ -101,43 +131,53 @@ function drawQuad(gl, color) {
   // matches the input with higher precision than we can achieve with 8 bits.
   let pixels = new Float32Array(4);
   gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.FLOAT, pixels);
+  const glError = gl.getError();
+  if (glError !== gl.NO_ERROR) {
+    throw new Error(
+        `GL error 0x${glError.toString(16)} on ${canvasId} ` +
+        `(isContextLost=${gl.isContextLost()})`);
+  }
   for (let c = 0; c < 4; ++c) {
     const epsilon = (1/255) / 8;
-    if (Math.abs(pixels[c] - color[c]) > epsilon)
-      throw new Error('Error reading back pixels as floats');
+    if (Math.abs(pixels[c] - color[c]) > epsilon) {
+      throw new Error(
+          `Error reading back pixels as floats on ${canvasId}: ` +
+          `expected [${color}], got [${pixels}] ` +
+          `(isContextLost=${gl.isContextLost()})`);
+    }
   }
 }
 
-async function main() {
-  let color = new Float32Array(4);
+function main() {
+  try {
+    let color = new Float32Array(4);
 
-  color[0] = 1.0;
-  color[1] = 0.0;
-  color[2] = (128 + 1/4) / 255;
-  color[3] = 1.0;
-  {
-    let element = document.getElementById('canvas-noaa-premul');
-    let gl = element.getContext('webgl2', {premultipliedAlpha: true, antialias:false});
-    drawQuad(gl, color);
-  }
-  {
-    let element = document.getElementById('canvas-aa-premul');
-    let gl = element.getContext('webgl2', {premultipliedAlpha: true, antialias:true});
-    drawQuad(gl, color);
-  }
+    color[0] = 1.0;
+    color[1] = 0.0;
+    color[2] = (128 + 1/4) / 255;
+    color[3] = 1.0;
 
-  {
-    let element = document.getElementById('canvas-noaa-unpremul');
-    let gl = element.getContext('webgl2', {premultipliedAlpha: false, antialias:false});
-    drawQuad(gl, color);
-  }
-  {
-    let element = document.getElementById('canvas-aa-unpremul');
-    let gl = element.getContext('webgl2', {premultipliedAlpha: false, antialias:true});
-    drawQuad(gl, color);
-  }
+    drawQuad(
+        'canvas-noaa-premul',
+        {premultipliedAlpha: true, antialias: false},
+        color);
+    drawQuad(
+        'canvas-aa-premul',
+        {premultipliedAlpha: true, antialias: true},
+        color);
+    drawQuad(
+        'canvas-noaa-unpremul',
+        {premultipliedAlpha: false, antialias: false},
+        color);
+    drawQuad(
+        'canvas-aa-unpremul',
+        {premultipliedAlpha: false, antialias: true},
+        color);
 
-  waitForFinish();
+    waitForFinish();
+  } catch (e) {
+    sendResult("FAILURE", e.stack || String(e));
+  }
 }
 </script>
 </head>
