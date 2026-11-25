@@ -11,9 +11,46 @@ source_set("test_support") {
   ]
 
   public_deps = [
+    ":fake_task_client",
     "//components/browser_actuator/public",
     "//testing/gmock",
   ]
 
   deps = [ "//base" ]
+}
+
+# Not `testonly`, so that a development switch can return the fake from
+# `BrowserActuatorService::CreateTaskClient()` in a regular build.
+source_set("fake_task_client") {
+  visibility = [
+    ":*",
+    "//chrome/browser/browser_actuator:*",
+  ]
+
+  sources = [
+    "fake_browser_actuator_task_client.cc",
+    "fake_browser_actuator_task_client.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/browser_actuator/public",
+  ]
+
+  deps = [ "//third_party/protobuf:protobuf_lite" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "fake_browser_actuator_task_client_unittest.cc" ]
+
+  deps = [
+    ":fake_task_client",
+    "//base",
+    "//base/test:test_support",
+    "//components/browser_actuator/public/proto:auto_password_change_proto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

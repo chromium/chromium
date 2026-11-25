@@ -14,5 +14,6 @@ group("unit_tests") {
     "//components/browser_actuator/internal/proto:task_ingress_proto",
     "//components/browser_actuator/public/profile_registry:unit_tests",
     "//components/browser_actuator/public/proto:auto_password_change_proto",
+    "//components/browser_actuator/test_support:unit_tests",
   ]
 }
