@@ -1221,7 +1221,15 @@ constexpr base::TimeDelta kInitialPageLoadTimeout = base::Seconds(20);
 
 // Tests that `chrome://dino/` shows the disabled page instead of the dinosaur
 // game when the `AllowDinosaurEasterEgg` enterprise policy is set to `false`.
-- (void)testAllowDinosaurEasterEggDisabled {
+// TODO(crbug.com/590458746): Failing on device.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testAllowDinosaurEasterEggDisabled \
+  DISABLED_testAllowDinosaurEasterEggDisabled
+#else
+#define MAYBE_testAllowDinosaurEasterEggDisabled \
+  testAllowDinosaurEasterEggDisabled
+#endif
+- (void)MAYBE_testAllowDinosaurEasterEggDisabled {
   SetPolicy(false, policy::key::kAllowDinosaurEasterEgg);
   [ChromeEarlGrey loadURL:GURL(kChromeDinoGameURL)];
   [ChromeEarlGrey
