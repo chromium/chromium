@@ -5622,7 +5622,7 @@ You can restart anytime.
         Not available on your device
       </message>
       <message name="IDS_IOS_NTP_QUICK_ACTIONS_ADD" desc="The title of the attach image button in the quick actions buttons in NTP. Used to attach an image to a prompt. [iOS only]">
-        Add Image
+        Add images
       </message>
       <message name="IDS_IOS_NTP_QUICK_ACTIONS_AIM" desc="The title of the AI Mode button in the quick actions buttons in NTP">
         AI Mode
