@@ -809,13 +809,10 @@ void MirroringActivity::OnSessionSet(const CastSession& session) {
     return;
   }
   will_start_mirroring_timestamp_ = base::Time::Now();
-  // We use unretained here because weak pointers may be passed safely between
-  // sequences, but must always be dereferenced and invalidated on the same
-  // SequencedTaskRunner otherwise checking the pointer would be racey. See more
-  // at base/memory/weak_ptr.h.
+
   debugger_.get()->ShouldFetchMirroringStats(
-      base::BindOnce(&MirroringActivity::StartSession, base::Unretained(this),
-                     session.destination_id()));
+      base::BindOnce(&MirroringActivity::StartSession,
+                     weak_ptr_factory_.GetWeakPtr(), session.destination_id()));
 }
 void MirroringActivity::StartSession(const std::string& destination_id,
                                      bool enable_rtcp_reporting) {
