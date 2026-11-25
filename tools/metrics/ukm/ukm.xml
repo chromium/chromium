@@ -4294,7 +4294,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="BackForwardCacheDisabledForRenderFrameHostReason">
-  <owner>hajimehoshi@chromium.org</owner>
+  <owner>rakina@chromium.org</owner>
+  <owner>fergal@chromium.org</owner>
   <summary>
     Recorded at a history commit for each reason passed to
     BackForwardCache::DisableForRenderFrameHost. The source IDs match with the
