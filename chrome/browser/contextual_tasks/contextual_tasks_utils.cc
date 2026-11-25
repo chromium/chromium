@@ -107,6 +107,26 @@
 
 namespace contextual_tasks {
 
+namespace {
+
+// Returns true if `url` is an AI Mode page. `IsAiUrl()` also covers AI Mode
+// hosts that `IsAimURL()` does not know about (e.g. g.ai and a forced embedded
+// page host).
+bool IsAiModeUrl(const GURL& url, content::BrowserContext* browser_context) {
+  if (IsAimURL(url) || IsAimZeroStateURL(url)) {
+    return true;
+  }
+  if (!browser_context) {
+    return false;
+  }
+  ContextualTasksUiService* ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContextIfExists(
+          browser_context);
+  return ui_service && ui_service->IsAiUrl(url);
+}
+
+}  // namespace
+
 std::vector<contextual_search::TabInfo> ToRestoredTabInfos(
     const ContextualTaskContext* context) {
   if (!context) {
@@ -555,6 +575,14 @@ bool IsValidUrlForSuggestedTab(const GURL& url,
   }
 
   CHECK(profile);
+
+  // AI Mode pages cannot be picked in the tab picker (see
+  // `ContextualSearchboxHandler::GetRecentTabInfos()`), so they are not
+  // auto-suggested either.
+  if (IsAiModeUrl(url, profile)) {
+    return false;
+  }
+
   base::ElapsedTimer timer;
   // Since site exclusions are expected to be rare, it is generally faster
   // and simpler to use list-like key processing instead of allocating with
@@ -716,20 +744,11 @@ bool IsRecentTabSelectable(
     return true;
   }
 
-  // AI Mode pages cannot be added as context. One that is already shared
-  // (e.g. because it was auto-suggested) stays listed above so that it can be
-  // deselected. `IsAiUrl()` also covers AI Mode hosts that `IsAimURL()` does
-  // not know about (e.g. g.ai and a forced embedded page host).
-  if (IsAimURL(url) || IsAimZeroStateURL(url)) {
+  // AI Mode pages cannot be added as context. One that is already attached to
+  // the session stays listed above so that it can be deselected.
+  content::WebContents* contents = tab.GetContents();
+  if (IsAiModeUrl(url, contents ? contents->GetBrowserContext() : nullptr)) {
     return false;
-  }
-  if (content::WebContents* contents = tab.GetContents()) {
-    if (ContextualTasksUiService* ui_service =
-            ContextualTasksUiServiceFactory::GetForBrowserContextIfExists(
-                contents->GetBrowserContext());
-        ui_service && ui_service->IsAiUrl(url)) {
-      return false;
-    }
   }
 
   // Exclude unattached internal pages and, when requested, tabs whose last

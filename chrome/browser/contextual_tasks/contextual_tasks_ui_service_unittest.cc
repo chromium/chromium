@@ -5416,6 +5416,12 @@ TEST_F(ContextualTasksUiServiceTest, CloseTrackedWindow_ClosesTab) {
 #endif
 
 TEST_F(ContextualTasksUiServiceTest, IsValidUrlForSuggestedTab) {
+  // The mock treats every URL as an AI Mode URL by default, so limit it to
+  // g.ai, which only `ContextualTasksUiService::IsAiUrl()` knows about.
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::WithArg<0>(
+          [](const GURL& url) { return url.host() == "g.ai"; }));
+
   SiteExclusionDetail site_exclusion_detail;
 
   // HTTP / HTTPS urls are valid
@@ -5434,6 +5440,24 @@ TEST_F(ContextualTasksUiServiceTest, IsValidUrlForSuggestedTab) {
 
   // Internal about:blank urls are invalid
   EXPECT_FALSE(IsValidUrlForSuggestedTab(GURL("about:blank"), profile_.get(),
+                                         site_exclusion_detail));
+
+  // AI Mode urls are invalid, while a regular search results page is valid.
+  EXPECT_FALSE(IsValidUrlForSuggestedTab(
+      GURL("https://www.google.com/search?q=test&udm=50"), profile_.get(),
+      site_exclusion_detail));
+  EXPECT_FALSE(
+      IsValidUrlForSuggestedTab(GURL("https://www.google.com/search?udm=50"),
+                                profile_.get(), site_exclusion_detail));
+  EXPECT_FALSE(IsValidUrlForSuggestedTab(GURL("https://www.google.com/?udm=50"),
+                                         profile_.get(),
+                                         site_exclusion_detail));
+  EXPECT_TRUE(
+      IsValidUrlForSuggestedTab(GURL("https://www.google.com/search?q=test"),
+                                profile_.get(), site_exclusion_detail));
+
+  // AI Mode urls that only the UI service knows about are invalid too.
+  EXPECT_FALSE(IsValidUrlForSuggestedTab(GURL("https://g.ai/"), profile_.get(),
                                          site_exclusion_detail));
 }
 

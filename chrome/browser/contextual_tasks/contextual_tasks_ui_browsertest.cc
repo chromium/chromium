@@ -602,6 +602,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   tabs::TabInterface* tab = TabListInterface::From(browser())->GetActiveTab();
   ASSERT_TRUE(tab);
 
+  // The mock treats every URL as an AI Mode URL by default, and AI Mode URLs
+  // are never suggested.
+  ON_CALL(*GetMockAimEligibilityService(), IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
   // No composebox_handler_ initialized yet.
   EXPECT_FALSE(controller_->CanUpdateSuggestedTabContext(
       tab, GURL("http://example.com")));
@@ -646,6 +651,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
                        CanUpdateSuggestedTabContext_SiteExclusion) {
   tabs::TabInterface* tab = TabListInterface::From(browser())->GetActiveTab();
   ASSERT_TRUE(tab);
+
+  // The mock treats every URL as an AI Mode URL by default, and AI Mode URLs
+  // are never suggested.
+  ON_CALL(*GetMockAimEligibilityService(), IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
 
   // No composebox_handler_ initialized yet.
   EXPECT_FALSE(controller_->CanUpdateSuggestedTabContext(

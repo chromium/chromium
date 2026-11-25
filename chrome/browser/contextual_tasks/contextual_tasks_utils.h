@@ -169,7 +169,8 @@ void RemoveTabUnderline(
     content::WebContents* source_web_contents = nullptr);
 #endif
 
-// Returns true if the given URL is valid to show as a suggested tab.
+// Returns true if the given URL is valid to show as a suggested tab. AI Mode
+// URLs are never valid.
 // `profile` and `site_exclusion_detail` must be non-null.
 bool IsValidUrlForSuggestedTab(const GURL& url,
                                Profile* profile,
