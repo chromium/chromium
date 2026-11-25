@@ -142,7 +142,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
 // Hides auto sign-in notification. Removes the view from superview and destroys
 // the controller.
-// TODO(crbug.com/40394758): Animate disappearance.
 - (void)hideAutosigninNotification;
 
 @end
@@ -355,7 +354,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 }
 
 // Shows auto sign-in notification and schedules hiding it after 3 seconds.
-// TODO(crbug.com/40394758): Animate appearance.
 - (void)showAutosigninNotification:(std::unique_ptr<PasswordForm>)formSignedIn {
   if (!_webState) {
     return;
