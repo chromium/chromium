@@ -1161,24 +1161,6 @@ constexpr inline auto AllowUninitialized =
 // This is not meant to be added manually. You can ignore this flag.
 constexpr inline auto LeakedDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 
-// Temporary introduced alias in the context of rewriting std::vector<T*> into
-// std::vector<raw_ptr<T>> and in order to temporarily bypass the dangling ptr
-// checks on the CQ. This alias will be removed gradually after the cl lands and
-// will be replaced by DanglingUntriaged where necessary.
-constexpr inline auto VectorExperimental = base::RawPtrTraits::kMayDangle;
-
-// Temporary alias introduced in the context of rewriting std::set<T*> into
-// std::set<raw_ptr<T>> and in order to temporarily bypass the dangling ptr
-// checks on the CQ. This alias will be removed gradually after the rewrite cl
-// lands and will be replaced by DanglingUntriaged where necessary.
-constexpr inline auto SetExperimental = base::RawPtrTraits::kMayDangle;
-
-// Temporary alias introduced in the context of rewriting more containers and in
-// order to temporarily bypass the dangling ptr checks on the CQ. This alias
-// will be removed gradually after the rewrite cl lands and will be replaced by
-// DanglingUntriaged where necessary.
-constexpr inline auto CtnExperimental = base::RawPtrTraits::kMayDangle;
-
 // Marks the pointer as unprotected-in-release. The trait is always present on
 // the type; how it resolves depends on the
 // ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR build flag (see
