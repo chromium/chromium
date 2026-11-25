@@ -153,6 +153,10 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
 
 OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() {
   installer_->RemoveObserver(this);
+
+  // Settle the requests that still wait, so that their promises don't hang.
+  RejectPendingTasks([](const PendingTask&) { return true; },
+                     CreateTranslatorError::kExceedsServiceCountLimitation);
 }
 
 LanguagePackRequirements

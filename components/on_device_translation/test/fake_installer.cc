@@ -78,6 +78,9 @@ void FakeOnDeviceTranslationInstaller::InitNow(
 void FakeOnDeviceTranslationInstaller::InstallLanguagePack(
     LanguagePackKey language_pack) {
   registered_lang_packs_.insert(language_pack);
+  if (!install_language_packs_automatically_) {
+    return;
+  }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeOnDeviceTranslationInstaller::InstallLanguagePackNow,

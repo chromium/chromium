@@ -42,6 +42,13 @@ class FakeOnDeviceTranslationInstaller : public OnDeviceTranslationInstaller {
   void InitNow(base::RepeatingClosure on_ready_callback);
   // Forces installation to happen right away.
   void InstallLanguagePackNow(LanguagePackKey language_pack);
+
+  // When false, `InstallLanguagePack()` only registers the language pack, and
+  // the download waits until `InstallLanguagePackNow()` or
+  // `FailLanguagePackInstallNow()`.
+  void set_install_language_packs_automatically(bool automatically) {
+    install_language_packs_automatically_ = automatically;
+  }
   // Makes the pending library install fail with `error`.
   void FailLibraryInstallNow(InstallError error = InstallError::kFailed);
   // Makes the pending download of `language_pack` fail with `error`.
@@ -58,6 +65,7 @@ class FakeOnDeviceTranslationInstaller : public OnDeviceTranslationInstaller {
   base::FilePath fake_install_dir_;
   bool supported_ = true;
   bool is_init_ = false;
+  bool install_language_packs_automatically_ = true;
   std::set<LanguagePackKey> installed_lang_packs_;
   std::set<LanguagePackKey> registered_lang_packs_;
   std::map<LanguagePackKey, base::FilePath> language_pack_paths_;

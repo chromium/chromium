@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,11 +20,14 @@
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/on_device_translation/public/supported_languages.h"
 #include "components/on_device_translation/service/service_launcher.h"
+#include "components/on_device_translation/service_controller_manager.h"
 #include "components/on_device_translation/test/fake_installer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace on_device_translation {
 namespace {
@@ -648,6 +652,53 @@ TEST_F(OnDeviceTranslationServiceControllerTest,
   EXPECT_CALL(*mock_launcher_, UpdateLanguagePacks).Times(0);
   fake_installer_->UnInstallLanguagePack(LanguagePackKey::kEn_Es);
   EXPECT_FALSE(service_controller_->IsServiceRunning());
+}
+
+class ServiceControllerManagerTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    fake_installer_ =
+        std::make_unique<FakeOnDeviceTranslationInstaller>(base::FilePath());
+    fake_installer_->InitNow(base::DoNothing());
+    fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Es);
+    manager_ = std::make_unique<ServiceControllerManager>(
+        /*local_state=*/nullptr,
+        base::BindRepeating(&ServiceControllerManagerTest::CreateLauncher,
+                            base::Unretained(this)));
+    manager_->SetInstallerForTesting(fake_installer_.get());
+  }
+
+  void TearDown() override {
+    manager_.reset();
+    fake_installer_.reset();
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<FakeOnDeviceTranslationInstaller> fake_installer_;
+  std::unique_ptr<ServiceControllerManager> manager_;
+
+ private:
+  std::unique_ptr<OnDeviceTranslationServiceLauncher> CreateLauncher() {
+    return std::make_unique<MockServiceLauncher>();
+  }
+};
+
+// Tests that destroying a controller settles the requests that wait in it.
+TEST_F(ServiceControllerManagerTest,
+       DestroyingControllerRejectsPendingRequest) {
+  const auto origin = url::Origin::Create(GURL("https://a.test"));
+  fake_installer_->set_install_language_packs_automatically(false);
+  base::test::TestFuture<base::expected<
+      mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+      pending_future;
+  manager_->CreateTranslator(origin, "en", "ja", pending_future.GetCallback());
+  task_environment_.RunUntilIdle();
+  ASSERT_FALSE(pending_future.IsReady());
+
+  manager_.reset();
+  ASSERT_TRUE(pending_future.IsReady());
+  EXPECT_EQ(pending_future.Get().error(),
+            CreateTranslatorError::kExceedsServiceCountLimitation);
 }
 
 }  // namespace
