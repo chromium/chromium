@@ -1228,19 +1228,23 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     public void testCloseButton() {
+        mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSimpleHtml));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(true);
                 });
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        PageInfoController controller = PageInfoController.getLastPageInfoController();
-        assertTrue(controller.isDialogShowing());
-        onView(withId(R.id.page_info_close)).perform(click());
-        assertFalse(controller.isDialogShowing());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AccessibilityStateTestHelper.uninitializeForTesting();
-                });
+        try {
+            openPageInfo(PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+            PageInfoController controller = PageInfoController.getLastPageInfoController();
+            assertTrue(controller.isDialogShowing());
+            onView(withId(R.id.page_info_close)).perform(click());
+            assertFalse(controller.isDialogShowing());
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        AccessibilityStateTestHelper.uninitializeForTesting();
+                    });
+        }
     }
 
     /** Tests that navigation between nested subpages works as expected. */
