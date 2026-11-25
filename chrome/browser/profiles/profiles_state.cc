@@ -454,7 +454,9 @@ std::u16string GetDefaultNameForNewEnterpriseProfile(
 
 std::u16string GetDefaultNameForNewSignedInProfile(
     const AccountInfo& account_info) {
-  CHECK(account_info.IsValid(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/589721712): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(account_info.IsValid());
   if (account_info.IsManaged() != signin::Tribool::kTrue) {
     std::u16string given_name = base::UTF8ToUTF16(*account_info.GetGivenName());
     CHECK(!given_name.empty());
