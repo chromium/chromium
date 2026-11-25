@@ -168,6 +168,63 @@ describe('NetworkUtils', () => {
         },
       ]);
     });
+
+    it('splits newline-joined values into separate headers', () => {
+      const bidiNetworkHeaders =
+        networkUtils.bidiNetworkHeadersFromCdpNetworkHeaders({
+          'Set-Cookie': 'a=b\nc=d',
+          'Content-Type': 'text/html',
+        });
+
+      assert.deepEqual(bidiNetworkHeaders, [
+        {name: 'Set-Cookie', value: {type: 'string', value: 'a=b'}},
+        {name: 'Set-Cookie', value: {type: 'string', value: 'c=d'}},
+        {name: 'Content-Type', value: {type: 'string', value: 'text/html'}},
+      ]);
+    });
+  });
+
+  describe('mergeCdpNetworkHeaders', () => {
+    it('returns undefined without headers', () => {
+      assert.isUndefined(networkUtils.mergeCdpNetworkHeaders());
+    });
+
+    it('returns a copy of the only header map', () => {
+      const base = {'Content-Type': 'text/html'};
+      const extra = {'X-Extra': '1'};
+
+      assert.deepEqual(networkUtils.mergeCdpNetworkHeaders(base), base);
+      assert.notStrictEqual(networkUtils.mergeCdpNetworkHeaders(base), base);
+      assert.deepEqual(
+        networkUtils.mergeCdpNetworkHeaders(undefined, extra),
+        extra,
+      );
+    });
+
+    it('replaces base headers case-insensitively and keeps the inputs', () => {
+      const base = {
+        'content-type': 'text/html',
+        'X-Base': 'base',
+      };
+      const extra = {
+        'Content-Type': 'text/plain',
+        'WWW-Authenticate': 'Basic realm="Access"',
+      };
+
+      assert.deepEqual(networkUtils.mergeCdpNetworkHeaders(base, extra), {
+        'X-Base': 'base',
+        'Content-Type': 'text/plain',
+        'WWW-Authenticate': 'Basic realm="Access"',
+      });
+      assert.deepEqual(base, {
+        'content-type': 'text/html',
+        'X-Base': 'base',
+      });
+      assert.deepEqual(extra, {
+        'Content-Type': 'text/plain',
+        'WWW-Authenticate': 'Basic realm="Access"',
+      });
+    });
   });
 
   describe('should convert Bidi network headers to CDP network headers', () => {

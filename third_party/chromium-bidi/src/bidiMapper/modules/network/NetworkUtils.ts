@@ -63,13 +63,39 @@ export function bidiNetworkHeadersFromCdpNetworkHeaders(
     return [];
   }
 
-  return Object.entries(headers).map(([name, value]) => ({
-    name,
-    value: {
-      type: 'string',
-      value,
-    },
-  }));
+  return Object.entries(headers).flatMap(([name, value]) =>
+    value.split('\n').map((headerValue) => ({
+      name,
+      value: {
+        type: 'string',
+        value: headerValue,
+      },
+    })),
+  );
+}
+
+/** Merges two CDP header maps case-insensitively without mutating inputs. */
+export function mergeCdpNetworkHeaders(
+  base?: Protocol.Network.Headers,
+  extra?: Protocol.Network.Headers,
+): Protocol.Network.Headers | undefined {
+  if (!base && !extra) {
+    return undefined;
+  }
+
+  const result: Protocol.Network.Headers = {};
+  const extraLowerKeys = new Set(
+    Object.keys(extra ?? {}).map((key) => key.toLowerCase()),
+  );
+  for (const [key, value] of Object.entries(base ?? {})) {
+    if (!extraLowerKeys.has(key.toLowerCase())) {
+      result[key] = value;
+    }
+  }
+  for (const [key, value] of Object.entries(extra ?? {})) {
+    result[key] = value;
+  }
+  return result;
 }
 
 /** Converts from CDP Fetch domain headers to BiDi network headers. */

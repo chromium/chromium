@@ -39,17 +39,45 @@ import type {EventManager} from '../session/EventManager.js';
 import type {NetworkStorage} from './NetworkStorage.js';
 import {
   bidiBodySizeFromCdpPostDataEntries,
+  bidiNetworkHeadersFromCdpFetchHeaders,
   bidiNetworkHeadersFromCdpNetworkHeaders,
   cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
   cdpFetchHeadersFromBidiNetworkHeaders,
   cdpToBiDiCookie,
   computeHeadersSize,
   getTiming,
+  mergeCdpNetworkHeaders,
   networkHeaderFromCookieHeaders,
   stringToBase64,
 } from './NetworkUtils.js';
 
-const REALM_REGEX = /(?<=realm=").*(?=")/;
+// The `realm` parameter name is case-insensitive (RFC 9110, section 11.2). The
+// value is a quoted string that can contain quoted pairs (section 5.6.4).
+const REALM_REGEX = /(?:^|[\s,])realm="((?:\\.|[^"\\])*)"/i;
+
+const AUTH_SCHEME_CASE_MAP: Record<string, string> = {
+  basic: 'Basic',
+  bearer: 'Bearer',
+  digest: 'Digest',
+  hoba: 'HOBA',
+  mutual: 'Mutual',
+  negotiate: 'Negotiate',
+  ntlm: 'NTLM',
+  'scram-sha-1': 'SCRAM-SHA-1',
+  'scram-sha-256': 'SCRAM-SHA-256',
+  vapid: 'VAPID',
+};
+
+function normalizeAuthScheme(scheme: string): string {
+  const mapped = AUTH_SCHEME_CASE_MAP[scheme.toLowerCase()];
+  if (mapped !== undefined) {
+    return mapped;
+  }
+  if (scheme.length === 0) {
+    return scheme;
+  }
+  return `${scheme[0]!.toUpperCase()}${scheme.slice(1)}`;
+}
 
 /** Abstracts one individual network request. */
 export class NetworkRequest {
@@ -538,13 +566,32 @@ export class NetworkRequest {
     return null;
   }
 
+  /**
+   * Returns the response ExtraInfo event that the response data can use.
+   * Chromium sends wrong ExtraInfo events for responses served from the disk
+   * cache. See https://github.com/puppeteer/puppeteer/issues/9965 and
+   * https://crbug.com/1340398. `#response.extraInfo` keeps the event, because
+   * the redirect hop tracking needs it.
+   */
+  get #responseExtraInfo():
+    Protocol.Network.ResponseReceivedExtraInfoEvent | undefined {
+    return this.#response.info?.fromDiskCache
+      ? undefined
+      : this.#response.extraInfo;
+  }
+
   /** Returns the HTTP status code associated with this request if any. */
   get #statusCode(): number | undefined {
     return (
       this.#responseOverrides?.statusCode ??
       this.#response.paused?.responseStatusCode ??
-      this.#response.extraInfo?.statusCode ??
-      this.#response.info?.status
+      this.#responseExtraInfo?.statusCode ??
+      this.#response.info?.status ??
+      (this.#request.auth
+        ? this.#request.auth.authChallenge.source === 'Proxy'
+          ? 407
+          : 401
+        : undefined)
     );
   }
 
@@ -583,30 +630,48 @@ export class NetworkRequest {
   }
 
   get #authChallenges(): Network.AuthChallenge[] | undefined {
-    // TODO: get headers from Fetch.requestPaused
-    if (!this.#response.info) {
-      return;
-    }
-
     if (!(this.#statusCode === 401 || this.#statusCode === 407)) {
       return undefined;
     }
 
     const headerName =
-      this.#statusCode === 401 ? 'WWW-Authenticate' : 'Proxy-Authenticate';
+      this.#statusCode === 401 ? 'www-authenticate' : 'proxy-authenticate';
 
-    const authChallenges = [];
-    for (const [header, value] of Object.entries(this.#response.info.headers)) {
-      // TODO: Do a proper match based on https://httpwg.org/specs/rfc9110.html#credentials
-      // Or verify this works
-      if (
-        header.localeCompare(headerName, undefined, {sensitivity: 'base'}) === 0
-      ) {
-        authChallenges.push({
-          scheme: value.split(' ').at(0) ?? '',
-          realm: value.match(REALM_REGEX)?.at(0) ?? '',
-        });
+    // Use the same headers as the `headers` field of the response data.
+    const headers =
+      this.#responseOverrides?.headers ?? this.#getResponseHeaders();
+
+    const authChallenges: Network.AuthChallenge[] = [];
+    for (const header of headers) {
+      if (header.name.toLowerCase() !== headerName) {
+        continue;
       }
+      const value = header.value.value.trim();
+      if (!value) {
+        continue;
+      }
+      // TODO: Do a proper match based on https://httpwg.org/specs/rfc9110.html#credentials
+      authChallenges.push({
+        scheme: value.split(/\s+/).at(0) ?? '',
+        realm: value.match(REALM_REGEX)?.[1]?.replace(/\\(.)/g, '$1') ?? '',
+      });
+    }
+
+    // Use the `Fetch.authRequired` challenge only while the response headers
+    // are not known.
+    const responseHeadersKnown =
+      this.#responseOverrides?.headers !== undefined ||
+      this.#responseExtraInfo !== undefined ||
+      this.#response.paused !== undefined;
+    if (
+      authChallenges.length === 0 &&
+      this.#request.auth &&
+      !responseHeadersKnown
+    ) {
+      authChallenges.push({
+        scheme: normalizeAuthScheme(this.#request.auth.authChallenge.scheme),
+        realm: this.#request.auth.authChallenge.realm,
+      });
     }
 
     return authChallenges;
@@ -762,7 +827,9 @@ export class NetworkRequest {
       !this.#request.info;
 
     const responseExtraInfoCompleted =
+      Boolean(this.#response.loadingFailed) ||
       Boolean(this.#response.extraInfo) ||
+      Boolean(this.#response.info?.fromDiskCache) ||
       this.#isDataUrl() ||
       // The next hop finished, but this redirected hop has no ExtraInfo.
       this.#extraInfoWaitCanceled ||
@@ -776,7 +843,9 @@ export class NetworkRequest {
       this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted);
 
     if (
-      (this.#response.info && requestPhaseCompleted) ||
+      (this.#response.info &&
+        requestPhaseCompleted &&
+        responseExtraInfoCompleted) ||
       (responseInterceptionExpected && Boolean(this.#response.paused))
     ) {
       this.#emitEvent(this.#getResponseStartedEvent.bind(this));
@@ -1325,31 +1394,41 @@ export class NetworkRequest {
     };
   }
 
-  #getResponseEventParams(): Network.ResponseData {
-    // Chromium sends wrong extraInfo events for responses served from cache.
-    // See https://github.com/puppeteer/puppeteer/issues/9965 and
-    // https://crbug.com/1340398.
-    if (this.#response.info?.fromDiskCache) {
-      this.#response.extraInfo = undefined;
-    }
+  #getResponseHeaders(): Network.Header[] {
+    const cdpHeaders = mergeCdpNetworkHeaders(
+      this.#response.info?.headers,
+      this.#responseExtraInfo?.headers,
+    );
+    return cdpHeaders === undefined
+      ? bidiNetworkHeadersFromCdpFetchHeaders(
+          this.#response.paused?.responseHeaders,
+        )
+      : bidiNetworkHeadersFromCdpNetworkHeaders(cdpHeaders);
+  }
 
-    // TODO: Also this.#response.paused?.responseHeaders have to be merged here.
-    const cdpHeaders = this.#response.info?.headers ?? {};
-    const cdpRawHeaders = this.#response.extraInfo?.headers ?? {};
-    for (const [key, value] of Object.entries(cdpRawHeaders)) {
-      cdpHeaders[key] = value;
-    }
-    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(cdpHeaders);
+  #getResponseEventParams(): Network.ResponseData {
+    const headers = this.#getResponseHeaders();
     const authChallenges = this.#authChallenges;
+    const status = this.#statusCode ?? -1;
+    // Use the `Fetch.authRequired` data only before the response arrives. An
+    // empty status text of a received response is correct (HTTP/2 and HTTP/3
+    // have no reason phrase).
+    const statusText =
+      this.#response.info?.statusText ||
+      this.#response.paused?.responseStatusText ||
+      (this.#request.auth && !this.#response.info && !this.#response.paused
+        ? status === 407
+          ? 'Proxy Authentication Required'
+          : status === 401
+            ? 'Unauthorized'
+            : ''
+        : '');
 
     const response: Network.ResponseData = {
       url: this.url,
       protocol: this.#response.info?.protocol ?? '',
-      status: this.#statusCode ?? -1, // TODO: Throw an exception or use some other status code?
-      statusText:
-        this.#response.info?.statusText ||
-        this.#response.paused?.responseStatusText ||
-        '',
+      status,
+      statusText,
       fromCache:
         this.#response.info?.fromDiskCache ||
         this.#response.info?.fromPrefetchCache ||

@@ -22,6 +22,7 @@ from test_helpers import (
     goto_url,
     send_JSON_command,
     subscribe,
+    wait_for_command,
     wait_for_event,
 )
 
@@ -513,3 +514,69 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
         },
         "type": "event",
     }
+
+
+@pytest.mark.asyncio
+async def test_continue_with_auth_cancel_reports_challenges_and_header(
+    websocket, context_id, url_auth_required
+):
+    await subscribe(
+        websocket,
+        [
+            "network.authRequired",
+            "network.responseStarted",
+            "network.responseCompleted",
+        ],
+        [context_id],
+    )
+
+    await execute_command(
+        websocket,
+        {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["authRequired"],
+                "urlPatterns": [{"type": "string", "pattern": url_auth_required}],
+            },
+        },
+    )
+
+    nav_cmd = await send_JSON_command(
+        websocket,
+        {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_auth_required,
+                "context": context_id,
+                "wait": "complete",
+            },
+        },
+    )
+
+    auth_event = await wait_for_event(websocket, "network.authRequired")
+    assert auth_event["params"]["response"]["status"] == 401
+    assert auth_event["params"]["response"]["authChallenges"] == [
+        {"scheme": "Basic", "realm": "Access to staging site"}
+    ]
+
+    network_id = auth_event["params"]["request"]["request"]
+    await execute_command(
+        websocket,
+        {
+            "method": "network.continueWithAuth",
+            "params": {"request": network_id, "action": "cancel"},
+        },
+    )
+
+    started = await wait_for_event(websocket, "network.responseStarted")
+    completed = await wait_for_event(websocket, "network.responseCompleted")
+    await wait_for_command(websocket, nav_cmd)
+
+    for event in (started, completed):
+        assert event["params"]["response"]["status"] == 401
+        www_auth = [
+            h["value"]["value"]
+            for h in event["params"]["response"]["headers"]
+            if h["name"].lower() == "www-authenticate"
+        ]
+        assert www_auth == ['Basic realm="Access to staging site"']

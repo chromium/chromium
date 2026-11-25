@@ -775,7 +775,12 @@ describe('NetworkStorage', () => {
 
     function requestWillBeSent(
       url: string,
-      redirect?: {from: string; hasExtraInfo: boolean; location?: string},
+      redirect?: {
+        from: string;
+        hasExtraInfo: boolean;
+        location?: string;
+        fromDiskCache?: boolean;
+      },
     ) {
       cdpClient.emit('Network.requestWillBeSent', {
         requestId: REQUEST_ID,
@@ -794,9 +799,12 @@ describe('NetworkStorage', () => {
         redirectHasExtraInfo: redirect?.hasExtraInfo ?? false,
         ...(redirect
           ? {
-              redirectResponse: cdpResponse(redirect.from, 302, {
-                location: redirect.location ?? RELATIVE_LOCATION,
-              }),
+              redirectResponse: {
+                ...cdpResponse(redirect.from, 302, {
+                  location: redirect.location ?? RELATIVE_LOCATION,
+                }),
+                ...(redirect.fromDiskCache ? {fromDiskCache: true} : {}),
+              },
             }
           : {}),
         type: 'Document',
@@ -1039,6 +1047,31 @@ describe('NetworkStorage', () => {
       );
     });
 
+    it('should not apply the next hop response ExtraInfo to a disk-cached redirected hop', async () => {
+      requestWillBeSent(URL_A);
+      requestWillBeSentExtraInfo('A');
+      // The response ExtraInfo of the first hop arrives before the redirect.
+      responseReceivedExtraInfo(302, {location: RELATIVE_LOCATION});
+      requestWillBeSent(URL_B, {
+        from: URL_A,
+        hasExtraInfo: true,
+        fromDiskCache: true,
+      });
+      requestWillBeSentExtraInfo('B');
+      responseReceived(true);
+      responseReceivedExtraInfo(200);
+      loadingFinished();
+
+      assert.deepEqual(summarize(await getHopEvents()), [
+        ['network.beforeRequestSent', 0, 'A', undefined],
+        ['network.responseStarted', 0, 'A', 302],
+        ['network.responseCompleted', 0, 'A', 302],
+        ['network.beforeRequestSent', 1, 'B', undefined],
+        ['network.responseStarted', 1, 'B', 200],
+        ['network.responseCompleted', 1, 'B', 200],
+      ]);
+    });
+
     it('should emit redirected hop events at once without ExtraInfo', async () => {
       requestWillBeSent(URL_A);
       requestWillBeSent(URL_B, {from: URL_A, hasExtraInfo: false});
@@ -1224,10 +1257,10 @@ describe('NetworkStorage', () => {
       responseReceived(true);
 
       // The first hop waits for its response ExtraInfo before
-      // `network.responseCompleted`. The next hop waits for the first hop.
+      // `network.responseStarted` and `network.responseCompleted`. The next
+      // hop waits for the first hop.
       assert.deepEqual(summarize(await getHopEvents()), [
         ['network.beforeRequestSent', 0, 'A', undefined],
-        ['network.responseStarted', 0, 'A', 302],
       ]);
 
       loadingFinished();
@@ -1237,7 +1270,6 @@ describe('NetworkStorage', () => {
         ['network.responseStarted', 0, 'A', 302],
         ['network.responseCompleted', 0, 'A', 302],
         ['network.beforeRequestSent', 1, 'B', undefined],
-        ['network.responseStarted', 1, 'B', 200],
       ]);
 
       responseReceivedExtraInfo(200, {'X-Response': 'B'});
@@ -1398,7 +1430,6 @@ describe('NetworkStorage', () => {
         ['network.responseStarted', 0, 'A', 302],
         ['network.responseCompleted', 0, 'A', 302],
         ['network.beforeRequestSent', 1, 'B', undefined],
-        ['network.responseStarted', 1, 'B', 200],
       ]);
 
       // The late response ExtraInfo of the first hop must not change the
@@ -1469,7 +1500,6 @@ describe('NetworkStorage', () => {
         ['network.responseStarted', 1, 'B', 302],
         ['network.responseCompleted', 1, 'B', 302],
         ['network.beforeRequestSent', 2, 'C', undefined],
-        ['network.responseStarted', 2, 'C', 200],
       ]);
 
       // The late ExtraInfo of hop A redirects to hop B, not to hop C.
@@ -1586,7 +1616,6 @@ describe('NetworkStorage', () => {
       // Hop A waits for its response ExtraInfo. Hop B waits for hop A.
       assert.deepEqual(summarize(await getHopEvents()), [
         ['network.beforeRequestSent', 0, 'A', undefined],
-        ['network.responseStarted', 0, 'A', 302],
       ]);
 
       networkStorage.getRequestById(REQUEST_ID)!.onAuthRequired({
@@ -1613,7 +1642,7 @@ describe('NetworkStorage', () => {
         ['network.responseStarted', 0, 'A', 302],
         ['network.responseCompleted', 0, 'A', 302],
         ['network.beforeRequestSent', 1, 'B', undefined],
-        ['network.authRequired', 1, 'B', -1],
+        ['network.authRequired', 1, 'B', 401],
       ]);
       const beforeRequestSentB = getParams<Network.BeforeRequestSentParameters>(
         'network.beforeRequestSent',
