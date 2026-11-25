@@ -135,6 +135,7 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
 
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<HistoryDatabase> main_db_;
+  std::unique_ptr<sql::Transaction> main_db_transaction_;
   std::unique_ptr<favicon::FaviconDatabase> thumb_db_;
   scoped_refptr<TopSitesImpl> top_sites_;
 
@@ -150,13 +151,21 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
 
     base::FilePath history_name = path().Append(kHistoryFilename);
     main_db_ = std::make_unique<TestHistoryDatabase>();
-    if (main_db_->Init(history_name) != sql::INIT_OK) {
+    if (main_db_->Init(history_name) == sql::INIT_OK) {
+      // `HistoryBackend` keeps a singleton transaction open in production;
+      // match that here so test setup and expiration don't trigger
+      // per-statement autocommit disk flushes.
+      main_db_transaction_ = main_db_->CreateTransaction();
+      ASSERT_TRUE(main_db_transaction_->Begin());
+    } else {
       main_db_.reset();
     }
 
     base::FilePath thumb_name = path().Append(kFaviconsFilename);
     thumb_db_ = std::make_unique<favicon::FaviconDatabase>();
-    if (thumb_db_->Init(thumb_name) != sql::INIT_OK) {
+    if (thumb_db_->Init(thumb_name) == sql::INIT_OK) {
+      thumb_db_->BeginTransaction();
+    } else {
       thumb_db_.reset();
     }
 
@@ -177,6 +186,13 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
 
     expirer_.SetDatabases(nullptr, nullptr);
 
+    if (main_db_transaction_) {
+      EXPECT_TRUE(main_db_transaction_->Commit());
+      main_db_transaction_.reset();
+    }
+    if (thumb_db_) {
+      thumb_db_->CommitTransaction();
+    }
     main_db_.reset();
     thumb_db_.reset();
 
@@ -1543,12 +1559,6 @@ TEST_F(ExpireHistoryTest, ExpireSomeHistoryBetween) {
       internal::kMaxVisitsToExpirePerBatch + 10;
   base::Time start_time = PretendNow() - base::Days(1);
 
-  // HistoryBackend keeps a singleton transaction open in production; match that
-  // here so inserting and expiring >1000 visits doesn't trigger per-statement
-  // autocommit disk flushes.
-  std::unique_ptr<sql::Transaction> transaction = main_db_->CreateTransaction();
-  ASSERT_TRUE(transaction->Begin());
-
   URLRow url_row(GURL("http://www.google.com/paginated"));
   url_row.set_last_visit(start_time + base::Seconds(kNumVisits - 1));
   url_row.set_visit_count(kNumVisits);
@@ -1591,7 +1601,6 @@ TEST_F(ExpireHistoryTest, ExpireSomeHistoryBetween) {
             expirer_.ExpireSomeHistoryBetween(
                 /*restrict_urls=*/{}, kNoAppIdFilter, *next_begin_time,
                 base::Time::Max(), /*user_initiated=*/true));
-  ASSERT_TRUE(transaction->Commit());
   ASSERT_TRUE(GetLastDeletionInfo());
   EXPECT_EQ(*next_begin_time, GetLastDeletionInfo()->time_range().begin());
   EXPECT_EQ(base::Time::Max(), GetLastDeletionInfo()->time_range().end());
@@ -1603,9 +1612,6 @@ TEST_F(ExpireHistoryTest, ExpireHistoryBetweenPagination) {
   static constexpr size_t kNumVisits =
       internal::kMaxVisitsToExpirePerBatch + 10;
   base::Time start_time = PretendNow() - base::Days(1);
-
-  std::unique_ptr<sql::Transaction> transaction = main_db_->CreateTransaction();
-  ASSERT_TRUE(transaction->Begin());
 
   URLRow url_row(GURL("http://www.google.com/paginated"));
   url_row.set_last_visit(start_time + base::Seconds(kNumVisits - 1));
@@ -1625,7 +1631,6 @@ TEST_F(ExpireHistoryTest, ExpireHistoryBetweenPagination) {
   expirer_.ExpireHistoryBetween(
       /*restrict_urls=*/{}, kNoAppIdFilter, base::Time(), base::Time::Max(),
       /*user_initiated=*/true);
-  ASSERT_TRUE(transaction->Commit());
 
   // Expiration should have been processed in 2 batches:
   // Batch 1 deletes the first `kMaxVisitsToExpirePerBatch` visits and modifies
@@ -1665,9 +1670,6 @@ TEST_F(ExpireHistoryTest, ExpireHistoryBetweenPaginationWithRestrictUrls) {
   static constexpr size_t kNumUnrestrictedVisits = 5;
   base::Time start_time = PretendNow() - base::Days(1);
 
-  std::unique_ptr<sql::Transaction> transaction = main_db_->CreateTransaction();
-  ASSERT_TRUE(transaction->Begin());
-
   URLRow restricted_row(GURL("http://www.google.com/restricted"));
   restricted_row.set_last_visit(start_time +
                                 base::Seconds(kNumRestrictedVisits - 1));
@@ -1703,7 +1705,6 @@ TEST_F(ExpireHistoryTest, ExpireHistoryBetweenPaginationWithRestrictUrls) {
   expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, base::Time(),
                                 base::Time::Max(),
                                 /*user_initiated=*/true);
-  ASSERT_TRUE(transaction->Commit());
 
   const base::Time split_time =
       start_time + base::Seconds(internal::kMaxVisitsToExpirePerBatch);
