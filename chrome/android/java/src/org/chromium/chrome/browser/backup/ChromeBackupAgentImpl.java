@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.backup;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.backup.BackupDataInput;
 import android.app.backup.BackupDataOutput;
@@ -29,6 +28,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
@@ -193,6 +194,10 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
 
     // LINT.ThenChange(/components/metrics/persistent_histograms.cc)
 
+    private @MonotonicNonNull Profile mProfile;
+    private @MonotonicNonNull IdentityManager mIdentityManager;
+    private @MonotonicNonNull SigninManager mSigninManager;
+
     /**
      * Class to save and restore the backup state, used to decide if backups are needed. Since the
      * backup data is small, and stored as private data by the backup service, this can simply store
@@ -241,10 +246,8 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         }
     }
 
-    // TODO (aberent) Refactor the tests to use a mocked ChromeBrowserInitializer, and make this
-    // private again.
-    @VisibleForTesting
-    boolean initializeBrowser() {
+    @EnsuresNonNullIf({"mProfile", "mIdentityManager", "mSigninManager"})
+    private boolean initializeBrowser() {
         // Workaround for https://crbug.com/40518724. The backup agent is sometimes being started in
         // a child process, before the child process loads its native library. If backup then loads
         // the native library the child process is left in a very confused state and crashes.
@@ -253,6 +256,9 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
             return false;
         }
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+        mProfile = ProfileManager.getLastUsedRegularProfile();
+        mSigninManager = assertNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
+        mIdentityManager = mSigninManager.getIdentityManager();
         return true;
     }
 
@@ -285,13 +291,9 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
                             // immediately, so by the time it does Chrome may not be running.
                             if (!initializeBrowser()) return false;
 
-                            Profile profile = ProfileManager.getLastUsedRegularProfile();
-                            IdentityManager identityManager =
-                                    IdentityServicesProvider.get().getIdentityManager(profile);
-                            assumeNonNull(identityManager);
-                            signedInAccount.set(identityManager.getPrimaryAccountInfo());
+                            signedInAccount.set(mIdentityManager.getPrimaryAccountInfo());
 
-                            PrefService prefService = UserPrefs.get(profile);
+                            PrefService prefService = UserPrefs.get(mProfile);
                             for (PrefBackupSerializer serializer : NATIVE_PREFS_SERIALIZERS) {
                                 for (Pair<String, byte[]> serializedNameAndValue :
                                         serializer.serializeAllowlistedPrefs(prefService)) {
@@ -478,6 +480,9 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
             setRestoreStatus(RestoreStatus.BROWSER_STARTUP_FAILED);
             return;
         }
+        assertNonNull(mProfile);
+        assertNonNull(mIdentityManager);
+        assertNonNull(mSigninManager);
 
         final CountDownLatch accountsLatch = new CountDownLatch(1);
         PostTask.runSynchronously(
@@ -519,8 +524,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    PrefService prefService =
-                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+                    PrefService prefService = UserPrefs.get(mProfile);
                     for (int i = 0; i < backupNames.size(); i++) {
                         for (PrefBackupSerializer s : NATIVE_PREFS_SERIALIZERS) {
                             if (s.tryDeserialize(
@@ -553,14 +557,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
 
         boolean hasPrimaryAccount =
                 PostTask.runSynchronously(
-                        TaskTraits.UI_DEFAULT,
-                        () -> {
-                            Profile profile = ProfileManager.getLastUsedRegularProfile();
-                            return assertNonNull(
-                                            IdentityServicesProvider.get()
-                                                    .getIdentityManager(profile))
-                                    .hasPrimaryAccount();
-                        });
+                        TaskTraits.UI_DEFAULT, () -> mIdentityManager.hasPrimaryAccount());
         if (!hasPrimaryAccount) {
             editor.apply();
             signInAndWaitForResult(signedInAccountInfo);
@@ -660,7 +657,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         return AccountManagerFacadeProvider.getInstance().getAccounts().getResult();
     }
 
-    private static void signInAndWaitForResult(AccountInfo accountInfo) {
+    private void signInAndWaitForResult(AccountInfo accountInfo) {
         final CountDownLatch latch = new CountDownLatch(1);
         SigninManager.SignInCallback signInCallback =
                 new SigninManager.SignInCallback() {
@@ -699,17 +696,13 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         }
     }
 
-    private static void signIn(AccountInfo accountInfo, SigninManager.SignInCallback callback) {
+    private void signIn(AccountInfo accountInfo, SigninManager.SignInCallback callback) {
+        assertNonNull(mIdentityManager);
+        assertNonNull(mSigninManager);
         PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    Profile profile = ProfileManager.getLastUsedRegularProfile();
-                    SigninManager signinManager =
-                            assertNonNull(IdentityServicesProvider.get().getSigninManager(profile));
-                    IdentityManager identityManager =
-                            assertNonNull(
-                                    IdentityServicesProvider.get().getIdentityManager(profile));
-                    if (identityManager.hasPrimaryAccount()) {
+                    if (mIdentityManager.hasPrimaryAccount()) {
                         // This may happen if the user is supervised as they will be signed in via
                         // {@link SigninChecker}.
                         callback.onSignInAborted();
@@ -721,17 +714,19 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
                                 // If restoring a managed account, the user most likely already
                                 // accepted account management previously and we don't have the
                                 // ability to re-show the confirmation dialog here anyways.
-                                if (isManaged) signinManager.setUserAcceptedAccountManagement(true);
-                                signinManager.runAfterOperationInProgress(
+                                if (isManaged) {
+                                    mSigninManager.setUserAcceptedAccountManagement(true);
+                                }
+                                mSigninManager.runAfterOperationInProgress(
                                         () ->
-                                                signinManager.signin(
+                                                mSigninManager.signin(
                                                         accountInfo,
                                                         SigninAccessPoint
                                                                 .POST_DEVICE_RESTORE_BACKGROUND_SIGNIN,
                                                         callback));
                             };
 
-                    signinManager.isAccountManaged(accountInfo, accountManagedCallback);
+                    mSigninManager.isAccountManaged(accountInfo, accountManagedCallback);
                 });
     }
 

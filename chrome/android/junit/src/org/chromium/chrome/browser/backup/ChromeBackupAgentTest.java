@@ -17,11 +17,9 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -69,7 +67,6 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.internal.SyncPrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -118,8 +115,8 @@ public class ChromeBackupAgentTest {
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Mock private ChromeBackupAgentImpl.Natives mChromeBackupAgentJniMock;
+    @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
     @Mock private DictPrefBackupSerializer.Natives mDictPrefBackupSerializerJniMock;
-    @Mock private IdentityManager mIdentityManagerMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
@@ -162,23 +159,22 @@ public class ChromeBackupAgentTest {
 
         editor.putBoolean(SHARED_PREF_NOT_BACKED_UP, false);
 
-        doReturn(mAccountInfo).when(mIdentityManagerMock).getPrimaryAccountInfo();
+        mAccountManagerTestRule.addAccount(mAccountInfo);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(mAccountInfo);
         editor.apply();
     }
 
     @Before
     public void setUp() {
-        // Create the agent to test; override fetching the task runner, and spy on the agent to
-        // allow us to validate calls to these methods.
+        // Create the agent to test; override fetching the task runner.
         mAgent =
-                spy(
-                        new ChromeBackupAgentImpl() {
-                            @Override
-                            AsyncInitTaskRunner createAsyncInitTaskRunner(CountDownLatch latch) {
-                                latch.countDown();
-                                return mTaskRunner;
-                            }
-                        });
+                new ChromeBackupAgentImpl() {
+                    @Override
+                    AsyncInitTaskRunner createAsyncInitTaskRunner(CountDownLatch latch) {
+                        latch.countDown();
+                        return mTaskRunner;
+                    }
+                };
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         ChromeBackupAgentImplJni.setInstanceForTesting(mChromeBackupAgentJniMock);
@@ -187,10 +183,9 @@ public class ChromeBackupAgentTest {
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
 
-        IdentityServicesProvider identityServicesProvider = mock(IdentityServicesProvider.class);
-        IdentityServicesProvider.setInstanceForTests(identityServicesProvider);
-        when(identityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManagerMock);
-        when(identityServicesProvider.getSigninManager(any())).thenReturn(mSigninManager);
+        IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
+        when(mSigninManager.getIdentityManager())
+                .thenReturn(mAccountManagerTestRule.getIdentityManager());
         doAnswer(
                         (invocation) -> {
                             Runnable runnable = invocation.getArgument(0);
@@ -220,7 +215,7 @@ public class ChromeBackupAgentTest {
                 .isAccountManaged(eq(mAccountInfo), any());
 
         // Mock initializing the browser
-        doReturn(true).when(mAgent).initializeBrowser();
+        ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
 
         // Mock the AsyncTaskRunner.
         mTaskRunner = mock(AsyncInitTaskRunner.class);
@@ -432,11 +427,14 @@ public class ChromeBackupAgentTest {
         BackupDataOutput backupData = mock(BackupDataOutput.class);
         ParcelFileDescriptor mockState = mock(ParcelFileDescriptor.class);
 
-        doReturn(false).when(mAgent).initializeBrowser();
+        // Simulate running in a child process so browser startup fails
+        // (https://crbug.com/40518724).
+        ContentProcessInfo.setInChildProcess(true);
 
         BackupManagerShadow.clearDataChangedCalls();
         mAgent.onBackup(null, backupData, mockState);
         assertThat(BackupManagerShadow.getDataChangedCalls(), equalTo(1));
+        verifyNoMoreInteractions(mChromeBrowserInitializer);
         verifyNoMoreInteractions(backupData);
         verifyNoMoreInteractions(mockState);
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
@@ -452,7 +450,7 @@ public class ChromeBackupAgentTest {
         assertThat(BackupManagerShadow.getDataChangedCalls(), equalTo(1));
 
         // Check that a successful backup resets the failure count
-        doReturn(true).when(mAgent).initializeBrowser();
+        ContentProcessInfo.setInChildProcess(false);
         // Set up some preferences to back up.
         setUpPrefsToBackup(prefs);
         // A successful backup needs a real state file, or lots more mocking.
@@ -461,6 +459,7 @@ public class ChromeBackupAgentTest {
                         mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             mAgent.onBackup(null, backupData, newState);
         }
+        verify(mChromeBrowserInitializer).handleSynchronousStartup();
         assertThat(prefs.getInt(ChromeBackupAgentImpl.BACKUP_FAILURE_COUNT, 0), equalTo(0));
     }
 
@@ -666,7 +665,7 @@ public class ChromeBackupAgentTest {
     public void testOnRestore_browserStartupFails() throws IOException {
         BackupDataInput backupData =
                 createMockBackupData(/* hasSignedInUser= */ true, /* hasAccountSettings= */ true);
-        doReturn(false).when(mAgent).initializeBrowser();
+        ContentProcessInfo.setInChildProcess(true);
 
         try (ParcelFileDescriptor newState =
                 ParcelFileDescriptor.open(
@@ -674,6 +673,7 @@ public class ChromeBackupAgentTest {
             // Do a restore.
             onRestore(backupData, 0, newState);
         }
+        verifyNoMoreInteractions(mChromeBrowserInitializer);
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         assertFalse(prefs.contains(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE));
 
@@ -714,7 +714,7 @@ public class ChromeBackupAgentTest {
         BackupDataInput backupData =
                 createMockBackupData(/* hasSignedInUser= */ true, /* hasAccountSettings= */ true);
         mAccountManagerTestRule.addAccount(mAccountInfo);
-        doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount();
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(mAccountInfo);
 
         try (ParcelFileDescriptor newState =
                 ParcelFileDescriptor.open(
@@ -772,34 +772,6 @@ public class ChromeBackupAgentTest {
         assertThat(
                 ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.SIGNIN_TIMED_OUT));
-    }
-
-    /**
-     * Test normal browser startup. This is not tested by the other tests, since, until recently,
-     * it was not possible to mock ChromeBrowserInitializer, so initializeBrowser is mocked.
-     *
-     * TODO (aberent) remove mocking of initializeBrowser in the other tests.
-     */
-    @Test
-    public void testInitializeBrowser_normal() {
-        ChromeBackupAgentImpl agent = new ChromeBackupAgentImpl();
-        ChromeBrowserInitializer initializer = mock(ChromeBrowserInitializer.class);
-        ChromeBrowserInitializer.setForTesting(initializer);
-        assertTrue(agent.initializeBrowser());
-    }
-
-    /**
-     * Test that browser startup fails when in a child process. This is important because of
-     * https://crbug.com/40518724
-     */
-    @Test
-    public void testInitializeBrowser_childProcess() {
-        ContentProcessInfo.setInChildProcess(true);
-        ChromeBackupAgentImpl agent = new ChromeBackupAgentImpl();
-        ChromeBrowserInitializer initializer = mock(ChromeBrowserInitializer.class);
-        ChromeBrowserInitializer.setForTesting(initializer);
-        assertFalse(agent.initializeBrowser());
-        verifyNoMoreInteractions(initializer);
     }
 
     private void executeNormalRestoreAndCheckPrefs(
