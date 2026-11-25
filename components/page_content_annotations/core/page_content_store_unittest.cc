@@ -4,18 +4,23 @@
 
 #include "components/page_content_annotations/core/page_content_store.h"
 
+#include <string>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "sql/database.h"
 #include "sql/test/drive_error_test_vfs.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -72,6 +77,8 @@ class PageContentStoreTest : public testing::Test {
   base::FilePath db_path() const {
     return temp_dir_.GetPath().AppendASCII("PageContentStoreTest.db");
   }
+
+  sql::Database& db() { return store_->db_for_testing(); }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -455,12 +462,15 @@ TEST_F(PageContentStoreTest, DatabaseNonCatastrophicError) {
 
   // Simulate a non-catastrophic error (full disk); the next write operation
   // will fail and poison the current database handle.
+  base::HistogramTester histogram_tester;
   vfs_.set_drive_full(true);
   EXPECT_FALSE(
       store_->AddPageContent(GURL(kUrl), TestContent("test title 2"),
                              /*visit_timestamp=*/base::Time::Now(),
                              /*extraction_timestamp=*/base::Time::Now(), 2));
   vfs_.set_drive_full(false);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentStore.SqliteMemoryUsage", 0);
 
   // The database handle was poisoned, so operations should fail until
   // re-opened.
@@ -471,6 +481,90 @@ TEST_F(PageContentStoreTest, DatabaseNonCatastrophicError) {
   OpenStore();
   EXPECT_THAT(store_->GetPageContent(GURL(kUrl)),
               Optional(EqualsProto(TestContent("test title 1"))));
+}
+
+TEST_F(PageContentStoreTest, SqliteCacheSize_DefaultWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(page_content_annotations::features::
+                                         kPageContentStoreLimitSqliteCacheSize);
+  OpenStore();
+
+  // Negative PRAGMA cache_size values are in KiB (SQLite defaults to -2000).
+  EXPECT_EQ(sql::test::ExecuteWithResult(&db(), "PRAGMA cache_size"), "-2000");
+}
+
+TEST_F(PageContentStoreTest, SqliteCacheSize_LimitedWhenEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(page_content_annotations::features::
+                                        kPageContentStoreLimitSqliteCacheSize);
+  store_.reset();
+  ASSERT_TRUE(sql::Database::Delete(db_path()));
+  OpenStore();
+
+  EXPECT_EQ(sql::test::ExecuteWithResult(&db(), "PRAGMA cache_size"), "16");
+
+  // Verify that writes, reads, updates, and deletes exceeding the 16-page
+  // (64 KiB) cache size work properly when the page cache is capped.
+  base::HistogramTester histogram_tester;
+  const base::Time visit_timestamp = base::Time::Now();
+  const base::Time extraction_timestamp = base::Time::Now();
+  const proto::PageContext large_context1 =
+      TestContent(std::string(100 * 1024, 'a'));
+  const proto::PageContext large_context2 =
+      TestContent(std::string(100 * 1024, 'b'));
+
+  EXPECT_TRUE(store_->AddPageContent(GURL("https://example.com/1"),
+                                     large_context1, visit_timestamp,
+                                     extraction_timestamp, 1));
+  EXPECT_TRUE(store_->AddPageContent(GURL("https://example.com/2"),
+                                     large_context2, visit_timestamp,
+                                     extraction_timestamp, 2));
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentStore.SqliteMemoryUsage", 2);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PageContentStore.SqliteMemoryUsage", 0, 0);
+
+  EXPECT_THAT(store_->GetPageContentForTab(1),
+              Optional(EqualsProto(large_context1)));
+  EXPECT_THAT(store_->GetPageContentForTab(2),
+              Optional(EqualsProto(large_context2)));
+
+  EXPECT_TRUE(store_->UpdateTabId(1, 3));
+  EXPECT_FALSE(store_->GetPageContentForTab(1).has_value());
+  EXPECT_THAT(store_->GetPageContentForTab(3),
+              Optional(EqualsProto(large_context1)));
+
+  EXPECT_TRUE(store_->DeletePageContentForTab(2));
+  EXPECT_FALSE(store_->GetPageContentForTab(2).has_value());
+
+  OpenStore();
+  EXPECT_EQ(sql::test::ExecuteWithResult(&db(), "PRAGMA cache_size"), "16");
+  EXPECT_THAT(store_->GetPageContentForTab(3),
+              Optional(EqualsProto(large_context1)));
+  EXPECT_FALSE(store_->GetPageContentForTab(2).has_value());
+}
+
+TEST_F(PageContentStoreTest, SqliteCacheSize_CustomParam) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        page_content_annotations::features::
+            kPageContentStoreLimitSqliteCacheSize,
+        {{"cache_size_pages", "32"}});
+    OpenStore();
+    EXPECT_EQ(sql::test::ExecuteWithResult(&db(), "PRAGMA cache_size"), "32");
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        page_content_annotations::features::
+            kPageContentStoreLimitSqliteCacheSize,
+        {{"cache_size_pages", "0"}});
+    OpenStore();
+    EXPECT_EQ(sql::test::ExecuteWithResult(&db(), "PRAGMA cache_size"),
+              "-2000");
+  }
 }
 
 class PageContentStoreNoEncryptorTest : public testing::Test {
@@ -493,6 +587,7 @@ class PageContentStoreNoEncryptorTest : public testing::Test {
 };
 
 TEST_F(PageContentStoreNoEncryptorTest, AddPageContentFails) {
+  base::HistogramTester histogram_tester;
   const GURL url(kUrl);
   const auto page_context = TestContent("test title");
   const base::Time visit_timestamp = base::Time::Now();
@@ -500,6 +595,8 @@ TEST_F(PageContentStoreNoEncryptorTest, AddPageContentFails) {
 
   EXPECT_FALSE(store_->AddPageContent(url, page_context, visit_timestamp,
                                       extraction_timestamp, kTabId));
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentStore.SqliteMemoryUsage", 0);
 }
 
 TEST_F(PageContentStoreNoEncryptorTest, GetPageContentFails) {

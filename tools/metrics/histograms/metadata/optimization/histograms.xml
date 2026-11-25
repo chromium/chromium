@@ -2836,6 +2836,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.PageContentStore.SqliteMemoryUsage"
+    units="KB" expires_after="2027-06-01">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the approximate SQLite memory usage (page cache, schema, and
+    prepared statements, in KiB via sql::Database::GetMemoryUsage()) for
+    PageContentStore on the background thread immediately after each successful
+    write commit in AddPageContent().
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.PageContentStore.UpdateTabIdLatency"
     units="ms" expires_after="2027-06-01">
   <owner>alexmt@chromium.org</owner>

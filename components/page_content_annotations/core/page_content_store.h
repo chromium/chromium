@@ -81,6 +81,8 @@ class PageContentStore {
   // version), so `GetPageContentForTab()` may still return `std::nullopt`.
   std::vector<int64_t> GetAllTabIds();
 
+  sql::Database& db_for_testing() { return db_; }
+
  private:
   bool InitializeDb();
 

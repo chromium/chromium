@@ -8,6 +8,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/feature.h"
+#include "base/feature_list.h"
 #include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -145,6 +147,12 @@ const base::FeatureParam<bool> kPageContentCacheEnableScreenshot{
 
 const base::FeatureParam<bool> kPageContentCacheUseUserEngagement{
     &kPageContentCache, "page_content_cache_use_user_engagement", false};
+
+BASE_FEATURE(kPageContentStoreLimitSqliteCacheSize,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kPageContentStoreSqliteCacheSizePages{
+    &kPageContentStoreLimitSqliteCacheSize, "cache_size_pages", 16};
 
 BASE_FEATURE(kPageSettledMonitor, base::FEATURE_ENABLED_BY_DEFAULT);
 

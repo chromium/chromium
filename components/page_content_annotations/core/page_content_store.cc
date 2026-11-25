@@ -9,8 +9,10 @@
 #include <set>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
@@ -19,6 +21,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
@@ -27,8 +30,26 @@
 
 namespace optimization_guide {
 
+namespace {
+
+sql::DatabaseOptions GetDatabaseOptions() {
+  sql::DatabaseOptions options;
+  if (base::FeatureList::IsEnabled(page_content_annotations::features::
+                                       kPageContentStoreLimitSqliteCacheSize)) {
+    // Each tab blob (~400 KB) is rarely read back, so SQLite's default ~2 MB
+    // cache holds cold pages. Capping it retains metadata without the blobs;
+    // writes/deletes past the cap spill dirty pages mid-transaction, trading
+    // resting memory for extra journal syncs under secure delete.
+    options.set_cache_size(page_content_annotations::features::
+                               kPageContentStoreSqliteCacheSizePages.Get());
+  }
+  return options;
+}
+
+}  // namespace
+
 PageContentStore::PageContentStore(const base::FilePath& db_path)
-    : db_path_(db_path), db_("PageContentStore") {
+    : db_path_(db_path), db_(GetDatabaseOptions(), "PageContentStore") {
   db_initialized_ = InitializeDb();
 }
 
@@ -201,7 +222,13 @@ bool PageContentStore::AddPageContent(const GURL& url,
   if (!metadata_statement.Run()) {
     return false;
   }
-  return transaction.Commit();
+  if (!transaction.Commit()) {
+    return false;
+  }
+  base::UmaHistogramCounts10000(
+      "OptimizationGuide.PageContentStore.SqliteMemoryUsage",
+      db_.GetMemoryUsage() / 1024);
+  return true;
 }
 
 std::optional<proto::PageContext> PageContentStore::GetPageContent(

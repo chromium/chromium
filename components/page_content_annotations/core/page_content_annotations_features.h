@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "base/component_export.h"
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -69,6 +70,17 @@ extern const base::FeatureParam<bool> kPageContentCacheEnableScreenshot;
 // Whether to consider user engagement when enabling page content cache.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 extern const base::FeatureParam<bool> kPageContentCacheUseUserEngagement;
+
+// Caps `PageContentStore`'s SQLite in-memory page cache instead of using
+// SQLite's default ~2 MB.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kPageContentStoreLimitSqliteCacheSize);
+
+// Maximum number of 4 KiB pages kept in `PageContentStore`'s SQLite page cache
+// when `kPageContentStoreLimitSqliteCacheSize` is enabled. 0 uses SQLite's
+// default cache size.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+extern const base::FeatureParam<int> kPageContentStoreSqliteCacheSizePages;
 
 // Enables the shared component for monitoring page stability to determine when
 // a page has settled enough for observations to take place.
