@@ -58,17 +58,15 @@ PROXY_CONFIG_EXPORT net::ProxyChain ProxyOverrideRuleProxyFromString(
     std::string_view raw_value);
 
 // Returns whether user-scoped or extension-controlled proxy override rules are
-// allowed for the current user based on user affiliation and the
-// "EnableProxyOverrideRulesForAllUsers" policy. Unlike
+// allowed for the current user based on user affiliation, device management,
+// and the machine-scoped "EnableProxyOverrideRulesForAllUsers" policy. Unlike
 // `ProxyOverrideRulesAllowed()`, this checks whether a user or extension is
 // eligible to set or control `kProxyOverrideRules` regardless of whether the
 // preference currently has a value or what scope controls it.
-// `pref_service` must be non-null. `policy_service` is used to check user
-// affiliation and may be null if affiliation is not applicable to the caller
-// (in which case the user is treated as unaffiliated). Neither pointer is
-// retained.
+// `policy_service` may be null if affiliation is not applicable to the caller
+// (in which case user and extension rules are not allowed on platforms that
+// enforce affiliation). The pointer is not retained.
 PROXY_CONFIG_EXPORT bool AreUserProxyOverrideRulesAllowed(
-    const PrefService* pref_service,
     policy::PolicyService* policy_service);
 
 // Returns true if `kProxyOverrideRules` is currently controlled by an extension
@@ -84,8 +82,9 @@ PROXY_CONFIG_EXPORT bool IsUserOrExtensionProxyOverrideRules(
 // unaffiliated users) and delegates to `AreUserProxyOverrideRulesAllowed()`
 // when the preference is user-scoped or extension-controlled.
 // `pref_service` must be non-null. `policy_service` may be null if user
-// affiliation is not applicable to the caller (in which case the user is
-// treated as unaffiliated). Neither pointer is retained.
+// affiliation is not applicable to the caller (in which case user and extension
+// rules are not allowed on platforms that enforce affiliation). Neither pointer
+// is retained.
 PROXY_CONFIG_EXPORT bool ProxyOverrideRulesAllowed(
     const PrefService* pref_service,
     policy::PolicyService* policy_service);

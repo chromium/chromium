@@ -155,8 +155,7 @@ TEST_F(ProxyPrefsUtilsTest, ProxyOverrideRuleProxyFromString) {
 
 namespace {
 
-void SetAffiliation(TestingPrefServiceSimple& prefs,
-                    policy::MockPolicyService& policy_service,
+void SetAffiliation(policy::MockPolicyService& policy_service,
                     policy::PolicyMap& policy_map,
                     bool affiliated,
                     int enabled_for_all_users) {
@@ -171,8 +170,10 @@ void SetAffiliation(TestingPrefServiceSimple& prefs,
       .WillRepeatedly(testing::ReturnRef(policy_map));
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
-  prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers,
-                   enabled_for_all_users);
+  policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD,
+                 base::Value(enabled_for_all_users), nullptr);
 #endif
 }
 
@@ -183,18 +184,18 @@ void VerifyUnaffiliatedRestriction(TestingPrefServiceSimple& prefs,
                                    policy::PolicyMap& policy_map,
                                    bool expected_restricted) {
   // Unaffiliated: restricted if `expected_restricted` is true.
-  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/false,
+  SetAffiliation(policy_service, policy_map, /*affiliated=*/false,
                  /*enabled_for_all_users=*/0);
   EXPECT_EQ(ProxyOverrideRulesAllowed(&prefs, &policy_service),
             !expected_restricted);
 
   // Unaffiliated but enabled by policy: always allowed.
-  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/false,
+  SetAffiliation(policy_service, policy_map, /*affiliated=*/false,
                  /*enabled_for_all_users=*/1);
   EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
 
   // Affiliated: always allowed.
-  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/true,
+  SetAffiliation(policy_service, policy_map, /*affiliated=*/true,
                  /*enabled_for_all_users=*/0);
   EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
 }
@@ -213,7 +214,7 @@ TEST_F(ProxyPrefsUtilsTest, ProxyOverrideRulesAllowed) {
 
   // If `kProxyOverrideRules` is not managed by policy or controlled by an
   // extension, it is always allowed.
-  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/false,
+  SetAffiliation(policy_service, policy_map, /*affiliated=*/false,
                  /*enabled_for_all_users=*/0);
   EXPECT_FALSE(IsUserOrExtensionProxyOverrideRules(&prefs));
   EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
@@ -278,28 +279,51 @@ TEST_F(ProxyPrefsUtilsTest,
   // Blocked for user-scoped policy on a platform/EMM-managed device without
   // CBCM.
   EXPECT_FALSE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
-  EXPECT_FALSE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_FALSE(AreUserProxyOverrideRulesAllowed(&policy_service));
 
-  // Allowed when EnableProxyOverrideRulesForAllUsers is set to 1.
+  // User-scoped EnableProxyOverrideRulesForAllUsers=1 is ignored even if
+  // kSimplePolicyMap populated the preference.
+  policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
   prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers, 1);
+  EXPECT_FALSE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_FALSE(AreUserProxyOverrideRulesAllowed(&policy_service));
+
+  // Allowed when EnableProxyOverrideRulesForAllUsers is set to 1 at machine
+  // scope.
+  policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
   EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
-  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&policy_service));
 
   // Allowed when ProxyOverrideRules is set at machine scope even if
   // EnableProxyOverrideRulesForAllUsers is 0.
+  policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
   prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers, 0);
   prefs.SetInteger(prefs::kProxyOverrideRulesScope,
                    policy::POLICY_SCOPE_MACHINE);
   EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
-  EXPECT_FALSE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_FALSE(AreUserProxyOverrideRulesAllowed(&policy_service));
 
   // Blocked for extension-controlled rules when
-  // EnableProxyOverrideRulesForAllUsers is 0, and allowed when it is 1.
+  // EnableProxyOverrideRulesForAllUsers is 0 or user-scoped, and allowed when
+  // it is 1 at machine scope.
   prefs.RemoveManagedPref(prefs::kProxyOverrideRules);
   prefs.SetExtensionPref(prefs::kProxyOverrideRules,
                          base::Value(base::Value::Type::LIST));
   EXPECT_FALSE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
+  policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
   prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers, 1);
+  EXPECT_FALSE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
+  policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
   EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
 }
 
@@ -329,24 +353,24 @@ TEST_F(ProxyPrefsUtilsTest,
   // Allowed because platform management alone does not make the device managed
   // without the feature.
   EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
-  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&policy_service));
 
   // Extension-controlled rules are also allowed without the feature.
   prefs.RemoveManagedPref(prefs::kProxyOverrideRules);
   prefs.SetExtensionPref(prefs::kProxyOverrideRules,
                          base::Value(base::Value::Type::LIST));
   EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
-  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&policy_service));
 
   // CBCM device affiliation IDs still require an affiliated user, matching the
   // behavior prior to https://crrev.com/c/8618781.
   policy_map.SetDeviceAffiliationIds({"device_id"});
   EXPECT_FALSE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
-  EXPECT_FALSE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_FALSE(AreUserProxyOverrideRulesAllowed(&policy_service));
 
   policy_map.SetDeviceAffiliationIds({"user_id"});
   EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
-  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&policy_service));
 }
 
 TEST_F(ProxyPrefsUtilsTest,
@@ -373,14 +397,12 @@ TEST_F(ProxyPrefsUtilsTest,
   // Allowed when the platform only has `COMPUTER_LOCAL` (`LOW` trustworthiness)
   // management and no CBCM affiliation IDs.
   EXPECT_TRUE(ProxyOverrideRulesAllowed(&prefs, &policy_service));
-  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&policy_service));
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_ANDROID)
 
 TEST_F(ProxyPrefsUtilsTest, AreUserProxyOverrideRulesAllowed) {
-  TestingPrefServiceSimple prefs;
-  PrefProxyConfigTrackerImpl::RegisterProfilePrefs(prefs.registry());
   testing::NiceMock<policy::MockPolicyService> policy_service;
   policy::PolicyMap policy_map;
 
@@ -388,29 +410,36 @@ TEST_F(ProxyPrefsUtilsTest, AreUserProxyOverrideRulesAllowed) {
   // evaluates user/extension eligibility even when `kProxyOverrideRules` has no
   // value set yet. On ChromeOS, user rules are never blocked by unaffiliation
   // and always return true.
-  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/false,
+  SetAffiliation(policy_service, policy_map, /*affiliated=*/false,
                  /*enabled_for_all_users=*/0);
-  EXPECT_EQ(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service),
+  EXPECT_EQ(AreUserProxyOverrideRulesAllowed(&policy_service),
             !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
               BUILDFLAG(IS_ANDROID)));
 
-  // Unaffiliated with policy enabled for all users: allowed.
-  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/false,
+  // Unaffiliated with machine-scoped policy enabled for all users: allowed.
+  SetAffiliation(policy_service, policy_map, /*affiliated=*/false,
                  /*enabled_for_all_users=*/1);
-  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&policy_service));
 
-  // Affiliated: allowed even when `kEnableProxyOverrideRulesForAllUsers` is 0.
-  SetAffiliation(prefs, policy_service, policy_map, /*affiliated=*/true,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+  // User-scoped EnableProxyOverrideRulesForAllUsers=1 and null PolicyService
+  // must both fail closed.
+  policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
+  EXPECT_FALSE(AreUserProxyOverrideRulesAllowed(&policy_service));
+  EXPECT_FALSE(AreUserProxyOverrideRulesAllowed(nullptr));
+#endif
+
+  // Affiliated: allowed even when `EnableProxyOverrideRulesForAllUsers` is 0.
+  SetAffiliation(policy_service, policy_map, /*affiliated=*/true,
                  /*enabled_for_all_users=*/0);
-  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&policy_service));
 
   // Unmanaged device (empty device affiliation IDs): allowed.
   policy_map.Clear();
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID)
-  prefs.SetInteger(prefs::kEnableProxyOverrideRulesForAllUsers, 0);
-#endif
-  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&prefs, &policy_service));
+  EXPECT_TRUE(AreUserProxyOverrideRulesAllowed(&policy_service));
 }
 
 TEST_F(ProxyPrefsUtilsTest, ParseProxyOverrideRules) {

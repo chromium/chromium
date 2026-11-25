@@ -115,8 +115,16 @@ class MockObserver : public net::ProxyConfigService::Observer {
 class PrefProxyConfigTrackerImplTest : public testing::Test {
  protected:
   PrefProxyConfigTrackerImplTest() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+    management_override_ =
+        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+            policy::PlatformManagementService::GetInstance(),
+            policy::EnterpriseManagementAuthority::NONE);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
     ON_CALL(mock_policy_service_, GetPolicies(_))
-        .WillByDefault(testing::ReturnRef(empty_policy_map_));
+        .WillByDefault(testing::ReturnRef(policy_map_));
   }
 
   // Initializes the proxy config service. The delegate config service has the
@@ -172,7 +180,13 @@ class PrefProxyConfigTrackerImplTest : public testing::Test {
       const net::ProxyConfig::DynamicRoutingConfig& config) {}
 #endif  // BUILDFLAG(ENTERPRISE_PROXY)
 
-  policy::PolicyMap empty_policy_map_;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      management_override_;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_ANDROID)
+  policy::PolicyMap policy_map_;
   testing::NiceMock<policy::MockPolicyService> mock_policy_service_;
   raw_ptr<policy::PolicyService> policy_service_ = &mock_policy_service_;
 };
@@ -563,6 +577,10 @@ class PrefProxyConfigOverrideRulesTest : public PrefProxyConfigTrackerImplTest {
                                 bool is_valid = true) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
+    policy_map_.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                    policy::POLICY_LEVEL_MANDATORY,
+                    policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                    base::Value(1), nullptr);
     pref_service_->SetInteger(
         proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers, 1);
 #endif
@@ -1452,12 +1470,17 @@ TEST_F(PrefProxyConfigOverrideRulesTest,
   policy::PolicyMap policy_map;
   policy_map.SetDeviceAffiliationIds({"device_id"});
   policy_map.SetUserAffiliationIds({"other_id"});
+#if !BUILDFLAG(IS_CHROMEOS)
+  policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
+#endif
   ON_CALL(mock_policy_service_, GetPolicies(_))
       .WillByDefault(testing::ReturnRef(policy_map));
 
-  // On Linux/Mac/Win/Android, `SetExtensionOverrideRules()` sets
-  // `kEnableProxyOverrideRulesForAllUsers` = 1; on ChromeOS, override rules are
-  // always allowed even when unaffiliated.
+  // On Linux/Mac/Win/Android, machine-scoped
+  // `EnableProxyOverrideRulesForAllUsers` = 1 allows extension rules; on
+  // ChromeOS, override rules are always allowed even when unaffiliated.
   SetExtensionOverrideRules(
       R"([
              {
@@ -1476,11 +1499,37 @@ TEST_F(PrefProxyConfigOverrideRulesTest,
   EXPECT_EQ(actual_config.value().proxy_override_rules().size(), 1u);
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  // Dynamically disabling kEnableProxyOverrideRulesForAllUsers for an
-  // unaffiliated user should remove the override rules from the active config.
+  // Switching `EnableProxyOverrideRulesForAllUsers` = 1 from machine scope to
+  // user scope must remove the override rules even while the pref stays 1.
   RunAndWaitForProxyConfigChange([&] {
+    policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
+    proxy_config_tracker_->OnProviderUpdatePropagated(nullptr);
+  });
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_TRUE(actual_config.value().proxy_override_rules().empty());
+
+  // Restoring machine scope re-applies the override rules, and setting it to 0
+  // at machine scope removes them again.
+  RunAndWaitForProxyConfigChange([&] {
+    policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                   policy::POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
+    proxy_config_tracker_->OnProviderUpdatePropagated(nullptr);
+  });
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_EQ(actual_config.value().proxy_override_rules().size(), 1u);
+
+  RunAndWaitForProxyConfigChange([&] {
+    policy_map.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                   policy::POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
     pref_service_->SetInteger(
         proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers, 0);
+    proxy_config_tracker_->OnProviderUpdatePropagated(nullptr);
   });
   EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
             proxy_config_service_->GetLatestProxyConfig(&actual_config));
@@ -1528,14 +1577,11 @@ class PrefProxyConfigOverrideRulesAffiliationMetricsTest
   PrefProxyConfigOverrideRulesAffiliationMetricsTest() {
     affiliation_features_.InitAndDisableFeature(
         enterprise_net::kEnforceProxyAffiliationOnPlatformManagedDevices);
-    SetPlatformManaged(false);
     ON_CALL(mock_policy_service_,
             IsInitializationComplete(policy::POLICY_DOMAIN_CHROME))
         .WillByDefault([this](policy::PolicyDomain) {
           return policy_service_initialized_;
         });
-    ON_CALL(mock_policy_service_, GetPolicies(_))
-        .WillByDefault(testing::ReturnRef(policy_map_));
   }
 
   void InitMetricsTracker(bool record_affiliation_metrics = true,
@@ -1633,10 +1679,7 @@ class PrefProxyConfigOverrideRulesAffiliationMetricsTest
   }
 
   base::test::ScopedFeatureList affiliation_features_;
-  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
-      management_override_;
   bool policy_service_initialized_ = true;
-  policy::PolicyMap policy_map_;
   base::HistogramTester histogram_tester_;
 };
 

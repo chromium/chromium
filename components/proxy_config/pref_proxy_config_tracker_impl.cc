@@ -304,10 +304,6 @@ PrefProxyConfigTrackerImpl::PrefProxyConfigTrackerImpl(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
     proxy_prefs_.Add(
-        proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers,
-        base::BindRepeating(&PrefProxyConfigTrackerImpl::OnProxyPrefChanged,
-                            base::Unretained(this)));
-    proxy_prefs_.Add(
         proxy_config::prefs::kProxyOverrideRulesScope,
         base::BindRepeating(&PrefProxyConfigTrackerImpl::OnProxyPrefChanged,
                             base::Unretained(this)));

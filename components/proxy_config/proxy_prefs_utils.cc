@@ -77,21 +77,15 @@ net::ProxyChain ProxyOverrideRuleProxyFromString(std::string_view raw_value) {
   return net::PacResultElementToProxyChain(raw_value);
 }
 
-bool AreUserProxyOverrideRulesAllowed(const PrefService* pref_service,
-                                      policy::PolicyService* policy_service) {
-  CHECK(pref_service);
+bool AreUserProxyOverrideRulesAllowed(policy::PolicyService* policy_service) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
-  if (pref_service->GetInteger(prefs::kEnableProxyOverrideRulesForAllUsers) ==
-      1) {
-    return true;
-  }
-
   if (policy_service) {
     const policy::PolicyMap& policies = policy_service->GetPolicies(
         policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
     if (policies.IsUserAffiliated() ||
-        !enterprise_net::IsDeviceManaged(policies)) {
+        !enterprise_net::IsDeviceManaged(policies) ||
+        enterprise_net::IsUnaffiliatedUserProxyPolicyAllowed(policies)) {
       return true;
     }
   }
@@ -128,7 +122,7 @@ bool ProxyOverrideRulesAllowed(const PrefService* pref_service,
   CHECK(pref_service);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
-  return AreUserProxyOverrideRulesAllowed(pref_service, policy_service) ||
+  return AreUserProxyOverrideRulesAllowed(policy_service) ||
          !IsUserOrExtensionProxyOverrideRules(pref_service);
 #else   // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_ANDROID)

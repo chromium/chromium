@@ -138,8 +138,7 @@ bool ProxyOverrideRulesTransformer::IsExtensionModifiable(
       profile->GetProfilePolicyConnector()
           ? profile->GetProfilePolicyConnector()->policy_service()
           : nullptr;
-  return proxy_config::AreUserProxyOverrideRulesAllowed(profile->GetPrefs(),
-                                                        policy_service);
+  return proxy_config::AreUserProxyOverrideRulesAllowed(policy_service);
 }
 
 std::unique_ptr<PrefModifiabilityObserver>

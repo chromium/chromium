@@ -7,7 +7,6 @@
 
 #include "base/scoped_observation.h"
 #include "components/policy/core/common/policy_service.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/pref_modifiability_observer.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -41,7 +40,6 @@ class ProxyOverrideRulesModifiabilityObserver
       policy::ConfigurationPolicyProvider* provider) override;
 
  private:
-  PrefChangeRegistrar registrar_;
   base::ScopedObservation<policy::PolicyService,
                           policy::PolicyService::ProviderUpdateObserver>
       policy_service_observation_{this};

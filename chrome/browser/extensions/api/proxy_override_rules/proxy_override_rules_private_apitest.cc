@@ -213,7 +213,9 @@ class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
   }
 
   void SetPolicyState(bool affiliated,
-                      std::optional<int> enable_for_all_users = std::nullopt) {
+                      std::optional<int> enable_for_all_users = std::nullopt,
+                      policy::PolicyScope enable_for_all_users_scope =
+                          policy::POLICY_SCOPE_MACHINE) {
     policy::PolicyMap policies;
     policies.SetDeviceAffiliationIds({kAffiliationId});
     if (affiliated) {
@@ -224,7 +226,7 @@ class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
 #if !BUILDFLAG(IS_CHROMEOS)
     if (enable_for_all_users.has_value()) {
       policies.Set(policy::key::kEnableProxyOverrideRulesForAllUsers,
-                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                   policy::POLICY_LEVEL_MANDATORY, enable_for_all_users_scope,
                    policy::POLICY_SOURCE_CLOUD,
                    base::Value(*enable_for_all_users), nullptr);
     }
@@ -240,6 +242,15 @@ class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
         return false;
       }
 #if !BUILDFLAG(IS_CHROMEOS)
+      const policy::PolicyMap::Entry* entry = active_policies.Get(
+          policy::key::kEnableProxyOverrideRulesForAllUsers);
+      if (enable_for_all_users.has_value()) {
+        if (!entry || entry->scope != enable_for_all_users_scope) {
+          return false;
+        }
+      } else if (entry) {
+        return false;
+      }
       if (profile()->GetPrefs()->GetInteger(
               proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers) !=
           enable_for_all_users.value_or(0)) {
@@ -709,6 +720,27 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPrivateApiTest,
   VerifyDynamicModifiabilityClearsAndNotifies(
       /*revoke_access=*/[&] { SetPolicyState(/*affiliated=*/false, 0); },
       /*restore_access=*/[&] { SetPolicyState(/*affiliated=*/false, 1); });
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ProxyOverrideRulesPrivateApiTest,
+    ProxyOverrideRules_UnaffiliatedUserScopedEnableForAllUsersIgnored) {
+  SetPolicyState(/*affiliated=*/false, /*enable_for_all_users=*/1,
+                 policy::POLICY_SCOPE_MACHINE);
+  VerifyDynamicModifiabilityClearsAndNotifies(
+      /*revoke_access=*/
+      [&] {
+        SetPolicyState(/*affiliated=*/false, /*enable_for_all_users=*/1,
+                       policy::POLICY_SCOPE_USER);
+        EXPECT_EQ(
+            1, profile()->GetPrefs()->GetInteger(
+                   proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers));
+      },
+      /*restore_access=*/
+      [&] {
+        SetPolicyState(/*affiliated=*/false, /*enable_for_all_users=*/1,
+                       policy::POLICY_SCOPE_MACHINE);
+      });
 }
 
 IN_PROC_BROWSER_TEST_F(
