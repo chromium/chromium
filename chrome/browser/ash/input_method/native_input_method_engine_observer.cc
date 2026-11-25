@@ -64,7 +64,7 @@ struct InputFieldContext {
   bool multiword_allowed = false;
 };
 
-bool ShouldRouteToFirstPartyVietnameseInput(std::string_view engine_id) {
+bool IsFirstPartyVietnameseEngine(std::string_view engine_id) {
   return engine_id == "vkd_vi_vni" || engine_id == "vkd_vi_telex";
 }
 
@@ -816,7 +816,7 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     return;
   }
 
-  if (ShouldRouteToFirstPartyVietnameseInput(engine_id)) {
+  if (IsFirstPartyVietnameseEngine(engine_id)) {
     // TODO(b/251679480): Make this part of ShouldRouteToNativeMojoEngine
     // logic once flag is baked in.
     ConnectToImeService(engine_id);
