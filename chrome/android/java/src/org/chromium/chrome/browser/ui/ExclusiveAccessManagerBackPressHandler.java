@@ -27,7 +27,7 @@ public class ExclusiveAccessManagerBackPressHandler implements BackPressHandler 
                 mExclusiveAccessManager.hasExclusiveAccess()
                         ? BackPressResult.SUCCESS
                         : BackPressResult.FAILURE;
-        mExclusiveAccessManager.exitExclusiveAccess();
+        mExclusiveAccessManager.exitExclusiveAccessFromBackPress();
         return res;
     }
 

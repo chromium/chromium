@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -79,9 +80,15 @@ class ExclusiveAccessContextAndroid : public ExclusiveAccessContext {
 
   void ForceActiveTab(JNIEnv* env, const jni_zero::JavaRef<jobject>& j_tab);
 
+  // Suppresses non-empty exclusive access bubble updates while the returned
+  // AutoReset is alive (e.g. while tearing down all exclusive access layers in
+  // ExitAllExclusiveAccess()).
+  base::AutoReset<bool> SuppressBubbleUpdates();
+
  private:
   int snooze_reset_count_ = 0;
   static constexpr int kMaxSnoozeResets = 10;
+  bool suppress_bubble_updates_ = false;
 
   base::WeakPtr<ExclusiveAccessContextAndroid> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

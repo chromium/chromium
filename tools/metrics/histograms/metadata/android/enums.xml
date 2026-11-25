@@ -1772,6 +1772,28 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/fullscreen/ImmersiveModeMetrics.java:ImmersiveModeEntryMethod) -->
 
+<!-- LINT.IfChange(ImmersiveModeExitReason) -->
+
+<enum name="ImmersiveModeExitReason">
+  <int value="0" label="BackPress"/>
+  <int value="1" label="PressAndHoldEscape"/>
+  <int value="2" label="KeyboardShortcut"/>
+  <int value="3" label="DesktopWindowingModeChanged"/>
+  <int value="4" label="ActivityHiddenOrDestroyed"/>
+  <int value="5" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/fullscreen/ImmersiveModeMetrics.java:ImmersiveModeExitReason) -->
+
+<!-- LINT.IfChange(ImmersiveModeExitSnackbarShown) -->
+
+<enum name="ImmersiveModeExitSnackbarShown">
+  <int value="0" label="InitialEntry"/>
+  <int value="1" label="Retriggered"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/fullscreen/ImmersiveModeMetrics.java:ImmersiveModeExitSnackbarShown) -->
+
 <!-- LINT.IfChange(InAppUpdateAppMenuAction) -->
 
 <enum name="InAppUpdateAppMenuAction">

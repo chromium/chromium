@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics;
 import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics.ImmersiveModeEntryMethod;
+import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics.ImmersiveModeExitReason;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
 import org.chromium.chrome.browser.history.IncognitoHistoryDisclaimerCoordinator;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -676,8 +677,9 @@ public class TabbedRootUiCoordinatorUnitTest {
                             R.id.fullscreen_button, /* fromMenu= */ false));
         }
 
-        // 3. Toggling out of an already active Browser immersive mode session does not record
-        // EntryMethod.
+        // 3. Toggling out of an already active Browser immersive mode session via keyboard
+        // shortcut does not record EntryMethod and sets KEYBOARD_SHORTCUT as the pending exit
+        // reason.
         when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);
         try (HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
@@ -687,6 +689,26 @@ public class TabbedRootUiCoordinatorUnitTest {
                     mCoordinator.handleMenuOrKeyboardAction(
                             R.id.fullscreen_button, /* fromMenu= */ false));
         }
+        verify(mFullscreenManager)
+                .setPendingBrowserImmersiveExitReasonIfUnset(
+                        ImmersiveModeExitReason.KEYBOARD_SHORTCUT);
+        verify(mFullscreenManager).clearPendingBrowserImmersiveExitReason();
+
+        // 4. Toggling out via the 3-dot menu button (fromMenu = true) does not record EntryMethod
+        // and does not attribute KEYBOARD_SHORTCUT as the exit reason.
+        clearInvocations(mFullscreenManager);
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ImmersiveModeMetrics.HISTOGRAM_ENTRY_METHOD)
+                        .build()) {
+            assertTrue(
+                    mCoordinator.handleMenuOrKeyboardAction(
+                            R.id.fullscreen_button, /* fromMenu= */ true));
+        }
+        verify(mFullscreenManager, never())
+                .setPendingBrowserImmersiveExitReasonIfUnset(
+                        ImmersiveModeExitReason.KEYBOARD_SHORTCUT);
+        verify(mFullscreenManager, never()).clearPendingBrowserImmersiveExitReason();
     }
 
     private AtomicInteger attachLoadingStub() {

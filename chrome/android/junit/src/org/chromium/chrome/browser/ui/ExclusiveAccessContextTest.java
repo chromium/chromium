@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -32,6 +33,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager.FullscreenManagerDelegate;
+import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics.ImmersiveModeExitReason;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager.NativeExclusiveAccessManagerAndroid;
@@ -106,12 +108,16 @@ public class ExclusiveAccessContextTest {
 
         context.exitFullscreenModeForTab();
 
+        verify(mFullscreenManager)
+                .setPendingBrowserImmersiveExitReasonIfUnset(
+                        ImmersiveModeExitReason.PRESS_AND_HOLD_ESCAPE);
         verify(
                         mFullscreenManager,
                         description(
                                 "Should exit fullscreen for the active tab when mActiveTab is"
                                         + " non-null."))
                 .onExitFullscreen(tab);
+        verify(mFullscreenManager).clearPendingBrowserImmersiveExitReason();
         verify(
                         mFullscreenManager,
                         never().description(
@@ -131,11 +137,15 @@ public class ExclusiveAccessContextTest {
 
         context.exitFullscreenModeForTab();
 
+        verify(mFullscreenManager)
+                .setPendingBrowserImmersiveExitReasonIfUnset(
+                        ImmersiveModeExitReason.PRESS_AND_HOLD_ESCAPE);
         verify(
                         mFullscreenManager,
                         description(
                                 "Should exit persistent fullscreen mode when mActiveTab is null."))
                 .exitPersistentFullscreenMode();
+        verify(mFullscreenManager).clearPendingBrowserImmersiveExitReason();
         verify(
                         mFullscreenManager,
                         never().description(
@@ -213,12 +223,15 @@ public class ExclusiveAccessContextTest {
                                         "Should not call onEnterBrowserImmersiveMode when toggling"
                                                 + " out of an existing fullscreen session."))
                 .onEnterBrowserImmersiveMode();
+        verify(mFullscreenManager)
+                .setPendingBrowserImmersiveExitReasonIfUnset(ImmersiveModeExitReason.OTHER);
         verify(
                         mExclusiveAccessManagerJni,
                         description(
                                 "Should forward toggleBrowserFullscreenMode call to the JNI"
                                         + " bridge."))
                 .toggleBrowserFullscreenMode(/* self= */ nativePtr, /* userInitiated= */ true);
+        verify(mFullscreenManager).clearPendingBrowserImmersiveExitReason();
         manager.destroy();
     }
 
@@ -233,14 +246,24 @@ public class ExclusiveAccessContextTest {
         // Simulate exiting nested tab fullscreen while browser fullscreen remains active.
         when(mExclusiveAccessManagerJni.hasExclusiveAccess(nativePtr)).thenReturn(true);
         manager.exitExclusiveAccess();
+        verify(mFullscreenManager)
+                .setPendingBrowserImmersiveExitReasonIfUnset(ImmersiveModeExitReason.OTHER);
+        verify(mFullscreenManager).clearPendingBrowserImmersiveExitReason();
         assertTrue(
                 "Exclusive access state should remain true when browser fullscreen is still"
                         + " active.",
                 manager.getExclusiveAccessStateSupplier().get());
+        clearInvocations(mFullscreenManager);
 
-        // Simulate exiting browser fullscreen so no exclusive access remains.
+        // Simulate exiting browser fullscreen via BackPressHandler so BACK_PRESS is attributed and
+        // no exclusive access remains.
+        ExclusiveAccessManagerBackPressHandler backPressHandler =
+                new ExclusiveAccessManagerBackPressHandler(manager);
         when(mExclusiveAccessManagerJni.hasExclusiveAccess(nativePtr)).thenReturn(false);
-        manager.exitExclusiveAccess();
+        backPressHandler.handleBackPress();
+        verify(mFullscreenManager)
+                .setPendingBrowserImmersiveExitReasonIfUnset(ImmersiveModeExitReason.BACK_PRESS);
+        verify(mFullscreenManager).clearPendingBrowserImmersiveExitReason();
         assertFalse(
                 "Exclusive access state should become false when all exclusive access modes exit.",
                 manager.getExclusiveAccessStateSupplier().get());
@@ -290,12 +313,16 @@ public class ExclusiveAccessContextTest {
 
         manager.onDesktopWindowingModeChanged(/* isInDesktopWindow= */ true);
 
+        verify(mFullscreenManager)
+                .setPendingBrowserImmersiveExitReasonIfUnset(
+                        ImmersiveModeExitReason.DESKTOP_WINDOWING_MODE_CHANGED);
         verify(
                         mExclusiveAccessManagerJni,
                         description(
                                 "Should exit all exclusive access layers when entering desktop"
                                         + " windowing mode."))
                 .exitAllExclusiveAccess(nativePtr);
+        verify(mFullscreenManager).clearPendingBrowserImmersiveExitReason();
         assertFalse(
                 "Exclusive access state should become false when entering desktop windowing mode.",
                 manager.getExclusiveAccessStateSupplier().get());
@@ -318,12 +345,15 @@ public class ExclusiveAccessContextTest {
         // Simulate a screen lock to tear down all fullscreen.
         delegateCaptor.getValue().onExitFullscreen(/* tab= */ null);
 
+        verify(mFullscreenManager)
+                .setPendingBrowserImmersiveExitReasonIfUnset(ImmersiveModeExitReason.OTHER);
         verify(
                         mExclusiveAccessManagerJni,
                         description(
                                 "Should exit all exclusive access layers when"
                                         + " onExitFullscreen(null) is called."))
                 .exitAllExclusiveAccess(nativePtr);
+        verify(mFullscreenManager).clearPendingBrowserImmersiveExitReason();
         assertFalse(
                 "Exclusive access state should become false when onExitFullscreen(null) is"
                         + " called.",

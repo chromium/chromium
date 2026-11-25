@@ -2887,6 +2887,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ImmersiveMode.ExitReason"
+    enum="ImmersiveModeExitReason" expires_after="2027-05-15">
+  <owner>eleanorlee@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records how the user exited Browser immersive mode (back-swipe, long-press
+    Esc key, keyboard shortcut toggle, desktop windowing mode transition,
+    activity backgrounded/destroyed, or other). Recorded once when exiting
+    Browser immersive mode.
+  </summary>
+</histogram>
+
+<histogram name="Android.ImmersiveMode.ExitSnackbarShown"
+    enum="ImmersiveModeExitSnackbarShown" expires_after="2027-05-15">
+  <owner>eleanorlee@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records when the exit snackbar is shown during a Browser immersive mode
+    session, distinguishing between the initial snackbar shown automatically
+    upon entering Browser immersive mode (InitialEntry) and a reminder snackbar
+    re-shown during the session such as when holding the Esc key for more than
+    0.5 seconds (Retriggered).
+  </summary>
+</histogram>
+
 <histogram name="Android.ImmersiveMode.NavigationsPerSession" units="count"
     expires_after="2027-05-15">
   <owner>eleanorlee@google.com</owner>

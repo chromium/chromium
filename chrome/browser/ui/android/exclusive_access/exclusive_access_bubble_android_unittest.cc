@@ -11,6 +11,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/android/exclusive_access/exclusive_access_context_android.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -33,7 +34,10 @@ class MockBridge : public ExclusiveAccessBubbleAndroid::Bridge {
  public:
   MOCK_METHOD(void, Show, (), (override));
   MOCK_METHOD(void, Hide, (), (override));
-  MOCK_METHOD(void, Update, (const std::u16string& text), (override));
+  MOCK_METHOD(void,
+              Update,
+              (const std::u16string& text, bool is_browser_fullscreen_snackbar),
+              (override));
   MOCK_METHOD(bool, IsVisible, (), (const, override));
   MOCK_METHOD(bool, IsKeyboardConnected, (), (const, override));
   MOCK_METHOD(std::u16string,
@@ -53,7 +57,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest, UpdateEarlyOutsWhenAlreadyShown) {
 
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
   EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(false));
-  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
 
   ExclusiveAccessBubbleAndroid bubble(params, base::DoNothing(),
@@ -65,7 +69,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest, UpdateEarlyOutsWhenAlreadyShown) {
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(true));
 
   // Update with same params should early out because already_shown is true.
-  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(0);
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, _)).Times(0);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(0);
   bubble.Update(params, base::DoNothing());
 
@@ -81,7 +85,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest, WasShownFlagPreventsResurrection) {
 
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
   EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(false));
-  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
 
   ExclusiveAccessBubbleAndroid bubble(params, base::DoNothing(),
@@ -91,7 +95,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest, WasShownFlagPreventsResurrection) {
 
   // Second update with same params should early out because was_shown_ is true.
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
-  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(0);
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, _)).Times(0);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(0);
   bubble.Update(params, base::DoNothing());
 
@@ -99,7 +103,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest, WasShownFlagPreventsResurrection) {
 
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
   EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(false));
-  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
 
   params.force_update = true;
@@ -117,7 +121,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest, WasShownFlagPreventsResurrection) {
   params.force_update = false;
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
   EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(false));
-  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
   bubble.Update(params, base::DoNothing());
 
@@ -134,7 +138,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest, SnoozeResetForciblyReshowsNotice) {
   // Initial show on creation.
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
   EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(false));
-  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
 
   auto bubble = std::make_unique<ExclusiveAccessBubbleAndroid>(
@@ -157,7 +161,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest, SnoozeResetForciblyReshowsNotice) {
   // override the was_shown_ latch).
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
   EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(false));
-  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
 
   context.OnExclusiveAccessUserInput();
@@ -176,7 +180,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest,
 
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
   EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(false));
-  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
 
   ExclusiveAccessBubbleAndroid bubble(initial_params, base::DoNothing(),
@@ -194,7 +198,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest,
 
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
   EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(false));
-  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
 
   bubble.Update(update_params, base::DoNothing());
@@ -221,7 +225,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest,
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
   EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected())
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
 
   auto bubble = std::make_unique<ExclusiveAccessBubbleAndroid>(
@@ -237,7 +241,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest,
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
   EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected())
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_bridge_ptr, Update(_)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
 
   bubble_ptr->Update(lock_params, base::DoNothing());
@@ -262,7 +266,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest,
           EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION,
           l10n_util::GetStringUTF16(IDS_APP_ESC_KEY), std::nullopt,
           /*has_download=*/false, /*notify_overridden=*/false);
-  EXPECT_CALL(*mock_bridge_ptr, Update(expected_text)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(expected_text, false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
 
   context.OnExclusiveAccessUserInput();
@@ -290,7 +294,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest,
       .WillRepeatedly(Return(false));
 
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
-  EXPECT_CALL(*mock_bridge_ptr, Update(format_text(false))).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(format_text(false), false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
   ExclusiveAccessBubbleAndroid bubble(params, base::DoNothing(),
                                       std::move(mock_bridge));
@@ -302,7 +306,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest,
   params.has_download = true;
   params.force_update = true;
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(true));
-  EXPECT_CALL(*mock_bridge_ptr, Update(format_text(true))).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(format_text(true), false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
   bubble.Update(params, base::DoNothing());
   EXPECT_TRUE(bubble.params().has_download);
@@ -314,7 +318,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest,
   params.has_download = false;
   params.force_update = false;
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(true));
-  EXPECT_CALL(*mock_bridge_ptr, Update(format_text(false))).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(format_text(false), false)).Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
   bubble.Update(params, base::DoNothing());
   EXPECT_FALSE(bubble.params().has_download);
@@ -340,7 +344,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest,
   std::u16string captured_text;
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
   EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(true));
-  EXPECT_CALL(*mock_bridge_ptr, Update(_))
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false))
       .WillOnce(testing::SaveArg<0>(&captured_text));
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
 
@@ -449,7 +453,7 @@ TEST_F(ExclusiveAccessBubbleAndroidTest, LongOriginIsElidedInBubbleNotice) {
   std::u16string captured_text;
   EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
   EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(true));
-  EXPECT_CALL(*mock_bridge_ptr, Update(_))
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false))
       .WillOnce(testing::SaveArg<0>(&captured_text));
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
 
@@ -485,11 +489,108 @@ TEST_F(ExclusiveAccessBubbleAndroidTest,
               GetCustomFullscreenExitInstruction(
                   std::optional<std::u16string>(u"example.com")))
       .WillOnce(Return(gesture_nav_instruction));
-  EXPECT_CALL(*mock_bridge_ptr, Update(gesture_nav_instruction)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Update(gesture_nav_instruction, false))
+      .Times(1);
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
 
   ExclusiveAccessBubbleAndroid bubble(params, base::DoNothing(),
                                       std::move(mock_bridge));
+  testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+
+  EXPECT_CALL(*mock_bridge_ptr, Hide()).Times(1);
+}
+
+TEST_F(ExclusiveAccessBubbleAndroidTest,
+       BrowserFullscreenSnackbarFlagAndDownloadOverride) {
+  ExclusiveAccessBubbleParams params;
+  params.type =
+      EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION;
+
+  auto mock_bridge = std::make_unique<MockBridge>();
+  auto* mock_bridge_ptr = mock_bridge.get();
+
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, true)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+
+  ExclusiveAccessBubbleAndroid bubble(params, base::DoNothing(),
+                                      std::move(mock_bridge));
+  testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+
+  // When a download notice overrides the browser fullscreen snackbar,
+  // is_browser_fullscreen_snackbar must be false so download notifications are
+  // not counted as browser fullscreen exit snackbars.
+  ExclusiveAccessBubbleParams download_params;
+  download_params.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
+  download_params.has_download = true;
+  download_params.force_update = true;
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(true));
+  EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(true));
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+
+  bubble.Update(download_params, base::DoNothing());
+  testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+
+  EXPECT_CALL(*mock_bridge_ptr, Hide()).Times(1);
+}
+
+TEST_F(ExclusiveAccessBubbleAndroidTest,
+       SuppressBubbleUpdatesSkipsNonEmptyUpdatesAndAllowsHide) {
+  ExclusiveAccessBubbleParams tab_params;
+  tab_params.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
+
+  auto mock_bridge = std::make_unique<MockBridge>();
+  auto* mock_bridge_ptr = mock_bridge.get();
+
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, false)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+
+  auto bubble = std::make_unique<ExclusiveAccessBubbleAndroid>(
+      tab_params, base::DoNothing(), std::move(mock_bridge));
+  testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+
+  ExclusiveAccessContextAndroid context;
+  context.SetBubbleForTesting(std::move(bubble));
+
+  ExclusiveAccessBubbleParams browser_params;
+  browser_params.type =
+      EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION;
+
+  {
+    base::AutoReset<bool> suppress = context.SuppressBubbleUpdates();
+
+    // Non-empty bubble updates are suppressed while AutoReset is active.
+    EXPECT_CALL(*mock_bridge_ptr, Update(_, _)).Times(0);
+    EXPECT_CALL(*mock_bridge_ptr, Show()).Times(0);
+    std::optional<ExclusiveAccessBubbleHideReason> hide_reason;
+    context.UpdateExclusiveAccessBubble(
+        browser_params,
+        base::BindLambdaForTesting([&](ExclusiveAccessBubbleHideReason reason) {
+          hide_reason = reason;
+        }));
+    EXPECT_EQ(hide_reason, ExclusiveAccessBubbleHideReason::kNotShown);
+    testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+
+    // Hiding via EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE still runs normally.
+    ExclusiveAccessBubbleParams none_params;
+    none_params.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
+    EXPECT_CALL(*mock_bridge_ptr, Hide()).Times(1);
+    context.UpdateExclusiveAccessBubble(none_params, base::DoNothing());
+    testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+  }
+
+  // Once AutoReset goes out of scope, non-empty bubble updates resume normally.
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(true));
+  EXPECT_CALL(*mock_bridge_ptr, Update(_, true)).Times(1);
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+  context.UpdateExclusiveAccessBubble(browser_params, base::DoNothing());
   testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
 
   EXPECT_CALL(*mock_bridge_ptr, Hide()).Times(1);

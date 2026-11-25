@@ -47,7 +47,7 @@ public class ExclusiveAccessBubbleTest {
         Mockito.when(mSnackbarManager.canShowSnackbar()).thenReturn(false);
         ExclusiveAccessBubble bubble = ExclusiveAccessBubble.create(mExclusiveAccessContext);
 
-        bubble.update("Test text");
+        bubble.update("Test text", /* isBrowserFullscreenSnackbar= */ false);
         Assert.assertFalse(
                 "Bubble should not be visible or orphaned when snackbars cannot be shown",
                 bubble.isVisible());
@@ -75,7 +75,7 @@ public class ExclusiveAccessBubbleTest {
         Mockito.when(mExclusiveAccessContext.getActivity()).thenReturn(pipActivity);
         ExclusiveAccessBubble bubble = ExclusiveAccessBubble.create(mExclusiveAccessContext);
 
-        bubble.update("Exit fullscreen");
+        bubble.update("Exit fullscreen", /* isBrowserFullscreenSnackbar= */ false);
         Assert.assertFalse(bubble.isVisible());
         Mockito.verify(mSnackbarManager, Mockito.never()).showSnackbar(Mockito.any());
 
@@ -89,7 +89,7 @@ public class ExclusiveAccessBubbleTest {
     @Test
     public void testUpdateWhenCannotShowSnackbar_HidesBubble() {
         ExclusiveAccessBubble bubble = ExclusiveAccessBubble.create(mExclusiveAccessContext);
-        bubble.update("Initial text");
+        bubble.update("Initial text", /* isBrowserFullscreenSnackbar= */ false);
         Assert.assertTrue(bubble.isVisible());
         Mockito.verify(mSnackbarManager, Mockito.times(1)).showSnackbar(Mockito.any());
 
@@ -97,7 +97,7 @@ public class ExclusiveAccessBubbleTest {
         // updating—even with identical text—must dismiss the active snackbar to avoid
         // leaving an orphaned reference.
         Mockito.when(mSnackbarManager.canShowSnackbar()).thenReturn(false);
-        bubble.update("Initial text");
+        bubble.update("Initial text", /* isBrowserFullscreenSnackbar= */ false);
         Assert.assertFalse(
                 "Bubble should be safely hidden when updating while snackbars cannot be shown",
                 bubble.isVisible());
@@ -110,14 +110,14 @@ public class ExclusiveAccessBubbleTest {
         ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
 
         Assert.assertFalse(bubble.isVisible());
-        bubble.update("Test text");
+        bubble.update("Test text", /* isBrowserFullscreenSnackbar= */ false);
         Assert.assertTrue(bubble.isVisible());
         Mockito.verify(mSnackbarManager, Mockito.times(1)).showSnackbar(snackbarCaptor.capture());
         Assert.assertTrue(snackbarCaptor.getValue().isHighPriority());
         Assert.assertFalse(snackbarCaptor.getValue().getDefaultLines());
 
         // Dynamic update while visible should also preserve non-default line limit.
-        bubble.update("Updated text");
+        bubble.update("Updated text", /* isBrowserFullscreenSnackbar= */ false);
         Mockito.verify(mSnackbarManager, Mockito.times(2)).showSnackbar(snackbarCaptor.capture());
         Assert.assertFalse(snackbarCaptor.getValue().getDefaultLines());
 
@@ -130,11 +130,11 @@ public class ExclusiveAccessBubbleTest {
     public void testUpdateWithSameText() {
         ExclusiveAccessBubble bubble = ExclusiveAccessBubble.create(mExclusiveAccessContext);
 
-        bubble.update("Test text");
+        bubble.update("Test text", /* isBrowserFullscreenSnackbar= */ false);
         Mockito.verify(mSnackbarManager, Mockito.times(1)).showSnackbar(Mockito.any());
 
         // Update with the same text and visible snackbar should not trigger another show.
-        bubble.update("Test text");
+        bubble.update("Test text", /* isBrowserFullscreenSnackbar= */ false);
         Mockito.verify(mSnackbarManager, Mockito.times(1)).showSnackbar(Mockito.any());
         Mockito.verify(mSnackbarManager, Mockito.never()).dismissSnackbars(Mockito.any());
 
@@ -147,7 +147,7 @@ public class ExclusiveAccessBubbleTest {
         // `ExclusiveAccessBubbleAndroid::was_shown_`. This is because swiping away the Snackbar
         // triggers a layout change in Android, which can cause the WebContents to re-evaluate
         // its fullscreen state and fire another Update() from C++.
-        bubble.update("Test text");
+        bubble.update("Test text", /* isBrowserFullscreenSnackbar= */ false);
         Mockito.verify(mSnackbarManager, Mockito.times(2)).showSnackbar(Mockito.any());
     }
 
@@ -155,19 +155,44 @@ public class ExclusiveAccessBubbleTest {
     public void testUpdateWithNewTextReusesSnackbarInstance() {
         ExclusiveAccessBubble bubble = ExclusiveAccessBubble.create(mExclusiveAccessContext);
 
-        bubble.update("Press Esc");
+        bubble.update("Press Esc", /* isBrowserFullscreenSnackbar= */ false);
         ArgumentCaptor<Snackbar> captor = ArgumentCaptor.forClass(Snackbar.class);
         Mockito.verify(mSnackbarManager, Mockito.times(1)).showSnackbar(captor.capture());
         Snackbar firstSnackbar = captor.getValue();
         Assert.assertEquals("Press Esc", firstSnackbar.getTextForTesting());
 
-        bubble.update("Press and hold Esc");
+        bubble.update("Press and hold Esc", /* isBrowserFullscreenSnackbar= */ false);
         Mockito.verify(mSnackbarManager, Mockito.times(2)).showSnackbar(captor.capture());
         Snackbar secondSnackbar = captor.getValue();
 
         Assert.assertSame(firstSnackbar, secondSnackbar);
         Assert.assertEquals("Press and hold Esc", secondSnackbar.getTextForTesting());
         Mockito.verify(mSnackbarManager, Mockito.never()).dismissSnackbars(Mockito.any());
+    }
+
+    @Test
+    public void testBrowserFullscreenSnackbarNotifiesContext() {
+        ExclusiveAccessBubble bubble = ExclusiveAccessBubble.create(mExclusiveAccessContext);
+
+        // Non-browser fullscreen snackbar (e.g. HTML5 video fullscreen) should not notify.
+        bubble.update("youtube.com - Press Esc", /* isBrowserFullscreenSnackbar= */ false);
+        Mockito.verify(mExclusiveAccessContext, Mockito.never()).onBrowserFullscreenSnackbarShown();
+
+        // Updating in place to Browser fullscreen snackbar notifies once.
+        bubble.update("Press and hold Esc", /* isBrowserFullscreenSnackbar= */ true);
+        Mockito.verify(mExclusiveAccessContext, Mockito.times(1))
+                .onBrowserFullscreenSnackbarShown();
+
+        // Updating with identical text while visible does not re-show or re-notify.
+        bubble.update("Press and hold Esc", /* isBrowserFullscreenSnackbar= */ true);
+        Mockito.verify(mExclusiveAccessContext, Mockito.times(1))
+                .onBrowserFullscreenSnackbarShown();
+
+        // Hiding and showing a new Browser fullscreen snackbar notifies again.
+        bubble.hide();
+        bubble.update("Press and hold Esc", /* isBrowserFullscreenSnackbar= */ true);
+        Mockito.verify(mExclusiveAccessContext, Mockito.times(2))
+                .onBrowserFullscreenSnackbarShown();
     }
 
     @Test

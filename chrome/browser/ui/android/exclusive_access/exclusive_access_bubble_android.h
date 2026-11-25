@@ -24,7 +24,8 @@ class ExclusiveAccessBubbleAndroid : public ExclusiveAccessBubble {
     virtual ~Bridge() = default;
     virtual void Show() = 0;
     virtual void Hide() = 0;
-    virtual void Update(const std::u16string& text) = 0;
+    virtual void Update(const std::u16string& text,
+                        bool is_browser_fullscreen_snackbar) = 0;
     virtual bool IsVisible() const = 0;
     virtual bool IsKeyboardConnected() const = 0;
     virtual std::u16string GetCustomFullscreenExitInstruction(

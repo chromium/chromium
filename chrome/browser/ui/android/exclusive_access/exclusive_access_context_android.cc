@@ -109,6 +109,14 @@ void ExclusiveAccessContextAndroid::UpdateExclusiveAccessBubble(
     return;
   }
 
+  if (suppress_bubble_updates_) {
+    if (first_hide_callback) {
+      std::move(first_hide_callback)
+          .Run(ExclusiveAccessBubbleHideReason::kNotShown);
+    }
+    return;
+  }
+
   if (exclusive_access_bubble_) {
     if (exclusive_access_bubble_destruction_task_id_) {
       // We previously posted a destruction task, but now we want to reuse the
@@ -189,6 +197,10 @@ void ExclusiveAccessContextAndroid::ForceActiveTab(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& j_tab) {
   Java_ExclusiveAccessContext_forceActiveTab(env, java_context_, j_tab);
+}
+
+base::AutoReset<bool> ExclusiveAccessContextAndroid::SuppressBubbleUpdates() {
+  return base::AutoReset<bool>(&suppress_bubble_updates_, true);
 }
 
 DEFINE_JNI(ExclusiveAccessContext)

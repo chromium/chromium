@@ -67,10 +67,12 @@ class BridgeImpl : public ExclusiveAccessBubbleAndroid::Bridge {
     }
   }
 
-  void Update(const std::u16string& text) override {
+  void Update(const std::u16string& text,
+              bool is_browser_fullscreen_snackbar) override {
     if (j_bubble_) {
       JNIEnv* env = jni_zero::AttachCurrentThread();
-      Java_ExclusiveAccessBubble_update(env, j_bubble_, text);
+      Java_ExclusiveAccessBubble_update(env, j_bubble_, text,
+                                        is_browser_fullscreen_snackbar);
     }
   }
 
@@ -197,8 +199,12 @@ void ExclusiveAccessBubbleAndroid::UpdateBubbleContent(
 
   bool keyboard_connected = bridge_->IsKeyboardConnected();
   std::u16string text = GetBubbleText(bubble_type, keyboard_connected);
+  bool is_browser_fullscreen_snackbar =
+      !params_.has_download &&
+      exclusive_access_bubble::IsExclusiveAccessModeBrowserFullscreen(
+          bubble_type);
 
-  bridge_->Update(text);
+  bridge_->Update(text, is_browser_fullscreen_snackbar);
 }
 
 std::u16string ExclusiveAccessBubbleAndroid::GetBubbleText(

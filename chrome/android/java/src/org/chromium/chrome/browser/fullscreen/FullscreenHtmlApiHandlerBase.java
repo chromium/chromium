@@ -47,6 +47,8 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics.ImmersiveModeExitReason;
+import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics.ImmersiveModeExitSnackbarShown;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributeKeys;
@@ -127,11 +129,14 @@ public abstract class FullscreenHtmlApiHandlerBase
     private boolean mNotifyOnNextExit;
 
     // Session state for Browser immersive mode metrics (NavigationsPerSession,
-    // TabSwitchesPerSession, and SessionDuration in ImmersiveModeMetrics).
+    // TabSwitchesPerSession, ExitReason, SessionDuration, and ExitSnackbarShown in
+    // ImmersiveModeMetrics).
     private boolean mIsBrowserImmersiveSessionActive;
     private long mBrowserImmersiveEnterTimeMs;
     private int mImmersiveNavigationsCount;
     private int mImmersiveTabSwitchesCount;
+    private @Nullable @ImmersiveModeExitReason Integer mPendingImmersiveExitReason;
+    private boolean mHasShownInitialImmersiveSnackbar;
 
     // Current ContentView. Updates when active tab is switched or WebContents is swapped
     // in the current Tab.
@@ -387,18 +392,26 @@ public abstract class FullscreenHtmlApiHandlerBase
                         // non-null `tab` only exits tab-initiated fullscreen for that tab. On tab
                         // switches, pass `tab` so browser immersive mode remains active.
                         boolean isTabSwitch = reason == TabHidingType.CHANGED_TABS;
-                        mFullscreenManagerDelegate.onExitFullscreen(
-                                isPersistentImmersiveModeEnabled() && isTabSwitch ? tab : null);
-                        // Tab Switches per Session: Count all tab switches
-                        // (TabHidingType.CHANGED_TABS) that occur while remaining in a Browser
-                        // immersive mode session (does not differentiate between Ctrl + Tab,
-                        // Ctrl + T, Ctrl + W, etc.).
-                        if (mIsBrowserImmersiveSessionActive
-                                && isPersistentImmersiveModeEnabled()
-                                && isTabSwitch
-                                && getPersistentFullscreenMode()
-                                && modelSelector.getCurrentModel().getCount() > 0) {
-                            mImmersiveTabSwitchesCount++;
+                        boolean keepBrowserImmersive =
+                                isPersistentImmersiveModeEnabled() && isTabSwitch;
+                        if (keepBrowserImmersive) {
+                            mFullscreenManagerDelegate.onExitFullscreen(tab);
+                            // Tab Switches per Session: Count all tab switches
+                            // (TabHidingType.CHANGED_TABS) that occur while remaining in a Browser
+                            // immersive mode session (does not differentiate between Ctrl + Tab,
+                            // Ctrl + T, Ctrl + W, etc.).
+                            if (mIsBrowserImmersiveSessionActive
+                                    && getPersistentFullscreenMode()
+                                    && modelSelector.getCurrentModel().getCount() > 0) {
+                                mImmersiveTabSwitchesCount++;
+                            }
+                        } else {
+                            if (reason == TabHidingType.ACTIVITY_HIDDEN) {
+                                setPendingBrowserImmersiveExitReasonIfUnset(
+                                        ImmersiveModeExitReason.ACTIVITY_HIDDEN_OR_DESTROYED);
+                            }
+                            mFullscreenManagerDelegate.onExitFullscreen(null);
+                            clearPendingBrowserImmersiveExitReason();
                         }
                     }
 
@@ -804,7 +817,7 @@ public abstract class FullscreenHtmlApiHandlerBase
 
     /**
      * Marks the start of a Browser immersive mode session and resets the per-session navigation,
-     * tab-switch, and duration counters for {@link ImmersiveModeMetrics}.
+     * tab-switch, exit-reason, snackbar, and duration state for {@link ImmersiveModeMetrics}.
      */
     @Override
     public void onEnterBrowserImmersiveMode() {
@@ -812,6 +825,35 @@ public abstract class FullscreenHtmlApiHandlerBase
         mBrowserImmersiveEnterTimeMs = TimeUtils.elapsedRealtimeMillis();
         mImmersiveNavigationsCount = 0;
         mImmersiveTabSwitchesCount = 0;
+        mPendingImmersiveExitReason = null;
+        mHasShownInitialImmersiveSnackbar = false;
+    }
+
+    @Override
+    public void setPendingBrowserImmersiveExitReasonIfUnset(
+            @ImmersiveModeExitReason int exitReason) {
+        if (!mIsBrowserImmersiveSessionActive) return;
+        if (mPendingImmersiveExitReason == null) {
+            mPendingImmersiveExitReason = exitReason;
+        }
+    }
+
+    @Override
+    public void clearPendingBrowserImmersiveExitReason() {
+        mPendingImmersiveExitReason = null;
+    }
+
+    @Override
+    public void onBrowserFullscreenSnackbarShown() {
+        if (!mIsBrowserImmersiveSessionActive) return;
+        if (!mHasShownInitialImmersiveSnackbar) {
+            mHasShownInitialImmersiveSnackbar = true;
+            ImmersiveModeMetrics.recordExitSnackbarShown(
+                    ImmersiveModeExitSnackbarShown.INITIAL_ENTRY);
+        } else {
+            ImmersiveModeMetrics.recordExitSnackbarShown(
+                    ImmersiveModeExitSnackbarShown.RETRIGGERED);
+        }
     }
 
     @Override
@@ -835,18 +877,29 @@ public abstract class FullscreenHtmlApiHandlerBase
 
         if (getPersistentFullscreenMode()) {
             mPersistentModeSupplier.set(false);
-            // Navigations per Session, Tab Switches per Session, and Session Duration: Emit session
-            // histograms once when exiting a Browser immersive mode session.
+            // Navigations per Session, Tab Switches per Session, Exit Reason, and Session
+            // Duration: Emit session histograms once when exiting a Browser immersive mode
+            // session.
             if (mIsBrowserImmersiveSessionActive) {
                 long durationMs =
                         Math.max(
                                 0,
                                 TimeUtils.elapsedRealtimeMillis() - mBrowserImmersiveEnterTimeMs);
+                @ImmersiveModeExitReason
+                int exitReason =
+                        mPendingImmersiveExitReason != null
+                                ? mPendingImmersiveExitReason
+                                : ImmersiveModeExitReason.OTHER;
                 ImmersiveModeMetrics.recordSessionMetrics(
-                        mImmersiveNavigationsCount, mImmersiveTabSwitchesCount, durationMs);
+                        mImmersiveNavigationsCount,
+                        mImmersiveTabSwitchesCount,
+                        durationMs,
+                        exitReason);
                 mIsBrowserImmersiveSessionActive = false;
                 mImmersiveNavigationsCount = 0;
                 mImmersiveTabSwitchesCount = 0;
+                mPendingImmersiveExitReason = null;
+                mHasShownInitialImmersiveSnackbar = false;
             }
 
             if (mWebContentsInFullscreen != null && mTabInFullscreen != null) {
@@ -1086,7 +1139,10 @@ public abstract class FullscreenHtmlApiHandlerBase
             // correctly when
             // showing again (on JB MR2+ builds, the omnibox would be covered by the
             // notification bar when this was done in onStart()).
+            setPendingBrowserImmersiveExitReasonIfUnset(
+                    ImmersiveModeExitReason.ACTIVITY_HIDDEN_OR_DESTROYED);
             mFullscreenManagerDelegate.onExitFullscreen(null);
+            clearPendingBrowserImmersiveExitReason();
         } else if (newState == ActivityState.DESTROYED) {
             ApplicationStatus.unregisterActivityStateListener(this);
             ApplicationStatus.unregisterWindowFocusChangedListener(this);

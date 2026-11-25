@@ -37,6 +37,7 @@ public class ExclusiveAccessBubble {
             };
 
     private @Nullable String mText;
+    private boolean mIsBrowserFullscreenSnackbar;
 
     private ExclusiveAccessBubble(ExclusiveAccessContext parentContext) {
         mParentContext = parentContext;
@@ -75,10 +76,15 @@ public class ExclusiveAccessBubble {
                         // the notice is actually visible to the user.
                         .setDuration(EXCLUSIVE_ACCESS_SNACKBAR_DURATION_MS);
         snackbarManager.showSnackbar(mSnackbar);
+        if (mIsBrowserFullscreenSnackbar) {
+            mParentContext.onBrowserFullscreenSnackbarShown();
+        }
     }
 
     @CalledByNative
-    public void update(@JniType("std::u16string") String text) {
+    public void update(
+            @JniType("std::u16string") String text, boolean isBrowserFullscreenSnackbar) {
+        mIsBrowserFullscreenSnackbar = isBrowserFullscreenSnackbar;
         SnackbarManager snackbarManager = mParentContext.getSnackbarManager();
         if (snackbarManager == null || !snackbarManager.canShowSnackbar()) {
             mText = text;
@@ -96,6 +102,9 @@ public class ExclusiveAccessBubble {
             mSnackbar.setText(text);
             // This will trigger SnackbarManager.updateView() and update the existing view.
             snackbarManager.showSnackbar(mSnackbar);
+            if (mIsBrowserFullscreenSnackbar) {
+                mParentContext.onBrowserFullscreenSnackbarShown();
+            }
             return;
         }
         show();

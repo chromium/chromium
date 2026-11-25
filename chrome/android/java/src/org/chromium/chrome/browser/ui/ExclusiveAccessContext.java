@@ -21,6 +21,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics.ImmersiveModeExitReason;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -162,8 +163,19 @@ public class ExclusiveAccessContext implements Destroyable {
         return mActiveTab != null ? mActiveTab.getWebContents() : null;
     }
 
+    /** Notifies the fullscreen manager that the Browser immersive mode exit snackbar was shown. */
+    void onBrowserFullscreenSnackbarShown() {
+        mFullscreenManager.onBrowserFullscreenSnackbarShown();
+    }
+
     @CalledByNative
     public void exitFullscreenModeForTab() {
+        // If a Java caller (e.g. back-press, keyboard shortcut, or desktop windowing) initiated
+        // this exit, it already set a pending exit reason so this call is a no-op. Otherwise, C++
+        // initiated the exit directly via the 1.5s press-and-hold Esc timer in
+        // FullscreenController::HandleUserHeldEscape.
+        mFullscreenManager.setPendingBrowserImmersiveExitReasonIfUnset(
+                ImmersiveModeExitReason.PRESS_AND_HOLD_ESCAPE);
         if (mActiveTab != null) {
             mFullscreenManager.onExitFullscreen(mActiveTab);
         } else {
@@ -171,6 +183,7 @@ public class ExclusiveAccessContext implements Destroyable {
             // (e.g. in the tab switcher or after closing tabs).
             mFullscreenManager.exitPersistentFullscreenMode();
         }
+        mFullscreenManager.clearPendingBrowserImmersiveExitReason();
     }
 
     @CalledByNative

@@ -98,4 +98,18 @@ public interface FullscreenManager {
      * mode (rather than renderer-initiated HTML5 tab fullscreen) for session metrics tracking.
      */
     default void onEnterBrowserImmersiveMode() {}
+
+    /**
+     * Sets the pending exit reason for the active Browser immersive mode session if no pending exit
+     * reason is currently set.
+     *
+     * @param exitReason The {@code ImmersiveModeMetrics.ImmersiveModeExitReason} value.
+     */
+    default void setPendingBrowserImmersiveExitReasonIfUnset(int exitReason) {}
+
+    /** Clears any pending Browser immersive mode exit reason. */
+    default void clearPendingBrowserImmersiveExitReason() {}
+
+    /** Notifies the manager that the Browser immersive mode exit snackbar was shown. */
+    default void onBrowserFullscreenSnackbarShown() {}
 }

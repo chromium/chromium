@@ -65,6 +65,8 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager.FullscreenManagerDelegate;
+import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics.ImmersiveModeExitReason;
+import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics.ImmersiveModeExitSnackbarShown;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributeKeys;
@@ -1320,7 +1322,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         verify(observer, never()).onEnterFullscreen(eq(mTab), any());
     }
 
-    private FullscreenManagerDelegate enterFullscreenAndSetMockDelegate() {
+    private void enterFullscreen() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mContentView).when(mTab).getContentView();
         doReturn(true).when(mTab).isUserInteractable();
@@ -1333,7 +1335,9 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mAreControlsHidden.set(true);
 
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
-        mFullscreenHtmlApiHandlerCompat.initialize(mActivityTabProvider, mTabModelSelector);
+        if (mFullscreenHtmlApiHandlerCompat.getTabFullscreenObserverForTesting() == null) {
+            mFullscreenHtmlApiHandlerCompat.initialize(mActivityTabProvider, mTabModelSelector);
+        }
         FullscreenOptions fullscreenOptions =
                 new FullscreenOptions(
                         /* showNavigationBar= */ false,
@@ -1342,7 +1346,10 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
 
         // Enter persistent fullscreen mode.
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
+    }
 
+    private FullscreenManagerDelegate enterFullscreenAndSetMockDelegate() {
+        enterFullscreen();
         FullscreenManagerDelegate delegate = Mockito.mock(FullscreenManagerDelegate.class);
         mFullscreenHtmlApiHandlerCompat.setFullscreenManagerDelegate(delegate);
         return delegate;
@@ -1663,8 +1670,152 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
                         .expectNoRecords(ImmersiveModeMetrics.HISTOGRAM_NAVIGATIONS_PER_SESSION)
                         .expectNoRecords(ImmersiveModeMetrics.HISTOGRAM_TAB_SWITCHES_PER_SESSION)
                         .expectNoRecords(ImmersiveModeMetrics.HISTOGRAM_SESSION_DURATION)
+                        .expectNoRecords(ImmersiveModeMetrics.HISTOGRAM_EXIT_REASON)
                         .build()) {
             mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+        }
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testImmersiveModeMetrics_SetPendingExitReasonIfUnset_PreservesFirstReason() {
+        mFullscreenHtmlApiHandlerCompat.onEnterBrowserImmersiveMode();
+        enterFullscreen();
+
+        // Simulate a Java exit path (e.g. back press) setting BACK_PRESS before native calls back
+        // into ExclusiveAccessContext#exitFullscreenModeForTab (which calls
+        // setPendingBrowserImmersiveExitReasonIfUnset(PRESS_AND_HOLD_ESCAPE)).
+        mFullscreenHtmlApiHandlerCompat.setPendingBrowserImmersiveExitReasonIfUnset(
+                ImmersiveModeExitReason.BACK_PRESS);
+        mFullscreenHtmlApiHandlerCompat.setPendingBrowserImmersiveExitReasonIfUnset(
+                ImmersiveModeExitReason.PRESS_AND_HOLD_ESCAPE);
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ImmersiveModeMetrics.HISTOGRAM_EXIT_REASON,
+                                ImmersiveModeExitReason.BACK_PRESS)
+                        .build()) {
+            mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+        }
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testImmersiveModeMetrics_ClearPendingExitReason_ResetsToOther() {
+        mFullscreenHtmlApiHandlerCompat.onEnterBrowserImmersiveMode();
+        enterFullscreen();
+
+        // Simulate a partial exit (e.g. exiting nested tab fullscreen) that sets a pending exit
+        // reason and then clears it because Browser immersive mode remained active; a subsequent
+        // exit without another reason set must fall back to OTHER.
+        mFullscreenHtmlApiHandlerCompat.setPendingBrowserImmersiveExitReasonIfUnset(
+                ImmersiveModeExitReason.BACK_PRESS);
+        mFullscreenHtmlApiHandlerCompat.clearPendingBrowserImmersiveExitReason();
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ImmersiveModeMetrics.HISTOGRAM_EXIT_REASON,
+                                ImmersiveModeExitReason.OTHER)
+                        .build()) {
+            mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+        }
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testImmersiveModeMetrics_ExitReason_ActivityStopped() {
+        mFullscreenHtmlApiHandlerCompat =
+                new FullscreenHtmlApiHandlerCompat(
+                        mActivity,
+                        mAreControlsHidden,
+                        /* exitFullscreenOnStop= */ true,
+                        mMultiWindowModeStateDispatcher) {
+                    @Override
+                    public void destroySelectActionMode(Tab tab) {}
+
+                    @Override
+                    protected void updateMultiTouchZoomSupport(boolean enable) {}
+                };
+        mFullscreenHtmlApiHandlerCompat.onEnterBrowserImmersiveMode();
+        enterFullscreen();
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ImmersiveModeMetrics.HISTOGRAM_EXIT_REASON,
+                                ImmersiveModeExitReason.ACTIVITY_HIDDEN_OR_DESTROYED)
+                        .build()) {
+            mFullscreenHtmlApiHandlerCompat.onActivityStateChange(mActivity, ActivityState.STOPPED);
+        }
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testImmersiveModeMetrics_ExitReason_OnHiddenActivityHiddenVsTabSwitcherShown() {
+        // 1. Hiding the active tab with ACTIVITY_HIDDEN records ACTIVITY_HIDDEN_OR_DESTROYED.
+        mFullscreenHtmlApiHandlerCompat.onEnterBrowserImmersiveMode();
+        enterFullscreen();
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ImmersiveModeMetrics.HISTOGRAM_EXIT_REASON,
+                                ImmersiveModeExitReason.ACTIVITY_HIDDEN_OR_DESTROYED)
+                        .build()) {
+            mFullscreenHtmlApiHandlerCompat
+                    .getTabFullscreenObserverForTesting()
+                    .onHidden(mTab, TabHidingType.ACTIVITY_HIDDEN);
+        }
+
+        // 2. Hiding the active tab with TAB_SWITCHER_SHOWN (while Activity remains visible)
+        // records OTHER rather than ACTIVITY_HIDDEN_OR_DESTROYED.
+        mFullscreenHtmlApiHandlerCompat.onEnterBrowserImmersiveMode();
+        enterFullscreen();
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ImmersiveModeMetrics.HISTOGRAM_EXIT_REASON,
+                                ImmersiveModeExitReason.OTHER)
+                        .build()) {
+            mFullscreenHtmlApiHandlerCompat
+                    .getTabFullscreenObserverForTesting()
+                    .onHidden(mTab, TabHidingType.TAB_SWITCHER_SHOWN);
+        }
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testImmersiveModeMetrics_ExitSnackbarShown_InitialEntryAndRetriggered() {
+        // 1. Not in a Browser immersive mode session (e.g. regular HTML5 tab fullscreen): snackbar
+        // displays should not record Android.ImmersiveMode.ExitSnackbarShown.
+        enterFullscreen();
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ImmersiveModeMetrics.HISTOGRAM_EXIT_SNACKBAR_SHOWN)
+                        .build()) {
+            mFullscreenHtmlApiHandlerCompat.onBrowserFullscreenSnackbarShown();
+        }
+        mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+
+        // 2. Start a Browser immersive mode session:
+        //    - First Browser fullscreen snackbar shown records INITIAL_ENTRY (0).
+        //    - Subsequent Browser fullscreen snackbars shown (e.g. holding Esc for more than 0.5s)
+        //      record RETRIGGERED (1).
+        mFullscreenHtmlApiHandlerCompat.onEnterBrowserImmersiveMode();
+        enterFullscreen();
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                ImmersiveModeMetrics.HISTOGRAM_EXIT_SNACKBAR_SHOWN,
+                                ImmersiveModeExitSnackbarShown.INITIAL_ENTRY,
+                                ImmersiveModeExitSnackbarShown.RETRIGGERED)
+                        .build()) {
+            mFullscreenHtmlApiHandlerCompat.onBrowserFullscreenSnackbarShown();
+            mFullscreenHtmlApiHandlerCompat.onBrowserFullscreenSnackbarShown();
         }
     }
 }

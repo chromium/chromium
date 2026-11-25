@@ -25,6 +25,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics.ImmersiveModeExitReason;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -254,13 +255,33 @@ public class ExclusiveAccessManager
         if (mExclusiveAccessManagerAndroidNativePointer == null) {
             return;
         }
-        // Start tracking a Browser immersive mode session when entering Browser immersive mode.
-        if (!mFullscreenManager.getPersistentFullscreenMode()) {
+        // Start tracking a Browser immersive mode session when entering Browser immersive mode;
+        // when exiting, default to OTHER if no specific exit reason (e.g. KEYBOARD_SHORTCUT) was
+        // already set, so the native ExitFullscreen callback does not misattribute it to
+        // PRESS_AND_HOLD_ESCAPE.
+        boolean isExiting = mFullscreenManager.getPersistentFullscreenMode();
+        if (!isExiting) {
             mFullscreenManager.onEnterBrowserImmersiveMode();
+        } else {
+            mFullscreenManager.setPendingBrowserImmersiveExitReasonIfUnset(
+                    ImmersiveModeExitReason.OTHER);
         }
         ExclusiveAccessManagerJni.get()
                 .toggleBrowserFullscreenMode(
                         mExclusiveAccessManagerAndroidNativePointer, userInitiated);
+        if (isExiting) {
+            mFullscreenManager.clearPendingBrowserImmersiveExitReason();
+        }
+    }
+
+    /** Exits exclusive access in response to a back-press / back-swipe gesture. */
+    void exitExclusiveAccessFromBackPress() {
+        if (mExclusiveAccessManagerAndroidNativePointer == null) {
+            return;
+        }
+        mFullscreenManager.setPendingBrowserImmersiveExitReasonIfUnset(
+                ImmersiveModeExitReason.BACK_PRESS);
+        exitExclusiveAccess();
     }
 
     /** Force exit of all exclusive access controllers */
@@ -269,8 +290,11 @@ public class ExclusiveAccessManager
             return;
         }
         mLatestFullscreenOptions = null;
+        mFullscreenManager.setPendingBrowserImmersiveExitReasonIfUnset(
+                ImmersiveModeExitReason.OTHER);
         ExclusiveAccessManagerJni.get()
                 .exitExclusiveAccess(mExclusiveAccessManagerAndroidNativePointer);
+        mFullscreenManager.clearPendingBrowserImmersiveExitReason();
         // Re-check exclusive access state: e.g. when in nested fullscreen (tab fullscreen on top
         // of browser immersive mode), exiting once only exits tab fullscreen while
         // browser immersive mode remains active.
@@ -287,8 +311,14 @@ public class ExclusiveAccessManager
             return;
         }
         mLatestFullscreenOptions = null;
+        // Default to OTHER if a caller (e.g. desktop windowing or activity hidden) has not already
+        // set a specific exit reason (for example, TabHidingType.TAB_SWITCHER_SHOWN), so the
+        // native ExitFullscreen callback does not misattribute the exit to PRESS_AND_HOLD_ESCAPE.
+        mFullscreenManager.setPendingBrowserImmersiveExitReasonIfUnset(
+                ImmersiveModeExitReason.OTHER);
         ExclusiveAccessManagerJni.get()
                 .exitAllExclusiveAccess(mExclusiveAccessManagerAndroidNativePointer);
+        mFullscreenManager.clearPendingBrowserImmersiveExitReason();
         // Unlike single-step exitExclusiveAccess() (where browser immersive mode may remain active
         // after exiting nested tab fullscreen), exitAllExclusiveAccess() tears down all exclusive
         // access layers at once, so no exclusive access remains active.
@@ -474,6 +504,8 @@ public class ExclusiveAccessManager
             // When the window transitions into desktop windowing mode, exit all fullscreen layers
             // (both tab fullscreen and browser immersive mode) so browser immersive mode does not
             // remain active inside a desktop window.
+            mFullscreenManager.setPendingBrowserImmersiveExitReasonIfUnset(
+                    ImmersiveModeExitReason.DESKTOP_WINDOWING_MODE_CHANGED);
             exitAllExclusiveAccess();
         }
     }
