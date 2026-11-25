@@ -111,10 +111,11 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/integrators/personal_context/personal_context_autofill_util.h"
-#include "components/autofill/core/browser/payments/bnpl_manager.h"
-#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
+#include "components/autofill/core/browser/permissions/device_reauth_util.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/browsing_data/core/features.h"
@@ -146,6 +147,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/sync/base/features.h"
+#include "components/wallet/core/browser/walletable_permission_utils.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -451,25 +453,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("downloadBubblePartialViewControlledByPref",
                           download_bubble_controlled_by_pref);
 
-  html_source->AddBoolean(
-      "shouldShowPayOverTimeSettings",
-      autofill::ContentAutofillClient::FromWebContents(web_ui->GetWebContents())
-          ->GetPaymentsAutofillClient()
-          ->GetPaymentsDataManager()
-          .ShouldShowBnplSettings());
-
-  html_source->AddBoolean(
-      "shoppingIntegrationEnabled",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAmbientAutofill) ||
-          base::FeatureList::IsEnabled(
-              autofill::features::kAutofillAiWalletShopping));
-
-  html_source->AddBoolean(
-      "offersAndLoyaltyCardsSettingsEnabled",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings));
-
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 
@@ -505,7 +488,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddResourcePaths(kSettingsSharedResources);
 #endif
 
-  AddLocalizedStrings(html_source, profile, web_ui->GetWebContents());
+  AddLocalizedStrings(html_source, profile);
   AddSecurityData(html_source);
 
   ManagedUIHandler::Initialize(web_ui, html_source);
@@ -565,6 +548,44 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           network::features::kLocalNetworkAccessChecks) &&
           !network::features::kLocalNetworkAccessChecksWarn.Get());
 
+  // Autofill
+  const auto& autofill_client =
+      *autofill::ContentAutofillClient::FromWebContents(
+          web_ui->GetWebContents());
+  const autofill::PaymentsDataManager& payments_data =
+      autofill_client.GetPersonalDataManager().payments_data_manager();
+
+  html_source->AddBoolean("migrationEnabled", false);
+  html_source->AddBoolean("showIbansSettings",
+                          autofill::ShouldShowIbanOnSettingsPage(
+                              payments_data.GetCountryCodeForExperimentGroup(),
+                              profile->GetPrefs()));
+  html_source->AddBoolean("deviceAuthAvailable",
+                          autofill::SupportsDeviceReauth(autofill_client));
+  html_source->AddBoolean("cvcStorageAvailable", true);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  // The feature is already launched on Windows, Mac and ChromeOS.
+  constexpr bool kIsMandatoryReauthFeatureFlagEnabled = true;
+#else
+  constexpr bool kIsMandatoryReauthFeatureFlagEnabled = false;
+#endif
+  html_source->AddBoolean("mandatoryReauthFeatureFlagEnabled",
+                          kIsMandatoryReauthFeatureFlagEnabled);
+
+  html_source->AddBoolean(
+      "emailVerificationProtocolEnabled",
+      base::FeatureList::IsEnabled(features::kEmailVerificationProtocol));
+  // The Gmail OTP filling opt-in is shared by Actor OTP filling and Autofill
+  // Gmail OTP suggestions. Show it when either feature is enabled so that the
+  // two features don't depend on each other for launch.
+  html_source->AddBoolean(
+      "autofillGmailOtpFillingEnabled",
+      base::FeatureList::IsEnabled(
+          features::kGlicActorAutofillOneTimePassword) ||
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillShowGmailOtpSuggestions));
+
   html_source->AddBoolean(
       "autofillEnableWalletBranding",
       base::FeatureList::IsEnabled(
@@ -584,6 +605,55 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableWalletDisclosureNoticePublicPass",
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableWalletDisclosureNoticePublicPass));
+
+  html_source->AddBoolean(
+      "userEligibleForAutofillAi",
+      autofill::MayPerformAutofillAiAction(autofill_client,
+                                           autofill::AutofillAiAction::kOptIn));
+  // TODO(crbug.com/515356902): Check enable/disable eligibility per entity
+  // type, similar to how it is done on Clank. See crrev.com/c/7847781
+  html_source->AddBoolean(
+      "canEnableOrDisableAutofillAi",
+      autofill::MayPerformAutofillAiAction(
+          autofill_client, autofill::AutofillAiAction::kEnableOrDisable));
+  html_source->AddBoolean(
+      "isAutofillAiWalletPassBranding2026Enabled",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiWalletPassBranding2026));
+  html_source->AddBoolean(
+      "isAutofillRegionalizedPrivatePassesUxRefineEnabled",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillRegionalizedPrivatePassesUxRefine));
+  html_source->AddBoolean(
+      "isWalletServerStorageEnabled",
+      base::FeatureList::IsEnabled(syncer::kSyncWalletFlightReservations) ||
+          base::FeatureList::IsEnabled(
+              syncer::kSyncWalletVehicleRegistrations));
+  html_source->AddBoolean(
+      "AutofillSettingsEnterprisePolicyEnabled",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableAutofillSettingsEnterprisePolicy));
+  html_source->AddBoolean(
+      "isUserEligibleForWalletablePassDetection",
+      wallet::IsEligibleForWalletablePassDetection(
+          autofill_client.GetIdentityManager(),
+          wallet::GeoIpCountryCode(
+              autofill_client.GetVariationConfigCountryCode().value())));
+  html_source->AddBoolean("autofillAiReauthOnViewingSensitiveDataEnabled",
+                          base::FeatureList::IsEnabled(
+                              autofill::features::kAutofillAiReauthRequired));
+  html_source->AddBoolean("shouldShowPayOverTimeSettings",
+                          payments_data.ShouldShowBnplSettings());
+  html_source->AddBoolean(
+      "shoppingIntegrationEnabled",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAmbientAutofill) ||
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillAiWalletShopping));
+  html_source->AddBoolean(
+      "offersAndLoyaltyCardsSettingsEnabled",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings));
 
   html_source->AddBoolean("enableInlineCueMenuContentSetting",
                           glic::GetGlicProviderSpec(profile).SupportsFeature(
@@ -621,9 +691,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "showGeicDevicePolicyToggle",
       glic::GetGlicProviderSpec(profile).CanSwitchBetweenGeminiProviders());
 
-  const auto& autofill_client =
-      *autofill::ContentAutofillClient::FromWebContents(
-          web_ui->GetWebContents());
   html_source->AddBoolean(
       "showAutofillAiControl",
       autofill::MayPerformAutofillAiAction(

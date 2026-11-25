@@ -15,7 +15,6 @@ class Profile;
 
 namespace content {
 class WebUIDataSource;
-class WebContents;
 }  // namespace content
 
 namespace settings {
@@ -24,16 +23,13 @@ namespace settings {
 // This function causes |html_source| to expose a strings.js file from its
 // source which contains a mapping from string's name to its translated value.
 void AddLocalizedStrings(content::WebUIDataSource* html_source,
-                         Profile* profile,
-                         content::WebContents* web_contents);
+                         Profile* profile);
 
 // Returns the GRD resource ID for an Autofill localized string name (as exposed
 // to `loadTimeData` in Settings), or `std::nullopt` if `name` is not found.
 std::optional<int> GetAutofillLocalizedStringId(std::string_view name);
 
-void AddAutofillStringsForTesting(content::WebUIDataSource* html_source,
-                                  Profile* profile,
-                                  content::WebContents* web_contents);
+void AddAutofillStringsForTesting(content::WebUIDataSource* html_source);
 
 void AddGeicStringsForTesting(content::WebUIDataSource* html_source,
                               Profile* profile);

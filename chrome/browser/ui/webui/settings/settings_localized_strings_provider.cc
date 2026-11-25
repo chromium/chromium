@@ -21,7 +21,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -78,20 +77,9 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
-#include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
-#include "components/autofill/core/browser/payments/payments_util.h"
-#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
-#include "components/autofill/core/browser/permissions/device_reauth_util.h"
-#include "components/autofill/core/browser/studies/autofill_experiments.h"
-#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/google/core/common/google_util.h"
@@ -128,11 +116,8 @@
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/translate/core/common/translate_features.h"
-#include "components/wallet/core/browser/walletable_permission_utils.h"
-#include "components/wallet/core/common/wallet_features.h"
 #include "components/web_distiller/core/web_distiller_features.h"
 #include "components/zoom/page_zoom_constants.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1716,23 +1701,6 @@ void AddOnStartupStrings(content::WebUIDataSource* html_source) {
 #endif
 }
 
-bool CheckDeviceAuthAvailability(content::WebContents* web_contents) {
-  // If `client` is not available, then don't show toggle switch.
-  autofill::ContentAutofillClient* client =
-      autofill::ContentAutofillClient::FromWebContents(web_contents);
-  return client && autofill::SupportsDeviceReauth(*client);
-}
-
-bool IsWalletServerStorageEnabled() {
-  return base::FeatureList::IsEnabled(syncer::kSyncWalletFlightReservations) ||
-         base::FeatureList::IsEnabled(syncer::kSyncWalletVehicleRegistrations);
-}
-
-bool AutofillSettingsEnterprisePolicyEnabled() {
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableAutofillSettingsEnterprisePolicy);
-}
-
 // Returns the label with Google Wallet links shown on the payments settings
 // page.
 std::u16string GetManageCreditCardsLabel() {
@@ -2128,9 +2096,7 @@ constexpr webui::LocalizedString kAutofillLocalizedStrings[] = {
     {"autofillPersonalContextSettingsManageConnectedAppsSummary",
      IDS_AUTOFILL_PERSONAL_CONTEXT_SETTINGS_MANAGE_CONNECTED_APPS_SUMMARY}};
 
-void AddAutofillStrings(content::WebUIDataSource* html_source,
-                        Profile* profile,
-                        content::WebContents* web_contents) {
+void AddAutofillStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("manageAddressesUrl",
                          autofill::payments::GetManageAddressesUrl().spec());
   html_source->AddString("manageCreditCardsLabel", GetManageCreditCardsLabel());
@@ -2162,30 +2128,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          chrome::kSyncTrustedVaultLearnMoreURL);
   html_source->AddString("autofillPayOverTimeSettingsLearnMoreUrl",
                          chrome::kPayOverTimeLearnMoreUrl);
-
-  autofill::PaymentsDataManager& payments_data =
-      autofill::PersonalDataManagerFactory::GetForBrowserContext(profile)
-          ->payments_data_manager();
-  html_source->AddBoolean("migrationEnabled", false);
-
-  html_source->AddBoolean("showIbansSettings",
-                          autofill::ShouldShowIbanOnSettingsPage(
-                              payments_data.GetCountryCodeForExperimentGroup(),
-                              profile->GetPrefs()));
-
-  html_source->AddBoolean("deviceAuthAvailable",
-                          CheckDeviceAuthAvailability(web_contents));
-
-  html_source->AddBoolean("cvcStorageAvailable", true);
-
-  bool is_mandatory_reauth_feature_flag_enabled = false;
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  // The feature is already launched on Windows, Mac and ChromeOS.
-  is_mandatory_reauth_feature_flag_enabled = true;
-#endif
-  html_source->AddBoolean("mandatoryReauthFeatureFlagEnabled",
-                          is_mandatory_reauth_feature_flag_enabled);
 
   const std::u16string opens_in_new_tab = base::EscapeForHTML(
       l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB));
@@ -2231,18 +2173,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
           ? IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE_V2
           : IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE);
 
-  html_source->AddBoolean(
-      "emailVerificationProtocolEnabled",
-      base::FeatureList::IsEnabled(features::kEmailVerificationProtocol));
-  // The Gmail OTP filling opt-in is shared by Actor OTP filling and Autofill
-  // Gmail OTP suggestions. Show it when either feature is enabled so that the
-  // two features don't depend on each other for launch.
-  html_source->AddBoolean(
-      "autofillGmailOtpFillingEnabled",
-      base::FeatureList::IsEnabled(
-          features::kGlicActorAutofillOneTimePassword) ||
-          base::FeatureList::IsEnabled(
-              autofill::features::kAutofillShowGmailOtpSuggestions));
   html_source->AddString(
       "enableGmailOtpFillingDescription",
       l10n_util::GetStringFUTF16(
@@ -2266,41 +2196,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
           base::EscapeForHTML(chrome::kGmailSmartFeaturesURL),
           opens_in_new_tab));
 
-  auto* autofill_client =
-      autofill::ContentAutofillClient::FromWebContents(web_contents);
-  html_source->AddBoolean(
-      "userEligibleForAutofillAi",
-      autofill_client &&
-          autofill::MayPerformAutofillAiAction(
-              *autofill_client, autofill::AutofillAiAction::kOptIn));
-  // TODO(crbug.com/515356902): Check enable/disable eligibility per entity
-  // type, similar to how it is done on Clank. See crrev.com/c/7847781
-  html_source->AddBoolean(
-      "canEnableOrDisableAutofillAi",
-      autofill_client &&
-          (autofill::MayPerformAutofillAiAction(
-              *autofill_client, autofill::AutofillAiAction::kEnableOrDisable)));
-  html_source->AddBoolean(
-      "isAutofillAiWalletPassBranding2026Enabled",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiWalletPassBranding2026));
-  html_source->AddBoolean(
-      "isAutofillRegionalizedPrivatePassesUxRefineEnabled",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillRegionalizedPrivatePassesUxRefine));
-  html_source->AddBoolean("isWalletServerStorageEnabled",
-                          IsWalletServerStorageEnabled());
-  html_source->AddBoolean("AutofillSettingsEnterprisePolicyEnabled",
-                          AutofillSettingsEnterprisePolicyEnabled());
-
-  html_source->AddBoolean(
-      "isUserEligibleForWalletablePassDetection",
-      autofill_client &&
-          wallet::IsEligibleForWalletablePassDetection(
-              autofill_client->GetIdentityManager(),
-              wallet::GeoIpCountryCode(
-                  autofill_client->GetVariationConfigCountryCode().value())));
-
   html_source->AddString(
       "autofillPayOverTimeSettingsSublabel",
       l10n_util::GetStringFUTF16(
@@ -2316,10 +2211,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          chrome::kGoogleAccountWorkAddressURL);
   html_source->AddString("googleAccountNameEmailAddressEditUrl",
                          chrome::kGoogleAccountNameEmailAddressEditURL);
-
-  html_source->AddBoolean("autofillAiReauthOnViewingSensitiveDataEnabled",
-                          base::FeatureList::IsEnabled(
-                              autofill::features::kAutofillAiReauthRequired));
 
   html_source->AddString("personalContextConnectedAppsUrl",
                          personal_context::kPersonalContextConnectedAppsURL);
@@ -4623,10 +4514,8 @@ std::optional<int> GetAutofillLocalizedStringId(std::string_view name) {
   return it->id;
 }
 
-void AddAutofillStringsForTesting(content::WebUIDataSource* html_source,
-                                  Profile* profile,
-                                  content::WebContents* web_contents) {
-  AddAutofillStrings(html_source, profile, web_contents);
+void AddAutofillStringsForTesting(content::WebUIDataSource* html_source) {
+  AddAutofillStrings(html_source);
 }
 
 void AddGeicStringsForTesting(content::WebUIDataSource* html_source,
@@ -4642,12 +4531,11 @@ std::string GetPeopleSignInPromptSecondaryWithAccountForTesting(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source,
-                         Profile* profile,
-                         content::WebContents* web_contents) {
+                         Profile* profile) {
   AddA11yStrings(html_source);
   AddAboutStrings(html_source, profile);
   AddAiStrings(html_source);
-  AddAutofillStrings(html_source, profile, web_contents);
+  AddAutofillStrings(html_source);
   AddAppearanceStrings(html_source, profile);
   AddClearBrowsingDataStrings(html_source, profile);
   AddCommonStrings(html_source, profile);

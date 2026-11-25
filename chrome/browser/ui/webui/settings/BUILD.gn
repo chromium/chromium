@@ -364,7 +364,6 @@ source_set("impl") {
     "//components/universal_optout",
     "//components/user_manager:common",
     "//components/wallet/core/browser",
-    "//components/wallet/core/common:features",
     "//components/webapps/isolated_web_apps:scheme",
     "//components/webauthn/core/browser:passkey_model",
     "//extensions/browser",

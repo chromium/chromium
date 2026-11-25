@@ -26,7 +26,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui_data_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,15 +81,9 @@ TEST(SettingsLocalizedStringsProviderTest,
       u"Learn more about \"Autofill\" verification codes");
 
   content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  content::TestWebContentsFactory web_contents_factory;
-  content::WebContents* web_contents =
-      web_contents_factory.CreateWebContents(&profile);
-
   std::unique_ptr<content::TestWebUIDataSource> html_source =
       content::TestWebUIDataSource::Create(chrome::kChromeUISettingsHost);
-  AddAutofillStringsForTesting(html_source->GetWebUIDataSource(), &profile,
-                               web_contents);
+  AddAutofillStringsForTesting(html_source->GetWebUIDataSource());
 
   const base::DictValue& strings = html_source->GetLocalizedStrings();
   constexpr char kExpectedAriaDescription[] =
