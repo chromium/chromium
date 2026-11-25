@@ -66,13 +66,13 @@ ${this.loading ? html`
   <div>Percent Complete: ${computeProgress.bind(this)()}</div>
   ${getSpinnerDiv()}
 ` : html`
-  ${messagesToRender.map(message => html`<div>${message}</div>`)}
-  ${messagesToRender.map(message => {
-    return html`<div>${message}</div>`;
+  ${messagesToRender.map(item => html`<div>${item}</div>`)}
+  ${messagesToRender.map(item => {
+    return html`<div>${item}</div>`;
   })}
-  ${messagesToRender.map(message =>
-      this.fancyTitle ? html`<b>${message}</b>` :
-                        html`<span>${message}</span>`)}
+  ${messagesToRender.map(item =>
+      this.fancyTitle ? html`<b>${item}</b>` :
+                        html`<span>${item}</span>`)}
   ${(() => {
     switch (this.loadProgress) {
       case 0:

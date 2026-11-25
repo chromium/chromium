@@ -14,10 +14,25 @@ type MessageIds = 'ifStatementFound'|'switchStatementFound'|'forStatementFound'|
     'variableDeclarationFound'|'functionDefinitionFound'|
     'incorrectEventListenerNameFound'|'invalidGetHtmlReturn'|
     'invalidTernaryConsequent'|'invalidTernaryAlternate'|
-    'invalidArrowFunctionReturn'|'unnecessaryNestedHtml';
+    'invalidArrowFunctionReturn'|'unnecessaryNestedHtml'|
+    'invalidLoopVariableName'|'invalidLoopIndexName'|'shadowedLoopVariableName';
+
+const ALLOWED_LOOP_ITEM_NAMES = new Set(['item', '_item', '_']);
+const ALLOWED_LOOP_INDEX_NAMES = new Set(['index', '_index', '_']);
+
+enum LoopType {
+  MAP = 'map',
+  REPEAT = 'repeat',
+  ASYNC_MAP = 'asyncMap',
+}
 
 const litTemplateQuery =
     esquery.parse('TaggedTemplateExpression[tag.name="html"]');
+const loopCallQuery = esquery.parse(
+    'CallExpression[callee.property.name="map"], ' +
+    'CallExpression[callee.name=/^(repeat|asyncMap)$/]');
+const LOOP_CALLBACK_SELECTOR = 'FunctionDeclaration[id.name="getHtml"] ' +
+    ':matches(ArrowFunctionExpression, FunctionExpression)';
 
 function isLitTemplate(node: TSESTree.Node): boolean {
   return node.type === Node.TaggedTemplateExpression &&
@@ -27,6 +42,63 @@ function isLitTemplate(node: TSESTree.Node): boolean {
 function hasLitTemplate(node: TSESTree.Node): boolean {
   return isLitTemplate(node) ||
       esquery.match(node, litTemplateQuery).length > 0;
+}
+
+type LoopCallback =
+    TSESTree.ArrowFunctionExpression|TSESTree.FunctionExpression;
+
+function getLoopCallbacks(
+    node: TSESTree.CallExpression, loopType: LoopType): LoopCallback[] {
+  let candidates: TSESTree.CallExpressionArgument[];
+  switch (loopType) {
+    case LoopType.REPEAT:
+      candidates = node.arguments.slice(1, 3);
+      break;
+    case LoopType.ASYNC_MAP:
+      candidates = node.arguments.slice(1, 2);
+      break;
+    case LoopType.MAP:
+      candidates = node.arguments.slice(0, 1);
+      break;
+    default:
+      assert.fail(`Unexpected loop type: ${loopType}`);
+  }
+  return candidates.filter((arg): arg is LoopCallback => {
+    return arg.type === Node.ArrowFunctionExpression ||
+        arg.type === Node.FunctionExpression;
+  });
+}
+
+function getLoopType(node: TSESTree.Node): LoopType|null {
+  if (node.type !== Node.CallExpression) {
+    return null;
+  }
+  if (node.callee.type === Node.MemberExpression &&
+      isIdentifier(node.callee.property) &&
+      node.callee.property.name === LoopType.MAP &&
+      node.arguments.length >= 1) {
+    return getLoopCallbacks(node, LoopType.MAP)
+               .some(cb => hasLitTemplate(cb.body)) ?
+        LoopType.MAP :
+        null;
+  }
+  if (!isIdentifier(node.callee)) {
+    return null;
+  }
+  switch (node.callee.name) {
+    case LoopType.REPEAT:
+      return node.arguments.length >= 2 && node.arguments.length <= 3 ?
+          LoopType.REPEAT :
+          null;
+    case LoopType.ASYNC_MAP:
+      return node.arguments.length === 3 ? LoopType.ASYNC_MAP : null;
+    default:
+      return null;
+  }
+}
+
+function hasNestedLoop(node: TSESTree.Node): boolean {
+  return esquery.match(node, loopCallQuery).some(n => getLoopType(n) !== null);
 }
 
 function isValidAlternate(node: TSESTree.Node): boolean {
@@ -86,6 +158,15 @@ export const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs<
           'Unnecessary nested html`...` tagged template literal found ' +
           'inside template expression. Inline the HTML directly into the ' +
           'parent template',
+      invalidLoopVariableName:
+          'Loop variable \'{{variableName}}\' in non-nested template loop ' +
+          'should be named \'item\' (or \'_item\' / \'_\' if unused)',
+      invalidLoopIndexName:
+          'Loop index variable \'{{variableName}}\' in non-nested template ' +
+          'loop should be named \'index\' (or \'_index\' / \'_\' if unused)',
+      shadowedLoopVariableName:
+          'Nested loop variable \'{{variableName}}\' shadows an enclosing ' +
+          'loop variable. Use a distinct name to avoid confusion',
     },
     schema: [],
   },
@@ -95,6 +176,33 @@ export const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs<
     assert.ok(templateFilename.endsWith('.html.ts'));
 
     let hasLitImport = false;
+    const loopVarStack: string[][] = [];
+    const callbackParamNames = new Map<LoopCallback, string[]>();
+
+    function checkLoopParam(
+        param: TSESTree.Parameter|undefined, allowedNames: Set<string>,
+        invalidMessageId: 'invalidLoopVariableName'|'invalidLoopIndexName',
+        isNested: boolean, enclosingNames: string[]) {
+      if (!param || !isIdentifier(param)) {
+        return;
+      }
+      if (!isNested) {
+        if (!allowedNames.has(param.name)) {
+          context.report({
+            node: param,
+            messageId: invalidMessageId,
+            data: {variableName: param.name},
+          });
+        }
+      } else if (
+          !param.name.startsWith('_') && enclosingNames.includes(param.name)) {
+        context.report({
+          node: param,
+          messageId: 'shadowedLoopVariableName',
+          data: {variableName: param.name},
+        });
+      }
+    }
 
     return {
       [`ImportDeclaration[source.value=/${LIT_IMPORT_REGEX}/]`](
@@ -291,6 +399,44 @@ export const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs<
             messageId: 'invalidTernaryConsequent',
           });
           return;
+        }
+      },
+      ['FunctionDeclaration[id.name="getHtml"] CallExpression'](
+          node: TSESTree.CallExpression) {
+        if (!hasLitImport) {
+          return;
+        }
+        const loopType = getLoopType(node);
+        if (!loopType) {
+          return;
+        }
+
+        const callbacks = getLoopCallbacks(node, loopType);
+        const enclosingNames = loopVarStack.flat();
+        const isNested = loopVarStack.length > 0 ||
+            callbacks.some(cb => hasNestedLoop(cb.body));
+
+        for (const cb of callbacks) {
+          checkLoopParam(
+              cb.params[0], ALLOWED_LOOP_ITEM_NAMES, 'invalidLoopVariableName',
+              isNested, enclosingNames);
+          checkLoopParam(
+              cb.params[1], ALLOWED_LOOP_INDEX_NAMES, 'invalidLoopIndexName',
+              isNested, enclosingNames);
+          const names =
+              cb.params.slice(0, 2).filter(isIdentifier).map(p => p.name);
+          callbackParamNames.set(cb, names);
+        }
+      },
+      [LOOP_CALLBACK_SELECTOR](node: LoopCallback) {
+        const names = callbackParamNames.get(node);
+        if (names) {
+          loopVarStack.push(names);
+        }
+      },
+      [`${LOOP_CALLBACK_SELECTOR}:exit`](node: LoopCallback) {
+        if (callbackParamNames.has(node)) {
+          loopVarStack.pop();
         }
       },
     };

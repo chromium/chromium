@@ -853,6 +853,68 @@ class EslintTsTest(unittest.TestCase):
       f"Didn't find expected error: {_INVALID_TERNARY_ALTERNATE_ERROR}",
     )
 
+  def testWebUiEslintPlugin_LitElementTemplateStructure_LoopVariables(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(
+        [
+          "with_webui_plugin_lit_element_template_structure_loop_violations.html.ts"
+        ]
+      )
+
+    _EXPECTED_STRING = "@webui-eslint/lit-element-template-structure"
+    self.assertTrue(
+      _EXPECTED_STRING in str(context.exception),
+      f"Exception was: {context.exception}",
+    )
+
+    _LOOP_VAR_ERROR = "Loop variable '%(variableName)s' in non-nested template loop should be named 'item' (or '_item' / '_' if unused)"
+    _LOOP_INDEX_ERROR = "Loop index variable '%(variableName)s' in non-nested template loop should be named 'index' (or '_index' / '_' if unused)"
+    _SHADOWED_VAR_ERROR = "Nested loop variable '%(variableName)s' shadows an enclosing loop variable. Use a distinct name to avoid confusion"
+
+    output = str(context.exception)
+    expected_errors = [
+      _LOOP_VAR_ERROR % {'variableName': 'entry'},
+      _LOOP_INDEX_ERROR % {'variableName': 'idx'},
+      _LOOP_VAR_ERROR % {'variableName': '_entry'},
+      _LOOP_INDEX_ERROR % {'variableName': '_i'},
+      _LOOP_VAR_ERROR % {'variableName': 'badFnItem'},
+      _LOOP_VAR_ERROR % {'variableName': 'outerWithTextMap'},
+      _LOOP_VAR_ERROR % {'variableName': 'row'},
+      _LOOP_INDEX_ERROR % {'variableName': 'i'},
+      _LOOP_VAR_ERROR % {'variableName': 'badAsyncItem'},
+      _LOOP_INDEX_ERROR % {'variableName': 'badAsyncIdx'},
+      _SHADOWED_VAR_ERROR % {'variableName': 'item'},
+      _SHADOWED_VAR_ERROR % {'variableName': 'index'},
+      _SHADOWED_VAR_ERROR % {'variableName': 'asyncOuter'},
+    ]
+    for e in expected_errors:
+      self.assertTrue(e in output, f"Didn't find expected error: {e}\n{output}")
+
+    self.assertEqual(2, output.count(_LOOP_VAR_ERROR % {'variableName': 'row'}))
+
+    non_errors = [
+      _LOOP_VAR_ERROR % {'variableName': 'group'},
+      _LOOP_INDEX_ERROR % {'variableName': 'groupIndex'},
+      _LOOP_VAR_ERROR % {'variableName': 'child'},
+      _LOOP_INDEX_ERROR % {'variableName': 'childIndex'},
+      _LOOP_VAR_ERROR % {'variableName': 'subItem'},
+      _LOOP_VAR_ERROR % {'variableName': 'labelItem'},
+      _LOOP_VAR_ERROR % {'variableName': 'c'},
+      _LOOP_VAR_ERROR % {'variableName': 'nestedDestructured'},
+      _LOOP_VAR_ERROR % {'variableName': 'nestedEmpty'},
+      _LOOP_VAR_ERROR % {'variableName': 'outerWithUnusedIndex'},
+      _LOOP_VAR_ERROR % {'variableName': 'innerWithUnusedIndex'},
+      _SHADOWED_VAR_ERROR % {'variableName': '_index'},
+      _LOOP_VAR_ERROR % {'variableName': 'item'},
+      _LOOP_VAR_ERROR % {'variableName': '_item'},
+      _LOOP_VAR_ERROR % {'variableName': '_'},
+      _LOOP_INDEX_ERROR % {'variableName': 'index'},
+      _LOOP_INDEX_ERROR % {'variableName': '_index'},
+      _LOOP_INDEX_ERROR % {'variableName': '_'},
+    ]
+    for e in non_errors:
+      self.assertFalse(e in output, f"Found unexpected error: {e}\n{output}")
+
   def testWebUiEslintPlugin_LitReactiveProperties(self):
     with self.assertRaises(RuntimeError) as context:
       self._run_test(
