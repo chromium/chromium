@@ -44,6 +44,10 @@ if (v8_snapshot_toolchain == current_toolchain ||
       }
     }
 
-    configs += [ "//v8:external_startup_data" ]
+    configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+    configs += [
+      "//build/config/compiler:thinlto_optimize_none",
+      "//v8:external_startup_data",
+    ]
   }
 }
