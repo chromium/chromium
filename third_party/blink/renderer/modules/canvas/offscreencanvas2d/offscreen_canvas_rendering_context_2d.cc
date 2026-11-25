@@ -280,13 +280,7 @@ OffscreenCanvasRenderingContext2D::ProduceCanvasResource(FlushReason reason) {
     return nullptr;
   }
 
-  scoped_refptr<ExportedCanvasResource> frame =
-      PaintRenderingResultsToResource(kBackBuffer, reason);
-  if (!frame)
-    return nullptr;
-
-  frame->SetOriginClean(OriginClean());
-  return frame;
+  return PaintRenderingResultsToResource(kBackBuffer, reason);
 }
 
 scoped_refptr<ExportedCanvasResource>
