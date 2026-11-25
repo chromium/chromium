@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -263,12 +262,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
     /** Returns the view displaying the security icon. */
     private View getSecurityIconView() {
         return mStatusView.getSecurityView();
-    }
-
-    /** Returns {@code true} if the security button is currently being displayed. */
-    @VisibleForTesting
-    public boolean isSecurityViewShown() {
-        return mMediator.isSecurityViewShown();
     }
 
     /** Returns {@code true} if the search engine status is currently being displayed. */

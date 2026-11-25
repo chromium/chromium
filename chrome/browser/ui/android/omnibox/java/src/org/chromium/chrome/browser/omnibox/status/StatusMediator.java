@@ -150,7 +150,6 @@ public class StatusMediator
     private boolean mVerboseStatusSpaceAvailable;
     private boolean mPageIsPaintPreview;
     private boolean mPageIsOffline;
-    private boolean mIsSecurityViewShown;
     private int mUrlMinWidth;
     private int mSeparatorMinWidth;
     private int mVerboseStatusTextMinWidth;
@@ -526,12 +525,6 @@ public class StatusMediator
         return 0;
     }
 
-    /** Reports whether security icon is shown. */
-    @VisibleForTesting
-    boolean isSecurityViewShown() {
-        return mIsSecurityViewShown;
-    }
-
     /** Compute verbose status text for the current page. */
     private boolean shouldShowVerboseStatusText() {
         return mPageIsOffline || mPageIsPaintPreview;
@@ -592,8 +585,6 @@ public class StatusMediator
     /** Update selection of icon presented on the location bar. */
     @Override
     public void updateLocationBarIcon(@IconTransitionType int transitionType) {
-        mIsSecurityViewShown = false;
-
         @DrawableRes int iconRes = Resources.ID_NULL;
         @ColorRes int tintRes = Resources.ID_NULL;
         @StringRes int toastRes = Resources.ID_NULL;
@@ -669,12 +660,10 @@ public class StatusMediator
                 }
                 if (mPageSecurityLevel == ConnectionSecurityLevel.SECURE
                         && (isPageInfoMovedToAppMenu() || !mShowStatusIconForSecureOrigins)) {
-                    mIsSecurityViewShown = false;
                     if (mOnStatusViewHiddenForPageInfoRemoval != null) {
                         mOnStatusViewHiddenForPageInfoRemoval.run();
                     }
                 } else {
-                    mIsSecurityViewShown = true;
                     iconRes = mSecurityIconRes;
                     tintRes = mSecurityIconTintRes;
                     if (isPageInfoMovedToAppMenu()) {
@@ -1161,7 +1150,6 @@ public class StatusMediator
                 isInInputSession()
                         || isHubOrTabSearch
                         || mShowStatusIconForSecureOrigins
-                        || mIsSecurityViewShown
                         || hasStatusIconResource()
                         || shouldShowVerboseStatusText());
     }
