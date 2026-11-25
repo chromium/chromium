@@ -579,6 +579,11 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // Returns the associated RenderWidgetHostImpl.
   RenderWidgetHostImpl* host() const { return host_; }
 
+  // If the frame or page associated with this view is in the back-forward
+  // cache, evicts the cached page with `reason` (a DisallowActivationReasonId)
+  // and returns true. Otherwise returns false.
+  virtual bool EvictIfInBackForwardCache(uint64_t reason);
+
   // Process swap messages sent before |frame_token| in RenderWidgetHostImpl.
   void OnFrameTokenChangedForView(uint32_t frame_token,
                                   base::TimeTicks activation_time);

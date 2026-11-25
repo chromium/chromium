@@ -3614,6 +3614,23 @@ TouchEmulatorImpl* RenderWidgetHostImpl::GetTouchEmulator(
 
 void RenderWidgetHostImpl::TextInputStateChanged(
     ui::mojom::TextInputStatePtr state) {
+  // A page in the back-forward cache must not claim text input. If any widget
+  // in a cached page (main frame, subframe, fenced frame, or popup) sends a
+  // non-NONE state, evict the page rather than silently dropping the update
+  // (which would leave cached TextInputState out of sync on restore). NONE is
+  // allowed since it cannot make this widget the active text input target.
+  if (state->type != ui::TEXT_INPUT_TYPE_NONE) {
+    const bool evicted =
+        view_ ? view_->EvictIfInBackForwardCache(
+                    DisallowActivationReasonId::kTextInputStateChanged)
+              : (owner_delegate_ &&
+                 owner_delegate_->EvictIfInBackForwardCache(
+                     DisallowActivationReasonId::kTextInputStateChanged));
+    if (evicted) {
+      return;
+    }
+  }
+
   saved_text_input_state_for_suppression_.reset();
   if (!view_) {
     return;

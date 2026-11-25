@@ -470,6 +470,12 @@ CrossProcessFrameConnector::GetRootRenderWidgetHostView() {
   return view;
 }
 
+bool CrossProcessFrameConnector::EvictIfInBackForwardCache(uint64_t reason) {
+  RenderFrameHostImpl* child_rfh = current_child_frame_host();
+  return child_rfh &&
+         child_rfh->render_view_host()->EvictIfInBackForwardCache(reason);
+}
+
 input::RenderWidgetHostViewInput*
 CrossProcessFrameConnector::GetPinchZoomTarget() {
   input::RenderWidgetHostViewInput* parent = GetParentViewInput();

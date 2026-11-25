@@ -478,6 +478,12 @@ SurfaceEmbedConnectorImpl::GetRootRenderWidgetHostView() {
       GetRootWebContents(parent_web_contents())->GetRenderWidgetHostView());
 }
 
+bool SurfaceEmbedConnectorImpl::EvictIfInBackForwardCache(uint64_t reason) {
+  RenderFrameHostImpl* child_rfh = current_child_frame_host();
+  return child_rfh &&
+         child_rfh->render_view_host()->EvictIfInBackForwardCache(reason);
+}
+
 input::RenderWidgetHostViewInput*
 SurfaceEmbedConnectorImpl::GetPinchZoomTarget() {
   if (pinch_gesture_mode_ == PinchGestureMode::kScaleChildWebContents) {

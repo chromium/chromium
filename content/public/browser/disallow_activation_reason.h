@@ -74,6 +74,7 @@ enum DisallowActivationReasonId : uint64_t {
   kDownloadUrl = 50,
   kDetach = 51,
   kCreateDedicatedWorker = 52,
+  kTextInputStateChanged = 53,
   // New entries go above here. New entries should be added to
   // tools/metrics/histograms/enums.xml .
   kMinEmbedderDisallowActivationReason = 2 << 16,

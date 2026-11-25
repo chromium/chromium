@@ -99,6 +99,7 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
                bool allow_paint_holding) override;
   RenderWidgetHostViewBase* GetParentRenderWidgetHostView() override;
   RenderWidgetHostViewBase* GetRootRenderWidgetHostView() override;
+  bool EvictIfInBackForwardCache(uint64_t reason) override;
   input::RenderWidgetHostViewInput* GetPinchZoomTarget() override;
   void RenderProcessGone() override;
   void FirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;

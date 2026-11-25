@@ -86,6 +86,11 @@ class FrameConnector : public input::ChildFrameInputHelper::Delegate {
   // Returns the view for the top-level frame under the same WebContents.
   virtual RenderWidgetHostViewBase* GetRootRenderWidgetHostView() = 0;
 
+  // If the child frame is in the back-forward cache, evicts the cached page
+  // with `reason` (a DisallowActivationReasonId) and returns true. Otherwise
+  // returns false.
+  virtual bool EvictIfInBackForwardCache(uint64_t reason) = 0;
+
   // Returns the view whose page scale should be changed by pinch zoom
   // originating in this connector's view.
   virtual input::RenderWidgetHostViewInput* GetPinchZoomTarget() = 0;

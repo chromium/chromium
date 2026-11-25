@@ -55,6 +55,10 @@ class RenderWidgetHostOwnerDelegate {
   // the main frame.
   virtual bool IsMainFrameActive() = 0;
 
+  // If the page is in the back-forward cache, evicts the page with `reason` (a
+  // DisallowActivationReasonId) and returns true. Otherwise returns false.
+  virtual bool EvictIfInBackForwardCache(uint64_t reason) = 0;
+
   // Returns the WebkitPreferences for the page. The preferences are shared
   // between all widgets for the page.
   virtual blink::web_pref::WebPreferences GetWebkitPreferencesForWidget() = 0;

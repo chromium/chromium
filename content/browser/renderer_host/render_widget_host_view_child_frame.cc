@@ -498,6 +498,15 @@ RenderWidgetHostViewBase* RenderWidgetHostViewChildFrame::GetRootView() {
                           : nullptr;
 }
 
+bool RenderWidgetHostViewChildFrame::EvictIfInBackForwardCache(
+    uint64_t reason) {
+  if (RenderWidgetHostViewBase::EvictIfInBackForwardCache(reason)) {
+    return true;
+  }
+  return frame_connector_ &&
+         frame_connector_->EvictIfInBackForwardCache(reason);
+}
+
 input::RenderWidgetHostViewInput*
 RenderWidgetHostViewChildFrame::GetPinchZoomTarget() {
   return frame_connector_ ? frame_connector_->GetPinchZoomTarget() : nullptr;

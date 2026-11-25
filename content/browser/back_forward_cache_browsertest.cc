@@ -41,6 +41,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
@@ -1972,7 +1973,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Tests that a page in the back-forward cache cannot take over the
 // TextInputManager's active view (the tab-wide IME target) from the primary
-// page by sending TextInputStateChanged while cached. See crbug.com/574410501.
+// page by sending TextInputStateChanged while cached, and that a non-NONE
+// TextInputStateChanged from a cached page evicts it. See crbug.com/574410501.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        CachedPageCannotBecomeActiveTextInputView) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -2003,8 +2005,19 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   }
   ASSERT_EQ(rfh_2->GetView(), GetActiveViewFromWebContents(web_contents()));
 
-  // 3) Send a non-NONE TextInputState on the cached page's main-frame widget.
-  // The primary page must remain the active text input view.
+  // 3) A NONE TextInputState from the cached page is harmless and must not
+  // evict it.
+  {
+    auto none_state = ui::mojom::TextInputState::New();
+    none_state->type = ui::TEXT_INPUT_TYPE_NONE;
+    SendTextInputStateChangedToWidget(rwh_1, std::move(none_state));
+  }
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+  EXPECT_EQ(rfh_2->GetView(), GetActiveViewFromWebContents(web_contents()));
+
+  // 4) Send a non-NONE TextInputState on the cached page's main-frame widget.
+  // The primary page must remain the active text input view, and the cached
+  // page must be evicted.
   auto state = ui::mojom::TextInputState::New();
   state->type = ui::TEXT_INPUT_TYPE_TEXT;
   SendTextInputStateChangedToWidget(rwh_1, std::move(state));
@@ -2012,6 +2025,81 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ(rfh_2->GetView(), GetActiveViewFromWebContents(web_contents()));
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD,
             GetTextInputTypeFromWebContents(web_contents()));
+
+  ASSERT_TRUE(rfh_1.WaitUntilRenderFrameDeleted());
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kIgnoreEventAndEvict}, {}, {}, {},
+                    {DisallowActivationReasonId::kTextInputStateChanged},
+                    FROM_HERE);
+}
+
+// Tests that a cross-site subframe widget in a back-forward cached page also
+// evicts the cached page if it sends a non-NONE TextInputStateChanged while
+// cached. See crbug.com/574410501.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       CachedSubframeNonNoneTextInputStateEvictsPage) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_1(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_2(embedded_test_server()->GetURL("c.com", "/title2.html"));
+
+  // 1) Navigate to |url_1| (with a cross-site subframe on b.com), then to
+  // |url_2| so |rfh_a| and |rfh_b| enter the back-forward cache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameHostImplWrapper rfh_b(rfh_a->child_at(0)->current_frame_host());
+  RenderWidgetHost* rwh_b = rfh_b->GetRenderWidgetHost();
+  ASSERT_NE(rwh_b, rfh_a->GetRenderWidgetHost());
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+  ASSERT_TRUE(rfh_b->IsInBackForwardCache());
+
+  // 2) Focus a password <input> on the primary page.
+  RenderFrameHostImpl* rfh_c = current_frame_host();
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+  EXPECT_TRUE(ExecJs(rfh_c,
+                     "var input = document.createElement('input');"
+                     "input.setAttribute('type', 'password');"
+                     "document.body.appendChild(input);"));
+  {
+    TextInputManagerTypeObserver type_observer(web_contents(),
+                                               ui::TEXT_INPUT_TYPE_PASSWORD);
+    SimulateKeyPress(web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
+                     ui::VKEY_TAB, false, false, false, false);
+    type_observer.Wait();
+  }
+  ASSERT_EQ(rfh_c->GetView(), GetActiveViewFromWebContents(web_contents()));
+
+  // 3) A NONE TextInputState from the cached subframe is harmless and must not
+  // evict the page.
+  {
+    auto none_state = ui::mojom::TextInputState::New();
+    none_state->type = ui::TEXT_INPUT_TYPE_NONE;
+    SendTextInputStateChangedToWidget(rwh_b, std::move(none_state));
+  }
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+  EXPECT_EQ(rfh_c->GetView(), GetActiveViewFromWebContents(web_contents()));
+
+  // 4) Send a non-NONE TextInputState on the cached subframe's widget. The
+  // primary page must remain the active text input view, and the cached page
+  // must be evicted.
+  auto state = ui::mojom::TextInputState::New();
+  state->type = ui::TEXT_INPUT_TYPE_TEXT;
+  SendTextInputStateChangedToWidget(rwh_b, std::move(state));
+
+  EXPECT_EQ(rfh_c->GetView(), GetActiveViewFromWebContents(web_contents()));
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD,
+            GetTextInputTypeFromWebContents(web_contents()));
+
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kIgnoreEventAndEvict}, {}, {}, {},
+                    {DisallowActivationReasonId::kTextInputStateChanged},
+                    FROM_HERE);
 }
 
 // Tests that trying to focus on a BFCached cross-site iframe won't crash.

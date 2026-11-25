@@ -271,6 +271,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   void OnBackForwardCacheTimeout();
   void MaybeEvictFromBackForwardCache();
   void EnforceBackForwardCacheSizeLimit();
+  // RenderWidgetHostOwnerDelegate:
+  bool EvictIfInBackForwardCache(uint64_t reason) override;
 
   PageLifecycleStateManager* GetPageLifecycleStateManager() {
     return page_lifecycle_state_manager_.get();

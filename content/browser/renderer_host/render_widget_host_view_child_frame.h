@@ -201,6 +201,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
   bool IsRenderWidgetHostViewChildFrame() const override;
+  bool EvictIfInBackForwardCache(uint64_t reason) override;
   void InvalidateLocalSurfaceIdAndAllocationGroup() override;
 
 #if BUILDFLAG(IS_MAC)

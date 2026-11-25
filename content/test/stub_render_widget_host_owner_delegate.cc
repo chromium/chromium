@@ -17,6 +17,11 @@ bool StubRenderWidgetHostOwnerDelegate::IsMainFrameActive() {
   return true;
 }
 
+bool StubRenderWidgetHostOwnerDelegate::EvictIfInBackForwardCache(
+    uint64_t reason) {
+  return false;
+}
+
 blink::web_pref::WebPreferences
 StubRenderWidgetHostOwnerDelegate::GetWebkitPreferencesForWidget() {
   return {};

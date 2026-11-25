@@ -5908,6 +5908,10 @@ shown properly on the user-facing crash UI.
     A request to create a dedicated worker arrived for a frame in BFCache or
     pending deletion.
   </int>
+  <int value="53" label="kTextInputStateChanged">
+    A non-NONE TextInputStateChanged IPC arrived for a widget of a page in
+    BFCache.
+  </int>
 </enum>
 
 <enum name="IncidentType">

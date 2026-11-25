@@ -32,6 +32,7 @@
 #include "content/browser/renderer_host/input/synthetic_gesture_target_base.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_owner_delegate.h"
@@ -145,6 +146,22 @@ void RenderWidgetHostViewBase::SelectionBoundsChanged(
 
 RenderWidgetHostViewBase* RenderWidgetHostViewBase::GetRootView() {
   return this;
+}
+
+bool RenderWidgetHostViewBase::EvictIfInBackForwardCache(uint64_t reason) {
+  if (!host_) {
+    return false;
+  }
+  if (host_->owner_delegate()) {
+    return host_->owner_delegate()->EvictIfInBackForwardCache(reason);
+  }
+  if (auto creator_id = host_->GetPopupCreatorFrameId()) {
+    if (RenderFrameHostImpl* creator_rfh =
+            RenderFrameHostImpl::FromID(*creator_id)) {
+      return creator_rfh->render_view_host()->EvictIfInBackForwardCache(reason);
+    }
+  }
+  return false;
 }
 
 void RenderWidgetHostViewBase::SelectionChanged(const std::u16string& text,

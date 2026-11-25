@@ -772,6 +772,28 @@ bool RenderViewHostImpl::IsMainFrameActive() {
   return is_active();
 }
 
+bool RenderViewHostImpl::EvictIfInBackForwardCache(uint64_t reason) {
+  if (!is_in_back_forward_cache_) {
+    return false;
+  }
+  // Query the WebContents-level BackForwardCache via `render_frame_delegate()`
+  // rather than `frame_tree_->controller().GetBackForwardCache()` (which
+  // CHECKs `frame_tree_->is_primary()`) so inner FrameTrees stored in a
+  // BFCached page (such as fenced frames) as well as OOPIF RenderViewHosts
+  // also evict the owning BFCache entry.
+  if (!frame_tree_->render_frame_delegate()) {
+    return false;
+  }
+  for (auto* entry : frame_tree_->render_frame_delegate()
+                         ->GetBackForwardCache()
+                         .GetEntriesForRenderViewHostImpl(this)) {
+    if (RenderFrameHostImpl* rfh = entry->render_frame_host()) {
+      rfh->IsInactiveAndDisallowActivation(reason);
+    }
+  }
+  return true;
+}
+
 blink::web_pref::WebPreferences
 RenderViewHostImpl::GetWebkitPreferencesForWidget() {
   if (!delegate_)

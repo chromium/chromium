@@ -19,6 +19,7 @@ class StubRenderWidgetHostOwnerDelegate : public RenderWidgetHostOwnerDelegate {
       const input::NativeWebKeyboardEvent& key_event) override;
   void SetBackgroundOpaque(bool opaque) override {}
   bool IsMainFrameActive() override;
+  bool EvictIfInBackForwardCache(uint64_t reason) override;
   blink::web_pref::WebPreferences GetWebkitPreferencesForWidget() override;
   void ZoomToFindInPageRect(const gfx::Rect& rect_to_zoom) override {}
   void AnimateDoubleTapZoom(const gfx::Point& point,
