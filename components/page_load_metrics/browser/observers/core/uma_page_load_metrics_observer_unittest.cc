@@ -1508,7 +1508,9 @@ TEST_F(UmaPageLoadMetricsObserverTest,
                                          base::NumberToString(navigation_id)}));
 }
 
-TEST_F(UmaPageLoadMetricsObserverTest, TestTracingLoadEventStart) {
+// TODO(crbug.com/585643298): Flaky on many platforms; the trace slice is
+// sometimes missing when other tests ran earlier in the same process.
+TEST_F(UmaPageLoadMetricsObserverTest, DISABLED_TestTracingLoadEventStart) {
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("interactions");
 
@@ -1546,7 +1548,10 @@ TEST_F(UmaPageLoadMetricsObserverTest, TestTracingLoadEventStart) {
                                          base::NumberToString(navigation_id)}));
 }
 
-TEST_F(UmaPageLoadMetricsObserverTest, TestTracingDomContentLoadedEventStart) {
+// TODO(crbug.com/585643298): Flaky on many platforms; the trace slice is
+// sometimes missing when other tests ran earlier in the same process.
+TEST_F(UmaPageLoadMetricsObserverTest,
+       DISABLED_TestTracingDomContentLoadedEventStart) {
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("interactions");
 
