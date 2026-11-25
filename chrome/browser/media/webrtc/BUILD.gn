@@ -551,7 +551,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/media/prefs",
-    "//chrome/browser/picture_in_picture",
     "//chrome/browser/prefs",
     "//chrome/common",
     "//chrome/test:test_support",

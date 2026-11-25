@@ -5,15 +5,11 @@
 #ifndef CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_UI_H_
 #define CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_UI_H_
 
-#include <memory>
-#include <optional>
 #include <string>
-#include <string_view>
 
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "content/public/browser/global_routing_id.h"
-#include "url/origin.h"
 
 class ScreensharingControlsHistogramLogger;
 
@@ -26,18 +22,13 @@ class TabSharingUI : public MediaStreamUI {
   TabSharingUI() = default;
   ~TabSharingUI() override = default;
 
-  // |request_origin| is the origin on whose behalf the tab is captured. Capture
-  // policy applies to this origin, which differs from the origin of |capturer|
-  // when the capture was requested by a cross-origin subframe. If it is not
-  // provided, the origin of |capturer| is used.
   static std::unique_ptr<TabSharingUI> Create(
       content::GlobalRenderFrameHostId capturer,
       const content::DesktopMediaID& media_id,
       const std::u16string& capturer_name,
       bool app_preferred_current_tab,
       TabSharingInfoBarDelegate::TabShareType capture_type,
-      bool captured_surface_control_active,
-      const std::optional<url::Origin>& request_origin = std::nullopt);
+      bool captured_surface_control_active);
 
   virtual void StartSharing(infobars::InfoBar* infobar) = 0;
   virtual void StopSharing(std::string_view reason) = 0;

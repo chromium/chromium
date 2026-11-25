@@ -6,7 +6,6 @@
 
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -18,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/values.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -36,7 +34,6 @@
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_infobar.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_test_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -44,7 +41,6 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
-#include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/global_routing_id.h"
@@ -71,8 +67,6 @@
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
@@ -351,24 +345,21 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
     return browser;
   }
 
-  // `request_origin` is the origin on whose behalf the tab is captured. If it
-  // is not provided, it is the origin of the capturing tab's main frame.
   void CreateUiAndStartSharing(
       BrowserWindowInterface* browser,
       int capturing_tab,
       int captured_tab,
-      base::OnceClosure stop_callback = base::OnceClosure(),
-      const std::optional<url::Origin>& request_origin = std::nullopt) {
+      base::OnceClosure stop_callback = base::OnceClosure()) {
     // Explicitly activate the shared tab in testing.
     ActivateTab(browser, captured_tab);
 
-    tab_sharing_ui_ = TabSharingUI::Create(
-        GetGlobalId(browser, capturing_tab),
-        GetDesktopMediaID(browser, captured_tab),
-        /*capturer_name=*/u"capturer.com",
-        /*app_preferred_current_tab=*/false,
-        TabSharingInfoBarDelegate::TabShareType::CAPTURE,
-        /*captured_surface_control_active=*/false, request_origin);
+    tab_sharing_ui_ =
+        TabSharingUI::Create(GetGlobalId(browser, capturing_tab),
+                             GetDesktopMediaID(browser, captured_tab),
+                             /*capturer_name=*/u"capturer.com",
+                             /*app_preferred_current_tab=*/false,
+                             TabSharingInfoBarDelegate::TabShareType::CAPTURE,
+                             /*captured_surface_control_active=*/false);
 
     tab_sharing_ui_->OnStarted(
         std::move(stop_callback),
@@ -918,150 +909,6 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
 
   EXPECT_CALL(*this,
               OnSourceChange(_, /*captured_surface_control_active=*/true));
-  ClickShareThisTabInsteadButton(browser(), kOtherTab);
-}
-
-// When the capturer is restricted to capturing same-origin tabs by policy, a
-// request to share a tab that is cross-origin with the capturer must be
-// ignored, even if it reaches the UI despite the button being disabled.
-IN_PROC_BROWSER_TEST_P(
-    TabSharingUIViewsBrowserTest,
-    ShareThisTabInsteadIgnoredForCrossOriginTabUnderSameOriginPolicy) {
-  constexpr int kCapturingTab = 0;
-  constexpr int kCapturedTab = 1;
-  constexpr int kOtherTab = 2;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL same_origin_url =
-      embedded_test_server()->GetURL("a.com", "/title1.html");
-  const GURL cross_origin_url =
-      embedded_test_server()->GetURL("b.com", "/title1.html");
-
-  base::ListValue matchlist;
-  matchlist.Append("*");
-  browser()->GetProfile()->GetPrefs()->SetList(
-      prefs::kSameOriginTabCaptureAllowedByOrigins, std::move(matchlist));
-
-  AddTabs(browser(), 2);
-  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
-  for (int tab : {kCapturingTab, kCapturedTab, kOtherTab}) {
-    ASSERT_TRUE(content::NavigateToURL(GetWebContents(browser(), tab),
-                                       same_origin_url));
-  }
-
-  CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab);
-  ASSERT_TRUE(ShareThisTabInsteadButtonIsEnabled(browser(), kOtherTab));
-
-  // Once the other tab is cross-origin, a request to share it is ignored.
-  ASSERT_TRUE(content::NavigateToURL(GetWebContents(browser(), kOtherTab),
-                                     cross_origin_url));
-  EXPECT_FALSE(ShareThisTabInsteadButtonIsEnabled(browser(), kOtherTab));
-  EXPECT_CALL(*this, OnSourceChange).Times(0);
-  ClickShareThisTabInsteadButton(browser(), kOtherTab);
-  // The UI does not rely on the button being disabled to enforce the policy.
-  tab_sharing_ui_views()->StartSharing(GetInfoBar(browser(), kOtherTab));
-  testing::Mock::VerifyAndClearExpectations(this);
-
-  // Once the other tab is same-origin again, it can be shared.
-  ASSERT_TRUE(content::NavigateToURL(GetWebContents(browser(), kOtherTab),
-                                     same_origin_url));
-  EXPECT_TRUE(ShareThisTabInsteadButtonIsEnabled(browser(), kOtherTab));
-  EXPECT_CALL(*this, OnSourceChange);
-  ClickShareThisTabInsteadButton(browser(), kOtherTab);
-}
-
-// Capture policy applies to the origin on whose behalf the tab is captured,
-// which is the origin of a subframe if the subframe requested the capture. If
-// that origin is restricted to capturing same-origin tabs, only tabs that are
-// same-origin with it can be shared instead, regardless of the origin of the
-// capturing tab's main frame.
-IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
-                       SameOriginPolicyOfRequestOriginRestrictsShareThisTab) {
-  constexpr int kCapturingTab = 0;
-  constexpr int kCapturedTab = 1;
-  constexpr int kTabOfMainFrameOrigin = 2;
-  constexpr int kTabOfRequestOrigin = 3;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL main_frame_url =
-      embedded_test_server()->GetURL("a.com", "/title1.html");
-  const GURL request_url =
-      embedded_test_server()->GetURL("b.com", "/title1.html");
-
-  // Only the origin that requests the capture is restricted.
-  base::ListValue matchlist;
-  matchlist.Append("b.com");
-  browser()->GetProfile()->GetPrefs()->SetList(
-      prefs::kSameOriginTabCaptureAllowedByOrigins, std::move(matchlist));
-
-  AddTabs(browser(), 3);
-  ASSERT_EQ(browser()->GetTabStripModel()->count(), 4);
-  ASSERT_TRUE(content::NavigateToURL(GetWebContents(browser(), kCapturingTab),
-                                     main_frame_url));
-  ASSERT_TRUE(content::NavigateToURL(GetWebContents(browser(), kCapturedTab),
-                                     request_url));
-  ASSERT_TRUE(content::NavigateToURL(
-      GetWebContents(browser(), kTabOfMainFrameOrigin), main_frame_url));
-  ASSERT_TRUE(content::NavigateToURL(
-      GetWebContents(browser(), kTabOfRequestOrigin), request_url));
-
-  CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab,
-                          /*stop_callback=*/base::OnceClosure(),
-                          url::Origin::Create(request_url));
-
-  EXPECT_FALSE(
-      ShareThisTabInsteadButtonIsEnabled(browser(), kTabOfMainFrameOrigin));
-  EXPECT_CALL(*this, OnSourceChange).Times(0);
-  ClickShareThisTabInsteadButton(browser(), kTabOfMainFrameOrigin);
-  tab_sharing_ui_views()->StartSharing(
-      GetInfoBar(browser(), kTabOfMainFrameOrigin));
-  testing::Mock::VerifyAndClearExpectations(this);
-
-  EXPECT_TRUE(
-      ShareThisTabInsteadButtonIsEnabled(browser(), kTabOfRequestOrigin));
-  EXPECT_CALL(*this, OnSourceChange);
-  ClickShareThisTabInsteadButton(browser(), kTabOfRequestOrigin);
-}
-
-// Conversely, if the origin on whose behalf the tab is captured is not
-// restricted, any tab can be shared instead, even if the main frame of the
-// capturing tab is restricted to capturing same-origin tabs.
-IN_PROC_BROWSER_TEST_P(
-    TabSharingUIViewsBrowserTest,
-    SameOriginPolicyOfMainFrameDoesNotRestrictShareThisTabForOtherOrigin) {
-  constexpr int kCapturingTab = 0;
-  constexpr int kCapturedTab = 1;
-  constexpr int kOtherTab = 2;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL main_frame_url =
-      embedded_test_server()->GetURL("a.com", "/title1.html");
-  const GURL request_url =
-      embedded_test_server()->GetURL("b.com", "/title1.html");
-  const GURL other_url =
-      embedded_test_server()->GetURL("c.com", "/title1.html");
-
-  // Only the origin of the capturing tab's main frame is restricted.
-  base::ListValue matchlist;
-  matchlist.Append("a.com");
-  browser()->GetProfile()->GetPrefs()->SetList(
-      prefs::kSameOriginTabCaptureAllowedByOrigins, std::move(matchlist));
-
-  AddTabs(browser(), 2);
-  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
-  ASSERT_TRUE(content::NavigateToURL(GetWebContents(browser(), kCapturingTab),
-                                     main_frame_url));
-  ASSERT_TRUE(content::NavigateToURL(GetWebContents(browser(), kCapturedTab),
-                                     other_url));
-  ASSERT_TRUE(
-      content::NavigateToURL(GetWebContents(browser(), kOtherTab), other_url));
-
-  CreateUiAndStartSharing(browser(), kCapturingTab, kCapturedTab,
-                          /*stop_callback=*/base::OnceClosure(),
-                          url::Origin::Create(request_url));
-
-  EXPECT_TRUE(ShareThisTabInsteadButtonIsEnabled(browser(), kOtherTab));
-  EXPECT_CALL(*this, OnSourceChange);
   ClickShareThisTabInsteadButton(browser(), kOtherTab);
 }
 

@@ -9,7 +9,6 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "content/public/common/buildflags.h"
-#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
 class GURL;
 class PrefRegistrySimple;
@@ -18,10 +17,6 @@ class PrefService;
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace url {
-class Origin;
-}  // namespace url
 
 // This enum represents the various levels in priority order from most
 // restrictive to least restrictive, to which capture may be restricted by
@@ -62,23 +57,11 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(
 AllowedScreenCaptureLevel GetAllowedCaptureLevel(const GURL& request_origin,
                                                  const PrefService& prefs);
 
-// Returns whether |capture_level| allows |request_origin| to capture the tab
-// |web_contents|. This is the case if tabs may be captured at all and, if
-// |capture_level| is kSameOrigin, the document in the tab's primary main frame
-// is same-origin with |request_origin|.
-//
-// Use this to validate a tab that has been selected for capture. Unlike
-// GetIncludableWebContentsFilter(), it only reflects capture policy, and not
-// which tabs should be offered to the user.
-bool IsTabCaptureAllowed(const url::Origin& request_origin,
-                         AllowedScreenCaptureLevel capture_level,
-                         content::WebContents* web_contents);
-
 // Gets the appropriate DesktopMediaList::WebContentsFilter that should be run
-// against every WebContents shown for pickers that include tabs. It excludes
-// the tabs that IsTabCaptureAllowed() rejects for |request_origin| and
-// |capture_level|, as well as tabs that are never offered as a capture source,
-// such as document picture-in-picture windows.
+// against every WebContents shown for pickers that include tabs. Functionally
+// this returns a no-op unless |capture_level| is kSameOrigin or kDisallowed.
+// In the case of the latter, it always returns false, and for the former it
+// checks that the WebContents's origin matches |request_origin|.
 DesktopMediaList::WebContentsFilter GetIncludableWebContentsFilter(
     const GURL& request_origin,
     AllowedScreenCaptureLevel capture_level);
@@ -89,20 +72,6 @@ DesktopMediaList::WebContentsFilter GetIncludableWebContentsFilter(
 void FilterMediaList(std::vector<DesktopMediaList::Type>& media_types,
                      AllowedScreenCaptureLevel capture_level);
 
-// Returns whether the given |media_type| is allowed to be captured at the
-// specified |capture_level|.
-bool IsMediaTypeAllowed(AllowedScreenCaptureLevel capture_level,
-                        content::DesktopMediaID::Type media_type);
-
-// Validates that |media_id| is allowed under |capture_level| and
-// |request_origin|, and if it identifies a tab, that the tab still exists.
-// Returns MediaStreamRequestResult::OK if allowed, or the corresponding error
-// result.
-blink::mojom::MediaStreamRequestResult ValidateSelectedMediaId(
-    const content::DesktopMediaID& media_id,
-    const url::Origin& request_origin,
-    AllowedScreenCaptureLevel capture_level);
-
 void ShowCaptureTerminatedDialog(content::WebContents* contents);
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -112,12 +81,7 @@ bool IsTransientActivationRequiredForGetDisplayMedia(
     content::WebContents* contents);
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
-// Returns whether a capture that |request_origin| requests from |capturer| is
-// restricted by policy to tabs that are same-origin with |request_origin|.
-// |request_origin| is the origin of the frame that requests the capture, which
-// is not necessarily the origin of |capturer|'s main frame.
-bool CapturerRestrictedToSameOrigin(const url::Origin& request_origin,
-                                    content::WebContents* capturer);
+bool CapturerRestrictedToSameOrigin(content::WebContents* capturer);
 
 }  // namespace capture_policy
 
