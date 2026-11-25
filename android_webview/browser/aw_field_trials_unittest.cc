@@ -202,30 +202,9 @@ TEST_F(AwFieldTrialsTest, NonDenylistedFeature) {
   EXPECT_TRUE(base::FeatureList::IsEnabled(kNonDenylistedFeature));
 }
 
-TEST_F(AwFieldTrialsTest, ResamplingScrollEventsFeatureOverride) {
-  AwFieldTrials aw_field_trials;
-  auto feature_list = std::make_unique<base::FeatureList>();
-
-  aw_field_trials.RegisterFeatureOverrides(feature_list.get());
-  base::FeatureList::SetInstance(std::move(feature_list));
-
-  EXPECT_TRUE(
-      base::FeatureList::IsEnabled(blink::features::kResamplingScrollEvents));
-  EXPECT_EQ(base::GetFieldTrialParamValueByFeature(
-                blink::features::kResamplingScrollEvents,
-                blink::features::kScrollPredictorMaxResampleTime.name),
-            "20ms");
-}
-
-TEST_F(AwFieldTrialsTest, DisconnectWebSocketOnBFCacheFeatureOverride) {
-  AwFieldTrials aw_field_trials;
-  auto feature_list = std::make_unique<base::FeatureList>();
-
-  aw_field_trials.RegisterFeatureOverrides(feature_list.get());
-  base::FeatureList::SetInstance(std::move(feature_list));
-
-  EXPECT_FALSE(base::FeatureList::IsEnabled(
-      blink::features::kDisconnectWebSocketOnBFCache));
-}
+// Please don't add tests here that just verify that a real flag is in the
+// state that the code in AwFieldTrials sets it to - this is unnecessary and
+// wastes time. The purpose of this test class is to verify that the actual
+// implementation of feature overriding itself in AwFieldTrials works.
 
 }  // namespace android_webview
