@@ -14,7 +14,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "third_party/blink/public/common/features.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -118,3 +120,26 @@ TEST(ChromeBrowserFieldTrialsTest,
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+TEST(ChromeBrowserFieldTrialsTest, TranslationApiDisabledOnAutomotive) {
+  base::ScopedClosureRunner reset_is_automotive(base::BindOnce(
+      &base::android::device_info::reset_is_automotive_for_testing));
+  ChromeBrowserFieldTrials chrome_browser_field_trials;
+
+  base::android::device_info::set_is_automotive_for_testing(true);
+  base::FeatureList automotive_feature_list;
+  chrome_browser_field_trials.RegisterFeatureOverrides(
+      &automotive_feature_list);
+  EXPECT_TRUE(automotive_feature_list.IsFeatureOverriddenFromCommandLine(
+      blink::features::kTranslationAPI.name,
+      base::FeatureList::OVERRIDE_DISABLE_FEATURE));
+
+  base::android::device_info::set_is_automotive_for_testing(false);
+  base::FeatureList non_automotive_feature_list;
+  chrome_browser_field_trials.RegisterFeatureOverrides(
+      &non_automotive_feature_list);
+  EXPECT_FALSE(non_automotive_feature_list.IsFeatureOverridden(
+      blink::features::kTranslationAPI.name));
+}
+#endif  // BUILDFLAG(IS_ANDROID)

@@ -29,6 +29,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace on_device_translation {
 namespace {
 
@@ -82,6 +86,13 @@ class MockObserver : public OnDeviceTranslationInstaller::Observer {
 
 class TranslateKitLibrarySourceTest : public ::testing::Test {
  protected:
+  void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    // Don't depend on the form factor of the device running the test.
+    base::android::device_info::set_is_automotive_for_testing(false);
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
+
   // Creates an installer that gets the library from a `FakeLibrarySource`.
   void CreateInstaller() {
     auto library_source = std::make_unique<FakeLibrarySource>();
@@ -91,6 +102,9 @@ class TranslateKitLibrarySourceTest : public ::testing::Test {
   }
 
   void TearDown() override {
+#if BUILDFLAG(IS_ANDROID)
+    base::android::device_info::reset_is_automotive_for_testing();
+#endif  // BUILDFLAG(IS_ANDROID)
     library_source_ = nullptr;
     installer_.reset();
     TestingBrowserProcess::GetGlobal()->local_state()->ClearPref(
@@ -219,6 +233,24 @@ TEST_F(TranslateKitLibrarySourceTest, SupportedWhenMinPhysicalMemoryDisabled) {
   base::test::ScopedAmountOfPhysicalMemoryOverride memory(base::MiB(1900));
   EXPECT_TRUE(installer_->IsSupported());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(TranslateKitLibrarySourceTest, UnsupportedOnAutomotive) {
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory(base::MiB(4096));
+  CreateInstaller();
+  EXPECT_TRUE(installer_->IsSupported());
+
+  base::android::device_info::set_is_automotive_for_testing(true);
+  EXPECT_FALSE(installer_->IsSupported());
+
+  MockObserver observer;
+  installer_->AddObserver(&observer);
+  EXPECT_CALL(observer, OnLibraryInstallFailed(InstallError::kFailed));
+  installer_->Init(base::RepeatingClosure());
+  EXPECT_EQ(library_source_->install_count(), 0);
+  installer_->RemoveObserver(&observer);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(TranslateKitLibrarySourceTest, FixedPathSourceWithoutPathIsUnsupported) {
   EXPECT_TRUE(

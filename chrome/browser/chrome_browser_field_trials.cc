@@ -33,6 +33,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/background_thread_pool_field_trial.h"
 #include "base/android/bundle_utils.h"
+#include "base/android/device_info.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "build/android_buildflags.h"
 #include "cc/base/features.h"
@@ -410,5 +411,13 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
+
+  // Sets the default for `kTranslationAPI` to disabled on Android Automotive,
+  // which has tight memory and storage limits. Finch trials and command-line
+  // flags win over this override, so `OnDeviceTranslationInstallerImpl` also
+  // reports Automotive devices as unsupported.
+  if (base::android::device_info::is_automotive()) {
+    feature_overrides.DisableFeature(blink::features::kTranslationAPI);
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

@@ -27,6 +27,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
 #include "chrome/browser/data_saver/data_saver.h"
@@ -51,6 +52,10 @@
 #include "net/base/network_change_notifier.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/on_device_model/public/mojom/download_observer.mojom.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -399,6 +404,15 @@ OnDeviceTranslationInstallerImpl::RegisteredLanguagePacks() const {
 }
 
 bool OnDeviceTranslationInstallerImpl::IsSupported() const {
+#if BUILDFLAG(IS_ANDROID)
+  // Automotive devices have tight memory and storage limits for on-device
+  // translation. Holds when a Finch trial or command-line flag enables
+  // `kTranslationAPI` over the default disable override in
+  // `ChromeBrowserFieldTrials`.
+  if (base::android::device_info::is_automotive()) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   const size_t min_physical_memory_mb =
       kTranslationAPIMinPhysicalMemoryMB.Get();
   if (min_physical_memory_mb > 0 &&
