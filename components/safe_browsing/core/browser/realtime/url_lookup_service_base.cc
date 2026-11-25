@@ -303,6 +303,17 @@ void RealTimeUrlLookupServiceBase::SanitizeReferrerChainEntries(
     // subframe. Thus replace the url with the main_frame_url and clear
     // the main_frame_url field.
     if (entry.has_main_frame_url()) {
+      // `ip_addresses` is keyed by the host of `url`, not `main_frame_url`.
+      // Clear it unless the subframe and main frame share the same host.
+      if (!entry.ip_addresses().empty()) {
+        GURL entry_url(entry.url());
+        GURL main_frame_url(entry.main_frame_url());
+        if (!entry_url.is_valid() || !main_frame_url.is_valid() ||
+            !entry_url.has_host() ||
+            entry_url.host() != main_frame_url.host()) {
+          entry.clear_ip_addresses();
+        }
+      }
       entry.set_url(entry.main_frame_url());
       entry.clear_main_frame_url();
       entry.set_is_subframe_url_removed(true);

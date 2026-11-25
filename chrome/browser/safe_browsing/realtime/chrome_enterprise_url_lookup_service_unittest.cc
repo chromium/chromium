@@ -520,6 +520,14 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   ReferrerChainEntry* entry = returned_referrer_chain.Add();
   entry->set_url("http://example.test/");
   entry->add_ip_addresses("1.2.3.4");
+  ReferrerChainEntry* cross_host_subframe = returned_referrer_chain.Add();
+  cross_host_subframe->set_url("http://iframe.example.test/");
+  cross_host_subframe->set_main_frame_url("http://example.test/");
+  cross_host_subframe->add_ip_addresses("5.6.7.8");
+  ReferrerChainEntry* same_host_subframe = returned_referrer_chain.Add();
+  same_host_subframe->set_url("http://example.test/subframe");
+  same_host_subframe->set_main_frame_url("http://example.test/");
+  same_host_subframe->add_ip_addresses("9.10.11.12");
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
@@ -549,10 +557,21 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
         EXPECT_EQ("http://example.test/", request_proto.url());
         // ReferringAppInfo should not be populated for ESB.
         EXPECT_FALSE(request_proto.has_referring_app_info());
-        // Enterprise lookups retain server IPs even under standard protection.
-        ASSERT_EQ(1, request_proto.referrer_chain_size());
+        // Enterprise lookups retain server IPs even under standard protection,
+        // clearing them only when a cross-host subframe URL is replaced.
+        ASSERT_EQ(3, request_proto.referrer_chain_size());
         EXPECT_THAT(request_proto.referrer_chain(0).ip_addresses(),
                     testing::ElementsAre("1.2.3.4"));
+        EXPECT_EQ("http://example.test/",
+                  request_proto.referrer_chain(1).url());
+        EXPECT_TRUE(request_proto.referrer_chain(1).is_subframe_url_removed());
+        EXPECT_THAT(request_proto.referrer_chain(1).ip_addresses(),
+                    testing::IsEmpty());
+        EXPECT_EQ("http://example.test/",
+                  request_proto.referrer_chain(2).url());
+        EXPECT_TRUE(request_proto.referrer_chain(2).is_subframe_url_removed());
+        EXPECT_THAT(request_proto.referrer_chain(2).ip_addresses(),
+                    testing::ElementsAre("9.10.11.12"));
         request_validated = true;
       }));
 
