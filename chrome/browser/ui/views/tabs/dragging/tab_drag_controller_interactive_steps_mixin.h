@@ -448,6 +448,7 @@ class TabDragControllerInteractiveStepsMixin : public T {
     TabStrip* const tab_strip = test::GetTabStripForBrowser(source);
     return Steps(
         PressTab(tab_strip, index), MoveTabOutUntilDetached(tab_strip, index),
+        WaitForBrowserCount(2u),
         CheckDetachedTabWidth(source, tab_strip->tab_at(index)->width()),
         ReleaseDrag());
   }
