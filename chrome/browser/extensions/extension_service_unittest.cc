@@ -148,6 +148,7 @@
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/features/simple_feature.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -7484,8 +7485,7 @@ TEST_F(ExtensionServiceTest, ConcurrentExternalLocalFile) {
 // permissions.
 TEST_F(ExtensionServiceTest, InstallAllowlistedExtension) {
   std::string test_id = "hdkklepkcpckhnpgjnmbdfhehckloojk";
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kAllowlistedExtensionID, test_id);
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(test_id);
 
   InitializeEmptyExtensionService();
   base::FilePath path = data_dir().AppendASCII("permissions");

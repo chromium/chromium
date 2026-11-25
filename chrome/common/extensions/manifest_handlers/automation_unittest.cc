@@ -4,18 +4,16 @@
 
 #include "extensions/common/manifest_handlers/automation.h"
 
-#include "base/command_line.h"
-#include "base/test/scoped_command_line.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/version_info/version_info.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permission_message_test_util.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -25,18 +23,12 @@ namespace extensions {
 
 class AutomationManifestTest : public ChromeManifestTest {
  public:
-  AutomationManifestTest() : channel_(version_info::Channel::UNKNOWN) {}
+  AutomationManifestTest()
+      : allowlisted_extension_id_("ddchlicdkolnonkihahngkmmmjnjlkkf"),
+        channel_(version_info::Channel::UNKNOWN) {}
 
  private:
-  void SetUp() override {
-    auto* command_line = scoped_command_line_.GetProcessCommandLine();
-    command_line->RemoveSwitch(extensions::switches::kAllowlistedExtensionID);
-    command_line->AppendSwitchASCII(
-        extensions::switches::kAllowlistedExtensionID,
-        "ddchlicdkolnonkihahngkmmmjnjlkkf");
-  }
-
-  base::test::ScopedCommandLine scoped_command_line_;
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlisted_extension_id_;
   ScopedCurrentChannel channel_;
 };
 
@@ -51,9 +43,7 @@ TEST_F(AutomationManifestTest, AsBooleanFalse) {
   ASSERT_FALSE(info);
 }
 
-// TODO(crbug.com/585643619): Fails in batched runs on Android Desktop and
-// Linux ASan (AutomationInfo is null), passes when run alone.
-TEST_F(AutomationManifestTest, DISABLED_AsBooleanTrue) {
+TEST_F(AutomationManifestTest, AsBooleanTrue) {
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("automation_boolean_true.json");
   ASSERT_TRUE(extension.get());
