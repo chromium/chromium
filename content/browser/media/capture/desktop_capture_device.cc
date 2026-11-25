@@ -46,6 +46,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_info.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
@@ -56,6 +57,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
+#include "skia/ext/color_profile.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/scale.h"
 #include "third_party/webrtc/modules/desktop_capture/cropped_desktop_frame.h"
@@ -66,7 +68,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/fake_desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
-#include "skia/ext/color_profile.h"
 #include "third_party/webrtc_overrides/rtc_base/diagnostic_logging.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -256,6 +257,30 @@ std::optional<gfx::GpuMemoryBufferHandle> CreateGmbHandleFromTexture(
 #endif
 }
 
+scoped_refptr<gpu::SharedImageInterface>
+CreateSharedImageInterfaceOnUIThread() {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* factory = BrowserGpuChannelHostFactory::instance();
+  if (!factory) {
+    LOG(ERROR) << "BrowserGpuChannelHostFactory is not available.";
+    return nullptr;
+  }
+
+  // TODO(crbug.com/40929600): Consider using EstablishGpuChannel() so capture
+  // does not fail if GPU channel establishment is currently in flight.
+  auto* gpu_channel_host = factory->GetGpuChannel();
+  if (!gpu_channel_host) {
+    LOG(ERROR) << "Failed to get GpuChannelHost.";
+    return nullptr;
+  }
+
+  auto sii = gpu_channel_host->CreateClientSharedImageInterface();
+  if (!sii) {
+    LOG(ERROR) << "Failed to get SharedImageInterface.";
+  }
+  return sii;
+}
+
 }  // namespace
 
 #if BUILDFLAG(IS_WIN)
@@ -304,6 +329,16 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   void SetMockTimeForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* tick_clock);
+  void SetSharedImageInterfaceGetterForTesting(
+      SharedImageInterfaceGetter getter) {
+    CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
+    sii_getter_for_testing_ = std::move(getter);
+  }
+  void SetWakeLockForTesting(
+      mojo::PendingRemote<device::mojom::WakeLock> wake_lock) {
+    CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
+    wake_lock_.Bind(std::move(wake_lock));
+  }
   void InvalidateBuffers();
 
   base::WeakPtr<Core> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
@@ -313,6 +348,19 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
 #endif
 
  private:
+  enum class TextureDeliveryResult {
+    kDelivered,
+    kNotReady,
+    kFailed,
+  };
+
+  enum class SharedImageInterfaceState {
+    kNotRequested,
+    kPending,
+    kReady,
+    kFailed,
+  };
+
   // webrtc::DesktopCapturer::Callback interface.
   // A side-effect of this method is to schedule the next frame.
   void OnCaptureResult(
@@ -324,10 +372,15 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   void OnCaptureResultLegacy(const bool frame_is_refresh,
                              std::unique_ptr<webrtc::DesktopFrame> frame);
 
-  // Deliver texture of the frame to client. Returns false if the texture
-  // could not be delivered (e.g. GPU adapter LUID changed), in which case
-  // the caller should fall back to the software path.
-  bool DeliverTextureToClient(const webrtc::DesktopFrame* frame);
+  // Delivers the texture of `frame` to the client. Returns `kNotReady` while
+  // `SharedImageInterface` creation is still pending on the UI thread, or
+  // `kFailed` on a permanent error (e.g. GPU crash or adapter LUID change).
+  TextureDeliveryResult DeliverTextureToClient(
+      const webrtc::DesktopFrame* frame);
+
+  void RequestSharedImageInterface();
+  void OnSharedImageInterfaceCreated(
+      scoped_refptr<gpu::SharedImageInterface> sii);
 
   // Method that is scheduled on |task_runner_| to be called on regular interval
   // to capture a frame.
@@ -458,10 +511,14 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
   // Cached SharedImageInterface used to create shared images from DXGI
-  // texture handles in texture capture mode. Kept alive as a member so that
-  // the shared images it creates remain valid in the GPU process until the
-  // consumer (e.g. video encoder) has finished using them.
+  // texture handles in texture capture mode. Created on the UI thread and kept
+  // alive as a member so that the shared images it creates remain valid in the
+  // GPU process until the consumer (e.g. video encoder) has finished using
+  // them.
   scoped_refptr<gpu::SharedImageInterface> sii_;
+  SharedImageInterfaceState sii_state_ =
+      SharedImageInterfaceState::kNotRequested;
+  SharedImageInterfaceGetter sii_getter_for_testing_;
 
 #if BUILDFLAG(IS_WIN)
   // The GPU adapter LUID that was passed to the WGC capturer at creation
@@ -533,8 +590,9 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
           << ", max_cpu_consumption_percentage="
           << max_cpu_consumption_percentage_ << ")";
 
-  CHECK(!wake_lock_, base::NotFatalUntil::M160);
-  RequestWakeLock();
+  if (!wake_lock_) {
+    RequestWakeLock();
+  }
 
   desktop_capturer_->Start(this);
   // Assume it will be always started successfully for now.
@@ -652,22 +710,26 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
   }
 
   if (frame->texture()) {
-    if (!DeliverTextureToClient(frame.get())) {
-      // Texture delivery failed. This is typically caused by a GPU adapter
-      // LUID change (e.g. GPU process crash), which means the WGC capturer's
-      // D3D11 device is on the wrong adapter and all future texture frames
-      // will also fail. Report a permanent error so the capture pipeline can
-      // restart cleanly.
-      // TODO(crbug.com/40929600): Instead of failing, read back the texture
-      // to system memory and deliver as a software YUV frame to survive GPU
-      // crashes like non-texture capture does.
-      client_->OnError(
-          media::VideoCaptureError::kDesktopCaptureDeviceGpuAdapterChanged,
-          FROM_HERE, "Texture delivery failed (GPU adapter may have changed).");
-      return;
+    switch (DeliverTextureToClient(frame.get())) {
+      case TextureDeliveryResult::kDelivered:
+      case TextureDeliveryResult::kNotReady:
+        ScheduleNextCaptureFrame();
+        return;
+      case TextureDeliveryResult::kFailed:
+        // Texture delivery failed. This is typically caused by a GPU process
+        // crash or GPU adapter LUID change, which means the WGC capturer's
+        // D3D11 device may be on the wrong adapter and future texture frames
+        // cannot be delivered. Report a permanent error so the capture
+        // pipeline can restart cleanly.
+        // TODO(crbug.com/40929600): Instead of failing, read back the texture
+        // to system memory and deliver as a software YUV frame to survive GPU
+        // crashes like non-texture capture does.
+        client_->OnError(
+            media::VideoCaptureError::kDesktopCaptureDeviceGpuAdapterChanged,
+            FROM_HERE,
+            "Texture delivery failed (GPU adapter may have changed).");
+        return;
     }
-    ScheduleNextCaptureFrame();
-    return;
   }
 
   if (base::FeatureList::IsEnabled(media::kZeroCopyDesktopCapture)) {
@@ -1107,7 +1169,8 @@ void DesktopCaptureDevice::Core::OnCaptureResultLegacy(
   ScheduleNextCaptureFrame();
 }
 
-bool DesktopCaptureDevice::Core::DeliverTextureToClient(
+DesktopCaptureDevice::Core::TextureDeliveryResult
+DesktopCaptureDevice::Core::DeliverTextureToClient(
     const webrtc::DesktopFrame* frame) {
   CHECK(frame->texture(), base::NotFatalUntil::M160);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -1125,10 +1188,26 @@ bool DesktopCaptureDevice::Core::DeliverTextureToClient(
     if (current_luid != active_gpu_luid_) {
       LOG(WARNING) << "Active GPU LUID changed, texture is on wrong adapter.";
       sii_.reset();
-      return false;
+      sii_state_ = SharedImageInterfaceState::kFailed;
+      return TextureDeliveryResult::kFailed;
     }
   }
 #endif
+
+  if (sii_state_ == SharedImageInterfaceState::kNotRequested) {
+    RequestSharedImageInterface();
+    return TextureDeliveryResult::kNotReady;
+  }
+  if (sii_state_ == SharedImageInterfaceState::kPending) {
+    return TextureDeliveryResult::kNotReady;
+  }
+  if (sii_state_ == SharedImageInterfaceState::kFailed || !sii_ ||
+      sii_->IsLost()) {
+    LOG(ERROR) << "SharedImageInterface is unavailable or lost.";
+    sii_.reset();
+    sii_state_ = SharedImageInterfaceState::kFailed;
+    return TextureDeliveryResult::kFailed;
+  }
 
   gfx::Size texture_size(frame->size().width(), frame->size().height());
 
@@ -1138,38 +1217,13 @@ bool DesktopCaptureDevice::Core::DeliverTextureToClient(
 
   auto gmb_handle = CreateGmbHandleFromTexture(frame);
   if (!gmb_handle.has_value()) {
-    return false;
-  }
-
-  // Get or create a cached SharedImageInterface. The SII must be kept alive
-  // so that the shared images it creates remain registered in the GPU process
-  // until the consumer (e.g. D3D12 video encoder) has finished using them.
-  // Recreate if the GPU channel was lost (e.g. GPU process crash).
-  if (!sii_ || sii_->IsLost()) {
-    sii_.reset();
-    auto* factory = BrowserGpuChannelHostFactory::instance();
-    if (!factory) {
-      LOG(ERROR) << "BrowserGpuChannelHostFactory is not available.";
-      return false;
-    }
-
-    auto* gpu_channel_host = factory->GetGpuChannel();
-    if (!gpu_channel_host) {
-      LOG(ERROR) << "Failed to get GpuChannelHost.";
-      return false;
-    }
-
-    sii_ = gpu_channel_host->CreateClientSharedImageInterface();
-    if (!sii_) {
-      LOG(ERROR) << "Failed to get SharedImageInterface.";
-      return false;
-    }
+    return TextureDeliveryResult::kFailed;
   }
 
   auto si_format = media::VideoPixelFormatToSharedImageFormat(pixel_format);
   if (!si_format.has_value()) {
     LOG(ERROR) << "Unsupported pixel format for shared image.";
-    return false;
+    return TextureDeliveryResult::kFailed;
   }
 
   constexpr auto kSharedImageUsage =
@@ -1182,7 +1236,7 @@ bool DesktopCaptureDevice::Core::DeliverTextureToClient(
       std::move(*gmb_handle));
   if (!shared_image) {
     LOG(ERROR) << "Failed to create shared image.";
-    return false;
+    return TextureDeliveryResult::kFailed;
   }
 
   // Trigger sync token verification on the capture thread by calling Export().
@@ -1219,7 +1273,43 @@ bool DesktopCaptureDevice::Core::DeliverTextureToClient(
       0 /* clockwise_rotation */, now, now - first_ref_time_,
       /*capture_begin_timestamp=*/std::nullopt, natural_size,
       media::VideoFrameMetadata());
-  return true;
+  return TextureDeliveryResult::kDelivered;
+}
+
+void DesktopCaptureDevice::Core::RequestSharedImageInterface() {
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
+  if (sii_state_ != SharedImageInterfaceState::kNotRequested) {
+    return;
+  }
+
+  sii_state_ = SharedImageInterfaceState::kPending;
+  auto getter = sii_getter_for_testing_
+                    ? std::move(sii_getter_for_testing_)
+                    : base::BindOnce(&CreateSharedImageInterfaceOnUIThread);
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE, std::move(getter),
+      base::BindOnce(&Core::OnSharedImageInterfaceCreated, GetWeakPtr()));
+}
+
+void DesktopCaptureDevice::Core::OnSharedImageInterfaceCreated(
+    scoped_refptr<gpu::SharedImageInterface> sii) {
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
+  if (sii_state_ == SharedImageInterfaceState::kFailed) {
+    // A permanent failure (e.g. GPU adapter LUID change) occurred while the
+    // UI-thread request was in flight.
+    return;
+  }
+  CHECK_EQ(sii_state_, SharedImageInterfaceState::kPending);
+  if (!sii || sii->IsLost()) {
+    sii_state_ = SharedImageInterfaceState::kFailed;
+    return;
+  }
+  sii_ = std::move(sii);
+  sii_state_ = SharedImageInterfaceState::kReady;
+
+  if (!capture_in_progress_ && !refresh_in_progress_) {
+    CaptureFrame(/*is_refresh_frame=*/true);
+  }
 }
 
 void DesktopCaptureDevice::Core::OnCaptureTimer() {
@@ -1541,5 +1631,28 @@ void DesktopCaptureDevice::SetMockTimeForTesting(
     const base::TickClock* tick_clock) {
   core_->SetMockTimeForTesting(task_runner, tick_clock);  // IN-TEST
 }
+
+void DesktopCaptureDevice::SetSharedImageInterfaceGetterForTesting(
+    SharedImageInterfaceGetter getter) {
+  thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Core::SetSharedImageInterfaceGetterForTesting,  // IN-TEST
+                     core_->GetWeakPtr(), std::move(getter)));
+}
+
+void DesktopCaptureDevice::SetWakeLockForTesting(
+    mojo::PendingRemote<device::mojom::WakeLock> wake_lock) {
+  thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Core::SetWakeLockForTesting,  // IN-TEST
+                     core_->GetWeakPtr(), std::move(wake_lock)));
+}
+
+#if BUILDFLAG(IS_WIN)
+void DesktopCaptureDevice::SetGpuLuidForTesting(CHROME_LUID luid) {
+  thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&Core::SetGpuLuid, core_->GetWeakPtr(), luid));
+}
+#endif
 
 }  // namespace content

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -15,6 +16,8 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/device/public/mojom/wake_lock.mojom-forward.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -23,9 +26,17 @@
 #include "base/threading/thread.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_types.h"
+#endif
+
 namespace base {
 class TickClock;
 }  // namespace base
+
+namespace gpu {
+class SharedImageInterface;
+}  // namespace gpu
 
 namespace webrtc {
 class DesktopCapturer;
@@ -81,9 +92,13 @@ class CONTENT_EXPORT DesktopCaptureDevice : public media::VideoCaptureDevice {
   FRIEND_TEST_ALL_PREFIXES(DesktopCaptureDeviceTest,
                            RequestRefreshFrameAfterStop);
   friend class DesktopCaptureDeviceTest;
+  friend class DesktopCaptureDeviceTextureTest;
   friend class DesktopCaptureDeviceThrottledTest;
   friend class DesktopCaptureDeviceRequestRefreshFrameTest;
   class Core;
+
+  using SharedImageInterfaceGetter =
+      base::OnceCallback<scoped_refptr<gpu::SharedImageInterface>()>;
 
   DesktopCaptureDevice(
       std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer,
@@ -94,6 +109,15 @@ class CONTENT_EXPORT DesktopCaptureDevice : public media::VideoCaptureDevice {
   void SetMockTimeForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* tick_clock);
+
+  void SetSharedImageInterfaceGetterForTesting(
+      SharedImageInterfaceGetter getter);
+  void SetWakeLockForTesting(
+      mojo::PendingRemote<device::mojom::WakeLock> wake_lock);
+
+#if BUILDFLAG(IS_WIN)
+  void SetGpuLuidForTesting(CHROME_LUID luid);
+#endif
 
   std::unique_ptr<Core> core_;
 
