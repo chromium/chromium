@@ -225,10 +225,11 @@ void ExtensionSettingsOverriddenDialog::OnDialogWillBeShown() {
 void ExtensionSettingsOverriddenDialog::HandleDialogResult(
     DialogResult result) {
   CHECK(!params_.controlling_extension_id.empty(), base::NotFatalUntil::M162);
-  CHECK(
-      !HasAcknowledgedExtension(*profile_, params_.controlling_extension_id,
-                                params_.extension_acknowledged_preference_name),
-      base::NotFatalUntil::M162);
+  // TODO(crbug.com/590057712): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!HasAcknowledgedExtension(
+      *profile_, params_.controlling_extension_id,
+      params_.extension_acknowledged_preference_name));
   CHECK(HasShownFor(*profile_, params_.controlling_extension_id),
         base::NotFatalUntil::M162);
 
