@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -35,7 +36,9 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -74,17 +77,18 @@ AttributeTypeVector BuildAttributeVector() {
                      SpecificTrustedType::kScriptURL}};
 
   // All event handler content attributes map to kScript on any element.
-  // Keeping them as plain strings and building the QualifiedNames in the
-  // loop below emits considerably less code than one table entry each.
-  static constexpr const char* kEventHandlerNames[] = {
-#define FOREACH_EVENT_HANDLER(name) #name,
-      EVENT_HANDLER_LIST(FOREACH_EVENT_HANDLER)
-#undef FOREACH_EVENT_HANDLER
-  };
+  // Most are derived at runtime from event_type_names::GetNames() to avoid
+  // duplicating their strings in .rodata; the remaining few are expanded from
+  // EXTRA_EVENT_HANDLER_LIST.
+#define COUNT_EVENT_HANDLER(name) +1
+  constexpr wtf_size_t kExtraEventHandlerCount =
+      0 EXTRA_EVENT_HANDLER_LIST(COUNT_EVENT_HANDLER);
+#undef COUNT_EVENT_HANDLER
 
   AttributeTypeVector table;
   table.ReserveInitialCapacity(std::size(kTypeTable) +
-                               std::size(kEventHandlerNames));
+                               event_type_names::kNamesCount +
+                               kExtraEventHandlerCount);
   for (const auto& entry : kTypeTable) {
     // Attribute comparisons are case-insensitive, for both element and
     // attribute name. We rely on the fact that they're stored as lowercase.
@@ -95,12 +99,18 @@ AttributeTypeVector BuildAttributeVector() {
   }
 
   const QualifiedName any_element(g_null_atom, g_star_atom, g_null_atom);
-  for (const char* name : kEventHandlerNames) {
-    const QualifiedName attribute{AtomicString(name)};
-    DCHECK(attribute.LocalName().ContainsNoAsciiUpper());
-    table.push_back(AttributeTypeEntry{any_element, attribute,
+  auto add_event_handler = [&](const AtomicString& name) {
+    DCHECK(name.ContainsNoAsciiUpper());
+    table.push_back(AttributeTypeEntry{any_element, QualifiedName(name),
                                        SpecificTrustedType::kScript});
+  };
+  for (const AtomicString& event_type : event_type_names::GetNames()) {
+    add_event_handler(
+        AtomicString(StrCat({"on", event_type.GetString().ToAsciiLower()})));
   }
+#define ADD_EVENT_HANDLER(name) add_event_handler(AtomicString(#name));
+  EXTRA_EVENT_HANDLER_LIST(ADD_EVENT_HANDLER)
+#undef ADD_EVENT_HANDLER
   return table;
 }
 

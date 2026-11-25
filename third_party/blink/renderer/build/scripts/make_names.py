@@ -53,6 +53,7 @@ class MakeNamesWriter(json5_generator.Writer):
     default_metadata = {
         'allowDuplicates': False,
         'export': '',
+        'exportNamesSpan': False,
         'namespace': '',
         'suffix': '',
     }
@@ -94,6 +95,7 @@ class MakeNamesWriter(json5_generator.Writer):
             'namespace': namespace,
             'suffix': suffix,
             'export': export,
+            'export_names_span': self.json5_file.metadata['exportNamesSpan'],
             'entries': entries,
             'header_guard': self.make_header_guard(qualified_header),
             'input_files': self._input_files,

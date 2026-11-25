@@ -7,6 +7,9 @@
 #define {{header_guard}}
 
 {% set symbol_export = '%s ' % export if export else '' %}
+{% if export_names_span %}
+#include "base/containers/span.h"
+{% endif %}
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 {% if export == 'CORE_EXPORT' %}
 #include "third_party/blink/renderer/core/core_export.h"
@@ -28,6 +31,10 @@ namespace {{namespace}} {
 constexpr unsigned k{{suffix}}NamesCount = {{entries|length}};
 
 {{symbol_export}}void Init{{suffix}}();
+{% if export_names_span %}
+
+{{symbol_export}}base::span<const AtomicString> Get{{suffix}}Names();
+{% endif %}
 
 }  // namespace {{namespace}}
 }  // namespace blink

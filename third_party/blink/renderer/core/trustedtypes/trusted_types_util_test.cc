@@ -150,6 +150,11 @@ TEST(TrustedTypesUtilTest, IsTrustedTypesEventHandlerAttribute) {
       g_empty_atom, AtomicString("ondomfocusout"), g_empty_atom)));
   EXPECT_TRUE(IsTrustedTypesEventHandlerAttribute(
       QualifiedName(g_empty_atom, AtomicString("onunbounded"), g_empty_atom)));
+  // Event handler names not in event_type_names (EXTRA_EVENT_HANDLER_LIST):
+  EXPECT_TRUE(IsTrustedTypesEventHandlerAttribute(
+      QualifiedName(g_empty_atom, AtomicString("onbegin"), g_empty_atom)));
+  EXPECT_TRUE(IsTrustedTypesEventHandlerAttribute(
+      QualifiedName(g_empty_atom, AtomicString("onrepeat"), g_empty_atom)));
 
   // Not event handler names:
   EXPECT_FALSE(IsTrustedTypesEventHandlerAttribute(

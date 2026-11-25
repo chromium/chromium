@@ -6,6 +6,10 @@
 #include "{{this_include_path}}"
 
 #include "base/check_op.h"
+{% if export_names_span %}
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+{% endif %}
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 namespace blink {
@@ -41,6 +45,18 @@ void Init{{suffix}}() {
   DCHECK_EQ(current, reinterpret_cast<const StringImpl*>(&kNames + 1));
 {% endif %}
 }
+{% if export_names_span %}
+
+base::span<const AtomicString> Get{{suffix}}Names() {
+  Init{{suffix}}();
+  // SAFETY: `Init{{suffix}}()` constructs `k{{suffix}}NamesCount`
+  // `AtomicString` instances in `{{suffix|lower}}names_storage`.
+  return UNSAFE_BUFFERS(base::span(
+      base::unchecked,
+      reinterpret_cast<const AtomicString*>(&{{suffix|lower}}names_storage),
+      k{{suffix}}NamesCount));
+}
+{% endif %}
 
 }  // namespace {{namespace}}
 }  // namespace blink

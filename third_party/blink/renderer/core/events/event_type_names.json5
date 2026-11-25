@@ -2,6 +2,7 @@
   metadata: {
     namespace: "event_type_names",
     export: "CORE_EXPORT",
+    exportNamesSpan: true,
   },
 
   data: [

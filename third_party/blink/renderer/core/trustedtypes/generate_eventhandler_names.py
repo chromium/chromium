@@ -10,15 +10,16 @@ import web_idl
 import json5
 
 
-# Read the WebIDL database and write a list of all event handler attributes.
+# Write event handler attributes not already covered by event_type_names.
 #
-# Reads the WebIDL database (--webidl) and writes a C++ .h file with a macro
-# containing all event handler names (to --out). All attributes declared as
-# EventHandler or On(BeforeUnload|Error)EventHandler types are considered
+# Reads the WebIDL database (--webidl) and attribute lists, discards names
+# derived from --event-handler-names, and writes a C++ .h file with a macro
+# containing the remaining event handler names (to --out). Attributes declared
+# as EventHandler or On(BeforeUnload|Error)EventHandler types are considered
 # event handlers.
 #
-# The macro is called EVENT_HANDLER_LIST and follows the "X macro" model of
-# macro lists [1], as its used elsewhere [2] in the Chromium code base.
+# The macro is called EXTRA_EVENT_HANDLER_LIST and follows the "X macro" model
+# of macro lists [1], as it's used elsewhere [2] in the Chromium code base.
 #
 # [1] https://en.wikipedia.org/wiki/X_Macro
 # [2] https://source.chromium.org/search?q=%5E%23define%5C%20%5BA-Z_%5D*LIST%5C(%20file:v8
@@ -53,11 +54,6 @@ def main(argv):
             if attribute.idl_type.is_event_handler:
                 event_handlers.add(attribute.identifier)
 
-    with open(options.event_handler_names) as f:
-        event_type_names = json5.load(f)
-        for entry in event_type_names["data"]:
-            event_handlers.add(f"on{entry.lower()}")
-
     for path in (
         options.html_attribute_names,
         options.svg_attribute_names,
@@ -71,6 +67,11 @@ def main(argv):
                 )
                 if name.lower().startswith("on"):
                     event_handlers.add(name.lower())
+
+    with open(options.event_handler_names) as f:
+        event_type_names = json5.load(f)
+        for entry in event_type_names["data"]:
+            event_handlers.discard(f"on{entry.lower()}")
 
     license_and_header = """\
 // Copyright 2022 The Chromium Authors
@@ -87,7 +88,7 @@ def main(argv):
         print("//", file=out)
         print(f"// Generator: {argv[0]}", file=out)
         print("", file=out)
-        print("#define EVENT_HANDLER_LIST(EH) \\", file=out)
+        print("#define EXTRA_EVENT_HANDLER_LIST(EH) \\", file=out)
         for event in sorted(event_handlers):
             print(f"  EH({event}) \\", file=out)
         print("\n", file=out)
