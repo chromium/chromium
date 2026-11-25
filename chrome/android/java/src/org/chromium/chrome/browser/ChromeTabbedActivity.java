@@ -424,6 +424,7 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.SelectFileDialog;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
@@ -5883,14 +5884,18 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         if (Boolean.TRUE.equals(result)) return result;
 
-        @Nullable ToolbarManager toolbarManager =
-                mRootUiCoordinator.getToolbarManagerSupplier().get();
-        ExtensionsToolbarCoordinator extensionsToolbarCoordinator =
-                toolbarManager == null ? null : toolbarManager.getExtensionsToolbarCoordinator();
-        if (extensionsToolbarCoordinator != null) {
-            // Handle extension shortcuts.
-            if (extensionsToolbarCoordinator.dispatchKeyEvent(event)) {
-                result = true;
+        if (!UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+            @Nullable ToolbarManager toolbarManager =
+                    mRootUiCoordinator.getToolbarManagerSupplier().get();
+            ExtensionsToolbarCoordinator extensionsToolbarCoordinator =
+                    toolbarManager == null
+                            ? null
+                            : toolbarManager.getExtensionsToolbarCoordinator();
+            if (extensionsToolbarCoordinator != null) {
+                // Handle extension shortcuts.
+                if (extensionsToolbarCoordinator.dispatchKeyEvent(event)) {
+                    result = true;
+                }
             }
         }
 

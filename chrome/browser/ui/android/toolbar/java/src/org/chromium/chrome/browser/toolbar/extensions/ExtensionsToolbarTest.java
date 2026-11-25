@@ -10,6 +10,7 @@ import static androidx.test.espresso.assertion.PositionAssertions.isLeftOf;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isActivated;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -46,6 +47,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.Root;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.LargeTest;
@@ -61,6 +63,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.RootSpec;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -90,6 +94,7 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.util.ValueUtils;
 
@@ -1062,12 +1067,13 @@ public class ExtensionsToolbarTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562625134
+    @EnableFeatures(UiAndroidFeatures.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS)
     public void testExtensionCommandClosesPopupIfOpen() throws IOException {
         String extensionId =
                 loadCommandExtension(
                         "extension", "Extension", "Action", "Ctrl+Shift+1", "popup opened");
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
+        waitForView(withContentDescription("Action"));
 
         // Listen for the background script to echo the command back.
         try (ExtensionTestMessageListener listener =
@@ -1077,10 +1083,11 @@ public class ExtensionsToolbarTest {
             assertTrue(listener.waitUntilSatisfied());
         }
 
-        // Ensure the popup is open.
+        // Ensure the popup is open and has window focus before sending the key event.
         CriteriaHelper.pollInstrumentationThread(
                 () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 1,
                 "Popup did not open");
+        waitForPopupWindowFocus();
 
         // Send the same keypresses again.
         sendKeyEvent(KeyEvent.KEYCODE_1, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
@@ -1093,7 +1100,7 @@ public class ExtensionsToolbarTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562625134
+    @EnableFeatures(UiAndroidFeatures.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS)
     public void testNonExtensionCommandIsSentToApplicationWindow() throws IOException {
         String extensionId = loadPopupExtension("extension", "Extension", "Action", "popup opened");
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
@@ -1107,10 +1114,11 @@ public class ExtensionsToolbarTest {
             assertTrue(listener.waitUntilSatisfied());
         }
 
-        // Ensure the popup is open before sending the key event.
+        // Ensure the popup is open and has window focus before sending the key event.
         CriteriaHelper.pollInstrumentationThread(
                 () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 1,
                 "Popup did not open");
+        waitForPopupWindowFocus();
 
         // Send Ctrl+T.
         sendKeyEvent(KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON);
@@ -1429,5 +1437,21 @@ public class ExtensionsToolbarTest {
                 java.util.Objects.equals(
                         requestButton.getTextColors(), menuButton.getImageTintList());
         return actionAlphaMatches && menuTintMatchesFocus && requestTintMatchesMenu;
+    }
+
+    private void waitForPopupWindowFocus() {
+        waitForView(
+                ContentView.class,
+                allOf(instanceOf(ContentView.class), hasFocus()),
+                ViewElement.newOptions()
+                        .rootSpec(
+                                new RootSpec() {
+                                    @Override
+                                    public boolean matches(Root root) {
+                                        return root.getDecorView().hasWindowFocus()
+                                                && isPlatformPopup().matches(root);
+                                    }
+                                })
+                        .build());
     }
 }

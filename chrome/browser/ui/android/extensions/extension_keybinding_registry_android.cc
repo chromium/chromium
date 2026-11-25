@@ -4,37 +4,46 @@
 
 #include "chrome/browser/ui/android/extensions/extension_keybinding_registry_android.h"
 
-#include "base/functional/bind.h"
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "chrome/browser/extensions/commands/command_service.h"
-#include "chrome/browser/extensions/extension_keybinding_registry.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "extensions/browser/extension_system.h"
+#include "chrome/browser/ui/extensions/accelerator_priority.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
+#include "extensions/common/api/extension_action/action_info.h"
+#include "extensions/common/command.h"
 #include "extensions/common/extension.h"
-#include "third_party/jni_zero/jni_zero.h"
-#include "ui/base/accelerators/accelerator.h"
+#include "ui/android/accelerator_manager_android.h"
+#include "ui/android/ui_android_features.h"
 #include "ui/events/android/key_event_android.h"
 #include "ui/events/event.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform_event.h"
 
 namespace extensions {
 
 ExtensionKeybindingRegistryAndroid::ExtensionKeybindingRegistryAndroid(
     content::BrowserContext* context,
+    ui::WindowAndroid* window,
     TabListInterface* tab_list_interface,
     ExtensionsToolbarViewModel* toolbar_view_model)
     : ExtensionKeybindingRegistry(context,
                                   tab_list_interface,
                                   ExtensionFilter::ALL_EXTENSIONS),
+      window_(base::FeatureList::IsEnabled(ui::kAndroidUnifiedKeyboardShortcuts)
+                  ? window
+                  : nullptr),
       toolbar_view_model_(toolbar_view_model) {
+  CHECK(window);
   Init();
 }
 
-ExtensionKeybindingRegistryAndroid::~ExtensionKeybindingRegistryAndroid() =
-    default;
+ExtensionKeybindingRegistryAndroid::~ExtensionKeybindingRegistryAndroid() {
+  if (ui::AcceleratorManagerAndroid* accelerator_manager =
+          ui::AcceleratorManagerAndroid::FromWindow(window_)) {
+    for (const ui::Accelerator& accelerator : active_accelerators_) {
+      accelerator_manager->UnregisterAccelerator(accelerator, this);
+    }
+  }
+}
 
 bool ExtensionKeybindingRegistryAndroid::PopulateCommands(
     const Extension* extension,
@@ -63,6 +72,11 @@ bool ExtensionKeybindingRegistryAndroid::RegisterAccelerator(
   if (Command::IsActionRelatedCommand(command_name)) {
     active_action_accelerators_[accelerator] = extension_id;
   }
+  if (ui::AcceleratorManagerAndroid* accelerator_manager =
+          ui::AcceleratorManagerAndroid::FromWindow(window_)) {
+    accelerator_manager->RegisterAccelerator(
+        accelerator, kExtensionAcceleratorPriority, this);
+  }
   return true;
 }
 
@@ -70,11 +84,10 @@ void ExtensionKeybindingRegistryAndroid::UnregisterAccelerator(
     const ui::Accelerator& accelerator) {
   active_accelerators_.erase(accelerator);
   active_action_accelerators_.erase(accelerator);
-}
-
-void ExtensionKeybindingRegistryAndroid::OnShortcutHandlingSuspended(
-    bool suspended) {
-  is_shortcut_handling_suspended_ = suspended;
+  if (ui::AcceleratorManagerAndroid* accelerator_manager =
+          ui::AcceleratorManagerAndroid::FromWindow(window_)) {
+    accelerator_manager->UnregisterAccelerator(accelerator, this);
+  }
 }
 
 bool ExtensionKeybindingRegistryAndroid::ShouldIgnoreCommand(
@@ -83,15 +96,8 @@ bool ExtensionKeybindingRegistryAndroid::ShouldIgnoreCommand(
   return false;
 }
 
-bool ExtensionKeybindingRegistryAndroid::HandleKeyDownEvent(
-    const ui::KeyEventAndroid& key_event) {
-  if (is_shortcut_handling_suspended_) {
-    return false;
-  }
-
-  ui::PlatformEvent native_event(key_event);
-  ui::Accelerator accelerator((ui::KeyEvent(native_event)));
-
+bool ExtensionKeybindingRegistryAndroid::AcceleratorPressed(
+    const ui::Accelerator& accelerator) {
   if (!active_accelerators_.contains(accelerator)) {
     return false;
   }
@@ -107,6 +113,21 @@ bool ExtensionKeybindingRegistryAndroid::HandleKeyDownEvent(
   }
 
   return NotifyEventTargets(accelerator);
+}
+
+bool ExtensionKeybindingRegistryAndroid::CanHandleAccelerators() const {
+  return !shortcut_handling_suspended();
+}
+
+bool ExtensionKeybindingRegistryAndroid::HandleKeyDownEvent(
+    const ui::KeyEventAndroid& key_event) {
+  if (!CanHandleAccelerators()) {
+    return false;
+  }
+
+  ui::PlatformEvent native_event(key_event);
+  ui::Accelerator accelerator((ui::KeyEvent(native_event)));
+  return AcceleratorPressed(accelerator);
 }
 
 }  // namespace extensions

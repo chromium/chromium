@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
@@ -28,6 +29,7 @@
 #include "extensions/browser/permissions_manager.h"
 #include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_zero.h"
+#include "ui/base/base_window.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/android/key_event_android.h"
@@ -62,6 +64,7 @@ ExtensionsToolbarAndroid::ExtensionsToolbarAndroid(
                                            *toolbar_view_model_),
       keybinding_registry_(std::make_unique<ExtensionKeybindingRegistryAndroid>(
           browser_->GetProfile(),
+          CHECK_DEREF(browser_->GetWindow()).GetNativeWindow(),
           TabListInterface::From(browser),
           toolbar_view_model_.get())),
       java_object_(java_object) {

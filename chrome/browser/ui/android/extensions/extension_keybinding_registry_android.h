@@ -5,6 +5,11 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSION_KEYBINDING_REGISTRY_ANDROID_H_
 #define CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSION_KEYBINDING_REGISTRY_ANDROID_H_
 
+#include <map>
+#include <set>
+#include <string>
+
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -17,17 +22,20 @@ class BrowserContext;
 
 namespace ui {
 class KeyEventAndroid;
-}
+class WindowAndroid;
+}  // namespace ui
 
 namespace extensions {
 
 // This class handles keyboard accelerators for extensions on Android.
 // Unlike other subclasses, it manages all the command types including action
 // related commands.
-class ExtensionKeybindingRegistryAndroid : public ExtensionKeybindingRegistry {
+class ExtensionKeybindingRegistryAndroid : public ExtensionKeybindingRegistry,
+                                           public ui::AcceleratorTarget {
  public:
-  explicit ExtensionKeybindingRegistryAndroid(
+  ExtensionKeybindingRegistryAndroid(
       content::BrowserContext* context,
+      ui::WindowAndroid* window,
       TabListInterface* tab_list_interface,
       ExtensionsToolbarViewModel* toolbar_view_model);
 
@@ -37,6 +45,10 @@ class ExtensionKeybindingRegistryAndroid : public ExtensionKeybindingRegistry {
       const ExtensionKeybindingRegistryAndroid&) = delete;
 
   ~ExtensionKeybindingRegistryAndroid() override;
+
+  // Overridden from ui::AcceleratorTarget:
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  bool CanHandleAccelerators() const override;
 
   // Handles the key down event, and returns whether the event was handled.
   bool HandleKeyDownEvent(const ui::KeyEventAndroid& key_event);
@@ -49,13 +61,12 @@ class ExtensionKeybindingRegistryAndroid : public ExtensionKeybindingRegistry {
                            const ExtensionId& extension_id,
                            const std::string& command_name) override;
   void UnregisterAccelerator(const ui::Accelerator& accelerator) override;
-  void OnShortcutHandlingSuspended(bool suspended) override;
   bool ShouldIgnoreCommand(const std::string& command) const override;
 
+  const raw_ptr<ui::WindowAndroid> window_;
   const raw_ptr<ExtensionsToolbarViewModel> toolbar_view_model_;
   std::set<ui::Accelerator> active_accelerators_;
   std::map<ui::Accelerator, ExtensionId> active_action_accelerators_;
-  bool is_shortcut_handling_suspended_ = false;
 };
 
 }  // namespace extensions

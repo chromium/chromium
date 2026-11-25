@@ -72,6 +72,8 @@ if (enable_extensions_core) {
       "//extensions/common",
       "//extensions/strings",
       "//net",
+      "//ui/android",
+      "//ui/base",
       "//ui/display",
       "//ui/menus",
       "//url",
