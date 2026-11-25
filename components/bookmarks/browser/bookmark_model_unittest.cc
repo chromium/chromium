@@ -35,6 +35,7 @@
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_node_iterator.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
@@ -58,7 +59,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/models/tree_node_iterator.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -344,7 +344,7 @@ void VerifyModelMatchesNode(TestNode* expected, const BookmarkNode* actual) {
 }
 
 void VerifyNoDuplicateIDs(BookmarkModel* model) {
-  ui::TreeNodeIterator<const BookmarkNode> it(model->root_node());
+  BookmarkNodeIterator it(model->root_node());
   absl::flat_hash_set<int64_t> ids;
   while (it.has_next()) {
     ASSERT_TRUE(ids.insert(it.Next()->id()).second);

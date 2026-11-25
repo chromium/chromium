@@ -15,11 +15,23 @@ include_rules = [
   "+components/url_formatter",
   "+crypto",
   "+net/base",
-  "+ui",
+  "+ui/base/l10n",
+  "+ui/gfx/favicon_size.h",
+  "+ui/gfx/image",
 ]
 
 specific_include_rules = {
   "bookmark_model_unittest.cc": [
     "+third_party/skia",
-  ]
+  ],
+  "bookmark_node_data.*": [
+    "+ui/base/clipboard",
+    "+ui/base/dragdrop",
+  ],
+  "bookmark_pasteboard_helper_mac.*": [
+    "+ui/base/clipboard",
+  ],
+  "bookmark_utils_unittest.cc": [
+    "+ui/base/clipboard",
+  ],
 }
