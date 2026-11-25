@@ -334,21 +334,47 @@ void RelaunchApp() {
 }
 
 #if BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
-// Allows system permission if shown on Springboard without using eDO calls.
-void CheckAndAcceptSystemDialog(base::TimeDelta timeout) {
-  XCUIApplication* springboardApp = [[XCUIApplication alloc]
+// Timeout for the save image error alert to appear, including accepting the
+// system Photos permission dialog and cold-boot PhotoKit initialization.
+constexpr base::TimeDelta kSaveImageErrorAlertTimeout = base::Seconds(20);
+
+// Time to wait for SpringBoard to dismiss a system alert after tapping its
+// allow button before retrying the tap.
+constexpr base::TimeDelta kSystemAlertDismissalTimeout = base::Seconds(3);
+
+// Allows the system Photos permission dialog if shown on SpringBoard without
+// using eDO calls. Retries tapping the "Allow" button until the alert
+// disappears, because SpringBoard can ignore taps synthesized before
+// `_SBAlertController` finishes presenting (`viewDidAppear:`). Returns whether
+// no Photos permission alert remains visible.
+bool CheckAndAcceptSystemDialog(base::TimeDelta timeout) {
+  XCUIApplication* springboard_app = [[XCUIApplication alloc]
       initWithBundleIdentifier:@"com.apple.springboard"];
-  XCUIElement* alert = [[springboardApp
-      descendantsMatchingType:XCUIElementTypeAlert] firstMatch];
-  if ([alert waitForExistenceWithTimeout:timeout.InSecondsF()]) {
-    XCUIElement* allowButton = alert.buttons[@"Allow"].firstMatch;
-    if (![allowButton exists]) {
-      allowButton = [alert.buttons elementBoundByIndex:1];
-    }
-    if ([allowButton exists]) {
-      [allowButton tap];
-    }
+  NSPredicate* photos_alert_predicate =
+      [NSPredicate predicateWithFormat:@"label CONTAINS[c] 'photo'"];
+  XCUIElement* alert = [[springboard_app.alerts
+      matchingPredicate:photos_alert_predicate] firstMatch];
+  bool alert_exists =
+      timeout.is_positive()
+          ? [alert waitForExistenceWithTimeout:timeout.InSecondsF()]
+          : alert.exists;
+  if (!alert_exists) {
+    return true;
   }
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^{
+        if (!alert.exists) {
+          return YES;
+        }
+        XCUIElement* allow_button = alert.buttons[@"Allow"].firstMatch;
+        if (allow_button.exists && allow_button.hittable) {
+          [allow_button tap];
+          return
+              [alert waitForNonExistenceWithTimeout:kSystemAlertDismissalTimeout
+                                                        .InSecondsF()];
+        }
+        return NO;
+      });
 }
 #endif  // BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
 
@@ -390,7 +416,9 @@ void CheckAndAcceptSystemDialog(base::TimeDelta timeout) {
 
 - (void)tearDownHelper {
 #if BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
-  CheckAndAcceptSystemDialog(base::Seconds(1));
+  if ([self isRunningTest:@selector(testSaveInvalidImageShowsErrorAlert)]) {
+    CheckAndAcceptSystemDialog(base::Seconds(1));
+  }
 #endif  // BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
   if (_setUpHistogramTesterCalled) {
     chrome_test_util::GREYAssertErrorNil(
@@ -1493,12 +1521,29 @@ TAG_SMOKE_TEST(ContextMenuTestCase, testCopyLink);
 
   TapOnContextMenuButton(SaveImageButton());
 
-  CheckAndAcceptSystemDialog(base::test::ios::kWaitForUIElementTimeout);
+  // Wait for the error alert to appear, accepting the Photos permission dialog
+  // on SpringBoard if shown. Uses pure XCUITest so it handles both slow
+  // permission dialog presentation and already-granted permission without
+  // making eDO calls while a system alert is presented.
+  NSString* errorAlertTitle =
+      l10n_util::GetNSString(IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_TITLE);
+  XCUIApplication* chromeApp = [[XCUIApplication alloc] init];
+  XCUIElement* errorAlert = chromeApp.alerts[errorAlertTitle].firstMatch;
+  BOOL errorAlertAppeared = base::test::ios::WaitUntilConditionOrTimeout(
+      kSaveImageErrorAlertTimeout, ^{
+        if ([errorAlert waitForExistenceWithTimeout:1.0]) {
+          return YES;
+        }
+        GREYAssertTrue(CheckAndAcceptSystemDialog(base::TimeDelta()),
+                       @"Timed out dismissing system permission dialog.");
+        return errorAlert.exists;
+      });
+  GREYAssertTrue(errorAlertAppeared,
+                 @"Timed out waiting for save image error alert.");
 
   // Verify that the error alert is presented when saving invalid image data.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_text(l10n_util::GetNSString(
-                          IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_TITLE))];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_text(errorAlertTitle)];
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_text(l10n_util::GetNSString(
                                               IDS_IOS_SAVE_IMAGE_ERROR))];
@@ -1510,9 +1555,8 @@ TAG_SMOKE_TEST(ContextMenuTestCase, testCopyLink);
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:okButtonMatcher];
   [[EarlGrey selectElementWithMatcher:okButtonMatcher]
       performAction:grey_tap()];
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      grey_text(l10n_util::GetNSString(
-                          IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_TITLE))];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_text(errorAlertTitle)];
 }
 #endif  // BUILDFLAG(IOS_CHROME_ENABLE_PROFILE_ALTERING_TESTS)
 

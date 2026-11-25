@@ -763,9 +763,6 @@ crbug.com/584364590 GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationFl
 crbug.com/571459477 [ iPhone Simulator ] ReadingListTestCase/testDeleteEntries [ Pass Failure ]
 crbug.com/588447001 [ iOS26 iOS27 iPad Simulator ] SharedTabGroupsTestCase/testCloseLastTabInIncognito [ Pass Failure ]
 
-# CQ flakiness quarantine 2026-11-22
-crbug.com/587893044 [ Simulator ] ContextMenuTestCase/testSaveInvalidImageShowsErrorAlert [ Pass Failure ]
-
 # Gardening suppression 2026-11-23
 crbug.com/589704479 [ Simulator ] OtpInputDialogEgtest [ Pass Failure ]
 
