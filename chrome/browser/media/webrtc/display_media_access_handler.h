@@ -79,17 +79,16 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
 
   // Processes one pending request. Requests are queued so that we display one
   // picker UI at a time for each content::WebContents.
-  void ProcessQueuedAccessRequest(const RequestsQueue& queue,
+  void ProcessQueuedAccessRequest(RequestsQueue& queue,
                                   content::WebContents* web_contents);
 
-  void ProcessQueuedPickerRequest(const PendingAccessRequest& pending_request,
+  void ProcessQueuedPickerRequest(PendingAccessRequest& pending_request,
                                   content::WebContents* web_contents,
                                   AllowedScreenCaptureLevel capture_level,
                                   const GURL& request_origin);
 
-  void ProcessQueuedChangeSourceRequest(
-      const content::MediaStreamRequest& request,
-      content::WebContents* web_contents);
+  void ProcessQueuedChangeSourceRequest(PendingAccessRequest& pending_request,
+                                        content::WebContents* web_contents);
 
   void RejectRequest(content::WebContents* web_contents,
                      blink::mojom::MediaStreamRequestResult result);
@@ -102,13 +101,14 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
 
   void OnDesktopCaptureDevicesObtainedAfterAcceptRequest(
       base::WeakPtr<content::WebContents> web_contents,
-      content::MediaStreamRequest request,
+      base::WeakPtr<PendingAccessRequest> pending_request,
       const content::DesktopMediaID& media_id,
       blink::mojom::StreamDevices devices,
       std::unique_ptr<content::MediaStreamUI> ui);
 
-  bool IsRequestFirstInQueue(const RequestsQueue& queue,
-                             const content::MediaStreamRequest& request) const;
+  bool IsRequestFirstInQueue(
+      const RequestsQueue& queue,
+      const base::WeakPtr<PendingAccessRequest>& pending_request) const;
 
   // Called after the user interacts with the media-picker.
   // - If the user chooses to share a tab/window/screen, `result.value()` holds
@@ -118,6 +118,7 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
   //   error code.
   void OnDisplaySurfaceSelected(
       base::WeakPtr<content::WebContents> web_contents,
+      base::WeakPtr<PendingAccessRequest> pending_request,
       base::expected<content::DesktopMediaID,
                      blink::mojom::MediaStreamRequestResult> result);
 
@@ -130,9 +131,11 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Called back after checking Data Leak Prevention (DLP) restrictions.
-  void OnDlpRestrictionChecked(base::WeakPtr<content::WebContents> web_contents,
-                               const content::DesktopMediaID& media_id,
-                               bool is_dlp_allowed);
+  void OnDlpRestrictionChecked(
+      base::WeakPtr<content::WebContents> web_contents,
+      base::WeakPtr<PendingAccessRequest> pending_request,
+      const content::DesktopMediaID& media_id,
+      bool is_dlp_allowed);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   void DeletePendingAccessRequest(int render_process_id,

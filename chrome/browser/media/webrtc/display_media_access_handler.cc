@@ -365,20 +365,10 @@ void DisplayMediaAccessHandler::ShowMediaSelectionDialog(
 
 bool DisplayMediaAccessHandler::IsRequestFirstInQueue(
     const RequestsQueue& queue,
-    const content::MediaStreamRequest& request) const {
+    const base::WeakPtr<PendingAccessRequest>& pending_request) const {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-
-  if (queue.empty()) {
-    return false;
-  }
-  const PendingAccessRequest& first_pending_request = *queue.front();
-  // If requests are different, then this is a stale request.
-  return first_pending_request.request.render_process_id ==
-             request.render_process_id &&
-         first_pending_request.request.render_frame_id ==
-             request.render_frame_id &&
-         first_pending_request.request.page_request_id ==
-             request.page_request_id;
+  return pending_request && !queue.empty() &&
+         queue.front().get() == pending_request.get();
 }
 
 void DisplayMediaAccessHandler::BypassMediaSelectionDialog(
@@ -451,12 +441,16 @@ void DisplayMediaAccessHandler::ProcessChangeSourceRequest(
 }
 
 void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
-    const RequestsQueue& queue,
+    RequestsQueue& queue,
     WebContents* web_contents) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(web_contents, base::NotFatalUntil::M161);
 
-  const PendingAccessRequest& pending_request = *queue.front();
+  PendingAccessRequest& pending_request = *queue.front();
+  if (pending_request.processing_started) {
+    return;
+  }
+  pending_request.processing_started = true;
 
   content::RenderFrameHost* const rfh = content::RenderFrameHost::FromID(
       pending_request.request.render_process_id,
@@ -487,7 +481,7 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
   }
 
   if (pending_request.request.request_type == blink::MEDIA_DEVICE_UPDATE) {
-    ProcessQueuedChangeSourceRequest(pending_request.request, web_contents);
+    ProcessQueuedChangeSourceRequest(pending_request, web_contents);
   } else {
     ProcessQueuedPickerRequest(pending_request, web_contents, capture_level,
                                request_origin);
@@ -495,7 +489,7 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
 }
 
 void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
-    const PendingAccessRequest& pending_request,
+    PendingAccessRequest& pending_request,
     WebContents* web_contents,
     AllowedScreenCaptureLevel capture_level,
     const GURL& request_origin) {
@@ -576,7 +570,8 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
   // destroyed when the browser process terminates.
   DesktopMediaPicker::DoneCallback done_callback =
       base::BindOnce(&DisplayMediaAccessHandler::OnDisplaySurfaceSelected,
-                     base::Unretained(this), web_contents->GetWeakPtr());
+                     base::Unretained(this), web_contents->GetWeakPtr(),
+                     pending_request.GetWeakPtr());
   DesktopMediaPicker::Params picker_params(
       DesktopMediaPicker::Params::RequestSource::kGetDisplayMedia);
   picker_params.web_contents = ui_web_contents;
@@ -620,8 +615,9 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
 }
 
 void DisplayMediaAccessHandler::ProcessQueuedChangeSourceRequest(
-    const content::MediaStreamRequest& request,
+    PendingAccessRequest& pending_request,
     WebContents* web_contents) {
+  const content::MediaStreamRequest& request = pending_request.request;
   CHECK(web_contents, base::NotFatalUntil::M161);
   CHECK(!request.requested_video_device_ids.empty(), base::NotFatalUntil::M161);
 
@@ -636,7 +632,8 @@ void DisplayMediaAccessHandler::ProcessQueuedChangeSourceRequest(
                           DesktopMediaID::kNullId, web_contents_id);
   media_id.audio_share =
       request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE;
-  OnDisplaySurfaceSelected(web_contents->GetWeakPtr(), media_id);
+  OnDisplaySurfaceSelected(web_contents->GetWeakPtr(),
+                           pending_request.GetWeakPtr(), media_id);
 }
 
 void DisplayMediaAccessHandler::RejectRequest(WebContents* web_contents,
@@ -695,13 +692,13 @@ void DisplayMediaAccessHandler::AcceptRequest(WebContents* web_contents,
       base::BindOnce(&DisplayMediaAccessHandler::
                          OnDesktopCaptureDevicesObtainedAfterAcceptRequest,
                      base::Unretained(this), web_contents->GetWeakPtr(),
-                     pending_request.request, media_id));
+                     pending_request.GetWeakPtr(), media_id));
 }
 
 void DisplayMediaAccessHandler::
     OnDesktopCaptureDevicesObtainedAfterAcceptRequest(
         base::WeakPtr<WebContents> web_contents,
-        content::MediaStreamRequest request,
+        base::WeakPtr<PendingAccessRequest> originating_request,
         const DesktopMediaID& media_id,
         blink::mojom::StreamDevices devices,
         std::unique_ptr<content::MediaStreamUI> ui) {
@@ -722,7 +719,7 @@ void DisplayMediaAccessHandler::
   }
 
   // Only do something if the request is still pending.
-  if (IsRequestFirstInQueue(queue, request)) {
+  if (IsRequestFirstInQueue(queue, originating_request)) {
     PendingAccessRequest& pending_request = *(queue.front());
     UpdateTarget(pending_request.request, media_id);
 
@@ -744,12 +741,24 @@ void DisplayMediaAccessHandler::
 
 void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
     base::WeakPtr<WebContents> web_contents,
+    base::WeakPtr<PendingAccessRequest> originating_request,
     base::expected<DesktopMediaID, MediaStreamRequestResult> result) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!web_contents) {
     // WebContentsDestroyed() will evict the entry from `pending_requests_`,
     // which was associated with `web_contents` before it got null-out.
+    return;
+  }
+
+  auto it = pending_requests_.find(web_contents.get());
+  if (it == pending_requests_.end() || it->second.empty()) {
+    return;
+  }
+  RequestsQueue& queue = it->second;
+  if (!IsRequestFirstInQueue(queue, originating_request)) {
+    // The picker result belongs to a cancelled request, not its replacement.
+    ProcessQueuedAccessRequest(queue, web_contents.get());
     return;
   }
 
@@ -796,7 +805,8 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
   policy::DlpContentManager::Get()->CheckScreenShareRestriction(
       media_id, GetApplicationTitle(web_contents.get()),
       base::BindOnce(&DisplayMediaAccessHandler::OnDlpRestrictionChecked,
-                     base::Unretained(this), web_contents, media_id));
+                     base::Unretained(this), web_contents, originating_request,
+                     media_id));
 #else   // BUILDFLAG(IS_CHROMEOS)
   AcceptRequest(web_contents.get(), media_id);
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -805,11 +815,24 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
 #if BUILDFLAG(IS_CHROMEOS)
 void DisplayMediaAccessHandler::OnDlpRestrictionChecked(
     base::WeakPtr<WebContents> web_contents,
+    base::WeakPtr<PendingAccessRequest> originating_request,
     const DesktopMediaID& media_id,
     bool is_dlp_allowed) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!web_contents) {
+    return;
+  }
+
+  auto it = pending_requests_.find(web_contents.get());
+  if (it == pending_requests_.end() || it->second.empty()) {
+    return;
+  }
+  RequestsQueue& queue = it->second;
+  if (!IsRequestFirstInQueue(queue, originating_request)) {
+    // The originating request was cancelled. Discard its surface and DLP
+    // decision, and let the next request make its own selection.
+    ProcessQueuedAccessRequest(queue, web_contents.get());
     return;
   }
 

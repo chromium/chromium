@@ -7,6 +7,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -14,7 +15,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/with_feature_override.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -249,6 +252,21 @@ class DisplayMediaAccessHandlerTest : public WebAppTest {
     return access_handler_->pending_requests_;
   }
 
+  base::OnceClosure MakeDeviceLookupCompletion() {
+    return base::BindOnce(
+        &DisplayMediaAccessHandler::
+            OnDesktopCaptureDevicesObtainedAfterAcceptRequest,
+        access_handler_->weak_factory_.GetWeakPtr(),
+        web_contents()->GetWeakPtr(),
+        access_handler_->pending_requests_.at(web_contents())
+            .front()
+            ->GetWeakPtr(),
+        content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
+                                content::DesktopMediaID::kFakeId),
+        blink::mojom::StreamDevices(),
+        std::unique_ptr<content::MediaStreamUI>());
+  }
+
   void ChangeSourceRequestTest(
       bool with_audio,
       blink::mojom::MediaStreamRequestResult expected_result,
@@ -467,6 +485,98 @@ TEST_P(DisplayMediaAccessHandlerActiveRfhTest, ProcessRequest) {
                                       FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_HANDLER);
 }
 
+// The real picker posts its result independently of its lifetime. Exercise
+// cancellation after that post, before the handler receives success or failure.
+class DisplayMediaAccessHandlerStalePickerTest
+    : public DisplayMediaAccessHandlerTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {};
+
+TEST_P(DisplayMediaAccessHandlerStalePickerTest,
+       CancelledPickerDoesNotCompleteReplacement) {
+  const auto [stale_success, enqueue_before_cancellation] = GetParam();
+  auto first_flags = MakePickerTestFlags(false);
+  first_flags.result_survives_picker = true;
+  if (!stale_success) {
+    first_flags.picker_result = base::unexpected(
+        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_USER);
+  }
+  auto second_flags = MakePickerTestFlags(true);
+  second_flags.picker_result = base::unexpected(
+      blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM);
+  SetTestFlags({first_flags, second_flags});
+#if BUILDFLAG(IS_CHROMEOS)
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_observer(
+      &mock_dlp_content_manager);
+  EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction).Times(0);
+#endif
+
+  auto first_request = MakeRequest(/*request_audio=*/false);
+  // Reuse all three IDs, but request different capture flags.
+  auto second_request = MakeRequest(/*request_audio=*/true);
+  base::MockCallback<content::MediaResponseCallback> first_response;
+  EXPECT_CALL(first_response, Run).Times(0);
+  access_handler_->HandleRequest(web_contents(), first_request,
+                                 first_response.Get(), nullptr);
+  base::RunLoop second_wait_loop;
+  auto second_result = blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED;
+  blink::mojom::StreamDevices second_devices;
+  if (enqueue_before_cancellation) {
+    HandleRequest(second_request, &second_wait_loop, &second_result,
+                  second_devices);
+    EXPECT_FALSE(test_flags_[1].picker_shown);
+  }
+  access_handler_->UpdateMediaRequestState(
+      first_request.render_process_id, first_request.render_frame_id,
+      first_request.page_request_id, first_request.video_type,
+      content::MEDIA_REQUEST_STATE_CLOSING);
+  ASSERT_TRUE(test_flags_[0].picker_deleted);
+  if (!enqueue_before_cancellation) {
+    HandleRequest(second_request, &second_wait_loop, &second_result,
+                  second_devices);
+  }
+
+  second_wait_loop.Run();
+  EXPECT_TRUE(test_flags_[1].picker_shown);
+  EXPECT_EQ(
+      second_result,
+      blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM);
+  EXPECT_EQ(0u, blink::CountDevices(second_devices));
+  EXPECT_TRUE(GetRequestQueues().at(web_contents()).empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DisplayMediaAccessHandlerStalePickerTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+TEST_F(DisplayMediaAccessHandlerTest,
+       StaleDeviceLookupDoesNotCompleteRequestWithReusedIds) {
+  auto first_flags = MakePickerTestFlags(false);
+  first_flags.cancelled = true;
+  auto second_flags = MakePickerTestFlags(true);
+  second_flags.cancelled = true;
+  SetTestFlags({first_flags, second_flags});
+  auto first_request = MakeRequest(/*request_audio=*/false);
+  base::MockCallback<content::MediaResponseCallback> first_response;
+  base::MockCallback<content::MediaResponseCallback> second_response;
+  EXPECT_CALL(first_response, Run).Times(0);
+  EXPECT_CALL(second_response, Run).Times(0);
+  access_handler_->HandleRequest(web_contents(), first_request,
+                                 first_response.Get(), nullptr);
+  // Hold the completion as if the device lookup were still in flight.
+  auto completion = MakeDeviceLookupCompletion();
+  access_handler_->UpdateMediaRequestState(
+      first_request.render_process_id, first_request.render_frame_id,
+      first_request.page_request_id, first_request.video_type,
+      content::MEDIA_REQUEST_STATE_CLOSING);
+  access_handler_->HandleRequest(web_contents(), MakeRequest(true),
+                                 second_response.Get(), nullptr);
+  std::move(completion).Run();
+  EXPECT_EQ(1u, GetRequestQueues().at(web_contents()).size());
+  EXPECT_TRUE(test_flags_[1].picker_shown);
+  EXPECT_FALSE(test_flags_[1].picker_deleted);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DisplayMediaAccessHandlerTest, DlpRestricted) {
   const content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
@@ -546,6 +656,127 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpRestrictedWithQueuedRequest) {
             result2);
   EXPECT_EQ(0u, blink::CountDevices(devices2));
 }
+
+// Exercise both DLP decisions, with the replacement request either already
+// queued or starting after cancellation has emptied the queue.
+class DisplayMediaAccessHandlerStaleDlpTest
+    : public DisplayMediaAccessHandlerTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {};
+
+TEST_P(DisplayMediaAccessHandlerStaleDlpTest,
+       CancelledRequestDoesNotCompleteReplacement) {
+  const auto [stale_allowed, enqueue_before_cancellation, reuse_ids] =
+      GetParam();
+  SetTestFlags({MakePickerTestFlags(false), MakePickerTestFlags(true)});
+
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_observer(
+      &mock_dlp_content_manager);
+  base::OnceCallback<void(bool)> first_dlp_callback;
+  base::OnceCallback<void(bool)> second_dlp_callback;
+  EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction)
+      .WillOnce([&](const content::DesktopMediaID&, const std::u16string&,
+                    base::OnceCallback<void(bool)> callback) {
+        first_dlp_callback = std::move(callback);
+      })
+      .WillOnce([&](const content::DesktopMediaID&, const std::u16string&,
+                    base::OnceCallback<void(bool)> callback) {
+        second_dlp_callback = std::move(callback);
+      });
+
+  auto first_request = MakeRequest(/*request_audio=*/false);
+  auto second_request = MakeRequest(/*request_audio=*/true);
+  if (!reuse_ids) {
+    second_request.page_request_id = first_request.page_request_id + 1;
+  }
+  base::MockCallback<content::MediaResponseCallback> first_response;
+  EXPECT_CALL(first_response, Run).Times(0);
+  access_handler_->HandleRequest(web_contents(), first_request,
+                                 first_response.Get(), nullptr);
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !first_dlp_callback.is_null(); }));
+
+  base::RunLoop second_wait_loop;
+  blink::mojom::MediaStreamRequestResult second_result =
+      blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED;
+  blink::mojom::StreamDevices second_devices;
+  if (enqueue_before_cancellation) {
+    HandleRequest(second_request, &second_wait_loop, &second_result,
+                  second_devices);
+    EXPECT_FALSE(test_flags_[1].picker_shown);
+  }
+  access_handler_->UpdateMediaRequestState(
+      first_request.render_process_id, first_request.render_frame_id,
+      first_request.page_request_id, first_request.video_type,
+      content::MEDIA_REQUEST_STATE_CLOSING);
+  if (!enqueue_before_cancellation) {
+    HandleRequest(second_request, &second_wait_loop, &second_result,
+                  second_devices);
+    ASSERT_TRUE(
+        base::test::RunUntil([&] { return !second_dlp_callback.is_null(); }));
+  }
+
+  // Neither an old allow nor an old deny may complete the replacement request.
+  std::move(first_dlp_callback).Run(stale_allowed);
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return !second_dlp_callback.is_null(); }));
+  EXPECT_EQ(second_result,
+            blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED);
+  EXPECT_TRUE(test_flags_[1].picker_shown);
+  ASSERT_TRUE(second_dlp_callback);
+  EXPECT_FALSE(test_flags_[1].picker_deleted);
+
+  // The replacement must receive its own DLP decision, exactly once.
+  // Resolve asynchronously so any erroneously restarted picker also delivers
+  // its result, which would violate the two-call DLP expectation above.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(second_dlp_callback), false));
+  second_wait_loop.Run();
+  EXPECT_EQ(second_result,
+            blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED);
+  EXPECT_EQ(0u, blink::CountDevices(second_devices));
+  EXPECT_TRUE(GetRequestQueues().at(web_contents()).empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DisplayMediaAccessHandlerStaleDlpTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
+
+class DisplayMediaAccessHandlerCancelledDlpTest
+    : public DisplayMediaAccessHandlerTest,
+      public testing::WithParamInterface<bool> {};
+
+TEST_P(DisplayMediaAccessHandlerCancelledDlpTest,
+       DlpCallbackAfterOnlyRequestCancelled) {
+  SetTestFlags({MakePickerTestFlags(false)});
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_observer(
+      &mock_dlp_content_manager);
+  base::OnceCallback<void(bool)> dlp_callback;
+  EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction)
+      .WillOnce([&](const content::DesktopMediaID&, const std::u16string&,
+                    base::OnceCallback<void(bool)> callback) {
+        dlp_callback = std::move(callback);
+      });
+  auto request = MakeRequest(/*request_audio=*/false);
+  base::MockCallback<content::MediaResponseCallback> response;
+  EXPECT_CALL(response, Run).Times(0);
+  access_handler_->HandleRequest(web_contents(), request, response.Get(),
+                                 nullptr);
+  ASSERT_TRUE(base::test::RunUntil([&] { return !dlp_callback.is_null(); }));
+  access_handler_->UpdateMediaRequestState(
+      request.render_process_id, request.render_frame_id,
+      request.page_request_id, request.video_type,
+      content::MEDIA_REQUEST_STATE_CLOSING);
+  std::move(dlp_callback).Run(GetParam());
+  EXPECT_TRUE(GetRequestQueues().at(web_contents()).empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DisplayMediaAccessHandlerCancelledDlpTest,
+                         testing::Bool());
 
 TEST_F(DisplayMediaAccessHandlerTest, DlpNotRestricted) {
   const content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,

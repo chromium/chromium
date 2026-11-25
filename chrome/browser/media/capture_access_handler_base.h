@@ -8,6 +8,7 @@
 #include <list>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -73,6 +74,17 @@ class CaptureAccessHandlerBase : public MediaAccessHandler {
     std::u16string application_title;
     const bool should_display_notification;
     const bool is_allowlisted_extension;
+
+    // True once a handler has started processing this request (e.g., shown its
+    // picker). Currently only used by DisplayMediaAccessHandler.
+    bool processing_started = false;
+
+    base::WeakPtr<PendingAccessRequest> GetWeakPtr() {
+      return weak_factory_.GetWeakPtr();
+    }
+
+   private:
+    base::WeakPtrFactory<PendingAccessRequest> weak_factory_{this};
   };
 
   using RequestsQueue =

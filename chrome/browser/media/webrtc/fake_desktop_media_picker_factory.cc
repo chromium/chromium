@@ -70,7 +70,12 @@ void FakeDesktopMediaPicker::Show(
   EXPECT_TRUE(params.modality == ui::mojom::ModalType::kChild ||
               params.modality == ui::mojom::ModalType::kWindow);
 
-  if (!expectation_->cancelled) {
+  if (expectation_->result_survives_picker) {
+    CHECK(expectation_->picker_result.has_value());
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(done_callback),
+                                  expectation_->picker_result.value()));
+  } else if (!expectation_->cancelled) {
     // Post a task to call the callback asynchronously.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

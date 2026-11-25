@@ -40,6 +40,10 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
     bool picker_created = false;
     bool picker_shown = false;
     bool picker_deleted = false;
+
+    // Post the result independently of the picker, as the Views pickers do
+    // after the user has made a selection.
+    bool result_survives_picker = false;
   };
 
   FakeDesktopMediaPickerFactory();
