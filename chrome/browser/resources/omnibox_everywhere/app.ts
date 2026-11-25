@@ -779,6 +779,12 @@ export class OmniboxEverywhereAppElement extends
   // browser subtracts all no-drag boxes, so don't nest `drag` in `no-drag`.
   private onMousedown_(e: MouseEvent) {
     const target = e.composedPath()[0];
+    // Text fields keep their default action, so clicking one focuses it.
+    if (target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        (target instanceof HTMLElement && target.isContentEditable)) {
+      return;
+    }
     if (e.button === 0 && target instanceof Element &&
         getComputedStyle(target).getPropertyValue('app-region') === 'drag') {
       e.preventDefault();

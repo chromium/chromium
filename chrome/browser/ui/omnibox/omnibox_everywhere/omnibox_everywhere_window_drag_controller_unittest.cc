@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_window_drag_controller.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
@@ -38,7 +39,16 @@ struct FakeDelegate : public OmniboxEverywhereWindowDragController::Delegate {
   bool IsWindowDragging() const override { return is_dragging; }
   void OnWindowDragStarted() override { is_dragging = true; }
   void OnWindowDragEnded() override { is_dragging = false; }
+  void ForwardMouseEventToRenderer(const WebMouseEvent& event) override {
+    // Pass a copy back through the controller, as the real delegate does.
+    const WebMouseEvent copy = event;
+    if (!controller->PreHandleMouseEvent(copy)) {
+      forwarded.push_back(copy);
+    }
+  }
 
+  raw_ptr<OmniboxEverywhereWindowDragController> controller = nullptr;
+  std::vector<WebMouseEvent> forwarded;
   raw_ptr<views::Widget> widget = nullptr;
   gfx::Rect draggable_rect{0, 0, 100, 100};
   bool can_start = true;
@@ -52,11 +62,13 @@ class OmniboxEverywhereWindowDragControllerTest : public ChromeViewsTestBase {
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     widget_->SetBounds(gfx::Rect(200, 200, 400, 300));
     delegate_.widget = widget_.get();
+    delegate_.controller = &controller_;
   }
 
   void TearDown() override {
     controller_.Reset();
     delegate_.widget = nullptr;
+    delegate_.controller = nullptr;
     widget_.reset();
     ChromeViewsTestBase::TearDown();
   }
@@ -97,19 +109,39 @@ class OmniboxEverywhereWindowDragControllerTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
 };
 
-TEST_F(OmniboxEverywhereWindowDragControllerTest, PressArmsWithoutConsuming) {
-  // The press reaches the renderer so clicks and focus still work.
-  EXPECT_FALSE(Press(kDraggable));
+TEST_F(OmniboxEverywhereWindowDragControllerTest, ClickSendsHeldPress) {
+  // The press is held until it's known to be a click or a drag.
+  EXPECT_TRUE(Press(kDraggable));
   EXPECT_TRUE(controller_.has_pending_drag_for_testing());
 
-  // Moving below the drag threshold doesn't start a drag.
-  EXPECT_FALSE(MoveHeld(kDraggable + gfx::Vector2d(1, 0)));
+  // Moving below the drag threshold doesn't start a drag, and is hidden from
+  // the renderer since it hasn't seen the press.
+  EXPECT_TRUE(MoveHeld(kDraggable + gfx::Vector2d(1, 0)));
   EXPECT_TRUE(controller_.has_pending_drag_for_testing());
   EXPECT_FALSE(delegate_.is_dragging);
+  EXPECT_TRUE(delegate_.forwarded.empty());
 
-  // Releasing ends the pending drag without being consumed.
+  // Releasing sends the held press, then lets the release through.
   EXPECT_FALSE(Release(kDraggable));
+  ASSERT_EQ(1u, delegate_.forwarded.size());
+  EXPECT_EQ(WebInputEvent::Type::kMouseDown, delegate_.forwarded[0].GetType());
   EXPECT_FALSE(controller_.has_pending_drag_for_testing());
+}
+
+TEST_F(OmniboxEverywhereWindowDragControllerTest,
+       OtherButtonPressSendsHeldPress) {
+  EXPECT_TRUE(Press(kDraggable));
+  // Pressing another button means it isn't a drag, so the held press is sent
+  // before the other press goes through.
+  EXPECT_FALSE(
+      Send(WebInputEvent::Type::kMouseDown, kDraggable,
+           WebInputEvent::kLeftButtonDown | WebInputEvent::kRightButtonDown,
+           WebMouseEvent::Button::kRight));
+  ASSERT_EQ(1u, delegate_.forwarded.size());
+  EXPECT_EQ(WebMouseEvent::Button::kLeft, delegate_.forwarded[0].button);
+  EXPECT_FALSE(controller_.has_pending_drag_for_testing());
+  // The left release then goes through too.
+  EXPECT_FALSE(Release(kDraggable));
 }
 
 TEST_F(OmniboxEverywhereWindowDragControllerTest, PressesThatDoNotArm) {
@@ -139,6 +171,9 @@ TEST_F(OmniboxEverywhereWindowDragControllerTest,
   EXPECT_FALSE(Send(WebInputEvent::Type::kMouseMove, kDraggable,
                     WebInputEvent::kNoModifiers));
   EXPECT_FALSE(controller_.has_pending_drag_for_testing());
+  // The press is dropped, not sent.
+  EXPECT_FALSE(Release(kDraggable));
+  EXPECT_TRUE(delegate_.forwarded.empty());
 }
 
 TEST_F(OmniboxEverywhereWindowDragControllerTest,
@@ -146,9 +181,9 @@ TEST_F(OmniboxEverywhereWindowDragControllerTest,
   Press(kDraggable);
   // On macOS, a left-drag move handled after the button was lifted has no
   // button-down state. It isn't a missed release.
-  EXPECT_FALSE(Send(WebInputEvent::Type::kMouseMove,
-                    kDraggable + gfx::Vector2d(1, 0),
-                    WebInputEvent::kNoModifiers, WebMouseEvent::Button::kLeft));
+  EXPECT_TRUE(Send(WebInputEvent::Type::kMouseMove,
+                   kDraggable + gfx::Vector2d(1, 0),
+                   WebInputEvent::kNoModifiers, WebMouseEvent::Button::kLeft));
   EXPECT_TRUE(controller_.has_pending_drag_for_testing());
 }
 
@@ -165,6 +200,21 @@ TEST_F(OmniboxEverywhereWindowDragControllerTest,
   // Resetting before the posted move loop runs cancels it and ends the drag.
   controller_.Reset();
   EXPECT_FALSE(delegate_.is_dragging);
+  // The press is never sent to the renderer.
+  EXPECT_TRUE(delegate_.forwarded.empty());
+}
+
+TEST_F(OmniboxEverywhereWindowDragControllerTest, DragHidesRelease) {
+  Press(kDraggable);
+  ASSERT_TRUE(MoveHeld(kDraggable + gfx::Vector2d(50, 0)));
+  // A release seen while dragging is hidden, since the renderer never saw the
+  // press.
+  EXPECT_TRUE(Release(kDraggable + gfx::Vector2d(50, 0)));
+  EXPECT_FALSE(delegate_.is_dragging);
+  EXPECT_TRUE(delegate_.forwarded.empty());
+
+  // Later releases go through.
+  EXPECT_FALSE(Release(kDraggable));
 }
 
 TEST_F(OmniboxEverywhereWindowDragControllerTest,
@@ -206,7 +256,7 @@ TEST_F(OmniboxEverywhereWindowDragControllerTest,
   };
   EXPECT_FALSE(is_suppressed());
 
-  EXPECT_FALSE(Press(kDraggable));
+  EXPECT_TRUE(Press(kDraggable));
   EXPECT_TRUE(is_suppressed());
   MoveHeld(kDraggable + gfx::Vector2d(1, 0));
   EXPECT_TRUE(is_suppressed());

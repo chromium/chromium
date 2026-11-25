@@ -10,7 +10,7 @@ import '//resources/cr_components/composebox/composebox_file_inputs.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import './profile_icon.js';
 
-import {recordContextAdditionMethod} from '//resources/cr_components/composebox/common.js';
+import {getLoadTimeBoolean, recordContextAdditionMethod} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxState, ContextualUpload} from '//resources/cr_components/composebox/common.js';
 import {HelpBubbleMixinLit} from '//resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
@@ -297,6 +297,9 @@ export class OmniboxEverywhereOmniboxElement extends
     this.pageHandler_.getInputState().then((response) => {
       this.inputState_ = response.state;
     });
+    this.toggleAttribute(
+        'draggable-empty-input',
+        getLoadTimeBoolean('draggableEmptyInput', false));
   }
 
   override disconnectedCallback() {

@@ -254,6 +254,18 @@ ntp-error-scrim {
   -webkit-app-region: no-drag;
 }
 
+cr-composebox-input::part(input) {
+  cursor: text;
+}
+
+/* Allow dragging the window from the compose input when empty while preserving
+ * text selection once user input is active. Uses [empty-input] rather than
+ * :placeholder-shown, since the input may be a contenteditable div. */
+:host([draggable-empty-input]) cr-composebox-input[empty-input]::part(input) {
+  -webkit-app-region: drag;
+  -webkit-user-drag: none;
+}
+
 cr-composebox-input::part(icon-container) {
   -webkit-app-region: drag;
   -webkit-user-drag: none;

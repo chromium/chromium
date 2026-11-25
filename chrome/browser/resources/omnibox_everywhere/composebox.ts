@@ -192,6 +192,9 @@ export class OmniboxEverywhereComposeboxElement extends
 
   override connectedCallback() {
     super.connectedCallback();
+    this.toggleAttribute(
+        'draggable-empty-input',
+        getLoadTimeBoolean('draggableEmptyInput', false));
     if (!this.isPendingContextUpload) {
       this.playGlowAnimation();
       this.refreshTabSuggestions(/*forceRefresh=*/ true);
