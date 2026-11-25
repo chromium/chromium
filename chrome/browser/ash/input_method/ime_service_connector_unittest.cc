@@ -41,9 +41,7 @@ class ImeServiceConnectorTest : public testing::Test {
     profile_ = TestingProfile::Builder()
                    .SetPath(temp_dir_.GetPath())
                    .SetSharedURLLoaderFactory(
-                       base::MakeRefCounted<
-                           network::WeakWrapperSharedURLLoaderFactory>(
-                           &test_url_loader_factory_))
+                       test_url_loader_factory_.GetSafeWeakWrapper())
                    .Build();
     connector_ = std::make_unique<ImeServiceConnector>(profile_.get());
   }
