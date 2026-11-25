@@ -13,7 +13,6 @@
 #include "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/model/sync_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 namespace ios {
 
@@ -28,8 +27,7 @@ std::unique_ptr<KeyedService> WebHistoryServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<history::WebHistoryService>(
       SyncServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          profile.GetURLLoaderFactory()));
+      profile.GetSharedURLLoaderFactory());
 }
 
 }  // namespace ios

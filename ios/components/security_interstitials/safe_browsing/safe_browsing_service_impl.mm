@@ -82,7 +82,9 @@ SafeBrowsingServiceImpl::SafeBrowsingServiceImpl() {
           url_loader_factory_.get());
 }
 
-SafeBrowsingServiceImpl::~SafeBrowsingServiceImpl() = default;
+SafeBrowsingServiceImpl::~SafeBrowsingServiceImpl() {
+  shared_url_loader_factory_->Detach();
+}
 
 void SafeBrowsingServiceImpl::Initialize(const base::FilePath& user_data_path) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
@@ -171,6 +173,7 @@ void SafeBrowsingServiceImpl::ShutDown() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   pref_change_registrars_.clear();
+  shared_url_loader_factory_->Detach();
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&IOThreadEnabler::ShutDown, io_thread_enabler_));

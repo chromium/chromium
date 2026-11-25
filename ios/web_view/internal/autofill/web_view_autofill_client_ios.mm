@@ -38,7 +38,6 @@
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 namespace autofill {
 
@@ -116,8 +115,7 @@ bool WebViewAutofillClientIOS::IsOffTheRecord() const {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 WebViewAutofillClientIOS::GetURLLoaderFactory() {
-  return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-      web_state()->GetBrowserState()->GetURLLoaderFactory());
+  return web_state()->GetBrowserState()->GetSharedURLLoaderFactory();
 }
 
 AutofillCrowdsourcingManager&

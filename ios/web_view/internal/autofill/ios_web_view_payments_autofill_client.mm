@@ -33,7 +33,7 @@
 #import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
-#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace autofill::payments {
 
@@ -45,8 +45,7 @@ IOSWebViewPaymentsAutofillClient::IOSWebViewPaymentsAutofillClient(
       bridge_(bridge),
       payments_network_interface_(
           std::make_unique<payments::PaymentsNetworkInterface>(
-              base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                  web_state->GetBrowserState()->GetURLLoaderFactory()),
+              web_state->GetBrowserState()->GetSharedURLLoaderFactory(),
               client->GetIdentityManager(),
               &client->GetPersonalDataManager().payments_data_manager(),
               web_state->GetBrowserState()->IsOffTheRecord())),

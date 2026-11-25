@@ -65,7 +65,7 @@
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "ios/web/public/web_state.h"
-#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace autofill::payments {
 namespace {
@@ -89,8 +89,7 @@ IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
       infobar_manager_(CHECK_DEREF(infobar_manager)),
       payments_network_interface_(
           std::make_unique<payments::PaymentsNetworkInterface>(
-              base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                  web_state->GetBrowserState()->GetURLLoaderFactory()),
+              web_state->GetBrowserState()->GetSharedURLLoaderFactory(),
               client->GetIdentityManager(),
               &client->GetPersonalDataManager().payments_data_manager(),
               web_state->GetBrowserState()->IsOffTheRecord())),

@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 std::unique_ptr<ntp_tiles::PopularSites>
 IOSPopularSitesFactory::NewForBrowserState(ProfileIOS* profile) {
@@ -20,6 +19,5 @@ IOSPopularSitesFactory::NewForBrowserState(ProfileIOS* profile) {
       profile->GetPrefs(),
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       GetApplicationContext()->GetVariationsService(),
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          profile->GetURLLoaderFactory()));
+      profile->GetSharedURLLoaderFactory());
 }

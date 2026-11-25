@@ -120,7 +120,6 @@
 #import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 using personal_context::PersonalContextEligibilityService;
 using personal_context::PersonalContextEligibilityState;
@@ -259,8 +258,7 @@ bool ChromeAutofillClientIOS::IsOffTheRecord() const {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeAutofillClientIOS::GetURLLoaderFactory() {
-  return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-      web_state()->GetBrowserState()->GetURLLoaderFactory());
+  return web_state()->GetBrowserState()->GetSharedURLLoaderFactory();
 }
 
 AutofillCrowdsourcingManager&
