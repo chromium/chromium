@@ -216,6 +216,13 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // Handle a hover event from the renderer process.
   void HandleHoverEvent(ui::BrowserAccessibility* node);
 
+  // Returns true if `node` is an editable combobox whose
+  // `aria-activedescendant` changed to a valid node in the current event batch.
+  // Used to suppress redundant text/selection events that would interrupt
+  // active-descendant announcements on Android.
+  bool IsComboBoxWithActiveDescendantChange(
+      const BrowserAccessibilityAndroid* node) const;
+
   void FireDocumentSelectionChangedEvent(WebContentsAccessibilityBase* wcax);
 
   // Fires a text selection changed event on the root of the main frame, which

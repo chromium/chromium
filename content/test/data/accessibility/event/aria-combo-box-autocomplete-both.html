@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <input id="cb" role="combobox" type="text" aria-label="State"
+    aria-expanded="true" aria-autocomplete="both" aria-controls="list">
+  <ul id="list" role="listbox">
+    <li id="option1" role="option">Alabama</li>
+    <li id="option2" role="option">Alaska</li>
+  </ul>
+  <script>
+    const cb = document.getElementById('cb');
+    cb.focus();
+    const go_passes = [
+      () => {
+        cb.setAttribute('aria-activedescendant', 'option1');
+        cb.value = 'Alabama';
+        cb.setSelectionRange(7, 7);
+      },
+      () => {
+        cb.setAttribute('aria-activedescendant', 'option2');
+        cb.value = 'Alaska';
+        cb.setSelectionRange(6, 6);
+      },
+      () => {
+        cb.removeAttribute('aria-activedescendant');
+        cb.value = 'Alask';
+        cb.setSelectionRange(5, 5);
+      },
+    ];
+    let current_pass = 0;
+    function go() {
+      go_passes[current_pass++].call();
+      return current_pass < go_passes.length;
+    }
+  </script>
+</body>
+</html>

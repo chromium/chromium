@@ -394,6 +394,14 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_ariaComboboxAutocompleteBoth() {
+        performTest(
+                "aria-combo-box-autocomplete-both.html",
+                "aria-combo-box-autocomplete-both-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaComboboxCollapse() {
         performTest(
                 "aria-combo-box-collapse.html",

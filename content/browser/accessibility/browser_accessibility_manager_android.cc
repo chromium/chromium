@@ -467,9 +467,13 @@ void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
     return;
   }
 
-  // Send event to the focus node.
+  // Send event to the focus node unless it is an editable combobox navigating
+  // options via `aria-activedescendant` in this same update, where
+  // `HandleActiveDescendantChanged()` will announce the newly selected option.
   CHECK(selection->focus.node);
-  wcax->HandleTextSelectionChanged(selection->focus.node->GetUniqueId());
+  if (!IsComboBoxWithActiveDescendantChange(selection->focus.node)) {
+    wcax->HandleTextSelectionChanged(selection->focus.node->GetUniqueId());
+  }
 
   // The event is sent to the text field, but the extended selection which is
   // exposed on the root of the main frame is the page selection, and now must
@@ -490,6 +494,38 @@ bool isNodeLikelyKnownForExperiment(WebContentsAccessibilityBase* wcax,
     return wcax->IsNodeLikelyKnownByAndroidFrameworkForExperiment(unique_id);
   }
   return true;
+}
+
+// TODO(crbug.com/579059364): Remove this suppression logic once we implement
+// dedicated `aria-activedescendant` events and stop firing accessibility focus
+// events on descendants. TalkBack will then receive both text changes and
+// active-descendant events and can perform its own deduplication. Note that
+// this skips checking `mAccessibilityFocusId == activeDescendantId` in C++ to
+// avoid a per-event JNI call.
+bool BrowserAccessibilityManagerAndroid::IsComboBoxWithActiveDescendantChange(
+    const BrowserAccessibilityAndroid* node) const {
+  if (!node || !node->IsTextField() || !ui::IsComboBox(node->GetRole())) {
+    return false;
+  }
+  ui::AXNodeID active_descendant_id =
+      node->GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId);
+  if (active_descendant_id == ui::kInvalidAXNodeID) {
+    return false;
+  }
+  ui::BrowserAccessibility* active_descendant = GetFromID(active_descendant_id);
+  if (!active_descendant || active_descendant == node ||
+      active_descendant->IsInvisibleOrIgnored() ||
+      !active_descendant->CanFireEvents()) {
+    return false;
+  }
+  for (const auto& targeted_event : event_generator()) {
+    if (targeted_event.node_id == node->GetId() &&
+        targeted_event.event_params->event ==
+            ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool BrowserAccessibilityManagerAndroid::ShouldFireGeneratedEvent(
@@ -722,7 +758,8 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       // leaf node might not be a text field. For example, in the unusual case
       // when the text field is inside a button, the leaf node is the button not
       // the text field.
-      if (android_node->IsTextField() && GetFocus() == wrapper) {
+      if (android_node->IsTextField() && GetFocus() == wrapper &&
+          !IsComboBoxWithActiveDescendantChange(android_node)) {
         int32_t text_change_types =
             ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGE_TYPE_UNDEFINED;
         if (android_node->GetBoolAttribute(

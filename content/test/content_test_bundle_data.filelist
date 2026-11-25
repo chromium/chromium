@@ -3299,6 +3299,8 @@ data/accessibility/event/aria-checked-changed-expected-auralinux.txt
 data/accessibility/event/aria-checked-changed-expected-uia-win.txt
 data/accessibility/event/aria-checked-changed-expected-win.txt
 data/accessibility/event/aria-checked-changed.html
+data/accessibility/event/aria-combo-box-autocomplete-both-expected-android.txt
+data/accessibility/event/aria-combo-box-autocomplete-both.html
 data/accessibility/event/aria-combo-box-collapse-expected-android.txt
 data/accessibility/event/aria-combo-box-collapse-expected-auralinux.txt
 data/accessibility/event/aria-combo-box-collapse-expected-mac.txt

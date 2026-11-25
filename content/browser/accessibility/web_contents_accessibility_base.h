@@ -467,9 +467,9 @@ class CONTENT_EXPORT WebContentsAccessibilityBase
   // Dispatches LIVE_REGION_NODE_CHANGED AxGeneratedEvents over the JNI Bridge.
   void HandleLiveRegionNodeChanged(int32_t unique_id);
   void HandleDefaultActionVerbChanged(int32_t unique_id);
-  void HandleActiveDescendantChanged(int32_t unique_id);
-  void HandleTextSelectionChanged(int32_t unique_id);
-  void HandleEditableTextChanged(int32_t unique_id, int32_t subType);
+  virtual void HandleActiveDescendantChanged(int32_t unique_id);
+  virtual void HandleTextSelectionChanged(int32_t unique_id);
+  virtual void HandleEditableTextChanged(int32_t unique_id, int32_t subType);
   void HandleSliderChanged(int32_t unique_id);
   void SendDelayedWindowContentChangedEvent();
   // Handles value changes triggered by increment/decrement spinbutton

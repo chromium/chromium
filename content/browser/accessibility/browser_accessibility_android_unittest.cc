@@ -3637,4 +3637,164 @@ TEST_F(BrowserAccessibilityAndroidTest,
   child_manager->OnAccessibilityEvents(updates_and_events);
 }
 
+// Regression test for crbug.com/535319660. When an editable combobox updates
+// its text value and selection in the same atomic update as an
+// `aria-activedescendant` change to a valid option, suppress the redundant
+// `HandleEditableTextChanged()` and `HandleTextSelectionChanged()` calls so
+// TalkBack announces the option cleanly without text-diff or "End of field"
+// noise. Editing without an active-descendant change must still emit both.
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestComboboxActiveDescendantSuppressesRedundantTextEvents) {
+  class MockComboBoxWebContentsAccessibility
+      : public MockWebContentsAccessibilityBase {
+   public:
+    MOCK_METHOD(void,
+                HandleActiveDescendantChanged,
+                (int32_t unique_id),
+                (override));
+    MOCK_METHOD(void,
+                HandleTextSelectionChanged,
+                (int32_t unique_id),
+                (override));
+    MOCK_METHOD(void,
+                HandleEditableTextChanged,
+                (int32_t unique_id, int32_t subType),
+                (override));
+  };
+
+  testing::NiceMock<MockComboBoxWebContentsAccessibility> combobox_wcax;
+  ui::TestAXPlatformTreeManagerDelegate delegate;
+  delegate.SetWebContentsAccessibility(&combobox_wcax);
+
+  ui::AXNodeData option1;
+  option1.id = 4;
+  option1.role = ax::mojom::Role::kListBoxOption;
+  option1.SetName("Alabama");
+
+  ui::AXNodeData option2;
+  option2.id = 5;
+  option2.role = ax::mojom::Role::kListBoxOption;
+  option2.SetName("Alaska");
+
+  ui::AXNodeData listbox;
+  listbox.id = 3;
+  listbox.role = ax::mojom::Role::kListBox;
+  listbox.child_ids = {option1.id, option2.id};
+
+  ui::AXNodeData combobox;
+  combobox.id = 2;
+  combobox.role = ax::mojom::Role::kTextFieldWithComboBox;
+  combobox.AddState(ax::mojom::State::kEditable);
+  combobox.AddState(ax::mojom::State::kFocusable);
+  combobox.AddState(ax::mojom::State::kExpanded);
+  combobox.SetValue("Alabama");
+  combobox.AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
+                           option1.id);
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {combobox.id, listbox.id};
+
+  ui::AXTreeUpdate initial_update =
+      MakeAXTreeUpdateForTesting(root, combobox, listbox, option1, option2);
+  initial_update.has_tree_data = true;
+  initial_update.tree_data.focus_id = combobox.id;
+  initial_update.tree_data.sel_anchor_object_id = combobox.id;
+  initial_update.tree_data.sel_anchor_offset = 7;
+  initial_update.tree_data.sel_focus_object_id = combobox.id;
+  initial_update.tree_data.sel_focus_offset = 7;
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(initial_update,
+                                                 node_id_delegate_, &delegate));
+  ASSERT_NE(nullptr, manager.get());
+  auto* combobox_node = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetFromID(combobox.id));
+  ASSERT_NE(nullptr, combobox_node);
+  int32_t combobox_uid = combobox_node->GetUniqueId();
+
+  // Case 1: Active descendant changes to `option2` while value and selection
+  // also update in the same atomic update -> fire only
+  // `HandleActiveDescendantChanged()`.
+  {
+    EXPECT_CALL(combobox_wcax, HandleActiveDescendantChanged(combobox_uid))
+        .Times(1);
+    EXPECT_CALL(combobox_wcax,
+                HandleEditableTextChanged(combobox_uid, testing::_))
+        .Times(0);
+    EXPECT_CALL(combobox_wcax, HandleTextSelectionChanged(combobox_uid))
+        .Times(0);
+
+    ui::AXNodeData updated_combobox = combobox;
+    updated_combobox.SetValue("Alaska");
+    updated_combobox.AddIntAttribute(
+        ax::mojom::IntAttribute::kActivedescendantId, option2.id);
+
+    ui::AXUpdatesAndEvents updates_and_events;
+    updates_and_events.updates.resize(1);
+    updates_and_events.updates[0].has_tree_data = true;
+    updates_and_events.updates[0].tree_data = manager->GetTreeData();
+    updates_and_events.updates[0].tree_data.sel_anchor_offset = 6;
+    updates_and_events.updates[0].tree_data.sel_focus_offset = 6;
+    updates_and_events.updates[0].nodes = {updated_combobox};
+    manager->OnAccessibilityEvents(updates_and_events);
+    testing::Mock::VerifyAndClearExpectations(&combobox_wcax);
+  }
+
+  // Case 2: Value and selection change while active descendant stays unchanged
+  // (e.g., user typing/deleting) -> both text and selection events still fire.
+  {
+    EXPECT_CALL(combobox_wcax, HandleActiveDescendantChanged(testing::_))
+        .Times(0);
+    EXPECT_CALL(combobox_wcax,
+                HandleEditableTextChanged(combobox_uid, testing::_))
+        .Times(1);
+    EXPECT_CALL(combobox_wcax, HandleTextSelectionChanged(combobox_uid))
+        .Times(1);
+
+    ui::AXNodeData updated_combobox = combobox;
+    updated_combobox.SetValue("Alask");
+    updated_combobox.AddIntAttribute(
+        ax::mojom::IntAttribute::kActivedescendantId, option2.id);
+
+    ui::AXUpdatesAndEvents updates_and_events;
+    updates_and_events.updates.resize(1);
+    updates_and_events.updates[0].has_tree_data = true;
+    updates_and_events.updates[0].tree_data = manager->GetTreeData();
+    updates_and_events.updates[0].tree_data.sel_anchor_offset = 5;
+    updates_and_events.updates[0].tree_data.sel_focus_offset = 5;
+    updates_and_events.updates[0].nodes = {updated_combobox};
+    manager->OnAccessibilityEvents(updates_and_events);
+    testing::Mock::VerifyAndClearExpectations(&combobox_wcax);
+  }
+
+  // Case 3: Active descendant is cleared (`kInvalidAXNodeID`) while value and
+  // selection change -> both text and selection events still fire.
+  {
+    EXPECT_CALL(combobox_wcax, HandleActiveDescendantChanged(combobox_uid))
+        .Times(1);
+    EXPECT_CALL(combobox_wcax,
+                HandleEditableTextChanged(combobox_uid, testing::_))
+        .Times(1);
+    EXPECT_CALL(combobox_wcax, HandleTextSelectionChanged(combobox_uid))
+        .Times(1);
+
+    ui::AXNodeData updated_combobox = combobox;
+    updated_combobox.SetValue("Alas");
+    updated_combobox.RemoveIntAttribute(
+        ax::mojom::IntAttribute::kActivedescendantId);
+
+    ui::AXUpdatesAndEvents updates_and_events;
+    updates_and_events.updates.resize(1);
+    updates_and_events.updates[0].has_tree_data = true;
+    updates_and_events.updates[0].tree_data = manager->GetTreeData();
+    updates_and_events.updates[0].tree_data.sel_anchor_offset = 4;
+    updates_and_events.updates[0].tree_data.sel_focus_offset = 4;
+    updates_and_events.updates[0].nodes = {updated_combobox};
+    manager->OnAccessibilityEvents(updates_and_events);
+    testing::Mock::VerifyAndClearExpectations(&combobox_wcax);
+  }
+}
+
 }  // namespace content

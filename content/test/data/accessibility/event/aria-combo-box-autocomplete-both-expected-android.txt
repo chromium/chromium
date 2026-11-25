@@ -1,0 +1,6 @@
+=== END INITIAL PAGE LOAD ===
+TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.View on [Alabama] class_name=android.view.View
+TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.View on [Alaska] class_name=android.view.View
+TYPE_VIEW_TEXT_SELECTION_CHANGED class_name=android.widget.EditText [5, 5] on [Alask] class_name=android.widget.EditText
+TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.widget.EditText on [Alask] class_name=android.widget.EditText
+TYPE_VIEW_TEXT_CHANGED class_name=android.widget.EditText [5, 0, 1] text=[Alask] beforeText=Alaska on [Alask] class_name=android.widget.EditText
