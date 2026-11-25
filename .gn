@@ -353,6 +353,7 @@ no_check_generated_targets = [
   "//components/webui/safe_browsing/resources:resources",
   "//components/webui/user_actions/resources:resources",
   "//components/webui/version/resources:resources",
+  "//components/zucchini:zucchini_dex_integration_test__library__jni_registration_source_set",
   "//components/zucchini:zucchini_integration_test__library__jni_registration_source_set",
   "//components/zucchini:zucchini_unittests__library__jni_registration_source_set",
   "//components:components_browsertests__library__jni_registration_source_set",
