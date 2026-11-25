@@ -27,6 +27,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -89,6 +90,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_created_waiter.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -6174,6 +6176,77 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithActionFirstSuggestionsEnabled,
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
+
+// TODO(b/587942594): Enable the non-Floaty steps of this test on Android once
+// `detachPanel()` (desktop-only Floaty) is split out and Android `kPeeked`
+// background-request gating after tab switches is handled.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(GlicApiActorTest, testGetActuationLocalityState) {
+  tabs::TabInterface* tab_a = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab_a);
+  tabs::TabInterface* tab_b = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(tab_b);
+  ActivateTab(tab_a);
+
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  // Unpin `tab_a` to verify side-panel adjacency holds even when unpinned.
+  instance->GetSharingManager()->UnpinTabs({tab_a->GetHandle()});
+
+  // Start `task1` on `tab_a` before `RegisterConversation()`. Unregistered
+  // instance still reports `NOT_LOCAL`.
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  ASSERT_TRUE(actor_service);
+  actor::TaskId task1_id = actor_service->CreateTask(
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
+                            "conv-locality"),
+      actor::NoEnterprisePolicyChecker());
+  actor::ActorTask* task1 = actor_service->GetTask(task1_id);
+  ASSERT_TRUE(task1);
+  actor::AddTabToTask(*tab_a, *task1);
+  task1->Pause(/*from_actor=*/true);
+
+  base::DictValue params;
+  params.Set("tabAId", GlicTabId(tab_a->GetHandle()));
+  params.Set("tabBId", GlicTabId(tab_b->GetHandle()));
+
+  // Step 0: Unregistered instance emits `NOT_LOCAL`.
+  ExecuteJsTest({.params = base::Value(std::move(params))});
+
+  // Step 1: Registering `"conv-locality"` matches `task1` on `tab_a` and emits
+  // `ADJACENT_TAB` + `tabAId`.
+  RegisterConversation(instance, "conv-locality");
+  ContinueJsTest();
+
+  // Step 2: Switch active tab to `tab_b` -> `OTHER_LOCAL_TAB`; JS then calls
+  // `activateTab(tabAId)` -> `ADJACENT_TAB`, and `detachPanel()` ->
+  // `OTHER_LOCAL_TAB`.
+  ActivateTab(tab_b);
+  ContinueJsTest();
+
+  // Step 3: Start a newer non-completed `ActorTask` for the same conversation
+  // on background `tab_b` while `task1` is still paused on `tab_a`; locality
+  // updates to `tab_b`.
+  actor::TaskId task2_id = actor_service->CreateTask(
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
+                            "conv-locality"),
+      actor::NoEnterprisePolicyChecker());
+  actor::ActorTask* task2 = actor_service->GetTask(task2_id);
+  ASSERT_TRUE(task2);
+  actor::AddTabToTask(*tab_b, *task2);
+  task2->Pause(/*from_actor=*/true);
+  ContinueJsTest();
+
+  // Step 4: Stop `task1` and close `tab_b`; locality emits `NOT_LOCAL` with no
+  // `actuationTabId`.
+  actor_service->StopTask(task1_id,
+                          actor::ActorTask::StoppedReason::kTaskComplete);
+  GetTabListInterface()->CloseTab(tab_b->GetHandle());
+  ContinueJsTest();
+  actor_service->StopTask(task2_id,
+                          actor::ActorTask::StoppedReason::kTaskComplete);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Runs each test against consumer Gemini, with and without NoWebview, and
 // against Gemini Enterprise in Chrome (GEiC).

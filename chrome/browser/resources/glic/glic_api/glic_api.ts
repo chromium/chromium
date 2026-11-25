@@ -870,6 +870,18 @@ export declare interface GlicBrowserHost {
   getPanelState?(): ObservableValue<PanelState>;
 
   /**
+   * Returns the observable actuation locality state for this Glic panel
+   * instance's registered conversation.
+   *
+   * Emits the current locality state immediately on subscribe (`NOT_LOCAL` when
+   * no conversation is registered or no matching local actuation tab is
+   * active), and updates whenever a matching actuation task starts, switches or
+   * closes its tab, stops, or when this Glic instance changes panel/tab
+   * adjacency.
+   */
+  getActuationLocalityState?(): ObservableValue<ActuationLocalityState>;
+
+  /**
    * Whether the glic panel is in the active state. In the inactive state,
    * microphone recording should stop, but any playing audio output can
    * continue.
@@ -1983,6 +1995,38 @@ export declare interface FocusedTabDataHasNoFocus {
   tabFocusCandidateData?: TabData;
   /** A human-readable message explaining why there is no focused tab. */
   noFocusReason: string;
+}
+
+/**
+ * Locality of an active browser actuation task relative to the current Glic
+ * panel instance.
+ */
+export enum ActuationLocality {
+  /**
+   * No active non-completed actuation task with a live tab exists for this
+   * instance's registered conversation in this profile.
+   */
+  NOT_LOCAL = 0,
+  /**
+   * The active actuation tab is adjacent to this Glic side panel instance.
+   */
+  ADJACENT_TAB = 1,
+  /**
+   * An active actuation tab exists in this profile, but this Glic instance is
+   * showing on another tab, in another window, or in floating mode.
+   */
+  OTHER_LOCAL_TAB = 2,
+}
+
+/**
+ * Current locality state for this instance's registered conversation's
+ * actuation task.
+ */
+export declare interface ActuationLocalityState {
+  /** Locality relative to this Glic instance. */
+  locality: ActuationLocality;
+  /** Unset when `locality` is NOT_LOCAL. */
+  actuationTabId?: string;
 }
 
 /**

@@ -47,6 +47,7 @@ import {CaptureRegionErrorReason, ClientCapabilities, HostCapability, ResponseSt
 import type {                                  //
              ActionFirstSuggestions,           //
              ActivateTabOptions,               //
+             ActuationLocalityState,           //
              AdditionalContext,                //
              CaptureRegionParams,              //
              CaptureRegionResult,              //
@@ -104,6 +105,7 @@ import {GlicBrowserHostActor} from './actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from './annotation/annotation_client.js';
 import {                                     //
   actionFirstSuggestionsToClient,            //
+  actuationLocalityStateToClient,            //
   additionalContextToClient,                 //
   bitmapN32ToRGBAImage,                      //
   captureRegionResultToClient,               //
@@ -204,6 +206,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
   private platform?: Platform;
   private formFactor?: FormFactor;
   private panelState = ObservableValueImpl.withNoValue<PanelState>();
+  private actuationLocalityState =
+      ObservableValueImpl.withNoValue<ActuationLocalityState>();
   canAttachPanelValue = ObservableValueImpl.withNoValue<boolean>();
   private focusedTabStateV2 = ObservableValueImpl.withNoValue<FocusedTabData>();
   // @deprecated Legacy settings no longer populated; returns undefined.
@@ -353,6 +357,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
         state.geminiEnterpriseSettings ?? undefined);
     this.zoomLevel.assignAndSignal(state.zoomFactor);
     this.panelState.assignAndSignal(panelStateToClient(state.panelState));
+    this.applyInitialActuationLocalityState(state.actuationLocality);
     this.focusedTabStateV2.assignAndSignal(
         focusedTabDataToClient(state.focusedTabData));
     this.permissionStateMicrophone.assignAndSignal(
@@ -665,7 +670,19 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     this.actorClient.actOnWebCapabilityValue.assignAndSignal(canActOnWeb);
   }
 
-  notifyActuationLocalityChanged(_state: ActuationLocalityStateMojo): void {}
+  // Guards against a `NotifyActuationLocalityChanged` push on the `WebClient`
+  // pipe arriving before `WebClientCreated()` resolves on `WebClientHandler`.
+  applyInitialActuationLocalityState(state: ActuationLocalityStateMojo): void {
+    if (this.actuationLocalityState.getCurrentValue() === undefined) {
+      this.actuationLocalityState.assignAndSignal(
+          actuationLocalityStateToClient(state));
+    }
+  }
+
+  notifyActuationLocalityChanged(state: ActuationLocalityStateMojo): void {
+    this.actuationLocalityState.assignAndSignal(
+        actuationLocalityStateToClient(state));
+  }
 
   notifyOnboardingCompletedChanged(completed: boolean): void {
     this.onboardingCompleted.assignAndSignal(completed);
@@ -923,6 +940,10 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
 
   getPanelState?(): ObservableValueImpl<PanelState> {
     return this.panelState;
+  }
+
+  getActuationLocalityState?(): ObservableValueImpl<ActuationLocalityState> {
+    return this.actuationLocalityState;
   }
 
   panelActive(): ObservableValueImpl<boolean> {

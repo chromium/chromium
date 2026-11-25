@@ -23,6 +23,7 @@ import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
 import type {                                                      //
              ActionFirstSuggestions as ActionFirstSuggestionsMojo, //
+             ActuationLocalityState as ActuationLocalityStateMojo, //
              AdditionalContext as AdditionalContextMojo,           //
              AdditionalContextPart as AdditionalContextPartMojo,   //
              AnnotatedPageData as AnnotatedPageDataMojo,           //
@@ -70,6 +71,7 @@ import {                                                             //
 } from '../glic.mojom-webui.js';
 import type {                                                   //
              ActionFirstSuggestions,                            //
+             ActuationLocalityState,                            //
              AdditionalContext,                                 //
              AdditionalContextPart,                             //
              AnnotatedPageData,                                 //
@@ -111,6 +113,7 @@ import type {                                                   //
              ZssConfig,                                         //
 } from '../glic_api/glic_api.js';
 import {                           //
+  ActuationLocality,               //
   DEFAULT_INNER_TEXT_BYTES_LIMIT,  //
   DEFAULT_PDF_SIZE_LIMIT,          //
   MicrophoneStatus,                //
@@ -910,4 +913,19 @@ export function actionFirstSuggestionsToClient(
   return replaceProperties(suggestions, {
     tabId: idToClient(suggestions.tabId),
   });
+}
+
+export function actuationLocalityStateToClient(
+    state: ActuationLocalityStateMojo): ActuationLocalityState {
+  if (state.localTab) {
+    return {
+      locality: state.localTab.isAdjacent ? ActuationLocality.ADJACENT_TAB :
+                                            ActuationLocality.OTHER_LOCAL_TAB,
+      actuationTabId: idToClient(state.localTab.tabId),
+    };
+  }
+  if (!state.notLocal) {
+    console.error('Invalid ActuationLocalityStateMojo');
+  }
+  return {locality: ActuationLocality.NOT_LOCAL};
 }

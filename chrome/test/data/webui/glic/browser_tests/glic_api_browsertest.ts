@@ -5,6 +5,7 @@
 // cc_file_path: chrome/browser/glic/host/glic_api_browsertest.cc
 
 import {                             //
+  ActuationLocality,                 //
   ActuationTarget,                   //
   CancelActionsResult,               //
   ClientCapabilities,                //
@@ -29,6 +30,7 @@ import {                             //
   WebUseCounter,                     //
 } from '/glic/glic_api/glic_api.js';
 import type {                                  //
+             ActuationLocalityState,           //
              AdditionalContext,                //
              CounterAbuseVerdict,              //
              DataTransferActionsBlockedNotice, //
@@ -3813,6 +3815,64 @@ class DesktopOnlyApiTests extends ApiTests {
     assertDefined(this.host.resizeWindow);
     assertDefined(this.testParams);
     await this.host.resizeWindow(this.testParams.width, this.testParams.height);
+  }
+
+  async testGetActuationLocalityState() {
+    assertDefined(this.host.getActuationLocalityState);
+    assertDefined(this.host.activateTab);
+    assertDefined(this.host.detachPanel);
+    const params = this.testParams as {tabAId: string, tabBId: string};
+
+    const localitySeq = observeSequence<ActuationLocalityState>(
+        this.host.getActuationLocalityState());
+    try {
+      // Step 0: Before RegisterConversation, locality is NOT_LOCAL even when an
+      // ActorTask is running on tab A.
+      const initial = await localitySeq.next();
+      assertEquals(initial.locality, ActuationLocality.NOT_LOCAL);
+      assertUndefined(initial.actuationTabId);
+
+      // Step 1: C++ registers "conv-locality" on the instance; task1 on
+      // unpinned tab A matches -> ADJACENT_TAB + tabAId.
+      await this.advanceToNextStep();
+      const adjacent = await localitySeq.next();
+      assertEquals(adjacent.locality, ActuationLocality.ADJACENT_TAB);
+      assertEquals(adjacent.actuationTabId, params.tabAId);
+
+      // Step 2: C++ switches active tab to tab B -> OTHER_LOCAL_TAB.
+      await this.advanceToNextStep();
+      const otherTab = await localitySeq.next();
+      assertEquals(otherTab.locality, ActuationLocality.OTHER_LOCAL_TAB);
+      assertEquals(otherTab.actuationTabId, params.tabAId);
+
+      // Calling activateTab(actuationTabId) restores ADJACENT_TAB.
+      assertDefined(otherTab.actuationTabId);
+      this.host.activateTab(otherTab.actuationTabId);
+      const reActivated = await localitySeq.next();
+      assertEquals(reActivated.locality, ActuationLocality.ADJACENT_TAB);
+      assertEquals(reActivated.actuationTabId, params.tabAId);
+
+      // Detaching into Floaty emits OTHER_LOCAL_TAB.
+      this.host.detachPanel();
+      const floaty = await localitySeq.next();
+      assertEquals(floaty.locality, ActuationLocality.OTHER_LOCAL_TAB);
+      assertEquals(floaty.actuationTabId, params.tabAId);
+
+      // Step 3: C++ starts task2 for the same conversation on tab B while task1
+      // is still paused on tab A; locality updates to tab B.
+      await this.advanceToNextStep();
+      const replaced = await localitySeq.next();
+      assertEquals(replaced.locality, ActuationLocality.OTHER_LOCAL_TAB);
+      assertEquals(replaced.actuationTabId, params.tabBId);
+
+      // Step 4: C++ stops task1 and closes tab B -> NOT_LOCAL.
+      await this.advanceToNextStep();
+      const closed = await localitySeq.next();
+      assertEquals(closed.locality, ActuationLocality.NOT_LOCAL);
+      assertUndefined(closed.actuationTabId);
+    } finally {
+      localitySeq.unsubscribe();
+    }
   }
 }
 
