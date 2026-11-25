@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -423,8 +422,10 @@ class MODULES_EXPORT BaseRenderingContext2D
   bool context_restorable_{true};
 
  private:
+  class Resource;
+
   scoped_refptr<ExportedCanvasResource> CreateExportedResource(
-      scoped_refptr<CanvasResource> resource);
+      scoped_refptr<Resource> resource);
 
   void UpdateRecordingLimits(bool is_graphite);
   virtual bool IsHibernating() const { return false; }
@@ -466,7 +467,7 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void ResetSharedImagePool();
   void ClearUnusedResources();
-  scoped_refptr<CanvasResource> NewOrRecycledResource();
+  scoped_refptr<Resource> NewOrRecycledResource();
   gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGpuContextLost() const;
   bool ShouldReplaceTargetBuffer();
@@ -475,7 +476,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   void EndWriteAccess();
   void RasterRecordToSharedImage(cc::PaintRecord last_recording);
   void RasterRecordToSoftwareSurface(cc::PaintRecord last_recording);
-  void UploadSoftwareRenderingResults(CanvasResource& resource);
+  void UploadSoftwareRenderingResults(Resource& resource);
   void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
   // Returns a map of frame indexes to be used by
   // PlaybackImageProvider::GetRasterContent, indexed by `id` (one map per
@@ -491,12 +492,12 @@ class MODULES_EXPORT BaseRenderingContext2D
   Canvas2DColorParams color_params_;
   // If this instance is single-buffered or `resource_recycling_enabled_->data`
   // is false, `image_pool_` will not recycle resources.
-  std::unique_ptr<gpu::SharedImagePool<CanvasResource>> image_pool_;
+  std::unique_ptr<gpu::SharedImagePool<Resource>> image_pool_;
   // Pool-scoped flag wrapped in `RefCountedData` so resource release callbacks
   // can check whether recycling is enabled without binding the Oilpan-managed
   // `BaseRenderingContext2D`. Non-null iff `image_pool_` is non-null.
   scoped_refptr<base::RefCountedData<bool>> resource_recycling_enabled_;
-  scoped_refptr<CanvasResource> resource_;
+  scoped_refptr<Resource> resource_;
   bool is_accelerated_ = false;
   sk_sp<SkSurface> surface_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;

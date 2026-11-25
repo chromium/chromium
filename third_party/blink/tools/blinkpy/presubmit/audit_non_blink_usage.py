@@ -1901,6 +1901,7 @@ _CONFIG = [
             'display::Display',
             'gfx::BufferUsage',
             'gl::GpuPreference',
+            'gpu::ClientImage',
             'gpu::ClientSharedImage',
             'gpu::ContextSupport',
             'gpu::gles2::GLES2Interface',

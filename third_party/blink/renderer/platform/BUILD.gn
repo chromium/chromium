@@ -991,8 +991,6 @@ component("platform") {
     "graphics/canvas_image_provider.h",
     "graphics/canvas_non_2d_resource_provider.cc",
     "graphics/canvas_non_2d_resource_provider.h",
-    "graphics/canvas_resource.cc",
-    "graphics/canvas_resource.h",
     "graphics/canvas_resource_dispatcher.cc",
     "graphics/canvas_resource_dispatcher.h",
     "graphics/canvas_snapshot_info.h",
