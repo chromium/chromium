@@ -32,8 +32,8 @@
 ] interface URL {
     [RaisesException] constructor(USVString url, optional USVString base);
 
-    static URL? parse(USVString url, optional USVString base);
-    [MeasureAs="WebDXFeature::kUrlCanparse"] static boolean canParse(USVString url, optional USVString base);
+    [Affects=Nothing] static URL? parse(USVString url, optional USVString base);
+    [Affects=Nothing, MeasureAs="WebDXFeature::kUrlCanparse"] static boolean canParse(USVString url, optional USVString base);
 
     [RaisesException=Setter] stringifier attribute USVString href;
     readonly attribute USVString origin;
@@ -48,5 +48,5 @@
     [SameObject] readonly attribute URLSearchParams searchParams;
     attribute USVString hash;
 
-    USVString toJSON();
+    [Affects=Nothing] USVString toJSON();
 };

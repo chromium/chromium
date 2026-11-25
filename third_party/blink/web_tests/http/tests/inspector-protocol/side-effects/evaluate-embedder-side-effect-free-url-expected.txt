@@ -1,0 +1,22 @@
+Tests that URL and URLSearchParams read-only methods are side-effect-free.
+Expression `URL.canParse('https://example.com/?a=1')`
+has side effect: false, expected: false
+Expression `URL.parse('https://example.com/?a=1').toJSON()`
+has side effect: false, expected: false
+Expression `JSON.stringify(URL.parse('https://example.com/?a=1'))`
+has side effect: false, expected: false
+Expression `URL.parse('https://example.com/?a=1').searchParams.get('a')`
+has side effect: false, expected: false
+Expression `URL.parse('https://example.com/?a=1').searchParams.getAll('a')`
+has side effect: false, expected: false
+Expression `URL.parse('https://example.com/?a=1').searchParams.has('a')`
+has side effect: false, expected: false
+Expression `URL.parse('https://example.com/?a=1').searchParams.set('a', '2')`
+has side effect: true, expected: true
+Expression `URL.parse('https://example.com/?a=1').searchParams.append('b', '3')`
+has side effect: true, expected: true
+Expression `URL.parse('https://example.com/?a=1').searchParams.delete('a')`
+has side effect: true, expected: true
+Expression `URL.parse('https://example.com/?a=1').searchParams.sort()`
+has side effect: true, expected: true
+

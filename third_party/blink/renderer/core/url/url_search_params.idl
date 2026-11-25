@@ -11,9 +11,9 @@
     readonly attribute unsigned long size;
     void append(USVString name, USVString value);
     [ImplementedAs=deleteAllWithNameOrTuple, CallWith=ExecutionContext] void delete(USVString name, optional USVString value);
-    USVString? get(USVString name);
-    sequence<USVString> getAll(USVString name);
-    [CallWith=ExecutionContext] boolean has(USVString name, optional USVString value);
+    [Affects=Nothing] USVString? get(USVString name);
+    [Affects=Nothing] sequence<USVString> getAll(USVString name);
+    [Affects=Nothing, CallWith=ExecutionContext] boolean has(USVString name, optional USVString value);
     void set(USVString name, USVString value);
 
     void sort();
