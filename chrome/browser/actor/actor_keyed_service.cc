@@ -862,6 +862,18 @@ void ActorKeyedService::NotifyTaskStepProgressChanged(
   task_step_progress_change_callback_list_.Notify(task, step_progress);
 }
 
+base::CallbackListSubscription
+ActorKeyedService::AddTaskSurfacesChangedCallback(
+    TaskSurfacesChangedCallback callback) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  return task_surfaces_changed_callback_list_.Add(std::move(callback));
+}
+
+void ActorKeyedService::NotifyTaskSurfacesChanged(ActorTask& task) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  task_surfaces_changed_callback_list_.Notify(task);
+}
+
 void ActorKeyedService::RequestTabObservation(
     tabs::TabInterface& tab,
     TaskId task_id,

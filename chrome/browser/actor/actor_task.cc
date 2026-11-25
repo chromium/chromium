@@ -727,9 +727,13 @@ void ActorTask::AddActorSurface(ActorSurfaceHandle actor_surface_handle,
   }
 
   if (controlled_tabs_.contains(actor_surface_handle)) {
+    const bool changed = last_actuated_tab_ != actor_surface_handle;
     last_actuated_tab_ = actor_surface_handle;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
+    if (changed) {
+      service_->NotifyTaskSurfacesChanged(*this);
+    }
     return;
   }
 
@@ -782,6 +786,7 @@ void ActorTask::AddActorSurface(ActorSurfaceHandle actor_surface_handle,
         FROM_HERE, base::BindOnce(&ActorTaskDelegate::OnTabAddedToTask,
                                   delegate_, id_, tab_handle));
   }
+  service_->NotifyTaskSurfacesChanged(*this);
 }
 
 void ActorTask::OnActorSurfacePromoted(
@@ -812,6 +817,7 @@ void ActorTask::OnActorSurfacePromoted(
   // and hears about the new visible tab through
   // `OnTaskTabsVisibilityChanged()`.
   RecomputeHasVisibleTab();
+  service_->NotifyTaskSurfacesChanged(*this);
 }
 
 void ActorTask::NotifyUiOfAddedTab(tabs::TabHandle tab_handle,
@@ -881,6 +887,9 @@ void ActorTask::RemoveActorSurface(ActorSurfaceHandle actor_surface_handle) {
     // before dispatching the event.
     ui_event_dispatcher_->OnActorTaskSyncChange(
         ui::UiEventDispatcher::RemoveTab{.task_id = id_, .handle = tab_handle});
+    if (!stopped_reason_.has_value()) {
+      service_->NotifyTaskSurfacesChanged(*this);
+    }
   }
 }
 

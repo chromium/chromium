@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -376,6 +377,71 @@ TEST_F(ActorTaskTest, SetSourceIdBackfillsSourceInfo) {
   // Idempotent backfill with the same ID succeeds.
   task_->SetSourceId("initial-id");
   EXPECT_EQ(task_->source_info().id, "initial-id");
+}
+
+TEST_F(ActorTaskTest,
+       TaskSurfacesChangedCallbackNotifiesOnTabChangesAndSkipsStopTeardown) {
+  EXPECT_CALL(mock_delegate_, OnTabAddedToTask).Times(testing::AnyNumber());
+  EXPECT_CALL(mock_delegate_, OnTaskTabsVisibilityChanged)
+      .Times(testing::AnyNumber());
+
+  auto web_contents1 = CreateTestWebContents();
+  TestTabState tab1(web_contents1.get());
+  auto web_contents2 = CreateTestWebContents();
+  TestTabState tab2(web_contents2.get());
+
+  int update_count = 0;
+  base::CallbackListSubscription sub =
+      ActorKeyedService::Get(profile_.get())
+          ->AddTaskSurfacesChangedCallback(
+              base::BindLambdaForTesting([&](ActorTask& updated) {
+                EXPECT_EQ(updated.id(), task_->id());
+                ++update_count;
+              }));
+
+  AddTabAndVerify(tab1.tab);
+  EXPECT_EQ(update_count, 1);
+
+  // Re-adding the same last-actuated tab does not fire a redundant update.
+  {
+    base::test::TestFuture<mojom::ActionResultPtr> future;
+    task_->AddTab(tab1.tab.GetHandle(), /*stop_task_on_detach=*/false,
+                  future.GetCallback());
+    ExpectOkResult(future);
+  }
+  EXPECT_EQ(update_count, 1);
+
+  // Adding a second tab notifies, and switching `last_actuated_tab_` back to
+  // `tab1` notifies as well.
+  AddTabAndVerify(tab2.tab);
+  EXPECT_EQ(update_count, 2);
+  {
+    base::test::TestFuture<mojom::ActionResultPtr> future;
+    task_->AddTab(tab1.tab.GetHandle(), /*stop_task_on_detach=*/false,
+                  future.GetCallback());
+    ExpectOkResult(future);
+  }
+  EXPECT_EQ(update_count, 3);
+
+  // Removing a tab while active notifies.
+  RemoveTabAndVerify(tab1.tab);
+  EXPECT_EQ(update_count, 4);
+
+  // Promoting a controlled surface notifies even when tab visibility does not
+  // change.
+  ExpectStateChangeNotification(ActorTask::State::kPausedByActor);
+  task_->Pause(/*from_actor=*/true);
+  task_->OnActorSurfacePromoted(ActorSurfaceHandle::From(tab2.tab.GetHandle()));
+  EXPECT_EQ(update_count, 5);
+
+  // `Stop()` removes remaining tabs during teardown without emitting
+  // intermediate `TaskSurfacesChanged` notifications.
+  ExpectTabRemovedNotification(tab2.tab.GetHandle());
+  EXPECT_CALL(
+      *mock_ui_event_dispatcher_,
+      OnActorTaskSyncChange(VariantWith<ui::UiEventDispatcher::StopTask>(_)));
+  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
+  EXPECT_EQ(update_count, 5);
 }
 
 TEST_F(ActorTaskTest, SetStepProgressSendsEveryUpdateToUi) {

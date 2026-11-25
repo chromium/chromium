@@ -328,6 +328,19 @@ class ActorKeyedService : public KeyedService,
   void NotifyTaskStepProgressChanged(ActorTask& task,
                                      const std::string& step_progress);
 
+  // Notifies subscribers when an active `ActorTask`'s controlled surfaces
+  // change (a surface is added, removed, promoted to a tab, or becomes
+  // `last_actuated_tab_`). Not emitted for per-surface teardown removals
+  // performed inside `ActorTask::Stop()`. Subscribers must not synchronously
+  // mutate or stop `task`.
+  // TODO(crbug.com/587942594): Temporary hook; remove once the Glic locality
+  // consumer can read surface changes from the task UI model or
+  // `ActorFlowDelegate`.
+  using TaskSurfacesChangedCallback = base::RepeatingCallback<void(ActorTask&)>;
+  base::CallbackListSubscription AddTaskSurfacesChangedCallback(
+      TaskSurfacesChangedCallback callback);
+  void NotifyTaskSurfacesChanged(ActorTask& task);
+
   // Returns the acting task for web_contents. Returns nullptr if acting task
   // does not exist.
   const ActorTask* GetActingActorTaskForWebContents(
@@ -507,6 +520,9 @@ class ActorKeyedService : public KeyedService,
 
   base::RepeatingCallbackList<void(ActorTask&)>
       task_state_change_callback_list_;
+
+  base::RepeatingCallbackList<void(ActorTask&)>
+      task_surfaces_changed_callback_list_;
 
   base::ObserverList<BackgroundActuationObserver> observers_;
 
