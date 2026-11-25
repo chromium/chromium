@@ -96,7 +96,8 @@ class D3D12VideoEncodeDelegateTestBase : public ::testing::Test {
 
   Microsoft::WRL::ComPtr<ID3D12Resource> CreateResource(
       const gfx::Size& size,
-      VideoPixelFormat format) const;
+      VideoPixelFormat format,
+      uint16_t array_size = 1) const;
 
   void EnableFeature(const base::Feature& feature);
 

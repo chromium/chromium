@@ -12,13 +12,15 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d12_fence.h"
 #include "media/gpu/windows/d3d12_helpers.h"
+#include "media/gpu/windows/d3d_status.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 
-class D3D12CopyCommandQueueWrapper {
+class MEDIA_GPU_EXPORT D3D12CopyCommandQueueWrapper {
  public:
   static std::unique_ptr<D3D12CopyCommandQueueWrapper> Create(
       ID3D12Device* device);
@@ -50,7 +52,12 @@ class D3D12CopyCommandQueueWrapper {
                                    uint32_t uv_stride);
 
   D3D12FenceAndValue Execute();
-  void WaitSync();
+  // Waits on the CPU for the work submitted so far to complete.
+  D3DStatus WaitSync();
+
+  // Makes the copy command queue wait on |fence_and_value| on the GPU before
+  // executing command lists submitted after this call.
+  bool Wait(D3D12FenceAndValue fence_and_value);
 
  private:
   // This will be automatically called before CopyTextureRegion().

@@ -65,7 +65,10 @@ D3D12CopyCommandQueueWrapper::D3D12CopyCommandQueueWrapper(
       fence_(base::MakeRefCounted<D3D12Fence>(fence)) {}
 
 D3D12CopyCommandQueueWrapper::~D3D12CopyCommandQueueWrapper() {
-  WaitSync();
+  if (auto status = WaitSync(); !status.is_ok()) {
+    DLOG(ERROR) << "Waiting for in-flight copies during teardown failed: "
+                << static_cast<int>(status.code());
+  }
 }
 
 bool D3D12CopyCommandQueueWrapper::CopyTextureRegion(
@@ -167,12 +170,20 @@ D3D12FenceAndValue D3D12CopyCommandQueueWrapper::Execute() {
   return {fence_->Get(), std::move(value_or_error).value()};
 }
 
-void D3D12CopyCommandQueueWrapper::WaitSync() {
-  // If we have successfully queued any GPU work, wait on the CPU for it to
-  // complete.
-  if (fence_->Value() > 0) {
-    fence_->WaitCPU(fence_->Value());
+D3DStatus D3D12CopyCommandQueueWrapper::WaitSync() {
+  return fence_->WaitCPU(fence_->Value());
+}
+
+bool D3D12CopyCommandQueueWrapper::Wait(D3D12FenceAndValue fence_and_value) {
+  auto [fence, value] = fence_and_value;
+  CHECK(fence);
+  HRESULT hr = command_queue_->Wait(fence.Get(), value);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "D3D12 copy command queue wait failed: "
+               << logging::SystemErrorCodeToString(hr);
+    return false;
   }
+  return true;
 }
 
 bool D3D12CopyCommandQueueWrapper::Reset() {

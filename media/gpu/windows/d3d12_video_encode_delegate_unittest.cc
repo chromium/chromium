@@ -5,6 +5,7 @@
 #include "media/gpu/windows/d3d12_video_encode_delegate_unittest.h"
 
 #include <algorithm>
+#include <limits>
 
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
@@ -12,6 +13,7 @@
 #include "media/base/win/d3d12_mocks.h"
 #include "media/base/win/d3d12_video_mocks.h"
 #include "media/gpu/h264_dpb.h"
+#include "media/gpu/windows/d3d12_copy_command_list_wrapper.h"
 #include "media/gpu/windows/format_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
@@ -41,7 +43,11 @@ class MockD3D12VideoEncodeDelegate : public D3D12VideoEncodeDelegate {
                            const VideoEncoder::EncodeOptions&,
                            const gfx::ColorSpace&,
                            const gfx::HDRMetadata&) override {
-    return EncoderStatus::Codes::kOk;
+    return encode_impl_result_;
+  }
+
+  void set_encode_impl_result(EncoderStatus::Codes result) {
+    encode_impl_result_ = result;
   }
 
  private:
@@ -51,6 +57,8 @@ class MockD3D12VideoEncodeDelegate : public D3D12VideoEncodeDelegate {
         video_encoder_wrapper_factory_.Run({}, {}, {}, {}, {}, {}, {});
     return EncoderStatus::Codes::kOk;
   }
+
+  EncoderStatus::Codes encode_impl_result_ = EncoderStatus::Codes::kOk;
 };
 
 }  // namespace
@@ -174,14 +182,16 @@ D3D12VideoEncodeDelegateTestBase::GetEncoderOutputMetadataResourceMap(
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource>
-D3D12VideoEncodeDelegateTestBase::CreateResource(
-    const gfx::Size& size,
-    VideoPixelFormat format) const {
+D3D12VideoEncodeDelegateTestBase::CreateResource(const gfx::Size& size,
+                                                 VideoPixelFormat format,
+                                                 uint16_t array_size) const {
   auto input_frame = MakeComPtr<NiceMock<D3D12ResourceMock>>();
   ON_CALL(*input_frame.Get(), GetDesc())
       .WillByDefault(Return(D3D12_RESOURCE_DESC{
           .Width = static_cast<UINT64>(size.width()),
           .Height = static_cast<UINT>(size.height()),
+          .DepthOrArraySize = array_size,
+          .MipLevels = 1,
           .Format = VideoPixelFormatToDxgiFormat(format),
       }));
   return input_frame;
@@ -282,10 +292,45 @@ class D3D12VideoEncodeDelegateTest : public D3D12VideoEncodeDelegateTestBase {
     encoder_delegate_->SetFactoriesForTesting(
         base::BindRepeating(&CreateVideoEncoderWrapper),
         base::BindRepeating(&CreateVideoProcessorWrapper));
+    // Report submitted copies as complete so that WaitSync() does not block.
+    ON_CALL(*copy_fence_.Get(), GetCompletedValue())
+        .WillByDefault(Return(std::numeric_limits<uint64_t>::max()));
+    encoder_delegate_->SetCopyCommandQueueWrapperFactoryForTesting(
+        base::BindRepeating(
+            &D3D12VideoEncodeDelegateTest::CreateCopyCommandQueueWrapper,
+            base::Unretained(this)));
+  }
+
+  std::unique_ptr<D3D12CopyCommandQueueWrapper> CreateCopyCommandQueueWrapper(
+      ID3D12Device*) {
+    return std::make_unique<D3D12CopyCommandQueueWrapper>(
+        copy_command_queue_, copy_command_allocator_, copy_command_list_,
+        copy_fence_);
+  }
+
+  // Reports the submitted copy as in flight until one CPU wait for it.
+  void ExpectCopyQueueCpuWait() {
+    EXPECT_CALL(*copy_fence_.Get(), GetCompletedValue())
+        .WillOnce(Return(0))
+        .WillRepeatedly(Return(std::numeric_limits<uint64_t>::max()));
+    EXPECT_CALL(*copy_fence_.Get(), SetEventOnCompletion(1, _))
+        .WillOnce([](UINT64, HANDLE event) {
+          ::SetEvent(event);
+          return S_OK;
+        });
   }
 
   Microsoft::WRL::ComPtr<D3D12DeviceMock> device_;
   Microsoft::WRL::ComPtr<D3D12VideoDevice3Mock> video_device3_;
+  // The D3D12 objects behind the delegate's copy command queue wrapper.
+  Microsoft::WRL::ComPtr<D3D12CommandQueueMock> copy_command_queue_ =
+      MakeComPtr<NiceMock<D3D12CommandQueueMock>>();
+  Microsoft::WRL::ComPtr<D3D12CommandAllocatorMock> copy_command_allocator_ =
+      MakeComPtr<NiceMock<D3D12CommandAllocatorMock>>();
+  Microsoft::WRL::ComPtr<D3D12GraphicsCommandListMock> copy_command_list_ =
+      MakeComPtr<NiceMock<D3D12GraphicsCommandListMock>>();
+  Microsoft::WRL::ComPtr<D3D12FenceMock> copy_fence_ =
+      MakeComPtr<NiceMock<D3D12FenceMock>>();
 };
 
 TEST_F(D3D12VideoEncodeDelegateTest, Initialize) {
@@ -370,12 +415,14 @@ TEST_F(D3D12VideoEncodeDelegateTestWithProcessFrame, EncodeFrameWithoutVP) {
       base::RandIntInclusive(0, H264DPB::kDPBMaxSize - 1),
       shared_memory.Duplicate(), kPayloadSize);
   EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames).Times(0);
+  EXPECT_CALL(*copy_command_list_.Get(), CopyTextureRegion).Times(0);
   EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
       .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kPayloadSize)));
   auto result_or_error = encoder_delegate_->Encode(
       input_frame, gfx::Rect(input_size), color_space, bitstream_buffer,
       VideoEncoder::EncodeOptions());
   Mock::VerifyAndClearExpectations(GetVideoProcessorWrapper());
+  Mock::VerifyAndClearExpectations(copy_command_list_.Get());
   ASSERT_TRUE(result_or_error.has_value())
       << std::move(result_or_error).error().message();
 
@@ -433,11 +480,63 @@ TEST_F(D3D12VideoEncodeDelegateTestWithProcessFrame, EncodeFrameWithVP) {
 class D3D12VideoEncodeDelegateVisibleRectTest
     : public D3D12VideoEncodeDelegateTest {
  protected:
+  // One CopyTextureRegion() call recorded by the delegate for a crop.
+  struct CopyInfo {
+    UINT src_subresource;
+    UINT dst_subresource;
+    D3D12_BOX src_box;
+  };
+
+  // Encodes one frame and returns the CopyTextureRegion() calls the delegate
+  // recorded to crop it. The delegate must be initialized by the caller.
+  std::vector<CopyInfo> EncodeAndGetCopyInfos(
+      const D3D12PictureBuffer& picture_buffer,
+      const gfx::Rect& input_visible_rect) {
+    constexpr size_t kPayloadSize = 1024;
+    auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
+    BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(),
+                                     kPayloadSize);
+    std::vector<CopyInfo> copies;
+    EXPECT_CALL(*copy_command_list_.Get(), CopyTextureRegion)
+        .WillRepeatedly([&](const D3D12_TEXTURE_COPY_LOCATION* dst, UINT, UINT,
+                            UINT, const D3D12_TEXTURE_COPY_LOCATION* src,
+                            const D3D12_BOX* src_box) {
+          copies.push_back(
+              {src->SubresourceIndex, dst->SubresourceIndex, *src_box});
+        });
+    EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames).Times(0);
+    EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
+        .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kPayloadSize)));
+    auto result_or_error = encoder_delegate_->Encode(
+        picture_buffer, input_visible_rect, gfx::ColorSpace::CreateREC709(),
+        bitstream_buffer, VideoEncoder::EncodeOptions());
+    Mock::VerifyAndClearExpectations(GetVideoProcessorWrapper());
+    Mock::VerifyAndClearExpectations(copy_command_list_.Get());
+    EXPECT_TRUE(result_or_error.has_value())
+        << std::move(result_or_error).error().message();
+    return copies;
+  }
+
+  void ExpectBox(const D3D12_BOX& box,
+                 UINT left,
+                 UINT top,
+                 UINT right,
+                 UINT bottom) {
+    EXPECT_EQ(box.left, left);
+    EXPECT_EQ(box.top, top);
+    EXPECT_EQ(box.front, 0u);
+    EXPECT_EQ(box.right, right);
+    EXPECT_EQ(box.bottom, bottom);
+    EXPECT_EQ(box.back, 1u);
+  }
+
   // Encodes one frame and returns the source rectangle the video processor was
   // asked to sample. The delegate must be initialized by the caller.
-  gfx::Rect EncodeAndGetSourceRect(const D3D12PictureBuffer& picture_buffer,
-                                   const gfx::Rect& input_visible_rect,
-                                   gfx::Rect* destination_rect = nullptr) {
+  gfx::Rect EncodeAndGetSourceRect(
+      const D3D12PictureBuffer& picture_buffer,
+      const gfx::Rect& input_visible_rect,
+      gfx::Rect* destination_rect = nullptr,
+      const gfx::ColorSpace& color_space = gfx::ColorSpace::CreateREC709()) {
     constexpr size_t kPayloadSize = 1024;
     auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
     BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(),
@@ -458,8 +557,8 @@ class D3D12VideoEncodeDelegateVisibleRectTest
     EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
         .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kPayloadSize)));
     auto result_or_error = encoder_delegate_->Encode(
-        picture_buffer, input_visible_rect, gfx::ColorSpace::CreateREC709(),
-        bitstream_buffer, VideoEncoder::EncodeOptions());
+        picture_buffer, input_visible_rect, color_space, bitstream_buffer,
+        VideoEncoder::EncodeOptions());
     Mock::VerifyAndClearExpectations(GetVideoProcessorWrapper());
     EXPECT_TRUE(result_or_error.has_value())
         << std::move(result_or_error).error().message();
@@ -488,6 +587,9 @@ class D3D12VideoEncodeDelegateVisibleRectTest
   }
 };
 
+// A same-format crop is copied with CopyTextureRegion() instead of running
+// through the video processor, whose crop path faults the GPU on NVIDIA
+// (crbug 553687628).
 TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, CropsToVisibleRect) {
   VideoEncodeAccelerator::Config config = GetDefaultH264Config();
   config.input_visible_size = gfx::Size(1920, 1080);
@@ -496,11 +598,17 @@ TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, CropsToVisibleRect) {
   D3D12PictureBuffer picture_buffer(
       CreateResource(gfx::Size(1920, 1088), config.input_format));
 
-  gfx::Rect destination_rect;
-  EXPECT_EQ(EncodeAndGetSourceRect(picture_buffer, gfx::Rect(0, 0, 1920, 1080),
-                                   &destination_rect),
-            gfx::Rect(0, 0, 1920, 1080));
-  EXPECT_EQ(destination_rect, gfx::Rect(0, 0, 1920, 1080));
+  std::vector<CopyInfo> copies =
+      EncodeAndGetCopyInfos(picture_buffer, gfx::Rect(0, 0, 1920, 1080));
+  ASSERT_EQ(copies.size(), 2u);
+  // Luma plane.
+  EXPECT_EQ(copies[0].src_subresource, 0u);
+  EXPECT_EQ(copies[0].dst_subresource, 0u);
+  ExpectBox(copies[0].src_box, 0, 0, 1920, 1080);
+  // Chroma plane, at half the resolution.
+  EXPECT_EQ(copies[1].src_subresource, 1u);
+  EXPECT_EQ(copies[1].dst_subresource, 1u);
+  ExpectBox(copies[1].src_box, 0, 0, 960, 540);
 }
 
 TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, CropsToVisibleRectWithOffset) {
@@ -511,9 +619,232 @@ TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, CropsToVisibleRectWithOffset) {
   D3D12PictureBuffer picture_buffer(
       CreateResource(gfx::Size(1920, 1080), config.input_format));
 
-  EXPECT_EQ(
-      EncodeAndGetSourceRect(picture_buffer, gfx::Rect(16, 8, 1888, 1064)),
-      gfx::Rect(16, 8, 1888, 1064));
+  std::vector<CopyInfo> copies =
+      EncodeAndGetCopyInfos(picture_buffer, gfx::Rect(16, 8, 1888, 1064));
+  ASSERT_EQ(copies.size(), 2u);
+  EXPECT_EQ(copies[0].src_subresource, 0u);
+  EXPECT_EQ(copies[0].dst_subresource, 0u);
+  ExpectBox(copies[0].src_box, 16, 8, 1904, 1072);
+  EXPECT_EQ(copies[1].src_subresource, 1u);
+  EXPECT_EQ(copies[1].dst_subresource, 1u);
+  ExpectBox(copies[1].src_box, 8, 4, 952, 536);
+}
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, CropsP010UsesCopy) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_format = PIXEL_FORMAT_P010LE;
+  config.output_profile = H264PROFILE_HIGH10PROFILE;
+  config.input_visible_size = gfx::Size(1920, 1080);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1920, 1088), config.input_format));
+
+  std::vector<CopyInfo> copies =
+      EncodeAndGetCopyInfos(picture_buffer, gfx::Rect(0, 0, 1920, 1080));
+  ASSERT_EQ(copies.size(), 2u);
+  EXPECT_EQ(copies[0].src_subresource, 0u);
+  EXPECT_EQ(copies[0].dst_subresource, 0u);
+  ExpectBox(copies[0].src_box, 0, 0, 1920, 1080);
+  EXPECT_EQ(copies[1].src_subresource, 1u);
+  EXPECT_EQ(copies[1].dst_subresource, 1u);
+  ExpectBox(copies[1].src_box, 0, 0, 960, 540);
+}
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, CropsTextureArraySlice) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_visible_size = gfx::Size(1920, 1080);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1920, 1088), config.input_format,
+                     /*array_size=*/4),
+      /*subresource=*/2);
+
+  std::vector<CopyInfo> copies =
+      EncodeAndGetCopyInfos(picture_buffer, gfx::Rect(0, 0, 1920, 1080));
+  ASSERT_EQ(copies.size(), 2u);
+  EXPECT_EQ(copies[0].src_subresource, 2u);
+  EXPECT_EQ(copies[0].dst_subresource, 0u);
+  // The chroma planes of all four slices follow their luma planes.
+  EXPECT_EQ(copies[1].src_subresource, 6u);
+  EXPECT_EQ(copies[1].dst_subresource, 1u);
+}
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest,
+       CropsSinglePlaneFormatWithOneCopy) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.output_profile = AV1PROFILE_PROFILE_HIGH;
+  config.input_format = PIXEL_FORMAT_P410LE;
+  config.input_visible_size = gfx::Size(1888, 1064);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+  ASSERT_EQ(encoder_delegate_->GetInputFormat(), DXGI_FORMAT_Y410);
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1920, 1080), PIXEL_FORMAT_Y410));
+
+  // 4:4:4 has no subsampled plane, so an odd origin is copied as is.
+  std::vector<CopyInfo> copies =
+      EncodeAndGetCopyInfos(picture_buffer, gfx::Rect(15, 7, 1888, 1064));
+  ASSERT_EQ(copies.size(), 1u);
+  EXPECT_EQ(copies[0].src_subresource, 0u);
+  EXPECT_EQ(copies[0].dst_subresource, 0u);
+  ExpectBox(copies[0].src_box, 15, 7, 1903, 1071);
+}
+
+// A same-size crop that also needs a color space conversion is not a plain
+// copy.
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest,
+       CropWithColorSpaceConversionUsesVideoProcessor) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_visible_size = gfx::Size(1920, 1080);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1920, 1088), config.input_format));
+
+  EXPECT_CALL(*copy_command_list_.Get(), CopyTextureRegion).Times(0);
+  EXPECT_EQ(EncodeAndGetSourceRect(picture_buffer, gfx::Rect(0, 0, 1920, 1080),
+                                   nullptr, gfx::ColorSpace::CreateSRGB()),
+            gfx::Rect(0, 0, 1920, 1080));
+}
+
+// A copy-cropped frame allocates the processed input frame, which must not
+// make a later video processor frame skip the support check.
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest,
+       ChecksVideoProcessorSupportAfterCopyCrop) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_visible_size = gfx::Size(1920, 1080);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  auto processed_input_frame =
+      CreateResource(config.input_visible_size, config.input_format);
+  ON_CALL(*device_.Get(), CreateCommittedResource)
+      .WillByDefault(SetComPointeeAndReturnOk<6>(processed_input_frame.Get()));
+
+  D3D12PictureBuffer cropped_frame(
+      CreateResource(gfx::Size(1920, 1088), config.input_format));
+  ASSERT_EQ(
+      EncodeAndGetCopyInfos(cropped_frame, gfx::Rect(0, 0, 1920, 1080)).size(),
+      2u);
+
+  ON_CALL(*GetVideoProcessorWrapper(), CheckVideoProcessorSupport)
+      .WillByDefault(Return(false));
+  D3D12PictureBuffer converted_frame(
+      CreateResource(config.input_visible_size, PIXEL_FORMAT_ARGB));
+  EXPECT_EQ(EncodeAndGetRejection(converted_frame, gfx::Rect(0, 0, 1920, 1080)),
+            EncoderStatus::Codes::kEncoderUnsupportedConfig);
+}
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, CropWaitsForInputFence) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_visible_size = gfx::Size(1920, 1080);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  // An input that is not ready yet carries its producer fence, which the copy
+  // queue must wait on before copying.
+  auto fence = MakeComPtr<NiceMock<D3D12FenceMock>>();
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1920, 1088), config.input_format), 0,
+      {fence.Get(), 42});
+
+  EXPECT_CALL(*copy_command_queue_.Get(), Wait(_, 42u));
+  EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames).Times(0);
+  constexpr size_t kPayloadSize = 1024;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kPayloadSize);
+  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
+      .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kPayloadSize)));
+  auto result_or_error = encoder_delegate_->Encode(
+      picture_buffer, gfx::Rect(0, 0, 1920, 1080),
+      gfx::ColorSpace::CreateREC709(), bitstream_buffer,
+      VideoEncoder::EncodeOptions());
+  Mock::VerifyAndClearExpectations(copy_command_queue_.Get());
+  Mock::VerifyAndClearExpectations(GetVideoProcessorWrapper());
+  ASSERT_TRUE(result_or_error.has_value())
+      << std::move(result_or_error).error().message();
+}
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest,
+       CopyQueueWaitFailureReturnsError) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_visible_size = gfx::Size(1920, 1080);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  auto fence = MakeComPtr<NiceMock<D3D12FenceMock>>();
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1920, 1088), config.input_format), 0,
+      {fence.Get(), 42});
+
+  EXPECT_CALL(*copy_command_queue_.Get(), Wait(_, 42u))
+      .WillOnce(Return(E_FAIL));
+  EXPECT_CALL(*copy_command_list_.Get(), CopyTextureRegion).Times(0);
+  EXPECT_EQ(EncodeAndGetRejection(picture_buffer, gfx::Rect(0, 0, 1920, 1080)),
+            EncoderStatus::Codes::kD3D12FenceWaitFailed);
+}
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest,
+       EncoderWaitFailureAfterCopyReturnsError) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_visible_size = gfx::Size(1920, 1080);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1920, 1088), config.input_format));
+
+  // The encoder queue wait fails after the copy path has submitted work; the
+  // error must surface and the copy queue must be synced before returning.
+  ExpectCopyQueueCpuWait();
+  EXPECT_CALL(*GetVideoEncoderWrapper(), Wait(_)).WillOnce(Return(false));
+  EXPECT_EQ(EncodeAndGetRejection(picture_buffer, gfx::Rect(0, 0, 1920, 1080)),
+            EncoderStatus::Codes::kD3D12FenceWaitFailed);
+}
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest,
+       EncodeImplFailureAfterCopySyncsCopyQueue) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_visible_size = gfx::Size(1920, 1080);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+  static_cast<MockD3D12VideoEncodeDelegate*>(encoder_delegate_.get())
+      ->set_encode_impl_result(EncoderStatus::Codes::kBadReferenceBuffer);
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1920, 1088), config.input_format));
+
+  ExpectCopyQueueCpuWait();
+  EXPECT_EQ(EncodeAndGetRejection(picture_buffer, gfx::Rect(0, 0, 1920, 1080)),
+            EncoderStatus::Codes::kBadReferenceBuffer);
+}
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest,
+       CopyQueueCreationFailureReturnsError) {
+  encoder_delegate_->SetCopyCommandQueueWrapperFactoryForTesting(
+      base::BindRepeating([](ID3D12Device*) {
+        return std::unique_ptr<D3D12CopyCommandQueueWrapper>();
+      }));
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_visible_size = gfx::Size(1920, 1080);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1920, 1088), config.input_format));
+
+  EXPECT_EQ(EncodeAndGetRejection(picture_buffer, gfx::Rect(0, 0, 1920, 1080)),
+            EncoderStatus::Codes::kD3D12CreateCopyQueueFailed);
+}
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest,
+       CopyQueueExecuteFailureReturnsError) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_visible_size = gfx::Size(1920, 1080);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  EXPECT_CALL(*copy_command_list_.Get(), Close).WillOnce(Return(E_FAIL));
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1920, 1088), config.input_format));
+  EXPECT_EQ(EncodeAndGetRejection(picture_buffer, gfx::Rect(0, 0, 1920, 1080)),
+            EncoderStatus::Codes::kD3D12CopyQueueExecuteFailed);
 }
 
 TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, RejectsOddVisibleRectOrigin) {

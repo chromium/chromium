@@ -17,6 +17,7 @@
 #include "media/base/encoder_status.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/svc_layers.h"
+#include "media/gpu/windows/d3d12_copy_command_list_wrapper.h"
 #include "media/gpu/windows/d3d12_video_encoder_wrapper.h"
 #include "media/gpu/windows/d3d12_video_helpers.h"
 #include "media/gpu/windows/d3d12_video_processor_wrapper.h"
@@ -107,6 +108,13 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
 
   D3D12VideoProcessorWrapper* GetVideoProcessorWrapperForTesting() {
     return video_processor_wrapper_.get();
+  }
+
+  void SetCopyCommandQueueWrapperFactoryForTesting(
+      base::RepeatingCallback<std::unique_ptr<D3D12CopyCommandQueueWrapper>(
+          ID3D12Device*)> copy_command_queue_wrapper_factory) {
+    copy_command_queue_wrapper_factory_ =
+        std::move(copy_command_queue_wrapper_factory);
   }
 
   // The DXGI format the underlying D3D12 video encoder consumes. Valid after
@@ -218,6 +226,16 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
 
  private:
+  // Crops |input_visible_rect| out of |picture_buffer| into
+  // |processed_input_frame_| with CopyTextureRegion() on the copy command
+  // queue. Only valid when the input matches the encoder input format and
+  // color space and the crop does not need scaling.
+  base::expected<D3D12PictureBuffer, EncoderStatus>
+  CropToProcessedFrameWithCopy(const D3D12PictureBuffer& picture_buffer,
+                               const gfx::Rect& input_visible_rect);
+  // Allocates |processed_input_frame_| if it does not exist yet.
+  EncoderStatus EnsureProcessedInputFrame();
+
   // The video processor factory that may be changed for testing.
   base::RepeatingCallback<
       decltype(std::make_unique<D3D12VideoProcessorWrapper,
@@ -225,10 +243,28 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
       video_processor_wrapper_factory_ = base::BindRepeating(
           &std::make_unique<D3D12VideoProcessorWrapper,
                             Microsoft::WRL::ComPtr<ID3D12VideoDevice>>);
+  // The copy command queue factory that may be changed for testing. The queue
+  // is only created the first time a same-format crop is encoded.
+  base::RepeatingCallback<std::unique_ptr<D3D12CopyCommandQueueWrapper>(
+      ID3D12Device*)>
+      copy_command_queue_wrapper_factory_ =
+          base::BindRepeating(&D3D12CopyCommandQueueWrapper::Create);
+
+  // The destination of the crop copy (and of the video processor pass). Always
+  // input_size_ @ input_format_. The two producer queues need no fence between
+  // them: Encode() CPU-syncs the frame's producer, directly or through the
+  // encoder queue that waited on it, before returning.
   Microsoft::WRL::ComPtr<ID3D12Resource> processed_input_frame_;
+
+  // Crops same-format inputs with CopyTextureRegion() instead of the video
+  // processor.
+  std::unique_ptr<D3D12CopyCommandQueueWrapper> copy_command_queue_wrapper_;
+
   // The video processor used for possible resolution, format, or color space
   // conversion.
   std::unique_ptr<D3D12VideoProcessorWrapper> video_processor_wrapper_;
+  // Whether the first video processor pass has been checked for support.
+  bool video_processor_support_checked_ = false;
 };
 
 // A class to manage the decoded picture buffers for D3D12 video encode and

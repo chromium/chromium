@@ -95,6 +95,8 @@ std::string EncoderStatusTraits::ReadableCodeName(Codes code) {
       return "D3D12: Failed to create copy queue.";
     case EncoderStatus::Codes::kSharedImageResolveFailed:
       return "Failed to resolve SharedImage.";
+    case EncoderStatus::Codes::kD3D12CopyQueueExecuteFailed:
+      return "D3D12: Failed to execute copy queue.";
     case EncoderStatus::Codes::kOk:
       NOTREACHED();
   }

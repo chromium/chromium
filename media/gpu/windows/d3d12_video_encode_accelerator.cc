@@ -512,7 +512,10 @@ D3D12VideoEncodeAccelerator::~D3D12VideoEncodeAccelerator() {
   // `input_texture_`) are not released while the GPU may still be reading from
   // or writing to them.
   if (copy_command_queue_) {
-    copy_command_queue_->WaitSync();
+    if (auto status = copy_command_queue_->WaitSync(); !status.is_ok()) {
+      DLOG(ERROR) << "Waiting for in-flight copies during teardown failed: "
+                  << static_cast<int>(status.code());
+    }
   }
 
   if (!error_occurred_ && encoded_at_least_one_frame_) {
@@ -891,7 +894,11 @@ bool D3D12VideoEncodeAccelerator::EnsureUploadBuffer(uint64_t size) {
   // Wait for the GPU to finish copying from the buffer being replaced before
   // unmapping it.
   if (upload_buffer_map_) {
-    copy_command_queue_->WaitSync();
+    if (auto status = copy_command_queue_->WaitSync(); !status.is_ok()) {
+      DLOG(ERROR) << "Waiting for in-flight copies before replacing the "
+                     "upload buffer failed: "
+                  << static_cast<int>(status.code());
+    }
     upload_buffer_map_.reset();
   }
   HRESULT hr = device_->CreateCommittedResource(

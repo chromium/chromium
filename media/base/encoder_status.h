@@ -101,8 +101,10 @@ struct MEDIA_EXPORT EncoderStatusTraits {
     kD3D12CreateCopyQueueFailed = 41,
     // Failure in resolving a SharedImage.
     kSharedImageResolveFailed = 42,
+    // Failure in recording or executing a copy on the copy command queue.
+    kD3D12CopyQueueExecuteFailed = 43,
 
-    kMaxValue = kSharedImageResolveFailed,
+    kMaxValue = kD3D12CopyQueueExecuteFailed,
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:EncoderStatus)
 

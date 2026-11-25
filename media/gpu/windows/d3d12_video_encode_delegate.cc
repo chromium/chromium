@@ -355,7 +355,25 @@ D3D12VideoEncodeDelegate::D3D12VideoEncodeDelegate(
   CHECK(video_device_);
 }
 
-D3D12VideoEncodeDelegate::~D3D12VideoEncodeDelegate() = default;
+D3D12VideoEncodeDelegate::~D3D12VideoEncodeDelegate() {
+  // Drain both producer queues before member destruction releases
+  // |processed_input_frame_|.
+  if (video_processor_wrapper_) {
+    if (auto status = video_processor_wrapper_->WaitForInFlightWork();
+        !status.is_ok()) {
+      DLOG(ERROR) << "Waiting for in-flight video processing during teardown "
+                     "failed: "
+                  << static_cast<int>(status.code());
+    }
+  }
+  if (copy_command_queue_wrapper_) {
+    if (auto status = copy_command_queue_wrapper_->WaitSync();
+        !status.is_ok()) {
+      DLOG(ERROR) << "Waiting for in-flight copies during teardown failed: "
+                  << static_cast<int>(status.code());
+    }
+  }
+}
 
 EncoderStatus D3D12VideoEncodeDelegate::Initialize(
     VideoEncodeAccelerator::Config config) {
@@ -393,6 +411,7 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
   }
   input_format_ = *input_format;
   processed_input_frame_.Reset();
+  video_processor_support_checked_ = false;
 
   // A packed 4:2:2 macro-pixel covers two horizontally adjacent luma samples,
   // so an odd width has no representation in the encoder input surface. 4:2:0
@@ -454,6 +473,83 @@ bool D3D12VideoEncodeDelegate::UpdateRateControl(
   framerate_ = framerate;
   rate_control_ = rate_control;
   return true;
+}
+
+EncoderStatus D3D12VideoEncodeDelegate::EnsureProcessedInputFrame() {
+  if (processed_input_frame_) {
+    return EncoderStatus::Codes::kOk;
+  }
+  D3D12_RESOURCE_DESC processed_input_frame_desc = CD3DX12_RESOURCE_DESC::Tex2D(
+      input_format_, input_size_.Width, input_size_.Height, 1, 1);
+  HRESULT hr = device_->CreateCommittedResource(
+      &D3D12HeapProperties::kDefault, D3D12_HEAP_FLAG_NONE,
+      &processed_input_frame_desc, D3D12_RESOURCE_STATE_COMMON, nullptr,
+      IID_PPV_ARGS(&processed_input_frame_));
+  RETURN_ON_HR_FAILURE(
+      hr, "CreateCommittedResource for processed input frame failed",
+      EncoderStatus::Codes::kD3D12CreateCommittedResourceFailed);
+  return EncoderStatus::Codes::kOk;
+}
+
+base::expected<D3D12PictureBuffer, EncoderStatus>
+D3D12VideoEncodeDelegate::CropToProcessedFrameWithCopy(
+    const D3D12PictureBuffer& picture_buffer,
+    const gfx::Rect& input_visible_rect) {
+  // The copy may still read |picture_buffer.resource| after this returns;
+  // Encode() CPU-syncs it on every path before returning to its caller.
+  if (EncoderStatus status = EnsureProcessedInputFrame(); !status.is_ok()) {
+    return base::unexpected(std::move(status));
+  }
+  if (picture_buffer.fence_and_value.first) {
+    if (!copy_command_queue_wrapper_->Wait(picture_buffer.fence_and_value)) {
+      return base::unexpected(
+          EncoderStatus{EncoderStatus::Codes::kD3D12FenceWaitFailed,
+                        "D3D12 copy queue wait failed"});
+    }
+  }
+
+  const D3D12_RESOURCE_DESC input_frame_desc =
+      picture_buffer.resource->GetDesc();
+  const ChromaSubsampling subsampling = GetChromaSubsampling(input_format_);
+  const UINT plane_count =
+      base::checked_cast<UINT>(GetFormatPlaneCount(input_format_));
+  for (UINT plane = 0; plane < plane_count; ++plane) {
+    // Only the chroma plane of a bi-planar format is stored subsampled.
+    // Encode() validates that the visible rectangle is chroma-aligned.
+    const int scale_x = plane == 0 ? 1 : subsampling.x;
+    const int scale_y = plane == 0 ? 1 : subsampling.y;
+    const D3D12_BOX src_box{
+        .left = static_cast<UINT>(input_visible_rect.x() / scale_x),
+        .top = static_cast<UINT>(input_visible_rect.y() / scale_y),
+        .front = 0,
+        .right = static_cast<UINT>(input_visible_rect.right() / scale_x),
+        .bottom = static_cast<UINT>(input_visible_rect.bottom() / scale_y),
+        .back = 1};
+    if (!copy_command_queue_wrapper_->CopyTextureRegion(
+            {.pResource = processed_input_frame_.Get(),
+             .Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
+             .SubresourceIndex = plane},
+            0, 0, 0,
+            {.pResource = picture_buffer.resource.Get(),
+             .Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
+             .SubresourceIndex =
+                 D3D12CalcSubresource(picture_buffer.subresource, 0, plane,
+                                      input_frame_desc.MipLevels,
+                                      input_frame_desc.DepthOrArraySize)},
+            &src_box)) {
+      return base::unexpected(
+          EncoderStatus{EncoderStatus::Codes::kD3D12CopyQueueExecuteFailed,
+                        "D3D12 copy queue failed to record the crop"});
+    }
+  }
+
+  auto fence_and_value = copy_command_queue_wrapper_->Execute();
+  if (!fence_and_value.first) {
+    return base::unexpected(
+        EncoderStatus{EncoderStatus::Codes::kD3D12CopyQueueExecuteFailed,
+                      "D3D12 copy queue execute failed"});
+  }
+  return D3D12PictureBuffer{processed_input_frame_, 0, fence_and_value};
 }
 
 base::expected<D3D12VideoEncodeDelegate::EncodeResult, EncoderStatus>
@@ -545,12 +641,36 @@ D3D12VideoEncodeDelegate::Encode(
   // strictly out of contract, but scaling it is deliberate: MF VEA tolerates
   // the same mismatch via PerformD3DScaling(), and rejecting it here would
   // break clients that work on the Media Foundation path.
-  if (input_visible_rect != encoder_input_rect ||
+  const bool needs_crop_or_scale =
+      input_visible_rect != encoder_input_rect ||
       input_frame_desc.Width != input_size_.Width ||
-      input_frame_desc.Height != input_size_.Height ||
-      input_frame_desc.Format != input_format_ ||
-      input_frame_color_space != output_color_space) {
-    if (!processed_input_frame_) {
+      input_frame_desc.Height != input_size_.Height;
+  const bool needs_conversion = input_frame_desc.Format != input_format_ ||
+                                input_frame_color_space != output_color_space;
+  // A same-format crop does not need resampling, so it can be copied with
+  // CopyTextureRegion() directly. This also avoids the video processor crop
+  // path, which faults the GPU on NVIDIA (crbug.com/553687628).
+  const bool crop_with_copy =
+      needs_crop_or_scale && !needs_conversion &&
+      input_visible_rect.size() == encoder_input_rect.size();
+  if (crop_with_copy) {
+    if (!copy_command_queue_wrapper_) {
+      copy_command_queue_wrapper_ =
+          copy_command_queue_wrapper_factory_.Run(device_.Get());
+      if (!copy_command_queue_wrapper_) {
+        return base::unexpected(
+            EncoderStatus{EncoderStatus::Codes::kD3D12CreateCopyQueueFailed,
+                          "Failed to create the D3D12 copy command queue"});
+      }
+    }
+    auto cropped =
+        CropToProcessedFrameWithCopy(picture_buffer, input_visible_rect);
+    if (!cropped.has_value()) {
+      return base::unexpected(std::move(cropped).error());
+    }
+    picture_buffer = std::move(*cropped);
+  } else if (needs_crop_or_scale || needs_conversion) {
+    if (!video_processor_support_checked_) {
       // The actual input DXGI format and color space are only known here, at
       // Encode() time (e.g. an RGB(A) HDR shared image that must be converted
       // to P010). Validate that the video processor can perform this conversion
@@ -566,17 +686,10 @@ D3D12VideoEncodeDelegate::Encode(
             "D3D12 video processor does not support the required input "
             "format conversion"});
       }
-      D3D12_RESOURCE_DESC processed_input_frame_desc =
-          CD3DX12_RESOURCE_DESC::Tex2D(input_format_, input_size_.Width,
-                                       input_size_.Height, 1, 1);
-      HRESULT hr = device_->CreateCommittedResource(
-          &D3D12HeapProperties::kDefault, D3D12_HEAP_FLAG_NONE,
-          &processed_input_frame_desc, D3D12_RESOURCE_STATE_COMMON, nullptr,
-          IID_PPV_ARGS(&processed_input_frame_));
-      RETURN_ON_HR_FAILURE(
-          hr, "CreateCommittedResource for processed input frame failed",
-          base::unexpected(
-              EncoderStatus::Codes::kD3D12CreateCommittedResourceFailed));
+      video_processor_support_checked_ = true;
+    }
+    if (EncoderStatus status = EnsureProcessedInputFrame(); !status.is_ok()) {
+      return base::unexpected(std::move(status));
     }
     if (picture_buffer.fence_and_value.first) {
       if (!video_processor_wrapper_->Wait(picture_buffer.fence_and_value)) {
@@ -600,6 +713,14 @@ D3D12VideoEncodeDelegate::Encode(
   }
   if (picture_buffer.fence_and_value.first) {
     if (!video_encoder_wrapper_->Wait(picture_buffer.fence_and_value)) {
+      if (crop_with_copy) {
+        if (auto status = copy_command_queue_wrapper_->WaitSync();
+            !status.is_ok()) {
+          DLOG(ERROR) << "Waiting for in-flight copies after encoder wait "
+                         "error failed: "
+                      << static_cast<int>(status.code());
+        }
+      }
       return base::unexpected(
           EncoderStatus{EncoderStatus::Codes::kD3D12FenceWaitFailed,
                         "D3D12 video encoder wait failed"});
@@ -609,17 +730,25 @@ D3D12VideoEncodeDelegate::Encode(
       EncodeImpl(picture_buffer.resource.Get(), picture_buffer.subresource,
                  options, output_color_space, input_frame_hdr_metadata);
   if (!impl_result.is_ok()) {
-    // EncodeImpl() may bail (e.g. kBadReferenceBuffer) after
-    // D3D12VideoProcessorWrapper::ProcessFrames() has already submitted work
-    // to the video processor queue but before D3D12VideoEncoderWrapper::Encode
-    // would have CPU-synced it. Sync now so resources referenced by that
-    // command list are not released while the GPU is still using them when
-    // teardown follows this error.
+    // EncodeImpl() may bail (e.g. kBadReferenceBuffer) after the video
+    // processor or the crop copy has already submitted work to their command
+    // queues but before D3D12VideoEncoderWrapper::Encode would have CPU-synced
+    // it. Sync now so resources referenced by those command lists are not
+    // released while the GPU is still using them when teardown follows this
+    // error.
     if (auto status = video_processor_wrapper_->WaitForInFlightWork();
         !status.is_ok()) {
       DLOG(ERROR) << "Waiting for in-flight video processing after encode "
                      "error failed: "
                   << static_cast<int>(status.code());
+    }
+    if (crop_with_copy) {
+      if (auto status = copy_command_queue_wrapper_->WaitSync();
+          !status.is_ok()) {
+        DLOG(ERROR) << "Waiting for in-flight copies after encode error "
+                       "failed: "
+                    << static_cast<int>(status.code());
+      }
     }
     return base::unexpected(std::move(impl_result));
   }
