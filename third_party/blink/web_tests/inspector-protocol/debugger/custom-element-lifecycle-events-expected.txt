@@ -1,0 +1,17 @@
+Tests that custom element WebIDL lifecycle callbacks are suppressed while debugger is paused, while constructor runs and callbacks fire normally when unpaused.
+Custom element registered.
+new CustomElement() instanceof CustomElement = true
+Lifecycle callbacks while unpaused:
+[page] Invoked constructor.
+[page] Invoked attributeChangedCallback.
+[page] Invoked connectedCallback.
+[page] Invoked disconnectedCallback.
+[page] Invoked adoptedCallback.
+Script execution paused.
+new CustomElement() instanceof CustomElement = true
+Lifecycle callbacks while paused:
+[page] Invoked constructor.
+[page] Invoked constructor.
+Script execution resumed.
+Output lines after resume: 0
+
