@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/test_message_loop.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -450,6 +451,81 @@ INSTANTIATE_TEST_SUITE_P(
 #undef EXPECT_UKM
 #undef EXPECT_NO_UKM
 #undef EXPECT_HAS_UKM
+
+TEST_F(MediaMetricsProviderTest, TestPipelineUMASrcDemuxerType) {
+  auto destroy_provider = [&]() {
+    const size_t expected_entries =
+        test_recorder_->GetEntriesByName(UkmEntry::kEntryName).size() + 1;
+    provider_.reset();
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return test_recorder_->GetEntriesByName(UkmEntry::kEntryName).size() ==
+             expected_entries;
+    }));
+  };
+
+  {
+    base::HistogramTester histogram_tester;
+    Initialize(/*is_mse=*/false, false, false, kTestOrigin,
+               mojom::MediaURLScheme::kHttps);
+    provider_->SetDemuxerType(DemuxerType::kSymphoniaDemuxer);
+    provider_->SetHasAudio(AudioCodec::kFLAC);
+    destroy_provider();
+
+    histogram_tester.ExpectUniqueSample(
+        "Media.PipelineStatus.SRC.SymphoniaDemuxer", PIPELINE_OK, 1);
+    histogram_tester.ExpectTotalCount("Media.PipelineStatus.SRC.FFmpegDemuxer",
+                                      0);
+  }
+
+  // Open failures happen before audio/video tracks are known; they must still
+  // land in Media.PipelineStatus.SRC.{DemuxerType}.
+  {
+    base::HistogramTester histogram_tester;
+    Initialize(/*is_mse=*/false, false, false, kTestOrigin,
+               mojom::MediaURLScheme::kHttps);
+    provider_->SetDemuxerType(DemuxerType::kSymphoniaDemuxer);
+    provider_->OnError(DEMUXER_ERROR_COULD_NOT_OPEN);
+    destroy_provider();
+
+    histogram_tester.ExpectUniqueSample(
+        "Media.PipelineStatus.SRC.SymphoniaDemuxer",
+        DEMUXER_ERROR_COULD_NOT_OPEN, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    Initialize(/*is_mse=*/false, false, false, kTestOrigin,
+               mojom::MediaURLScheme::kHttps);
+    provider_->SetDemuxerType(DemuxerType::kFFmpegDemuxer);
+    provider_->OnError(DEMUXER_ERROR_NO_SUPPORTED_STREAMS);
+    destroy_provider();
+
+    histogram_tester.ExpectUniqueSample(
+        "Media.PipelineStatus.SRC.FFmpegDemuxer",
+        DEMUXER_ERROR_NO_SUPPORTED_STREAMS, 1);
+    histogram_tester.ExpectTotalCount(
+        "Media.PipelineStatus.SRC.SymphoniaDemuxer", 0);
+  }
+
+  // MSE and HLS playbacks must not record Media.PipelineStatus.SRC.*.
+  {
+    base::HistogramTester histogram_tester;
+    Initialize(/*is_mse=*/true, false, false, kTestOrigin,
+               mojom::MediaURLScheme::kHttps);
+    provider_->SetDemuxerType(DemuxerType::kChunkDemuxer);
+    destroy_provider();
+
+    Initialize(/*is_mse=*/false, false, false, kTestOrigin,
+               mojom::MediaURLScheme::kHttps);
+    provider_->SetDemuxerType(DemuxerType::kManifestDemuxer);
+    destroy_provider();
+
+    histogram_tester.ExpectTotalCount("Media.PipelineStatus.SRC.FFmpegDemuxer",
+                                      0);
+    histogram_tester.ExpectTotalCount(
+        "Media.PipelineStatus.SRC.SymphoniaDemuxer", 0);
+  }
+}
 
 TEST_F(MediaMetricsProviderTest, DoubleInitializeReportsBadMessage) {
   Initialize(true, false, true, kTestOrigin, mojom::MediaURLScheme::kHttp);

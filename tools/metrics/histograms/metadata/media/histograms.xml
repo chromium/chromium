@@ -7272,6 +7272,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.PipelineStatus.SRC.{DemuxerType}" enum="PipelineStatus"
+    expires_after="2027-08-01">
+  <owner>jophba@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Final pipeline status for progressive src= playbacks (excluding MSE, HLS,
+    and MediaStreams) that used {DemuxerType}. Recorded once when
+    MediaMetricsProvider is destroyed at the end of a media player's lifecycle,
+    including playbacks that failed before tracks were discovered.
+  </summary>
+  <token key="DemuxerType">
+    <variant name="FFmpegDemuxer" summary="FFmpegDemuxer"/>
+    <variant name="SymphoniaDemuxer" summary="SymphoniaDemuxer"/>
+  </token>
+</histogram>
+
 <histogram name="Media.PipelineStatus.Start" enum="PipelineStatus"
     expires_after="2027-09-22">
   <owner>xhwang@chromium.org</owner>

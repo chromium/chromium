@@ -5,11 +5,13 @@
 #include "media/mojo/services/media_metrics_provider.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/key_systems.h"
@@ -39,7 +41,7 @@ namespace {
 // unique IDs for the purpose of tracking UKMs.
 static base::AtomicSequenceNumber g_next_player_id;
 
-std::string GetDemuxerNameStringForTrackChangeMetrics(DemuxerType type) {
+std::string_view GetDemuxerNameStringForMetrics(DemuxerType type) {
   switch (type) {
     case DemuxerType::kFFmpegDemuxer:
       return "FFmpegDemuxer";
@@ -203,6 +205,15 @@ void MediaMetricsProvider::ReportPipelineUMA() {
                                   PIPELINE_STATUS_MAX + 1);
   }
 
+  if (!media_info_->is_mse &&
+      (demuxer_type_ == DemuxerType::kFFmpegDemuxer ||
+       demuxer_type_ == DemuxerType::kSymphoniaDemuxer)) {
+    base::UmaHistogramExactLinear(
+        base::StrCat({"Media.PipelineStatus.SRC.",
+                      GetDemuxerNameStringForMetrics(demuxer_type_)}),
+        uma_info_.last_pipeline_status, PIPELINE_STATUS_MAX + 1);
+  }
+
   // Report the audio decoder type used for playback.
   if (uma_info_.audio_pipeline_info.decoder_type !=
           AudioDecoderType::kUnknown &&
@@ -235,8 +246,8 @@ void MediaMetricsProvider::ReportPipelineUMA() {
 
   if (uma_info_.has_track_change_) {
     base::UmaHistogramSparse(
-        "Media.TrackChangePipelineStatus." +
-            GetDemuxerNameStringForTrackChangeMetrics(demuxer_type_),
+        base::StrCat({"Media.TrackChangePipelineStatus.",
+                      GetDemuxerNameStringForMetrics(demuxer_type_)}),
         media::PIPELINE_OK);
   }
 }
