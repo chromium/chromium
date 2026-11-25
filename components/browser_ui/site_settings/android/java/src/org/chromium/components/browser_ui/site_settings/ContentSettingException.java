@@ -21,8 +21,6 @@ public class ContentSettingException implements Serializable {
     private final @ContentSettingsType.EnumType int mContentSettingType;
     private final String mPrimaryPattern;
     private final @Nullable String mSecondaryPattern;
-    // TODO(crbug.com/40231949): Convert {@link #mSource} to enum to enable merging {@link #mSource}
-    // and {@link #mIsEmbargoed}.
     private final @ProviderType.EnumType int mSource;
     private final @Nullable Integer mExpirationInDays;
     private final boolean mIsEmbargoed;

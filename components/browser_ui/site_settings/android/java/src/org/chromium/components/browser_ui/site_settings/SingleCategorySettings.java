@@ -158,7 +158,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     // e.g. Location/Popups/All sites (if blank).
     public static final String EXTRA_CATEGORY = "category";
     public static final String EXTRA_TITLE = "title";
-    public static final String POLICY = "policy";
 
     @SuppressWarnings("NullAway.Init")
     private SettingsNavigation mSettingsNavigation;
