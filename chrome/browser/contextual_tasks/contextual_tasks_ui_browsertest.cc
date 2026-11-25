@@ -1879,4 +1879,97 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksToolbarPostRearchitectureBrowserTest,
         .ExtractBool();
   }));
 }
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksToolbarPostRearchitectureBrowserTest,
+                       SidePanelToolbarLocksZoom) {
+  content::HostZoomMap* default_zoom_map =
+      content::HostZoomMap::GetDefaultForBrowserContext(
+          browser()->GetProfile());
+  default_zoom_map->SetDefaultZoomLevel(2.0);
+  default_zoom_map->SetZoomLevelForHost(chrome::kChromeUIContextualTasksHost,
+                                        2.0);
+
+  auto* service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  auto* tab = TabListInterface::From(browser())->GetActiveTab();
+  service->InitSidePanelWithGhostLoader(browser(), tab, nullptr);
+
+  auto* panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(panel_controller);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return panel_controller->IsPanelOpenForContextualTask(); }));
+
+  content::WebContents* toolbar_contents =
+      panel_controller->GetToolbarWebContents();
+  ASSERT_TRUE(toolbar_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(toolbar_contents));
+
+  auto* zoom_controller =
+      zoom::ZoomController::FromWebContents(toolbar_contents);
+  ASSERT_TRUE(zoom_controller);
+  EXPECT_EQ(zoom::ZoomController::ZoomMode::ZOOM_MODE_DISABLED,
+            zoom_controller->zoom_mode());
+  EXPECT_DOUBLE_EQ(0.0, zoom_controller->GetZoomLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksToolbarPostRearchitectureBrowserTest,
+                       TabAndNonToolbarNavigationsDoNotLockZoom) {
+  content::HostZoomMap* default_zoom_map =
+      content::HostZoomMap::GetDefaultForBrowserContext(
+          browser()->GetProfile());
+  default_zoom_map->SetDefaultZoomLevel(2.0);
+
+  // Full-tab `ContextualTasksUIPostRearchitecture` pages (such as `/internals`)
+  // and full-tab `chrome://contextual-tasks/` navigations must keep default
+  // zoom enabled on the tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://contextual-tasks/internals")));
+  content::WebContents* tab_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+  ASSERT_NE(tab_contents->GetWebUI(), nullptr);
+  auto* tab_zoom_controller =
+      zoom::ZoomController::FromWebContents(tab_contents);
+  ASSERT_TRUE(tab_zoom_controller);
+  EXPECT_EQ(zoom::ZoomController::ZoomMode::ZOOM_MODE_DEFAULT,
+            tab_zoom_controller->zoom_mode());
+  EXPECT_DOUBLE_EQ(2.0, tab_zoom_controller->GetZoomLevel());
+
+  (void)ui_test_utils::NavigateToURL(browser(),
+                                     GURL(chrome::kChromeUIContextualTasksURL));
+  tab_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+  tab_zoom_controller = zoom::ZoomController::FromWebContents(tab_contents);
+  ASSERT_TRUE(tab_zoom_controller);
+  EXPECT_EQ(zoom::ZoomController::ZoomMode::ZOOM_MODE_DEFAULT,
+            tab_zoom_controller->zoom_mode());
+
+  // Navigating a non-tab WebContents from `toolbar.html` to a non-toolbar URL
+  // releases the zoom lock.
+  std::unique_ptr<content::WebContents> standalone_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  standalone_contents->GetController().LoadURL(
+      GURL(chrome::kChromeUIContextualTasksToolbarURL), content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(standalone_contents.get()));
+
+  auto* standalone_zoom_controller =
+      zoom::ZoomController::FromWebContents(standalone_contents.get());
+  ASSERT_TRUE(standalone_zoom_controller);
+  EXPECT_EQ(zoom::ZoomController::ZoomMode::ZOOM_MODE_DISABLED,
+            standalone_zoom_controller->zoom_mode());
+  EXPECT_DOUBLE_EQ(0.0, standalone_zoom_controller->GetZoomLevel());
+
+  standalone_contents->GetController().LoadURL(
+      GURL("chrome://contextual-tasks/internals"), content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(standalone_contents.get()));
+  standalone_zoom_controller =
+      zoom::ZoomController::FromWebContents(standalone_contents.get());
+  ASSERT_TRUE(standalone_zoom_controller);
+  EXPECT_EQ(zoom::ZoomController::ZoomMode::ZOOM_MODE_DEFAULT,
+            standalone_zoom_controller->zoom_mode());
+}
 #endif  // !BUILDFLAG(IS_ANDROID)

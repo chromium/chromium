@@ -5,12 +5,19 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_POST_REARCHITECTURE_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_POST_REARCHITECTURE_H_
 
+#include <memory>
+
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 #include "content/public/browser/web_ui_controller.h"
 
 namespace content {
+class Page;
 class WebUI;
 }  // namespace content
+
+namespace zoom {
+class ZoomDisableLock;
+}  // namespace zoom
 
 namespace contextual_tasks {
 
@@ -26,7 +33,13 @@ class ContextualTasksUIPostRearchitecture : public ContextualTasksUIBase {
       const ContextualTasksUIPostRearchitecture&) = delete;
   ~ContextualTasksUIPostRearchitecture() override;
 
+  // content::WebUIController:
+  void WebUIPrimaryPageChanged(content::Page& page) override;
+
   WEB_UI_CONTROLLER_TYPE_DECL();
+
+ private:
+  std::unique_ptr<zoom::ZoomDisableLock> zoom_lock_;
 };
 
 }  // namespace contextual_tasks
