@@ -33,6 +33,12 @@ extern const base::FeatureParam<base::TimeDelta>
 // created per browser context.
 extern const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount;
 
+// The free disk space in MiB that a language pack download needs. When the
+// component updater volume has less, `Translator.create()` fails without
+// starting the download. 0 turns the check off.
+extern const base::FeatureParam<size_t>
+    kTranslationAPILanguagePackMinFreeDiskSpaceMB;
+
 // How long a translator in the translation service can go without a
 // translation before the service unloads its TranslateKit model, and whether
 // moderate or critical memory pressure unloads all models immediately. The

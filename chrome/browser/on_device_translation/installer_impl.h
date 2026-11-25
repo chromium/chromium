@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_INSTALLER_IMPL_H_
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_INSTALLER_IMPL_H_
 
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "chrome/browser/on_device_translation/library_source.h"
@@ -57,8 +60,12 @@ class OnDeviceTranslationInstallerImpl
   // already in progress.
   void UpdateLanguagePackOnDemand(LanguagePackKey language_pack);
 
-  // Checks connectivity before `DownloadLanguagePack()` starts a download.
+  // Checks connectivity and free disk space before `DownloadLanguagePack()`
+  // starts a download.
   void OnLanguagePackOnlineChecked(LanguagePackKey language_pack, bool online);
+  void OnLanguagePackDiskSpaceChecked(LanguagePackKey language_pack,
+                                      size_t min_free_disk_space_mb,
+                                      std::optional<base::ByteSize> available);
   void DownloadLanguagePack(LanguagePackKey language_pack);
   void OnLibraryOnlineChecked(bool online);
 

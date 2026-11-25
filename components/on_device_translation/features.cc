@@ -47,6 +47,12 @@ const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount{
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
+// Require 5 GiB of free disk space by default before starting a new language
+// pack download across all platforms.
+const base::FeatureParam<size_t> kTranslationAPILanguagePackMinFreeDiskSpaceMB{
+    &blink::features::kTranslationAPI,
+    "TranslationAPILanguagePackMinFreeDiskSpaceMB", 5120};
+
 const base::FeatureParam<base::TimeDelta> kTranslationAPIModelIdleUnloadTimeout{
     &blink::features::kTranslationAPI, "TranslationAPIModelIdleUnloadTimeout",
 #if BUILDFLAG(IS_ANDROID)

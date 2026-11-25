@@ -18,12 +18,15 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
 #include "chrome/browser/data_saver/data_saver.h"
@@ -88,6 +91,22 @@ void CheckOnline(base::OnceCallback<void(bool)> callback) {
         FROM_HERE,
         base::BindOnce(on_connection_type, std::move(callbacks.second), type));
   }
+}
+
+// Returns the available disk space on the component updater install volume, or
+// `std::nullopt` if the directory or free space cannot be queried. Blocks.
+std::optional<base::ByteSize> GetAvailableDiskSpace() {
+  base::FilePath component_dir;
+  if (!base::PathService::Get(component_updater::DIR_COMPONENT_USER,
+                              &component_dir)) {
+    return std::nullopt;
+  }
+  const std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+      base::SysInfo::AmountOfDiskSpace(component_dir);
+  if (!disk_space.has_value()) {
+    return std::nullopt;
+  }
+  return disk_space->available;
 }
 
 std::optional<LanguagePackKey> FindLanguagePackKey(
@@ -479,22 +498,48 @@ void OnDeviceTranslationInstallerImpl::InstallLanguagePack(
 void OnDeviceTranslationInstallerImpl::OnLanguagePackOnlineChecked(
     LanguagePackKey language_pack,
     bool online) {
-  language_pack_checks_in_progress_.erase(language_pack);
+  std::optional<InstallError> error;
   if (!online) {
+    error = InstallError::kOffline;
+  } else if (data_saver::IsDataSaverEnabled()) {
+    error = InstallError::kDataSaverEnabled;
+  } else if (IsMeteredDownloadBlocked()) {
+    error = InstallError::kMeteredConnectionBlocked;
+  }
+  if (error) {
+    language_pack_checks_in_progress_.erase(language_pack);
     if (!InstalledLanguagePacks().contains(language_pack)) {
-      notifier_->NotifyLanguagePackInstallFailed(language_pack,
-                                                 InstallError::kOffline);
+      notifier_->NotifyLanguagePackInstallFailed(language_pack, *error);
     }
     return;
   }
-  if (data_saver::IsDataSaverEnabled()) {
-    notifier_->NotifyLanguagePackInstallFailed(language_pack,
-                                               InstallError::kDataSaverEnabled);
+  const size_t min_free_disk_space_mb =
+      kTranslationAPILanguagePackMinFreeDiskSpaceMB.Get();
+  if (min_free_disk_space_mb == 0) {
+    language_pack_checks_in_progress_.erase(language_pack);
+    DownloadLanguagePack(language_pack);
     return;
   }
-  if (IsMeteredDownloadBlocked()) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&GetAvailableDiskSpace),
+      base::BindOnce(
+          &OnDeviceTranslationInstallerImpl::OnLanguagePackDiskSpaceChecked,
+          weak_ptr_factory_.GetWeakPtr(), language_pack,
+          min_free_disk_space_mb));
+}
+
+void OnDeviceTranslationInstallerImpl::OnLanguagePackDiskSpaceChecked(
+    LanguagePackKey language_pack,
+    size_t min_free_disk_space_mb,
+    std::optional<base::ByteSize> available) {
+  language_pack_checks_in_progress_.erase(language_pack);
+  // Don't block the download if the free space is unknown.
+  if (available.has_value() && available->InMiB() < min_free_disk_space_mb) {
     notifier_->NotifyLanguagePackInstallFailed(
-        language_pack, InstallError::kMeteredConnectionBlocked);
+        language_pack, InstallError::kNotEnoughDiskSpace);
     return;
   }
   DownloadLanguagePack(language_pack);

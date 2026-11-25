@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -205,8 +206,10 @@ class TestSupportsUserData : public base::SupportsUserData {
 
 class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
  public:
-  OnDeviceTranslationBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kTranslationAPI);
+  explicit OnDeviceTranslationBrowserTest(base::FieldTrialParams params = {}) {
+    params.emplace("TranslationAPILanguagePackMinFreeDiskSpaceMB", "0");
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kTranslationAPI, params);
     CHECK(tmp_dir_.CreateUniqueTempDir());
   }
   ~OnDeviceTranslationBrowserTest() override = default;
@@ -1388,18 +1391,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 class OnDeviceTranslationCrashingLangBrowserTest
     : public OnDeviceTranslationBrowserTest {
  public:
-  OnDeviceTranslationCrashingLangBrowserTest() {
-    // Need to set TranslationAPIAcceptLanguagesCheck to false to use a fake
-    // language code `crash` to trigger a crash.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kTranslationAPI,
-          {{"TranslationAPIAcceptLanguagesCheck", "false"}}}},
-        {});
-  }
+  OnDeviceTranslationCrashingLangBrowserTest()
+      // Need to set TranslationAPIAcceptLanguagesCheck to false to use a fake
+      // language code `crash` to trigger a crash.
+      : OnDeviceTranslationBrowserTest(
+            {{"TranslationAPIAcceptLanguagesCheck", "false"}}) {}
   ~OnDeviceTranslationCrashingLangBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the behavior of the crash of calling create().
@@ -1954,16 +1951,10 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 class OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest
     : public OnDeviceTranslationBrowserTest {
  public:
-  OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kTranslationAPI,
-          {{"TranslationAPIAcceptLanguagesCheck", "false"}}}},
-        {});
-  }
+  OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest()
+      : OnDeviceTranslationBrowserTest(
+            {{"TranslationAPIAcceptLanguagesCheck", "false"}}) {}
   ~OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test the behavior of availability() when PassAcceptLanguagesCheck() checks
@@ -1989,13 +1980,11 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest,
 class OnDeviceTranslationCrossOriginBrowserTest
     : public OnDeviceTranslationBrowserTest {
  public:
-  OnDeviceTranslationCrossOriginBrowserTest() {
-    // Use a reduced value for TranslationAPIMaxServiceCount to speed
-    // up the test.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kTranslationAPI,
-          {{"TranslationAPIMaxServiceCount", "2"}}}},
-        {});
+  OnDeviceTranslationCrossOriginBrowserTest()
+      // Use a reduced value for TranslationAPIMaxServiceCount to speed
+      // up the test.
+      : OnDeviceTranslationBrowserTest(
+            {{"TranslationAPIMaxServiceCount", "2"}}) {
     CHECK_EQ(kTranslationAPIMaxServiceCount.Get(), 2u);
   }
   ~OnDeviceTranslationCrossOriginBrowserTest() override = default;
@@ -2154,7 +2143,6 @@ class OnDeviceTranslationCrossOriginBrowserTest
     return false;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<content::URLLoaderInterceptor> url_loader_interceptor_;
 
  protected:

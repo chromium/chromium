@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/native_library.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -52,6 +53,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -83,7 +85,8 @@ class MockOnDemandUpdater : public component_updater::OnDemandUpdater {
 // Tests for OnDeviceTranslationInstallerImpl.
 class OnDeviceTranslationInstallerTest : public ::testing::Test {
  public:
-  OnDeviceTranslationInstallerTest() = default;
+  explicit OnDeviceTranslationInstallerTest(base::FieldTrialParams params = {})
+      : default_feature_list_(std::move(params)) {}
   ~OnDeviceTranslationInstallerTest() override = default;
 
   // Disallow copy and assign.
@@ -210,9 +213,21 @@ class OnDeviceTranslationInstallerTest : public ::testing::Test {
   std::unique_ptr<base::ScopedPathOverride> scoped_path_override_;
   std::unique_ptr<base::ScopedPathOverride>
       component_user_scoped_path_override_;
+  // Initialized before `task_environment_` so worker threads see the feature
+  // state from startup.
+  struct ScopedTranslationFeatureList {
+    explicit ScopedTranslationFeatureList(base::FieldTrialParams params) {
+      params.emplace("TranslationAPILanguagePackMinFreeDiskSpaceMB", "0");
+      feature_list.InitAndEnableFeatureWithParameters(
+          blink::features::kTranslationAPI, params);
+    }
+    base::test::ScopedFeatureList feature_list;
+  };
+
   // This installer is captured so its lifetime is extended and we do not end up
   // with a dangling pointer to the policy installer.
   scoped_refptr<update_client::CrxInstaller> captured_installer_;
+  ScopedTranslationFeatureList default_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
 };
 
@@ -1209,6 +1224,30 @@ TEST_F(OnDeviceTranslationInstallerTest, ProgressReporting) {
 
   run_loop_100.Run();
 
+  OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
+}
+
+// Tests that a language pack download doesn't start when the disk is almost
+// full.
+TEST_F(OnDeviceTranslationInstallerTest,
+       InstallLanguagePackFailsWithoutFreeDiskSpace) {
+  base::test::ScopedFeatureList feature_list;
+  // More free space than any test machine has.
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kTranslationAPI,
+      {{"TranslationAPILanguagePackMinFreeDiskSpaceMB", "2000000000"}});
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate).Times(0);
+  testing::NiceMock<MockObserver> observer;
+  OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer,
+              OnLanguagePackInstallFailed(LanguagePackKey::kEn_Ja,
+                                          InstallError::kNotEnoughDiskSpace))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
+      LanguagePackKey::kEn_Ja);
+  run_loop.Run();
   OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&observer);
 }
 
