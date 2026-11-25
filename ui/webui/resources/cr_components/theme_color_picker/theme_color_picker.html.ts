@@ -20,7 +20,7 @@ export function getHtml(this: ThemeColorPickerElement) {
       aria-label="${this.i18n('defaultColorName')}" role="radio"
       ?checked="${this.isDefaultColorSelected_}"
       aria-checked="${this.isDefaultColorSelected_}"
-      tabindex="${this.tabIndex_(this.isDefaultColorSelected_)}"
+      tabindex="${this.defaultColorTabIndex_()}"
       @click="${this.onDefaultColorClick_}">
   </cr-theme-color>
   <cr-theme-color id="greyDefaultColor"

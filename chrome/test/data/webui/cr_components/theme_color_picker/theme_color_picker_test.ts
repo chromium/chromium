@@ -33,6 +33,7 @@ function createTheme(isDarkMode = false): Theme {
     isGreyBaseline: false,
     browserColorVariant: BrowserColorVariant.kTonalSpot,
     followDeviceTheme: false,
+    usingSystemTheme: false,
   };
 }
 
@@ -454,6 +455,25 @@ suite('CrComponentsThemeColorPickerTest', () => {
           assertEquals(0, handler.getCallCount('setSeedColor'));
         });
       });
+
+  test('no color selected when using system theme', async () => {
+    initializeElement();
+    const theme = createTheme();
+    theme.usingSystemTheme = true;
+    callbackRouter.setTheme(theme);
+    await callbackRouter.$.flushForTesting();
+    chromeColorsResolver.resolve({colors: []});
+    await microtasksFinished();
+
+    assertEquals(
+        0, colorsElement.shadowRoot.querySelectorAll('[checked]').length);
+    const indexedColors =
+        colorsElement.shadowRoot.querySelectorAll('[tabindex="0"]');
+    assertEquals(1, indexedColors.length);
+    assertEquals(
+        $$<ThemeColorElement>(colorsElement, '#defaultColor'),
+        indexedColors[0]);
+  });
 
   // New tests covering grey baseline selection logic.
   test('grey baseline selected when not following device theme', async () => {

@@ -98,6 +98,7 @@ class MockThemeService : public ThemeService {
   MOCK_CONST_METHOD0(UsingDefaultTheme, bool());
   MOCK_METHOD(void, UseDeviceTheme, (bool));
   MOCK_CONST_METHOD0(UsingSystemTheme, bool());
+  MOCK_CONST_METHOD0(IsSystemThemeDistinctFromDefaultTheme, bool());
   MOCK_CONST_METHOD0(UsingExtensionTheme, bool());
   MOCK_CONST_METHOD0(UsingPolicyTheme, bool());
   MOCK_CONST_METHOD0(GetThemeID, std::string());
@@ -317,6 +318,26 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetTheme) {
   EXPECT_EQ(theme->browser_color_variant,
             ui::mojom::BrowserColorVariant::kNeutral);
   EXPECT_FALSE(theme->follow_device_theme);
+  EXPECT_FALSE(theme->using_system_theme);
+}
+
+TEST_P(ThemeColorPickerHandlerSetThemeTest, UsingSystemTheme) {
+  ON_CALL(mock_theme_service(), UsingSystemTheme())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_theme_service(), IsSystemThemeDistinctFromDefaultTheme())
+      .WillByDefault(testing::Return(true));
+
+  theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
+  ASSERT_TRUE(theme);
+  EXPECT_TRUE(theme->using_system_theme);
+
+  // Platforms where the system theme is the default theme.
+  ON_CALL(mock_theme_service(), IsSystemThemeDistinctFromDefaultTheme())
+      .WillByDefault(testing::Return(false));
+
+  theme = UpdateTheme();
+  ASSERT_TRUE(theme);
+  EXPECT_FALSE(theme->using_system_theme);
 }
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeColorSchemeGM3) {

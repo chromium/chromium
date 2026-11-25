@@ -35,6 +35,9 @@ struct Theme {
   ui.mojom.BrowserColorVariant browser_color_variant;
   // True if following the OS theme.
   bool follow_device_theme;
+  // True if using a system theme that is distinct from the default theme
+  // (e.g. GTK or Qt on Linux). No color is selected in this case.
+  bool using_system_theme;
 };
 
 struct ChromeColor {

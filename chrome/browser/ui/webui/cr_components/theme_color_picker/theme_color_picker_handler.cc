@@ -150,6 +150,10 @@ void ThemeColorPickerHandler::UpdateTheme() {
         *custom_background->custom_background_main_color;
   }
 
+  theme->using_system_theme =
+      theme_service_->UsingSystemTheme() &&
+      theme_service_->IsSystemThemeDistinctFromDefaultTheme();
+
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   CHECK(native_theme);
 

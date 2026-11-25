@@ -153,6 +153,9 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
     if (this.theme_.followDeviceTheme) {
       return {type: ColorType.CUSTOM};
     }
+    if (this.theme_.usingSystemTheme) {
+      return {type: ColorType.NONE};
+    }
     if (this.theme_.isGreyBaseline) {
       return {type: ColorType.GREY};
     }
@@ -207,6 +210,13 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
 
   protected tabIndex_(selected: boolean): string {
     return selected ? '0' : '-1';
+  }
+
+  protected defaultColorTabIndex_(): string {
+    // Keep the color grid reachable by keyboard when no color is selected.
+    return this.tabIndex_(
+        this.isDefaultColorSelected_ ||
+        this.selectedColor_.type === ColorType.NONE);
   }
 
   protected onDefaultColorClick_() {
