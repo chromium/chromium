@@ -86,6 +86,9 @@ class MainLoopContinuationTest(unittest.TestCase):
                     cast_test, 'should_run_vp9_tests', return_value=False
                 ),
                 mock.patch.object(
+                    cast_test, 'should_run_60fps_vp8_tests', return_value=True
+                ),
+                mock.patch.object(
                     cast_test, 'setup_test_environment', side_effect=fake_setup
                 ),
                 mock.patch.object(
@@ -177,6 +180,9 @@ class MainLoopContinuationTest(unittest.TestCase):
                 mock.patch.object(common, 'finalize_results'),
                 mock.patch.object(
                     cast_test, 'should_run_vp9_tests', return_value=False
+                ),
+                mock.patch.object(
+                    cast_test, 'should_run_60fps_vp8_tests', return_value=True
                 ),
                 mock.patch.object(
                     cast_test, 'setup_test_environment', side_effect=fake_setup
@@ -389,6 +395,95 @@ class MainLoopContinuationTest(unittest.TestCase):
                     'Xvfb did not start on the lab host',
                     entry['failure_reason'],
                 )
+
+    def test_chromecast_hd_receiver_skips_60fps_vp8_clip_only(self):
+        ran_videos = []
+
+        def fake_setup(_args, _cv, _opts, codec_name, video_name):
+            trace = f'/remote/{codec_name}_{video_name}_sender.perfetto-trace'
+            return cast_test.SenderSession(
+                mock.MagicMock(), mock.MagicMock(), '160.0.0.1', trace
+            )
+
+        def fake_run(video_name, _driver, codec_name, _args):
+            ran_videos.append(f'{codec_name}_{video_name}')
+            return mock.MagicMock()
+
+        def fake_subprocess_run(cmd, **_kwargs):
+            if cmd[-2:] == ['getprop', 'ro.product.model']:
+                return completed(stdout='Chromecast HD\n')
+            return completed()
+
+        fake_sender = mock.MagicMock()
+        fake_sender.codec_skip_reason.return_value = None
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            results_path = os.path.join(tmp_dir, 'output.json')
+            reporter = test_results.TestReporter(output_path=results_path)
+            with (
+                mock.patch.object(common, 'RECORDINGS_DIR', f'{tmp_dir}/rec'),
+                mock.patch.object(common, 'TRACES_DIR', f'{tmp_dir}/traces'),
+                mock.patch.object(common, 'verify_receiver_connectivity'),
+                mock.patch.object(
+                    common, 'make_sender', return_value=fake_sender
+                ),
+                mock.patch.object(common, 'dump_remote_logs'),
+                mock.patch.object(common, 'teardown_recording_process'),
+                mock.patch.object(common, 'teardown_test_environment'),
+                mock.patch.object(common, 'cleanup_binaries'),
+                mock.patch.object(common, 'finalize_results'),
+                mock.patch.object(
+                    cast_test, 'should_run_vp9_tests', return_value=True
+                ),
+                mock.patch.object(
+                    cast_test, 'setup_test_environment', side_effect=fake_setup
+                ),
+                mock.patch.object(
+                    cast_test, 'run_performance_test', side_effect=fake_run
+                ),
+                mock.patch.object(
+                    cast_test.subprocess, 'run', side_effect=fake_subprocess_run
+                ),
+                mock.patch.object(cast_test.time, 'sleep'),
+                mock.patch.object(
+                    cast_test.sys,
+                    'argv',
+                    [
+                        'openscreen_cast_performance_test.py',
+                        '--sender=127.0.0.1',
+                        '--sender-os=win',
+                        '--receiver=sink',
+                    ],
+                ),
+            ):
+                with reporter:
+                    cast_test._run_tests(reporter)
+
+            with open(results_path, encoding='utf-8') as f:
+                results_json = json.load(f)
+
+        # H264 (30+60), VP8 (30 only), VP9 (30+60) -> 5 clips ran, 1 skipped.
+        self.assertEqual(len(ran_videos), 5)
+        self.assertNotIn(
+            'VP8_1080p60fpsH264_boat_yt_sync.mp4',
+            ran_videos,
+        )
+        self.assertEqual(
+            results_json['tests']['VP8'][
+                '1080p30fpsH264_foodmarket_yt_sync.mp4'
+            ]['actual'],
+            'PASS',
+        )
+        self.assertEqual(
+            results_json['tests']['VP8']['1080p60fpsH264_boat_yt_sync.mp4'][
+                'actual'
+            ],
+            'SKIP',
+        )
+        self.assertFalse(
+            results_json['tests']['VP8']['1080p60fpsH264_boat_yt_sync.mp4'].get(
+                'is_unexpected', False
+            )
+        )
 
 
 class SetupTestEnvironmentTest(unittest.TestCase):

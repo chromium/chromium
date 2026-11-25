@@ -124,6 +124,13 @@ SENDER_TRACE_CATEGORIES = (
 )
 
 
+# Receiver models whose software VP8 decoder cannot sustain 1080p60 in real
+# time (for example Chromecast HD's Cortex-A35 software VP8 decoder, which
+# drops ~45% of frames on 1080p60 VP8). Production Chrome negotiates hardware
+# H.264 or VP9 on these devices.
+SOFTWARE_VP8_30FPS_ONLY_MODELS = frozenset({'chromecast hd'})
+
+
 def should_run_vp9_tests(args) -> bool:
     """Detects whether VP9 tests should be run on the sender."""
     if args.sender_os == 'win':
@@ -143,6 +150,34 @@ def should_run_vp9_tests(args) -> bool:
                 cpu_name = ''
         if 'RYZEN' in cpu_name:
             return False
+    return True
+
+
+def should_run_60fps_vp8_tests(
+    receiver_ip: str = RECEIVER_IP, adb_path: str = ADB_PATH
+) -> bool:
+    """Returns False when the ADB receiver cannot decode 1080p60 VP8."""
+    try:
+        res = subprocess.run(
+            [
+                adb_path,
+                '-s',
+                receiver_ip,
+                'shell',
+                'getprop',
+                'ro.product.model',
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=5,
+        )
+        if res.returncode == 0:
+            model = res.stdout.strip().lower()
+            if model in SOFTWARE_VP8_30FPS_ONLY_MODELS:
+                return False
+    except (subprocess.SubprocessError, OSError) as e:
+        logging.warning("Failed to query receiver model: %s", e)
     return True
 
 
@@ -815,6 +850,8 @@ def _run_tests(reporter):
 
     # Fail fast if the Chromecast receiver cannot be reached over ADB.
     common.verify_receiver_connectivity(RECEIVER_IP, ADB_PATH)
+    run_60fps_vp8_tests = should_run_60fps_vp8_tests()
+    logging.info("Should run 60fps VP8 tests: %s", run_60fps_vp8_tests)
 
     if args.sender_os == 'cros' and not args.skip_cros_update:
         cros_updater.ensure_latest_canary(args)
@@ -1004,9 +1041,18 @@ def _run_tests(reporter):
     if not run_vp9_tests:
         skip_reasons['VP9'] = "Sender or receiver does not support VP9."
     skip_reasons = {c: r for c, r in skip_reasons.items() if r}
+    skipped_cases = {}
     for codec_name, reason in skip_reasons.items():
         for video in CONFIGURATIONS[codec_name]['videos']:
-            reporter.skip(_case_name(codec_name, video), reason)
+            skipped_cases[_case_name(codec_name, video)] = reason
+    if not run_60fps_vp8_tests and 'VP8' not in skip_reasons:
+        for video in CONFIGURATIONS['VP8']['videos']:
+            if video['fps'] > 30:
+                skipped_cases[_case_name('VP8', video)] = (
+                    "Receiver software VP8 decoder cannot sustain 60fps."
+                )
+    for case_id, reason in skipped_cases.items():
+        reporter.skip(case_id, reason)
 
     # A local Linux sender is a headless lab host, so it needs a virtual
     # display for Chrome. Other senders return a no-op context.
@@ -1017,15 +1063,19 @@ def _run_tests(reporter):
             display_error = RuntimeError('Xvfb did not start on the lab host')
             display_error.__cause__ = e
             for codec_name, config in CONFIGURATIONS.items():
-                if codec_name in skip_reasons:
-                    continue
                 for video in config['videos']:
-                    reporter.fail(_case_name(codec_name, video), display_error)
+                    case_id = _case_name(codec_name, video)
+                    if case_id not in skipped_cases:
+                        reporter.fail(case_id, display_error)
             raise display_error
-        _run_configurations(args, cv, reporter, CONFIGURATIONS, skip_reasons)
+        _run_configurations(
+            args, cv, reporter, CONFIGURATIONS, skip_reasons, skipped_cases
+        )
 
 
-def _run_configurations(args, cv, reporter, configurations, skip_reasons):
+def _run_configurations(
+    args, cv, reporter, configurations, skip_reasons, skipped_cases
+):
     """Runs every planned codec/video case and cleans up the sender."""
     actual_version = None
     last_version = None
@@ -1075,6 +1125,15 @@ def _run_configurations(args, cv, reporter, configurations, skip_reasons):
             )
 
             for video in config['videos']:
+                case_id = _case_name(codec_name, video)
+                if case_id in skipped_cases:
+                    logging.info(
+                        "Skipping %s: %s",
+                        case_id,
+                        skipped_cases[case_id],
+                    )
+                    continue
+
                 # TODO(b/512198717): Enable HEVC tests on ChromeOS.
                 # Currently these tests are rendering a blank white screen,
                 # so we skip them to bring up the other cros tests.
