@@ -264,19 +264,16 @@ TEST_F(FuzzyFinderTest, UnicodeAndNonLatinStrings) {
   FuzzyFinder finder(items);
 
   auto results = finder.FuzzyFind(u"新しい", /*max_results=*/3);
-  EXPECT_THAT(ExtractResultTitles(results),
-              ElementsAre(u"新しいタブ"));
+  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"新しいタブ"));
   EXPECT_LE(results.size(), 3u);
 
   results = finder.FuzzyFind(u"настройки", /*max_results=*/4);
-  EXPECT_THAT(ExtractResultTitles(results),
-              ElementsAre(u"Настройки"));
+  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Настройки"));
   EXPECT_LE(results.size(), 4u);
 }
 
 TEST_F(FuzzyFinderTest, MaxResultsBoundsReturnedCount) {
-  auto items =
-      CreateItems({{u"Tab 1"}, {u"Tab 2"}, {u"Tab 3"}, {u"Tab 4"}});
+  auto items = CreateItems({{u"Tab 1"}, {u"Tab 2"}, {u"Tab 3"}, {u"Tab 4"}});
   FuzzyFinder finder(items);
 
   EXPECT_THAT(finder.FuzzyFind(u"Tab", /*max_results=*/0), IsEmpty());
@@ -318,13 +315,11 @@ TEST_F(FuzzyFinderTest, SpecialCharactersAndPunctuation) {
   EXPECT_LE(results.size(), 3u);
 
   results = finder.FuzzyFind(u"(Grouped)", /*max_results=*/1);
-  EXPECT_THAT(ExtractResultTitles(results),
-              ElementsAre(u"Tab (Grouped)"));
+  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Tab (Grouped)"));
   EXPECT_EQ(results.size(), 1u);
 
   results = finder.FuzzyFind(u"100%", /*max_results=*/3);
-  EXPECT_THAT(ExtractResultTitles(results),
-              ElementsAre(u"Zoom: 100%"));
+  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Zoom: 100%"));
   EXPECT_LE(results.size(), 3u);
 }
 
@@ -337,7 +332,7 @@ TEST_F(FuzzyFinderTest, LegacyFindSubstringMatching) {
   ASSERT_EQ(results.size(), 1u);
   EXPECT_EQ(results[0].item, items[0]);
   EXPECT_THAT(results[0].match_ranges, ElementsAre(gfx::Range(0, 7)));
-  EXPECT_EQ(results[0].exact_match_range, gfx::Range(0, 7));
+  EXPECT_THAT(results[0].highlight_ranges, ElementsAre(gfx::Range(0, 7)));
 }
 
 TEST_F(FuzzyFinderTest, FuzzyFindExactAndWordBoundaryRanking) {
@@ -543,7 +538,8 @@ TEST_F(FuzzyFinderTest, MatchRangesComputation) {
   auto prefix_results = prefix_finder.FuzzyFind(u"New", /*max_results=*/1);
   ASSERT_EQ(prefix_results.size(), 1u);
   EXPECT_THAT(prefix_results[0].match_ranges, ElementsAre(gfx::Range(0, 3)));
-  EXPECT_EQ(prefix_results[0].exact_match_range, gfx::Range(0, 3));
+  EXPECT_THAT(prefix_results[0].highlight_ranges,
+              ElementsAre(gfx::Range(0, 3)));
 
   // 2. Infix and inner-word matches: "Open New Tab" with query "New" -> [5, 8),
   // and "New Incognito Window" with query "cognito" -> [6, 13).
@@ -552,34 +548,36 @@ TEST_F(FuzzyFinderTest, MatchRangesComputation) {
   auto infix_results = infix_finder.FuzzyFind(u"New", /*max_results=*/1);
   ASSERT_EQ(infix_results.size(), 1u);
   EXPECT_THAT(infix_results[0].match_ranges, ElementsAre(gfx::Range(5, 8)));
-  EXPECT_EQ(infix_results[0].exact_match_range, gfx::Range(5, 8));
+  EXPECT_THAT(infix_results[0].highlight_ranges, ElementsAre(gfx::Range(5, 8)));
 
   auto inner_items = CreateItems({{u"New Incognito Window"}});
   FuzzyFinder inner_finder(inner_items);
   auto inner_results = inner_finder.FuzzyFind(u"cognito", /*max_results=*/1);
   ASSERT_EQ(inner_results.size(), 1u);
   EXPECT_THAT(inner_results[0].match_ranges, ElementsAre(gfx::Range(6, 13)));
-  EXPECT_EQ(inner_results[0].exact_match_range, gfx::Range(6, 13));
+  EXPECT_THAT(inner_results[0].highlight_ranges,
+              ElementsAre(gfx::Range(6, 13)));
 
-  // 3. Accent-insensitive exact match: "Café Mode" with query "cafe" populates
-  // `exact_match_range` for the contiguous word while `match_ranges` reflects
-  // the unaccented fuzzy character alignment.
+  // 3. Accent-insensitive exact match: "Café Mode" with query "cafe" highlights
+  // the contiguous word while `match_ranges` reflects the unaccented fuzzy
+  // character alignment.
   auto accent_items = CreateItems({{u"Café Mode"}});
   FuzzyFinder accent_finder(accent_items);
   auto accent_results = accent_finder.FuzzyFind(u"cafe", /*max_results=*/1);
   ASSERT_EQ(accent_results.size(), 1u);
   EXPECT_THAT(accent_results[0].match_ranges,
               ElementsAre(gfx::Range(0, 3), gfx::Range(8, 9)));
-  EXPECT_EQ(accent_results[0].exact_match_range, gfx::Range(0, 4));
+  EXPECT_THAT(accent_results[0].highlight_ranges,
+              ElementsAre(gfx::Range(0, 4)));
 
   // 4. Transposition match: "Tab" with query "atb" merges into a single fuzzy
-  // range [0, 3) but is not an exact match, so `exact_match_range` is invalid.
+  // range [0, 3) but is not an exact match, so nothing is highlighted.
   auto swap_items = CreateItems({{u"Tab"}});
   FuzzyFinder swap_finder(swap_items);
   auto swap_results = swap_finder.FuzzyFind(u"atb", /*max_results=*/1);
   ASSERT_EQ(swap_results.size(), 1u);
   EXPECT_THAT(swap_results[0].match_ranges, ElementsAre(gfx::Range(0, 3)));
-  EXPECT_EQ(swap_results[0].exact_match_range, gfx::Range::InvalidRange());
+  EXPECT_THAT(swap_results[0].highlight_ranges, IsEmpty());
 
   // 5. Multi-word acronym match: "Google Chrome Browser" with query "gcb"
   auto multi_items = CreateItems({{u"Google Chrome Browser"}});
@@ -589,24 +587,23 @@ TEST_F(FuzzyFinderTest, MatchRangesComputation) {
   EXPECT_THAT(
       multi_results[0].match_ranges,
       ElementsAre(gfx::Range(0, 1), gfx::Range(7, 8), gfx::Range(14, 15)));
-  EXPECT_EQ(multi_results[0].exact_match_range, gfx::Range::InvalidRange());
+  EXPECT_THAT(multi_results[0].highlight_ranges, IsEmpty());
 
-  // 6. Synonym match leaves match_ranges empty and exact_match_range invalid.
+  // 6. Synonym match leaves match_ranges and highlight_ranges empty.
   auto syn_items = CreateItems({{u"Settings", u"", {u"Preferences"}}});
   FuzzyFinder syn_finder(syn_items);
   auto syn_results = syn_finder.FuzzyFind(u"Preferences", /*max_results=*/1);
   ASSERT_EQ(syn_results.size(), 1u);
   EXPECT_TRUE(syn_results[0].match_ranges.empty());
-  EXPECT_EQ(syn_results[0].exact_match_range, gfx::Range::InvalidRange());
+  EXPECT_TRUE(syn_results[0].highlight_ranges.empty());
 
-  // 7. Secondary text match leaves match_ranges empty and exact_match_range
-  // invalid.
+  // 7. Secondary text match leaves match_ranges and highlight_ranges empty.
   auto sec_items = CreateItems({{u"Settings", u"Preferences"}});
   FuzzyFinder sec_finder(sec_items);
   auto sec_results = sec_finder.FuzzyFind(u"Preferences", /*max_results=*/1);
   ASSERT_EQ(sec_results.size(), 1u);
   EXPECT_TRUE(sec_results[0].match_ranges.empty());
-  EXPECT_EQ(sec_results[0].exact_match_range, gfx::Range::InvalidRange());
+  EXPECT_TRUE(sec_results[0].highlight_ranges.empty());
 }
 
 TEST_F(FuzzyFinderTest, DefaultWeightsMatchSingleArgConstructor) {
@@ -862,12 +859,13 @@ TEST_F(FuzzyFinderTest, FuzzyFindMultiWordAcrossFieldsAndOrder) {
   });
   FuzzyFinder finder(items);
 
-  // Cross-field (title + synonym) and live-typing partial second word.
+  // Cross-field (title + synonym) and live-typing partial second word. Only
+  // the title word is highlighted.
   auto results = finder.FuzzyFind(u"delete cache", /*max_results=*/5);
   ASSERT_EQ(results.size(), 1u);
   EXPECT_EQ(results[0].item->GetTitle(), u"Delete browsing data");
   EXPECT_THAT(results[0].match_ranges, ElementsAre(gfx::Range(0, 6)));
-  EXPECT_EQ(results[0].exact_match_range, gfx::Range::InvalidRange());
+  EXPECT_THAT(results[0].highlight_ranges, ElementsAre(gfx::Range(0, 6)));
 
   EXPECT_THAT(ExtractResultTitles(finder.FuzzyFind(u"delete c", 5)),
               ElementsAre(u"Delete browsing data"));
@@ -877,6 +875,7 @@ TEST_F(FuzzyFinderTest, FuzzyFindMultiWordAcrossFieldsAndOrder) {
   ASSERT_EQ(results.size(), 1u);
   EXPECT_EQ(results[0].item->GetTitle(), u"Customize Chrome");
   EXPECT_THAT(results[0].match_ranges, IsEmpty());
+  EXPECT_THAT(results[0].highlight_ranges, IsEmpty());
 
   // Reordered title words sort ranges; overlapping words coalesce.
   results = finder.FuzzyFind(u"window incognito", /*max_results=*/5);
@@ -884,19 +883,74 @@ TEST_F(FuzzyFinderTest, FuzzyFindMultiWordAcrossFieldsAndOrder) {
   EXPECT_EQ(results[0].item->GetTitle(), u"New Incognito window");
   EXPECT_THAT(results[0].match_ranges,
               ElementsAre(gfx::Range(4, 13), gfx::Range(14, 20)));
+  EXPECT_THAT(results[0].highlight_ranges,
+              ElementsAre(gfx::Range(4, 13), gfx::Range(14, 20)));
 
   results = finder.FuzzyFind(u"delete del", /*max_results=*/5);
   ASSERT_EQ(results.size(), 1u);
   EXPECT_THAT(results[0].match_ranges, ElementsAre(gfx::Range(0, 6)));
+  EXPECT_THAT(results[0].highlight_ranges, ElementsAre(gfx::Range(0, 6)));
 
-  // Exact whole-phrase match outranks a cross-field split match.
+  // Exact whole-phrase match outranks a cross-field split match, and the
+  // split match only highlights its title word.
   results = finder.FuzzyFind(u"always show", /*max_results=*/5);
   EXPECT_THAT(ExtractResultTitles(results),
               ElementsAre(u"Always show", u"Always hide"));
   ASSERT_EQ(results.size(), 2u);
   EXPECT_GT(results[0].score, results[1].score);
-  EXPECT_EQ(results[0].exact_match_range, gfx::Range(0, 11));
-  EXPECT_EQ(results[1].exact_match_range, gfx::Range::InvalidRange());
+  EXPECT_THAT(results[0].highlight_ranges, ElementsAre(gfx::Range(0, 11)));
+  EXPECT_THAT(results[1].highlight_ranges, ElementsAre(gfx::Range(0, 6)));
+
+  // Non-adjacent title words are highlighted in any order, with any amount of
+  // whitespace between the query words.
+  results = finder.FuzzyFind(u"window new", /*max_results=*/5);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_THAT(results[0].highlight_ranges,
+              ElementsAre(gfx::Range(0, 3), gfx::Range(14, 20)));
+  results = finder.FuzzyFind(u"new   window", /*max_results=*/5);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_THAT(results[0].highlight_ranges,
+              ElementsAre(gfx::Range(0, 3), gfx::Range(14, 20)));
+
+  // A word without an exact match in the title (e.g. a typo) is not
+  // highlighted, while the other words still are.
+  results = finder.FuzzyFind(u"new incgonito", /*max_results=*/5);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_THAT(results[0].highlight_ranges, ElementsAre(gfx::Range(0, 3)));
+
+  // A contiguous match of the whole query, including a trailing single
+  // character, is highlighted as one range.
+  results = finder.FuzzyFind(u"new i", /*max_results=*/5);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_THAT(results[0].highlight_ranges, ElementsAre(gfx::Range(0, 5)));
+
+  // A single-character word highlights only at a word start, skipping the
+  // 'w' inside "New" for the one starting "window", and nothing when no word
+  // starts with it.
+  results = finder.FuzzyFind(u"w new", /*max_results=*/5);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_THAT(results[0].highlight_ranges,
+              ElementsAre(gfx::Range(0, 3), gfx::Range(14, 15)));
+  results = finder.FuzzyFind(u"new o", /*max_results=*/5);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_THAT(results[0].highlight_ranges, ElementsAre(gfx::Range(0, 3)));
+
+  // Single characters are counted in code points, so a two-code-unit character
+  // is still a single-character word that only highlights at a word start.
+  auto emoji_items = CreateItems({{u"New🚀 🚀 tab"}});
+  FuzzyFinder emoji_finder(emoji_items);
+  results = emoji_finder.FuzzyFind(u"tab 🚀", /*max_results=*/1);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_THAT(results[0].highlight_ranges,
+              ElementsAre(gfx::Range(6, 8), gfx::Range(9, 12)));
+
+  // An item matched only through its synonyms may have no title to highlight,
+  // including for a single-character word.
+  auto untitled_items = CreateItems({{u"", u"", {u"delete", u"cache"}}});
+  FuzzyFinder untitled_finder(untitled_items);
+  results = untitled_finder.FuzzyFind(u"delete c", /*max_results=*/1);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_THAT(results[0].highlight_ranges, IsEmpty());
 }
 
 TEST_F(FuzzyFinderTest, FuzzyFindMultiWordRejectsUnmatchedTokens) {

@@ -353,7 +353,7 @@ AppMenuSearchController::ProcessSearchResults(
   auto try_add_item = [&remaining_capacity](
                           std::vector<SearchResults::Item>& section,
                           size_t max_cap, const AppMenuSearchItem* search_item,
-                          const gfx::Range& highlight_range) {
+                          const std::vector<gfx::Range>& highlight_ranges) {
     if (section.size() < max_cap) {
       section.push_back({
           .action_item = search_item->GetActionItem(),
@@ -361,7 +361,7 @@ AppMenuSearchController::ProcessSearchResults(
           .breadcrumb = search_item->GetSecondaryText(),
           .icon_override = search_item->GetIconOverride(),
           .is_checkable = search_item->IsCheckable(),
-          .highlight_range = highlight_range,
+          .highlight_ranges = highlight_ranges,
       });
       --remaining_capacity;
     }
@@ -383,19 +383,19 @@ AppMenuSearchController::ProcessSearchResults(
     switch (search_item->GetType()) {
       case AppMenuSearchItem::Type::kAction:
         try_add_item(results.actions, kMaxActions, search_item,
-                     match.exact_match_range);
+                     match.highlight_ranges);
         break;
       case AppMenuSearchItem::Type::kBookmark:
         try_add_item(results.bookmarks, kMaxBookmarks, search_item,
-                     match.exact_match_range);
+                     match.highlight_ranges);
         break;
       case AppMenuSearchItem::Type::kRecentTabs:
         try_add_item(results.recent_tabs, kMaxRecentTabs, search_item,
-                     match.exact_match_range);
+                     match.highlight_ranges);
         break;
       case AppMenuSearchItem::Type::kTabGroup:
         try_add_item(results.tab_groups, kMaxTabGroups, search_item,
-                     match.exact_match_range);
+                     match.highlight_ranges);
         break;
     }
   }
@@ -443,10 +443,10 @@ AppMenuSearchController::BuildSearchResultsTree(SearchResults results) const {
       // mnemonics on the MenuItemView so UTF-16 offsets match `item.title`;
       // unhighlighted rows keep mnemonics enabled, so both title and
       // secondary title need ampersands escaped.
-      const bool has_highlight = item.highlight_range.IsValid();
+      const bool has_highlight = !item.highlight_ranges.empty();
       if (has_highlight) {
-        indirect_item->SetProperty(AppMenuActionItem::kHighlightRangeKey,
-                                   item.highlight_range);
+        indirect_item->SetProperty(AppMenuActionItem::kHighlightRangesKey,
+                                   item.highlight_ranges);
       }
       indirect_item->SetProperty(
           AppMenuActionItem::kTextOverrideKey,

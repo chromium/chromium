@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -13,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/char_iterator.h"
 #include "base/i18n/string_search.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -70,9 +72,9 @@ bool IsWordBoundary(std::u16string_view text, size_t i) {
   return i == 0 || base::IsUnicodeWhitespace(text[i - 1]);
 }
 
-gfx::Range FindExactMatchRange(
-    base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents& search,
-    std::u16string_view text) {
+using ExactSearch = base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents;
+
+gfx::Range FindExactMatchRange(ExactSearch& search, std::u16string_view text) {
   size_t match_start = 0;
   size_t match_length = 0;
   if (!search.Search(text, &match_start, &match_length) || match_length == 0) {
@@ -92,6 +94,64 @@ std::vector<gfx::Range> MergeRanges(std::vector<gfx::Range> ranges) {
     }
   }
   return merged;
+}
+
+// An exact searcher for one word of a multi-word query. Single-character
+// words only match at word starts, so a trailing character typed mid-word
+// doesn't highlight an unrelated letter.
+struct TokenSearch {
+  std::unique_ptr<ExactSearch> search;
+  bool word_start_only = false;
+};
+
+// Finds the first match of `search` in `text` that begins at a word boundary,
+// or InvalidRange() if none.
+gfx::Range FindWordStartMatchRange(ExactSearch& search,
+                                   std::u16string_view text) {
+  for (size_t offset = 0; offset < text.size(); ++offset) {
+    if (!IsWordBoundary(text, offset)) {
+      continue;
+    }
+    const gfx::Range match = FindExactMatchRange(search, text.substr(offset));
+    if (!match.IsValid()) {
+      return gfx::Range::InvalidRange();
+    }
+    const size_t match_start = offset + match.start();
+    if (IsWordBoundary(text, match_start)) {
+      return gfx::Range(match_start, match_start + match.length());
+    }
+    offset = match_start;
+  }
+  return gfx::Range::InvalidRange();
+}
+
+// Computes the ranges of `title` to highlight: the first contiguous case- and
+// accent-insensitive match of the whole query or, failing that, the first such
+// match of each of `token_searches` (the words of a multi-word query)
+// regardless of order.
+//
+// E.g. for query "history open" and title "Open history page", the whole query
+// has no match while "history" matches [5, 12) and "open" matches [0, 4),
+// highlighting "Open" and "history".
+std::vector<gfx::Range> ComputeHighlightRanges(
+    std::u16string_view title,
+    ExactSearch& full_search,
+    const std::vector<TokenSearch>& token_searches) {
+  if (const gfx::Range full_range = FindExactMatchRange(full_search, title);
+      full_range.IsValid()) {
+    return {full_range};
+  }
+  std::vector<gfx::Range> ranges;
+  for (const TokenSearch& token_search : token_searches) {
+    const gfx::Range range =
+        token_search.word_start_only
+            ? FindWordStartMatchRange(*token_search.search, title)
+            : FindExactMatchRange(*token_search.search, title);
+    if (range.IsValid()) {
+      ranges.push_back(range);
+    }
+  }
+  return MergeRanges(std::move(ranges));
 }
 
 }  // namespace
@@ -132,8 +192,7 @@ std::vector<FuzzySearchResult> FuzzyFinder::Find(std::u16string_view query,
     return {};
   }
 
-  base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents search{
-      std::u16string(trimmed_query)};
+  ExactSearch search{std::u16string(trimmed_query)};
 
   std::vector<FuzzySearchResult> results;
   results.reserve(max_results);
@@ -147,7 +206,7 @@ std::vector<FuzzySearchResult> FuzzyFinder::Find(std::u16string_view query,
       FuzzySearchResult result;
       result.item = item;
       result.match_ranges.push_back(match_range);
-      result.exact_match_range = match_range;
+      result.highlight_ranges.push_back(match_range);
       results.emplace_back(std::move(result));
       if (results.size() >= max_results) {
         break;
@@ -239,11 +298,24 @@ std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(std::u16string_view query,
   }
 
   if (!results.empty()) {
-    base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents search{
-        std::u16string(trimmed_query)};
+    ExactSearch full_search{std::u16string(trimmed_query)};
+    std::vector<TokenSearch> token_searches;
+    if (is_multi_word) {
+      // Split the query before lowercasing so a word's character count is
+      // not skewed by case mappings that change its length (e.g. "İ").
+      for (std::u16string_view token : base::SplitStringPiece(
+               trimmed_query, base::kWhitespaceUTF16, base::TRIM_WHITESPACE,
+               base::SPLIT_WANT_NONEMPTY)) {
+        base::i18n::UTF16CharIterator iter(token);
+        const bool is_single_char = iter.Advance() && iter.end();
+        token_searches.push_back(
+            {std::make_unique<ExactSearch>(std::u16string(token)),
+             /*word_start_only=*/is_single_char});
+      }
+    }
     for (FuzzySearchResult& result : results) {
-      result.exact_match_range =
-          FindExactMatchRange(search, result.item->GetTitle());
+      result.highlight_ranges = ComputeHighlightRanges(
+          result.item->GetTitle(), full_search, token_searches);
     }
   }
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -76,7 +77,8 @@ class AppMenuActionItem {
   static const ui::ClassProperty<ui::ColorId>* const kContainerColorKey;
   static const ui::ClassProperty<ui::ColorId>* const kForegroundColorKey;
   static const ui::ClassProperty<std::u16string*>* const kTextOverrideKey;
-  static const ui::ClassProperty<gfx::Range*>* const kHighlightRangeKey;
+  static const ui::ClassProperty<std::vector<gfx::Range>*>* const
+      kHighlightRangesKey;
   static const ui::ClassProperty<ui::ImageModel*>* const kIconOverrideKey;
   static const ui::ClassProperty<ui::ImageModel*>* const kMinorIconKey;
   static const ui::ClassProperty<std::u16string*>* const kMinorTextKey;
@@ -120,7 +122,7 @@ DECLARE_UI_CLASS_PROPERTY_TYPE(AppMenuActionItem::DisplayType)
 DECLARE_UI_CLASS_PROPERTY_TYPE(AppMenuActionItem::ItemHeight)
 DECLARE_UI_CLASS_PROPERTY_TYPE(AppMenuDragAndDropDelegate*)
 DECLARE_UI_CLASS_PROPERTY_TYPE(const base::Feature*)
-DECLARE_UI_CLASS_PROPERTY_TYPE(gfx::Range*)
+DECLARE_UI_CLASS_PROPERTY_TYPE(std::vector<gfx::Range>*)
 DECLARE_UI_CLASS_PROPERTY_TYPE(ui::ImageModel*)
 DECLARE_UI_CLASS_PROPERTY_TYPE(ui::MenuSeparatorType)
 

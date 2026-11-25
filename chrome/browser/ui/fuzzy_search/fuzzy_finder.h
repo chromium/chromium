@@ -21,10 +21,16 @@ struct FuzzySearchResult {
   // For FuzzyFind(), the item's match score in [0.0, 1.0] (before
   // FuzzySearchItem::GetBonusWeight()).
   double score = 0.0;
+  // Character ranges of the fuzzy alignment of the query against
+  // `item->GetTitle()`, used for scoring; empty if secondary text or a synonym
+  // produced the best match.
   std::vector<gfx::Range> match_ranges;
-  // First contiguous case- and accent-insensitive match of the query in
-  // `item->GetTitle()`, or `gfx::Range::InvalidRange()` if none.
-  gfx::Range exact_match_range = gfx::Range::InvalidRange();
+  // Sorted, non-overlapping character ranges in `item->GetTitle()` to render
+  // in bold: the first contiguous case- and accent-insensitive match of the
+  // whole query or, failing that for a multi-word query, of each word
+  // regardless of order. Single-character words only match at word starts.
+  // Empty if the title has no such match (e.g. a fuzzy or synonym match).
+  std::vector<gfx::Range> highlight_ranges;
 };
 
 // Performs fuzzy search over a collection of FuzzySearchItems (matching against

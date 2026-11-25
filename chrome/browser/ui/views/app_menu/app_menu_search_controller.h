@@ -99,9 +99,8 @@ class AppMenuSearchController {
       // is rendered as one too, bound to the action's checked state.
       bool is_checkable = false;
 
-      // Consecutive character span in `title` that is a case-insensitive exact
-      // match of the query, or InvalidRange() if none.
-      gfx::Range highlight_range = gfx::Range::InvalidRange();
+      // Sorted, non-overlapping character spans in `title` to render in bold.
+      std::vector<gfx::Range> highlight_ranges;
     };
 
     SearchResults();

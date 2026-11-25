@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -39,8 +40,8 @@ class AppMenuItemView : public views::MenuItemView {
   const std::optional<std::u16string>& text_override() const {
     return text_override_;
   }
-  const std::optional<gfx::Range>& highlight_range_override() const {
-    return highlight_range_;
+  const std::vector<gfx::Range>& highlight_ranges_override() const {
+    return highlight_ranges_;
   }
   const std::optional<ui::ImageModel>& icon_override() const {
     return icon_override_;
@@ -64,7 +65,7 @@ class AppMenuItemView : public views::MenuItemView {
 
  private:
   std::optional<std::u16string> text_override_;
-  std::optional<gfx::Range> highlight_range_;
+  std::vector<gfx::Range> highlight_ranges_;
   std::optional<ui::ImageModel> icon_override_;
   int default_icon_size_ = 0;
   std::optional<ui::ColorId> default_icon_color_;

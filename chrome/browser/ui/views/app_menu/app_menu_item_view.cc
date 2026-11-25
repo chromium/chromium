@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -81,8 +82,8 @@ class AppMenuItemActionViewInterface
     if (menu_item->text_override().has_value()) {
       menu_item->SetTitle(*menu_item->text_override());
     }
-    if (menu_item->highlight_range_override().has_value()) {
-      menu_item->SetHighlightRanges({*menu_item->highlight_range_override()});
+    if (!menu_item->highlight_ranges_override().empty()) {
+      menu_item->SetHighlightRanges(menu_item->highlight_ranges_override());
     }
 
     const int default_icon_size = menu_item->default_icon_size();
@@ -162,9 +163,10 @@ AppMenuItemView::AppMenuItemView(views::MenuItemView* parent,
     GetViewAccessibility().SetDescription(default_secondary_text_);
   }
 
-  if (gfx::Range* highlight_range =
-          base_action->GetProperty(AppMenuActionItem::kHighlightRangeKey)) {
-    highlight_range_ = *highlight_range;
+  if (std::vector<gfx::Range>* highlight_ranges =
+          base_action->GetProperty(AppMenuActionItem::kHighlightRangesKey);
+      highlight_ranges && !highlight_ranges->empty()) {
+    highlight_ranges_ = *highlight_ranges;
     set_may_have_mnemonics(false);
   }
 

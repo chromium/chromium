@@ -1064,7 +1064,7 @@ TEST_F(AppMenuSearchControllerTest, OtherDeviceTabsSubmenuIndexed) {
   EXPECT_EQ(items[0]->GetSecondaryText(), u"example.org");
 }
 
-TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRange) {
+TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRanges) {
   menu_root_->AddChild(actions::ActionItem::Builder()
                            .SetActionId(kActionNewTab)
                            .SetText(u"New Tab")
@@ -1091,33 +1091,47 @@ TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRange) {
 
   controller_->InitializeSearchIndex();
 
-  // Case-insensitive word-prefix match sets highlight range.
+  // Case-insensitive word-prefix match sets highlight ranges.
   {
     const std::unique_ptr<actions::ActionItem> results =
         controller_->Search(u"  tab  ");
     ASSERT_NE(results, nullptr);
     const auto& rows = results->GetChildren().children();
     ASSERT_FALSE(rows.empty());
-    const gfx::Range* range =
-        rows[0]->GetProperty(AppMenuActionItem::kHighlightRangeKey);
-    ASSERT_NE(range, nullptr);
-    EXPECT_EQ(*range, gfx::Range(4, 7));
+    const std::vector<gfx::Range>* ranges =
+        rows[0]->GetProperty(AppMenuActionItem::kHighlightRangesKey);
+    ASSERT_NE(ranges, nullptr);
+    EXPECT_THAT(*ranges, testing::ElementsAre(gfx::Range(4, 7)));
   }
 
-  // Case-insensitive inner-word substring match sets highlight range.
+  // Case-insensitive inner-word substring match sets highlight ranges.
   {
     const std::unique_ptr<actions::ActionItem> results =
         controller_->Search(u"cognito");
     ASSERT_NE(results, nullptr);
     const auto& rows = results->GetChildren().children();
     ASSERT_EQ(rows.size(), 1u);
-    const gfx::Range* range =
-        rows[0]->GetProperty(AppMenuActionItem::kHighlightRangeKey);
-    ASSERT_NE(range, nullptr);
-    EXPECT_EQ(*range, gfx::Range(6, 13));
+    const std::vector<gfx::Range>* ranges =
+        rows[0]->GetProperty(AppMenuActionItem::kHighlightRangesKey);
+    ASSERT_NE(ranges, nullptr);
+    EXPECT_THAT(*ranges, testing::ElementsAre(gfx::Range(6, 13)));
   }
 
-  // Text override strips mnemonic '&' and computes accurate highlight range.
+  // Reordered multi-word query highlights each matching word.
+  {
+    const std::unique_ptr<actions::ActionItem> results =
+        controller_->Search(u"tab new");
+    ASSERT_NE(results, nullptr);
+    const auto& rows = results->GetChildren().children();
+    ASSERT_FALSE(rows.empty());
+    const std::vector<gfx::Range>* ranges =
+        rows[0]->GetProperty(AppMenuActionItem::kHighlightRangesKey);
+    ASSERT_NE(ranges, nullptr);
+    EXPECT_THAT(*ranges,
+                testing::ElementsAre(gfx::Range(0, 3), gfx::Range(4, 7)));
+  }
+
+  // Text override strips mnemonic '&' and computes accurate highlight ranges.
   {
     const std::unique_ptr<actions::ActionItem> results =
         controller_->Search(u"horizontal");
@@ -1128,33 +1142,33 @@ TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRange) {
         rows[0]->GetProperty(AppMenuActionItem::kTextOverrideKey);
     ASSERT_NE(text_override, nullptr);
     EXPECT_EQ(*text_override, u"Show tabs horizontally");
-    const gfx::Range* range =
-        rows[0]->GetProperty(AppMenuActionItem::kHighlightRangeKey);
-    ASSERT_NE(range, nullptr);
-    EXPECT_EQ(*range, gfx::Range(10, 20));
+    const std::vector<gfx::Range>* ranges =
+        rows[0]->GetProperty(AppMenuActionItem::kHighlightRangesKey);
+    ASSERT_NE(ranges, nullptr);
+    EXPECT_THAT(*ranges, testing::ElementsAre(gfx::Range(10, 20)));
   }
 
   // Fuzzy transposition match ("atb" -> "New Tab") does not set highlight
-  // range.
+  // ranges.
   {
     const std::unique_ptr<actions::ActionItem> results =
         controller_->Search(u"atb");
     ASSERT_NE(results, nullptr);
     const auto& rows = results->GetChildren().children();
     ASSERT_FALSE(rows.empty());
-    EXPECT_EQ(rows[0]->GetProperty(AppMenuActionItem::kHighlightRangeKey),
+    EXPECT_EQ(rows[0]->GetProperty(AppMenuActionItem::kHighlightRangesKey),
               nullptr);
   }
 
   // Synonym-only match ("private" -> "New Incognito Window") does not set
-  // highlight range.
+  // highlight ranges.
   {
     const std::unique_ptr<actions::ActionItem> results =
         controller_->Search(u"private");
     ASSERT_NE(results, nullptr);
     const auto& rows = results->GetChildren().children();
     ASSERT_EQ(rows.size(), 1u);
-    EXPECT_EQ(rows[0]->GetProperty(AppMenuActionItem::kHighlightRangeKey),
+    EXPECT_EQ(rows[0]->GetProperty(AppMenuActionItem::kHighlightRangesKey),
               nullptr);
   }
 
@@ -1180,10 +1194,10 @@ TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRange) {
     EXPECT_EQ(
         *highlighted_rows[0]->GetProperty(AppMenuActionItem::kSecondaryTextKey),
         u"R&D");
-    const gfx::Range* range =
-        highlighted_rows[0]->GetProperty(AppMenuActionItem::kHighlightRangeKey);
-    ASSERT_NE(range, nullptr);
-    EXPECT_EQ(*range, gfx::Range(4, 10));
+    const std::vector<gfx::Range>* ranges = highlighted_rows[0]->GetProperty(
+        AppMenuActionItem::kHighlightRangesKey);
+    ASSERT_NE(ranges, nullptr);
+    EXPECT_THAT(*ranges, testing::ElementsAre(gfx::Range(4, 10)));
 
     const std::unique_ptr<actions::ActionItem> unhighlighted_results =
         controller_->Search(u"faq");
@@ -1204,7 +1218,7 @@ TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRange) {
                   AppMenuActionItem::kSecondaryTextKey),
               u"R&&D");
     EXPECT_EQ(unhighlighted_rows[0]->GetProperty(
-                  AppMenuActionItem::kHighlightRangeKey),
+                  AppMenuActionItem::kHighlightRangesKey),
               nullptr);
   }
 }
