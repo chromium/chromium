@@ -89,18 +89,15 @@ class ExtensionPageCaptureApiTest : public ExtensionApiTest {
   }
 };
 
-// https://crbug.com/492228013: Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(ExtensionPageCaptureApiTest,
-                       DISABLED_SaveAsMHTMLWithoutFileAccess) {
+                       SaveAsMHTMLWithoutFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", "ONLY_PAGE_CAPTURE_PERMISSION"))
       << message_;
 }
 
-// https://crbug.com/492228013: Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(ExtensionPageCaptureApiTest,
-                       DISABLED_SaveAsMHTMLWithFileAccess) {
+IN_PROC_BROWSER_TEST_F(ExtensionPageCaptureApiTest, SaveAsMHTMLWithFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", /*custom_arg=*/nullptr,

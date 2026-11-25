@@ -26,10 +26,9 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
           'Error in chrome.pageCapture.saveAsMHTML callback', e);
     } finally {
       if (requestId) {
-        // If we received a blob, notify the browser. Now that the blob is
-        // referenced from JavaScript, the browser can drop its reference to
-        // it.
-        SendResponseAck(requestId);
+        // If a blob was received, notify the browser once the blob has been
+        // registered, so the browser can drop its reference to the file.
+        SendResponseAck(requestId, response);
       }
     }
   });
