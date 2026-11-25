@@ -41,6 +41,8 @@ TEST(PerfettoTraceConfigTest, DefaultConfigBuildsRingBufferAndPeriodicClear) {
             perfetto::TraceConfig::BufferConfig::RING_BUFFER);
   EXPECT_EQ(proto.builtin_data_sources().primary_trace_clock(),
             perfetto::protos::gen::BUILTIN_CLOCK_MONOTONIC);
+  EXPECT_EQ(proto.data_source_stop_timeout_ms(),
+            kDefaultPerfettoDataSourceStopTimeoutMs);
   EXPECT_EQ(proto.incremental_state_config().clear_period_ms(),
             kDefaultPerfettoClearPeriodMs);
 

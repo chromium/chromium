@@ -10,6 +10,20 @@
 
 namespace remoting {
 
+// Perfetto TrackEvent categories registered for Chrome Remote Desktop in
+// `base/trace_event/builtin_categories.h`. Declared as `const char[]` so they
+// can be passed directly to `TRACE_EVENT(...)` compile-time category lookups as
+// well as `PerfettoTraceConfig::enabled_categories`.
+inline constexpr char kRemotingTraceCategory[] = "remoting";
+inline constexpr char kRemotingVideoTraceCategory[] = "remoting.video";
+inline constexpr char kRemotingDebugTraceCategory[] = "remoting.debug";
+
+// `PerfettoTraceConfig::enabled_categories` wildcard pattern matching
+// `remoting.*` subcategories (not `"remoting"` itself, and excluding
+// `"remoting.debug"` unless enabled explicitly). Cannot be passed to
+// `TRACE_EVENT(...)`.
+inline constexpr char kRemotingSubcategoriesPattern[] = "remoting.*";
+
 // Initializes the in-process Perfetto SDK backend, registers Chromium
 // `base::TrackEvent` and WebRTC track-event categories, names the current
 // `ProcessTrack` (without recording command-line arguments), and records

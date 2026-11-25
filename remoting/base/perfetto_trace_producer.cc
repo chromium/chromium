@@ -4,6 +4,7 @@
 
 #include "remoting/base/perfetto_trace_producer.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -13,8 +14,9 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/perfetto_platform.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
@@ -24,6 +26,7 @@ namespace remoting {
 namespace {
 
 constexpr uint32_t kFlushTimeoutMs = 2000;
+constexpr base::TimeDelta kDefaultReadTimeout = base::Seconds(2);
 
 }  // namespace
 
@@ -42,6 +45,8 @@ class PerfettoTraceProducer::ActiveSessionImpl {
   bool Start();
 
   void StopAndFlush();
+  void Cancel();
+  void CancelIfRecording();
 
  private:
   enum class State {
@@ -51,9 +56,13 @@ class PerfettoTraceProducer::ActiveSessionImpl {
     kReading,
   };
 
+  void OnTracingError(perfetto::TracingError::ErrorCode code,
+                      std::string message);
   void OnFlushComplete(bool flush_succeeded);
   void OnStopComplete();
+  void StartReading();
   void OnTraceChunk(std::vector<uint8_t> chunk, bool has_more);
+  void OnReadTimedOut();
   void FinishAndNotify();
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -62,6 +71,7 @@ class PerfettoTraceProducer::ActiveSessionImpl {
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
   TraceDataCallback callback_;
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
+  base::OneShotTimer timer_;
   State state_ = State::kRecording;
   std::vector<uint8_t> trace_bytes_;
   base::WeakPtrFactory<ActiveSessionImpl> weak_factory_{this};
@@ -96,10 +106,22 @@ bool PerfettoTraceProducer::ActiveSessionImpl::Start() {
 
   tracing_session_ = perfetto::Tracing::NewTrace(perfetto::kInProcessBackend);
   tracing_session_->Setup(config_.ToPerfettoConfig());
+
+  auto weak_self = weak_factory_.GetWeakPtr();
+  auto task_runner = origin_task_runner_;
+  tracing_session_->SetOnErrorCallback([task_runner, weak_self](
+                                           perfetto::TracingError error) {
+    task_runner->PostTask(
+        FROM_HERE, base::BindOnce(&ActiveSessionImpl::OnTracingError, weak_self,
+                                  error.code, std::move(error.message)));
+  });
+
   tracing_session_->StartBlocking();
 
   if (config_.duration.is_positive()) {
-    NOTIMPLEMENTED();
+    timer_.Start(FROM_HERE, config_.duration,
+                 base::BindOnce(&ActiveSessionImpl::StopAndFlush,
+                                base::Unretained(this)));
   }
   return true;
 }
@@ -110,6 +132,7 @@ void PerfettoTraceProducer::ActiveSessionImpl::StopAndFlush() {
     return;
   }
   state_ = State::kFlushing;
+  timer_.Stop();
 
   base::TrackEvent::Flush();
 
@@ -124,6 +147,43 @@ void PerfettoTraceProducer::ActiveSessionImpl::StopAndFlush() {
       kFlushTimeoutMs);
 }
 
+void PerfettoTraceProducer::ActiveSessionImpl::Cancel() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  timer_.Stop();
+  // Move `callback_` to a local so destroying bound state cannot re-entrantly
+  // destroy `this` before `ClearActiveSession()` runs.
+  TraceDataCallback discarded_callback = std::move(callback_);
+  producer_->ClearActiveSession(this);
+}
+
+void PerfettoTraceProducer::ActiveSessionImpl::CancelIfRecording() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ == State::kRecording) {
+    Cancel();
+  }
+}
+
+void PerfettoTraceProducer::ActiveSessionImpl::OnTracingError(
+    perfetto::TracingError::ErrorCode code,
+    std::string message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LOG(WARNING) << "Perfetto tracing session error: " << message;
+  if (code == perfetto::TracingError::kDisconnected) {
+    // The consumer is gone, so nothing further can be read.
+    FinishAndNotify();
+    return;
+  }
+  if (state_ == State::kReading) {
+    // A read is already in flight and is bounded by the read timeout.
+    return;
+  }
+  // The session has stopped due to an error; make a best effort to read
+  // whatever data remains buffered. Skip any pending flush/stop handshake
+  // since Perfetto may drop a pending `Flush()` callback if the session was
+  // torn down.
+  StartReading();
+}
+
 void PerfettoTraceProducer::ActiveSessionImpl::OnFlushComplete(
     bool flush_succeeded) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -135,6 +195,8 @@ void PerfettoTraceProducer::ActiveSessionImpl::OnFlushComplete(
   }
   state_ = State::kStopping;
 
+  // Perfetto bounds `Stop()` with `TraceConfig::data_source_stop_timeout_ms`,
+  // scraping any remaining shared-memory chunks before firing the callback.
   auto weak_self = weak_factory_.GetWeakPtr();
   auto task_runner = origin_task_runner_;
   tracing_session_->SetOnStopCallback([task_runner, weak_self]() {
@@ -150,7 +212,22 @@ void PerfettoTraceProducer::ActiveSessionImpl::OnStopComplete() {
   if (state_ != State::kStopping) {
     return;
   }
+  StartReading();
+}
+
+void PerfettoTraceProducer::ActiveSessionImpl::StartReading() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Perfetto supports only one read at a time per session.
+  DCHECK(state_ != State::kReading);
   state_ = State::kReading;
+  timer_.Stop();
+
+  // Guard against a chunk never arriving. Re-armed as each chunk is received.
+  if (!producer_->read_timeout_.is_max()) {
+    timer_.Start(FROM_HERE, producer_->read_timeout_,
+                 base::BindOnce(&ActiveSessionImpl::OnReadTimedOut,
+                                base::Unretained(this)));
+  }
 
   auto weak_self = weak_factory_.GetWeakPtr();
   auto task_runner = origin_task_runner_;
@@ -188,13 +265,27 @@ void PerfettoTraceProducer::ActiveSessionImpl::OnTraceChunk(
     }
   }
   if (has_more) {
+    if (timer_.IsRunning()) {
+      timer_.Reset();
+    }
     return;
   }
   FinishAndNotify();
 }
 
+void PerfettoTraceProducer::ActiveSessionImpl::OnReadTimedOut() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_ != State::kReading) {
+    return;
+  }
+  LOG(WARNING) << "Perfetto trace read timed out; completing with the data "
+                  "received so far.";
+  FinishAndNotify();
+}
+
 void PerfettoTraceProducer::ActiveSessionImpl::FinishAndNotify() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  timer_.Stop();
 
   // Release producer ownership *before* running `callback_` so callers (such
   // as flight-recorder snapshot harvesting) can immediately start a new
@@ -229,7 +320,7 @@ PerfettoTraceProducer::SessionHandle::SessionHandle(
 
 PerfettoTraceProducer::SessionHandle::~SessionHandle() {
   if (impl_) {
-    NOTIMPLEMENTED();
+    impl_->CancelIfRecording();
   }
 }
 
@@ -241,11 +332,12 @@ void PerfettoTraceProducer::SessionHandle::StopAndFlush() {
 
 void PerfettoTraceProducer::SessionHandle::Cancel() {
   if (impl_) {
-    NOTIMPLEMENTED();
+    impl_->Cancel();
   }
 }
 
-PerfettoTraceProducer::PerfettoTraceProducer() = default;
+PerfettoTraceProducer::PerfettoTraceProducer()
+    : read_timeout_(kDefaultReadTimeout) {}
 
 PerfettoTraceProducer::~PerfettoTraceProducer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -275,6 +367,11 @@ PerfettoTraceProducer::StartTracing(const PerfettoTraceConfig& config,
 bool PerfettoTraceProducer::IsTracing() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return active_session_ != nullptr;
+}
+
+void PerfettoTraceProducer::SetReadTimeoutForTesting(base::TimeDelta timeout) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  read_timeout_ = timeout;
 }
 
 void PerfettoTraceProducer::ClearActiveSession(ActiveSessionImpl* session) {

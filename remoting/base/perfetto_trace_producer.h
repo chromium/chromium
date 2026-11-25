@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "remoting/base/perfetto_trace_config.h"
 
 namespace remoting {
@@ -28,17 +29,21 @@ namespace remoting {
 class PerfettoTraceProducer {
  public:
   // Invoked once on the producer's sequence when a started trace session
-  // finishes flushing and reading `.pftrace` packets. Not invoked if
-  // `StartTracing()` returns `nullptr`.
+  // completes, with the serialized `.pftrace` bytes. The bytes may be partial
+  // or empty if the session ended early because of a Perfetto error, or
+  // because flushing, stopping, or reading the trace timed out. Not invoked if
+  // `StartTracing()` returns `nullptr` or if the session is cancelled.
   using TraceDataCallback = base::OnceCallback<void(std::vector<uint8_t>)>;
 
   // RAII handle controlling an active trace session. Must be used and destroyed
   // on the owning `PerfettoTraceProducer`'s sequence.
   //
-  // Note: `Cancel()` and automatic cancellation in `~Session()` when dropped
-  // while recording are `NOTIMPLEMENTED()` stubs in this CL and are implemented
-  // in the follow-up CL; callers must invoke `StopAndFlush()` before dropping
-  // the handle.
+  // Destroying a `Session` handle while the session is still recording
+  // immediately cancels the trace, discards buffered data without invoking
+  // `TraceDataCallback`, and frees the producer for a new session. Once
+  // recording has stopped (via `StopAndFlush()` or `config.duration` expiry),
+  // destroying the `Session` handle leaves the in-flight flush running until
+  // `TraceDataCallback` completes (unless `Cancel()` is called explicitly).
   class Session {
    public:
     virtual ~Session() = default;
@@ -73,6 +78,10 @@ class PerfettoTraceProducer {
   // Returns true while a session is recording or flushing on this producer.
   bool IsTracing() const;
 
+  // Overrides how long a session waits for each chunk of trace data to arrive
+  // before completing with the data received so far.
+  void SetReadTimeoutForTesting(base::TimeDelta timeout);
+
  private:
   class ActiveSessionImpl;
   class SessionHandle;
@@ -80,6 +89,7 @@ class PerfettoTraceProducer {
   void ClearActiveSession(ActiveSessionImpl* session);
 
   SEQUENCE_CHECKER(sequence_checker_);
+  base::TimeDelta read_timeout_;
   std::unique_ptr<ActiveSessionImpl> active_session_;
 };
 

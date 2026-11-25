@@ -49,6 +49,8 @@ perfetto::TraceConfig PerfettoTraceConfig::ToPerfettoConfig() const {
 
   perfetto_config.mutable_builtin_data_sources()->set_primary_trace_clock(
       perfetto::protos::gen::BUILTIN_CLOCK_MONOTONIC);
+  perfetto_config.set_data_source_stop_timeout_ms(
+      kDefaultPerfettoDataSourceStopTimeoutMs);
 
   if (clear_period_ms > 0) {
     perfetto_config.mutable_incremental_state_config()->set_clear_period_ms(

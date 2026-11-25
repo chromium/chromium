@@ -17,6 +17,7 @@ namespace remoting {
 inline constexpr uint32_t kDefaultPerfettoBufferSizeKb = 16 * 1024;  // 16 MiB
 inline constexpr uint32_t kMaxPerfettoBufferSizeKb = 64 * 1024;      // 64 MiB
 inline constexpr uint32_t kDefaultPerfettoClearPeriodMs = 500;
+inline constexpr uint32_t kDefaultPerfettoDataSourceStopTimeoutMs = 2000;
 
 struct PerfettoTraceConfig {
   PerfettoTraceConfig();
