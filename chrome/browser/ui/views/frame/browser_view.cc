@@ -53,6 +53,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/headless/headless_mode_util.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -6093,6 +6094,11 @@ void BrowserView::OnFirstPresentation(
     manager->OnBrowserWindowFirstPresentation(
         frame_timing_details.presentation_feedback.timestamp);
   }
+  // TODO(crbug.com/588415468): Replace this History-specific hook with a
+  //   generic first-presentation notification (e.g., via
+  //   `AfterStartupTaskUtils` or `ProfileBrowserCollection`) so `BrowserView`
+  //   does not depend on `//chrome/browser/history`.
+  HistoryServiceFactory::OnBrowserWindowPresented(GetProfile());
 }
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)

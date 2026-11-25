@@ -303,6 +303,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "history_service_factory_unittest.cc",
     "history_tab_helper_unittest.cc",
     "history_utils_unittest.cc",
     "top_sites_factory_unittest.cc",
@@ -312,6 +313,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/app/resources:locale_settings",
+    "//chrome/browser:after_startup_task_utils",
     "//chrome/browser/actor",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/renderer_host",
@@ -364,6 +366,7 @@ if (!is_android) {
       "//chrome/browser:after_startup_task_utils",
       "//chrome/browser/actor",
       "//chrome/browser/actor:test_support",
+      "//chrome/browser/favicon",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/renderer_host",
       "//chrome/browser/search_engines",
@@ -379,6 +382,8 @@ if (!is_android) {
       "//chrome/test/base:chrome_test_utils",
       "//components/actor/core",
       "//components/download/public/common:public",
+      "//components/favicon/core",
+      "//components/favicon_base",
       "//components/history/core/browser",
       "//components/history/core/common",
       "//components/history/core/test",

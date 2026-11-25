@@ -4,6 +4,7 @@
 
 #include "chrome/browser/history/history_service_factory.h"
 
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/chrome_history_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -71,6 +72,17 @@ history::HistoryService* HistoryServiceFactory::GetForProfileWithoutCreating(
 HistoryServiceFactory* HistoryServiceFactory::GetInstance() {
   static base::NoDestructor<HistoryServiceFactory> instance;
   return instance.get();
+}
+
+// static
+void HistoryServiceFactory::OnBrowserWindowPresented(Profile* profile) {
+  // Backend init is only deferred during startup.
+  if (AfterStartupTaskUtils::IsBrowserStartupComplete()) {
+    return;
+  }
+  if (auto* history_service = GetForProfileWithoutCreating(profile)) {
+    history_service->EnsureBackendInitScheduled();
+  }
 }
 
 // static

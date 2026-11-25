@@ -10,13 +10,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/history_test_utils.h"
@@ -35,6 +38,8 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/download_features.h"
+#include "components/favicon/core/favicon_service.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
@@ -1720,6 +1725,32 @@ class HistoryDeferredBackendInitBrowserTest : public InProcessBrowserTest {
     // disabled, exercising both GetNextDownloadId() and QueryDownloads().
     ASSERT_TRUE(profile->GetDownloadManager());
 
+    history::HistoryService* const history_service =
+        HistoryServiceFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS);
+    ASSERT_TRUE(history_service);
+
+    // Before the first browser window presents, `HistoryBackend` initialization
+    // remains deferred even after `DownloadHistory` startup queries.
+    EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+    EXPECT_FALSE(history_service->is_backend_init_scheduled_for_testing());
+    EXPECT_FALSE(history_service->BackendLoaded());
+
+    // Queue a favicon lookup while `HistoryBackend` init is still deferred (the
+    // same path used by `BookmarkModel` and `chrome://favicon2/` on the NTP).
+    favicon::FaviconService* const favicon_service =
+        FaviconServiceFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS);
+    ASSERT_TRUE(favicon_service);
+    base::CancelableTaskTracker tracker;
+    base::test::TestFuture<const favicon_base::FaviconRawBitmapResult&>
+        favicon_future;
+    favicon_service->GetRawFaviconForPageURL(
+        GURL("https://example.com/"), {favicon_base::IconType::kFavicon},
+        /*desired_size_in_pixel=*/16, /*fallback_to_host=*/true,
+        favicon_future.GetCallback(), &tracker);
+    EXPECT_FALSE(history_service->is_backend_init_scheduled_for_testing());
+
     content::WebContents* const active_contents =
         browser_window->GetTabStripModel()->GetActiveWebContents();
     ASSERT_TRUE(active_contents);
@@ -1727,16 +1758,14 @@ class HistoryDeferredBackendInitBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
               active_contents->GetLastCommittedURL());
 
-    history::HistoryService* const history_service =
-        HistoryServiceFactory::GetForProfile(
-            profile, ServiceAccessType::EXPLICIT_ACCESS);
-    ASSERT_TRUE(history_service);
-
-    // Before startup completes, HistoryBackend initialization must not be
-    // scheduled even after NTP load and DownloadHistory startup queries.
+    // Once the browser window presents its first frame, `HistoryBackend` init
+    // must be scheduled and the queued favicon lookup must complete even while
+    // `AfterStartupTaskUtils` still considers startup in progress.
+    EXPECT_TRUE(favicon_future.Wait());
     EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-    EXPECT_FALSE(history_service->is_backend_init_scheduled_for_testing());
-    EXPECT_FALSE(history_service->BackendLoaded());
+    EXPECT_TRUE(history_service->is_backend_init_scheduled_for_testing());
+    ui_test_utils::WaitForHistoryToLoad(history_service);
+    EXPECT_TRUE(history_service->BackendLoaded());
 
     startup_ref.reset();
 
@@ -1750,16 +1779,12 @@ class HistoryDeferredBackendInitBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(HistoryDeferredBackendInitBrowserTest,
-                       DeferredDuringNtpStartupThenLoadsAfterStartup) {
+                       DeferredUntilFirstPresentationThenServesFavicons) {
   history::HistoryService* const history_service =
       HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
   ASSERT_TRUE(history_service);
-
-  // Now that PreRunTestOnMainThread() has marked browser startup complete,
-  // HistoryBackend initialization should be scheduled and complete cleanly.
   EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
   EXPECT_TRUE(history_service->is_backend_init_scheduled_for_testing());
-  ui_test_utils::WaitForHistoryToLoad(history_service);
   EXPECT_TRUE(history_service->BackendLoaded());
 }

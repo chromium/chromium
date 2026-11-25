@@ -33,7 +33,9 @@ void ChromeHistoryClient::OnHistoryServiceCreated(
     history::HistoryService* history_service) {
   if (base::FeatureList::IsEnabled(history::kDeferHistoryBackendInit)) {
     // If history backend initialization was deferred during startup, schedule
-    // it once browser startup tasks have completed.
+    // it once browser startup tasks have completed. This is the fallback for
+    // profiles with no browser window presenting during startup; see
+    // `HistoryServiceFactory::OnBrowserWindowPresented()`.
     AfterStartupTaskUtils::PostTask(
         FROM_HERE, base::SequencedTaskRunner::GetCurrentDefault(),
         base::BindOnce(&history::HistoryService::EnsureBackendInitScheduled,

@@ -805,6 +805,7 @@ source_set("browser_view") {
     "//chrome/browser/feature_engagement",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/headless",
+    "//chrome/browser/history",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",

@@ -30,6 +30,11 @@ class HistoryServiceFactory : public ProfileKeyedServiceFactory {
 
   static HistoryServiceFactory* GetInstance();
 
+  // Schedules deferred `HistoryBackend` initialization for `profile`. Called
+  // whenever one of its browser windows presents a frame; a no-op once browser
+  // startup is complete.
+  static void OnBrowserWindowPresented(Profile* profile);
+
   // In the testing profile, we often clear the history before making a new
   // one. This takes care of that work. It should only be used in tests.
   // Note: This does not do any cleanup; it only destroys the service. The
