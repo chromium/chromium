@@ -193,17 +193,23 @@ if (is_android) {
 
   android_resources("java_resources") {
     sources = [
+      "java/res/drawable/ic_block_red.xml",
       "java/res/layout/filter_sheet_content.xml",
       "java/res/layout/filter_sheet_header.xml",
       "java/res/layout/history_filter_chips.xml",
       "java/res/layout/history_item_critical_action.xml",
       "java/res/layout/history_item_critical_actions.xml",
+      "java/res/layout/history_item_view.xml",
+      "java/res/layout/history_toolbar.xml",
       "java/res/layout/incognito_history_disclaimer_popup.xml",
+      "java/res/menu/app_specific_history_manager_menu.xml",
+      "java/res/menu/history_manager_menu.xml",
       "java/res/values/dimens.xml",
       "java/res/values/ids.xml",
     ]
     deps = [
       "//chrome/app:java_strings_grd",
+      "//chrome/browser/ui/android/favicon:java_resources",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//components/browser_ui/styles/android:java_resources",
       "//components/browser_ui/theme/android:java_resources",
