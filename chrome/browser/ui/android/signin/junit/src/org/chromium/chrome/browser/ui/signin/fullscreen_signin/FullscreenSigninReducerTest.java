@@ -33,7 +33,9 @@ import java.util.List;
 public class FullscreenSigninReducerTest {
     @Test
     public void testNativeReady_recordsNativeInitializedThenCreatesProfileDataCache() {
-        FullscreenSigninState state = new FullscreenSigninState();
+        // Native is only subscribed to once construction has finished.
+        FullscreenSigninState state =
+                new FullscreenSigninState().buildUpon().setConstructionFinished().build();
         assertFalse(state.isNativeLoaded());
 
         Result result = FullscreenSigninReducer.reduce(state, new NativeReady());

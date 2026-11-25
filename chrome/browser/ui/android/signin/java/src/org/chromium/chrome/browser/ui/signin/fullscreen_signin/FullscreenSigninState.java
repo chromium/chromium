@@ -24,15 +24,20 @@ final class FullscreenSigninState {
     }
 
     private final @Phase int mPhase;
+    private final boolean mConstructing;
     private final boolean mNativeLoaded;
     private final boolean mPoliciesLoaded;
     private final boolean mChildStatusLoaded;
     private final boolean mAccountsLoaded;
     private final @Nullable CoreAccountId mSelectedAccountId;
 
-    /** Creates the state before any input has arrived. */
+    /**
+     * Creates the state before any input has arrived. Construction is in progress until {@link
+     * FullscreenSigninEvent.ConstructionFinished}.
+     */
     FullscreenSigninState() {
         mPhase = Phase.LOADING;
+        mConstructing = true;
         mNativeLoaded = false;
         mPoliciesLoaded = false;
         mChildStatusLoaded = false;
@@ -42,6 +47,7 @@ final class FullscreenSigninState {
 
     private FullscreenSigninState(Builder builder) {
         mPhase = builder.mPhase;
+        mConstructing = builder.mConstructing;
         mNativeLoaded = builder.mNativeLoaded;
         mPoliciesLoaded = builder.mPoliciesLoaded;
         mChildStatusLoaded = builder.mChildStatusLoaded;
@@ -52,6 +58,11 @@ final class FullscreenSigninState {
     @Phase
     int getPhase() {
         return mPhase;
+    }
+
+    /** Whether the mediator is still being created. */
+    boolean isConstructing() {
+        return mConstructing;
     }
 
     /** Whether native initialization has completed. */
@@ -83,6 +94,7 @@ final class FullscreenSigninState {
 
     static final class Builder {
         private @Phase int mPhase;
+        private boolean mConstructing;
         private boolean mNativeLoaded;
         private boolean mPoliciesLoaded;
         private boolean mChildStatusLoaded;
@@ -91,6 +103,7 @@ final class FullscreenSigninState {
 
         private Builder(FullscreenSigninState state) {
             mPhase = state.mPhase;
+            mConstructing = state.mConstructing;
             mNativeLoaded = state.mNativeLoaded;
             mPoliciesLoaded = state.mPoliciesLoaded;
             mChildStatusLoaded = state.mChildStatusLoaded;
@@ -100,6 +113,11 @@ final class FullscreenSigninState {
 
         Builder setPhase(@Phase int phase) {
             mPhase = phase;
+            return this;
+        }
+
+        Builder setConstructionFinished() {
+            mConstructing = false;
             return this;
         }
 

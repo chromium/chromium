@@ -200,7 +200,6 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testInitialLoadWhenAllInputsReadyAtConstruction_doesNotRecordLoadHistograms() {
-        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mNativeInitializationPromise.fulfill(null);
@@ -212,6 +211,21 @@ public class FullscreenSigninMediatorTest {
         verify(mDelegateMock, times(1)).onInitialLoadCompleted();
         verify(mDelegateMock, never()).recordNativeInitializedHistogram();
         verify(mDelegateMock, never()).recordLoadCompletedHistograms(anyInt());
+    }
+
+    @Test
+    public void testInitialLoadWhenOnlyPoliciesMissingAtConstruction_recordsLoadHistograms() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mPolicyLoadListener = new OneshotSupplierImpl<>();
+        when(mDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListener);
+        mNativeInitializationPromise.fulfill(null);
+
+        createMediator();
+        mPolicyLoadListener.set(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mDelegateMock, times(1)).recordNativeInitializedHistogram();
+        verify(mDelegateMock).recordLoadCompletedHistograms(FullscreenSigninLoadPoint.POLICY_LOAD);
     }
 
     @Test

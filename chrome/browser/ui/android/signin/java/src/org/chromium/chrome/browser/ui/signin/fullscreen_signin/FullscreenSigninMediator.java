@@ -23,8 +23,11 @@ import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninE
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.NotifyInitialLoadCompleted;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordLoadCompleted;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordNativeInitialized;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.SubscribeToLoadInputs;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.AccountsUpdated;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ChildAccountStatusLoaded;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ConstructionFinished;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ConstructionStarted;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.NativeReady;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.PoliciesLoaded;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ProfileDataCacheCreated;
@@ -113,29 +116,17 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
                         mConfig.dismissText,
                         /* showInitialLoadProgressSpinner= */ true);
 
-        mDelegate
-                .getNativeInitializationPromise()
-                .then(
-                        result -> {
-                            onNativeLoaded();
-                        });
-        // An input that already has a value counts as loaded now (the suppliers post their
-        // callbacks, which could otherwise arrive after other inputs).
-        if (mDelegate.getPolicyLoadListener().get() != null) {
-            onPolicyLoad();
-        } else {
-            mDelegate.getPolicyLoadListener().onAvailable(hasPolicies -> onPolicyLoad());
-        }
-        if (mDelegate.getChildAccountStatusSupplier().get() != null) {
-            onChildAccountStatusAvailable();
-        } else {
-            mDelegate
-                    .getChildAccountStatusSupplier()
-                    .onAvailable(ignored -> onChildAccountStatusAvailable());
-        }
+        // Inputs that are already available count as loaded now (the callbacks are posted, so they
+        // could otherwise arrive after other inputs).
+        boolean isNativeReady = mDelegate.getNativeInitializationPromise().isFulfilled();
+        boolean arePoliciesLoaded = mDelegate.getPolicyLoadListener().get() != null;
+        boolean isChildStatusLoaded = mDelegate.getChildAccountStatusSupplier().get() != null;
+        dispatch(new ConstructionStarted(isNativeReady, arePoliciesLoaded, isChildStatusLoaded));
+        // ConstructionStarted is fully handled before ConstructionFinished is reduced: dispatch()
+        // runs its effects, and any events they dispatch synchronously, before returning.
+        dispatch(new ConstructionFinished());
 
         SigninMetricsUtils.logSigninStarted(mAccessPoint);
-        render();
     }
 
     @Override
@@ -280,6 +271,22 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
                 // The cache doesn't notify its observers about the accounts it already has, so
                 // send them with ProfileDataCacheCreated.
                 dispatch(new ProfileDataCacheCreated(getAccountIdsIfLoaded()));
+            }
+            case SubscribeToLoadInputs e -> {
+                mDelegate
+                        .getNativeInitializationPromise()
+                        .then(
+                                result -> {
+                                    onNativeLoaded();
+                                });
+                if (e.includesPolicies()) {
+                    mDelegate.getPolicyLoadListener().onAvailable(hasPolicies -> onPolicyLoad());
+                }
+                if (e.includesChildStatus()) {
+                    mDelegate
+                            .getChildAccountStatusSupplier()
+                            .onAvailable(ignored -> onChildAccountStatusAvailable());
+                }
             }
             case NotifyInitialLoadCompleted _ -> mDelegate.onInitialLoadCompleted();
             case RecordLoadCompleted e ->

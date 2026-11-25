@@ -30,6 +30,28 @@ sealed interface FullscreenSigninEffect {
         private CreateProfileDataCache() {}
     }
 
+    /**
+     * Subscribes to native initialization, and to the policies and child account status as
+     * requested.
+     */
+    final class SubscribeToLoadInputs implements FullscreenSigninEffect {
+        private final boolean mIncludePolicies;
+        private final boolean mIncludeChildStatus;
+
+        SubscribeToLoadInputs(boolean includePolicies, boolean includeChildStatus) {
+            mIncludePolicies = includePolicies;
+            mIncludeChildStatus = includeChildStatus;
+        }
+
+        boolean includesPolicies() {
+            return mIncludePolicies;
+        }
+
+        boolean includesChildStatus() {
+            return mIncludeChildStatus;
+        }
+    }
+
     /** Calls {@code Delegate.onInitialLoadCompleted()}. */
     final class NotifyInitialLoadCompleted implements FullscreenSigninEffect {
         static final NotifyInitialLoadCompleted INSTANCE = new NotifyInitialLoadCompleted();

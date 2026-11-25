@@ -10,8 +10,11 @@ import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninE
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.NotifyInitialLoadCompleted;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordLoadCompleted;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordNativeInitialized;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.SubscribeToLoadInputs;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.AccountsUpdated;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ChildAccountStatusLoaded;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ConstructionFinished;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ConstructionStarted;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.NativeReady;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.PoliciesLoaded;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ProfileDataCacheCreated;
@@ -54,11 +57,44 @@ final class FullscreenSigninReducer {
         List<FullscreenSigninEffect> effects = new ArrayList<>();
         @FullscreenSigninLoadPoint int loadPoint;
         switch (event) {
-            case NativeReady _ -> {
+            case ConstructionStarted e -> {
+                assert state.isConstructing();
                 assert !state.isNativeLoaded();
+                if (e.arePoliciesLoaded()) builder.setPoliciesLoaded();
+                if (e.isChildStatusLoaded()) builder.setChildStatusLoaded();
+                if (e.isNativeReady()) {
+                    builder.setNativeLoaded();
+                    // The native-initialized histogram isn't recorded here: the native callback
+                    // records it, unless the initial load completes during construction.
+                    effects.add(CreateProfileDataCache.INSTANCE);
+                }
+                // The accounts can't have loaded yet (they come from the cache), so the gate
+                // can't open here.
+                return new Result(builder.build(), effects);
+            }
+            case ConstructionFinished _ -> {
+                assert state.isConstructing();
+                builder.setConstructionFinished();
+                // Native is subscribed to even if it's ready, since its callback records the
+                // native-initialized histogram.
+                if (state.getPhase() == Phase.LOADING) {
+                    effects.add(
+                            new SubscribeToLoadInputs(
+                                    !state.arePoliciesLoaded(), !state.isChildStatusLoaded()));
+                }
+                return new Result(builder.build(), effects);
+            }
+            case NativeReady _ -> {
+                // Native is only subscribed to once construction has finished.
+                assert !state.isConstructing();
+                if (state.isNativeLoaded()) {
+                    // Native was ready at construction, so the cache exists and native can't
+                    // complete the load: only record the histogram.
+                    return new Result(state, List.of(RecordNativeInitialized.INSTANCE));
+                }
                 builder.setNativeLoaded();
-                // Record the native-initialized histogram before creating the cache, as the
-                // legacy mediator does, so the timing isn't inflated.
+                // Record the native-initialized histogram before creating the cache, so the
+                // timing isn't inflated.
                 effects.add(RecordNativeInitialized.INSTANCE);
                 effects.add(CreateProfileDataCache.INSTANCE);
                 // The accounts can't have loaded yet (they come from the cache), so the gate
@@ -94,7 +130,12 @@ final class FullscreenSigninReducer {
             // Notify the delegate before recording the load histograms: they measure the time
             // until this point, so they include showing the loaded screen.
             effects.add(NotifyInitialLoadCompleted.INSTANCE);
-            effects.add(new RecordLoadCompleted(loadPoint));
+            // A screen that's ready as soon as it's created waited for nothing, so there's no
+            // load to record.
+            // TODO(crbug.com/579875669): Consider, with the metrics owners, always recording the
+            // load histograms and recording the native-initialized histogram as soon as native is
+            // seen. That would remove the special cases for construction.
+            if (!nextState.isConstructing()) effects.add(new RecordLoadCompleted(loadPoint));
         }
         return new Result(nextState, effects);
     }

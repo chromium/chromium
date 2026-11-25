@@ -13,6 +13,41 @@ import java.util.List;
 /** Input events dispatched to {@link FullscreenSigninReducer}. */
 @NullMarked
 sealed interface FullscreenSigninEvent {
+    /**
+     * Dispatched first during construction, with the load inputs that were already available. The
+     * reducer counts them as loaded now rather than waiting for their events.
+     */
+    final class ConstructionStarted implements FullscreenSigninEvent {
+        private final boolean mNativeReady;
+        private final boolean mPoliciesLoaded;
+        private final boolean mChildStatusLoaded;
+
+        ConstructionStarted(
+                boolean nativeReady, boolean policiesLoaded, boolean childStatusLoaded) {
+            mNativeReady = nativeReady;
+            mPoliciesLoaded = policiesLoaded;
+            mChildStatusLoaded = childStatusLoaded;
+        }
+
+        boolean isNativeReady() {
+            return mNativeReady;
+        }
+
+        boolean arePoliciesLoaded() {
+            return mPoliciesLoaded;
+        }
+
+        boolean isChildStatusLoaded() {
+            return mChildStatusLoaded;
+        }
+    }
+
+    /**
+     * Construction has finished: every event it dispatched, including from effects, has been
+     * handled.
+     */
+    final class ConstructionFinished implements FullscreenSigninEvent {}
+
     /** Native initialization has completed. */
     final class NativeReady implements FullscreenSigninEvent {}
 
