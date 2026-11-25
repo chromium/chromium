@@ -48,6 +48,11 @@ inline constexpr int kSmallAvatarThresholdDip = 24;
 // Returns the gradient ring thickness in DIPs for the given avatar size.
 int GetAvatarRingThickness(int avatar_size);
 
+// Adds the profile/session annotation to an accessible window title.
+std::u16string AnnotateAccessibleWindowTitleForProfile(
+    const std::u16string& title,
+    const Profile& profile);
+
 // Navigates to the Google Account page.
 void NavigateToGoogleAccountPage(Profile* profile, const std::string& email);
 

@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
@@ -58,6 +59,34 @@
 int GetAvatarRingThickness(int avatar_size) {
   return avatar_size <= kSmallAvatarThresholdDip ? kAvatarRingThicknessSmallDip
                                                  : kAvatarRingThicknessDip;
+}
+
+std::u16string AnnotateAccessibleWindowTitleForProfile(
+    const std::u16string& title,
+    const Profile& profile) {
+  if (profile.IsGuestSession()) {
+    return l10n_util::GetStringFUTF16(IDS_ACCESSIBLE_GUEST_WINDOW_TITLE_FORMAT,
+                                      title);
+  }
+  if (profile.IsIncognitoProfile()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_ACCESSIBLE_INCOGNITO_WINDOW_TITLE_FORMAT, title);
+  }
+  if (profile.IsEnterpriseIsolatedModeProfile()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_ACCESSIBLE_ISOLATED_WINDOW_TITLE_FORMAT, title);
+  }
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (profile.IsRegularProfile() && profile_manager &&
+      profile_manager->GetNumberOfProfiles() > 1) {
+    const std::u16string profile_name =
+        profiles::GetAvatarNameForProfile(profile.GetPath());
+    if (!profile_name.empty()) {
+      return l10n_util::GetStringFUTF16(
+          IDS_ACCESSIBLE_WINDOW_TITLE_WITH_PROFILE_FORMAT, title, profile_name);
+    }
+  }
+  return title;
 }
 
 void NavigateToGoogleAccountPage(Profile* profile, const std::string& email) {

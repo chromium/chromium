@@ -4,10 +4,17 @@
 
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 
+#include <utility>
+
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -45,6 +52,78 @@ class ProfileViewUtilsTest : public testing::Test {
   TestingProfileManager testing_profile_manager_;
   raw_ptr<TestingProfile> profile_;
 };
+
+TEST_F(ProfileViewUtilsTest, AccessibleWindowTitleTracksProfileCount) {
+  EXPECT_EQ(u"Window title", AnnotateAccessibleWindowTitleForProfile(
+                                 u"Window title", *profile()));
+
+  testing_profile_manager()->CreateTestingProfile("other");
+  EXPECT_EQ(u"Window title - profile", AnnotateAccessibleWindowTitleForProfile(
+                                           u"Window title", *profile()));
+
+  testing_profile_manager()->DeleteTestingProfile("other");
+  EXPECT_EQ(u"Window title", AnnotateAccessibleWindowTitleForProfile(
+                                 u"Window title", *profile()));
+}
+
+TEST_F(ProfileViewUtilsTest,
+       AccessibleWindowTitleIncognitoPrecedesProfileName) {
+  testing_profile_manager()->CreateTestingProfile("other");
+  Profile* incognito =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(incognito->IsIncognitoProfile());
+
+  EXPECT_EQ(
+      u"Window title (Incognito)",
+      AnnotateAccessibleWindowTitleForProfile(u"Window title", *incognito));
+}
+
+TEST_F(ProfileViewUtilsTest, AccessibleWindowTitleGuestPrecedesIncognito) {
+  Profile* guest =
+      testing_profile_manager()->CreateGuestProfile()->GetPrimaryOTRProfile(
+          /*create_if_needed=*/true);
+  ASSERT_TRUE(guest->IsGuestSession());
+  ASSERT_TRUE(guest->IsOffTheRecord());
+
+  EXPECT_EQ(u"Window title (Guest)",
+            AnnotateAccessibleWindowTitleForProfile(u"Window title", *guest));
+}
+
+TEST_F(ProfileViewUtilsTest, AccessibleWindowTitleEnterpriseIsolatedMode) {
+  base::test::ScopedFeatureList feature_list(
+      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  profile()->GetPrefs()->SetInteger(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      std::to_underlying(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+  Profile* isolated =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(isolated->IsEnterpriseIsolatedModeProfile());
+
+  EXPECT_EQ(u"Window title (Isolated)", AnnotateAccessibleWindowTitleForProfile(
+                                            u"Window title", *isolated));
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ProfileViewUtilsTest,
+       AccessibleWindowTitleDoesNotAnnotateSystemProfile) {
+  testing_profile_manager()->CreateTestingProfile("other");
+  Profile* system_profile = testing_profile_manager()->CreateSystemProfile();
+  ASSERT_TRUE(system_profile->IsSystemProfile());
+
+  EXPECT_EQ(u"Window title", AnnotateAccessibleWindowTitleForProfile(
+                                 u"Window title", *system_profile));
+}
+#endif
+
+TEST(ProfileViewUtilsWithoutProfileManagerTest, AccessibleWindowTitle) {
+  content::BrowserTaskEnvironment task_environment;
+  ASSERT_FALSE(TestingBrowserProcess::GetGlobal()->profile_manager());
+  TestingProfile profile;
+
+  EXPECT_EQ(u"Window title",
+            AnnotateAccessibleWindowTitleForProfile(u"Window title", profile));
+}
 
 // Assert the utility correctly reports whether the OTR affordance may be shown
 // when the incognito policy is applied.

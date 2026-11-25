@@ -40,7 +40,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"
 #include "chrome/browser/devtools/devtools_ui_controller.h"
@@ -57,7 +56,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -112,6 +110,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
@@ -3645,29 +3644,7 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
     title = l10n_util::GetStringFUTF16(message_id, title);
   }
 
-  // Finally annotate with the user - add Incognito or guest if it's an
-  // incognito or guest window, otherwise use the avatar name.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (profile->IsGuestSession()) {
-    title = l10n_util::GetStringFUTF16(IDS_ACCESSIBLE_GUEST_WINDOW_TITLE_FORMAT,
-                                       title);
-  } else if (profile->IsIncognitoProfile()) {
-    title = l10n_util::GetStringFUTF16(
-        IDS_ACCESSIBLE_INCOGNITO_WINDOW_TITLE_FORMAT, title);
-  } else if (profile->IsEnterpriseIsolatedModeProfile()) {
-    title = l10n_util::GetStringFUTF16(
-        IDS_ACCESSIBLE_ISOLATED_WINDOW_TITLE_FORMAT, title);
-  } else if (!profile->IsOffTheRecord() &&
-             profile_manager->GetNumberOfProfiles() > 1) {
-    std::u16string profile_name =
-        profiles::GetAvatarNameForProfile(profile->GetPath());
-    if (!profile_name.empty()) {
-      title = l10n_util::GetStringFUTF16(
-          IDS_ACCESSIBLE_WINDOW_TITLE_WITH_PROFILE_FORMAT, title, profile_name);
-    }
-  }
-
-  return title;
+  return AnnotateAccessibleWindowTitleForProfile(title, *profile);
 }
 
 std::vector<views::NativeViewHost*>
