@@ -472,6 +472,14 @@ class MockActorTaskDelegate : public ActorTaskDelegate {
                GmailOtpConfirmationCallback callback),
               (override));
 
+  // Approves by default.
+  MOCK_METHOD(void,
+              DidToolValidation,
+              (TaskId task_id,
+               const ToolRequest& request,
+               ToolValidationCallback callback),
+              (override));
+
   base::WeakPtr<MockActorTaskDelegate> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }

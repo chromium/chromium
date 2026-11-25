@@ -1836,6 +1836,167 @@ TEST_F(ExecutionEngineTest, ToolResultError) {
   EXPECT_EQ(action_results[0].tool_result.error()->message, "No matching tab");
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+// `DidToolValidation` runs after browser-side validation and posts its
+// continuation before pre-tool UI and invocation run.
+TEST_F(ExecutionEngineTest, DidToolValidationRunsBeforeTool) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+  fake_chrome_render_frame_.OverrideBinder(main_rfh());
+  std::unique_ptr<ToolRequest> action =
+      MakeClickCallback(kFakeContentNodeId).Run();
+
+  int pre_tool_count = 0;
+  ON_CALL(*mock_ui_event_dispatcher_, OnPreTool)
+      .WillByDefault([&](const ToolRequest&,
+                         ui::UiEventDispatcher::UiCompleteCallback callback) {
+        ++pre_tool_count;
+        std::move(callback).Run(MakeOkResult());
+      });
+
+  int invoke_count = 0;
+  fake_chrome_render_frame_.SetNextToolHook(
+      base::BindLambdaForTesting([&] { ++invoke_count; }));
+  EXPECT_CALL(
+      mock_actor_task_delegate_,
+      DidToolValidation(task_->id(),
+                        Property(&ToolRequest::JournalEvent, Eq("Click")), _))
+      .WillOnce([&](TaskId, const ToolRequest&,
+                    ActorTaskDelegate::ToolValidationCallback callback) {
+        EXPECT_EQ(pre_tool_count, 0);
+        EXPECT_EQ(invoke_count, 0);
+        std::move(callback).Run(MakeOkResult());
+        // The continuation is posted rather than run synchronously.
+        EXPECT_EQ(pre_tool_count, 0);
+        EXPECT_EQ(invoke_count, 0);
+      });
+
+  ActResultFuture result;
+  task_->Act(ToRequestList(std::move(action)), result.GetCallback());
+  ASSERT_TRUE(result.Wait());
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_TRUE(result.Get()[0].tool_result.Ok());
+  EXPECT_EQ(pre_tool_count, 1);
+  EXPECT_EQ(invoke_count, 1);
+}
+
+// A non-OK result from `DidToolValidation` cancels the validated tool and fails
+// the action without running pre-tool UI or invocation.
+TEST_F(ExecutionEngineTest, RejectedToolValidationSkipsTool) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+  fake_chrome_render_frame_.OverrideBinder(main_rfh());
+  std::unique_ptr<ToolRequest> action =
+      MakeClickCallback(kFakeContentNodeId).Run();
+
+  int invoke_count = 0;
+  fake_chrome_render_frame_.SetNextToolHook(
+      base::BindLambdaForTesting([&] { ++invoke_count; }));
+  EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool).Times(0);
+  EXPECT_CALL(mock_actor_task_delegate_, DidToolValidation)
+      .WillOnce(base::test::RunOnceCallback<2>(
+          MakeResult(mojom::ActionResultCode::kActionsCancelled)))
+      .WillOnce(base::test::RunOnceCallback<2>(MakeOkResult()));
+
+  ActResultFuture result;
+  task_->Act(ToRequestList(std::move(action)), result.GetCallback());
+  ASSERT_TRUE(result.Wait());
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(result.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kActionsCancelled);
+  EXPECT_EQ(invoke_count, 0);
+
+  // `Cancel()` released the active tool, so the next action on the task runs.
+  testing::Mock::VerifyAndClearExpectations(mock_ui_event_dispatcher_);
+  fake_chrome_render_frame_.SetNextToolHook(
+      base::BindLambdaForTesting([&] { ++invoke_count; }));
+  ActResultFuture next_result;
+  task_->Act(ToRequestList(MakeClickCallback(kFakeContentNodeId).Run()),
+             next_result.GetCallback());
+  ASSERT_TRUE(next_result.Wait());
+  ASSERT_EQ(next_result.Get().size(), 1u);
+  EXPECT_TRUE(next_result.Get()[0].tool_result.Ok());
+  EXPECT_EQ(invoke_count, 1);
+}
+
+// Stopping the task while `DidToolValidation` is pending fails the action, and
+// a late answer does not invoke the tool.
+TEST_F(ExecutionEngineTest, StopWhileToolValidationPendingDropsAnswer) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+  fake_chrome_render_frame_.OverrideBinder(main_rfh());
+
+  int invoke_count = 0;
+  fake_chrome_render_frame_.SetNextToolHook(
+      base::BindLambdaForTesting([&] { ++invoke_count; }));
+  ActorTaskDelegate::ToolValidationCallback held_callback;
+  EXPECT_CALL(mock_actor_task_delegate_, DidToolValidation)
+      .WillOnce([&](TaskId, const ToolRequest&,
+                    ActorTaskDelegate::ToolValidationCallback callback) {
+        held_callback = std::move(callback);
+      });
+
+  ActResultFuture result;
+  task_->Act(ToRequestList(MakeClickCallback(kFakeContentNodeId).Run()),
+             result.GetCallback());
+  task_environment()->RunUntilIdle();
+  ASSERT_TRUE(held_callback);
+  EXPECT_FALSE(result.IsReady());
+
+  task_->Stop(kStoppedByUser);
+  ASSERT_TRUE(result.Wait());
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_FALSE(result.Get()[0].tool_result.Ok());
+
+  std::move(held_callback).Run(MakeOkResult());
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(invoke_count, 0);
+}
+
+// A task without an `ActorTaskDelegate` posts its validation continuation and
+// invokes the tool.
+TEST_F(ExecutionEngineTest, NoDelegateToolValidationRunsTool) {
+  MockPolicyChecker no_enterprise_checker(
+      EnterprisePolicyChecker::UrlBlockReason::kNotBlocked);
+  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher =
+      ui::NewMockUiEventDispatcher();
+  auto* dispatcher =
+      static_cast<ui::MockUiEventDispatcher*>(ui_event_dispatcher.get());
+  int pre_tool_count = 0;
+  ON_CALL(*dispatcher, OnPreTool)
+      .WillByDefault([&](const ToolRequest&,
+                         ui::UiEventDispatcher::UiCompleteCallback callback) {
+        ++pre_tool_count;
+        std::move(callback).Run(MakeOkResult());
+      });
+  ON_CALL(*dispatcher, OnPostTool)
+      .WillByDefault(UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
+          MakeOkResult, /*requires_page_stabilization=*/true)));
+  ON_CALL(*dispatcher, OnActorTaskAsyncChange)
+      .WillByDefault(UiEventDispatcherCallback<
+                     ui::UiEventDispatcher::ActorTaskAsyncChange>(
+          base::BindRepeating(MakeOkResult,
+                              /*requires_page_stabilization=*/true)));
+
+  std::unique_ptr<ActorTask> task_without_delegate =
+      ActorTask::CreateForTesting(*ActorKeyedService::Get(profile()), TaskId(2),
+                                  std::move(ui_event_dispatcher),
+                                  TestTaskSourceInfo(), &no_enterprise_checker,
+                                  ActorTaskOptions());
+
+  std::unique_ptr<ToolRequest> action =
+      std::make_unique<FakeToolRequest>(ToolResult::Success(TestToolData(42)));
+  ActResultFuture result;
+  task_without_delegate->Act(ToRequestList(action), result.GetCallback());
+  ASSERT_TRUE(result.Wait());
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_TRUE(result.Get()[0].tool_result.Ok());
+  EXPECT_EQ(pre_tool_count, 1);
+
+  task_without_delegate->Stop(kTaskComplete);
+}
+#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     ExecutionEngineStopReasonParamTest,

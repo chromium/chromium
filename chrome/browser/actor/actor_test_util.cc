@@ -14,8 +14,11 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected_macros.h"
@@ -1022,7 +1025,14 @@ ScopedExecutionEngineFactory::~ScopedExecutionEngineFactory() {
   ExecutionEngine::GetFactoryFunctionForTesting().Reset();
 }
 
-MockActorTaskDelegate::MockActorTaskDelegate() = default;
+MockActorTaskDelegate::MockActorTaskDelegate() {
+  ON_CALL(*this, DidToolValidation)
+      .WillByDefault(
+          [](TaskId, const ToolRequest&, ToolValidationCallback callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
+          });
+}
 MockActorTaskDelegate::~MockActorTaskDelegate() = default;
 
 MockPolicyChecker::MockPolicyChecker(

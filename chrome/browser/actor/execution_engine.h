@@ -400,6 +400,10 @@ class ExecutionEngine : public ToolDelegate,
 
   // Called each time an action finishes.
   void PostToolCreate(mojom::ActionResultPtr result);
+  // Called when the task delegate finishes `DidToolValidation()`.
+  void PostDelegateToolValidation(
+      std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
+      mojom::ActionResultPtr result);
   void FinishedUiPreInvoke(mojom::ActionResultPtr result);
   void FinishedToolInvoke(ToolResult tool_result);
   void FinishToolInvokeWithDialogs(

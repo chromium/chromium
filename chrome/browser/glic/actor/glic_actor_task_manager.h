@@ -228,6 +228,10 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
       actor::TaskId task_id,
       const std::string& verification_code,
       actor::ActorTaskDelegate::GmailOtpConfirmationCallback callback) override;
+  void DidToolValidation(
+      actor::TaskId task_id,
+      const actor::ToolRequest& request,
+      actor::ActorTaskDelegate::ToolValidationCallback callback) override;
   void AutofillSuggestionDialogOnFormPresented(
       int32_t task_id,
       actor::webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr

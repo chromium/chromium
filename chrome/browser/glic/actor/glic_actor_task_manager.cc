@@ -13,10 +13,12 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -1137,6 +1139,14 @@ void GlicActorClientSession::RequestToShowAutofillSuggestionsDialog(
 
   actor_client_->RequestToShowAutofillSuggestionsDialog(
       std::move(dialog_request), std::move(on_autofill_suggestions_selected));
+}
+
+void GlicActorClientSession::DidToolValidation(
+    actor::TaskId task_id,
+    const actor::ToolRequest& request,
+    actor::ActorTaskDelegate::ToolValidationCallback callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), actor::MakeOkResult()));
 }
 
 void GlicActorClientSession::AutofillSuggestionDialogOnFormPresented(

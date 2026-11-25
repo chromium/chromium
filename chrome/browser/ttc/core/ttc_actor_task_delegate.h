@@ -78,6 +78,9 @@ class TtcActorTaskDelegate : public actor::ActorTaskDelegate {
       actor::TaskId task_id,
       const std::string& verification_code,
       GmailOtpConfirmationCallback callback) override;
+  void DidToolValidation(actor::TaskId task_id,
+                         const actor::ToolRequest& request,
+                         ToolValidationCallback callback) override;
 
  private:
   base::WeakPtrFactory<TtcActorTaskDelegate> weak_ptr_factory_{this};

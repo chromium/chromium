@@ -31,6 +31,7 @@
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
 #include "base/strings/string_split.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
@@ -1695,6 +1696,40 @@ void ExecutionEngine::ExecuteNextAction() {
 void ExecutionEngine::PostToolCreate(mojom::ActionResultPtr result) {
   TRACE_EVENT0("actor", "ExecutionEngine::PostToolCreate");
   if (!IsOk(*result)) {
+    CompleteActions(std::move(result), InProgressActionIndex());
+    return;
+  }
+  ActorTaskDelegate* delegate = task_->delegate().get();
+  if (!delegate) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ExecutionEngine::PostDelegateToolValidation,
+                                  GetActionSequenceWeakPtr(),
+                                  /*journal_entry=*/nullptr, MakeOkResult()));
+    return;
+  }
+  const ToolRequest& action = GetInProgressAction();
+  auto journal_entry = journal_->CreatePendingAsyncEntry(
+      action.GetURLForJournal(), task_->id(), MakeBrowserTrackUUID(task_->id()),
+      "DidToolValidation",
+      JournalDetailsBuilder().Add("tool", action.JournalEvent()).Build());
+  delegate->DidToolValidation(
+      task_->id(), action,
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &ExecutionEngine::PostDelegateToolValidation,
+          GetActionSequenceWeakPtr(), std::move(journal_entry))));
+}
+
+void ExecutionEngine::PostDelegateToolValidation(
+    std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
+    mojom::ActionResultPtr result) {
+  TRACE_EVENT0("actor", "ExecutionEngine::PostDelegateToolValidation");
+  CHECK_EQ(state_, State::kToolCreateAndVerify, base::NotFatalUntil::M161);
+  if (journal_entry) {
+    journal_entry->EndEntry(
+        JournalDetailsBuilder().Add("result", ToDebugString(*result)).Build());
+  }
+  if (!IsOk(*result)) {
+    tool_controller_->Cancel();
     CompleteActions(std::move(result), InProgressActionIndex());
     return;
   }

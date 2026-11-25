@@ -90,6 +90,9 @@ class ActorKeyedServiceAdapter : public ActuationDelegate,
       TaskId task_id,
       const std::string& verification_code,
       GmailOtpConfirmationCallback callback) override;
+  void DidToolValidation(TaskId task_id,
+                         const ToolRequest& request,
+                         ToolValidationCallback callback) override;
 
  private:
   friend class ActorKeyedServiceAdapterTest;

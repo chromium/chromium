@@ -11,7 +11,9 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/notimplemented.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -539,6 +542,14 @@ void ActorKeyedServiceAdapter::RequestToShowGmailOtpConfirmationDialog(
   // TODO(crbug.com/565389892): Forward Gmail OTP confirmation request over
   // transport.
   NOTIMPLEMENTED();
+}
+
+void ActorKeyedServiceAdapter::DidToolValidation(
+    TaskId task_id,
+    const ToolRequest& request,
+    ToolValidationCallback callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
 }
 
 }  // namespace actor

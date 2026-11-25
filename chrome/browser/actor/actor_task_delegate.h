@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
 #include "components/actor/core/task_id.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
@@ -19,6 +20,7 @@
 namespace actor {
 
 class AutofillSelectionDialogEventHandler;
+class ToolRequest;
 
 // Delegate interface for ActorTask to communicate with other classes.
 class ActorTaskDelegate {
@@ -65,8 +67,8 @@ class ActorTaskDelegate {
       base::WeakPtr<AutofillSelectionDialogEventHandler> event_handler,
       AutofillSuggestionSelectedCallback callback) = 0;
 
-  using GmailOtpOptInCallback = base::OnceCallback<void(
-      webui::mojom::GmailOtpOptInResultPtr)>;
+  using GmailOtpOptInCallback =
+      base::OnceCallback<void(webui::mojom::GmailOtpOptInResultPtr)>;
   virtual void RequestToShowGmailOtpOptInDialog(
       TaskId task_id,
       GmailOtpOptInCallback callback) = 0;
@@ -77,6 +79,20 @@ class ActorTaskDelegate {
       TaskId task_id,
       const std::string& verification_code,
       GmailOtpConfirmationCallback callback) = 0;
+
+  // Called after `request` passes browser-side validation and before pre-tool
+  // UI or tool invocation runs. Running `callback` with a non-OK result fails
+  // the action without invoking the tool. The delegate must eventually run
+  // `callback` asynchronously, or the action waits until the task stops or
+  // pauses. A delegate that blocks on user input should interrupt the task into
+  // `kWaitingOnUser` and uninterrupt back to `kActing` before running
+  // `callback`. If the task stops or pauses first, running `callback` does
+  // nothing. `request` is valid only during this call.
+  using ToolValidationCallback =
+      base::OnceCallback<void(mojom::ActionResultPtr)>;
+  virtual void DidToolValidation(TaskId task_id,
+                                 const ToolRequest& request,
+                                 ToolValidationCallback callback) = 0;
 };
 
 }  // namespace actor

@@ -6,7 +6,11 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor_webui.mojom.h"
 
 namespace ttc {
@@ -85,6 +89,15 @@ void TtcActorTaskDelegate::RequestToShowGmailOtpConfirmationDialog(
     GmailOtpConfirmationCallback callback) {
   // Only requested by the attempt_otp_filling tool, which TTC doesn't expose.
   NOTREACHED();
+}
+
+void TtcActorTaskDelegate::DidToolValidation(actor::TaskId task_id,
+                                             const actor::ToolRequest& request,
+                                             ToolValidationCallback callback) {
+  // TODO(b/586617729): Look up the target APC node from `request`, put the task
+  // into `kWaitingOnUser`, and run HOTL click confirmation.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), actor::MakeOkResult()));
 }
 
 }  // namespace ttc
