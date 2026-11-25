@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -1537,6 +1538,35 @@ TEST_F(HlsRenditionImplUnittest, TestLiveToVodAdaptationWithExhaustedQueue) {
     rendition->CheckState(clock, 1.0, BindCheckState(kNoTimestamp));
     ASSERT_EQ(clock, base::Seconds(25.2));
   }
+}
+
+TEST_F(HlsRenditionImplUnittest, FailedManifestUpdateQuitsRendition) {
+  auto rendition =
+      MakeLiveRendition(GURL("http://example.com"), kInitialFetchPlaylist);
+  ASSERT_NE(rendition, nullptr);
+
+  Ranges<base::TimeDelta> loaded_ranges;
+  loaded_ranges.Add(base::Seconds(0), base::Seconds(12));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
+      .WillRepeatedly(Return(loaded_ranges));
+
+  task_environment_.FastForwardBy(base::Seconds(33));
+  EXPECT_CALL(*mock_hrh_,
+              UpdateRenditionManifestUri("test", GURL("http://example.com"), _))
+      .WillOnce([](std::string, GURL, HlsDemuxerStatusCallback cb) {
+        std::move(cb).Run({HlsDemuxerStatus::Codes::kNetworkReadStopped,
+                           "manifest reload failed"});
+      });
+
+  base::RunLoop quit_loop;
+  EXPECT_CALL(*mock_hrh_, Quit(_))
+      .WillOnce([&quit_loop](HlsDemuxerStatus status) {
+        EXPECT_EQ(status.code(), HlsDemuxerStatus::Codes::kNetworkReadStopped);
+        quit_loop.Quit();
+      });
+
+  rendition->CheckState(base::Seconds(0), 0.0, BindCheckStateNoExpect());
+  quit_loop.Run();
 }
 
 }  // namespace media

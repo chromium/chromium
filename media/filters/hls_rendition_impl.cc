@@ -267,6 +267,10 @@ void HlsRenditionImpl::FetchManifestUpdates(ManifestDemuxer::DelayCallback cb,
 void HlsRenditionImpl::OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
                                         base::TimeDelta delay,
                                         HlsDemuxerStatus success) {
+  if (!success.is_ok()) {
+    rendition_host_->Quit(std::move(success).AddHere());
+    return;
+  }
   auto update_duration = base::TimeTicks::Now() - last_download_time_;
   if (update_duration > delay) {
     std::move(cb).Run(base::Seconds(0));
