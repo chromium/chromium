@@ -7551,6 +7551,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_THREADS_CLOSE_SIDEBAR_LABEL" desc="Tooltip and accessible label for the button that closes the expanded AI Mode threads sidebar on the New Tab Page.">
         Close sidebar
       </message>
+      <message name="IDS_NTP_THREADS_OFFLINE_TITLE" desc="Title of the error shown in the expanded AI Mode history panel on the New Tab Page when it could not load because the browser is offline or the network is too slow.">
+        No internet connection
+      </message>
+      <message name="IDS_NTP_THREADS_OFFLINE_DESCRIPTION" desc="Description shown below IDS_NTP_THREADS_OFFLINE_TITLE in the expanded AI Mode history panel on the New Tab Page, asking the user to check their network connection and retry.">
+        Check your connection, then try again.
+      </message>
+      <message name="IDS_NTP_THREADS_RETRY_LABEL" desc="Label of the button in the expanded AI Mode history panel on the New Tab Page that reloads the panel after it failed to load.">
+        Try again
+      </message>
       <message name="IDS_NTP_THREADS_NEW_SEARCH_LABEL" desc="Label for starting a new AI Mode query.">
         Start new search
       </message>

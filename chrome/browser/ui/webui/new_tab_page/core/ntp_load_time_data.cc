@@ -570,6 +570,9 @@ base::DictValue BuildLoadTimeData(Profile* profile,
       {"aimThreadsGoogleSearchLabel", IDS_NTP_THREADS_GOOGLE_SEARCH_LABEL},
       {"aimThreadsHistoryLabel", IDS_NTP_THREADS_HISTORY_LABEL},
       {"aimThreadsNewSearchLabel", IDS_NTP_THREADS_NEW_SEARCH_LABEL},
+      {"aimThreadsOfflineDescription", IDS_NTP_THREADS_OFFLINE_DESCRIPTION},
+      {"aimThreadsOfflineTitle", IDS_NTP_THREADS_OFFLINE_TITLE},
+      {"aimThreadsRetryLabel", IDS_NTP_THREADS_RETRY_LABEL},
 
       // Webstore toast.
       {"webstoreThemesToastMessage", IDS_NTP_WEBSTORE_TOAST_MESSAGE},
