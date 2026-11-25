@@ -25,39 +25,58 @@ import {TestRunner} from 'test_runner';
         SourcesModule.ScopeChainSidebarPane.ScopeChainSidebarPane.prototype, 'sidebarPaneUpdatedForTest');
   await Promise.all([SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise(), sidebarUpdated]);
   await UI.Widget.Widget.allUpdatesComplete;
-  let localScope = SourcesTestRunner.scopeChainSections()[0];
 
   TestRunner.addResult('Dump current');
-  await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
+  await new Promise(
+      resolve => SourcesTestRunner.expandProperties(
+          [SourcesTestRunner.scopeChainSections()[0], ['Return value']],
+          resolve));
   await UI.Widget.Widget.allUpdatesComplete;
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   function getReturnValueProperty() {
     const treeElement = SourcesTestRunner.findChildPropertyTreeElement(
-        localScope, 'Return value');
+        SourcesTestRunner.scopeChainSections()[0], 'Return value');
     return UI.Widget.Widget
         .get(treeElement.titleElement.querySelector('devtools-widget'))
         .property;
   }
 
   TestRunner.addResult('Set return value to {a:1}');
+  sidebarUpdated = TestRunner.addSnifferPromise(
+      SourcesModule.ScopeChainSidebarPane.ScopeChainSidebarPane.prototype,
+      'sidebarPaneUpdatedForTest');
   await getReturnValueProperty().setValue('{a:1}');
+  await sidebarUpdated;
   await UI.Widget.Widget.allUpdatesComplete;
-  await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
+  await new Promise(
+      resolve => SourcesTestRunner.expandProperties(
+          [SourcesTestRunner.scopeChainSections()[0], ['Return value']],
+          resolve));
   await UI.Widget.Widget.allUpdatesComplete;
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   TestRunner.addResult('Try to remove return value');
   await getReturnValueProperty().setValue('');
   await UI.Widget.Widget.allUpdatesComplete;
-  await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
+  await new Promise(
+      resolve => SourcesTestRunner.expandProperties(
+          [SourcesTestRunner.scopeChainSections()[0], ['Return value']],
+          resolve));
   await UI.Widget.Widget.allUpdatesComplete;
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   TestRunner.addResult('Set return value to 239');
+  sidebarUpdated = TestRunner.addSnifferPromise(
+      SourcesModule.ScopeChainSidebarPane.ScopeChainSidebarPane.prototype,
+      'sidebarPaneUpdatedForTest');
   await getReturnValueProperty().setValue('239');
+  await sidebarUpdated;
   await UI.Widget.Widget.allUpdatesComplete;
-  await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
+  await new Promise(
+      resolve => SourcesTestRunner.expandProperties(
+          [SourcesTestRunner.scopeChainSections()[0], ['Return value']],
+          resolve));
   await UI.Widget.Widget.allUpdatesComplete;
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
