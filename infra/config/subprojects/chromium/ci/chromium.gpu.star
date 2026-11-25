@@ -310,6 +310,8 @@ shared_gpu.ci.mac_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
+        # Kept in sync with "ci/mac-arm64-rel" for mirroring.
+        gn_check_generated = True,
     ),
     gn_args = gn_args.config(
         configs = [

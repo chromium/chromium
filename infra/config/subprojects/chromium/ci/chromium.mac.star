@@ -289,6 +289,9 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
+        # Also enables the check on mac-rel, which mirrors this builder.
+        # "ci/GPU Mac arm64 Builder" sets the same value for mirroring.
+        gn_check_generated = True,
     ),
     gn_args = gn_args.config(
         configs = [
