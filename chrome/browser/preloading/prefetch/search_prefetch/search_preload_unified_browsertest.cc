@@ -1056,7 +1056,15 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 // Tests the prerender works well when running in the
 // `StreamingSearchPrefetchURLLoader::serving_from_data_` mode, even if the
 // server is slow.
-IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, ChunkedResponseBody) {
+// TODO(crbug.com/590448781): Re-enable once Android Desktop UA override
+// mismatch (b/587601601) is resolved.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ChunkedResponseBody DISABLED_ChunkedResponseBody
+#else
+#define MAYBE_ChunkedResponseBody ChunkedResponseBody
+#endif
+IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
+                       MAYBE_ChunkedResponseBody) {
   base::HistogramTester histogram_tester;
   set_service_deferral_type(
       SearchPreloadTestResponseDeferralType::kDeferChunkedResponseBody);
