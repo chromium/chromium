@@ -101,7 +101,7 @@ public class SyncErrorMessageTest {
 
     @Rule(order = 0)
     public final SyncTestRule mSyncTestRule =
-            new SyncTestRule(/* launchActivity= */ false) {
+            new SyncTestRule() {
                 @Override
                 protected FakeSyncServiceImpl createSyncServiceImpl() {
                     return new FakeSyncServiceImpl();

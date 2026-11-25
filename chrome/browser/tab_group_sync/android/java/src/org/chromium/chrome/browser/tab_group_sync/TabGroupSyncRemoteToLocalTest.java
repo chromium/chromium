@@ -57,7 +57,7 @@ public class TabGroupSyncRemoteToLocalTest {
     private static final String TAB_TITLE_4 = "iframe test";
 
     @Rule(order = 0)
-    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+    public final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Rule(order = 1)
     public final FreshCtaTransitTestRule mCtaTestRule =

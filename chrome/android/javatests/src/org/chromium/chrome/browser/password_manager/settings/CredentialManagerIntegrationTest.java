@@ -69,7 +69,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
 public class CredentialManagerIntegrationTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+    public final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     public final AutoResetCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();

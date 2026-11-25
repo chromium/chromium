@@ -48,7 +48,7 @@ public class ExplicitPassphrasePlatformClientTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule(order = 0)
-    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+    public final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Rule(order = 1)
     public final FreshCtaTransitTestRule mCtaTestRule =

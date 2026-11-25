@@ -213,7 +213,7 @@ public class ManageSyncSettingsTest {
 
     private SettingsActivityInterface mSettingsActivityInterface;
 
-    private final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+    private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private final AutoResetCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();

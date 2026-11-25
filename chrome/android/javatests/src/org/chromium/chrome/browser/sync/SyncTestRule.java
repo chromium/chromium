@@ -217,11 +217,6 @@ public class SyncTestRule extends ExternalResource {
 
     public SyncTestRule() {}
 
-    // TODO(crbug.com/490461435): Remove once callers drop the unused launchActivity argument.
-    public SyncTestRule(boolean launchActivity) {
-        assert !launchActivity : "SyncTestRule no longer launches ChromeTabbedActivity";
-    }
-
     /** Getters for Test variables */
     public Context getTargetContext() {
         return ApplicationProvider.getApplicationContext();

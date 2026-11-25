@@ -59,7 +59,7 @@ import org.chromium.url.GURL;
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
 })
 public class AccountBookmarkTest {
-    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+    public final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     public final FreshCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();

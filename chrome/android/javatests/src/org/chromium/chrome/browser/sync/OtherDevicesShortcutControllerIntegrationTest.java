@@ -78,7 +78,7 @@ import java.util.stream.Collectors;
 @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_DYNAMIC_SHORTCUTS)
 public class OtherDevicesShortcutControllerIntegrationTest {
     @Rule(order = 0)
-    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+    public final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Rule(order = 1)
     public final FreshCtaTransitTestRule mCtaTestRule =

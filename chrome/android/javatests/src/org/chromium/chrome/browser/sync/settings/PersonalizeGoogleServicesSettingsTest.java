@@ -56,7 +56,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 public class PersonalizeGoogleServicesSettingsTest {
     private static final int RENDER_TEST_REVISION = 1;
 
-    private final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+    private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private final FreshCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();

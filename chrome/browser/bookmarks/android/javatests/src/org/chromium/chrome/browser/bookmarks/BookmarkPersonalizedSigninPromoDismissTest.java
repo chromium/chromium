@@ -67,7 +67,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
             ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
                     SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS);
 
-    private final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+    private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private final AutoResetCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();

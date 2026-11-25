@@ -79,7 +79,7 @@ public class PasswordGenerationIntegrationTest {
     public static final int KEYBOARD_ACCESSORY_BAR_ITEM_COUNT = 3;
 
     @Rule(order = 0)
-    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+    public final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Rule(order = 1)
     public final FreshCtaTransitTestRule mActivityTestRule =

@@ -184,7 +184,7 @@ public class MainSettingsFragmentTest {
 
     private final HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
-    private final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+    private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private final AutoResetCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();

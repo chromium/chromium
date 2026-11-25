@@ -46,7 +46,7 @@ import org.chromium.url.GURL;
 public class BookmarkBatchUploadCardRenderTest {
     private static final int RENDER_TEST_REVISION = 2;
 
-    public final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+    public final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     public final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();

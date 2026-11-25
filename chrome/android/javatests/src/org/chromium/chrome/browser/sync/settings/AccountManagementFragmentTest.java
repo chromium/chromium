@@ -86,7 +86,7 @@ public class AccountManagementFragmentTest {
     private final FreshCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private final SyncTestRule mSyncTestRule = new SyncTestRule(/* launchActivity= */ false);
+    private final SyncTestRule mSyncTestRule = new SyncTestRule();
     private static final int RENDER_TEST_REVISION = 4;
 
     private final boolean mIsIdentityManagerSourceOfAccounts;
