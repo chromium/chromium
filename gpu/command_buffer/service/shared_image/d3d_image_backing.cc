@@ -944,11 +944,6 @@ bool D3DImageBacking::CopyToStagingTexture() {
   // Flush any previously deferred Graphite commands to ensure the readback
   // doesn't contain stale data.
   FlushGraphiteCommandsIfNeeded();
-  if (!IsClearedInternal()) {
-    LOG(ERROR)
-        << "D3DImageBacking::CopyToStagingTexture: texture is not cleared";
-    return false;
-  }
   ID3D11Texture2D* staging_texture = GetOrCreateStagingTexture();
   if (!staging_texture) {
     return false;
@@ -1467,11 +1462,6 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
     // and disable persistent access.
     InvalidatePersistentGraphiteDawnAccess();
   }
-  if (!write_access && !IsClearedInternal()) {
-    // This can happen if the deferred submission fails due to context loss.
-    LOG(ERROR) << "Attempt to read from an uninitialized SharedImage";
-    return nullptr;
-  }
 
   // The presence of d3d12_resource_ with D3D12 backend implies ProduceDawn
   // already took the graphite D3D11on12 path.
@@ -1808,11 +1798,6 @@ bool D3DImageBacking::BeginAccessD3D(const D3DAccessObject& access_device,
   }
 
   if (!ValidateBeginAccess(write_access)) {
-    return false;
-  }
-  if (!write_access && !IsClearedInternal()) {
-    // This can happen if the deferred submission fails due to context loss.
-    LOG(ERROR) << "Attempt to read from an uninitialized SharedImage";
     return false;
   }
 
@@ -2295,8 +2280,6 @@ bool D3DImageBacking::PresentSwapChain() {
 
   // Flush any deferred Graphite submits before presentation.
   FlushGraphiteCommandsIfNeeded();
-  // The swapchain should already be cleared at creation.
-  CHECK(IsClearedInternal());
 
   TRACE_EVENT1("gpu", "D3DImageBacking::PresentSwapChain", "has_alpha",
                !SkAlphaTypeIsOpaque(alpha_type()));
@@ -2494,9 +2477,10 @@ void D3DImageBacking::FlushGraphiteCommandsIfNeeded() {
     return;
   }
 
-  const bool initialized = dawn::native::IsTextureSubresourceInitialized(
-      persistent_graphite_dawn_access_->texture().Get(), 0, 1, 0, 1);
-  SetClearedRectInternal(initialized ? gfx::Rect(size()) : gfx::Rect());
+  if (dawn::native::IsTextureSubresourceInitialized(
+          persistent_graphite_dawn_access_->texture().Get(), 0, 1, 0, 1)) {
+    SetClearedRectInternal(gfx::Rect(size()));
+  }
 }
 
 void D3DImageBacking::InvalidatePersistentGraphiteDawnAccess() {
