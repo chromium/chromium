@@ -96,7 +96,7 @@ android_library("test_support_java") {
 
   deps = [
     ":java",
-    ":test_jni_headers",
+    ":test_jni_headers_java",
     "//base:base_java",
     "//components/browser_ui/media/android:java",
     "//content/public/android:content_java",
