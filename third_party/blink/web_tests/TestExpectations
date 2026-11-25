@@ -8424,6 +8424,8 @@ crbug.com/452729239 [ Mac ] external/wpt/wasm/core/f32_cmp.wast.js.html [ Pass T
 crbug.com/446272167 [ Linux ] external/wpt/wasm/core/f64.wast.js.html [ Crash Failure Pass Timeout ]
 crbug.com/452628516 [ Linux ] external/wpt/wasm/core/f64_cmp.wast.js.html [ Crash Failure Pass Timeout ]
 crbug.com/453103188 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_cmp.wast.js.html [ Crash Failure Pass Timeout ]
+crbug.com/453103188 [ Win ] external/wpt/wasm/core/simd/simd_f32x4_cmp.wast.js.html [ Pass Timeout ]
+crbug.com/453103188 [ Mac ] external/wpt/wasm/core/simd/simd_f32x4_cmp.wast.js.html [ Pass Timeout ]
 
 crbug.com/41187256 http/tests/devtools/console/console-functions.js [ Failure Pass ]
 crbug.com/41187256 http/tests/devtools/console/console-dir.js [ Failure Pass ]
