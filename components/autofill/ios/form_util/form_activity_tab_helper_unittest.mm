@@ -5,6 +5,8 @@
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 
 #import <optional>
+#import <ostream>
+#import <string>
 #import <vector>
 
 #import "base/feature_list.h"
@@ -683,16 +685,41 @@ TEST_F(FormActivityTabHelperTest, AddCustomElement) {
   }));
 }
 
-// Test fixture verifying the behavior of FormActivityTabHelper when handling
-// form mutation events.
-class FormMutationTest : public base::test::WithFeatureOverride,
-                         public FormActivityTabHelperTest {
- public:
-  FormMutationTest()
-      : base::test::WithFeatureOverride(
-            features::kAutofillTrackFormMutationsOptimizationIos) {}
-  void SetUp() override { FormActivityTabHelperTest::SetUp(); }
+// Parameters for `FormMutationTest` covering all combinations of the form
+// search and form mutation tracking optimization flags.
+struct FormMutationTestParams {
+  const char* name;
+  bool optimize_form_search;
+  bool optimize_track_form_mutations;
+};
 
+void PrintTo(const FormMutationTestParams& params, std::ostream* os) {
+  *os << params.name;
+}
+
+// Initializes feature flags before `FormActivityTabHelperTest` constructs its
+// `WebTaskEnvironment`.
+class FormMutationFeatureSetup
+    : public ::testing::WithParamInterface<FormMutationTestParams> {
+ public:
+  FormMutationFeatureSetup() {
+    scoped_feature_list_.InitWithFeatureStates({
+        {features::kAutofillOptimizationFormSearchIos,
+         GetParam().optimize_form_search},
+        {features::kAutofillTrackFormMutationsOptimizationIos,
+         GetParam().optimize_track_form_mutations},
+    });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test fixture verifying the behavior of FormActivityTabHelper when handling
+// form mutation events. `FormMutationFeatureSetup` must stay first for the
+// feature flags to be initialized before the helper.
+class FormMutationTest : public FormMutationFeatureSetup,
+                         public FormActivityTabHelperTest {
  protected:
   // Loads the specified HTML content, prepares for form mutation tracking.
   void LoadHtmlForMutationTest(NSString* html) {
@@ -1338,7 +1365,33 @@ TEST_P(FormMutationTest, OptimizedFormMutations_ThrottledAcrossTicks) {
                                        /*expected_bucket_count=*/1);
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FormMutationTest);
+INSTANTIATE_TEST_SUITE_P(
+    /* No InstantiationName */,
+    FormMutationTest,
+    ::testing::Values(
+        FormMutationTestParams{
+            .name = "Standard",
+            .optimize_form_search = false,
+            .optimize_track_form_mutations = false,
+        },
+        FormMutationTestParams{
+            .name = "FormSearch",
+            .optimize_form_search = true,
+            .optimize_track_form_mutations = false,
+        },
+        FormMutationTestParams{
+            .name = "TrackFormMutations",
+            .optimize_form_search = false,
+            .optimize_track_form_mutations = true,
+        },
+        FormMutationTestParams{
+            .name = "FormSearchAndTrackFormMutations",
+            .optimize_form_search = true,
+            .optimize_track_form_mutations = true,
+        }),
+    [](const ::testing::TestParamInfo<FormMutationTestParams>& info) {
+      return std::string(info.param.name);
+    });
 
 class FormContentEditableTest : public base::test::WithFeatureOverride,
                                 public FormActivityTabHelperTest {
