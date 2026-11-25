@@ -15,6 +15,7 @@
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/preloading/preloading_features.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -41,8 +42,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -92,6 +95,9 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                     kAIMWebContentsVisible);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                     kAIMWebContentsHidden);
+
+// The AIM hint, which starts with a tab key symbol.
+constexpr char16_t kAimHint[] = u"\u21E5 Press tab then enter to ask AI Mode";
 
 const WebContentsInteractionTestUtil::DeepQuery kOmniboxInputDeepQuery = {
     "toolbar-app", "location-bar", "readonly-omnibox", "#textInput", "#input"};
@@ -685,10 +691,20 @@ class WebUILocationBarInteractiveUiTest
     return WaitForStateChange(webview, text_matches);
   }
 
-  auto WaitTillOmniboxViewPlaceholder(std::u16string_view expected_text) {
+  auto CheckAimHintImpressions(int expected_impressions) {
+    return CheckResult(
+        [this]() {
+          return browser()->GetProfile()->GetPrefs()->GetInteger(
+              omnibox::kAimHintTotalImpressions);
+        },
+        expected_impressions);
+  }
+
+  auto WaitTillOmniboxViewPlaceholder(std::u16string_view expected_text,
+                                      View view = View::kEditable) {
     auto webview = kWebUIToolbarId;
     auto query = kOmniboxInputDeepQuery;
-    if (mode() == Mode::kFull) {
+    if (mode() == Mode::kFull && view == View::kEditable) {
       webview = kClassicPopupWebViewId;
       query = kFullPopupInputDeepQuery;
     }
@@ -1167,8 +1183,10 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
       // Delete everything.
       InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_DELETE)),
       WaitTillOmniboxViewText(""),
-      // No placeholder while the input has focus.
-      WaitTillOmniboxViewPlaceholder(u""),
+      // The focused, empty input shows the AIM hint.
+      WaitTillOmniboxViewPlaceholder(kAimHint),
+      WaitForJsResultAt(InputWebContents(), kFullPopupInputDeepQuery,
+                        kPlaceholderVisibility, "visible"),
       // With no suggestions, Tab moves focus to the AIM button itself.
       WaitForJsResultAt(InputWebContents(), kSearchbox,
                         "(el) => el.dropdownIsVisible", false),
@@ -1179,10 +1197,10 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
       WaitTillOmniboxViewPlaceholder(u"Ask Google or type a URL"),
       WaitForJsResultAt(InputWebContents(), kFullPopupInputDeepQuery,
                         kPlaceholderVisibility, "visible"),
-      // Shift+Tab back to the input clears it again.
+      // Shift+Tab back to the input shows the AIM hint again.
       InAnyContext(
           SendKeyPress(InputWebContents(), ui::VKEY_TAB, ui::EF_SHIFT_DOWN)),
-      WaitTillOmniboxViewFocus(), WaitTillOmniboxViewPlaceholder(u""));
+      WaitTillOmniboxViewFocus(), WaitTillOmniboxViewPlaceholder(kAimHint));
 }
 
 // Test that the popup shrinks when the browser window does.
@@ -1732,7 +1750,6 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, ZeroSuggestNoEnlide) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, Placeholder) {
-  FAILS_IN_MODE(Mode::kFull, "Full doesn't seem to have the AIM placeholder");
   RunTestSequence(
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
       InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
@@ -1744,13 +1761,36 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, Placeholder) {
       WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)),
       // Delete everything
       InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_DELETE)),
-      WaitTillOmniboxViewText(""),
-      WaitTillOmniboxViewPlaceholder(
-          u"\u21E5 Press tab then enter to ask AI Mode"),
+      WaitTillOmniboxViewText(""), WaitTillOmniboxViewPlaceholder(kAimHint),
       // Transfer the focus to contents.
       FocusTab(),
       // Now we should get the regular search placeholder, not AIM one.
-      WaitTillOmniboxViewPlaceholder(u"Ask Google or type a URL"));
+      WaitTillOmniboxViewPlaceholder(u"Ask Google or type a URL",
+                                     View::kStatic));
+}
+
+// A click into the omnibox focuses the toolbar's omnibox before the popup's.
+// Only the popup counts an impression of the AIM hint then.
+IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
+                       ClickCountsOneAimHintImpression) {
+  if (mode() != Mode::kFull) {
+    GTEST_SKIP() << "Only the full popup counts the AIM hint's impressions.";
+  }
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      HandleAutofocus(), WaitTillOmniboxViewText("about:blank"),
+      WaitTillOmniboxViewFocus(),
+      WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)),
+      // The autofocused omnibox shows the AIM hint once it's empty.
+      InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_DELETE)),
+      WaitTillOmniboxViewPlaceholder(kAimHint), CheckAimHintImpressions(1),
+      // Blur the omnibox, then click into it.
+      FocusTab(),
+      WaitTillOmniboxViewPlaceholder(u"Ask Google or type a URL",
+                                     View::kStatic),
+      MoveMouseTo(kOmniboxElementId), ClickMouse(), WaitTillOmniboxViewFocus(),
+      WaitTillOmniboxViewPlaceholder(kAimHint), CheckAimHintImpressions(2));
 }
 
 // Click when already focused doesn't select all.

@@ -570,25 +570,26 @@ WebUIReadOnlyOmnibox::ComputeMojoState() {
   // TODO(crbug.com/507045398): Pay attention to this.
   std::optional<std::u16string> maybe_a11y_placeholder;
 
-  omnibox::ComputePlaceholderText(location_bar_, placeholder_text,
+  omnibox::ComputePlaceholderText(*controller(), placeholder_text,
                                   maybe_a11y_placeholder);
-  if (has_focus_ && !aim_hint_currently_shown_ &&
-      omnibox::IsAimPlaceholderText(location_bar_, placeholder_text)) {
-    omnibox::RecordAimHintImpression(location_bar_);
+  // With the full WebUI omnibox, its popup records the impressions instead.
+  if (has_focus_ && !aim_hint_currently_shown_ && !IsFullWebUIOmnibox() &&
+      omnibox::IsAimPlaceholderText(*controller(), placeholder_text)) {
+    omnibox::RecordAimHintImpression(*controller());
     aim_hint_currently_shown_ = true;
   }
 
   if (!placeholder_text.empty() &&
       omnibox::ShouldShowPlaceholderText(
-          location_bar_,
+          *controller(),
           /*in_popup_state_transition=*/
-          location_bar_->in_popup_state_transition(),
+          location_bar_ && location_bar_->in_popup_state_transition(),
           /*aim_button_visible=*/AimButtonVisible(),
           /*aim_hint_currently_shown=*/aim_hint_currently_shown_)) {
     state->placeholder = toolbar_ui_api::mojom::OmniboxTextPortion::New(
         placeholder_text,
         /*strikethrough=*/false,
-        omnibox::ShouldUseDimPlaceholderColor(location_bar_)
+        omnibox::ShouldUseDimPlaceholderColor(*controller())
             ? toolbar_ui_api::mojom::OmniboxTextColor::
                   kOmniboxForegroundDisabled
             : toolbar_ui_api::mojom::OmniboxTextColor::kOmniboxText);

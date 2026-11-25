@@ -8,24 +8,20 @@
 
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
-#include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/contextual_tasks/public/features.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_client.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/ai_mode_button_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace omnibox {
@@ -35,9 +31,8 @@ namespace {
 constexpr int kAimHintImpressionLimitTotal = 15;
 constexpr int kAimHintImpressionLimitDaily = 3;
 
-const AiModeButtonUiConfig* GetAiModeUiConfig(LocationBar& location_bar) {
-  auto* service =
-      AiModeButtonServiceFactory::GetForProfile(location_bar.GetProfile());
+const AiModeButtonUiConfig* GetAiModeUiConfig(OmniboxController& controller) {
+  const auto* service = controller.client()->GetAiModeButtonService();
   return service ? service->GetCurrentConfig() : nullptr;
 }
 
@@ -50,75 +45,65 @@ std::u16string AimPlaceholderText(const AiModeButtonUiConfig& config) {
 }  // namespace
 
 bool ShouldUseAskPlaceholderText(
-    Profile* profile,
+    bool is_aim_popup_enabled,
     const TemplateURLService* template_url_service) {
-  return template_url_service && omnibox::IsAimPopupEnabled(profile) &&
+  return template_url_service && is_aim_popup_enabled &&
          search::DefaultSearchProviderIsGoogle(template_url_service);
 }
 
 void ComputePlaceholderText(
-    LocationBar* location_bar,
+    OmniboxController& controller,
     std::u16string& out_placeholder_text,
     std::optional<std::u16string>& out_a11y_placeholder) {
   out_a11y_placeholder = std::nullopt;
   out_placeholder_text = std::u16string();
-  if (!location_bar) {
-    return;
-  }
-  auto* controller = location_bar->GetOmniboxController();
-  if (!controller->edit_model()->keyword_placeholder().empty()) {
+  OmniboxClient* client = controller.client();
+  if (!controller.edit_model()->keyword_placeholder().empty()) {
     // If `keyword_placeholder()` is set, then the user is in a keyword mode
     // that has placeholder text, so display that.
-    out_placeholder_text = controller->edit_model()->keyword_placeholder();
-  } else if (ShouldInstallAimPlaceholderText(location_bar)) {
+    out_placeholder_text = controller.edit_model()->keyword_placeholder();
+  } else if (ShouldInstallAimPlaceholderText(controller)) {
     // If the Omnibox is visibly focused w/ AI Mode enabled, display the AI Mode
     // placeholder text to suggest tabbing into AI Mode. Note, even if the AI
     // placeholder text is installed, it will only be visible if
     // `ShouldShowPlaceholderText()` is also true.
-    auto* config = GetAiModeUiConfig(*location_bar);
+    auto* config = GetAiModeUiConfig(controller);
     CHECK(config);
     out_placeholder_text = AimPlaceholderText(*config);
     // Override the AIM accessibility placeholder text, so that the tab icon is
     // not announced.
     out_a11y_placeholder = config->placeholder_text;
-  } else if (ShouldInstallContextualTasksPlaceholderText(location_bar)) {
+  } else if (ShouldInstallContextualTasksPlaceholderText(controller)) {
     // For Contextual Tasks page, use the page title as placeholder text.
-    out_placeholder_text = location_bar->GetWebContents()->GetTitle();
-  } else if (const auto* default_provider = controller->client()
-                                                ->GetTemplateURLService()
-                                                ->GetDefaultSearchProvider()) {
+    out_placeholder_text = client->GetTitle();
+  } else if (const auto* default_provider =
+                 client->GetTemplateURLService()->GetDefaultSearchProvider()) {
     // Otherwise, if a DSE is set, use the DSE placeholder text.
     out_placeholder_text = l10n_util::GetStringFUTF16(
-        ShouldUseAskPlaceholderText(
-            location_bar->GetProfile(),
-            controller->client()->GetTemplateURLService())
+        ShouldUseAskPlaceholderText(client->IsAimPopupEnabled(),
+                                    client->GetTemplateURLService())
             ? IDS_WEBUI_OMNIBOX_PLACEHOLDER_TEXT
             : IDS_OMNIBOX_PLACEHOLDER_TEXT,
         default_provider->short_name());
   }
 }
 
-bool ShouldShowPlaceholderText(LocationBar* location_bar,
+bool ShouldShowPlaceholderText(const OmniboxController& controller,
                                bool in_popup_state_transition,
                                bool aim_button_visible,
                                bool aim_hint_currently_shown) {
-  if (!location_bar) {
-    return false;
-  }
-  auto* controller = location_bar->GetOmniboxController();
-
   // If there's keyword placeholder to show, always show it, regardless of
   // whether the omnibox is focused, because users won't enter keyword mode,
   // blur the omnibox, read the placeholder text, refocus the omnibox, and begin
   // typing.
-  if (!controller->edit_model()->keyword_placeholder().empty()) {
+  if (!controller.edit_model()->keyword_placeholder().empty()) {
     return true;
   }
 
   if (omnibox::ShouldDeferAimShowUntilVisualStateReady()) {
     // Suppress the hint text while the AIM popup is displayed or in deferred
     // transition.
-    OmniboxPopupState state = controller->popup_state_manager()->popup_state();
+    OmniboxPopupState state = controller.popup_state_manager()->popup_state();
     bool is_webui_popup =
         state == OmniboxPopupState::kAim || state == OmniboxPopupState::kFull;
     if (is_webui_popup || in_popup_state_transition) {
@@ -128,40 +113,34 @@ bool ShouldShowPlaceholderText(LocationBar* location_bar,
 
   // If the omnibox is blurred, only show the DSE placeholder if there is no
   // keyword selected.
-  if (!controller->edit_model()->is_caret_visible()) {
-    return !controller->edit_model()->is_keyword_selected();
+  if (!controller.edit_model()->is_caret_visible()) {
+    return !controller.edit_model()->is_keyword_selected();
   }
 
   // If the omnibox is focused, only show the AIM placeholder if its conditions
   // are met:
-  if (!aim_button_visible || AreAimHintImpressionLimitsReached(
-                                 location_bar, aim_hint_currently_shown)) {
+  if (!aim_button_visible ||
+      AreAimHintImpressionLimitsReached(controller, aim_hint_currently_shown)) {
     return false;
   }
 
   // Hide the AIM placeholder when the AIM button is focused.
-  return !controller->edit_model()->GetPopupSelection().IsButtonFocused();
+  return !controller.edit_model()->GetPopupSelection().IsButtonFocused();
 }
 
-bool ShouldUseDimPlaceholderColor(LocationBar* location_bar) {
-  if (!location_bar) {
-    return false;
-  }
+bool ShouldUseDimPlaceholderColor(OmniboxController& controller) {
   // AIM placeholder text, contextual tasks placeholder text, and keyword
   // placeholders are dim to differentiate from user input. DSE placeholders are
   // not dim to draw attention to the omnibox and because the omnibox is
   // unfocused so there's less risk of confusion with user input.
   bool dse_placeholder_installed =
-      location_bar->GetOmniboxController()
-          ->edit_model()
-          ->keyword_placeholder()
-          .empty() &&
-      !ShouldInstallAimPlaceholderText(location_bar) &&
-      !ShouldInstallContextualTasksPlaceholderText(location_bar);
+      controller.edit_model()->keyword_placeholder().empty() &&
+      !ShouldInstallAimPlaceholderText(controller) &&
+      !ShouldInstallContextualTasksPlaceholderText(controller);
   return !dse_placeholder_installed;
 }
 
-bool AreAimHintImpressionLimitsReached(LocationBar* location_bar,
+bool AreAimHintImpressionLimitsReached(const OmniboxController& controller,
                                        bool aim_hint_currently_shown) {
   // If the hint has already been shown in the current focus session, we can
   // ignore the limits to avoid hiding the hint text in the same session that
@@ -170,7 +149,7 @@ bool AreAimHintImpressionLimitsReached(LocationBar* location_bar,
     return false;
   }
 
-  PrefService* prefs = location_bar->GetProfile()->GetPrefs();
+  const PrefService* prefs = controller.client()->GetPrefs();
 
   // Check total impressions.
   const int total_impressions =
@@ -189,68 +168,33 @@ bool AreAimHintImpressionLimitsReached(LocationBar* location_bar,
   return false;
 }
 
-bool ShouldInstallAimPlaceholderText(LocationBar* location_bar) {
-  if (!location_bar) {
-    return false;
-  }
-
-  const auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(location_bar->GetProfile());
-  const auto* ai_mode_button_service =
-      AiModeButtonServiceFactory::GetForProfile(location_bar->GetProfile());
-  const auto* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(location_bar->GetProfile());
+bool ShouldInstallAimPlaceholderText(OmniboxController& controller) {
+  OmniboxClient* client = controller.client();
   const bool is_aim_entrypoint_enabled =
-      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(aim_eligibility_service,
-                                                       ai_mode_button_service,
-                                                       template_url_service);
+      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
+          controller.autocomplete_controller()
+              ->autocomplete_provider_client()
+              ->GetAimEligibilityService(),
+          client->GetAiModeButtonService(), client->GetTemplateURLService());
 
   return is_aim_entrypoint_enabled &&
-         location_bar->GetOmniboxController()
-             ->edit_model()
-             ->is_caret_visible() &&
-         GetAiModeUiConfig(*location_bar);
+         controller.edit_model()->is_caret_visible() &&
+         GetAiModeUiConfig(controller);
 }
 
-bool IsAimPlaceholderText(LocationBar* location_bar, std::u16string_view text) {
-  if (!location_bar) {
-    return false;
-  }
-  auto* config = GetAiModeUiConfig(*location_bar);
+bool IsAimPlaceholderText(OmniboxController& controller,
+                          std::u16string_view text) {
+  auto* config = GetAiModeUiConfig(controller);
   return config && text == AimPlaceholderText(*config);
 }
 
-bool ShouldInstallContextualTasksPlaceholderText(LocationBar* location_bar) {
-  if (!location_bar) {
-    return false;
-  }
-
-  content::WebContents* web_contents = location_bar->GetWebContents();
-  if (!web_contents) {
-    return false;
-  }
-
-  content::NavigationEntry* entry =
-      web_contents->GetController().GetLastCommittedEntry();
-  if (!entry) {
-    return false;
-  }
-
-  // Check if the URL is under chrome://contextual-tasks and the contextual
-  // tasks feature is enabled.
-  const auto is_contextual_tasks = [](const GURL& url) {
-    return url.SchemeIs(content::kChromeUIScheme) &&
-           url.GetHost() == chrome::kChromeUIContextualTasksHost &&
-           base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
-  };
-  return is_contextual_tasks(entry->GetURL());
+bool ShouldInstallContextualTasksPlaceholderText(
+    const OmniboxController& controller) {
+  return controller.client()->IsContextualTasksPage();
 }
 
-void RecordAimHintImpression(LocationBar* location_bar) {
-  if (!location_bar) {
-    return;
-  }
-  PrefService* prefs = location_bar->GetProfile()->GetPrefs();
+void RecordAimHintImpression(OmniboxController& controller) {
+  PrefService* prefs = controller.client()->GetPrefs();
 
   // Increment the total impressions count.
   const int total_impressions =

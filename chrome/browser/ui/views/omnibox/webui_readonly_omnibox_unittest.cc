@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -174,6 +175,14 @@ void WebUIReadOnlyOmniboxTest::SetUp() {
               ->autocomplete_provider_client()
               ->GetPrefs())
           ->registry());
+
+  // Computing the omnibox's placeholder checks whether AIM is eligible.
+  EXPECT_CALL(*static_cast<MockAimEligibilityService*>(
+                  omnibox_controller_->autocomplete_controller()
+                      ->autocomplete_provider_client()
+                      ->GetAimEligibilityService()),
+              IsAimEligible())
+      .WillRepeatedly(testing::Return(false));
 
   widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto contents_view = std::make_unique<views::View>();

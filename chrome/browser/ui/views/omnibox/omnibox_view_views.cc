@@ -395,7 +395,7 @@ void OmniboxViewViews::SetUserTextForTab(content::WebContents* web_contents,
 void OmniboxViewViews::InstallPlaceholderText() {
   std::u16string placeholder_text;
   std::optional<std::u16string> maybe_a11y_placeholder_text;
-  omnibox::ComputePlaceholderText(location_bar_view_, placeholder_text,
+  omnibox::ComputePlaceholderText(*controller(), placeholder_text,
                                   maybe_a11y_placeholder_text);
   SetPlaceholderText(placeholder_text);
   const std::u16string a11y_text =
@@ -727,13 +727,15 @@ void OmniboxViewViews::OnPaint(gfx::Canvas* canvas) {
     Textfield::OnPaint(canvas);
   }
 
-  // Record an impression of the AIM hint text if it is being shown.
+  // Record an impression of the AIM hint text if it is being shown. With the
+  // full WebUI omnibox, its popup records the impressions instead.
   const bool should_show_placeholder = ShouldShowPlaceholderText();
   const bool is_aim_placeholder =
-      omnibox::IsAimPlaceholderText(location_bar_view_, GetPlaceholderText());
-  if (should_show_placeholder && is_aim_placeholder && !aim_hint_shown_) {
+      omnibox::IsAimPlaceholderText(*controller(), GetPlaceholderText());
+  if (should_show_placeholder && is_aim_placeholder && !aim_hint_shown_ &&
+      !IsFullWebUIOmnibox()) {
     aim_hint_shown_ = true;
-    omnibox::RecordAimHintImpression(location_bar_view_);
+    omnibox::RecordAimHintImpression(*controller());
   }
 }
 
@@ -2152,7 +2154,7 @@ bool OmniboxViewViews::ShouldShowPlaceholderText() const {
   }
 
   return omnibox::ShouldShowPlaceholderText(
-      location_bar_view_,
+      *controller(),
       /*in_popup_state_transition=*/location_bar_view_ &&
           location_bar_view_->in_popup_state_transition(),
       /*aim_button_visible=*/AimButtonVisible(),
@@ -2699,10 +2701,9 @@ void OmniboxViewViews::PerformDrop(
 }
 
 void OmniboxViewViews::UpdatePlaceholderTextColor() {
-  SetPlaceholderTextColorId(
-      omnibox::ShouldUseDimPlaceholderColor(location_bar_view_)
-          ? kColorOmniboxForegroundDisabled
-          : kColorOmniboxText);
+  SetPlaceholderTextColorId(omnibox::ShouldUseDimPlaceholderColor(*controller())
+                                ? kColorOmniboxForegroundDisabled
+                                : kColorOmniboxText);
 }
 
 BEGIN_METADATA(OmniboxViewViews)
