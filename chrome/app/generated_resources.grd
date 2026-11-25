@@ -10467,6 +10467,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_LIST_ENTRY_POINT_PROMO" desc="Text shown on promotional UI to encourage users to add a tab to their reading list">
         To add this page to your reading list, click the Bookmark icon
       </message>
+      <message name="IDS_DELIGHT_DINO_BOOKMARK_IPH_TITLE" desc="Title text shown on the in-product help bubble after losing the offline Dino game, encouraging the user to bookmark the game." translateable="false">
+        Play anytime
+      </message>
       <message name="IDS_DESKTOP_PWA_INSTALL_PROMO" desc="Text shown on promotional UI appearing next to the PWA install icon">
         To get back here quickly, install <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> by clicking the install button
       </message>

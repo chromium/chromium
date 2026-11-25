@@ -3471,6 +3471,16 @@ If this page isn’t working as expected, try allowing optimization.
       <message name="IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL" desc="Text shown when a user with no available target devices attempts to use send-tab-to-self.">
         To send this tab to another device, sign in to Chromium there
       </message>
+      <!-- Delight Dino Bookmark IPH -->
+      <message name="IDS_DELIGHT_DINO_BOOKMARK_IPH_BODY" desc="Body text shown on the in-product help bubble after losing the offline Chromium Dino game, encouraging the user to click the bookmark star to save chrome://dino." translateable="false">
+        Click the star to add the Chromium Dino game to your bookmarks bar
+      </message>
+      <message name="IDS_DELIGHT_DINO_BOOKMARK_IPH_SCREENREADER" desc="Screen reader text for the in-product help bubble after losing the offline Chromium Dino game, describing how to bookmark chrome://dino via the address bar." translateable="false">
+        Select the bookmark star in the address bar to add the Chromium Dino game to your bookmarks bar
+      </message>
+      <message name="IDS_DELIGHT_DINO_BOOKMARK_TITLE" desc="Default title for the chrome://dino bookmark created when clicking the bookmark star from the Dino game-over in-product help prompt." translateable="false">
+        Chromium Dino Game
+      </message>
       <if expr="not use_titlecase">
         <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SIGN_IN" desc="The label for a menu item to sign in to Chromium in the Send Tab to Self context menu when signed out.">
           Sign in to Chromium
