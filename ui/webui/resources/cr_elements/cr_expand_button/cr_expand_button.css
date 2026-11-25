@@ -36,7 +36,7 @@
 }
 
 #icon[data-direction='up']::part(icon) {
-  transform: rotate(180deg);
+  transform: rotate(-180deg);
 }
 
 #icon[data-direction='left']::part(icon) {
@@ -45,4 +45,16 @@
 
 #icon[data-direction='right']::part(icon) {
   transform: rotate(-90deg);
+}
+
+:host([animate-rotation_]) #icon::part(icon) {
+  transition: fill var(--cr-icon-button-transition),
+      stroke var(--cr-icon-button-transition),
+      transform 300ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([animate-rotation_]) #icon::part(icon) {
+    transition: none;
+  }
 }

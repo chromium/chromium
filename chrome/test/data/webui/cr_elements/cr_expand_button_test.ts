@@ -223,4 +223,70 @@ suite('cr-expand-button', function() {
     await button.updateComplete;
     assertEquals('0', icon.getAttribute('tabindex'));
   });
+
+  test('animate-rotation animates direction changes', async () => {
+    const crIcon = icon.shadowRoot.querySelector('cr-icon')!;
+    // Does not animate by default.
+    getComputedStyle(crIcon).getPropertyValue('transform');
+    button.expanded = true;
+    await button.updateComplete;
+    assertEquals(0, crIcon.getAnimations().length);
+
+    button.animateRotation = true;
+    await button.updateComplete;
+    assertTrue(
+        getComputedStyle(crIcon).transitionProperty.includes('transform'));
+
+    let whenTransitionEnd =
+        eventToPromise<TransitionEvent>('transitionend', crIcon);
+    button.expanded = false;
+    assertEquals('transform', (await whenTransitionEnd).propertyName);
+
+    whenTransitionEnd =
+        eventToPromise<TransitionEvent>('transitionend', crIcon);
+    button.expanded = true;
+    assertEquals('transform', (await whenTransitionEnd).propertyName);
+  });
+
+  test('toggling animate-rotation suppresses transition', async () => {
+    const crIcon = icon.shadowRoot.querySelector('cr-icon')!;
+    button.animateRotation = true;
+    await button.updateComplete;
+    getComputedStyle(crIcon).getPropertyValue('transform');
+
+    button.animateRotation = false;
+    button.expanded = true;
+    await button.updateComplete;
+    assertEquals(0, crIcon.getAnimations().length);
+
+    // Re-enabling animateRotation in the next microtask must not trigger a
+    // transition for the already-committed state change.
+    button.animateRotation = true;
+    await button.updateComplete;
+    assertTrue(
+        getComputedStyle(crIcon).transitionProperty.includes('transform'));
+    assertEquals(0, crIcon.getAnimations().length);
+
+    const whenTransitionEnd =
+        eventToPromise<TransitionEvent>('transitionend', crIcon);
+    button.expanded = false;
+    assertEquals('transform', (await whenTransitionEnd).propertyName);
+  });
+
+  test('no transition on initial render with animate-rotation', async () => {
+    const animatedButton = document.createElement('cr-expand-button');
+    animatedButton.animateRotation = true;
+    animatedButton.expanded = true;
+    document.body.appendChild(animatedButton);
+
+    const crIcon = animatedButton.$.icon.shadowRoot.querySelector('cr-icon')!;
+    assertTrue(
+        getComputedStyle(crIcon).transitionProperty.includes('transform'));
+    assertEquals(0, crIcon.getAnimations().length);
+
+    const whenTransitionEnd =
+        eventToPromise<TransitionEvent>('transitionend', crIcon);
+    animatedButton.expanded = false;
+    assertEquals('transform', (await whenTransitionEnd).propertyName);
+  });
 });

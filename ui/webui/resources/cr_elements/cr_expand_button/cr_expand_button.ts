@@ -58,6 +58,11 @@ export class CrExpandButtonElement extends CrLitElement {
       },
 
       /**
+       * If true, the chevron icon will smoothly rotate when `expanded` changes.
+       */
+      animateRotation: {type: Boolean},
+
+      /**
        * If true, the button will be disabled and grayed out.
        */
       disabled: {
@@ -89,6 +94,7 @@ export class CrExpandButtonElement extends CrLitElement {
   }
 
   accessor expanded: boolean = false;
+  accessor animateRotation: boolean = false;
   accessor disabled: boolean = false;
   override accessor ariaDescription: string|null = null;
   override accessor ariaLabel: string = '';
@@ -120,6 +126,20 @@ export class CrExpandButtonElement extends CrLitElement {
 
     if (changedProperties.has('ariaLabel')) {
       this.onAriaLabelChange_();
+    }
+
+    if (changedProperties.has('animateRotation')) {
+      if (this.animateRotation &&
+          changedProperties.get('animateRotation') !== undefined) {
+        // Flush any pending transform change before enabling the CSS
+        // transition so re-enabling `animateRotation` in the next microtask
+        // does not animate an already-committed state change.
+        const crIcon = this.$.icon.shadowRoot.querySelector('cr-icon');
+        if (crIcon) {
+          getComputedStyle(crIcon).getPropertyValue('transform');
+        }
+      }
+      this.toggleAttribute('animate-rotation_', this.animateRotation);
     }
   }
 
