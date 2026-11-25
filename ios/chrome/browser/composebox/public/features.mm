@@ -6,6 +6,7 @@
 
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
+#import "components/omnibox/common/composebox_features.h"
 #import "components/omnibox/common/omnibox_features.h"
 
 BASE_FEATURE(kComposeboxDevTools, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -96,4 +97,9 @@ BASE_FEATURE(kComposeboxConnectedAppsSetting,
 
 bool IsComposeboxConnectedAppsSettingEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxConnectedAppsSetting);
+}
+
+bool IsDynamicAimFulfillmentEnabled(ComposeboxEntrypoint entrypoint) {
+  return entrypoint != ComposeboxEntrypoint::kCobrowse &&
+         base::FeatureList::IsEnabled(omnibox::kDynamicAimFulfillment);
 }

@@ -13,6 +13,7 @@
 #import "components/contextual_search/mock_contextual_search_session_handle.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
+#import "components/omnibox/common/composebox_features.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
@@ -46,6 +47,8 @@
 @property(nonatomic, assign) ComposeboxMode lastMode;
 @property(nonatomic, strong)
     NSArray<ComposeboxInputItem*>* lastInvalidatedItems;
+@property(nonatomic, copy) void (^onDidChangeMode)
+    (ComposeboxMode, NSArray<ComposeboxInputItem*>*);
 @end
 
 @implementation FakeComposeboxInputStateManagerDelegate
@@ -61,6 +64,9 @@
   self.didChangeModeCalled = YES;
   self.lastMode = mode;
   self.lastInvalidatedItems = invalidatedItems;
+  if (self.onDidChangeMode) {
+    self.onDidChangeMode(mode, invalidatedItems);
+  }
 }
 
 @end
@@ -1838,4 +1844,206 @@ TEST_F(ComposeboxInputStateManagerTest,
                                                        attachedWebStateIDs:{}];
   ASSERT_EQ(state.activeTool, ComposeboxMode::kAIM);
   EXPECT_FALSE(state.defaultToolActive);
+}
+
+#pragma mark - Dynamic AIM fulfillment
+
+// Fixture with dynamic AIM fulfillment enabled and a server config whose
+// default model allows images and files, plus `Create Images` (`imgn=1`).
+class ComposeboxInputStateManagerDynamicAimFulfillmentTest
+    : public ComposeboxInputStateManagerTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({omnibox::kDynamicAimFulfillment},
+                                          {});
+    ComposeboxInputStateManagerTest::SetUp();
+    EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+        .WillRepeatedly(testing::Return(true));
+    ON_CALL(*session_handle_, GetUploadedContextFileInfos())
+        .WillByDefault(
+            testing::Return(std::vector<contextual_search::FileInfo>()));
+
+    omnibox::ModelConfig* model_config = config_.add_model_configs();
+    model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+    model_config->mutable_rule()->set_allow_all_input_types(true);
+    model_config->mutable_rule()->set_allow_all_tools(true);
+    config_.mutable_rule_set()->add_allowed_models(
+        omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+    omnibox::ToolConfig* image_gen_config = config_.add_tool_configs();
+    image_gen_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+    image_gen_config->mutable_rule()->set_allow_all_input_types(true);
+    omnibox::UrlParam* imgn = image_gen_config->add_aim_url_params();
+    imgn->set_param_key("imgn");
+    imgn->set_param_value("1");
+    config_.mutable_rule_set()->add_allowed_tools(
+        omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  }
+
+  // Sends `config_` to the manager as the server config.
+  void LoadServerConfig() {
+    EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+        .WillRepeatedly(testing::Return(&config_));
+    aim_eligibility_callback_.Run();
+  }
+
+  // Attaches `image_count` images and `pdf_count` PDFs, as both the UI items
+  // and the uploaded session files, and notifies the manager.
+  void Attach(size_t image_count, size_t pdf_count) {
+    ComposeboxInputItemCollection* collection =
+        [[ComposeboxInputItemCollection alloc] init];
+    std::vector<contextual_search::FileInfo> file_infos;
+    for (size_t i = 0; i < image_count + pdf_count; ++i) {
+      BOOL is_image = i < image_count;
+      [collection
+          addItem:
+              [[ComposeboxInputItem alloc]
+                  initWithComposeboxInputItemType:
+                      is_image
+                          ? ComposeboxInputItemType::
+                                kComposeboxInputItemTypeImage
+                          : ComposeboxInputItemType::kComposeboxInputItemTypePDF
+                                           source:ComposeboxInputItemSource::
+                                                      kGalleryPicker]];
+      contextual_search::FileInfo file_info;
+      file_info.mime_type =
+          is_image ? lens::MimeType::kImage : lens::MimeType::kPdf;
+      file_infos.push_back(std::move(file_info));
+    }
+    items_ = collection;
+    manager_.items = items_;
+    ON_CALL(*session_handle_, GetUploadedContextFileInfos())
+        .WillByDefault(testing::Return(file_infos));
+    [manager_ onItemsUpdated];
+    [manager_ onContextChanged];
+  }
+
+  // Returns the UI state computed by the manager.
+  ComposeboxUIInputState* UIState() {
+    return [manager_ computeUIInputStateWithFavicon:nil attachedWebStateIDs:{}];
+  }
+
+  omnibox::SearchboxConfig config_;
+  ComposeboxInputItemCollection* items_;
+};
+
+// Tests that one image in regular search stays in regular search without
+// switching to AI Mode or showing a model.
+TEST_F(ComposeboxInputStateManagerDynamicAimFulfillmentTest,
+       OneImageStaysInRegularSearch) {
+  LoadServerConfig();
+
+  Attach(/*image_count=*/1, /*pdf_count=*/0);
+
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_FALSE([manager_ willFulfillInAIM]);
+  EXPECT_EQ(UIState().activeTool, ComposeboxMode::kRegularSearch);
+  EXPECT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+}
+
+// Tests that attaching a PDF switches to AI Mode with the default model, and
+// AI Mode stays active after the PDF is removed via the carousel.
+TEST_F(ComposeboxInputStateManagerDynamicAimFulfillmentTest,
+       PDFSwitchesToAIModeAndStaysSticky) {
+  LoadServerConfig();
+
+  Attach(/*image_count=*/1, /*pdf_count=*/1);
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
+  EXPECT_TRUE([manager_ willFulfillInAIM]);
+  EXPECT_EQ(manager_.activeModel,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  Attach(/*image_count=*/1, /*pdf_count=*/0);
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
+  EXPECT_TRUE([manager_ willFulfillInAIM]);
+}
+
+// Tests that entering AI Mode from regular search activates AI Mode with the
+// default model, and toggling it off clears sticky AI Mode.
+TEST_F(ComposeboxInputStateManagerDynamicAimFulfillmentTest,
+       EnteringAndLeavingAIModeWithoutAttachments) {
+  LoadServerConfig();
+
+  [manager_ toggleToolMode:omnibox::ToolMode::TOOL_MODE_AIM
+          activationSource:AiModeActivationSource::kToolMenu];
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
+  EXPECT_TRUE([manager_ willFulfillInAIM]);
+  EXPECT_EQ(manager_.activeModel,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  [manager_ toggleToolMode:omnibox::ToolMode::TOOL_MODE_AIM
+          activationSource:AiModeActivationSource::kToolMenu];
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_FALSE([manager_ willFulfillInAIM]);
+  EXPECT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+
+  Attach(/*image_count=*/1, /*pdf_count=*/0);
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_FALSE([manager_ willFulfillInAIM]);
+}
+
+// Tests that toggling AI Mode off removes attachments, clears sticky AI Mode,
+// and lets a subsequent single image stay in regular search.
+TEST_F(ComposeboxInputStateManagerDynamicAimFulfillmentTest,
+       LeavingAIModeClearsAttachmentsAndStickyState) {
+  FakeComposeboxInputStateManagerDelegate* delegate =
+      [[FakeComposeboxInputStateManagerDelegate alloc] init];
+  delegate.onDidChangeMode =
+      ^(ComposeboxMode mode, NSArray<ComposeboxInputItem*>* invalidated) {
+        if (invalidated.count > 0) {
+          Attach(/*image_count=*/0, /*pdf_count=*/0);
+        }
+      };
+  manager_.delegate = delegate;
+  LoadServerConfig();
+  Attach(/*image_count=*/1, /*pdf_count=*/1);
+  ASSERT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
+
+  [manager_ toggleToolMode:omnibox::ToolMode::TOOL_MODE_AIM
+          activationSource:AiModeActivationSource::kToolMenu];
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_EQ(delegate.lastInvalidatedItems.count, 2u);
+  EXPECT_FALSE([manager_ willFulfillInAIM]);
+
+  // A subsequent single image stays in regular search (sticky AIM was cleared).
+  Attach(/*image_count=*/1, /*pdf_count=*/0);
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_FALSE([manager_ willFulfillInAIM]);
+}
+
+// Tests that Create Images without attachments fulfills on the Search results
+// page with no model, and switches to AI Mode fulfillment when an image is
+// attached.
+TEST_F(ComposeboxInputStateManagerDynamicAimFulfillmentTest,
+       CreateImagesRoutesByAttachments) {
+  LoadServerConfig();
+
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
+  EXPECT_FALSE([manager_ willFulfillInAIM]);
+  EXPECT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+
+  Attach(/*image_count=*/1, /*pdf_count=*/0);
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  EXPECT_TRUE([manager_ willFulfillInAIM]);
+  EXPECT_EQ(manager_.activeModel,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+}
+
+// Tests that the in-sheet Cobrowse composebox keeps using AI Mode.
+TEST_F(ComposeboxInputStateManagerDynamicAimFulfillmentTest,
+       CobrowseAlwaysUsesAIMode) {
+  ComposeboxInputStateManager* cobrowse_manager =
+      [[ComposeboxInputStateManager alloc]
+           initWithWebStateList:&web_state_list_
+                    prefService:&pref_service_
+          aimEligibilityService:mock_aim_service_.get()
+                identityManager:identity_test_env_.identity_manager()
+             templateURLService:nullptr
+                  sessionHandle:session_handle_.get()
+                     entrypoint:ComposeboxEntrypoint::kCobrowse
+                    isIncognito:NO];
+  LoadServerConfig();
+
+  EXPECT_TRUE([cobrowse_manager willFulfillInAIM]);
+  [cobrowse_manager disconnect];
 }
