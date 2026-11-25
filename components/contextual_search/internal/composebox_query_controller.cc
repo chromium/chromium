@@ -107,6 +107,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
           data: "Only file data that is explicitly uploaded by the user will "
             "be sent."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "lensfrontend-pa.googleapis.com"
           internal {
             contacts {
               email: "hujasonx@google.com"
