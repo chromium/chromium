@@ -76,13 +76,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   // BaseRenderingContext2D implementation
   bool CanCreateBacking() final;
 
-  // Offscreen canvas doesn't have any notion of image orientation.
-  RespectImageOrientationEnum RespectImageOrientation() const final {
-    return kRespectImageOrientation;
-  }
-
-  Color GetCurrentColor() const final;
-
   MemoryManagedPaintCanvas* GetOrCreatePaintCanvas() final;
 
   void WillDraw(const gfx::Rect& dirty_rect,

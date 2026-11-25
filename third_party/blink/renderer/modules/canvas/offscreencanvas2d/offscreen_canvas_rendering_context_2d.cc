@@ -336,10 +336,6 @@ OffscreenCanvasRenderingContext2D::AsV8OffscreenRenderingContext() {
   return MakeGarbageCollected<V8OffscreenRenderingContext>(this);
 }
 
-Color OffscreenCanvasRenderingContext2D::GetCurrentColor() const {
-  return Color::kBlack;
-}
-
 MemoryManagedPaintCanvas*
 OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   if (isContextLost() || !InitializeBacking()) [[unlikely]] {

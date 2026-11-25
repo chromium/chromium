@@ -35,8 +35,10 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
+#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -126,6 +128,11 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   int Width() const final;
   int Height() const final;
+
+  RespectImageOrientationEnum RespectImageOrientation() const override {
+    return kRespectImageOrientation;
+  }
+  Color GetCurrentColor() const override { return Color::kBlack; }
 
   bool clear_frame() const { return clear_frame_; }
   void set_clear_frame(bool clear_frame) { clear_frame_ = clear_frame; }

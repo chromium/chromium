@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
@@ -129,12 +128,6 @@ class TestRenderingContext2D final
   cc::PaintRecord FlushRecorder() { return Recorder()->ReleaseMainRecording(); }
 
   bool CanCreateBacking() override { return false; }
-
-  RespectImageOrientationEnum RespectImageOrientation() const override {
-    return kRespectImageOrientation;
-  }
-
-  Color GetCurrentColor() const override { return Color::kBlack; }
 
   MemoryManagedPaintCanvas* GetOrCreatePaintCanvas() override {
     return GetPaintCanvas();
