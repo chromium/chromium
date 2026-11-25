@@ -524,8 +524,6 @@ BASE_FEATURE(kForceThirdPartyCookieBlocking,
 
 BASE_FEATURE(kEnableEarlyHintsOnHttp11, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableWebTransportDraft07, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebTransportFineGrainedThrottling,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
