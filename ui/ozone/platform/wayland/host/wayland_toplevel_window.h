@@ -386,6 +386,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   // and may already be tearing down.
   bool hide_deferred_ = false;
 
+  // Set while HideNow() hides children; rejects bubble activation meanwhile.
+  bool hiding_ = false;
+
   raw_ptr<WorkspaceExtensionDelegate> workspace_extension_delegate_ = nullptr;
 
   gfx::ImageSkia initial_icon_;

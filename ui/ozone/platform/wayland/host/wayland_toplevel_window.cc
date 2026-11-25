@@ -224,35 +224,23 @@ void WaylandToplevelWindow::HideNow() {
   }
 
   auto weak_this = AsWeakPtr();
-  // Deactivate the active bubble first so that hiding children doesn't
-  // reactivate this hiding toplevel.
-  if (WaylandBubble* prev = std::exchange(active_bubble_, nullptr)) {
-    ++bubble_activation_epoch_;
-    if (!prev->shutting_down()) {
-      prev->delegate()->OnActivationChanged(false);
-      if (!weak_this || !xdg_toplevel_) {
-        return;
-      }
-    }
+  // Reject bubble activation while hiding so that hiding children runs no
+  // delegate code. Cleared right before `xdg_toplevel_` is reset, which every
+  // early return below with `this` alive implies.
+  hiding_ = true;
+  SetActiveBubble(nullptr);
+  if (!weak_this || !xdg_toplevel_) {
+    return;
   }
   HideChildPopups();
   if (!weak_this || !xdg_toplevel_) {
     return;
   }
   set_child_popup(nullptr);
-  std::vector<base::WeakPtr<WaylandWindow>> bubbles;
-  bubbles.reserve(child_bubbles().size());
   for (WaylandBubble* bubble : child_bubbles()) {
-    bubbles.push_back(bubble->AsWeakPtr());
+    bubble->Hide();
   }
-  for (const auto& bubble : bubbles) {
-    if (bubble) {
-      bubble->Hide();
-    }
-    if (!weak_this || !xdg_toplevel_) {
-      return;
-    }
-  }
+  hiding_ = false;
 
   // Note that the xdg_toplevel object should be destroyed before we touch
   // anything else in order to provide the compositor a good reference point
@@ -642,7 +630,7 @@ void WaylandToplevelWindow::SetActiveBubble(WaylandBubble* new_bubble) {
   // Like Aura activation, a bubble may become active within an unfocused
   // toplevel (e.g. one shown before the compositor activates the toplevel).
   const auto can_activate = [this]() {
-    return !shutting_down() && !hide_deferred_;
+    return !shutting_down() && !hide_deferred_ && !hiding_;
   };
   if (new_bubble) {
     CHECK(new_bubble->activatable());

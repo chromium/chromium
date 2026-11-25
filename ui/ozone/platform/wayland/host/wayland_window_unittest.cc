@@ -7998,6 +7998,34 @@ TEST_P(WaylandWindowTest, WaylandBubbleHideUaf) {
   EXPECT_FALSE(wayland_bubble);
 }
 
+// Hiding a toplevel must not activate bubbles or the toplevel while its child
+// bubbles are hidden.
+TEST_P(WaylandWindowTest, HidingToplevelRejectsBubbleActivation) {
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+  auto wayland_bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(10, 10, 50, 50), &bubble_delegate,
+      window_->GetWidget());
+  ASSERT_TRUE(wayland_bubble);
+  MockWaylandPlatformWindowDelegate other_bubble_delegate(connection_.get());
+  auto other_bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(30, 30, 50, 50),
+      &other_bubble_delegate, window_->GetWidget());
+  ASSERT_TRUE(other_bubble);
+  wayland_bubble->Activate();
+  ASSERT_TRUE(wayland_bubble->IsActive());
+
+  EXPECT_CALL(bubble_delegate, OnActivationChanged(false)).WillOnce([&]() {
+    other_bubble->Activate();
+  });
+  EXPECT_CALL(other_bubble_delegate, OnActivationChanged(_)).Times(0);
+  EXPECT_CALL(delegate_, OnActivationChanged(true)).Times(0);
+
+  window_->Hide();
+  EXPECT_FALSE(other_bubble->IsActive());
+  EXPECT_FALSE(wayland_bubble->IsVisible());
+  EXPECT_FALSE(other_bubble->IsVisible());
+}
+
 // Verifies that when a WaylandBubble is hidden and destroyed during a
 // compositor-initiated parent state transition (such as exiting fullscreen via
 // a window manager shortcut), its wl_subsurface switches to synchronized mode,
