@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WebSearchDelegate;
-import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinatorProvider;
@@ -179,7 +178,6 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.theme.AdjustedTopUiThemeColorProvider;
@@ -2270,22 +2268,15 @@ public class RootUiCoordinator
                             },
                             // Open Quick Delete Dialog callback:
                             () -> {
-                                Profile profile = mProfileSupplier.asNonNull().get();
-                                TabModelSelectorBase tabModelSelector =
-                                        ArchivedTabModelOrchestrator.getForProfile(profile)
-                                                .getTabModelSelector();
-                                assert tabModelSelector != null;
                                 QuickDeleteController quickDeleteController =
-                                        new QuickDeleteController(
+                                        QuickDeleteDelegateImpl.createController(
                                                 mActivity,
-                                                new QuickDeleteDelegateImpl(
-                                                        profile.getOriginalProfile(),
-                                                        mTabSwitcherSupplier),
+                                                mProfileSupplier.asNonNull().get(),
+                                                mTabSwitcherSupplier,
                                                 mModalDialogManagerSupplier.get(),
                                                 assertNonNull(mSnackbarManagerSupplier.get()),
                                                 mLayoutManager,
-                                                mTabModelSelectorSupplier.asNonNull().get(),
-                                                tabModelSelector);
+                                                mTabModelSelectorSupplier.asNonNull().get());
                                 quickDeleteController.showDialog();
                             },
                             TabWindowManagerSingleton::getInstance,

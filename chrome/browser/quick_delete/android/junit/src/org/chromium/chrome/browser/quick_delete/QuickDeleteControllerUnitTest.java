@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,11 +13,16 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.View;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,9 +35,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -40,6 +48,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -51,7 +60,9 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 /** Robolectric unit tests for {@link QuickDeleteController}. */
@@ -73,14 +84,21 @@ public class QuickDeleteControllerUnitTest {
     @Mock private LayoutManager mLayoutManagerMock;
     @Mock private TabRemover mTabRemoverMock;
     @Mock private TabGroupSyncService mTabGroupSyncServiceMock;
+    @Mock private TabRemover mArchivedTabRemoverMock;
+    @Mock private Destroyable mArchivedTabsLeaseMock;
 
     @Captor private ArgumentCaptor<Runnable> mOnDeleteFinishedCaptor;
     @Captor private ArgumentCaptor<Runnable> mOnAnimationEndCaptor;
 
+    @Captor
+    private ArgumentCaptor<TabModelSelectorObserver> mArchivedTabModelSelectorObserverCaptor;
+
     private Activity mActivity;
     private FakeModalDialogManager mModalDialogManager;
     private MockTabModelSelector mTabModelSelector;
+    private MockTabModelSelector mArchivedTabModelSelector;
     private MockTabModel mTabModel;
+    private MockTabModel mArchivedTabModel;
 
     @Before
     public void setUp() {
@@ -103,8 +121,13 @@ public class QuickDeleteControllerUnitTest {
 
         mTabModelSelector =
                 new MockTabModelSelector(mProfileMock, mIncognitoProfileMock, 0, 0, null);
+        mArchivedTabModelSelector =
+                spy(new MockTabModelSelector(mProfileMock, mIncognitoProfileMock, 0, 0, null));
         mTabModel = (MockTabModel) mTabModelSelector.getModel(/* incognito= */ false);
         mTabModel.setTabRemoverForTesting(mTabRemoverMock);
+        mArchivedTabModel =
+                (MockTabModel) mArchivedTabModelSelector.getModel(/* incognito= */ false);
+        mArchivedTabModel.setTabRemoverForTesting(mArchivedTabRemoverMock);
     }
 
     @Test
@@ -114,8 +137,11 @@ public class QuickDeleteControllerUnitTest {
         mModalDialogManager.clickPositiveButton();
 
         verify(mDelegateMock).performQuickDelete(mOnDeleteFinishedCaptor.capture(), anyInt());
+        verify(mArchivedTabsLeaseMock, never()).destroy();
 
         mTabModelSelector.destroy();
+        verify(mArchivedTabsLeaseMock, times(1)).destroy();
+
         mOnDeleteFinishedCaptor.getValue().run();
 
         verify(mPrefServiceMock, never())
@@ -125,6 +151,7 @@ public class QuickDeleteControllerUnitTest {
 
         // Verify destroy() is idempotent.
         controller.destroy();
+        verify(mArchivedTabsLeaseMock, times(1)).destroy();
     }
 
     @Test
@@ -135,9 +162,101 @@ public class QuickDeleteControllerUnitTest {
 
         mTabModelSelector.destroy();
         assertNull(mModalDialogManager.getShownDialogModel());
+        verify(mArchivedTabsLeaseMock, times(1)).destroy();
 
         controller.showDialog();
         assertNull(mModalDialogManager.getShownDialogModel());
+    }
+
+    @Test
+    public void testArchivedTabStateInitialized_RefreshesClosedTabsCount() {
+        QuickDeleteController controller = createController(/* layoutManager= */ null);
+        controller.showDialog();
+
+        View customView =
+                mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
+        Spinner spinner = customView.findViewById(R.id.quick_delete_spinner);
+        spinner.setSelection(1);
+        verify(mQuickDeleteBridgeNativesMock, times(1))
+                .restartCounterForTimePeriod(any(), eq(TimePeriod.LAST_HOUR));
+
+        MockTab archivedTab = mArchivedTabModel.addTab(1);
+        archivedTab.setLastNavigationCommittedTimestampMillis(System.currentTimeMillis());
+        mArchivedTabModelSelector.markTabStateInitialized();
+
+        TextView tabsTitle = customView.findViewById(R.id.quick_delete_tabs_row_title);
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getQuantityString(R.plurals.quick_delete_dialog_tabs_closed_text, 1, 1),
+                tabsTitle.getText().toString());
+        verify(mQuickDeleteBridgeNativesMock, times(1))
+                .restartCounterForTimePeriod(any(), anyInt());
+        controller.destroy();
+    }
+
+    @Test
+    public void testDismissBeforeArchivedTabStateInitialized_RemovesObserverAndReleasesLease() {
+        QuickDeleteController controller = createController(/* layoutManager= */ null);
+        verify(mArchivedTabModelSelector)
+                .addObserver(mArchivedTabModelSelectorObserverCaptor.capture());
+
+        controller.showDialog();
+        mModalDialogManager.dismissDialog(
+                mModalDialogManager.getShownDialogModel(),
+                DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+
+        assertNull(mModalDialogManager.getShownDialogModel());
+        verify(mArchivedTabModelSelector)
+                .removeObserver(mArchivedTabModelSelectorObserverCaptor.getValue());
+        verify(mArchivedTabsLeaseMock, times(1)).destroy();
+
+        controller.destroy();
+        verify(mArchivedTabsLeaseMock, times(1)).destroy();
+    }
+
+    @Test
+    public void testPostDelete_WaitsForArchivedTabStateInitialized() {
+        long now = System.currentTimeMillis();
+        MockTab archivedTab = mArchivedTabModel.addTab(2);
+        archivedTab.setLastNavigationCommittedTimestampMillis(now);
+        startDeletionPendingArchivedInit(now);
+
+        mArchivedTabModelSelector.markTabStateInitialized();
+
+        verify(mTabRemoverMock, times(1)).closeTabs(any(), eq(false));
+        verify(mArchivedTabRemoverMock, times(1)).closeTabs(any(), eq(false));
+        verify(mSnackbarManagerMock, times(1)).showSnackbar(any());
+        verify(mTrackerLockMock, times(1)).release();
+        verify(mArchivedTabsLeaseMock, times(1)).destroy();
+    }
+
+    @Test
+    public void testPostDelete_ArchivedTabModelSelectorDestroyed_ReleasesLeaseWithoutClosing() {
+        startDeletionPendingArchivedInit(System.currentTimeMillis());
+
+        mArchivedTabModelSelector.destroy();
+
+        verify(mTabRemoverMock, times(1)).closeTabs(any(), eq(false));
+        verify(mArchivedTabRemoverMock, never()).closeTabs(any(), anyBoolean());
+        verify(mSnackbarManagerMock, times(1)).showSnackbar(any());
+        verify(mTrackerLockMock, times(1)).release();
+        verify(mArchivedTabsLeaseMock, times(1)).destroy();
+    }
+
+    @Test
+    public void testPostDelete_RegularTabModelSelectorDestroyedWhileWaiting_StillClosesArchived() {
+        long now = System.currentTimeMillis();
+        MockTab archivedTab = mArchivedTabModel.addTab(2);
+        archivedTab.setLastNavigationCommittedTimestampMillis(now);
+        startDeletionPendingArchivedInit(now);
+
+        mTabModelSelector.destroy();
+
+        verify(mArchivedTabsLeaseMock, never()).destroy();
+        mArchivedTabModelSelector.markTabStateInitialized();
+        verify(mArchivedTabRemoverMock, times(1)).closeTabs(any(), eq(false));
+        verify(mArchivedTabsLeaseMock, times(1)).destroy();
     }
 
     @Test
@@ -154,6 +273,7 @@ public class QuickDeleteControllerUnitTest {
                 .when(mDelegateMock)
                 .performQuickDelete(any(), anyInt());
 
+        mArchivedTabModelSelector.markTabStateInitialized();
         QuickDeleteController controller = createController(mLayoutManagerMock);
         controller.showDialog();
         mModalDialogManager.clickPositiveButton();
@@ -178,6 +298,28 @@ public class QuickDeleteControllerUnitTest {
                 mSnackbarManagerMock,
                 layoutManager,
                 mTabModelSelector,
-                /* archivedTabModelSelector= */ null);
+                mArchivedTabModelSelector,
+                mArchivedTabsLeaseMock);
+    }
+
+    private void startDeletionPendingArchivedInit(long now) {
+        doAnswer(
+                        invocation -> {
+                            ((Runnable) invocation.getArgument(0)).run();
+                            return null;
+                        })
+                .when(mDelegateMock)
+                .performQuickDelete(any(), anyInt());
+        MockTab regularTab = mTabModel.addTab(1);
+        regularTab.setLastNavigationCommittedTimestampMillis(now);
+
+        createController(/* layoutManager= */ null).showDialog();
+        mModalDialogManager.clickPositiveButton();
+
+        verify(mTabRemoverMock, times(1)).closeTabs(any(), eq(false));
+        verify(mArchivedTabRemoverMock, never()).closeTabs(any(), anyBoolean());
+        verify(mSnackbarManagerMock, times(1)).showSnackbar(any());
+        verify(mTrackerLockMock, times(1)).release();
+        verify(mArchivedTabsLeaseMock, never()).destroy();
     }
 }

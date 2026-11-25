@@ -22,8 +22,8 @@ class QuickDeleteMediator
     private final Profile mProfile;
     private final QuickDeleteBridge mQuickDeleteBridge;
     private final QuickDeleteTabsFilter mQuickDeleteRegularTabsFilter;
-    // Null when declutter is disabled.
-    private final @Nullable QuickDeleteTabsFilter mQuickDeleteArchivedTabsFilter;
+    // Null when declutter is disabled, in multi-window mode, or after clearArchivedTabsFilter().
+    private @Nullable QuickDeleteTabsFilter mQuickDeleteArchivedTabsFilter;
 
     /**
      * @param propertyModel {@link PropertyModel} associated with the quick delete {@link View}.
@@ -52,28 +52,35 @@ class QuickDeleteMediator
      */
     @Override
     public void onTimePeriodChanged(@TimePeriod int timePeriod) {
-        mQuickDeleteRegularTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
-        if (mQuickDeleteArchivedTabsFilter != null) {
-            mQuickDeleteArchivedTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
-        }
-
         mPropertyModel.set(
                 QuickDeleteProperties.IS_SIGNED_IN, QuickDeleteDelegate.isSignedIn(mProfile));
-
-        // Disable tabs if the user is in multi-window mode.
-        // TODO(b/333036591): Remove this check once tab closure works properly across
-        // multi-instances.
-        if (!mPropertyModel.get(QuickDeleteProperties.HAS_MULTI_WINDOWS)) {
-            mPropertyModel.set(
-                    QuickDeleteProperties.CLOSED_TABS_COUNT, getCountOfTabsToBeDeleted());
-        }
-
         mPropertyModel.set(QuickDeleteProperties.TIME_PERIOD, timePeriod);
+        refreshClosedTabsCount();
 
         mPropertyModel.set(QuickDeleteProperties.IS_SYNCING_HISTORY, false);
         mPropertyModel.set(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING, true);
         // This is an async call which would update the browsing history row.
         mQuickDeleteBridge.restartCounterForTimePeriod(timePeriod);
+    }
+
+    void clearArchivedTabsFilter() {
+        mQuickDeleteArchivedTabsFilter = null;
+    }
+
+    void refreshClosedTabsCount() {
+        // Disable tabs if the user is in multi-window mode.
+        // TODO(b/333036591): Remove this check once tab closure works properly across
+        // multi-instances.
+        if (!mPropertyModel.getAllSetProperties().contains(QuickDeleteProperties.TIME_PERIOD)
+                || mPropertyModel.get(QuickDeleteProperties.HAS_MULTI_WINDOWS)) {
+            return;
+        }
+        @TimePeriod int timePeriod = mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD);
+        mQuickDeleteRegularTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
+        if (mQuickDeleteArchivedTabsFilter != null) {
+            mQuickDeleteArchivedTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
+        }
+        mPropertyModel.set(QuickDeleteProperties.CLOSED_TABS_COUNT, getCountOfTabsToBeDeleted());
     }
 
     /**

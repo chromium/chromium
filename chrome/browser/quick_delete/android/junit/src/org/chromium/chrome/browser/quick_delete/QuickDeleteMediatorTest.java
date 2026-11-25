@@ -8,8 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -122,5 +125,52 @@ public class QuickDeleteMediatorTest {
         assertFalse(mPropertyModel.get(QuickDeleteProperties.IS_SYNCING_HISTORY));
         verify(mQuickDeleteBridgeNatives)
                 .restartCounterForTimePeriod(any(), eq(TimePeriod.LAST_15_MINUTES));
+    }
+
+    @Test
+    public void testRefreshClosedTabsCount() {
+        setSignedInStatus(true);
+        when(mTabsListMock.size()).thenReturn(1);
+        when(mQuickDeleteTabsFilterMock.getListOfTabsFilteredToBeClosed())
+                .thenReturn(mTabsListMock);
+        when(mArchivedTabsListMock.size()).thenReturn(0, 2);
+        when(mQuickDeleteArchivedTabsFilterMock.getListOfTabsFilteredToBeClosed())
+                .thenReturn(mArchivedTabsListMock);
+        mQuickDeleteMediator =
+                new QuickDeleteMediator(
+                        mPropertyModel,
+                        mProfileMock,
+                        mQuickDeleteTabsFilterMock,
+                        mQuickDeleteArchivedTabsFilterMock);
+
+        // No-op before TIME_PERIOD is set.
+        mQuickDeleteMediator.refreshClosedTabsCount();
+        verify(mQuickDeleteTabsFilterMock, never()).prepareListOfTabsToBeClosed(anyInt());
+        verify(mQuickDeleteArchivedTabsFilterMock, never()).prepareListOfTabsToBeClosed(anyInt());
+
+        // No-op in multi-window mode.
+        PropertyModel multiWindowModel =
+                new PropertyModel.Builder(QuickDeleteProperties.ALL_KEYS)
+                        .with(QuickDeleteProperties.TIME_PERIOD, TimePeriod.LAST_15_MINUTES)
+                        .with(QuickDeleteProperties.HAS_MULTI_WINDOWS, true)
+                        .build();
+        new QuickDeleteMediator(
+                        multiWindowModel,
+                        mProfileMock,
+                        mQuickDeleteTabsFilterMock,
+                        mQuickDeleteArchivedTabsFilterMock)
+                .refreshClosedTabsCount();
+        verify(mQuickDeleteTabsFilterMock, never()).prepareListOfTabsToBeClosed(anyInt());
+
+        mQuickDeleteMediator.onTimePeriodChanged(TimePeriod.LAST_15_MINUTES);
+        assertEquals(1, mPropertyModel.get(QuickDeleteProperties.CLOSED_TABS_COUNT));
+
+        mQuickDeleteMediator.refreshClosedTabsCount();
+        assertEquals(3, mPropertyModel.get(QuickDeleteProperties.CLOSED_TABS_COUNT));
+
+        mQuickDeleteMediator.clearArchivedTabsFilter();
+        mQuickDeleteMediator.refreshClosedTabsCount();
+        assertEquals(1, mPropertyModel.get(QuickDeleteProperties.CLOSED_TABS_COUNT));
+        verify(mQuickDeleteBridgeNatives, times(1)).restartCounterForTimePeriod(any(), anyInt());
     }
 }

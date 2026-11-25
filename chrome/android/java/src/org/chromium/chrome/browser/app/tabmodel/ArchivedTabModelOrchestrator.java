@@ -114,7 +114,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
         LeaseReason.DRAG_TO_ARCHIVE,
         LeaseReason.SEARCH_OVERLAY,
         LeaseReason.FOR_TESTING,
-        LeaseReason.UNDO_CLOSE_ALL_TABS
+        LeaseReason.UNDO_CLOSE_ALL_TABS,
+        LeaseReason.QUICK_DELETE
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LeaseReason {
@@ -127,6 +128,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
         int SEARCH_OVERLAY = 6;
         int FOR_TESTING = 7;
         int UNDO_CLOSE_ALL_TABS = 8;
+        int QUICK_DELETE = 9;
     }
 
     private static final int GRACE_PERIOD_DELAY_MS = 5000;

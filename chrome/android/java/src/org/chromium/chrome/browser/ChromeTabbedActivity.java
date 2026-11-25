@@ -5220,15 +5220,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private QuickDeleteController createQuickDeleteController() {
         Profile profile = assertNonNull(mTabModelProfileSupplier.get());
         var modalDialogManager = assertNonNull(getModalDialogManager());
-        return new QuickDeleteController(
+        return QuickDeleteDelegateImpl.createController(
                 this,
-                new QuickDeleteDelegateImpl(profile.getOriginalProfile(), mTabSwitcherSupplier),
+                profile,
+                mTabSwitcherSupplier,
                 modalDialogManager,
                 getSnackbarManager(),
                 getLayoutManager(),
-                mTabModelSelector,
-                ArchivedTabModelOrchestrator.getForProfile(profile.getOriginalProfile())
-                        .getTabModelSelector());
+                mTabModelSelector);
     }
 
     @Contract("null -> false")

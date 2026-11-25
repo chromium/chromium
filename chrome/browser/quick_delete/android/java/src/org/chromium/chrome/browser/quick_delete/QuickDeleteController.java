@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -50,14 +51,11 @@ public class QuickDeleteController {
     private final Context mContext;
     private final QuickDeleteDelegate mDelegate;
     private final QuickDeleteTabsFilter mDeleteRegularTabsFilter;
-    // Null when declutter is disabled.
-    private final @Nullable QuickDeleteTabsFilter mDeleteArchivedTabsFilter;
     private final TabModelSelector mTabModelSelector;
     private final SnackbarManager mSnackbarManager;
     private final @Nullable LayoutManager mLayoutManager;
     private final Profile mProfile;
     private final TabModel mTabModel;
-    private final QuickDeleteMediator mQuickDeleteMediator;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final QuickDeleteDialogDelegate mDialogDelegate;
@@ -69,8 +67,31 @@ public class QuickDeleteController {
                     destroy();
                 }
             };
+    private final TabModelSelectorObserver mArchivedTabModelSelectorObserver =
+            new TabModelSelectorObserver() {
+                @Override
+                public void onTabStateInitialized() {
+                    if (mQuickDeleteMediator != null) {
+                        mQuickDeleteMediator.refreshClosedTabsCount();
+                    }
+                }
+
+                @Override
+                public void onDestroyed() {
+                    releaseArchivedTabModel();
+                    if (mQuickDeleteMediator != null) {
+                        mQuickDeleteMediator.refreshClosedTabsCount();
+                    }
+                }
+            };
+    private @Nullable QuickDeleteMediator mQuickDeleteMediator;
+    // Null when declutter is disabled, in multi-window mode, when archived tab models are empty or
+    // uninitialized, or after releaseArchivedTabModel().
+    private @Nullable QuickDeleteTabsFilter mDeleteArchivedTabsFilter;
+    private @Nullable TabModelSelector mArchivedTabModelSelector;
     private boolean mIsDestroyed;
     private @Nullable DisplayLockHandle mTrackerLock;
+    private @Nullable Destroyable mArchivedTabsLease;
 
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
@@ -82,6 +103,9 @@ public class QuickDeleteController {
      * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
      * @param tabModelSelector {@link TabModelSelector} for regular tabs.
      * @param archivedTabModelSelector The {@link TabModelSelector} for archived tabs.
+     * @param archivedTabsLease Lease keeping the archived tab model alive while Quick Delete
+     *     finishes or the archived tab model is destroyed. Ownership is transferred to this
+     *     controller.
      */
     public QuickDeleteController(
             Context context,
@@ -90,12 +114,15 @@ public class QuickDeleteController {
             SnackbarManager snackbarManager,
             @Nullable LayoutManager layoutManager,
             TabModelSelector tabModelSelector,
-            @Nullable TabModelSelector archivedTabModelSelector) {
+            @Nullable TabModelSelector archivedTabModelSelector,
+            @Nullable Destroyable archivedTabsLease) {
         mContext = context;
         mDelegate = delegate;
         mSnackbarManager = snackbarManager;
         mLayoutManager = layoutManager;
         mTabModelSelector = tabModelSelector;
+        mArchivedTabModelSelector = archivedTabModelSelector;
+        mArchivedTabsLease = archivedTabsLease;
 
         mTabModel = tabModelSelector.getModel(/* incognito= */ false);
         mDeleteRegularTabsFilter = new QuickDeleteTabsFilter(mTabModel);
@@ -124,12 +151,13 @@ public class QuickDeleteController {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mPropertyModel, quickDeleteView, QuickDeleteViewBinder::bind);
-        mQuickDeleteMediator =
+        QuickDeleteMediator mediator =
                 new QuickDeleteMediator(
                         mPropertyModel,
                         mProfile,
                         mDeleteRegularTabsFilter,
                         mDeleteArchivedTabsFilter);
+        mQuickDeleteMediator = mediator;
 
         mDialogDelegate =
                 new QuickDeleteDialogDelegate(
@@ -138,23 +166,34 @@ public class QuickDeleteController {
                         modalDialogManager,
                         this::onDialogDismissed,
                         tabModelSelector,
-                        mQuickDeleteMediator);
+                        mediator);
 
         mTabModelSelector.addObserver(mRegularTabModelSelectorObserver);
+        if (archivedTabModelSelector != null) {
+            archivedTabModelSelector.addObserver(mArchivedTabModelSelectorObserver);
+        }
     }
 
     /** Destroys the controller and cancels any in-flight deletion callbacks. */
     public void destroy() {
         if (mIsDestroyed) return;
         mIsDestroyed = true;
+        releaseArchivedTabModel();
         mCallbackController.destroy();
         mTabModelSelector.removeObserver(mRegularTabModelSelectorObserver);
         mDialogDelegate.dismissDialog(DialogDismissalCause.ACTIVITY_DESTROYED);
         mPropertyModelChangeProcessor.destroy();
-        mQuickDeleteMediator.destroy();
+        destroyMediator();
         if (mTrackerLock != null) {
             mTrackerLock.release();
             mTrackerLock = null;
+        }
+    }
+
+    private void destroyMediator() {
+        if (mQuickDeleteMediator != null) {
+            mQuickDeleteMediator.destroy();
+            mQuickDeleteMediator = null;
         }
     }
 
@@ -174,6 +213,7 @@ public class QuickDeleteController {
                 @TimePeriod int timePeriod = mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD);
                 boolean isTabClosureDisabled =
                         mPropertyModel.get(QuickDeleteProperties.HAS_MULTI_WINDOWS);
+                destroyMediator();
 
                 mDelegate.performQuickDelete(
                         mCallbackController.makeCancelable(
@@ -221,11 +261,24 @@ public class QuickDeleteController {
         }
     }
 
+    private void releaseArchivedTabModel() {
+        if (mArchivedTabModelSelector != null) {
+            mArchivedTabModelSelector.removeObserver(mArchivedTabModelSelectorObserver);
+            mArchivedTabModelSelector = null;
+        }
+        mDeleteArchivedTabsFilter = null;
+        if (mQuickDeleteMediator != null) {
+            mQuickDeleteMediator.clearArchivedTabsFilter();
+        }
+        if (mArchivedTabsLease != null) {
+            Destroyable lease = mArchivedTabsLease;
+            mArchivedTabsLease = null;
+            lease.destroy();
+        }
+    }
+
     private void maybeShowQuickDeleteAnimation(@TimePeriod int timePeriod) {
         mDeleteRegularTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
-        if (mDeleteArchivedTabsFilter != null) {
-            mDeleteArchivedTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
-        }
         boolean isTabModelEmpty = mTabModel.getCount() == 0;
         // If the tab switcher is not displayed, skip the animation.
         boolean isTabSwitcherVisible =
@@ -245,11 +298,52 @@ public class QuickDeleteController {
     }
 
     private void closeTabsAndShowPostDeleteFeedback(@TimePeriod int timePeriod) {
+        closeArchivedTabsOrDeferUntilInitialized(timePeriod);
         mDeleteRegularTabsFilter.closeTabsFilteredForQuickDelete();
-        if (mDeleteArchivedTabsFilter != null) {
-            mDeleteArchivedTabsFilter.closeTabsFilteredForQuickDelete();
-        }
+        if (mIsDestroyed) return;
         showPostDeleteFeedback(timePeriod);
+    }
+
+    private void closeArchivedTabsOrDeferUntilInitialized(@TimePeriod int timePeriod) {
+        if (mArchivedTabModelSelector == null || mDeleteArchivedTabsFilter == null) return;
+        if (mArchivedTabModelSelector.isTabStateInitialized()) {
+            mDeleteArchivedTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
+            mDeleteArchivedTabsFilter.closeTabsFilteredForQuickDelete();
+            return;
+        }
+        // Detach archived tab closure and lease ownership from this controller so Activity teardown
+        // (e.g. shouldCloseAppWithZeroTabs() after closing regular tabs) cannot cancel it.
+        TabModelSelector archivedSelector = mArchivedTabModelSelector;
+        QuickDeleteTabsFilter archivedFilter = mDeleteArchivedTabsFilter;
+        Destroyable lease = mArchivedTabsLease;
+        archivedSelector.removeObserver(mArchivedTabModelSelectorObserver);
+        mArchivedTabModelSelector = null;
+        mDeleteArchivedTabsFilter = null;
+        mArchivedTabsLease = null;
+        closeArchivedTabsWhenInitialized(archivedSelector, archivedFilter, lease, timePeriod);
+    }
+
+    private static void closeArchivedTabsWhenInitialized(
+            TabModelSelector archivedSelector,
+            QuickDeleteTabsFilter archivedFilter,
+            @Nullable Destroyable lease,
+            @TimePeriod int timePeriod) {
+        archivedSelector.addObserver(
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabStateInitialized() {
+                        archivedSelector.removeObserver(this);
+                        archivedFilter.prepareListOfTabsToBeClosed(timePeriod);
+                        archivedFilter.closeTabsFilteredForQuickDelete();
+                        if (lease != null) lease.destroy();
+                    }
+
+                    @Override
+                    public void onDestroyed() {
+                        archivedSelector.removeObserver(this);
+                        if (lease != null) lease.destroy();
+                    }
+                });
     }
 
     private void showPostDeleteFeedback(@TimePeriod int timePeriod) {
