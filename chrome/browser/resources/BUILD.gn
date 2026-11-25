@@ -171,10 +171,6 @@ group("resources") {
     ]
   }
 
-  if (enable_on_device_translation && !is_chromeos) {
-    public_deps += [ "on_device_translation_internals:resources" ]
-  }
-
   if (!is_android && !is_chromeos) {
     public_deps += [
       "default_browser/default_browser_modal:resources",
@@ -516,6 +512,10 @@ group("dev_ui_resources") {
     public_deps += [ "//chrome/browser/resources/sandbox_internals:resources" ]
   }
 
+  if (enable_on_device_translation && !is_chromeos) {
+    public_deps += [ "on_device_translation_internals:resources" ]
+  }
+
   if (enable_session_service) {
     public_deps += [ "tab_strip_internals:resources" ]
   }
@@ -602,6 +602,11 @@ repack("dev_ui_paks") {
 
   if (is_android || is_linux || is_chromeos || is_win) {
     sources += [ "$root_gen_dir/chrome/sandbox_internals_resources.pak" ]
+  }
+
+  if (enable_on_device_translation && !is_chromeos) {
+    sources +=
+        [ "$root_gen_dir/chrome/on_device_translation_internals_resources.pak" ]
   }
 
   if (enable_session_service) {

@@ -14,6 +14,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
+#include "components/on_device_translation/buildflags/buildflags.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "components/private_ai/private_ai_internals/webui/url_constants.h"
 #include "components/webui/regional_capabilities_internals/constants.h"
@@ -58,6 +59,9 @@ bool IsWebUiHostInDevUiDfm(const std::string& host) {
          host == chrome::kChromeUINetExportHost ||
          host == chrome::kChromeUINetInternalsHost ||
          host == chrome::kChromeUIOmniboxInternalsHost ||
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+         host == chrome::kChromeUIOnDeviceTranslationInternalsHost ||
+#endif
          host == chrome::kChromeUIPasswordManagerInternalsHost ||
          host == chrome::kChromeUIPolicyHost ||
          host == chrome::kChromeUIPredictorsHost ||
