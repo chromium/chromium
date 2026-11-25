@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/document_suggestions_service.h"
 #include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -298,7 +299,7 @@ GURL AddAimInputStateParamsToEndpointUrl(
   if (search_terms_args.input_state.active_tool !=
       omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
     // Override IMAGE_GEN tool mode if image gen upload is active.
-    omnibox::ToolMode tool_mode =
+    omnibox::ToolKey tool_mode =
         search_terms_args.input_state.image_gen_upload_active
             ? omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD
             : search_terms_args.input_state.active_tool;

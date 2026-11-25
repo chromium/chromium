@@ -63,7 +63,7 @@ void MergeParams(
 
 // Returns the config for `tool`, or null if there's none.
 const omnibox::ToolConfig* FindToolConfig(const omnibox::InputState& state,
-                                          omnibox::ToolMode tool) {
+                                          omnibox::ToolKey tool) {
   auto it =
       std::ranges::find(state.tool_configs, tool, &omnibox::ToolConfig::tool);
   return it != state.tool_configs.end() ? &*it : nullptr;
@@ -71,7 +71,7 @@ const omnibox::ToolConfig* FindToolConfig(const omnibox::InputState& state,
 
 // Returns the config for `model`, or null if there's none.
 const omnibox::ModelConfig* FindModelConfig(const omnibox::InputState& state,
-                                            omnibox::ModelMode model) {
+                                            omnibox::ModelKey model) {
   auto it = std::ranges::find(state.model_configs, model,
                               &omnibox::ModelConfig::model);
   return it != state.model_configs.end() ? &*it : nullptr;

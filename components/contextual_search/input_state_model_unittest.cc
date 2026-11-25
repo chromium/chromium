@@ -277,7 +277,7 @@ TEST_F(InputStateModelTest, TestSubscribeAndNotify) {
 
   EXPECT_CALL(mock_subscriber, Run(testing::_)).Times(1);
   // Setting a tool notifies subscribers.
-  input_state_model_->SetActiveTool(ToolMode::TOOL_MODE_UNSPECIFIED);
+  input_state_model_->SetActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
 }
 
 TEST_F(InputStateModelTest, DefaultToFirstAllowedModel) {
@@ -2298,7 +2298,7 @@ class InputStateModelDynamicAimTest : public InputStateModelTest {
   bool WillFulfillInAim() {
     return input_state_model_->GetInputState().will_fulfill_in_aim;
   }
-  omnibox::ModelMode ActiveModel() {
+  omnibox::ModelKey ActiveModel() {
     return input_state_model_->GetInputState().active_model;
   }
 };

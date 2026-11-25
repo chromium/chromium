@@ -12,13 +12,9 @@
 #include <string_view>
 #include <vector>
 
-#include "third_party/omnibox_proto/model_mode.pb.h"
+#include "components/omnibox/common/input_state.h"
 
 class GURL;
-
-namespace omnibox {
-struct InputState;
-}  // namespace omnibox
 
 // Routes a composebox query to AI Mode (AIM) or the Search results page (SRP)
 // when `omnibox::kDynamicAimFulfillment` is enabled.
@@ -95,7 +91,7 @@ struct FulfillmentDecision {
   // Defaults to AIM, today's behavior for every query.
   bool will_fulfill_in_aim = true;
   // Model to show; unspecified for SRP.
-  omnibox::ModelMode model = omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
+  omnibox::ModelKey model = omnibox::kUnspecifiedModelKey;
   // Params for the search URL.
   UrlParams url_params;
 };

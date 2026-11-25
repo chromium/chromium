@@ -216,8 +216,8 @@ AndroidNonZPSSection::AndroidNonZPSSection(
 AndroidComposeboxNonZPSSection::AndroidComposeboxNonZPSSection(
     const omnibox::GroupConfigMap& group_configs,
     size_t num_contextual_attachments,
-    omnibox::ToolMode tool_mode)
-    : Section(tool_mode == omnibox::ToolMode::TOOL_MODE_UNSPECIFIED &&
+    omnibox::ToolKey tool_mode)
+    : Section(tool_mode == omnibox::kUnspecifiedToolKey &&
                       num_contextual_attachments == 0
                   ? 15
                   : 1,

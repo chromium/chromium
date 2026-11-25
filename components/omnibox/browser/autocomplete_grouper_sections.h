@@ -11,8 +11,8 @@
 #include "components/omnibox/browser/autocomplete_grouper_groups.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
-#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 class Section;
 using Groups = std::vector<Group>;
@@ -119,7 +119,7 @@ class AndroidComposeboxNonZPSSection : public Section {
   explicit AndroidComposeboxNonZPSSection(
       const omnibox::GroupConfigMap& group_configs,
       size_t num_contextual_attachments = 0,
-      omnibox::ToolMode tool_mode = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+      omnibox::ToolKey tool_mode = omnibox::kUnspecifiedToolKey);
 };
 
 // Android prefix section for Hub search (ZPS).

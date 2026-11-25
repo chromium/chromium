@@ -26,13 +26,17 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "net/base/url_util.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/rule_set.pb.h"
 #include "third_party/omnibox_proto/tool_config.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "url/gurl.h"
 
 namespace contextual_search {
 
+using omnibox::ModelKey;
 using omnibox::SearchboxConfig;
+using omnibox::ToolKey;
 
 namespace {
 
@@ -140,15 +144,15 @@ void MaybePopulateDriveInputTypeRule(omnibox::SearchboxConfig* config) {
 constexpr char kUdmParamKey[] = "udm";
 constexpr char kNemParamKey[] = "nem";
 
-std::optional<omnibox::ModelMode> GetActiveModelFromUrl(
+std::optional<omnibox::ModelKey> GetActiveModelFromUrl(
     const GURL& active_url,
     const std::vector<omnibox::ModelConfig>& model_configs,
-    const std::vector<omnibox::ModelMode>& allowed_models) {
+    const std::vector<omnibox::ModelKey>& allowed_models) {
   if (!active_url.is_valid() || !active_url.has_query()) {
     return std::nullopt;
   }
 
-  std::optional<omnibox::ModelMode> best_model = std::nullopt;
+  std::optional<omnibox::ModelKey> best_model = std::nullopt;
   size_t max_matched_params = 0;
 
   for (const auto& model_config : model_configs) {
@@ -182,15 +186,15 @@ std::optional<omnibox::ModelMode> GetActiveModelFromUrl(
   return best_model;
 }
 
-std::optional<omnibox::ToolMode> GetActiveToolFromUrl(
+std::optional<omnibox::ToolKey> GetActiveToolFromUrl(
     const GURL& active_url,
     const std::vector<omnibox::ToolConfig>& tool_configs,
-    const std::vector<omnibox::ToolMode>& allowed_tools) {
+    const std::vector<omnibox::ToolKey>& allowed_tools) {
   if (!active_url.is_valid() || !active_url.has_query()) {
     return std::nullopt;
   }
 
-  std::optional<omnibox::ToolMode> best_tool = std::nullopt;
+  std::optional<omnibox::ToolKey> best_tool = std::nullopt;
   size_t max_matched_params = 0;
   // `GetAdditionalQueryParams()` drops a tool's `udm` when a model sets `nem`.
   const bool url_has_nem =
@@ -463,10 +467,10 @@ bool InputStateModel::IsConfigPopulated(
 }
 
 // static
-std::vector<ToolMode> InputStateModel::GetAllowedTools(
+std::vector<ToolKey> InputStateModel::GetAllowedTools(
     const omnibox::SearchboxConfig& config,
     bool is_off_the_record) {
-  std::vector<ToolMode> allowed_tools;
+  std::vector<ToolKey> allowed_tools;
   allowed_tools.reserve(config.tool_configs().size());
   for (const auto& tool_config : config.tool_configs()) {
     if (tool_config.hide_from_menu()) {
@@ -543,7 +547,7 @@ std::vector<omnibox::InputType> InputStateModel::GetEffectiveInputTypes()
         is_browser_tab_allowed = false;
       }
     }
-    const ModelMode rules_model = GetModelForRules();
+    const ModelKey rules_model = GetModelForRules();
     if (rules_model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
       const omnibox::ModelRule* rule = GetModelRule(rules_model);
       if (!rule || (!rule->allow_all_input_types() &&
@@ -594,7 +598,7 @@ void InputStateModel::NotifySubscribers() {
   subscribers_.Notify(state_);
 }
 
-void InputStateModel::SetActiveTool(ToolMode tool) {
+void InputStateModel::SetActiveTool(ToolKey tool) {
   if (tool != state_.active_tool) {
     user_modified_tool_in_thread_ = true;
   }
@@ -604,7 +608,7 @@ void InputStateModel::SetActiveTool(ToolMode tool) {
   UpdateSelectedState(tool, state_.active_model);
 }
 
-void InputStateModel::SetActiveModel(ModelMode model) {
+void InputStateModel::SetActiveModel(ModelKey model) {
   if (dynamic_aim_fulfillment_enabled_) {
     // The page doesn't auto-select a model in this mode, so a model set by the
     // page (e.g. from the model menu) means AI Mode, and clearing it (e.g. on
@@ -633,7 +637,7 @@ void InputStateModel::UpdateStateFromUrl(const GURL& url) {
     user_modified_tool_in_thread_ = false;
   }
 
-  ToolMode new_tool = state_.active_tool;
+  ToolKey new_tool = state_.active_tool;
 
   // If the user has modified the tool in the thread, do not use tool from URL
   // params until user changes the thread, as that will dirty the tool state
@@ -641,12 +645,12 @@ void InputStateModel::UpdateStateFromUrl(const GURL& url) {
   if (matched_tool.has_value() && !user_modified_tool_in_thread_) {
     new_tool = *matched_tool;
   } else if (thread_changed) {
-    new_tool = ToolMode::TOOL_MODE_UNSPECIFIED;
+    new_tool = omnibox::kUnspecifiedToolKey;
   }
 
   auto matched_model =
       GetActiveModelFromUrl(url, state_.model_configs, state_.allowed_models);
-  ModelMode new_model = matched_model.value_or(state_.active_model);
+  ModelKey new_model = matched_model.value_or(state_.active_model);
 
   state_.is_canvas_query_submitted =
       (new_tool == omnibox::ToolMode::TOOL_MODE_CANVAS);
@@ -677,7 +681,7 @@ void InputStateModel::OnContextChanged() {
 }
 
 void InputStateModel::SetPermanentlyDisabledTools(
-    const std::vector<ToolMode>& tools) {
+    const std::vector<ToolKey>& tools) {
   permanently_disabled_tools_ = tools;
   UpdateDisabledState();
   NotifySubscribers();
@@ -707,7 +711,7 @@ void InputStateModel::TogglePermanentlyDisabledInputType(InputType input_type,
   }
 }
 
-void InputStateModel::UpdateSelectedState(ToolMode tool, ModelMode model) {
+void InputStateModel::UpdateSelectedState(ToolKey tool, ModelKey model) {
   state_.active_model = model;
   state_.image_gen_upload_active = false;
 
@@ -778,7 +782,7 @@ bool InputStateModel::IsSearchContentSharingEnabled() const {
              contextual_search::SearchContentSharingSettingsValue::kEnabled);
 }
 
-const omnibox::ModelRule* InputStateModel::GetModelRule(ModelMode model) const {
+const omnibox::ModelRule* InputStateModel::GetModelRule(ModelKey model) const {
   auto it = std::find_if(state_.model_configs.begin(),
                          state_.model_configs.end(), [&](const auto& config) {
                            return config.model() == model && config.has_rule();
@@ -790,7 +794,7 @@ const omnibox::ModelRule* InputStateModel::GetModelRule(ModelMode model) const {
   return nullptr;
 }
 
-ModelMode InputStateModel::GetModelForRules() const {
+ModelKey InputStateModel::GetModelForRules() const {
   if (dynamic_aim_fulfillment_enabled_ &&
       state_.active_model == omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
     return state_.GetDefaultModel();
@@ -798,7 +802,7 @@ ModelMode InputStateModel::GetModelForRules() const {
   return state_.active_model;
 }
 
-const omnibox::ToolRule* InputStateModel::GetToolRule(ToolMode tool) const {
+const omnibox::ToolRule* InputStateModel::GetToolRule(ToolKey tool) const {
   auto it = std::find_if(state_.tool_configs.begin(), state_.tool_configs.end(),
                          [&](const auto& config) {
                            return config.tool() == tool && config.has_rule();
@@ -817,7 +821,7 @@ void InputStateModel::UpdateDisabledTools() {
   // - Incompatible with the current inputs.
   state_.disabled_tools.clear();
   state_.disabled_tools.reserve(state_.allowed_tools.size());
-  const ModelMode rules_model = GetModelForRules();
+  const ModelKey rules_model = GetModelForRules();
   const omnibox::ModelRule* model_rule = GetModelRule(rules_model);
   const auto effective_inputs = GetEffectiveInputTypes();
   for (const auto& tool : state_.allowed_tools) {
@@ -902,7 +906,7 @@ void InputStateModel::UpdateDisabledInputTypes() {
     current_input_counts[input_type]++;
   }
 
-  const ModelMode rules_model = GetModelForRules();
+  const ModelKey rules_model = GetModelForRules();
   const omnibox::ModelRule* model_rule = GetModelRule(rules_model);
   const omnibox::ToolRule* active_tool_rule = GetToolRule(state_.active_tool);
 

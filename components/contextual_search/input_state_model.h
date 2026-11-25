@@ -18,9 +18,7 @@
 #include "components/omnibox/common/input_state.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
-#include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
-#include "third_party/omnibox_proto/tool_mode.pb.h"
 
 class GURL;
 class PrefService;
@@ -28,9 +26,7 @@ namespace contextual_search {
 
 using omnibox::InputState;
 using omnibox::InputType;
-using omnibox::ModelMode;
 using omnibox::SearchboxConfig;
-using omnibox::ToolMode;
 
 // Enum values are persisted to preferences (as integers). Do not reorder,
 // delete, or reuse values.
@@ -77,7 +73,7 @@ class InputStateModel {
   // the tools that end up in `InputState::allowed_tools`. This is independent
   // of any session state, so it can be used by surfaces that need to know
   // which tools are available before a session is started.
-  static std::vector<ToolMode> GetAllowedTools(
+  static std::vector<omnibox::ToolKey> GetAllowedTools(
       const omnibox::SearchboxConfig& config,
       bool is_off_the_record);
 
@@ -103,10 +99,10 @@ class InputStateModel {
                         bool browser_identity_matches_aim_identity);
 
   // Set a new tool.
-  void SetActiveTool(ToolMode tool);
+  void SetActiveTool(omnibox::ToolKey tool);
 
   // Set a new model.
-  void SetActiveModel(ModelMode model);
+  void SetActiveModel(omnibox::ModelKey model);
   void UpdateStateFromUrl(const GURL& url);
 
   // Called when an input of type `InputType` is added or deleted.
@@ -118,7 +114,7 @@ class InputStateModel {
   bool IsSmartTabSharingActive() const { return is_smart_tab_sharing_active_; }
 
   // Sets the tools that should be forced to be disabled.
-  void SetPermanentlyDisabledTools(const std::vector<ToolMode>& tools);
+  void SetPermanentlyDisabledTools(const std::vector<omnibox::ToolKey>& tools);
 
   // Sets the input types that should be forced to be disabled.
   void SetPermanentlyDisabledInputTypes(
@@ -198,7 +194,7 @@ class InputStateModel {
   void NotifySubscribers();
 
   // Update the current value of `state_` based on new tool or model.
-  void UpdateSelectedState(ToolMode tool, ModelMode model);
+  void UpdateSelectedState(omnibox::ToolKey tool, omnibox::ModelKey model);
 
   // Recomputes routing (`state_.will_fulfill_in_aim` and the shown model), then
   // the allowed input types and the disabled tools, models, and inputs.
@@ -237,15 +233,15 @@ class InputStateModel {
   void UpdateHintText();
 
   // Returns the rule for a given `model`.
-  const omnibox::ModelRule* GetModelRule(ModelMode model) const;
+  const omnibox::ModelRule* GetModelRule(omnibox::ModelKey model) const;
 
   // Returns the model whose rule limits tools and inputs. With dynamic AIM
   // fulfillment and no model shown (headed to SRP), that's the default model,
   // since routing picks it when the query switches to AI Mode.
-  ModelMode GetModelForRules() const;
+  omnibox::ModelKey GetModelForRules() const;
 
   // Returns a rule for a given `tool`.
-  const omnibox::ToolRule* GetToolRule(ToolMode tool) const;
+  const omnibox::ToolRule* GetToolRule(omnibox::ToolKey tool) const;
 
   // Repopulates rules, tools, and models from `config`.
   void PopulateConfig(const omnibox::SearchboxConfig& config);
@@ -273,7 +269,7 @@ class InputStateModel {
 
   // Stores tools that are permanently disabled by an external trigger and must
   // persist through state updates. Persists after Initialize() is called.
-  std::vector<ToolMode> permanently_disabled_tools_;
+  std::vector<omnibox::ToolKey> permanently_disabled_tools_;
   // Stores input_types that are permanently disabled by an external trigger and
   // must persist through state updates. Persists after Initialize() is called.
   std::vector<InputType> permanently_disabled_input_types_;
