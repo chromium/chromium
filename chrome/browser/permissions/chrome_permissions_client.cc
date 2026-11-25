@@ -5,6 +5,7 @@
 #include "chrome/browser/permissions/chrome_permissions_client.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <optional>
 #include <vector>
 
@@ -64,6 +65,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/google/core/common/google_util.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
@@ -79,7 +81,6 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/navigation_controller.h"
@@ -247,25 +248,34 @@ bool ShouldShowInfobarOnPromptResolved(
   return true;
 }
 
-void ShowInfobar(content::WebContents* web_contents) {
+bool ShowInfobar(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
   if (infobars::IsInfoBarMigrated(
           infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)) {
     auto* browser_infobar_manager =
         infobars::BrowserInfoBarManager::From(g_browser_process);
-    if (browser_infobar_manager) {
-      auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
-      if (tab) {
-        browser_infobar_manager->Show(
-            tab, infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
-      }
+    if (!browser_infobar_manager) {
+      return false;
     }
-  } else {
-    infobars::ContentInfoBarManager* infobar_manager =
-        infobars::ContentInfoBarManager::FromWebContents(web_contents);
-    if (infobar_manager) {
-      PageInfoInfoBarDelegate::Create(infobar_manager);
-    }
+    return browser_infobar_manager->Show(
+               web_contents,
+               infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE) !=
+           nullptr;
   }
+
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  if (!infobar_manager) {
+    return false;
+  }
+  // `PageInfoInfoBarDelegate::Create()` returns void, so compare the infobar
+  // count before and after to detect whether a new infobar was actually added
+  // (e.g., duplicate grants are ignored if one is already showing).
+  const size_t previous_infobar_count = infobar_manager->infobars().size();
+  PageInfoInfoBarDelegate::Create(infobar_manager);
+  return infobar_manager->infobars().size() > previous_infobar_count;
 }
 #endif
 }  // namespace
@@ -620,13 +630,12 @@ void ChromePermissionsClient::OnPromptResolved(
 
 #if !BUILDFLAG(IS_ANDROID)
   // Infobar exists only on Desktop platforms.
-  bool should_show_infobar = ShouldShowInfobarOnPromptResolved(
-      web_contents, request, quiet_ui_reason, action);
-  permissions::PermissionUmaUtil::RecordPageReloadInfoBarShown(
-      should_show_infobar);
-  if (should_show_infobar) {
-    ShowInfobar(web_contents);
+  bool infobar_shown = false;
+  if (ShouldShowInfobarOnPromptResolved(web_contents, request, quiet_ui_reason,
+                                        action)) {
+    infobar_shown = ShowInfobar(web_contents);
   }
+  permissions::PermissionUmaUtil::RecordPageReloadInfoBarShown(infobar_shown);
 #endif
 
   auto content_setting_type = RequestTypeToContentSettingsType(request_type);

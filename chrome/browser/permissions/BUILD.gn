@@ -291,6 +291,7 @@ source_set("unit_tests") {
     ":permissions",
     ":permissions_proto",
     ":test_support",
+    "//base/test:test_support",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/geolocation",
     "//chrome/browser/history",
@@ -304,6 +305,8 @@ source_set("unit_tests") {
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",
     "//components/contextual_tasks/public:feature_list",
+    "//components/infobars/content",
+    "//components/infobars/core",
     "//components/omnibox/common",
     "//components/optimization_guide/core:test_support",
     "//components/passage_embeddings/core",
@@ -324,7 +327,6 @@ source_set("unit_tests") {
       "permission_update_message_controller_android_unittest.cc",
     ]
     deps += [
-      "//components/infobars/content",
       "//components/messages/android:test_support",
       "//components/ukm:test_support",
     ]
@@ -333,7 +335,13 @@ source_set("unit_tests") {
       "permission_hats_trigger_unittest.cc",
       "system/system_media_permission_cache_unittest.cc",
     ]
-    deps += [ "//chrome/browser/ui/hats" ]
+    deps += [
+      "//chrome/browser/infobars",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/page_info",
+      "//chrome/browser/ui/views:layout_provider",
+      "//components/tabs:public",
+    ]
     if (enable_extensions) {
       deps += [
         "//extensions/browser/mime_handler:stream_container",

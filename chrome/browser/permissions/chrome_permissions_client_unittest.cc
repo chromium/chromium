@@ -17,16 +17,33 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include <optional>
 #include <string>
+#include <variant>
 
+#include "base/functional/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"  // nogncheck
+#include "chrome/browser/infobars/infobar_features.h"         // nogncheck
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"  // nogncheck
-#include "chrome/browser/ui/hats/mock_hats_service.h"     // nogncheck
-#include "chrome/browser/ui/hats/survey_config.h"         // nogncheck
+#include "chrome/browser/ui/hats/hats_service_factory.h"            // nogncheck
+#include "chrome/browser/ui/hats/mock_hats_service.h"               // nogncheck
+#include "chrome/browser/ui/hats/survey_config.h"                   // nogncheck
+#include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"  // nogncheck
+#include "chrome/browser/ui/views/chrome_layout_provider.h"         // nogncheck
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar.h"
+#include "components/infobars/core/infobar_delegate.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
+#include "components/permissions/permission_request_enums.h"
+#include "components/permissions/permission_uma_constants.h"
+#include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"  // nogncheck
 #include "components/unified_consent/pref_names.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/render_frame_host.h"
@@ -562,4 +579,102 @@ TEST_F(ChromePermissionsClientTest,
   }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+class ChromePermissionsClientReloadInfoBarTest
+    : public ChromePermissionsClientTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ChromePermissionsClientReloadInfoBarTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        infobars::kCentralizedInfoBarFramework,
+        {{infobars::kMigratedPageInfo.name, GetParam() ? "true" : "false"}});
+  }
+
+  void SetUp() override {
+    ChromePermissionsClientTest::SetUp();
+    if (infobars::IsInfoBarMigrated(
+            infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)) {
+      auto* browser_infobar_manager = infobars::BrowserInfoBarManager::From(
+          TestingBrowserProcess::GetGlobal());
+      ASSERT_NE(browser_infobar_manager, nullptr);
+      if (!browser_infobar_manager->IsRegistered(
+              infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)) {
+        ChromePageInfoDelegate::RegisterPageInfoInfoBar(
+            browser_infobar_manager);
+      }
+    }
+  }
+
+ protected:
+  static constexpr char kPageReloadInfoBarHistogram[] =
+      "Permissions.QuietPrompt.Preignore.PageReloadInfoBar";
+
+  void ResolveQuietPrompt(permissions::RequestType request_type,
+                          permissions::PermissionAction action) {
+    permissions::MockPermissionRequest request(
+        GURL("https://example.com"), request_type,
+        permissions::PermissionRequestGestureType::GESTURE);
+    ChromePermissionsClient::GetInstance()->OnPromptResolved(
+        &request, action, std::monostate(),
+        permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
+        permissions::PermissionPromptDispositionReason::DEFAULT_FALLBACK,
+        permissions::PermissionsClient::QuietUiReason::kEnabledInPrefs,
+        base::Seconds(1), std::nullopt, CONTENT_SETTING_ASK, web_contents());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  ChromeLayoutProvider layout_provider_;
+};
+
+TEST_P(ChromePermissionsClientReloadInfoBarTest,
+       NonTabWebContentsWithInfoBarManagerShowsReloadInfoBar) {
+  NavigateAndCommit(GURL("https://example.com"));
+  ASSERT_EQ(tabs::TabInterface::MaybeGetFromContents(web_contents()), nullptr);
+  infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents());
+  ASSERT_NE(infobar_manager, nullptr);
+
+  base::HistogramTester histogram_tester;
+  ResolveQuietPrompt(permissions::RequestType::kNotifications,
+                     permissions::PermissionAction::GRANTED);
+
+  ASSERT_EQ(infobar_manager->infobars().size(), 1u);
+  EXPECT_EQ(infobar_manager->infobars()[0]->delegate()->GetIdentifier(),
+            infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE);
+  histogram_tester.ExpectUniqueSample(kPageReloadInfoBarHistogram, true, 1);
+
+  // A subsequent quiet grant while the reload infobar is already showing does
+  // not add a duplicate infobar and records that no new infobar was shown.
+  ResolveQuietPrompt(permissions::RequestType::kNotifications,
+                     permissions::PermissionAction::GRANTED);
+  EXPECT_EQ(infobar_manager->infobars().size(), 1u);
+  histogram_tester.ExpectBucketCount(kPageReloadInfoBarHistogram, true, 1);
+  histogram_tester.ExpectBucketCount(kPageReloadInfoBarHistogram, false, 1);
+}
+
+TEST_P(ChromePermissionsClientReloadInfoBarTest,
+       NonTabWebContentsWithoutInfoBarManagerRecordsNotShown) {
+  NavigateAndCommit(GURL("https://example.com"));
+  ASSERT_EQ(tabs::TabInterface::MaybeGetFromContents(web_contents()), nullptr);
+  ASSERT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents()),
+            nullptr);
+
+  base::HistogramTester histogram_tester;
+  ResolveQuietPrompt(permissions::RequestType::kNotifications,
+                     permissions::PermissionAction::GRANTED);
+
+  EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents()),
+            nullptr);
+  histogram_tester.ExpectUniqueSample(kPageReloadInfoBarHistogram, false, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChromePermissionsClientReloadInfoBarTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "CentralizedInfoBar"
+                                             : "LegacyInfoBar";
+                         });
 #endif  // !BUILDFLAG(IS_ANDROID)
