@@ -15,10 +15,34 @@
 
 namespace {
 
+// Clears the app's persistent `NSUserDefaults` domain when non-empty. Skipping
+// removal when already empty avoids unnecessary `cfprefsd` writes and
+// `NSUserDefaultsDidChangeNotification` broadcasts between tests.
+void ClearStandardUserDefaults() {
+  NSString* bundle_id = [NSBundle mainBundle].bundleIdentifier;
+  if (!bundle_id) {
+    return;
+  }
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  if ([defaults persistentDomainForName:bundle_id].count > 0) {
+    [defaults removePersistentDomainForName:bundle_id];
+  }
+}
+
 class IOSRunLoopListener : public testing::EmptyTestEventListener {
  public:
+  void OnTestProgramStart(const testing::UnitTest& unit_test) override;
   void OnTestEnd(const testing::TestInfo& test_info) override;
 };
+
+void IOSRunLoopListener::OnTestProgramStart(
+    const testing::UnitTest& unit_test) {
+  @autoreleasepool {
+    // Clear stale NSUserDefaults left by a prior run on a reused simulator
+    // (e.g. after a crash or watchdog kill that skipped OnTestEnd).
+    ClearStandardUserDefaults();
+  }
+}
 
 void IOSRunLoopListener::OnTestEnd(const testing::TestInfo& test_info) {
   @autoreleasepool {
@@ -27,11 +51,7 @@ void IOSRunLoopListener::OnTestEnd(const testing::TestInfo& test_info) {
     [NSRunLoop.currentRunLoop runUntilDate:stop_date];
 
     // Clear NSUserDefaults to prevent state leakage.
-    NSString* bundle_id = [NSBundle mainBundle].bundleIdentifier;
-    if (bundle_id) {
-      [[NSUserDefaults standardUserDefaults]
-          removePersistentDomainForName:bundle_id];
-    }
+    ClearStandardUserDefaults();
   }
 }
 
