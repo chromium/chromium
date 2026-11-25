@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
@@ -95,6 +95,15 @@ class TestSelectionOffer : public ServerObject {
 
   void OnOffer(const std::string& mime_type, ui::PlatformClipboard::Data data);
 
+  // When set, Receive() hands the pipe's write end to `callback` instead of
+  // writing the offered data, e.g: to emulate a stalled source.
+  using ReceiveCallback =
+      base::RepeatingCallback<void(const std::string& mime_type,
+                                   base::ScopedFD fd)>;
+  void set_receive_callback(ReceiveCallback callback) {
+    receive_callback_ = std::move(callback);
+  }
+
   // Protocol object requests:
   static void Receive(wl_client* client,
                       wl_resource* resource,
@@ -105,6 +114,7 @@ class TestSelectionOffer : public ServerObject {
   const std::unique_ptr<Delegate> delegate_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   ui::PlatformClipboard::DataMap data_to_offer_;
+  ReceiveCallback receive_callback_;
 };
 
 class TestSelectionSource : public ServerObject {

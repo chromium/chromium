@@ -366,9 +366,13 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   std::unique_ptr<ScopedEventDispatcher> nested_dispatcher_;
 
-  // Flag used to notify the data fetcher task, which runs on thread pool, that
-  // it should abort the operation. i.e: used only in incoming dnd sessions.
+  // Flag set when the current data fetching task, if any, is cancelled so that
+  // its results are dropped. i.e: used only in incoming dnd sessions.
   scoped_refptr<CancelFlag> data_fetch_cancel_flag_;
+
+  // Write end of a pipe whose read end is polled by the data fetching task.
+  // Closing it interrupts the task even while it waits on a stalled source.
+  base::ScopedFD data_fetch_cancel_fd_;
 
   // Sequenced task runner used to post fetch tasks to.
   scoped_refptr<base::TaskRunner> data_fetch_task_runner_;

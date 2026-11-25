@@ -4,18 +4,24 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 
+#include <poll.h>
+#include <unistd.h>
 #include <viewporter-client-protocol.h>
 
+#include <algorithm>
+#include <array>
 #include <bitset>
 #include <cstdint>
 #include <memory>
 #include <utility>
 
 #include "base/check.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -69,6 +75,62 @@ using mojom::DragOperation;
 // https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API and
 // https://wayland.app/protocols/wayland#wl_data_offer:request:accept.
 constexpr char kMimeTypeEmptyDragData[] = "chromium/x-empty-drag-data";
+
+using FetchingInfo = std::vector<std::pair<std::string, base::ScopedFD>>;
+
+// Reads all `offered_data` pipes concurrently until each reaches EOF, so that
+// a source which writes to a pipe before closing an earlier one does not
+// deadlock. Returns an empty map as soon as `cancel_fd` becomes readable or
+// hung up, i.e: when the controller closes the write end to cancel fetching.
+std::map<std::string, std::vector<uint8_t>> FetchOfferedData(
+    FetchingInfo offered_data,
+    base::ScopedFD cancel_fd) {
+  base::ScopedBlockingCall blocking_call(FROM_HERE,
+                                         base::BlockingType::MAY_BLOCK);
+  VLOG(1) << "Starting data fetching for " << offered_data.size()
+          << " mime types.";
+
+  // poll() ignores negative fds, so finished pipes are disabled by setting
+  // their fd to -1.
+  std::vector<pollfd> poll_fds;
+  poll_fds.push_back({cancel_fd.get(), POLLIN, 0});
+  for (const auto& [mime_type, fd] : offered_data) {
+    poll_fds.push_back({fd.get(), POLLIN, 0});
+  }
+
+  std::map<std::string, std::vector<uint8_t>> result;
+  std::array<uint8_t, 4096> buffer;
+  size_t pending = offered_data.size();
+  while (pending > 0) {
+    if (HANDLE_EINTR(poll(poll_fds.data(), poll_fds.size(), -1)) < 0) {
+      PLOG(ERROR) << "poll() failed while fetching drag data.";
+      return {};
+    }
+    if (poll_fds[0].revents) {
+      VLOG(1) << "cancelled data fetching.";
+      return {};
+    }
+    for (size_t i = 1; i < poll_fds.size(); ++i) {
+      if (poll_fds[i].fd < 0 || !poll_fds[i].revents) {
+        continue;
+      }
+      auto& [mime_type, fd] = offered_data[i - 1];
+      const ssize_t length =
+          HANDLE_EINTR(read(fd.get(), buffer.data(), buffer.size()));
+      if (length > 0) {
+        auto& contents = result[mime_type];
+        contents.insert(contents.end(), buffer.begin(),
+                        buffer.begin() + length);
+        continue;
+      }
+      VLOG(1) << "did fetch data for " << mime_type;
+      poll_fds[i].fd = -1;
+      fd.reset();
+      --pending;
+    }
+  }
+  return result;
+}
 
 bool IsPortalMimeType(const std::string& mime_type) {
 #if BUILDFLAG(IS_LINUX)
@@ -745,8 +807,6 @@ void WaylandDataDragController::PostDataFetchingTask(
     const gfx::PointF& location,
     base::TimeTicks start_time,
     const scoped_refptr<CancelFlag>& cancel_flag) {
-  using FetchingInfo = std::vector<std::pair<std::string, int>>;
-
   CHECK_EQ(state_, State::kFetching, base::NotFatalUntil::M163);
   CHECK(!cancel_flag->data.IsSet(), base::NotFatalUntil::M163);
 
@@ -761,6 +821,11 @@ void WaylandDataDragController::PostDataFetchingTask(
       LOG(WARNING) << "Skipping unsupported mime type " << mime_type;
       continue;
     }
+    // Some compositors forward duplicate mime types; fetch each only once.
+    if (std::ranges::contains(offered_data, mime_type,
+                              &FetchingInfo::value_type::first)) {
+      continue;
+    }
 
     VLOG(1) << __func__ << " requesting to receive data for " << mime_type;
     base::ScopedFD fd = data_offer_->Receive(mime_type);
@@ -768,42 +833,24 @@ void WaylandDataDragController::PostDataFetchingTask(
       PLOG(ERROR) << "Failed to open file descriptor for " << mime_type;
       continue;
     }
-    offered_data.emplace_back(mime_type, fd.release());
+    offered_data.emplace_back(mime_type, std::move(fd));
   }
   connection_->Flush();
 
-  auto fetch_data_closure = [](FetchingInfo offered_data,
-                               const scoped_refptr<CancelFlag>& cancel_flag)
-      -> std::map<std::string, std::vector<uint8_t>> {
-    base::ScopedBlockingCall blocking_call(FROM_HERE,
-                                           base::BlockingType::MAY_BLOCK);
-
-    VLOG(1) << "Starting data fetching for " << offered_data.size()
-            << " mime types.";
-
-    std::map<std::string, std::vector<uint8_t>> result;
-    for (const auto& [mime_type, fd_handle] : offered_data) {
-      if (cancel_flag->data.IsSet()) {
-        VLOG(1) << "cancelled data fetching.";
-        return {};
-      }
-
-      VLOG(1) << "will fetch data for " << mime_type;
-      std::vector<uint8_t> contents;
-      wl::ReadDataFromFD(base::ScopedFD(fd_handle), &contents);
-      result[mime_type] = std::move(contents);
-      VLOG(1) << "did fetch " << result[mime_type].size() << " bytes.";
-    }
-
-    return result;
-  };
+  // Closing `data_fetch_cancel_fd_` wakes up and aborts the fetching task,
+  // which may otherwise block indefinitely if the source never closes a pipe.
+  base::ScopedFD cancel_read_fd;
+  if (!base::CreatePipe(&cancel_read_fd, &data_fetch_cancel_fd_)) {
+    PLOG(ERROR) << "Failed to create data fetching cancellation pipe.";
+  }
 
   last_drag_location_ = location;
   data_fetch_cancel_flag_ = cancel_flag;
 
   GetDataFetchTaskRunner().PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(fetch_data_closure, std::move(offered_data), cancel_flag),
+      base::BindOnce(&FetchOfferedData, std::move(offered_data),
+                     std::move(cancel_read_fd)),
       base::BindOnce(&WaylandDataDragController::OnDataFetched,
                      weak_factory_.GetWeakPtr(), start_time, cancel_flag));
 }
@@ -913,6 +960,7 @@ void WaylandDataDragController::OnDataFetchingFinished(
 
   if (data_fetch_cancel_flag_ == cancel_flag) {
     data_fetch_cancel_flag_.reset();
+    data_fetch_cancel_fd_.reset();
   }
 
   if (had_pending_drop) {
@@ -926,6 +974,7 @@ void WaylandDataDragController::CancelDataFetchingIfNeeded() {
         << "Cancelling data fetching.";
     data_fetch_cancel_flag_->data.Set();
     data_fetch_cancel_flag_ = nullptr;
+    data_fetch_cancel_fd_.reset();
   }
 }
 

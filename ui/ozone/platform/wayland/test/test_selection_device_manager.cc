@@ -77,6 +77,10 @@ void TestSelectionOffer::Receive(wl_client* client,
                                  int fd) {
   CHECK(GetUserDataAs<TestSelectionOffer>(resource));
   auto* self = GetUserDataAs<TestSelectionOffer>(resource);
+  if (self->receive_callback_) {
+    self->receive_callback_.Run(mime_type, base::ScopedFD(fd));
+    return;
+  }
   self->task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&WriteDataOnWorkerThread, base::ScopedFD(fd),
                                 self->data_to_offer_[mime_type]));

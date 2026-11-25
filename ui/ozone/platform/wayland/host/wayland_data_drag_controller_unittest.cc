@@ -15,6 +15,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -28,6 +30,8 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
+#include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -313,6 +317,10 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
     drag_controller()->data_fetch_task_runner_ = deferred_runner;
     return base::ScopedClosureRunner(base::BindOnce(
         &base::DeferredSequencedTaskRunner::Start, std::move(deferred_runner)));
+  }
+
+  void SetDataFetchTaskRunner(scoped_refptr<base::TaskRunner> task_runner) {
+    drag_controller()->data_fetch_task_runner_ = std::move(task_runner);
   }
 
   std::unique_ptr<MockDropHandler> drop_handler_;
@@ -1935,6 +1943,117 @@ TEST_P(WaylandDataDragControllerTest, LeaveWindowWhileFetchingData) {
   EXPECT_FALSE(drop_handler_->dropped_data());
   EXPECT_FALSE(data_device()->drag_delegate_);
   EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
+}
+
+// Regression test for https://crbug.com/589797300: leaving a session whose
+// source never closes its pipe must not block fetching in later sessions.
+TEST_P(WaylandDataDragControllerTest, LeaveUnblocksStalledDataFetching) {
+  const uint32_t surface_id = window_->root_surface()->get_surface_id();
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(2);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(2);
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(1);
+  EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(1);
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(2);
+
+  // Fetch on a dedicated thread, which RunUntilIdle() does not wait for, so
+  // that a blocked fetch fails the test instead of hanging it.
+  base::Thread fetch_thread("DataFetchThread");
+  ASSERT_TRUE(fetch_thread.Start());
+  SetDataFetchTaskRunner(fetch_thread.task_runner());
+
+  // The first source keeps the write end of its pipe open and never writes.
+  std::vector<base::ScopedFD> stalled_fds;
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* data_device = server->data_device_manager()->data_device();
+    auto* data_offer = data_device->CreateAndSendDataOffer();
+    data_offer->set_receive_callback(base::BindLambdaForTesting(
+        [&](const std::string& mime_type, base::ScopedFD fd) {
+          stalled_fds.push_back(std::move(fd));
+        }));
+    data_offer->OnOffer(kMimeTypePlainText, ToClipboardData(std::string()));
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    data_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                         wl_fixed_from_int(10), wl_fixed_from_int(10),
+                         data_offer);
+  });
+  WaylandTestBase::SyncDisplay();
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    EXPECT_EQ(stalled_fds.size(), 1u);
+    server->data_device_manager()->data_device()->OnLeave();
+  });
+
+  // A subsequent well-behaved session must still deliver its drop.
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* data_device = server->data_device_manager()->data_device();
+    auto* data_offer = data_device->CreateAndSendDataOffer();
+    data_offer->OnOffer(
+        kMimeTypePlainText,
+        ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+    data_offer->OnSourceActions(WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY);
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    data_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                         wl_fixed_from_int(10), wl_fixed_from_int(10),
+                         data_offer);
+    data_device->OnDrop();
+    data_device->OnLeave();
+  });
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return drop_handler_->dropped_data() != nullptr; }));
+  WaylandTestBase::SyncDisplay();
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  ASSERT_NE(drop_handler_->dropped_data(), nullptr);
+  EXPECT_EQ(drop_handler_->dropped_data()->GetString(), sample_text_for_dnd());
+  EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
+}
+
+// Regression test for https://crbug.com/589797300: a source may fill a later
+// pipe before closing an earlier one (e.g: GTK), so pipes must be drained
+// concurrently rather than one at a time.
+TEST_P(WaylandDataDragControllerTest, FetchesOfferedDataConcurrently) {
+  const uint32_t surface_id = window_->root_surface()->get_surface_id();
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(1);
+  EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(1);
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+
+  // Larger than the default pipe buffer size, so that writing it blocks until
+  // the client reads it.
+  const std::string html(256 * 1024, 'a');
+  base::ScopedFD text_fd;
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* data_device = server->data_device_manager()->data_device();
+    auto* data_offer = data_device->CreateAndSendDataOffer();
+    data_offer->set_receive_callback(base::BindLambdaForTesting(
+        [&](const std::string& mime_type, base::ScopedFD fd) {
+          if (mime_type == kMimeTypePlainText) {
+            EXPECT_TRUE(
+                base::WriteFileDescriptor(fd.get(), kSampleTextForDragAndDrop));
+            text_fd = std::move(fd);
+            return;
+          }
+          // The text pipe is closed only once the html one is fully written.
+          EXPECT_TRUE(base::WriteFileDescriptor(fd.get(), html));
+          text_fd.reset();
+        }));
+    data_offer->OnOffer(kMimeTypePlainText, ToClipboardData(std::string()));
+    data_offer->OnOffer(kMimeTypeHtml, ToClipboardData(std::string()));
+    data_offer->OnSourceActions(WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY);
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    data_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                         wl_fixed_from_int(10), wl_fixed_from_int(10),
+                         data_offer);
+    data_device->OnDrop();
+    data_device->OnLeave();
+  });
+  WaitForDragDropTasks();
+  WaylandTestBase::SyncDisplay();
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  ASSERT_NE(drop_handler_->dropped_data(), nullptr);
+  EXPECT_EQ(drop_handler_->dropped_data()->GetString(), sample_text_for_dnd());
+  EXPECT_TRUE(drop_handler_->dropped_data()->HasHtml());
 }
 
 // Cursor position should be updated during a (outgoing) drag with mouse.
