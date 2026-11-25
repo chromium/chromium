@@ -725,8 +725,17 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
 // each tab consistently in all four places: favicon coins on the "+" button,
 // coins next to "Sharing n tabs" on the menu trigger row, a checkmark on the
 // tab's flyout row, and an underline on the tab strip.
+// TODO(crbug.com/590502199): Flaky on Debug builds (RunLoop::Run() timed out
+// waiting for event).
+#if !defined(NDEBUG)
+#define MAYBE_NewThread_AddAndRemoveTabs_SignpostsConsistently \
+  DISABLED_NewThread_AddAndRemoveTabs_SignpostsConsistently
+#else
+#define MAYBE_NewThread_AddAndRemoveTabs_SignpostsConsistently \
+  NewThread_AddAndRemoveTabs_SignpostsConsistently
+#endif
 IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
-                       NewThread_AddAndRemoveTabs_SignpostsConsistently) {
+                       MAYBE_NewThread_AddAndRemoveTabs_SignpostsConsistently) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab2);
