@@ -313,7 +313,9 @@ bool CanPopOutWebApp(Profile* profile) {
 
 void CreateWebAppFromCurrentWebContents(BrowserWindowInterface* browser,
                                         WebAppInstallFlow flow) {
-  CHECK(CanCreateWebApp(browser), base::NotFatalUntil::M162);
+  // TODO(crbug.com/589712334): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(CanCreateWebApp(browser));
 
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
