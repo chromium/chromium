@@ -178,11 +178,17 @@ class DataControlsPasteboardManager {
   // Called when the pasteboard content changes.
   void OnPasteboardChanged(UIPasteboard* pasteboard);
 
-  // Resets the manager to its initial state. For testing purposes only.
+  // Resets the manager to its initial state and stops observing pasteboard and
+  // app lifecycle notifications. For testing purposes only.
   void ResetForTesting();
 
-  // Initializes the manager to its initial state.
-  void Initialize();
+  // Starts observing pasteboard and app lifecycle notifications if not already
+  // observing.
+  void StartObservingIfNeeded();
+
+  // Stops observing pasteboard and app lifecycle notifications when there are
+  // no registered observers and no tracked pasteboard source.
+  void StopObservingIfIdle();
 
   // Information about the pasteboard items.
   PasteboardState pasteboard_state_;

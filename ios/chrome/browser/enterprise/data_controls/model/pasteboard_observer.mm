@@ -48,6 +48,11 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)stopObserving {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  _callback.Reset();
+}
+
 - (void)pasteboardChanged:(NSNotification*)notification {
   [self updateFromGeneralPasteboard];
 }
@@ -67,6 +72,9 @@
 }
 
 - (void)updateChangeCountFromPasteboard:(UIPasteboard*)pasteboard {
+  if (!_callback) {
+    return;
+  }
   _cachedChangeCount = pasteboard.changeCount;
 }
 
@@ -78,13 +86,19 @@
 }
 
 - (void)updateIfNeededWithPasteboard:(UIPasteboard*)pasteboard {
+  if (!_callback) {
+    return;
+  }
   NSInteger changeCount = pasteboard.changeCount;
   if (changeCount == _cachedChangeCount) {
     return;
   }
 
   _cachedChangeCount = changeCount;
-  _callback.Run(pasteboard);
+  // Copy the callback so calling `stopObserving` re-entrantly from inside
+  // `Run()` does not destroy the callback state while it is executing.
+  base::RepeatingCallback<void(UIPasteboard*)> callback = _callback;
+  callback.Run(pasteboard);
 }
 
 @end

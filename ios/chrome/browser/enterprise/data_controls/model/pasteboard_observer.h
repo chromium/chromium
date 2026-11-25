@@ -24,6 +24,10 @@
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Stops observing pasteboard and app lifecycle notifications immediately and
+// clears the callback.
+- (void)stopObserving;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_MODEL_PASTEBOARD_OBSERVER_H_

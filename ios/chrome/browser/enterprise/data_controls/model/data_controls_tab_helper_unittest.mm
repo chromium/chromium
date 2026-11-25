@@ -106,11 +106,16 @@ class DataControlsTabHelperTest : public PlatformTest {
             profile_.get()));
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(profile_);
+    // Mark `web_state_` visible so `ShowPasteSpinner()` does not invalidate
+    // pastes when `MOCK_TIME` auto-advances past `kSpinnerOverlayDelay` while
+    // `GetGeneralPasteboard()` runs on the thread pool.
+    web_state_->WasShown();
     OverlayRequestQueue::CreateForWebState(web_state_.get());
     DataControlsTabHelper::CreateForWebState(web_state_.get());
   }
 
   void TearDown() override {
+    web_state_.reset();
     DataControlsPasteboardManager::GetInstance()->ResetForTesting();
     PlatformTest::TearDown();
   }
@@ -1409,6 +1414,7 @@ TEST_F(DataControlsTabHelperTest,
 
   auto custom_web_state = std::make_unique<web::FakeWebState>();
   custom_web_state->SetBrowserState(custom_profile.get());
+  custom_web_state->WasShown();
   OverlayRequestQueue::CreateForWebState(custom_web_state.get());
   DataControlsTabHelper::CreateForWebState(custom_web_state.get());
   DataControlsTabHelper* custom_tab_helper =
@@ -2086,7 +2092,6 @@ TEST_F(DataControlsTabHelperTest,
   feature_list_.InitAndEnableFeature(
       enterprise_connectors::kEnableBulkDataEntryConnectorIOS);
   SetBulkDataEntryRule();
-  web_state_->WasShown();
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state_.get(), OverlayModality::kWebContentArea);
@@ -2134,7 +2139,6 @@ TEST_F(DataControlsTabHelperTest,
   feature_list_.InitAndEnableFeature(
       enterprise_connectors::kEnableBulkDataEntryConnectorIOS);
   SetBulkDataEntryRule();
-  web_state_->WasShown();
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state_.get(), OverlayModality::kWebContentArea);
@@ -2181,7 +2185,6 @@ TEST_F(DataControlsTabHelperTest,
   feature_list_.InitAndEnableFeature(
       enterprise_connectors::kEnableBulkDataEntryConnectorIOS);
   SetBulkDataEntryRule();
-  web_state_->WasShown();
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state_.get(), OverlayModality::kWebContentArea);
@@ -2232,7 +2235,6 @@ TEST_F(DataControlsTabHelperTest,
   feature_list_.InitAndEnableFeature(
       enterprise_connectors::kEnableBulkDataEntryConnectorIOS);
   SetBulkDataEntryRule();
-  web_state_->WasShown();
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state_.get(), OverlayModality::kWebContentArea);
@@ -2275,7 +2277,6 @@ TEST_F(DataControlsTabHelperTest,
   feature_list_.InitAndEnableFeature(
       enterprise_connectors::kEnableBulkDataEntryConnectorIOS);
   SetBulkDataEntryRule();
-  web_state_->WasShown();
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state_.get(), OverlayModality::kWebContentArea);
@@ -2327,7 +2328,6 @@ TEST_F(DataControlsTabHelperTest,
   feature_list_.InitAndEnableFeature(
       enterprise_connectors::kEnableBulkDataEntryConnectorIOS);
   SetBulkDataEntryRule();
-  web_state_->WasShown();
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state_.get(), OverlayModality::kWebContentArea);
@@ -2378,7 +2378,6 @@ TEST_F(DataControlsTabHelperTest,
   feature_list_.InitAndEnableFeature(
       enterprise_connectors::kEnableBulkDataEntryConnectorIOS);
   SetBulkDataEntryRule();
-  web_state_->WasShown();
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state_.get(), OverlayModality::kWebContentArea);

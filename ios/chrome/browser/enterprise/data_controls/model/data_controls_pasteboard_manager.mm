@@ -165,19 +165,27 @@ DataControlsPasteboardManager* DataControlsPasteboardManager::GetInstance() {
   return instance.get();
 }
 
-DataControlsPasteboardManager::DataControlsPasteboardManager() {
-  Initialize();
-}
+DataControlsPasteboardManager::DataControlsPasteboardManager() = default;
 
 DataControlsPasteboardManager::~DataControlsPasteboardManager() = default;
 
-void DataControlsPasteboardManager::Initialize() {
-  pasteboard_state_ = {};
-  stage_ = Stage::kUnknownSource;
-  pasteboard_observer_ = [[PasteboardObserver alloc]
-      initWithCallback:base::BindRepeating(
-                           &DataControlsPasteboardManager::OnPasteboardChanged,
-                           base::Unretained(this))];
+void DataControlsPasteboardManager::StartObservingIfNeeded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pasteboard_observer_) {
+    pasteboard_observer_ = [[PasteboardObserver alloc]
+        initWithCallback:base::BindRepeating(&DataControlsPasteboardManager::
+                                                 OnPasteboardChanged,
+                                             base::Unretained(this))];
+  }
+}
+
+void DataControlsPasteboardManager::StopObservingIfIdle() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (observers_.empty() && stage_ == Stage::kUnknownSource) {
+    [pasteboard_observer_ stopObserving];
+    pasteboard_observer_ = nil;
+    DETACH_FROM_SEQUENCE(sequence_checker_);
+  }
 }
 
 void DataControlsPasteboardManager::SetNextPasteboardItemsSource(
@@ -192,6 +200,7 @@ void DataControlsPasteboardManager::SetNextPasteboardItemsSource(
   pasteboard_state_ = {std::move(source_url),
                        source_profile->GetOriginalProfile()->GetProfileName(),
                        source_profile->IsOffTheRecord(), os_clipboard_allowed};
+  StartObservingIfNeeded();
 }
 
 PasteboardSource
@@ -216,6 +225,7 @@ DataControlsPasteboardManager::GetCurrentPasteboardItemsSource() {
   // Invalidate source if the profile is gone.
   pasteboard_state_ = {};
   stage_ = Stage::kUnknownSource;
+  StopObservingIfIdle();
 
   return PasteboardSource();
 }
@@ -280,6 +290,8 @@ void DataControlsPasteboardManager::OnPasteboardChanged(
   for (auto& observer : observers_) {
     observer.OnPasteboardContentChanged();
   }
+
+  StopObservingIfIdle();
 }
 
 void DataControlsPasteboardManager::
@@ -314,16 +326,22 @@ void DataControlsPasteboardManager::AddObserver(
     DataControlsPasteboardManagerObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
+  StartObservingIfNeeded();
 }
 
 void DataControlsPasteboardManager::RemoveObserver(
     DataControlsPasteboardManagerObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
+  StopObservingIfIdle();
 }
 
 void DataControlsPasteboardManager::ResetForTesting() {
-  Initialize();
+  pasteboard_state_ = {};
+  stage_ = Stage::kUnknownSource;
+  [pasteboard_observer_ stopObserving];
+  pasteboard_observer_ = nil;
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 }  // namespace data_controls

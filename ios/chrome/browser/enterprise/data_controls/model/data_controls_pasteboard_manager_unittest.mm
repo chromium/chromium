@@ -8,7 +8,11 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/memory/raw_ptr.h"
+#import "base/run_loop.h"
+#import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
@@ -64,6 +68,10 @@ class DataControlsPasteboardManagerTest : public PlatformTest {
     manager_->ResetForTesting();
     PlatformTest::TearDown();
   }
+
+  bool IsObserving() const { return manager_->pasteboard_observer_ != nil; }
+
+  void ResetManager() { manager_->ResetForTesting(); }
 
   void CallOnPasteboardChanged(UIPasteboard* pasteboard) {
     manager_->OnPasteboardChanged(pasteboard);
@@ -570,6 +578,84 @@ TEST_F(DataControlsPasteboardManagerTest,
   std::optional<PasteboardContentDLP> result = future.Take();
 
   EXPECT_FALSE(result.has_value());
+}
+
+// Tests that `DataControlsPasteboardManager` observes notifications only while
+// it has observers or a tracked pasteboard source, and stops automatically when
+// idle.
+TEST_F(DataControlsPasteboardManagerTest, StopsObservingWhenIdle) {
+  EXPECT_FALSE(IsObserving());
+
+  TestObserver observer;
+  base::ScopedObservation<DataControlsPasteboardManager,
+                          DataControlsPasteboardManagerObserver>
+      observation(&observer);
+  observation.Observe(manager_);
+  EXPECT_TRUE(IsObserving());
+
+  UIPasteboard.generalPasteboard.string = @(kPasteboardString);
+  EXPECT_TRUE(observer.Wait());
+
+  // Removing the last observer with no tracked source stops observation.
+  observation.Reset();
+  EXPECT_FALSE(IsObserving());
+
+  // Setting a source starts observing even with no observers, and stays active
+  // while the source is known.
+  manager_->SetNextPasteboardItemsSource(GURL(kSourceURL), profile_,
+                                         /*os_clipboard_allowed=*/true);
+  EXPECT_TRUE(IsObserving());
+
+  UIPasteboard.generalPasteboard.string = @(kNewPasteboardString);
+  ASSERT_TRUE(WaitForKnownPasteboardSource());
+  EXPECT_TRUE(IsObserving());
+
+  // Invalidating the source with no observers stops observation automatically.
+  UIPasteboard.generalPasteboard.string = @(kPasteboardString);
+  ASSERT_TRUE(WaitForUnknownPasteboardSource());
+  EXPECT_FALSE(IsObserving());
+}
+
+// Tests that `ResetForTesting()` stops observing pasteboard and app lifecycle
+// notifications until observation is started again.
+TEST_F(DataControlsPasteboardManagerTest, ResetForTestingStopsObserving) {
+  TestObserver observer;
+  base::ScopedObservation<DataControlsPasteboardManager,
+                          DataControlsPasteboardManagerObserver>
+      observation(&observer);
+  observation.Observe(manager_);
+  EXPECT_TRUE(IsObserving());
+
+  // Verify the observer receives notifications before reset.
+  UIPasteboard.generalPasteboard.string = @(kPasteboardString);
+  EXPECT_TRUE(observer.Wait());
+
+  ResetManager();
+  EXPECT_FALSE(IsObserving());
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillResignActiveNotification
+                    object:nil
+                  userInfo:nil];
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidBecomeActiveNotification
+                    object:nil
+                  userInfo:nil];
+  UIPasteboard.generalPasteboard.string = @(kNewPasteboardString);
+
+  // Flush the thread pool and main sequence to confirm no callback fires.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_FALSE(observer.Notified());
+
+  observation.Reset();
+  observation.Observe(manager_);
+  EXPECT_TRUE(IsObserving());
+  UIPasteboard.generalPasteboard.string = @(kPasteboardString);
+  EXPECT_TRUE(observer.Wait());
 }
 
 }  // namespace data_controls
