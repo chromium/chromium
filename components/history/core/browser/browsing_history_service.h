@@ -190,6 +190,13 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   virtual void QueryHistory(const std::u16string& search_text,
                             const QueryOptions& options);
 
+  // If a retry of a failed Web History request is waiting for the current
+  // query, resets the backoff and runs the retry right away. Otherwise does
+  // nothing. Results arrive through the driver's pending request. Call this
+  // only in response to a user action (e.g. scrolling), never from automatic
+  // loading, so that automatic requests still wait out the backoff delay.
+  virtual void RetryPendingWebHistoryNow();
+
   // Fetch all the app IDs used in the database.
   void GetAllAppIds();
 

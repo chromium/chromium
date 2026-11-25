@@ -1101,6 +1101,67 @@ TEST_F(BrowsingHistoryServiceRetryTest, NewQueryCancelsPendingRetry) {
   EXPECT_EQ(2U, driver()->GetQueryResults().size());
 }
 
+// `RetryPendingWebHistoryNow()` runs a waiting retry right away, without
+// waiting out the backoff delay.
+TEST_F(BrowsingHistoryServiceRetryTest,
+       RetryPendingWebHistoryNowRetriesImmediately) {
+  AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
+  QueryHistory(2);
+  web_history()->SetupFakeResponse(false, 0);
+  ContinueQueryExpectingNoResult();
+
+  web_history()->SetupFakeResponse(true, net::HTTP_OK);
+  service()->RetryPendingWebHistoryNow();
+  BlockUntilHistoryProcessesPendingRequests();
+  ASSERT_EQ(2U, driver()->GetQueryResults().size());
+  EXPECT_THAT(driver()->GetQueryResults().back(),
+              MatchesQueryResult(baseline_time_,
+                                 /*reached_beginning*/ true,
+                                 std::vector<TestResult>{
+                                     {kUrl1, 1, kRemote},
+                                 }));
+}
+
+// `RetryPendingWebHistoryNow()` resets the backoff, so if the immediate retry
+// fails too, the next one runs after the initial delay again.
+TEST_F(BrowsingHistoryServiceRetryTest,
+       RetryPendingWebHistoryNowResetsBackoff) {
+  AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
+  QueryHistory(2);
+  web_history()->SetupFakeResponse(false, 0);
+  ContinueQueryExpectingNoResult();
+  // Two failed retries, so the next delay would be 6.4s-8s without a reset.
+  FastForwardBy(base::Seconds(6));
+
+  // The immediate retry fails as well.
+  service()->RetryPendingWebHistoryNow();
+  BlockUntilHistoryProcessesPendingRequests();
+  EXPECT_EQ(1U, driver()->GetQueryResults().size());
+
+  web_history()->SetupFakeResponse(true, net::HTTP_OK);
+  FastForwardBy(base::Seconds(2));
+  ASSERT_EQ(2U, driver()->GetQueryResults().size());
+  EXPECT_TRUE(driver()->GetQueryResults().back().second.reached_beginning);
+}
+
+// `RetryPendingWebHistoryNow()` does nothing if no retry is waiting.
+TEST_F(BrowsingHistoryServiceRetryTest,
+       RetryPendingWebHistoryNowDoesNothingWithoutPendingRetry) {
+  AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
+  QueryHistory(2);
+
+  service()->RetryPendingWebHistoryNow();
+  BlockUntilHistoryProcessesPendingRequests();
+  EXPECT_EQ(1U, driver()->GetQueryResults().size());
+
+  // The query state is untouched, so the continuation returns the next page.
+  EXPECT_THAT(ContinueQuery(), MatchesQueryResult(baseline_time_,
+                                                  /*reached_beginning*/ true,
+                                                  std::vector<TestResult>{
+                                                      {kUrl1, 1, kRemote},
+                                                  }));
+}
+
 // With the kill switch off, a failed continuation returns an empty, unfinished
 // page, and the consumer has to retry.
 TEST_F(BrowsingHistoryServiceTest,

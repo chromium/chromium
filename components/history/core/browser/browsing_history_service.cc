@@ -373,6 +373,18 @@ void BrowsingHistoryService::CancelWebHistoryRetry() {
   }
 }
 
+void BrowsingHistoryService::RetryPendingWebHistoryNow() {
+  // Nothing to do if no retry is waiting, e.g. because the last page made
+  // progress or a request is already in flight.
+  if (!retry_timer_.IsRunning()) {
+    return;
+  }
+  CHECK(retry_backoff_);
+  // Start over at the initial delay if this retry fails too.
+  retry_backoff_->Reset();
+  retry_timer_.FireNow();
+}
+
 void BrowsingHistoryService::QueryHistoryInternal(
     scoped_refptr<QueryHistoryState> state) {
   state->query_start_time = base::TimeTicks::Now();
