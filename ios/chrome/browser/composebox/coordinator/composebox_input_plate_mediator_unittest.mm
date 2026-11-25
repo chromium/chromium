@@ -309,9 +309,7 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
         pref_service_.registry());
     AimEligibilityService::RegisterProfilePrefs(pref_service_.registry());
     profile_ = TestProfileIOS::Builder().Build();
-    shared_url_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_factory_);
+    shared_url_loader_factory_ = test_factory_.GetSafeWeakWrapper();
     fake_variations_client_ = std::make_unique<FakeVariationsClient>();
     service_ = std::make_unique<contextual_search::ContextualSearchService>(
         nullptr, shared_url_loader_factory_, template_url_service(),

@@ -153,9 +153,7 @@ class ClientSideDetectionServiceTest : public PlatformTest {
     model_observer_tracker_ =
         std::make_unique<ClientSidePhishingModelObserverTracker>();
     csd_service_ = std::make_unique<ClientSideDetectionService>(
-        profile_->GetPrefs(),
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_),
+        profile_->GetPrefs(), test_url_loader_factory_.GetSafeWeakWrapper(),
         model_observer_tracker_.get());
   }
 
@@ -323,9 +321,7 @@ TEST_F(ClientSideDetectionServiceTest, ScorerProfileIsolation) {
   auto model_observer_tracker2 =
       std::make_unique<ClientSidePhishingModelObserverTracker>();
   auto csd_service2 = std::make_unique<ClientSideDetectionService>(
-      profile2->GetPrefs(),
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory_),
+      profile2->GetPrefs(), test_url_loader_factory_.GetSafeWeakWrapper(),
       model_observer_tracker2.get());
 
   EXPECT_THAT(csd_service2->GetScorer(), testing::IsNull());
@@ -360,9 +356,7 @@ TEST_F(ClientSideDetectionServiceTest, ScorerProfileIsolationWhenDisabled) {
   auto model_observer_tracker2 =
       std::make_unique<ClientSidePhishingModelObserverTracker>();
   auto csd_service2 = std::make_unique<ClientSideDetectionService>(
-      profile2->GetPrefs(),
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory_),
+      profile2->GetPrefs(), test_url_loader_factory_.GetSafeWeakWrapper(),
       model_observer_tracker2.get());
 
   EXPECT_THAT(csd_service2->GetScorer(), testing::IsNull());
@@ -393,9 +387,7 @@ TEST_F(ClientSideDetectionServiceTest, ProfileDisableIsolation) {
   auto model_observer_tracker2 =
       std::make_unique<ClientSidePhishingModelObserverTracker>();
   auto csd_service2 = std::make_unique<ClientSideDetectionService>(
-      profile2->GetPrefs(),
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory_),
+      profile2->GetPrefs(), test_url_loader_factory_.GetSafeWeakWrapper(),
       model_observer_tracker2.get());
 
   // Update model for both services independently.
@@ -473,9 +465,7 @@ TEST_F(ClientSideDetectionServiceTest, KillswitchPreventsScorerCreation) {
 
   // 2. Recreate the service.
   csd_service_ = std::make_unique<ClientSideDetectionService>(
-      profile_->GetPrefs(),
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory_),
+      profile_->GetPrefs(), test_url_loader_factory_.GetSafeWeakWrapper(),
       model_observer_tracker_.get());
 
   // 3. Verify scorer is null.

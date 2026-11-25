@@ -284,9 +284,7 @@ class MockDriveFilePickerImageFetcher : public DriveFilePickerImageFetcher {
 class DriveFilePickerMediatorTest : public PlatformTest {
  public:
   DriveFilePickerMediatorTest()
-      : shared_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {}
+      : shared_factory_(test_url_loader_factory_.GetSafeWeakWrapper()) {}
 
  protected:
   void SetUp() final {

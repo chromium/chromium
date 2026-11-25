@@ -117,8 +117,7 @@ class IOSModelQualityLogsUploaderServiceTest : public PlatformTest {
  public:
   IOSModelQualityLogsUploaderServiceTest()
       : test_shared_url_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)),
+            test_url_loader_factory_.GetSafeWeakWrapper()),
         scoped_metrics_services_manager_(test_shared_url_loader_factory_) {}
 
   void SetUp() override {

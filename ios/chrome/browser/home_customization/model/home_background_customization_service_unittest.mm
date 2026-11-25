@@ -61,9 +61,7 @@ class HomeBackgroundCustomizationServiceTest : public PlatformTest {
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
-    test_shared_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_);
+    test_shared_loader_factory_ = test_url_loader_factory_.GetSafeWeakWrapper();
     application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
     ntp_background_service_ = std::make_unique<NtpBackgroundService>(
         application_locale_storage_.get(), test_shared_loader_factory_);

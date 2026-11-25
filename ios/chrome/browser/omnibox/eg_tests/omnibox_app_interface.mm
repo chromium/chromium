@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 
+#import <utility>
+
 #import "base/apple/foundation_util.h"
 #import "base/no_destructor.h"
 #import "base/path_service.h"
@@ -29,6 +31,7 @@
 #import "ios/testing/nserror_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 
@@ -110,11 +113,11 @@ const base::FilePath& GetTestDataDir() {
       RemoteSuggestionsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile());
 
-  network::mojom::URLLoaderFactory* urlLoaderFactory =
-      chrome_test_util::GetOriginalProfile()->GetURLLoaderFactory();
+  scoped_refptr<network::SharedURLLoaderFactory> sharedURLLoaderFactory =
+      chrome_test_util::GetOriginalProfile()->GetSharedURLLoaderFactory();
 
-  TestFakeSuggestionsService::GetInstance()->TearDown(remoteSuggestionsService,
-                                                      urlLoaderFactory);
+  TestFakeSuggestionsService::GetInstance()->TearDown(
+      remoteSuggestionsService, std::move(sharedURLLoaderFactory));
 }
 
 + (BOOL)shortcutsBackendInitialized {

@@ -301,8 +301,7 @@ bool FakeSafeBrowsingService::CanCheckUrl(const GURL& url) const {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 FakeSafeBrowsingService::GetURLLoaderFactory() {
-  return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-      &url_loader_factory_);
+  return url_loader_factory_.GetSafeWeakWrapper();
 }
 
 scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>

@@ -370,9 +370,7 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
         std::make_unique<network::TestURLLoaderFactory>();
     // Set up the URL loader factory for the PaymentsNetworkInterface so we can
     // intercept those network requests.
-    shared_url_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            test_url_loader_factory_.get());
+    shared_url_loader_factory_ = test_url_loader_factory_->GetSafeWeakWrapper();
 
     payments::PaymentsNetworkInterface* payments_network_interface =
         FakeCreditCardServer::GetPaymentsNetworkInterface();

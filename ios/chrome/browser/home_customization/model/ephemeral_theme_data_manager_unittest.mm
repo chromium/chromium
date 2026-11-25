@@ -46,9 +46,7 @@ class EphemeralThemeDataManagerTest : public PlatformTest {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     EphemeralThemeDataManager::RegisterProfilePrefs(pref_service_->registry());
-    test_shared_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_);
+    test_shared_loader_factory_ = test_url_loader_factory_.GetSafeWeakWrapper();
     manager_ = std::make_unique<EphemeralThemeDataManager>(
         pref_service_.get(), test_shared_loader_factory_, temp_dir_.GetPath());
   }

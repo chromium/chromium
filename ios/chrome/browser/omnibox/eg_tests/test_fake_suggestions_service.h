@@ -6,13 +6,14 @@
 #define IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_TEST_FAKE_SUGGESTIONS_SERVICE_H_
 
 #import "base/files/file_path.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/no_destructor.h"
 #import "base/scoped_observation.h"
 #import "components/omnibox/browser/remote_suggestions_service.h"
-#import "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace network {
+class SharedURLLoaderFactory;
 class TestURLLoaderFactory;
 }  // namespace network
 
@@ -32,8 +33,9 @@ class TestFakeSuggestionsService : public RemoteSuggestionsService::Observer {
              TemplateURLService* template_url_service,
              const base::FilePath& file_path);
 
-  void TearDown(RemoteSuggestionsService* remote_suggestions_service,
-                network::mojom::URLLoaderFactory* url_loader_factory);
+  void TearDown(
+      RemoteSuggestionsService* remote_suggestions_service,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
   // RemoteSuggestionsService::Observer:
   void OnRequestCreated(const base::UnguessableToken& request_id,

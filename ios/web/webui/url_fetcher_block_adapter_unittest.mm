@@ -48,8 +48,7 @@ TEST_F(URLFetcherBlockAdapterTest, FetchTextResource) {
 
   network::TestURLLoaderFactory test_url_loader_factory;
   auto test_shared_url_loader_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory);
+      test_url_loader_factory.GetSafeWeakWrapper();
 
   web::URLFetcherBlockAdapter web_ui_fetcher(
       test_url, test_shared_url_loader_factory, completion_handler);
@@ -76,8 +75,7 @@ TEST_F(URLFetcherBlockAdapterTest, FetchPNGResource) {
 
   network::TestURLLoaderFactory test_url_loader_factory;
   auto test_shared_url_loader_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory);
+      test_url_loader_factory.GetSafeWeakWrapper();
 
   web::URLFetcherBlockAdapter web_ui_fetcher(
       test_url, test_shared_url_loader_factory, completion_handler);
