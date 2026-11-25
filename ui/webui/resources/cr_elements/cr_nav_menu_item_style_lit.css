@@ -121,10 +121,20 @@
 }
 
 @media (forced-colors: active) {
+  .cr-nav-menu-item {
+    --cr-icon-color: currentColor;
+  }
+
+  .cr-nav-menu-item .cr-icon {
+    forced-color-adjust: preserve-parent-color;
+  }
+
+  .cr-nav-menu-item:hover,
   .cr-nav-menu-item[selected] {
+    --cr-icon-color: HighlightText;
+    --iron-icon-fill-color: HighlightText;
     background: Highlight;
     color: HighlightText;
-    --iron-icon-fill-color: HighlightText;
     /* The default application of forced colors does not work here. */
     forced-color-adjust: none;
   }
