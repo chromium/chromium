@@ -14497,7 +14497,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Memory.TabFootprint">
-  <owner>tommckee@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
   <summary>
     Measure of memory used by the processes that host an instance of a tab.
     Intended as a high-level metric for analyzing effective memory use of
