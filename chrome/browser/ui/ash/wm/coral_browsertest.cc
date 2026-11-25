@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/coral_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -25,9 +26,13 @@
 #include "base/scoped_observation.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/ash/birch/birch_test_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -38,15 +43,25 @@
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
+#include "chromeos/ui/wm/desks/desks_helper.h"
+#include "components/account_id/account_id.h"
 #include "components/app_restore/restore_data.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
 #include "gmock/gmock.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/aura/test/window_destroyed_waiter.h"
 #include "ui/aura/window.h"
+#include "url/url_constants.h"
 
 namespace ash {
 namespace {
@@ -895,6 +910,115 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, ConsecutiveLaunchGroups) {
                                             GURL("https://drive.google.com"),
                                             GURL("https://mail.google.com"),
                                             GURL("https://meet.google.com")));
+}
+
+// Tests that moving tabs to a new desk only moves tabs from normal browsers of
+// the active user.
+IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveTabsFiltersBrowsers) {
+  auto* const session_manager = session_manager::SessionManager::Get();
+  const session_manager::Session* active_session =
+      session_manager->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  Profile* active_profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id()));
+  ASSERT_TRUE(active_profile);
+
+  // Open a normal browser, a PWA window, and a popup browser for the active
+  // user on the active desk.
+  BrowserWindowInterface* const normal_browser = test::CreateAndShowBrowser(
+      active_profile,
+      {GURL("https://youtube.com/"), GURL("https://google.com/")});
+  BrowserWindowInterface* const app_browser = test::InstallAndLaunchPWA(
+      active_profile, GURL("https://www.nba.com/"),
+      /*launch_in_browser=*/false, /*app_title=*/u"NBA");
+  BrowserWindowInterface* const popup_browser =
+      CreateBrowserForPopup(active_profile);
+
+  // Open a normal browser for a secondary user and show it on the active desk.
+  profiles::testing::ScopedNonEnterpriseDomainSetterForTesting
+      non_enterprise_domain;
+  const AccountId secondary_account_id = AccountId::FromUserEmailGaiaId(
+      "secondary@example.com", GaiaId("secondary-gaia-id"));
+  ASSERT_TRUE(user_manager::UserManager::Get()->EnsureUser(
+      secondary_account_id, user_manager::UserType::kRegular,
+      /*is_ephemeral=*/false));
+  const std::string secondary_hash =
+      user_manager::TestHelper::GetFakeUsernameHash(secondary_account_id);
+  session_manager->CreateSession(secondary_account_id, secondary_hash,
+                                 /*new_user=*/false,
+                                 /*has_active_session=*/true);
+  base::test::TestFuture<Profile*> profile_future;
+  profiles::LoadProfileAsync(
+      BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
+          secondary_hash),
+      profile_future.GetCallback());
+  Profile* secondary_profile = profile_future.Get();
+  ASSERT_TRUE(secondary_profile);
+  session_manager->NotifyUserProfileLoaded(secondary_account_id);
+
+  BrowserWindowInterface* const secondary_browser = test::CreateAndShowBrowser(
+      secondary_profile, {GURL("https://maps.google.com/")});
+  aura::Window* const secondary_window =
+      secondary_browser->GetWindow()->GetNativeWindow();
+  Shell::Get()->multi_user_window_manager()->ShowWindowForCurrentUser(
+      secondary_window);
+  secondary_browser->GetWindow()->Show();
+  ASSERT_TRUE(chromeos::DesksHelper::Get()->BelongsToDesk(secondary_window,
+                                                          /*desk_index=*/0));
+
+  ASSERT_EQ(app_browser->GetTabStripModel()
+                ->GetWebContentsAt(0)
+                ->GetLastCommittedURL(),
+            GURL("https://www.nba.com/"));
+  ASSERT_EQ(popup_browser->GetTabStripModel()
+                ->GetWebContentsAt(0)
+                ->GetLastCommittedURL(),
+            GURL(url::kAboutBlankURL));
+  ASSERT_EQ(secondary_browser->GetTabStripModel()
+                ->GetWebContentsAt(0)
+                ->GetLastCommittedURL(),
+            GURL("https://maps.google.com/"));
+
+  std::vector<coral::mojom::GroupPtr> fake_groups;
+  fake_groups.push_back(
+      CreateTestGroup({{"Youtube", GURL("https://youtube.com/")},
+                       {"NBA", GURL("https://www.nba.com/")},
+                       {"Blank", GURL(url::kAboutBlankURL)},
+                       {"Google Maps", GURL("https://maps.google.com/")}},
+                      "Coral desk"));
+  OverrideTestResponse(std::move(fake_groups), CoralSource::kInSession);
+
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  ToggleOverview();
+  WaitForOverviewEntered();
+  birch_data_fetch_waiter.Run();
+
+  BirchChipButton* coral_chip = GetFirstCoralButton();
+  ASSERT_TRUE(coral_chip);
+  test::Click(coral_chip);
+
+  DesksController* desks_controller = DesksController::Get();
+  EXPECT_EQ(desks_controller->desks().size(), 2u);
+  EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 1);
+
+  std::vector<GURL> tab_urls_on_active_desk = CollectTabURLsFromWindows(
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk));
+  EXPECT_THAT(tab_urls_on_active_desk,
+              testing::ElementsAre(GURL("https://youtube.com/")));
+
+  EXPECT_EQ(normal_browser->GetTabStripModel()->count(), 1);
+  EXPECT_EQ(
+      normal_browser->GetTabStripModel()->GetWebContentsAt(0)->GetVisibleURL(),
+      GURL("https://google.com/"));
+  EXPECT_EQ(app_browser->GetTabStripModel()->count(), 1);
+  EXPECT_EQ(popup_browser->GetTabStripModel()->count(), 1);
+  EXPECT_EQ(secondary_browser->GetTabStripModel()->count(), 1);
+
+  CloseBrowserAndNativeWindowSynchronously(secondary_browser);
 }
 
 }  // namespace ash

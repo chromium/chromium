@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/wm/coral_delegate_impl.h"
 
 #include "ash/constants/generative_ai_country_restrictions.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
@@ -21,8 +22,10 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
+#include "chromeos/ash/components/browser_delegate/browser_type.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
+#include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/restore_data.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -30,6 +33,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/variations/service/variations_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
@@ -123,16 +127,21 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
   return restore_data;
 }
 
-content::BrowserContext* GetActiveUserBrowserContext() {
-  // TODO(crbug.com/278643115): Take the account_id from the callers.
-  const auto* active_session =
+const AccountId* GetActiveAccountId() {
+  // TODO(crbug.com/278643115): Take the `account_id` from the callers.
+  const session_manager::Session* active_session =
       session_manager::SessionManager::Get()->GetActiveSession();
-  if (!active_session) {
+  return active_session ? &active_session->account_id() : nullptr;
+}
+
+content::BrowserContext* GetActiveUserBrowserContext() {
+  const AccountId* active_account_id = GetActiveAccountId();
+  if (!active_account_id) {
     return nullptr;
   }
 
   return ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-      active_session->account_id());
+      *active_account_id);
 }
 
 // Gets profile from the active user.
@@ -146,14 +155,14 @@ Profile* GetActiveUserProfile() {
 // Creates an empty browser window (with no initial tabs) on the active desk
 // for `CoralDelegateImpl::MoveTabsInGroupToNewDesk()` to move existing tabs
 // into, matching `chrome::MoveTabsToNewWindow()`.
-ash::BrowserDelegate* CreateBrowser() {
-  Profile* active_profile = GetActiveUserProfile();
-  if (!active_profile) {
-    return nullptr;
-  }
+ash::BrowserDelegate* CreateBrowser(const AccountId& account_id) {
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  CHECK(browser_context);
 
   BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
-                                   active_profile,
+                                   Profile::FromBrowserContext(browser_context),
                                    /*user_gesture=*/false);
   params.should_trigger_session_restore = false;
   return ash::BrowserController::GetInstance()->GetDelegate(
@@ -162,11 +171,12 @@ ash::BrowserDelegate* CreateBrowser() {
           waap::NewWindowCreationSource::kMoveTabsToNewWindow));
 }
 
-// Finds the first tab with given url on the desk with the given `index` and
-// returns the source browser and the tab index.
+// Finds the first tab with `url` in a normal browser for `account_id` on the
+// desk at `src_desk_index`, and returns the source browser and tab index.
 ash::BrowserDelegate* FindTabOnDeskAtIndex(const GURL& url,
                                            int& out_tab_index,
-                                           size_t src_desk_index) {
+                                           size_t src_desk_index,
+                                           const AccountId& account_id) {
   out_tab_index = -1;
   auto* desks_helper = chromeos::DesksHelper::Get();
   ash::BrowserDelegate* found_browser = nullptr;
@@ -179,7 +189,8 @@ ash::BrowserDelegate* FindTabOnDeskAtIndex(const GURL& url,
           return ash::BrowserController::kContinueIteration;
         }
 
-        if (browser.IsOffTheRecord()) {
+        if (browser.GetType() != ash::BrowserType::kNormal ||
+            browser.IsOffTheRecord() || browser.GetAccountId() != account_id) {
           return ash::BrowserController::kContinueIteration;
         }
 
@@ -244,17 +255,19 @@ void CoralDelegateImpl::LaunchPostLoginGroup(coral::mojom::GroupPtr group) {
 void CoralDelegateImpl::MoveTabsInGroupToNewDesk(
     const std::vector<coral::mojom::Tab>& tabs,
     size_t src_desk_index) {
+  const AccountId& active_account_id = CHECK_DEREF(GetActiveAccountId());
+
   ash::BrowserDelegate* target_browser = nullptr;
   for (const auto& tab : tabs) {
     // Find the index of the tab item on its browser window.
     const auto& tab_url = tab.url;
     int tab_index = -1;
-    ash::BrowserDelegate* source_browser =
-        FindTabOnDeskAtIndex(tab_url, tab_index, src_desk_index);
+    ash::BrowserDelegate* source_browser = FindTabOnDeskAtIndex(
+        tab_url, tab_index, src_desk_index, active_account_id);
     if (source_browser) {
       // Create a browser on the new desk if there is none.
       if (!target_browser) {
-        target_browser = CreateBrowser();
+        target_browser = CreateBrowser(active_account_id);
         if (!target_browser) {
           break;
         }
