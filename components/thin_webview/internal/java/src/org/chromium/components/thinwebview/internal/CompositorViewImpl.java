@@ -200,7 +200,10 @@ public class CompositorViewImpl implements CompositorView {
                             mSurface.release();
                             mSurface = null;
                         }
-                        return false;
+                        // Let TextureView release the SurfaceTexture now that the native
+                        // compositor and Surface wrapper have been torn down.
+                        return ThinWebViewFeatureMap.sThinWebViewReleaseSurfaceTextureOnDestroy
+                                .isEnabled();
                     }
 
                     @Override

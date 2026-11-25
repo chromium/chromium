@@ -7,6 +7,7 @@ package org.chromium.components.thinwebview.internal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,6 +46,8 @@ import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowSurfaceView;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
@@ -66,6 +69,7 @@ public class CompositorViewImplUnitTest {
     @Mock private XrSceneCoreSessionManager mXrSceneCoreSessionManager;
     @Mock private XrSurfaceEntityHolder mXrSurfaceEntityHolder;
     @Captor private ArgumentCaptor<XrSurfaceEntityHolder.Callback> mXrCallbackCaptor;
+    @Captor private ArgumentCaptor<Surface> mSurfaceCaptor;
 
     private Context mContext;
     private ThinWebViewConstraints mConstraints;
@@ -82,6 +86,7 @@ public class CompositorViewImplUnitTest {
     }
 
     @Test
+    @EnableFeatures(ThinWebViewFeatureMap.THIN_WEBVIEW_RELEASE_SURFACE_TEXTURE_ON_DESTROY)
     public void testTextureView_creationAndCallbacks() {
         mConstraints.supportsOpacity = true;
         mConstraints.backgroundColor = Color.GREEN;
@@ -110,7 +115,8 @@ public class CompositorViewImplUnitTest {
                         eq(100),
                         eq(200),
                         eq(false),
-                        any(Surface.class));
+                        mSurfaceCaptor.capture());
+        Surface initialSurface = mSurfaceCaptor.getValue();
 
         // Size changed
         listener.onSurfaceTextureSizeChanged(surfaceTexture, 300, 400);
@@ -121,24 +127,35 @@ public class CompositorViewImplUnitTest {
                         eq(300),
                         eq(400),
                         eq(false),
-                        any(Surface.class));
+                        eq(initialSurface));
 
         // Updated (should not invoke extra JNI methods)
         listener.onSurfaceTextureUpdated(surfaceTexture);
 
-        // Surface texture destroyed
-        boolean result = listener.onSurfaceTextureDestroyed(surfaceTexture);
-        assertFalse(result);
+        // Surface texture destroyed - TextureView should release the SurfaceTexture.
+        assertTrue(listener.onSurfaceTextureDestroyed(surfaceTexture));
         verify(mMockJni).surfaceDestroyed(any());
 
-        // Surface texture available again
-        listener.onSurfaceTextureAvailable(surfaceTexture, 300, 400);
+        // Re-attaching provides a new SurfaceTexture and creates a fresh Surface.
+        SurfaceTexture newSurfaceTexture = new SurfaceTexture(0);
+        textureView.setSurfaceTexture(newSurfaceTexture);
+        listener.onSurfaceTextureAvailable(newSurfaceTexture, 500, 600);
         verify(mMockJni, times(2)).surfaceCreated(any());
+        verify(mMockJni)
+                .surfaceChanged(
+                        any(),
+                        eq(PixelFormat.OPAQUE),
+                        eq(500),
+                        eq(600),
+                        eq(false),
+                        mSurfaceCaptor.capture());
+        assertNotSame(initialSurface, mSurfaceCaptor.getValue());
 
         compositorView.destroy();
     }
 
     @Test
+    @EnableFeatures(ThinWebViewFeatureMap.THIN_WEBVIEW_RELEASE_SURFACE_TEXTURE_ON_DESTROY)
     public void testTextureView_callbacksIgnoredAfterDestroy() {
         mConstraints.supportsOpacity = true;
 
@@ -153,15 +170,44 @@ public class CompositorViewImplUnitTest {
 
         compositorView.destroy();
 
-        // All subsequent callbacks should no-op
+        // All subsequent callbacks should no-op for JNI, while still allowing TextureView to
+        // release the SurfaceTexture.
         listener.onSurfaceTextureAvailable(surfaceTexture, 100, 200);
         listener.onSurfaceTextureSizeChanged(surfaceTexture, 100, 200);
-        listener.onSurfaceTextureDestroyed(surfaceTexture);
+        assertTrue(listener.onSurfaceTextureDestroyed(surfaceTexture));
 
         verify(mMockJni, never()).surfaceCreated(any());
         verify(mMockJni, never()).surfaceDestroyed(any());
         verify(mMockJni, never())
                 .surfaceChanged(any(), anyInt(), anyInt(), anyInt(), anyBoolean(), any());
+    }
+
+    @Test
+    @DisableFeatures(ThinWebViewFeatureMap.THIN_WEBVIEW_RELEASE_SURFACE_TEXTURE_ON_DESTROY)
+    public void testTextureView_killSwitchDisabled_retainsSurfaceTexture() {
+        mConstraints.supportsOpacity = true;
+
+        CompositorViewImpl compositorView =
+                new CompositorViewImpl(mContext, mWindowAndroid, mConstraints);
+        TextureView textureView = (TextureView) compositorView.getView();
+        TextureView.SurfaceTextureListener listener = textureView.getSurfaceTextureListener();
+        assertNotNull(listener);
+
+        SurfaceTexture surfaceTexture = new SurfaceTexture(0);
+        textureView.setSurfaceTexture(surfaceTexture);
+
+        listener.onSurfaceTextureAvailable(surfaceTexture, 100, 200);
+        verify(mMockJni).surfaceCreated(any());
+
+        // Surface texture destroyed - TextureView retains the SurfaceTexture when disabled.
+        assertFalse(listener.onSurfaceTextureDestroyed(surfaceTexture));
+        verify(mMockJni).surfaceDestroyed(any());
+
+        // Re-attaching with the same SurfaceTexture succeeds.
+        listener.onSurfaceTextureAvailable(surfaceTexture, 300, 400);
+        verify(mMockJni, times(2)).surfaceCreated(any());
+
+        compositorView.destroy();
     }
 
     @Test
