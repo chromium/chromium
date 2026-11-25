@@ -21,6 +21,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/containers/enum_set.h"
 #include "base/metrics/field_trial.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -83,6 +84,7 @@ enum IDCollectionKey {
   // transmitted via the X-Client-Data header. These IDs are transmitted in
   // first- and third-party contexts.
   GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
+  ID_COLLECTION_FIRST = GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
   // The IDs in this collection are used by Google web properties and are
   // transmitted via the X-Client-Data header. Transmitted in only first-party
   // contexts.
@@ -101,9 +103,14 @@ enum IDCollectionKey {
   // This collection is used by the Google App and is passed at the time
   // the cross-app communication is triggered.
   GOOGLE_APP,
+  ID_COLLECTION_LAST = GOOGLE_APP,
   // The total count of collections.
   ID_COLLECTION_COUNT,
 };
+
+// A set of IDCollectionKeys.
+using IDCollectionKeySet =
+    base::EnumSet<IDCollectionKey, ID_COLLECTION_FIRST, ID_COLLECTION_LAST>;
 
 // Associates a VariationID value with a FieldTrial group (denoted by
 // `active_group_id`) for collection `key`. If an ID was previously set for

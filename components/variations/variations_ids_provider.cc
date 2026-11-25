@@ -140,20 +140,20 @@ std::string VariationsIdsProvider::GetVariationsString() {
 }
 
 std::vector<VariationID> VariationsIdsProvider::GetVariationsVector(
-    const std::set<IDCollectionKey>& keys) {
+    IDCollectionKeySet keys) {
   return GetVariationsVectorImpl(keys);
 }
 
 std::vector<VariationID>
 VariationsIdsProvider::GetVariationsVectorForWebPropertiesKeys() {
-  const std::set<IDCollectionKey> web_properties_keys{
+  static constexpr IDCollectionKeySet kWebPropertiesKeys{
       GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
       GOOGLE_WEB_PROPERTIES_FIRST_PARTY,
       GOOGLE_WEB_PROPERTIES_SIGNED_IN,
       GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
       GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY,
   };
-  return GetVariationsVectorImpl(web_properties_keys);
+  return GetVariationsVectorImpl(kWebPropertiesKeys);
 }
 
 void VariationsIdsProvider::SetLowEntropySourceValue(
@@ -290,7 +290,7 @@ void VariationsIdsProvider::ResetInstanceForTesting(
 }
 
 std::string VariationsIdsProvider::GetVariationsString(
-    const std::set<IDCollectionKey>& keys) {
+    IDCollectionKeySet keys) {
   // Construct a space-separated string with leading and trailing spaces from
   // the VariationIDs set. The IDs in the string are unique and in sorted order.
   std::string ids_string = " ";
@@ -623,7 +623,7 @@ std::string VariationsIdsProvider::GetClientDataHeader(
 }
 
 std::vector<VariationID> VariationsIdsProvider::GetVariationsVectorImpl(
-    const std::set<IDCollectionKey>& keys) {
+    IDCollectionKeySet keys) {
   const bool optimize_ipc = GetOptimizeVariationsIpcFeatureState();
   // Get all the active variation ids while holding the lock.
   std::vector<VariationID> result;
@@ -634,7 +634,7 @@ std::vector<VariationID> VariationsIdsProvider::GetVariationsVectorImpl(
     // Copy the requested variations to the output vector.
     result.reserve(active_variation_ids_set_.size());
     for (const auto& entry : active_variation_ids_set_) {
-      if (keys.find(entry.second) != keys.end()) {
+      if (keys.Has(entry.second)) {
         result.push_back(entry.first);
       }
     }

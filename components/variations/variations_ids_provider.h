@@ -6,7 +6,6 @@
 #define COMPONENTS_VARIATIONS_VARIATIONS_IDS_PROVIDER_H_
 
 #include <map>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -139,8 +138,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
 
   // Returns the collection of VariationIDs associated with `keys`. Each entry
   // in the returned vector is unique.
-  std::vector<VariationID> GetVariationsVector(
-      const std::set<IDCollectionKey>& keys);
+  std::vector<VariationID> GetVariationsVector(IDCollectionKeySet keys);
 
   // Returns the collection of variations ids for all Google Web Properties
   // related keys.
@@ -221,7 +219,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // Returns a space-separated string containing the list of current active
   // variations (as would be reported in the `variation_id` repeated field of
   // the ClientVariations proto) for a given ID collection.
-  std::string GetVariationsString(const std::set<IDCollectionKey>& keys);
+  std::string GetVariationsString(IDCollectionKeySet keys);
 
   // base::FieldTrialList::Observer:
   // This will add the variation ID associated with `trial_name` and
@@ -311,8 +309,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
 
   // Returns the collection of variation ids matching any of the given
   // `keys`. Each entry in the returned vector will be unique.
-  std::vector<VariationID> GetVariationsVectorImpl(
-      const std::set<IDCollectionKey>& key);
+  std::vector<VariationID> GetVariationsVectorImpl(IDCollectionKeySet keys);
 
   // Returns whether `id` has already been added to the active set of variation
   // ids. This includes ids from field trials, synthetic trials, and forced ids.

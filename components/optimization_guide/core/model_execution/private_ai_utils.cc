@@ -4,11 +4,11 @@
 
 #include "components/optimization_guide/core/model_execution/private_ai_utils.h"
 
-#include <set>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_ids_provider.h"
 
 namespace private_ai {
@@ -24,7 +24,7 @@ void PopulatePaicMessage(
         paic_message->mutable_private_execute_request_ext();
     *private_execute_request->mutable_request() = execute_request;
 
-    const std::set<variations::IDCollectionKey> web_properties_keys{
+    static constexpr variations::IDCollectionKeySet kWebPropertiesKeys{
         variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
         variations::GOOGLE_WEB_PROPERTIES_FIRST_PARTY,
         variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
@@ -32,7 +32,7 @@ void PopulatePaicMessage(
     };
     std::vector<variations::VariationID> variations =
         variations::VariationsIdsProvider::GetInstance()->GetVariationsVector(
-            web_properties_keys);
+            kWebPropertiesKeys);
     for (auto variation : variations) {
       private_execute_request->add_variations(variation);
     }

@@ -5,6 +5,7 @@
 #include "components/variations/variations_ids_provider.h"
 
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 
