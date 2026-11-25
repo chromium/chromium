@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -45,6 +46,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -134,7 +136,8 @@ public class TopToolbarSceneLayerTest {
     @EnableFeatures(ChromeFeatureList.TOP_TOOLBAR_SCENE_LAYER_SKIP_UPDATE_ON_PROGRESS)
     public void testProgressBarUpdateSkipsUpdateToolbarLayer() {
         AtomicReference<@Nullable ResourceManager> resourceManagerRef = new AtomicReference<>();
-        TopToolbarOverlayCoordinator coordinator = createCoordinator(resourceManagerRef::get);
+        TopToolbarOverlayCoordinator coordinator =
+                createCoordinator(resourceManagerRef::get, mProgressBar);
 
         // Frame 1 with null ResourceManager skips JNI pushes and preserves dirty state.
         mFrameRequestSupplier.set(1L);
@@ -178,7 +181,8 @@ public class TopToolbarSceneLayerTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TOP_TOOLBAR_SCENE_LAYER_SKIP_UPDATE_ON_PROGRESS)
     public void testFlagDisabledPushesBothOnProgressBarUpdate() {
-        TopToolbarOverlayCoordinator coordinator = createCoordinator(() -> mResourceManager);
+        TopToolbarOverlayCoordinator coordinator =
+                createCoordinator(() -> mResourceManager, mProgressBar);
 
         mFrameRequestSupplier.set(1L);
         verifyUpdateToolbarLayerCount(1);
@@ -193,8 +197,30 @@ public class TopToolbarSceneLayerTest {
         coordinator.destroy();
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOP_TOOLBAR_SCENE_LAYER_SKIP_UPDATE_ON_PROGRESS)
+    public void testProgressBarNullAlwaysPushesToolbarLayer() {
+        TopToolbarOverlayCoordinator coordinator =
+                createCoordinator(() -> mResourceManager, /* progressBar= */ null);
+        ArgumentCaptor<TabObserver> tabObserverCaptor = ArgumentCaptor.forClass(TabObserver.class);
+        verify(mTab).addObserver(tabObserverCaptor.capture());
+
+        mFrameRequestSupplier.set(1L);
+        verifyUpdateToolbarLayerCount(1);
+        verifyUpdateProgressBarCount(1);
+
+        clearInvocations(mTopToolbarSceneLayerNatives);
+        tabObserverCaptor.getValue().onLoadProgressChanged(mTab, 0.5f);
+        mFrameRequestSupplier.set(2L);
+        verifyUpdateToolbarLayerCount(1);
+        verifyUpdateProgressBarCount(1);
+
+        coordinator.destroy();
+    }
+
     private TopToolbarOverlayCoordinator createCoordinator(
-            Supplier<? extends @Nullable ResourceManager> resourceManagerSupplier) {
+            Supplier<? extends @Nullable ResourceManager> resourceManagerSupplier,
+            @Nullable ToolbarProgressBar progressBar) {
         return new TopToolbarOverlayCoordinator(
                 mContext,
                 mLayoutManager,
@@ -208,7 +234,7 @@ public class TopToolbarSceneLayerTest {
                 LayoutType.BROWSING,
                 false,
                 mCaptureResourceIdSupplier,
-                mProgressBar);
+                progressBar);
     }
 
     private void verifyUpdateToolbarLayerCount(int expectedCount) {

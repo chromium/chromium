@@ -85,9 +85,12 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                         .with(TopToolbarOverlayProperties.ANONYMIZE, false)
                         .with(TopToolbarOverlayProperties.SHOW_SHADOW, true)
                         .build();
-        mSceneLayer = new TopToolbarSceneLayer(resourceManagerSupplier);
+        boolean skipUpdateOnProgress =
+                progressBar != null
+                        && ChromeFeatureList.sTopToolbarSceneLayerSkipUpdateOnProgress.isEnabled();
+        mSceneLayer = new TopToolbarSceneLayer(resourceManagerSupplier, skipUpdateOnProgress);
         mPropertyChangeProcessor =
-                ChromeFeatureList.sTopToolbarSceneLayerSkipUpdateOnProgress.isEnabled()
+                skipUpdateOnProgress
                         ? PropertyModelChangeProcessor.create(
                                 mModel,
                                 mSceneLayer,

@@ -10,7 +10,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
@@ -29,6 +28,8 @@ public class TopToolbarSceneLayer extends SceneOverlayLayer {
 
     /** A means of accessing a {@link ResourceManager} for textures. */
     private final Supplier<? extends @Nullable ResourceManager> mResourceManagerSupplier;
+
+    private final boolean mSkipUpdateOnProgress;
 
     private boolean mToolbarLayerDirty = true;
     private boolean mProgressBarDirty = true;
@@ -51,9 +52,13 @@ public class TopToolbarSceneLayer extends SceneOverlayLayer {
 
     /**
      * @param resourceManagerSupplier Access to a {@link ResourceManager} for textures.
+     * @param skipUpdateOnProgress Whether unchanged layer updates should be skipped.
      */
-    TopToolbarSceneLayer(Supplier<? extends @Nullable ResourceManager> resourceManagerSupplier) {
+    TopToolbarSceneLayer(
+            Supplier<? extends @Nullable ResourceManager> resourceManagerSupplier,
+            boolean skipUpdateOnProgress) {
         mResourceManagerSupplier = resourceManagerSupplier;
+        mSkipUpdateOnProgress = skipUpdateOnProgress;
     }
 
     /** Push dirty information about the texture or progress bar to native. */
@@ -61,9 +66,7 @@ public class TopToolbarSceneLayer extends SceneOverlayLayer {
         ResourceManager resourceManager = mResourceManagerSupplier.get();
         if (resourceManager == null) return;
 
-        boolean skipUnchanged =
-                ChromeFeatureList.sTopToolbarSceneLayerSkipUpdateOnProgress.isEnabled();
-        if (!skipUnchanged || mToolbarLayerDirty) {
+        if (!mSkipUpdateOnProgress || mToolbarLayerDirty) {
             mToolbarLayerDirty = false;
             TopToolbarSceneLayerJni.get()
                     .updateToolbarLayer(
@@ -82,7 +85,7 @@ public class TopToolbarSceneLayer extends SceneOverlayLayer {
                             model.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
         }
 
-        if (!skipUnchanged || mProgressBarDirty) {
+        if (!mSkipUpdateOnProgress || mProgressBarDirty) {
             mProgressBarDirty = false;
             DrawingInfo progressInfo = model.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO);
             if (progressInfo == null) return;
