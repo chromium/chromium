@@ -12,6 +12,7 @@
 
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/mojom/frame.mojom.h"
+#include "base/functional/bind.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -195,6 +197,8 @@ void AwRenderFrameExt::DidCreateDocumentElement() {
 
 void AwRenderFrameExt::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
+  has_pending_prerender_focus_update_ = false;
+  weak_ptr_factory_.InvalidateWeakPtrs();
   // Clear the cache when we cross site boundaries in the main frame.
   //
   // We're trying to approximate what happens with a multi-process Chromium,
@@ -216,6 +220,21 @@ void AwRenderFrameExt::FocusedElementChanged(const blink::WebElement& element) {
   if (element.IsNull() || !render_frame())
     return;
 
+  // Avoid binding `mojom::FrameHost` while prerendering, which would otherwise
+  // cancel prerendering via `MojoBinderPolicyApplier`. Defer hit-test updates
+  // until activation, when `AwRenderViewHostExt::UpdateHitTestData` accepts
+  // updates for the newly active frame.
+  if (blink::WebDocument document = element.GetDocument();
+      document && document.IsPrerendering()) {
+    if (!has_pending_prerender_focus_update_) {
+      has_pending_prerender_focus_update_ = true;
+      document.AddPostPrerenderingActivationStep(base::BindOnce(
+          &AwRenderFrameExt::UpdateHitTestDataForPrerenderActivation,
+          weak_ptr_factory_.GetWeakPtr()));
+    }
+    return;
+  }
+
   auto data = mojom::HitTestData::New();
 
   data->href = GetHref(element);
@@ -231,6 +250,18 @@ void AwRenderFrameExt::FocusedElementChanged(const blink::WebElement& element) {
                       element.IsEditable(), data.get());
 
   GetFrameHost()->UpdateHitTestData(std::move(data));
+}
+
+void AwRenderFrameExt::UpdateHitTestDataForPrerenderActivation() {
+  has_pending_prerender_focus_update_ = false;
+  if (!render_frame() || !render_frame()->GetWebFrame()) {
+    return;
+  }
+  blink::WebDocument document = render_frame()->GetWebFrame()->GetDocument();
+  if (!document) {
+    return;
+  }
+  FocusedElementChanged(document.FocusedElement());
 }
 
 void AwRenderFrameExt::HandleHitTestResult(

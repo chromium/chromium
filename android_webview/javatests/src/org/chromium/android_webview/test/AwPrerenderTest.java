@@ -9,7 +9,11 @@ import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_T
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CancellationSignal;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebView.HitTestResult;
 
 import androidx.annotation.Nullable;
 import androidx.test.InstrumentationRegistry;
@@ -3077,5 +3081,167 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // callback re-entered startPrerendering and destroyed the dispatching PrerenderInfo.
         activationCallbackHelper1.waitForNext();
         activationCallbackHelper2.waitForNext();
+    }
+
+    // Tests that focusing elements inside a prerendered page does not bind FrameHost (which would
+    // cancel prerendering via MojoBinderPolicyApplier), deduplicates multiple focus changes while
+    // prerendering, and updates hit-test data to the final focused element upon activation.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testFocusDuringPrerenderingDefersHitTestDataUntilActivation() throws Throwable {
+        loadInitialPage();
+
+        SettableFuture<Boolean> focusDoneFuture = SettableFuture.create();
+        Object focusFutureObj =
+                new Object() {
+                    @JavascriptInterface
+                    public void focused() {
+                        focusDoneFuture.set(true);
+                    }
+                };
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                mAwContents, focusFutureObj, "awFocusDoneFuture");
+
+        final String firstHref = "https://example.com/prerender-first-link";
+        final String secondHref = "https://example.com/prerender-second-link";
+        final String focusScript =
+                String.format(
+                        """
+                        window.addEventListener('DOMContentLoaded', () => {
+                          if (!document.prerendering) return;
+                          const link1 = document.createElement('a');
+                          link1.id = 'prerender_link_1';
+                          link1.href = '%s';
+                          link1.textContent = 'First link';
+                          document.body.appendChild(link1);
+                          const link2 = document.createElement('a');
+                          link2.id = 'prerender_link_2';
+                          link2.href = '%s';
+                          link2.textContent = 'Second link';
+                          document.body.appendChild(link2);
+                          link1.focus();
+                          link2.focus();
+                          awFocusDoneFuture.focused();
+                        });
+                        """,
+                        firstHref, secondHref);
+        ScriptHandler scriptHandler =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mAwContents.addDocumentStartJavaScript(
+                                        focusScript, new String[] {"*"}));
+        try {
+            // 0 corresponds to `PrerenderFinalStatus::kActivated`.
+            var histogramWatcher = createFinalStatusHistogramWatcher(/* expectedStatus= */ 0);
+            startPrerendering(
+                    mPrerenderingUrl,
+                    /* prefetchParameters= */ null,
+                    /* cancellationSignal= */ null,
+                    mActivationCallbackHelper.getCallback(),
+                    mPrerenderErrorCallbackHelper.getCallback());
+            Assert.assertTrue(focusDoneFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+            Assert.assertEquals(0, mPrerenderErrorCallbackHelper.getCallCount());
+
+            activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
+            histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+            mActivityTestRule.pollUiThread(
+                    () -> {
+                        AwContents.HitTestData data = mAwContents.getLastHitTestResult();
+                        return data.hitTestResultType == HitTestResult.SRC_ANCHOR_TYPE
+                                && secondHref.equals(data.hitTestResultExtraData);
+                    });
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(scriptHandler::remove);
+        }
+    }
+
+    // Tests that focusing and then blurring an element before prerender activation does not push
+    // stale hit-test data when the page activates.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testFocusThenBlurDuringPrerenderingDoesNotUpdateHitTestData() throws Throwable {
+        loadInitialPage();
+
+        SettableFuture<Boolean> focusBlurDoneFuture = SettableFuture.create();
+        Object focusFutureObj =
+                new Object() {
+                    @JavascriptInterface
+                    public void done() {
+                        focusBlurDoneFuture.set(true);
+                    }
+                };
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                mAwContents, focusFutureObj, "awFocusBlurDoneFuture");
+
+        final String targetHref = "https://example.com/prerender-blurred-link";
+        final String focusBlurScript =
+                String.format(
+                        """
+                        window.addEventListener('DOMContentLoaded', () => {
+                          if (!document.prerendering) return;
+                          const link = document.createElement('a');
+                          link.id = 'prerender_blurred_link';
+                          link.href = '%s';
+                          link.textContent = 'Blurred link';
+                          document.body.appendChild(link);
+                          link.focus();
+                          link.blur();
+                          awFocusBlurDoneFuture.done();
+                        });
+                        """,
+                        targetHref);
+        ScriptHandler scriptHandler =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mAwContents.addDocumentStartJavaScript(
+                                        focusBlurScript, new String[] {"*"}));
+        try {
+            // 0 corresponds to `PrerenderFinalStatus::kActivated`.
+            var histogramWatcher = createFinalStatusHistogramWatcher(/* expectedStatus= */ 0);
+            startPrerendering(
+                    mPrerenderingUrl,
+                    /* prefetchParameters= */ null,
+                    /* cancellationSignal= */ null,
+                    mActivationCallbackHelper.getCallback(),
+                    mPrerenderErrorCallbackHelper.getCallback());
+            Assert.assertTrue(
+                    focusBlurDoneFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+            Assert.assertEquals(0, mPrerenderErrorCallbackHelper.getCallCount());
+
+            activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
+            histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+            // Round-trip `documentHasImages` over the channel-associated `LocalMainFrame` pipe so
+            // any hypothetical `FrameHost::UpdateHitTestData` IPC sent during activation would
+            // already have arrived on the UI thread before inspecting `getLastHitTestResult()`.
+            SettableFuture<Integer> hasImagesFuture = SettableFuture.create();
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        Handler handler =
+                                new Handler(Looper.getMainLooper()) {
+                                    @Override
+                                    public void handleMessage(Message msg) {
+                                        hasImagesFuture.set(msg.arg1);
+                                    }
+                                };
+                        mAwContents.documentHasImages(handler.obtainMessage());
+                    });
+            hasImagesFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            Assert.assertEquals(
+                                    HitTestResult.UNKNOWN_TYPE,
+                                    mAwContents.getLastHitTestResult().hitTestResultType));
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(scriptHandler::remove);
+        }
     }
 }

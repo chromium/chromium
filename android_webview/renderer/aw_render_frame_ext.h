@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "android_webview/common/mojom/frame.mojom.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -67,6 +68,7 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
       mojo::PendingAssociatedReceiver<mojom::LocalMainFrame> pending_receiver);
 
   void HandleHitTestResult(const blink::WebHitTestResult& result);
+  void UpdateHitTestDataForPrerenderActivation();
 
   const mojo::AssociatedRemote<mojom::FrameHost>& GetFrameHost();
 
@@ -74,12 +76,15 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
   blink::WebFrameWidget* GetWebFrameWidget();
 
   url::Origin last_origin_;
+  bool has_pending_prerender_focus_update_ = false;
 
   blink::AssociatedInterfaceRegistry registry_;
   mojo::AssociatedReceiver<mojom::LocalMainFrame> local_main_frame_receiver_{
       this};
 
   mojo::AssociatedRemote<mojom::FrameHost> frame_host_remote_;
+
+  base::WeakPtrFactory<AwRenderFrameExt> weak_ptr_factory_{this};
 };
 
 }  // namespace android_webview
