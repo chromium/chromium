@@ -820,6 +820,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="188537499764410817">Webbplatser där Gemini kan logga in dig visas här</translation>
 <translation id="1886996562706621347">Tillåt att webbplatser begär att bli standardhanterare för protokoll (rekommenderas)</translation>
 <translation id="1887210448491286312">Sluta casta fliken till <ph name="DEVICE_NAME" /></translation>
+<translation id="1888096615505794228">Kontrollera din aktivitet</translation>
 <translation id="1888692623866312036">Färdigheten har sparats</translation>
 <translation id="1890026367080681123">Öppna inställningarna för inbäddat innehåll</translation>
 <translation id="1892453608039100484">1. Klicka på <ph name="BUTTON_LABEL" /> nedan
@@ -1197,6 +1198,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2300332192655962933">Filen var inte tillgänglig på webbplatsen</translation>
 <translation id="2300383962156589922">Anpassa och kontrollera <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Tilläggets rotkatalog är ogiltig.</translation>
+<translation id="2301564937934269788">Hantera AI som används för funktioner som skrivhjälp med mera</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2306794767168143227">Spara i <ph name="BRAND" /> på den här enheten</translation>
 <translation id="2309620859903500144">Den här webbplatsen får inte använda enhetens rörelse- eller ljussensor.</translation>
@@ -1436,6 +1438,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2575502321843437554">Inte tillräckligt engagerande</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Den här enheten sparas i ett år. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}other{Den här enheten sparas i {YEARS} år. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}}</translation>
 <translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och kan inte längre interagera med dig i Googles tjänster.</translation>
+<translation id="2579341115189727508">Hjälper webbplatser att sammanfatta, korrekturläsa, texta med mera</translation>
 <translation id="2580889980133367162">Tillåt alltid att <ph name="HOST" /> laddar flera filer</translation>
 <translation id="2583877283803564049">Fäst i verktygsfältet</translation>
 <translation id="2583905535229480958">Alla smartkortsläsare</translation>
@@ -1807,6 +1810,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> har avinstallerat en app}other{<ph name="APP_NAME" /> har avinstallerat # appar}}</translation>
 <translation id="2988018669686457659">Renderare i reserv</translation>
 <translation id="2988328607561082373">Du återanvänder inga lösenord</translation>
+<translation id="298928587890404307">Ger dig viktiga punkter, en kort sammanfattning eller en rubrik</translation>
 <translation id="2989523299700148168">Nyligen besökta</translation>
 <translation id="2989786307324390836">DER-kodat binärt enstaka certifikat</translation>
 <translation id="2990583317361835189">Tillåt inte att webbplatser använder rörelsesensorer</translation>
@@ -1885,6 +1889,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3057938290530993634">Tryck länge för att fästa dina mest besökta webbplatser så att du kommer åt dem snabbt nästa gång</translation>
 <translation id="3058498974290601450">Du kan när som helst inaktivera synkroniseringen i inställningarna</translation>
 <translation id="3060694926634506594">Färdigheter</translation>
+<translation id="3061501546390656547">Sammanfattning</translation>
 <translation id="306166624240243643">Granska uppdateringar av namn och webbadress</translation>
 <translation id="3062037978804523418"><ph name="TASK_TITLE" />: Om du inte svarar snart slutar Gemini att arbeta med den här uppgiften för att spara batteri</translation>
 <translation id="3062655045399308513">Radera webbinformation …</translation>
@@ -2434,6 +2439,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3630132874740063857">Din telefon</translation>
 <translation id="3633492436029262388">Om du vill få tillgång till dina lösenord, bokmärken med mera på alla dina enheter kan du spara dem i Google-kontot</translation>
 <translation id="3633759325857031264">HDMI-enhet</translation>
+<translation id="3634271025780115616">Vill du inaktivera AI på enheten?</translation>
 <translation id="3634652306074934350">Begäran om behörighet har löpt ut</translation>
 <translation id="3635353578505343390">Skicka feedback till Google</translation>
 <translation id="3636538438330991674">Hantera vilka appar som Gemini kan ansluta till</translation>
@@ -2708,6 +2714,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3893268973182382220">Det går inte att läsa in panelen just nu</translation>
 <translation id="3893536212201235195">Läsa och ändra tillgänglighetsinställningarna</translation>
 <translation id="3893858854379998374">Radera oanvända bokmärken om du vill spara bokmärken i kontot</translation>
+<translation id="3893902465710154528">AI-modeller på den här enheten</translation>
 <translation id="3894427358181296146">Lägg till mapp</translation>
 <translation id="389521680295183045">Webbplatser kan begära tillstånd att få veta om du använder enheten aktivt</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> vill <ph name="FIRST_PERMISSION" /> och <ph name="SECOND_PERMISSION" /></translation>
@@ -2741,6 +2748,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3928570707778085600">Vill du spara ändringarna i <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Låg bläcknivå</translation>
 <translation id="3929426037718431833">De här tilläggen kan se och ändra information på den här webbplatsen.</translation>
+<translation id="3930298488600685734">Hjälper dig att skriva utkast, omformulera och organisera text på webbplatser som använder den</translation>
 <translation id="3930737994424905957">Söker efter enheter</translation>
 <translation id="3930968231047618417">Bakgrundsfärg</translation>
 <translation id="3932356525934356570">Fäst <ph name="EXTENSION_NAME" /></translation>
@@ -2953,6 +2961,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4202536110335087135">Prova nu</translation>
 <translation id="4203065553461038553">Filens namn och/eller sökväg är för långa</translation>
 <translation id="4203769790323223880">Kamera tillåts inte</translation>
+<translation id="4203999225629028925">Använd AI på enheten</translation>
 <translation id="4204415812590935863">Det går inte att skapa ett tema just nu.</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
 <translation id="4206585797409671301">Får visa begäranden</translation>
@@ -2973,6 +2982,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4216511743389425832">Lyssna på sidan</translation>
 <translation id="4218081191298393750">Klicka på högtalarikonen om du vill stänga av ljudet på den här fliken</translation>
 <translation id="4220157655212610908">Använda en extern säkerhetsnyckel</translation>
+<translation id="4222217401873406622">Snabbare och mer kompakt än allmänt skrivande</translation>
 <translation id="4222917615373664617">Prisbevakning har aktiverats. Priset är <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Mikrofon tillåts inte</translation>
 <translation id="4224541845943007092">Läs och spara tangentbordsinmatningar från adressfältet</translation>
@@ -3416,6 +3426,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">Radera när du stänger alla fönster</translation>
 <translation id="4714414859110184926">Skaffa nycklar</translation>
+<translation id="4715398813921022332">Hanterar många uppgifter, så en nedladdning täcker flera funktioner</translation>
 <translation id="4715631922189108923">Redigera användarnamn</translation>
 <translation id="47158868804223727">Utöka eller komprimera gruppen genom att klicka på namnet</translation>
 <translation id="471759229191973607">Byt tema</translation>
@@ -3573,6 +3584,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4876273079589074638">Hjälp våra ingenjörer att undersöka och åtgärda den här kraschen. Ange de exakta stegen om du kan. Ingen detalj är för liten.</translation>
 <translation id="4876305945144899064">Inget användarnamn</translation>
 <translation id="4876327226315760474">Detta innebär att webbplatsfunktionerna ska fungera som förväntat, men du kan ha mindre surfskydd.</translation>
+<translation id="4876867869589423092">Kontrollerar stavning och grammatik</translation>
 <translation id="4877276003880815204">Inspektera element</translation>
 <translation id="4878634973244289103">Det gick inte att skicka feedback. Försök igen senare.</translation>
 <translation id="4878718769565915065">Det gick inte att lägga till ett fingeravtryck på säkerhetsnyckeln</translation>
@@ -3617,6 +3629,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4922104989726031751">Om du vill använda Lösenordshantering med operativsystemet ska du starta om Chromium och tillåta åtkomst till datorns lösenordshanterare. Flikarna öppnas igen när du har startat om enheten.</translation>
 <translation id="4923561999941435531">{0,plural, =1{Spara 1 objekt i kontot}other{Spara # objekt i kontot}}</translation>
 <translation id="4923977675318667854">Visa flikgrupper</translation>
+<translation id="4924283156756356309">På enheten</translation>
 <translation id="49265687513387605">Det gick inte att casta skärmen. Kontrollera att du har svarat på frågan om att dela skärmen.</translation>
 <translation id="4927753642311223124">Här finns inget att se, fortsätt.</translation>
 <translation id="4928488083257788101">Data som skickas till Google kan ses av mänskliga granskare för att förbättra den här funktionen</translation>
@@ -3703,6 +3716,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5026572062076949786">inställningar, anpassning, språk, integritet, standardinställningar, avancerat</translation>
 <translation id="5026874946691314267">Visa inte detta igen</translation>
 <translation id="5027550639139316293">E-postcertifikat</translation>
+<translation id="5027821222544962995">Omvandlar tal till text, till exempel textning</translation>
 <translation id="502811790397568978">Lås upp <ph name="TOKEN_NAME" /> om du vill importera klientcertifikat från <ph name="HOST_NAME" />.</translation>
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Adresser}=1{Adresser ({SELECTED_ITEMS})}other{Adresser ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Det gick inte att skapa QR-koden</translation>
@@ -3889,6 +3903,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5234764350956374838">Stäng</translation>
 <translation id="5235050375939235066">Vill du avinstallera appen?</translation>
 <translation id="5235750401727657667">Ersätt den aktuella sidan när du öppnar en ny flik</translation>
+<translation id="5235961530490811036">Föreslår korrigeringar av stavning, grammatik och skiljetecken medan du skriver</translation>
 <translation id="5238301240406177137">Spara i kontot</translation>
 <translation id="523862956770478816">Webbplatsbehörigheter</translation>
 <translation id="5240247138804326767">Ordna delad vy</translation>
@@ -4011,6 +4026,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5395353843367783642">Sparar i kontot …</translation>
 <translation id="5397656531674854099">Använd flikgrupper på telefonen</translation>
 <translation id="5397794290049113714">Du</translation>
+<translation id="5397922003973770546"><ph name="MODEL_NAME" /> · cirka <ph name="SIZE" /></translation>
 <translation id="5398497406011404839">Dolda bokmärken</translation>
 <translation id="5398572795982417028">Sidreferensen faller utanför intervallet. Gränsen är <ph name="MAXIMUM_PAGE" />.</translation>
 <translation id="539882584649709174">Hjälper dig att skriva text i kort format på webben, till exempel recensioner</translation>
@@ -4269,6 +4285,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5683916195767086779">Flikgrupp</translation>
 <translation id="5684110242705861346">Tillägget <ph name="NAME" /> har lagts till via organisationens princip och styr den här inställningen. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" />.</translation>
 <translation id="5687340364605915800">Webbplatser svarar på denna begäran efter eget gottfinnande</translation>
+<translation id="5688905504429733599">Hjälper dig att skriva, skriva om och sammanfatta text</translation>
 <translation id="5689516760719285838">Plats</translation>
 <translation id="568984110402742489">Det går inte att skicka feedback</translation>
 <translation id="5691772641933328258">Fingeravtrycket känns inte igen</translation>
@@ -4530,6 +4547,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5992652489368666106">Ingen kant</translation>
 <translation id="5996490984199062729">Din profil har inte ställts in</translation>
 <translation id="5997337190805127100">Läs mer om webbplatsåtkomst</translation>
+<translation id="5997562608469198702">Visa information om <ph name="MODEL_CATEGORY" /></translation>
 <translation id="5997802678829218272">När du är inloggad i Chrome med samma konto kan du snabbt skicka länkar mellan alla enheter</translation>
 <translation id="5998458948782718639">Hjälp till att förbättra autofyll</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultat för <ph name="SEARCH_TEXT" /></translation>
@@ -4775,6 +4793,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6264376385120300461">Ladda ned ändå</translation>
 <translation id="6264636978858465832">Lösenordshantering behöver mer åtkomst</translation>
 <translation id="626495329434552273">Får åsidosätta indata från tangentbordet</translation>
+<translation id="6265472496386910894">Fråga om det som visas på skärmen med Google Lens</translation>
 <translation id="6266984048393265562">Anpassa profil</translation>
 <translation id="6267166720438879315">Välj ett certifikat för att styrka din identitet för <ph name="HOST_NAME" /></translation>
 <translation id="6269392226729599142">Återställ delad vy</translation>
@@ -5028,6 +5047,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6571178651832779742">Spara bokmärkena i Google-kontot om du vill ta bort dubbletter</translation>
 <translation id="6571533309669248172">Textformatering</translation>
 <translation id="6571772921213691236">Redigera inloggningsdata</translation>
+<translation id="657215700875716805">Omvandlar långa sidor med text till viktiga punkter</translation>
 <translation id="657229725818377235">Få ett bättre skydd mot farliga webbplatser och nedladdningar</translation>
 <translation id="6573096386450695060">Tillåt alltid</translation>
 <translation id="657402800789773160">&amp;Hämta sidan igen</translation>
@@ -5200,6 +5220,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6746834324024491643">Logga in som <ph name="EMAIL" /> om du vill få tillgång till dina lösenord med mera på alla dina enheter</translation>
 <translation id="6749077623962119521">Vill du återställa behörigheter?</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>
+<translation id="6754302065638000088">Korrekturläsning</translation>
 <translation id="6754359471209693699">Starta en ny sökning</translation>
 <translation id="6756882635793733911">Fråga om vad som helst på skärmen</translation>
 <translation id="6757615605516049275">Lås upp <ph name="TOKEN_NAME" />.</translation>
@@ -5304,6 +5325,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6853118789186721762">En påminnelse har skickats till din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" /> år</translation>
 <translation id="68541483639528434">Stäng andra flikar</translation>
+<translation id="6855569790346583403">Radera <ph name="MODEL_CATEGORY" /></translation>
 <translation id="6856348640027512653">Får inte använda VR-enheter eller VR-data</translation>
 <translation id="6856607887871564638">Ställ in en jobbprofil för att spara och använda lösenord och annat i kontot</translation>
 <translation id="68601584151169673">&amp;Spara och dela</translation>
@@ -5424,6 +5446,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6979440798594660689">Ljud av (standard)</translation>
 <translation id="6979557074007409812">Ja, håll min data åtskild från jobbet</translation>
 <translation id="6979737339423435258">Sedan start</translation>
+<translation id="6981951388037216929">Fråga vad som helst om det som visas på skärmen genom att dela skärmen.</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="698428203349952091">Lägg till webbplatsen på listan över webbplatser som inte tillåts</translation>
 <translation id="6985235333261347343">Microsofts nyckelåterställningsagent</translation>
@@ -5758,6 +5781,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7341834142292923918">Begär åtkomst till webbplatsen</translation>
 <translation id="7343372807593926528">Beskriv problemet innan du skickar feedback.</translation>
 <translation id="7344585835349671209">Hantera HTTPS-/SSL-certifikat på enheten</translation>
+<translation id="734576882396032500">Laddas ned en gång för alla språk du använder</translation>
 <translation id="7346909386216857016">Ok, jag förstår</translation>
 <translation id="7347751611463936647">Om du vill använda det här tillägget skriver du ”<ph name="EXTENSION_KEYWORD" />”, trycker på tabbtangenten och anger kommandot eller sökningen.</translation>
 <translation id="7347943691222276892">Klicka för att navigera bort från <ph name="SUBPAGE_TITLE" />.</translation>
@@ -6156,6 +6180,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="7793098747275782155">Mörkblå</translation>
 <translation id="7798504574384119986">Visa webbehörigheter</translation>
 <translation id="7798559336183476274">Fler åtgärder för <ph name="BUTTON_TITLE" /></translation>
+<translation id="7798702742851934390">Föreslår endast korrigeringar utan att skriva om texten</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> blockerades automatiskt</translation>
 <translation id="7800518121066352902">Rotera m&amp;oturs</translation>
 <translation id="780254490276923052">Nivå 2: MELLAN</translation>
@@ -6312,6 +6337,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="7974713334845253259">Standardfärg</translation>
 <translation id="7977029776654598145">När funktionen används</translation>
 <translation id="7978100757563451333">Flikar delas för mer relevanta svar. Google använder innehållet och webbadressen på delade flikar. Din aktuella flik delas i nya chattar. Du kan ändra den här inställningen när som helst.</translation>
+<translation id="7978324202327430335">Fungerar på webbplatser som har stöd för ljudtranskription i realtid</translation>
 <translation id="7978412674231730200">Privat nyckel</translation>
 <translation id="7978450511781612192">Du loggas ut från dina Google-konton. Bokmärken, historik, lösenord och annan information synkroniseras inte längre.</translation>
 <translation id="7980066177668669492">Base64-kodad ASCII, flera certifikat</translation>
@@ -7394,6 +7420,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9154194610265714752">Uppdaterat</translation>
 <translation id="9155344700756733162">Avmarkera färg</translation>
 <translation id="9155515662479003830">Du kan när som helst byta tillbaka till den klassiska stilen i inställningarna</translation>
+<translation id="9157129135366432684">Ingen AI på enheten har lagts till</translation>
 <translation id="9157915340203975005">Luckan är öppen på skrivaren</translation>
 <translation id="9165856803582999927">Skanna den här QR-koden med kameran på enheten där du vill skapa och spara nyckeln för <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Bild-i-bild</translation>

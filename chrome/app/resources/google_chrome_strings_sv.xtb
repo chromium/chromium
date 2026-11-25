@@ -141,6 +141,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2295218613066132598">Visa genvägar till Chrome-webbplatser</translation>
 <translation id="2301513536169703857">Logga in i Chrome om du vill få tillgång till dina lösenord, bokmärken med mera på alla dina enheter</translation>
 <translation id="2307973900865360088">Behåll i dockan</translation>
+<translation id="2308558013860776484">Dela en skärmbild av innehåll utanför Chrome, som andra appar eller filer</translation>
 <translation id="2309047409763057870">Det här är en sekundär installation av Google Chrome. Det går inte att göra den till standardwebbläsare.</translation>
 <translation id="2345992953227471816">Chrome har upptäckt att dessa tillägg innehåller skadlig kod:</translation>
 <translation id="2358140144860869442">Logga in i Chrome om du vill få tillgång till din läslista med mera på alla dina enheter</translation>
@@ -250,6 +251,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="3294686910656423119">Användningsstatistik och kraschrapporter</translation>
 <translation id="3327226547491422998">Senare kan Chrome fråga om du vill använda sparade uppgifter för att fylla i formulär automatiskt åt dig</translation>
 <translation id="3352986031709923790">övre högra hörnet av sökområdet: <ph name="RIGHT" /> % åt höger, <ph name="TOP" /> % uppåt</translation>
+<translation id="3370239327277137701">Webbplatser och Chrome kan använda AI som körs direkt på enheten för funktioner som sammanfattningar, korrekturläsning, textning med mera. Detta sker separat från Gemini i Chrome. <ph name="BEGIN_LINK" />Läs mer om AI på enheten<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Vissa funktioner och tillägg i Chrome har kortkommandon. Du kan välja att aktivera dem igen.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome startas om nu}=1{Om en sekund startas Chrome om}other{Om # sekunder startas Chrome om}}</translation>
 <translation id="3380249972812870825">Tryck på <ph name="GLOBAL_HOTKEY" /> för att öppna Gemini i Chrome</translation>
@@ -349,6 +351,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig kod</translation>
 <translation id="4434353761996769206">Installationsfel: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Dela det här dokumentet med Gemini i Chrome för att få en snabb översikt och ställa uppföljningsfrågor</translation>
+<translation id="4440999670272408191">Du kan ta bort dem när som helst. Chrome kan ladda ned dem igen automatiskt när en webbplats eller funktion behöver dem.</translation>
 <translation id="4450664632294415862">Chrome – nätverksinloggning – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">En annan process i Google Chrome pågår. Försök igen senare.</translation>
 <translation id="4493028449971051158">Startfel: Kör installationsprogrammet som administratör.</translation>
@@ -356,6 +359,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="4501839397124711198">Du kan fästa Google Sök i sidopanelen för att ställa frågor medan du surfar</translation>
 <translation id="4571503333518166079">Öppna aviseringsinställningarna för Chrome</translation>
 <translation id="4580939929828762295">Skydda dig med Google Lösenordshantering</translation>
+<translation id="4589544932092381064">Visa Sök med Chrome i aktivitetsfältet i Windows och aktivera kortkommandot</translation>
 <translation id="459622048091363950">När du har gett Chrome åtkomst kan webbplatser begära att få åtkomst.</translation>
 <translation id="4598116752460667024">Sök efter en process i listan.</translation>
 <translation id="4600710005438004015">Det gick inte att uppdatera Chrome till den senaste versionen. Därför går du miste om nya funktioner och säkerhetskorrigeringar.</translation>
@@ -371,6 +375,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Detta gör webbplatser snabbare med Chromes V8-motor men Chrome blir något mindre motståndskraftigt mot attacker</translation>
 <translation id="4768676935374695498">Sök i den här videon med Google Lens</translation>
+<translation id="4783580253728290203">När inställningen är inaktiverad tar Chrome bort AI-modeller på enheten och laddar inte ned dem igen. Vissa webbplatser och Chrome-funktioner kanske inte fungerar.</translation>
 <translation id="479167709087336770">Detta använder samma stavningskontroll som Google Sök. Text som du skriver i webbläsaren skickas till Google. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="4793679854893018356">Läs mer om hur du skyddas i Chrome</translation>
 <translation id="4803313124144656665">Stäng Google Sök i Chrome</translation>
@@ -456,6 +461,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Det går inte att ansluta till internet. Proxyservern kräver autentisering.</translation>
 <translation id="5709557627224531708">Ange Chrome som standardwebbläsare</translation>
+<translation id="5715427327524421317">Chrome laddar ned och uppdaterar dessa AI-modeller automatiskt</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Avancerat skydd kräver att du startar om Chrome för att tillämpa en uppdatering. Det isolerade fönstret öppnas inte igen.}other{Avancerat skydd kräver att du startar om Chrome för att tillämpa en uppdatering. # isolerade fönster öppnas inte igen.}}</translation>
 <translation id="5719246646468301581">Ytterligare användarvillkor för Google Chrome och ChromeOS</translation>
 <translation id="5736850870166430177">Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet</translation>
@@ -547,6 +553,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6491330562720922580">QR-kod för att ladda ned webbläsaren Chrome på mobila enheter</translation>
 <translation id="6493527311031785448">Google Chrome försöker att <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome avslutades automatiskt</translation>
+<translation id="650039555447046671">Chrome tar bort AI-modeller från den här enheten. Vissa webbplatser och Chrome-funktioner kanske inte fungerar.</translation>
 <translation id="6506909944137591434">Du behöver ge Chrome kamerabehörighet om du vill skapa en 3D-karta över dina omgivningar</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Ge Chrome åtkomst i <ph name="BEGIN_LINK" />systeminställningarna<ph name="END_LINK" /> om du vill använda platsen</translation>
@@ -585,6 +592,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6877155553248388166">nedre högra hörnet av sökområdet: <ph name="RIGHT" /> % åt höger, <ph name="BOTTOM" /> % nedåt</translation>
 <translation id="6879791154455204815">Öppna sökning med Chrome</translation>
 <translation id="6881299373831449287">Chrome uppdateras</translation>
+<translation id="6881997500528805781">Använder enhetens lagringsutrymme. Chrome tar bort AI-modeller som inte används efter 45 dagar eller när lagringsutrymmet är lågt.</translation>
 <translation id="6885412569789873916">Appar i Chrome Beta</translation>
 <translation id="6893363893008038481">Ta bort kontot från Chrome</translation>
 <translation id="6896758677409633944">Kopiera</translation>

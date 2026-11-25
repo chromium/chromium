@@ -842,6 +842,7 @@
 <translation id="1921544956190977703">तपाईं Chrome को सबैभन्दा भरपर्दो सुरक्षा प्रणालीका सहायताले खतरनाक वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट सुरक्षित हुनुहुन्छ</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">"<ph name="NAME" />" यो डिभाइसमा मात्र सेभ गरिएको छ। यो एक्स्टेन्सन आफ्ना अन्य डिभाइसमा प्रयोग गर्न यसलाई आफ्नो खातामा सेभ गर्नुहोस्।</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">यस मार्फत खोल्नुहोस्</translation>
 <translation id="1925017091976104802">पेस्ट गर्न <ph name="MODIFIER_KEY_DESCRIPTION" /> मा थिच्नुहोस्</translation>
 <translation id="1925021887439448749"> कस्टम पारिएको वेब ठेगाना प्रविष्टि गर्नुहोस्</translation>
@@ -1388,6 +1389,7 @@
 <translation id="2528487766183344810">क्लाइन्ट सर्टिफिकेट एक्स्पोर्ट गर्न कृपया <ph name="TOKEN_NAME" /> अनलक गर्नुहोस्।</translation>
 <translation id="2532198298278778531">ChromeOS Flex का सेटिङमा गई Secure DNS व्यवस्थापन गर्नुहोस्</translation>
 <translation id="253434972992662860">&amp;पज गर्नुहोस्</translation>
+<translation id="2534439599863644240">सिरियल पोर्ट</translation>
 <translation id="253498598929009420">यो साइटले तपाईंको स्क्रिनमा भएका सामग्री हेर्न सक्ने छ</translation>
 <translation id="253557089021624350">सक्रिय राख्ने गणना</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> ले निम्न फाइलहरू हेर्न र सम्पादन गर्न सक्छ</translation>

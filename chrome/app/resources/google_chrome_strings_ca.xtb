@@ -137,6 +137,7 @@
 <translation id="2295218613066132598">Mostra les dreceres de llocs web de Chrome</translation>
 <translation id="2301513536169703857">Per obtenir les teves contrasenyes, adreces d'interès i altres dades en tots els teus dispositius, inicia la sessió a Chrome</translation>
 <translation id="2307973900865360088">Mantén al Dock</translation>
+<translation id="2308558013860776484">Comparteix una captura de pantalla de contingut extern a Chrome, com ara altres aplicacions o fitxers</translation>
 <translation id="2309047409763057870">Aquesta és una instal·lació secundària de Google Chrome i no pot definir-se com a navegador predeterminat.</translation>
 <translation id="2345992953227471816">Chrome ha detectat que aquestes extensions contenen programari maliciós:</translation>
 <translation id="2358140144860869442">Per obtenir la teva llista de lectura i altres dades en tots els dispositius, inicia la sessió a Chrome</translation>
@@ -246,6 +247,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="3294686910656423119">Estadístiques d'ús i informes d'error</translation>
 <translation id="3327226547491422998">Més tard, Chrome et pot preguntar si vols utilitzar la informació desada per emplenar automàticament formularis per tu</translation>
 <translation id="3352986031709923790">extrem superior dret de l'àrea de cerca: <ph name="RIGHT" /> % per la dreta i <ph name="TOP" /> % per dalt</translation>
+<translation id="3370239327277137701">Els llocs web i Chrome poden utilitzar la IA que s'executa directament al dispositiu per a funcions com ara resums, correccions, subtítols i més. Això és independent de Gemini a Chrome. <ph name="BEGIN_LINK" />Més informació sobre la IA al dispositiu<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Algunes funcions i extensions de Chrome inclouen dreceres. Pots decidir si vols tornar-les a activar.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome es reiniciarà ara}=1{Chrome es reiniciarà d'aquí a 1 segon}other{Chrome es reiniciarà d'aquí a # segons}}</translation>
 <translation id="3380249972812870825">Per obrir Gemini a Chrome, prem <ph name="GLOBAL_HOTKEY" /></translation>
@@ -345,6 +347,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="4427306783828095590">La protecció millorada és més efiçaç a l'hora de bloquejar la pesca de credencials i el programari maliciós</translation>
 <translation id="4434353761996769206">Error de l'instal·lador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Comparteix aquest document amb Gemini a Chrome per obtenir-ne una visió general ràpida i fer preguntes de seguiment</translation>
+<translation id="4440999670272408191">Pots suprimir-los en qualsevol moment. És possible que Chrome els torni a baixar automàticament quan un lloc web o una funció els necessiti.</translation>
 <translation id="4450664632294415862">Chrome - Inici de sessió a la xarxa - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hi ha una altra operació en curs a Google Chrome. Torna-ho a provar més tard.</translation>
 <translation id="4493028449971051158">Error d'arrencada: executa l'instal·lador com a administrador.</translation>
@@ -352,6 +355,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="4501839397124711198">Pots fixar la Cerca de Google al tauler lateral per fer preguntes mentre navegues</translation>
 <translation id="4571503333518166079">Ves a la configuració de notificacions de Chrome</translation>
 <translation id="4580939929828762295">Protegeix-te amb el gestor de contrasenyes de Google</translation>
+<translation id="4589544932092381064">Mostra la cerca amb Chrome a la barra de tasques de Windows i activa les tecles de drecera</translation>
 <translation id="459622048091363950">Un cop Chrome tingui accés, els llocs web et podran demanar accés.</translation>
 <translation id="4598116752460667024">Cerca qualsevol procés de la llista.</translation>
 <translation id="4600710005438004015">Chrome no s'ha pogut actualitzar a la darrera versió, així que no pots gaudir de les funcions noves ni de les correccions de seguretat.</translation>
@@ -367,6 +371,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Agilitza els llocs web amb el motor V8 de Chrome, però fa que Chrome sigui una mica menys resistent als atacs</translation>
 <translation id="4768676935374695498">Cerca en aquest vídeo amb Google Lens</translation>
+<translation id="4783580253728290203">Quan l'opció està desactivada, Chrome suprimeix els models d'IA del dispositiu i no els torna a baixar. És possible que alguns llocs web i algunes funcions de Chrome no funcionin.</translation>
 <translation id="479167709087336770">Fa servir el mateix corrector ortogràfic que s'utilitza a la Cerca de Google. El text que escrius al navegador s'envia a Google. Pots canviar aquest comportament sempre que vulguis a la configuració.</translation>
 <translation id="4793679854893018356">Informació sobre com et protegeix Chrome</translation>
 <translation id="4803313124144656665">Tanca la Cerca de Google a Chrome</translation>
@@ -448,6 +453,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">No es pot connectar a Internet. El servidor intermediari necessita autenticació.</translation>
 <translation id="5709557627224531708">Defineix Chrome com a navegador predeterminat</translation>
+<translation id="5715427327524421317">Chrome baixa i actualitza aquests models d'IA automàticament</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{La Protecció avançada requereix que reiniciïs Chrome per aplicar una actualització. La finestra aïllada no es tornarà a obrir.}other{La Protecció avançada requereix que reiniciïs Chrome per aplicar una actualització. # finestres aïllades no es tornaran a obrir.}}</translation>
 <translation id="5719246646468301581">Condicions del servei addicionals de Google Chrome i ChromeOS</translation>
 <translation id="5736850870166430177">Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura</translation>
@@ -539,6 +545,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6491330562720922580">Codi QR per baixar el navegador Chrome en dispositius mòbils</translation>
 <translation id="6493527311031785448">Google Chrome està intentant <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome s'ha tancat automàticament</translation>
+<translation id="650039555447046671">Chrome suprimirà els models d'IA d'aquest dispositiu. És possible que alguns llocs web i algunes funcions de Chrome no funcionin.</translation>
 <translation id="6506909944137591434">Chrome necessita permís d'accés a la càmera per poder crear un mapa en 3D del teu entorn</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">Per poder utilitzar la ubicació, dona accés a Chrome des de la <ph name="BEGIN_LINK" />configuració del sistema<ph name="END_LINK" /></translation>
@@ -577,6 +584,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6877155553248388166">extrem inferior dret de l'àrea de cerca: <ph name="RIGHT" /> % per la dreta i <ph name="BOTTOM" /> % per baix</translation>
 <translation id="6879791154455204815">Obre la cerca amb Chrome</translation>
 <translation id="6881299373831449287">S'està actualitzant Chrome</translation>
+<translation id="6881997500528805781">Utilitza l'emmagatzematge del dispositiu. Chrome suprimeix els models d'IA que no s'utilitzen al cap de 45 dies o quan l'emmagatzematge és baix.</translation>
 <translation id="6885412569789873916">Aplicacions de Chrome Beta</translation>
 <translation id="6893363893008038481">Suprimeix el compte de Chrome</translation>
 <translation id="6896758677409633944">Copia</translation>

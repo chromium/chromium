@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Siyosat keshida xatoliklar yo‘q</translation>
 <translation id="1131264053432022307">Nusxalangan rasm</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Butun ekran rejimidan chiqish uchun ekranni yuqori chetidan pastga torting va “Orqaga” tugmasini bosing.</translation>
+<translation id="1132789342529761192">Yuklash tavsiya etilmaydi</translation>
 <translation id="11370190534773372">Karta tafsilotlari kiritildi</translation>
 <translation id="1138458427267715730">Internetdagi istalgan saytda narx tushganda bildirishnoma oling</translation>
 <translation id="1142713751288681188">Qogʻoz turi</translation>
@@ -583,6 +584,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1988881251331415125">Xatosiz kiritilgan boʻlsa, <ph name="BEGIN_LINK" />Ulanish diagnostikasini<ph name="END_LINK" /> ishga tushiring.</translation>
 <translation id="1991370806334788445">Tashqi cookie fayllarga ruxsat bering, bunda himoya pasayadi, lekin sayt funksiyalari kutilganidek ishlaydi.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1995173078718234136">Fayllar tekshirilmoqda...</translation>
 <translation id="1996557034791506430">Ruxsat olib tashlansinmi?</translation>
 <translation id="1997484222658892567"><ph name="URL" /> sayti katta hajmdagi ma’lumotlarni kompyuteringizda doimiy saqlashga ruxsat so‘ramoqda</translation>
 <translation id="1997774360448418989">Qogʻoz (yengil)</translation>
@@ -602,6 +604,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2025891858974379949">Zararli kontent</translation>
 <translation id="2027465737841872819">Plastik</translation>
 <translation id="2027707238798802149">Karta ishlamayapti</translation>
+<translation id="2028329426302356196">Yuklab olish tavsiya etilmaydi</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proksi-server va himoya devori sozlamalarini tekshiring<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Chromening ushbu nusxasi mustaqil sozlangan buyruqlar qatori bayroqlari bilan ishlamoqda. Buyruqlar qatori bayroqlari istalgan vaqtda oʻzgarishi va dastaklanmay qolishini yodda tuting.</translation>
 <translation id="2033900728810589426">Buyruq <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> belgilagan standart qidiruv provayderi kalit soʻzi bilan bir xil boʻlishi mumkin emas: <ph name="SHORTCUT_NAME" /></translation>
@@ -1454,6 +1457,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3443504041532578451">Optik disk (satin)</translation>
 <translation id="3447661539832366887">Bu qurilmaning egasi dinozavr o‘yinini o‘chirib qo‘ygan.</translation>
 <translation id="3447884698081792621">Sertifikatni ko‘rsatish (noshir: <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Chop etish tavsiya etilmaydi</translation>
 <translation id="3450323514459570273">MIDI qurilmalarini boshqarish va qayta dasturlash uchun ruxsat soʻrashi mumkin</translation>
 <translation id="3452404311384756672">Yuklash oralig‘i:</translation>
 <translation id="345268527248907593">Sayt aloqada emas</translation>
@@ -2915,6 +2919,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5851548754964597211">Ichki oynalar ro‘yxati</translation>
 <translation id="5851868085455377790">Noshir</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Nusxa olish tavsiya etilmaydi</translation>
 <translation id="5860491529813859533">Yoqish</translation>
 <translation id="5862579898803147654">Taxlovchi 8</translation>
 <translation id="5863515189965725638">IBAN raqamini tahrirlash</translation>

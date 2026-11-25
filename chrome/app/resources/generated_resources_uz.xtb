@@ -1302,6 +1302,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="244071666433939959">Ilovalar yangi oynada ochiladi.</translation>
 <translation id="2442916515643169563">Matn soyasi</translation>
 <translation id="2443487764245141020">Saytlar identifikator yordamida qurilmangizni tanib olishi kerak boʻlishi mumkin.</translation>
+<translation id="2444282212665587861">yangilash, yangilanishlar, yuksaltirish, versiya, nashr, maʼlumot, yangilanishlarni tekshirish</translation>
 <translation id="244475495405467108">Varaqlarni chapga yopish</translation>
 <translation id="2444874983932528148">Ishni kelgan joyidan davom ettiring</translation>
 <translation id="2445081178310039857">Kengaytma tub katalogi talab qilinadi.</translation>
@@ -2137,6 +2138,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="3321512411079201586">&amp;Izolyatsiyalangan</translation>
 <translation id="3323288183237359315">Edge brauzeriga oʻrnating</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Maxfiylikni himoyalash maqsadida muayyan saytdan ruxsatlar olib tashlandi}other{Maxfiylikni himoyalash maqsadida ayrim saytlardan ruxsatlar olib tashlandi}}</translation>
+<translation id="3325561120400598624">Chatlar tekshiriladi va generativ AI modellarini oʻrgatish uchun foydalaniladi. Gemini bu – AI va u xato qilishi mumkin. Ayrim turdagi kontent hamma uchun mos kelmasligi mumkin. <ph name="BEGIN_LINK_MANAGE_HISTORY" />Tarixingizni<ph name="END_LINK_MANAGE_HISTORY" />, jumladan, <ph name="BEGIN_LINK_LOCATION_INFO" />joylashuvingiz haqidagi axborotni<ph name="END_LINK_LOCATION_INFO" /> boshqarishingiz mumkin. <ph name="BEGIN_LINK_LEARN_MORE" />Tanlovlaringiz haqida batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Uslub</translation>
 <translation id="3331974543021145906">Ilova haqida</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video tasvir ustida tasvir rejimida ijro etilmoqda</translation>
@@ -2262,6 +2264,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Savolga biriktirish uchun 1 ta pdf fayl yuklang}other{Savolga biriktirish uchun # tagacha pdf fayl yuklang}}</translation>
 <translation id="3456750372063895499">Havolani alohida oynada ochish</translation>
 <translation id="345693547134384690">Rasmni yangi varaqda ochish</translation>
+<translation id="3456949031754827166">Qayta tartiblash</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Guruh qolsin}other{Guruhlar qolsin}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 ta bukmark oʻchirildi}other{# ta bukmark oʻchirildi}}</translation>
 <translation id="3471687177769494956">Navigatsiya tezkor tugmasini tahrirlash</translation>
@@ -3316,6 +3319,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="4602776638371779614">Bu varaq faol ravishda Bluetooth qurilmalarni qidirmoqda</translation>
 <translation id="4605026046465576953">Izolyatsiyalangan veb-ilovalarni ishga tushirishga ruxsatingiz yoʻqligi uchun ilova ochilmadi</translation>
 <translation id="4606551464649945562">Saytlarga atrofingiz 3D xaritasini yaratish yoki kamera holatini kuzatishni taqiqlash</translation>
+<translation id="4606965546067937011">tezlik, RAM, kechikish, qotib qolish, ishdan chiqish, resurslar, sarf, batareya, optimizator, sekin, xotira, xotirani tejash</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Varaqlar guruhi oʻchirilsinmi?}other{Varaqlar guruhi oʻchirilsinmi?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Savolga biriktirish uchun 1 ta fayl yuklang}other{Savolga biriktirish uchun # tagacha fayl yuklang}}</translation>
 <translation id="4608500690299898628">&amp;Qidirish...</translation>
@@ -4148,6 +4152,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="5535769176698670170">Yuqori panel bilan almashtirish</translation>
 <translation id="5536642445914063887">Profilni almashtirish</translation>
 <translation id="5537725057119320332">Cast</translation>
+<translation id="553876896781261711">oʻchirish, olib tashlash, xavfsizlik, maxfiylik, tozalash, xotira, asliga qaytarish, kesh, cookie, sekin, tezlik, tarix</translation>
 <translation id="5541091577812545428">Parol yangilanmadi</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5543983818738093899">Holat tekshirilmoqda...</translation>
@@ -4739,6 +4744,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6214157047210274853">Google Wallet orqali tahrirlash</translation>
 <translation id="621470880408090483">Saytlarga Bluetooth qurilmalarga ulanishni taqiqlash</translation>
 <translation id="6215039389782910006">{1,plural, =1{Parollaringizni xavfsiz saqlash uchun <ph name="BRAND" /> 1 daqiqalik nofaollikdan keyin qulflanadi}other{Parollaringizni xavfsiz saqlash uchun <ph name="BRAND" /> # daqiqalik nofaollikdan keyin qulflanadi}}</translation>
+<translation id="6215427500141060726">Chatlar tekshiriladi va generativ AI modellarini oʻrgatish uchun foydalaniladi. Gemini bu – AI va u xato qilishi mumkin. <ph name="BEGIN_LINK_MANAGE_HISTORY" />Tarixingizni<ph name="END_LINK_MANAGE_HISTORY" />, jumladan, <ph name="BEGIN_LINK_LOCATION_INFO" />joylashuvingiz haqidagi axborotni<ph name="END_LINK_LOCATION_INFO" /> boshqarishingiz mumkin. <ph name="BEGIN_LINK_LEARN_MORE" />Tanlovlaringiz haqida batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Paroli saqlanmaydigan sayt va ilovalar</translation>
 <translation id="6216696360484424239">Avtomatik kirish</translation>
 <translation id="6218961554829577610">Ovozi yoqmadi</translation>
@@ -4890,6 +4896,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="639880411171387127">Google Lens tanlovingiz. Google Lens tanlovingizni oʻchirish uchun enter yoki backspace tugmasini bosing</translation>
 <translation id="6400360390396538896">Har doim yoniq (<ph name="ORIGIN" />)</translation>
 <translation id="6400714103322134861">Varaqlar guruhini fokusdan yechish</translation>
+<translation id="6401522392962817913">Davom etish orqali siz Google Payments xizmat shartlariga rozilik bildirasiz. Maxfiylik eslatmasida axborotdan qanday foydalanilishi haqida yoritilgan. Kartangiz Google hisobingizga (<ph name="ACCOUNT" />) saqlandi.</translation>
 <translation id="6402042774506839496">Sababini bilish uchun ilova dasturchisiga murojaat qiling</translation>
 <translation id="6402921224457714577">Saytlar MIDI qurilmalarini boshqarish va qayta dasturlash uchun ruxsat soʻrashi mumkin</translation>
 <translation id="6404511346730675251">Xatcho‘pni tahrirlash</translation>
@@ -4978,6 +4985,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6499143127267478107">Proksi-server skriptida host manzili aniqlanmoqda...</translation>
 <translation id="6503077044568424649">Eng ko‘p ochilgan saytlar</translation>
 <translation id="6504601948739128893">Qurilmangizga oʻrnatilgan shriftlardan foydalanish taqiqlangan</translation>
+<translation id="6505525633061207363">hisob maʼlumotlari, tizimga kirish, kirish kaliti, qulflash, maxfiy ombor, kalitlar, login, hisobga kirish, kirish</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{“<ph name="APP_NAME" />” bu qurilmada quyidagi ilovani oʻrnatmoqchi:}other{“<ph name="APP_NAME" />” bu qurilmada quyidagi ilovalarni oʻrnatmoqchi:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> bilan aloqador</translation>
 <translation id="6508261954199872201">Ilova: <ph name="APP_NAME" /></translation>
