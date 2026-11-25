@@ -120,6 +120,13 @@ class COMPONENT_EXPORT(GFX) ImageSkia {
   // Returns a null image rep if the object contains no image reps.
   const gfx::ImageSkiaRep& GetRepresentation(float scale) const;
 
+  // Similar to GetRepresentation(), except that if |scale| is not natively
+  // supported by this image's source (i.e. HasRepresentationAtAllScales() is
+  // false), returns the underlying supported resource representation instead of
+  // CPU-rescaling it to |scale|. Callers that scale during drawing can use
+  // this to avoid double-resampling and ScaleToCeiledSize rounding mismatch.
+  const gfx::ImageSkiaRep& GetRepresentationWithoutRescale(float scale) const;
+
   // Make the ImageSkia instance read-only. Note that this only prevent
   // modification from client code, and the storage may still be
   // modified by the source if any (thus, it's not thread safe).  This

@@ -106,12 +106,16 @@ class ImageSkiaStorage : public base::RefCountedThreadSafe<ImageSkiaStorage> {
   // Returns the iterator of the image rep whose density best matches
   // |scale|. If the image for the |scale| doesn't exist in the storage and
   // |source_| is set, it fetches new image by calling
-  // |ImageSkiaSource::GetImageForScale|. Arbitrary scale factors are dealt by
-  // invoking GetImageForScale with the closest known scale to the requested
-  // one and rescaling the image.
+  // |ImageSkiaSource::GetImageForScale|. When |allow_rescale| is true,
+  // arbitrary scale factors are dealt with by invoking GetImageForScale with
+  // the closest supported resource scale and rescaling the image. When
+  // |allow_rescale| is false and the source does not have representations at
+  // all scales, the supported resource representation is returned directly
+  // without CPU-rescaling.
   std::vector<ImageSkiaRep>::const_iterator FindRepresentation(
       float scale,
-      bool fetch_new_image) const;
+      bool fetch_new_image,
+      bool allow_rescale = true) const;
 
  private:
   friend class base::RefCountedThreadSafe<ImageSkiaStorage>;
@@ -195,8 +199,15 @@ bool ImageSkiaStorage::HasRepresentationAtAllScales() const {
 
 std::vector<ImageSkiaRep>::const_iterator ImageSkiaStorage::FindRepresentation(
     float scale,
-    bool fetch_new_image) const {
+    bool fetch_new_image,
+    bool allow_rescale) const {
   TRACE_EVENT0("ui", "ImageSkiaStorage::FindRepresentation");
+
+  if (!allow_rescale && source_ && !HasRepresentationAtAllScales()) {
+    const float resource_scale = ui::GetScaleForResourceScaleFactor(
+        ui::GetSupportedResourceScaleFactorForRescale(scale));
+    return FindRepresentation(resource_scale, fetch_new_image, true);
+  }
 
   auto exact_iter = image_reps_.end();
   auto closest_downscale_iter = image_reps_.end();
@@ -431,6 +442,24 @@ const ImageSkiaRep& ImageSkia::GetRepresentation(float scale) const {
   auto it = storage_->FindRepresentation(scale, true);
   if (it == storage_->image_reps().end())
     return NullImageRep();
+
+  return *it;
+}
+
+const ImageSkiaRep& ImageSkia::GetRepresentationWithoutRescale(
+    float scale) const {
+  TRACE_EVENT0("ui", "ImageSkia::GetRepresentationWithoutRescale");
+  if (isNull()) {
+    return NullImageRep();
+  }
+
+  CHECK(CanRead());
+
+  auto it = storage_->FindRepresentation(scale, /*fetch_new_image=*/true,
+                                         /*allow_rescale=*/false);
+  if (it == storage_->image_reps().end()) {
+    return NullImageRep();
+  }
 
   return *it;
 }

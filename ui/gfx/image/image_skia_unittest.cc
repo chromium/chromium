@@ -657,4 +657,50 @@ TEST_F(ImageSkiaTest, SupportedScaleValue) {
   EXPECT_EQ(1.0f, source->GetLastRequestedScaleAndReset());
 }
 
+TEST_F(ImageSkiaTest, GetRepresentationWithoutRescale) {
+  ui::test::ScopedSetSupportedResourceScaleFactors
+      supported_scale_factors_override({ui::k100Percent, ui::k200Percent});
+
+  // Null image returns null rep.
+  ImageSkia null_image;
+  EXPECT_TRUE(null_image.GetRepresentationWithoutRescale(1.75f).is_null());
+
+  // Discrete-scale source returns the underlying supported resource scale
+  // without CPU-rescaling, even if a rescaled rep was previously cached.
+  auto discrete_source = std::make_unique<DynamicSource>(Size(16, 16));
+  DynamicSource* discrete_source_ptr = discrete_source.get();
+  ImageSkia discrete_image(std::move(discrete_source), Size(16, 16));
+
+  const ImageSkiaRep& unrescaled =
+      discrete_image.GetRepresentationWithoutRescale(1.75023f);
+  EXPECT_EQ(2.0f, discrete_source_ptr->GetLastRequestedScaleAndReset());
+  EXPECT_EQ(2.0f, unrescaled.scale());
+  EXPECT_EQ(Size(32, 32), unrescaled.pixel_size());
+  EXPECT_EQ(1U, discrete_image.image_reps().size());
+
+  // Triggering GetRepresentation(1.75023f) caches a 29x29 CPU-rescaled rep,
+  // but GetRepresentationWithoutRescale(1.75023f) still returns the 2.0f rep.
+  const ImageSkiaRep& rescaled = discrete_image.GetRepresentation(1.75023f);
+  EXPECT_EQ(1.75023f, rescaled.scale());
+  EXPECT_EQ(Size(29, 29), rescaled.pixel_size());
+
+  const ImageSkiaRep& unrescaled_after_cache =
+      discrete_image.GetRepresentationWithoutRescale(1.75023f);
+  EXPECT_EQ(2.0f, unrescaled_after_cache.scale());
+  EXPECT_EQ(Size(32, 32), unrescaled_after_cache.pixel_size());
+
+  // Source with representations at all scales returns the exact requested
+  // scale.
+  class AllScalesSource : public DynamicSource {
+   public:
+    explicit AllScalesSource(const Size& size) : DynamicSource(size) {}
+    bool HasRepresentationAtAllScales() const override { return true; }
+  };
+  ImageSkia vector_image(std::make_unique<AllScalesSource>(Size(16, 16)),
+                         Size(16, 16));
+  const ImageSkiaRep& vector_rep =
+      vector_image.GetRepresentationWithoutRescale(1.75023f);
+  EXPECT_EQ(1.75023f, vector_rep.scale());
+}
+
 }  // namespace gfx
