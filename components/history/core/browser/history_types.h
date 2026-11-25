@@ -1156,20 +1156,16 @@ struct ClusterVisit {
 
 // Additional data for a cluster keyword.
 struct ClusterKeywordData {
-  // Corresponds to `HistoryClusterKeywordType` in
-  // tools/metrics/histograms/enums.xml.
-  //
   // Types are ordered according to preferences.
   //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
+  // These values are persisted to the database and prefs. Entries should not
+  // be renumbered and numeric values should never be reused.
   enum ClusterKeywordType {
     kUnknown = 0,
     kEntityCategory = 1,
     kEntityAlias = 2,
     kEntity = 3,
-    kSearchTerms = 4,
-    kMaxValue = kSearchTerms
+    kSearchTerms = 4
   };
 
   ClusterKeywordData();

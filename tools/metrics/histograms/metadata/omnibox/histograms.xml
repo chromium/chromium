@@ -4330,23 +4330,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.ResumeJourneyShown.ClusterKeywordType"
-    enum="HistoryClusterKeywordType" expires_after="2024-12-08">
-  <owner>junzou@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Emits the type of the matched cluster keyword of any &quot;Resume
-    Journey&quot; omnibox actions shown in the popup. The types indicate the
-    sources from which the keywords are generated in the history clustering
-    backend.
-
-    Note that these are emitted when the user uses the omnibox to go somewhere.
-    When that happens, one keyword type is emitted per action visible in the
-    popup. These are NOT emitted per-keystroke, in order to make this a suitable
-    denominator for Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.ScrollToTLD.Duration" units="ms"
     expires_after="2027-10-01">
   <owner>ender@google.com</owner>

@@ -32,10 +32,8 @@ class HistoryClusterProvider : public AutocompleteProvider,
   // `provider_suggestion_groups_map` to contain the right groups.
   // `matching_text` is necessary to pass the query down to the `OmniboxAction`
   // so it can pre-populate the query field in the Journeys searchbox.
-  static void CompleteHistoryClustersMatch(
-      const std::string& matching_text,
-      history::ClusterKeywordData matched_keyword_data,
-      AutocompleteMatch* match);
+  static void CompleteHistoryClustersMatch(const std::string& matching_text,
+                                           AutocompleteMatch* match);
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
@@ -57,9 +55,7 @@ class HistoryClusterProvider : public AutocompleteProvider,
   bool CreateMatches();
 
   // Creates a `AutocompleteMatch`.
-  AutocompleteMatch CreateMatch(
-      const AutocompleteMatch& search_match,
-      history::ClusterKeywordData matched_keyword_data);
+  AutocompleteMatch CreateMatch(const AutocompleteMatch& search_match);
 
   // The `AutocompleteInput` passed to `Start()`.
   AutocompleteInput input_;

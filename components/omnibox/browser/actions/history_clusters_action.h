@@ -5,11 +5,14 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_ACTIONS_HISTORY_CLUSTERS_ACTION_H_
 #define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_HISTORY_CLUSTERS_ACTION_H_
 
+#include <string>
+#include <vector>
+
 #include "build/build_config.h"
-#include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 
 struct AutocompleteMatch;
+class GURL;
 
 namespace gfx {
 struct VectorIcon;
@@ -43,9 +46,7 @@ GURL GetFullJourneysUrlForQuery(const std::string& query);
 // TODO(crbug.com/356236364): Investigate and remove.
 class HistoryClustersAction : public OmniboxAction {
  public:
-  HistoryClustersAction(
-      const std::string& query,
-      const history::ClusterKeywordData& matched_keyword_data);
+  explicit HistoryClustersAction(const std::string& query);
 
   void RecordActionShown(size_t position, bool executed) const override;
   void Execute(ExecutionContext& context) const override;
@@ -56,10 +57,6 @@ class HistoryClustersAction : public OmniboxAction {
 
  private:
   ~HistoryClustersAction() override;
-
-  // Additional data of the matching keyword from the history clustering
-  // service.
-  history::ClusterKeywordData matched_keyword_data_;
 
   // Used to open journeys in side panel with relevant clusters
   std::string query_;

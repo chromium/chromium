@@ -434,8 +434,7 @@ IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, PedalVectorIcons) {
 // in the NTP Realbox.
 IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, ActionVectorIcons) {
   std::vector<scoped_refptr<OmniboxAction>> actions = {
-      base::MakeRefCounted<history_clusters::HistoryClustersAction>(
-          "test", history::ClusterKeywordData()),
+      base::MakeRefCounted<history_clusters::HistoryClustersAction>("test"),
       base::MakeRefCounted<TabSwitchAction>(GURL("test")),
   };
   for (auto const& action : actions) {

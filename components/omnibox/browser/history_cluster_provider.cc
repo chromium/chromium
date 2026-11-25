@@ -48,7 +48,6 @@ HistoryClusterProvider::HistoryClusterProvider(
 // static
 void HistoryClusterProvider::CompleteHistoryClustersMatch(
     const std::string& matching_text,
-    history::ClusterKeywordData matched_keyword_data,
     AutocompleteMatch* match) {
   DCHECK(match);
 
@@ -59,7 +58,7 @@ void HistoryClusterProvider::CompleteHistoryClustersMatch(
   DCHECK(match->actions.empty());
   match->takeover_action =
       base::MakeRefCounted<history_clusters::HistoryClustersAction>(
-          matching_text, std::move(matched_keyword_data));
+          matching_text);
 }
 
 void HistoryClusterProvider::Start(const AutocompleteInput& input,
@@ -132,16 +131,13 @@ bool HistoryClusterProvider::CreateMatches() {
   // lowest relevance with an exception for search-what-you-typed search
   // suggestions being ordered before others.
   for (const auto& search_match : search_provider_->matches()) {
-    auto matched_keyword_data =
-        client_->GetHistoryClustersService()->DoesQueryMatchAnyCluster(
-            base::UTF16ToUTF8(search_match.contents));
-    if (matched_keyword_data) {
+    if (client_->GetHistoryClustersService()->DoesQueryMatchAnyCluster(
+            base::UTF16ToUTF8(search_match.contents))) {
       client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
           metrics::OmniboxEventProto_Feature_HISTORY_CLUSTER_SUGGESTION);
       if (!history_clusters::GetConfig()
                .omnibox_history_cluster_provider_counterfactual) {
-        matches_.push_back(
-            CreateMatch(search_match, std::move(matched_keyword_data.value())));
+        matches_.push_back(CreateMatch(search_match));
       }
       return true;
     }
@@ -150,8 +146,7 @@ bool HistoryClusterProvider::CreateMatches() {
 }
 
 AutocompleteMatch HistoryClusterProvider::CreateMatch(
-    const AutocompleteMatch& search_match,
-    history::ClusterKeywordData matched_keyword_data) {
+    const AutocompleteMatch& search_match) {
   AutocompleteMatch match;
   match.provider = this;
   match.type = omnibox::AutocompleteMatchType::kHistoryCluster;
@@ -183,8 +178,7 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT);
   match.contents_class = {{0, ACMatchClassification::DIM}};
 
-  CompleteHistoryClustersMatch(base::UTF16ToUTF8(text),
-                               std::move(matched_keyword_data), &match);
+  CompleteHistoryClustersMatch(base::UTF16ToUTF8(text), &match);
 
   return match;
 }

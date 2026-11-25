@@ -401,10 +401,8 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
         // This is a bit hacky, but accurately reflects how
         // `HistoryClusterProvider` constructed the original match.
         std::string matching_string = base::UTF16ToUTF8(match.description);
-        // Shortcut-generated HC matches have empty `ClusterKeywordData()`s,
-        // because it wasn't generated via an entity match in the first place.
-        HistoryClusterProvider::CompleteHistoryClustersMatch(
-            matching_string, history::ClusterKeywordData(), &match);
+        HistoryClusterProvider::CompleteHistoryClustersMatch(matching_string,
+                                                             &match);
 #endif  // !BUILDFLAG(IS_IOS)
 
         return match;

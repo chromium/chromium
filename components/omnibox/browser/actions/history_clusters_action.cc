@@ -23,6 +23,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "net/base/url_util.h"
 #include "ui/base/ui_base_features.h"
+#include "url/gurl.h"
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
@@ -58,9 +59,7 @@ GURL GetFullJourneysUrlForQuery(const std::string& query) {
       GURL(GetChromeUIHistoryClustersURL()), "q", query);
 }
 
-HistoryClustersAction::HistoryClustersAction(
-    const std::string& query,
-    const history::ClusterKeywordData& matched_keyword_data)
+HistoryClustersAction::HistoryClustersAction(const std::string& query)
     : OmniboxAction(
           OmniboxAction::LabelStrings(
               IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
@@ -68,7 +67,6 @@ HistoryClustersAction::HistoryClustersAction(
               IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
               IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
           GetFullJourneysUrlForQuery(query)),
-      matched_keyword_data_(matched_keyword_data),
       query_(query) {}
 
 void HistoryClustersAction::RecordActionShown(size_t position,
@@ -82,10 +80,6 @@ void HistoryClustersAction::RecordActionShown(size_t position,
         "Omnibox.SuggestionUsed.ResumeJourney", position,
         AutocompleteResult::kMaxAutocompletePositionValue);
   }
-
-  // Record cluster keyword type UMA metric.
-  base::UmaHistogramEnumeration("Omnibox.ResumeJourneyShown.ClusterKeywordType",
-                                matched_keyword_data_.type);
 }
 
 void HistoryClustersAction::Execute(ExecutionContext& context) const {

@@ -354,14 +354,6 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="GROUP_VISITED_DOC_RELATED"/>
 </enum>
 
-<enum name="HistoryClusterKeywordType">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="EntityCategory"/>
-  <int value="2" label="EntityAlias"/>
-  <int value="3" label="Entity"/>
-  <int value="4" label="SearchTerms"/>
-</enum>
-
 <!-- LINT.IfChange(MigrationMatch) -->
 
 <enum name="MigrationMatch">
