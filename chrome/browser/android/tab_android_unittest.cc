@@ -5,12 +5,14 @@
 #include "chrome/browser/android/tab_android.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -35,12 +37,16 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/actor/core/actor_features.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/pinned_tab_collection.h"
+#include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_strip_collection.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_controller.h"
@@ -76,40 +82,51 @@ class TabAndroidTest : public testing::Test {
     TestingProfile::Builder builder;
     profile_ = builder.Build();
 
-    java_tab_ = Java_TabAndroidTestHelper_createAndInitializeTabImpl(
-        env_, kTabId, profile_->GetJavaObject(),
-        static_cast<int32_t>(TabModel::TabLaunchType::FROM_LINK));
-    ASSERT_FALSE(java_tab_.is_null()) << "Java tab creation failed.";
-
-    tab_android_ = TabAndroid::GetNativeTab(env_, java_tab_);
-    ASSERT_NE(nullptr, tab_android_)
-        << "Failed to get native TabAndroid from Java TabImpl";
+    tab_android_ = CreateTab();
   }
 
   void TearDown() override {
-    if (!java_tab_.is_null()) {
-      // Call the destroy() method on the Java TabImpl object.
-      // This will trigger TabAndroid::Destroy() via JNI.
-      auto tab_impl_class =
-          jni_zero::AdoptRef(env_, env_->GetObjectClass(java_tab_.obj()));
-      ASSERT_FALSE(tab_impl_class.is_null());
+    // DestroyTab() calls TabAndroid::Destroy(), which deletes the TabAndroid
+    // object, so here we need to clear the `tab_android_` raw_ptr first to
+    // avoid a dangling pointer.
+    DestroyTab(tab_android_.ExtractAsDangling());
 
-      jmethodID destroy_method =
-          env_->GetMethodID(tab_impl_class.obj(), "destroy", "()I");
-      ASSERT_NE(nullptr, destroy_method)
-          << "Failed to find TabImpl.destroy() method";
-
-      env_->CallIntMethod(java_tab_.obj(), destroy_method);
-      // TabAndroid::Destroy calls 'delete this', so tab_android_ is now
-      // dangling.
-      tab_android_ = nullptr;
-    }
-
-    java_tab_.Reset();
-    profile_.reset();  // Destroys TestingProfile.
+    profile_.reset();
   }
 
  protected:
+  TabAndroid* CreateTab() {
+    base::android::ScopedJavaLocalRef<jobject> java_tab =
+        Java_TabAndroidTestHelper_createAndInitializeTabImpl(
+            env_, next_tab_id_++, profile_->GetJavaObject(),
+            static_cast<int32_t>(TabModel::TabLaunchType::FROM_LINK));
+    CHECK(!java_tab.is_null()) << "Java tab creation failed.";
+
+    TabAndroid* tab_android = TabAndroid::GetNativeTab(env_, java_tab);
+    CHECK(tab_android) << "Failed to get native TabAndroid from Java TabImpl";
+    return tab_android;
+  }
+
+  void DestroyTab(TabAndroid* tab_android) {
+    CHECK(tab_android);
+
+    base::android::ScopedJavaLocalRef<jobject> java_tab =
+        tab_android->GetJavaObject();
+    CHECK(!java_tab.is_null()) << "Java tab is null";
+
+    // Call the destroy() method on the Java TabImpl object.
+    // This will trigger TabAndroid::Destroy() via JNI.
+    auto tab_impl_class =
+        jni_zero::AdoptRef(env_, env_->GetObjectClass(java_tab.obj()));
+    CHECK(!tab_impl_class.is_null()) << "Failed to get TabImpl class";
+
+    jmethodID destroy_method =
+        env_->GetMethodID(tab_impl_class.obj(), "destroy", "()I");
+    CHECK(destroy_method) << "Failed to find TabImpl.destroy() method";
+
+    env_->CallIntMethod(java_tab.obj(), destroy_method);
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
@@ -117,7 +134,7 @@ class TabAndroidTest : public testing::Test {
   raw_ptr<JNIEnv> env_ = nullptr;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   std::unique_ptr<TestingProfile> profile_;
-  base::android::ScopedJavaGlobalRef<jobject> java_tab_;
+  int next_tab_id_ = kTabId;
 
   // TabAndroid is owned by its Java counterpart via the native pointer.
   // It's deleted when the Java TabImpl.destroy() calls TabAndroid::Destroy().
@@ -181,31 +198,127 @@ TEST_F(TabAndroidTest, FromTabHandle) {
 TEST_F(TabAndroidTest, PinnedCollectionParent) {
   EXPECT_FALSE(tab_android_->IsPinned());
 
-  std::unique_ptr<tabs::PinnedTabCollection> pinned_collection =
-      std::make_unique<tabs::PinnedTabCollection>();
-  pinned_collection->AddTab(tabs::ScopedTab(tab_android_), 0);
+  // Arrange:
+  tabs::TabStripCollection tab_strip_collection;
 
+  // Act: Pin the tab.
+  tab_strip_collection.AddTabRecursive(tabs::ScopedTab(tab_android_),
+                                       /*index=*/0,
+                                       /*new_group_id=*/std::nullopt,
+                                       /*new_pinned_state=*/true);
+
+  // Assert:
   EXPECT_TRUE(tab_android_->IsPinned());
-  tabs::ScopedTab removed_pinned_tab =
-      pinned_collection->MaybeRemoveTab(tab_android_);
-  EXPECT_EQ(removed_pinned_tab.get(), tab_android_);
+
+  // Act: Remove the pinned tab.
+  tabs::ScopedTab removed_tab = tab_strip_collection.RemoveTab(tab_android_);
+
+  // Assert:
+  // Cached pinned state is retained after removal for undoable closures.
+  EXPECT_EQ(removed_tab.get(), tab_android_);
+  EXPECT_TRUE(tab_android_->IsPinned());
 }
 
 TEST_F(TabAndroidTest, TabGroupTabCollectionParent) {
   EXPECT_FALSE(tab_android_->GetGroup());
 
+  // Arrange:
+  tabs::TabStripCollection tab_strip_collection;
   tab_groups::TabGroupId tab_group_id = tab_groups::TabGroupId::GenerateNew();
   tab_groups::TabGroupVisualData visual_data;
   TabGroupAndroid::Factory factory(profile_.get());
-  std::unique_ptr<tabs::TabGroupTabCollection> tab_group_collection =
-      std::make_unique<tabs::TabGroupTabCollection>(factory, tab_group_id,
-                                                    visual_data);
-  tab_group_collection->AddTab(tabs::ScopedTab(tab_android_), 0);
 
-  EXPECT_EQ(tab_group_id, *(tab_android_->GetGroup()));
-  tabs::ScopedTab removed_group_tab =
-      tab_group_collection->MaybeRemoveTab(tab_android_);
-  EXPECT_EQ(removed_group_tab.get(), tab_android_);
+  // Act: Create a tab group.
+  tab_strip_collection.CreateTabGroup(
+      std::make_unique<tabs::TabGroupTabCollection>(factory, tab_group_id,
+                                                    visual_data));
+  tab_strip_collection.AddTabRecursive(tabs::ScopedTab(tab_android_),
+                                       /*index=*/0,
+                                       /*new_group_id=*/std::nullopt,
+                                       /*new_pinned_state=*/false);
+  tab_strip_collection.MoveTabRecursive(/*initial_index=*/0, /*final_index=*/0,
+                                        tab_group_id,
+                                        /*new_pinned_state=*/false);
+
+  // Assert:
+  EXPECT_EQ(tab_group_id, tab_android_->GetGroup());
+
+  // Act: Remove the tab from the tab group.
+  tabs::ScopedTab removed_tab = tab_strip_collection.RemoveTab(tab_android_);
+
+  // Assert:
+  // Cached group ID is retained after removal for undoable closures.
+  EXPECT_EQ(removed_tab.get(), tab_android_);
+  EXPECT_EQ(tab_group_id, tab_android_->GetGroup());
+}
+
+TEST_F(TabAndroidTest, SplitTabCollectionParent) {
+  EXPECT_FALSE(tab_android_->GetSplit());
+  EXPECT_FALSE(tab_android_->IsSplit());
+
+  // Arrange:
+  tabs::TabStripCollection tab_strip_collection;
+  TabAndroid* second_tab_android = CreateTab();
+  tab_strip_collection.AddTabRecursive(tabs::ScopedTab(tab_android_),
+                                       /*index=*/0,
+                                       /*new_group_id=*/std::nullopt,
+                                       /*new_pinned_state=*/true);
+  tab_strip_collection.AddTabRecursive(tabs::ScopedTab(second_tab_android),
+                                       /*index=*/1,
+                                       /*new_group_id=*/std::nullopt,
+                                       /*new_pinned_state=*/true);
+
+  // Act: Create SplitTabCollection.
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+  tab_strip_collection.CreateSplit(split_id, {tab_android_, second_tab_android},
+                                   split_tabs::SplitTabVisualData());
+
+  // Assert:
+  EXPECT_TRUE(tab_android_->IsSplit());
+  EXPECT_EQ(split_id, tab_android_->GetSplit());
+  EXPECT_TRUE(second_tab_android->IsSplit());
+  EXPECT_EQ(split_id, second_tab_android->GetSplit());
+
+  // Act: Detaching the SplitTabCollection from the root (TabStripCollection).
+  // This must not wipe cached pinned or split properties on the child tabs.
+  tabs::SplitTabCollection* split_collection =
+      tab_strip_collection.GetSplitTabCollection(split_id);
+  ASSERT_NE(nullptr, split_collection);
+  std::unique_ptr<tabs::TabCollection> detached_split_collection =
+      tab_strip_collection.RemoveTabCollection(split_collection);
+  ASSERT_NE(nullptr, detached_split_collection);
+
+  // Assert:
+  EXPECT_TRUE(tab_android_->IsPinned());
+  EXPECT_TRUE(tab_android_->IsSplit());
+  EXPECT_EQ(split_id, tab_android_->GetSplit());
+  EXPECT_TRUE(second_tab_android->IsPinned());
+  EXPECT_TRUE(second_tab_android->IsSplit());
+  EXPECT_EQ(split_id, second_tab_android->GetSplit());
+
+  // Cleanup:
+  // After removing the tabs, we only need to destroy second_tab_android,
+  // since the first tab (tab_android_) will be destroyed by TearDown().
+  EXPECT_EQ(tab_android_,
+            detached_split_collection->MaybeRemoveTab(tab_android_).get());
+  EXPECT_EQ(
+      second_tab_android,
+      detached_split_collection->MaybeRemoveTab(second_tab_android).get());
+  DestroyTab(second_tab_android);
+}
+
+TEST_F(TabAndroidTest, UnrootedSubCollectionDoesNotOverwriteProperties) {
+  // Arrange & Act:
+  std::unique_ptr<tabs::PinnedTabCollection> unrooted_pinned_collection =
+      std::make_unique<tabs::PinnedTabCollection>();
+  unrooted_pinned_collection->AddTab(tabs::ScopedTab(tab_android_),
+                                     /*index=*/0);
+
+  // Assert:
+  // Without a TabStripCollection root, cached properties must remain unchanged.
+  EXPECT_FALSE(tab_android_->IsPinned());
+  EXPECT_EQ(tab_android_,
+            unrooted_pinned_collection->MaybeRemoveTab(tab_android_).get());
 }
 
 TEST_F(TabAndroidTest, WebUIEmbeddingContext) {

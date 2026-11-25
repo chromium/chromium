@@ -17,21 +17,28 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_group_android.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/split_tabs/android/split_tab_id_jni_conversion.h"
+#include "components/split_tabs/android/split_tab_visual_data_jni_conversion.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/android/tab_group_id_jni_conversion.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/pinned_tab_collection.h"
+#include "components/tabs/public/split_tab_collection.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"
 #include "components/tabs/public/unpinned_tab_collection.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "ui/gfx/range/range.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-// This JNI header is generated from TabCollectionTabModelImpl.java.
 #include "chrome/android/chrome_jni_headers/TabCollectionTabModelImpl_jni.h"
+#include "chrome/browser/tabmodel/jni_headers/SplitTabData_jni.h"
 
 using tab_groups::TabGroupColorId;
 using tab_groups::TabGroupId;
@@ -103,6 +110,15 @@ int TabCollectionTabModelImpl::AddTabRecursive(
 }
 
 void TabCollectionTabModelImpl::RemoveTab(TabAndroid* tab) {
+  CHECK(tab);
+
+  // TabStripCollection requires SplitTabCollection instances to hold >= 2 tabs
+  // so if a tab is in SplitTabCollection, we should "unsplit" before removing
+  // the tab.
+  if (std::optional<split_tabs::SplitTabId> split_id = tab->GetSplit()) {
+    tab_strip_collection_->Unsplit(*split_id);
+  }
+
   tab_strip_collection_->RemoveTab(tab);
 }
 
@@ -367,6 +383,41 @@ int TabCollectionTabModelImpl::GetIndexOfFirstNonPinnedTab() const {
 jni_zero::JniRawPtr<tabs::TabStripCollection>
 TabCollectionTabModelImpl::GetTabStripCollection() {
   return jni_zero::MakeRaw(tab_strip_collection_.get());
+}
+
+void TabCollectionTabModelImpl::CreateSplit(
+    const split_tabs::SplitTabId& split_id,
+    const std::vector<TabInterface*>& tabs,
+    split_tabs::SplitTabVisualData visual_data) {
+  // TODO(crbug.com/585322223): Guard GetSafeIndex() and MoveTabRecursive()
+  // against SplitTabCollection index and contiguity invariants.
+  tab_strip_collection_->CreateSplit(split_id, tabs, std::move(visual_data));
+}
+
+jni_zero::ScopedJavaLocalRef<JSplitTabData>
+TabCollectionTabModelImpl::GetSplitTabData(
+    JNIEnv* env,
+    const split_tabs::SplitTabId& split_id) const {
+  SplitTabCollection* split_collection =
+      tab_strip_collection_->GetSplitTabCollection(split_id);
+  if (!split_collection) {
+    return nullptr;
+  }
+
+  split_tabs::SplitTabData* data = split_collection->data();
+  std::vector<TabInterface*> tabs = data->ListTabs();
+  std::vector<TabAndroid*> android_tabs;
+  android_tabs.reserve(tabs.size());
+  for (TabInterface* tab : tabs) {
+    android_tabs.push_back(TabAndroid::FromTabInterface(tab));
+  }
+
+  return SplitTabDataJni::New(env, data->id(), std::move(android_tabs),
+                              *data->visual_data());
+}
+
+std::set<split_tabs::SplitTabId> TabCollectionTabModelImpl::ListSplits() const {
+  return tab_strip_collection_->ListSplits();
 }
 
 // Private methods:

@@ -395,6 +395,12 @@ inline TabAndroid* FromJniType<TabAndroid*>(JNIEnv* env,
   return j_object.is_null() ? nullptr : TabAndroid::GetNativeTab(env, j_object);
 }
 template <>
+inline tabs::TabInterface* FromJniType<tabs::TabInterface*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_object) {
+  return FromJniType<TabAndroid*>(env, j_object);
+}
+template <>
 inline ScopedJavaLocalRef<jobject> ToJniType<TabAndroid>(
     JNIEnv* env,
     const TabAndroid& tab) {

@@ -38,10 +38,12 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -54,6 +56,11 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.split_tabs.SplitTabId;
+import org.chromium.components.split_tabs.SplitTabLayout;
+import org.chromium.components.split_tabs.SplitTabVisualData;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
@@ -72,6 +79,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Integration test for {@link TabCollectionTabModelImpl}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_STARTUP_PROMOS)
+@EnableFeatures({ChromeFeatureList.ENABLE_ANDROID_SPLIT_VIEW})
 @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
 @Batch(Batch.PER_CLASS)
 public class TabCollectionTabModelImplTest {
@@ -87,6 +95,7 @@ public class TabCollectionTabModelImplTest {
     @Mock private TabGroupCollectionData mTabGroupCollectionData;
 
     private String mTestUrl;
+    private WebPageStation mInitialPageStation;
     private TabModelSelector mTabModelSelector;
     private TabModel mRegularModel;
     private TabCollectionTabModelImpl mCollectionModel;
@@ -98,7 +107,7 @@ public class TabCollectionTabModelImplTest {
         mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
 
         mTestUrl = mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/ok.txt");
-        mActivityTestRule.startOnBlankPage();
+        mInitialPageStation = mActivityTestRule.startOnBlankPage();
         mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
         mRegularModel = mTabModelSelector.getModel(/* incognito= */ false);
         if (mRegularModel instanceof TabCollectionTabModelImpl collectionModel) {
@@ -251,6 +260,34 @@ public class TabCollectionTabModelImplTest {
                     tab0.destroy();
                     mCollectionModel.removeObserver(observer);
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testRemoveTab_TabInSplitView() {
+        // Arrange:
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        var visualData =
+                new SplitTabVisualData(
+                        SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+        SplitTabId splitTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, tab2), visualData));
+        assertNotNull(splitTabId);
+
+        // Act:
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeTab(tab1));
+
+        // Assert:
+        assertNull(tab1.getSplitTabId());
+        assertNull(tab2.getSplitTabId());
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits).isEmpty());
+        assertNull(
+                ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.getSplitTabData(splitTabId)));
+
+        // Cleanup:
+        ThreadUtils.runOnUiThreadBlocking(tab1::destroy);
     }
 
     @Test
@@ -4873,5 +4910,338 @@ public class TabCollectionTabModelImplTest {
                     tab2.destroy();
                     tab3.destroy();
                 });
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SPLIT_VIEW)
+    public void testCreateSplit_FeatureFlagDisabled_SplitNotCreated() {
+        // Arrange:
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        var visualData =
+                new SplitTabVisualData(
+                        SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+
+        // Act:
+        SplitTabId splitTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, tab2), visualData));
+
+        // Assert:
+        assertNull(splitTabId);
+        assertNull(tab1.getSplitTabId());
+        assertNull(tab2.getSplitTabId());
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits).isEmpty());
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateSplit_RejectInvalidTabs() {
+        // Arrange:
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        Tab closedTab = createTab();
+        Tab pinnedTab = createTab();
+        Tab groupedTab = createTab();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Pending-closure tabs are removed from TabModel.
+                    mRegularModel
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(closedTab).allowUndo(true).build(),
+                                    /* allowDialog= */ false);
+                    mRegularModel.pinTab(pinnedTab.getId(), /* showUngroupDialog= */ false);
+                    mRegularModel.createSingleTabGroup(groupedTab);
+                });
+        assertTrue(pinnedTab.getIsPinned());
+        assertNotNull(groupedTab.getTabGroupId());
+        var visualData =
+                new SplitTabVisualData(
+                        SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+
+        // Act & Assert:
+        // Fewer than two tabs.
+        assertNull(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(), visualData)));
+        assertNull(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1), visualData)));
+
+        // More than two tabs.
+        assertNull(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, tab2, tab3), visualData)));
+
+        // Two identical tabs.
+        assertNull(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, tab1), visualData)));
+
+        // Tab not in TabModel.
+        assertNull(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, closedTab), visualData)));
+
+        // TODO(crbug.com/585322252): Support creating a Split View with pinned or grouped tabs.
+        // Pinned tab.
+        assertNull(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(pinnedTab, tab1), visualData)));
+
+        // Grouped tab.
+        assertNull(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(groupedTab, tab1), visualData)));
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits).isEmpty());
+
+        // Tab already in a Split View.
+        SplitTabId existingSplitTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, tab2), visualData));
+        assertNotNull(existingSplitTabId);
+        assertNull(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, tab3), visualData)));
+        assertEquals(existingSplitTabId, tab1.getSplitTabId());
+        assertEquals(existingSplitTabId, tab2.getSplitTabId());
+        assertNull(tab3.getSplitTabId());
+        assertEquals(
+                Set.of(existingSplitTabId),
+                ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits));
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateSplit_CommitPendingClosures() {
+        // Arrange:
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab closedTab = createTab();
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mRegularModel
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTab(closedTab)
+                                                .allowUndo(true)
+                                                .build(),
+                                        /* allowDialog= */ false));
+        assertTrue(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.isClosurePending(closedTab.getId())));
+        assertFalse(closedTab.isDestroyed());
+        var visualData =
+                new SplitTabVisualData(
+                        SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+
+        // Act:
+        SplitTabId splitTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, tab2), visualData));
+
+        // Assert:
+        assertNotNull(splitTabId);
+        assertFalse(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.isClosurePending(closedTab.getId())));
+        assertTrue(closedTab.isDestroyed());
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateSplit_AdjacentTabs() {
+        // Arrange:
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        var visualData =
+                new SplitTabVisualData(
+                        SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+        assertNull(tab1.getSplitTabId());
+        assertNull(tab2.getSplitTabId());
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits).isEmpty());
+
+        // Act:
+        SplitTabId splitTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, tab2), visualData));
+
+        // Assert:
+        assertNotNull(splitTabId);
+        assertEquals(splitTabId, tab1.getSplitTabId());
+        assertEquals(splitTabId, tab2.getSplitTabId());
+        assertEquals(
+                Set.of(splitTabId), ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits));
+
+        var expectedSplitTabData = new SplitTabData(splitTabId, List.of(tab1, tab2), visualData);
+        assertEquals(
+                expectedSplitTabData,
+                ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.getSplitTabData(splitTabId)));
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateSplit_NonadjacentTabs_SecondTabIsAfterFirstTab() {
+        // Arrange:
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+        var visualData =
+                new SplitTabVisualData(
+                        SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+
+        // Act:
+        SplitTabId splitTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, tab3), visualData));
+
+        // Assert:
+        assertNotNull(splitTabId);
+        assertTabsInOrderAre(List.of(tab0, tab1, tab3, tab2));
+        assertEquals(
+                Set.of(splitTabId), ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits));
+
+        var expectedSplitTabData = new SplitTabData(splitTabId, List.of(tab1, tab3), visualData);
+        assertEquals(
+                expectedSplitTabData,
+                ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.getSplitTabData(splitTabId)));
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateSplit_NonadjacentTabs_SecondTabIsBeforeFirstTab() {
+        // Arrange:
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+        var visualData =
+                new SplitTabVisualData(
+                        SplitTabLayout.STACKED, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+
+        // Act:
+        SplitTabId splitTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab3, tab1), visualData));
+
+        // Assert:
+        assertNotNull(splitTabId);
+        assertTabsInOrderAre(List.of(tab0, tab2, tab3, tab1));
+        assertEquals(
+                Set.of(splitTabId), ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits));
+
+        var expectedSplitTabData = new SplitTabData(splitTabId, List.of(tab3, tab1), visualData);
+        assertEquals(
+                expectedSplitTabData,
+                ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.getSplitTabData(splitTabId)));
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateSplit_ResetPendingTabClosureState() {
+        // Arrange:
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+        var visualData =
+                new SplitTabVisualData(
+                        SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+
+        // Act:
+        // Creating a non-adjacent split that reorders tabs to [tab0, tab1, tab3, tab2]. This should
+        // reset PendingTabClosureManager's rewound list, so if we close tab2 then undo it, tab2
+        // should be restored at index 3.
+        SplitTabId splitTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, tab3), visualData));
+        assertNotNull(splitTabId);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mRegularModel
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTab(tab2).allowUndo(true).build(),
+                                        /* allowDialog= */ false));
+        ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.cancelTabClosure(tab2.getId()));
+
+        // Assert:
+        assertTabsInOrderAre(List.of(tab0, tab1, tab3, tab2));
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateSplit_IncognitoTabModel() {
+        // Arrange:
+        IncognitoNewTabPageStation incognitoPage =
+                mInitialPageStation.openNewIncognitoTabOrWindowFast();
+        TabModel incognitoModel =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> incognitoPage.getTabModelSelector().getModel(/* incognito= */ true));
+        Tab incognitoTab1 = ThreadUtils.runOnUiThreadBlocking(incognitoPage::getTab);
+        Tab incognitoTab2 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                incognitoModel
+                                        .getTabCreator()
+                                        .createNewTab(
+                                                new LoadUrlParams("about:blank"),
+                                                TabLaunchType.FROM_CHROME_UI,
+                                                /* parent= */ null));
+        var visualData =
+                new SplitTabVisualData(
+                        SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+
+        // Act:
+        SplitTabId splitTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                incognitoModel.createSplit(
+                                        List.of(incognitoTab1, incognitoTab2), visualData));
+
+        // Assert:
+        assertNotNull(splitTabId);
+        assertEquals(splitTabId, incognitoTab1.getSplitTabId());
+        assertEquals(splitTabId, incognitoTab2.getSplitTabId());
+        assertEquals(
+                Set.of(splitTabId), ThreadUtils.runOnUiThreadBlocking(incognitoModel::listSplits));
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(mRegularModel::listSplits).isEmpty());
+
+        var expectedSplitTabData =
+                new SplitTabData(splitTabId, List.of(incognitoTab1, incognitoTab2), visualData);
+        assertEquals(
+                expectedSplitTabData,
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> incognitoModel.getSplitTabData(splitTabId)));
+    }
+
+    @Test
+    @MediumTest
+    public void testGetSplitTabData_NonExistentSplitId() {
+        // Arrange:
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        var visualData =
+                new SplitTabVisualData(
+                        SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+        SplitTabId existingSplitTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.createSplit(List.of(tab1, tab2), visualData));
+        assertNotNull(existingSplitTabId);
+
+        // Act:
+        SplitTabData splitTabData =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mRegularModel.getSplitTabData(SplitTabId.generateNew()));
+
+        // Assert:
+        assertNull(splitTabData);
     }
 }

@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.tabmodel;
 
 import com.google.errorprone.annotations.DoNotMock;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -37,7 +40,11 @@ public final class SplitTabData {
      * @param tabs The ordered list of {@link Tab}s in the Split View.
      * @param visualData The {@link SplitTabVisualData} describing layout and divider ratio.
      */
-    public SplitTabData(SplitTabId splitId, List<Tab> tabs, SplitTabVisualData visualData) {
+    @CalledByNative
+    public SplitTabData(
+            @JniType("split_tabs::SplitTabId") SplitTabId splitId,
+            @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
+            @JniType("split_tabs::SplitTabVisualData") SplitTabVisualData visualData) {
         this.splitId = splitId;
         this.tabs = List.copyOf(tabs);
         this.visualData = visualData;

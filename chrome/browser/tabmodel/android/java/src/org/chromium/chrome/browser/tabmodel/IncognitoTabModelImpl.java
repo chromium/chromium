@@ -32,7 +32,6 @@ import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabStripCollection;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -733,19 +732,16 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
 
     @Override
     public @Nullable SplitTabId createSplit(List<Tab> tabs, SplitTabVisualData visualData) {
-        // TODO(crbug.com/585322243): Implement this.
-        return null;
+        return mDelegateModel.createSplit(tabs, visualData);
     }
 
     @Override
     public @Nullable SplitTabData getSplitTabData(SplitTabId splitTabId) {
-        // TODO(crbug.com/585322243): Implement this.
-        return null;
+        return mDelegateModel.getSplitTabData(splitTabId);
     }
 
     @Override
     public Set<SplitTabId> listSplits() {
-        // TODO(crbug.com/585322243): Implement this.
-        return Collections.emptySet();
+        return mDelegateModel.listSplits();
     }
 }

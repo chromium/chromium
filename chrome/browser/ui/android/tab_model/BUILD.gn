@@ -23,6 +23,7 @@ source_set("tab_model") {
     "//chrome/browser/flags:chrome_browser_flags_enums_srcjar",
     "//chrome/browser/flags:flags_android",
     "//chrome/browser/tab_list",
+    "//chrome/browser/tabmodel:jni_headers",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/ui/tabs:utils",
     "//components/omnibox/browser:location_bar",
@@ -134,11 +135,13 @@ source_set("browser_tests") {
   ]
   deps = [
     ":test_support",
+    "//chrome/browser/android",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/flags:flags_android",
     "//chrome/browser/performance_manager",
     "//chrome/test:test_support",
     "//components/performance_manager",
+    "//components/split_tabs",
     "//content/public/browser",
   ]
 }

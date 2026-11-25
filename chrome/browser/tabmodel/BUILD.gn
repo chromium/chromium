@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   resources_package = "org.chromium.chrome.browser.tabmodel"
@@ -81,6 +82,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/undo/UndoClosureSnapshot.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/undo/UndoClosureSnapshotFactory.java",
   ]
+  srcjar_deps = [ ":jni_headers" ]
   deps = [
     "//base:base_java",
     "//base:tristate_java",
@@ -208,5 +210,15 @@ robolectric_library("test_support_java") {
     "//content/public/android:content_full_java",
     "//third_party/mockito:mockito_java",
     "//url:url_java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [
+    ":*",
+    "//chrome/browser/ui/android/tab_model",
+  ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/tabmodel/SplitTabData.java",
   ]
 }

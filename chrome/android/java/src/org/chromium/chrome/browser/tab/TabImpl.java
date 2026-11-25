@@ -319,6 +319,7 @@ class TabImpl implements Tab {
     private int mParentId = INVALID_TAB_ID;
     private int mRootId;
     private @Nullable Token mTabGroupId;
+    private @Nullable SplitTabId mSplitTabId;
     private boolean mTabHasSensitiveContent;
     private boolean mIsPinned;
     private @TabAlert int mAlertState = TabAlert.NONE;
@@ -2924,16 +2925,26 @@ class TabImpl implements Tab {
     }
 
     @Override
-    public @Nullable SplitTabId getSplitTabId() {
-        // TODO(crbug.com/585322243): Implement this.
-        return null;
+    @CalledByNative
+    public @JniType("std::optional<split_tabs::SplitTabId>") @Nullable SplitTabId getSplitTabId() {
+        return mSplitTabId;
+    }
+
+    private void setSplitTabId(@Nullable SplitTabId splitTabId) {
+        if (Objects.equals(mSplitTabId, splitTabId) || isDestroyed()) return;
+        // TODO(crbug.com/585322669, crbug.com/585322789): Notify TabObservers and native
+        // SplitChangedCallbacks when mSplitTabId changes.
+        mSplitTabId = splitTabId;
     }
 
     @CalledByNative
     private void updateParentCollectionProperties(
-            boolean isPinned, @Nullable @JniType("std::optional<base::Token>") Token tabGroupId) {
+            boolean isPinned,
+            @Nullable @JniType("std::optional<base::Token>") Token tabGroupId,
+            @Nullable @JniType("std::optional<split_tabs::SplitTabId>") SplitTabId splitTabId) {
         setIsPinned(isPinned);
         setTabGroupId(tabGroupId);
+        setSplitTabId(splitTabId);
     }
 
     @Override

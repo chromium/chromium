@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -25,6 +26,8 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -672,6 +675,66 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest,
 
   EXPECT_TRUE(new_contents->GetLastCommittedURL().SchemeIsBlob());
   EXPECT_EQ(u"INITIAL", new_contents->GetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, CreateSplit_SplitViewEnabled) {
+  // CachedFlag ignores `defaultValueInTests` on `is_chrome_branded = true`
+  // builds (see CachedFlag.java), so regardless of `defaultValueInTests`, we
+  // need to explicitly enable the feature flag here.
+  chrome::android::ScopedJavaDrivenFeatureForTesting enable_split_view(
+      chrome::android::kEnableAndroidSplitView, true);
+
+  // Arrange:
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+
+  tabs::TabInterface* tab_a = tab_list->GetTab(0);
+  tabs::TabInterface* tab_b =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/-1);
+  ASSERT_TRUE(tab_a);
+  ASSERT_TRUE(tab_b);
+
+  const split_tabs::SplitTabVisualData expected_visual_data(
+      split_tabs::SplitTabLayout::kSideBySide, /*split_ratio=*/0.4);
+
+  // Act:
+  std::optional<split_tabs::SplitTabId> split_id = tab_list->CreateSplit(
+      {tab_a->GetHandle(), tab_b->GetHandle()}, expected_visual_data);
+
+  // Assert:
+  ASSERT_TRUE(split_id.has_value());
+  EXPECT_EQ(tab_a->GetSplit(), split_id);
+  EXPECT_EQ(tab_b->GetSplit(), split_id);
+  EXPECT_THAT(tab_list->ListSplits(), testing::ElementsAre(*split_id));
+  EXPECT_EQ(tab_list->GetSplitTabVisualData(*split_id), expected_visual_data);
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest, CreateSplit_SplitViewDisabled) {
+  chrome::android::ScopedJavaDrivenFeatureForTesting disable_split_view(
+      chrome::android::kEnableAndroidSplitView, false);
+
+  // Arrange:
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+
+  tabs::TabInterface* tab_a = tab_list->GetTab(0);
+  tabs::TabInterface* tab_b =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/-1);
+  ASSERT_TRUE(tab_a);
+  ASSERT_TRUE(tab_b);
+
+  const split_tabs::SplitTabVisualData visual_data(
+      split_tabs::SplitTabLayout::kSideBySide, /*split_ratio=*/0.4);
+
+  // Act:
+  std::optional<split_tabs::SplitTabId> split_id = tab_list->CreateSplit(
+      {tab_a->GetHandle(), tab_b->GetHandle()}, visual_data);
+
+  // Assert:
+  EXPECT_FALSE(split_id.has_value());
+  EXPECT_FALSE(tab_a->GetSplit().has_value());
+  EXPECT_FALSE(tab_b->GetSplit().has_value());
+  EXPECT_TRUE(tab_list->ListSplits().empty());
 }
 
 }  // namespace

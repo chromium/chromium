@@ -9,15 +9,22 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/tabmodel/jni_headers/SplitTabData_shared_jni.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 class Profile;
 class TabAndroid;
 class TabGroup;
+
+namespace split_tabs {
+class SplitTabVisualData;
+}  // namespace split_tabs
 
 namespace tab_groups {
 class TabGroupVisualData;
@@ -132,6 +139,20 @@ class TabCollectionTabModelImpl {
 
   // Returns the TabStripCollection associated with this TabModel.
   jni_zero::JniRawPtr<tabs::TabStripCollection> GetTabStripCollection();
+
+  // Pairs `tabs` into a new Split View. All tabs must belong to the same
+  // parent collection.
+  void CreateSplit(const split_tabs::SplitTabId& split_id,
+                   const std::vector<TabInterface*>& tabs,
+                   split_tabs::SplitTabVisualData visual_data);
+
+  // Returns the Java SplitTabData for `split_id`, or nullptr if not found.
+  jni_zero::ScopedJavaLocalRef<JSplitTabData> GetSplitTabData(
+      JNIEnv* env,
+      const split_tabs::SplitTabId& split_id) const;
+
+  // Returns the set of SplitTabIds in this TabModel.
+  std::set<split_tabs::SplitTabId> ListSplits() const;
 
  private:
   // Returns a safe index for adding or moving a tab or tab group.

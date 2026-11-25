@@ -1646,6 +1646,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tabmodel") {
     "//base:tristate_java",
     "//chrome/browser/ui/browser_window/public/android:factory_java",
     "//chrome/browser/ui/browser_window/public/android:java",
+    "//components/split_tabs:split_tabs_java",
     "//components/tabs/public/android:java",
     "//third_party/jni_zero:jni_zero_java",
   ]

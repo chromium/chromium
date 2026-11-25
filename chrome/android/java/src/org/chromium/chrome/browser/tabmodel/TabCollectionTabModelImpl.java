@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabClosureDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
+import org.chromium.chrome.browser.ui.android.split_view.SplitViewEnabledFn;
 import org.chromium.components.split_tabs.SplitTabId;
 import org.chromium.components.split_tabs.SplitTabVisualData;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -1655,20 +1656,58 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     @Override
     public @Nullable SplitTabId createSplit(List<Tab> tabs, SplitTabVisualData visualData) {
-        // TODO(crbug.com/585322243): Implement this.
-        return null;
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == null) return null;
+
+        if (!SplitViewEnabledFn.isEnabled()) return null;
+
+        if (tabs.size() != 2 || tabs.get(0) == tabs.get(1)) return null;
+
+        for (var tab : tabs) {
+            if (mTabIdToTabs.get(tab.getId()) != tab) return null;
+
+            if (tab.getSplitTabId() != null) return null;
+
+            // TODO(crbug.com/585322252): Support creating a Split View with pinned or grouped tabs.
+            if (tab.getIsPinned() || tab.getTabGroupId() != null) return null;
+        }
+
+        try (ScopedStorageBatch ignored = mBatchFactory.get()) {
+            commitPendingClosures(/* notifyIfEmpty= */ false);
+
+            SplitTabId splitTabId = SplitTabId.generateNew();
+            TabCollectionTabModelImplJni.get()
+                    .createSplit(
+                            assertNonNull(mNativeTabCollectionTabModelImplPtr),
+                            splitTabId,
+                            tabs,
+                            visualData);
+            invalidateCache();
+
+            if (supportsPendingClosures()) {
+                mPendingTabClosureManager.resetState();
+            }
+            return splitTabId;
+        }
     }
 
     @Override
     public @Nullable SplitTabData getSplitTabData(SplitTabId splitTabId) {
-        // TODO(crbug.com/585322243): Implement this.
-        return null;
+        assertOnUiThread();
+        return mNativeTabCollectionTabModelImplPtr == null
+                ? null
+                : TabCollectionTabModelImplJni.get()
+                        .getSplitTabData(mNativeTabCollectionTabModelImplPtr, splitTabId);
     }
 
     @Override
     public Set<SplitTabId> listSplits() {
-        // TODO(crbug.com/585322243): Implement this.
-        return Collections.emptySet();
+        assertOnUiThread();
+        return mNativeTabCollectionTabModelImplPtr == null
+                ? Collections.emptySet()
+                : Set.copyOf(
+                        TabCollectionTabModelImplJni.get()
+                                .listSplits(mNativeTabCollectionTabModelImplPtr));
     }
 
     protected void maybeAssertTabHasWebContents(Tab tab) {
@@ -3043,6 +3082,19 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         JniRawPtr<TabStripCollection> getTabStripCollection(
                 JniPtr<NativeTabCollectionTabModelImpl> self);
+
+        void createSplit(
+                JniPtr<NativeTabCollectionTabModelImpl> self,
+                @JniType("split_tabs::SplitTabId") SplitTabId splitTabId,
+                @JniType("std::vector<tabs::TabInterface*>") List<Tab> tabs,
+                @JniType("split_tabs::SplitTabVisualData") SplitTabVisualData visualData);
+
+        @Nullable SplitTabData getSplitTabData(
+                JniPtr<NativeTabCollectionTabModelImpl> self,
+                @JniType("split_tabs::SplitTabId") SplitTabId splitTabId);
+
+        @JniType("std::set<split_tabs::SplitTabId>")
+        List<SplitTabId> listSplits(JniPtr<NativeTabCollectionTabModelImpl> self);
     }
 
     List<Tab> getAllTabsFromNativeForTesting() {

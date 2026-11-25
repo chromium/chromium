@@ -66,7 +66,9 @@
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/split_tabs/android/split_tab_id_jni_conversion.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_collection.h"
@@ -1025,10 +1027,8 @@ bool TabAndroid::IsBlocked() const {
   return false;
 }
 
-// Split tabs is currently desktop only.
 bool TabAndroid::IsSplit() const {
-  NOTIMPLEMENTED();
-  return false;
+  return GetSplit().has_value();
 }
 
 std::optional<tab_groups::TabGroupId> TabAndroid::GetGroup() const {
@@ -1038,10 +1038,9 @@ std::optional<tab_groups::TabGroupId> TabAndroid::GetGroup() const {
   return tab_groups::TabGroupId::FromOptionalToken(token);
 }
 
-// Split tabs is currently desktop only.
 std::optional<split_tabs::SplitTabId> TabAndroid::GetSplit() const {
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  JNIEnv* env = AttachCurrentThread();
+  return Java_TabImpl_getSplitTabId(env, GetJavaObject(env));
 }
 
 tabs::TabCollection* TabAndroid::GetParentCollection(
@@ -1060,10 +1059,18 @@ void TabAndroid::OnReparented(tabs::TabCollection* parent,
 }
 
 void TabAndroid::OnAncestorChanged(base::PassKey<tabs::TabCollection>) {
-  // We only want to update this when getting attached to a collection. Keeping
-  // the old data around allows us to keep the tab group id or pinned state
-  // during undoable closures and reparenting.
-  if (parent_collection_) {
+  // Only update cached properties when attached to a root TabStripCollection.
+  //
+  // Skipping updates when a tab or an ancestor sub-collection (such as
+  // SplitTabCollection or TabGroupTabCollection) is detached preserves pinned,
+  // grouped, and/or split states across transient reparenting and undoable
+  // closures.
+  tabs::TabCollection* root = parent_collection_;
+  while (root && root->GetParentCollection()) {
+    root = root->GetParentCollection();
+  }
+
+  if (root && root->type() == tabs::TabCollection::Type::TABSTRIP) {
     UpdateProperties();
   }
 }
@@ -1086,6 +1093,7 @@ TabAndroid::TabAndroid(Profile* profile, int tab_id)
 void TabAndroid::UpdateProperties() {
   bool pinned = false;
   std::optional<tab_groups::TabGroupId> tab_group_id;
+  std::optional<split_tabs::SplitTabId> split_tab_id;
 
   tabs::TabCollection* ancestor = parent_collection_;
   while (ancestor) {
@@ -1098,7 +1106,9 @@ void TabAndroid::UpdateProperties() {
                            ->GetTabGroupId();
         break;
       case tabs::TabCollection::Type::SPLIT:
-        // Intentional fallthrough. Split tabs is currently desktop only.
+        split_tab_id =
+            static_cast<tabs::SplitTabCollection*>(ancestor)->GetSplitTabId();
+        break;
       case tabs::TabCollection::Type::TABSTRIP:
       case tabs::TabCollection::Type::UNPINNED:
         break;
@@ -1110,7 +1120,7 @@ void TabAndroid::UpdateProperties() {
   std::optional<base::Token> tab_group_token =
       tab_groups::TabGroupId::ToOptionalToken(tab_group_id);
   Java_TabImpl_updateParentCollectionProperties(env, GetJavaObject(env), pinned,
-                                                tab_group_token);
+                                                tab_group_token, split_tab_id);
 }
 
 ScopedJavaLocalRef<jobject> TabAndroid::GetJavaObject(JNIEnv* env) const {
