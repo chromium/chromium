@@ -68,6 +68,9 @@ export class ExceptionTabbedAddDialogElement extends CrLitElement {
   private accessor submitDisabledList_: boolean = true;
   private accessor submitDisabledManual_: boolean = true;
 
+  protected readonly settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
+
   protected onTabsSelectedChanged_(
       e: CustomEvent<{value: ExceptionAddDialogTabs}>) {
     this.selectedTab_ = e.detail.value;

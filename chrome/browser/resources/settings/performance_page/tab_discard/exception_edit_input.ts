@@ -10,11 +10,13 @@ import {assert} from 'chrome://resources/js/assert.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {loadTimeData} from '../../i18n_setup.js';
 import {convertDateToWindowsEpoch} from '../../time.js';
 import type {PerformanceMetricsProxy} from '../performance_metrics_proxy.js';
 import {MemorySaverModeExceptionListAction, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
 
 import {getHtml} from './exception_edit_input.html.js';
+import {getCss} from './exception_input_shared.css.js';
 import {ExceptionValidationMixin, TAB_DISCARD_EXCEPTIONS_PREF} from './exception_validation_mixin.js';
 
 export interface ExceptionEditInputElement {
@@ -28,6 +30,10 @@ const ExceptionEditInputElementBase = ExceptionValidationMixin(CrLitElement);
 export class ExceptionEditInputElement extends ExceptionEditInputElementBase {
   static get is() {
     return 'tab-discard-exception-edit-input';
+  }
+
+  static override get styles() {
+    return getCss();
   }
 
   override render() {
@@ -45,10 +51,12 @@ export class ExceptionEditInputElement extends ExceptionEditInputElementBase {
     };
   }
 
+  accessor ruleToEdit: string = '';
+
+  protected readonly settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
-
-  accessor ruleToEdit: string = '';
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

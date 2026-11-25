@@ -9,6 +9,7 @@ import type {ExceptionAddInputElement} from './exception_add_input.js';
 export function getHtml(this: ExceptionAddInputElement) {
   return html`<!--_html_template_start_-->
 <cr-input id="input" label="$i18n{addSite}" aria-label="$i18n{addSiteTitle}"
+    class="${this.settingsRefresh2026Enabled_ ? 'stroked' : ''}"
     placeholder="example.com" .value="${this.rule}"
     @value-changed="${this.onRuleValueChanged_}"
     error-message="${this.errorMessage}" ?invalid="${this.inputInvalid}"

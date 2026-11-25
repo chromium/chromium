@@ -16,8 +16,8 @@
 /* adds horizontal padding to account for the removed padding from the dialog
  * body */
 #emptyText {
-  padding-inline-end: 20px;
-  padding-inline-start: 20px;
+  padding-inline-end: var(--cr-dialog-body-padding-horizontal, 20px);
+  padding-inline-start: var(--cr-dialog-body-padding-horizontal, 20px);
   padding-top: 20px;
 }
 
@@ -31,5 +31,6 @@
 }
 
 cr-checkbox {
-  padding: 7px var(--cr-section-padding);
+  padding: 7px var(--cr-dialog-body-padding-horizontal,
+      var(--cr-section-padding));
 }

@@ -17,7 +17,9 @@ export function getHtml(this: ExceptionEditDialogElement) {
     </tab-discard-exception-edit-input>
   </div>
   <div slot="button-container">
-    <cr-button id="cancelButton" class="cancel-button"
+    <cr-button id="cancelButton"
+        class="cancel-button ${
+            this.settingsRefresh2026Enabled_ ? 'tonal-button' : ''}"
         @click="${this.onCancelClick_}">
       $i18n{cancel}
     </cr-button>

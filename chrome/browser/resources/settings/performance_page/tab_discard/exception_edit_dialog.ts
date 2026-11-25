@@ -10,6 +10,8 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {loadTimeData} from '../../i18n_setup.js';
+
 import {getHtml} from './exception_edit_dialog.html.js';
 import type {ExceptionEditInputElement} from './exception_edit_input.js';
 
@@ -40,6 +42,9 @@ export class ExceptionEditDialogElement extends CrLitElement {
 
   accessor ruleToEdit: string = '';
   protected accessor submitDisabled_: boolean = true;
+
+  protected readonly settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   protected onSubmitDisabledChanged_(e: CustomEvent<{value: boolean}>) {
     this.submitDisabled_ = e.detail.value;

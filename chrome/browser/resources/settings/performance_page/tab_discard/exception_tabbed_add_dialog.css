@@ -56,7 +56,7 @@ cr-tabs {
  * body
  */
 #inputPage {
-  padding-inline-end: 20px;
-  padding-inline-start: 20px;
+  padding-inline-end: var(--cr-dialog-body-padding-horizontal, 20px);
+  padding-inline-start: var(--cr-dialog-body-padding-horizontal, 20px);
   padding-top: 20px;
 }

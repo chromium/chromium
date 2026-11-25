@@ -4,11 +4,11 @@
 
 import 'chrome://settings/settings.js';
 
-import {convertDateToWindowsEpoch, ExceptionAddDialogTabs, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, PrefsBrowserProxy, PrefService, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
+import {convertDateToWindowsEpoch, ExceptionAddDialogTabs, loadTimeData, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, PrefsBrowserProxy, PrefService, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import type {ExceptionEditDialogElement, ExceptionTabbedAddDialogElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
@@ -26,6 +26,9 @@ suite('TabDiscardExceptionsDialog', function() {
   const VALID_RULE = 'baz';
 
   setup(async function() {
+    loadTimeData.overrideValues({settingsRefresh2026: ''});
+    document.documentElement.toggleAttribute('settings-refresh-2026', false);
+
     performanceBrowserProxy = new TestPerformanceBrowserProxy();
     performanceBrowserProxy.setValidationResults({
       [EXISTING_RULE]: true,
@@ -112,8 +115,30 @@ suite('TabDiscardExceptionsDialog', function() {
     assertEquals(ExceptionAddDialogTabs.MANUAL, dialog.$.tabs.selected);
     assertFalse(dialog.$.input.$.input.invalid);
     assertTrue(dialog.$.actionButton.disabled);
+    assertFalse(dialog.$.input.$.input.classList.contains('stroked'));
+    assertTrue(dialog.$.cancelButton.classList.contains('cancel-button'));
+    assertFalse(dialog.$.cancelButton.classList.contains('tonal-button'));
+    assertTrue(isVisible(dialog.$.input.$.input.$.error));
 
     await testValidation();
+  });
+
+  test('ExceptionTabbedAddDialogSettingsRefresh2026', async function() {
+    loadTimeData.overrideValues({settingsRefresh2026: 'settings-refresh-2026'});
+    document.documentElement.toggleAttribute('settings-refresh-2026', true);
+    dialog = await setupTabbedAddDialog();
+    assertTrue(dialog.$.input.$.input.classList.contains('stroked'));
+    assertTrue(dialog.$.cancelButton.classList.contains('cancel-button'));
+    assertTrue(dialog.$.cancelButton.classList.contains('tonal-button'));
+    assertFalse(isVisible(dialog.$.input.$.input.$.error));
+
+    await assertUserInputValidated(INVALID_RULE);
+    assertTrue(dialog.$.input.$.input.invalid);
+    assertTrue(isVisible(dialog.$.input.$.input.$.error));
+
+    await assertUserInputValidated(VALID_RULE);
+    assertFalse(dialog.$.input.$.input.invalid);
+    assertFalse(isVisible(dialog.$.input.$.input.$.error));
   });
 
   test('ExceptionListEditDialogState', async function() {
@@ -121,8 +146,30 @@ suite('TabDiscardExceptionsDialog', function() {
     assertTrue(dialog.$.dialog.open);
     assertFalse(dialog.$.input.$.input.invalid);
     assertFalse(dialog.$.actionButton.disabled);
+    assertFalse(dialog.$.input.$.input.classList.contains('stroked'));
+    assertTrue(dialog.$.cancelButton.classList.contains('cancel-button'));
+    assertFalse(dialog.$.cancelButton.classList.contains('tonal-button'));
+    assertTrue(isVisible(dialog.$.input.$.input.$.error));
 
     await testValidation();
+  });
+
+  test('ExceptionEditDialogSettingsRefresh2026', async function() {
+    loadTimeData.overrideValues({settingsRefresh2026: 'settings-refresh-2026'});
+    document.documentElement.toggleAttribute('settings-refresh-2026', true);
+    dialog = await setupEditDialog();
+    assertTrue(dialog.$.input.$.input.classList.contains('stroked'));
+    assertTrue(dialog.$.cancelButton.classList.contains('cancel-button'));
+    assertTrue(dialog.$.cancelButton.classList.contains('tonal-button'));
+    assertFalse(isVisible(dialog.$.input.$.input.$.error));
+
+    await assertUserInputValidated(INVALID_RULE);
+    assertTrue(dialog.$.input.$.input.invalid);
+    assertTrue(isVisible(dialog.$.input.$.input.$.error));
+
+    await assertUserInputValidated(VALID_RULE);
+    assertFalse(dialog.$.input.$.input.invalid);
+    assertFalse(isVisible(dialog.$.input.$.input.$.error));
   });
 
   function assertCancel() {
