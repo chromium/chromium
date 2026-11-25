@@ -11,8 +11,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -94,6 +96,8 @@ constexpr float kGlifGradientWashAlpha = 0.18f;
 constexpr int kMinSelectionSize = 10;
 
 struct IntersectingSlice {
+  // The screenshot that `phys_rect_in_screenshot` is relative to.
+  SkBitmap screenshot;
   gfx::Rect dip_intersection;
   gfx::Rect phys_rect_in_screenshot;
   float scale = 1.0f;
@@ -167,8 +171,7 @@ std::pair<gfx::Rect, float> CalculateActiveBoundsAndScale(
   return {active_dip_bounds, output_scale};
 }
 
-void DrawSlicesToCanvas(const SkBitmap& screenshot,
-                        base::span<const IntersectingSlice> slices,
+void DrawSlicesToCanvas(base::span<const IntersectingSlice> slices,
                         const gfx::Rect& active_dip_bounds,
                         float output_scale,
                         SkBitmap& output) {
@@ -182,7 +185,7 @@ void DrawSlicesToCanvas(const SkBitmap& screenshot,
 
   for (const auto& item : slices) {
     SkBitmap piece;
-    if (!screenshot.extractSubset(
+    if (!item.screenshot.extractSubset(
             &piece, gfx::RectToSkIRect(item.phys_rect_in_screenshot))) {
       continue;
     }
@@ -451,7 +454,11 @@ class RegionSelectOverlayView : public views::View {
   // widget's display origin would drift further from true cursor position.
   gfx::Point GetScreenPointForEvent(const ui::LocatedEvent& event) const {
 #if BUILDFLAG(IS_WIN)
-    if (!GetLocalBounds().Contains(event.location())) {
+    // A confined selection stays on `display_`, so keep the point in its scale.
+    // Converting it with a neighbor monitor's scale would distort the clipped
+    // rect on mixed-DPI setups.
+    if (!coordinator_->confine_selection_to_display() &&
+        !GetLocalBounds().Contains(event.location())) {
       if (const auto* screen_win = display::win::GetScreenWin();
           screen_win && display::Screen::Get() == screen_win) {
         const gfx::PointF phys_pt =
@@ -495,6 +502,8 @@ class RegionSelectOverlayView : public views::View {
   ui::Cursor GetCursor(const ui::MouseEvent& event) override {
     return ui::Cursor(ui::mojom::CursorType::kCross);
   }
+
+  int64_t display_id() const { return display_.id(); }
 
   const SkBitmap& bitmap_for_testing() const { return bitmap_; }
 
@@ -576,7 +585,7 @@ class RegionSelectOverlayView : public views::View {
       }
       coordinator_->OnDragStarted();
       coordinator_->OnDragUpdated(
-          gfx::Rect(drag_start_screen_, gfx::Size(0, 0)));
+          display_id(), gfx::Rect(drag_start_screen_, gfx::Size(0, 0)));
       return true;
     }
     return views::View::OnMousePressed(event);
@@ -584,7 +593,7 @@ class RegionSelectOverlayView : public views::View {
 
   bool OnMouseDragged(const ui::MouseEvent& event) override {
     if (is_dragging_) {
-      coordinator_->OnDragUpdated(GetGlobalSelectionRect(event));
+      coordinator_->OnDragUpdated(display_id(), GetGlobalSelectionRect(event));
       return true;
     }
     return views::View::OnMouseDragged(event);
@@ -593,7 +602,8 @@ class RegionSelectOverlayView : public views::View {
   void OnMouseReleased(const ui::MouseEvent& event) override {
     if (is_dragging_ && event.IsLeftMouseButton()) {
       is_dragging_ = false;
-      coordinator_->OnDragCompleted(GetGlobalSelectionRect(event));
+      coordinator_->OnDragCompleted(display_id(),
+                                    GetGlobalSelectionRect(event));
     }
   }
 
@@ -624,12 +634,13 @@ class RegionSelectOverlayView : public views::View {
         }
         coordinator_->OnDragStarted();
         coordinator_->OnDragUpdated(
-            gfx::Rect(drag_start_screen_, gfx::Size(0, 0)));
+            display_id(), gfx::Rect(drag_start_screen_, gfx::Size(0, 0)));
         event->SetHandled();
         break;
       case ui::EventType::kGestureScrollUpdate:
         if (is_dragging_) {
-          coordinator_->OnDragUpdated(GetGlobalSelectionRect(*event));
+          coordinator_->OnDragUpdated(display_id(),
+                                      GetGlobalSelectionRect(*event));
           event->SetHandled();
         }
         break;
@@ -637,7 +648,8 @@ class RegionSelectOverlayView : public views::View {
       case ui::EventType::kGestureEnd:
         if (is_dragging_) {
           is_dragging_ = false;
-          coordinator_->OnDragCompleted(GetGlobalSelectionRect(*event));
+          coordinator_->OnDragCompleted(display_id(),
+                                        GetGlobalSelectionRect(*event));
           event->SetHandled();
         }
         break;
@@ -792,15 +804,29 @@ OmniboxEverywhereRegionSelectOverlay::Create(const SkBitmap& screenshot,
                                              const RegionCaptureSource& source,
                                              CompleteCallback callback,
                                              gfx::NativeWindow context) {
-  auto overlay = base::WrapUnique(
-      new OmniboxEverywhereRegionSelectOverlay(std::move(callback)));
+  auto overlay = base::WrapUnique(new OmniboxEverywhereRegionSelectOverlay(
+      std::move(callback), /*confine_selection_to_display=*/false));
   overlay->Initialize(screenshot, source, context);
   return overlay;
 }
 
+// static
+std::unique_ptr<OmniboxEverywhereRegionSelectOverlay>
+OmniboxEverywhereRegionSelectOverlay::CreateForDisplays(
+    const DisplayScreenshots& screenshots,
+    CompleteCallback callback,
+    gfx::NativeWindow context) {
+  auto overlay = base::WrapUnique(new OmniboxEverywhereRegionSelectOverlay(
+      std::move(callback), /*confine_selection_to_display=*/true));
+  overlay->InitializeForDisplays(screenshots, context);
+  return overlay;
+}
+
 OmniboxEverywhereRegionSelectOverlay::OmniboxEverywhereRegionSelectOverlay(
-    CompleteCallback callback)
-    : callback_(std::move(callback)) {}
+    CompleteCallback callback,
+    bool confine_selection_to_display)
+    : callback_(std::move(callback)),
+      confine_selection_to_display_(confine_selection_to_display) {}
 
 OmniboxEverywhereRegionSelectOverlay::~OmniboxEverywhereRegionSelectOverlay() {
   auto callback = std::move(callback_);
@@ -863,9 +889,7 @@ void OmniboxEverywhereRegionSelectOverlay::Initialize(
   std::vector<display::Display> target_displays =
       GetTargetDisplaysForSource(source);
   if (target_displays.empty() || screenshot.drawsNothing()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&OmniboxEverywhereRegionSelectOverlay::Finish,
-                                  weak_factory_.GetWeakPtr(), SkBitmap()));
+    PostEmptyFinish();
     return;
   }
 
@@ -875,18 +899,9 @@ void OmniboxEverywhereRegionSelectOverlay::Initialize(
   const gfx::Rect screenshot_bounds(0, 0, screenshot.width(),
                                     screenshot.height());
 
-  screenshot_ = screenshot;
-  screenshot_.setImmutable();
-  display_slices_.clear();
-
-  // Determine which display should be active/focused (display nearest cursor).
-  auto* screen = display::Screen::Get();
-  int64_t active_display_id =
-      screen
-          ? screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint()).id()
-          : target_displays[0].id();
-
-  views::Widget* active_widget = nullptr;
+  // Every slice refers to the same pixels, those of the one screenshot.
+  SkBitmap shared_screenshot = screenshot;
+  shared_screenshot.setImmutable();
 
   for (const auto& display : target_displays) {
     gfx::Rect sub_rect;
@@ -896,22 +911,75 @@ void OmniboxEverywhereRegionSelectOverlay::Initialize(
       const gfx::Rect physical_bounds = GetDisplayPhysicalBounds(display);
       sub_rect = physical_bounds - virtual_origin.OffsetFromOrigin();
     }
-    display_slices_.push_back({display, sub_rect});
+    display_slices_.push_back({display, shared_screenshot, sub_rect});
+  }
+  CreateWidgets(context);
+}
 
-    gfx::Rect crop_rect = gfx::IntersectRects(sub_rect, screenshot_bounds);
+void OmniboxEverywhereRegionSelectOverlay::InitializeForDisplays(
+    const DisplayScreenshots& screenshots,
+    gfx::NativeWindow context) {
+  auto* screen = display::Screen::Get();
+  if (!screen) {
+    PostEmptyFinish();
+    return;
+  }
+
+  // Going through the connected displays leaves out the screenshots of
+  // displays that are no longer connected.
+  for (const auto& display : screen->GetAllDisplays()) {
+    const auto it = screenshots.find(display.id());
+    if (it == screenshots.end() || it->second.drawsNothing()) {
+      continue;
+    }
+    SkBitmap screenshot = it->second;
+    screenshot.setImmutable();
+    const gfx::Rect screenshot_bounds = gfx::SkIRectToRect(screenshot.bounds());
+    display_slices_.push_back(
+        {display, std::move(screenshot), screenshot_bounds});
+  }
+
+  if (display_slices_.empty()) {
+    PostEmptyFinish();
+    return;
+  }
+  CreateWidgets(context);
+}
+
+void OmniboxEverywhereRegionSelectOverlay::PostEmptyFinish() {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&OmniboxEverywhereRegionSelectOverlay::Finish,
+                                weak_factory_.GetWeakPtr(), SkBitmap()));
+}
+
+void OmniboxEverywhereRegionSelectOverlay::CreateWidgets(
+    gfx::NativeWindow context) {
+  CHECK(!display_slices_.empty());
+
+  // Determine which display should be active/focused (display nearest cursor).
+  auto* screen = display::Screen::Get();
+  int64_t active_display_id =
+      screen
+          ? screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint()).id()
+          : display_slices_[0].display.id();
+
+  views::Widget* active_widget = nullptr;
+
+  for (const auto& slice : display_slices_) {
+    const gfx::Rect crop_rect =
+        gfx::IntersectRects(slice.sub_rect_in_screenshot,
+                            gfx::SkIRectToRect(slice.screenshot.bounds()));
 
     SkBitmap display_bitmap;
     if (!crop_rect.IsEmpty()) {
-      screenshot.extractSubset(
-          &display_bitmap,
-          SkIRect::MakeXYWH(crop_rect.x(), crop_rect.y(), crop_rect.width(),
-                            crop_rect.height()));
+      slice.screenshot.extractSubset(&display_bitmap,
+                                     gfx::RectToSkIRect(crop_rect));
     }
 
     std::unique_ptr<views::Widget> widget =
-        CreateWidgetForDisplay(display, display_bitmap, context);
+        CreateWidgetForDisplay(slice.display, display_bitmap, context);
 
-    if (display.id() == active_display_id) {
+    if (slice.display.id() == active_display_id) {
       active_widget = widget.get();
     }
 
@@ -998,36 +1066,65 @@ void OmniboxEverywhereRegionSelectOverlay::OnDragStarted() {
 }
 
 void OmniboxEverywhereRegionSelectOverlay::OnDragUpdated(
+    int64_t source_display_id,
     const gfx::Rect& global_selection_rect) {
+  const gfx::Rect selection_rect =
+      MaybeConfineSelection(source_display_id, global_selection_rect);
   for (const auto& widget : widgets_) {
     if (widget) {
       if (auto* overlay_view = views::AsViewClass<RegionSelectOverlayView>(
               widget->GetContentsView())) {
-        overlay_view->SetGlobalSelectionRect(global_selection_rect);
+        const gfx::Rect rect_for_view =
+            confine_selection_to_display_ &&
+                    overlay_view->display_id() != source_display_id
+                ? gfx::Rect()
+                : selection_rect;
+        overlay_view->SetGlobalSelectionRect(rect_for_view);
       }
     }
   }
 }
 
 void OmniboxEverywhereRegionSelectOverlay::OnDragCompleted(
+    int64_t source_display_id,
     const gfx::Rect& global_selection_rect) {
-  Finish(CropGlobalSelection(global_selection_rect));
+  const gfx::Rect selection_rect =
+      MaybeConfineSelection(source_display_id, global_selection_rect);
+  Finish(CropGlobalSelection(source_display_id, selection_rect));
 }
 
 void OmniboxEverywhereRegionSelectOverlay::OnDragCancelled() {
   Finish(SkBitmap());
 }
 
-SkBitmap OmniboxEverywhereRegionSelectOverlay::CropGlobalSelection(
+gfx::Rect OmniboxEverywhereRegionSelectOverlay::MaybeConfineSelection(
+    int64_t source_display_id,
     const gfx::Rect& global_selection_rect) const {
-  if (screenshot_.drawsNothing() || global_selection_rect.IsEmpty()) {
+  if (!confine_selection_to_display_) {
+    return global_selection_rect;
+  }
+  const auto it = std::ranges::find(
+      display_slices_, source_display_id,
+      [](const DisplaySliceInfo& slice) { return slice.display.id(); });
+  // Every view reports the id of a display in `display_slices_`.
+  CHECK(it != display_slices_.end());
+  return gfx::IntersectRects(global_selection_rect, it->display.bounds());
+}
+
+SkBitmap OmniboxEverywhereRegionSelectOverlay::CropGlobalSelection(
+    int64_t source_display_id,
+    const gfx::Rect& global_selection_rect) const {
+  if (global_selection_rect.IsEmpty()) {
     return SkBitmap();
   }
 
   std::vector<IntersectingSlice> intersecting;
-  const gfx::Rect screenshot_bounds = gfx::SkIRectToRect(screenshot_.bounds());
 
   for (const auto& slice : display_slices_) {
+    if (confine_selection_to_display_ &&
+        slice.display.id() != source_display_id) {
+      continue;
+    }
     // Find the intersection of the selection with the display.
     // Skip if no intersection.
     // Otherwise, map into physical bounds and union with the rest of the
@@ -1041,7 +1138,7 @@ SkBitmap OmniboxEverywhereRegionSelectOverlay::CropGlobalSelection(
     gfx::Rect phys_crop = MapDipToPhysicalBounds(
         inter_dip, slice.display.bounds(), slice.sub_rect_in_screenshot);
     phys_crop.Intersect(slice.sub_rect_in_screenshot);
-    phys_crop.Intersect(screenshot_bounds);
+    phys_crop.Intersect(gfx::SkIRectToRect(slice.screenshot.bounds()));
     if (phys_crop.IsEmpty()) {
       continue;
     }
@@ -1052,7 +1149,8 @@ SkBitmap OmniboxEverywhereRegionSelectOverlay::CropGlobalSelection(
                  static_cast<float>(slice.sub_rect_in_screenshot.height()) /
                      slice.display.bounds().height());
 
-    intersecting.push_back({inter_dip, phys_crop, slice_scale});
+    intersecting.push_back(
+        {slice.screenshot, inter_dip, phys_crop, slice_scale});
   }
 
   const auto [active_dip_bounds, output_scale] =
@@ -1063,7 +1161,7 @@ SkBitmap OmniboxEverywhereRegionSelectOverlay::CropGlobalSelection(
   }
 
   if (intersecting.size() == 1) {
-    return ExtractCompactSubset(screenshot_,
+    return ExtractCompactSubset(intersecting[0].screenshot,
                                 intersecting[0].phys_rect_in_screenshot);
   }
 
@@ -1074,12 +1172,11 @@ SkBitmap OmniboxEverywhereRegionSelectOverlay::CropGlobalSelection(
 
   SkBitmap output;
   if (!output.tryAllocPixels(
-          screenshot_.info().makeWH(out_width, out_height))) {
+          intersecting[0].screenshot.info().makeWH(out_width, out_height))) {
     return SkBitmap();
   }
 
-  DrawSlicesToCanvas(screenshot_, intersecting, active_dip_bounds, output_scale,
-                     output);
+  DrawSlicesToCanvas(intersecting, active_dip_bounds, output_scale, output);
 
   output.setImmutable();
   return output;
@@ -1105,7 +1202,6 @@ void OmniboxEverywhereRegionSelectOverlay::ResetWidgets() {
     }
   }
   widgets_.clear();
-  screenshot_.reset();
   display_slices_.clear();
 }
 

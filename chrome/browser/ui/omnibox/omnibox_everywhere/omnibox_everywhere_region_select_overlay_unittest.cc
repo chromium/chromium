@@ -75,6 +75,8 @@ class OmniboxEverywhereRegionSelectOverlayTest : public ChromeViewsTestBase {
  public:
   using RegionCaptureSource =
       OmniboxEverywhereRegionSelectOverlay::RegionCaptureSource;
+  using DisplayScreenshots =
+      OmniboxEverywhereRegionSelectOverlay::DisplayScreenshots;
 
   OmniboxEverywhereRegionSelectOverlayTest() = default;
   ~OmniboxEverywhereRegionSelectOverlayTest() override = default;
@@ -1198,6 +1200,312 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
                             gfx::Point(100, 100), base::TimeTicks::Now(), 0, 0);
   contents_view->OnMouseMoved(move_event);
   EXPECT_EQ(cursor_chip->GetMirroredBounds(), gfx::Rect(98, 98, 56, 56));
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ForDisplays_ShowsEachScreenshotOnItsDisplay) {
+  // Use non-zero origin (100, 100) away from edges to avoid OS menu bar
+  // clamping on macOS (where y=0 at the top of the display is adjusted down to
+  // y=30 for frameless top-level windows).
+  SetDisplays({display::Display(1, gfx::Rect(100, 100, 800, 600)),
+               display::Display(2, gfx::Rect(900, 100, 1024, 768))});
+
+  DisplayScreenshots screenshots;
+  screenshots.emplace(1, CreateTestBitmap(800, 600, SK_ColorRED));
+  screenshots.emplace(2, CreateTestBitmap(1024, 768, SK_ColorBLUE));
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::CreateForDisplays(
+      screenshots, future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  EXPECT_EQ(overlay->widgets_for_testing()[0]->GetWindowBoundsInScreen(),
+            gfx::Rect(100, 100, 800, 600));
+  const SkBitmap& bitmap0 = overlay->GetBitmapForWidgetForTesting(0);
+  EXPECT_EQ(bitmap0.width(), 800);
+  EXPECT_EQ(bitmap0.height(), 600);
+  EXPECT_EQ(bitmap0.getColor(0, 0), SK_ColorRED);
+
+  EXPECT_EQ(overlay->widgets_for_testing()[1]->GetWindowBoundsInScreen(),
+            gfx::Rect(900, 100, 1024, 768));
+  const SkBitmap& bitmap1 = overlay->GetBitmapForWidgetForTesting(1);
+  EXPECT_EQ(bitmap1.width(), 1024);
+  EXPECT_EQ(bitmap1.height(), 768);
+  EXPECT_EQ(bitmap1.getColor(0, 0), SK_ColorBLUE);
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ForDisplays_DragCropsFromScreenshotOfItsDisplay) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
+               display::Display(2, gfx::Rect(800, 0, 800, 600))});
+
+  DisplayScreenshots screenshots;
+  screenshots.emplace(1, CreateTestBitmap(800, 600, SK_ColorGREEN));
+  screenshots.emplace(2, CreateTestBitmap(800, 600, SK_ColorBLUE));
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::CreateForDisplays(
+      screenshots, future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  // Drag select a 50x50 box on the second display.
+  SimulateMouseDrag(overlay->widgets_for_testing()[1]->GetContentsView(),
+                    gfx::Point(10, 10), gfx::Point(60, 60));
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().empty());
+  EXPECT_EQ(future.Get().width(), 50);
+  EXPECT_EQ(future.Get().height(), 50);
+  EXPECT_EQ(future.Get().getColor(0, 0), SK_ColorBLUE);
+
+  // Both widgets closed in unison.
+  EXPECT_TRUE(overlay->widgets_for_testing().empty());
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ForDisplays_CropUsesScreenshotResolution) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600))});
+
+  // The screenshot has twice the resolution of the display's DIP bounds.
+  DisplayScreenshots screenshots;
+  screenshots.emplace(1, CreateTestBitmap(1600, 1200, SK_ColorGREEN));
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::CreateForDisplays(
+      screenshots, future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_TRUE(overlay->GetActiveWidgetForTesting());
+
+  // A 50x50 DIP selection covers 100x100 pixels of the screenshot.
+  SimulateMouseDrag(overlay->GetActiveWidgetForTesting()->GetContentsView(),
+                    gfx::Point(10, 10), gfx::Point(60, 60));
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().empty());
+  EXPECT_EQ(future.Get().width(), 100);
+  EXPECT_EQ(future.Get().height(), 100);
+  EXPECT_EQ(future.Get().getColor(0, 0), SK_ColorGREEN);
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ForDisplays_SelectionIsConfinedToDisplayItStartsOn) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
+               display::Display(2, gfx::Rect(800, 0, 800, 600))});
+
+  DisplayScreenshots screenshots;
+  screenshots.emplace(1, CreateTestBitmap(800, 600, SK_ColorGREEN));
+  screenshots.emplace(2, CreateTestBitmap(800, 600, SK_ColorBLUE));
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::CreateForDisplays(
+      screenshots, future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  // Drag on display 2 from local (100, 100) to local (-20, 300), which is 20
+  // DIPs into display 1. Only the 100x200 part on display 2 is selected.
+  SimulateMouseDrag(overlay->widgets_for_testing()[1]->GetContentsView(),
+                    gfx::Point(100, 100), gfx::Point(-20, 300));
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().empty());
+  EXPECT_EQ(future.Get().width(), 100);
+  EXPECT_EQ(future.Get().height(), 200);
+  EXPECT_EQ(future.Get().getColor(0, 100), SK_ColorBLUE);
+  EXPECT_EQ(future.Get().getColor(99, 100), SK_ColorBLUE);
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ForDisplays_EscapeCancelsAndClosesAllWidgets) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
+               display::Display(2, gfx::Rect(800, 0, 800, 600))});
+
+  DisplayScreenshots screenshots;
+  screenshots.emplace(1, CreateTestBitmap(800, 600, SK_ColorGREEN));
+  screenshots.emplace(2, CreateTestBitmap(800, 600, SK_ColorBLUE));
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::CreateForDisplays(
+      screenshots, future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  // Trigger Escape key via FocusManager accelerator.
+  ui::Accelerator escape_accel(ui::VKEY_ESCAPE, ui::EF_NONE);
+  EXPECT_TRUE(overlay->GetActiveWidgetForTesting()
+                  ->GetFocusManager()
+                  ->ProcessAccelerator(escape_accel));
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_TRUE(overlay->widgets_for_testing().empty());
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ForDisplays_SkipsScreenshotOfDisconnectedDisplay) {
+  // Use non-zero origin (100, 100) away from edges to avoid OS menu bar
+  // clamping on macOS (where y=0 at the top of the display is adjusted down to
+  // y=30 for frameless top-level windows).
+  SetDisplays({display::Display(1, gfx::Rect(100, 100, 800, 600))});
+
+  // Display 2 is not connected.
+  DisplayScreenshots screenshots;
+  screenshots.emplace(1, CreateTestBitmap(800, 600, SK_ColorRED));
+  screenshots.emplace(2, CreateTestBitmap(800, 600, SK_ColorBLUE));
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::CreateForDisplays(
+      screenshots, future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 1u);
+  EXPECT_EQ(overlay->widgets_for_testing()[0]->GetWindowBoundsInScreen(),
+            gfx::Rect(100, 100, 800, 600));
+  EXPECT_EQ(overlay->GetBitmapForWidgetForTesting(0).getColor(0, 0),
+            SK_ColorRED);
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ForDisplays_NoWidgetOnDisplayWithoutScreenshot) {
+  // Use non-zero origin (100, 100) away from edges to avoid OS menu bar
+  // clamping on macOS (where y=0 at the top of the display is adjusted down to
+  // y=30 for frameless top-level windows).
+  SetDisplays({display::Display(1, gfx::Rect(100, 100, 800, 600)),
+               display::Display(2, gfx::Rect(900, 100, 800, 600))});
+
+  // Only display 2 has a screenshot.
+  DisplayScreenshots screenshots;
+  screenshots.emplace(2, CreateTestBitmap(800, 600, SK_ColorBLUE));
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::CreateForDisplays(
+      screenshots, future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 1u);
+  EXPECT_EQ(overlay->widgets_for_testing()[0]->GetWindowBoundsInScreen(),
+            gfx::Rect(900, 100, 800, 600));
+  EXPECT_EQ(overlay->GetBitmapForWidgetForTesting(0).getColor(0, 0),
+            SK_ColorBLUE);
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ForDisplays_NothingToShowFinishesWithEmptyBitmap) {
+  // The only connected display has an empty screenshot.
+  DisplayScreenshots screenshots;
+  screenshots.emplace(1, SkBitmap());
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::CreateForDisplays(
+      screenshots, future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  EXPECT_TRUE(overlay->widgets_for_testing().empty());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ForDisplays_ConfinedSelectionBelowMinSizeCancels) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
+               display::Display(2, gfx::Rect(800, 0, 800, 600))});
+
+  DisplayScreenshots screenshots;
+  screenshots.emplace(1, CreateTestBitmap(800, 600, SK_ColorGREEN));
+  screenshots.emplace(2, CreateTestBitmap(800, 600, SK_ColorBLUE));
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::CreateForDisplays(
+      screenshots, future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  // Unconfined width is 55 DIP (>= kMinSelectionSize), but only 5 DIP lies on
+  // display 2 where the drag started.
+  SimulateMouseDrag(overlay->widgets_for_testing()[1]->GetContentsView(),
+                    gfx::Point(5, 100), gfx::Point(-50, 200));
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_TRUE(overlay->widgets_for_testing().empty());
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ForDisplays_ConfinedSelectionDoesNotPaintOnAdjacentDisplay) {
+  // Use non-zero origin (100, 100) away from edges to avoid OS menu bar
+  // clamping on macOS.
+  SetDisplays({display::Display(1, gfx::Rect(100, 100, 200, 200)),
+               display::Display(2, gfx::Rect(300, 100, 200, 200))});
+
+  DisplayScreenshots screenshots;
+  screenshots.emplace(1, CreateTestBitmap(200, 200, SK_ColorGREEN));
+  screenshots.emplace(2, CreateTestBitmap(200, 200, SK_ColorBLUE));
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::CreateForDisplays(
+      screenshots, future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  views::Widget* widget0 = overlay->widgets_for_testing()[0].get();
+  views::Widget* widget1 = overlay->widgets_for_testing()[1].get();
+  views::View* contents_view1 = widget1->GetContentsView();
+
+  // Start a drag on display 2, hiding the toast chip on both displays.
+  ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(50, 50),
+                       gfx::Point(50, 50), base::TimeTicks::Now(),
+                       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  contents_view1->OnMousePressed(press);
+
+  SkBitmap before0 = views::test::PaintViewToBitmap(widget0->GetRootView());
+  ASSERT_EQ(before0.width(), 200);
+  ASSERT_EQ(before0.height(), 200);
+
+  // Drag left across the seam so the confined selection touches display 2's
+  // left edge adjacent to display 1's right edge.
+  ui::MouseEvent drag(ui::EventType::kMouseDragged, gfx::Point(-20, 150),
+                      gfx::Point(-20, 150), base::TimeTicks::Now(),
+                      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  contents_view1->OnMouseDragged(drag);
+
+  SkBitmap during0 = views::test::PaintViewToBitmap(widget0->GetRootView());
+  ASSERT_EQ(during0.width(), 200);
+  ASSERT_EQ(during0.height(), 200);
+  EXPECT_EQ(during0.getColor(199, 100), before0.getColor(199, 100));
+
+  // Verify display 2 itself painted the confined selection punch-out.
+  SkBitmap during1 = views::test::PaintViewToBitmap(widget1->GetRootView());
+  ASSERT_EQ(during1.width(), 200);
+  ASSERT_EQ(during1.height(), 200);
+  EXPECT_EQ(during1.getColor(25, 100), SK_ColorBLUE);
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       ForDisplays_OverlappingDisplaysCropOnlyOriginatingDisplay) {
+  // Two distinct displays occupying identical DIP bounds (e.g. mirrored).
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
+               display::Display(2, gfx::Rect(0, 0, 800, 600))});
+
+  DisplayScreenshots screenshots;
+  screenshots.emplace(1, CreateTestBitmap(800, 600, SK_ColorGREEN));
+  screenshots.emplace(2, CreateTestBitmap(800, 600, SK_ColorBLUE));
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::CreateForDisplays(
+      screenshots, future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  // Drag on display 1; result must come solely from display 1's screenshot,
+  // not composited with display 2.
+  SimulateMouseDrag(overlay->widgets_for_testing()[0]->GetContentsView(),
+                    gfx::Point(10, 10), gfx::Point(60, 60));
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().empty());
+  EXPECT_EQ(future.Get().width(), 50);
+  EXPECT_EQ(future.Get().height(), 50);
+  EXPECT_EQ(future.Get().getColor(0, 0), SK_ColorGREEN);
 }
 
 }  // namespace omnibox_everywhere
