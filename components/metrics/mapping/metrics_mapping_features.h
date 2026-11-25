@@ -19,8 +19,9 @@ COMPONENT_EXPORT(METRICS_MAPPING) BASE_DECLARE_FEATURE(kWebiumMetricsMapping);
 
 // The base64-encoded binary proto configuration for the Webium metrics mapping
 // feature.
-// If this string is empty, all metrics from the Webium renderer process will be
-// dropped. Otherwise, the string will be used to map the metric names.
+// When empty or invalid, only the defaults registered via
+// `MetricsNameMapper::SetDefaults()` apply, and the mapper drops every other
+// metric it evaluates.
 COMPONENT_EXPORT(METRICS_MAPPING)
 BASE_DECLARE_FEATURE_PARAM(std::string, kWebiumMetricsMappingConfig);
 

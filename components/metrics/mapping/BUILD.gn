@@ -18,8 +18,10 @@ component("mapping") {
 
   defines = [ "IS_METRICS_MAPPING_IMPL" ]
 
-  public_deps = [ ":metrics_name_mapping_proto" ]
-  deps = [ "//base" ]
+  deps = [
+    ":metrics_name_mapping_proto",
+    "//base",
+  ]
 }
 
 source_set("unit_tests") {

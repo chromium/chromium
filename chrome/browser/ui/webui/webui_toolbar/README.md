@@ -844,12 +844,11 @@ than checking `IsWebiumRenderer()`).
 To prevent background WebUI navigations from skewing global Core Web Vitals,
 Chrome filters WebUI metrics via the `MetricsNameMapper`:
 
-*   If a metric matches the rules in `features::kWebiumMetricsMappingConfig`,
-    the mapper prepends the `Webium.` prefix (e.g., converting
-    `Navigation.DocumentLoader.DidCommitNavigation` to
-    `Webium.Navigation.DocumentLoader.DidCommitNavigation`).
-*   Unmatched metrics from the subprocess allocator are dropped entirely to keep
-    standard user metrics clean.
+*   If a metric matches a built-in rule (below) or a served rule in
+    `features::kWebiumMetricsMappingConfig`, the mapper keeps it or renames it
+    to the rule's `new_metric_name`.
+*   Unmatched metrics from the subprocess allocator are dropped entirely unless
+    allowed by a built-in prefix rule, keeping standard user metrics clean.
 
 > [!IMPORTANT] **Architectural Note: Browser-Side Metrics Leakage** The
 > `MetricsNameMapper` only filters and maps metrics generated *within the WebUI
@@ -860,6 +859,21 @@ Chrome filters WebUI metrics via the `MetricsNameMapper`:
 > process, they bypass the `MetricsNameMapper` filters entirely, causing some
 > WebUI metrics to leak into standard browser-side metrics if not specifically
 > ignored by the observer class.
+
+#### Built-in Mapping Rules
+
+`RegisterTopChromeWebUIMetricsMappingDefaults()` registers two rules that
+apply even without a served config:
+
+*   `Graphics.Smoothness.PercentDroppedFrames3.AllSequences` is renamed to
+    `WebUI.TopChrome.Graphics.Smoothness.PercentDroppedFrames3.AllSequences`,
+    which separates top-chrome jank from web-content jank. Served rules cannot
+    override this rename.
+*   A metric starting with `WebUI.` that no served rule matches is kept
+    unchanged instead of dropped.
+
+Disabling `WebiumMetricsMapping` turns off both. See
+`components/metrics/mapping/README.md` for the order in which rules apply.
 
 ### Perfetto Tracing Category
 

@@ -6,6 +6,7 @@ source_set("top_chrome") {
   sources = [
     "top_chrome_web_ui_controller.h",
     "top_chrome_webui_config.h",
+    "top_chrome_webui_metrics_mapping.h",
     "untrusted_top_chrome_web_ui_controller.h",
   ]
 
@@ -48,6 +49,7 @@ source_set("impl") {
   sources = [
     "top_chrome_web_ui_controller.cc",
     "top_chrome_webui_config.cc",
+    "top_chrome_webui_metrics_mapping.cc",
     "untrusted_top_chrome_web_ui_controller.cc",
   ]
 
@@ -59,6 +61,7 @@ source_set("impl") {
     "//chrome/browser/ui/webui:log_web_ui_url",
     "//chrome/common",
     "//components/input",
+    "//components/metrics/mapping",
     "//components/zoom",
     "//content/public/browser",
     "//content/public/common",

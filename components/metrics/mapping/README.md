@@ -19,6 +19,18 @@ This configuration defines a `rules` array in `metrics_name_mapping.proto`
 which dictates whether a strictly matching histogram string should be dropped or
 mapped to a `new_metric_name`.
 
+An embedder can also register built-in rules and allowed metric name prefixes
+with `MetricsNameMapper::SetDefaults()`. `MetricsNameMapper` uses the first
+match in this order: built-in rules, server `rules`, allowed prefixes (kept
+unchanged), then drop. Built-in rules come first so that a server rule, such as
+one that keeps a metric under its own name, cannot undo a built-in rename.
+Disabling `WebiumMetricsMapping` turns off both. Like server rules, the defaults
+apply only to histograms that `MetricsNameMapper` evaluates, all of which come
+from top-chrome WebUI renderers (`IsWebiumRenderer()` in
+`SubprocessMetricsProvider`, `is_webium_renderer` in `HistogramSynchronizer`).
+An empty or invalid server configuration is ignored, so the defaults still
+apply.
+
 The `MetricsNameMapper` evaluator is called dynamically by the
 `SubprocessMetricsProvider` when parsing and merging metric allocation streams
 from child processes.

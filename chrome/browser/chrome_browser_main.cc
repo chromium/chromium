@@ -82,6 +82,7 @@
 #include "chrome/browser/ui/webui/chrome_untrusted_web_ui_configs.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_configs.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_metrics_mapping.h"
 #include "chrome/browser/updater/updater.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -907,6 +908,7 @@ ChromeBrowserMainParts::~ChromeBrowserMainParts() {
 
 void ChromeBrowserMainParts::SetupMetrics() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::SetupMetrics");
+  RegisterTopChromeWebUIMetricsMappingDefaults();
   CHECK(metrics::SubprocessMetricsProvider::CreateInstance());
   metrics::MetricsService* metrics = browser_process_->metrics_service();
   metrics->GetSyntheticTrialRegistry()->AddObserver(

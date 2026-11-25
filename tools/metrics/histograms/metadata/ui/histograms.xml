@@ -1503,8 +1503,9 @@ features through Chrome Labs. -->
     chrome://webui-toolbar.top-chrome). Not recorded directly: when the
     WebiumMetricsMapping feature is enabled, SubprocessMetricsProvider renames
     those samples to this histogram as it merges histograms from top-chrome
-    WebUI renderers, per the Finch-provided MetricsNameMappingConfiguration.
-    Those samples then no longer count toward
+    WebUI renderers, per Chrome's built-in top-chrome mapping rule, which
+    overrides the Finch-provided MetricsNameMappingConfiguration. Those samples
+    then no longer count toward
     Graphics.Smoothness.PercentDroppedFrames3.AllSequences, which separates jank
     in top-chrome WebUI from jank in web content.
   </summary>
