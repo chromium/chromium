@@ -112,12 +112,6 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kMdnsResponderGeneratedNameListing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Treat ORB blocked responses to script-initiated fetches as errors too.
-// Complements ORB v0.2, which exempts script-initiated fetches.
-// Implementing ORB in Chromium is tracked in https://crbug.com/1178928
-BASE_FEATURE(kOpaqueResponseBlockingErrorsForAllFetches,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether ORB content sniffers use the Rust implementation.
 BASE_FEATURE(kOrbSniffersInRust, base::FEATURE_DISABLED_BY_DEFAULT);
 

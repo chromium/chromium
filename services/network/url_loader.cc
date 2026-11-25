@@ -2502,8 +2502,7 @@ URLLoader::BlockResponseForOrbResult URLLoader::BlockResponseForOrb() {
           : net::ERR_BLOCKED_BY_ORB;
 
   // Send empty body to the real URLLoaderClient. This preserves "ORB v0.1"
-  // behaviour and will also go away once
-  // OpaqueResponseBlockingErrorsForAllFetches is perma-enabled.
+  // behaviour.
   if (blocked_error_code == net::OK) {
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;

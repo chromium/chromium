@@ -12,7 +12,6 @@
 #include "net/base/mime_sniffer.h"
 #include "net/http/http_util.h"
 #include "net/url_request/url_request.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/orb/orb_mimetypes.h"
 #include "services/network/public/cpp/orb/orb_sniffers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -502,12 +501,6 @@ OpaqueResponseBlockingAnalyzer::ShouldHandleBlockedResponseAs() const {
   // "ORB v0.1" uses CORB-style error handling with injecting an empty response.
   // "ORB v0.2" uses ORB-specified error handling (injecting a network error)
   // for non-script fetches, by injecting a network error.
-  // "ORB errors-for-all-fetches" uses ORB-specified error handling everywhere.
-
-  if (base::FeatureList::IsEnabled(
-          features::kOpaqueResponseBlockingErrorsForAllFetches)) {
-    return BlockedResponseHandling::kNetworkError;
-  }
 
   if (request_destination_from_renderer_ != mojom::RequestDestination::kEmpty) {
     return BlockedResponseHandling::kNetworkError;

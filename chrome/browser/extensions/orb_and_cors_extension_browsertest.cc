@@ -297,16 +297,6 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
     EXPECT_TRUE(resource_load_observer_->GetResource(url));
     EXPECT_TRUE(
         (*resource_load_observer_->GetResource(url))->raw_body_bytes.is_zero());
-
-    // For later versions of ORB the error code lets us determine precisely
-    // whether a fetch was blocked by ORB. For "v0.1" and "v0.2" (for
-    // JS-initiated fetches), we have to rely on circumstantial evidence (like
-    // an empty body, which could have other reasons).
-    if (base::FeatureList::IsEnabled(
-            network::features::kOpaqueResponseBlockingErrorsForAllFetches)) {
-      EXPECT_EQ(net::ERR_BLOCKED_BY_ORB,
-                (*resource_load_observer_->GetResource(url))->net_error);
-    }
   }
 
   void VerifyFetchWasAllowedByOrb(const GURL& url) {
@@ -1678,17 +1668,11 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
     // URLLoaderFactoryParams::is_orb_enabled set to the default, secure value
     // of `true`.
     //
-    // ORB ErrorsForAllFetches: Error message, because the fetch failed.
     // ORB v0.2: Empty result. ORB v0.2 can result in either network errors
     //   or empty results. But in this test all fetches are initiated by script,
     //   for which ORB v0.2 delivers empty responses, like earlier versions.
     // CORB & ORB v0.1: Empty result, because of no-cors.
-    if (base::FeatureList::IsEnabled(
-            network::features::kOpaqueResponseBlockingErrorsForAllFetches)) {
-      EXPECT_THAT(fetch_result, HasSubstr("TypeError: Failed to fetch"));
-    } else {
-      EXPECT_EQ(fetch_result, "");
-    }
+    EXPECT_EQ(fetch_result, "");
     VerifyFetchWasBlockedByOrb(cross_site_resource2);
   }
 }
