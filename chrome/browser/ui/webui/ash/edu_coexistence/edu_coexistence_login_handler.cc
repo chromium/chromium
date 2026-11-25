@@ -308,7 +308,9 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
 
 void EduCoexistenceLoginHandler::ConsentValid(const base::ListValue& args) {
   AllowJavascript();
-  CHECK(!in_error_state_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/589803821): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!in_error_state_);
   EduCoexistenceStateTracker::Get()->OnWebUiStateChanged(
       web_ui(), EduCoexistenceStateTracker::FlowResult::kConsentValid);
 }
