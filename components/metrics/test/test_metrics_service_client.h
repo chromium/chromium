@@ -49,6 +49,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   SystemProfileProto::Channel GetChannel() override;
   bool IsExtendedStableChannel() override;
   std::string GetVersionString() override;
+  void OnEnvironmentUpdate(std::string* serialized_environment) override;
   void CollectFinalMetricsForLog(base::OnceClosure done_callback) override;
   std::unique_ptr<MetricsLogUploader> CreateUploader(
       const GURL& server_url,
@@ -72,6 +73,9 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   void RemoveMetricUploadForUserId(uint64_t user_id);
 
   const std::string& get_client_id() const { return client_id_; }
+  const std::string& last_environment_for_crash_reporting() const {
+    return last_environment_for_crash_reporting_;
+  }
   // Returns a weak ref to the last created uploader.
   TestMetricsLogUploader* uploader() { return uploader_.get(); }
   void set_version_string(const std::string& str) { version_string_ = str; }
@@ -109,6 +113,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
  private:
   std::string client_id_{"0a94430b-18e5-43c8-a657-580f7e855ce1"};
   std::string version_string_{"5.0.322.0-64-devel"};
+  std::string last_environment_for_crash_reporting_;
   int32_t product_ = ChromeUserMetricsExtension::CHROME;
   bool reporting_is_managed_ = false;
   bool is_extended_stable_channel_ = false;

@@ -534,6 +534,13 @@ void MetricsLog::ClearSessionIdentifiers(SystemProfileProto* system_profile) {
   system_profile->clear_fg_bg_id();
 }
 
+// static
+void MetricsLog::ClearUmaIdentifiers(SystemProfileProto* system_profile) {
+  system_profile->clear_client_uuid();
+  system_profile->clear_cloned_install_info();
+  ClearSessionIdentifiers(system_profile);
+}
+
 const SystemProfileProto& MetricsLog::RecordEnvironment(
     DelegatingProvider* delegating_provider) {
   // If |has_environment_| is true, then the system profile in |uma_proto_| has

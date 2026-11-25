@@ -70,11 +70,9 @@ void IOSModelQualityLogsUploaderService::SetSystemMetadata(
                       .tag_string()),
       /*package_name=*/std::string(),
       logging_metadata->mutable_system_profile());
-  // Remove identifiers for privacy reasons.
-  logging_metadata->mutable_system_profile()->clear_client_uuid();
-  logging_metadata->mutable_system_profile()
-      ->mutable_cloned_install_info()
-      ->clear_cloned_from_client_id();
+  // Remove UMA identifiers for privacy reasons.
+  metrics::MetricsLog::ClearUmaIdentifiers(
+      logging_metadata->mutable_system_profile());
 
   variations::VariationsService* variations_service =
       GetApplicationContext()->GetVariationsService();

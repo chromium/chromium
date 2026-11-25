@@ -213,7 +213,5 @@ TEST_F(IOSModelQualityLogsUploaderServiceTest,
 
   service.SetSystemMetadata(&metadata);
   EXPECT_FALSE(metadata.system_profile().has_client_uuid());
-  EXPECT_FALSE(metadata.system_profile()
-                   .cloned_install_info()
-                   .has_cloned_from_client_id());
+  EXPECT_FALSE(metadata.system_profile().has_cloned_install_info());
 }

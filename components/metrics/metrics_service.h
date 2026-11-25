@@ -372,6 +372,12 @@ class MetricsService {
       PrefService* local_state,
       DelegatingProvider* delegating_provider);
 
+  // Records the current environment (system profile) in |log|, persists the
+  // results in prefs and GlobalPersistentSystemProfile, and notifies the client
+  // with UMA client and session identifiers stripped.
+  // Exposed for testing.
+  void RecordCurrentEnvironment(MetricsLog* log, bool complete);
+
   // The MetricsService has a lifecycle that is stored as a state.
   // See metrics_service.cc for description of this lifecycle.
   enum State {
@@ -585,10 +591,6 @@ class MetricsService {
 
   // Creates a new MetricsLog instance with the given |log_type|.
   std::unique_ptr<MetricsLog> CreateLog(MetricsLog::LogType log_type);
-
-  // Records the current environment (system profile) in |log|, and persists
-  // the results in prefs and GlobalPersistentSystemProfile.
-  void RecordCurrentEnvironment(MetricsLog* log, bool complete);
 
   // Handle completion of PrepareProviderMetricsLog which is run as a
   // background task.

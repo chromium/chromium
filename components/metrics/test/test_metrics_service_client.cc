@@ -70,6 +70,13 @@ std::string TestMetricsServiceClient::GetVersionString() {
   return version_string_;
 }
 
+void TestMetricsServiceClient::OnEnvironmentUpdate(
+    std::string* serialized_environment) {
+  if (serialized_environment) {
+    last_environment_for_crash_reporting_ = *serialized_environment;
+  }
+}
+
 void TestMetricsServiceClient::CollectFinalMetricsForLog(
     base::OnceClosure done_callback) {
   std::move(done_callback).Run();

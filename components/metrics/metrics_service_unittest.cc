@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -116,6 +117,7 @@ class TestMetricsService : public MetricsService {
 
   using MetricsService::INIT_TASK_DONE;
   using MetricsService::INIT_TASK_SCHEDULED;
+  using MetricsService::RecordCurrentEnvironment;
   using MetricsService::RecordCurrentEnvironmentHelper;
   using MetricsService::SENDING_LOGS;
   using MetricsService::state;
@@ -125,6 +127,7 @@ class TestMetricsService : public MetricsService {
                                   bool complete) override {
     persistent_system_profile_provided_ = true;
     persistent_system_profile_complete_ = complete;
+    persistent_system_profile_ = serialized_proto;
   }
 
   bool persistent_system_profile_provided() const {
@@ -133,10 +136,14 @@ class TestMetricsService : public MetricsService {
   bool persistent_system_profile_complete() const {
     return persistent_system_profile_complete_;
   }
+  const std::string& persistent_system_profile() const {
+    return persistent_system_profile_;
+  }
 
  private:
   bool persistent_system_profile_provided_ = false;
   bool persistent_system_profile_complete_ = false;
+  std::string persistent_system_profile_;
 };
 
 class TestMetricsLog : public MetricsLog {
@@ -1693,6 +1700,70 @@ TEST_F(MetricsServiceTest, SystemProfileDataProvidedOnEnableRecording) {
   EXPECT_TRUE(test_provider->provide_system_profile_metrics_called());
   EXPECT_TRUE(service.persistent_system_profile_provided());
   EXPECT_FALSE(service.persistent_system_profile_complete());
+}
+
+TEST_F(MetricsServiceTest,
+       RecordCurrentEnvironmentStripsIdentifiersForCrashReporting) {
+  EnableMetricsReporting();
+  GetMetricsStateManager()->ForceClientIdCreation();
+  GetLocalState()->SetInteger(prefs::kClonedResetCount, 1);
+  GetLocalState()->SetInt64(prefs::kFirstClonedResetTimestamp, 3600);
+  GetLocalState()->SetInt64(prefs::kLastClonedResetTimestamp, 7200);
+
+  TestMetricsServiceClient client;
+  TestMetricsService service(GetMetricsStateManager(), &client,
+                             GetLocalState());
+  service.InitializeMetricsRecordingState();
+
+  std::unique_ptr<MetricsLog> log =
+      service.CreateLogForTesting(MetricsLog::ONGOING_LOG);
+  log->uma_proto()->mutable_system_profile()->set_fg_bg_id(42);
+
+  service.RecordCurrentEnvironment(log.get(), /*complete=*/true);
+
+  const SystemProfileProto& log_profile = log->uma_proto()->system_profile();
+  ASSERT_TRUE(log_profile.has_client_uuid());
+  ASSERT_TRUE(log_profile.has_cloned_install_info());
+  ASSERT_TRUE(log_profile.has_session_hash());
+  ASSERT_TRUE(log_profile.has_fg_bg_id());
+
+  // Local State prefs and persistent system profile must keep UMA identifiers.
+  std::string decoded_prefs_proto;
+  ASSERT_TRUE(base::Base64Decode(
+      GetLocalState()->GetString(prefs::kStabilitySavedSystemProfile),
+      &decoded_prefs_proto));
+  SystemProfileProto prefs_profile;
+  ASSERT_TRUE(prefs_profile.ParseFromString(decoded_prefs_proto));
+  EXPECT_EQ(log_profile.client_uuid(), prefs_profile.client_uuid());
+  EXPECT_TRUE(prefs_profile.has_cloned_install_info());
+  EXPECT_EQ(1, prefs_profile.cloned_install_info().count());
+  EXPECT_EQ(log_profile.session_hash(), prefs_profile.session_hash());
+  EXPECT_EQ(log_profile.fg_bg_id(), prefs_profile.fg_bg_id());
+
+  ASSERT_TRUE(service.persistent_system_profile_provided());
+  SystemProfileProto persistent_profile;
+  ASSERT_TRUE(
+      persistent_profile.ParseFromString(service.persistent_system_profile()));
+  EXPECT_EQ(log_profile.client_uuid(), persistent_profile.client_uuid());
+  EXPECT_TRUE(persistent_profile.has_cloned_install_info());
+  EXPECT_EQ(1, persistent_profile.cloned_install_info().count());
+  EXPECT_EQ(log_profile.session_hash(), persistent_profile.session_hash());
+  EXPECT_EQ(log_profile.fg_bg_id(), persistent_profile.fg_bg_id());
+
+  // Crash reporting environment passed to OnEnvironmentUpdate() must strip all
+  // UMA client and session identifiers while preserving other fields.
+  ASSERT_FALSE(client.last_environment_for_crash_reporting().empty());
+  SystemProfileProto crash_profile;
+  ASSERT_TRUE(crash_profile.ParseFromString(
+      client.last_environment_for_crash_reporting()));
+  EXPECT_FALSE(crash_profile.has_client_uuid());
+  EXPECT_FALSE(crash_profile.has_cloned_install_info());
+  EXPECT_FALSE(crash_profile.has_session_hash());
+  EXPECT_FALSE(crash_profile.has_fg_bg_id());
+  EXPECT_EQ(client.GetVersionString(), crash_profile.app_version());
+  EXPECT_EQ(client.GetChannel(), crash_profile.channel());
+  EXPECT_EQ(TestMetricsServiceClient::kBrandForTesting,
+            crash_profile.brand_code());
 }
 
 // Verify that the two separate MetricsSchedulers (MetricsRotationScheduler and

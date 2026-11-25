@@ -164,6 +164,12 @@ class MetricsLog {
   // session.
   static void ClearSessionIdentifiers(SystemProfileProto* system_profile);
 
+  // Clears UMA-only client and session identifiers (`client_uuid`,
+  // `cloned_install_info`, `session_hash`, and `fg_bg_id`) before exporting a
+  // `SystemProfileProto` to a non-UMA service (such as Crashpad or Model
+  // Quality Logs).
+  static void ClearUmaIdentifiers(SystemProfileProto* system_profile);
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Increments the global foreground/background ID. Must be called on the main
   // thread.

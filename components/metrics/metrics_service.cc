@@ -1524,7 +1524,17 @@ void MetricsService::RecordCurrentEnvironment(MetricsLog* log, bool complete) {
       RecordCurrentEnvironmentHelper(log, local_state_, &delegating_provider_);
 
   SetPersistentSystemProfile(serialized_proto, complete);
-  client_->OnEnvironmentUpdate(&serialized_proto);
+
+  // Strip UMA client and session identifiers before exporting the system
+  // profile to crash reporting, while keeping them intact in `log`, prefs, and
+  // GlobalPersistentSystemProfile.
+  SystemProfileProto stripped_system_profile =
+      log->uma_proto()->system_profile();
+  MetricsLog::ClearUmaIdentifiers(&stripped_system_profile);
+  std::string stripped_serialized_proto;
+  if (stripped_system_profile.SerializeToString(&stripped_serialized_proto)) {
+    client_->OnEnvironmentUpdate(&stripped_serialized_proto);
+  }
 
   // The call to SetPersistentSystemProfile() above will have written the
   // current system profile to persistent memory. Because it may span over

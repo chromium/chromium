@@ -110,9 +110,9 @@ class MetricsServiceClient {
   virtual std::string GetVersionString() = 0;
 
   // Called by the metrics service when a new environment has been recorded.
-  // Takes the serialized environment as a parameter. The contents of
-  // |serialized_environment| are consumed by the call, but the caller maintains
-  // ownership.
+  // Takes the serialized environment as a parameter, with UMA client and
+  // session identifiers stripped. The contents of |serialized_environment| are
+  // consumed by the call, but the caller maintains ownership.
   virtual void OnEnvironmentUpdate(std::string* serialized_environment) {}
 
   // Collects child process histograms and merges them into StatisticsRecorder.

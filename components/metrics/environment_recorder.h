@@ -28,8 +28,8 @@ class EnvironmentRecorder {
   ~EnvironmentRecorder();
 
   // Serializes the system profile and records it in prefs for the next
-  // session.  Returns the uncompressed serialized proto for passing to crash
-  // reports, or the empty string if the proto can't be serialized.
+  // session. Returns the uncompressed serialized proto, or the empty string if
+  // the proto can't be serialized.
   std::string SerializeAndRecordEnvironmentToPrefs(
       const SystemProfileProto& system_profile);
 
