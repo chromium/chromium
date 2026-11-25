@@ -1028,11 +1028,9 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
              scoped_refptr<CanvasResource> resource,
              const gpu::SyncToken& sync_token, bool lost_resource) {
             CHECK(resource);
+            CHECK(!lost_resource);
 
             resource->WaitSyncToken(sync_token);
-            if (lost_resource) {
-              resource->NotifyResourceLost();
-            }
 
             if (image_pool && recycling_enabled->data && !resource->IsLost() &&
                 resource->HasOneRef()) {
