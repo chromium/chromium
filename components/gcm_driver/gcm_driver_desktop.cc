@@ -53,8 +53,9 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Observer {
       scoped_refptr<GCMRegistrationInfo> gcm_registration_info,
       const std::string& registration_id,
       GCMClient::Result result) override;
-  void OnUnregisterFinished(scoped_refptr<RegistrationInfo> registration_info,
-                            GCMClient::Result result) override;
+  void OnUnregisterFinished(
+      scoped_refptr<GCMRegistrationInfo> gcm_registration_info,
+      GCMClient::Result result) override;
   void OnSendFinished(const std::string& app_id,
                       const std::string& message_id,
                       GCMClient::Result result) override;
@@ -191,28 +192,15 @@ void GCMDriverDesktop::IOWorker::OnRegisterFinished(
 }
 
 void GCMDriverDesktop::IOWorker::OnUnregisterFinished(
-    scoped_refptr<RegistrationInfo> registration_info,
+    scoped_refptr<GCMRegistrationInfo> gcm_registration_info,
     GCMClient::Result result) {
   DCHECK(io_thread_->RunsTasksInCurrentSequence());
+  CHECK(gcm_registration_info);
 
-  const GCMRegistrationInfo* gcm_registration_info =
-      GCMRegistrationInfo::FromRegistrationInfo(registration_info.get());
-  if (gcm_registration_info) {
-    ui_thread_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&GCMDriverDesktop::RemoveEncryptionInfoAfterUnregister,
-                       service_, gcm_registration_info->app_id, result));
-  }
-
-  const InstanceIDTokenInfo* instance_id_token_info =
-      InstanceIDTokenInfo::FromRegistrationInfo(registration_info.get());
-  if (instance_id_token_info) {
-    ui_thread_->PostTask(
-        FROM_HERE, base::BindOnce(&GCMDriverDesktop::DeleteTokenFinished,
-                                  service_, instance_id_token_info->app_id,
-                                  instance_id_token_info->authorized_entity,
-                                  instance_id_token_info->scope, result));
-  }
+  ui_thread_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GCMDriverDesktop::RemoveEncryptionInfoAfterUnregister,
+                     service_, gcm_registration_info->app_id, result));
 }
 
 void GCMDriverDesktop::IOWorker::OnSendFinished(const std::string& app_id,
@@ -427,11 +415,18 @@ void GCMDriverDesktop::IOWorker::DeleteToken(
     const std::string& app_id,
     const std::string& authorized_entity,
     const std::string& scope) {
+  DCHECK(io_thread_->RunsTasksInCurrentSequence());
+
   auto instance_id_token_info = base::MakeRefCounted<InstanceIDTokenInfo>();
   instance_id_token_info->app_id = app_id;
   instance_id_token_info->authorized_entity = authorized_entity;
   instance_id_token_info->scope = scope;
-  gcm_client_->Unregister(std::move(instance_id_token_info));
+  gcm_client_->DeleteToken(
+      std::move(instance_id_token_info),
+      base::BindPostTask(
+          ui_thread_,
+          base::BindOnce(&GCMDriverDesktop::DeleteTokenFinished, service_,
+                         app_id, authorized_entity, scope)));
 }
 
 void GCMDriverDesktop::IOWorker::RecordDecryptionFailure(

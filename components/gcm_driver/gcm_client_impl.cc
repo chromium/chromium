@@ -375,6 +375,55 @@ void GCMClientImpl::GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
   registration_manager_->GetToken(std::move(token_info), std::move(callback));
 }
 
+void GCMClientImpl::DeleteToken(scoped_refptr<InstanceIDTokenInfo> token_info,
+                                DeleteTokenCallback callback) {
+  // TODO(crbug.com/589587357): Upgrade to `CHECK_EQ` once
+  // `GCMDriverDesktop::OnStoreReset()` re-gates `delayed_task_controller_`.
+  DCHECK_EQ(state_, READY);
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(token_info);
+  CHECK(callback);
+  CHECK(registration_manager_);
+
+  auto instance_id_iter =
+      registration_manager_->instance_id_data().find(token_info->app_id);
+  // Tokens must not be deleted when an InstanceID has not been created yet.
+  CHECK(instance_id_iter != registration_manager_->instance_id_data().end());
+
+  // Remove the token(s) from the cache and the store.
+  // TODO(crbug.com/589661362): Remove it only when the request is successful.
+  if (token_info->authorized_entity == "*" && token_info->scope == "*") {
+    // If no token is found for the Instance ID, don't need to unregister since
+    // the Instance ID is not sent to the server yet.
+    if (!RemoveAllCachedInstanceIDTokens(token_info->app_id)) {
+      std::move(callback).Run(SUCCESS);
+      return;
+    }
+  } else if (!RemoveCachedRegistration(token_info)) {
+    std::move(callback).Run(INVALID_PARAMETER);
+    return;
+  }
+
+  auto request_handler = std::make_unique<InstanceIDDeleteTokenRequestHandler>(
+      instance_id_iter->second.first, token_info->authorized_entity,
+      token_info->scope,
+      GCMRegistrationManagerImpl::ConstructGCMVersion(
+          chrome_build_info_.version));
+  std::string source_to_record =
+      token_info->authorized_entity + "/" + token_info->scope;
+
+  bool use_subtype = GCMRegistrationManagerImpl::InstanceIDUsesSubtypeForAppId(
+      token_info->app_id);
+  std::string category = use_subtype
+                             ? chrome_build_info_.product_category_for_subtypes
+                             : token_info->app_id;
+  std::string subtype = use_subtype ? token_info->app_id : std::string();
+
+  StartUnregistrationRequest(std::move(token_info), category, subtype,
+                             std::move(request_handler), source_to_record,
+                             std::move(callback));
+}
+
 void GCMClientImpl::WaitForInitialConnectionReady(base::OnceClosure callback) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   // TODO(crbug.com/589587357): Upgrade to `CHECK_EQ(state_, READY)` once
@@ -623,68 +672,29 @@ bool GCMClientImpl::ValidateRegistration(
 }
 
 void GCMClientImpl::Unregister(
-    scoped_refptr<RegistrationInfo> registration_info) {
+    scoped_refptr<GCMRegistrationInfo> gcm_registration_info) {
   DCHECK_EQ(state_, READY);
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(gcm_registration_info);
   CHECK(registration_manager_);
 
-  std::unique_ptr<UnregistrationRequest::CustomRequestHandler> request_handler;
-  std::string source_to_record;
-
-  const GCMRegistrationInfo* gcm_registration_info =
-      GCMRegistrationInfo::FromRegistrationInfo(registration_info.get());
-  if (gcm_registration_info) {
-    request_handler = std::make_unique<GCMUnregistrationRequestHandler>(
-        registration_info->app_id);
-  }
-
-  const InstanceIDTokenInfo* instance_id_token_info =
-      InstanceIDTokenInfo::FromRegistrationInfo(registration_info.get());
-  if (instance_id_token_info) {
-    auto instance_id_iter = registration_manager_->instance_id_data().find(
-        registration_info->app_id);
-    // Tokens should not be deleted when an InstanceID has not been created yet.
-    CHECK(instance_id_iter != registration_manager_->instance_id_data().end());
-
-    request_handler = std::make_unique<InstanceIDDeleteTokenRequestHandler>(
-        instance_id_iter->second.first,
-        instance_id_token_info->authorized_entity,
-        instance_id_token_info->scope,
-        GCMRegistrationManagerImpl::ConstructGCMVersion(
-            chrome_build_info_.version));
-    source_to_record = instance_id_token_info->authorized_entity + "/" +
-                       instance_id_token_info->scope;
-  }
-
-  // Remove the registration/token(s) from the cache and the store.
-  // TODO(jianli): Remove it only when the request is successful.
-  if (instance_id_token_info &&
-      instance_id_token_info->authorized_entity == "*" &&
-      instance_id_token_info->scope == "*") {
-    // If no token is found for the Instance ID, don't need to unregister since
-    // the Instance ID is not sent to the server yet.
-    if (!RemoveAllCachedInstanceIDTokens(registration_info->app_id)) {
-      NotifyUnregisterFinished(std::move(registration_info), SUCCESS);
-      return;
-    }
-  } else if (!RemoveCachedRegistration(registration_info)) {
-    NotifyUnregisterFinished(std::move(registration_info), INVALID_PARAMETER);
+  // Remove the registration from the cache and the store.
+  // TODO(crbug.com/589661362): Remove it only when the request is successful.
+  if (!RemoveCachedRegistration(gcm_registration_info)) {
+    NotifyUnregisterFinished(std::move(gcm_registration_info),
+                             INVALID_PARAMETER);
     return;
   }
 
-  bool use_subtype = instance_id_token_info &&
-                     GCMRegistrationManagerImpl::InstanceIDUsesSubtypeForAppId(
-                         registration_info->app_id);
-  std::string category = use_subtype
-                             ? chrome_build_info_.product_category_for_subtypes
-                             : registration_info->app_id;
-  std::string subtype = use_subtype ? registration_info->app_id : std::string();
+  auto request_handler = std::make_unique<GCMUnregistrationRequestHandler>(
+      gcm_registration_info->app_id);
 
   StartUnregistrationRequest(
-      registration_info, category, subtype, std::move(request_handler),
-      source_to_record,
+      gcm_registration_info, /*category=*/gcm_registration_info->app_id,
+      /*subtype=*/std::string(), std::move(request_handler),
+      /*source_to_record=*/std::string(),
       base::BindOnce(&GCMClientImpl::NotifyUnregisterFinished,
-                     weak_ptr_factory_.GetWeakPtr(), registration_info));
+                     weak_ptr_factory_.GetWeakPtr(), gcm_registration_info));
 }
 
 bool GCMClientImpl::RemoveCachedRegistration(
@@ -783,11 +793,11 @@ void GCMClientImpl::OnUnregistrationRequestCompleted(
 }
 
 void GCMClientImpl::NotifyUnregisterFinished(
-    scoped_refptr<RegistrationInfo> registration_info,
+    scoped_refptr<GCMRegistrationInfo> gcm_registration_info,
     Result result) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   observers_.Notify(&Observer::OnUnregisterFinished,
-                    std::move(registration_info), result);
+                    std::move(gcm_registration_info), result);
 }
 
 void GCMClientImpl::Send(const std::string& app_id,

@@ -72,7 +72,8 @@ class FakeGCMClient : public GCMClient {
       scoped_refptr<GCMRegistrationInfo> gcm_registration_info) override;
   bool ValidateRegistration(scoped_refptr<RegistrationInfo> registration_info,
                             const std::string& registration_id) override;
-  void Unregister(scoped_refptr<RegistrationInfo> registration_info) override;
+  void Unregister(
+      scoped_refptr<GCMRegistrationInfo> gcm_registration_info) override;
   void Send(const std::string& app_id,
             const std::string& receiver_id,
             const OutgoingMessage& message) override;
@@ -90,6 +91,8 @@ class FakeGCMClient : public GCMClient {
                          std::string* extra_data) override;
   void GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
                 GetTokenCallback callback) override;
+  void DeleteToken(scoped_refptr<InstanceIDTokenInfo> token_info,
+                   DeleteTokenCallback callback) override;
   void WaitForInitialConnectionReady(base::OnceClosure callback) override;
 
   // Initiate the start that has been delayed.
@@ -113,7 +116,8 @@ class FakeGCMClient : public GCMClient {
   void RegisterFinished(
       scoped_refptr<GCMRegistrationInfo> gcm_registration_info,
       const std::string& registrion_id);
-  void UnregisterFinished(scoped_refptr<RegistrationInfo> registration_info);
+  void UnregisterFinished(
+      scoped_refptr<GCMRegistrationInfo> gcm_registration_info);
   void SendFinished(const std::string& app_id, const OutgoingMessage& message);
   void MessageReceived(const std::string& app_id,
                        const IncomingMessage& message);

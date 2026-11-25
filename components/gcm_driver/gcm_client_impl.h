@@ -117,7 +117,8 @@ class GCMClientImpl : public GCMClient,
       scoped_refptr<GCMRegistrationInfo> gcm_registration_info) override;
   bool ValidateRegistration(scoped_refptr<RegistrationInfo> registration_info,
                             const std::string& registration_id) override;
-  void Unregister(scoped_refptr<RegistrationInfo> registration_info) override;
+  void Unregister(
+      scoped_refptr<GCMRegistrationInfo> gcm_registration_info) override;
   void Send(const std::string& app_id,
             const std::string& receiver_id,
             const OutgoingMessage& message) override;
@@ -135,6 +136,8 @@ class GCMClientImpl : public GCMClient,
                          std::string* extra_data) override;
   void GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
                 GetTokenCallback callback) override;
+  void DeleteToken(scoped_refptr<InstanceIDTokenInfo> token_info,
+                   DeleteTokenCallback callback) override;
   void WaitForInitialConnectionReady(base::OnceClosure callback) override;
 
   // GCMStatsRecorder::Delegate implemenation.
@@ -250,7 +253,7 @@ class GCMClientImpl : public GCMClient,
 
   // Notifies observers that an `Unregister()` call has finished.
   void NotifyUnregisterFinished(
-      scoped_refptr<RegistrationInfo> registration_info,
+      scoped_refptr<GCMRegistrationInfo> gcm_registration_info,
       Result result);
 
   // Handles incoming data message and dispatches it to observers of this class.

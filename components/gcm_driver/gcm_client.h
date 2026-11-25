@@ -81,6 +81,7 @@ class GCMClient {
 
   using GetTokenCallback =
       base::OnceCallback<void(const std::string& token, Result result)>;
+  using DeleteTokenCallback = base::OnceCallback<void(Result result)>;
 
   // Detailed information of the Send Error event.
   struct SendErrorDetails {
@@ -131,13 +132,12 @@ class GCMClient {
         const std::string& registration_id,
         Result result) {}
 
-    // Called when the unregistration completed.
-    // |registration_info|: the specific information required for the
-    //                      registration.
-    // |result|: result of the unregistration.
+    // Called when a legacy GCM unregistration completed.
+    // `gcm_registration_info`: registration info containing app ID.
+    // `result`: result of the unregistration.
     virtual void OnUnregisterFinished(
-        scoped_refptr<RegistrationInfo> registration_info,
-        GCMClient::Result result) {}
+        scoped_refptr<GCMRegistrationInfo> gcm_registration_info,
+        Result result) {}
 
     // Called when the message is scheduled to send successfully or an error
     // occurs.
@@ -235,15 +235,14 @@ class GCMClient {
       scoped_refptr<RegistrationInfo> registration_info,
       const std::string& registration_id) = 0;
 
-  // Unregisters from the server to stop accessing the provided service.
-  // Observer::OnUnregisterFinished will be called asynchronously upon
-  // completion.
-  // |registration_info|: the specific information required for the
-  //                      registration. For GCM, it will contain app id (sender
-  //                      IDs can be ingored). For InstanceID, it will contain
-  //                      app id, authorized entity and scope.
+  // Unregisters from the server to stop accessing the provided service (used
+  // for legacy GCM registrations only; Instance ID callers should use
+  // `DeleteToken()`). `Observer::OnUnregisterFinished()` will be called
+  // asynchronously upon completion.
+  // `gcm_registration_info`: registration info containing app ID (sender IDs
+  // can be ignored).
   virtual void Unregister(
-      scoped_refptr<RegistrationInfo> registration_info) = 0;
+      scoped_refptr<GCMRegistrationInfo> gcm_registration_info) = 0;
 
   // Sends a message to a given receiver. Observer::OnSendFinished will be
   // called asynchronously upon completion.
@@ -285,6 +284,12 @@ class GCMClient {
   // synchronously (on a cache hit) or asynchronously.
   virtual void GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
                         GetTokenCallback callback) = 0;
+
+  // Deletes the Instance ID token(s) matching `token_info` (or all tokens for
+  // `token_info->app_id` if `authorized_entity` and `scope` are `"*"`),
+  // invoking `callback` upon completion.
+  virtual void DeleteToken(scoped_refptr<InstanceIDTokenInfo> token_info,
+                           DeleteTokenCallback callback) = 0;
 
   // Invokes `callback` once the initial push connection for the current
   // `Start()` cycle has logged in and completed a post-login heartbeat
