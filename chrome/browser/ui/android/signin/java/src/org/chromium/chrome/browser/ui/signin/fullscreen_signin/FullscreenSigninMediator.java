@@ -11,7 +11,9 @@ import android.graphics.drawable.Drawable;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -19,10 +21,12 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator.Delegate;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.CheckSigninSupport;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.CreateProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.NotifyInitialLoadCompleted;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordLoadCompleted;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordNativeInitialized;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordSigninFunnelEvent;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.SubscribeToLoadInputs;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.AccountsUpdated;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ChildAccountStatusLoaded;
@@ -31,6 +35,7 @@ import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninE
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.NativeReady;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.PoliciesLoaded;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ProfileDataCacheCreated;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.SigninSupportChecked;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninReducer.Result;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninState.Phase;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -40,6 +45,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -260,9 +266,7 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
                 IdentityManager identityManager =
                         assertNonNull(
                                 IdentityServicesProvider.get()
-                                        .getIdentityManager(
-                                                assertNonNull(mDelegate.getProfileSupplier().get())
-                                                        .getOriginalProfile()));
+                                        .getIdentityManager(getOriginalProfile()));
                 mIdentityManager = identityManager;
                 ProfileDataCache profileDataCache =
                         ProfileDataCache.createWithDefaultImageSize(mContext, identityManager);
@@ -288,6 +292,15 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
                             .onAvailable(ignored -> onChildAccountStatusAvailable());
                 }
             }
+            case CheckSigninSupport _ ->
+                    dispatch(
+                            new SigninSupportChecked(
+                                    ExternalAuthUtils.getInstance().canUseGooglePlayServices()
+                                            && UserPrefs.get(getOriginalProfile())
+                                                    .getBoolean(Pref.SIGNIN_ALLOWED)
+                                            && !mConfig.shouldDisableSignin));
+            case RecordSigninFunnelEvent e ->
+                    SigninMetricsUtils.logSigninFunnelEvent(mAccessPoint, e.getFunnelEvent());
             case NotifyInitialLoadCompleted _ -> mDelegate.onInitialLoadCompleted();
             case RecordLoadCompleted e ->
                     mDelegate.recordLoadCompletedHistograms(e.getSlowestLoadPoint());
@@ -295,9 +308,10 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
     }
 
     private void render() {
+        // Shown until loading has finished.
         mModel.set(
                 FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER,
-                mState.getPhase() == Phase.LOADING);
+                mState.getPhase() != Phase.READY);
         // An account can only be selected once the cache has loaded the accounts.
         @Nullable CoreAccountId selectedAccountId = mState.getSelectedAccountId();
         mModel.set(
@@ -305,6 +319,10 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
                 selectedAccountId == null
                         ? null
                         : assertNonNull(mProfileDataCache).getById(selectedAccountId));
+    }
+
+    private Profile getOriginalProfile() {
+        return assertNonNull(mDelegate.getProfileSupplier().get()).getOriginalProfile();
     }
 
     /**

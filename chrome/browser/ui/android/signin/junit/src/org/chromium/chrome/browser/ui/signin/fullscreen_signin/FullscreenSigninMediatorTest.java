@@ -209,6 +209,9 @@ public class FullscreenSigninMediatorTest {
         assertLoadingSpinnerVisibility(false);
         assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT1);
         verify(mDelegateMock, times(1)).onInitialLoadCompleted();
+        verify(mSigninMetricsUtilsJniMock)
+                .logSigninFunnelEvent(
+                        SigninAccessPoint.START_PAGE, SigninFunnelEvent.PROMO_SHOWN_WITH_ACCOUNT);
         verify(mDelegateMock, never()).recordNativeInitializedHistogram();
         verify(mDelegateMock, never()).recordLoadCompletedHistograms(anyInt());
     }
@@ -502,7 +505,6 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_promoShownWithAccount() {
-        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
@@ -510,14 +512,16 @@ public class FullscreenSigninMediatorTest {
 
         initializeNative();
 
-        verify(mSigninMetricsUtilsJniMock)
+        InOrder inOrder = inOrder(mSigninMetricsUtilsJniMock, mDelegateMock);
+        inOrder.verify(mSigninMetricsUtilsJniMock)
                 .logSigninFunnelEvent(
                         SigninAccessPoint.START_PAGE, SigninFunnelEvent.PROMO_SHOWN_WITH_ACCOUNT);
+        inOrder.verify(mDelegateMock).onInitialLoadCompleted();
+        inOrder.verify(mDelegateMock).recordLoadCompletedHistograms(anyInt());
     }
 
     @Test
     public void testSigninFunnel_promoShownNoAccount() {
-        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(true);
         createMediator();
 
@@ -530,7 +534,6 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testSigninFunnel_notLoggedWhenSigninNotSupported() {
-        assumeFalse(mIsStateMachineEnabled);
         setUpSigninSupported(false);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         createMediator();
@@ -540,6 +543,24 @@ public class FullscreenSigninMediatorTest {
 
         verify(mSigninMetricsUtilsJniMock, never()).logSigninFunnelEvent(anyInt(), anyInt());
         verify(mDelegateMock, never()).logPromoShownFunnelEventOnBackPress(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testSigninFunnel_notLoggedWhenPoliciesDisallowSignin() {
+        setUpSigninSupported(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mPolicyLoadListener = new OneshotSupplierImpl<>();
+        when(mDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListener);
+        createMediator();
+        initializeNative();
+
+        // Policies apply their prefs before they're reported as loaded.
+        when(mPrefServiceMock.getBoolean(Pref.SIGNIN_ALLOWED)).thenReturn(false);
+        mPolicyLoadListener.set(true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mDelegateMock).onInitialLoadCompleted();
+        verify(mSigninMetricsUtilsJniMock, never()).logSigninFunnelEvent(anyInt(), anyInt());
     }
 
     @Test

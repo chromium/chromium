@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.CheckSigninSupport;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.CreateProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.NotifyInitialLoadCompleted;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordLoadCompleted;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordNativeInitialized;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordSigninFunnelEvent;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.SubscribeToLoadInputs;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.AccountsUpdated;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ChildAccountStatusLoaded;
@@ -18,7 +20,9 @@ import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninE
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.NativeReady;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.PoliciesLoaded;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ProfileDataCacheCreated;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.SigninSupportChecked;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninState.Phase;
+import org.chromium.components.signin.metrics.SigninFunnelEvent;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.ArrayList;
@@ -74,6 +78,9 @@ final class FullscreenSigninReducer {
             }
             case ConstructionFinished _ -> {
                 assert state.isConstructing();
+                // The mediator constructor's first dispatch handles the sign-in support reply
+                // before ConstructionFinished, so loading can't still be finalizing.
+                assert state.getPhase() != Phase.FINALIZING_LOAD;
                 builder.setConstructionFinished();
                 // Native is subscribed to even if it's ready, since its callback records the
                 // native-initialized histogram.
@@ -122,20 +129,42 @@ final class FullscreenSigninReducer {
                 onAccountsLoaded(builder, e.getAccountIds());
                 loadPoint = FullscreenSigninLoadPoint.ACCOUNT_FETCHING;
             }
+            case SigninSupportChecked e -> {
+                assert state.getPhase() == Phase.FINALIZING_LOAD;
+                builder.setPhase(Phase.READY);
+                if (e.isSigninSupported()) {
+                    effects.add(
+                            new RecordSigninFunnelEvent(
+                                    state.getSelectedAccountId() != null
+                                            ? SigninFunnelEvent.PROMO_SHOWN_WITH_ACCOUNT
+                                            : SigninFunnelEvent.PROMO_SHOWN_NO_ACCOUNT));
+                }
+                // Notify the delegate before recording the load histograms: they measure the time
+                // until this point, so they include showing the loaded screen.
+                effects.add(NotifyInitialLoadCompleted.INSTANCE);
+                // A screen that's ready as soon as it's created waited for nothing, so there's no
+                // load to record.
+                // TODO(crbug.com/579875669): Consider, with the metrics owners, always recording
+                // the load histograms and recording the native-initialized histogram as soon as
+                // native is seen. That would remove the special cases for construction.
+                if (!state.isConstructing()) {
+                    effects.add(new RecordLoadCompleted(state.getSlowestLoadPoint()));
+                }
+                return new Result(builder.build(), effects);
+            }
         }
 
         FullscreenSigninState nextState = builder.build();
         if (nextState.getPhase() == Phase.LOADING && nextState.isInitialLoadComplete()) {
-            nextState = nextState.buildUpon().setPhase(Phase.READY).build();
-            // Notify the delegate before recording the load histograms: they measure the time
-            // until this point, so they include showing the loaded screen.
-            effects.add(NotifyInitialLoadCompleted.INSTANCE);
-            // A screen that's ready as soon as it's created waited for nothing, so there's no
-            // load to record.
-            // TODO(crbug.com/579875669): Consider, with the metrics owners, always recording the
-            // load histograms and recording the native-initialized histogram as soon as native is
-            // seen. That would remove the special cases for construction.
-            if (!nextState.isConstructing()) effects.add(new RecordLoadCompleted(loadPoint));
+            // Sign-in support is checked only now: policies can disallow sign-in, and they've
+            // only been applied once they've loaded.
+            nextState =
+                    nextState
+                            .buildUpon()
+                            .setPhase(Phase.FINALIZING_LOAD)
+                            .setSlowestLoadPoint(loadPoint)
+                            .build();
+            effects.add(CheckSigninSupport.INSTANCE);
         }
         return new Result(nextState, effects);
     }

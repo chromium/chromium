@@ -16,11 +16,17 @@ import java.lang.annotation.RetentionPolicy;
 /** Immutable state of the fullscreen sign-in screen. */
 @NullMarked
 final class FullscreenSigninState {
-    @IntDef({Phase.LOADING, Phase.READY})
+    @IntDef({Phase.LOADING, Phase.FINALIZING_LOAD, Phase.READY})
     @Retention(RetentionPolicy.SOURCE)
     @interface Phase {
+        /** Waiting for the load inputs. */
         int LOADING = 0;
-        int READY = 1;
+
+        /** All load inputs have arrived; checking what's needed to finish loading. */
+        int FINALIZING_LOAD = 1;
+
+        /** Loading has finished. */
+        int READY = 2;
     }
 
     private final @Phase int mPhase;
@@ -29,6 +35,7 @@ final class FullscreenSigninState {
     private final boolean mPoliciesLoaded;
     private final boolean mChildStatusLoaded;
     private final boolean mAccountsLoaded;
+    private final @FullscreenSigninLoadPoint int mSlowestLoadPoint;
     private final @Nullable CoreAccountId mSelectedAccountId;
 
     /**
@@ -42,6 +49,7 @@ final class FullscreenSigninState {
         mPoliciesLoaded = false;
         mChildStatusLoaded = false;
         mAccountsLoaded = false;
+        mSlowestLoadPoint = FullscreenSigninLoadPoint.NATIVE_INITIALIZATION;
         mSelectedAccountId = null;
     }
 
@@ -52,6 +60,7 @@ final class FullscreenSigninState {
         mPoliciesLoaded = builder.mPoliciesLoaded;
         mChildStatusLoaded = builder.mChildStatusLoaded;
         mAccountsLoaded = builder.mAccountsLoaded;
+        mSlowestLoadPoint = builder.mSlowestLoadPoint;
         mSelectedAccountId = builder.mSelectedAccountId;
     }
 
@@ -83,6 +92,13 @@ final class FullscreenSigninState {
         return mSelectedAccountId;
     }
 
+    /** The load input that arrived last. Set when loading enters {@link Phase#FINALIZING_LOAD}. */
+    @FullscreenSigninLoadPoint
+    int getSlowestLoadPoint() {
+        assert mPhase == Phase.FINALIZING_LOAD;
+        return mSlowestLoadPoint;
+    }
+
     /** Whether all four initial-load inputs have arrived. */
     boolean isInitialLoadComplete() {
         return mNativeLoaded && mPoliciesLoaded && mChildStatusLoaded && mAccountsLoaded;
@@ -99,6 +115,7 @@ final class FullscreenSigninState {
         private boolean mPoliciesLoaded;
         private boolean mChildStatusLoaded;
         private boolean mAccountsLoaded;
+        private @FullscreenSigninLoadPoint int mSlowestLoadPoint;
         private @Nullable CoreAccountId mSelectedAccountId;
 
         private Builder(FullscreenSigninState state) {
@@ -108,6 +125,7 @@ final class FullscreenSigninState {
             mPoliciesLoaded = state.mPoliciesLoaded;
             mChildStatusLoaded = state.mChildStatusLoaded;
             mAccountsLoaded = state.mAccountsLoaded;
+            mSlowestLoadPoint = state.mSlowestLoadPoint;
             mSelectedAccountId = state.mSelectedAccountId;
         }
 
@@ -138,6 +156,11 @@ final class FullscreenSigninState {
 
         Builder setAccountsLoaded() {
             mAccountsLoaded = true;
+            return this;
+        }
+
+        Builder setSlowestLoadPoint(@FullscreenSigninLoadPoint int slowestLoadPoint) {
+            mSlowestLoadPoint = slowestLoadPoint;
             return this;
         }
 

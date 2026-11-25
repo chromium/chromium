@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.signin.metrics.SigninFunnelEvent;
 
 /**
  * Side effects returned by {@link FullscreenSigninReducer} for the mediator to run.
@@ -49,6 +50,30 @@ sealed interface FullscreenSigninEffect {
 
         boolean includesChildStatus() {
             return mIncludeChildStatus;
+        }
+    }
+
+    /**
+     * Checks whether sign-in is supported, then dispatches {@link
+     * FullscreenSigninEvent.SigninSupportChecked} synchronously.
+     */
+    final class CheckSigninSupport implements FullscreenSigninEffect {
+        static final CheckSigninSupport INSTANCE = new CheckSigninSupport();
+
+        private CheckSigninSupport() {}
+    }
+
+    /** Calls {@code SigninMetricsUtils.logSigninFunnelEvent(accessPoint, funnelEvent)}. */
+    final class RecordSigninFunnelEvent implements FullscreenSigninEffect {
+        private final @SigninFunnelEvent int mFunnelEvent;
+
+        RecordSigninFunnelEvent(@SigninFunnelEvent int funnelEvent) {
+            mFunnelEvent = funnelEvent;
+        }
+
+        @SigninFunnelEvent
+        int getFunnelEvent() {
+            return mFunnelEvent;
         }
     }
 

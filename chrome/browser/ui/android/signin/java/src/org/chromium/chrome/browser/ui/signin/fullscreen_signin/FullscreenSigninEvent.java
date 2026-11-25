@@ -90,4 +90,17 @@ sealed interface FullscreenSigninEvent {
             return mAccountIds;
         }
     }
+
+    /** Whether sign-in is supported, checked once all load inputs have arrived. */
+    final class SigninSupportChecked implements FullscreenSigninEvent {
+        private final boolean mSigninSupported;
+
+        SigninSupportChecked(boolean signinSupported) {
+            mSigninSupported = signinSupported;
+        }
+
+        boolean isSigninSupported() {
+            return mSigninSupported;
+        }
+    }
 }
