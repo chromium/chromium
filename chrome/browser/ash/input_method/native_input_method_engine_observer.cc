@@ -69,7 +69,8 @@ bool IsFirstPartyVietnameseEngine(std::string_view engine_id) {
 }
 
 bool IsRuleBasedEngine(std::string_view engine_id) {
-  return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
+  return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE) &&
+         !IsFirstPartyVietnameseEngine(engine_id);
 }
 
 bool HasXkbPrefix(std::string_view engine_id) {
@@ -992,7 +993,8 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
     return;
   }
 
-  if ((use_ime_service_ && IsRuleBasedEngine(engine_id)) ||
+  if ((use_ime_service_ && (IsRuleBasedEngine(engine_id) ||
+                            IsFirstPartyVietnameseEngine(engine_id))) ||
       ShouldRouteToNativeMojoEngine(engine_id)) {
     if (IsInputMethodBound() && IsInputMethodConnected()) {
       // CharacterComposer only takes KEY_PRESSED events.
@@ -1045,7 +1047,8 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
 
 void NativeInputMethodEngineObserver::OnReset(const std::string& engine_id) {
   if (ShouldRouteToNativeMojoEngine(engine_id) ||
-      (use_ime_service_ && IsRuleBasedEngine(engine_id))) {
+      (use_ime_service_ && (IsRuleBasedEngine(engine_id) ||
+                            IsFirstPartyVietnameseEngine(engine_id)))) {
     if (IsInputMethodBound()) {
       input_method_->OnCompositionCanceledBySystem();
     }
