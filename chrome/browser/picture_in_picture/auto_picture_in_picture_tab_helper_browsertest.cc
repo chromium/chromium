@@ -4476,6 +4476,117 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperWindowOcclusionBrowserTest,
   EXPECT_FALSE(web_contents->HasPictureInPictureDocument());
 }
 
+class OcclusionChangeOnChildDialogShownObserver : public views::WidgetObserver {
+ public:
+  OcclusionChangeOnChildDialogShownObserver(
+      views::Widget* pip_widget,
+      content::WebContents* opener_web_contents,
+      MockAutoPictureInPictureWindowOcclusionHelper* occlusion_helper)
+      : pip_widget_(pip_widget),
+        opener_web_contents_(opener_web_contents),
+        occlusion_helper_(occlusion_helper) {
+    pip_observation_.Observe(pip_widget);
+  }
+
+  void OnWidgetChildAdded(views::Widget* widget,
+                          views::Widget* child_dialog) override {
+    if (widget == pip_widget_ && !child_observation_.IsObserving()) {
+      child_observation_.Observe(child_dialog);
+    }
+  }
+
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override {
+    if (child_observation_.IsObservingSource(widget) && visible) {
+      triggered_during_show_ = true;
+      child_observation_.Reset();
+      pip_observation_.Reset();
+      occlusion_helper_->SimulateOcclusionStateChange(
+          AutoPictureInPictureWindowOcclusionHelperBase::OcclusionState::
+              kVisible);
+      // Exiting auto picture-in-picture must be deferred to a subsequent task
+      // so the PiP document is not synchronously torn down during Show().
+      was_still_in_pip_after_notification_ =
+          opener_web_contents_->HasPictureInPictureDocument();
+    }
+  }
+
+  void OnWidgetDestroying(views::Widget* widget) override {
+    if (pip_observation_.IsObservingSource(widget)) {
+      pip_observation_.Reset();
+    }
+    if (child_observation_.IsObservingSource(widget)) {
+      child_observation_.Reset();
+    }
+  }
+
+  bool triggered_during_show() const { return triggered_during_show_; }
+  bool was_still_in_pip_after_notification() const {
+    return was_still_in_pip_after_notification_;
+  }
+
+ private:
+  raw_ptr<views::Widget> pip_widget_;
+  raw_ptr<content::WebContents> opener_web_contents_;
+  raw_ptr<MockAutoPictureInPictureWindowOcclusionHelper> occlusion_helper_;
+  bool triggered_during_show_ = false;
+  bool was_still_in_pip_after_notification_ = false;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      pip_observation_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      child_observation_{this};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    AutoPictureInPictureTabHelperWindowOcclusionBrowserTest,
+    WindowUnoccludedDuringChildDialogShowExitsAutoPipAsynchronously) {
+  // Load a page that registers for autopip and starts using camera/microphone.
+  LoadCameraMicrophonePage(browser());
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
+  GetUserMediaAndAccept(web_contents);
+
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  auto* mock_occlusion_helper =
+      static_cast<MockAutoPictureInPictureWindowOcclusionHelper*>(
+          tab_helper->window_occlusion_helper_for_testing());
+  ASSERT_NE(nullptr, mock_occlusion_helper);
+
+  // Simulate the window becoming occluded to enter document auto-pip.
+  content::MediaStartStopObserver enter_pip_observer(
+      web_contents,
+      content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+  mock_occlusion_helper->SimulateOcclusionStateChange(
+      AutoPictureInPictureWindowOcclusionHelperBase::OcclusionState::kOccluded);
+  enter_pip_observer.Wait();
+  ASSERT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  content::WebContents* pip_web_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(pip_web_contents));
+
+  views::Widget* pip_widget = views::Widget::GetWidgetForNativeWindow(
+      pip_web_contents->GetTopLevelNativeWindow());
+  ASSERT_NE(nullptr, pip_widget);
+  pip_web_contents->Focus();
+
+  // When the child dialog's Show() makes the dialog widget visible, simulate
+  // the opener window becoming visible synchronously on the same stack.
+  OcclusionChangeOnChildDialogShownObserver dialog_observer(
+      pip_widget, web_contents, mock_occlusion_helper);
+
+  content::MediaStartStopObserver exit_pip_observer(
+      web_contents,
+      content::MediaStartStopObserver::Type::kExitPictureInPicture);
+  content::ExecuteScriptAsync(pip_web_contents, "alert('test dialog');");
+  exit_pip_observer.Wait();
+
+  EXPECT_TRUE(dialog_observer.triggered_during_show());
+  EXPECT_TRUE(dialog_observer.was_still_in_pip_after_notification());
+  EXPECT_FALSE(web_contents->HasPictureInPictureDocument());
+  EXPECT_FALSE(tab_helper->IsInAutoPictureInPicture());
+}
+
 class AutoPictureInPictureTabHelperBrowserAutoPipDryRunTest
     : public AutoPictureInPictureWithVideoPlaybackBrowserTest,
       public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
