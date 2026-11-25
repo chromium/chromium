@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 
 import java.util.List;

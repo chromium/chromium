@@ -23,13 +23,11 @@ import android.widget.TextView;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -52,7 +50,7 @@ public class HistoryItemView extends CheckableSelectableItemView<HistoryItem> {
     private TextView mTitleView;
     private TextView mDescriptionView;
     private ImageButton mRemoveButton;
-    private @Nullable VectorDrawableCompat mBlockedVisitDrawable;
+    private @Nullable Drawable mBlockedVisitDrawable;
     private AppInfoCache mAppInfoCache;
     private @Nullable Runnable mClusterToggleHandler;
 
