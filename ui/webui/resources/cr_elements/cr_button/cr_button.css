@@ -48,7 +48,7 @@
   isolation: isolate;
 }
 
-:host(.action-button) {
+:host(.action-button:not(.tonal-button)) {
   --cr-button-background-color: var(--color-button-background-prominent,
       var(--cr-fallback-color-primary));
   --cr-button-text-color: var(--color-button-foreground-prominent,
@@ -154,7 +154,7 @@
   display: block;
 }
 
-:host(.action-button:hover) #hoverBackground {
+:host(.action-button:not(.tonal-button):hover) #hoverBackground {
   background: var(--cr-hover-on-prominent-background-color);
 }
 

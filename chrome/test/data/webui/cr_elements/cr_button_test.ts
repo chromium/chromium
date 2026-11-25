@@ -183,4 +183,21 @@ suite('cr-button', function() {
     assertEquals('8px', buttonStyle.gap);
     assertEquals('8px 12px 8px 16px', buttonStyle.padding);
   });
+
+  test('action-button with tonal-button uses tonal styles', () => {
+    const tonalButton = document.createElement('cr-button');
+    tonalButton.classList.add('tonal-button');
+    document.body.appendChild(tonalButton);
+
+    button.classList.add('action-button', 'tonal-button');
+
+    assertEquals(
+        getComputedStyle(tonalButton).backgroundColor,
+        getComputedStyle(button).backgroundColor);
+    assertEquals(
+        getComputedStyle(tonalButton).color, getComputedStyle(button).color);
+    assertEquals(
+        getComputedStyle(tonalButton.getRipple()).color,
+        getComputedStyle(button.getRipple()).color);
+  });
 });

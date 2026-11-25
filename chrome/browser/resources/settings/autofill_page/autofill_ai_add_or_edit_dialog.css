@@ -108,7 +108,7 @@
 }
 
 .spinner {
-  --cr-spinner-color: white;
+  --cr-spinner-color: currentColor;
   --cr-spinner-size: 16px;
   display: inline-block;
   vertical-align: middle;

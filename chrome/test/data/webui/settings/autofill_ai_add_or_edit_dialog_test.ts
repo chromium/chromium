@@ -574,6 +574,9 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
 
     // The proxy should hold the promise in pending state.
     assertTrue(isVisible(spinner));
+    assertEquals(
+        getComputedStyle(saveButton).color,
+        getComputedStyle(spinner).backgroundColor);
 
     entityDataManager.resolveSave();
 
