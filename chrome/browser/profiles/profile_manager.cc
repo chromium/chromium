@@ -1046,21 +1046,23 @@ void ProfileManager::CreateMultiProfileAsync(
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
   base::FilePath new_path;
-  ProfileAttributesEntry* entry = nullptr;
-  // In some crashes, it can happen that next profile dir (backed up by local
-  // pref) is out-of-sync with profiles dir. Keep generating next profile path
-  // until that path is _not_ present in `storage`.
+  // In some crashes (or when a profile directory was opened via
+  // --profile-directory without incrementing `prefs::kProfilesNumCreated`), the
+  // next profile dir pref can be out-of-sync with existing profiles. Keep
+  // generating next profile paths until one is unused.
+  auto is_path_unavailable = [&](const base::FilePath& path) {
+    return storage.GetProfileAttributesWithPath(path) != nullptr ||
+           profile_manager->GetProfileInfoByPath(path) != nullptr ||
+           profile_manager->profiles_pending_destruction_.contains(path) ||
+           IsProfileDirectoryMarkedForDeletion(path);
+  };
   do {
     new_path = profile_manager->GenerateNextProfileDirectoryPath();
-    // The generated path should be unused and free to use.
-    // TODO(crbug.com/577271507): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
-    DCHECK_EQ(profile_manager->GetProfileByPath(new_path), nullptr);
-    CHECK(profile_manager->CanCreateProfileAtPath(new_path),
-          base::NotFatalUntil::M162);
+  } while (is_path_unavailable(new_path));
 
-    entry = storage.GetProfileAttributesWithPath(new_path);
-  } while (entry != nullptr);
+  // The generated path should be unused and free to use.
+  CHECK(profile_manager->CanCreateProfileAtPath(new_path),
+        base::NotFatalUntil::M162);
 
   // Add a storage entry early here to set up a new profile with user selected
   // name and avatar.

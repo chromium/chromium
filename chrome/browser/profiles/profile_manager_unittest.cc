@@ -1027,6 +1027,96 @@ TEST_F(ProfileManagerMultiProfileTest,
 }
 
 TEST_F(ProfileManagerMultiProfileTest,
+       CreateMultiProfilesAsyncWithBrokenPrefAndLoadedProfile) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_TRUE(profile_manager);
+
+  // Simulate loading "Profile 1" directly (e.g. via --profile-directory)
+  // without incrementing `prefs::kProfilesNumCreated`.
+  Profile* profile1 = profile_manager->GetProfile(
+      profile_manager->user_data_dir().AppendASCII("Profile 1"));
+  ASSERT_NE(profile1, nullptr);
+  ASSERT_EQ(profile_manager->GetProfileByPath(profile1->GetPath()), profile1);
+  ASSERT_NE(profile_manager->GetProfileAttributesStorage()
+                .GetProfileAttributesWithPath(profile1->GetPath()),
+            nullptr);
+  ASSERT_EQ(TestingBrowserProcess::GetGlobal()->local_state()->GetInteger(
+                prefs::kProfilesNumCreated),
+            1);
+
+  base::RunLoop run_loop;
+  MockObserver mock_observer;
+  Profile* profile2 = nullptr;
+  EXPECT_CALL(mock_observer, OnProfileCreated(testing::NotNull()))
+      .WillOnce(testing::SaveArg<0>(&profile2));
+  EXPECT_CALL(mock_observer, OnProfileInitialized(testing::NotNull()))
+      .WillOnce([&run_loop] { run_loop.Quit(); });
+
+  CreateMultiProfileAsync(profile_manager, "Profile B", &mock_observer);
+  run_loop.Run();
+
+  ASSERT_NE(profile2, nullptr);
+  EXPECT_NE(profile2, profile1);
+  EXPECT_EQ(profile2->GetPath().BaseName().value(),
+            FILE_PATH_LITERAL("Profile 2"));
+  EXPECT_EQ(TestingBrowserProcess::GetGlobal()->local_state()->GetInteger(
+                prefs::kProfilesNumCreated),
+            3);
+  ProfileAttributesEntry* entry2 =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile2->GetPath());
+  ASSERT_NE(entry2, nullptr);
+}
+
+TEST_F(ProfileManagerMultiProfileTest,
+       CreateMultiProfilesAsyncWithBrokenPrefAndProfileMarkedForDeletion) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_TRUE(profile_manager);
+
+  // Simulate "Profile 1" having been marked for deletion and removed from
+  // `ProfileAttributesStorage` without incrementing
+  // `prefs::kProfilesNumCreated` (and without being loaded in memory).
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  const base::FilePath profile1_path =
+      profile_manager->user_data_dir().AppendASCII("Profile 1");
+  ProfileAttributesInitParams params_1;
+  params_1.profile_path = profile1_path;
+  params_1.profile_name = u"name_1";
+  storage.AddProfile(std::move(params_1));
+  MarkProfileDirectoryForDeletion(profile1_path);
+  storage.RemoveProfile(profile1_path);
+
+  ASSERT_TRUE(IsProfileDirectoryMarkedForDeletion(profile1_path));
+  ASSERT_EQ(storage.GetProfileAttributesWithPath(profile1_path), nullptr);
+  ASSERT_EQ(profile_manager->GetProfileByPath(profile1_path), nullptr);
+  ASSERT_EQ(TestingBrowserProcess::GetGlobal()->local_state()->GetInteger(
+                prefs::kProfilesNumCreated),
+            1);
+
+  base::RunLoop run_loop;
+  MockObserver mock_observer;
+  Profile* profile2 = nullptr;
+  EXPECT_CALL(mock_observer, OnProfileCreated(testing::NotNull()))
+      .WillOnce(testing::SaveArg<0>(&profile2));
+  EXPECT_CALL(mock_observer, OnProfileInitialized(testing::NotNull()))
+      .WillOnce([&run_loop] { run_loop.Quit(); });
+
+  CreateMultiProfileAsync(profile_manager, "Profile B", &mock_observer);
+  run_loop.Run();
+
+  ASSERT_NE(profile2, nullptr);
+  EXPECT_EQ(profile2->GetPath().BaseName().value(),
+            FILE_PATH_LITERAL("Profile 2"));
+  EXPECT_EQ(TestingBrowserProcess::GetGlobal()->local_state()->GetInteger(
+                prefs::kProfilesNumCreated),
+            3);
+  ProfileAttributesEntry* entry2 =
+      storage.GetProfileAttributesWithPath(profile2->GetPath());
+  ASSERT_NE(entry2, nullptr);
+}
+
+TEST_F(ProfileManagerMultiProfileTest,
        PRE_CreateMultiProfilesAsyncWithBrokenPrefAndProfileOnDisk) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
