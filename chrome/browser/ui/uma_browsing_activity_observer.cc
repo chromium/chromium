@@ -39,7 +39,9 @@ UMABrowsingActivityObserver* g_uma_browsing_activity_observer_instance =
 
 // static
 void UMABrowsingActivityObserver::Init() {
-  CHECK(!g_uma_browsing_activity_observer_instance, base::NotFatalUntil::M162);
+  // TODO(crbug.com/589562567): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!g_uma_browsing_activity_observer_instance);
   // Must be created before any Browsers are.
   CHECK(!KeepAliveRegistry::GetInstance()->IsOriginRegistered(
             KeepAliveOrigin::BROWSER),
