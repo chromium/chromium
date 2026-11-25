@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "cc/slim/solid_color_layer.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "content/public/browser/android/compositor.h"
@@ -103,6 +104,14 @@ class CompositorViewTest : public ::testing::Test {
   }
 
  protected:
+  SkColor4f root_layer_background_color() const {
+    return compositor_view_->root_layer_->background_color();
+  }
+
+  bool root_layer_draws_content() const {
+    return compositor_view_->root_layer_->draws_content();
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::MainThreadType::UI};
   std::unique_ptr<FakeTabContentManager> tab_content_manager_;
@@ -121,6 +130,64 @@ TEST_F(CompositorViewTest, SetOverlayXrFullScreenMode) {
   // Disable XR mode.
   EXPECT_CALL(*compositor_, SetBackgroundColor(SK_ColorWHITE));
   compositor_view_->SetOverlayXrFullScreenMode(false);
+}
+
+TEST_F(CompositorViewTest, SetBackgroundColorAndOverlayRestore) {
+  constexpr SkColor kDarkBg = SkColorSetARGB(0xFF, 0x13, 0x13, 0x14);
+
+  EXPECT_CALL(*compositor_, SetBackgroundColor(static_cast<int>(kDarkBg)));
+  compositor_view_->SetBackgroundColor(static_cast<int32_t>(kDarkBg));
+  EXPECT_EQ(SkColor4f::FromColor(kDarkBg), root_layer_background_color());
+  EXPECT_TRUE(root_layer_draws_content());
+
+  // Entering XR mode keeps the compositor transparent.
+  EXPECT_CALL(*compositor_, SetBackgroundColor(SK_ColorTRANSPARENT));
+  compositor_view_->SetOverlayXrFullScreenMode(true);
+  EXPECT_EQ(SkColors::kTransparent, root_layer_background_color());
+  EXPECT_FALSE(root_layer_draws_content());
+
+  // Exiting XR mode restores the configured dark background instead of white.
+  EXPECT_CALL(*compositor_, SetBackgroundColor(static_cast<int>(kDarkBg)));
+  compositor_view_->SetOverlayXrFullScreenMode(false);
+  EXPECT_EQ(SkColor4f::FromColor(kDarkBg), root_layer_background_color());
+  EXPECT_TRUE(root_layer_draws_content());
+}
+
+TEST_F(CompositorViewTest, SetOverlayImmersiveArAndXrOverlapPreservesAlpha) {
+  constexpr SkColor kDarkBg = SkColorSetARGB(0xFF, 0x13, 0x13, 0x14);
+
+  EXPECT_CALL(*compositor_, SetBackgroundColor(static_cast<int>(kDarkBg)));
+  compositor_view_->SetBackgroundColor(static_cast<int32_t>(kDarkBg));
+
+  // Enable both AR and XR overlay modes.
+  EXPECT_CALL(*compositor_, SetRequiresAlphaChannel(true));
+  EXPECT_CALL(*compositor_, SetBackgroundColor(SK_ColorTRANSPARENT));
+  compositor_view_->SetOverlayImmersiveArMode(true);
+
+  EXPECT_CALL(*compositor_, SetBackgroundColor(SK_ColorTRANSPARENT));
+  compositor_view_->SetOverlayXrFullScreenMode(true);
+
+  // Updating background color while in overlay keeps compositor transparent.
+  constexpr SkColor kNewBg = SkColorSetARGB(0xFF, 0x20, 0x21, 0x24);
+  EXPECT_CALL(*compositor_, SetBackgroundColor(SK_ColorTRANSPARENT));
+  compositor_view_->SetBackgroundColor(static_cast<int32_t>(kNewBg));
+
+  // Exiting AR while XR is still active keeps compositor transparent.
+  EXPECT_CALL(*compositor_, SetRequiresAlphaChannel(false));
+  EXPECT_CALL(*compositor_, SetBackgroundColor(SK_ColorTRANSPARENT));
+  compositor_view_->SetOverlayImmersiveArMode(false);
+
+  // Exiting XR restores the updated background color.
+  EXPECT_CALL(*compositor_, SetBackgroundColor(static_cast<int>(kNewBg)));
+  compositor_view_->SetOverlayXrFullScreenMode(false);
+  EXPECT_EQ(SkColor4f::FromColor(kNewBg), root_layer_background_color());
+}
+
+TEST_F(CompositorViewTest, SetBackgroundColorTransparentHidesRootLayer) {
+  EXPECT_CALL(*compositor_, SetBackgroundColor(SK_ColorTRANSPARENT));
+  compositor_view_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  EXPECT_EQ(SkColors::kTransparent, root_layer_background_color());
+  EXPECT_FALSE(root_layer_draws_content());
 }
 
 }  // namespace android

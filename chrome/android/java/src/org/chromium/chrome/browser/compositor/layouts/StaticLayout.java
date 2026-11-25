@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.RectF;
 
 import androidx.annotation.Px;
@@ -167,6 +168,7 @@ public class StaticLayout extends Layout {
         mModel =
                 new PropertyModel.Builder(LayoutTab.ALL_KEYS)
                         .with(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID)
+                        .with(LayoutTab.BACKGROUND_COLOR, Color.TRANSPARENT)
                         .with(LayoutTab.SCALE, 1.0f)
                         .with(LayoutTab.X, 0.0f)
                         .with(LayoutTab.Y, 0.0f)
@@ -300,6 +302,7 @@ public class StaticLayout extends Layout {
                         if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
 
                         mModel.set(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID);
+                        mModel.set(LayoutTab.BACKGROUND_COLOR, Color.TRANSPARENT);
                     }
 
                     @Override
@@ -307,6 +310,7 @@ public class StaticLayout extends Layout {
                         if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
 
                         mModel.set(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID);
+                        mModel.set(LayoutTab.BACKGROUND_COLOR, Color.TRANSPARENT);
                     }
 
                     @Override
@@ -363,6 +367,7 @@ public class StaticLayout extends Layout {
     public void doneHiding() {
         mIsShowing = false;
         mModel.set(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID);
+        mModel.set(LayoutTab.BACKGROUND_COLOR, Color.TRANSPARENT);
 
         // Call super last because it might re-show this layout. If we do any work after
         // super.doneHiding() the layout might become unexpectedly inactive or have an

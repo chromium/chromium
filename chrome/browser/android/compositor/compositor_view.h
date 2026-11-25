@@ -81,6 +81,7 @@ class CompositorView : public content::CompositorClient,
   void SetOverlayVideoMode(bool enabled);
   void SetOverlayImmersiveArMode(bool enabled);
   void SetOverlayXrFullScreenMode(bool enabled);
+  void SetBackgroundColor(int32_t color);
   void SetSceneLayer(JNIEnv* env,
                      const base::android::JavaRef<jobject>& jscene_layer);
   void SetCompositorWindow(ui::WindowAndroid* window_android);
@@ -109,6 +110,7 @@ class CompositorView : public content::CompositorClient,
       const content::ChildProcessTerminationInfo& info) override;
 
   void SetBackground(bool visible, SkColor color);
+  void UpdateBackgroundColor();
 
   // Constructor for testing.
   CompositorView(JNIEnv* env,
@@ -135,6 +137,7 @@ class CompositorView : public content::CompositorClient,
   bool overlay_video_mode_;
   bool overlay_immersive_ar_mode_;
   bool overlay_xr_full_screen_mode_;
+  SkColor background_color_ = SK_ColorWHITE;
 };
 
 }  // namespace android

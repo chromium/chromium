@@ -111,6 +111,7 @@ public class CompositorView extends FrameLayout
     private @Nullable View mRootView;
     private boolean mPreloadedResources;
     private boolean mHasTempBackground;
+    private @ColorInt int mBackgroundColor = Color.WHITE;
     private final Object mDrawingFinishedCallbackLock = new Object();
 
     @GuardedBy("mDrawingFinishedCallbackLock")
@@ -205,8 +206,10 @@ public class CompositorView extends FrameLayout
         // Cover the black surface before it has valid content.  Set this placeholder view to
         // visible, but don't yet make SurfaceView visible, in order to delay
         // surfaceCreate/surfaceChanged calls until the native library is loaded.
+        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getContext(), false);
+        mBackgroundColor = backgroundColor;
         mHasTempBackground = true;
-        setBackgroundColor(ChromeColors.getPrimaryBackgroundColor(getContext(), false));
+        setBackgroundColor(backgroundColor);
         super.setVisibility(View.VISIBLE);
 
         // Request the opaque surface.  We might need the translucent one, but
@@ -384,6 +387,8 @@ public class CompositorView extends FrameLayout
 
         mNativeCompositorView =
                 CompositorViewJni.get().init(this, windowAndroid, tabContentManager);
+        CompositorViewJni.get()
+                .setBackgroundColor(assumeNonNull(mNativeCompositorView), mBackgroundColor);
 
         mIsSurfaceControlEnabled = CompositorViewJni.get().isSurfaceControlEnabled();
 
@@ -980,10 +985,14 @@ public class CompositorView extends FrameLayout
         if (!mHasTempBackground || getBackground() == null || color == Color.TRANSPARENT) {
             return;
         }
+        mBackgroundColor = color;
         // Use setBackground() with a fresh ColorDrawable instead of setBackgroundColor(), because
         // View#setBackgroundColor() mutates an existing ColorDrawable in place without calling
         // setBackgroundDrawable() to notify and invalidate both child SurfaceViews.
         setBackground(new ColorDrawable(color));
+        if (mNativeCompositorView != null) {
+            CompositorViewJni.get().setBackgroundColor(mNativeCompositorView, color);
+        }
     }
 
     @Override
@@ -1112,6 +1121,8 @@ public class CompositorView extends FrameLayout
         void setOverlayXrFullScreenMode(JniPtr<NativeCompositorView> self, boolean enabled);
 
         void setSceneLayer(JniPtr<NativeCompositorView> self, SceneLayer sceneLayer);
+
+        void setBackgroundColor(JniPtr<NativeCompositorView> self, int color);
 
         void setCompositorWindow(
                 JniPtr<NativeCompositorView> self,

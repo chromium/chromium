@@ -39,6 +39,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserDataHost;
@@ -179,6 +180,7 @@ public class StaticLayoutUnitTest {
                         mStaticTabSceneLayer,
                         mNeedsOffsetTagsSupplier);
         mModel = mStaticLayout.getModelForTesting();
+        assertEquals(Color.TRANSPARENT, mModel.get(LayoutTab.BACKGROUND_COLOR));
         mStaticLayout.setIsActive(true);
 
         doReturn(TOOLBAR_BACKGROUND_COLOR)
@@ -556,5 +558,29 @@ public class StaticLayoutUnitTest {
                 contentOffsetX,
                 mModel.get(LayoutTab.CONTENT_OFFSET_X),
                 0);
+    }
+
+    @Test
+    public void testBackgroundColorResetOnDoneHidingAndTabRemoval() {
+        mModel.set(LayoutTab.BACKGROUND_COLOR, Color.WHITE);
+
+        mStaticLayout.doneHiding();
+        assertEquals(Tab.INVALID_TAB_ID, mModel.get(LayoutTab.TAB_ID));
+        assertEquals(Color.TRANSPARENT, mModel.get(LayoutTab.BACKGROUND_COLOR));
+
+        // Reset via onDestroyed.
+        mStaticLayout.show(0, false);
+        assertEquals(BACKGROUND_COLOR, mModel.get(LayoutTab.BACKGROUND_COLOR));
+        mTabObserverCaptor.getAllValues().get(0).onDestroyed(mTab1);
+        assertEquals(Tab.INVALID_TAB_ID, mModel.get(LayoutTab.TAB_ID));
+        assertEquals(Color.TRANSPARENT, mModel.get(LayoutTab.BACKGROUND_COLOR));
+
+        // Reset via onTabUnregistered.
+        mStaticLayout.show(0, false);
+        assertEquals(BACKGROUND_COLOR, mModel.get(LayoutTab.BACKGROUND_COLOR));
+        ShadowLooper.idleMainLooper();
+        mTabModelObserverCaptor.getAllValues().get(1).tabRemoved(mTab1);
+        assertEquals(Tab.INVALID_TAB_ID, mModel.get(LayoutTab.TAB_ID));
+        assertEquals(Color.TRANSPARENT, mModel.get(LayoutTab.BACKGROUND_COLOR));
     }
 }

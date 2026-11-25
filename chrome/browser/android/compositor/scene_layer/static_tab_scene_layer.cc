@@ -46,13 +46,14 @@ static bool LayerDraws(scoped_refptr<cc::slim::Layer> layer) {
 
 StaticTabSceneLayer::StaticTabSceneLayer(JNIEnv* env,
                                          const JavaRef<jobject>& jobj)
-    : SceneLayer(env, jobj),
-      tab_content_manager_(nullptr),
-      background_color_(SK_ColorWHITE) {}
+    : SceneLayer(env, jobj), tab_content_manager_(nullptr) {}
 
 StaticTabSceneLayer::~StaticTabSceneLayer() = default;
 
 bool StaticTabSceneLayer::ShouldShowBackground() {
+  if (tab_id_ == -1) {
+    return false;
+  }
   scoped_refptr<cc::slim::Layer> root = layer_->RootLayer();
   return root && root->bounds() != layer_->bounds();
 }
@@ -71,7 +72,9 @@ void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
   DCHECK(tab_content_manager_)
       << "TabContentManager must be set before updating the layer";
 
-  background_color_ = default_background_color;
+  tab_id_ = id;
+  background_color_ = id == -1 ? SK_ColorTRANSPARENT
+                               : static_cast<SkColor>(default_background_color);
   if (!content_layer_.get()) {
     content_layer_ = android::ContentLayer::Create(tab_content_manager_);
     layer_->AddChild(content_layer_->layer());

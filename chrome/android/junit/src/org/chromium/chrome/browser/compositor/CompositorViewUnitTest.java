@@ -9,6 +9,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -199,17 +201,20 @@ public class CompositorViewUnitTest {
         ArgumentCaptor<Drawable> drawableCaptor = ArgumentCaptor.forClass(Drawable.class);
         verify(mCompositorSurfaceManager).setBackgroundDrawable(drawableCaptor.capture());
         assertEquals(Color.DKGRAY, ((ColorDrawable) drawableCaptor.getValue()).getColor());
+        verify(mCompositorViewJni).setBackgroundColor(mNativeCompositorView, Color.DKGRAY);
     }
 
     @Test
     public void testUpdateTempBackgroundColor_ignoresTransparent() {
         int initialColor = ((ColorDrawable) mCompositorView.getBackground()).getColor();
         reset(mCompositorSurfaceManager);
+        clearInvocations(mCompositorViewJni);
 
         mCompositorView.updateTempBackgroundColor(Color.TRANSPARENT);
 
         assertEquals(initialColor, ((ColorDrawable) mCompositorView.getBackground()).getColor());
         verify(mCompositorSurfaceManager, never()).setBackgroundDrawable(any());
+        verify(mCompositorViewJni, never()).setBackgroundColor(any(), anyInt());
     }
 
     @Test
@@ -217,12 +222,14 @@ public class CompositorViewUnitTest {
         mCompositorView.setBackgroundResource(0);
         assertNull(mCompositorView.getBackground());
         reset(mCompositorSurfaceManager);
+        clearInvocations(mCompositorViewJni);
 
         mCompositorView.updateTempBackgroundColor(Color.DKGRAY);
         mCompositorView.refreshTempBackgroundColor();
 
         assertNull(mCompositorView.getBackground());
         verify(mCompositorSurfaceManager, never()).setBackgroundDrawable(any());
+        verify(mCompositorViewJni, never()).setBackgroundColor(any(), anyInt());
     }
 
     @Test
@@ -277,5 +284,19 @@ public class CompositorViewUnitTest {
         ArgumentCaptor<Drawable> drawableCaptor = ArgumentCaptor.forClass(Drawable.class);
         verify(mCompositorSurfaceManager).setBackgroundDrawable(drawableCaptor.capture());
         assertEquals(expectedDarkColor, ((ColorDrawable) drawableCaptor.getValue()).getColor());
+
+        // Clearing the temporary Java drawable must preserve the refreshed color for native init.
+        view.setBackgroundResource(0);
+        reset(mCompositorViewJni);
+        when(mCompositorViewJni.init(any(), any(), any())).thenReturn(mNativeCompositorView);
+        view.initNativeCompositor(mWindowAndroid, mTabContentManager);
+        verify(mCompositorViewJni).setBackgroundColor(mNativeCompositorView, expectedDarkColor);
+    }
+
+    @Test
+    public void testInitNativeCompositor_setsBackgroundColor() {
+        int expectedColor =
+                ChromeColors.getPrimaryBackgroundColor(mCompositorView.getContext(), false);
+        verify(mCompositorViewJni).setBackgroundColor(mNativeCompositorView, expectedColor);
     }
 }

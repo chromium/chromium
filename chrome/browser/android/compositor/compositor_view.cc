@@ -256,8 +256,26 @@ void CompositorView::SetLayoutBounds() {
   root_layer_->SetBounds(gfx::Size(content_width_, content_height_));
 }
 
+void CompositorView::SetBackgroundColor(int32_t color) {
+  background_color_ = static_cast<SkColor>(color);
+  UpdateBackgroundColor();
+}
+
+void CompositorView::UpdateBackgroundColor() {
+  bool is_transparent_overlay =
+      overlay_immersive_ar_mode_ || overlay_xr_full_screen_mode_;
+  SkColor color =
+      is_transparent_overlay ? SK_ColorTRANSPARENT : background_color_;
+  compositor_->SetBackgroundColor(color);
+  if (!scene_layer_) {
+    SetBackground(color != SK_ColorTRANSPARENT, color);
+  }
+}
+
 void CompositorView::SetBackground(bool visible, SkColor color) {
-  // TODO(crbug.com/41347744): Set the background color on the compositor.
+  // Note: the compositor clear color is controlled by UpdateBackgroundColor()
+  // so that hiding root_layer_ (or using a transparent pre-tab scene layer)
+  // exposes the activity's configured background color (crbug.com/41347744).
   // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   root_layer_->SetBackgroundColor(SkColor4f::FromColor(color));
   root_layer_->SetIsDrawable(visible);
@@ -286,8 +304,7 @@ void CompositorView::SetOverlayImmersiveArMode(bool enabled) {
   // This mode needs a transparent background color.
   // ContentViewRenderView::SetOverlayVideoMode applies this, but the
   // CompositorView::SetOverlayVideoMode version in this file doesn't.
-  compositor_->SetBackgroundColor(enabled ? SK_ColorTRANSPARENT
-                                          : SK_ColorWHITE);
+  UpdateBackgroundColor();
   compositor_->SetNeedsComposite();
 }
 
@@ -299,8 +316,7 @@ void CompositorView::SetOverlayXrFullScreenMode(bool enabled) {
   overlay_xr_full_screen_mode_ = enabled;
 
   // XR full screen mode requires a transparent background.
-  compositor_->SetBackgroundColor(enabled ? SK_ColorTRANSPARENT
-                                          : SK_ColorWHITE);
+  UpdateBackgroundColor();
   compositor_->SetNeedsComposite();
 }
 

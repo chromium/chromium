@@ -48,7 +48,8 @@ class StaticTabSceneLayer : public SceneLayer {
   scoped_refptr<android::ContentLayer> content_layer_;
 
   raw_ptr<TabContentManager> tab_content_manager_;
-  int background_color_;
+  int32_t tab_id_ = -1;
+  SkColor background_color_ = SK_ColorTRANSPARENT;
 };
 
 }  // namespace android
