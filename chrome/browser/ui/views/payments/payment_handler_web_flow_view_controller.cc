@@ -77,6 +77,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/color_palette.h"
@@ -769,13 +770,18 @@ SkColor PaymentHandlerWebFlowViewController::
   if (std::optional<SkColor> bg = GetLocationIconThemeBackgroundColor()) {
     return GetContrastingHeaderIconColor(*bg);
   }
-  return header_view()->GetColorProvider()->GetColor(kColorOmniboxText);
+  ui::ColorId color_id = kColorOmniboxText;
+  if (views::IsViewClass<PaymentHandlerLocationIconView>(
+          location_icon_view_tracker_.view())) {
+    color_id = ui::kColorPrimaryForeground;
+  }
+  return header_view()->GetColorProvider()->GetColor(color_id);
 }
 
 SkColor PaymentHandlerWebFlowViewController::GetIconLabelBubbleBackgroundColor()
     const {
-  return header_view()->GetColorProvider()->GetColor(
-      ui::kColorDialogBackground);
+  return GetLocationIconThemeBackgroundColor().value_or(
+      header_view()->GetColorProvider()->GetColor(ui::kColorDialogBackground));
 }
 
 content::WebContents* PaymentHandlerWebFlowViewController::GetWebContents() {
@@ -795,11 +801,14 @@ SkColor PaymentHandlerWebFlowViewController::GetSecurityChipColor(
                      color_utils::kMinimumVisibleContrastRatio)
                : GetContrastingHeaderIconColor(*bg);
   }
-  ui::ColorId id = kColorOmniboxText;
+  ui::ColorId color_id = kColorOmniboxText;
   if (security_level == security_state::DANGEROUS) {
-    id = kColorOmniboxSecurityChipDangerous;
+    color_id = kColorOmniboxSecurityChipDangerous;
+  } else if (views::IsViewClass<PaymentHandlerLocationIconView>(
+                 location_icon_view_tracker_.view())) {
+    color_id = ui::kColorPrimaryForeground;
   }
-  return header_view()->GetColorProvider()->GetColor(id);
+  return header_view()->GetColorProvider()->GetColor(color_id);
 }
 
 std::optional<SkColor>

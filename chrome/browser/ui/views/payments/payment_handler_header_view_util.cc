@@ -263,7 +263,11 @@ PaymentHandlerLocationIconView::PaymentHandlerLocationIconView(
     : LocationIconView(font_list,
                        icon_label_bubble_delegate,
                        location_icon_delegate) {
-  SetBackgroundVisibility(BackgroundVisibility::kAlways);
+  // `LocationIconView` installs hover and press effects in Omnibox colors,
+  // which assume the Omnibox pill and browser toolbar colors. Clearing them
+  // falls back to the defaults, which use the icon color.
+  views::InkDrop::Get(this)->SetCreateHighlightCallback({});
+  views::InkDrop::Get(this)->SetCreateRippleCallback({});
 }
 
 PaymentHandlerLocationIconView::~PaymentHandlerLocationIconView() = default;
@@ -276,31 +280,9 @@ void PaymentHandlerLocationIconView::SetThemeColor(
   theme_color_ = theme_color;
   if (GetWidget()) {
     Update(/*suppress_animations=*/true);
-  }
-}
-
-void PaymentHandlerLocationIconView::UpdateBackground() {
-  if (!GetWidget()) {
-    return;
-  }
-  if (!theme_color_.has_value()) {
-    // `LocationIconView::UpdateBackground()` is private, so this calls the
-    // grandparent's. That only skips the red "Dangerous" pill, which payment
-    // apps cannot reach because this dialog closes on pages that are not
-    // secure.
-    // TODO(crbug.com/587503732): Remove with the icon's background circle.
-    IconLabelBubbleView::UpdateBackground();
-    return;
-  }
-
-  SetBackground(nullptr);
-  // `LocationIconView` installs hover and press effects in Omnibox colors,
-  // which follow the browser theme and can be invisible on the themed header.
-  // Clearing them falls back to the defaults, which use the icon color.
-  views::InkDrop::Get(this)->SetCreateHighlightCallback({});
-  views::InkDrop::Get(this)->SetCreateRippleCallback({});
-  if (views::InkDrop::Get(this)->HasInkDrop() && !GetWidget()->IsClosed()) {
-    views::InkDrop::Get(this)->GetInkDrop()->HostViewThemeChanged();
+    if (views::InkDrop::Get(this)->HasInkDrop() && !GetWidget()->IsClosed()) {
+      views::InkDrop::Get(this)->GetInkDrop()->HostViewThemeChanged();
+    }
   }
 }
 

@@ -27,16 +27,20 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 
@@ -56,7 +60,8 @@ class PaymentHandlerHeaderViewUITest : public PaymentRequestBrowserTestBase {
   base::test::ScopedFeatureList feature_list_{
       {features::kPaymentRequestMandatoryPaymentAppUi,
        features::kPaymentHandlerHtmlHeadThemeColor,
-       features::kPaymentHandlerCameraAccessUx}};
+       features::kPaymentHandlerCameraAccessUx,
+       features::kPaymentHandlerPageInfoThemeColor}};
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
@@ -306,13 +311,12 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, HtmlHeadThemeColor) {
   auto* location_icon =
       views::AsViewClass<LocationIconView>(controller->GetPageInfoIconView());
   ASSERT_NE(nullptr, location_icon);
-  EXPECT_NE(nullptr, location_icon->background());
+  EXPECT_EQ(nullptr, location_icon->background());
   EXPECT_FALSE(color_utils::IsDark(location_icon->GetForegroundColor()));
   EXPECT_NE(SK_ColorWHITE, header_view->background()->color().ResolveToSkColor(
                                header_view->GetColorProvider()));
 
-  // A white HTML theme in Dark Mode hides the dark Omnibox pill and makes the
-  // Page Info icon dark.
+  // A white HTML theme in Dark Mode makes the Page Info icon dark.
   ResetEventWaiter(DialogEvent::PAYMENT_HANDLER_THEME_COLOR_SET);
   ASSERT_TRUE(content::ExecJs(
       payment_handler_web_contents,
@@ -331,13 +335,13 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, HtmlHeadThemeColor) {
                                     ->layer()
                                     ->type());
 
-  // Navigating to a page without a theme color restores the Omnibox pill.
+  // Navigating to a page without a theme color restores the light icon color.
   content::ThemeChangeWaiter waiter(payment_handler_web_contents);
   ASSERT_TRUE(content::NavigateToURL(
       payment_handler_web_contents,
       https_server()->GetURL("127.0.0.1", "/payment_handler.html")));
   waiter.Wait();
-  EXPECT_NE(nullptr, location_icon->background());
+  EXPECT_EQ(nullptr, location_icon->background());
   EXPECT_FALSE(color_utils::IsDark(location_icon->GetForegroundColor()));
 }
 
@@ -368,6 +372,87 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, HeaderHeight) {
       kPaymentHandlerHeaderHeight,
       top_view->GetViewByID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER))
           ->height());
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
+                       PageInfoIconHasNoBackground) {
+  auto* theme_service =
+      ThemeServiceFactory::GetForProfile(browser()->GetProfile());
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+
+  std::string method_name;
+  // Use 127.0.0.1 so the test server certificate is valid and the Page Info
+  // button stays icon-only without a "Not secure" label.
+  InstallPaymentApp("127.0.0.1", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  ViewStack* view_stack = test_api(dialog_view()).view_stack();
+  auto* location_icon = views::AsViewClass<LocationIconView>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          PaymentHandlerWebFlowViewController::kAppIconElementId,
+          views::ElementTrackerViews::GetContextForView(view_stack->top())));
+  ASSERT_NE(nullptr, location_icon);
+
+  for (auto color_scheme : {ThemeService::BrowserColorScheme::kLight,
+                            ThemeService::BrowserColorScheme::kDark,
+                            ThemeService::BrowserColorScheme::kLight}) {
+    SCOPED_TRACE(color_scheme == ThemeService::BrowserColorScheme::kLight
+                     ? "Light"
+                     : "Dark");
+    theme_service->SetBrowserColorScheme(color_scheme);
+    EXPECT_EQ(nullptr, location_icon->background());
+    EXPECT_EQ(color_scheme == ThemeService::BrowserColorScheme::kLight,
+              color_utils::IsDark(location_icon->GetForegroundColor()));
+    EXPECT_EQ(views::InkDropHost::InkDropMode::ON,
+              views::InkDrop::Get(location_icon)->GetMode());
+    // The default InkDropHighlight is a textured layer tinted with the icon
+    // color, whereas the Omnibox Refresh2023 highlight is a solid color layer.
+    EXPECT_EQ(ui::LAYER_TEXTURED, views::InkDrop::Get(location_icon)
+                                      ->CreateInkDropHighlight()
+                                      ->layer()
+                                      ->type());
+    EXPECT_NE(nullptr,
+              views::InkDrop::Get(location_icon)->CreateInkDropRipple());
+    EXPECT_EQ(location_icon->GetForegroundColor(),
+              views::InkDrop::Get(location_icon)->GetBaseColor());
+    EXPECT_EQ(views::PlatformStyle::kDefaultFocusBehavior,
+              location_icon->GetFocusBehavior());
+    EXPECT_EQ(ax::mojom::Role::kPopUpButton,
+              location_icon->GetViewAccessibility().GetCachedRole());
+    EXPECT_FALSE(location_icon->GetViewAccessibility().GetCachedName().empty());
+    EXPECT_FALSE(location_icon->GetTooltipText().empty());
+  }
+
+  // Custom browser themes change the toolbar color without changing the dialog
+  // header background, so the icon and ink drop still contrast with the dialog.
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+  theme_service->BuildAutogeneratedThemeFromColor(SK_ColorBLACK);
+  EXPECT_EQ(nullptr, location_icon->background());
+  EXPECT_TRUE(color_utils::IsDark(location_icon->GetForegroundColor()));
+  EXPECT_EQ(location_icon->GetForegroundColor(),
+            views::InkDrop::Get(location_icon)->GetBaseColor());
+
+  theme_service->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kDark);
+  theme_service->BuildAutogeneratedThemeFromColor(SK_ColorWHITE);
+  EXPECT_EQ(nullptr, location_icon->background());
+  EXPECT_FALSE(color_utils::IsDark(location_icon->GetForegroundColor()));
+  EXPECT_EQ(location_icon->GetForegroundColor(),
+            views::InkDrop::Get(location_icon)->GetBaseColor());
 }
 
 class PaymentHandlerHeaderViewAppIconUITest

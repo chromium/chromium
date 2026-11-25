@@ -119,7 +119,9 @@ class PaymentHandlerLocationIconView : public LocationIconView {
 
  protected:
   // IconLabelBubbleView:
-  void UpdateBackground() override;
+  // No-op to stop `LocationIconView::UpdateBackground()` from adding the
+  // Omnibox pill background and ink-drop callbacks.
+  void UpdateBackground() override {}
 
  private:
   std::optional<SkColor> theme_color_;
