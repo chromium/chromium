@@ -444,9 +444,11 @@ void CopyIfAllowedByContentAnalysis(
     delegate_data.initiating_frame_id = rfh->GetGlobalId();
   }
 
-  // Write a placeholder to the OS clipboard while the scan is ongoing.
-  // The original data is saved to be pasted if the user pastes in the same tab.
-  {
+  // Only a scan that holds the copy back needs a placeholder on the OS
+  // clipboard and the copied data tracked as being scanned. An audit-only
+  // scan lets the copy through before this function returns.
+  if (delegate_data.settings.block_until_verdict ==
+      enterprise_connectors::BlockUntilVerdict::kBlock) {
     data_controls::LastReplacedClipboardDataObserver::GetInstance()
         ->AddDataToNextSeqno(data,
                              data_controls::CopyRestrictionLevel::kOngoingScan);

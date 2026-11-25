@@ -6,6 +6,8 @@
 
 #include <variant>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -37,6 +39,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -106,10 +110,16 @@ class DataProtectionClipboardTest : public testing::Test {
 
   void SetUp() override {
     ui::TestClipboard::CreateForCurrentThread();
+    // Flush any pending staged data left in `LastReplacedClipboardDataObserver`
+    // by a prior test that did not commit a clipboard write.
+    ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
     data_controls::GetLastReplacedClipboardData() = {};
   }
 
   void TearDown() override {
+    // Prevent unconsumed staged data from leaking into fixtures in other files
+    // sharing the `unit_tests` process.
+    ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
     data_controls::GetLastReplacedClipboardData() = {};
   }
 
@@ -1465,6 +1475,83 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
 
   // Wait for the scan to finish.
   EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
+       AuditOnlyCopyDoesNotStageOngoingScan) {
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"prior clipboard");
+  }
+  const ui::ClipboardSequenceNumberToken initial_seqno =
+      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste);
+
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 0
+        })");
+
+  enterprise_connectors::test::FakeContentAnalysisDelegate::
+      ResetStaticDialogFlagsAndTotalRequestsCount();
+  base::test::TestFuture<void> delegate_deleted;
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          delegate_deleted.GetRepeatingCallback(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                SuccessfulResponse({"dlp"});
+          }),
+          "dm_token"));
+  base::ScopedClosureRunner reset_factory(base::BindOnce(
+      &enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting));
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      CopyEndpoint(GURL("https://source.com")), CopyMetadata(),
+      MakeClipboardPasteData(std::string(100, 'a'), "", {}),
+      future.GetCallback());
+
+  // Audit-only scans allow the copy synchronously without writing a scanning
+  // placeholder to the OS clipboard or staging an ongoing-scan restriction.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get<0>(), ui::ClipboardFormatType::PlainTextType());
+  EXPECT_EQ(future.Get<1>().text, std::u16string(100, 'a'));
+  EXPECT_FALSE(future.Get<2>().has_value());
+  EXPECT_EQ(ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+                ui::ClipboardBuffer::kCopyPaste),
+            initial_seqno);
+
+  base::test::TestFuture<std::u16string> clipboard_future;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+      clipboard_future.GetCallback());
+  EXPECT_EQ(clipboard_future.Get(), u"prior clipboard");
+
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kNone);
+  EXPECT_EQ(data_controls::LastReplacedClipboardDataObserver::GetInstance()
+                ->pending_restriction_level(),
+            data_controls::CopyRestrictionLevel::kNone);
+  EXPECT_EQ(enterprise_connectors::test::FakeContentAnalysisDelegate::
+                GetTotalAnalysisRequestsCount(),
+            1);
+
+  EXPECT_TRUE(delegate_deleted.Wait());
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,

@@ -4,8 +4,13 @@
 
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 
+#include <cstdint>
+#include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -61,16 +66,20 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/clipboard_types.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/permissions_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
@@ -4507,5 +4516,129 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   // because Content Analysis allowed the string payload through.
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ClipboardCopyApi.PayloadLength", 1);
+}
+
+namespace {
+
+class ClipboardTextRecorder : public ui::ClipboardObserver {
+ public:
+  ClipboardTextRecorder() {
+    ui::ClipboardMonitor::GetInstance()->AddObserver(this);
+  }
+  ~ClipboardTextRecorder() override {
+    ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
+  }
+
+  void OnClipboardDataChanged() override {
+    texts_.push_back(ui::clipboard_test_util::ReadText(
+        ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+        /*data_dst=*/nullptr));
+  }
+
+  const std::vector<std::u16string>& texts() const { return texts_; }
+
+ private:
+  std::vector<std::u16string> texts_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       AuditOnlyRendererCopyWritesOnlyRealData) {
+  SetupDMToken();
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 0,
+          "minimum_data_size": 1
+        })",
+      machine_scope());
+
+  base::test::TestFuture<void> deleted;
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::BarrierClosure(3, deleted.GetCallback()),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                SuccessfulResponse({"dlp"});
+          }),
+          "dm_token"));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ASSERT_TRUE(content::ExecJs(contents(),
+                              R"(
+        document.addEventListener('copy', (e) => {
+          e.clipboardData.setData('text/plain', 'copied text');
+          e.clipboardData.setData('text/html', '<b>copied text</b>');
+          e.clipboardData.setData('application/x-custom-type', '{"meta":1}');
+          e.preventDefault();
+        });
+        document.body.innerText = 'selected text';
+        const range = document.createRange();
+        range.selectNodeContents(document.body);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+      )"));
+
+  ClipboardTextRecorder recorder;
+  base::test::TestFuture<void> committed;
+  ClipboardEnterpriseMessageObserver waiter(u"copied text",
+                                            committed.GetCallback());
+
+  enterprise_connectors::test::FakeContentAnalysisDelegate::
+      ResetStaticDialogFlagsAndTotalRequestsCount();
+  data_controls::GetLastReplacedClipboardData() = {};
+
+  contents()->Copy();
+  ASSERT_TRUE(committed.Wait());
+
+  EXPECT_THAT(recorder.texts(),
+              testing::Not(testing::Contains(l10n_util::GetStringUTF16(
+                  IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_SCANNING_MESSAGE))));
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kNone);
+
+  auto* clipboard = ui::Clipboard::GetForCurrentThread();
+  const ui::ClipboardSequenceNumberToken seqno =
+      clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+  EXPECT_EQ(content::GetContentClientForTesting()
+                ->browser()
+                ->GetClipboardTypesIfPolicyApplied(seqno),
+            std::nullopt);
+  EXPECT_EQ(
+      ui::clipboard_test_util::ReadText(
+          clipboard, ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr),
+      u"copied text");
+  std::u16string markup;
+  std::string src_url;
+  uint32_t fragment_start = 0;
+  uint32_t fragment_end = 0;
+  ui::clipboard_test_util::ReadHTML(clipboard, ui::ClipboardBuffer::kCopyPaste,
+                                    /*data_dst=*/nullptr, &markup, &src_url,
+                                    &fragment_start, &fragment_end);
+  EXPECT_EQ(markup, u"<b>copied text</b>");
+  EXPECT_EQ(ui::clipboard_test_util::ReadDataTransferCustomData(
+                clipboard, ui::ClipboardBuffer::kCopyPaste,
+                u"application/x-custom-type", /*data_dst=*/nullptr),
+            u"{\"meta\":1}");
+  EXPECT_EQ(enterprise_connectors::test::FakeContentAnalysisDelegate::
+                GetTotalAnalysisRequestsCount(),
+            3);
+
+  EXPECT_TRUE(deleted.Wait());
 }
 }  // namespace enterprise_data_protection
