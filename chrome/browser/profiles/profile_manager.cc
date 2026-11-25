@@ -28,6 +28,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -36,6 +37,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"
@@ -175,18 +177,48 @@ namespace {
 const void* const kProfileDestructionObserverKey =
     &kProfileDestructionObserverKey;
 
+// Runs `callback` on the current sequence once the tasks already posted to
+// `task_runner` have completed.
+void RunAfterPendingTasks(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                          base::OnceClosure callback) {
+  task_runner->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                std::move(callback));
+}
+
+// Runs `on_destroyed` once the profile is destroyed and the file operations it
+// posted to its IO task runner are complete.
 class ProfileDestructionObserver : public base::SupportsUserData::Data {
  public:
-  explicit ProfileDestructionObserver(base::OnceClosure on_destroyed)
-      : on_destroyed_(std::move(on_destroyed)) {}
+  ProfileDestructionObserver(
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+      base::OnceClosure on_destroyed)
+      : ui_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+        io_task_runner_(std::move(io_task_runner)),
+        on_destroyed_(std::move(on_destroyed)) {}
 
   ~ProfileDestructionObserver() override {
-    if (on_destroyed_) {
-      std::move(on_destroyed_).Run();
+    if (!on_destroyed_) {
+      return;
     }
+    // A profile created again for the same path uses a new IO task runner, so
+    // its file operations are not sequenced after the ones of this profile. It
+    // could then read files, such as Preferences, while they are still being
+    // written. Wait until the file operations of this profile are complete:
+    // 1. The profile may clear its user data early in its destructor, before
+    //    members such as the `PrefService` post their final writes to the IO
+    //    task runner (see `ProfileImpl::~ProfileImpl()`). Post a task to the UI
+    //    thread, which runs once the destructor has returned.
+    // 2. From the UI thread, post a task to the IO task runner, which runs
+    //    after these writes, and reply to the UI thread once it has run.
+    ui_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RunAfterPendingTasks, std::move(io_task_runner_),
+                       std::move(on_destroyed_)));
   }
 
  private:
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   base::OnceClosure on_destroyed_;
 };
 
@@ -2146,6 +2178,7 @@ void ProfileManager::StartProfileDestruction(std::unique_ptr<Profile> profile) {
   profile->SetUserData(
       kProfileDestructionObserverKey,
       std::make_unique<ProfileDestructionObserver>(
+          profile->GetIOTaskRunner(),
           base::BindOnce(&ProfileManager::OnProfileDestructionComplete,
                          weak_factory_.GetWeakPtr(), profile->GetPath())));
 

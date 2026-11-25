@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
@@ -21,6 +22,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -44,6 +46,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -785,6 +788,74 @@ TEST_F(ProfileManagerTest, CreateProfileAsyncRace_MultipleCreations) {
   keep_alive_rph.reset();
 
   content::RunAllTasksUntilIdle();
+}
+
+class ProfileCreationStartedObserver : public ProfileManagerObserver {
+ public:
+  explicit ProfileCreationStartedObserver(
+      base::RepeatingClosure on_creation_started)
+      : on_creation_started_(std::move(on_creation_started)) {}
+
+  void OnProfileCreationStarted(Profile* profile) override {
+    on_creation_started_.Run();
+  }
+
+ private:
+  base::RepeatingClosure on_creation_started_;
+};
+
+// Checks that a profile creation deferred by a pending destruction starts only
+// after the file operations posted by the destroyed profile.
+TEST_F(ProfileManagerTest, CreateProfileAsyncRace_WaitsForFileOperations) {
+  if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    GTEST_SKIP() << "Profile keep-alives are not supported on this platform.";
+  }
+
+  const base::FilePath profile_path =
+      temp_dir_.GetPath().AppendASCII("New Profile");
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  MockObserver mock_observer;
+  EXPECT_CALL(mock_observer, OnProfileInitialized(testing::NotNull()));
+  EXPECT_CALL(mock_observer, OnProfileCreated(testing::NotNull()));
+  CreateProfileAsync(profile_manager, profile_path, &mock_observer);
+  content::RunAllTasksUntilIdle();
+
+  auto* profile =
+      static_cast<TestingProfile*>(profile_manager->GetProfile(profile_path));
+  ASSERT_TRUE(profile);
+
+  // Simulate a file write posted by the profile while it is destroyed.
+  std::vector<std::string> events;
+  profile->SetProfileDestructionObserver(base::BindLambdaForTesting(
+      [&events, io_task_runner = profile->GetIOTaskRunner()] {
+        io_task_runner->PostTask(FROM_HERE,
+                                 base::BindLambdaForTesting(
+                                     [&events] { events.push_back("write"); }));
+      }));
+
+  auto keep_alive_rph = std::make_unique<KeepAliveRenderProcessHost>(profile);
+  ProfileDestroyer::SetDestroyProfileTimeoutForTesting(base::Days(1));
+  profile_manager->ClearFirstBrowserWindowKeepAlive(profile);
+  ASSERT_FALSE(profile_manager->GetProfileByPath(profile_path));
+
+  ProfileCreationStartedObserver creation_observer(base::BindLambdaForTesting(
+      [&events] { events.push_back("creation started"); }));
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver> observation(
+      &creation_observer);
+  observation.Observe(profile_manager);
+
+  MockObserver race_observer;
+  EXPECT_CALL(race_observer, OnProfileInitialized(testing::NotNull()));
+  EXPECT_CALL(race_observer, OnProfileCreated(testing::NotNull()));
+  CreateProfileAsync(profile_manager, profile_path, &race_observer);
+  content::RunAllTasksUntilIdle();
+  EXPECT_TRUE(events.empty());
+
+  keep_alive_rph.reset();
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_THAT(events, testing::ElementsAre("write", "creation started"));
 }
 
 TEST_F(ProfileManagerTest, CreateProfilesAsync) {
