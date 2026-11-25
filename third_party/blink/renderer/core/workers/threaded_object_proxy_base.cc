@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
@@ -18,11 +19,6 @@
 namespace blink {
 
 void ThreadedObjectProxyBase::CountFeature(WebFeature feature) {
-  if (!GetParentExecutionContextTaskRunners()) {
-    DCHECK(GetParentAgentGroupTaskRunner());
-    return;
-  }
-
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
@@ -31,11 +27,6 @@ void ThreadedObjectProxyBase::CountFeature(WebFeature feature) {
 }
 
 void ThreadedObjectProxyBase::CountWebDXFeature(WebDXFeature feature) {
-  if (!GetParentExecutionContextTaskRunners()) {
-    DCHECK(GetParentAgentGroupTaskRunner());
-    return;
-  }
-
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
@@ -45,11 +36,6 @@ void ThreadedObjectProxyBase::CountWebDXFeature(WebDXFeature feature) {
 
 void ThreadedObjectProxyBase::EvictFromBackForwardCache(
     mojom::blink::RendererEvictionReason reason) {
-  if (!GetParentExecutionContextTaskRunners()) {
-    DCHECK(GetParentAgentGroupTaskRunner());
-    return;
-  }
-
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(
           TaskType::kNetworkingUnfreezable),
@@ -64,11 +50,6 @@ void ThreadedObjectProxyBase::ReportConsoleMessage(
     mojom::ConsoleMessageLevel level,
     const String& message,
     const SourceLocation* location) {
-  if (!GetParentExecutionContextTaskRunners()) {
-    DCHECK(GetParentAgentGroupTaskRunner());
-    return;
-  }
-
   CrossThreadSourceLocation cross_thread_location =
       CrossThreadSourceLocation::From(location);
 
@@ -81,17 +62,6 @@ void ThreadedObjectProxyBase::ReportConsoleMessage(
 }
 
 void ThreadedObjectProxyBase::DidCloseWorkerGlobalScope() {
-  if (!GetParentExecutionContextTaskRunners()) {
-    DCHECK(GetParentAgentGroupTaskRunner());
-
-    PostCrossThreadTask(
-        *GetParentAgentGroupTaskRunner(), FROM_HERE,
-        CrossThreadBindOnce(&ThreadedMessagingProxyBase::TerminateGlobalScope,
-                            MessagingProxyWeakPtr()));
-
-    return;
-  }
-
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
@@ -100,17 +70,6 @@ void ThreadedObjectProxyBase::DidCloseWorkerGlobalScope() {
 }
 
 void ThreadedObjectProxyBase::DidTerminateWorkerThread() {
-  if (!GetParentExecutionContextTaskRunners()) {
-    DCHECK(GetParentAgentGroupTaskRunner());
-
-    PostCrossThreadTask(
-        *GetParentAgentGroupTaskRunner(), FROM_HERE,
-        CrossThreadBindOnce(&ThreadedMessagingProxyBase::WorkerThreadTerminated,
-                            MessagingProxyWeakPtr()));
-
-    return;
-  }
-
   // This will terminate the MessagingProxy. The parent thread must not miss
   // `WorkerThreadTerminated()`: a parent worker waits for it before finishing
   // its own shutdown. Use a cleanup task so it still runs if the parent's task
@@ -126,16 +85,11 @@ ThreadedObjectProxyBase::GetParentExecutionContextTaskRunners() {
   return parent_execution_context_task_runners_.Get();
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-ThreadedObjectProxyBase::GetParentAgentGroupTaskRunner() {
-  return parent_agent_group_task_runner_;
-}
-
 ThreadedObjectProxyBase::ThreadedObjectProxyBase(
-    ParentExecutionContextTaskRunners* parent_execution_context_task_runners,
-    scoped_refptr<base::SingleThreadTaskRunner> parent_agent_group_task_runner)
+    ParentExecutionContextTaskRunners* parent_execution_context_task_runners)
     : parent_execution_context_task_runners_(
-          parent_execution_context_task_runners),
-      parent_agent_group_task_runner_(parent_agent_group_task_runner) {}
+          parent_execution_context_task_runners) {
+  CHECK(parent_execution_context_task_runners_);
+}
 
 }  // namespace blink

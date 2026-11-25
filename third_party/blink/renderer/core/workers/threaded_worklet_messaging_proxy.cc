@@ -38,101 +38,26 @@
 namespace blink {
 
 ThreadedWorkletMessagingProxy::ThreadedWorkletMessagingProxy(
-    ExecutionContext* execution_context,
-    scoped_refptr<base::SingleThreadTaskRunner> parent_agent_group_task_runner)
-    : ThreadedMessagingProxyBase(execution_context,
-                                 parent_agent_group_task_runner) {}
+    ExecutionContext* execution_context)
+    : ThreadedMessagingProxyBase(execution_context) {}
 
 void ThreadedWorkletMessagingProxy::Initialize(
     WorkerClients* worker_clients,
     WorkletModuleResponsesMap* module_responses_map,
-    const std::optional<WorkerBackingThreadStartupData>& thread_startup_data,
-    mojom::blink::WorkletGlobalScopeCreationParamsPtr
-        client_provided_global_scope_creation_params) {
+    const std::optional<WorkerBackingThreadStartupData>& thread_startup_data) {
   DCHECK(IsMainThread());
   if (AskedToTerminate()) {
     return;
   }
 
   worklet_object_proxy_ =
-      CreateObjectProxy(this, GetParentExecutionContextTaskRunners(),
-                        GetParentAgentGroupTaskRunner());
+      CreateObjectProxy(this, GetParentExecutionContextTaskRunners());
 
   // For now we don't use global scope name for threaded worklets.
   // TODO(nhiroki): Threaded worklets may want to have the global scope name to
   // distinguish multiple worklets created from the same script URL like
   // LayoutWorklet and PaintWorklet.
   const String global_scope_name = g_empty_string;
-
-  // TODO(crbug.com/1419253): ExecutionContext can be null for a worklet that is
-  // not spawned from the original renderer (e.g. shared storage worklet). This
-  // is acceptable from the scope of shared storage. Longer term, it'd be good
-  // to support an out-of-process worklet architecture where the
-  // GlobalScopeCreationParams is reasonably filled in.
-  if (!GetExecutionContext()) {
-    CHECK(client_provided_global_scope_creation_params);
-
-    Vector<mojom::blink::OriginTrialFeature> inherited_trial_features =
-        std::move(client_provided_global_scope_creation_params
-                      ->origin_trial_features);
-
-    // Worklets can only be created in secure contexts.
-    // https://html.spec.whatwg.org/multipage/webappapis.html#secure-context
-    bool starter_secure_context = true;
-
-    auto creation_params = std::make_unique<GlobalScopeCreationParams>(
-        client_provided_global_scope_creation_params->script_url,
-        /*script_type=*/mojom::blink::ScriptType::kModule, global_scope_name,
-        /*user_agent=*/String(),
-        /*ua_metadata=*/std::optional<UserAgentMetadata>(),
-        /*web_worker_fetch_context=*/nullptr,
-        /*outside_content_security_policies=*/
-        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-        /*outside_settings_reporter=*/mojo::NullRemote(),
-        /*referrer_policy=*/network::mojom::ReferrerPolicy::kDefault,
-        client_provided_global_scope_creation_params->starter_origin.get(),
-        starter_secure_context,
-        /*starter_https_state=*/HttpsState::kNone,
-        /*worker_clients=*/nullptr,
-        /*content_settings_client=*/nullptr, &inherited_trial_features,
-        /*parent_devtools_token=*/
-        client_provided_global_scope_creation_params->devtools_token,
-        /*worker_settings=*/nullptr,
-        /*v8_cache_options=*/mojom::blink::V8CacheOptions::kDefault,
-        /*module_responses_map=*/nullptr,
-        std::move(client_provided_global_scope_creation_params
-                      ->browser_interface_broker),
-        std::move(
-            client_provided_global_scope_creation_params->code_cache_host));
-
-    auto devtools_params = std::make_unique<WorkerDevToolsParams>();
-    devtools_params->devtools_worker_token =
-        client_provided_global_scope_creation_params->devtools_token;
-    devtools_params->wait_for_debugger =
-        client_provided_global_scope_creation_params->wait_for_debugger;
-    mojo::PendingRemote<mojom::blink::DevToolsAgent> devtools_agent_remote;
-    devtools_params->agent_receiver =
-        devtools_agent_remote.InitWithNewPipeAndPassReceiver();
-    mojo::PendingReceiver<mojom::blink::DevToolsAgentHost>
-        devtools_agent_host_receiver =
-            devtools_params->agent_host_remote.InitWithNewPipeAndPassReceiver();
-
-    InitializeWorkerThread(std::move(creation_params), thread_startup_data,
-                           /*token=*/std::nullopt, std::move(devtools_params));
-    if (pending_freeze_is_in_back_forward_cache_.has_value()) {
-      Freeze(*pending_freeze_is_in_back_forward_cache_);
-      pending_freeze_is_in_back_forward_cache_.reset();
-    }
-
-    mojo::Remote<mojom::blink::WorkletDevToolsHost> devtools_host(
-        std::move(client_provided_global_scope_creation_params->devtools_host));
-    devtools_host->OnReadyForInspection(
-        std::move(devtools_agent_remote),
-        std::move(devtools_agent_host_receiver));
-    return;
-  }
-
-  CHECK(!client_provided_global_scope_creation_params);
 
   LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
   ContentSecurityPolicy* csp = window->GetContentSecurityPolicy();
@@ -260,12 +185,9 @@ void ThreadedWorkletMessagingProxy::Resume() {
 std::unique_ptr<ThreadedWorkletObjectProxy>
 ThreadedWorkletMessagingProxy::CreateObjectProxy(
     ThreadedWorkletMessagingProxy* messaging_proxy,
-    ParentExecutionContextTaskRunners* parent_execution_context_task_runners,
-    scoped_refptr<base::SingleThreadTaskRunner>
-        parent_agent_group_task_runner) {
+    ParentExecutionContextTaskRunners* parent_execution_context_task_runners) {
   return ThreadedWorkletObjectProxy::Create(
-      messaging_proxy, parent_execution_context_task_runners,
-      std::move(parent_agent_group_task_runner));
+      messaging_proxy, parent_execution_context_task_runners);
 }
 
 ThreadedWorkletObjectProxy&

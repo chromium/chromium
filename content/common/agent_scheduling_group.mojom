@@ -10,7 +10,6 @@ import "third_party/blink/public/mojom/frame/frame.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
-import "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom";
 
 // Interface for general communication between the renderer process's
 // AgentSchedulingGroup and the browser process's AgentSchedulingGroupHost.

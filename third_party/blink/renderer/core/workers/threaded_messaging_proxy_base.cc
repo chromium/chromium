@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
 #include "third_party/blink/public/common/features.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
+#include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -30,21 +32,14 @@ std::atomic<int> g_live_messaging_proxy_count(0);
 }  // namespace
 
 ThreadedMessagingProxyBase::ThreadedMessagingProxyBase(
-    ExecutionContext* execution_context,
-    scoped_refptr<base::SingleThreadTaskRunner> parent_agent_group_task_runner)
+    ExecutionContext* execution_context)
     : execution_context_(execution_context),
       parent_execution_context_task_runners_(
-          execution_context
-              ? ParentExecutionContextTaskRunners::Create(*execution_context)
-              : nullptr),
-      parent_agent_group_task_runner_(parent_agent_group_task_runner),
+          ParentExecutionContextTaskRunners::Create(
+              CHECK_DEREF(execution_context))),
       terminate_sync_load_event_(
           base::WaitableEvent::ResetPolicy::MANUAL,
           base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  DCHECK((parent_execution_context_task_runners_ &&
-          !parent_agent_group_task_runner_) ||
-         (!parent_execution_context_task_runners_ &&
-          parent_agent_group_task_runner_));
   DCHECK(IsParentContextThread());
   g_live_messaging_proxy_count++;
 }
@@ -65,8 +60,7 @@ void ThreadedMessagingProxyBase::Trace(Visitor* visitor) const {
 bool ThreadedMessagingProxyBase::InitializeWorkerThread(
     std::unique_ptr<GlobalScopeCreationParams> global_scope_creation_params,
     const std::optional<WorkerBackingThreadStartupData>& thread_startup_data,
-    const std::optional<const blink::DedicatedWorkerToken>& token,
-    std::unique_ptr<WorkerDevToolsParams> client_provided_devtools_params) {
+    const std::optional<const blink::DedicatedWorkerToken>& token) {
   DCHECK(IsParentContextThread());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -99,12 +93,10 @@ bool ThreadedMessagingProxyBase::InitializeWorkerThread(
     return false;
   }
 
-  auto devtools_params =
-      client_provided_devtools_params
-          ? std::move(client_provided_devtools_params)
-          : DevToolsAgent::WorkerThreadCreated(
-                execution_context_.Get(), worker_thread_.get(), script_url,
-                global_scope_creation_params->global_scope_name, token);
+  std::unique_ptr<WorkerDevToolsParams> devtools_params =
+      DevToolsAgent::WorkerThreadCreated(
+          execution_context_.Get(), worker_thread_.get(), script_url,
+          global_scope_creation_params->global_scope_name, token);
 
   worker_thread_->Start(std::move(global_scope_creation_params),
                         thread_startup_data, std::move(devtools_params));
@@ -233,12 +225,6 @@ ThreadedMessagingProxyBase::GetParentExecutionContextTaskRunners() const {
   return parent_execution_context_task_runners_;
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-ThreadedMessagingProxyBase::GetParentAgentGroupTaskRunner() const {
-  DCHECK(IsParentContextThread());
-  return parent_agent_group_task_runner_;
-}
-
 WorkerThread* ThreadedMessagingProxyBase::GetWorkerThread() const {
   DCHECK(IsParentContextThread());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -246,14 +232,6 @@ WorkerThread* ThreadedMessagingProxyBase::GetWorkerThread() const {
 }
 
 bool ThreadedMessagingProxyBase::IsParentContextThread() const {
-  // `execution_context_` can be nullptr for the main thread for shared stoarge
-  // worklet. We'd still consider it a parent context thread, though it's not
-  // associated with an `ExecutionContext`.
-  if (!execution_context_) {
-    DCHECK(parent_agent_group_task_runner_);
-    return parent_agent_group_task_runner_->BelongsToCurrentThread();
-  }
-
   return execution_context_->IsContextThread();
 }
 

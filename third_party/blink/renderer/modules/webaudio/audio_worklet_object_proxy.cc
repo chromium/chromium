@@ -26,8 +26,7 @@ AudioWorkletObjectProxy::AudioWorkletObjectProxy(
     uint32_t context_render_quantum_size_at_construction)
     : ThreadedWorkletObjectProxy(
           static_cast<ThreadedWorkletMessagingProxy*>(messaging_proxy_weak_ptr),
-          parent_execution_context_task_runners,
-          /*parent_agent_group_task_runner=*/nullptr),
+          parent_execution_context_task_runners),
       global_scope_port_channel_(global_scope_port_channel),
       context_sample_rate_at_construction_(context_sample_rate),
       context_sample_frame_at_construction_(

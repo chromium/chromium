@@ -163,9 +163,7 @@ WorkerThread* AudioWorkletMessagingProxy::GetBackingWorkerThread() {
 std::unique_ptr<ThreadedWorkletObjectProxy>
 AudioWorkletMessagingProxy::CreateObjectProxy(
     ThreadedWorkletMessagingProxy* messaging_proxy,
-    ParentExecutionContextTaskRunners* parent_execution_context_task_runners,
-    scoped_refptr<base::SingleThreadTaskRunner>
-        parent_agent_group_task_runner) {
+    ParentExecutionContextTaskRunners* parent_execution_context_task_runners) {
   if (RuntimeEnabledFeatures::AudioWorkletPerformanceEnabled()) {
     // Performance::ClampTimeResolution() lazily constructs a process-wide
     // TimeClamper (base::RandUint64() under a static-init guard) on first use,

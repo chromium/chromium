@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/storage_access_api/status.h"
@@ -74,7 +75,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
           std::move(outside_content_security_policies)),
       outside_settings_reporter(std::move(outside_settings_reporter)),
       referrer_policy(referrer_policy),
-      starter_origin(starter_origin ? starter_origin->IsolatedCopy() : nullptr),
+      starter_origin(CHECK_DEREF(starter_origin).IsolatedCopy()),
       origin_to_use(std::move(origin_to_use)),
       starter_secure_context(starter_secure_context),
       starter_https_state(starter_https_state),
@@ -90,17 +91,12 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       begin_frame_provider_params(std::move(begin_frame_provider_params)),
       // At the moment, workers do not support their container policy being set,
       // so it will just be an empty network::ParsedPermissionsPolicy for now.
-      // Shared storage worklets have a null `parent_permissions_policy` and
-      // `starter_origin`.
-      // TODO(crbug.com/1419253): Pass non-null `parent_permissions_policy` and
-      // `starter_origin`. Also, we could ensure `starter_origin` is never null
-      // after that.
       worker_permissions_policy(
           network::PermissionsPolicy::CreateFromParentPolicy(
               parent_permissions_policy,
               /*header_policy=*/{},
               network::ParsedPermissionsPolicy() /* container_policy */,
-              starter_origin ? starter_origin->ToUrlOrigin() : url::Origin())),
+              starter_origin->ToUrlOrigin())),
       agent_cluster_id(agent_cluster_id),
       ukm_source_id(ukm_source_id),
       parent_context_token(parent_context_token),

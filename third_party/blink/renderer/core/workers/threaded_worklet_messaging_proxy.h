@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
 #include "third_party/blink/renderer/core/workers/threaded_worklet_object_proxy.h"
@@ -36,26 +35,15 @@ class CORE_EXPORT ThreadedWorkletMessagingProxy
   void Freeze(bool is_in_back_forward_cache) final;
   void Resume() final;
 
-  // Normally, for worklets created in-process, the worklet thread will be
-  // initialized with state taking from the original Window context. When
-  // worklet creation is proxied via the browser process (e.g. shared storage
-  // worklet), where the original Window context isn't directly accessible, the
-  // worklet thread will be initialized with state taking from
-  // `client_provided_global_scope_creation_params`.
   void Initialize(
       WorkerClients*,
       WorkletModuleResponsesMap*,
-      const std::optional<WorkerBackingThreadStartupData>& = std::nullopt,
-      mojom::blink::WorkletGlobalScopeCreationParamsPtr
-          client_provided_global_scope_creation_params = {});
+      const std::optional<WorkerBackingThreadStartupData>& = std::nullopt);
 
   void Trace(Visitor*) const override;
 
  protected:
-  explicit ThreadedWorkletMessagingProxy(
-      ExecutionContext*,
-      scoped_refptr<base::SingleThreadTaskRunner>
-          parent_agent_group_task_runner = nullptr);
+  explicit ThreadedWorkletMessagingProxy(ExecutionContext*);
 
   ThreadedWorkletObjectProxy& WorkletObjectProxy();
 
@@ -64,9 +52,7 @@ class CORE_EXPORT ThreadedWorkletMessagingProxy
 
   virtual std::unique_ptr<ThreadedWorkletObjectProxy> CreateObjectProxy(
       ThreadedWorkletMessagingProxy*,
-      ParentExecutionContextTaskRunners*,
-      scoped_refptr<base::SingleThreadTaskRunner>
-          parent_agent_group_task_runner);
+      ParentExecutionContextTaskRunners*);
 
   std::unique_ptr<ThreadedWorkletObjectProxy> worklet_object_proxy_;
 
