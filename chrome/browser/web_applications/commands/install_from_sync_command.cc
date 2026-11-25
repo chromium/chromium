@@ -96,7 +96,7 @@ InstallFromSyncCommand::Params::Params(
     : app_id(app_id),
       manifest_id(manifest_id),
       start_url(start_url),
-      title(title),
+      title(!title.empty() ? title : start_url.spec()),
       scope(scope),
       theme_color(theme_color),
       user_display_mode(user_display_mode),

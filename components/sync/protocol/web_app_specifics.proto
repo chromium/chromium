@@ -57,6 +57,11 @@ message WebAppSpecifics {
   }
 
   optional string start_url = 1;
+  // The user-visible name of the web app. Modern clients always populate this
+  // field, but older clients committed entities with an empty `name` that
+  // still live on the server (crbug.com/579501200). Readers must tolerate an
+  // empty value; see `WebAppSyncBridge::PrepareLocalUpdateFromSyncChange()`
+  // for the fallback.
   optional string name = 2;
 
   // User-selected display setting, which may be used if no platform-specific

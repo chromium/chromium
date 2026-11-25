@@ -171,6 +171,32 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
             GetExpectedInstallState());
 }
 
+// Regression test for crbug.com/579501200: older clients committed
+// `WebAppSpecifics` with an empty `name`. Install must succeed and fall back
+// to the canonicalized `start_url` instead of hitting the empty-title CHECK
+// in `SetWebAppManifestFields`.
+IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
+                       AppWithEmptyNameSyncInstalled) {
+  const GURL url("https://example.com/");
+  const std::string app_id =
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, url);
+
+  sync_pb::EntitySpecifics entity_specifics;
+  entity_specifics.mutable_web_app()->set_start_url(url.spec());
+  entity_specifics.mutable_web_app()->clear_name();
+  fake_server_->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          /*non_unique_name=*/"", app_id, entity_specifics, kDefaultTime,
+          kDefaultTime));
+
+  ASSERT_TRUE(SetupSync());
+  AwaitWebAppQuiescence();
+
+  EXPECT_EQ(registrar_unsafe().GetInstallState(app_id),
+            GetExpectedInstallState());
+  EXPECT_EQ(registrar_unsafe().GetAppShortName(app_id), url.spec());
+}
+
 IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
                        SyncInstalledAppDoesNotChangeResponseToSync) {
   GURL url("https://example.com/");

@@ -1329,6 +1329,63 @@ TEST_F(WebAppSyncBridgeTest, SyncOsIntegrationOnStartup) {
       "WebApp.Install.CompletedOsIntegrationOnStartup", true, 1);
 }
 
+TEST_F(
+    WebAppSyncBridgeTest,
+    ApplyIncrementalSyncChanges_EmptySpecificsAndEntityNameFallsBackToStartUrl) {
+  StartWebAppProvider();
+
+  const GURL kStartUrl("https://example.com/app/");
+  WebAppSpecifics sync_proto = CreateWebAppSpecificsForTesting("", kStartUrl);
+  sync_proto.clear_name();
+  const webapps::AppId app_id = GetAppIdFromWebAppSpecifics(sync_proto);
+
+  WebAppTestInstallObserver install_observer(profile());
+  install_observer.BeginListening({app_id});
+
+  sync_bridge().ApplyIncrementalSyncChanges(
+      sync_bridge().CreateMetadataChangeList(),
+      ToEntityChangeList(app_id, sync_proto, sync_bridge()));
+
+  EXPECT_EQ(install_observer.Wait(), app_id);
+
+  const WebApp* app = registrar().GetAppById(app_id);
+  ASSERT_TRUE(app);
+  EXPECT_EQ(app->sync_proto().name(), kStartUrl.spec());
+  EXPECT_EQ(registrar().GetAppShortName(app_id), kStartUrl.spec());
+}
+
+TEST_F(
+    WebAppSyncBridgeTest,
+    ApplyIncrementalSyncChanges_UpdateWithEmptySpecificsNamePreservesExistingName) {
+  StartWebAppProvider();
+
+  const GURL kStartUrl("https://example.com/app/");
+  EXPECT_CALL(processor(), Put).WillOnce(testing::Return());
+  const webapps::AppId app_id = test::InstallDummyWebApp(
+      profile(), "Existing App", kStartUrl, webapps::WebappInstallSource::SYNC);
+
+  WebAppSpecifics sync_proto = GetSpecificsFromInstalledApp(app_id);
+  sync_proto.clear_name();
+
+  // A non-empty `entity_data.name` must not clobber the existing local name.
+  syncer::EntityData entity_data;
+  entity_data.name = "Stale Or Encrypted Entity Name";
+  *entity_data.specifics.mutable_web_app() = sync_proto;
+  ASSERT_TRUE(sync_bridge().IsEntityDataValid(entity_data));
+
+  syncer::EntityChangeList entity_changes;
+  entity_changes.push_back(
+      syncer::EntityChange::CreateUpdate(app_id, std::move(entity_data)));
+
+  sync_bridge().ApplyIncrementalSyncChanges(
+      sync_bridge().CreateMetadataChangeList(), std::move(entity_changes));
+
+  const WebApp* app = registrar().GetAppById(app_id);
+  ASSERT_TRUE(app);
+  EXPECT_EQ(app->sync_proto().name(), "Existing App");
+  EXPECT_EQ(registrar().GetAppShortName(app_id), "Existing App");
+}
+
 namespace {
 using UserDisplayModeSplitParam = std::tuple<
     std::optional<WebAppSpecifics_UserDisplayMode> /*sync_cros_udm*/,

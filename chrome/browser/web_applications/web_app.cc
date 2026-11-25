@@ -1020,6 +1020,11 @@ void WebApp::MergeDataFromSyncSystem(
         sync_proto_.migrated_from_manifest_id());
   }
 
+  // `WebAppSyncBridge::PrepareLocalUpdateFromSyncChange()` relies on
+  // `IsEntityDataValid()` to guarantee a parseable `start_url` and then
+  // populates a non-empty name on `modified_sync_proto` before merging.
+  CHECK(!modified_sync_proto.name().empty(), base::NotFatalUntil::M162);
+
   sync_proto_ = std::move(modified_sync_proto);
   CHECK(HasCurrentPlatformUserDisplayMode(sync_proto_));
 }
