@@ -25,6 +25,8 @@ found in the LICENSE file.
 
     <application android:name="ContentBrowserTestsApplication"
             android:label="ContentBrowserTests"
+            android:zygotePreloadName="org.chromium.content_public.app.ZygotePreload"
+            android:zygotePreloadNativeLib="lib{{ library_name }}.so"
             android:requestLegacyExternalStorage="true"
             android:memtagMode="sync">
         <activity android:name="ContentBrowserTestsActivity"
@@ -48,12 +50,18 @@ found in the LICENSE file.
         <service android:name="org.chromium.content.app.SandboxedProcessService{{ i }}"
                  android:process=":sandboxed_process{{ i }}"
                  android:isolatedProcess="true"
+                 {% if (i == 0) %}
+                 android:useAppZygote="true"
+                 {% endif %}
                  android:exported="false" />
 
         <service android:name="org.chromium.content.app.NativeOnlySandboxedProcessService{{ i }}"
                  android:process=":sandboxed_process{{ i }}"
                  android:isolatedProcess="true"
                  android:nativeService="true"
+                 {% if (i == 0) %}
+                 android:useAppZygote="true"
+                 {% endif %}
                  android:exported="false" >
              <property android:name="android.app.PROPERTY_NATIVE_SERVICE_LIBRARY_NAME"
                        android:value="lib{{ library_name }}.so" />
