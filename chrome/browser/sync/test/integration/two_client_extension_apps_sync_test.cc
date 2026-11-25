@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/apps_sync_test_base.h"
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
-#include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -453,15 +453,21 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
   // technically racy as the installs could complete in any order but it's
   // unlikely given the headstart kHostedApp0 got.
   ASSERT_EQ(InstallHostedApp(GetProfile(0), 1), kHostedAppId1);
-  struct HostedApp1Installed : public AppsStatusChangeChecker {
+  class HostedApp1Installed : public AppsStatusChangeChecker {
+   public:
+    explicit HostedApp1Installed(Profile& profile) : profile_(profile) {}
+
     bool IsExitConditionSatisfied(std::ostream* os) override {
       *os << "Waiting for kHostedAppId1 to be installed.";
-      return GetExtensionRegistry(sync_datatype_helper::test()->GetProfile(1))
+      return GetExtensionRegistry(&*profile_)
           ->enabled_extensions()
           .Contains(kHostedAppId1);
     }
+
+   private:
+    const raw_ref<Profile> profile_;
   };
-  ASSERT_TRUE(HostedApp1Installed().Wait());
+  ASSERT_TRUE(HostedApp1Installed(*GetProfile(1)).Wait());
   EXPECT_FALSE(GetExtensionRegistry(GetProfile(1))
                    ->enabled_extensions()
                    .Contains(kHostedAppId0));

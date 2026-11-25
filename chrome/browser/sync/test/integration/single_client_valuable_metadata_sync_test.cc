@@ -5,7 +5,6 @@
 #include "base/test/protobuf_matchers.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
-#include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager_test_util.h"
@@ -29,7 +28,6 @@ using autofill::test::GetVehicleEntityInstance;
 using autofill::test::GetVehicleEntityInstanceWithRandomGuid;
 using autofill::test::VehicleOptions;
 using base::test::EqualsProto;
-using sync_datatype_helper::test;
 using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::UnorderedElementsAre;
@@ -108,8 +106,7 @@ class SingleClientValuableMetadataSyncTest
   }
 
   EntityDataManager* GetEntityDataManager() {
-    return AutofillEntityDataManagerFactory::GetForProfile(
-        test()->GetProfile(0));
+    return AutofillEntityDataManagerFactory::GetForProfile(GetProfile(0));
   }
 
   base::span<const autofill::EntityInstance> GetEntityInstances() {

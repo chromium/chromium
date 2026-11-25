@@ -14,7 +14,6 @@
 #include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
-#include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -42,7 +41,6 @@ using autofill::ValuablesDataManagerFactory;
 using autofill::test::CreateLoyaltyCard;
 using autofill::test::CreateLoyaltyCard2;
 using base::test::EqualsProto;
-using sync_datatype_helper::test;
 using testing::Contains;
 using testing::ElementsAre;
 using testing::SizeIs;
@@ -242,12 +240,11 @@ class SingleClientValuablesSyncTest
   }
 
   ValuablesDataManager& GetValuablesDataManager() {
-    return *ValuablesDataManagerFactory::GetForProfile(test()->GetProfile(0));
+    return *ValuablesDataManagerFactory::GetForProfile(GetProfile(0));
   }
 
   EntityDataManager& GetEntityDataManager() {
-    return *AutofillEntityDataManagerFactory::GetForProfile(
-        test()->GetProfile(0));
+    return *AutofillEntityDataManagerFactory::GetForProfile(GetProfile(0));
   }
 
   void InjectValuableEntityIncrementally(
