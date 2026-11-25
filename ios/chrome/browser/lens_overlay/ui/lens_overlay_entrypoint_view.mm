@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
 
-#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -25,7 +24,7 @@ const CGFloat kVisibilityIndicatorSize = 30.0;
 }  // namespace
 
 @implementation LensOverlayEntrypointButton {
-  raw_ptr<const PrefService, DanglingUntriaged> _profilePrefs;
+  BOOL _isLandscapeOrientationEnabled;
 
   // Indicates whether the feature is currently active and visible.
   UIView* _visibilityIndicatorView;
@@ -35,7 +34,8 @@ const CGFloat kVisibilityIndicatorSize = 30.0;
   self = [super init];
 
   if (self) {
-    _profilePrefs = profilePrefs;
+    _isLandscapeOrientationEnabled =
+        IsLensOverlayLandscapeOrientationEnabled(profilePrefs);
     self.pointerInteractionEnabled = YES;
     self.minimumDiameter = kMinimumWidth;
     self.pointerStyleProvider = CreateDefaultEffectCirclePointerStyleProvider();
@@ -101,7 +101,7 @@ const CGFloat kVisibilityIndicatorSize = 30.0;
 #pragma mark - private
 
 - (void)setEnabledOnTraitChange:(UITraitCollection*)previousTraitCollection {
-  if (IsLensOverlayLandscapeOrientationEnabled(_profilePrefs)) {
+  if (_isLandscapeOrientationEnabled) {
     return;
   }
 
