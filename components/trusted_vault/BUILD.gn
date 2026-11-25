@@ -10,8 +10,6 @@ static_library("trusted_vault") {
     "trusted_vault_client.h",
     "trusted_vault_histograms.cc",
     "trusted_vault_histograms.h",
-    "trusted_vault_key_and_version.cc",
-    "trusted_vault_key_and_version.h",
     "trusted_vault_server_constants.cc",
     "trusted_vault_server_constants.h",
     "trusted_vault_service.cc",
@@ -19,6 +17,7 @@ static_library("trusted_vault") {
   ]
   deps = [ "//components/signin/public/identity_manager" ]
   public_deps = [
+    ":trusted_vault_key_and_version",
     "//base",
     "//components/keyed_service/core",
   ]
@@ -110,12 +109,19 @@ static_library("trusted_vault") {
   }
 }
 
+source_set("trusted_vault_key_and_version") {
+  sources = [
+    "trusted_vault_key_and_version.cc",
+    "trusted_vault_key_and_version.h",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "trusted_vault_key_and_version_unittest.cc" ]
 
   deps = [
-    ":trusted_vault",
+    ":trusted_vault_key_and_version",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -151,6 +157,7 @@ source_set("unit_tests") {
 
     deps += [
       ":test_support",
+      ":trusted_vault",
       "//components/os_crypt/async/browser:test_support",
       "//components/os_crypt/async/common",
       "//components/signin/public/identity_manager:test_support",
