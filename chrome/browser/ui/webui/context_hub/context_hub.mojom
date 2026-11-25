@@ -626,15 +626,22 @@ interface Page {
 
 // Types of user actions that can be recorded during a skill recording session.
 enum SkillRecordingActionType {
-  // A left mouse button click on the active page.
+  // A left mouse button click on an interactive element on the active page.
   kLeftClick,
+  // Switching to an HTTP/HTTPS tab or browser window.
+  kTabChange,
+  // Committing a primary main-frame HTTP/HTTPS navigation in the active tab.
+  kNavigation,
 };
 
 // Represents a single user action recorded during a skill recording session.
 struct SkillRecordingAction {
   // The category of user interaction that occurred.
   SkillRecordingActionType type;
-  // A human-readable summary of the action (e.g., click coordinates).
+  // A human-readable summary of the action (e.g., "Clicked on 'Submit'").
+  // May contain untrusted third-party webpage text (such as accessible element
+  // names, page titles, or sanitized URLs) and must only be rendered as plain
+  // text.
   string description;
   // Time elapsed since the start of the recording session when the action
   // occurred.

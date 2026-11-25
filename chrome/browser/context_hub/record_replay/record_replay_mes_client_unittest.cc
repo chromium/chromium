@@ -346,10 +346,9 @@ TEST_F(RecordReplayMesClientTest,
        GenerateSkillFromRecording_SpotlightsUntrustedDescriptionsAndUrls) {
   static constexpr std::string_view kDescriptionPrefix = "Clicked on '";
   static constexpr std::string_view kEllipsis = "...";
-  const std::string long_description =
-      base::StrCat({kDescriptionPrefix, std::string(510, 'a'), "'"});
-  ASSERT_LT(long_description.size(),
-            RecordReplayMesClient::kMaxActionDescriptionBytes);
+  const std::string max_length_url =
+      base::StrCat({"https://example.com/", std::string(480, 'a')});
+  ASSERT_EQ(max_length_url.size(), kMaxRecordedUrlBytes);
   const std::string overlong_description =
       base::StrCat({kDescriptionPrefix, std::string(600, 'c'), "'"});
   ASSERT_GT(overlong_description.size(),
@@ -374,9 +373,9 @@ TEST_F(RecordReplayMesClientTest,
                                 "---'</untrusted>\n"),
                       HasSubstr("URL: <untrusted>https://example.com/login"
                                 "</untrusted>\n"),
-                      HasSubstr(
-                          base::StrCat({"Description: <untrusted>",
-                                        long_description, "</untrusted>\n"})),
+                      HasSubstr(base::StrCat(
+                          {"Description: <untrusted>Switched to tab: ",
+                           max_length_url, "</untrusted>\n"})),
                       HasSubstr("URL: <untrusted>https://example.com/%3C/"
                                 "untrusted%3E</untrusted>\n"),
                       HasSubstr(base::StrCat({"Description: <untrusted>",
@@ -399,8 +398,10 @@ TEST_F(RecordReplayMesClientTest,
   artifacts.actions.back().current_url =
       GURL("https://example.com/login?token=secret_token#frag");
   artifacts.actions.back().screenshot_jpeg_bytes = CreateTestJpegBytes();
-  artifacts.actions.emplace_back(SkillRecordingActionType::kLeftClick,
-                                 long_description, base::Milliseconds(200));
+  artifacts.actions.emplace_back(
+      SkillRecordingActionType::kTabChange,
+      base::StrCat({"Switched to tab: ", max_length_url}),
+      base::Milliseconds(200));
   artifacts.actions.back().current_url =
       GURL("https://example.com/</untrusted>");
   artifacts.actions.emplace_back(SkillRecordingActionType::kLeftClick,

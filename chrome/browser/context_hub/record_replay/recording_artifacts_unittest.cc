@@ -27,8 +27,9 @@ TEST(RecordingArtifactsTest, StoresRecordingArtifacts) {
   artifacts.actions[0].current_url = GURL("https://example.com/page");
   artifacts.actions[0].screenshot_jpeg_bytes =
       std::string("\x01\x02\x03\x04", 4);
-  artifacts.actions.emplace_back(SkillRecordingActionType::kLeftClick,
-                                 "Clicked on 'Next'", base::Milliseconds(350));
+  artifacts.actions.emplace_back(SkillRecordingActionType::kNavigation,
+                                 "Navigated to https://example.com/next",
+                                 base::Milliseconds(350));
 
   ASSERT_EQ(artifacts.actions.size(), 2u);
   EXPECT_EQ(artifacts.actions[0].type, SkillRecordingActionType::kLeftClick);
@@ -38,8 +39,9 @@ TEST(RecordingArtifactsTest, StoresRecordingArtifacts) {
   EXPECT_EQ(artifacts.actions[0].screenshot_jpeg_bytes,
             std::string("\x01\x02\x03\x04", 4));
 
-  EXPECT_EQ(artifacts.actions[1].type, SkillRecordingActionType::kLeftClick);
-  EXPECT_EQ(artifacts.actions[1].description, "Clicked on 'Next'");
+  EXPECT_EQ(artifacts.actions[1].type, SkillRecordingActionType::kNavigation);
+  EXPECT_EQ(artifacts.actions[1].description,
+            "Navigated to https://example.com/next");
   EXPECT_EQ(artifacts.actions[1].timestamp, base::Milliseconds(350));
   EXPECT_TRUE(artifacts.actions[1].current_url.is_empty());
   EXPECT_TRUE(artifacts.actions[1].screenshot_jpeg_bytes.empty());

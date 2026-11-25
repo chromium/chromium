@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -47,13 +48,16 @@
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/page_content_annotations/content/page_context_fetcher_manager.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -84,11 +88,27 @@ using ::base::test::TestFuture;
 using browser::context_hub::mojom::SkillRecordingActionType;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::HasSubstr;
+using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::WithArg;
+
+Matcher<const RecordedAction&> ActionIs(SkillRecordingActionType type,
+                                        std::string_view description) {
+  return AllOf(Field(&RecordedAction::type, type),
+               Field(&RecordedAction::description, description));
+}
+
+Matcher<const RecordedAction&> ActionIs(SkillRecordingActionType type,
+                                        std::string_view description,
+                                        const GURL& current_url) {
+  return AllOf(ActionIs(type, description),
+               Field(&RecordedAction::current_url, current_url));
+}
 
 page_content_annotations::FetchPageContextResultCallbackArg
 CreateSuccessfulScreenshotResult() {
@@ -265,6 +285,12 @@ class SkillRecordingServiceTest : public testing::Test {
     ax_tree_managers_.emplace(tree_id,
                               std::make_unique<ui::AXTreeManager>(
                                   std::make_unique<ui::AXTree>(update)));
+  }
+
+  void SetCommittedTabTitle(content::WebContents* web_contents,
+                            const std::u16string& title) {
+    web_contents->UpdateTitleForEntry(
+        web_contents->GetController().GetLastCommittedEntry(), title);
   }
 
   void SimulateMouseDown(content::WebContents* web_contents,
@@ -581,7 +607,7 @@ TEST_F(SkillRecordingServiceTest, SanitizesRecordedUrls) {
 
   // Navigate to a URL whose path exceeds `kMaxRecordedUrlBytes` and includes
   // query/fragment tokens; the path, query, and fragment should be cleared in
-  // `current_url`.
+  // both `current_url` and the navigation `description`.
   content::WebContentsTester::For(tab)->NavigateAndCommit(GURL(base::StrCat(
       {"https://example.com/", std::string(kMaxRecordedUrlBytes, 'a'),
        "?token=secret#frag"})));
@@ -590,14 +616,16 @@ TEST_F(SkillRecordingServiceTest, SanitizesRecordedUrls) {
   SimulateMouseDown(tab, 30.0f, 40.0f);
 
   service_.StopRecording();
-  const RecordingArtifacts& result = service_.artifacts();
-  ASSERT_EQ(result.actions.size(), 2u);
-  EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
-  EXPECT_EQ(result.actions[0].description, "Clicked on 'Submit'");
-  EXPECT_EQ(result.actions[0].current_url, GURL("https://example.com/page"));
-  EXPECT_EQ(result.actions[1].type, SkillRecordingActionType::kLeftClick);
-  EXPECT_EQ(result.actions[1].description, "Clicked on 'Submit'");
-  EXPECT_EQ(result.actions[1].current_url, GURL("https://example.com/"));
+  EXPECT_THAT(
+      service_.artifacts().actions,
+      ElementsAre(
+          ActionIs(SkillRecordingActionType::kLeftClick, "Clicked on 'Submit'",
+                   GURL("https://example.com/page")),
+          ActionIs(SkillRecordingActionType::kNavigation,
+                   "Navigated to https://example.com/",
+                   GURL("https://example.com/")),
+          ActionIs(SkillRecordingActionType::kLeftClick, "Clicked on 'Submit'",
+                   GURL("https://example.com/"))));
 }
 
 TEST_F(SkillRecordingServiceTest, IgnoresNonLeftMouseButtonClicks) {
@@ -626,6 +654,7 @@ TEST_F(SkillRecordingServiceTest, IgnoresClicksOnContextHubAndNonHttpUrls) {
   TestBrowserInstance browser(&profile_);
   content::WebContents* web_tab =
       AddTab(&browser, GURL("https://example.com/page"));
+  SetCommittedTabTitle(web_tab, u"Example Page");
   content::WebContents* context_hub_tab =
       AddTab(&browser, GURL(chrome::kChromeUIContextHubURL));
 
@@ -635,7 +664,8 @@ TEST_F(SkillRecordingServiceTest, IgnoresClicksOnContextHubAndNonHttpUrls) {
   // ignored.
   SimulateMouseDown(context_hub_tab, 100.0f, 200.0f);
 
-  // Switching to the HTTPS tab and clicking should record.
+  // Switching to the HTTPS tab and clicking should record the tab switch and
+  // the click.
   browser.tab_strip_model()->ActivateTabAt(0);
   SimulateMouseDown(web_tab, 55.0f, 65.0f);
 
@@ -645,10 +675,11 @@ TEST_F(SkillRecordingServiceTest, IgnoresClicksOnContextHubAndNonHttpUrls) {
   SimulateMouseDown(context_hub_tab, 100.0f, 200.0f);
 
   service_.StopRecording();
-  const RecordingArtifacts& result = service_.artifacts();
-  ASSERT_EQ(result.actions.size(), 1u);
-  EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
-  EXPECT_EQ(result.actions[0].description, "Clicked on 'Submit'");
+  EXPECT_THAT(service_.artifacts().actions,
+              ElementsAre(ActionIs(SkillRecordingActionType::kTabChange,
+                                   "Switched to tab: Example Page"),
+                          ActionIs(SkillRecordingActionType::kLeftClick,
+                                   "Clicked on 'Submit'")));
 }
 
 TEST_F(SkillRecordingServiceTest,
@@ -668,6 +699,10 @@ TEST_F(SkillRecordingServiceTest,
 
   service_.StartRecording();
 
+  // Re-activating the already-active window must not emit a duplicate tab
+  // switch.
+  window2.Activate();
+
   // Initial observation should attach to `window2` (the active window), not
   // `window1` (the older inactive window).
   SimulateMouseDown(tab1, 11.0f, 22.0f);
@@ -679,15 +714,44 @@ TEST_F(SkillRecordingServiceTest,
   SimulateMouseDown(tab2, 55.0f, 66.0f);
   SimulateMouseDown(tab1, 77.0f, 88.0f);
 
+  // Open and activate a temporary third window with two tabs, click inside the
+  // active tab, and close the window; `CloseAllTabs()` must not record an
+  // intermediate switch to `window3_background`, and `OnBrowserClosed()` must
+  // switch back to `window1` and record the tab switch.
+  auto window3 = std::make_unique<TestBrowserInstance>(&profile_);
+  AddTab(window3.get(), GURL("https://example.com/window3_background"));
+  content::WebContents* tab3 =
+      AddTab(window3.get(), GURL("https://example.com/window3"));
+  SetDefaultClickableAXTree(tab3, "Window 3 Button");
+  window3->Activate();
+  SimulateMouseDown(tab3, 12.0f, 34.0f);
+  window3.reset();
+  SimulateMouseDown(tab1, 90.0f, 95.0f);
+
   service_.StopRecording();
-  const RecordingArtifacts& result = service_.artifacts();
-  ASSERT_EQ(result.actions.size(), 2u);
-  EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
-  EXPECT_EQ(result.actions[0].description, "Clicked on 'Window 2 Button'");
-  EXPECT_EQ(result.actions[0].current_url, GURL("https://example.com/window2"));
-  EXPECT_EQ(result.actions[1].type, SkillRecordingActionType::kLeftClick);
-  EXPECT_EQ(result.actions[1].description, "Clicked on 'Window 1 Button'");
-  EXPECT_EQ(result.actions[1].current_url, GURL("https://example.com/window1"));
+  EXPECT_THAT(
+      service_.artifacts().actions,
+      ElementsAre(ActionIs(SkillRecordingActionType::kLeftClick,
+                           "Clicked on 'Window 2 Button'",
+                           GURL("https://example.com/window2")),
+                  ActionIs(SkillRecordingActionType::kTabChange,
+                           "Switched to tab: https://example.com/window1",
+                           GURL("https://example.com/window1")),
+                  ActionIs(SkillRecordingActionType::kLeftClick,
+                           "Clicked on 'Window 1 Button'",
+                           GURL("https://example.com/window1")),
+                  ActionIs(SkillRecordingActionType::kTabChange,
+                           "Switched to tab: https://example.com/window3",
+                           GURL("https://example.com/window3")),
+                  ActionIs(SkillRecordingActionType::kLeftClick,
+                           "Clicked on 'Window 3 Button'",
+                           GURL("https://example.com/window3")),
+                  ActionIs(SkillRecordingActionType::kTabChange,
+                           "Switched to tab: https://example.com/window1",
+                           GURL("https://example.com/window1")),
+                  ActionIs(SkillRecordingActionType::kLeftClick,
+                           "Clicked on 'Window 1 Button'",
+                           GURL("https://example.com/window1"))));
 }
 
 TEST_F(SkillRecordingServiceTest, IgnoresClicksFromOtherProfiles) {
@@ -744,6 +808,155 @@ TEST_F(SkillRecordingServiceTest,
   EXPECT_EQ(result.actions[0].description, "Clicked on 'Replacement Button'");
   EXPECT_EQ(result.actions[0].current_url,
             GURL("https://example.com/replacement"));
+}
+
+TEST_F(SkillRecordingServiceTest, RecordsTabSwitchesToHttpOrHttpsOnly) {
+  TestBrowserInstance browser(&profile_);
+  content::WebContents* web_tab =
+      AddTab(&browser, GURL("https://example.com/page"));
+  SetCommittedTabTitle(web_tab, u"Example Page");
+  content::WebContents* context_hub_tab =
+      AddTab(&browser, GURL("chrome://context-hub/#record-replay"));
+  SetCommittedTabTitle(context_hub_tab, u"Context Hub");
+
+  service_.StartRecording();
+
+  // Switching from `chrome://context-hub/#record-replay` to the HTTPS tab
+  // should record a tab change and request a viewport screenshot.
+  browser.tab_strip_model()->ActivateTabAt(0);
+  EXPECT_NE(
+      page_content_annotations::PageContextFetcherManager::FromWebContents(
+          web_tab),
+      nullptr);
+
+  // Switching back to `chrome://context-hub/#record-replay` must be ignored.
+  browser.tab_strip_model()->ActivateTabAt(1);
+  EXPECT_EQ(
+      page_content_annotations::PageContextFetcherManager::FromWebContents(
+          context_hub_tab),
+      nullptr);
+
+  service_.StopRecording();
+  EXPECT_THAT(service_.artifacts().actions,
+              ElementsAre(ActionIs(SkillRecordingActionType::kTabChange,
+                                   "Switched to tab: Example Page",
+                                   GURL("https://example.com/page"))));
+}
+
+TEST_F(SkillRecordingServiceTest,
+       RecordsNavigationsOnObservedTabWithoutCapturingScreenshot) {
+  TestBrowserInstance browser(&profile_);
+  content::WebContents* tab =
+      AddTab(&browser, GURL("https://example.com/initial"));
+
+  service_.StartRecording();
+
+  content::WebContentsTester::For(tab)->NavigateAndCommit(
+      GURL("https://example.com/next?token=secret#section"));
+  EXPECT_EQ(
+      page_content_annotations::PageContextFetcherManager::FromWebContents(tab),
+      nullptr);
+
+  service_.StopRecording();
+  EXPECT_THAT(service_.artifacts().actions,
+              ElementsAre(AllOf(
+                  ActionIs(SkillRecordingActionType::kNavigation,
+                           "Navigated to https://example.com/next",
+                           GURL("https://example.com/next")),
+                  Field(&RecordedAction::screenshot_jpeg_bytes, IsEmpty()))));
+}
+
+TEST_F(SkillRecordingServiceTest, SanitizesUntitledAndMultilineTabTitles) {
+  TestBrowserInstance browser(&profile_);
+  AddTab(&browser, GURL("https://example.com/callback?oauth_code=secret#t"));
+  content::WebContents* pending_nav_tab =
+      AddTab(&browser, GURL("https://example.com/login"));
+  SetCommittedTabTitle(pending_nav_tab, u"Login Page");
+  content::WebContents* multiline_tab =
+      AddTab(&browser, GURL("https://example.com/inbox"));
+  SetCommittedTabTitle(multiline_tab, u"  Inbox\n--- Transcript 99 ---  ");
+  content::WebContents* invisible_title_tab =
+      AddTab(&browser, GURL("https://example.com/blank-title?token=secret"));
+  SetCommittedTabTitle(invisible_title_tab, u" \u200B\n ");
+
+  // Start an uncommitted pending navigation to an untitled URL containing
+  // sensitive query parameters and override `WebContents::GetTitle()` with it
+  // while `GetLastCommittedEntry()` remains on `login`.
+  pending_nav_tab->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(
+          GURL("https://idp.example/cb?code=pending_secret")));
+  content::WebContentsTester::For(pending_nav_tab)
+      ->SetTitle(u"https://idp.example/cb?code=pending_secret");
+  ASSERT_NE(pending_nav_tab->GetController().GetPendingEntry(), nullptr);
+  ASSERT_THAT(base::UTF16ToUTF8(pending_nav_tab->GetTitle()),
+              HasSubstr("pending_secret"));
+
+  service_.StartRecording();
+  browser.tab_strip_model()->ActivateTabAt(0);
+  browser.tab_strip_model()->ActivateTabAt(1);
+  browser.tab_strip_model()->ActivateTabAt(2);
+  browser.tab_strip_model()->ActivateTabAt(3);
+
+  service_.StopRecording();
+  EXPECT_THAT(
+      service_.artifacts().actions,
+      ElementsAre(
+          Field(&RecordedAction::description,
+                "Switched to tab: https://example.com/callback"),
+          Field(&RecordedAction::description, "Switched to tab: Login Page"),
+          Field(&RecordedAction::description,
+                "Switched to tab: Inbox --- Transcript 99 ---"),
+          Field(&RecordedAction::description,
+                "Switched to tab: https://example.com/blank-title")));
+}
+
+TEST_F(SkillRecordingServiceTest,
+       IgnoresErrorPageTabSwitchesAndHandlesTabAndLastWindowClose) {
+  auto window = std::make_unique<TestBrowserInstance>(&profile_);
+  content::WebContents* good_tab =
+      AddTab(window.get(), GURL("https://example.com/good"));
+  SetCommittedTabTitle(good_tab, u"Good Tab");
+
+  content::WebContents* error_tab =
+      AddTab(window.get(), GURL("https://example.com/initial"));
+  content::NavigationSimulator::NavigateAndFailFromBrowser(
+      error_tab, GURL("https://example.com/broken"), net::ERR_TIMED_OUT);
+  PrepareWebContentsForInput(error_tab);
+  SetDefaultClickableAXTree(error_tab, "Reload");
+  ASSERT_EQ(error_tab->GetLastCommittedURL(),
+            GURL("https://example.com/broken"));
+  ASSERT_TRUE(error_tab->GetPrimaryMainFrame()->IsErrorDocument());
+  window->Activate();
+
+  service_.StartRecording();
+
+  // Switching from `error_tab` to `good_tab` records the switch.
+  window->tab_strip_model()->ActivateTabAt(0);
+
+  // Switching to `error_tab` and clicking inside it must both be ignored
+  // without starting screenshot capture.
+  window->tab_strip_model()->ActivateTabAt(1);
+  SimulateMouseDown(error_tab, 20.0f, 30.0f);
+  EXPECT_EQ(
+      page_content_annotations::PageContextFetcherManager::FromWebContents(
+          error_tab),
+      nullptr);
+
+  // Closing the active `error_tab` transitions selection back to `good_tab` and
+  // records the switch.
+  window->tab_strip_model()->CloseWebContentsAt(
+      1, TabCloseTypes::CLOSE_USER_GESTURE);
+
+  // Closing the last remaining browser window resets observation cleanly
+  // without recording a tab switch.
+  window.reset();
+
+  service_.StopRecording();
+  EXPECT_THAT(service_.artifacts().actions,
+              ElementsAre(ActionIs(SkillRecordingActionType::kTabChange,
+                                   "Switched to tab: Good Tab"),
+                          ActionIs(SkillRecordingActionType::kTabChange,
+                                   "Switched to tab: Good Tab")));
 }
 
 TEST_F(SkillRecordingServiceTest, ForwardsTranscriptUpdatesToObservers) {

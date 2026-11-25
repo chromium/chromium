@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -23,11 +24,14 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/net_errors.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -53,6 +57,25 @@ namespace context_hub {
 namespace {
 
 using browser::context_hub::mojom::SkillRecordingActionType;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::Matcher;
+using ::testing::NiceMock;
+using ::testing::Return;
+
+Matcher<const RecordedAction&> ActionIs(SkillRecordingActionType type,
+                                        const std::string& description) {
+  return AllOf(Field(&RecordedAction::type, type),
+               Field(&RecordedAction::description, description));
+}
+
+Matcher<const RecordedAction&> ActionIs(SkillRecordingActionType type,
+                                        const std::string& description,
+                                        base::TimeDelta timestamp) {
+  return AllOf(ActionIs(type, description),
+               Field(&RecordedAction::timestamp, timestamp));
+}
 
 class TabActiveObserverTest : public testing::Test {
  public:
@@ -163,18 +186,24 @@ TEST_F(TabActiveObserverTest, RecordsLeftMouseDownOnHttpAndHttpsUrls) {
   SimulateMouseDown(35.0f, 45.0f);
 
   service_.StopRecording();
-  const RecordingArtifacts& result = service_.artifacts();
-  ASSERT_EQ(result.actions.size(), 2u);
-  EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
-  EXPECT_EQ(result.actions[0].description, "Clicked on 'Submit'");
-  EXPECT_EQ(result.actions[0].timestamp, base::Milliseconds(100));
-  EXPECT_EQ(result.actions[1].type, SkillRecordingActionType::kLeftClick);
-  EXPECT_EQ(result.actions[1].description, "Clicked on 'Submit'");
-  EXPECT_EQ(result.actions[1].timestamp, base::Milliseconds(300));
+  EXPECT_THAT(
+      service_.artifacts().actions,
+      ElementsAre(ActionIs(SkillRecordingActionType::kNavigation,
+                           "Navigated to https://example.com/secure",
+                           base::Milliseconds(0)),
+                  ActionIs(SkillRecordingActionType::kLeftClick,
+                           "Clicked on 'Submit'", base::Milliseconds(100)),
+                  ActionIs(SkillRecordingActionType::kNavigation,
+                           "Navigated to http://example.com/insecure",
+                           base::Milliseconds(100)),
+                  ActionIs(SkillRecordingActionType::kLeftClick,
+                           "Clicked on 'Submit'", base::Milliseconds(300))));
 }
 
 TEST_F(TabActiveObserverTest, IgnoresNonMouseDownEvents) {
   NavigateTo(GURL("https://example.com"));
+  service_.StopRecording();
+  service_.StartRecording();
 
   blink::WebGestureEvent scroll_event(
       blink::WebInputEvent::Type::kGestureScrollBegin,
@@ -199,6 +228,8 @@ TEST_F(TabActiveObserverTest, IgnoresNonMouseDownEvents) {
 
 TEST_F(TabActiveObserverTest, IgnoresNonLeftMouseButtons) {
   NavigateTo(GURL("https://example.com"));
+  service_.StopRecording();
+  service_.StartRecording();
 
   const base::TimeTicks timestamp = base::TimeTicks::Now();
   blink::WebMouseEvent right_down(
@@ -308,16 +339,169 @@ TEST_F(TabActiveObserverTest,
   SimulateMouseDown(120.0f, 120.0f);
 
   service_.StopRecording();
-  const RecordingArtifacts& result = service_.artifacts();
-  ASSERT_EQ(result.actions.size(), 2u);
-  EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
-  EXPECT_EQ(result.actions[0].description, "Clicked on 'Second Page Button'");
-  EXPECT_EQ(result.actions[1].type, SkillRecordingActionType::kLeftClick);
-  EXPECT_EQ(result.actions[1].description, "Clicked on 'Subframe Button'");
+  EXPECT_THAT(service_.artifacts().actions,
+              ElementsAre(ActionIs(SkillRecordingActionType::kNavigation,
+                                   "Navigated to https://example.com/first"),
+                          ActionIs(SkillRecordingActionType::kNavigation,
+                                   "Navigated to https://other.example/second"),
+                          ActionIs(SkillRecordingActionType::kLeftClick,
+                                   "Clicked on 'Second Page Button'"),
+                          ActionIs(SkillRecordingActionType::kLeftClick,
+                                   "Clicked on 'Subframe Button'")));
+}
+
+TEST_F(TabActiveObserverTest,
+       RecordsSanitizedCommittedHttpAndHttpsNavigationsAndFiltersSameDocNoise) {
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(
+          GURL("https://user:pass@example.com/step1?token=secret#section"));
+
+  // Same-document fragment/query updates whose sanitized URL is unchanged must
+  // be ignored.
+  std::unique_ptr<content::NavigationSimulator> same_url_hash =
+      content::NavigationSimulator::CreateRendererInitiated(
+          GURL("https://example.com/step1?q=filter#details"),
+          web_contents_->GetPrimaryMainFrame());
+  same_url_hash->SetHasUserGesture(true);
+  same_url_hash->CommitSameDocument();
+
+  // Renderer-initiated same-document `pushState()` without a user gesture must
+  // be ignored to prevent zero-click prompt flooding.
+  std::unique_ptr<content::NavigationSimulator> ungestured_push_state =
+      content::NavigationSimulator::CreateRendererInitiated(
+          GURL("https://example.com/injected_step"),
+          web_contents_->GetPrimaryMainFrame());
+  ungestured_push_state->SetHasUserGesture(false);
+  ungestured_push_state->CommitSameDocument();
+
+  // User-initiated SPA `replaceState()` (`DidReplaceEntry() == true`) must also
+  // be ignored so in-page URL normalizations that do not add a history entry
+  // are not recorded as navigations.
+  ASSERT_EQ(web_contents_->GetLastCommittedURL(),
+            GURL("https://example.com/injected_step"));
+  NiceMock<content::MockNavigationHandle> gestured_replace_state(
+      web_contents_->GetLastCommittedURL(),
+      web_contents_->GetPrimaryMainFrame());
+  gestured_replace_state.set_is_in_primary_main_frame(true);
+  gestured_replace_state.set_has_committed(true);
+  gestured_replace_state.set_is_same_document(true);
+  gestured_replace_state.set_is_renderer_initiated(true);
+  gestured_replace_state.set_previous_primary_main_frame_url(
+      GURL("https://example.com/step1"));
+  ON_CALL(gestured_replace_state, HasUserGesture()).WillByDefault(Return(true));
+  ON_CALL(gestured_replace_state, DidReplaceEntry())
+      .WillByDefault(Return(true));
+  static_cast<content::WebContentsObserver*>(observer_.get())
+      ->DidFinishNavigation(&gestured_replace_state);
+
+  // User-initiated SPA path transition (`HasUserGesture() == true` and distinct
+  // sanitized URL) is recorded.
+  std::unique_ptr<content::NavigationSimulator> user_spa_nav =
+      content::NavigationSimulator::CreateRendererInitiated(
+          GURL("https://example.com/step2?session=abc"),
+          web_contents_->GetPrimaryMainFrame());
+  user_spa_nav->SetHasUserGesture(true);
+  user_spa_nav->CommitSameDocument();
+
+  // Cross-document navigations whose sanitized URL matches the previous page
+  // (e.g., reloads or query-parameter pagination) are still recorded.
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://example.com/step2?page=2"));
+
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("http://example.com/step3?token=secret#frag"));
+
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL(base::StrCat(
+          {"https://example.com/", std::string(kMaxRecordedUrlBytes, 'a')})));
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL(chrome::kChromeUIContextHubURL));
+
+  service_.StopRecording();
+  EXPECT_THAT(service_.artifacts().actions,
+              ElementsAre(ActionIs(SkillRecordingActionType::kNavigation,
+                                   "Navigated to https://example.com/step1"),
+                          ActionIs(SkillRecordingActionType::kNavigation,
+                                   "Navigated to https://example.com/step2"),
+                          ActionIs(SkillRecordingActionType::kNavigation,
+                                   "Navigated to https://example.com/step2"),
+                          ActionIs(SkillRecordingActionType::kNavigation,
+                                   "Navigated to http://example.com/step3"),
+                          ActionIs(SkillRecordingActionType::kNavigation,
+                                   "Navigated to https://example.com/")));
+}
+
+TEST_F(TabActiveObserverTest,
+       IgnoresAbortedErrorViewSourceAndAutoRefreshNavigations) {
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://example.com/step1"));
+
+  // Aborted navigations (`HasCommitted() == false`) must be ignored.
+  std::unique_ptr<content::NavigationSimulator> aborted_nav =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://example.com/aborted"), web_contents_.get());
+  aborted_nav->Start();
+  aborted_nav->AbortCommit();
+
+  // Ungestured renderer-initiated cross-document refreshes to the same
+  // sanitized URL (e.g., `<meta http-equiv="refresh">` polling) must be
+  // ignored.
+  std::unique_ptr<content::NavigationSimulator> auto_refresh =
+      content::NavigationSimulator::CreateRendererInitiated(
+          GURL("https://example.com/step1?poll=2"),
+          web_contents_->GetPrimaryMainFrame());
+  auto_refresh->SetHasUserGesture(false);
+  auto_refresh->Commit();
+
+  // Ungestured renderer-initiated cross-document navigations to a distinct
+  // sanitized URL (e.g., async post-login JS redirects) are still recorded.
+  std::unique_ptr<content::NavigationSimulator> async_redirect =
+      content::NavigationSimulator::CreateRendererInitiated(
+          GURL("https://example.com/dashboard?session=abc"),
+          web_contents_->GetPrimaryMainFrame());
+  async_redirect->SetHasUserGesture(false);
+  async_redirect->Commit();
+
+  // Browser-initiated same-document navigations with a distinct sanitized URL
+  // are recorded even without a renderer user gesture.
+  std::unique_ptr<content::NavigationSimulator> browser_same_doc =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://example.com/dashboard/settings"), web_contents_.get());
+  browser_same_doc->CommitSameDocument();
+
+  // `view-source:` navigations have an HTTP/HTTPS `NavigationHandle::GetURL()`
+  // but a non-HTTP/HTTPS virtual `GetLastCommittedURL()` and must be ignored.
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("view-source:https://example.com/source"));
+  ASSERT_EQ(web_contents_->GetLastCommittedURL(),
+            GURL("view-source:https://example.com/source"));
+
+  // Committed error pages and clicks on error documents must be ignored even
+  // though `GetLastCommittedURL()` retains the failed HTTPS target URL.
+  content::NavigationSimulator::NavigateAndFailFromBrowser(
+      web_contents_.get(), GURL("https://example.com/broken"),
+      net::ERR_TIMED_OUT);
+  ASSERT_TRUE(web_contents_->GetPrimaryMainFrame()->IsErrorDocument());
+  PrepareMainFrameForInput();
+  SetDefaultClickableAXTreeForFrame(web_contents_->GetPrimaryMainFrame());
+  SimulateMouseDown(15.0f, 25.0f);
+
+  service_.StopRecording();
+  EXPECT_THAT(
+      service_.artifacts().actions,
+      ElementsAre(
+          ActionIs(SkillRecordingActionType::kNavigation,
+                   "Navigated to https://example.com/step1"),
+          ActionIs(SkillRecordingActionType::kNavigation,
+                   "Navigated to https://example.com/dashboard"),
+          ActionIs(SkillRecordingActionType::kNavigation,
+                   "Navigated to https://example.com/dashboard/settings")));
 }
 
 TEST_F(TabActiveObserverTest, IgnoresCrossOriginSubframeAndUnroutedMouseDowns) {
   NavigateTo(GURL("https://example.com/main"));
+  service_.StopRecording();
+  service_.StartRecording();
 
   content::RenderFrameHost* main_rfh = web_contents_->GetPrimaryMainFrame();
   content::RenderFrameHost* cross_origin_rfh =
@@ -347,6 +531,8 @@ TEST_F(TabActiveObserverTest, IgnoresCrossOriginSubframeAndUnroutedMouseDowns) {
 
 TEST_F(TabActiveObserverTest, IgnoresInnerWebContents) {
   NavigateTo(GURL("https://example.com/main"));
+  service_.StopRecording();
+  service_.StartRecording();
 
   content::RenderFrameHost* main_rfh = web_contents_->GetPrimaryMainFrame();
   content::RenderFrameHost* attach_rfh =

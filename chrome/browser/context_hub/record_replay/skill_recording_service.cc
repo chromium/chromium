@@ -18,10 +18,13 @@
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -40,6 +43,9 @@
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_mode.h"
@@ -52,6 +58,48 @@ BrowserWindowInterface* GetLastActiveBrowser(Profile& profile) {
   ProfileBrowserCollection* collection =
       ProfileBrowserCollection::GetForProfile(&profile);
   return collection ? collection->GetLastActiveBrowser() : nullptr;
+}
+
+GURL GetSanitizedRecordableUrl(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return GURL();
+  }
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+  if (!main_rfh || main_rfh->IsErrorDocument()) {
+    return GURL();
+  }
+  return SanitizeRecordedUrl(web_contents->GetLastCommittedURL());
+}
+
+std::optional<std::string> BuildTabSwitchDescription(
+    content::WebContents* web_contents) {
+  GURL sanitized_url = GetSanitizedRecordableUrl(web_contents);
+  if (sanitized_url.is_empty()) {
+    return std::nullopt;
+  }
+
+  std::string label;
+  if (content::NavigationEntry* entry =
+          web_contents->GetController().GetLastCommittedEntry();
+      entry && !entry->GetTitle().empty()) {
+    label = SanitizeRecordedText(base::UTF16ToUTF8(entry->GetTitle()));
+  }
+  if (label.empty()) {
+    label = sanitized_url.spec();
+  }
+  return base::StrCat({"Switched to tab: ", label});
+}
+
+bool ShouldCaptureScreenshot(
+    browser::context_hub::mojom::SkillRecordingActionType type) {
+  switch (type) {
+    case browser::context_hub::mojom::SkillRecordingActionType::kLeftClick:
+    case browser::context_hub::mojom::SkillRecordingActionType::kTabChange:
+      return true;
+    case browser::context_hub::mojom::SkillRecordingActionType::kNavigation:
+      return false;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -141,11 +189,12 @@ void SkillRecordingService::CaptureAction(
       type, std::move(description),
       base::TimeTicks::Now() - start_time_.value());
 
-  if (!tab_observer_ || !tab_observer_->web_contents()) {
+  content::WebContents* web_contents =
+      tab_observer_ ? tab_observer_->web_contents() : nullptr;
+  action.current_url = GetSanitizedRecordableUrl(web_contents);
+  if (!ShouldCaptureScreenshot(type) || action.current_url.is_empty()) {
     return;
   }
-  content::WebContents* web_contents = tab_observer_->web_contents();
-  action.current_url = SanitizeRecordedUrl(web_contents->GetLastCommittedURL());
 
   constexpr int32_t kMaxScreenshotWidth = 1280;
   constexpr int32_t kMaxScreenshotHeight = 1280;
@@ -238,7 +287,15 @@ void SkillRecordingService::OnTabStripModelChanged(
     return;
   }
 
+  if (tab_strip_model->closing_all()) {
+    tab_observer_.reset();
+    return;
+  }
+
   ObserveWebContents(selection.new_contents);
+  if (selection.old_tab != selection.new_tab) {
+    MaybeCaptureTabSwitch();
+  }
 }
 
 bool SkillRecordingService::ShouldTrackBrowser(
@@ -251,7 +308,7 @@ void SkillRecordingService::OnBrowserActivated(
   if (!is_recording()) {
     return;
   }
-  ObserveActiveTabInBrowser(browser);
+  SwitchActiveBrowser(browser);
 }
 
 void SkillRecordingService::OnBrowserClosed(BrowserWindowInterface* browser) {
@@ -259,7 +316,11 @@ void SkillRecordingService::OnBrowserClosed(BrowserWindowInterface* browser) {
     return;
   }
   BrowserWindowInterface* last_active = GetLastActiveBrowser(*profile_);
-  ObserveActiveTabInBrowser(last_active != browser ? last_active : nullptr);
+  if (!last_active || last_active == browser) {
+    tab_observer_.reset();
+    return;
+  }
+  SwitchActiveBrowser(last_active);
 }
 
 void SkillRecordingService::OnTranscriptUpdate(const std::string& text,
@@ -304,6 +365,29 @@ void SkillRecordingService::OnScreenshotCaptured(
   }
   artifacts_.actions[action_index].screenshot_jpeg_bytes =
       std::string(base::as_string_view(screenshot.screenshot_data));
+}
+
+void SkillRecordingService::MaybeCaptureTabSwitch() {
+  content::WebContents* web_contents =
+      tab_observer_ ? tab_observer_->web_contents() : nullptr;
+  if (std::optional<std::string> description =
+          BuildTabSwitchDescription(web_contents)) {
+    CaptureAction(
+        browser::context_hub::mojom::SkillRecordingActionType::kTabChange,
+        std::move(description).value());
+  }
+}
+
+void SkillRecordingService::SwitchActiveBrowser(
+    BrowserWindowInterface* browser) {
+  content::WebContents* previous_contents =
+      tab_observer_ ? tab_observer_->web_contents() : nullptr;
+  ObserveActiveTabInBrowser(browser);
+  content::WebContents* new_contents =
+      tab_observer_ ? tab_observer_->web_contents() : nullptr;
+  if (new_contents && new_contents != previous_contents) {
+    MaybeCaptureTabSwitch();
+  }
 }
 
 void SkillRecordingService::ObserveActiveTabInBrowser(

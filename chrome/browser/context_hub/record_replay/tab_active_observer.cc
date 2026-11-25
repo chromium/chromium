@@ -13,8 +13,10 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/context_hub/record_replay/ax_click_target_resolver.h"
+#include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
 #include "chrome/browser/context_hub/record_replay/skill_recording_service.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -106,6 +108,46 @@ void TabActiveObserver::DidGetUserInteraction(
   service_->CaptureAction(
       browser::context_hub::mojom::SkillRecordingActionType::kLeftClick,
       std::move(description));
+}
+
+void TabActiveObserver::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+    return;
+  }
+  content::RenderFrameHost* main_rfh = web_contents()->GetPrimaryMainFrame();
+  if (!main_rfh || main_rfh->IsErrorDocument()) {
+    return;
+  }
+  GURL sanitized_url =
+      SanitizeRecordedUrl(web_contents()->GetLastCommittedURL());
+  if (sanitized_url.is_empty()) {
+    return;
+  }
+  const bool same_sanitized_url =
+      sanitized_url ==
+      SanitizeRecordedUrl(navigation_handle->GetPreviousPrimaryMainFrameURL());
+  const bool is_ungestured_renderer_nav =
+      navigation_handle->IsRendererInitiated() &&
+      !navigation_handle->HasUserGesture();
+  // TODO(crbug.com/582756003): Stripping query parameters and fragments in
+  // `SanitizeRecordedUrl()` causes `same_sanitized_url` to skip same-document
+  // hash/query-only transitions (e.g., SPA tabs/filters or in-page searches).
+  // Click recording already covers clicked SPA controls, and Enter/submit
+  // recording will cover in-page searches; revisit if evals show gaps (e.g.,
+  // Back/Forward or bookmark transitions).
+  if (navigation_handle->IsSameDocument()) {
+    if (is_ungestured_renderer_nav || navigation_handle->DidReplaceEntry() ||
+        same_sanitized_url) {
+      return;
+    }
+  } else if (is_ungestured_renderer_nav && same_sanitized_url) {
+    return;
+  }
+  service_->CaptureAction(
+      browser::context_hub::mojom::SkillRecordingActionType::kNavigation,
+      base::StrCat({"Navigated to ", sanitized_url.spec()}));
 }
 
 void TabActiveObserver::OnInputEvent(const content::RenderWidgetHost& host,

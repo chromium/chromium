@@ -93,8 +93,9 @@ class SkillRecordingService final : public KeyedService,
 
   std::optional<base::TimeTicks> start_time() const { return start_time_; }
 
-  // Captures a user action of the given `type` and requests a viewport
-  // screenshot.
+  // Captures a user action of the given `type` and, for action types that
+  // include visual context, requests a viewport screenshot of the active
+  // HTTP/HTTPS page.
   void CaptureAction(browser::context_hub::mojom::SkillRecordingActionType type,
                      std::string description);
 
@@ -151,6 +152,8 @@ class SkillRecordingService final : public KeyedService,
   void OnScreenshotCaptured(
       size_t action_index,
       page_content_annotations::FetchPageContextResultCallbackArg result);
+  void MaybeCaptureTabSwitch();
+  void SwitchActiveBrowser(BrowserWindowInterface* browser);
   void ObserveActiveTabInBrowser(BrowserWindowInterface* browser);
   void ObserveWebContents(content::WebContents* web_contents);
 

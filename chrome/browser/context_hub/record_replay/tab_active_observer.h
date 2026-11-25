@@ -20,6 +20,7 @@ class WebInputEvent;
 }  // namespace blink
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
@@ -28,8 +29,8 @@ namespace context_hub {
 
 class SkillRecordingService;
 
-// Helper class to observe user interactions on the currently active tab's
-// `WebContents`.
+// Helper class to observe user interactions and primary main-frame navigations
+// on the currently active tab's `WebContents`.
 class TabActiveObserver final
     : public content::WebContentsObserver,
       public content::RenderWidgetHost::InputEventObserver,
@@ -59,6 +60,8 @@ class TabActiveObserver final
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // content::RenderWidgetHost::InputEventObserver:
   void OnInputEvent(const content::RenderWidgetHost& host,
