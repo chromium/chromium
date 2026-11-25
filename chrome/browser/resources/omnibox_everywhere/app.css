@@ -23,7 +23,7 @@
 }
 
 :host([small-loomnibox]) {
-  --loomnibox-content-width: 480px;
+  --loomnibox-content-width: 408px;
 }
 
 :host([small-font]) {
@@ -43,7 +43,7 @@
 }
 
 :host([dynamic-sizing][small-loomnibox]) {
-  --loomnibox-content-width: 480px;
+  --loomnibox-content-width: 408px;
 }
 
 :host(:not([is-active])) {

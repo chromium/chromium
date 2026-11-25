@@ -174,7 +174,7 @@ const base::FeatureParam<bool> kOmniboxEverywhereProfilePickerParam{
 // Controls showing most visited tiles in OmniboxEverywhere.
 const base::FeatureParam<bool> kOmniboxEverywhereMostVisitedParam{
     &kOmniboxEverywhere, "MostVisited", true};
-// Controls whether small Loomnibox (480px width) is enabled.
+// Controls whether small Loomnibox (408px width) is enabled.
 const base::FeatureParam<bool> kOmniboxEverywhereSmallLoomniboxParam{
     &kOmniboxEverywhere, "smallLoomnibox", false};
 // Controls whether dynamic sizing is enabled for OmniboxEverywhere.

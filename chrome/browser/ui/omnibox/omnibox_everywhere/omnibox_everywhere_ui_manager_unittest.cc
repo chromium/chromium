@@ -452,7 +452,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, SmallLoomniboxBounds) {
   EXPECT_EQ(
       widget->GetWindowBoundsInScreen(),
       gfx::Rect(
-          696, 464,
+          732, 464,
           omnibox_everywhere::OmniboxEverywhereUIManager::kPopupSmallFixedWidth,
           omnibox_everywhere::OmniboxEverywhereUIManager::
               kDefaultRestingHeight));
@@ -491,7 +491,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DynamicSizingBounds_PersistentMode) {
 
   const gfx::Rect initial_bounds = widget->GetWindowBoundsInScreen();
   EXPECT_EQ(initial_bounds,
-            gfx::Rect(688, 464,
+            gfx::Rect(724, 464,
                       omnibox_everywhere::OmniboxEverywhereUIManager::
                           kDynamicPopupSmallFixedWidth,
                       omnibox_everywhere::OmniboxEverywhereUIManager::
