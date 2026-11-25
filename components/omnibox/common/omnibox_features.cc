@@ -721,9 +721,9 @@ BASE_FEATURE(kOmniboxSessionlessVoiceSearch, ENABLED);
 // Kill switch for suppressing status icon during HTTP/HTTPS navigation.
 BASE_FEATURE(kSuppressStatusIconDuringHttpNavigation, ENABLED);
 
-// Enables computing and probing alternative navigation matches for intranet
-// redirects on Android.
-BASE_FEATURE(kOmniboxAndroidIntranetRedirect, DISABLED);
+// Kill switch for computing and probing alternative navigation matches for
+// intranet redirects on Android.
+BASE_FEATURE(kOmniboxAndroidIntranetRedirect, ENABLED);
 
 // If enabled, the Omnibox, New Tab Page and toolbar mic buttons delegate voice
 // capture and transcription to the Android Google App Voice Plate (via an
