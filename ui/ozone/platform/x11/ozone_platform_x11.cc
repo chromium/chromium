@@ -9,7 +9,9 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -65,6 +67,28 @@
 namespace ui {
 
 namespace {
+
+OzonePlatform::PlatformProperties& GetMutablePlatformProperties() {
+  static base::NoDestructor<OzonePlatform::PlatformProperties> properties;
+  static const bool initialized = [] {
+    properties->custom_frame_pref_default = ui::GetCustomFramePrefDefault();
+
+    // When the Ozone X11 backend is running, use a UI loop to grab Expose
+    // events. See GLSurfaceGLX and https://crbug.com/326995.
+    properties->message_pump_type_for_gpu = base::MessagePumpType::UI;
+    // When the Ozone X11 backend is running, use a UI loop to dispatch
+    // SHM completion events.
+    properties->message_pump_type_for_viz_compositor =
+        base::MessagePumpType::UI;
+    properties->supports_vulkan_swap_chain = true;
+    properties->skia_can_fall_back_to_x11 = true;
+    properties->platform_shows_drag_image = false;
+    properties->app_modal_dialogs_use_event_blocker = true;
+    return true;
+  }();
+  (void)initialized;
+  return *properties;
+}
 
 // Singleton OzonePlatform implementation for X11 platform.
 class OzonePlatformX11 : public OzonePlatform,
@@ -184,27 +208,7 @@ class OzonePlatformX11 : public OzonePlatform,
   }
 
   const PlatformProperties& GetPlatformProperties() override {
-    static base::NoDestructor<OzonePlatform::PlatformProperties> properties;
-    static bool initialised = false;
-    if (!initialised) {
-      properties->custom_frame_pref_default = ui::GetCustomFramePrefDefault();
-
-      // When the Ozone X11 backend is running, use a UI loop to grab Expose
-      // events. See GLSurfaceGLX and https://crbug.com/326995.
-      properties->message_pump_type_for_gpu = base::MessagePumpType::UI;
-      // When the Ozone X11 backend is running, use a UI loop to dispatch
-      // SHM completion events.
-      properties->message_pump_type_for_viz_compositor =
-          base::MessagePumpType::UI;
-      properties->supports_vulkan_swap_chain = true;
-      properties->skia_can_fall_back_to_x11 = true;
-      properties->platform_shows_drag_image = false;
-      properties->app_modal_dialogs_use_event_blocker = true;
-
-      initialised = true;
-    }
-
-    return *properties;
+    return GetMutablePlatformProperties();
   }
 
   const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
@@ -253,6 +257,11 @@ class OzonePlatformX11 : public OzonePlatform,
 
     InitializeCommon(params);
     CreatePlatformEventSource();
+    wm_properties_subscription_ =
+        x11::Connection::Get()->RegisterWmPropertiesChangedCallback(
+            base::BindRepeating(&OzonePlatformX11::OnWmPropertiesChanged,
+                                weak_factory_.GetWeakPtr()));
+    OnWmPropertiesChanged();
     overlay_manager_ = std::make_unique<StubOverlayManager>();
     input_controller_ = std::make_unique<StubInputController>();
     clipboard_ = std::make_unique<X11ClipboardOzone>();
@@ -335,9 +344,20 @@ class OzonePlatformX11 : public OzonePlatform,
     event_source_ = std::make_unique<X11EventSource>(connection);
   }
 
+  void OnWmPropertiesChanged() {
+    auto& properties = GetMutablePlatformProperties();
+    const bool custom_frame_pref_default = ui::GetCustomFramePrefDefault();
+    if (properties.custom_frame_pref_default == custom_frame_pref_default) {
+      return;
+    }
+    properties.custom_frame_pref_default = custom_frame_pref_default;
+    NotifyCustomFramePrefDefaultChanged();
+  }
+
   bool common_initialized_ = false;
 
   // Objects in the UI process.
+  base::CallbackListSubscription wm_properties_subscription_;
   std::unique_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;
   std::unique_ptr<OverlayManagerOzone> overlay_manager_;
   std::unique_ptr<InputController> input_controller_;
@@ -360,6 +380,8 @@ class OzonePlatformX11 : public OzonePlatform,
 #if BUILDFLAG(USE_GTK)
   std::unique_ptr<LinuxUiDelegate> linux_ui_delegate_;
 #endif
+
+  base::WeakPtrFactory<OzonePlatformX11> weak_factory_{this};
 };
 
 }  // namespace

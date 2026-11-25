@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/chrome_linux_ui_getter.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
@@ -19,6 +20,7 @@
 #include "ui/linux/linux_ui_factory.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace {
 
@@ -117,7 +119,37 @@ SystemThemeLinux::~SystemThemeLinux() = default;
 
 }  // namespace
 
+ThemeServiceAuraLinux::ThemeServiceAuraLinux(Profile* profile,
+                                             const ThemeHelper& theme_helper)
+    : ThemeService(profile, theme_helper) {}
+
 ThemeServiceAuraLinux::~ThemeServiceAuraLinux() = default;
+
+void ThemeServiceAuraLinux::Init() {
+  ThemeService::Init();
+  if (ui::OzonePlatform::IsInitialized() &&
+      profile()->GetPrefs()->FindPreference(prefs::kUseCustomChromeFrame)) {
+    UpdateCustomFramePrefDefault();
+    custom_frame_pref_default_subscription_ =
+        ui::OzonePlatform::GetInstance()
+            ->RegisterCustomFramePrefDefaultChangedCallback(base::BindRepeating(
+                &ThemeServiceAuraLinux::UpdateCustomFramePrefDefault,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void ThemeServiceAuraLinux::Shutdown() {
+  custom_frame_pref_default_subscription_ = {};
+  ThemeService::Shutdown();
+}
+
+void ThemeServiceAuraLinux::UpdateCustomFramePrefDefault() {
+  profile()->GetPrefs()->SetDefaultPrefValue(
+      prefs::kUseCustomChromeFrame,
+      base::Value(ui::OzonePlatform::GetInstance()
+                      ->GetPlatformProperties()
+                      .custom_frame_pref_default));
+}
 
 ui::SystemTheme ThemeServiceAuraLinux::GetDefaultSystemTheme() const {
   return GetSystemThemeForProfile(profile());

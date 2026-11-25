@@ -107,7 +107,7 @@ class ThemeService : public KeyedService,
   ThemeService& operator=(const ThemeService&) = delete;
   ~ThemeService() override;
 
-  void Init();
+  virtual void Init();
 
   // KeyedService:
   void Shutdown() override;

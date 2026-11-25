@@ -4,6 +4,7 @@
 
 #include "ui/gfx/x/property_cache.h"
 
+#include <algorithm>
 #include <limits>
 
 #include "base/check_op.h"
@@ -36,6 +37,12 @@ PropertyCache::PropertyCache(Connection* connection,
 
 PropertyCache::~PropertyCache() {
   connection_->RemoveEventObserver(this);
+}
+
+bool PropertyCache::HasResponses() const {
+  return std::ranges::all_of(properties_, [](const auto& entry) {
+    return entry.second.response.has_value();
+  });
 }
 
 const GetPropertyResponse& PropertyCache::Get(Atom atom) {

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -342,6 +343,13 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // See https://crbug.com/1212555
   virtual bool ShouldUseCustomFrame();
 
+  // Registers a callback invoked on the UI thread when
+  // `GetPlatformProperties().custom_frame_pref_default` changes at runtime
+  // (e.g., when an X11 window manager finishes starting up after the X server
+  // accepted the initial connection).
+  base::CallbackListSubscription RegisterCustomFramePrefDefaultChangedCallback(
+      base::RepeatingClosure callback);
+
   // Returns a struct that contains configuration and requirements for the
   // current platform implementation. This can be called from either host or GPU
   // process at any time.
@@ -391,6 +399,8 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
 
   bool single_process() const { return single_process_; }
 
+  void NotifyCustomFramePrefDefaultChanged();
+
   static bool ShouldFailInitializeUIForTest();
 
  private:
@@ -423,6 +433,8 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // modifications to |single_process_| visible by other threads. Mutex is not
   // needed since it's set before other threads are started.
   volatile bool single_process_ = false;
+
+  base::RepeatingClosureList custom_frame_pref_default_changed_callbacks_;
 };
 
 }  // namespace ui

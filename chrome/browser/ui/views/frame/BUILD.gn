@@ -2541,6 +2541,19 @@ source_set("interactive_ui_tests") {
       "//ui/linux:linux_ui",
       "//ui/linux:test_support",
     ]
+    if (ozone_platform_x11) {
+      sources +=
+          [ "browser_native_widget_aura_linux_x11_interactive_uitest.cc" ]
+      deps += [
+        "//chrome/browser/profiles:profile",
+        "//chrome/browser/themes",
+        "//chrome/common",
+        "//components/prefs",
+        "//ui/aura",
+        "//ui/color",
+        "//ui/gfx/x",
+      ]
+    }
   }
 
   if (is_mac) {

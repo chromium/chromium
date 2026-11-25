@@ -40,6 +40,9 @@ class COMPONENT_EXPORT(X11) PropertyCache : public EventObserver {
 
   Window window() const { return window_; }
 
+  // Returns true if every watched property has received at least one response.
+  bool HasResponses() const;
+
   // Synchronously retrieves the cached property response, blocking if the
   // initial response has not yet been received. Note that this method does not
   // invoke `OnChangeCallback`; the callback is only invoked when property

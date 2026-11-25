@@ -8,12 +8,15 @@
 #include <array>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
 #include "base/sequence_checker.h"
@@ -471,11 +474,17 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   bool WmSupportsHint(Atom atom);
 
+  // Registers a callback invoked when cached root or window-manager EWMH
+  // properties finish updating.
+  base::CallbackListSubscription RegisterWmPropertiesChangedCallback(
+      base::RepeatingClosure callback);
+
  private:
   friend class FutureBase;
   friend class FutureImpl;
   template <typename Reply>
   friend class Future;
+  FRIEND_TEST_ALL_PREFIXES(X11ConnectionTest, WmPropertiesChangedCallback);
 
   struct Request {
     explicit Request(ResponseCallback callback);
@@ -548,6 +557,12 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   void OnRootPropertyChanged(Atom property, const GetPropertyResponse& value);
 
+  void OnWmPropertyChanged(Atom property, const GetPropertyResponse& value);
+
+  void ResetWmProps(Window wm_window);
+
+  void NotifyWmPropertiesChanged();
+
   bool WmSupportsEwmh();
 
   void AttemptSyncWithWm();
@@ -617,6 +632,9 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   std::unique_ptr<PropertyCache> root_props_;
   std::unique_ptr<PropertyCache> wm_props_;
+  base::RepeatingClosureList wm_properties_changed_callbacks_;
+
+  base::WeakPtrFactory<Connection> weak_factory_{this};
 };
 
 // Grab/release the X server connection within a scope. This can help avoid race

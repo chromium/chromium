@@ -346,6 +346,12 @@ bool Connection::WmSupportsHint(Atom atom) {
   return false;
 }
 
+base::CallbackListSubscription Connection::RegisterWmPropertiesChangedCallback(
+    base::RepeatingClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return wm_properties_changed_callbacks_.Add(std::move(callback));
+}
+
 Connection::Request::Request(ResponseCallback callback)
     : callback(std::move(callback)) {}
 
@@ -524,6 +530,8 @@ std::unique_ptr<Connection> Connection::Clone() const {
 
 void Connection::DetachFromSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  wm_props_.reset();
+  weak_factory_.InvalidateWeakPtrs();
   DETACH_FROM_SEQUENCE(sequence_checker_);
   SupportsUserData::DetachFromSequence();
 }
@@ -953,34 +961,49 @@ void Connection::OnRootPropertyChanged(Atom property,
   // rely on `value` directly.
   Atom check_atom = GetAtom("_NET_SUPPORTING_WM_CHECK");
   if (property == check_atom) {
-    // We've detected a new window manager, which may have different behavior
-    // when attempting to use WmSync.  Attempt to sync with the window manager
-    // so we know which behavior WmSync should use.
+    // A new window manager was detected, which may have different behavior
+    // when attempting to use WmSync. Attempt to sync with the window manager
+    // to determine which behavior WmSync should use.
     AttemptSyncWithWm();
-    Window wm_window = GetWindowPropertyAsWindow(value);
-    if (!wm_props_ || wm_props_->window() != wm_window) {
-      wm_props_.reset();
-      if (wm_window != Window::None) {
-        wm_props_ = std::make_unique<PropertyCache>(
-            this, wm_window,
-            std::vector<Atom>{check_atom, GetAtom("_NET_WM_NAME")});
-      }
-    }
+    ResetWmProps(GetWindowPropertyAsWindow(value));
   }
+  NotifyWmPropertiesChanged();
+}
+
+void Connection::OnWmPropertyChanged(Atom property,
+                                     const GetPropertyResponse& value) {
+  NotifyWmPropertiesChanged();
+}
+
+void Connection::ResetWmProps(Window wm_window) {
+  if (wm_window == Window::None) {
+    wm_props_.reset();
+    return;
+  }
+  if (!wm_props_ || wm_props_->window() != wm_window) {
+    wm_props_ = std::make_unique<PropertyCache>(
+        this, wm_window,
+        std::vector<Atom>{GetAtom("_NET_SUPPORTING_WM_CHECK"),
+                          GetAtom("_NET_WM_NAME")},
+        base::BindRepeating(&Connection::OnWmPropertyChanged,
+                            weak_factory_.GetWeakPtr()));
+  }
+}
+
+void Connection::NotifyWmPropertiesChanged() {
+  if (!root_props_ || !root_props_->HasResponses() ||
+      (wm_props_ && !wm_props_->HasResponses())) {
+    return;
+  }
+  wm_properties_changed_callbacks_.Notify();
 }
 
 bool Connection::WmSupportsEwmh() {
   Atom check_atom = GetAtom("_NET_SUPPORTING_WM_CHECK");
   Window wm_window = GetWindowPropertyAsWindow(root_props_->Get(check_atom));
-
-  if (wm_window == Window::None) {
-    wm_props_.reset();
+  ResetWmProps(wm_window);
+  if (!wm_props_) {
     return false;
-  }
-  if (!wm_props_ || wm_props_->window() != wm_window) {
-    wm_props_ = std::make_unique<PropertyCache>(
-        this, wm_window,
-        std::vector<Atom>{check_atom, GetAtom("_NET_WM_NAME")});
   }
   if (const Window* wm_check = wm_props_->GetAs<Window>(check_atom)) {
     return *wm_check == wm_window;

@@ -980,6 +980,9 @@ void X11Window::Deactivate() {
 void X11Window::SetUseNativeFrame(bool use_native_frame) {
   use_native_frame_ = use_native_frame;
   SetUseOSWindowFrame(xwindow_, use_native_frame);
+  SetHideTitlebarWhenMaximizedProperty(
+      xwindow_, use_native_frame ? SHOW_TITLEBAR_WHEN_MAXIMIZED
+                                 : HIDE_TITLEBAR_WHEN_MAXIMIZED);
   ResetWindowRegion();
 }
 
@@ -1237,17 +1240,10 @@ bool X11Window::CanSetDecorationInsets() const {
   // c26c9394), while all older releases do, so use that to detect a buggy
   // Xfwm4. The block below should be removed once Xfwm4 4.16 and older are no
   // longer supported. See https://crbug.com/40804717.
-  {
-    static WindowManagerName wm_name = WM_OTHER;
-    static bool checked_for_wm = false;
-    if (!checked_for_wm) {
-      wm_name = GuessWindowManager();
-      checked_for_wm = true;
-    }
-    if (wm_name == WM_XFWM4 && connection_->WmSupportsHint(connection_->GetAtom(
-                                   "_NET_SYSTEM_TRAY_OPCODE"))) {
-      return false;
-    }
+  if (GuessWindowManager() == WM_XFWM4 &&
+      connection_->WmSupportsHint(
+          connection_->GetAtom("_NET_SYSTEM_TRAY_OPCODE"))) {
+    return false;
   }
   return connection_->WmSupportsHint(
       connection_->GetAtom("_GTK_FRAME_EXTENTS"));
@@ -1445,11 +1441,18 @@ bool X11Window::IsWmSyncActiveForTest() {
 }
 
 void X11Window::OnFrameTypeChanged() {
-  const std::optional<gfx::Insets> old_insets_px = decoration_insets_in_pixels_;
+  // Before the window is mapped, the initial bounds already account for the
+  // current frame, so there is nothing to adjust.
+  if (!window_mapped_in_client_) {
+    UpdateDecorationInsets();
+    return;
+  }
+  const gfx::Insets old_insets_px =
+      decoration_insets_in_pixels_.value_or(gfx::Insets());
   UpdateDecorationInsets();
-  // Before the insets are first set, the initial bounds already account for
-  // the current frame, so there is nothing to adjust.
-  if (!old_insets_px || *decoration_insets_in_pixels_ == *old_insets_px) {
+  const gfx::Insets new_insets_px =
+      decoration_insets_in_pixels_.value_or(gfx::Insets());
+  if (new_insets_px == old_insets_px) {
     return;
   }
 
@@ -1464,8 +1467,8 @@ void X11Window::OnFrameTypeChanged() {
   // change, so use StaticGravity until OnWmSynced().
   SetWinGravity(x11::WIN_GRAVITY_HINT_STATIC_GRAVITY);
   gfx::Rect bounds = GetBoundsInPixels();
-  bounds.Inset(*old_insets_px);
-  bounds.Inset(-*decoration_insets_in_pixels_);
+  bounds.Inset(old_insets_px);
+  bounds.Inset(-new_insets_px);
   SetBoundsInPixels(bounds);
 }
 

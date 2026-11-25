@@ -18,6 +18,7 @@
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/event_observer.h"
 #include "ui/gfx/x/future.h"
+#include "ui/gfx/x/property_cache.h"
 #include "ui/gfx/x/shm.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
@@ -399,6 +400,93 @@ TEST(X11ConnectionTest, WmSupportsEwmhSync) {
   EXPECT_FALSE(connection.GetWmName().empty());
   EXPECT_TRUE(
       connection.WmSupportsHint(connection.GetAtom("_NET_ACTIVE_WINDOW")));
+}
+
+TEST(X11ConnectionTest, WmPropertiesChangedCallback) {
+  Connection wm_conn;
+  ASSERT_TRUE(wm_conn.Ready());
+
+  // Use a dedicated window instead of `default_root()` so parallel test workers
+  // sharing Xvfb do not race on root-window EWMH properties.
+  const Window root = CreateWindow(&wm_conn);
+  const Window dummy_wm = CreateWindow(&wm_conn);
+  const Atom check_atom = wm_conn.GetAtom("_NET_SUPPORTING_WM_CHECK");
+  const Atom supported_atom = wm_conn.GetAtom("_NET_SUPPORTED");
+
+  {
+    Connection connection;
+    ASSERT_TRUE(connection.Ready());
+    connection.wm_props_.reset();
+    connection.root_props_ = std::make_unique<PropertyCache>(
+        &connection, root,
+        std::vector<Atom>{connection.GetAtom("_NET_SUPPORTING_WM_CHECK"),
+                          connection.GetAtom("_NET_SUPPORTED")},
+        base::BindRepeating(&Connection::OnRootPropertyChanged,
+                            connection.weak_factory_.GetWeakPtr()));
+
+    EXPECT_TRUE(connection.GetWmName().empty());
+    const Atom move_resize = connection.GetAtom("_NET_WM_MOVERESIZE");
+    EXPECT_FALSE(connection.WmSupportsHint(move_resize));
+
+    struct CallbackState {
+      int notifications = 0;
+      bool saw_wm = false;
+    };
+    auto state = base::MakeRefCounted<base::RefCountedData<CallbackState>>();
+    base::CallbackListSubscription subscription =
+        connection.RegisterWmPropertiesChangedCallback(base::BindRepeating(
+            [](base::WeakPtr<Connection> conn, Atom hint,
+               scoped_refptr<base::RefCountedData<CallbackState>> state) {
+              if (!conn) {
+                return;
+              }
+              ++state->data.notifications;
+              state->data.saw_wm = conn->GetWmName() == "GNOME Shell" &&
+                                   conn->WmSupportsHint(hint);
+            },
+            connection.weak_factory_.GetWeakPtr(), move_resize, state));
+    connection.Sync();
+    connection.DispatchAll();
+    state->data.notifications = 0;
+    EXPECT_FALSE(state->data.saw_wm);
+
+    wm_conn.SetProperty(dummy_wm, check_atom, Atom::WINDOW, dummy_wm);
+    wm_conn.SetStringProperty(dummy_wm, wm_conn.GetAtom("_NET_WM_NAME"),
+                              wm_conn.GetAtom("UTF8_STRING"), "GNOME Shell");
+    wm_conn.SetArrayProperty(
+        root, supported_atom, Atom::ATOM,
+        std::vector<Atom>{wm_conn.GetAtom("_NET_WM_MOVERESIZE")});
+    wm_conn.SetProperty(root, check_atom, Atom::WINDOW, dummy_wm);
+    wm_conn.Sync();
+
+    for (int i = 0; i < 8 && !state->data.saw_wm; ++i) {
+      connection.Sync();
+      connection.DispatchAll();
+    }
+
+    EXPECT_GE(state->data.notifications, 1);
+    EXPECT_TRUE(state->data.saw_wm);
+    EXPECT_EQ(connection.GetWmName(), "GNOME Shell");
+    EXPECT_TRUE(connection.WmSupportsHint(move_resize));
+
+    state->data.notifications = 0;
+    wm_conn.DeleteProperty(root, check_atom);
+    wm_conn.Sync();
+
+    for (int i = 0; i < 8 && state->data.saw_wm; ++i) {
+      connection.Sync();
+      connection.DispatchAll();
+    }
+
+    EXPECT_GE(state->data.notifications, 1);
+    EXPECT_FALSE(state->data.saw_wm);
+    EXPECT_TRUE(connection.GetWmName().empty());
+    EXPECT_FALSE(connection.WmSupportsHint(move_resize));
+  }
+
+  wm_conn.DestroyWindow({dummy_wm});
+  wm_conn.DestroyWindow({root});
+  wm_conn.Sync();
 }
 
 }  // namespace x11

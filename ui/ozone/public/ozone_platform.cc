@@ -172,6 +172,16 @@ bool OzonePlatform::ShouldUseCustomFrame() {
   return GetPlatformProperties().custom_frame_pref_default;
 }
 
+base::CallbackListSubscription
+OzonePlatform::RegisterCustomFramePrefDefaultChangedCallback(
+    base::RepeatingClosure callback) {
+  return custom_frame_pref_default_changed_callbacks_.Add(std::move(callback));
+}
+
+void OzonePlatform::NotifyCustomFramePrefDefaultChanged() {
+  custom_frame_pref_default_changed_callbacks_.Notify();
+}
+
 const OzonePlatform::PlatformProperties&
 OzonePlatform::GetPlatformProperties() {
   static const base::NoDestructor<OzonePlatform::PlatformProperties> properties;
