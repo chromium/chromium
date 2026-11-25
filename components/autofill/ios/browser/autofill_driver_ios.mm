@@ -634,8 +634,13 @@ void AutofillDriverIOS::FormSubmitted(
 void AutofillDriverIOS::CaretMovedInFormField(const FormData& form,
                                               const FieldGlobalId& field_id,
                                               const gfx::Rect& caret_bounds) {
-  GetAutofillManager().OnCaretMovedInFormField(form, field_id, caret_bounds,
-                                               /*pass_key=*/{});
+  auto callback = [](AutofillDriver& driver, const FormData& form,
+                     const FieldGlobalId& field_id,
+                     const gfx::Rect& caret_bounds) {
+    driver.GetAutofillManager().OnCaretMovedInFormField(
+        form, field_id, caret_bounds, /*pass_key=*/{});
+  };
+  router_->CaretMovedInFormField(callback, *this, form, field_id, caret_bounds);
 }
 
 void AutofillDriverIOS::TextFieldValueChanged(const FormData& form,
