@@ -208,6 +208,12 @@ bool ThemeSource::AllowCaching() {
   return false;
 }
 
+bool ThemeSource::ShouldReplaceExistingSource() {
+  // Leave the existing DataSource in place; ThemeSource holds no per-instance
+  // theme state, so replacing it on every WebUI creation is unnecessary.
+  return false;
+}
+
 bool ThemeSource::ShouldServiceRequest(const GURL& url,
                                        content::BrowserContext* browser_context,
                                        int render_process_id) {
