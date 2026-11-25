@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -64,6 +65,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/range/range.h"
@@ -161,11 +163,9 @@ class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
       const TabGroupHighlightPathGenerator&) = delete;
 
   // views::HighlightPathGenerator:
-  SkPath GetHighlightPath(const views::View* view) override {
-    return SkPath::RRect(SkRRect::MakeRectXY(
-        gfx::RectToSkRect(view->GetLocalBounds()),
-        style_->GetHighlightPathGeneratorCornerRadius(title_),
-        style_->GetHighlightPathGeneratorCornerRadius(title_)));
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+    return gfx::RRectF(rect,
+                       style_->GetHighlightPathGeneratorCornerRadii(title_));
   }
 
  private:
@@ -607,13 +607,13 @@ void TabGroupHeader::VisualsChanged() {
         tab_slot_controller_->GetGroupColorId(tab_group_id), is_ephemeral_);
     unfocus_chip_->UpdateAccessibleName();
     if (is_focused) {
-      const gfx::Point origin = TabGroupStyle::GetTitleChipOffset(std::nullopt);
-      const int chip_height = GetChipHeight();
+      const gfx::Point origin = TabGroupStyle::GetHeaderOffset(std::nullopt);
+      const int unfocus_height = TabGroupStyle::GetUnfocusButtonHeight();
       const int unfocus_width =
-          unfocus_chip_->GetPreferredSize(views::SizeBounds({}, chip_height))
+          unfocus_chip_->GetPreferredSize(views::SizeBounds({}, unfocus_height))
               .width();
       unfocus_chip_->SetBounds(origin.x(), GetChipY(), unfocus_width,
-                               chip_height);
+                               unfocus_height);
     }
   }
 
@@ -722,12 +722,11 @@ int TabGroupHeader::GetChipHeight() const {
   const bool is_focused =
       is_ephemeral_ ||
       tab_slot_controller_->GetFocusedGroup() == group().value();
-  return is_focused ? TabGroupStyle::GetFocusedChipHeight()
-                    : TabGroupStyle::GetEmptyChipSize();
+  return TabGroupStyle::GetHeaderHeight(is_focused);
 }
 
 int TabGroupHeader::GetChipY() const {
-  return TabGroupStyle::GetTitleChipOffset(GetChipHeight()).y();
+  return TabGroupStyle::GetHeaderOffset(GetChipHeight()).y();
 }
 
 bool TabGroupHeader::ShouldShowHeaderIcon() const {
@@ -829,22 +828,19 @@ void TabGroupHeader::CreateHeaderWithoutTitle() {
   const int chip_height = GetChipHeight();
   const int chip_y = GetChipY();
   const int empty_width = chip_height;
-  const gfx::Point empty_origin =
-      TabGroupStyle::GetTitleChipOffset(std::nullopt);
+  const gfx::Point empty_origin = TabGroupStyle::GetHeaderOffset(std::nullopt);
 
   const bool is_focused =
       is_ephemeral_ ||
       tab_slot_controller_->GetFocusedGroup() == group().value();
-  const float radius = is_focused ? TabGroupStyle::GetFocusedChipCornerRadius()
-                                  : TabGroupStyle::GetChipCornerRadius();
-  const gfx::RoundedCornersF radii =
-      is_focused ? gfx::RoundedCornersF(2.0f, radius, radius, 2.0f)
-                 : gfx::RoundedCornersF(radius);
 
   title_chip_->SetBounds(empty_origin.x() + GetUnfocusChipWidthWithGap(),
                          chip_y, empty_width, chip_height);
   title_chip_->SetBackground(
-      is_focused ? views::CreateRoundedRectBackground(color_, radii)
+      is_focused ? views::CreateRoundedRectBackground(
+                       color_, TabGroupStyle::GetHeaderCornerRadii(
+                                   TabStripOrientation::kHorizontal,
+                                   /*focus_progress=*/1.0f))
                  : group_style_->GetEmptyTitleChipBackground(color_));
 
   const int sync_icon_width = group_style_->GetSyncIconWidth();
@@ -852,9 +848,8 @@ void TabGroupHeader::CreateHeaderWithoutTitle() {
   if (should_show_header_icon_) {
     const bool should_show_attention_indicator = ShouldShowAttentionIndicator();
     if (should_show_attention_indicator) {
-      const gfx::Insets title_chip_insets =
-          is_focused ? TabGroupStyle::GetInsetsForFocusedHeaderChip()
-                     : TabGroupStyle::GetInsetsForHeaderChip();
+      const gfx::Insets title_chip_insets = TabGroupStyle::GetHeaderInsets(
+          TabStripOrientation::kHorizontal, is_focused);
       const int title_chip_vertical_inset = 0;
       gfx::Rect title_chip_bounds = title_chip_->GetLocalBounds();
       const int attention_indicator_width =
@@ -926,24 +921,17 @@ void TabGroupHeader::CreateHeaderWithTitle() {
   const bool is_focused =
       is_ephemeral_ ||
       tab_slot_controller_->GetFocusedGroup() == group().value();
-  const gfx::Insets title_chip_insets =
-      is_focused ? TabGroupStyle::GetInsetsForFocusedHeaderChip()
-                 : TabGroupStyle::GetInsetsForHeaderChip();
+  const gfx::Insets title_chip_insets = TabGroupStyle::GetHeaderInsets(
+      TabStripOrientation::kHorizontal, is_focused);
   const int chip_height = GetChipHeight();
   const int title_chip_width =
       std::max(chip_height, total_content_width + title_chip_insets.width());
 
   const int chip_y = GetChipY();
-  const gfx::Point named_origin =
-      TabGroupStyle::GetTitleChipOffset(std::nullopt);
+  const gfx::Point named_origin = TabGroupStyle::GetHeaderOffset(std::nullopt);
 
-  const int corner_radius = is_focused
-                                ? TabGroupStyle::GetFocusedChipCornerRadius()
-                                : TabGroupStyle::GetChipCornerRadius();
-  const gfx::RoundedCornersF radii =
-      is_focused
-          ? gfx::RoundedCornersF(2.0f, corner_radius, corner_radius, 2.0f)
-          : gfx::RoundedCornersF(corner_radius);
+  const gfx::RoundedCornersF radii = TabGroupStyle::GetHeaderCornerRadii(
+      TabStripOrientation::kHorizontal, is_focused ? 1.0f : 0.0f);
   title_chip_->SetBounds(named_origin.x() + GetUnfocusChipWidthWithGap(),
                          chip_y, title_chip_width, chip_height);
   title_chip_->SetBackground(views::CreateRoundedRectBackground(color_, radii));

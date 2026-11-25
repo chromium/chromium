@@ -91,7 +91,7 @@ views::ProposedLayout TabGroupViewHorizontalLayout::CalculateProposedLayout(
   const int header_width = header.total_width();
   if (TabGroupView().group_header_) {
     const int header_y =
-        TabGroupStyle::GetTitleChipOffset(header.header_height).y();
+        TabGroupStyle::GetHeaderOffset(header.header_height).y();
     if (TabGroupView().unfocus_header_) {
       const bool unfocus_visible = TabGroupView().ShouldShowUnfocusButton();
       layouts.child_layouts.emplace_back(
@@ -213,20 +213,23 @@ TabGroupViewHorizontalLayout::ComputeHeaderInfo() const {
   // as the group gains focus; both reverse as it loses focus. Ephemeral groups
   // always use the focused height and instead collapse horizontally to zero
   // width as they dissolve.
-  const int focused_height = TabGroupStyle::GetFocusedChipHeight();
+  const int focused_height =
+      TabGroupStyle::GetHeaderHeight(/*in_focused_state=*/true);
   info.header_height =
       TabGroupView().is_ephemeral()
           ? focused_height
-          : gfx::Tween::LinearIntValueBetween(focus_progress,
-                                              TabGroupStyle::GetEmptyChipSize(),
-                                              focused_height);
+          : gfx::Tween::LinearIntValueBetween(
+                focus_progress,
+                TabGroupStyle::GetHeaderHeight(/*in_focused_state=*/false),
+                focused_height);
 
   if (TabGroupView().unfocus_header_) {
     info.unfocus_width = gfx::Tween::LinearIntValueBetween(
         focus_progress, 0,
         TabGroupView()
             .unfocus_header_
-            ->GetPreferredSize(views::SizeBounds({}, focused_height))
+            ->GetPreferredSize(
+                views::SizeBounds({}, TabGroupStyle::GetUnfocusButtonHeight()))
             .width());
     if (info.unfocus_width > 0) {
       info.gap = gfx::Tween::LinearIntValueBetween(focus_progress, 0,
@@ -238,7 +241,7 @@ TabGroupViewHorizontalLayout::ComputeHeaderInfo() const {
           .group_header_
           ->GetPreferredSize(views::SizeBounds({}, info.header_height))
           .width();
-  const int target_overlap = TabGroupStyle::GetTabGroupOverlapAdjustment();
+  const int target_overlap = TabGroupStyle::GetOverlapAdjustment();
   info.header_width = TabGroupView().is_ephemeral()
                           ? gfx::Tween::LinearIntValueBetween(
                                 focus_progress, 0, target_header_width)

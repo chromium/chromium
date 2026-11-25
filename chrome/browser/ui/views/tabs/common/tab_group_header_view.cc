@@ -290,7 +290,10 @@ TabGroupHeaderView::TabGroupHeaderView(
   // Rounds the corners of the focus ring to match the header's shape
   views::HighlightPathGenerator::Install(
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
-                gfx::Insets(kFocusRingInset), GetCornerRadius()));
+                gfx::Insets(kFocusRingInset),
+                TabGroupStyle::GetHeaderCornerRadii(
+                    orientation_,
+                    delegate_->ShouldUseFocusedHeaderStyle() ? 1.0f : 0.0f)));
 
   set_context_menu_controller(this);
 }
@@ -334,11 +337,10 @@ gfx::Size TabGroupHeaderView::CalculatePreferredSize(
                              sync_icon_width_with_margin;
   label_width = std::min(label_width, text_max_width);
 
-  const int chip_height = delegate_->ShouldUseFocusedHeaderStyle()
-                              ? TabGroupStyle::GetFocusedChipHeight()
-                              : TabGroupStyle::GetEmptyChipSize();
-  size.set_width(std::max(chip_height, non_label_width + label_width));
-  size.set_height(chip_height);
+  const int header_height =
+      TabGroupStyle::GetHeaderHeight(delegate_->ShouldUseFocusedHeaderStyle());
+  size.set_width(std::max(header_height, non_label_width + label_width));
+  size.set_height(header_height);
   return size;
 }
 
@@ -829,11 +831,11 @@ void TabGroupHeaderView::UpdateBackground() {
   if (!GetColorProvider()) {
     return;
   }
+  const float focus_progress = focus_animation_state_.progress.value_or(
+      delegate_->ShouldUseFocusedHeaderStyle() ? 1.0f : 0.0f);
   SetBackground(views::CreateRoundedRectBackground(
       GetBackgroundColor(),
-      TabGroupStyle::GetHeaderCornerRadii(
-          orientation_, delegate_->ShouldUseFocusedHeaderStyle(),
-          focus_animation_state_.progress)));
+      TabGroupStyle::GetHeaderCornerRadii(orientation_, focus_progress)));
 }
 
 void TabGroupHeaderView::UpdateEditorBubbleButtonVisibility(
@@ -905,16 +907,6 @@ void TabGroupHeaderView::ShowEditorBubble() {
       /*stop_context_menu_propagation=*/false));
 }
 
-int TabGroupHeaderView::GetCornerRadius() const {
-  return delegate_->ShouldUseFocusedHeaderStyle()
-             ? TabGroupStyle::GetFocusedChipCornerRadius(orientation_)
-             : TabGroupStyle::GetChipCornerRadius(orientation_);
-}
-
-int TabGroupHeaderView::GetHorizontalInset() const {
-  return TabGroupStyle::GetInsetsForHeaderChip(orientation_).left();
-}
-
 gfx::Insets TabGroupHeaderView::ApplyTitleVisualCenteringOffset(
     gfx::Insets insets) const {
   if (orientation_ == TabStripOrientation::kHorizontal && !is_shared_ &&
@@ -928,11 +920,8 @@ gfx::Insets TabGroupHeaderView::ApplyTitleVisualCenteringOffset(
 }
 
 gfx::Insets TabGroupHeaderView::GetTargetHeaderInsets() const {
-  return ApplyTitleVisualCenteringOffset(
-      orientation_ == TabStripOrientation::kHorizontal &&
-              delegate_->ShouldUseFocusedHeaderStyle()
-          ? TabGroupStyle::GetInsetsForFocusedHeaderChip()
-          : gfx::Insets::VH(0, GetHorizontalInset()));
+  return ApplyTitleVisualCenteringOffset(TabGroupStyle::GetHeaderInsets(
+      orientation_, delegate_->ShouldUseFocusedHeaderStyle()));
 }
 
 gfx::Insets TabGroupHeaderView::GetHeaderInsets() const {
@@ -942,9 +931,11 @@ gfx::Insets TabGroupHeaderView::GetHeaderInsets() const {
       focus_animation_state_.progress.has_value() && !IsEphemeralGroup()) {
     const float p = *focus_animation_state_.progress;
     const gfx::Insets unfocused = ApplyTitleVisualCenteringOffset(
-        gfx::Insets::VH(0, GetHorizontalInset()));
+        TabGroupStyle::GetHeaderInsets(orientation_,
+                                       /*in_focused_state=*/false));
     const gfx::Insets focused = ApplyTitleVisualCenteringOffset(
-        TabGroupStyle::GetInsetsForFocusedHeaderChip());
+        TabGroupStyle::GetHeaderInsets(orientation_,
+                                       /*in_focused_state=*/true));
     return gfx::Insets::TLBR(
         gfx::Tween::LinearIntValueBetween(p, unfocused.top(), focused.top()),
         gfx::Tween::LinearIntValueBetween(p, unfocused.left(), focused.left()),

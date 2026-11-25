@@ -251,7 +251,7 @@ void TabGroupView::ToggleCollapsedState(
           closing_helper->IsLastVisibleUnpinnedChild(collection_node_)
               ? TabGroupStyle::GetTrailingGroupHeaderPadding()
               : TabStyle::Get()->GetTabOverlap() -
-                    TabGroupStyle::GetTabGroupOverlapAdjustment();
+                    TabGroupStyle::GetOverlapAdjustment();
       new_override = current_override - width() +
                      group_header_->GetPreferredSize({}).width() +
                      collapsed_trailing_space;

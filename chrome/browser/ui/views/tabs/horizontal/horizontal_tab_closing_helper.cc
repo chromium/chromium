@@ -275,7 +275,7 @@ void HorizontalTabClosingHelper::OnChildWillBeRemoved(
     }
     tab_node = child_node->children()[0].get();
     if (child_node->type() == TabCollectionNode::Type::GROUP) {
-      const int header_overlap = TabGroupStyle::GetTabGroupOverlapAdjustment();
+      const int header_overlap = TabGroupStyle::GetOverlapAdjustment();
       extra_removed_width =
           std::max(0, child_node->view()->width() - tab_node->view()->width() +
                           (tab_overlap - header_overlap));

@@ -946,8 +946,8 @@ TEST_F(TabGroupHeaderViewTest, HorizontalPreferredSize_NamedGroup) {
   header->OnDataChanged(data);
 
   const gfx::Size preferred_size = header->CalculatePreferredSize({});
-  EXPECT_EQ(preferred_size.height(), TabGroupStyle::GetEmptyChipSize());
-  EXPECT_GE(preferred_size.width(), TabGroupStyle::GetEmptyChipSize());
+  EXPECT_EQ(preferred_size.height(), TabGroupStyle::GetHeaderHeight());
+  EXPECT_GE(preferred_size.width(), TabGroupStyle::GetHeaderHeight());
 }
 
 TEST_F(TabGroupHeaderViewTest, HorizontalPreferredSize_UnnamedGroup) {
@@ -976,8 +976,8 @@ TEST_F(TabGroupHeaderViewTest, HorizontalPreferredSize_UnnamedGroup) {
   const gfx::Size preferred_size = header->CalculatePreferredSize({});
   // An unnamed group header should match legacy tab strip empty chip size
   // (20x20).
-  EXPECT_EQ(preferred_size, gfx::Size(TabGroupStyle::GetEmptyChipSize(),
-                                      TabGroupStyle::GetEmptyChipSize()));
+  EXPECT_EQ(preferred_size, gfx::Size(TabGroupStyle::GetHeaderHeight(),
+                                      TabGroupStyle::GetHeaderHeight()));
 }
 
 TEST_F(TabGroupHeaderViewTest, AnchorBounds_HorizontalWithParent) {
@@ -1229,7 +1229,8 @@ TEST_F(TabGroupHeaderViewTest, FocusAnimationInsetsMatchRestingInsets) {
 
   header->SetFocusAnimationState({.progress = 1.0f});
   EXPECT_EQ(header->GetInteriorMargin(),
-            TabGroupStyle::GetInsetsForFocusedHeaderChip());
+            TabGroupStyle::GetHeaderInsets(TabStripOrientation::kHorizontal,
+                                           /*in_focused_state=*/true));
 
   header->SetFocusAnimationState({.progress = 0.0f});
   EXPECT_EQ(header->GetInteriorMargin(), unfocused_insets);
@@ -1237,8 +1238,8 @@ TEST_F(TabGroupHeaderViewTest, FocusAnimationInsetsMatchRestingInsets) {
   // Midway, each edge lies strictly between the two resting values (or equals
   // them when they coincide), so the insets really interpolate.
   header->SetFocusAnimationState({.progress = 0.5f});
-  const gfx::Insets focused_insets =
-      TabGroupStyle::GetInsetsForFocusedHeaderChip();
+  const gfx::Insets focused_insets = TabGroupStyle::GetHeaderInsets(
+      TabStripOrientation::kHorizontal, /*in_focused_state=*/true);
   const gfx::Insets mid_insets = header->GetInteriorMargin();
   const auto between = [](int value, int a, int b) {
     return value >= std::min(a, b) && value <= std::max(a, b) &&
@@ -1603,7 +1604,10 @@ TEST_F(TabGroupHeaderViewTest,
   EXPECT_CALL(delegate, IsGroupFocused()).WillRepeatedly(testing::Return(true));
 
   SetGroupTitleAndLayout(header, delegate, u"\U0001F60A");
-  EXPECT_EQ(TabGroupStyle::GetInsetsForFocusedHeaderChip().left() + 1,
+  EXPECT_EQ(TabGroupStyle::GetHeaderInsets(TabStripOrientation::kHorizontal,
+                                           /*in_focused_state=*/true)
+                    .left() +
+                1,
             header->title_label_for_testing()->x());
 }
 
@@ -1623,7 +1627,10 @@ TEST_F(TabGroupHeaderViewTest,
   EXPECT_CALL(delegate, IsGroupFocused()).WillRepeatedly(testing::Return(true));
 
   SetGroupTitleAndLayout(header, delegate, u"\U0001F60A");
-  EXPECT_EQ(TabGroupStyle::GetInsetsForFocusedHeaderChip().left() - 1,
+  EXPECT_EQ(TabGroupStyle::GetHeaderInsets(TabStripOrientation::kHorizontal,
+                                           /*in_focused_state=*/true)
+                    .left() -
+                1,
             header->title_label_for_testing()->x());
 }
 

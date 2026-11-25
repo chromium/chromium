@@ -20,34 +20,38 @@ class TabGroupStyle {
  public:
   TabGroupStyle() = delete;
 
-  static int GetTabGroupOverlapAdjustment();
-  static int GetChipCornerRadius(
-      TabStripOrientation orientation = TabStripOrientation::kHorizontal);
-  static int GetFocusedChipCornerRadius(
-      TabStripOrientation orientation = TabStripOrientation::kHorizontal);
-
-  // Corner radii for the group header and the Unfocus button, which sit
-  // against each other when a group is focused (the header follows the Unfocus
-  // button: below it in a vertical strip, after it in a horizontal one). The
-  // corners where they meet flatten to a small radius when focused and
-  // interpolate according to `animation_progress` (0.0 unfocused to 1.0
-  // focused) during a focus transition.
+  // Group header styling.
+  // Returns the height of a horizontal group header. An untitled unfocused
+  // header is square, so its width equals the unfocused height.
+  static int GetHeaderHeight(bool in_focused_state = false);
+  static gfx::Point GetHeaderOffset(
+      std::optional<int> header_height = std::nullopt);
+  static gfx::Insets GetHeaderInsets(
+      TabStripOrientation orientation = TabStripOrientation::kHorizontal,
+      bool in_focused_state = false);
+  // Corner radii for the group header, which sits adjacent to the Unfocus
+  // button when a group is focused (below it in a vertical strip, after it in a
+  // horizontal one). The corners facing the Unfocus button flatten to a small
+  // radius as `focus_progress` interpolates from 0.0 (unfocused) to 1.0
+  // (focused).
   static gfx::RoundedCornersF GetHeaderCornerRadii(
       TabStripOrientation orientation,
-      bool in_focused_state,
-      std::optional<float> animation_progress = std::nullopt);
+      float focus_progress = 0.0f);
+
+  // Unfocus button styling.
+  // Returns the height of the horizontal Unfocus button.
+  static int GetUnfocusButtonHeight();
+  static gfx::Insets GetUnfocusButtonInsets(
+      TabStripOrientation orientation = TabStripOrientation::kHorizontal);
+  // Corner radii for the Unfocus button. The corners facing the group header
+  // flatten to a small radius as `focus_progress` interpolates from 0.0
+  // (unfocused) to 1.0 (focused).
   static gfx::RoundedCornersF GetUnfocusButtonCornerRadii(
       TabStripOrientation orientation,
-      std::optional<float> animation_progress = std::nullopt);
+      float focus_progress = 1.0f);
 
-  static int GetEmptyChipSize();
-  static int GetFocusedChipHeight();
-  static gfx::Point GetTitleChipOffset(
-      std::optional<int> chip_height = std::nullopt);
-  static gfx::Insets GetInsetsForHeaderChip(
-      TabStripOrientation orientation = TabStripOrientation::kHorizontal);
-  static gfx::Insets GetInsetsForFocusedHeaderChip();
-  static gfx::Insets GetInsetsForFocusedUnfocusChip();
+  // Tab strip spacing and overlap.
+  static int GetOverlapAdjustment();
   // Returns the horizontal padding between adjacent tab group headers when
   // collapsed.
   static int GetPaddingBetweenCollapsedHeaders();
@@ -58,12 +62,14 @@ class TabGroupStyle {
   // the last item in the tab strip.
   static int GetTrailingGroupHeaderPadding();
 
+  // Group underline.
   // Thickness of the line drawn under (or beside) the tabs in a group.
   static int GetUnderlineStrokeThickness();
   // Returns how far the group underline is inset from the leading/trailing
   // edges of the group in a horizontal tab strip.
   static int GetUnderlineStrokeInset();
 
+  // Separators.
   // Returns the opacities of the separators, in physical order, for a group
   // header. Group headers never paint a leading separator: the preceding slot
   // paints it. A trailing separator is only painted while the group is
@@ -75,13 +81,6 @@ class TabGroupStyle {
   // These rules mirror HorizontalTabStyleViews::GetSeparatorOpacity(), where
   // tabs paint trailing separators by default; keep both in sync.
   static TabStyle::SeparatorOpacities GetSeparatorOpacities(
-      bool is_collapsed,
-      bool is_dragging,
-      int tab_count,
-      const TabStyleViewDelegate* adjacent_tab);
-
- private:
-  static float GetTrailingSeparatorOpacity(
       bool is_collapsed,
       bool is_dragging,
       int tab_count,

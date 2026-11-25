@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace views {
 class Background;
@@ -44,9 +45,9 @@ class TabGroupStyleViews {
   virtual std::unique_ptr<views::Background> GetEmptyTitleChipBackground(
       SkColor color) const;
 
-  // Returns the radius for the tab group header's highlight path. This is used
-  // when the header is focused.
-  virtual int GetHighlightPathGeneratorCornerRadius(
+  // Returns the corner radii for the tab group header's highlight path. This is
+  // used when the header is focused.
+  virtual gfx::RoundedCornersF GetHighlightPathGeneratorCornerRadii(
       const views::View* title) const;
 
   // While calculating desired width of a tab group an adjustment value is added

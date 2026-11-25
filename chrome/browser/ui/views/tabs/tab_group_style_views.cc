@@ -78,23 +78,23 @@ SkPath TabGroupStyleViews::GetUnderlinePath(
 
 gfx::Rect TabGroupStyleViews::GetEmptyTitleChipBounds(
     const TabGroupHeader* const header) const {
-  return gfx::Rect(TabGroupStyle::GetTitleChipOffset(std::nullopt).x(),
-                   TabGroupStyle::GetTitleChipOffset(std::nullopt).y(),
-                   TabGroupStyle::GetEmptyChipSize(),
-                   TabGroupStyle::GetEmptyChipSize());
+  const gfx::Point offset = TabGroupStyle::GetHeaderOffset(std::nullopt);
+  const int size = TabGroupStyle::GetHeaderHeight(/*in_focused_state=*/false);
+  return gfx::Rect(offset.x(), offset.y(), size, size);
 }
 
 std::unique_ptr<views::Background>
 TabGroupStyleViews::GetEmptyTitleChipBackground(const SkColor color) const {
   return views::CreateRoundedRectBackground(
-      color, TabGroupStyle::GetChipCornerRadius());
+      color, TabGroupStyle::GetHeaderCornerRadii(
+                 TabStripOrientation::kHorizontal, /*focus_progress=*/0.0f));
 }
 
-int TabGroupStyleViews::GetHighlightPathGeneratorCornerRadius(
+gfx::RoundedCornersF TabGroupStyleViews::GetHighlightPathGeneratorCornerRadii(
     const views::View* const title) const {
-  return tab_group_views_->IsFocusModeActive()
-             ? TabGroupStyle::GetFocusedChipCornerRadius()
-             : TabGroupStyle::GetChipCornerRadius();
+  return TabGroupStyle::GetHeaderCornerRadii(
+      TabStripOrientation::kHorizontal,
+      tab_group_views_->IsFocusModeActive() ? 1.0f : 0.0f);
 }
 
 int TabGroupStyleViews::GetTitleAdjustmentToTabGroupHeaderDesiredWidth(
@@ -116,5 +116,5 @@ int TabGroupStyleViews::GetTabGroupViewOverlap() const {
   // For refresh the tab has an overlap value is 18. In order to have a margin
   // of 10 from the neighbor tabs this is required.
   return TabStyle::Get()->GetTabOverlap() -
-         TabGroupStyle::GetTabGroupOverlapAdjustment();
+         TabGroupStyle::GetOverlapAdjustment();
 }

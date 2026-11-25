@@ -1889,12 +1889,12 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
   auto* header_view = group_view->group_header();
   ASSERT_NE(header_view, nullptr);
 
-  // Unnamed group header chip height and width should match legacy chip size
+  // Unnamed group header height and width should match legacy header size
   // (20x20).
-  EXPECT_EQ(header_view->bounds().height(), TabGroupStyle::GetEmptyChipSize());
-  EXPECT_EQ(header_view->bounds().width(), TabGroupStyle::GetEmptyChipSize());
+  EXPECT_EQ(header_view->bounds().height(), TabGroupStyle::GetHeaderHeight());
+  EXPECT_EQ(header_view->bounds().width(), TabGroupStyle::GetHeaderHeight());
   // Header should be vertically centered.
-  EXPECT_EQ(header_view->bounds().y(), TabGroupStyle::GetTitleChipOffset().y());
+  EXPECT_EQ(header_view->bounds().y(), TabGroupStyle::GetHeaderOffset().y());
 
   // Set a title.
   GetTabStripModel()->ChangeTabGroupVisuals(
@@ -1904,11 +1904,11 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
       false);
   tab_strip_view->GetWidget()->LayoutRootViewIfNecessary();
 
-  // Named group header chip height should remain 20 DIPs, vertically centered,
+  // Named group header height should remain 20 DIPs, vertically centered,
   // and width should expand to fit the label.
-  EXPECT_EQ(header_view->bounds().height(), TabGroupStyle::GetEmptyChipSize());
-  EXPECT_GT(header_view->bounds().width(), TabGroupStyle::GetEmptyChipSize());
-  EXPECT_EQ(header_view->bounds().y(), TabGroupStyle::GetTitleChipOffset().y());
+  EXPECT_EQ(header_view->bounds().height(), TabGroupStyle::GetHeaderHeight());
+  EXPECT_GT(header_view->bounds().width(), TabGroupStyle::GetHeaderHeight());
+  EXPECT_EQ(header_view->bounds().y(), TabGroupStyle::GetHeaderOffset().y());
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
@@ -2038,8 +2038,8 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
   ASSERT_NE(header_view, nullptr);
 
   // Visually, the header overlaps the pinned tab by
-  // TabGroupStyle::GetTabGroupOverlapAdjustment() (2 DIPs).
-  const int header_overlap = TabGroupStyle::GetTabGroupOverlapAdjustment();
+  // TabGroupStyle::GetOverlapAdjustment() (2 DIPs).
+  const int header_overlap = TabGroupStyle::GetOverlapAdjustment();
   EXPECT_EQ(pinned_tab_view->GetBoundsInScreen().right() -
                 header_view->GetBoundsInScreen().x(),
             header_overlap);
