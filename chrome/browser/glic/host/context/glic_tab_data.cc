@@ -192,6 +192,7 @@ void TabDataObserver::ClearObservation() {
   Observe(nullptr);
   deferred_update_.Stop();
   updates_since_navigation_ = 0;
+  change_causes_ = {};
   tab_detach_subscription_ = {};
   tab_.reset();
 }
@@ -204,8 +205,8 @@ void TabDataObserver::DidFinishNavigation(
   }
   if (!navigation_handle->IsSameDocument()) {
     change_causes_.Put(TabDataChangeCause::kCrossDocNavigation);
-    SendUpdate();
     updates_since_navigation_ = 0;
+    NotifyTabDataChanged();
     return;
   }
 
@@ -234,10 +235,16 @@ void TabDataObserver::SendRateLimitedUpdate() {
 }
 
 void TabDataObserver::SendUpdate() {
-  deferred_update_.Stop();
   ++updates_since_navigation_;
-  tab_data_changed_.Run({change_causes_, CreateTabData(tab_.get())});
-  change_causes_ = {};
+  NotifyTabDataChanged();
+}
+
+void TabDataObserver::NotifyTabDataChanged() {
+  deferred_update_.Stop();
+  // Clear `change_causes_` before invoking the callback because the callback
+  // may synchronously destroy or re-enter `this`.
+  TabDataChangeCauseSet causes = std::exchange(change_causes_, {});
+  tab_data_changed_.Run({causes, CreateTabData(tab_.get())});
 }
 
 #if !BUILDFLAG(IS_ANDROID)

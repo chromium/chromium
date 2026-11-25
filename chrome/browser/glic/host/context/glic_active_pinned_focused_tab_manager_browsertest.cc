@@ -4,19 +4,25 @@
 
 #include "chrome/browser/glic/host/context/glic_active_pinned_focused_tab_manager.h"
 
+#include <vector>
+
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -163,6 +169,58 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
 
   // Verify focus did not change.
   EXPECT_FALSE(future.IsReady());
+}
+
+// Regression test for https://crbug.com/589800523: activating another tab
+// synchronously inside `FocusedTabChangedCallback` during a tab data update
+// destroys the old `TabDataObserver` mid-callback. Ensure this neither
+// crashes/UAFs nor notifies stale `TabData` for the previously active tab
+// afterward.
+IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
+                       ReentrantActiveTabSwitchDuringTabDataUpdate) {
+  std::vector<raw_ptr<tabs::TabInterface>> tabs = SetupTabs(2);
+  ASSERT_EQ(tabs.size(), 2u);
+  tabs::TabInterface* tab1 = tabs[0];
+  tabs::TabInterface* tab2 = tabs[1];
+
+  // Query the instance's own sharing manager directly rather than
+  // `active_instance_sharing_manager()`. Activating `tab1` hides `tab2`'s Glic
+  // embedder and starts `GlicInstanceImpl`'s 30ms deactivation timer, which can
+  // clear `active_instance_sharing_manager_`'s delegate while `ExecJs()` waits
+  // for the renderer reply on slower bots (e.g. Android emulators).
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto& manager = instance->GetSharingManagerInternal();
+
+  manager.PinTabs({tab1->GetHandle(), tab2->GetHandle()},
+                  GlicPinTrigger::kUnknown);
+  ASSERT_OK(WaitForPinnedTabs({tab2, tab1}));
+  ASSERT_EQ(manager.GetFocusedTabData().focus(), tab2);
+
+  bool switched = false;
+  auto focus_sub = manager.AddFocusedTabChangedCallback(
+      base::BindLambdaForTesting([&](const FocusedTabData& data) {
+        if (!switched && data.focus() == tab2) {
+          switched = true;
+          GetTabListInterface()->ActivateTab(tab1->GetHandle());
+        }
+      }));
+
+  std::vector<int> notified_tab_ids;
+  auto data_sub = manager.AddFocusedTabDataChangedCallback(
+      base::BindLambdaForTesting([&](const mojom::TabData* data) {
+        if (data) {
+          notified_tab_ids.push_back(data->tab_id);
+        }
+      }));
+
+  ASSERT_TRUE(content::ExecJs(tab2->GetContents()->GetPrimaryMainFrame(),
+                              "document.title = 'trigger update';"));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() { return switched; }));
+  EXPECT_EQ(GetTabListInterface()->GetActiveTab(), tab1);
+  EXPECT_EQ(manager.GetFocusedTabData().focus(), tab1);
+  ASSERT_FALSE(notified_tab_ids.empty());
+  EXPECT_EQ(notified_tab_ids.back(), tab1->GetHandle().raw_value());
 }
 
 }  // namespace glic
