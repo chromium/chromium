@@ -490,8 +490,9 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
 }
 
 void ManagedDisplayInfo::SetBounds(const gfx::Rect& new_bounds_in_native) {
-  CHECK_NE(new_bounds_in_native.width(), new_bounds_in_native.height(),
-           base::NotFatalUntil::M163);
+  // TODO(crbug.com/587702761): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_NE(new_bounds_in_native.width(), new_bounds_in_native.height());
 
   bounds_in_native_ = new_bounds_in_native;
   size_in_pixel_ = new_bounds_in_native.size();
