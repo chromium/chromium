@@ -767,7 +767,9 @@ void WebUIToolbarExtensionsContainer::NotifyOfOneAction(
   if (id == kExtensionsRequestAccessButtonActionId) {
     update.push_back(request_access_button_->Clone());
   } else {
-    update.push_back(actions_[id]->ToMojo());
+    auto it = actions_.find(id);
+    CHECK(it != actions_.end());
+    update.push_back(it->second->ToMojo());
   }
   std::vector<toolbar_ui_api::mojom::IconUpdatePtr> icon_updates;
   if (push_icon_table_updates_) {
@@ -988,6 +990,19 @@ void WebUIToolbarExtensionsContainer::CreateActionForId(
 void WebUIToolbarExtensionsContainer::ShowWidgetForExtension(
     views::Widget* widget,
     const std::string& extension_id) {
+  if (!actions_.contains(extension_id)) {
+    // The extension doesn't have a toolbar action (e.g. it's disabled), so
+    // fall back to anchoring to the extensions menu button.
+    anchored_widgets_.emplace_back(widget, extension_id);
+    widget->AddObserver(this);
+    if (views::BubbleDialogDelegate* bubble_delegate =
+            widget->widget_delegate()->AsBubbleDialogDelegate()) {
+      bubble_delegate->SetAnchor(GetExtensionsButtonAnchor());
+    }
+    widget->Show();
+    return;
+  }
+
   ui::TrackedElement* anchor = GetExtensionAnchor(extension_id);
   if (anchor) {
     anchored_widgets_.emplace_back(widget, extension_id);

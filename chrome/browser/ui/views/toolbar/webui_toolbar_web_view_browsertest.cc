@@ -4860,7 +4860,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ShowWidgetForExtension) {
 
   // Create a dummy widget to show.
   std::unique_ptr<ui::DialogModel> dialog_model =
-      ui::DialogModel::Builder().SetTitle(u"Title").Build();
+      ui::DialogModel::Builder()
+          .SetTitle(u"Title")
+          .DisableCloseOnDeactivate()
+          .Build();
   views::View* default_anchor = BrowserView::GetBrowserViewForBrowser(browser())
                                     ->GetWidget()
                                     ->GetRootView();
@@ -4904,6 +4907,95 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ShowWidgetForExtension) {
 
   // It should not be visible anymore.
   EXPECT_FALSE(container->IsActionVisibleOnToolbar(extension_id));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       ShowWidgetForExtension_NoAction) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL allowed_url =
+      embedded_test_server()->GetURL("allowed.com", "/title1.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir enabled_temp_dir;
+  ASSERT_TRUE(enabled_temp_dir.CreateUniqueTempDir());
+  base::ScopedTempDir disabled_temp_dir;
+  ASSERT_TRUE(disabled_temp_dir.CreateUniqueTempDir());
+
+  // Load an enabled extension so the extensions menu button (puzzle piece) is
+  // shown on the toolbar.
+  scoped_refptr<const extensions::Extension> enabled_extension = LoadExtension(
+      enabled_temp_dir, /*has_background_script=*/false, /*has_popup=*/true);
+  ASSERT_TRUE(enabled_extension);
+
+  // Load a second unpinned extension and disable it so it has no toolbar
+  // action.
+  scoped_refptr<const extensions::Extension> disabled_extension = LoadExtension(
+      disabled_temp_dir, /*has_background_script=*/false, /*has_popup=*/true);
+  ASSERT_TRUE(disabled_extension);
+  const std::string disabled_extension_id = disabled_extension->id();
+  extensions::ExtensionRegistrar::Get(browser()->GetProfile())
+      ->DisableExtension(disabled_extension_id,
+                         {extensions::disable_reason::DISABLE_USER_ACTION});
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+  EXPECT_FALSE(container->GetActionForId(disabled_extension_id));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return container->GetExtensionAnchor("") != nullptr; }));
+
+  // Create a dummy widget to show.
+  std::unique_ptr<ui::DialogModel> dialog_model =
+      ui::DialogModel::Builder()
+          .SetTitle(u"Title")
+          .DisableCloseOnDeactivate()
+          .Build();
+  views::View* default_anchor = BrowserView::GetBrowserViewForBrowser(browser())
+                                    ->GetWidget()
+                                    ->GetRootView();
+  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
+      std::move(dialog_model), default_anchor, views::BubbleBorder::TOP_RIGHT);
+  std::unique_ptr<views::Widget> widget =
+      views::BubbleDialogDelegate::CreateBubble(bubble.release());
+
+  // Show widget for the disabled extension. It should fall back to anchoring
+  // to the extensions menu button (puzzle piece) rather than crashing.
+  container->ShowWidgetForExtension(widget.get(), disabled_extension_id);
+
+  auto iter = std::ranges::find(
+      container->anchored_widgets_, disabled_extension_id,
+      &WebUIToolbarExtensionsContainer::AnchoredWidget::extension_id);
+  ASSERT_NE(iter, container->anchored_widgets_.end());
+  views::Widget* const bubble_widget = iter->widget.get();
+  ASSERT_EQ(widget.get(), bubble_widget);
+  views::test::WidgetVisibleWaiter(bubble_widget).Wait();
+
+  views::BubbleDialogDelegate* bubble_delegate =
+      bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
+  ASSERT_TRUE(bubble_delegate);
+
+  ui::TrackedElement* expected_anchor = container->GetExtensionAnchor("");
+  ASSERT_TRUE(expected_anchor);
+  EXPECT_EQ(expected_anchor->identifier(), kExtensionsMenuButtonElementId);
+  EXPECT_TRUE(
+      bubble_delegate->IsSameAnchor(views::BubbleAnchor(expected_anchor)));
+
+  // Close the widget and verify cleanup.
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  bubble_widget->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  destroyed_waiter.Wait();
+  EXPECT_TRUE(container->anchored_widgets_.empty());
 }
 
 // Tests that the callback passed to PopOutAction() isn't run until the popped

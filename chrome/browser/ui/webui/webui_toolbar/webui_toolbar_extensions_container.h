@@ -204,6 +204,8 @@ class WebUIToolbarExtensionsContainer
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest,
                            ShowWidgetForExtension);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest,
+                           ShowWidgetForExtension_NoAction);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest, RequestAccessButton);
   class ActionInfo;
   class ContextMenu;
