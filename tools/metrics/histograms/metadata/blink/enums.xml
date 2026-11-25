@@ -6937,6 +6937,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6162" label="DeclarativeShadowDomRejectedByDocumentOpen"/>
   <int value="6163" label="MediaElementPlayingWhileContentVisibilityHidden"/>
   <int value="6164" label="JSSelfProfilingInDedicatedWorker"/>
+  <int value="6165" label="HTMLAlignAttributeNonSpecListedElement"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

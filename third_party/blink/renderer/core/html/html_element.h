@@ -482,6 +482,7 @@ class CORE_EXPORT HTMLElement : public Element {
   static bool ParseColorWithLegacyRules(const String& attribute_value,
                                         Color& parsed_color);
   bool IsPresentationAttribute(const QualifiedName&) const override;
+  bool IsAlignPresentationalHintHost() const;
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,

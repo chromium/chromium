@@ -356,9 +356,35 @@ void HTMLElement::ApplyBorderAttributeToStyle(
   }
 }
 
+// The HTML spec lists the elements that accept the `align` presentational
+// hint on the HTMLElement fallback path (each element with a dedicated host
+// class overrides this hook separately).
+// https://html.spec.whatwg.org/multipage/rendering.html#align-descendants
+bool HTMLElement::IsAlignPresentationalHintHost() const {
+  const AtomicString& tag = localName();
+  return tag == html_names::kCaptionTag.LocalName() ||
+         tag == html_names::kCenterTag.LocalName() ||
+         tag == html_names::kDivTag.LocalName() ||
+         tag == html_names::kH1Tag.LocalName() ||
+         tag == html_names::kH2Tag.LocalName() ||
+         tag == html_names::kH3Tag.LocalName() ||
+         tag == html_names::kH4Tag.LocalName() ||
+         tag == html_names::kH5Tag.LocalName() ||
+         tag == html_names::kH6Tag.LocalName() ||
+         tag == html_names::kPTag.LocalName();
+}
+
 bool HTMLElement::IsPresentationAttribute(const QualifiedName& name) const {
-  if (name == html_names::kAlignAttr ||
-      name == html_names::kContenteditableAttr ||
+  if (name == html_names::kAlignAttr) {
+    if (IsAlignPresentationalHintHost()) {
+      return true;
+    }
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kHTMLAlignAttributeNonSpecListedElement);
+    return !RuntimeEnabledFeatures::
+        AlignAttributeOnlyForSpecListedElementsEnabled();
+  }
+  if (name == html_names::kContenteditableAttr ||
       name == html_names::kHiddenAttr || name == html_names::kLangAttr ||
       name.Matches(xml_names::kLangAttr) ||
       name == html_names::kDraggableAttr || name == html_names::kDirAttr ||

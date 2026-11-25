@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<title>align= on non-spec-listed elements triggers a use counter</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<script>
+// WebFeature::kHTMLAlignAttributeNonSpecListedElement from
+// third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.
+const kHTMLAlignAttributeNonSpecListedElement = 6165;
+
+test(() => {
+  assert_false(
+      internals.isUseCounted(document, kHTMLAlignAttributeNonSpecListedElement),
+      'counter must not fire for a spec-listed <div>');
+  const div = document.createElement('div');
+  div.setAttribute('align', 'right');
+  document.body.appendChild(div);
+  div.getBoundingClientRect();
+  assert_false(
+      internals.isUseCounted(document, kHTMLAlignAttributeNonSpecListedElement),
+      '<div> is spec-listed and must not trigger the counter');
+
+  const span = document.createElement('span');
+  span.setAttribute('align', 'right');
+  document.body.appendChild(span);
+  span.getBoundingClientRect();
+  assert_true(
+      internals.isUseCounted(document, kHTMLAlignAttributeNonSpecListedElement),
+      '<span align> must trigger the counter');
+}, 'align= on non-spec-listed host triggers the use counter');
+</script>

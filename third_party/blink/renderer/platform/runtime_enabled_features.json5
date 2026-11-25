@@ -642,6 +642,15 @@
       public: true,
     },
     {
+      // Restricts the `align` presentational hint to the HTML elements the
+      // spec lists, so unknown and custom elements, and generic hosts like
+      // <span>, no longer map `align` to `text-align`. Off by default so the
+      // existing behavior ships while
+      // kHTMLAlignAttributeNonSpecListedElement measures real usage; finch
+      // flips this on later. https://crbug.com/41441191
+      name: "AlignAttributeOnlyForSpecListedElements",
+    },
+    {
       name: "AlignZoomToCenter",
       status: "stable",
     },
