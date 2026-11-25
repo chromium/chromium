@@ -168,7 +168,7 @@ std::u16string ContactInfoEditorViewController::GetValueForType(
     autofill::FieldType type) {
   if (type == autofill::PHONE_HOME_WHOLE_NUMBER) {
     return autofill::i18n::GetFormattedPhoneNumberForDisplay(
-        profile, std::string(state()->GetApplicationLocale().tag_string()));
+        profile, state()->GetApplicationLocale());
   }
 
   return profile.GetInfo(type, state()->GetApplicationLocale().tag_string());

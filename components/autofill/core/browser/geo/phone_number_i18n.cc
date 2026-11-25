@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/i18n/language_tag.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -336,22 +337,23 @@ bool PhoneNumbersMatch(std::u16string_view number_a,
   return PhoneNumbersMatch(i18n_number1, i18n_number2, support_short_nsn_match);
 }
 
-std::u16string GetFormattedPhoneNumberForDisplay(const AutofillProfile& profile,
-                                                 const std::string& locale) {
+std::u16string GetFormattedPhoneNumberForDisplay(
+    const AutofillProfile& profile,
+    const base::i18n::LanguageTag& locale) {
   // Since the "+" is removed for some country's phone numbers, try to add a "+"
   // and see if it is a valid phone number for a country.
   // Having two "+" in front of a number has no effect on the formatted number.
   // The reason for this is international phone numbers for another country. For
   // example, without adding a "+", the US number 1-415-123-1234 for an AU
   // address would be wrongly formatted as +61 1-415-123-1234 which is invalid.
-  std::string phone =
-      base::UTF16ToUTF8(profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, locale));
+  std::string phone = base::UTF16ToUTF8(
+      profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, locale.tag_string()));
   std::string tentative_intl_phone = "+" + phone;
 
   // Always favor the tentative international phone number if it's determined as
   // being a valid number.
   const std::string country_code =
-      data_util::GetCountryCodeWithFallback(profile, locale);
+      data_util::GetCountryCodeWithFallback(profile, locale.tag_string());
   if (IsValidPhoneNumber(tentative_intl_phone, country_code)) {
     return base::UTF8ToUTF16(FormatPhoneNumber(
         tentative_intl_phone, country_code, PhoneFormat::kInternational));

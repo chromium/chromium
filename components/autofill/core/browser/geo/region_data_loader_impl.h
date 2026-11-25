@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_REGION_DATA_LOADER_IMPL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_REGION_DATA_LOADER_IMPL_H_
 
-#include "components/autofill/core/browser/geo/region_data_loader.h"
-
 #include <memory>
 #include <string>
 
+#include "base/i18n/language_tag.h"
+#include "components/autofill/core/browser/geo/region_data_loader.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/preload_supplier.h"
 
 namespace i18n {
@@ -32,7 +32,7 @@ class RegionDataLoaderImpl : public RegionDataLoader {
  public:
   RegionDataLoaderImpl(::i18n::addressinput::Source* address_input_source,
                        ::i18n::addressinput::Storage* address_input_storage,
-                       const std::string& app_locale);
+                       const base::i18n::LanguageTag& app_locale);
 
   ~RegionDataLoaderImpl() override;
 
@@ -54,7 +54,7 @@ class RegionDataLoaderImpl : public RegionDataLoader {
   // A supplier of region data.
   ::i18n::addressinput::PreloadSupplier region_data_supplier_;
 
-  std::string app_locale_;
+  base::i18n::LanguageTag app_locale_;
   RegionDataLoader::RegionDataLoaded callback_;
 };
 

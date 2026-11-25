@@ -163,10 +163,8 @@ std::u16string SaveAddressBubbleController::GetProfilePhone() const {
   }
 
   return i18n::GetFormattedPhoneNumberForDisplay(
-      address_profile_, std::string(g_browser_process->GetFeatures()
-                                        ->application_locale_storage()
-                                        ->GetTag()
-                                        .tag_string()));
+      address_profile_,
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
 }
 
 std::u16string SaveAddressBubbleController::GetOkButtonLabel() const {

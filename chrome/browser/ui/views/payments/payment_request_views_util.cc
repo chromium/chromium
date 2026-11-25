@@ -152,8 +152,8 @@ std::unique_ptr<views::View> GetShippingAddressLabel(
   std::u16string address =
       GetShippingAddressLabelFromAutofillProfile(profile, locale);
 
-  std::u16string phone = autofill::i18n::GetFormattedPhoneNumberForDisplay(
-      profile, std::string(locale.tag_string()));
+  std::u16string phone =
+      autofill::i18n::GetFormattedPhoneNumberForDisplay(profile, locale);
 
   return GetBaseProfileLabel(type, name, address, phone, accessible_content,
                              enabled);
@@ -292,9 +292,9 @@ std::unique_ptr<views::View> GetContactInfoLabel(
           : std::u16string();
 
   std::u16string phone =
-      request_payer_phone ? autofill::i18n::GetFormattedPhoneNumberForDisplay(
-                                profile, std::string(locale.tag_string()))
-                          : std::u16string();
+      request_payer_phone
+          ? autofill::i18n::GetFormattedPhoneNumberForDisplay(profile, locale)
+          : std::u16string();
 
   std::u16string email =
       request_payer_email

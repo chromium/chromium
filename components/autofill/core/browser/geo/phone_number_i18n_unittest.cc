@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -359,10 +360,11 @@ TEST(PhoneNumberUtilTest, FormatPhoneForDisplay) {
 
 // Test for the GetFormattedPhoneNumberForDisplay method.
 struct PhoneNumberFormatCase {
-  PhoneNumberFormatCase(const char16_t* phone,
-                        const char16_t* country,
-                        const char16_t* expected_format,
-                        const char* locale = "")
+  PhoneNumberFormatCase(
+      const char16_t* phone,
+      const char16_t* country,
+      const char16_t* expected_format,
+      base::i18n::LanguageTag locale = base::i18n::GetKnownLanguageTag("und"))
       : phone(phone),
         country(country),
         expected_format(expected_format),
@@ -371,7 +373,7 @@ struct PhoneNumberFormatCase {
   const char16_t* phone;
   const char16_t* country;
   const char16_t* expected_format;
-  const char* locale;
+  base::i18n::LanguageTag locale;
 };
 
 class GetFormattedPhoneNumberForDisplayTest
@@ -502,26 +504,32 @@ INSTANTIATE_TEST_SUITE_P(
         PhoneNumberFormatCase(u"52 55 5342 8400",
                               u"",
                               u"+52 55 5342 8400",
-                              "es_MX"),
+                              base::i18n::GetKnownLanguageTag("es-MX")),
         PhoneNumberFormatCase(u"55 5342 8400",
                               u"",
                               u"+52 55 5342 8400",
-                              "es_MX"),
+                              base::i18n::GetKnownLanguageTag("es-MX")),
         PhoneNumberFormatCase(u"61 2 9374 4000",
                               u"",
                               u"+61 2 9374 4000",
-                              "en_AU"),
+                              base::i18n::GetKnownLanguageTag("en-AU")),
         PhoneNumberFormatCase(u"02 9374 4000",
                               u"",
                               u"+61 2 9374 4000",
-                              "en_AU"),
+                              base::i18n::GetKnownLanguageTag("en-AU")),
 
         // Numbers in local format yet are invalid with user locale, user might
         // be trying to enter a foreign number, calling formatting will just
         // return what the user entered.
-        PhoneNumberFormatCase(u"55 5342 8400", u"", u"5553428400", "en_US"),
+        PhoneNumberFormatCase(u"55 5342 8400",
+                              u"",
+                              u"5553428400",
+                              base::i18n::GetKnownLanguageTag("en-US")),
         PhoneNumberFormatCase(u"55 5342 8400", u"", u"5553428400"),
-        PhoneNumberFormatCase(u"226 123 1234", u"", u"2261231234", "en_US"),
+        PhoneNumberFormatCase(u"226 123 1234",
+                              u"",
+                              u"2261231234",
+                              base::i18n::GetKnownLanguageTag("en-US")),
         PhoneNumberFormatCase(u"293744000", u"", u"293744000"),
         PhoneNumberFormatCase(u"02 9374 4000", u"", u"0293744000"),
 

@@ -285,9 +285,9 @@ ChromePaymentRequestDelegate::GetPaymentUIObserver() const {
 
 autofill::RegionDataLoader*
 ChromePaymentRequestDelegate::GetRegionDataLoader() {
-  return new autofill::RegionDataLoaderImpl(
-      GetAddressInputSource().release(), GetAddressInputStorage().release(),
-      std::string(GetApplicationLocale().tag_string()));
+  return new autofill::RegionDataLoaderImpl(GetAddressInputSource().release(),
+                                            GetAddressInputStorage().release(),
+                                            GetApplicationLocale());
 }
 
 content::BrowserContext* ChromePaymentRequestDelegate::GetBrowserContextOrNull()

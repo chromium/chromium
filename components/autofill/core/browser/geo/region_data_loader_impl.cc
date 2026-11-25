@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/callback.h"
@@ -21,7 +22,7 @@ namespace autofill {
 RegionDataLoaderImpl::RegionDataLoaderImpl(
     ::i18n::addressinput::Source* address_input_source,
     ::i18n::addressinput::Storage* address_input_storage,
-    const std::string& app_locale)
+    const base::i18n::LanguageTag& app_locale)
     // region_data_supplier_ takes ownership of source and storage.
     : region_data_supplier_(address_input_source, address_input_storage),
       app_locale_(app_locale) {
@@ -56,10 +57,11 @@ void RegionDataLoaderImpl::OnRegionDataLoaded(bool success,
     if (success) {
       std::string best_region_tree_language_tag;
       ::i18n::addressinput::RegionDataBuilder builder(&region_data_supplier_);
-      callback_.Run(
-          builder
-              .Build(country_code, app_locale_, &best_region_tree_language_tag)
-              .sub_regions());
+      callback_.Run(builder
+                        .Build(country_code,
+                               std::string(app_locale_.tag_string()),
+                               &best_region_tree_language_tag)
+                        .sub_regions());
     } else {
       callback_.Run(std::vector<const ::i18n::addressinput::RegionData*>());
     }

@@ -13,6 +13,10 @@
 
 #include "components/autofill/core/browser/field_types.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace i18n::phonenumbers {
 class PhoneNumber;
 }  // namespace i18n::phonenumbers
@@ -98,8 +102,9 @@ bool PhoneNumbersMatch(std::u16string_view number_a,
 // If it's a valid number for the profile's country or for the `locale` given
 // as a fallback, returns the number in international format; otherwise returns
 // the raw number string from profile.
-std::u16string GetFormattedPhoneNumberForDisplay(const AutofillProfile& profile,
-                                                 const std::string& locale);
+std::u16string GetFormattedPhoneNumberForDisplay(
+    const AutofillProfile& profile,
+    const base::i18n::LanguageTag& locale);
 
 // Returns `phone_number` in i18n::phonenumbers::PhoneNumberUtil::
 // PhoneNumberFormat::NATIONAL format if the number is valid for
