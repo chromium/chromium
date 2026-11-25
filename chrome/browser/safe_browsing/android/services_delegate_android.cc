@@ -79,7 +79,7 @@ void ServicesDelegateAndroid::SetDatabaseManagerForTest(
 }
 
 void ServicesDelegateAndroid::ShutdownServices() {
-  telemetry_service_.reset();
+  telemetry_services_.clear();
   download_service_.reset();
   ServicesDelegate::ShutdownServices();
 }
@@ -120,17 +120,20 @@ void ServicesDelegateAndroid::CreateTelemetryService(Profile* profile) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(profile, base::NotFatalUntil::M162);
 
-  if (profile->IsOffTheRecord())
+  if (profile->IsOffTheRecord()) {
     return;
+  }
 
-  CHECK(!telemetry_service_, base::NotFatalUntil::M162);
-  telemetry_service_ = std::make_unique<AndroidTelemetryService>(profile);
+  const base::UnguessableToken& token = profile->UniqueToken();
+  CHECK(!telemetry_services_.contains(token), base::NotFatalUntil::M162);
+  telemetry_services_[token] =
+      std::make_unique<AndroidTelemetryService>(profile);
 }
 
 void ServicesDelegateAndroid::RemoveTelemetryService(Profile* profile) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
-  if (telemetry_service_ && telemetry_service_->profile() == profile)
-    telemetry_service_.reset();
+  CHECK(profile, base::NotFatalUntil::M162);
+  telemetry_services_.erase(profile->UniqueToken());
 }
 
 DownloadProtectionService*

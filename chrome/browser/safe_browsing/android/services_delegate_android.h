@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_ANDROID_SERVICES_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_SAFE_BROWSING_ANDROID_SERVICES_DELEGATE_ANDROID_H_
 
+#include <map>
+#include <memory>
+
+#include "base/unguessable_token.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
@@ -60,8 +64,11 @@ class ServicesDelegateAndroid : public ServicesDelegate {
   // Notifies DownloadProtectionService of profile shutdown.
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  // The telemetry service tied to the current profile.
-  std::unique_ptr<AndroidTelemetryService> telemetry_service_;
+  // Telemetry services keyed by Profile::UniqueToken(), for regular profiles.
+  // TODO(crbug.com/590079312): Convert AndroidTelemetryService into a keyed
+  // service.
+  std::map<base::UnguessableToken, std::unique_ptr<AndroidTelemetryService>>
+      telemetry_services_;
 
   std::unique_ptr<DownloadProtectionService> download_service_;
 
