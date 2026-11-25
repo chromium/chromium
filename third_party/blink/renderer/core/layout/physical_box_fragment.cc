@@ -151,27 +151,29 @@ int MaxGapDecorationsWidth(const GapDataList<int>& width_value) {
 // extension is bounded by thickness inflation.
 LayoutUnit MaxGapDecorationInsetOutset(const Length& cap_inset,
                                        const Length& junction_inset,
-                                       LayoutUnit cross_gap_width) {
+                                       LayoutUnit interior_cap_inset_width,
+                                       LayoutUnit junction_inset_width) {
   LayoutUnit max_outset;
 
   if (!cap_inset.IsOverlapJoin()) {
     // Cap insets are almost always only at the container's exterior edge,
     // where there is no crossing decoration. Caps can also be interior
     // "dangling" endpoints produced by rule visibility (see
-    // https://github.com/w3c/csswg-drafts/issues/13697); for those, the real
-    // percentage basis would be the cross gap width, so a negative percentage
-    // cap inset less than -100% would extend further than we compute here.
+    // https://github.com/w3c/csswg-drafts/issues/13697); for those, the
+    // percentage basis is the cross gap width.
     // We don't have per-intersection context at this layer to distinguish
-    // exterior from interior caps, so we conservatively resolve against 0 and
-    // accept a potential under-approximation of ink overflow in that narrow
-    // edge case.
-    LayoutUnit cap_resolved = ValueForLength(cap_inset, LayoutUnit());
-    max_outset = std::max(max_outset, -cap_resolved);
+    // exterior from interior caps, so we consider both zero and, where
+    // applicable, the cross gap width.
+    max_outset = std::max(max_outset, -ValueForLength(cap_inset, LayoutUnit()));
+    if (interior_cap_inset_width) {
+      max_outset = std::max(
+          max_outset, -ValueForLength(cap_inset, interior_cap_inset_width));
+    }
   }
 
   if (!junction_inset.IsOverlapJoin()) {
     LayoutUnit junction_resolved =
-        ValueForLength(junction_inset, cross_gap_width);
+        ValueForLength(junction_inset, junction_inset_width);
     max_outset = std::max(max_outset, -junction_resolved);
   }
 
@@ -1142,25 +1144,45 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
 
     GapGeometry::GapDecorationInkOutsets outsets;
 
+    // Only Grid and Multicol can have caps with a nonzero percentage basis.
+    // In both, the junction inset width bound is the exact crossing gutter
+    // width. This check must match the container check in
+    // `CSSGapDecorationUtils::HasCrossGapSegment()` and the cap classification
+    // in `GapGeometry::IsCapIntersection()`.
+    // TODO(javiercon): Add a `GapGeometry` API that returns the cap inset
+    // width bound for a direction, and use it in both the overflow and the
+    // paint code.
+    const GapGeometry::ContainerType container_type =
+        gap_geometry->GetContainerType();
+    const bool can_have_nonzero_cap_basis =
+        container_type == GapGeometry::ContainerType::kGrid ||
+        container_type == GapGeometry::ContainerType::kMultiColumn;
+
     // Column rule insets extend the block axis.
-    const LayoutUnit col_inset_width_bound =
+    const LayoutUnit col_junction_inset_width_bound =
         gap_geometry->MaxInsetWidthBound(kForColumns);
+    const LayoutUnit col_cap_inset_width = can_have_nonzero_cap_basis
+                                               ? col_junction_inset_width_bound
+                                               : LayoutUnit();
     outsets.block_start = MaxGapDecorationInsetOutset(
         style.ColumnRuleInsetCapStart(), style.ColumnRuleInsetJunctionStart(),
-        col_inset_width_bound);
+        col_cap_inset_width, col_junction_inset_width_bound);
     outsets.block_end = MaxGapDecorationInsetOutset(
         style.ColumnRuleInsetCapEnd(), style.ColumnRuleInsetJunctionEnd(),
-        col_inset_width_bound);
+        col_cap_inset_width, col_junction_inset_width_bound);
 
     // Row rule insets extend the inline axis.
-    const LayoutUnit row_inset_width_bound =
+    const LayoutUnit row_junction_inset_width_bound =
         gap_geometry->MaxInsetWidthBound(kForRows);
+    const LayoutUnit row_cap_inset_width = can_have_nonzero_cap_basis
+                                               ? row_junction_inset_width_bound
+                                               : LayoutUnit();
     outsets.inline_start = MaxGapDecorationInsetOutset(
         style.RowRuleInsetCapStart(), style.RowRuleInsetJunctionStart(),
-        row_inset_width_bound);
+        row_cap_inset_width, row_junction_inset_width_bound);
     outsets.inline_end = MaxGapDecorationInsetOutset(
         style.RowRuleInsetCapEnd(), style.RowRuleInsetJunctionEnd(),
-        row_inset_width_bound);
+        row_cap_inset_width, row_junction_inset_width_bound);
 
     PhysicalRect rect = gap_geometry->ComputeInkOverflowForGaps(
         Style().GetWritingDirection(), Size(), inline_thickness,

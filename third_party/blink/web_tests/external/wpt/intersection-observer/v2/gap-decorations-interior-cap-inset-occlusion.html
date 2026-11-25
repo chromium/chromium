@@ -1,0 +1,82 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Negative percentage cap insets at interior gap endpoints occlude a target outside a grid container</title>
+<link rel="help" href="https://drafts.csswg.org/css-gaps-1/#propdef-row-rule-inset-cap-start">
+<link rel="help" href="https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset-cap-start">
+<link rel="help" href="https://drafts.csswg.org/css-gaps-1/#propdef-rule-visibility-items">
+<link rel="help" href="https://w3c.github.io/IntersectionObserver/#visibility">
+<meta name="assert" content="A negative percentage cap inset at an interior rule endpoint resolves against the width of the crossing gap, and the extended rule occludes a target outside the grid container.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  /* Items only fill the middle two tracks in each axis. With `between`, the
+     rules between them end at the crossing gaps next to the empty outer
+     tracks, where no crossing rule is painted. The percentage cap inset at
+     those endpoints resolves against the 20px crossing gap. */
+  #occluder {
+    position: absolute;
+    left: 200px;
+    top: 200px;
+    z-index: 1;
+    display: grid;
+    grid-template: repeat(4, 20px) / repeat(4, 20px);
+    gap: 20px;
+    rule: 20px solid black;
+    rule-visibility-items: between;
+  }
+  #target {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: blue;
+  }
+</style>
+<div id="occluder">
+  <div style="grid-area: 2 / 2"></div>
+  <div style="grid-area: 2 / 3"></div>
+  <div style="grid-area: 3 / 2"></div>
+  <div style="grid-area: 3 / 3"></div>
+</div>
+<div id="target"></div>
+<script>
+const occluder = document.getElementById("occluder");
+const target = document.getElementById("target");
+
+// The target lies 100px outside the grid and in line with the rule.
+for (const [property, left, top] of [
+  ["row-rule-inset-cap-start", 90, 265],
+  ["row-rule-inset-cap-end", 440, 265],
+  ["column-rule-inset-cap-start", 265, 90],
+  ["column-rule-inset-cap-end", 265, 440],
+]) {
+  promise_test(async t => {
+    assert_implements("isVisible" in IntersectionObserverEntry.prototype,
+                      "IntersectionObserver V2 is required");
+    target.style.left = `${left}px`;
+    target.style.top = `${top}px`;
+    t.add_cleanup(() => {
+      occluder.style.removeProperty(property);
+    });
+
+    // Each negative inset follows a zero inset that leaves the target visible,
+    // so a rejected or ignored value cannot pass by keeping the previous one.
+    for (const [inset, expected_visible] of [
+      ["0", true], ["-400px", false], ["0", true], ["-2000%", false]]) {
+      occluder.style.setProperty(property, inset);
+      const entry = await new Promise(resolve => {
+        const observer = new IntersectionObserver(entries => {
+          observer.disconnect();
+          resolve(entries[entries.length - 1]);
+        }, {trackVisibility: true, delay: 100});
+        t.add_cleanup(() => {
+          observer.disconnect();
+        });
+        observer.observe(target);
+      });
+      assert_true(entry.isIntersecting, "The target intersects the viewport");
+      assert_equals(entry.isVisible, expected_visible,
+                    `isVisible with ${property}: ${inset}`);
+    }
+  }, `A negative percentage ${property} at an interior endpoint occludes a target`);
+}
+</script>
