@@ -8,8 +8,8 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {FileSystemGrant, FileSystemSiteDetailsElement, OriginFileSystemGrants} from 'chrome://settings/lazy_load.js';
 import {SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, Router, routes} from 'chrome://settings/settings.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 
@@ -75,6 +75,9 @@ suite('FileSystemSettings_EnablePersistentPermissions_SiteDetails', function() {
   test('FileSystemSiteDetails_NoGrants', async function() {
     // Simulate an origin that previously had permission grants, and now has
     // none due to a change in chooser permissions being updated.
+    assertEquals(
+        routes.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS,
+        Router.getInstance().getCurrentRoute());
     browserProxy.setFileSystemGrants(FILE_SYSTEM_GRANTS_EMPTY);
     webUIListenerCallback(
         'contentSettingChooserPermissionChanged', 'file-system-write');
@@ -84,4 +87,51 @@ suite('FileSystemSettings_EnablePersistentPermissions_SiteDetails', function() {
         Router.getInstance().getCurrentRoute(),
         routes.SITE_SETTINGS_FILE_SYSTEM_WRITE);
   });
+
+  test('FileSystemSiteDetails_NoRouteHijackWhenInactive', async function() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
+    await microtasksFinished();
+    assertEquals(
+        routes.SITE_SETTINGS_ALL, Router.getInstance().getCurrentRoute());
+    browserProxy.resetResolver('getFileSystemGrants');
+
+    browserProxy.setFileSystemGrants(FILE_SYSTEM_GRANTS_EMPTY);
+    webUIListenerCallback(
+        'contentSettingChooserPermissionChanged', 'file-system-write');
+    await microtasksFinished();
+
+    assertEquals(
+        routes.SITE_SETTINGS_ALL, Router.getInstance().getCurrentRoute());
+    assertEquals(0, browserProxy.getCallCount('getFileSystemGrants'));
+  });
+
+  test(
+      'FileSystemSiteDetails_InvalidOriginNavigatesToPreviousRoute',
+      async function() {
+        const subpage = testElement.shadowRoot.querySelector('settings-subpage');
+        assertTrue(subpage !== null);
+        assertEquals(origin, subpage.pageTitle);
+
+        Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
+        await microtasksFinished();
+        assertEquals(
+            routes.SITE_SETTINGS_ALL, Router.getInstance().getCurrentRoute());
+        browserProxy.resetResolver('isOriginValid');
+        browserProxy.resetResolver('getFileSystemGrants');
+        browserProxy.setIsOriginValid(false);
+
+        const whenPopState = eventToPromise('popstate', window);
+        const params = new URLSearchParams();
+        params.append('site', 'invalid-origin');
+        Router.getInstance().navigateTo(
+            routes.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS, params);
+        await browserProxy.whenCalled('isOriginValid');
+        await whenPopState;
+        await microtasksFinished();
+
+        assertEquals(
+            routes.SITE_SETTINGS_ALL, Router.getInstance().getCurrentRoute());
+        assertEquals(0, browserProxy.getCallCount('getFileSystemGrants'));
+        assertEquals(origin, subpage.pageTitle);
+      });
 });

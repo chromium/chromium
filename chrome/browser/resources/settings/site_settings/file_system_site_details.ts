@@ -79,7 +79,8 @@ export class FileSystemSiteDetailsElement extends
     this.addWebUiListener(
         'contentSettingChooserPermissionChanged',
         (category: ContentSettingsTypes) => {
-          if (category === ContentSettingsTypes.FILE_SYSTEM_WRITE) {
+          if (category === ContentSettingsTypes.FILE_SYSTEM_WRITE &&
+              this.origin_) {
             this.populateList_();
           }
         });
@@ -91,6 +92,12 @@ export class FileSystemSiteDetailsElement extends
   override currentRouteChanged(route: Route, oldRoute?: Route) {
     super.currentRouteChanged(route, oldRoute);
 
+    this.origin_ = '';
+    this.grantsPerOrigin_ = {
+      origin: '',
+      viewGrants: [],
+      editGrants: [],
+    };
     if (route !== routes.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS) {
       return;
     }
@@ -99,13 +106,19 @@ export class FileSystemSiteDetailsElement extends
       return;
     }
     this.browserProxy.isOriginValid(site).then(valid => {
+      if (Router.getInstance().getCurrentRoute() !==
+              routes.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS ||
+          Router.getInstance().getQueryParameters().get('site') !== site) {
+        return;
+      }
       if (!valid) {
         Router.getInstance().navigateToPreviousRoute();
+        return;
       }
       this.origin_ = site;
       this.pageTitle_ = this.origin_;
+      this.populateList_();
     });
-    this.populateList_();
   }
 
   /**
@@ -113,9 +126,16 @@ export class FileSystemSiteDetailsElement extends
    * granted via the File System Access API.
    */
   private async populateList_() {
+    const targetOrigin = this.origin_;
+    if (!targetOrigin) {
+      return;
+    }
     const response = await this.browserProxy.getFileSystemGrants();
+    if (this.origin_ !== targetOrigin) {
+      return;
+    }
     const originFileSystemGrantsObj =
-        response.find(grantObj => grantObj.origin === this.origin_);
+        response.find(grantObj => grantObj.origin === targetOrigin);
     // Return to the file system site settings page if the given origin has
     // no file system grants.
     if (!originFileSystemGrantsObj) {
