@@ -12,6 +12,7 @@
 #import "components/private_ai/private_ai_internals/webui/url_constants.h"
 #import "components/private_ai/private_ai_service.h"
 #import "ios/chrome/browser/private_ai/model/private_ai_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/network_context_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/web_state.h"
@@ -33,7 +34,7 @@ web::WebUIIOSDataSource* CreatePrivateAiInternalsHTMLSource() {
     source->AddResourcePath(resource.path, resource.id);
   }
 
-  source->AddString("default_url", private_ai::kPrivateAiUrl.Get());
+  source->AddString("default_url", private_ai::GetPrivateAiServiceUrl());
   source->AddString(
       "default_api_key",
       private_ai::PrivateAiService::GetApiKey(::GetChannel()).empty()
@@ -80,21 +81,9 @@ void PrivateAiInternalsUI::BindInterface(
     return;
   }
 
-  if (!network_context_.is_bound()) {
-    network_driver_ios_.CreateNetworkContext(
-        network_context_.BindNewPipeAndPassReceiver(),
-        network::mojom::NetworkContextParams::New());
-  }
-
-  auto network_context_getter = base::BindRepeating(
-      [](base::WeakPtr<PrivateAiInternalsUI> self)
-          -> network::mojom::NetworkContext* {
-        return self ? self->network_context_.get() : nullptr;
-      },
-      weak_ptr_factory_.GetWeakPtr());
-
   page_handler_ = std::make_unique<private_ai::PrivateAiInternalsPageHandler>(
-      token_manager, std::move(network_context_getter),
+      token_manager,
+      base::BindRepeating(&GetNetworkContextFromProfile, profile->AsWeakPtr()),
       private_ai_service->GetClient(), private_ai_service->GetLogger(),
       &oak_session_driver_ios_, &network_driver_ios_, ::GetChannel(),
       std::move(receiver));

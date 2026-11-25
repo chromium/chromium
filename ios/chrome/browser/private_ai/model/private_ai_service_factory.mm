@@ -7,12 +7,13 @@
 #import <utility>
 
 #import "base/feature_list.h"
-#import "base/functional/callback_helpers.h"
+#import "base/functional/bind.h"
 #import "components/private_ai/features.h"
 #import "components/private_ai/ios/private_ai_network_driver_ios.h"
 #import "components/private_ai/ios/private_ai_oak_session_driver_ios.h"
 #import "components/private_ai/phosphor/blind_sign_auth_factory_impl.h"
 #import "components/private_ai/private_ai_service.h"
+#import "ios/chrome/browser/shared/model/profile/network_context_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/common/channel_info.h"
@@ -44,8 +45,8 @@ std::unique_ptr<KeyedService> PrivateAiServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForProfile(profile), &bsa_factory,
       profile.GetSharedURLLoaderFactory(), std::move(network_driver),
       std::move(oak_session_driver),
-      /*network_context_getter=*/base::NullCallback(),
-      private_ai::kPrivateAiUrl.Get(),
+      base::BindRepeating(&GetNetworkContextFromProfile, profile.AsWeakPtr()),
+      private_ai::GetPrivateAiServiceUrl(),
       private_ai::PrivateAiService::GetApiKey(::GetChannel()),
       private_ai::kPrivateAiProxyServerUrl.Get(),
       base::FeatureList::IsEnabled(private_ai::kPrivateAiUseTokenAttestation),

@@ -13,7 +13,6 @@
 #import "components/private_ai/private_ai_internals/webui/private_ai_internals.mojom.h"
 #import "ios/web/public/webui/web_ui_ios_controller.h"
 #import "mojo/public/cpp/bindings/pending_receiver.h"
-#import "services/network/public/mojom/network_context.mojom.h"
 
 namespace private_ai {
 class PrivateAiInternalsPageHandler;
@@ -40,7 +39,6 @@ class PrivateAiInternalsUI : public web::WebUIIOSController {
  private:
   private_ai::PrivateAiOakSessionDriverIOS oak_session_driver_ios_;
   private_ai::PrivateAiNetworkDriverIOS network_driver_ios_;
-  mojo::Remote<network::mojom::NetworkContext> network_context_;
   std::unique_ptr<private_ai::PrivateAiInternalsPageHandler> page_handler_;
   base::WeakPtrFactory<PrivateAiInternalsUI> weak_ptr_factory_{this};
 };

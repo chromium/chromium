@@ -22,20 +22,12 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/shared/model/profile/network_context_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
-
-// Returns the NetworkContext from `weak_profile` or nullptr.
-network::mojom::NetworkContext* GetNetworkContext(
-    base::WeakPtr<ProfileIOS> weak_profile) {
-  if (ProfileIOS* profile = weak_profile.get()) {
-    return profile->GetNetworkContext();
-  }
-  return nullptr;
-}
 
 std::unique_ptr<KeyedService> BuildOptimizationGuideService(
     ProfileIOS& profile) {
@@ -77,7 +69,7 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
       BrowserListFactory::GetForProfile(profile),
       GetApplicationContext()->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile), std::move(delegate),
-      base::BindRepeating(&GetNetworkContext, profile.AsWeakPtr()));
+      base::BindRepeating(&GetNetworkContextFromProfile, profile.AsWeakPtr()));
 
   service->DoFinalInit(
       BackgroundDownloadServiceFactory::GetForProfile(profile));

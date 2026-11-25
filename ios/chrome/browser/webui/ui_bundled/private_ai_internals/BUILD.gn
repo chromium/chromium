@@ -17,6 +17,7 @@ source_set("private_ai_internals") {
     "//components/private_ai/private_ai_internals/webui:url_constants",
     "//ios/chrome/browser/private_ai/model",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:network_context_util",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/common",
     "//ios/web/public",

@@ -90,6 +90,15 @@ source_set("incognito_session_tracker") {
   ]
 }
 
+source_set("network_context_util") {
+  sources = [
+    "network_context_util.cc",
+    "network_context_util.h",
+  ]
+  deps = [ ":profile" ]
+  public_deps = [ "//base" ]
+}
+
 source_set("utils") {
   sources = [
     "profile_ios_util.h",
@@ -107,11 +116,13 @@ source_set("unit_tests") {
   sources = [
     "incognito_session_tracker_unittest.mm",
     "mutable_profile_attributes_storage_ios_unittest.mm",
+    "network_context_util_unittest.cc",
     "profile_attributes_ios_unittest.cc",
     "profile_ios_unittest.cc",
   ]
   deps = [
     ":incognito_session_tracker",
+    ":network_context_util",
     ":profile",
     "//base",
     "//components/variations/net",
@@ -125,6 +136,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]
