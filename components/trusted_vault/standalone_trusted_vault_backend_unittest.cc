@@ -2304,8 +2304,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldCallEnrollmentHandlerInEnroll) {
   EXPECT_THAT(
       storage()->GetVaultKeys(kAccountInfo.gaia, SecurityDomainId::kChromeSync),
       ElementsAre(GetConstantTrustedVaultKey(), kRotatedKey));
-  EXPECT_EQ(backend()->GetLastKeyVersionForTesting(
-                kAccountInfo.gaia, SecurityDomainId::kChromeSync),
+  EXPECT_EQ(storage()->GetLastKeyVersion(kAccountInfo.gaia,
+                                         SecurityDomainId::kChromeSync),
             kNewKeyVersion);
 }
 
@@ -2395,8 +2395,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_THAT(storage()->GetVaultKeys(kPrimaryAccount.gaia,
                                       SecurityDomainId::kChromeSync),
               ElementsAre(GetConstantTrustedVaultKey()));
-  EXPECT_EQ(backend()->GetLastKeyVersionForTesting(
-                kPrimaryAccount.gaia, SecurityDomainId::kChromeSync),
+  EXPECT_EQ(storage()->GetLastKeyVersion(kPrimaryAccount.gaia,
+                                         SecurityDomainId::kChromeSync),
             kConstantKeyVersion);
 
   // Connection disabled.

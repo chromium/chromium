@@ -117,10 +117,6 @@ class StandaloneTrustedVaultFrontend
   void WaitForIdleForTesting(base::OnceClosure cb);
   void GetLastAddedRecoveryMethodPublicKeyForTesting(
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
-  void GetLastKeyVersionForTesting(
-      const GaiaId& gaia_id,
-      SecurityDomainId security_domain,
-      base::OnceCallback<void(int last_key_version)> callback);
 
  private:
   friend class base::RefCounted<StandaloneTrustedVaultFrontend>;

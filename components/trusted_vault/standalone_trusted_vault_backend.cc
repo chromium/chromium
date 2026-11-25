@@ -754,13 +754,6 @@ StandaloneTrustedVaultBackend::GetLastAddedRecoveryMethodPublicKeyForTesting()
   return last_added_recovery_method_public_key_for_testing_;
 }
 
-int StandaloneTrustedVaultBackend::GetLastKeyVersionForTesting(
-    const GaiaId& gaia_id,
-    SecurityDomainId security_domain) {
-  CHECK(GetSupportedSecurityDomainIdValues().contains(security_domain));
-  return storage_->GetLastKeyVersion(gaia_id, security_domain);
-}
-
 bool StandaloneTrustedVaultBackend::HasPendingTrustedRecoveryMethodForTesting()
     const {
   return !pending_trusted_recovery_methods_.empty();

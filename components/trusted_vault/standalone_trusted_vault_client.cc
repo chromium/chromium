@@ -103,13 +103,6 @@ void StandaloneTrustedVaultClient::
   frontend_->GetLastAddedRecoveryMethodPublicKeyForTesting(std::move(callback));
 }
 
-void StandaloneTrustedVaultClient::GetLastKeyVersionForTesting(
-    const GaiaId& gaia_id,
-    base::OnceCallback<void(int last_key_version)> callback) {
-  frontend_->GetLastKeyVersionForTesting(gaia_id, security_domain_,
-                                         std::move(callback));
-}
-
 void StandaloneTrustedVaultClient::NotifyTrustedVaultKeysChanged(
     std::optional<TrustedVaultUserActionTriggerForUMA> trigger) {
   for (Observer& observer : observer_list_) {

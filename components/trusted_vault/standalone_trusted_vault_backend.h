@@ -200,8 +200,6 @@ class StandaloneTrustedVaultBackend
   std::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
   std::vector<uint8_t> GetLastAddedRecoveryMethodPublicKeyForTesting() const;
-  int GetLastKeyVersionForTesting(const GaiaId& gaia_id,
-                                  SecurityDomainId security_domain);
 
   bool HasPendingTrustedRecoveryMethodForTesting() const;
 

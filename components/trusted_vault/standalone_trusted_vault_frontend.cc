@@ -601,25 +601,6 @@ void StandaloneTrustedVaultFrontend::
       std::move(callback));
 }
 
-void StandaloneTrustedVaultFrontend::GetLastKeyVersionForTesting(
-    const GaiaId& gaia_id,
-    SecurityDomainId security_domain,
-    base::OnceCallback<void(int last_key_version)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!backend_) {
-    pending_tasks_.push_back(base::BindOnce(
-        &StandaloneTrustedVaultFrontend::GetLastKeyVersionForTesting,
-        base::Unretained(this), gaia_id, security_domain, std::move(callback)));
-    return;
-  }
-  backend_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          &StandaloneTrustedVaultBackend::GetLastKeyVersionForTesting,
-          base::Unretained(backend_.get()), gaia_id, security_domain),
-      std::move(callback));
-}
-
 void StandaloneTrustedVaultFrontend::NotifyAllVaultKeysChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& [domain, client] : clients_) {

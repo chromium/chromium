@@ -79,9 +79,6 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   // FakeSecurityDomainsServer.
   void GetLastAddedRecoveryMethodPublicKeyForTesting(
       base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
-  void GetLastKeyVersionForTesting(
-      const GaiaId& gaia_id,
-      base::OnceCallback<void(int last_key_version)> callback);
 
  private:
   const SecurityDomainId security_domain_;

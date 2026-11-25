@@ -227,13 +227,6 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
     ASSERT_TRUE(future.Wait());
   }
 
-  int GetLastKeyVersion(StandaloneTrustedVaultClient* client,
-                        const GaiaId& gaia_id) {
-    base::test::TestFuture<int> future;
-    client->GetLastKeyVersionForTesting(gaia_id, future.GetCallback());
-    return future.Get();
-  }
-
   bool CanEnroll(StandaloneTrustedVaultClient* client,
                  const CoreAccountInfo& account) {
     base::test::TestFuture<bool> future;
@@ -431,8 +424,6 @@ TEST_F(StandaloneTrustedVaultClientTest,
     std::unique_ptr<StandaloneTrustedVaultClient> client_b = CreateClient();
     EXPECT_THAT(FetchKeys(client_b.get(), account_info),
                 ElementsAre(TrustedVaultKeyAndVersion(kKey, kServerEpoch)));
-    EXPECT_EQ(GetLastKeyVersion(client_b.get(), account_info.gaia),
-              kServerEpoch);
   }
 }
 
@@ -716,8 +707,6 @@ TEST_F(StandaloneTrustedVaultClientTest,
       FetchKeys(second_client.get(), account_info),
       ElementsAre(TrustedVaultKeyAndVersion(rotated_key, rotated_key_version)));
   WaitForIdle(second_client.get());
-  EXPECT_EQ(GetLastKeyVersion(second_client.get(), account_info.gaia),
-            rotated_key_version);
   EXPECT_FALSE(CanEnroll(second_client.get(), account_info));
 }
 
