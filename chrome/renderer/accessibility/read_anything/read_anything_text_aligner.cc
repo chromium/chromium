@@ -12,8 +12,11 @@
 #include <ranges>
 #include <stack>
 #include <type_traits>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -58,6 +61,123 @@ void RecordReadabilityMappingMetrics(std::optional<size_t> success_rate,
       total_duration);
 }
 
+// A stretch of `suffix_array`, from `start` up to but not including `end`,
+// whose suffixes can't be told apart yet. They begin with the same text, as
+// far as the sort has looked.
+struct SuffixGroup {
+  size_t start;
+  size_t end;
+};
+
+// A suffix and its sort key for the current round.
+//
+// The sort key is a number that stands in for the suffix's text. A smaller key
+// means the suffix comes earlier in alphabetical order. Equal keys mean the
+// suffixes still match, as far as this round looks.
+struct KeyedSuffix {
+  size_t key;
+  uint32_t suffix;
+};
+
+// Returns the sort key for `suffix` in this round. See `KeyedSuffix`.
+//
+// In the first round (`sorted_length` is 0), it's the suffix's first
+// character.
+//
+// After that, the suffixes in a group all begin with the same `sorted_length`
+// characters, so only the text after them matters. That text is itself a
+// suffix, and an earlier round already worked out where it goes. `rank` stores
+// that.
+size_t GetSortKey(std::u16string_view text,
+                  base::span<const size_t> rank,
+                  size_t sorted_length,
+                  uint32_t suffix) {
+  if (sorted_length == 0) {
+    return text[suffix];
+  }
+
+  // The suffix has no text after its first `sorted_length` characters. Shorter
+  // text sorts first, like "a" before "ana", so it gets the smallest key.
+  if (suffix + sorted_length >= text.size()) {
+    return 0;
+  }
+
+  // Add 1 so this never clashes with the 0 above.
+  return rank[suffix + sorted_length] + 1;
+}
+
+// Does one round of sorting.
+//
+// Each group holds suffixes that begin with the same `sorted_length`
+// characters. This round sorts each group by the text after those characters,
+// using GetSortKey(). Suffixes that still match stay together as a smaller
+// group for the next round.
+//
+// Each round looks at twice as much text as the one before, so only a few
+// rounds are needed, even when the text repeats a lot.
+//
+// For example, for "banana" ({} marks suffixes that still match):
+//   Round 1 (sorted_length = 0): {a, ana, anana}, banana, {na, nana}
+//   Round 2 (sorted_length = 1): a, {ana, anana}, banana, {na, nana}
+//   Round 3 (sorted_length = 2): a, ana, anana, banana, na, nana
+//
+// In round 3, "ana" and "anana" both begin with "an". What follows is "a" and
+// "ana", which round 2 already put in order, so "ana" goes first.
+//
+// `rank[i]` is where suffix i's group starts in `suffix_array`.
+void SortSuffixGroups(std::u16string_view text,
+                      size_t sorted_length,
+                      base::span<uint32_t> suffix_array,
+                      base::span<size_t> rank,
+                      std::vector<SuffixGroup>& groups) {
+  std::vector<SuffixGroup> next_groups;
+  std::vector<KeyedSuffix> keyed_suffixes;
+  for (const SuffixGroup& group : groups) {
+    // Get every sort key before the loop below changes `rank`.
+    keyed_suffixes.clear();
+    keyed_suffixes.reserve(group.end - group.start);
+    for (size_t i = group.start; i < group.end; ++i) {
+      const uint32_t suffix = suffix_array[i];
+      keyed_suffixes.push_back(
+          {.key = GetSortKey(text, rank, sorted_length, suffix),
+           .suffix = suffix});
+    }
+    std::ranges::sort(keyed_suffixes, {}, &KeyedSuffix::key);
+
+    // Copy the sorted suffixes back into `suffix_array`. Suffixes with the same
+    // sort key still match, so they're handled together as a run.
+    for (size_t run_start = 0; run_start < keyed_suffixes.size();) {
+      // Find where the run ends.
+      size_t run_end = run_start + 1;
+      while (run_end < keyed_suffixes.size() &&
+             keyed_suffixes[run_end].key == keyed_suffixes[run_start].key) {
+        ++run_end;
+      }
+
+      // Save each suffix's new position. Every suffix in the run gets the
+      // same rank: where the run starts. Groups sorted later in this round may
+      // read these new ranks in GetSortKey(). That's safe because each new
+      // rank is still between this group's start and end, so it compares the
+      // same way against ranks from other groups. It only tells suffixes in
+      // this group apart in more detail, which is still correct.
+      const size_t new_group_start = group.start + run_start;
+      for (size_t index = run_start; index < run_end; ++index) {
+        suffix_array[group.start + index] = keyed_suffixes[index].suffix;
+        rank[keyed_suffixes[index].suffix] = new_group_start;
+      }
+
+      // A run of one suffix is in its final place. Longer runs need more
+      // sorting.
+      if (run_end - run_start > 1) {
+        next_groups.push_back(
+            {.start = new_group_start, .end = group.start + run_end});
+      }
+      run_start = run_end;
+    }
+  }
+  groups = std::move(next_groups);
+}
+
 }  // namespace
 
 ReadAnythingTextAligner::SuffixArray::SuffixArray() = default;
@@ -71,11 +191,21 @@ void ReadAnythingTextAligner::SuffixArray::Build(std::u16string_view t) {
   // the text: [0, 1, 2, ... N-1].
   std::iota(this->suffix_array.begin(), this->suffix_array.end(), 0);
 
-  // Sort the start positions so their suffixes are in lexicographic order.
-  std::sort(this->suffix_array.begin(), this->suffix_array.end(),
-            [this](uint32_t i, uint32_t j) {
-              return this->text.substr(i) < this->text.substr(j);
-            });
+  // Sort in rounds: by the first character, then the first 2, 4, 8, ...
+  // characters. Each round only re-sorts suffixes that still match.
+  //
+  // Comparing whole suffixes directly can take seconds on text that repeats,
+  // like long runs of spaces.
+  std::vector<size_t> rank(this->text.size());
+  std::vector<SuffixGroup> groups = {{.start = 0, .end = this->text.size()}};
+  // The first round sorts by the first character. Later rounds double the
+  // value of `sorted_length`, so they start at 1.
+  SortSuffixGroups(this->text, /*sorted_length=*/0, this->suffix_array, rank,
+                   groups);
+  for (size_t sorted_length = 1; !groups.empty(); sorted_length *= 2) {
+    SortSuffixGroups(this->text, sorted_length, this->suffix_array, rank,
+                     groups);
+  }
 }
 
 std::pair<std::vector<uint32_t>::const_iterator,

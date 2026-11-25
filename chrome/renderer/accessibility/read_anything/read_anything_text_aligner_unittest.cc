@@ -4,10 +4,15 @@
 
 #include "chrome/renderer/accessibility/read_anything/read_anything_text_aligner.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <memory>
+#include <numeric>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/expected.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
@@ -873,4 +878,41 @@ TEST_F(
   // Block 3 only matches 4 chars (< kMinSequentialMatchLength) and must remain
   // unmapped.
   EXPECT_TRUE(GetAXMapping(3).empty());
+}
+
+TEST_F(ReadAnythingTextAlignerTest, MapRenderedTextToTree_RepetitiveText) {
+  // A long repetitive run, which is the worst case for suffix sorting.
+  const std::u16string repeated(10000, u'a');
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData root = test::GenericContainerNode(1);
+  root.child_ids = {2, 3};
+  update.root_id = 1;
+  update.nodes = {root, test::TextNode(2, repeated),
+                  test::TextNode(3, u"Unique ending.")};
+  SetTree(update);
+
+  EXPECT_TRUE(MapRenderedTextToTree({u"Title", u"Unique ending."}));
+
+  auto mapping = GetAXMapping(1);
+  ASSERT_EQ(mapping.size(), 1u);
+  EXPECT_EQ(mapping[0].id, 3);
+  EXPECT_EQ(mapping[0].start, 0);
+  EXPECT_EQ(mapping[0].end, 14);
+}
+
+TEST_F(ReadAnythingTextAlignerTest, SuffixArray_MatchesComparisonSort) {
+  for (std::u16string_view text :
+       {u"", u"a", u"aaaa", u"abab", u"abcabcabc", u"banana", u"mississippi"}) {
+    SCOPED_TRACE(base::UTF16ToUTF8(text));
+    std::vector<uint32_t> expected(text.size());
+    std::iota(expected.begin(), expected.end(), 0);
+    std::ranges::sort(expected, [text](uint32_t a, uint32_t b) {
+      return text.substr(a) < text.substr(b);
+    });
+
+    ReadAnythingTextAligner::SuffixArray index;
+    index.Build(text);
+    EXPECT_EQ(index.suffix_array, expected);
+  }
 }

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -65,6 +66,9 @@ class ReadAnythingTextAligner {
       bool is_loaded);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ReadAnythingTextAlignerTest,
+                           SuffixArray_MatchesComparisonSort);
+
   // One AXNode's slice of `global_ax_tree_text_`. Used to turn a character
   // range in that string back into AXNodes and offsets within them.
   struct AXNodeSegment {
