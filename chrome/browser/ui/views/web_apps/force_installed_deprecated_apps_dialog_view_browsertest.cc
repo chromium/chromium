@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/chrome_app_deprecation.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -12,7 +11,6 @@
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -44,10 +42,6 @@ constexpr char kMockAppManifest[] =
 class ForceInstalledDeprecatedAppsDialogViewBrowserTest
     : public extensions::ExtensionBrowserTest {
  protected:
-  ForceInstalledDeprecatedAppsDialogViewBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kChromeAppsDeprecation);
-  }
-
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
     app_id_ = InstallTestApp();
@@ -84,7 +78,6 @@ class ForceInstalledDeprecatedAppsDialogViewBrowserTest
   }
 
   extensions::ExtensionId app_id_;
-  base::test::ScopedFeatureList feature_list_;
   extensions::TestManagementPolicyProvider policy_provider_{
       extensions::TestManagementPolicyProvider::MUST_REMAIN_INSTALLED};
   content::TestWebUI test_web_ui_;

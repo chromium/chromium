@@ -873,59 +873,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   CloseBrowserSynchronously(new_browser);
 }
 
-namespace {
-
-enum class ChromeAppDeprecationFeatureValue {
-  kDefault,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  kEnabledWithNoLaunch,
-  kDisabled,
-#endif
-};
-
-std::string ChromeAppDeprecationFeatureValueToString(
-    const ::testing::TestParamInfo<ChromeAppDeprecationFeatureValue>&
-        param_info) {
-  std::string result;
-  switch (param_info.param) {
-    case ChromeAppDeprecationFeatureValue::kDefault:
-      result = "ChromeAppDeprecationFeatureDefault";
-      break;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    case ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch:
-      result = "ChromeAppDeprecationFeatureEnabledWithNoLaunch";
-      break;
-    case ChromeAppDeprecationFeatureValue::kDisabled:
-      result = "ChromeAppDeprecationFeatureDisabled";
-      break;
-#endif
-  }
-  return result;
-}
-
-}  // namespace
-
 class StartupBrowserCreatorChromeAppShortcutTest
-    : public StartupBrowserCreatorTest,
-      public ::testing::WithParamInterface<ChromeAppDeprecationFeatureValue> {
+    : public StartupBrowserCreatorTest {
  protected:
-  StartupBrowserCreatorChromeAppShortcutTest() {
-    switch (GetParam()) {
-      case ChromeAppDeprecationFeatureValue::kDefault:
-        break;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      case ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch:
-        scoped_feature_list_.InitAndEnableFeature(
-            features::kChromeAppsDeprecation);
-        break;
-      case ChromeAppDeprecationFeatureValue::kDisabled:
-        scoped_feature_list_.InitAndDisableFeature(
-            features::kChromeAppsDeprecation);
-        break;
-#endif
-    }
-  }
-
   void SetUpOnMainThread() override {
     StartupBrowserCreatorTest::SetUpOnMainThread();
   }
@@ -1044,12 +994,9 @@ class StartupBrowserCreatorChromeAppShortcutTest
     return true;
 #endif
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorChromeAppShortcutTest,
                        OpenAppShortcutNoPref) {
   // Load an app with launch.container = 'tab'.
   const Extension* extension_app = nullptr;
@@ -1094,7 +1041,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorChromeAppShortcutTest,
                        OpenAppShortcutWindowPref) {
   const Extension* extension_app = nullptr;
   ASSERT_NO_FATAL_FAILURE(LoadApp("app_with_tab_container", &extension_app));
@@ -1131,7 +1078,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorChromeAppShortcutTest,
                        OpenAppShortcutTabPref) {
   // When we start, the browser should already have an open tab.
   TabStripModel* tab_strip = browser()->GetTabStripModel();
@@ -1180,7 +1127,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorChromeAppShortcutTest,
                        OpenPolicyForcedAppShortcut) {
   // Load an app with launch.container = 'tab'.
   const Extension* extension_app = nullptr;
@@ -1236,24 +1183,14 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    StartupBrowserCreatorChromeAppShortcutTest,
-    ::testing::Values(ChromeAppDeprecationFeatureValue::kDefault
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-                      ,
-                      ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch,
-                      ChromeAppDeprecationFeatureValue::kDisabled
-#endif
-                      ),
-    ChromeAppDeprecationFeatureValueToString);
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+// These tests are specifically for testing what happens when the "Launch
+// Anyways" button is pressed.
 using StartupBrowserCreatorChromeAppShortcutTestWithLaunch =
     StartupBrowserCreatorChromeAppShortcutTest;
 
-IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
                        OpenAppShortcutNoPref) {
   // Load an app with launch.container = 'tab'.
   const Extension* extension_app = nullptr;
@@ -1279,7 +1216,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
                     ->GetSize());
 }
 
-IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
                        OpenAppShortcutWindowPref) {
   const Extension* extension_app = nullptr;
   ASSERT_NO_FATAL_FAILURE(LoadApp("app_with_tab_container", &extension_app));
@@ -1302,7 +1239,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
                     ->GetSize());
 }
 
-IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
                        OpenAppShortcutTabPref) {
   // When we start, the browser should already have an open tab.
   TabStripModel* tab_strip = browser()->GetTabStripModel();
@@ -1329,7 +1266,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
                     ->GetSize());
 }
 
-IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
                        OpenPolicyForcedAppShortcut) {
   // Load an app with launch.container = 'tab'.
   const Extension* extension_app = nullptr;
@@ -1361,14 +1298,6 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
   ASSERT_EQ(2u, ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
                     ->GetSize());
 }
-
-// These tests are specifically for testing what happens when the "Launch
-// Anyways" button is pressed.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
-    ::testing::Values(ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch),
-    ChromeAppDeprecationFeatureValueToString);
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

@@ -6,7 +6,6 @@
 
 #include "base/check_deref.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
@@ -46,7 +45,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -155,8 +153,7 @@ void AppHomePageHandler::LaunchAppInternal(
     const std::string& app_id,
     extension_misc::AppLaunchBucket launch_bucket,
     app_home::mojom::ClickEventPtr click_event) {
-  if (extensions::IsExtensionUnsupportedDeprecatedApp(profile_, app_id) &&
-      base::FeatureList::IsEnabled(features::kChromeAppsDeprecation)) {
+  if (extensions::IsExtensionUnsupportedDeprecatedApp(profile_, app_id)) {
     if (!extensions::util::IsExtensionForceInstalled(app_id, profile_)) {
       TabDialogs::FromWebContents(web_ui_->GetWebContents())
           ->ShowDeprecatedAppsDialog(app_id, deprecated_app_ids_,
