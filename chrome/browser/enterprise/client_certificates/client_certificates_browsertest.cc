@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cstdint>
+#include <tuple>
 #include <vector>
 
 #include "base/json/json_writer.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/browser/enterprise/test/test_constants.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -26,6 +28,8 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/device_signals/core/browser/pref_names.h"
+#include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
@@ -43,6 +47,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -52,8 +57,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/callback_list.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"  // nogncheck
 #include "components/enterprise/client_certificates/android/browser_binding/browser_key.h"
 #include "components/enterprise/client_certificates/android/browser_binding/browser_key_store.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"  // nogncheck
+#include "components/signin/public/base/consent_level.h"  // nogncheck
+#include "components/signin/public/base/signin_prefs.h"   // nogncheck
+#include "components/signin/public/identity_manager/identity_test_utils.h"  // nogncheck
+#include "google_apis/gaia/gaia_id.h"  // nogncheck
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace client_certificates {
@@ -81,30 +93,19 @@ constexpr int kKeyLoadResultNotFound = 1;
 
 }  // namespace
 
-class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
-                                     public testing::WithParamInterface<bool> {
+class ClientCertificateBrowserTestBase : public MixinBasedPlatformBrowserTest {
  protected:
-  ClientCertificateBrowserTest()
-      : ClientCertificateBrowserTest(/*mock_unexportable_keys=*/true) {}
-
-  // When `mock_unexportable_keys` is false, no unexportable key provider is
-  // available and the next key source is used for the managed identity's
-  // private key. On Android that is the keystore-backed
-  // `AndroidPrivateKeyFactory`, as in production, where //crypto has no
-  // unexportable key provider.
-  explicit ClientCertificateBrowserTest(bool mock_unexportable_keys)
-      : scoped_key_converter_(mock_unexportable_keys) {
+  ClientCertificateBrowserTestBase(bool mock_unexportable_keys,
+                                   ManagementContext management_context)
+      : is_profile_scenario_(management_context.is_cloud_user_managed),
+        is_cloud_machine_managed_(management_context.is_cloud_machine_managed),
+        scoped_key_converter_(mock_unexportable_keys) {
     scoped_feature_list_.InitWithFeatures(
         {::features::kLazyKeyedServiceInstantiation,
          features::kClientCertCommonNameAttribute},
         {});
     management_mixin_ = ManagementContextMixin::Create(
-        &mixin_host_, this,
-        {
-            .is_cloud_user_managed = is_profile_scenario(),
-            .is_cloud_machine_managed = !is_profile_scenario(),
-            .affiliated = false,
-        });
+        &mixin_host_, this, std::move(management_context));
   }
 
   void SetUp() override {
@@ -123,7 +124,7 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
   void SetUpInProcessBrowserTestFixture() override {
     test_dm_server_ = std::make_unique<policy::EmbeddedPolicyTestServer>();
 
-    if (!is_profile_scenario()) {
+    if (is_cloud_machine_managed_) {
       test_dm_server_->client_storage()->RegisterClient(
           enterprise::test::CreateBrowserClientInfo());
     }
@@ -155,8 +156,9 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
-        &ClientCertificateBrowserTest::HandleRequest, base::Unretained(this)));
+    embedded_https_test_server().RegisterRequestHandler(
+        base::BindRepeating(&ClientCertificateBrowserTestBase::HandleRequest,
+                            base::Unretained(this)));
 
     embedded_https_test_server().StartAcceptingConnections();
 
@@ -298,21 +300,50 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
                                  : kBrowserIssuerCommonName;
   }
 
+  void ExpectUniquePermissionSample(device_signals::UserPermission expected) {
+    histogram_tester_.ExpectUniqueSample(
+        "Enterprise.ClientCertificate.Profile.ComputerNamePermission", expected,
+        1);
+  }
+
   ManagementContextMixin* management_mixin() { return management_mixin_.get(); }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  bool is_profile_scenario() const { return GetParam(); }
+  bool is_profile_scenario() const { return is_profile_scenario_; }
 
   bool was_profile_service_created_before_startup_complete_ = true;
   std::optional<CapturedRequest> captured_request_;
 
  private:
+  const bool is_profile_scenario_;
+  const bool is_cloud_machine_managed_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<policy::EmbeddedPolicyTestServer> test_dm_server_;
   client_certificates::ScopedSSLKeyConverter scoped_key_converter_;
   std::unique_ptr<ManagementContextMixin> management_mixin_;
+};
+
+class ClientCertificateBrowserTest : public ClientCertificateBrowserTestBase,
+                                     public testing::WithParamInterface<bool> {
+ protected:
+  ClientCertificateBrowserTest()
+      : ClientCertificateBrowserTest(/*mock_unexportable_keys=*/true) {}
+
+  // When `mock_unexportable_keys` is false, no unexportable key provider is
+  // available and the next key source is used for the managed identity's
+  // private key. On Android that is the keystore-backed
+  // `AndroidPrivateKeyFactory`, as in production, where //crypto has no
+  // unexportable key provider.
+  explicit ClientCertificateBrowserTest(bool mock_unexportable_keys)
+      : ClientCertificateBrowserTestBase(
+            mock_unexportable_keys,
+            ManagementContext{
+                .is_cloud_user_managed = GetParam(),
+                .is_cloud_machine_managed = !GetParam(),
+                .affiliated = false,
+            }) {}
 };
 
 IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, CreateNewIdentity) {
@@ -328,13 +359,24 @@ IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, CreateNewIdentity) {
 IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest,
                        CreateNewIdentityWithComputerName) {
   EnablePolicyAndWaitForIdentity(kCommonNameSourceComputerName);
-  std::string expected_device_name =
-      SanitizeAndTruncateCommonName(policy::GetDeviceName());
   std::optional<ClientIdentity> identity = GetManagedIdentity();
   ASSERT_TRUE(identity);
-  EXPECT_EQ(identity->certificate->subject().common_name,
-            expected_device_name.empty() ? GetDefaultExpectedCommonName()
-                                         : expected_device_name);
+  if (is_profile_scenario()) {
+    // User is cloud-managed on an unmanaged browser without signals consent, so
+    // `computer_name` falls back to `profile_id`.
+    EXPECT_EQ(identity->certificate->subject().common_name,
+              GetDefaultExpectedCommonName());
+    ExpectUniquePermissionSample(
+        device_signals::UserPermission::kMissingConsent);
+    histogram_tester().ExpectTotalCount(
+        "Enterprise.ClientCertificate.CommonNameSanitization", 0);
+  } else {
+    std::string expected_device_name =
+        SanitizeAndTruncateCommonName(policy::GetDeviceName());
+    EXPECT_EQ(identity->certificate->subject().common_name,
+              expected_device_name.empty() ? GetDefaultExpectedCommonName()
+                                           : expected_device_name);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, PRE_LoadExistingIdentity) {
@@ -393,13 +435,14 @@ IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest,
                        UseIdentityInMtlsWithComputerName) {
-  // Enable the necessary policies and trigger a navigation.
-  SetCertificateAutoselectionPolicy();
+  // Profile `computer_name` mTLS coverage (with affiliation and consent) lives
+  // in `ClientCertificateProfileAffiliationBrowserTest`.
   if (is_profile_scenario()) {
-    SetUserPolicy(1, kCommonNameSourceComputerName);
-  } else {
-    SetBrowserPolicy(1, kCommonNameSourceComputerName);
+    GTEST_SKIP();
   }
+
+  SetCertificateAutoselectionPolicy();
+  SetBrowserPolicy(1, kCommonNameSourceComputerName);
 
   ASSERT_TRUE(content::NavigateToURL(
       chrome_test_utils::GetActiveWebContents(this),
@@ -418,6 +461,169 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     ClientCertificateBrowserTest,
     testing::Bool());
+
+// Parameterized by `(affiliated, consent)` for a cloud-managed user on a
+// cloud-managed browser.
+class ClientCertificateProfileAffiliationBrowserTest
+    : public ClientCertificateBrowserTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ protected:
+  ClientCertificateProfileAffiliationBrowserTest()
+      : ClientCertificateBrowserTestBase(
+            /*mock_unexportable_keys=*/true,
+            ManagementContext{
+                .is_cloud_user_managed = true,
+                .is_cloud_machine_managed = true,
+                .affiliated = std::get<0>(GetParam()),
+            }) {}
+
+  void SetUpInProcessBrowserTestFixture() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (has_user_consented()) {
+      create_services_subscription_ =
+          BrowserContextDependencyManager::GetInstance()
+              ->RegisterCreateServicesCallbackForTesting(
+                  base::BindRepeating([](content::BrowserContext* context) {
+                    IdentityTestEnvironmentProfileAdaptor::
+                        SetIdentityTestEnvironmentFactoriesOnBrowserContext(
+                            context);
+                  }));
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+    ClientCertificateBrowserTestBase::SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (has_user_consented()) {
+      identity_test_env_adaptor_ =
+          std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+    ClientCertificateBrowserTestBase::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+#if BUILDFLAG(IS_ANDROID)
+    identity_test_env_adaptor_.reset();
+#endif  // BUILDFLAG(IS_ANDROID)
+    ClientCertificateBrowserTestBase::TearDownOnMainThread();
+  }
+
+  void GrantUserSignalsConsent() {
+#if BUILDFLAG(IS_ANDROID)
+    AccountInfo account_info =
+        identity_test_env_adaptor_->identity_test_env()->MakeAccountAvailable(
+            signin::AccountAvailabilityOptionsBuilder()
+                .AsPrimary(signin::ConsentLevel::kSignin)
+                .WithGaiaId(GaiaId(enterprise::test::kTestUserId))
+                .Build(enterprise::test::kTestUserEmail));
+    SigninPrefs(*GetProfile()->GetPrefs())
+        .SetDeviceSignalsPermanentConsentReceived(account_info.GetGaiaId(),
+                                                  true);
+#else
+    GetProfile()->GetPrefs()->SetBoolean(
+        device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
+
+  bool is_affiliated() const { return std::get<0>(GetParam()); }
+  bool has_user_consented() const { return std::get<1>(GetParam()); }
+
+ private:
+#if BUILDFLAG(IS_ANDROID)
+  base::CallbackListSubscription create_services_subscription_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+#endif  // BUILDFLAG(IS_ANDROID)
+};
+
+IN_PROC_BROWSER_TEST_P(ClientCertificateProfileAffiliationBrowserTest,
+                       CreateNewIdentityWithComputerName) {
+  // On desktop, also enable a machine-level signals policy so
+  // `CanCollectSignals()` returns `kGranted`, verifying that machine-scope
+  // signals policies do not grant `computer_name` to an unaffiliated profile's
+  // certificate. (`BrowserContextAwareAccessSignalsAllowlist` is still
+  // `future_on` Android, so skip asserting `CanCollectSignals()` there to avoid
+  // failing on official branded builds.)
+  base::flat_map<std::string, std::optional<base::Value>> machine_policies;
+  machine_policies.insert(
+      {policy::key::kBrowserContextAwareAccessSignalsAllowlist,
+       base::Value(base::ListValue().Append("https://example.com"))});
+  management_mixin()->SetCloudMachinePolicies(std::move(machine_policies));
+
+  if (has_user_consented()) {
+    GrantUserSignalsConsent();
+  }
+
+  EnablePolicyAndWaitForIdentity(kCommonNameSourceComputerName);
+  std::optional<ClientIdentity> identity = GetManagedIdentity();
+  ASSERT_TRUE(identity);
+
+  if (!is_affiliated()) {
+#if !BUILDFLAG(IS_ANDROID)
+    ASSERT_TRUE(enterprise_signals::UserPermissionServiceFactory::GetForProfile(
+        GetProfile()));
+    EXPECT_EQ(enterprise_signals::UserPermissionServiceFactory::GetForProfile(
+                  GetProfile())
+                  ->CanCollectSignals(),
+              device_signals::UserPermission::kGranted);
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
+
+  if (is_affiliated() || has_user_consented()) {
+    std::string expected_device_name =
+        SanitizeAndTruncateCommonName(policy::GetDeviceName());
+    EXPECT_EQ(identity->certificate->subject().common_name,
+              expected_device_name.empty() ? GetDefaultExpectedCommonName()
+                                           : expected_device_name);
+    ExpectUniquePermissionSample(device_signals::UserPermission::kGranted);
+  } else {
+    EXPECT_EQ(identity->certificate->subject().common_name,
+              GetDefaultExpectedCommonName());
+    ExpectUniquePermissionSample(
+        device_signals::UserPermission::kMissingConsent);
+    histogram_tester().ExpectTotalCount(
+        "Enterprise.ClientCertificate.CommonNameSanitization", 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ClientCertificateProfileAffiliationBrowserTest,
+                       UseIdentityInMtlsWithComputerName) {
+  SetCertificateAutoselectionPolicy();
+  if (has_user_consented()) {
+    GrantUserSignalsConsent();
+  }
+  SetUserPolicy(1, kCommonNameSourceComputerName);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this),
+      embedded_https_test_server().GetURL("mtls.google.com", "/mtls")));
+
+  ASSERT_TRUE(captured_request_);
+  VerifyClientCert(captured_request_->client_certificate);
+
+  if (is_affiliated() || has_user_consented()) {
+    std::string expected_device_name =
+        SanitizeAndTruncateCommonName(policy::GetDeviceName());
+    EXPECT_EQ(captured_request_->client_certificate->subject().common_name,
+              expected_device_name.empty() ? GetDefaultExpectedCommonName()
+                                           : expected_device_name);
+  } else {
+    EXPECT_EQ(captured_request_->client_certificate->subject().common_name,
+              GetDefaultExpectedCommonName());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ClientCertificateProfileAffiliationBrowserTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      return base::StringPrintf(
+          "%s_%s", std::get<0>(info.param) ? "Affiliated" : "Unaffiliated",
+          std::get<1>(info.param) ? "Consented" : "NoConsent");
+    });
 
 #if BUILDFLAG(IS_ANDROID)
 

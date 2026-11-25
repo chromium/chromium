@@ -65,6 +65,13 @@ class UserPermissionService : public KeyedService {
       const UserContext& user_context) const = 0;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX
 
+  // Verifies whether signals can be collected in a user-scoped context for the
+  // current profile user. Grants permission (`kGranted`) only when the user is
+  // managed and either has given explicit signals consent, or the browser is
+  // cloud-managed and the user is affiliated with it. Never grants access
+  // based solely on machine-scope policies.
+  virtual UserPermission CanCollectUserScopedSignals() const = 0;
+
   // Will verify whether context-aware signals can be collected
   // based on the current context (e.g. browser-wide management, user logged-in
   // to a Profile). Returns `kGranted` if collection is allowed.

@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_store_factory.h"
 #include "chrome/browser/enterprise/client_certificates/profile_context_delegate.h"
@@ -32,6 +33,10 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace client_certificates {
 
@@ -70,6 +75,9 @@ CertificateProvisioningServiceFactory::CertificateProvisioningServiceFactory()
               : ProfileSelections::BuildForRegularProfile()) {
   DependsOn(CertificateStoreFactory::GetInstance());
   DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
+#if !BUILDFLAG(IS_CHROMEOS)
+  DependsOn(enterprise_signals::UserPermissionServiceFactory::GetInstance());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 CertificateProvisioningServiceFactory::
@@ -106,7 +114,6 @@ CertificateProvisioningServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-
   auto* certificate_store = CertificateStoreFactory::GetForProfile(profile);
   auto url_loader_factory = profile->GetURLLoaderFactory();
   auto* device_management_service = GetDeviceManagementService();
@@ -117,9 +124,16 @@ CertificateProvisioningServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  device_signals::UserPermissionService* user_permission_service = nullptr;
+#if !BUILDFLAG(IS_CHROMEOS)
+  user_permission_service =
+      enterprise_signals::UserPermissionServiceFactory::GetForProfile(profile);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   return CertificateProvisioningService::Create(
       profile->GetPrefs(), certificate_store,
-      std::make_unique<ProfileContextDelegate>(profile, profile_id_service),
+      std::make_unique<ProfileContextDelegate>(profile, profile_id_service,
+                                               user_permission_service),
       KeyUploadClient::Create(
           std::make_unique<
               enterprise_attestation::ProfileCloudManagementDelegate>(

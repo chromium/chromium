@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_MOCK_USER_PERMISSION_SERVICE_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_MOCK_USER_PERMISSION_SERVICE_H_
 
+#include "build/build_config.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -17,11 +18,16 @@ class MockUserPermissionService : public UserPermissionService {
 
   MOCK_METHOD(bool, HasUserConsented, (), (const override));
   MOCK_METHOD(bool, ShouldCollectConsent, (), (const override));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   MOCK_METHOD(UserPermission,
               CanUserCollectSignals,
               (const UserContext&),
               (const override));
-
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  MOCK_METHOD(UserPermission,
+              CanCollectUserScopedSignals,
+              (),
+              (const override));
   MOCK_METHOD(UserPermission, CanCollectSignals, (), (const override));
   MOCK_METHOD(UserPermission, CanCollectReportSignals, (), (const override));
 };

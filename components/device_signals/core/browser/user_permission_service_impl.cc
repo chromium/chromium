@@ -115,6 +115,11 @@ UserPermission UserPermissionServiceImpl::CanUserCollectSignals(
     return UserPermission::kUnknownUser;
   }
 
+  return CanCollectUserScopedSignals();
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX
+
+UserPermission UserPermissionServiceImpl::CanCollectUserScopedSignals() const {
   if (!user_delegate_->IsManagedUser()) {
     return UserPermission::kConsumerUser;
   }
@@ -127,13 +132,10 @@ UserPermission UserPermissionServiceImpl::CanUserCollectSignals(
                               : UserPermission::kMissingConsent;
   }
 
-  // At this point, the given user is:
-  // - The same user as the browser user,
-  // - Is managed by an org affiliated with the org managing the browser.
-  // They are, therefore, allowed to collect signals.
+  // At this point, the profile user is managed by an org affiliated with the
+  // org managing the browser. They are, therefore, allowed to collect signals.
   return UserPermission::kGranted;
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX
 
 UserPermission UserPermissionServiceImpl::CanCollectSignals() const {
   if (HasUserConsented()) {

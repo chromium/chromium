@@ -448,6 +448,84 @@ TEST_P(UserPermissionServiceImplTest,
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX
 
+// Tests `CanCollectUserScopedSignals()` when the profile user is not managed,
+// even if consent is set.
+TEST_P(UserPermissionServiceImplTest,
+       CanCollectUserScopedSignals_UserNotManaged) {
+  SetDeviceAsCloudManaged();
+  SetPermanentUserConsentGiven();
+  EXPECT_CALL(*mock_user_delegate_, IsManagedUser()).WillOnce(Return(false));
+
+  EXPECT_EQ(permission_service_->CanCollectUserScopedSignals(),
+            UserPermission::kConsumerUser);
+}
+
+// Tests CanCollectUserScopedSignals when the user is managed on an unmanaged
+// browser and has not granted consent.
+TEST_P(UserPermissionServiceImplTest,
+       CanCollectUserScopedSignals_BrowserNotManaged_NoConsent) {
+  SetUserAsCloudManaged();
+  EXPECT_CALL(*mock_user_delegate_, IsManagedUser()).WillOnce(Return(true));
+
+  EXPECT_EQ(permission_service_->CanCollectUserScopedSignals(),
+            UserPermission::kMissingConsent);
+}
+
+// Tests CanCollectUserScopedSignals when the user is managed on an unmanaged
+// browser and has granted consent.
+TEST_P(UserPermissionServiceImplTest,
+       CanCollectUserScopedSignals_BrowserNotManaged_WithConsent) {
+  SetUserAsCloudManaged();
+  SetPermanentUserConsentGiven();
+  EXPECT_CALL(*mock_user_delegate_, IsManagedUser()).WillOnce(Return(true));
+
+  EXPECT_EQ(permission_service_->CanCollectUserScopedSignals(),
+            UserPermission::kGranted);
+}
+
+// Tests CanCollectUserScopedSignals when the browser is cloud-managed, the user
+// is unaffiliated without consent, and a machine-scope policy needs signals:
+// unlike CanCollectSignals(), user-scoped collection must remain denied.
+TEST_P(
+    UserPermissionServiceImplTest,
+    CanCollectUserScopedSignals_BrowserManaged_Unaffiliated_MachinePolicyDoesNotGrant) {
+  SetDeviceAsCloudManaged();
+  EXPECT_CALL(*mock_user_delegate_, IsManagedUser())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_user_delegate_, IsAffiliated())
+      .WillRepeatedly(Return(false));
+  SetPolicyScopesNeedingSignals(/*machine_scope=*/true, /*user_scope=*/false);
+
+  EXPECT_EQ(permission_service_->CanCollectSignals(), UserPermission::kGranted);
+  EXPECT_EQ(permission_service_->CanCollectUserScopedSignals(),
+            UserPermission::kMissingConsent);
+}
+
+// Tests CanCollectUserScopedSignals when the browser is cloud-managed and the
+// managed user is unaffiliated, but has granted explicit consent.
+TEST_P(UserPermissionServiceImplTest,
+       CanCollectUserScopedSignals_BrowserManaged_Unaffiliated_WithConsent) {
+  SetDeviceAsCloudManaged();
+  SetUserConsentGiven();
+  EXPECT_CALL(*mock_user_delegate_, IsManagedUser()).WillOnce(Return(true));
+  EXPECT_CALL(*mock_user_delegate_, IsAffiliated()).WillOnce(Return(false));
+
+  EXPECT_EQ(permission_service_->CanCollectUserScopedSignals(),
+            UserPermission::kGranted);
+}
+
+// Tests CanCollectUserScopedSignals when the browser is cloud-managed and the
+// managed user is affiliated without explicit consent.
+TEST_P(UserPermissionServiceImplTest,
+       CanCollectUserScopedSignals_BrowserManaged_Affiliated) {
+  SetDeviceAsCloudManaged();
+  EXPECT_CALL(*mock_user_delegate_, IsManagedUser()).WillOnce(Return(true));
+  EXPECT_CALL(*mock_user_delegate_, IsAffiliated()).WillOnce(Return(true));
+
+  EXPECT_EQ(permission_service_->CanCollectUserScopedSignals(),
+            UserPermission::kGranted);
+}
+
 // Tests that signals can be collected if the user has already given their
 // consent.
 TEST_P(UserPermissionServiceImplTest, CanCollectSignals_AlreadyConsented) {
@@ -594,10 +672,14 @@ TEST_P(UserPermissionServiceImplTest,
 // signals.
 TEST_P(UserPermissionServiceImplTest, Android_PrimaryAccountConsent) {
   SetUserAsCloudManaged();
+  EXPECT_CALL(*mock_user_delegate_, IsManagedUser())
+      .WillRepeatedly(Return(true));
 
   SetAccountConsentGiven(kOtherGaiaId);
   EXPECT_FALSE(permission_service_->HasUserConsented());
   EXPECT_EQ(permission_service_->CanCollectSignals(),
+            UserPermission::kMissingConsent);
+  EXPECT_EQ(permission_service_->CanCollectUserScopedSignals(),
             UserPermission::kMissingConsent);
   EXPECT_EQ(permission_service_->CanCollectReportSignals(),
             UserPermission::kMissingConsent);
@@ -606,6 +688,8 @@ TEST_P(UserPermissionServiceImplTest, Android_PrimaryAccountConsent) {
   EXPECT_TRUE(permission_service_->HasUserConsented());
   EXPECT_FALSE(permission_service_->ShouldCollectConsent());
   EXPECT_EQ(permission_service_->CanCollectSignals(), UserPermission::kGranted);
+  EXPECT_EQ(permission_service_->CanCollectUserScopedSignals(),
+            UserPermission::kGranted);
   EXPECT_EQ(permission_service_->CanCollectReportSignals(),
             UserPermission::kGranted);
 }
@@ -615,11 +699,15 @@ TEST_P(UserPermissionServiceImplTest, Android_PrimaryAccountConsent) {
 TEST_P(UserPermissionServiceImplTest, Android_NoPrimaryAccount) {
   SetUserAsCloudManaged();
   SetAccountConsentGiven(kPrimaryGaiaId);
+  EXPECT_CALL(*mock_user_delegate_, IsManagedUser())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_user_delegate_, GetPrimaryAccountGaiaId())
       .WillRepeatedly(Return(GaiaId()));
 
   EXPECT_FALSE(permission_service_->HasUserConsented());
   EXPECT_EQ(permission_service_->CanCollectSignals(),
+            UserPermission::kMissingConsent);
+  EXPECT_EQ(permission_service_->CanCollectUserScopedSignals(),
             UserPermission::kMissingConsent);
   EXPECT_EQ(permission_service_->CanCollectReportSignals(),
             UserPermission::kMissingConsent);

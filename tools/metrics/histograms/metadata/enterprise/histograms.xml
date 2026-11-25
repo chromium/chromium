@@ -1042,6 +1042,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.ClientCertificate.Profile.ComputerNamePermission"
+    enum="DeviceSignalsUserPermission" expires_after="2027-06-01">
+  <owner>pleblanc@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the user signals permission check outcome evaluated in
+    ProfileContextDelegate when ManagedClientCertificateForUserConfig sets
+    common_name_source to computer_name. Recorded at most once per profile
+    session (the first time GetExpectedCommonName evaluates permission while
+    computer_name is configured). When anything other than Granted is recorded,
+    Chrome falls back to using the profile ID as the certificate Subject Common
+    Name.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.ClientCertificate.{Level}.CertificateValidation.Result"
     enum="CertificateValidationResult" expires_after="2027-06-01">

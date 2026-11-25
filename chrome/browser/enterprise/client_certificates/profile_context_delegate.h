@@ -12,6 +12,10 @@
 
 class Profile;
 
+namespace device_signals {
+class UserPermissionService;
+}  // namespace device_signals
+
 namespace enterprise {
 class ProfileIdService;
 }  // namespace enterprise
@@ -20,8 +24,15 @@ namespace client_certificates {
 
 class ProfileContextDelegate : public ContextDelegate {
  public:
-  ProfileContextDelegate(Profile* profile,
-                         enterprise::ProfileIdService* profile_id_service);
+  // `profile` and `profile_id_service` must be non-null and outlive `this`.
+  // `user_permission_service` is null on ChromeOS (where `computer_name` is
+  // unsupported) and in unit tests where `DeviceTrustConnectorServiceFactory`
+  // returns null via `ServiceIsNULLWhileTesting()`; when null, `computer_name`
+  // is not used and `GetExpectedCommonName()` falls back to the profile ID.
+  ProfileContextDelegate(
+      Profile* profile,
+      enterprise::ProfileIdService* profile_id_service,
+      device_signals::UserPermissionService* user_permission_service);
   ~ProfileContextDelegate() override;
 
   // ContextDelegate:
@@ -35,8 +46,15 @@ class ProfileContextDelegate : public ContextDelegate {
   std::string GetLoggingContext() override;
 
  private:
+  // Evaluates whether the profile user has permission to include
+  // `computer_name` in the certificate Common Name, recording the permission
+  // metric and fallback log at most once per profile session.
+  bool CanUseComputerName() const;
+
   const raw_ptr<Profile> profile_;
   const raw_ptr<enterprise::ProfileIdService> profile_id_service_;
+  const raw_ptr<device_signals::UserPermissionService> user_permission_service_;
+  mutable bool has_recorded_computer_name_permission_ = false;
 };
 
 }  // namespace client_certificates

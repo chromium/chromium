@@ -13,6 +13,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/device_signals/core/browser/mock_user_permission_service.h"
+#include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/features.h"
@@ -80,10 +82,14 @@ class ProfileContextDelegateTest : public testing::Test {
         std::move(network_context_remote));
     profile_id_service_ =
         std::make_unique<enterprise::ProfileIdService>(kTestProfileId);
+    ON_CALL(mock_user_permission_service_, CanCollectUserScopedSignals())
+        .WillByDefault(
+            testing::Return(device_signals::UserPermission::kGranted));
   }
 
   ProfileContextDelegate CreateDelegate() {
-    return ProfileContextDelegate(profile_.get(), profile_id_service_.get());
+    return ProfileContextDelegate(profile_.get(), profile_id_service_.get(),
+                                  &mock_user_permission_service_);
   }
 
  protected:
@@ -93,6 +99,8 @@ class ProfileContextDelegateTest : public testing::Test {
   std::unique_ptr<MockNetworkContext> mock_network_context_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<enterprise::ProfileIdService> profile_id_service_;
+  testing::NiceMock<device_signals::MockUserPermissionService>
+      mock_user_permission_service_;
 };
 
 TEST_F(ProfileContextDelegateTest,
@@ -137,15 +145,23 @@ TEST_F(ProfileContextDelegateTest, GetConfigPolicyPref) {
 }
 
 TEST_F(ProfileContextDelegateTest, GetExpectedCommonName_DefaultIdentifier) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(mock_user_permission_service_, CanCollectUserScopedSignals())
+      .Times(0);
   profile_->GetPrefs()->SetDict(
       prefs::kManagedClientCertificateForUserConfigPrefs,
       base::DictValue().Set(kCommonNameSourceKey, kCommonNameSourceProfileId));
   EXPECT_EQ(kTestProfileId, CreateDelegate().GetExpectedCommonName());
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ClientCertificate.Profile.ComputerNamePermission", 0);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileContextDelegateTest,
        GetExpectedCommonName_ComputerNameFallbackToProfileIdOnChromeOS) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(mock_user_permission_service_, CanCollectUserScopedSignals())
+      .Times(0);
   profile_->GetPrefs()->SetDict(
       prefs::kManagedClientCertificateForUserConfigPrefs,
       base::DictValue().Set(kCommonNameSourceKey,
@@ -153,9 +169,12 @@ TEST_F(ProfileContextDelegateTest,
   auto delegate = CreateDelegate();
   delegate.SetComputerNameForTesting("custom-workstation");
   EXPECT_EQ(kTestProfileId, delegate.GetExpectedCommonName());
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ClientCertificate.Profile.ComputerNamePermission", 0);
 }
 #else
 TEST_F(ProfileContextDelegateTest, GetExpectedCommonName_ComputerName) {
+  base::HistogramTester histogram_tester;
   profile_->GetPrefs()->SetDict(
       prefs::kManagedClientCertificateForUserConfigPrefs,
       base::DictValue().Set(kCommonNameSourceKey,
@@ -163,6 +182,52 @@ TEST_F(ProfileContextDelegateTest, GetExpectedCommonName_ComputerName) {
   auto delegate = CreateDelegate();
   delegate.SetComputerNameForTesting("custom-workstation");
   EXPECT_EQ("custom-workstation", delegate.GetExpectedCommonName());
+  // Repeated checks within the same profile session should not record again.
+  EXPECT_EQ("custom-workstation", delegate.GetExpectedCommonName());
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.ComputerNamePermission",
+      device_signals::UserPermission::kGranted, 1);
+}
+
+TEST_F(ProfileContextDelegateTest,
+       GetExpectedCommonName_ComputerNameWithoutPermissionFallbackToProfileId) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(mock_user_permission_service_, CanCollectUserScopedSignals())
+      .WillByDefault(
+          testing::Return(device_signals::UserPermission::kMissingConsent));
+  profile_->GetPrefs()->SetDict(
+      prefs::kManagedClientCertificateForUserConfigPrefs,
+      base::DictValue().Set(kCommonNameSourceKey,
+                            kCommonNameSourceComputerName));
+  auto delegate = CreateDelegate();
+  delegate.SetComputerNameForTesting("custom-workstation");
+  EXPECT_EQ(kTestProfileId, delegate.GetExpectedCommonName());
+  // Repeated checks within the same profile session should not record again.
+  EXPECT_EQ(kTestProfileId, delegate.GetExpectedCommonName());
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.ComputerNamePermission",
+      device_signals::UserPermission::kMissingConsent, 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ClientCertificate.CommonNameSanitization", 0);
+}
+
+TEST_F(
+    ProfileContextDelegateTest,
+    GetExpectedCommonName_ComputerNameNullPermissionServiceFallbackToProfileId) {
+  base::HistogramTester histogram_tester;
+  profile_->GetPrefs()->SetDict(
+      prefs::kManagedClientCertificateForUserConfigPrefs,
+      base::DictValue().Set(kCommonNameSourceKey,
+                            kCommonNameSourceComputerName));
+  ProfileContextDelegate delegate(profile_.get(), profile_id_service_.get(),
+                                  /*user_permission_service=*/nullptr);
+  delegate.SetComputerNameForTesting("custom-workstation");
+  EXPECT_EQ(kTestProfileId, delegate.GetExpectedCommonName());
+  EXPECT_EQ(kTestProfileId, delegate.GetExpectedCommonName());
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ClientCertificate.Profile.ComputerNamePermission", 0);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ClientCertificate.CommonNameSanitization", 0);
 }
 #endif
 
@@ -183,6 +248,9 @@ TEST_F(ProfileContextDelegateTest,
   scoped_feature_list.InitAndDisableFeature(
       features::kClientCertCommonNameAttribute);
 
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(mock_user_permission_service_, CanCollectUserScopedSignals())
+      .Times(0);
   profile_->GetPrefs()->SetDict(
       prefs::kManagedClientCertificateForUserConfigPrefs,
       base::DictValue().Set(kCommonNameSourceKey,
@@ -190,6 +258,8 @@ TEST_F(ProfileContextDelegateTest,
   auto delegate = CreateDelegate();
   delegate.SetComputerNameForTesting("custom-workstation");
   EXPECT_EQ(kTestProfileId, delegate.GetExpectedCommonName());
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.ClientCertificate.Profile.ComputerNamePermission", 0);
 }
 
 TEST_F(ProfileContextDelegateTest,
@@ -224,6 +294,29 @@ TEST_F(ProfileContextDelegateTest,
   histogram_tester.ExpectUniqueSample(
       "Enterprise.ClientCertificate.Profile.CertificateValidation.Result",
       CertificateValidationResult::kValid, 1);
+}
+
+TEST_F(ProfileContextDelegateTest,
+       ShouldCertificateBeRenewed_DeviceNameRejectedWhenPermissionMissing) {
+  constexpr char kTestDeviceName[] = "custom-workstation";
+  ON_CALL(mock_user_permission_service_, CanCollectUserScopedSignals())
+      .WillByDefault(
+          testing::Return(device_signals::UserPermission::kMissingConsent));
+  profile_->GetPrefs()->SetDict(
+      prefs::kManagedClientCertificateForUserConfigPrefs,
+      base::DictValue().Set(kCommonNameSourceKey,
+                            kCommonNameSourceComputerName));
+  auto delegate = CreateDelegate();
+  delegate.SetComputerNameForTesting(kTestDeviceName);
+
+  base::HistogramTester histogram_tester;
+  auto cert = CreateCert(kTestDeviceName, base::Time::Now() - base::Days(1),
+                         base::Time::Now() + base::Days(30));
+  EXPECT_TRUE(delegate.ShouldCertificateBeRenewed(
+      *cert, delegate.GetExpectedCommonName()));
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.CertificateValidation.Result",
+      CertificateValidationResult::kIdentityMismatch, 1);
 }
 #endif
 

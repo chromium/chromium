@@ -15,8 +15,11 @@ source_set("unit_tests") {
     "//chrome/browser/profiles",
     "//chrome/test/base:testing_browser_process",
     "//chrome/test/base:testing_profile",
+    "//components/device_signals/core/browser",
+    "//components/device_signals/core/browser:test_support",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/client_certificates/core",
+    "//components/prefs",
     "//content/public/browser",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
@@ -60,18 +63,27 @@ if (!is_chromeos) {
     deps = [
       "//base",
       "//chrome/browser:after_startup_task_utils",
+      "//chrome/browser/enterprise",
       "//chrome/browser/enterprise/test:test_support",
       "//chrome/test/base:chrome_test_utils",
+      "//components/device_signals/core/browser",
+      "//components/device_signals/core/browser:pref_names",
       "//components/enterprise/client_certificates/core",
       "//components/enterprise/client_certificates/core:test_support",
       "//components/policy/test_support",
+      "//components/prefs",
       "//content/test:test_support",
       "//testing/gmock",
     ]
 
     if (is_android) {
       deps += [
+        "//chrome/browser/signin:identity_test_support",
         "//components/enterprise/client_certificates/android/browser_binding",
+        "//components/keyed_service/content",
+        "//components/signin/public/base",
+        "//components/signin/public/identity_manager:test_support",
+        "//google_apis",
       ]
     }
   }

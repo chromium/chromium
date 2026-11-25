@@ -77,14 +77,17 @@ class ContextDelegate {
   void SetComputerNameForTesting(std::optional<std::string> computer_name);
 
  protected:
-  // If `kClientCertCommonNameAttribute` is enabled and `prefs` (if non-null)
-  // configures `GetConfigPolicyPref()` with `common_name_source` set to
-  // `"computer_name"`, returns the sanitized device hostname (or on iOS, the
-  // sanitized MDM Managed App Configuration `DeviceName` from
-  // `policy::GetIOSManagedDeviceName()`, independent of
-  // `kIOSReportMachineName`). Returns `std::nullopt` if not configured, if the
-  // sanitized name is empty (such as when MDM `DeviceName` is unset on iOS), or
-  // on ChromeOS where computer name is not supported.
+  // Returns true if `kClientCertCommonNameAttribute` is enabled and `prefs`
+  // (if non-null) configures `GetConfigPolicyPref()` with `common_name_source`
+  // set to `"computer_name"` (always false on ChromeOS where computer name is
+  // not supported).
+  bool IsComputerNameConfigured(const PrefService* prefs) const;
+
+  // If `IsComputerNameConfigured(prefs)` is true, returns the sanitized device
+  // hostname (or on iOS, the sanitized MDM Managed App Configuration
+  // `DeviceName` from `policy::GetIOSManagedDeviceName()`, independent of
+  // `kIOSReportMachineName`), or `std::nullopt` if the sanitized name is empty
+  // (such as when MDM `DeviceName` is unset on iOS).
   std::optional<std::string> GetConfiguredComputerName(
       const PrefService* prefs) const;
 

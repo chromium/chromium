@@ -117,25 +117,34 @@ void ContextDelegate::SetComputerNameForTesting(
   cached_computer_name_.reset();
 }
 
-std::optional<std::string> ContextDelegate::GetConfiguredComputerName(
-    const PrefService* prefs) const {
+bool ContextDelegate::IsComputerNameConfigured(const PrefService* prefs) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_CHROMEOS)
   // Computer name is not supported on ChromeOS (where policy::GetDeviceName()
   // returns the hardware serial number rather than a hostname).
-  return std::nullopt;
+  return false;
 #else
   if (!prefs || !features::IsClientCertCommonNameAttributeEnabled()) {
-    return std::nullopt;
+    return false;
   }
   std::string config_pref = GetConfigPolicyPref();
   if (config_pref.empty() || !prefs->FindPreference(config_pref)) {
-    return std::nullopt;
+    return false;
   }
   const std::string* common_name_source =
       prefs->GetDict(config_pref).FindString(kCommonNameSourceKey);
-  if (!common_name_source ||
-      *common_name_source != kCommonNameSourceComputerName) {
+  return common_name_source &&
+         *common_name_source == kCommonNameSourceComputerName;
+#endif
+}
+
+std::optional<std::string> ContextDelegate::GetConfiguredComputerName(
+    const PrefService* prefs) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(IS_CHROMEOS)
+  return std::nullopt;
+#else
+  if (!IsComputerNameConfigured(prefs)) {
     return std::nullopt;
   }
   if (!cached_computer_name_.has_value()) {
