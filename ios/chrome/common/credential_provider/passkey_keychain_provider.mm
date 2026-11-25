@@ -5,6 +5,7 @@
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
 
 #import "base/functional/callback.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 
 PasskeyKeychainProvider::PasskeyKeychainProvider(
     bool metrics_reporting_enabled) {}
@@ -37,6 +38,15 @@ void PasskeyKeychainProvider::FetchKeys(
   }
 }
 
+void PasskeyKeychainProvider::FetchKeys(
+    NSString* gaia,
+    webauthn::ReauthenticatePurpose purpose,
+    webauthn::KeysWithVersionsFetchedCallback callback) {
+  if (!callback.is_null()) {
+    std::move(callback).Run({}, nil);
+  }
+}
+
 void PasskeyKeychainProvider::MarkKeysAsStale(
     NSString* gaia,
     KeysMarkedAsAsStaleCallback callback) {
@@ -51,6 +61,17 @@ void PasskeyKeychainProvider::Reauthenticate(
     UIView* navigation_item_title_view,
     webauthn::ReauthenticatePurpose purpose,
     webauthn::KeysFetchedCallback callback) {
+  if (!callback.is_null()) {
+    std::move(callback).Run({}, nil);
+  }
+}
+
+void PasskeyKeychainProvider::Reauthenticate(
+    NSString* gaia,
+    UINavigationController* navigation_controller,
+    UIView* navigation_item_title_view,
+    webauthn::ReauthenticatePurpose purpose,
+    webauthn::KeysWithVersionsFetchedCallback callback) {
   if (!callback.is_null()) {
     std::move(callback).Run({}, nil);
   }

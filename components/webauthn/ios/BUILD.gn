@@ -74,6 +74,7 @@ static_library("test_support") {
 source_set("passkey_types") {
   sources = [ "passkey_types.h" ]
   deps = [ "//base" ]
+  public_deps = [ "//components/trusted_vault:trusted_vault_key_and_version" ]
 }
 
 optimize_ts("passkey_controller_js") {

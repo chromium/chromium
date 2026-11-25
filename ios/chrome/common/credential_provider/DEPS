@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+components/sync/protocol",
+  "+components/trusted_vault/trusted_vault_key_and_version.h",
   "+components/webauthn",
   "+net/base/registry_controlled_domains",
   # keep-sorted end

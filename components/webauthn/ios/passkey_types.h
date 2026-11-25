@@ -10,6 +10,7 @@
 #import <vector>
 
 #import "base/functional/callback_forward.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 
 // Type definitions generally useful for passkey requests.
 namespace webauthn {
@@ -72,15 +73,26 @@ enum class PasskeyUserVerificationStatus {
 };
 
 // Helper types representing a key and a list of key respectively.
+// TODO(crbug.com/588274186): Remove once all callers migrate to
+// `trusted_vault::TrustedVaultKeyAndVersion`.
 using SharedKey = std::vector<uint8_t>;
 using SharedKeyList = std::vector<SharedKey>;
 
 // Callback to be called once trusted vault keys are fetched by
 // `PasskeyKeychainProvider`.
+// TODO(crbug.com/588274186): Remove once callers migrate to
+// `KeysWithVersionsFetchedCallback`.
 using KeysFetchedCallback = base::OnceCallback<void(SharedKeyList, NSError*)>;
+
+// Callback to be called once trusted vault keys and their versions are fetched
+// by `PasskeyKeychainProvider`.
+using KeysWithVersionsFetchedCallback = base::OnceCallback<
+    void(std::vector<trusted_vault::TrustedVaultKeyAndVersion>, NSError*)>;
 
 // Callback to be called once trusted vault keys are fetched, including user
 // verification completion status.
+// TODO(crbug.com/588274186): Migrate `SharedKeyList` to
+// `std::vector<trusted_vault::TrustedVaultKeyAndVersion>`.
 using FetchTrustedVaultKeysCallback =
     base::OnceCallback<void(SharedKeyList, bool did_complete_uv)>;
 

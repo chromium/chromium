@@ -86,6 +86,7 @@ source_set("passkey_keychain_provider_implementation") {
   deps = [
     ":passkey_keychain_provider_header",
     "//base",
+    "//components/trusted_vault:trusted_vault_key_and_version",
   ]
   assert_no_deps = [ "//ios/chrome/browser/*" ]
   frameworks = [ "Foundation.framework" ]

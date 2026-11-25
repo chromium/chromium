@@ -55,6 +55,10 @@ class PasskeyKeychainProvider {
 
   // Asynchronously fetches the shared keys for the identity identified by
   // `gaia` and invokes `callback` with the fetched keys.
+  // Deprecated: callers should use the overload taking
+  // `webauthn::KeysWithVersionsFetchedCallback`.
+  // TODO(crbug.com/588274186): Remove once callers migrate to the versioned
+  // overload.
   // - "gaia" is used to identify the account.
   // - "purpose" is used to specify if the keys will be used to encrypt or
   //   decrypt. This is mostly for logging purposes and has no effect on the
@@ -64,6 +68,18 @@ class PasskeyKeychainProvider {
   virtual void FetchKeys(NSString* gaia,
                          webauthn::ReauthenticatePurpose purpose,
                          webauthn::KeysFetchedCallback callback);
+
+  // Asynchronously fetches the shared keys and their versions for the identity
+  // identified by `gaia` and invokes `callback` with the fetched keys.
+  // - `gaia` is used to identify the account.
+  // - `purpose` is used to specify if the keys will be used to encrypt or
+  //   decrypt. This is mostly for logging purposes and has no effect on the
+  //   fetched keys.
+  // - `callback` is called once the keys are fetched and receives the fetched
+  //   keys and their versions as input (the vector will be empty on failure).
+  void FetchKeys(NSString* gaia,
+                 webauthn::ReauthenticatePurpose purpose,
+                 webauthn::KeysWithVersionsFetchedCallback callback);
 
   // Asynchronously marks the keys as stale for the identity identified by
   // `gaia` and invokes `callback` after completion. This should be invoked
@@ -75,6 +91,10 @@ class PasskeyKeychainProvider {
 
   // Asynchronously reauthenticates the identity identified by `gaia` after the
   // keys were fetched and invokes `callback` with the fetched keys.
+  // Deprecated: callers should use the overload taking
+  // `webauthn::KeysWithVersionsFetchedCallback`.
+  // TODO(crbug.com/588274186): Remove once callers migrate to the versioned
+  // overload.
   // - "gaia" is used to identify the account.
   // - "navigation_controller" is used to display UI for the user to enter
   //   credentials.
@@ -90,6 +110,25 @@ class PasskeyKeychainProvider {
                       UIView* navigation_item_title_view,
                       webauthn::ReauthenticatePurpose purpose,
                       webauthn::KeysFetchedCallback callback);
+
+  // Asynchronously reauthenticates the identity identified by `gaia` after the
+  // keys were fetched and invokes `callback` with the fetched keys and their
+  // versions.
+  // - `gaia` is used to identify the account.
+  // - `navigation_controller` is used to display UI for the user to enter
+  //   credentials.
+  // - `navigation_item_title_view` is a branded title view of the
+  //   password manager.
+  // - `purpose` is used to specify if the keys will be used to encrypt or
+  //   decrypt. This is mostly for logging purposes and has no effect on the
+  //   fetched keys.
+  // - `callback` is called once the keys are fetched and receives the fetched
+  //   keys and their versions as input (the vector will be empty on failure).
+  void Reauthenticate(NSString* gaia,
+                      UINavigationController* navigation_controller,
+                      UIView* navigation_item_title_view,
+                      webauthn::ReauthenticatePurpose purpose,
+                      webauthn::KeysWithVersionsFetchedCallback callback);
 
   // Checks if the identity identified by `gaia` is in the degraded
   // recoverability state.

@@ -7,6 +7,7 @@ include_rules = [
   "+components/password_manager/core/browser",
   "+components/password_manager/ios",
   "+components/strings/grit",
+  "+components/trusted_vault/trusted_vault_key_and_version.h",
   "+third_party/ocmock",
   "+ui",
 ]
