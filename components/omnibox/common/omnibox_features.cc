@@ -332,11 +332,6 @@ BASE_FEATURE(kOmniboxWebUISizeWebViewToPreferredHeight, DISABLED);
 // height resets on hide/tab switch.
 BASE_FEATURE(kOmniboxFullWebUISizeWebViewToPreferredHeight, DISABLED);
 
-// When enabled, the Omnibox WebUI popup presenter will explicitly hide the
-// widget upon creation, preventing pre-warmed child widgets from inheriting
-// parent window visibility and locking compositor frames.
-BASE_FEATURE(kOmniboxWebUIPopupHideOnCreation, DISABLED);
-
 // When enabled, a WebUI omnibox popup presenter creates its native widget on
 // the first `Show()` instead of when the popup is created with the browser
 // window. The WebContents is still created and loaded up front. Kill switch.
