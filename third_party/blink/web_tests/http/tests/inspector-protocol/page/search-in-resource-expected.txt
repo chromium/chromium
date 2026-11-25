@@ -1,0 +1,30 @@
+Tests single resource search in inspector page agent.
+
+http://127.0.0.1:8000/inspector-protocol/page/resources/search.js
+Search matches:
+lineNumber: 1, line: 'function searchTestUniqueString()'
+lineNumber: 4, line: '    // searchTestUniqueString two occurrences on the same line searchTestUniqueString'
+lineNumber: 5, line: '    // searchTestUniqueString on the next line.'
+lineNumber: 11, line: '    searchTestUniqueString();'
+lineNumber: 12, line: '    // SEARCHTestUniqueString();'
+
+Search matches:
+lineNumber: 1, line: 'function searchTestUniqueString()'
+lineNumber: 4, line: '    // searchTestUniqueString two occurrences on the same line searchTestUniqueString'
+lineNumber: 5, line: '    // searchTestUniqueString on the next line.'
+lineNumber: 11, line: '    searchTestUniqueString();'
+
+Search matches:
+lineNumber: 1, line: 'function searchTestUniqueString()'
+lineNumber: 4, line: '    // searchTestUniqueString two occurrences on the same line searchTestUniqueString'
+lineNumber: 5, line: '    // searchTestUniqueString on the next line.'
+lineNumber: 11, line: '    searchTestUniqueString();'
+lineNumber: 12, line: '    // SEARCHTestUniqueString();'
+
+Search matches:
+lineNumber: 1, line: 'function searchTestUniqueString()'
+lineNumber: 4, line: '    // searchTestUniqueString two occurrences on the same line searchTestUniqueString'
+lineNumber: 5, line: '    // searchTestUniqueString on the next line.'
+lineNumber: 11, line: '    searchTestUniqueString();'
+
+
