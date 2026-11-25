@@ -121,7 +121,7 @@
   UIView* closeButton = [_contextProvider closeButtonForAnimation];
   BOOL isLandscape = IsLandscape(fromView.window);
 
-  CGFloat scaleAmmount = isLandscape ? 0.7 : 0.9;
+  CGFloat scaleAmount = isLandscape ? 0.7 : 0.9;
   [UIView
       animateKeyframesWithDuration:[self transitionDuration:transitionContext]
       delay:0
@@ -138,10 +138,10 @@
                                       animations:^{
                                         inputPlateView.transform =
                                             CGAffineTransformMakeScale(
-                                                scaleAmmount, scaleAmmount);
+                                                scaleAmount, scaleAmount);
                                         closeButton.transform =
                                             CGAffineTransformMakeScale(
-                                                scaleAmmount, scaleAmmount);
+                                                scaleAmount, scaleAmount);
                                       }];
       }
       completion:^(BOOL finished) {

@@ -148,7 +148,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
         forControlEvents:UIControlEventEditingChanged];
 
     [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
-                       withAction:@selector(updateTextProperitesOnTraitChange)];
+                       withAction:@selector(updateTextPropertiesOnTraitChange)];
   }
   return self;
 }
@@ -1095,7 +1095,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 // Resets Omnibox's the font and attributed text when a UITrait is modified.
-- (void)updateTextProperitesOnTraitChange {
+- (void)updateTextPropertiesOnTraitChange {
   // Reset the fonts to the appropriate ones in this size class.
   [self setFont:self.currentFont];
   // Reset the attributed text to apply the new font.

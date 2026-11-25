@@ -97,7 +97,7 @@
 // Tests navigating to a shortcut as a default match.
 - (void)testRichInlineDefaultSuggestion {
   // Add 2 shortcuts Page(1) and Page(2).
-  [OmniboxEarlGrey addShorcuts:2 toTestServer:self.testServer];
+  [OmniboxEarlGrey addShortcuts:2 toTestServer:self.testServer];
 
   omnibox::Page shortcutPage = omnibox::Page(1);
 

@@ -78,8 +78,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   }
 }
 
-- (void)addShorcuts:(NSUInteger)shortcutCount
-       toTestServer:(net::test_server::EmbeddedTestServer*)testServer {
+- (void)addShortcuts:(NSUInteger)shortcutCount
+        toTestServer:(net::test_server::EmbeddedTestServer*)testServer {
   [OmniboxEarlGrey waitForShortcutsBackendInitialization];
   [OmniboxAppInterface clearShortcutsDatabase];
 

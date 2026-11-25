@@ -317,7 +317,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
     // Bottom constraints.
     if (showPopoutLayout) {
-      BOOL paddingAmmount =
+      BOOL paddingAmount =
           _presentationContext == OmniboxPresentationContext::kLensOverlay
               ? 0
               : kPopupBottomPaddingTablet +
@@ -329,7 +329,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
       self.bottomConstraintPhone = [superviewAnchor
           constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
-                                      constant:paddingAmmount];
+                                      constant:paddingAmount];
     } else {
       CGFloat offset = self.useBottomOmniboxInPopup ? _bottomOmniboxOffset : 0;
       self.bottomConstraintPhone = [popup.bottomAnchor

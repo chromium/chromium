@@ -39,9 +39,9 @@ const CGFloat kPeakDetentHeight = 100.0;
 // Height of the HUD elements header bar in the selection UI.
 const CGFloat kHUDHeaderHeight = 54.0;
 
-// The ammount of obstruction (in points) on top of the HUD header.
-const CGFloat kHUDObstructionAmmountSystemDetents = 8.0;
-const CGFloat kHUDObstructionAmmountLensOverlayBottomSheet = 36.0;
+// The amount of obstruction (in points) on top of the HUD header.
+const CGFloat kHUDObstructionAmountSystemDetents = 8.0;
+const CGFloat kHUDObstructionAmountLensOverlayBottomSheet = 36.0;
 
 // The percentage of the screen that will be covered by the bottom sheet in
 // selection mode.
@@ -109,13 +109,13 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
                              window:(UIWindow*)window {
   return [self initWithBottomSheet:sheet
                             window:window
-              presentationStrategy:SheetDetentPresentationStategySelection];
+              presentationStrategy:SheetDetentPresentationStrategySelection];
 }
 
 - (instancetype)initWithBottomSheet:(UISheetPresentationController*)sheet
                              window:(UIWindow*)window
                presentationStrategy:
-                   (SheetDetentPresentationStategy)presentationStrategy {
+                   (SheetDetentPresentationStrategy)presentationStrategy {
   self = [super init];
   if (self) {
     _sheet = sheet;
@@ -133,7 +133,7 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 - (instancetype)initWithLensOverlayBottomSheet:
                     (id<LensOverlayBottomSheet>)lensOverlayBottomSheet
                                         window:(UIWindow*)window
-                          presentationStrategy:(SheetDetentPresentationStategy)
+                          presentationStrategy:(SheetDetentPresentationStrategy)
                                                    presentationStrategy {
   self = [super init];
   if (self) {
@@ -152,9 +152,9 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 
 - (CGFloat)estimatedMediumDetentHeight {
   switch (_presentationStrategy) {
-    case SheetDetentPresentationStategySelection:
+    case SheetDetentPresentationStrategySelection:
       return [self windowHeight] / 2;
-    case SheetDetentPresentationStategyTranslate:
+    case SheetDetentPresentationStrategyTranslate:
       return [self windowHeight] * kTranslateSheetHeightRatio;
     default:
       return 0;
@@ -186,7 +186,7 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 }
 
 - (void)setPresentationStrategy:
-    (SheetDetentPresentationStategy)presentationStrategy {
+    (SheetDetentPresentationStrategy)presentationStrategy {
   _presentationStrategy = presentationStrategy;
   [self adjustDetentsForState:SheetDetentStateUnrestrictedMovement];
 }
@@ -345,8 +345,8 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 
               CGFloat obstruction =
                   weakSelf.sheetDetentInteractor.usesSystemPresentation
-                      ? kHUDObstructionAmmountSystemDetents
-                      : kHUDObstructionAmmountLensOverlayBottomSheet;
+                      ? kHUDObstructionAmountSystemDetents
+                      : kHUDObstructionAmountLensOverlayBottomSheet;
 
               return MAX([weakSelf windowSafeAreaHeight] - kHUDHeaderHeight +
                              obstruction,
@@ -356,12 +356,12 @@ const CGFloat kTranslateSheetHeightRatio = 0.33;
 
 - (LensOverlayBottomSheetDetentProxy*)mediumDetent {
   NSString* identifier =
-      _presentationStrategy == SheetDetentPresentationStategySelection
+      _presentationStrategy == SheetDetentPresentationStrategySelection
           ? kCustomMediumDetentIdentifier
           : kTranslateModeMediumDetentIdentifier;
 
   CGFloat ratio =
-      _presentationStrategy == SheetDetentPresentationStategySelection
+      _presentationStrategy == SheetDetentPresentationStrategySelection
           ? kSelectionSheetHeightRatio
           : kTranslateSheetHeightRatio;
 

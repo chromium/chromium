@@ -20,7 +20,7 @@ const double kContentSizeMultiplier2XL = 1.6;
 const double kContentSizeMultiplier3XL = 1.8;
 // Single maximum zoom level for accessibility. This value is only slightly
 // higher than the 3XL zoom avoid visually breaking the UI.
-const double kContentSizeMultiplierAccesibility = 2.0;
+const double kContentSizeMultiplierAccessibility = 2.0;
 }  // namespace
 
 CGFloat OmniboxPopupRowContentSizeMultiplierForCategory(
@@ -34,15 +34,15 @@ CGFloat OmniboxPopupRowContentSizeMultiplierForCategory(
     UIContentSizeCategoryExtraExtraLarge : @(kContentSizeMultiplier2XL),
     UIContentSizeCategoryExtraExtraExtraLarge : @(kContentSizeMultiplier3XL),
     UIContentSizeCategoryAccessibilityMedium :
-        @(kContentSizeMultiplierAccesibility),
+        @(kContentSizeMultiplierAccessibility),
     UIContentSizeCategoryAccessibilityLarge :
-        @(kContentSizeMultiplierAccesibility),
+        @(kContentSizeMultiplierAccessibility),
     UIContentSizeCategoryAccessibilityExtraLarge :
-        @(kContentSizeMultiplierAccesibility),
+        @(kContentSizeMultiplierAccessibility),
     UIContentSizeCategoryAccessibilityExtraExtraLarge :
-        @(kContentSizeMultiplierAccesibility),
+        @(kContentSizeMultiplierAccessibility),
     UIContentSizeCategoryAccessibilityExtraExtraExtraLarge :
-        @(kContentSizeMultiplierAccesibility),
+        @(kContentSizeMultiplierAccessibility),
   };
 
   return [sizeMapping[category] doubleValue];

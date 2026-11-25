@@ -78,7 +78,7 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   base::WeakPtr<WebStateList> _webStateList;
   // Bridge for observing WebStateList events.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
-  // The web state associated with the Lens Overlay invokation.
+  // The web state associated with the Lens Overlay invocation.
   base::WeakPtr<web::WebState> _associatedWebState;
 }
 

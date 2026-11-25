@@ -77,10 +77,10 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   void ClearViewportSnapshot() { viewport_snapshot_ = nil; }
 
   // Clears the recorded invocation navigation id.
-  void ClearInvokationNavigationId() { invokation_navigation_id_ = 0; }
+  void ClearInvocationNavigationId() { invocation_navigation_id_ = 0; }
 
   // Records a volatile snapshot of the viewport window.
-  void RecordViewportSnaphot();
+  void RecordViewportSnapshot();
 
   // Updates the lens overlay web state tab switcher snapshot.
   void UpdateSnapshot();
@@ -149,7 +149,7 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   UIImage* viewport_snapshot_;
 
   // Stores the navigation id at which the lens overlay is invoked.
-  int invokation_navigation_id_ = 0;
+  int invocation_navigation_id_ = 0;
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.

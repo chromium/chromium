@@ -226,7 +226,7 @@
   _omniboxAutocompleteController.omniboxTextController = _omniboxTextController;
   _omniboxAutocompleteController.omniboxMetricsRecorder =
       _omniboxMetricsRecorder;
-  _omniboxAutocompleteController.lensHander = self.mediator;
+  _omniboxAutocompleteController.lensHandler = self.mediator;
 
   _omniboxMetricsRecorder.omniboxAutocompleteController =
       _omniboxAutocompleteController;

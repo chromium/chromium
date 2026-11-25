@@ -43,7 +43,7 @@ struct OmniboxTextModel;
     debuggerDelegate;
 
 /// Handler for Lens interactions.
-@property(nonatomic, weak) id<OmniboxLensDelegate> lensHander;
+@property(nonatomic, weak) id<OmniboxLensDelegate> lensHandler;
 
 /// Autcomplete result wrapper.
 @property(nonatomic, strong)

@@ -20,11 +20,11 @@ namespace {
 // The width of the side panel.
 const CGFloat kSidePanelWidth = 375.0;
 
-// The ammount padding from the side panel to the selection UI.
+// The amount padding from the side panel to the selection UI.
 const CGFloat kSidePanelSelectionPadding = 24.0;
 
 // The duration of the side panel appear and dissapear animations.
-const CGFloat kSidePannelAnimationDuration = 0.4;
+const CGFloat kSidePanelAnimationDuration = 0.4;
 
 // The corner radius of the selection UI when presented in the side panel
 // presentation.
@@ -238,7 +238,7 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   }
 
   [self.view layoutIfNeeded];
-  [UIView animateWithDuration:kSidePannelAnimationDuration
+  [UIView animateWithDuration:kSidePanelAnimationDuration
       delay:0
       options:UIViewAnimationCurveEaseInOut
       animations:^{
@@ -276,7 +276,7 @@ const CGFloat kSelectionUICornerRadius = 13.0;
     return;
   }
 
-  [UIView animateWithDuration:kSidePannelAnimationDuration
+  [UIView animateWithDuration:kSidePanelAnimationDuration
       delay:0
       options:UIViewAnimationCurveEaseInOut
       animations:^{

@@ -31,7 +31,7 @@
 /// Called when the text input mode changed.
 - (void)onTextInputModeChange;
 
-#pragma mark - Textfield delegate forwaring
+#pragma mark - Textfield delegate forwarding
 
 /// Called when the omnibox text field starts editing.
 - (void)onDidBeginEditing;

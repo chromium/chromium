@@ -148,7 +148,7 @@ TEST_F(LensOverlayDetentsManagerTest, TestDefaultPresentationStrategy) {
 
   // Then the default presentation strategy should be selection.
   EXPECT_EQ(detents_manager_.presentationStrategy,
-            SheetDetentPresentationStategySelection);
+            SheetDetentPresentationStrategySelection);
 }
 
 // Tests that adjusting the presentation strategy correctly adjusts the medium
@@ -164,13 +164,13 @@ TEST_F(LensOverlayDetentsManagerTest,
 
   // Then the default presentation strategy should be selection
   EXPECT_EQ(detents_manager_.presentationStrategy,
-            SheetDetentPresentationStategySelection);
+            SheetDetentPresentationStrategySelection);
   CGFloat estimatedMediumDetentHeightSelection =
       detents_manager_.estimatedMediumDetentHeight;
   EXPECT_GT(estimatedMediumDetentHeightSelection, 0.0);
 
   detents_manager_.presentationStrategy =
-      SheetDetentPresentationStategyTranslate;
+      SheetDetentPresentationStrategyTranslate;
   CGFloat estimatedMediumDetentHeightTranslate =
       detents_manager_.estimatedMediumDetentHeight;
 

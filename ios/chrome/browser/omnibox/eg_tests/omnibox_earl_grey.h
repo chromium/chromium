@@ -43,8 +43,8 @@ class EmbeddedTestServer;
 // - ...
 // - <omnibox::PageTitle(N)> -> <omnibox::PageURL(N)>
 // N = `shortcutCount`.
-- (void)addShorcuts:(NSUInteger)shortcutCount
-       toTestServer:(net::test_server::EmbeddedTestServer*)testServer;
+- (void)addShortcuts:(NSUInteger)shortcutCount
+        toTestServer:(net::test_server::EmbeddedTestServer*)testServer;
 
 /// Defocus the omnibox.
 - (void)defocusOmnibox;

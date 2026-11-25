@@ -47,7 +47,7 @@
 // Changing the presentation strategy adjusts the detents for unrestricted
 // movement.
 @property(nonatomic, assign)
-    SheetDetentPresentationStategy presentationStrategy;
+    SheetDetentPresentationStrategy presentationStrategy;
 
 // Creates a new detents manager scoped to the sheet instance.
 // Starts by default in 'selection' mode.
@@ -59,13 +59,13 @@
 - (instancetype)initWithBottomSheet:(UISheetPresentationController*)sheet
                              window:(UIWindow*)window
                presentationStrategy:
-                   (SheetDetentPresentationStategy)presentationStrategy
+                   (SheetDetentPresentationStrategy)presentationStrategy
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithLensOverlayBottomSheet:
                     (id<LensOverlayBottomSheet>)lensOverlayBottomSheet
                                         window:(UIWindow*)window
-                          presentationStrategy:(SheetDetentPresentationStategy)
+                          presentationStrategy:(SheetDetentPresentationStrategy)
                                                    presentationStrategy
     NS_DESIGNATED_INITIALIZER;
 

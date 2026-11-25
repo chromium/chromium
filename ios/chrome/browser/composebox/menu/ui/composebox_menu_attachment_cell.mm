@@ -13,7 +13,7 @@
 
 namespace {
 
-// The ammount of padding added on the highlight of the pointer insteraction.
+// The amount of padding added on the highlight of the pointer interaction.
 const CGFloat kPointerInteractionPadding = 8.0;
 
 // The corner radius of the pointer highlight.

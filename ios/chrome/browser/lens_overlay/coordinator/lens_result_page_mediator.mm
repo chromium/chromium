@@ -194,8 +194,8 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   base::WeakPtr<WebStateList> _webStateList;
   /// Whether the interface is in dark mode.
   BOOL _isDarkMode;
-  /// The last commited progress to the loading bar.
-  float _lastCommitedProgress;
+  /// The last committed progress to the loading bar.
+  float _lastCommittedProgress;
   /// Most recent loaded HTTP headers.
   NSDictionary<NSString*, NSString*>* _latestHttpHeaders;
   /// Whether the AIM overlay is currently displayed.
@@ -303,12 +303,12 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 }
 
 - (void)handleSearchRequestStarted {
-  _lastCommitedProgress = kProgressBarLensRequestStarted;
+  _lastCommittedProgress = kProgressBarLensRequestStarted;
   [_consumer setLoadingProgress:kProgressBarLensRequestStarted];
 }
 
 - (void)handleSearchRequestErrored {
-  _lastCommitedProgress = kProgressBarFull;
+  _lastCommittedProgress = kProgressBarFull;
   [_consumer setLoadingProgress:kProgressBarFull];
   [self.errorHandler showNoInternetAlert];
 }
@@ -427,7 +427,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   BOOL isSameDocument = navigationContext->IsSameDocument();
   if (!isSameDocument) {
     // Reset progress for new page.
-    _lastCommitedProgress = 0;
+    _lastCommittedProgress = 0;
   }
 
   // Check for overlay status.
@@ -461,11 +461,11 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
                     kProgressBarLensResponseReceived, kProgressBarFull);
   }
 
-  if (progress <= _lastCommitedProgress) {
+  if (progress <= _lastCommittedProgress) {
     return;
   }
 
-  _lastCommitedProgress = progress;
+  _lastCommittedProgress = progress;
   [_consumer setLoadingProgress:progress];
 }
 

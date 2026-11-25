@@ -246,9 +246,9 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
                      maximizeSheet:(BOOL)maximizeSheet
                   startInTranslate:(BOOL)startInTranslate
                         completion:(void (^)(void))completion {
-  SheetDetentPresentationStategy strategy =
-      startInTranslate ? SheetDetentPresentationStategyTranslate
-                       : SheetDetentPresentationStategySelection;
+  SheetDetentPresentationStrategy strategy =
+      startInTranslate ? SheetDetentPresentationStrategyTranslate
+                       : SheetDetentPresentationStrategySelection;
   [self setupDetentsManagerWithStrategy:strategy
                           maximizeSheet:maximizeSheet
                                animated:animated];
@@ -324,7 +324,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   BOOL maximizeSheet =
       _detentsManager.sheetDimension == SheetDimensionState::kLarge;
   BOOL startInTranslate = _detentsManager.presentationStrategy ==
-                          SheetDetentPresentationStategyTranslate;
+                          SheetDetentPresentationStrategyTranslate;
   [self dismissResultsPageAnimated:NO
                         completion:^{
                           [weakSelf presentResultsPageAnimated:NO
@@ -432,8 +432,8 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
   // To keep in sync external animation, emply the approximated layer that is
   // currently being displayed onscreen as it accurately keeps track of the
-  // bottom sheet positon throughout the animations (e.g. when the user finishes
-  // dragging the sheet).
+  // bottom sheet position throughout the animations (e.g. when the user
+  // finishes dragging the sheet).
   CGRect presentationLayerConvertedFrame =
       [presentationLayer convertRect:presentationLayer.frame
                              toLayer:_baseViewController.view.layer];
@@ -484,7 +484,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
     return;
   }
 
-  // Pad the offset by a small ammount to avoid having the bottom edge of the
+  // Pad the offset by a small amount to avoid having the bottom edge of the
   // selection overlapped over the sheet.
   CGFloat estimatedMediumDetentHeight =
       _detentsManager.estimatedMediumDetentHeight;
@@ -539,7 +539,8 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 }
 
 // Sets up the detents manager for the bottom sheet presentation.
-- (void)setupDetentsManagerWithStrategy:(SheetDetentPresentationStategy)strategy
+- (void)setupDetentsManagerWithStrategy:
+            (SheetDetentPresentationStrategy)strategy
                           maximizeSheet:(BOOL)maximizeSheet
                                animated:(BOOL)animated {
   if ([self useCustomBottomSheet]) {
@@ -745,7 +746,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
 - (void)adjustForSelectionResult {
   _detentsManager.presentationStrategy =
-      SheetDetentPresentationStategySelection;
+      SheetDetentPresentationStrategySelection;
   [_presentationNavigationController popToRootViewControllerAnimated:YES];
   [_baseViewController.view layoutIfNeeded];
   [self adjustSelectionOcclusionInsets];
@@ -753,7 +754,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
 - (void)adjustForTranslateResult {
   _detentsManager.presentationStrategy =
-      SheetDetentPresentationStategyTranslate;
+      SheetDetentPresentationStrategyTranslate;
   [_presentationNavigationController popToRootViewControllerAnimated:YES];
   [_baseViewController.view layoutIfNeeded];
   [self adjustSelectionOcclusionInsets];

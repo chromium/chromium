@@ -34,7 +34,7 @@ const CGFloat kInputPlateTopPadding = 4.0f;
 const CGFloat kMinInputPlateTopPadding = 8.0f;
 /// The size for the close button.
 const CGFloat kCloseButtonSize = 30.0f;
-/// The ammount of padding to add vertically to the incognito view content.
+/// The amount of padding to add vertically to the incognito view content.
 const CGFloat kIncognitoVerticalPadding = 24.0f;
 /// The bottom margin between the composebox and the container.
 const CGFloat kBlurBottomMargin = 20.0f;
@@ -550,7 +550,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   [NSLayoutConstraint activateConstraints:_constraintsForCurrentPosition];
 }
 
-- (UIView*)fadeViewForPosition:(ComposeboxInputPlatePosition)positon {
+- (UIView*)fadeViewForPosition:(ComposeboxInputPlatePosition)position {
   UIView* fadeView = [[UIView alloc] init];
   fadeView.userInteractionEnabled = NO;
   fadeView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -570,7 +570,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
     (id)[[UIColor whiteColor] colorWithAlphaComponent:0.7].CGColor,
     (id)[[UIColor whiteColor] colorWithAlphaComponent:1.0].CGColor,
   ];
-  switch (positon) {
+  switch (position) {
     case ComposeboxInputPlatePosition::kiPad:  // Fall through
     case ComposeboxInputPlatePosition::kBottomSheet:  // Fall through
     case ComposeboxInputPlatePosition::kTop:
@@ -591,8 +591,8 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 }
 
 - (UIView*)createBlurBackgroundEffectForPosition:
-    (ComposeboxInputPlatePosition)positon {
-  UIView* containerView = [self fadeViewForPosition:positon];
+    (ComposeboxInputPlatePosition)position {
+  UIView* containerView = [self fadeViewForPosition:position];
   containerView.translatesAutoresizingMaskIntoConstraints = NO;
   containerView.userInteractionEnabled = NO;
 

@@ -27,7 +27,7 @@ const CGFloat kTrailingPadding = 52.0;
 // Top padding for the view content.
 const CGFloat kViewTopPadding = 36.0;
 
-// Ammount of spacing from the trailing edge of the image, in points.
+// Amount of spacing from the trailing edge of the image, in points.
 const CGFloat kImageHorizontalSpacing = 24.0;
 
 // The height of the translate error message.

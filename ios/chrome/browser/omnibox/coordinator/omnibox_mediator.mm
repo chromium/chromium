@@ -238,7 +238,7 @@ using base::UserMetricsAction;
   [self.omniboxTextController onTextInputModeChange];
 }
 
-#pragma mark Textfield delegate forwaring
+#pragma mark Textfield delegate forwarding
 
 - (void)onDidBeginEditing {
   [self.omniboxTextController onDidBeginEditing];

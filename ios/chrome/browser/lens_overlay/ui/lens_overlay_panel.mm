@@ -10,16 +10,16 @@
 namespace {
 
 // The width of the border outline that surrounds the results page.
-const CGFloat kSidePannelOutlineBorderWidth = 1.0;
+const CGFloat kSidePanelOutlineBorderWidth = 1.0;
 
 // The corner radius of the outline that surrounds the results page.
-const CGFloat kSidePannelOutlineCornerRadius = 13.0;
+const CGFloat kSidePanelOutlineCornerRadius = 13.0;
 
-// The lateral inset ammount of the border outlining the results page.
-const CGFloat kSidePannelOutlineLateralInset = 8.0;
+// The lateral inset amount of the border outlining the results page.
+const CGFloat kSidePanelOutlineLateralInset = 8.0;
 
-// The bottom inset ammount of the border outlining the results page.
-const CGFloat kSidePannelOutlineBottomInset = 8.0;
+// The bottom inset amount of the border outlining the results page.
+const CGFloat kSidePanelOutlineBottomInset = 8.0;
 
 }  // namespace
 
@@ -79,25 +79,25 @@ const CGFloat kSidePannelOutlineBottomInset = 8.0;
 
 #pragma mark - Private
 
-// The ammount of insets for the outline relative to the bounds.
+// The amount of insets for the outline relative to the bounds.
 - (NSDirectionalEdgeInsets)insetsForInnerOutline {
   if (!_insetContent) {
     return NSDirectionalEdgeInsetsZero;
   }
-  return NSDirectionalEdgeInsetsMake(0, kSidePannelOutlineLateralInset,
-                                     kSidePannelOutlineBottomInset,
-                                     kSidePannelOutlineLateralInset);
+  return NSDirectionalEdgeInsetsMake(0, kSidePanelOutlineLateralInset,
+                                     kSidePanelOutlineBottomInset,
+                                     kSidePanelOutlineLateralInset);
 }
 
 // Creates a new border outline view.
 - (UIView*)createBorderView {
   UIView* borderView = [[UIView alloc] init];
   borderView.translatesAutoresizingMaskIntoConstraints = NO;
-  borderView.layer.cornerRadius = kSidePannelOutlineCornerRadius;
+  borderView.layer.cornerRadius = kSidePanelOutlineCornerRadius;
   borderView.clipsToBounds = YES;
 
   if (_insetContent) {
-    borderView.layer.borderWidth = kSidePannelOutlineBorderWidth;
+    borderView.layer.borderWidth = kSidePanelOutlineBorderWidth;
     borderView.layer.borderColor = [UIColor colorNamed:kGrey200Color].CGColor;
   }
 

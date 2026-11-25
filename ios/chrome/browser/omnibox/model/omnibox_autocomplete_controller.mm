@@ -748,13 +748,13 @@ using base::UserMetricsAction;
 
 /// Wraps the suggestions and send them to the delegate.
 - (void)updateWithSortedResults:(const AutocompleteResult&)results {
-  BOOL supressVerbatim =
+  BOOL suppressVerbatim =
       _omniboxPresentationContext == OmniboxPresentationContext::kComposebox &&
       _omniboxClient->ShouldSuppressVerbatimSuggestion();
   NSArray<id<AutocompleteSuggestionGroup>>* suggestionGroups =
       [self.autocompleteResultWrapper
           wrapAutocompleteResultInGroups:results
-              suppressVerbatimFromResult:supressVerbatim];
+              suppressVerbatimFromResult:suppressVerbatim];
   [self.delegate omniboxAutocompleteController:self
                     didUpdateSuggestionsGroups:suggestionGroups];
 }
@@ -1049,8 +1049,8 @@ using base::UserMetricsAction;
       break;
     }
     case omnibox::AutocompleteMatchType::kClipboardImage: {
-      if ([self.lensHander shouldUseLensForCopiedImage]) {
-        [self.lensHander lensCopiedImage];
+      if ([self.lensHandler shouldUseLensForCopiedImage]) {
+        [self.lensHandler lensCopiedImage];
       } else {
         clipboardRecentContent->GetRecentImageFromClipboard(base::BindOnce(
             [](OmniboxAutocompleteController* controller,

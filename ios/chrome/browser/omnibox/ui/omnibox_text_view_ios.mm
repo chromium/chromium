@@ -175,7 +175,7 @@ const CGFloat kVerticalOffset = 1;
       UITraitHorizontalSizeClass.class,
       UITraitVerticalSizeClass.class,
     ]
-                       withAction:@selector(updateTextProperitesOnTraitChange)];
+                       withAction:@selector(updateTextPropertiesOnTraitChange)];
   }
   return self;
 }
@@ -1196,7 +1196,7 @@ const CGFloat kVerticalOffset = 1;
 
 // Resets the font, cached line height, and container insets when size class or
 // content size category traits change.
-- (void)updateTextProperitesOnTraitChange {
+- (void)updateTextPropertiesOnTraitChange {
   UIFont* newFont = self.currentFont;
   BOOL fontChanged = ![_appliedTraitFont isEqual:newFont];
   if (fontChanged) {
