@@ -50,6 +50,7 @@ static_library("browser") {
     "bookmark_storage.cc",
     "bookmark_utils.cc",
     "bookmark_uuids.cc",
+    "id_index.h",
     "model_loader.cc",
     "scoped_group_bookmark_actions.cc",
     "titled_url_index.cc",

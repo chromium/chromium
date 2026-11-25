@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/id_index.h"
 #include "components/bookmarks/browser/uuid_index.h"
 
 namespace base {
@@ -69,6 +70,12 @@ class BookmarkLoadDetails {
     // MSAN sanitizer builds, it considers nodes being left in undefined state
     // as an error. So instead, we use `std::exchange` to zero out the value.
     return std::exchange(account_uuid_index_, {});
+  }
+
+  IdIndex owned_id_index() {
+    // Use `std::exchange` instead of `std::move` on Abseil sets; see comment in
+    // `owned_local_or_syncable_uuid_index()`.
+    return std::exchange(id_index_, {});
   }
 
   // Max id of the nodes.
@@ -132,6 +139,8 @@ class BookmarkLoadDetails {
   // before this function.
   void AddManagedNode(std::unique_ptr<BookmarkPermanentNode> managed_node);
 
+  // PopulateNodeIdsForLocalOrSyncablePermanentNodes() must have been invoked
+  // before this function.
   void CreateIndices();
 
   void ResetPermanentNodePointers();
@@ -162,6 +171,9 @@ class BookmarkLoadDetails {
   std::multimap<int64_t, int64_t> local_or_syncable_reassigned_ids_per_old_id_;
   bool required_recovery_ = false;
   scoped_refptr<UrlIndex> url_index_;
+  // Declared after `url_index_` and `root_node_` so it is destroyed before
+  // both even if `owned_id_index()` is never called.
+  IdIndex id_index_;
   raw_ptr<BookmarkPermanentNode> bb_node_;
   raw_ptr<BookmarkPermanentNode> other_folder_node_;
   raw_ptr<BookmarkPermanentNode> mobile_folder_node_;

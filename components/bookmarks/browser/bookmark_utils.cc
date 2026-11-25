@@ -85,23 +85,6 @@ bool DoesBookmarkTextContainWords(const std::u16string& text,
   return true;
 }
 
-// Recursively searches for a node satisfying the functor `pred` . Returns
-// nullptr if not found.
-template <typename Predicate>
-const BookmarkNode* FindNode(const BookmarkNode* node, Predicate pred) {
-  if (pred(node)) {
-    return node;
-  }
-
-  for (const auto& child : node->children()) {
-    const BookmarkNode* result = FindNode(child.get(), pred);
-    if (result) {
-      return result;
-    }
-  }
-  return nullptr;
-}
-
 template <class type>
 std::vector<const BookmarkNode*> GetBookmarksMatchingPropertiesImpl(
     type& iterator,
@@ -528,8 +511,7 @@ bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url) {
 
 const BookmarkNode* GetBookmarkNodeByID(const BookmarkModel* model,
                                         int64_t id) {
-  return FindNode(model->root_node(),
-                  [id](const BookmarkNode* node) { return node->id() == id; });
+  return model->GetNodeById(id);
 }
 
 bool IsDescendantOf(const BookmarkNode* node, const BookmarkNode* root) {

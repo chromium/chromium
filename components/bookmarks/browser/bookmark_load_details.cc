@@ -4,6 +4,8 @@
 
 #include "components/bookmarks/browser/bookmark_load_details.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/browser/titled_url_index.h"
@@ -140,6 +142,9 @@ void BookmarkLoadDetails::AddManagedNode(
 void BookmarkLoadDetails::CreateIndices() {
   static_assert(kNumDefaultTopLevelPermanentFolders == 3u,
                 "The code below assumes three permanent nodes");
+  DUMP_WILL_BE_CHECK_NE(bb_node_->id(), 0);
+  DUMP_WILL_BE_CHECK_NE(other_folder_node_->id(), 0);
+  DUMP_WILL_BE_CHECK_NE(mobile_folder_node_->id(), 0);
 
   size_t local_or_syncable_node_count = 1;
   size_t account_node_count = 0;
@@ -152,8 +157,11 @@ void BookmarkLoadDetails::CreateIndices() {
   }
   local_or_syncable_uuid_index_.reserve(local_or_syncable_node_count);
   account_uuid_index_.reserve(account_node_count);
+  id_index_.reserve(local_or_syncable_node_count + account_node_count);
 
   local_or_syncable_uuid_index_.insert(root_node_.get());
+  bool root_id_is_unique = id_index_.insert(root_node_.get()).second;
+  DUMP_WILL_BE_CHECK(root_id_is_unique);
   for (const auto& child : root_node_->children()) {
     if (IsAccountPermanentNode(child.get())) {
       // Use a dedicated index for account folders and desdendants.
@@ -213,6 +221,9 @@ UserFolderLoadStats BookmarkLoadDetails::ComputeUserFolderStats() const {
 void BookmarkLoadDetails::AddNodeToIndexRecursive(BookmarkNode* node,
                                                   UuidIndex& uuid_index) {
   uuid_index.insert(node);
+  DUMP_WILL_BE_CHECK_NE(node->id(), kRootNodeId);
+  bool id_is_unique = id_index_.insert(node).second;
+  DUMP_WILL_BE_CHECK(id_is_unique);
   if (node->is_url()) {
     if (node->url().is_valid()) {
       titled_url_index_->Add(node);

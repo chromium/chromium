@@ -27,6 +27,7 @@
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
+#include "components/bookmarks/browser/id_index.h"
 #include "components/bookmarks/browser/uuid_index.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -296,6 +297,10 @@ class BookmarkModel : public BookmarkUndoProvider,
   // to components/bookmarks owners for guidance.
   const BookmarkNode* GetNodeByUuid(const base::Uuid& uuid,
                                     NodeTypeForUuidLookup type) const;
+
+  // Returns the node with the given `id`, or null if no node exists matching
+  // `id`.
+  const BookmarkNode* GetNodeById(int64_t id) const;
 
   // Returns the most recently added user node for the `url`; urls from any
   // nodes that are not editable by the user are never returned by this call.
@@ -667,6 +672,11 @@ class BookmarkModel : public BookmarkUndoProvider,
   base::flat_map<NodeTypeForUuidLookup, UuidIndex> uuid_index_;
 
   scoped_refptr<UrlIndex> url_index_;
+
+  // All nodes in the model (including `root_node()`, permanent folders, and
+  // managed nodes) indexed by `BookmarkNode::id()`. Declared after `url_index_`
+  // so it is destroyed before `url_index_` and `owned_root_`.
+  IdIndex id_index_;
 
   // See description of IsDoingExtensiveChanges above.
   int extensive_changes_ = 0;

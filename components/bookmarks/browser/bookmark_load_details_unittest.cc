@@ -21,6 +21,11 @@ const BookmarkNode* FindNodeByUuid(const UuidIndex& index,
   return it == index.end() ? nullptr : *it;
 }
 
+const BookmarkNode* FindNodeById(const IdIndex& index, int64_t id) {
+  auto it = index.find(id);
+  return it == index.end() ? nullptr : *it;
+}
+
 BookmarkNode* AddFolder(int64_t id, BookmarkNode* parent) {
   return parent->Add(std::make_unique<BookmarkNode>(
       id, base::Uuid::GenerateRandomV4(), GURL()));
@@ -88,13 +93,16 @@ TEST(BookmarkLoadDetailsTest, CreateIndicesWithoutAccountNodes) {
   BookmarkNode* node3 = details.mobile_folder_node()->Add(
       std::make_unique<BookmarkNode>(/*id=*/300, kUuid3, GURL()));
 
+  details.PopulateNodeIdsForLocalOrSyncablePermanentNodes();
   details.CreateIndices();
 
   const UuidIndex local_or_syncable_uuid_index =
       details.owned_local_or_syncable_uuid_index();
   const UuidIndex account_uuid_index = details.owned_account_uuid_index();
+  const IdIndex id_index = details.owned_id_index();
   EXPECT_TRUE(details.owned_local_or_syncable_uuid_index().empty());
   EXPECT_TRUE(details.owned_account_uuid_index().empty());
+  EXPECT_TRUE(details.owned_id_index().empty());
 
   EXPECT_TRUE(account_uuid_index.empty());
 
@@ -122,6 +130,18 @@ TEST(BookmarkLoadDetailsTest, CreateIndicesWithoutAccountNodes) {
 
   // Besides the nodes listed above, there should be nothing else.
   EXPECT_EQ(7u, local_or_syncable_uuid_index.size());
+
+  EXPECT_EQ(7u, id_index.size());
+  EXPECT_EQ(FindNodeById(id_index, details.RootNodeForTest()->id()),
+            details.RootNodeForTest());
+  EXPECT_EQ(FindNodeById(id_index, details.bb_node()->id()), details.bb_node());
+  EXPECT_EQ(FindNodeById(id_index, details.other_folder_node()->id()),
+            details.other_folder_node());
+  EXPECT_EQ(FindNodeById(id_index, details.mobile_folder_node()->id()),
+            details.mobile_folder_node());
+  EXPECT_EQ(FindNodeById(id_index, 100), node1);
+  EXPECT_EQ(FindNodeById(id_index, 200), node2);
+  EXPECT_EQ(FindNodeById(id_index, 300), node3);
 }
 
 TEST(BookmarkLoadDetailsTest, CreateIndicesWithAccountNodes) {
@@ -168,13 +188,16 @@ TEST(BookmarkLoadDetailsTest, CreateIndicesWithAccountNodes) {
   BookmarkNode* account_node4 = account_node3->Add(
       std::make_unique<BookmarkNode>(/*id=*/1100, kAccountUuid4, GURL()));
 
+  details.PopulateNodeIdsForLocalOrSyncablePermanentNodes();
   details.CreateIndices();
 
   const UuidIndex local_or_syncable_uuid_index =
       details.owned_local_or_syncable_uuid_index();
   const UuidIndex account_uuid_index = details.owned_account_uuid_index();
+  const IdIndex id_index = details.owned_id_index();
   EXPECT_TRUE(details.owned_local_or_syncable_uuid_index().empty());
   EXPECT_TRUE(details.owned_account_uuid_index().empty());
+  EXPECT_TRUE(details.owned_id_index().empty());
 
   // Permanent folders should be present in the local-or-syncable index.
   EXPECT_EQ(FindNodeByUuid(local_or_syncable_uuid_index,
@@ -224,6 +247,12 @@ TEST(BookmarkLoadDetailsTest, CreateIndicesWithAccountNodes) {
   // Besides the nodes listed above, there should be nothing else.
   EXPECT_EQ(8u, local_or_syncable_uuid_index.size());
   EXPECT_EQ(7u, account_uuid_index.size());
+  EXPECT_EQ(15u, id_index.size());
+  EXPECT_EQ(FindNodeById(id_index, details.RootNodeForTest()->id()),
+            details.RootNodeForTest());
+  EXPECT_EQ(FindNodeById(id_index, 400), local_node1);
+  EXPECT_EQ(FindNodeById(id_index, 800), account_node1);
+  EXPECT_EQ(FindNodeById(id_index, 1100), account_node4);
 }
 
 TEST(BookmarkLoadDetailsTest, ComputeUserFolderStats) {

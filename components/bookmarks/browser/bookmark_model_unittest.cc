@@ -3903,6 +3903,69 @@ TEST_F(BookmarkModelTest, IsLocalOnlyNodeWithSyncFeatureOnAndDettachedNode) {
   EXPECT_TRUE(model()->IsLocalOnlyNode(*dettached_node));
 }
 
+TEST_F(BookmarkModelTest, GetNodeById) {
+  EXPECT_EQ(model()->root_node(), model()->GetNodeById(kRootNodeId));
+  EXPECT_EQ(model()->bookmark_bar_node(),
+            model()->GetNodeById(model()->bookmark_bar_node()->id()));
+  EXPECT_EQ(model()->other_node(),
+            model()->GetNodeById(model()->other_node()->id()));
+  EXPECT_EQ(model()->mobile_node(),
+            model()->GetNodeById(model()->mobile_node()->id()));
+  EXPECT_EQ(nullptr, model()->GetNodeById(99999));
+
+  // Pre-load model resolves root_node() and returns null for other IDs.
+  auto unloaded_model =
+      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  EXPECT_EQ(unloaded_model->root_node(),
+            unloaded_model->GetNodeById(kRootNodeId));
+  EXPECT_EQ(nullptr, unloaded_model->GetNodeById(1));
+
+  const BookmarkNode* folder =
+      model()->AddFolder(model()->bookmark_bar_node(), 0, u"folder");
+  const BookmarkNode* child =
+      model()->AddURL(folder, 0, u"example", GURL("https://example.com"));
+  const int64_t folder_id = folder->id();
+  const int64_t child_id = child->id();
+
+  EXPECT_EQ(folder, model()->GetNodeById(folder_id));
+  EXPECT_EQ(child, model()->GetNodeById(child_id));
+
+  // Removing a folder removes both the folder and its descendants from IdIndex,
+  // and restoring via Undo re-inserts them.
+  model()->Remove(folder, metrics::BookmarkEditSource::kOther, FROM_HERE);
+  EXPECT_EQ(nullptr, model()->GetNodeById(folder_id));
+  EXPECT_EQ(nullptr, model()->GetNodeById(child_id));
+
+  auto* undo_client =
+      static_cast<TestBookmarkClientWithUndo*>(model()->client());
+  ASSERT_TRUE(undo_client->RestoreLastRemovedBookmark(model()));
+  EXPECT_EQ(folder, model()->GetNodeById(folder_id));
+  EXPECT_EQ(child, model()->GetNodeById(child_id));
+
+  model()->RemoveAllUserBookmarks(FROM_HERE);
+  EXPECT_EQ(nullptr, model()->GetNodeById(folder_id));
+  EXPECT_EQ(nullptr, model()->GetNodeById(child_id));
+  EXPECT_EQ(model()->bookmark_bar_node(),
+            model()->GetNodeById(model()->bookmark_bar_node()->id()));
+}
+
+TEST_F(BookmarkModelTest, GetAccountNodeById) {
+  model()->CreateAccountPermanentFolders();
+  const int64_t account_bb_id = model()->account_bookmark_bar_node()->id();
+  const BookmarkNode* account_url =
+      model()->AddURL(model()->account_bookmark_bar_node(), 0, u"acct",
+                      GURL("https://acct.example"));
+  const int64_t account_url_id = account_url->id();
+
+  EXPECT_EQ(model()->account_bookmark_bar_node(),
+            model()->GetNodeById(account_bb_id));
+  EXPECT_EQ(account_url, model()->GetNodeById(account_url_id));
+
+  model()->RemoveAccountPermanentFolders();
+  EXPECT_EQ(nullptr, model()->GetNodeById(account_bb_id));
+  EXPECT_EQ(nullptr, model()->GetNodeById(account_url_id));
+}
+
 TEST_F(BookmarkModelTest, UserFolderDepthHistograms) {
   constexpr char kUrlAddedMetricName[] = "Bookmarks.UserFolderDepth.UrlAdded";
   constexpr char kUrlOpenedMetricName[] = "Bookmarks.UserFolderDepth.UrlOpened";

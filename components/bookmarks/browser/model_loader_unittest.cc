@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -17,14 +18,18 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_load_details.h"
+#include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/id_index.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/storage_file_encryption_type.h"
 #include "components/bookmarks/test/bookmark_test_with_encryption_stages.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace bookmarks {
 namespace {
@@ -74,6 +79,11 @@ const BookmarkNode* FindNodeByUuid(const UuidIndex& index,
   const base::Uuid uuid = base::Uuid::ParseLowercase(uuid_str);
   CHECK(uuid.is_valid());
   const auto it = index.find(uuid);
+  return it == index.end() ? nullptr : *it;
+}
+
+const BookmarkNode* FindNodeById(const IdIndex& index, int64_t id) {
+  const auto it = index.find(id);
   return it == index.end() ? nullptr : *it;
 }
 
@@ -392,6 +402,7 @@ TEST_F(ModelLoaderTest, LoadNonEmptyModel) {
             details->local_or_syncable_sync_metadata_str());
 
   const UuidIndex uuid_index = details->owned_local_or_syncable_uuid_index();
+  const IdIndex id_index = details->owned_id_index();
 
   // Sanity-check the presence of one node.
   const BookmarkNode* folder_b1 =
@@ -399,6 +410,10 @@ TEST_F(ModelLoaderTest, LoadNonEmptyModel) {
   ASSERT_NE(nullptr, folder_b1);
   EXPECT_EQ(u"Folder B1", folder_b1->GetTitle());
   EXPECT_EQ(4, folder_b1->id());
+  EXPECT_EQ(10u, id_index.size());
+  EXPECT_EQ(details->RootNodeForTest(),
+            FindNodeById(id_index, details->RootNodeForTest()->id()));
+  EXPECT_EQ(folder_b1, FindNodeById(id_index, 4));
 
   histogram_tester.ExpectUniqueSample(kLocalOrSyncableIdsReassignedMetricName,
                                       /*sample=*/false,
@@ -436,6 +451,59 @@ TEST_F(ModelLoaderTest, LoadNonEmptyModel) {
       base::StrCat(
           {kBookmarksFileLoadResultMetricName, ".Account", ".ClearText"}),
       /*expected_count=*/0);
+}
+
+TEST_F(ModelLoaderTest, LoadWithManagedNode) {
+  base::test::TaskEnvironment task_environment;
+  const base::FilePath test_file_clear =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json");
+  const base::FilePath temp_dir = base::CreateUniqueTempDirectoryScopedToTest();
+  const base::FilePath test_file_encrypted = temp_dir.AppendASCII("encrypted");
+  ASSERT_TRUE(base::PathExists(test_file_clear));
+  ASSERT_FALSE(base::PathExists(test_file_encrypted));
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor =
+      os_crypt_async::GetTestEncryptorForTesting();
+
+  LoadManagedNodeCallback load_managed_node_callback =
+      base::BindOnce([](int64_t* max_node_id) {
+        auto managed_node =
+            BookmarkPermanentNode::CreateManagedBookmarks((*max_node_id)++);
+        managed_node->Add(std::make_unique<BookmarkNode>(
+            (*max_node_id)++, base::Uuid::GenerateRandomV4(),
+            GURL("https://managed.example.com")));
+        return managed_node;
+      });
+
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create();
+  loader->Load(
+      /*encryptor=*/encryptor,
+      /*local_or_syncable_file_path=*/test_file_clear,
+      /*encrypted_local_or_syncable_file_path=*/test_file_encrypted,
+      /*account_file_path=*/base::FilePath(),
+      /*encrypted_account_file_path=*/base::FilePath(),
+      /*load_managed_node_callback=*/std::move(load_managed_node_callback),
+      /*save_local_or_syncable_single_file_callback=*/base::DoNothing(),
+      /*save_account_single_file_callback=*/base::DoNothing(),
+      /*files_to_delete=*/{}, /*callback=*/details_future.GetCallback());
+
+  const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
+  ASSERT_NE(nullptr, details);
+  ASSERT_EQ(4u, details->RootNodeForTest()->children().size());
+
+  const BookmarkNode* managed_node =
+      details->RootNodeForTest()->children()[3].get();
+  ASSERT_EQ(1u, managed_node->children().size());
+  const BookmarkNode* managed_child = managed_node->children()[0].get();
+
+  EXPECT_EQ(11, managed_node->id());
+  EXPECT_EQ(12, managed_child->id());
+  EXPECT_EQ(13, details->max_id());
+
+  const IdIndex id_index = details->owned_id_index();
+  EXPECT_EQ(12u, id_index.size());
+  EXPECT_EQ(managed_node, FindNodeById(id_index, 11));
+  EXPECT_EQ(managed_child, FindNodeById(id_index, 12));
 }
 
 TEST_F(ModelLoaderTest, LoadNonEmptyModelFromOneFileWithInternalIdCollisions) {
@@ -692,6 +760,7 @@ TEST_F(ModelLoaderTest, LoadTwoFilesWithCollidingIdsAcross) {
   const UuidIndex local_or_syncable_uuid_index =
       details->owned_local_or_syncable_uuid_index();
   const UuidIndex account_uuid_index = details->owned_account_uuid_index();
+  const IdIndex id_index = details->owned_id_index();
 
   // Sanity-check the presence of one node. The UUID should not have changed.
   const BookmarkNode* account_folder_b1 = FindNodeByUuid(
@@ -708,6 +777,12 @@ TEST_F(ModelLoaderTest, LoadTwoFilesWithCollidingIdsAcross) {
   // important, but it is added here as overly-strict requirement to document
   // the behavior.
   EXPECT_EQ(15, local_or_syncable_folder_b1->id());
+
+  EXPECT_EQ(19u, id_index.size());
+  EXPECT_EQ(details->RootNodeForTest(),
+            FindNodeById(id_index, details->RootNodeForTest()->id()));
+  EXPECT_EQ(account_folder_b1, FindNodeById(id_index, 4));
+  EXPECT_EQ(local_or_syncable_folder_b1, FindNodeById(id_index, 15));
 
   histogram_tester.ExpectUniqueSample(kLocalOrSyncableIdsReassignedMetricName,
                                       /*sample=*/true,
@@ -1177,6 +1252,73 @@ TEST_F(ModelLoaderTest, LoadAccountFileWithMalformedPermanentFolder) {
           {kBookmarksFileLoadResultMetricName, ".Account", ".ClearText"}),
       metrics::BookmarksFileLoadResult::kBookmarkCodecDecodingFailed,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(ModelLoaderTest, LoadFileWithExtremeIdAndManagedNode) {
+  base::test::TaskEnvironment task_environment;
+  const base::FilePath temp_dir = base::CreateUniqueTempDirectoryScopedToTest();
+  const base::FilePath local_file_clear = temp_dir.AppendASCII("Bookmarks");
+  const base::FilePath local_file_encrypted = temp_dir.AppendASCII("encrypted");
+
+  constexpr char kExtremeIdJson[] = R"({
+    "version": 1,
+    "roots": {
+      "bookmark_bar": {
+        "id": "1",
+        "type": "folder",
+        "children": [ {
+          "id": "9223372036854775807",
+          "guid": "8976663c-4b6e-4abc-ae57-0d136b88c2f5",
+          "name": "Corrupted ID URL",
+          "type": "url",
+          "url": "https://example.com"
+        } ]
+      },
+      "other": { "id": "2", "type": "folder", "children": [] },
+      "synced": { "id": "3", "type": "folder", "children": [] }
+    }
+  })";
+  ASSERT_TRUE(base::WriteFile(local_file_clear, kExtremeIdJson));
+
+  LoadManagedNodeCallback load_managed_node_callback =
+      base::BindOnce([](int64_t* max_node_id) {
+        return BookmarkPermanentNode::CreateManagedBookmarks((*max_node_id)++);
+      });
+
+  scoped_refptr<const os_crypt_async::Encryptor> encryptor =
+      os_crypt_async::GetTestEncryptorForTesting();
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create();
+  loader->Load(
+      /*encryptor=*/encryptor,
+      /*local_or_syncable_file_path=*/local_file_clear,
+      /*encrypted_local_or_syncable_file_path=*/local_file_encrypted,
+      /*account_file_path=*/base::FilePath(),
+      /*encrypted_account_file_path=*/base::FilePath(),
+      /*load_managed_node_callback=*/std::move(load_managed_node_callback),
+      /*save_local_or_syncable_single_file_callback=*/base::DoNothing(),
+      /*save_account_single_file_callback=*/base::DoNothing(),
+      /*files_to_delete=*/{}, /*callback=*/details_future.GetCallback());
+
+  const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
+  ASSERT_NE(nullptr, details);
+  EXPECT_TRUE(details->ids_reassigned());
+  EXPECT_TRUE(details->required_recovery());
+
+  ASSERT_EQ(1u, details->bb_node()->children().size());
+  ASSERT_EQ(4u, details->RootNodeForTest()->children().size());
+  const BookmarkNode* url_node = details->bb_node()->children()[0].get();
+  const BookmarkNode* managed_node =
+      details->RootNodeForTest()->children()[3].get();
+
+  EXPECT_EQ(4, url_node->id());
+  EXPECT_EQ(5, managed_node->id());
+  EXPECT_EQ(6, details->max_id());
+
+  const IdIndex id_index = details->owned_id_index();
+  EXPECT_EQ(6u, id_index.size());
+  EXPECT_EQ(url_node, FindNodeById(id_index, 4));
+  EXPECT_EQ(managed_node, FindNodeById(id_index, 5));
 }
 
 void VerifyPrimaryLoadCorrectlySecondaryHasGivenResult(
