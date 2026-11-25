@@ -2558,6 +2558,10 @@ bool DrawRecordOp::HasReadBackDisallowedContentIgnoringFlags() const {
   return record.has_read_back_disallowed_content();
 }
 
+bool DrawRecordOp::HasDeferredPropertyKeys() const {
+  return record.has_deferred_property_keys();
+}
+
 void DrawRecordOp::UnionColorVolumeInto(
     gfx::ContentColorVolume& color_volume) const {
   color_volume.UnionWith(record.content_color_volume());
@@ -2592,6 +2596,10 @@ bool DrawScrollingContentsOp::HasDiscardableImages() const {
 bool DrawScrollingContentsOp::HasReadBackDisallowedContentIgnoringFlags()
     const {
   return display_item_list->has_read_back_disallowed_content();
+}
+
+bool DrawScrollingContentsOp::HasDeferredPropertyKeys() const {
+  return display_item_list->has_deferred_property_keys();
 }
 
 void DrawScrollingContentsOp::UnionColorVolumeInto(

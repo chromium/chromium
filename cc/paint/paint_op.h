@@ -250,6 +250,9 @@ class CC_PAINT_EXPORT PaintOp {
   bool HasReadBackDisallowedContentIgnoringFlags() const { return false; }
   bool HasReadBackDisallowedContentFromFlags() const { return false; }
 
+  bool HasDeferredPropertyKeys() const { return false; }
+  bool HasDeferredPropertyKeysFromFlags() const { return false; }
+
   void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const {}
   void UnionColorVolumeFromFlagsInto(
       gfx::ContentColorVolume& color_volume) const {}
@@ -290,6 +293,9 @@ class CC_PAINT_EXPORT PaintOpWithFlags : public PaintOp {
   int CountSlowPathsFromFlags() const { return flags.getPathEffect() ? 1 : 0; }
   bool HasDiscardableImagesFromFlags() const;
   bool HasReadBackDisallowedContentFromFlags() const;
+  bool HasDeferredPropertyKeysFromFlags() const {
+    return flags.getPaintColor().has_deferred_color();
+  }
   void UnionColorVolumeFromFlagsInto(
       gfx::ContentColorVolume& color_volume) const;
 
@@ -331,6 +337,8 @@ class CC_PAINT_EXPORT PaintOpWithFlags : public PaintOp {
     using super::HasDiscardableImagesFromFlags;                \
     using super::HasReadBackDisallowedContentIgnoringFlags;    \
     using super::HasReadBackDisallowedContentFromFlags;        \
+    using super::HasDeferredPropertyKeys;                      \
+    using super::HasDeferredPropertyKeysFromFlags;             \
     using super::UnionColorVolumeInto;                         \
     using super::UnionColorVolumeFromFlagsInto;                \
     using super::AdditionalBytesUsed;                          \
@@ -841,6 +849,7 @@ class CC_PAINT_EXPORT DrawRecordOp final : public PaintOpBaseInternal {
   size_t AdditionalOpCount() const;
   bool HasDiscardableImages() const;
   bool HasReadBackDisallowedContentIgnoringFlags() const;
+  bool HasDeferredPropertyKeys() const;
   void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const;
   int CountSlowPaths() const;
   bool HasNonAAPaint() const;
@@ -925,6 +934,7 @@ class CC_PAINT_EXPORT DrawScrollingContentsOp final
   size_t AdditionalOpCount() const;
   bool HasDiscardableImages() const;
   bool HasReadBackDisallowedContentIgnoringFlags() const;
+  bool HasDeferredPropertyKeys() const;
   void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const;
   int CountSlowPaths() const;
   bool HasNonAAPaint() const;

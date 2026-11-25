@@ -77,6 +77,18 @@ bool CompareN32Pixels(base::span<unsigned char> actual_pixels,
   return false;
 }
 
+using DeferredKeyInfo = DisplayItemList::DeferredPropertyKeyInfo;
+
+void PushColoredRect(DisplayItemList& list,
+                     const gfx::Rect& rect,
+                     const PaintColor& color) {
+  PaintFlags flags;
+  flags.setPaintColor(color);
+  list.StartPaint();
+  list.push<DrawRectOp>(gfx::RectToSkRect(rect), flags);
+  list.EndPaintOfUnpaired(rect);
+}
+
 }  // namespace
 
 class DisplayItemListTest : public testing::Test {
@@ -1374,6 +1386,72 @@ TEST_F(DisplayItemListTest, AreaOfDrawText) {
   // This includes all DrawTextBlobOps.
   EXPECT_EQ(static_cast<int>(text_blob1_area * 2 + text_blob2_area * 2),
             static_cast<int>(list->AreaOfDrawText(gfx::Rect(500, 500))));
+}
+
+TEST_F(DisplayItemListTest, DeferredPropertyKeysUnionRects) {
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  auto list = base::MakeRefCounted<DisplayItemList>();
+  PushColoredRect(*list, gfx::Rect(0, 0, 10, 10), {SkColors::kGreen, kKey});
+  PushColoredRect(*list, gfx::Rect(20, 30, 10, 10), {SkColors::kGreen, kKey});
+  PushColoredRect(*list, gfx::Rect(80, 80, 10, 10), SkColors::kRed);
+  list->Finalize();
+
+  // Both keyed rects union together, and the unkeyed red rect is ignored.
+  EXPECT_THAT(list->deferred_property_keys(),
+              testing::ElementsAre(testing::Pair(
+                  kKey, DeferredKeyInfo{gfx::Rect(0, 0, 30, 40)})));
+}
+
+TEST_F(DisplayItemListTest, DeferredPropertyKeysFromNestedRecord) {
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  PaintFlags flags;
+  flags.setPaintColor({SkColors::kGreen, kKey});
+  PaintOpBuffer nested;
+  nested.push<DrawRectOp>(SkRect::MakeWH(10, 10), flags);
+
+  auto list = base::MakeRefCounted<DisplayItemList>();
+  list->StartPaint();
+  list->push<DrawRecordOp>(nested.ReleaseAsRecord());
+  list->EndPaintOfUnpaired(gfx::Rect(20, 30, 10, 10));
+  list->Finalize();
+
+  // Nested ops use the enclosing DrawRecordOp's visual rect.
+  EXPECT_THAT(list->deferred_property_keys(),
+              testing::ElementsAre(testing::Pair(
+                  kKey, DeferredKeyInfo{gfx::Rect(20, 30, 10, 10)})));
+}
+
+TEST_F(DisplayItemListTest, DeferredPropertyKeysFromScrollingContents) {
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  auto scrolling_list = base::MakeRefCounted<DisplayItemList>();
+  PushColoredRect(*scrolling_list, gfx::Rect(200, 200),
+                  {SkColors::kBlue, kKey});
+  scrolling_list->Finalize();
+
+  auto list = base::MakeRefCounted<DisplayItemList>();
+  list->PushDrawScrollingContentsOp(ElementId(99), std::move(scrolling_list),
+                                    gfx::Rect(40, 50, 40, 40));
+  list->Finalize();
+
+  // Keys in scrolling contents use the scroller's visual rect in the parent.
+  EXPECT_THAT(list->deferred_property_keys(),
+              testing::ElementsAre(testing::Pair(
+                  kKey, DeferredKeyInfo{gfx::Rect(40, 50, 40, 40)})));
+}
+
+TEST_F(DisplayItemListTest, DeferredPropertyKeysSkipsEmptyVisualRect) {
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  auto list = base::MakeRefCounted<DisplayItemList>();
+  PushColoredRect(*list, gfx::Rect(), {SkColors::kBlue, kKey});
+  list->Finalize();
+
+  // The buffer still marks the key, while the map omits empty visual rects.
+  EXPECT_TRUE(list->has_deferred_property_keys());
+  EXPECT_TRUE(list->deferred_property_keys().empty());
 }
 
 }  // namespace cc

@@ -84,6 +84,9 @@ class CC_PAINT_EXPORT PaintRecord {
   // underlying buffer if shared), so stripping disallowed ops omits this record
   // as a unit.
   void SetIsReadBackDisallowed();
+  bool has_deferred_property_keys() const {
+    return buffer_->has_deferred_property_keys();
+  }
   const gfx::ContentColorVolume& content_color_volume() const {
     return buffer_->content_color_volume();
   }

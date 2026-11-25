@@ -460,6 +460,7 @@ PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
   has_discardable_images_ = other.has_discardable_images_;
   is_read_back_disallowed_ = other.is_read_back_disallowed_;
   has_read_back_disallowed_content_ = other.has_read_back_disallowed_content_;
+  has_deferred_property_keys_ = other.has_deferred_property_keys_;
   content_color_volume_ = other.content_color_volume_;
 
   // Make sure the other pob can destruct safely or is ready for reuse.
@@ -507,6 +508,7 @@ void PaintOpBuffer::ResetRetainingBuffer() {
   has_discardable_images_ = false;
   is_read_back_disallowed_ = false;
   has_read_back_disallowed_content_ = false;
+  has_deferred_property_keys_ = false;
   content_color_volume_ = gfx::ContentColorVolume();
 }
 
@@ -850,7 +852,8 @@ bool PaintOpBuffer::EqualsForTesting(const PaintOpBuffer& other) const {
       has_discardable_images_ != other.has_discardable_images_ ||
       is_read_back_disallowed_ != other.is_read_back_disallowed_ ||
       has_read_back_disallowed_content_ !=
-          other.has_read_back_disallowed_content_) {
+          other.has_read_back_disallowed_content_ ||
+      has_deferred_property_keys_ != other.has_deferred_property_keys_) {
     return false;
   }
 

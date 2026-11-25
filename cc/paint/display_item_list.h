@@ -12,9 +12,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "cc/base/rtree.h"
+#include "cc/paint/deferred_property_key.h"
 #include "cc/paint/directly_composited_image_info.h"
 #include "cc/paint/discardable_image_map.h"
 #include "cc/paint/image_id.h"
@@ -197,6 +199,9 @@ class CC_PAINT_EXPORT DisplayItemList
   bool has_read_back_disallowed_content() const {
     return paint_op_buffer_.has_read_back_disallowed_content();
   }
+  bool has_deferred_property_keys() const {
+    return paint_op_buffer_.has_deferred_property_keys();
+  }
   const gfx::ContentColorVolume& content_color_volume() const {
     return paint_op_buffer_.content_color_volume();
   }
@@ -226,6 +231,24 @@ class CC_PAINT_EXPORT DisplayItemList
     return raster_inducing_scrolls_;
   }
 
+  struct DeferredPropertyKeyInfo {
+    // Union of visual rects of ops using this key. See
+    // CollectDeferredPropertyKeys() for how this is computed.
+    gfx::Rect visual_rect;
+
+    bool operator==(const DeferredPropertyKeyInfo&) const = default;
+  };
+  // Maps deferred property keys of painted ops to info.
+  // Populated in Finalize().
+  using DeferredPropertyKeyMap =
+      base::flat_map<DeferredPropertyKey, DeferredPropertyKeyInfo>;
+  const DeferredPropertyKeyMap& deferred_property_keys() const {
+#if DCHECK_IS_ON()
+    DCHECK(IsFinalized());
+#endif
+    return deferred_property_keys_;
+  }
+
  private:
   friend class DisplayItemListTest;
 
@@ -243,6 +266,7 @@ class CC_PAINT_EXPORT DisplayItemList
   }
 
   RasterInducingScrollMap raster_inducing_scrolls_;
+  DeferredPropertyKeyMap deferred_property_keys_;
 
   // RTree stores offsets into the paint op buffer. It's available after
   // Finalize().

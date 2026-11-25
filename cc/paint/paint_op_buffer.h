@@ -244,6 +244,11 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   bool has_read_back_disallowed_content() const {
     return has_read_back_disallowed_content_;
   }
+  // True when any op, sub-record, or nested display list carries a deferred
+  // property key.
+  bool has_deferred_property_keys() const {
+    return has_deferred_property_keys_;
+  }
   const gfx::ContentColorVolume& content_color_volume() const {
     return content_color_volume_;
   }
@@ -334,6 +339,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
           op->HasReadBackDisallowedContentIgnoringFlags() ||
           op->HasReadBackDisallowedContentFromFlags();
     }
+    has_deferred_property_keys_ |=
+        op->HasDeferredPropertyKeys() || op->HasDeferredPropertyKeysFromFlags();
 
     op->UnionColorVolumeInto(content_color_volume_);
     op->UnionColorVolumeFromFlagsInto(content_color_volume_);
@@ -439,6 +446,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   bool has_discardable_images_ : 1 = false;
   bool is_read_back_disallowed_ : 1 = false;
   bool has_read_back_disallowed_content_ : 1 = false;
+  bool has_deferred_property_keys_ : 1 = false;
   gfx::ContentColorVolume content_color_volume_;
 };
 

@@ -6011,4 +6011,41 @@ TEST(PaintOpBufferTest, SaveLayerShaderAndUnclosedLayerRetainDecodes) {
   }
 }
 
+TEST(PaintOpBufferTest, HasDeferredPropertyKeys) {
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  // Empty buffers and plain ops have no deferred property keys.
+  PaintOpBuffer buffer;
+  EXPECT_FALSE(buffer.has_deferred_property_keys());
+  buffer.push<DrawRectOp>(SkRect::MakeWH(10, 10), PaintFlags());
+  EXPECT_FALSE(buffer.has_deferred_property_keys());
+
+  // A deferred color sets the bit, DeepCopyAsRecord() preserves it, and Reset()
+  // clears it.
+  PaintFlags flags;
+  flags.setPaintColor({SkColors::kGreen, kKey});
+  buffer.push<DrawRectOp>(SkRect::MakeWH(10, 10), flags);
+  EXPECT_TRUE(buffer.has_deferred_property_keys());
+  PaintRecord copy = buffer.DeepCopyAsRecord();
+  EXPECT_TRUE(copy.has_deferred_property_keys());
+  EXPECT_TRUE(buffer.EqualsForTesting(copy.buffer()));
+  buffer.Reset();
+  EXPECT_FALSE(buffer.has_deferred_property_keys());
+}
+
+TEST(PaintOpBufferTest, HasDeferredPropertyKeysFromNestedRecord) {
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  PaintFlags flags;
+  flags.setPaintColor({SkColors::kGreen, kKey});
+  PaintOpBuffer nested;
+  nested.push<DrawRectOp>(SkRect::MakeWH(10, 10), flags);
+
+  // Releasing clears `nested`, and DrawRecordOp marks `outer`.
+  PaintOpBuffer outer;
+  outer.push<DrawRecordOp>(nested.ReleaseAsRecord());
+  EXPECT_FALSE(nested.has_deferred_property_keys());
+  EXPECT_TRUE(outer.has_deferred_property_keys());
+}
+
 }  // namespace cc

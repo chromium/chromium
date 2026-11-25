@@ -77,6 +77,89 @@ void IterateTextContentByOffsets(const PaintOpBuffer& buffer,
 constexpr gfx::Rect kMaxBounds(std::numeric_limits<int>::max(),
                                std::numeric_limits<int>::max());
 
+// Collects all deferred property keys in an op (including nested records and
+// scrolling contents) and unions the op's visual rect into each key's entry.
+void CollectDeferredPropertyKeys(
+    const PaintOp& op,
+    const gfx::Rect& visual_rect,
+    DisplayItemList::DeferredPropertyKeyMap& deferred_keys) {
+  // No default case so new PaintOpTypes fail to compile until handled here.
+  switch (op.GetType()) {
+    // Only DrawRecordOp and DrawScrollingContentsOp resolve deferred property
+    // keys in nested ops. Records in shaders, filters, images, and Skottie
+    // always fall back to their painted colors.
+    case PaintOpType::kDrawRecord: {
+      const PaintRecord& record = static_cast<const DrawRecordOp&>(op).record;
+      if (record.has_deferred_property_keys()) {
+        // Nested ops have no visual rects of their own, so use the record's
+        // rect.
+        for (const PaintOp& nested_op : record.buffer()) {
+          CollectDeferredPropertyKeys(nested_op, visual_rect, deferred_keys);
+        }
+      }
+      return;
+    }
+    case PaintOpType::kDrawScrollingContents: {
+      // Use the scroller's visual rect so invalidation stays valid on scroll.
+      const auto& scroll_op = static_cast<const DrawScrollingContentsOp&>(op);
+      for (const auto& [key, _] :
+           scroll_op.display_item_list->deferred_property_keys()) {
+        deferred_keys[key].visual_rect.Union(visual_rect);
+      }
+      return;
+    }
+
+    // PaintOpWithFlags ops.
+    case PaintOpType::kDrawArc:
+    case PaintOpType::kDrawDRRect:
+    case PaintOpType::kDrawImage:
+    case PaintOpType::kDrawImageRect:
+    case PaintOpType::kDrawIRect:
+    case PaintOpType::kDrawLine:
+    case PaintOpType::kDrawOval:
+    case PaintOpType::kDrawPath:
+    case PaintOpType::kDrawRect:
+    case PaintOpType::kDrawRRect:
+    case PaintOpType::kDrawSlug:
+    case PaintOpType::kDrawTextBlob:
+    case PaintOpType::kDrawTextSlugs:
+    case PaintOpType::kDrawVertices:
+    case PaintOpType::kSaveLayer:
+    case PaintOpType::kSaveLayerFilters: {
+      DCHECK(op.IsPaintOpWithFlags());
+      const PaintColor& color =
+          static_cast<const PaintOpWithFlags&>(op).flags.getPaintColor();
+      if (color.has_deferred_color()) {
+        deferred_keys[color.deferred_key()].visual_rect.Union(visual_rect);
+      }
+      return;
+    }
+
+    // Ops without deferred property keys.
+    case PaintOpType::kAnnotate:
+    case PaintOpType::kClipPath:
+    case PaintOpType::kClipRect:
+    case PaintOpType::kClipRRect:
+    case PaintOpType::kConcat:
+    case PaintOpType::kCustomData:
+    case PaintOpType::kDrawArcLite:
+    case PaintOpType::kDrawColor:
+    case PaintOpType::kDrawLineLite:
+    case PaintOpType::kDrawSkottie:
+    case PaintOpType::kNoop:
+    case PaintOpType::kRestore:
+    case PaintOpType::kRotate:
+    case PaintOpType::kSave:
+    case PaintOpType::kSaveLayerAlpha:
+    case PaintOpType::kScale:
+    case PaintOpType::kSetMatrix:
+    case PaintOpType::kSetNodeId:
+    case PaintOpType::kTranslate:
+      DCHECK(!op.IsPaintOpWithFlags());
+      return;
+  }
+}
+
 }  // namespace
 
 DisplayItemList::DisplayItemList() {
@@ -215,6 +298,20 @@ void DisplayItemList::Finalize() {
   DCHECK_EQ(visual_rects_.size(), offsets_.size());
   current_range_start_ = kFinalized;
 #endif
+
+  // Record the painted bounds of each deferred property key.
+  if (paint_op_buffer_.has_deferred_property_keys()) [[unlikely]] {
+    DCHECK_EQ(paint_op_buffer_.size(), visual_rects_.size());
+    size_t index = 0;
+    for (const PaintOp& op : paint_op_buffer_) {
+      if (!visual_rects_[index].IsEmpty()) {
+        CollectDeferredPropertyKeys(op, visual_rects_[index],
+                                    deferred_property_keys_);
+      }
+      ++index;
+    }
+    deferred_property_keys_.shrink_to_fit();
+  }
 
   // Safe to exclude from safety checks: `Finalize()` only frees internal POD
   // rect/offset recording scratch vectors, `RTree::Build()` `Branch`
