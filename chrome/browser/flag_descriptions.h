@@ -8572,6 +8572,12 @@ inline constexpr char
     kEnableStandardBoundSessionCredentialsAudienceDescription[] =
         "Enables including the 'aud' (audience) claim in Device Bound "
         "Session Credentials registration and refresh JWT payloads.";
+inline constexpr char kEnableDeviceBoundSessionsForSingleSignOnName[] =
+    "Device Bound Session Credentials for single sign-on";
+inline constexpr char kEnableDeviceBoundSessionsForSingleSignOnDescription[] =
+    "Enables the Device Bound Session Credentials single sign-on extension "
+    "(Secure-Session-GenerateKey and Secure-Session-KeyBinding). Requires "
+    "Device Bound Session Credentials (Standard) to be enabled.";
 
 inline constexpr char kHandleMdmErrorsForDasherAccountsName[] =
     "Mdm error handling for dasher accounts";

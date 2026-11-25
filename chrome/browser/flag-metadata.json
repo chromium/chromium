@@ -3956,6 +3956,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "enable-device-bound-sessions-for-single-sign-on",
+    "owners": [ "jdoerrie@chromium.org", "alexilin@chromium.org", "ahijazi@chromium.org" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "enable-devtools-deep-link-via-extensibility-api",
     "owners": [ "finnur@chromium.org", "//components/ui_devtools/OWNERS" ],
     "expiry_milestone": 180

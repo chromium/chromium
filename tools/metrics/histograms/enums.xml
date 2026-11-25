@@ -14120,6 +14120,7 @@ from previous Chrome versions.
   <int value="-273573364" label="TabHoverCardImageSettings:enabled"/>
   <int value="-273570157" label="EnableBloom:enabled"/>
   <int value="-273534119" label="LacrosAuraCapture:enabled"/>
+  <int value="-272731949" label="DeviceBoundSessionsForSingleSignOn:enabled"/>
   <int value="-272668067"
       label="PageContentAnnotationsPersistSalientImageMetadata:enabled"/>
   <int value="-272544597"
@@ -17705,6 +17706,7 @@ from previous Chrome versions.
   <int value="785159660" label="NotificationsIgnoreRequireInteraction:enabled"/>
   <int value="785273919" label="CompositingBasedThrottling:disabled"/>
   <int value="785757258" label="AiOverlayDisableNavigationContext:disabled"/>
+  <int value="785788561" label="DeviceBoundSessionsForSingleSignOn:disabled"/>
   <int value="785795587" label="AndroidAppIntegrationSafeSearch:enabled"/>
   <int value="786070201"
       label="EcheSWAProcessAndroidAccessibilityTree:disabled"/>

@@ -10247,6 +10247,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(
          net::features::kDeviceBoundSessionsIncludeAudienceClaim)},
+    {"enable-device-bound-sessions-for-single-sign-on",
+     flag_descriptions::kEnableDeviceBoundSessionsForSingleSignOnName,
+     flag_descriptions::kEnableDeviceBoundSessionsForSingleSignOnDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessionsForSingleSignOn)},
 
     {"pwm-show-suggestions-on-autofocus",
      flag_descriptions::kPasswordManagerShowSuggestionsOnAutofocusName,
