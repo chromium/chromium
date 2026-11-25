@@ -1960,6 +1960,83 @@ TEST_F(ClipboardHostImplTest, ReadFiles_PolicyAllowSubset_GrantsOnlyAllowed) {
   EXPECT_FALSE(policy->CanReadFile(child_id, blocked_file));
 }
 
+// Regression test for crbug.com/553272482: ReadFiles() only reads from the
+// standard copy/paste clipboard. Even if file paths are present in the
+// selection buffer (e.g. X11 PRIMARY on Linux) and paste is allowed, ReadFiles
+// must not return files or grant ChildProcessSecurityPolicy read permissions
+// for any buffer other than kCopyPaste, while preserving selection text reads
+// and copy/paste file reads.
+TEST_F(ClipboardHostImplTest, ReadFiles_SelectionBuffer_GrantsNoFileAccess) {
+  ClipboardPasteAllowedBrowserClient browser_client;
+  browser_client.set_is_clipboard_paste_allowed(true);
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  if (!ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    GTEST_SKIP() << "kSelection buffer is not supported on this platform.";
+  }
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath selection_file =
+      temp_dir.GetPath().AppendASCII("selection_secret.txt");
+  const base::FilePath copy_paste_file =
+      temp_dir.GetPath().AppendASCII("copied_allowed.txt");
+  {
+    ui::ScopedClipboardWriter selection_writer(ui::ClipboardBuffer::kSelection);
+    selection_writer.WriteFilenames(ui::FileInfosToURIList(
+        {ui::FileInfo(selection_file, base::FilePath())}));
+    selection_writer.WriteText(u"selection-text");
+  }
+  {
+    ui::ScopedClipboardWriter copy_writer(ui::ClipboardBuffer::kCopyPaste);
+    copy_writer.WriteFilenames(ui::FileInfosToURIList(
+        {ui::FileInfo(copy_paste_file, base::FilePath())}));
+  }
+
+  RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  RenderProcessHost* process = rfh->GetProcess();
+  const ChildProcessId child_id = process->GetID();
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  ASSERT_FALSE(policy->CanReadFile(child_id, selection_file));
+  ASSERT_FALSE(policy->CanReadFile(child_id, copy_paste_file));
+
+  // Invoke ClipboardHostImpl directly with kSelection because the non-Blink C++
+  // EnumTraits<blink::mojom::ClipboardBuffer, ui::ClipboardBuffer>::ToMojom()
+  // only serializes kCopyPaste on the client side, whereas FromMojom() maps
+  // blink::mojom::ClipboardBuffer::kSelection to
+  // ui::ClipboardBuffer::kSelection when dispatching renderer IPCs to
+  // ClipboardHostImpl.
+  ClipboardHostImpl clipboard_host(*rfh);
+
+  base::test::TestFuture<blink::mojom::ClipboardFilesPtr> selection_future;
+  clipboard_host.ReadFiles(ui::ClipboardBuffer::kSelection,
+                           selection_future.GetCallback());
+  blink::mojom::ClipboardFilesPtr selection_result = selection_future.Take();
+
+  EXPECT_TRUE(selection_result->files.empty());
+  EXPECT_FALSE(selection_result->file_system_id);
+  EXPECT_FALSE(policy->CanReadFile(child_id, selection_file));
+
+  // Middle-click selection text paste continues to work normally.
+  base::test::TestFuture<const std::u16string&> selection_text_future;
+  clipboard_host.ReadText(ui::ClipboardBuffer::kSelection,
+                          selection_text_future.GetCallback());
+  EXPECT_EQ(u"selection-text", selection_text_future.Take());
+
+  // Reading files from kCopyPaste continues to work normally when paste is
+  // allowed.
+  base::test::TestFuture<blink::mojom::ClipboardFilesPtr> copy_future;
+  clipboard_host.ReadFiles(ui::ClipboardBuffer::kCopyPaste,
+                           copy_future.GetCallback());
+  blink::mojom::ClipboardFilesPtr copy_result = copy_future.Take();
+
+  EXPECT_EQ(1u, copy_result->files.size());
+  EXPECT_TRUE(copy_result->file_system_id);
+  EXPECT_TRUE(policy->CanReadFile(child_id, copy_paste_file));
+  EXPECT_FALSE(policy->CanReadFile(child_id, selection_file));
+}
+
 TEST_F(ClipboardHostImplTest,
        ReadAvailableCustomAndStandardFormats_TextWithoutUserActivation) {
   // Setup: Custom browser client that denies clipboard paste

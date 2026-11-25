@@ -753,7 +753,11 @@ void ClipboardHostImpl::OnReadPngWithText(
 
 void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                                   ReadFilesCallback callback) {
-  if (!IsPasteAllowed()) {
+  // File paste and ChildProcessSecurityPolicy file read grants only apply to
+  // the standard copy/paste clipboard. Selection buffers (such as X11 PRIMARY
+  // on Linux) only support plain-text paste and must not grant file access.
+  if (!IsPasteAllowed() ||
+      clipboard_buffer != ui::ClipboardBuffer::kCopyPaste) {
     std::move(callback).Run(blink::mojom::ClipboardFiles::New());
     return;
   }
