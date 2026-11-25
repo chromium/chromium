@@ -16,12 +16,17 @@
 <script>
 const svgNS = "http://www.w3.org/2000/svg";
 
+// SVG animation timelines start once the document has loaded; before that,
+// setCurrentTime() only records the time to seek to later.
+const loaded = new Promise(resolve => window.addEventListener("load", resolve));
+
 function waitForAnimationFrame()
 {
     return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 }
 
 promise_test(async () => {
+    await loaded;
     rectSVG.pauseAnimations();
 
     const rect = document.createElementNS(svgNS, "rect");
@@ -36,6 +41,7 @@ promise_test(async () => {
 }, "<set> targeting a <rect> inserted after it");
 
 promise_test(async () => {
+    await loaded;
     textPathSVG.pauseAnimations();
 
     const textPath = document.createElementNS(svgNS, "textPath");
