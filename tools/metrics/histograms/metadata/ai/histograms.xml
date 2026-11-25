@@ -462,7 +462,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseSize"
-    units="characters" expires_after="2027-03-16">
+    units="characters" expires_after="2027-11-15">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>chrome-chia-dev@google.com</owner>
@@ -544,7 +544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Translation.LoadTranslateKitErrorCode"
-    enum="WinGetLastError" expires_after="2027-03-16">
+    enum="WinGetLastError" expires_after="2027-11-15">
   <owner>iahouma@google.com</owner>
   <owner>ohjerry@google.com</owner>
   <owner>evliu@google.com</owner>

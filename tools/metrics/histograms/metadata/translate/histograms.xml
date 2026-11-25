@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.OnDeviceTranslation.Download.LanguagePair"
-    units="int" expires_after="2027-03-01">
+    units="int" expires_after="2027-11-15">
   <owner>evliu@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Translate.OnDeviceTranslation.DownloadExceedLimit.LanguagePair"
-    units="int" expires_after="2027-03-01">
+    units="int" expires_after="2027-11-15">
   <owner>evliu@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -340,7 +340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.OnDeviceTranslation.ModelFileMmapSuccess"
-    enum="BooleanSuccess" expires_after="2027-02-07">
+    enum="BooleanSuccess" expires_after="2027-11-15">
   <owner>danft@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -355,7 +355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.OnDeviceTranslation.ModelFileOpenError"
-    enum="PlatformFileError" expires_after="2027-02-07">
+    enum="PlatformFileError" expires_after="2027-11-15">
   <owner>danft@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -369,7 +369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.OnDeviceTranslation.TranslationLength" units="int"
-    expires_after="2027-03-01">
+    expires_after="2027-11-15">
   <owner>danft@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -393,7 +393,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Translate.OnDeviceTranslation.{LanguageRole}.{SupportedLanguage}.TranslationLength"
-    units="int" expires_after="2027-03-01">
+    units="int" expires_after="2027-11-15">
   <owner>danft@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -910,7 +910,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.TranslatorApi.TranslationLength" units="int"
-    expires_after="2027-03-01">
+    expires_after="2027-11-15">
   <owner>evliu@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -921,7 +921,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Translate.TranslatorApi.{LanguageRole}.{SupportedLanguage}.TranslationLength"
-    units="int" expires_after="2027-03-01">
+    units="int" expires_after="2027-11-15">
   <owner>evliu@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -934,7 +934,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Translate.TranslatorApi.{OnDeviceTranslationAction}.LanguagePair"
-    units="int" expires_after="2027-03-01">
+    units="int" expires_after="2027-11-15">
   <owner>evliu@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
@@ -949,7 +949,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Translate.TranslatorApi.{OnDeviceTranslationAction}.{LanguageRole}"
-    enum="SupportedLanguage" expires_after="2027-03-01">
+    enum="SupportedLanguage" expires_after="2027-11-15">
   <owner>evliu@google.com</owner>
   <owner>chrome-builtin-ai@google.com</owner>
   <summary>
