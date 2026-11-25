@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
+class AuthenticationService;
 class Browser;
 class FullscreenController;
 class GeminiSharedTabsManager;
@@ -367,6 +368,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // IdentityManager associated with the Browser's profile.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
+  // `AuthenticationService` associated with the `Browser`'s profile.
+  raw_ptr<AuthenticationService> authentication_service_ = nullptr;
 
   // Observers for keyboard events.
   id keyboard_show_observer_ = nil;

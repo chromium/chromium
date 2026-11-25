@@ -12,6 +12,7 @@
 
 #import "base/barrier_closure.h"
 #import "base/check.h"
+#import "base/check_deref.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
@@ -297,7 +298,9 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
   browser_->AddObserver(this);
   StartObserving(browser_);
 
-  pref_change_registrar_.Init(browser_->GetProfile()->GetPrefs());
+  ProfileIOS& profile = CHECK_DEREF(browser_->GetProfile());
+
+  pref_change_registrar_.Init(profile.GetPrefs());
   pref_change_registrar_.Add(
       prefs::kIOSGeminiLiveMicrophoneSetting,
       base::BindRepeating(&GeminiBrowserAgent::OnMicrophonePrefChanged,
@@ -359,8 +362,15 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
                                  &GeminiBrowserAgent::OnScrollEvent,
                                  weak_factory_.GetWeakPtr())];
 
-  identity_manager_ =
-      IdentityManagerFactory::GetForProfile(browser_->GetProfile());
+  // Creating the `AuthenticationService` may trigger a main account change (if
+  // the user is signed-in) which will notify the `IdentityManager` observers –
+  // including the `GeminiBrowserAgent` – of the account change. Ensure this
+  // happens before registering as an `Observer` (otherwise the notification
+  // would be received before the current instance constructor completes).
+  authentication_service_ =
+      AuthenticationServiceFactory::GetForProfile(profile);
+
+  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
   if (identity_manager_) {
     identity_manager_->AddObserver(this);
   }
@@ -368,7 +378,7 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
 
   if (IsAppSwitcherAISummarizationEnabled()) {
     GeminiCapabilitiesManager* capabilities_manager =
-        GeminiCapabilitiesManagerFactory::GetForProfile(browser_->GetProfile());
+        GeminiCapabilitiesManagerFactory::GetForProfile(profile);
     if (capabilities_manager) {
       capabilities_manager->UpdateCapabilities();
     }
@@ -386,7 +396,7 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
   ConfigureGemini();
 
   shared_tabs_manager_ = std::make_unique<GeminiSharedTabsManagerImpl>(
-      browser_->GetWebStateList(), browser_->GetProfile()->GetPrefs(),
+      browser_->GetWebStateList(), profile.GetPrefs(),
       PersistTabContextBrowserAgent::FromBrowser(browser_),
       SnapshotBrowserAgent::FromBrowser(browser_),
       base::BindRepeating(&GeminiBrowserAgent::is_floaty_invoked,
@@ -402,8 +412,7 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
   gemini_container_mediator_ = [[GeminiContainerMediator alloc]
             initWithBrowser:browser_
                actorService:nullptr
-      authenticationService:AuthenticationServiceFactory::GetForProfile(
-                                browser_->GetProfile())
+      authenticationService:authentication_service_
                eventHandler:this
           sharedTabsManager:shared_tabs_manager_.get()
       sessionMetricsManager:session_metrics_manager_];
@@ -488,6 +497,7 @@ void GeminiBrowserAgent::BrowserDestroyed(Browser* browser) {
     identity_manager_ = nullptr;
   }
 
+  authentication_service_ = nullptr;
   browser->RemoveObserver(this);
 }
 
@@ -543,19 +553,15 @@ gemini::EntryPoint GeminiBrowserAgent::GetEntryPoint() const {
 }
 
 void GeminiBrowserAgent::ConfigureGemini() {
-  ProfileIOS* profile = browser_->GetProfile();
-  if (!profile) {
-    return;
-  }
-  AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  if (!auth_service || !auth_service->HasPrimaryIdentity()) {
+  if (!authentication_service_ ||
+      !authentication_service_->HasPrimaryIdentity()) {
     return;
   }
 
+  ProfileIOS* profile = browser_->GetProfile();
   GeminiStartupConfiguration* config =
       [[GeminiStartupConfiguration alloc] init];
-  config.authService = auth_service;
+  config.authService = authentication_service_;
   config.linkOpeningHandler = link_opening_handler_;
   config.imageRemixEnabled =
       gemini::IsFeatureAvailable(gemini::Feature::kImageRemix, profile);
