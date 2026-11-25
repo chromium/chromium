@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/account_switching_manager.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
@@ -32,6 +33,7 @@ AccountSwitchingManagerFactory* AccountSwitchingManagerFactory::GetInstance() {
 AccountSwitchingManagerFactory::AccountSwitchingManagerFactory()
     : ProfileKeyedServiceFactory("AccountSwitchingManager",
                                  ProfileSelections::BuildForRegularProfile()) {
+  DependsOn(ChromeSigninClientFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(AccountPreviewDataServiceFactory::GetInstance());
 }
@@ -46,7 +48,10 @@ AccountSwitchingManagerFactory::BuildServiceInstanceForBrowserContext(
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<signin::AccountSwitchingManager>(profile->GetPrefs());
+  return std::make_unique<signin::AccountSwitchingManager>(
+      profile->GetPrefs(), ChromeSigninClientFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile),
+      AccountPreviewDataServiceFactory::GetForProfile(profile));
 }
 
 void AccountSwitchingManagerFactory::RegisterProfilePrefs(

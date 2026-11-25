@@ -12,16 +12,37 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/account_switching_manager_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
+#include "components/signin/core/browser/test_account_preview_data_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -339,8 +360,11 @@ TEST_F(AccountSwitchingManagerTest,
   // Verify `Shutdown()` cancels an in-progress switch without running the
   // callback or suppressing the pair.
   {
-    auto standalone_manager =
-        std::make_unique<AccountSwitchingManager>(profile_->GetPrefs());
+    auto standalone_manager = std::make_unique<AccountSwitchingManager>(
+        profile_->GetPrefs(),
+        ChromeSigninClientFactory::GetForProfile(profile_.get()),
+        IdentityManagerFactory::GetForProfile(profile_.get()),
+        AccountPreviewDataServiceFactory::GetForProfile(profile_.get()));
     base::MockOnceClosure shutdown_callback;
     EXPECT_CALL(shutdown_callback, Run()).Times(0);
     ASSERT_TRUE(standalone_manager->StartSwitching(account_a_, account_b_,
@@ -354,8 +378,11 @@ TEST_F(AccountSwitchingManagerTest,
   // Verify destroying the manager directly while a switch is active also drops
   // the callback without suppressing the pair.
   {
-    auto standalone_manager =
-        std::make_unique<AccountSwitchingManager>(profile_->GetPrefs());
+    auto standalone_manager = std::make_unique<AccountSwitchingManager>(
+        profile_->GetPrefs(),
+        ChromeSigninClientFactory::GetForProfile(profile_.get()),
+        IdentityManagerFactory::GetForProfile(profile_.get()),
+        AccountPreviewDataServiceFactory::GetForProfile(profile_.get()));
     base::MockOnceClosure destroy_callback;
     EXPECT_CALL(destroy_callback, Run()).Times(0);
     ASSERT_TRUE(standalone_manager->StartSwitching(account_a_, account_b_,
@@ -526,6 +553,366 @@ TEST_F(AccountSwitchingManagerTest, RegularAndOffTheRecordProfiles) {
   std::unique_ptr<TestingProfile> guest_profile = guest_builder.Build();
   EXPECT_EQ(AccountSwitchingManagerFactory::GetForProfile(guest_profile.get()),
             nullptr);
+}
+
+class AccountSwitchingManagerEligibilityTest : public testing::Test {
+ public:
+  AccountSwitchingManagerEligibilityTest() = default;
+
+  void SetUp() override {
+    ASSERT_TRUE(profile_manager_.SetUp());
+
+    TestingProfile::TestingFactories factories =
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories();
+    factories.emplace_back(
+        AccountPreviewDataServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<TestAccountPreviewDataService>();
+            }));
+
+    profile_ = profile_manager_.CreateTestingProfile("Profile 1",
+                                                     std::move(factories));
+    other_profile_ = profile_manager_.CreateTestingProfile("Profile 2");
+
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
+    preview_service_ = static_cast<TestAccountPreviewDataService*>(
+        AccountPreviewDataServiceFactory::GetForProfile(profile_));
+    manager_ = AccountSwitchingManagerFactory::GetForProfile(profile_);
+    ASSERT_NE(preview_service_, nullptr);
+    ASSERT_NE(manager_, nullptr);
+
+    primary_account_ = identity_test_env()->MakePrimaryAccountAvailable(
+        "primary@gmail.com", ConsentLevel::kSignin);
+    secondary_account_ =
+        identity_test_env()->MakeAccountAvailable("secondary@gmail.com");
+    third_account_ =
+        identity_test_env()->MakeAccountAvailable("third@gmail.com");
+
+    // Stamp the primary account as signed in 28+ days ago so tests start in an
+    // eligible baseline state.
+    SigninPrefs(*profile_->GetPrefs())
+        .SetChromeLastSigninTime(
+            primary_account_.GetGaiaId(),
+            base::Time::Now() -
+                AccountSwitchingManager::kPrimaryAccountSigninGracePeriod);
+
+    // Record `primary_account_` on Profile 1's own attributes entry to mirror
+    // real multi-profile state.
+    ProfileAttributesEntry* profile_entry = GetProfileEntry(profile_);
+    ASSERT_NE(profile_entry, nullptr);
+    profile_entry->SetAuthInfo(primary_account_.GetGaiaId(),
+                               u"primary@gmail.com",
+                               /*is_consented_primary_account=*/false);
+  }
+
+  void TearDown() override {
+    manager_ = nullptr;
+    preview_service_ = nullptr;
+    identity_test_env_adaptor_.reset();
+    profile_ = nullptr;
+    other_profile_ = nullptr;
+  }
+
+ protected:
+  IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_adaptor_->identity_test_env();
+  }
+
+  ProfileAttributesEntry* GetProfileEntry(Profile* profile) {
+    return profile_manager_.profile_manager()
+        ->GetProfileAttributesStorage()
+        .GetProfileAttributesWithPath(profile->GetPath());
+  }
+
+  AccountPreviewDataService::AccountPreviewPreference MakePreference(
+      const GaiaId& gaia_id) const {
+    AccountPreviewDataService::AccountPreviewPreference pref;
+    pref.gaia_id = gaia_id;
+    pref.preferred_data_types.push_back(
+        {syncer::PASSWORDS, SyncDataQuartile::kAboveQ3});
+    pref.other_device_info.form_factor =
+        sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+    pref.other_device_info.enabled_data_types = {syncer::PASSWORDS};
+    return pref;
+  }
+
+  struct FeatureInitializer {
+    FeatureInitializer() {
+      feature_list.InitWithFeatures(
+          {switches::kEnableAccountPreviewData,
+           switches::kEnableAccountPreviewSwitchingAccount},
+          {});
+    }
+    base::test::ScopedFeatureList feature_list;
+  } feature_initializer_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<TestingProfile> other_profile_ = nullptr;
+  raw_ptr<TestAccountPreviewDataService> preview_service_ = nullptr;
+  raw_ptr<AccountSwitchingManager> manager_ = nullptr;
+
+  AccountInfo primary_account_;
+  AccountInfo secondary_account_;
+  AccountInfo third_account_;
+};
+
+TEST_F(AccountSwitchingManagerEligibilityTest,
+       TargetAccountSignedInOnOtherProfileBlocksPromoAndSwitching) {
+  const GaiaId primary_gaia = primary_account_.GetGaiaId();
+  const GaiaId secondary_gaia = secondary_account_.GetGaiaId();
+  const GaiaId third_gaia = third_account_.GetGaiaId();
+
+  EXPECT_TRUE(manager_->CanShowPromo(primary_gaia, secondary_gaia));
+
+  // Sign `secondary_gaia` into `other_profile_` as primary.
+  ProfileAttributesEntry* other_entry = GetProfileEntry(other_profile_);
+  ASSERT_NE(other_entry, nullptr);
+  other_entry->SetAuthInfo(secondary_gaia, u"secondary@gmail.com",
+                           /*is_consented_primary_account=*/false);
+
+  // Both promo eligibility and switching are blocked for `secondary_gaia`.
+  EXPECT_FALSE(manager_->CanShowPromo(primary_gaia, secondary_gaia));
+  base::MockOnceClosure rejected_callback;
+  EXPECT_CALL(rejected_callback, Run()).Times(0);
+  EXPECT_FALSE(manager_->StartSwitching(primary_gaia, secondary_gaia,
+                                        rejected_callback.Get()));
+
+  // Unrelated accounts not signed in on another profile remain eligible.
+  EXPECT_TRUE(manager_->CanShowPromo(primary_gaia, third_gaia));
+
+  // Even `SkipCooldown` does not bypass the multi-profile structural guard.
+  {
+    base::test::ScopedFeatureList skip_cooldown_features;
+    skip_cooldown_features.InitAndEnableFeatureWithParameters(
+        switches::kEnableAccountPreviewSwitchingAccount,
+        {{switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
+          "true"}});
+    EXPECT_FALSE(manager_->CanShowPromo(primary_gaia, secondary_gaia));
+    EXPECT_FALSE(manager_->StartSwitching(primary_gaia, secondary_gaia));
+  }
+
+  // Omitted ephemeral profiles are ignored by
+  // `IsAccountSignedInOnOtherProfile`.
+  other_entry->SetIsEphemeral(true);
+  other_entry->SetIsOmitted(true);
+  EXPECT_TRUE(manager_->CanShowPromo(primary_gaia, secondary_gaia));
+  other_entry->SetIsOmitted(false);
+  other_entry->SetIsEphemeral(false);
+  EXPECT_FALSE(manager_->CanShowPromo(primary_gaia, secondary_gaia));
+
+  // Signing `secondary_gaia` out of `other_profile_` restores eligibility.
+  other_entry->SetAuthInfo(GaiaId(), std::u16string(),
+                           /*is_consented_primary_account=*/false);
+  EXPECT_TRUE(manager_->CanShowPromo(primary_gaia, secondary_gaia));
+}
+
+TEST_F(AccountSwitchingManagerEligibilityTest,
+       GetEligibleAccountForSwitchingReturnsValidCandidate) {
+  const auto pref = MakePreference(secondary_account_.GetGaiaId());
+  preview_service_->SetPreferredAccountForSwitching(pref);
+
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), pref);
+}
+
+TEST_F(
+    AccountSwitchingManagerEligibilityTest,
+    GetEligibleAccountForSwitchingFiltersStaleCandidateSignedInOnOtherProfile) {
+  const auto stale_pref = MakePreference(secondary_account_.GetGaiaId());
+  preview_service_->SetPreferredAccountForSwitching(stale_pref);
+  ASSERT_EQ(manager_->GetEligibleAccountForSwitching(), stale_pref);
+
+  // Simulate the user signing into `secondary_account_` as primary in another
+  // Chrome profile after `prefs::kAccountPreviewSwitchingPreference` was
+  // computed, leaving `AccountPreviewDataService` returning a stale candidate.
+  ProfileAttributesEntry* other_entry = GetProfileEntry(other_profile_);
+  ASSERT_NE(other_entry, nullptr);
+  other_entry->SetAuthInfo(secondary_account_.GetGaiaId(),
+                           u"secondary@gmail.com",
+                           /*is_consented_primary_account=*/false);
+
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+
+  // `SkipCooldown` must still filter out the stale multi-profile candidate.
+  {
+    base::test::ScopedFeatureList skip_cooldown_features;
+    skip_cooldown_features.InitAndEnableFeatureWithParameters(
+        switches::kEnableAccountPreviewSwitchingAccount,
+        {{switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
+          "true"}});
+    EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+  }
+
+  // Omitting `other_profile_` or signing out restores eligibility.
+  other_entry->SetIsEphemeral(true);
+  other_entry->SetIsOmitted(true);
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), stale_pref);
+  other_entry->SetIsOmitted(false);
+  other_entry->SetIsEphemeral(false);
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+
+  other_entry->SetAuthInfo(GaiaId(), std::u16string(),
+                           /*is_consented_primary_account=*/false);
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), stale_pref);
+}
+
+TEST_F(AccountSwitchingManagerEligibilityTest,
+       GetEligibleAccountForSwitchingFiltersStaleOrIneligibleState) {
+  // No candidate from `AccountPreviewDataService`.
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+
+  // Empty Gaia ID candidate is rejected.
+  preview_service_->SetPreferredAccountForSwitching(MakePreference(GaiaId()));
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+
+  // Valid secondary candidate is eligible.
+  const auto valid_pref = MakePreference(secondary_account_.GetGaiaId());
+  preview_service_->SetPreferredAccountForSwitching(valid_pref);
+  ASSERT_EQ(manager_->GetEligibleAccountForSwitching(), valid_pref);
+
+  // Disabled feature flag blocks eligibility.
+  {
+    base::test::ScopedFeatureList disabled_features;
+    disabled_features.InitAndDisableFeature(
+        switches::kEnableAccountPreviewSwitchingAccount);
+    EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+  }
+
+  // Persistent refresh token error on the candidate filters it out.
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      secondary_account_.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+
+  // Clearing the error restores eligibility.
+  identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      secondary_account_.GetAccountId(),
+      GoogleServiceAuthError::AuthErrorNone());
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), valid_pref);
+
+  // Promo throttling / pair suppression and primary-account state are enforced
+  // separately by `CanShowPromo()`, not by `GetEligibleAccountForSwitching()`.
+  SigninPrefs(*profile_->GetPrefs())
+      .SetAccountSwitchingPromoSuppressedBySwitch(
+          secondary_account_.GetGaiaId(), primary_account_.GetGaiaId());
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), valid_pref);
+  EXPECT_FALSE(manager_->CanShowPromo(primary_account_.GetGaiaId(),
+                                      secondary_account_.GetGaiaId()));
+}
+
+TEST_F(AccountSwitchingManagerEligibilityTest,
+       GetEligibleAccountForSwitchingFiltersManagedTargetAccount) {
+  const auto pref = MakePreference(secondary_account_.GetGaiaId());
+  preview_service_->SetPreferredAccountForSwitching(pref);
+  ASSERT_EQ(manager_->GetEligibleAccountForSwitching(), pref);
+
+  // Explicit managed hosted domain filters out the candidate.
+  identity_test_env()->UpdateAccountInfoForAccount(
+      AccountInfo::Builder(secondary_account_)
+          .SetHostedDomain("example.com")
+          .Build());
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+
+  // Unknown management status on a potentially enterprise domain fails closed.
+  AccountInfo custom_account =
+      identity_test_env()->MakeAccountAvailable("custom@company.com");
+  ASSERT_EQ(custom_account.IsManaged(), Tribool::kUnknown);
+  const auto custom_pref = MakePreference(custom_account.GetGaiaId());
+  preview_service_->SetPreferredAccountForSwitching(custom_pref);
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+
+  // Flex Org account (`IsManaged() == Tribool::kFalse` but
+  // `IsMemberOfFlexOrg() == true`) also filters out the candidate.
+  custom_account = AccountInfo::Builder(custom_account)
+                       .SetHostedDomain(signin::constants::kNoHostedDomainFound)
+                       .Build();
+  AccountCapabilitiesTestMutator(&custom_account)
+      .set_is_subject_to_enterprise_features(true);
+  identity_test_env()->UpdateAccountInfoForAccount(custom_account);
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+
+  // Confirmed consumer non-well-known account is eligible.
+  AccountCapabilitiesTestMutator(&custom_account)
+      .set_is_subject_to_enterprise_features(false);
+  identity_test_env()->UpdateAccountInfoForAccount(custom_account);
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), custom_pref);
+}
+
+TEST_F(AccountSwitchingManagerEligibilityTest,
+       GetEligibleAccountForSwitchingFiltersChildTargetAccount) {
+  const auto pref = MakePreference(secondary_account_.GetGaiaId());
+  preview_service_->SetPreferredAccountForSwitching(pref);
+  ASSERT_EQ(manager_->GetEligibleAccountForSwitching(), pref);
+
+  // Child target account is filtered out.
+  identity_test_env()->UpdateAccountInfoForAccount(
+      AccountInfo::Builder(secondary_account_)
+          .SetIsChildAccount(Tribool::kTrue)
+          .Build());
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+  identity_test_env()->UpdateAccountInfoForAccount(
+      AccountInfo::Builder(secondary_account_)
+          .SetIsChildAccount(Tribool::kFalse)
+          .Build());
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), pref);
+}
+
+TEST_F(AccountSwitchingManagerEligibilityTest,
+       GetEligibleAccountForSwitchingFiltersRemovedOrUnloadedAccounts) {
+  const auto pref = MakePreference(secondary_account_.GetGaiaId());
+  preview_service_->SetPreferredAccountForSwitching(pref);
+  ASSERT_EQ(manager_->GetEligibleAccountForSwitching(), pref);
+
+  // Removing the candidate's refresh token filters out the stale candidate.
+  identity_test_env()->RemoveRefreshTokenForAccount(
+      secondary_account_.GetAccountId());
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+
+  // Re-adding the candidate restores eligibility.
+  secondary_account_ =
+      identity_test_env()->MakeAccountAvailable("secondary@gmail.com");
+  ASSERT_EQ(manager_->GetEligibleAccountForSwitching(), pref);
+
+  // Resetting refresh tokens to unloaded filters out the candidate.
+  identity_test_env()->ResetToAccountsNotYetLoadedFromDiskState();
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
+}
+
+TEST_F(AccountSwitchingManagerEligibilityTest,
+       SigninDisallowedBlocksPromoAndSwitching) {
+  ASSERT_TRUE(manager_->CanShowPromo(primary_account_.GetGaiaId(),
+                                     secondary_account_.GetGaiaId()));
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  EXPECT_FALSE(manager_->CanShowPromo(primary_account_.GetGaiaId(),
+                                      secondary_account_.GetGaiaId()));
+  EXPECT_FALSE(manager_->StartSwitching(primary_account_.GetGaiaId(),
+                                        secondary_account_.GetGaiaId()));
+
+  // `SkipCooldown` must not bypass `prefs::kSigninAllowed`.
+  base::test::ScopedFeatureList skip_cooldown_features;
+  skip_cooldown_features.InitAndEnableFeatureWithParameters(
+      switches::kEnableAccountPreviewSwitchingAccount,
+      {{switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
+        "true"}});
+  EXPECT_FALSE(manager_->CanShowPromo(primary_account_.GetGaiaId(),
+                                      secondary_account_.GetGaiaId()));
+  EXPECT_FALSE(manager_->StartSwitching(primary_account_.GetGaiaId(),
+                                        secondary_account_.GetGaiaId()));
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       GetEligibleAccountForSwitchingReturnsNulloptWithoutPreviewService) {
+  // Default `TestingProfile` does not instantiate `AccountPreviewDataService`.
+  EXPECT_EQ(manager_->GetEligibleAccountForSwitching(), std::nullopt);
 }
 
 }  // namespace

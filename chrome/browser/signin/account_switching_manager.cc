@@ -20,8 +20,15 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
+#include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 
 namespace signin {
 
@@ -69,13 +76,66 @@ void AccountSwitchingManager::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kAccountSwitchingPromoState);
 }
 
-AccountSwitchingManager::AccountSwitchingManager(PrefService* prefs)
-    : prefs_(CHECK_DEREF(prefs)) {}
+AccountSwitchingManager::AccountSwitchingManager(
+    PrefService* prefs,
+    SigninClient* signin_client,
+    IdentityManager* identity_manager,
+    AccountPreviewDataService* account_preview_data_service)
+    : prefs_(CHECK_DEREF(prefs)),
+      signin_client_(CHECK_DEREF(signin_client)),
+      identity_manager_(CHECK_DEREF(identity_manager)),
+      account_preview_data_service_(account_preview_data_service) {}
 
 AccountSwitchingManager::~AccountSwitchingManager() = default;
 
 void AccountSwitchingManager::Shutdown() {
   active_switch_.reset();
+}
+
+std::optional<AccountPreviewDataService::AccountPreviewPreference>
+AccountSwitchingManager::GetEligibleAccountForSwitching() const {
+  if (!IsFeatureEnabled() || !account_preview_data_service_) {
+    return std::nullopt;
+  }
+
+  if (!identity_manager_->AreRefreshTokensLoaded()) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/585132231): Confirm with product whether a suppressed
+  // `(A, B)` pair should fall back to a third eligible secondary account `C`.
+  std::optional<AccountPreviewDataService::AccountPreviewPreference> candidate =
+      account_preview_data_service_->GetPreferredAccountForSwitching();
+  if (!candidate.has_value() || candidate->gaia_id.empty()) {
+    return std::nullopt;
+  }
+
+  // Validate prompt-time candidate freshness in `IdentityManager`: the target
+  // account must remain non-managed, non-child, and have a valid refresh token
+  // in this profile.
+  const AccountInfo target_account_info =
+      identity_manager_->FindExtendedAccountInfoByGaiaId(candidate->gaia_id);
+  if (target_account_info.IsEmpty() ||
+      !identity_manager_->HasAccountWithRefreshToken(
+          target_account_info.GetAccountId()) ||
+      identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+          target_account_info.GetAccountId()) ||
+      target_account_info.IsManaged() == Tribool::kTrue ||
+      target_account_info.IsMemberOfFlexOrg() ||
+      (target_account_info.IsManaged() == Tribool::kUnknown &&
+       AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+           target_account_info.GetEmail())) ||
+      target_account_info.IsChildAccount() == Tribool::kTrue) {
+    return std::nullopt;
+  }
+
+  // Prompt-time multi-profile freshness check: never surface a candidate that
+  // has since been signed in as the primary account of another profile.
+  if (signin_client_->IsAccountSignedInOnOtherProfile(candidate->gaia_id)) {
+    return std::nullopt;
+  }
+
+  return candidate;
 }
 
 bool AccountSwitchingManager::CanShowPromo(const GaiaId& primary_gaia_id,
@@ -192,8 +252,16 @@ bool AccountSwitchingManager::CanStartSwitching(
   if (!IsFeatureEnabled()) {
     return false;
   }
+  if (!prefs_->GetBoolean(prefs::kSigninAllowed)) {
+    return false;
+  }
   if (primary_gaia_id.empty() || target_gaia_id.empty() ||
       primary_gaia_id == target_gaia_id) {
+    return false;
+  }
+  // Prompt-time / switch-time multi-profile freshness check: never promote or
+  // switch to an account already signed in as primary on another profile.
+  if (signin_client_->IsAccountSignedInOnOtherProfile(target_gaia_id)) {
     return false;
   }
   // In-progress switch and active 7-day switch-back grace window guards prevent
