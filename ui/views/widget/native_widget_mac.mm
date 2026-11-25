@@ -403,8 +403,9 @@ void NativeWidgetMac::ReparentNativeViewImpl(gfx::NativeView new_parent) {
   CHECK([child.GetNativeNSView() isDescendantOf:widget_view.GetNativeNSView()],
         base::NotFatalUntil::M163);
   CHECK(widget_window, base::NotFatalUntil::M163);
-  CHECK(![widget_window.GetNativeNSWindow() isSheet],
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/589937303): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(![widget_window.GetNativeNSWindow() isSheet]);
 
   NativeWidgetMacNSWindowHost* new_parent_window_host =
       new_parent ? NativeWidgetMacNSWindowHost::GetFromNativeView(new_parent)
