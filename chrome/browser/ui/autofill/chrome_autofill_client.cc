@@ -117,8 +117,6 @@
 #include "components/autofill/content/browser/integrators/custom_form_controls/custom_form_control_script_runner.h"
 #include "components/autofill/content/browser/integrators/email_verifier/email_verifier_delegate.h"
 #include "components/autofill/core/browser/actor/actor_autofill_manager.h"
-#include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
-#include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -536,10 +534,6 @@ AutofillComposeDelegate* ChromeAutofillClient::GetComposeDelegate() {
 AtMemoryQueryService* ChromeAutofillClient::GetAtMemoryQueryService() {
   Profile* profile = GetProfile();
   return AtMemoryQueryServiceFactory::GetForProfile(profile);
-}
-
-AtMemoryManager* ChromeAutofillClient::GetAtMemoryManager() {
-  return at_memory_manager_.get();
 }
 
 personal_context::PersonalContextEligibilityState
@@ -1383,11 +1377,6 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
     autofill_ai_manager_ = std::make_unique<AutofillAiManager>(
         this, StrikeDatabaseFactory::GetForProfile(GetProfile()));
-  }
-  if (base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
-    at_memory_manager_ = std::make_unique<AtMemoryManager>(
-        this, HistoryServiceFactory::GetForProfile(
-                  GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
   }
   // When AutofillCustomFormControlExtraction is enabled,
   // `AutofillManager::OnFormsSeen()` loads the script instead.
