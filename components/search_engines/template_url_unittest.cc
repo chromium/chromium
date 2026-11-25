@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -38,6 +39,12 @@
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "ui/base/device_form_factor.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using base::ASCIIToUTF16;
 using PolicyOrigin = TemplateURLData::PolicyOrigin;
@@ -1576,6 +1583,13 @@ TEST_F(TemplateURLTest, SuggestClient) {
 
 TEST_F(TemplateURLTest, ComposeboxSuggestClient) {
   base::test::ScopedFeatureList features;
+#if BUILDFLAG(IS_ANDROID)
+  // Desktop Android uses the Desktop client, see
+  // `ComposeboxSuggestClientOnDesktopAndroid`.
+  base::android::device_info::set_is_desktop_for_testing(false);
+  base::ScopedClosureRunner reset_is_desktop(base::BindOnce(
+      &base::android::device_info::reset_is_desktop_for_testing));
+#endif  // BUILDFLAG(IS_ANDROID)
   const std::string base_url_str("http://google.com/?");
   const std::string query_params_str("client={google:suggestClient}");
   const std::string full_url_str = base_url_str + query_params_str;
@@ -1601,9 +1615,19 @@ TEST_F(TemplateURLTest, ComposeboxSuggestClient) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-// On Android, the WebUI NTP composebox uses the Desktop client, while the other
-// composeboxes use the mobile one.
-TEST_F(TemplateURLTest, ComposeboxSuggestClientForNtpComposeboxOnAndroid) {
+// On Desktop Android, the composeboxes use the Desktop client.
+TEST_F(TemplateURLTest, ComposeboxSuggestClientOnDesktopAndroid) {
+  if (base::android::device_info::is_tv() ||
+      base::android::device_info::is_automotive()) {
+    // TV and automotive take precedence over desktop in
+    // `ui::GetDeviceFormFactor()`.
+    GTEST_SKIP() << "This test is not applicable to TV and automotive.";
+  }
+  base::android::device_info::set_is_desktop_for_testing(true);
+  base::ScopedClosureRunner reset_is_desktop(base::BindOnce(
+      &base::android::device_info::reset_is_desktop_for_testing));
+  ASSERT_EQ(ui::DEVICE_FORM_FACTOR_DESKTOP, ui::GetDeviceFormFactor());
+
   base::test::ScopedFeatureList features(
       omnibox::kComposeboxUsesChromeComposeClient);
   const std::string base_url_str("http://google.com/?");
@@ -1626,15 +1650,61 @@ TEST_F(TemplateURLTest, ComposeboxSuggestClientForNtpComposeboxOnAndroid) {
             .spec();
       };
 
-  EXPECT_EQ("http://google.com/?client=chrome-compose",
-            get_suggest_url(metrics::OmniboxEventProto::NTP_COMPOSEBOX, ""));
-  // Other composeboxes keep the mobile client.
-  EXPECT_EQ(
-      "http://google.com/?client=chrome-mobile-aim",
-      get_suggest_url(metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX, ""));
-  EXPECT_EQ(
-      "http://google.com/?client=chrome-mobile-aim",
-      get_suggest_url(metrics::OmniboxEventProto::NTP_COMPOSEBOX_PREFETCH, ""));
+  for (const auto page_classification :
+       {metrics::OmniboxEventProto::NTP_COMPOSEBOX,
+        metrics::OmniboxEventProto::NTP_COMPOSEBOX_PREFETCH,
+        metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX,
+        metrics::OmniboxEventProto::SRP_OMNIBOX_COMPOSEBOX,
+        metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX}) {
+    EXPECT_EQ("http://google.com/?client=chrome-compose",
+              get_suggest_url(page_classification, ""))
+        << "page_classification: " << page_classification;
+  }
+  // Delayed context uploads from the NTP composebox still use "chrome-omni".
+  EXPECT_EQ("http://google.com/?client=chrome-omni",
+            get_suggest_url(metrics::OmniboxEventProto::NTP_COMPOSEBOX,
+                            "https://example.com/"));
+}
+
+// On the other Android devices, the composeboxes use the mobile client.
+TEST_F(TemplateURLTest, ComposeboxSuggestClientOnMobileAndroid) {
+  base::android::device_info::set_is_desktop_for_testing(false);
+  base::ScopedClosureRunner reset_is_desktop(base::BindOnce(
+      &base::android::device_info::reset_is_desktop_for_testing));
+  ASSERT_NE(ui::DEVICE_FORM_FACTOR_DESKTOP, ui::GetDeviceFormFactor());
+
+  base::test::ScopedFeatureList features(
+      omnibox::kComposeboxUsesChromeComposeClient);
+  const std::string base_url_str("http://google.com/?");
+  search_terms_data_.set_google_base_url(base_url_str);
+
+  TemplateURLData data;
+  data.SetURL(base_url_str + "client={google:suggestClient}");
+  TemplateURL url(data);
+  ASSERT_TRUE(url.url_ref().IsValid(search_terms_data_));
+
+  auto get_suggest_url =
+      [&](metrics::OmniboxEventProto::PageClassification page_classification,
+          const std::string& current_page_url) {
+        TemplateURLRef::SearchTermsArgs search_terms_args;
+        search_terms_args.request_source = RequestSource::COMPOSEBOX;
+        search_terms_args.page_classification = page_classification;
+        search_terms_args.current_page_url = current_page_url;
+        return GURL(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                     search_terms_data_))
+            .spec();
+      };
+
+  for (const auto page_classification :
+       {metrics::OmniboxEventProto::NTP_COMPOSEBOX,
+        metrics::OmniboxEventProto::NTP_COMPOSEBOX_PREFETCH,
+        metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX,
+        metrics::OmniboxEventProto::SRP_OMNIBOX_COMPOSEBOX,
+        metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX}) {
+    EXPECT_EQ("http://google.com/?client=chrome-mobile-aim",
+              get_suggest_url(page_classification, ""))
+        << "page_classification: " << page_classification;
+  }
   // Delayed context uploads from the NTP composebox still use "chrome-omni".
   EXPECT_EQ("http://google.com/?client=chrome-omni",
             get_suggest_url(metrics::OmniboxEventProto::NTP_COMPOSEBOX,
