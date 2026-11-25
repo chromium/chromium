@@ -477,10 +477,12 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec,
     return base::FeatureList::IsEnabled(features::kGeicApiBundleResource) ||
            base::FeatureList::IsEnabled(features::kGlicCic);
   }
-  // GEiC uses explicit single-tab attachment; tabs created via CreateTab or
-  // link clicks (e.g. Send feedback, Help, citations) should not be auto-pinned
-  // as shared tab context.
-  bool PinOnBindEnabled() const override { return false; }
+  // Whether tabs created via `CreateTab()` or link clicks are auto-pinned as
+  // shared tab context. Gated by `kGeicPinOnBind` for rollout parity with
+  // consumer Gemini.
+  bool PinOnBindEnabled() const override {
+    return base::FeatureList::IsEnabled(features::kGeicPinOnBind);
+  }
   bool CanSwitchToProvider(Profile& profile,
                            GlicProvider target) const override {
     return target == GlicProvider::kGemini &&

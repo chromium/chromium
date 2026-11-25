@@ -182,6 +182,30 @@ class GlicInstanceCoordinatorBrowserTest
     return InvokeWithAutoSubmitPasskeyProvider::GetPassKey();
   }
 
+  tabs::TabInterface* OpenBookmarkTab() {
+    GlicTestTabAddedWaiter waiter(GetProfile());
+#if BUILDFLAG(IS_ANDROID)
+    TabListInterface* tab_list = GetTabListInterface();
+    TabModel* tab_model = static_cast<TabModel*>(tab_list);
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(GetProfile()));
+    web_contents->GetController().LoadURL(
+        GURL("about:blank"), content::Referrer(),
+        ui::PAGE_TRANSITION_AUTO_BOOKMARK, std::string());
+    tabs::TabInterface* tab = tab_model->CreateTab(
+        nullptr, std::move(web_contents), -1,
+        TabModel::TabLaunchType::FROM_BOOKMARK_BAR_BACKGROUND, false);
+    tab_model->ActivateTab(tab->GetHandle());
+#else
+    NavigateParams params(PlatformBrowserTest::browser(), GURL("about:blank"),
+                          ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
+    Navigate(&params);
+#endif
+    return waiter.Wait();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -357,31 +381,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
 
   // Simulate opening a bookmark in a new foreground tab.
-  GlicTestTabAddedWaiter waiter(GetProfile());
-
-#if BUILDFLAG(IS_ANDROID)
-  TabListInterface* tab_list = GetTabListInterface();
-  TabModel* tab_model = static_cast<TabModel*>(tab_list);
-  Profile* profile = GetProfile();
-
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContents::Create(content::WebContents::CreateParams(profile));
-  web_contents->GetController().LoadURL(
-      GURL("about:blank"), content::Referrer(),
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK, std::string());
-
-  tabs::TabInterface* tab2 = tab_model->CreateTab(
-      nullptr, std::move(web_contents), -1,
-      TabModel::TabLaunchType::FROM_BOOKMARK_BAR_BACKGROUND, false);
-  tab_model->ActivateTab(tab2->GetHandle());
-#else
-  NavigateParams params(PlatformBrowserTest::browser(), GURL("about:blank"),
-                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
-  Navigate(&params);
-#endif
-
-  tabs::TabInterface* tab2_result = waiter.Wait();
+  tabs::TabInterface* tab2_result = OpenBookmarkTab();
+  ASSERT_TRUE(tab2_result);
 
   EXPECT_EQ(instance, coordinator().GetInstanceImplForTab(tab2_result));
   EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, tab2_result));
@@ -2472,7 +2473,7 @@ class GlicInstanceCoordinatorGeicBrowserTest
         {
             {features::kGeic, {}},
         },
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kGeicPinOnBind});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -2504,10 +2505,121 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorGeicBrowserTest,
   ASSERT_TRUE(new_tab);
 
   EXPECT_EQ(GetInstanceForTab(new_tab), instance);
-  EXPECT_TRUE(instance->IsShowing());
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, new_tab));
   EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
       original_tab->GetHandle()));
   EXPECT_FALSE(
+      instance->GetSharingManagerInternal().IsTabPinned(new_tab->GetHandle()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorGeicBrowserTest,
+                       LinkClickDoesNotPinNewTabInGeic) {
+  SKIP_TEST_FOR_NON_DESKTOP_ANDROID();
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  tabs::TabInterface* original_tab = GetTabListInterface()->GetActiveTab();
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  SimulateLinkClick(original_tab, /*ctrl_key=*/true, /*shift_key=*/true);
+  tabs::TabInterface* new_tab = waiter.Wait();
+  ASSERT_TRUE(new_tab);
+
+  EXPECT_EQ(GetInstanceForTab(new_tab), instance);
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, new_tab));
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+  EXPECT_FALSE(
+      instance->GetSharingManagerInternal().IsTabPinned(new_tab->GetHandle()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorGeicBrowserTest,
+                       BookmarkDoesNotPinNewTabInGeic) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  tabs::TabInterface* original_tab = GetTabListInterface()->GetActiveTab();
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+
+  tabs::TabInterface* new_tab = OpenBookmarkTab();
+  ASSERT_TRUE(new_tab);
+
+  EXPECT_EQ(GetInstanceForTab(new_tab), instance);
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, new_tab));
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+  EXPECT_FALSE(
+      instance->GetSharingManagerInternal().IsTabPinned(new_tab->GetHandle()));
+}
+
+class GlicInstanceCoordinatorGeicPinOnBindBrowserTest
+    : public GlicInstanceCoordinatorGeicBrowserTest {
+ public:
+  GlicInstanceCoordinatorGeicPinOnBindBrowserTest() {
+    pin_on_bind_feature_list_.InitAndEnableFeature(features::kGeicPinOnBind);
+  }
+
+ private:
+  base::test::ScopedFeatureList pin_on_bind_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorGeicPinOnBindBrowserTest,
+                       LinkClickPinsNewTabInGeic) {
+  SKIP_TEST_FOR_NON_DESKTOP_ANDROID();
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  tabs::TabInterface* original_tab = GetTabListInterface()->GetActiveTab();
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  SimulateLinkClick(original_tab, /*ctrl_key=*/true, /*shift_key=*/true);
+  tabs::TabInterface* new_tab = waiter.Wait();
+  ASSERT_TRUE(new_tab);
+
+  EXPECT_EQ(GetInstanceForTab(new_tab), instance);
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, new_tab));
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+  EXPECT_TRUE(
+      instance->GetSharingManagerInternal().IsTabPinned(new_tab->GetHandle()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorGeicPinOnBindBrowserTest,
+                       CreateTabPinsNewTabInGeic) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  tabs::TabInterface* original_tab = GetTabListInterface()->GetActiveTab();
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  instance->CreateTab(GetSimpleTestUrl(),
+                      /*open_in_background=*/false, std::nullopt,
+                      base::DoNothing(), /*show_side_panel=*/true);
+  tabs::TabInterface* new_tab = waiter.Wait();
+  ASSERT_TRUE(new_tab);
+
+  EXPECT_EQ(GetInstanceForTab(new_tab), instance);
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, new_tab));
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+  EXPECT_TRUE(
+      instance->GetSharingManagerInternal().IsTabPinned(new_tab->GetHandle()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorGeicPinOnBindBrowserTest,
+                       BookmarkPinsNewTabInGeic) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  tabs::TabInterface* original_tab = GetTabListInterface()->GetActiveTab();
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+
+  tabs::TabInterface* new_tab = OpenBookmarkTab();
+  ASSERT_TRUE(new_tab);
+
+  EXPECT_EQ(GetInstanceForTab(new_tab), instance);
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, new_tab));
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+  EXPECT_TRUE(
       instance->GetSharingManagerInternal().IsTabPinned(new_tab->GetHandle()));
 }
 

@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
@@ -306,9 +307,12 @@ class GlicApiBrowserTestMixin : public T {
     }
     Profile* profile =
         Profile::FromBrowserContext(glic_guest_frame->GetBrowserContext());
-    init_dict.Set("isGeic",
-                  profile && GlicProviderLatch::GetProviderForTesting(
-                                 *profile) == GlicProvider::kGeminiEnterprise);
+    const bool is_geic =
+        profile && GlicProviderLatch::GetProviderForTesting(*profile) ==
+                       GlicProvider::kGeminiEnterprise;
+    init_dict.Set(
+        "pinOnBindEnabled",
+        !is_geic || base::FeatureList::IsEnabled(features::kGeicPinOnBind));
     std::string test_init_data = base::WriteJson(init_dict).value_or("");
     // Store `frame_id` early to avoid evaluation-order use-after-free if
     // `EvalJs` yields and the frame is destroyed.

@@ -112,6 +112,10 @@ glic::GlicIndigoFeatureParams PopulateIndigoFeatureParams(
 // GlicFeature::kDynamicChromeTools.
 BASE_DECLARE_FEATURE(kGlicDynamicChromeTools);
 
+// GEiC pins daisy-chained tabs like Gemini in Chrome (b/553983194).
+// See `GlicProviderSpec::PinOnBindEnabled()`.
+BASE_DECLARE_FEATURE(kGeicPinOnBind);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_PROVIDER_FEATURES_H_

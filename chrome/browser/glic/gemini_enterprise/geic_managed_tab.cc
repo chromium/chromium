@@ -150,7 +150,7 @@ bool GeicManagedTab::Open(const GURL& url, ReuseMode reuse_mode) {
       if (auto* tab_list = TabListInterface::From(browser)) {
         if (reuse_mode == ReuseMode::kNavigateAndActivate) {
           content::NavigationController::LoadURLParams load_params(url);
-          load_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+          load_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
           existing_tab->GetContents()->GetController().LoadURLWithParams(
               load_params);
         }
@@ -172,8 +172,11 @@ bool GeicManagedTab::Open(const GURL& url, ReuseMode reuse_mode) {
     }
   }
 
+  // Use `AUTO_TOPLEVEL` (matching `OpenGlicSettingsPage()`) so Chrome-managed
+  // auth tabs are not treated as bookmark navigations and daisy-chained on
+  // Desktop.
   auto params = std::make_unique<NavigateParams>(
-      profile_, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+      profile_, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params->browser = browser_window;
   params->disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   params->user_gesture = false;

@@ -63,6 +63,8 @@ source_set("test_support") {
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic/common",
     "//chrome/browser/glic/gemini_enterprise:guest_url",
+    "//chrome/browser/glic/public:provider",
+    "//chrome/browser/glic/public:provider_features",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window:create_browser_window",

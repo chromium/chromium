@@ -287,7 +287,64 @@ class GlicGeicRolloutStageApiBrowserTest extends GlicGeicApiBrowserTest {
   }
 }
 
+class GlicGeicPinOnBindApiBrowserTest extends GlicGeicApiBrowserTest {
+  async testGeicCreateTabPinOnBind() {
+    assertDefined(this.host.createTab);
+    assertDefined(this.host.getPinnedTabs);
+    const pinnedTabs = observeSequence(this.host.getPinnedTabs());
+    await pinnedTabs.waitFor(tabs => tabs.length === 1);
+
+    const pageUrl = new URL('/glic/test_data/page.html', location.href).href;
+    const pinnedTab = await this.host.createTab(pageUrl, {});
+    const afterCreateTabTabs =
+        await pinnedTabs.waitFor(tabs => tabs.length === 2);
+    assertTrue(afterCreateTabTabs.some(tab => tab.tabId === pinnedTab.tabId));
+  }
+
+  async testGeicLinkClickPinOnBind() {
+    assertDefined(this.host.getPinnedTabs);
+    const pinnedTabs = observeSequence(this.host.getPinnedTabs());
+    await pinnedTabs.waitFor(tabs => tabs.length === 1);
+
+    const link = document.createElement('a');
+    link.setAttribute(
+        'href', new URL('/glic/test_data/page.html', location.href).href);
+    link.setAttribute('target', '_blank');
+    document.body.appendChild(link);
+    link.click();
+
+    const afterLinkTabs = await pinnedTabs.waitFor(tabs => tabs.length === 2);
+    assertEquals(afterLinkTabs.length, 2);
+  }
+
+  async testGeicAuthTabDoesNotPin() {
+    const geic = this.geic;
+    assertDefined(geic.openAuthTab);
+    assertDefined(geic.closeAuthTab);
+    assertEquals(
+        (await geic.openAuthTab({
+          purpose: AuthTabPurpose.SIGN_IN,
+          url: 'https://accounts.google.com/signin',
+        })).result,
+        OpenAuthTabResult.SUCCESS);
+
+    await this.advanceToNextStep();
+
+    assertEquals(
+        (await geic.closeAuthTab({purpose: AuthTabPurpose.SIGN_IN})).result,
+        CloseAuthTabResult.CLOSED_ACTIVE);
+    assertEquals(
+        (await geic.openAuthTab({
+          purpose: AuthTabPurpose.CONNECTOR_OAUTH,
+          url: 'https://vertexaisearch.cloud.google.com/oauth-redirect' +
+              '?continue_uri=https%3A%2F%2Flogin.example.com%2Fauthorize',
+        })).result,
+        OpenAuthTabResult.SUCCESS);
+  }
+}
+
 testMain([
   GlicGeicApiBrowserTest,
   GlicGeicRolloutStageApiBrowserTest,
+  GlicGeicPinOnBindApiBrowserTest,
 ]);

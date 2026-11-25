@@ -1472,23 +1472,24 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.getPanelState);
     assertDefined(this.host.detachPanel);
     assertDefined(this.host.canAttachPanel);
-    const isGeic = Boolean((this.initData as any)?.isGeic);
+    const pinOnBindEnabled = Boolean(this.initData?.pinOnBindEnabled);
     const link = document.createElement('a');
     link.setAttribute('href', 'https://www.chromium.org');
     link.setAttribute('target', '_blank');
     document.body.appendChild(link);
     link.click();
-    if (isGeic) {
-      // In GEiC, the opened tab is daisy-chained (bound) but not auto-pinned.
+    if (pinOnBindEnabled) {
+      // The opened tab should be pinned.
+      await observeSequence(this.host.getPinnedTabs())
+          .waitFor(tabs => tabs.length === 2);
+    } else {
+      // When pin-on-bind is disabled, the opened tab is daisy-chained (bound)
+      // but not auto-pinned.
       await observeSequence(this.host.getFocusedTabStateV2())
           .waitFor(
               state => state.hasNoFocus?.tabFocusCandidateData?.url ===
                   'https://www.chromium.org/');
       assertEquals(1, this.host.getPinnedTabs().getCurrentValue()?.length);
-    } else {
-      // The opened tab should be pinned.
-      await observeSequence(this.host.getPinnedTabs())
-          .waitFor(tabs => tabs.length === 2);
     }
 
     // Detach panel
@@ -1747,23 +1748,24 @@ class ApiTests extends ApiTestFixtureBase {
   async testCreateTabByClickingOnLinkDaisyChains() {
     assertDefined(this.host.getFocusedTabStateV2);
     assertDefined(this.host.getPinnedTabs);
-    const isGeic = Boolean((this.initData as any)?.isGeic);
+    const pinOnBindEnabled = Boolean(this.initData?.pinOnBindEnabled);
     const link = document.createElement('a');
     link.setAttribute('href', 'https://www.chromium.org');
     link.setAttribute('target', '_blank');
     document.body.appendChild(link);
     link.click();
-    if (isGeic) {
-      // In GEiC, the opened tab is daisy-chained (bound) but not auto-pinned.
+    if (pinOnBindEnabled) {
+      // The opened tab should be pinned.
+      await observeSequence(this.host.getPinnedTabs())
+          .waitFor(tabs => tabs.length === 2);
+    } else {
+      // When pin-on-bind is disabled, the opened tab is daisy-chained (bound)
+      // but not auto-pinned.
       await observeSequence(this.host.getFocusedTabStateV2())
           .waitFor(
               state => state.hasNoFocus?.tabFocusCandidateData?.url ===
                   'https://www.chromium.org/');
       assertEquals(1, this.host.getPinnedTabs().getCurrentValue()?.length);
-    } else {
-      // The opened tab should be pinned.
-      await observeSequence(this.host.getPinnedTabs())
-          .waitFor(tabs => tabs.length === 2);
     }
   }
 

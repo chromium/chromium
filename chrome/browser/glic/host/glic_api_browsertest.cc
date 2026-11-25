@@ -2932,13 +2932,18 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithNewTabDaisyChain,
   // 8. Open Glic in the new (third) tab.
   ASSERT_OK_AND_ASSIGN(auto* tab2_instance, WaitForGlicOpen(tab2));
 
-  // In GEiC, daisy-chained tabs are not auto-pinned, and attached mode only
-  // attributes focused-tab input metrics to pinned tabs.
-  if (IsGeic()) {
+  // When pin-on-bind is disabled, daisy-chained tabs are not auto-pinned, and
+  // attached mode only attributes focused-tab input metrics to pinned tabs.
+  const bool expect_pin_on_bind =
+      !IsGeic() || base::FeatureList::IsEnabled(features::kGeicPinOnBind);
+  if (!expect_pin_on_bind) {
     EXPECT_FALSE(
         tab2_instance->GetSharingManager()->IsTabPinned(tab2->GetHandle()));
     tab2_instance->GetSharingManager()->PinTabs({tab2->GetHandle()},
                                                 GlicPinTrigger::kContextMenu);
+  } else {
+    EXPECT_TRUE(
+        tab2_instance->GetSharingManager()->IsTabPinned(tab2->GetHandle()));
   }
 
   // 9. Trigger "inputSubmitted" in the third tab's panel.

@@ -186,6 +186,42 @@ TEST(GlicProviderSpecImplTest, OnlyGeminiSupportsOsEntryPoints) {
                    ->SupportsFeature(GlicFeature::kOsEntryPoints));
 }
 
+TEST(GlicProviderSpecImplTest, GeminiPinOnBindEnabledAlwaysTrue) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kGeicPinOnBind);
+    EXPECT_TRUE(
+        CreateGlicProviderSpec(GlicProvider::kGemini, {})->PinOnBindEnabled());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kGeicPinOnBind);
+    EXPECT_TRUE(
+        CreateGlicProviderSpec(GlicProvider::kGemini, {})->PinOnBindEnabled());
+  }
+}
+
+TEST(GlicProviderSpecImplTest, GeminiEnterprisePinOnBindDisabledByDefault) {
+  EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                   ->PinOnBindEnabled());
+}
+
+TEST(GlicProviderSpecImplTest,
+     GeminiEnterprisePinOnBindEnabledFollowsGeicPinOnBind) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kGeicPinOnBind);
+    EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                     ->PinOnBindEnabled());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kGeicPinOnBind);
+    EXPECT_TRUE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                    ->PinOnBindEnabled());
+  }
+}
+
 bool GeminiSupportsFeature(GlicFeature feature) {
   return CreateGlicProviderSpec(GlicProvider::kGemini, {})
       ->SupportsFeature(feature);

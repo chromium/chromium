@@ -149,4 +149,6 @@ BASE_FEATURE(kGlicDynamicChromeTools,
 #endif
 );
 
+BASE_FEATURE(kGeicPinOnBind, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -27,6 +27,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -118,6 +119,14 @@ IN_PROC_BROWSER_TEST_F(GlicGeicApiBrowserTest,
   tabs::TabInterface* auth_tab = tab_list->GetActiveTab();
   ASSERT_TRUE(auth_tab);
   EXPECT_NE(auth_tab->GetHandle(), window_open_handle);
+  // TODO(b/590221698): Enable on Android. `AUTO_TOPLEVEL` still maps to
+  // `FROM_CHROME_UI` -> `MaybeDaisyChainNewTab()` on Desktop Android, so the
+  // auth tab still daisy-chains there.
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(GetInstanceForTab(auth_tab), nullptr);
+  EXPECT_FALSE(GetOnlyGlicInstance()->GetSharingManager()->IsTabPinned(
+      auth_tab->GetHandle()));
+#endif  // !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(auth_tab->GetContents()->GetVisibleURL(),
             GURL("https://accounts.google.com/signin"));
 
@@ -456,6 +465,91 @@ IN_PROC_BROWSER_TEST_F(GlicGeicRolloutStageApiBrowserTest,
       GetProfile()->GetPrefs()->GetString(geic::prefs::kGeicSelectedStageId),
       "autopush");
 }
+
+class GlicGeicPinOnBindApiBrowserTest : public GlicGeicApiBrowserTest {
+ public:
+  GlicGeicPinOnBindApiBrowserTest() {
+    pin_on_bind_feature_list_.InitAndEnableFeature(features::kGeicPinOnBind);
+  }
+
+ private:
+  base::test::ScopedFeatureList pin_on_bind_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicGeicPinOnBindApiBrowserTest,
+                       testGeicCreateTabPinOnBind) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  tabs::TabInterface* original_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(original_tab);
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+
+  // Calling `createTab()` pins the new tab when `kGeicPinOnBind` is enabled.
+  ExecuteJsTest();
+  ASSERT_EQ(GetTabListInterface()->GetTabCount(), 2);
+  tabs::TabInterface* pinned_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(pinned_tab);
+  EXPECT_NE(pinned_tab, original_tab);
+  EXPECT_EQ(GetInstanceForTab(pinned_tab), instance);
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      pinned_tab->GetHandle()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicGeicPinOnBindApiBrowserTest,
+                       testGeicLinkClickPinOnBind) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  tabs::TabInterface* original_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(original_tab);
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+
+  ExecuteJsTest();
+  ASSERT_EQ(GetTabListInterface()->GetTabCount(), 2);
+  tabs::TabInterface* new_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(new_tab);
+  EXPECT_NE(new_tab, original_tab);
+  EXPECT_EQ(GetInstanceForTab(new_tab), instance);
+  EXPECT_TRUE(
+      instance->GetSharingManagerInternal().IsTabPinned(new_tab->GetHandle()));
+}
+
+// TODO(b/590221698): Enable on Android. `AUTO_TOPLEVEL` still maps to
+// `FROM_CHROME_UI` -> `MaybeDaisyChainNewTab()` on Desktop Android, so the
+// auth tab still daisy-chains there.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicGeicPinOnBindApiBrowserTest,
+                       testGeicAuthTabDoesNotPin) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  tabs::TabInterface* original_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(original_tab);
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(
+      original_tab->GetHandle()));
+
+  // Step 1: opening a sign-in tab while kGeicPinOnBind is enabled must neither
+  // daisy-chain/bind it nor auto-pin it (nor create a second instance).
+  ExecuteJsTest();
+  ASSERT_EQ(GetTabListInterface()->GetTabCount(), 2);
+  tabs::TabInterface* signin_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(signin_tab);
+  EXPECT_NE(signin_tab, original_tab);
+  EXPECT_EQ(GetOnlyGlicInstance(), instance);
+  EXPECT_EQ(GetInstanceForTab(signin_tab), nullptr);
+  EXPECT_FALSE(instance->GetSharingManagerInternal().IsTabPinned(
+      signin_tab->GetHandle()));
+
+  // Step 2: closing the sign-in tab restores focus to `original_tab`; opening a
+  // connector OAuth tab from it must also neither bind nor auto-pin.
+  ContinueJsTest();
+  ASSERT_EQ(GetTabListInterface()->GetTabCount(), 2);
+  tabs::TabInterface* oauth_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(oauth_tab);
+  EXPECT_NE(oauth_tab, original_tab);
+  EXPECT_EQ(GetOnlyGlicInstance(), instance);
+  EXPECT_EQ(GetInstanceForTab(oauth_tab), nullptr);
+  EXPECT_FALSE(instance->GetSharingManagerInternal().IsTabPinned(
+      oauth_tab->GetHandle()));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace glic

@@ -29,6 +29,7 @@ export const longWaitTimeMs = 120000;
 export interface TestInitData {
   embeddedTestServerUrl: string;
   embeddedHttpsTestServerUrl?: string;
+  pinOnBindEnabled?: boolean;
 }
 
 export function getTestName(): string|null {

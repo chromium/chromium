@@ -25,10 +25,12 @@ source_set("provider_features") {
     "//chrome/browser/glic:browser_tests",
     "//chrome/browser/glic:provider_spec_impl",  # glic_provider_spec_impl.cc
     "//chrome/browser/glic/browser_ui:unit_tests",
+    "//chrome/browser/glic/gemini_enterprise:browser_tests",
     "//chrome/browser/glic/navigation_capture:browser_tests",
     "//chrome/browser/glic/selection:browser_tests",
     "//chrome/browser/glic/selection:interactive_ui_tests",
     "//chrome/browser/glic/selection:unit_tests",
+    "//chrome/browser/glic/test_support",
     "//chrome/browser/sharing:unit_tests",
     "//chrome/test:test_support",  # testonly = true
     "//chrome/test/data/webui:browser_tests",
