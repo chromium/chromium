@@ -34,6 +34,10 @@ class WebContents;
 struct OpenURLParams;
 }  // namespace content
 
+namespace input {
+struct NativeWebKeyboardEvent;
+}  // namespace input
+
 class BrowserWindowInterface;
 class InfoBarContainerView;
 class Profile;
@@ -125,6 +129,9 @@ class ContextualTasksWebView
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
   std::optional<gfx::Rect> GetWindowBoundsInScreen() override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
+  void ContentsZoomChange(bool zoom_in) override;
 
   // content::WebContentsObserver:
   void DidStartNavigation(

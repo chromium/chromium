@@ -9,8 +9,10 @@
 #include "base/memory/raw_ref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler_interface.h"
@@ -87,6 +89,7 @@
 #include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -102,6 +105,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/webview/webview.h"
@@ -659,6 +663,78 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectBucketCount("WebsiteSettings.Action.ContextualTasks",
                                      page_info::PAGE_INFO_OPENED, 1);
   histogram_tester.ExpectTotalCount("WebsiteSettings.Action.Default", 0);
+}
+
+// The zoom accelerators only reach the side panel contents through
+// `GetAcceleratorList()`, which omits modifier accelerators on macOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ZoomAcceleratorsZoomFocusedSidePanelContents \
+  DISABLED_ZoomAcceleratorsZoomFocusedSidePanelContents
+#else
+#define MAYBE_ZoomAcceleratorsZoomFocusedSidePanelContents \
+  ZoomAcceleratorsZoomFocusedSidePanelContents
+#endif
+// Regression test for b/547282732: when the side panel contents have focus,
+// the zoom accelerators zoom the side panel contents and not the active tab.
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksSidePanelPermissionDashboardRearchitectureInteractiveUiTest,
+    MAYBE_ZoomAcceleratorsZoomFocusedSidePanelContents) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentWebContentsId);
+
+  SetUpTasks();
+  EXPECT_CALL(mock_active_task_context_provider_observer_,
+              OnContextTabsChanged(testing::_))
+      .Times(AtLeast(1));
+
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+  RunTestSequence(
+      Do([&]() {
+        coordinator->Show(
+            false, omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebView",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelContentWebContentsId,
+                              "SidePanelContentWebView"),
+      Do([&]() {
+        coordinator->GetActiveWebContents()->GetController().LoadURL(
+            GURL("https://www.google.com/search?q=test&udm=50"),
+            content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+      }),
+      WaitForWebContentsNavigation(kSidePanelContentWebContentsId),
+      WithView(kContextualTasksSidePanelWebViewElementId,
+               [](ContextualTasksWebView* web_view) {
+                 web_view->RequestContentViewFocus();
+               }));
+
+  content::WebContents* panel_contents = coordinator->GetActiveWebContents();
+  ASSERT_TRUE(panel_contents);
+  auto* panel_zoom = zoom::ZoomController::FromWebContents(panel_contents);
+  ASSERT_TRUE(panel_zoom);
+  auto* tab_zoom = zoom::ZoomController::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(tab_zoom);
+  ASSERT_TRUE(panel_zoom->IsAtDefaultZoom());
+  ASSERT_TRUE(tab_zoom->IsAtDefaultZoom());
+  const double default_zoom_level = panel_zoom->GetZoomLevel();
+
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_OEM_PLUS, /*control=*/true, /*shift=*/false,
+      /*alt=*/false, /*command=*/false));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return panel_zoom->GetZoomLevel() > default_zoom_level; }));
+  EXPECT_TRUE(tab_zoom->IsAtDefaultZoom());
+
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_0, /*control=*/true, /*shift=*/false, /*alt=*/false,
+      /*command=*/false));
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return panel_zoom->IsAtDefaultZoom(); }));
+  EXPECT_TRUE(tab_zoom->IsAtDefaultZoom());
 }
 
 IN_PROC_BROWSER_TEST_F(

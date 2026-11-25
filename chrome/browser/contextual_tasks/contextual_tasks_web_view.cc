@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_scrim_view.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/constants.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -32,9 +34,12 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "components/zoom/page_zoom.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/global_routing_id.h"
@@ -42,14 +47,18 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/page_zoom.h"
 #include "extensions/browser/view_type_utils.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/base_window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/content_accelerators/accelerator_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -81,6 +90,34 @@ void UpdateToolbarStateForUrl(const GURL& url,
   } else {
     toolbar_ui->SetThreadTitle(std::nullopt);
   }
+}
+
+// Returns the zoom change that the browser's accelerator table binds to
+// `event`, or std::nullopt if `event` is not a zoom accelerator.
+std::optional<content::PageZoom> GetPageZoomForKeyboardEvent(
+    const input::NativeWebKeyboardEvent& event) {
+  if (event.GetType() != blink::WebInputEvent::Type::kRawKeyDown) {
+    return std::nullopt;
+  }
+  const ui::Accelerator accelerator =
+      ui::GetAcceleratorFromNativeWebKeyboardEvent(event);
+  for (const AcceleratorMapping& mapping : GetAcceleratorList()) {
+    if (mapping.keycode != accelerator.key_code() ||
+        mapping.modifiers != accelerator.modifiers()) {
+      continue;
+    }
+    switch (mapping.command_id) {
+      case IDC_ZOOM_PLUS:
+        return content::PAGE_ZOOM_IN;
+      case IDC_ZOOM_MINUS:
+        return content::PAGE_ZOOM_OUT;
+      case IDC_ZOOM_NORMAL:
+        return content::PAGE_ZOOM_RESET;
+      default:
+        return std::nullopt;
+    }
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -241,6 +278,10 @@ void ContextualTasksWebView::SetWebContents(content::WebContents* wc) {
   if (IsContextualTasksSidePanelRearchitectureEnabled()) {
     if (wc) {
       infobars::ContentInfoBarManager::CreateForWebContents(wc);
+      // `WebContents` created for the side panel never go through
+      // `TabHelpers::AttachTabHelpers()`, so attach the `ZoomController` that
+      // `HandleKeyboardEvent()` and `ContentsZoomChange()` zoom through.
+      zoom::ZoomController::CreateForWebContents(wc);
     }
     if (infobar_container_) {
       infobar_container_->ChangeInfoBarManager(
@@ -538,6 +579,34 @@ void ContextualTasksWebView::DidStopLoading() {
     return;
   }
   SetGhostLoaderVisible(false);
+}
+
+bool ContextualTasksWebView::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  // The browser's zoom commands always act on the active tab, so zoom the side
+  // panel contents here, before the accelerator reaches the browser, when they
+  // are what the user is interacting with.
+  // TODO(b/547282732): Support macOS, where accelerators that use a modifier
+  // key are dispatched to the main menu before reaching the `WebContents`.
+  if (IsContextualTasksSidePanelRearchitectureEnabled() &&
+      source == web_contents()) {
+    if (const std::optional<content::PageZoom> zoom =
+            GetPageZoomForKeyboardEvent(event)) {
+      zoom::PageZoom::Zoom(source, *zoom);
+      return true;
+    }
+  }
+  return views::WebContentsDelegateViews<
+      ContextualTasksWebView>::HandleKeyboardEvent(source, event);
+}
+
+void ContextualTasksWebView::ContentsZoomChange(bool zoom_in) {
+  if (!IsContextualTasksSidePanelRearchitectureEnabled() || !web_contents()) {
+    return;
+  }
+  zoom::PageZoom::Zoom(
+      web_contents(), zoom_in ? content::PAGE_ZOOM_IN : content::PAGE_ZOOM_OUT);
 }
 
 void ContextualTasksWebView::RequestMediaAccessPermission(
