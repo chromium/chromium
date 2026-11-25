@@ -17,5 +17,7 @@ test_valid_value("border-shape", "circle() circle()");
 test_valid_value("border-shape", "circle() polygon(10px 10px, 100px 10px, 10px 100px)");
 test_valid_value("border-shape", "circle(closest-corner) ellipse(farthest-corner closest-corner)");
 test_valid_value("border-shape", "circle() border-box circle() content-box", "circle() circle() content-box");
+test_valid_value("border-shape", "circle() margin-box circle() padding-box", "circle() margin-box circle()");
+test_valid_value("border-shape", "circle() half-border-box", "circle()");
 test_valid_value("border-shape", "circle() margin-box circle() view-box");
 </script>

@@ -2078,6 +2078,15 @@ const CSSValue* ConsumeBasicShapeAndGeometryBox(
   return shape;
 }
 
+const CSSValue& StripDefaultBox(const CSSValue& value, CSSValueID default_box) {
+  if (const auto* pair = DynamicTo<CSSValuePair>(value);
+      pair &&
+      To<CSSIdentifierValue>(pair->Second()).GetValueID() == default_box) {
+    return pair->First();
+  }
+  return value;
+}
+
 }  // namespace
 
 const CSSValue* BorderShape::ParseSingleValue(
@@ -2105,12 +2114,12 @@ const CSSValue* BorderShape::ParseSingleValue(
   // circle() border-box circle() padding-box.
   if (!inner || (outer->IsBaseValuePair() && inner->IsBaseValuePair() &&
                  base::ValuesEquivalent(inner, outer))) {
-    return outer;
+    return &StripDefaultBox(*outer, CSSValueID::kHalfBorderBox);
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*outer);
-  list->Append(*inner);
+  list->Append(StripDefaultBox(*outer, CSSValueID::kBorderBox));
+  list->Append(StripDefaultBox(*inner, CSSValueID::kPaddingBox));
   return list;
 }
 
