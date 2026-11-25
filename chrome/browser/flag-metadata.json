@@ -5464,7 +5464,7 @@
       "austinzzr@google.com",
       "//chrome/browser/geic/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 167
   },
   {
     "name": "geic-enabled",
