@@ -248,7 +248,9 @@ void ExitTypeService::CheckUserAckedCrash() {
 
 void ExitTypeService::CrashedLockDestroyed() {
   --crashed_lock_count_;
-  CHECK_GE(crashed_lock_count_, 0, base::NotFatalUntil::M163);
+  // TODO(crbug.com/588864994): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK_GE(crashed_lock_count_, 0);
   if (crashed_lock_count_ == 0) {
     CheckUserAckedCrash();
   }
