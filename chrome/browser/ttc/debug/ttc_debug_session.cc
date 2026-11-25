@@ -264,6 +264,7 @@ void TtcDebugSession::End() {
   // can add events, e.g. when the effect note spends a text budget.
   AddEvent(EventKind::kSessionEnded);
   ended_ = true;
+  ended_ms_ = NowMs();
   watchdog_.Stop();
   detector_timer_.Stop();
   journal_ = nullptr;
@@ -855,7 +856,9 @@ void TtcDebugSession::OnError(std::string_view error) {
 TtcDebugSession::Snapshot TtcDebugSession::GetSnapshot() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Snapshot snapshot;
-  snapshot.now_ms = NowMs();
+  // An ended session's time stops at its end, so that it keeps showing how
+  // long it lasted.
+  snapshot.now_ms = ended_ms_.value_or(NowMs());
   snapshot.ended = ended_;
   snapshot.transport_connected = transport_connected_;
   snapshot.server_session_id = server_session_id_;
@@ -873,6 +876,8 @@ TtcDebugSession::Snapshot TtcDebugSession::GetSnapshot() const {
   snapshot.audio_cap_bytes = recorder_.cap_bytes();
   snapshot.audio_cap_reached = recorder_.cap_reached();
   snapshot.dropped_items = dropped_items_;
+  snapshot.frequent_events_truncated = frequent_events_truncated_;
+  snapshot.events_truncated = events_truncated_;
   for (const Issue& issue : issues_) {
     if (issue.resolved) {
       continue;

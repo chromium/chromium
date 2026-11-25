@@ -910,6 +910,8 @@ TEST_F(TtcDebugSessionTest, EventsAreCapped) {
   EXPECT_EQ(session_->events().size(), TtcDebugSession::kMaxOtherEvents);
   EXPECT_THAT(session_->ToValue().FindBool("events_truncated"),
               testing::Optional(true));
+  EXPECT_TRUE(session_->GetSnapshot().events_truncated);
+  EXPECT_FALSE(session_->GetSnapshot().frequent_events_truncated);
 
   // The end of the session is still recorded.
   session_->End();
@@ -932,6 +934,18 @@ TEST_F(TtcDebugSessionTest, FrequentEventsDontCrowdOutOthers) {
   EXPECT_THAT(value.FindBool("frequent_events_truncated"),
               testing::Optional(true));
   EXPECT_THAT(value.FindBool("events_truncated"), testing::Optional(false));
+  EXPECT_TRUE(session_->GetSnapshot().frequent_events_truncated);
+  EXPECT_FALSE(session_->GetSnapshot().events_truncated);
+}
+
+// The record is kept after the session ends, and keeps showing how long it
+// lasted.
+TEST_F(TtcDebugSessionTest, TimeStopsAtTheEnd) {
+  task_environment_.FastForwardBy(base::Seconds(5));
+  EXPECT_DOUBLE_EQ(session_->GetSnapshot().now_ms, 5000);
+  session_->End();
+  task_environment_.FastForwardBy(base::Minutes(10));
+  EXPECT_DOUBLE_EQ(session_->GetSnapshot().now_ms, 5000);
 }
 
 TEST_F(TtcDebugSessionTest, LateObserverOnlyGetsNewChanges) {

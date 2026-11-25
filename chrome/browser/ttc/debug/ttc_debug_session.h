@@ -86,6 +86,8 @@ class TtcDebugSession final : public DebugSink {
     Snapshot& operator=(const Snapshot&);
     ~Snapshot();
 
+    // Milliseconds since the session started. Once it has ended, the time it
+    // ended.
     double now_ms = 0;
     bool ended = false;
     bool transport_connected = false;
@@ -108,6 +110,10 @@ class TtcDebugSession final : public DebugSink {
     // Tool calls, issues and turns dropped because their cap was reached, or
     // kept without all their text because its budget was spent.
     int64_t dropped_items = 0;
+    // Whether events were left out because their cap was reached: frequent
+    // ones (IsFrequentEvent()) and the others separately.
+    bool frequent_events_truncated = false;
+    bool events_truncated = false;
     std::array<StageStatus, kStageCount> stages;
   };
 
@@ -584,6 +590,8 @@ class TtcDebugSession final : public DebugSink {
   const raw_ptr<const base::TickClock> clock_;
   const base::TimeTicks start_time_;
   bool ended_ = false;
+  // When End() was called, in milliseconds since the session started.
+  std::optional<double> ended_ms_;
 
   // Capture.
   std::optional<CaptureFormat> capture_format_;
