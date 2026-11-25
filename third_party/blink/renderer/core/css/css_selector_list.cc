@@ -46,8 +46,6 @@ CSSSelectorList* CSSSelectorList::Empty() {
   if (!persistent) [[unlikely]] {
     persistent =
         MakeGarbageCollected<CSSSelectorList>(base::PassKey<CSSSelectorList>());
-    new (persistent->first_selector_) CSSSelector();
-    persistent->first_selector_[0].SetMatch(CSSSelector::kInvalidList);
     DCHECK(persistent->IsInvalidWithoutUnparsed());
     LEAK_SANITIZER_IGNORE_OBJECT(&persistent);
   }
@@ -61,15 +59,9 @@ CSSSelectorList* CSSSelectorList::Copy() const {
 
   unsigned length = ComputeLength();
   DCHECK(length);
-  CSSSelectorList* list = MakeGarbageCollected<CSSSelectorList>(
+  return MakeGarbageCollected<CSSSelectorList>(
       AdditionalBytes(sizeof(CSSSelector) * (length - 1)),
-      base::PassKey<CSSSelectorList>());
-  for (unsigned i = 0; i < length; ++i) {
-    UNSAFE_BUFFERS(new (&list->first_selector_[i])
-                       CSSSelector(first_selector_[i]));
-  }
-
-  return list;
+      base::PassKey<CSSSelectorList>(), *this, length);
 }
 
 HeapVector<CSSSelector> CSSSelectorList::Copy(
@@ -115,12 +107,10 @@ CSSSelectorList* CSSSelectorList::AdoptSelectorVector(
     return CSSSelectorList::Empty();
   }
 
-  CSSSelectorList* list = MakeGarbageCollected<CSSSelectorList>(
+  return MakeGarbageCollected<CSSSelectorList>(
       AdditionalBytes(base::checked_cast<uint32_t>(
           sizeof(CSSSelector) * (selector_vector.size() - 1))),
-      base::PassKey<CSSSelectorList>());
-  AdoptSelectorVector(selector_vector, list->first_selector_);
-  return list;
+      base::PassKey<CSSSelectorList>(), selector_vector);
 }
 
 unsigned CSSSelectorList::ComputeLength() const {
@@ -194,7 +184,7 @@ void CSSSelectorList::Trace(Visitor* visitor) const {
 
   for (int i = 0;; ++i) {
     visitor->Trace(UNSAFE_BUFFERS(first_selector_[i]));
-    if (UNSAFE_BUFFERS(first_selector_[i].IsLastInSelectorList())) {
+    if (UNSAFE_BUFFERS(first_selector_[i].IsLastInSelectorListForOilpan())) {
       break;
     }
   }
