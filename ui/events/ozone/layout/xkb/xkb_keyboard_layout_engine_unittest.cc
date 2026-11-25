@@ -1591,6 +1591,25 @@ TEST(XkbKeyboardLayoutEngineTest, WinSpaceToggle) {
   EXPECT_EQ(VKEY_SPACE, key_code);
 }
 
+// Regression test for crbug.com/40900105. With "us(dvorak),ru", a key that
+// produces a Cyrillic letter in the Russian layout gets the VKEY of the Dvorak
+// letter on that key rather than the VKEY of the US QWERTY letter.
+TEST(XkbKeyboardLayoutEngineTest, NonLatinLayoutUsesLatinLayoutKeyboardCode) {
+  XkbEvdevCodes evdev_codes;
+  XkbKeyboardLayoutEngine layout_engine(evdev_codes);
+  ASSERT_NO_FATAL_FAILURE(SetLayoutFromName(layout_engine, "us,ru", "dvorak,"));
+  layout_engine.UpdateModifiers(/*depressed=*/0, /*latched=*/0, /*locked=*/0,
+                                /*group=*/1);
+
+  // The US 'K' key is 't' in Dvorak and Cyrillic 'л' in Russian.
+  DomKey dom_key = DomKey::NONE;
+  KeyboardCode key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(DomCode::US_K, EF_CONTROL_DOWN, &dom_key,
+                                   &key_code));
+  EXPECT_EQ(DomKey::FromCharacter(u'\u043b'), dom_key);
+  EXPECT_EQ(VKEY_T, key_code);
+}
+
 TEST(XkbKeyboardLayoutEngineTest, KeyRepeats) {
   XkbEvdevCodes evdev_codes;
   XkbKeyboardLayoutEngine layout_engine(evdev_codes);

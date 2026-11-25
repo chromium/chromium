@@ -602,6 +602,32 @@ bool IsModifierKey(uint32_t keysym) {
          keysym == XK_Mode_switch || keysym == XK_Num_Lock;
 }
 
+// Returns the VKEY of the first ASCII letter or digit that `xkeycode` produces
+// with `modifiers` in an XKB group other than the active one, or VKEY_UNKNOWN.
+// Keys that produce non-Latin characters in the active group (e.g. "ru") then
+// get the VKEY of a Latin group configured alongside it (e.g. "us(dvorak)"),
+// so shortcuts work the same in both layouts.
+KeyboardCode KeyboardCodeFromOtherXkbGroups(uint32_t xkeycode,
+                                            uint32_t modifiers) {
+  constexpr int kXkbMaxGroups = 4;
+  const int active_group = XkbGroupForCoreState(modifiers);
+  modifiers &= ~((kXkbMaxGroups - 1) << kXkbGroupShift);
+  for (int group = 0; group < kXkbMaxGroups; ++group) {
+    if (group == active_group) {
+      continue;
+    }
+    uint32_t keysym =
+        TranslateKey(xkeycode, modifiers | (group << kXkbGroupShift));
+    if (keysym >= XK_a && keysym <= XK_z) {
+      return static_cast<KeyboardCode>(VKEY_A + keysym - XK_a);
+    }
+    if (keysym >= XK_0 && keysym <= XK_9) {
+      return static_cast<KeyboardCode>(VKEY_0 + keysym - XK_0);
+    }
+  }
+  return VKEY_UNKNOWN;
+}
+
 }  // namespace
 
 // Get an ui::KeyboardCode from an X keyevent
@@ -617,7 +643,8 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
   //    hardware_code in map3.
   // 7. If not found, fallback to find in KeyboardCodeFromXKeysym(), which
   //    mainly for non-letter keys.
-  // 8. If not found, fallback to find with the hardware code in US layout.
+  // 8. If not found, fallback to a letter or digit in another XKB group.
+  // 9. If not found, fallback to find with the hardware code in US layout.
 
   uint32_t keysym = 0;
   uint32_t xkeycode = 0;
@@ -651,6 +678,7 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
       }
     }
   }
+  const uint32_t plain_modifiers = modifiers;
 
   // [a-z] cases.
   if (keysym >= XK_a && keysym <= XK_z)
@@ -703,6 +731,9 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
   }
 
   keycode = KeyboardCodeFromXKeysym(keysym);
+  if (keycode == VKEY_UNKNOWN && !IsModifierKey(keysym)) {
+    keycode = KeyboardCodeFromOtherXkbGroups(xkeycode, plain_modifiers);
+  }
   if (keycode == VKEY_UNKNOWN && !IsModifierKey(keysym)) {
     // Modifier keys should not fall back to the hardware-keycode-based US
     // layout.  See crbug.com/402320

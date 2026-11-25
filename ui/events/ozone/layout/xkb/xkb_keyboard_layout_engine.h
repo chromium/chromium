@@ -152,6 +152,13 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
                         DomKey* dom_key,
                         KeyboardCode* key_code) const;
 
+  // Returns the VKEY of the first ASCII letter or digit that `xkb_keycode`
+  // produces without modifiers in a layout other than the active one, or
+  // VKEY_UNKNOWN. Keys that produce non-Latin characters in the active layout
+  // (e.g. "ru") then get the VKEY of a Latin layout configured alongside it
+  // (e.g. "us(dvorak)"), so shortcuts work the same in both layouts.
+  KeyboardCode KeyboardCodeFromOtherLayouts(xkb_keycode_t xkb_keycode) const;
+
   // Returns the XKB modifiers flags corresponding to the given EventFlags.
   xkb_mod_mask_t EventFlagsToXkbFlags(int ui_flags) const;
 

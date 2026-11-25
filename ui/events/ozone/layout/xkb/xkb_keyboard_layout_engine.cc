@@ -939,10 +939,39 @@ bool XkbKeyboardLayoutEngine::LookupXkbKeycode(DomCode dom_code,
     *key_code = DifficultKeyboardCode(dom_code, flags, xkb_keycode, xkb_flags,
                                       xkb_keysym, character);
     if (*key_code == VKEY_UNKNOWN) {
+      *key_code = KeyboardCodeFromOtherLayouts(xkb_keycode);
+    }
+    if (*key_code == VKEY_UNKNOWN) {
       *key_code = FallbackKeyboardCode(dom_code, *dom_key);
     }
   }
   return true;
+}
+
+KeyboardCode XkbKeyboardLayoutEngine::KeyboardCodeFromOtherLayouts(
+    xkb_keycode_t xkb_keycode) const {
+  if (!xkb_state_) {
+    return VKEY_UNKNOWN;
+  }
+  xkb_keymap* keymap = xkb_state_get_keymap(xkb_state_.get());
+  const xkb_layout_index_t num_layouts =
+      xkb_keymap_num_layouts_for_key(keymap, xkb_keycode);
+  for (xkb_layout_index_t layout = 0; layout < num_layouts; ++layout) {
+    if (layout == layout_index_) {
+      continue;
+    }
+    const xkb_keysym_t* keysyms;
+    if (xkb_keymap_key_get_syms_by_level(keymap, xkb_keycode, layout,
+                                         /*level=*/0, &keysyms) != 1) {
+      continue;
+    }
+    KeyboardCode key_code =
+        AlphanumericKeyboardCode(*keysyms, xkb_keysym_to_utf32(*keysyms));
+    if (key_code != VKEY_UNKNOWN) {
+      return key_code;
+    }
+  }
+  return VKEY_UNKNOWN;
 }
 
 std::optional<uint32_t> XkbKeyboardLayoutEngine::LookupKeysym(DomCode dom_code,
