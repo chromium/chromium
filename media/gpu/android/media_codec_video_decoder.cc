@@ -192,7 +192,8 @@ bool SelectMediaCodec(const VideoDecoderConfig& config,
   // Allow software decoder if either:
   // 1. the stream is encrypted.
   // 2. No software decoder is bundled into Chromium.
-  if (!(config.is_encrypted()
+  if (software_decoder.empty() ||
+      !(config.is_encrypted()
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
         || config.codec() == VideoCodec::kH264
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -1082,8 +1083,10 @@ bool MediaCodecVideoDecoder::QueueInput() {
     // the end of stream flush.
     const bool can_reuse_codec = [&]() {
       std::string codec_name;
-      SelectMediaCodec(new_config, requires_secure_codec_, low_delay_,
-                       &codec_name);
+      SelectMediaCodec(
+          new_config, requires_secure_codec_,
+          base::FeatureList::IsEnabled(kMediaCodecLowDelayMode) && low_delay_,
+          &codec_name);
       return !codec_name_.empty() && codec_name == codec_name_ &&
              !CodecNeedsReallocation(new_config.coded_size());
     }();

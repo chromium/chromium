@@ -4,6 +4,8 @@
 
 #include "media/gpu/android/video_accelerator_util.h"
 
+#include <utility>
+
 #include "base/android/jni_string.h"
 #include "base/no_destructor.h"
 #include "media/base/media_switches.h"
@@ -13,6 +15,14 @@
 #include "media/base/android/media_jni_headers/VideoAcceleratorUtil_jni.h"
 
 namespace {
+std::optional<std::vector<media::MediaCodecDecoderInfo>>&
+GetDecoderInfoOverrideForTesting() {
+  static base::NoDestructor<
+      std::optional<std::vector<media::MediaCodecDecoderInfo>>>
+      override_infos;
+  return *override_infos;
+}
+
 bool isEncoderSupportedProfile(media::VideoCodecProfile profile) {
   media::VideoCodec codec = media::VideoCodecProfileToVideoCodec(profile);
   if (codec == media::VideoCodec::kHEVC) {
@@ -110,6 +120,9 @@ const std::vector<MediaCodecEncoderInfo>& GetEncoderInfoCache() {
 }
 
 const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
+  if (const auto& override_infos = GetDecoderInfoOverrideForTesting()) {
+    return *override_infos;
+  }
   static const base::NoDestructor<std::vector<MediaCodecDecoderInfo>> infos([] {
     JNIEnv* env = jni_zero::AttachCurrentThread();
     CHECK(env);
@@ -177,6 +190,11 @@ const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
     return cpp_infos;
   }());
   return *infos;
+}
+
+void SetDecoderInfoCacheForTesting(
+    std::optional<std::vector<MediaCodecDecoderInfo>> decoder_infos) {
+  GetDecoderInfoOverrideForTesting() = std::move(decoder_infos);  // IN-TEST
 }
 
 }  // namespace media

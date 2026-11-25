@@ -327,6 +327,8 @@ class MediaCodecUtil {
                                     /* requireSoftwareCodec= */ true,
                                     /* requireHardwareCodec= */ false,
                                     /* requireSecure= */ false);
+                    if (decoderName.isEmpty()) return result;
+
                     result.mediaCodec = MediaCodec.createByCodecName(decoderName);
                 } else if (mime.equals(MediaFormat.MIMETYPE_AUDIO_RAW)) {
                     result.mediaCodec = MediaCodec.createByCodecName("OMX.google.raw.decoder");
@@ -345,12 +347,15 @@ class MediaCodecUtil {
 
     /**
      * Create MediaCodec decoder with the given name.
+     *
      * @param mime MIME type of the media.
      * @param decoderName name of the decoder.
      * @return CodecCreationInfo object
      */
     static CodecCreationInfo createDecoderByName(String mime, String decoderName) {
         CodecCreationInfo result = new CodecCreationInfo();
+        if (decoderName.isEmpty()) return result;
+
         try {
             result.mediaCodec = MediaCodec.createByCodecName(decoderName);
             result.supportsAdaptivePlayback =

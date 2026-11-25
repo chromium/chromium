@@ -4,7 +4,9 @@
 
 #include "media/gpu/android/media_codec_video_decoder.h"
 
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "base/android/android_info.h"
 #include "base/android/jni_android.h"
@@ -108,6 +110,24 @@ class FakeCdmContextRef final : public CdmContextRef {
 constexpr char kOutputFrameEligibilityHistogram[] =
     "Media.Android.MediaCodec.OutputFrame.Eligibility";
 
+MediaCodecDecoderInfo MakeDecoderInfo(
+    VideoCodecProfile profile,
+    bool is_software_codec,
+    LowLatencyCapability low_latency_capability,
+    SecureCodecCapability secure_codec_capability,
+    std::string name) {
+  MediaCodecDecoderInfo info;
+  info.profile = profile;
+  info.level = kNoVideoCodecLevel;
+  info.coded_size_min = gfx::Size(64, 64);
+  info.coded_size_max = gfx::Size(1920, 1080);
+  info.is_software_codec = is_software_codec;
+  info.low_latency_capability = low_latency_capability;
+  info.secure_codec_capability = secure_codec_capability;
+  info.name = std::move(name);
+  return info;
+}
+
 }  // namespace
 
 class MockVideoFrameFactory : public VideoFrameFactory {
@@ -196,6 +216,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
     // MCVD calls DeleteSoon() on itself, so we have to run a RunLoop.
     mcvd_.reset();
     base::RunLoop().RunUntilIdle();
+    SetDecoderInfoCacheForTesting(std::nullopt);
   }
 
   void CreateMcvd() {
@@ -256,7 +277,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
 
   // Just call Initialize(). MCVD will be waiting for a call to Decode() before
   // continuining initialization.
-  bool Initialize(VideoDecoderConfig config) {
+  bool Initialize(VideoDecoderConfig config, bool low_delay = false) {
     if (!mcvd_)
       CreateMcvd();
     bool result = false;
@@ -264,7 +285,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
       *result_out = result.is_ok();
     };
     mcvd_->Initialize(
-        config, false, cdm_.get(), base::BindOnce(init_cb, &result),
+        config, low_delay, cdm_.get(), base::BindOnce(init_cb, &result),
         base::BindRepeating(&OutputCb, &most_recent_frame_), base::DoNothing());
     base::RunLoop().RunUntilIdle();
 
@@ -283,8 +304,9 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   // Call Initialize() and Decode() to start lazy init. MCVD will be waiting for
   // a codec and have one decode pending.
   MockAndroidOverlay* InitializeWithOverlay_OneDecodePending(
-      VideoDecoderConfig config) {
-    if (!Initialize(config)) {
+      VideoDecoderConfig config,
+      bool low_delay = false) {
+    if (!Initialize(config, low_delay)) {
       return nullptr;
     }
     mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
@@ -307,8 +329,9 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
 
   // Call Initialize() and Decode() to start lazy init. MCVD will be waiting for
   // a codec and have one decode pending.
-  bool InitializeWithTextureOwner_OneDecodePending(VideoDecoderConfig config) {
-    if (!Initialize(config)) {
+  bool InitializeWithTextureOwner_OneDecodePending(VideoDecoderConfig config,
+                                                   bool low_delay = false) {
+    if (!Initialize(config, low_delay)) {
       return false;
     }
     mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
@@ -320,8 +343,9 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   // Fully initializes MCVD and returns the codec it's configured with. MCVD
   // will have one decode pending.
   MockMediaCodecBridge* InitializeFully_OneDecodePending(
-      VideoDecoderConfig config) {
-    if (!InitializeWithTextureOwner_OneDecodePending(config)) {
+      VideoDecoderConfig config,
+      bool low_delay = false) {
+    if (!InitializeWithTextureOwner_OneDecodePending(config, low_delay)) {
       return nullptr;
     }
     codec_allocator_->most_recent_config->on_buffers_available_cb.Run();
@@ -1601,6 +1625,115 @@ TEST_P(MediaCodecVideoDecoderTest,
   ASSERT_TRUE(InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_)));
 
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(output_trial->trial_name()));
+}
+
+TEST_P(MediaCodecVideoDecoderTest, LowDelayCodecSelectionFallback) {
+  base::test::ScopedFeatureList scoped_features(kMediaCodecLowDelayMode);
+  const auto config = TestVideoConfig::NormalEncrypted(codec_);
+  struct {
+    std::vector<MediaCodecDecoderInfo> infos;
+    bool require_secure;
+    bool use_overlay;
+    std::string expected_name;
+    bool expected_low_latency;
+  } kCases[] = {
+      {{MakeDecoderInfo(config.profile(), false, LowLatencyCapability::kNone,
+                        SecureCodecCapability::kAny, "c2.test.hw.decoder")},
+       false,
+       false,
+       "c2.test.hw.decoder",
+       false},
+      {{MakeDecoderInfo(config.profile(), true, LowLatencyCapability::kNone,
+                        SecureCodecCapability::kAny, "c2.test.sw.decoder")},
+       false,
+       false,
+       "c2.test.sw.decoder",
+       false},
+      {{MakeDecoderInfo(config.profile(), false, LowLatencyCapability::kNone,
+                        SecureCodecCapability::kAny, "c2.test.hw.decoder"),
+        MakeDecoderInfo(
+            config.profile(), false, LowLatencyCapability::kRequired,
+            SecureCodecCapability::kAny, "c2.test.hw.decoder.low_latency")},
+       false,
+       false,
+       "c2.test.hw.decoder.low_latency",
+       true},
+      {{MakeDecoderInfo(config.profile(), false, LowLatencyCapability::kNone,
+                        SecureCodecCapability::kClear,
+                        "c2.test.clear.decoder")},
+       true,
+       true,
+       "",
+       false},
+  };
+
+  for (const auto& tc : kCases) {
+    SetDecoderInfoCacheForTesting(tc.infos);
+    CreateCdm(true, tc.require_secure);
+    if (tc.use_overlay) {
+      ASSERT_TRUE(
+          InitializeWithOverlay_OneDecodePending(config, /*low_delay=*/true));
+    } else {
+      ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+          config, /*low_delay=*/true));
+    }
+    EXPECT_EQ(codec_allocator_->most_recent_config->name, tc.expected_name);
+    EXPECT_EQ(codec_allocator_->most_recent_config->use_low_latency_mode,
+              tc.expected_low_latency);
+    mcvd_.reset();
+    base::RunLoop().RunUntilIdle();
+  }
+}
+
+TEST_P(MediaCodecVideoDecoderTest, LowDelayElidesEOSForConfigChange) {
+  for (bool enable_low_delay_feature : {true, false}) {
+    base::test::ScopedFeatureList scoped_features;
+    scoped_features.InitWithFeatureState(kMediaCodecLowDelayMode,
+                                         enable_low_delay_feature);
+    const auto large_config = enable_low_delay_feature
+                                  ? TestVideoConfig::LargeEncrypted(codec_)
+                                  : TestVideoConfig::Large(codec_);
+    const auto normal_config = enable_low_delay_feature
+                                   ? TestVideoConfig::NormalEncrypted(codec_)
+                                   : TestVideoConfig::Normal(codec_);
+    const std::string codec_name =
+        "c2.google.mock.codec." + GetCodecName(codec_);
+    SetDecoderInfoCacheForTesting(
+        std::vector<MediaCodecDecoderInfo>{MakeDecoderInfo(
+            large_config.profile(), false, LowLatencyCapability::kNone,
+            enable_low_delay_feature ? SecureCodecCapability::kAny
+                                     : SecureCodecCapability::kClear,
+            codec_name)});
+    if (enable_low_delay_feature) {
+      CreateCdm(true, false);
+    } else {
+      cdm_.reset();
+    }
+
+    auto* codec =
+        InitializeFully_OneDecodePending(large_config, /*low_delay=*/true);
+    ASSERT_TRUE(codec);
+    EXPECT_EQ(codec_allocator_->most_recent_config->name, codec_name);
+    EXPECT_FALSE(codec_allocator_->most_recent_config->use_low_latency_mode);
+
+    codec->AcceptOneInput();
+    codec->ProduceOneOutput();
+    PumpCodec();
+
+    EXPECT_CALL(*codec, Flush()).Times(0);
+    EXPECT_CALL(decode_cb_,
+                Run(HasStatusCode(
+                    DecoderStatus::Codes::kElidedEndOfStreamForConfigChange)));
+    mcvd_->Decode(DecoderBuffer::CreateEOSBuffer(normal_config),
+                  decode_cb_.Get());
+    PumpCodec();
+    testing::Mock::VerifyAndClearExpectations(&decode_cb_);
+    if (codec_ == VideoCodec::kVP8) {
+      DoReset();
+    }
+    mcvd_.reset();
+    base::RunLoop().RunUntilIdle();
+  }
 }
 
 static std::vector<VideoCodec> GetTestList() {

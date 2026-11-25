@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_ANDROID_VIDEO_ACCELERATOR_UTIL_H_
 #define MEDIA_GPU_ANDROID_VIDEO_ACCELERATOR_UTIL_H_
 
+#include <optional>
 #include <vector>
 
 #include "media/base/video_codecs.h"
@@ -59,6 +60,9 @@ struct MediaCodecDecoderInfo {
 // https://developer.android.com/guide/topics/media/media-formats
 MEDIA_GPU_EXPORT const std::vector<MediaCodecDecoderInfo>&
 GetDecoderInfoCache();
+
+MEDIA_GPU_EXPORT void SetDecoderInfoCacheForTesting(
+    std::optional<std::vector<MediaCodecDecoderInfo>> decoder_infos);
 
 }  // namespace media
 
