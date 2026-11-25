@@ -18,6 +18,7 @@
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_feedback.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
@@ -31,6 +32,7 @@
 #include "components/search_engines/ai_mode_button_service.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -41,8 +43,10 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/color/color_id.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -149,6 +153,13 @@ void OmniboxEverywhereContextMenuController::ShowOverflowMenu(
   last_params_ = content::ContextMenuParams();
   context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   AppendSettingsContextMenu();
+  if (ShouldShowFeedback(profile())) {
+    context_menu_model_->AddItemWithStringIdAndIcon(
+        kSendFeedback, IDS_CHROMELABS_SEND_FEEDBACK,
+        ui::ImageModel::FromVectorIcon(vector_icons::kPetsIcon,
+                                       ui::kColorMenuIcon,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
+  }
 #if BUILDFLAG(IS_WIN)
   AppendWindowControlsContextMenu();
 #endif  // BUILDFLAG(IS_WIN)
@@ -589,6 +600,12 @@ void OmniboxEverywhereContextMenuController::ExecuteCommand(int command_id,
       }
       break;
     }
+    case kSendFeedback: {
+      if (Profile* current_profile = profile()) {
+        ShowFeedbackForm(current_profile);
+      }
+      break;
+    }
 #if BUILDFLAG(IS_MAC)
     case kWritingDirectionDefault:
     case kWritingDirectionLtr:
@@ -677,6 +694,8 @@ bool OmniboxEverywhereContextMenuController::IsCommandIdEnabled(
       return true;
     case kSettings:
       return true;
+    case kSendFeedback:
+      return ShouldShowFeedback(current_profile);
 #if BUILDFLAG(IS_MAC)
     case kWritingDirectionMenu:
       return true;
