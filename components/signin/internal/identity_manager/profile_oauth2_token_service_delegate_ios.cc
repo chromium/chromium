@@ -72,6 +72,8 @@ class SSOAccessTokenFetcher : public OAuth2AccessTokenFetcher {
 
   void CancelRequest() override;
 
+  Latencies GetLatencies() const override;
+
   // Handles an access token response.
   void OnAccessTokenResponse(AccessTokenResult result);
 
@@ -108,6 +110,11 @@ void SSOAccessTokenFetcher::Start(const std::string& client_id,
 
 void SSOAccessTokenFetcher::CancelRequest() {
   request_was_cancelled_ = true;
+}
+
+OAuth2AccessTokenFetcher::Latencies SSOAccessTokenFetcher::GetLatencies()
+    const {
+  return {};
 }
 
 void SSOAccessTokenFetcher::OnAccessTokenResponse(AccessTokenResult result) {

@@ -47,6 +47,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcherImmediateError
 
   void CancelRequest() override;
 
+  Latencies GetLatencies() const override;
+
  private:
 
   void Fail();

@@ -64,6 +64,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcherImpl
 
   void CancelRequest() override;
 
+  Latencies GetLatencies() const override;
+
  private:
   enum State {
     INITIAL,

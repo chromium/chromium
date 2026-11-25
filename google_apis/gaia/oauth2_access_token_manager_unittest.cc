@@ -61,11 +61,10 @@ class FakeChallengeSigningAccessTokenFetcher : public OAuth2AccessTokenFetcher {
     fetcher_->Start(client_id, client_secret, scopes);
   }
   void CancelRequest() override { fetcher_->CancelRequest(); }
-  std::optional<base::TimeDelta> GetNetworkLatency() const override {
-    return fetcher_->GetNetworkLatency();
-  }
-  std::optional<base::TimeDelta> GetChallengeSigningLatency() const override {
-    return challenge_signing_latency_;
+  Latencies GetLatencies() const override {
+    Latencies latencies = fetcher_->GetLatencies();
+    latencies.challenge_signing = challenge_signing_latency_;
+    return latencies;
   }
 
  private:

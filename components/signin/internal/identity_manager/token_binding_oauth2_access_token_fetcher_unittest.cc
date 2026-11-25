@@ -18,6 +18,7 @@
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_mint_access_token_fetcher_adapter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,6 +55,7 @@ class MockOAuth2MintAccessTokenFetcherAdapter
                const std::vector<std::string>& scopes),
               (override));
   MOCK_METHOD(void, CancelRequest, (), (override));
+  MOCK_METHOD(Latencies, GetLatencies, (), (const, override));
   MOCK_METHOD(void,
               SetBindingKeyAssertion,
               (std::string assertion),
@@ -140,13 +142,23 @@ TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, CancelRequest) {
   fetcher()->CancelRequest();
 }
 
-TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, GetChallengeSigningLatency) {
-  EXPECT_EQ(fetcher()->GetChallengeSigningLatency(), std::nullopt);
+TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, GetLatencies) {
+  EXPECT_CALL(*mock_internal_fetcher(), GetLatencies)
+      .WillOnce(testing::Return(OAuth2AccessTokenFetcher::Latencies()));
+  EXPECT_EQ(fetcher()->GetLatencies(), OAuth2AccessTokenFetcher::Latencies());
+
   task_environment().FastForwardBy(base::Milliseconds(120));
   EXPECT_CALL(*mock_internal_fetcher(), SetBindingKeyAssertion(kAssertion));
   fetcher()->SetBindingKeyAssertion(/*ephemeral_key=*/std::nullopt, kAssertion);
   task_environment().FastForwardBy(base::Milliseconds(50));
-  EXPECT_EQ(fetcher()->GetChallengeSigningLatency(), base::Milliseconds(120));
+
+  EXPECT_CALL(*mock_internal_fetcher(), GetLatencies)
+      .WillOnce(testing::Return(OAuth2AccessTokenFetcher::Latencies{
+          .network = base::Milliseconds(50)}));
+  EXPECT_EQ(fetcher()->GetLatencies(),
+            (OAuth2AccessTokenFetcher::Latencies{
+                .network = base::Milliseconds(50),
+                .challenge_signing = base::Milliseconds(120)}));
 }
 
 TEST_F(TokenBindingOAuth2AccessTokenFetcherTest, SetAssertionWithEphemeralKey) {

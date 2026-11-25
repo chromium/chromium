@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher.h"
 
 OAuth2AccessTokenFetcherImmediateError::OAuth2AccessTokenFetcherImmediateError(
     OAuth2AccessTokenConsumer* consumer,
@@ -22,6 +23,11 @@ OAuth2AccessTokenFetcherImmediateError::
 }
 
 void OAuth2AccessTokenFetcherImmediateError::CancelRequest() {}
+
+OAuth2AccessTokenFetcher::Latencies
+OAuth2AccessTokenFetcherImmediateError::GetLatencies() const {
+  return {};
+}
 
 void OAuth2AccessTokenFetcherImmediateError::Start(
     const std::string& client_id,

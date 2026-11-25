@@ -39,6 +39,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
@@ -222,6 +223,12 @@ class AccountManager::AccessTokenFetcher : public OAuth2AccessTokenFetcher {
 
   // OAuth2AccessTokenFetcher override:
   void CancelRequest() override { access_token_fetcher_.reset(); }
+
+  // OAuth2AccessTokenFetcher override:
+  Latencies GetLatencies() const override {
+    return access_token_fetcher_ ? access_token_fetcher_->GetLatencies()
+                                 : Latencies();
+  }
 
  private:
   void UnblockTokenRequestInternal() {

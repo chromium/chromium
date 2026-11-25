@@ -135,9 +135,9 @@ void OAuth2MintAccessTokenFetcherAdapter::CancelRequest() {
   mint_token_flow_.reset();
 }
 
-std::optional<base::TimeDelta>
-OAuth2MintAccessTokenFetcherAdapter::GetNetworkLatency() const {
-  return network_latency_;
+OAuth2AccessTokenFetcher::Latencies
+OAuth2MintAccessTokenFetcherAdapter::GetLatencies() const {
+  return latencies_;
 }
 
 void OAuth2MintAccessTokenFetcherAdapter::SetBindingKeyAssertion(
@@ -248,7 +248,7 @@ void OAuth2MintAccessTokenFetcherAdapter::OnRemoteConsentSuccess(
 }
 
 void OAuth2MintAccessTokenFetcherAdapter::RecordNetworkLatency() {
-  network_latency_ = network_request_timer_->Elapsed();
+  latencies_.network = network_request_timer_->Elapsed();
   network_request_timer_.reset();
 }
 

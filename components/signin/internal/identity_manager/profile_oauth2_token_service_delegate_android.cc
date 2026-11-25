@@ -66,6 +66,7 @@ class AndroidAccessTokenFetcher : public OAuth2AccessTokenFetcher {
              const std::string& client_secret,
              const std::vector<std::string>& scopes) override;
   void CancelRequest() override;
+  Latencies GetLatencies() const override;
 
   // Handles an access token response.
   void OnAccessTokenResponse(const GoogleServiceAuthError& error,
@@ -113,6 +114,11 @@ void AndroidAccessTokenFetcher::Start(const std::string& client_id,
 
 void AndroidAccessTokenFetcher::CancelRequest() {
   request_was_cancelled_ = true;
+}
+
+OAuth2AccessTokenFetcher::Latencies AndroidAccessTokenFetcher::GetLatencies()
+    const {
+  return {};
 }
 
 void AndroidAccessTokenFetcher::OnAccessTokenResponse(

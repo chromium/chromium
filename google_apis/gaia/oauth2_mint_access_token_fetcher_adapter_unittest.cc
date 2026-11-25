@@ -22,6 +22,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_id_literal.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 #include "google_apis/gaia/token_binding_response_encryption_error.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -597,13 +598,13 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, CancelRequest) {
   task_environment().FastForwardBy(base::Milliseconds(100));
   fetcher->CancelRequest();
   EXPECT_FALSE(mock_flow());
-  EXPECT_EQ(fetcher->GetNetworkLatency(), std::nullopt);
+  EXPECT_EQ(fetcher->GetLatencies(), OAuth2AccessTokenFetcher::Latencies());
   EXPECT_THAT(
       histogram_tester().GetTotalCountsForPrefix(kBoundFetchAuthErrorHistogram),
       testing::IsEmpty());
 }
 
-TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, GetNetworkLatencyOnSuccess) {
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, GetLatenciesOnSuccess) {
   auto fetcher = CreateFetcher();
   fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
   task_environment().FastForwardBy(base::Milliseconds(250));
@@ -615,14 +616,15 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, GetNetworkLatencyOnSuccess) {
                                         kTimeToLive.InSeconds(),
                                         /*is_encrypted=*/false);
 
-  EXPECT_EQ(fetcher->GetNetworkLatency(), base::Milliseconds(250));
+  EXPECT_EQ(fetcher->GetLatencies(), (OAuth2AccessTokenFetcher::Latencies{
+                                         .network = base::Milliseconds(250)}));
 }
 
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest,
-       GetNetworkLatencyExcludesDecryption) {
+       GetLatenciesNetworkExcludesDecryption) {
   const std::string kTestEncryptedToken = "test_encrypted_token";
   auto fetcher = CreateFetcher();
-  EXPECT_EQ(fetcher->GetNetworkLatency(), std::nullopt);
+  EXPECT_EQ(fetcher->GetLatencies(), OAuth2AccessTokenFetcher::Latencies());
 
   base::MockCallback<OAuth2MintAccessTokenFetcherAdapter::TokenDecryptor>
       mock_decryptor;
@@ -635,7 +637,7 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest,
 
   fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
   task_environment().FastForwardBy(base::Milliseconds(250));
-  EXPECT_EQ(fetcher->GetNetworkLatency(), std::nullopt);
+  EXPECT_EQ(fetcher->GetLatencies(), OAuth2AccessTokenFetcher::Latencies());
 
   base::TimeDelta kTimeToLive = base::Hours(4);
   EXPECT_CALL(*mock_consumer(), OnGetTokenSuccess(HasAccessTokenWithTtl(
@@ -644,10 +646,11 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest,
                                         kTimeToLive.InSeconds(),
                                         /*is_encrypted=*/true);
 
-  EXPECT_EQ(fetcher->GetNetworkLatency(), base::Milliseconds(250));
+  EXPECT_EQ(fetcher->GetLatencies(), (OAuth2AccessTokenFetcher::Latencies{
+                                         .network = base::Milliseconds(250)}));
 }
 
-TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, GetNetworkLatencyOnFailure) {
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, GetLatenciesOnFailure) {
   auto fetcher = CreateFetcher();
   fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
   task_environment().FastForwardBy(base::Milliseconds(300));
@@ -657,5 +660,6 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, GetNetworkLatencyOnFailure) {
   EXPECT_CALL(*mock_consumer(), OnGetTokenFailure(error));
   mock_flow()->SimulateMintTokenFailure(error);
 
-  EXPECT_EQ(fetcher->GetNetworkLatency(), base::Milliseconds(300));
+  EXPECT_EQ(fetcher->GetLatencies(), (OAuth2AccessTokenFetcher::Latencies{
+                                         .network = base::Milliseconds(300)}));
 }

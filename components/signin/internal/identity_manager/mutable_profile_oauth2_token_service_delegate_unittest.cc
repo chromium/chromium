@@ -2497,9 +2497,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   WaitForGetTokenCompleted();
 
   EXPECT_EQ(1, access_token_success_count_);
-  EXPECT_EQ(fetcher->GetChallengeSigningLatency(),
-            kUnwrapKeyDelay + kSignDelay);
-  EXPECT_EQ(fetcher->GetNetworkLatency(), kNetworkDelay);
+  EXPECT_EQ(fetcher->GetLatencies(),
+            (OAuth2AccessTokenFetcher::Latencies{
+                .network = kNetworkDelay,
+                .challenge_signing = kUnwrapKeyDelay + kSignDelay}));
 }
 
 class MutableProfileOAuth2TokenServiceDelegateExtractCredentialsParamTest

@@ -70,14 +70,11 @@ void TokenBindingOAuth2AccessTokenFetcher::CancelRequest() {
   fetcher_->CancelRequest();
 }
 
-std::optional<base::TimeDelta>
-TokenBindingOAuth2AccessTokenFetcher::GetNetworkLatency() const {
-  return fetcher_->GetNetworkLatency();
-}
-
-std::optional<base::TimeDelta>
-TokenBindingOAuth2AccessTokenFetcher::GetChallengeSigningLatency() const {
-  return challenge_signing_latency_;
+OAuth2AccessTokenFetcher::Latencies
+TokenBindingOAuth2AccessTokenFetcher::GetLatencies() const {
+  Latencies latencies = fetcher_->GetLatencies();
+  latencies.challenge_signing = challenge_signing_latency_;
+  return latencies;
 }
 
 base::WeakPtr<TokenBindingOAuth2AccessTokenFetcher>

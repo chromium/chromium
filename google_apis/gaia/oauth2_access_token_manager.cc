@@ -352,17 +352,17 @@ void OAuth2AccessTokenManager::Fetcher::OnGetTokenFailure(
 }
 
 void OAuth2AccessTokenManager::Fetcher::RecordAttemptLatency(bool success) {
-  if (std::optional<base::TimeDelta> network_latency =
-          fetcher_->GetNetworkLatency()) {
+  const OAuth2AccessTokenFetcher::Latencies attempt_latencies =
+      fetcher_->GetLatencies();
+  if (attempt_latencies.network.has_value()) {
     cumulative_latencies_.network =
         cumulative_latencies_.network.value_or(base::TimeDelta()) +
-        *network_latency;
+        *attempt_latencies.network;
   }
-  if (std::optional<base::TimeDelta> challenge_signing_latency =
-          fetcher_->GetChallengeSigningLatency()) {
+  if (attempt_latencies.challenge_signing.has_value()) {
     cumulative_latencies_.challenge_signing =
         cumulative_latencies_.challenge_signing.value_or(base::TimeDelta()) +
-        *challenge_signing_latency;
+        *attempt_latencies.challenge_signing;
   }
 
   // `fetcher_` is only set by `Start()`, right after `attempt_start_time_`, so

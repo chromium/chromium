@@ -20,6 +20,7 @@
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_response.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -195,6 +196,11 @@ OAuth2AccessTokenFetcherImpl::~OAuth2AccessTokenFetcherImpl() = default;
 void OAuth2AccessTokenFetcherImpl::CancelRequest() {
   state_ = GET_ACCESS_TOKEN_CANCELED;
   url_loader_.reset();
+}
+
+OAuth2AccessTokenFetcher::Latencies OAuth2AccessTokenFetcherImpl::GetLatencies()
+    const {
+  return {};
 }
 
 void OAuth2AccessTokenFetcherImpl::Start(

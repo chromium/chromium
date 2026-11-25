@@ -28,6 +28,18 @@ class GoogleServiceAuthError;
 // create multiple instances.
 class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcher {
  public:
+  // Sub-stage latencies measured during this single fetch attempt. Each field
+  // is `std::nullopt` if the corresponding stage did not complete (e.g., if the
+  // request failed immediately, was cancelled, or did not involve that stage).
+  struct Latencies {
+    friend bool operator==(const Latencies&, const Latencies&) = default;
+
+    // Latency of the network request to mint an access token.
+    std::optional<base::TimeDelta> network;
+    // Latency of loading the binding key and signing a token binding challenge.
+    std::optional<base::TimeDelta> challenge_signing;
+  };
+
   explicit OAuth2AccessTokenFetcher(OAuth2AccessTokenConsumer* consumer);
 
   OAuth2AccessTokenFetcher(const OAuth2AccessTokenFetcher&) = delete;
@@ -48,15 +60,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcher {
   // Cancels the current request and informs the consumer.
   virtual void CancelRequest() = 0;
 
-  // Returns the network latency of this fetch attempt, or `std::nullopt` if no
-  // network request completed (e.g., if the request failed immediately or was
-  // cancelled).
-  virtual std::optional<base::TimeDelta> GetNetworkLatency() const;
-
-  // Returns the latency of loading the binding key and signing a token binding
-  // challenge in this fetch attempt, or `std::nullopt` if no challenge signing
-  // completed.
-  virtual std::optional<base::TimeDelta> GetChallengeSigningLatency() const;
+  // Returns sub-stage latencies measured during this fetch attempt.
+  virtual Latencies GetLatencies() const = 0;
 
  protected:
   // Fires |OnGetTokenSuccess| on |consumer_|.

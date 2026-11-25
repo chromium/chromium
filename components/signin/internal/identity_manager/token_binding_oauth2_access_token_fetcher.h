@@ -45,8 +45,7 @@ class TokenBindingOAuth2AccessTokenFetcher : public OAuth2AccessTokenFetcher {
              const std::string& client_secret,
              const std::vector<std::string>& scopes) override;
   void CancelRequest() override;
-  std::optional<base::TimeDelta> GetNetworkLatency() const override;
-  std::optional<base::TimeDelta> GetChallengeSigningLatency() const override;
+  Latencies GetLatencies() const override;
 
   base::WeakPtr<TokenBindingOAuth2AccessTokenFetcher> GetWeakPtr();
 
