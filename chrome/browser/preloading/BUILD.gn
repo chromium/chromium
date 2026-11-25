@@ -87,7 +87,7 @@ if (!is_android) {
       "//chrome/browser/preloading/prefetch:browser_tests",
       "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
       "//chrome/browser/profiles:profile",
-      "//chrome/test:test_support",
+      "//chrome/browser/ui/browser_window",
       "//components/omnibox/browser",
       "//content/public/browser",
       "//content/test:test_support",
