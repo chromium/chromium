@@ -145,10 +145,6 @@ struct Config {
   // a visit can be considered for the same cluster.
   base::TimeDelta cluster_navigation_time_cutoff = base::Minutes(60);
 
-  // The minimum threshold for whether an entity is considered relevant to the
-  // visit.
-  int entity_relevance_threshold = 60;
-
   // Returns the threshold for which we should mark a cluster as being able to
   // show on prominent UI surfaces.
   float content_visibility_threshold = 0.5;
