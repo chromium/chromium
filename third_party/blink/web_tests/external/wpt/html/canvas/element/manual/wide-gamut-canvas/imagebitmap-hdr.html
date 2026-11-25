@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+function createHdrCanvas(toneMappingMode, {offscreen = false} = {}) {
+  let canvas;
+  if (offscreen) {
+    canvas = new OffscreenCanvas(16, 16);
+  } else {
+    canvas = document.createElement('canvas');
+    canvas.width = 16;
+    canvas.height = 16;
+  }
+  const ctx = canvas.getContext('2d', {
+    colorSpace: 'srgb-linear',
+    colorType: 'float16',
+    toneMapping: {mode: toneMappingMode},
+  });
+  ctx.fillStyle = 'color(srgb-linear 16 16 16)';
+  ctx.fillRect(0, 0, 16, 16);
+  return canvas;
+}
+
+const bitmapMethods = [
+  {
+    name: 'createImageBitmap(canvas)',
+    createSource: (mode) => createImageBitmap(createHdrCanvas(mode)),
+  },
+  {
+    name: 'createImageBitmap(OffscreenCanvas)',
+    createSource: (mode) =>
+        createImageBitmap(createHdrCanvas(mode, {offscreen: true})),
+  },
+  {
+    name: 'OffscreenCanvas.transferToImageBitmap',
+    createSource: (mode) =>
+        createHdrCanvas(mode, {offscreen: true}).transferToImageBitmap(),
+  },
+  {
+    name: 'bitmaprenderer.transferFromImageBitmap',
+    createSource: async (mode) => {
+      const bitmap = await createImageBitmap(
+          createHdrCanvas(mode, {offscreen: true}));
+      const dstCanvas = document.createElement('canvas');
+      dstCanvas.width = 16;
+      dstCanvas.height = 16;
+      dstCanvas.getContext('bitmaprenderer').transferFromImageBitmap(bitmap);
+      return dstCanvas;
+    },
+  },
+];
+
+for (const method of bitmapMethods) {
+  promise_test(async () => {
+    const featureCtx = new OffscreenCanvas(1, 1).getContext('2d');
+    assert_implements(
+        featureCtx.getContextAttributes().toneMapping,
+        'CanvasRenderingContext2DSettings.toneMapping not supported');
+
+    const source = await method.createSource('extended');
+
+    const dstCanvas = new OffscreenCanvas(16, 16);
+    const dstCtx = dstCanvas.getContext('2d', {
+      colorSpace: 'srgb-linear',
+      colorType: 'float16',
+    });
+    dstCtx.drawImage(source, 0, 0);
+
+    const data = dstCtx.getImageData(
+        8, 8, 1, 1,
+        {colorSpace: 'srgb-linear', pixelFormat: 'rgba-float16'});
+    for (let c = 0; c < 3; ++c) {
+      assert_approx_equals(
+          data.data[c], 16.0, 0.05, `channel=${c}`);
+    }
+  }, `${method.name} toneMapping=extended`);
+}
+</script>

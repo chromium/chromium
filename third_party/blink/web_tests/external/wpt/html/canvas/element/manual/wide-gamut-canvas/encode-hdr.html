@@ -54,6 +54,29 @@ const encodeMethods = [
   },
 ];
 
+const decodeMethods = [
+  {
+    name: 'HTMLImageElement',
+    decode: async (url) => {
+      const image = new Image();
+      image.src = url;
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = reject;
+      });
+      return image;
+    },
+  },
+  {
+    name: 'createImageBitmap',
+    decode: async (url) => {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      return await createImageBitmap(blob);
+    },
+  },
+];
+
 const toneMappingCases = [
   {mode: 'standard', expected: 1.0, epsilon: 0.05},
   {mode: 'extended', expected: 16.0, epsilon: 1.0},
@@ -61,37 +84,34 @@ const toneMappingCases = [
 
 for (const mimeType of mimeTypes) {
   for (const method of encodeMethods) {
-    for (const toneMappingCase of toneMappingCases) {
-      promise_test(async () => {
-        const featureCtx = new OffscreenCanvas(1, 1).getContext('2d');
-        assert_implements(
-            featureCtx.getContextAttributes().toneMapping,
-            'CanvasRenderingContext2DSettings.toneMapping not supported');
+    for (const decodeMethod of decodeMethods) {
+      for (const toneMappingCase of toneMappingCases) {
+        promise_test(async () => {
+          const featureCtx = new OffscreenCanvas(1, 1).getContext('2d');
+          assert_implements(
+              featureCtx.getContextAttributes().toneMapping,
+              'CanvasRenderingContext2DSettings.toneMapping not supported');
 
-        const url = await method.encode(toneMappingCase.mode, mimeType);
-        const image = new Image();
-        image.src = url;
-        await new Promise((resolve, reject) => {
-          image.onload = resolve;
-          image.onerror = reject;
-        });
+          const url = await method.encode(toneMappingCase.mode, mimeType);
+          const image = await decodeMethod.decode(url);
 
-        const dstCanvas = new OffscreenCanvas(16, 16);
-        const dstCtx = dstCanvas.getContext('2d', {
-          colorSpace: 'srgb-linear',
-          colorType: 'float16',
-        });
-        dstCtx.drawImage(image, 0, 0);
+          const dstCanvas = new OffscreenCanvas(16, 16);
+          const dstCtx = dstCanvas.getContext('2d', {
+            colorSpace: 'srgb-linear',
+            colorType: 'float16',
+          });
+          dstCtx.drawImage(image, 0, 0);
 
-        const data = dstCtx.getImageData(
-            8, 8, 1, 1,
-            {colorSpace: 'srgb-linear', pixelFormat: 'rgba-float16'});
-        for (let c = 0; c < 3; ++c) {
-          assert_approx_equals(
-              data.data[c], toneMappingCase.expected, toneMappingCase.epsilon,
-              `channel=${c}`);
-        }
-      }, `${method.name} ${mimeType} toneMapping=${toneMappingCase.mode}`);
+          const data = dstCtx.getImageData(
+              8, 8, 1, 1,
+              {colorSpace: 'srgb-linear', pixelFormat: 'rgba-float16'});
+          for (let c = 0; c < 3; ++c) {
+            assert_approx_equals(
+                data.data[c], toneMappingCase.expected, toneMappingCase.epsilon,
+                `channel=${c}`);
+          }
+        }, `${method.name} ${decodeMethod.name} ${mimeType} toneMapping=${toneMappingCase.mode}`);
+      }
     }
   }
 }
