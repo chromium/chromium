@@ -47,6 +47,7 @@ void JavaScriptDialogBlockingState::DidStartNavigation(
 void JavaScriptDialogBlockingState::WebStateDestroyed(
     web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
+  blocked_item_ = nullptr;
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 }

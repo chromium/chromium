@@ -5,13 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_DIALOGS_UI_BUNDLED_JAVA_SCRIPT_BLOCKING_FAKE_WEB_STATE_H_
 #define IOS_CHROME_BROWSER_DIALOGS_UI_BUNDLED_JAVA_SCRIPT_BLOCKING_FAKE_WEB_STATE_H_
 
-#import <memory>
-
 #import "base/memory/raw_ptr.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 
 namespace web {
-class NavigationItem;
 class FakeNavigationManager;
 }  // namespace web
 
@@ -29,7 +26,6 @@ class JavaScriptBlockingFakeWebState : public web::FakeWebState {
 
  private:
   raw_ptr<web::FakeNavigationManager> manager_ = nullptr;
-  std::unique_ptr<web::NavigationItem> last_committed_item_;
 };
 
 #endif  // IOS_CHROME_BROWSER_DIALOGS_UI_BUNDLED_JAVA_SCRIPT_BLOCKING_FAKE_WEB_STATE_H_

@@ -4,20 +4,24 @@
 
 #import "ios/chrome/browser/dialogs/ui_bundled/java_script_blocking_fake_web_state.h"
 
-#import "ios/web/public/navigation/navigation_item.h"
+#import <memory>
+#import <utility>
+
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "url/gurl.h"
 
 JavaScriptBlockingFakeWebState::JavaScriptBlockingFakeWebState()
     : web::FakeWebState() {
-  last_committed_item_ = web::NavigationItem::Create();
   auto manager = std::make_unique<web::FakeNavigationManager>();
-  manager->SetLastCommittedItem(last_committed_item_.get());
+  manager->AddItem(GURL(), ui::PAGE_TRANSITION_TYPED);
+  manager->SetLastCommittedItem(
+      manager->GetItemAtIndex(manager->GetLastCommittedItemIndex()));
   manager_ = manager.get();
   SetNavigationManager(std::move(manager));
 }
 
-JavaScriptBlockingFakeWebState::~JavaScriptBlockingFakeWebState() {}
+JavaScriptBlockingFakeWebState::~JavaScriptBlockingFakeWebState() = default;
 
 void JavaScriptBlockingFakeWebState::SimulateNavigationStarted(
     bool renderer_initiated,
@@ -25,8 +29,12 @@ void JavaScriptBlockingFakeWebState::SimulateNavigationStarted(
     ui::PageTransition transition,
     bool change_last_committed_item) {
   if (change_last_committed_item) {
-    last_committed_item_ = web::NavigationItem::Create();
-    manager_->SetLastCommittedItem(last_committed_item_.get());
+    // Store simulated items in `FakeNavigationManager` so previous items
+    // outlive `DidStartNavigation()` and `WebStateDestroyed()`, matching
+    // `NavigationManagerImpl`.
+    manager_->AddItem(GURL(), transition);
+    manager_->SetLastCommittedItem(
+        manager_->GetItemAtIndex(manager_->GetLastCommittedItemIndex()));
   }
   web::FakeNavigationContext context;
   context.SetIsRendererInitiated(renderer_initiated);
