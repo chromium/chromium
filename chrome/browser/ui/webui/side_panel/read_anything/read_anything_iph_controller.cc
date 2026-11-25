@@ -56,37 +56,17 @@ void ReadAnythingIphController::OnDistillationStateChanged(
   distillation_state_ = new_state;
 
   if (new_state == DistillationState::kDistillationEmpty) {
-    ai_playback_iph_timer_.Stop();
-    auto* user_ed = GetUserEducation(read_anything_controller_);
-    if (!user_ed) {
-      return;
-    }
-    user_ed->AbortFeaturePromo(
-        feature_engagement::kIPHReadingModeLineFocusFeature);
-    if (features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled()) {
-      user_ed->AbortFeaturePromo(
-          feature_engagement::kIPHReadingModeAiPlaybackFeature);
-      user_ed->AbortFeaturePromo(
-          feature_engagement::kIPHReadingModeAiPlaybackSettingsFeature);
-    }
+    AbortContentPromos();
     return;
   }
 
-  if (new_state != DistillationState::kDistillationWithContent ||
-      read_anything_controller_->GetPresentationState() ==
-          PresentationState::kInactive) {
+  // The presentation state is set before the host is visible, and
+  // `Activate(true)` shows the content promos once it is, so wait for that
+  // rather than requesting them twice.
+  if (new_state != DistillationState::kDistillationWithContent || !is_shown_) {
     return;
   }
-  auto* user_ed = GetUserEducation(read_anything_controller_);
-  if (!user_ed) {
-    return;
-  }
-
-  // Only show the line focus IPH if there is content because line focus
-  // does not do anything on an empty page.
-  user_ed->MaybeShowFeaturePromo(
-      feature_engagement::kIPHReadingModeLineFocusFeature);
-  MaybeStartAiPlaybackIphTimer();
+  MaybeShowContentPromos();
 }
 
 void ReadAnythingIphController::OnAiPlaybackStateChanged(bool enabled) {
@@ -124,8 +104,17 @@ void ReadAnythingIphController::Activate(
     return;
   }
 
+  is_shown_ = active;
   if (!active) {
-    ai_playback_iph_timer_.Stop();
+    // User education keeps a queued promo until its anchor is visible or it
+    // times out, so abort the promos anchored in Reading Mode once it's hidden.
+    if (auto* user_ed = GetUserEducation(read_anything_controller_)) {
+      user_ed->AbortFeaturePromo(
+          feature_engagement::kIPHReadingModeKeyboardShortcutFeature);
+      user_ed->AbortFeaturePromo(
+          feature_engagement::kIPHReadingModePresentationModeFeature);
+    }
+    AbortContentPromos();
     return;
   }
 
@@ -151,7 +140,33 @@ void ReadAnythingIphController::MaybeShowPresentationPromos() {
         feature_engagement::kIPHReadingModePresentationModeFeature);
   }
   if (distillation_state_ == DistillationState::kDistillationWithContent) {
-    MaybeStartAiPlaybackIphTimer();
+    MaybeShowContentPromos();
+  }
+}
+
+void ReadAnythingIphController::MaybeShowContentPromos() {
+  // Only show the line focus IPH if there is content because line focus
+  // does not do anything on an empty page.
+  if (auto* user_ed = GetUserEducation(read_anything_controller_)) {
+    user_ed->MaybeShowFeaturePromo(
+        feature_engagement::kIPHReadingModeLineFocusFeature);
+  }
+  MaybeStartAiPlaybackIphTimer();
+}
+
+void ReadAnythingIphController::AbortContentPromos() {
+  ai_playback_iph_timer_.Stop();
+  auto* user_ed = GetUserEducation(read_anything_controller_);
+  if (!user_ed) {
+    return;
+  }
+  user_ed->AbortFeaturePromo(
+      feature_engagement::kIPHReadingModeLineFocusFeature);
+  if (features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled()) {
+    user_ed->AbortFeaturePromo(
+        feature_engagement::kIPHReadingModeAiPlaybackFeature);
+    user_ed->AbortFeaturePromo(
+        feature_engagement::kIPHReadingModeAiPlaybackSettingsFeature);
   }
 }
 
@@ -188,8 +203,7 @@ void ReadAnythingIphController::MaybeShowAiPlaybackIph() {
   }
 
   CHECK(features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled());
-  if (read_anything_controller_->GetPresentationState() ==
-          PresentationState::kInactive ||
+  if (!is_shown_ ||
       distillation_state_ != DistillationState::kDistillationWithContent) {
     return;
   }

@@ -50,14 +50,26 @@ class ReadAnythingIphController : public ReadAnythingLifecycleObserver {
 
  private:
   // Shows the promos for the presentation that Reading Mode is shown in, and
-  // starts the AI playback promo timer if there's content.
+  // the content promos if there's content.
   void MaybeShowPresentationPromos();
+
+  // Shows the line focus promo and starts the AI playback promo timer. Only
+  // called when Reading Mode is shown with content.
+  void MaybeShowContentPromos();
+
+  // Aborts the content promos, whether showing or queued, and stops the AI
+  // playback promo timer.
+  void AbortContentPromos();
 
   void MaybeStartAiPlaybackIphTimer();
   void MaybeShowAiPlaybackIph();
 
   // Null once ReadAnythingController is destroyed.
   raw_ptr<ReadAnythingController> read_anything_controller_;
+  // True from `Activate(true)` until `Activate(false)`. Unlike the presentation
+  // state, which only says which host owns the WebUI, this is false until the
+  // host is visible.
+  bool is_shown_ = false;
   // The last distillation state reported.
   read_anything::mojom::ReadAnythingDistillationState distillation_state_ =
       read_anything::mojom::ReadAnythingDistillationState::kUndefined;

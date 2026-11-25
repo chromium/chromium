@@ -158,6 +158,22 @@ class ReadAnythingIphControllerTest : public ChromeRenderViewHostTestHarness {
                 MaybeShowFeaturePromo(MatchFeaturePromoParams(feature)));
   }
 
+  void ExpectAbort(const base::Feature& feature) {
+    EXPECT_CALL(user_ed(), AbortFeaturePromo(testing::Ref(feature)));
+  }
+
+  // Expects every promo anchored in Reading Mode to be aborted, as when it's
+  // hidden.
+  void ExpectAbortAll() {
+    ExpectAbort(feature_engagement::kIPHReadingModeKeyboardShortcutFeature);
+    ExpectAbort(feature_engagement::kIPHReadingModePresentationModeFeature);
+    ExpectAbort(feature_engagement::kIPHReadingModeLineFocusFeature);
+    if (features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled()) {
+      ExpectAbort(feature_engagement::kIPHReadingModeAiPlaybackFeature);
+      ExpectAbort(feature_engagement::kIPHReadingModeAiPlaybackSettingsFeature);
+    }
+  }
+
   void FastForwardBy(base::TimeDelta delta) {
     task_environment()->FastForwardBy(delta);
   }
@@ -229,11 +245,35 @@ TEST_F(ReadAnythingIphControllerTest, ShowsAndAbortsPromos_AiPlaybackFlagOff) {
   VerifyAndClearUserEducation();
 
   // An empty page aborts only the line focus promo.
-  EXPECT_CALL(user_ed(),
-              AbortFeaturePromo(testing::Ref(
-                  feature_engagement::kIPHReadingModeLineFocusFeature)));
+  ExpectAbort(feature_engagement::kIPHReadingModeLineFocusFeature);
   iph_->OnDistillationStateChanged(
       ReadAnythingDistillationState::kDistillationEmpty);
+}
+
+TEST_F(ReadAnythingIphControllerTest, LineFocusPromo_WaitsUntilShown) {
+  // The immersive overlay sets the presentation state before it's visible.
+  // Content arriving then waits for the overlay to show before showing promos.
+  ShowInImmersive();
+  iph_->OnDistillationStateChanged(
+      ReadAnythingDistillationState::kDistillationWithContent);
+  VerifyAndClearUserEducation();
+
+  // Once the overlay is shown, the promo shows for the existing content.
+  ExpectShow(feature_engagement::kIPHReadingModeKeyboardShortcutFeature);
+  ExpectShow(feature_engagement::kIPHReadingModePresentationModeFeature);
+  ExpectShow(feature_engagement::kIPHReadingModeLineFocusFeature);
+  controller_->OnEntryShown(ReadAnythingOpenTrigger::kOmniboxChip);
+  VerifyAndClearUserEducation();
+
+  // Hiding Reading Mode aborts its promos, which might still be queued.
+  // Reopening it on a page that's already distilled shows them again.
+  ExpectAbortAll();
+  controller_->OnEntryHidden();
+  VerifyAndClearUserEducation();
+  ExpectShow(feature_engagement::kIPHReadingModeKeyboardShortcutFeature);
+  ExpectShow(feature_engagement::kIPHReadingModePresentationModeFeature);
+  ExpectShow(feature_engagement::kIPHReadingModeLineFocusFeature);
+  controller_->OnEntryShown(ReadAnythingOpenTrigger::kOmniboxChip);
 }
 
 TEST_F(ReadAnythingIphControllerTest,
@@ -276,9 +316,11 @@ TEST_F(ReadAnythingIphControllerAiPlaybackTest,
   FastForwardBy(kAiPlaybackIphDelay);
   VerifyAndClearUserEducation();
 
-  // Showing Reading Mode with existing content starts the countdown.
+  // Showing Reading Mode with existing content shows the line focus promo and
+  // starts the countdown.
   ShowInSidePanel();
   ExpectShow(feature_engagement::kIPHReadingModeKeyboardShortcutFeature);
+  ExpectShow(feature_engagement::kIPHReadingModeLineFocusFeature);
   controller_->OnEntryShown(ReadAnythingOpenTrigger::kOmniboxChip);
   VerifyAndClearUserEducation();
 
@@ -309,8 +351,10 @@ TEST_F(ReadAnythingIphControllerAiPlaybackTest,
   controller_->OnEntryShown(ReadAnythingOpenTrigger::kOmniboxChip);
   VerifyAndClearUserEducation();
 
+  // The line focus promo's anchor moves to the new host, so it's shown again.
   FastForwardBy(base::Seconds(10));
   ExpectShow(feature_engagement::kIPHReadingModeKeyboardShortcutFeature);
+  ExpectShow(feature_engagement::kIPHReadingModeLineFocusFeature);
   TogglePresentation(/*is_user_initiated=*/true);
   ASSERT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInSidePanel);
@@ -329,31 +373,28 @@ TEST_F(ReadAnythingIphControllerAiPlaybackTest,
 
 TEST_F(ReadAnythingIphControllerAiPlaybackTest,
        AiPlaybackTimer_StopsOnHideOrEmptyOrAiPlaybackEnabled) {
-  // Closing Reading Mode stops the timer.
+  // Closing Reading Mode aborts its promos and stops the timer.
   StartAiPlaybackTimer();
+  ExpectAbortAll();
   controller_->OnEntryHidden();
+  VerifyAndClearUserEducation();
   FastForwardBy(kAiPlaybackIphDelay);
   VerifyAndClearUserEducation();
 
   // Empty distillation aborts the line focus and AI playback promos and stops
   // the timer.
   StartAiPlaybackTimer();
-  EXPECT_CALL(user_ed(),
-              AbortFeaturePromo(testing::Ref(
-                  feature_engagement::kIPHReadingModeLineFocusFeature)));
-  EXPECT_CALL(user_ed(),
-              AbortFeaturePromo(testing::Ref(
-                  feature_engagement::kIPHReadingModeAiPlaybackFeature)));
-  EXPECT_CALL(
-      user_ed(),
-      AbortFeaturePromo(testing::Ref(
-          feature_engagement::kIPHReadingModeAiPlaybackSettingsFeature)));
+  ExpectAbort(feature_engagement::kIPHReadingModeLineFocusFeature);
+  ExpectAbort(feature_engagement::kIPHReadingModeAiPlaybackFeature);
+  ExpectAbort(feature_engagement::kIPHReadingModeAiPlaybackSettingsFeature);
   iph_->OnDistillationStateChanged(
       ReadAnythingDistillationState::kDistillationEmpty);
   VerifyAndClearUserEducation();
   FastForwardBy(kAiPlaybackIphDelay);
   VerifyAndClearUserEducation();
+  ExpectAbortAll();
   controller_->OnEntryHidden();
+  VerifyAndClearUserEducation();
 
   // Turning on AI playback tells user education it was used, then shows the
   // settings promo, and stops the timer.
