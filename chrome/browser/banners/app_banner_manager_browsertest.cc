@@ -67,6 +67,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #endif
@@ -762,6 +763,10 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTest,
   // be separate OS-specific versions of this test for AppBannerManagerDesktop
   // and AppBannerManagerAndroid.
 #if !BUILDFLAG(IS_ANDROID)
+  // Prevent InstallVerifier from disabling the synthetic kInternal extension on
+  // branded Windows/Mac builds if CheckManagementPolicy() runs during the test.
+  extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass;
+
   // Corresponds to the id listed in manifest_listing_related_chrome_app.json.
   const auto extension =
       extensions::ExtensionBuilder("installed related chrome app")

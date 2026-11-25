@@ -156,6 +156,7 @@ if (!is_android) {
       "//content/public/browser",
       "//content/public/common",
       "//content/test:test_support",
+      "//extensions/browser",
       "//extensions/common",
       "//net:test_support",
       "//testing/gtest",
