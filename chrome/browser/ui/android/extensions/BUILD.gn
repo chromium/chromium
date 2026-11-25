@@ -97,6 +97,7 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/ui/browser_window/public/android:browser_window_interface_java",
     "//chrome/browser/ui/browser_window/public/android:java",
     "//chrome/browser/user_education:java",
     "//components/browser_ui/widget/android:java",
@@ -195,6 +196,7 @@ android_library("test_support_java") {
     ]
     deps += [
       "//chrome/browser/flags:java",
+      "//chrome/browser/ui/browser_window/public/android:browser_window_interface_java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//content/public/android:content_full_java",
       "//extensions/browser:extension_action_enums",

@@ -43,6 +43,7 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/ui/android/extensions/browser_window_helper:java",
+    "//chrome/browser/ui/browser_window/public/android:browser_window_interface_java",
     "//chrome/browser/ui/browser_window/public/android:java",
     "//third_party/jni_zero:jni_zero_java",
   ]

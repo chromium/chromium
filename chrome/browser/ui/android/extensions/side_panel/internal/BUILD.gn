@@ -61,6 +61,7 @@ android_library("java") {
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//chrome/browser/ui/android/extensions/side_panel:java",
+    "//chrome/browser/ui/browser_window/public/android:browser_window_interface_java",
     "//chrome/browser/ui/browser_window/public/android:java",
     "//components/embedder_support/android:content_view_java",
     "//components/thin_webview:factory_java",
