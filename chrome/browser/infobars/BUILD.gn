@@ -161,7 +161,10 @@ if (!is_android) {
       "//components/prefs",
       "//content/public/browser",
       "//content/test:test_support",
+      "//testing/gmock",
       "//testing/gtest",
+      "//ui/gfx:test_support",
+      "//ui/gfx/animation",
       "//url",
     ]
 
@@ -174,6 +177,7 @@ if (!is_android) {
 
     if (toolkit_views) {
       deps += [
+        "//chrome/browser/ui/views/frame:contents_web_view",
         "//chrome/browser/ui/views/infobars",
         "//chrome/browser/ui/views/js_optimization",
         "//chrome/browser/ui/views/site_data",

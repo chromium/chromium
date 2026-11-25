@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -126,6 +127,10 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
             const InfoBarSpec::BrowserFilter& browser_filter =
                 InfoBarSpec::BrowserFilter());
 
+  // Populates global infobars on `browser`'s incoming active tab before
+  // `BrowserWindow::OnActiveTabChanged()` swaps its `InfoBarContainer`.
+  void PrepareForActiveTabChange(BrowserWindowInterface* browser);
+
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override;
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
@@ -150,6 +155,7 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
       infobars::InfoBarDelegate::InfoBarIdentifier identifier,
       InfoBarShowParams params);
 
+  void PopulateGlobalInfoBarsForActiveTab(BrowserWindowInterface* browser);
   void OnActiveTabChanged(BrowserWindowInterface* browser);
 
   // Returns true if `spec` is suppressed by enterprise policy. Checked at show
@@ -180,6 +186,10 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   // Tracking for active global infobars and their instances.
   std::map<infobars::InfoBarDelegate::InfoBarIdentifier, GlobalInfoBarContext>
       active_global_infobars_;
+
+  // FIFO `ShowGlobally()` activation order for `active_global_infobars_`.
+  std::vector<infobars::InfoBarDelegate::InfoBarIdentifier>
+      active_global_order_;
 
   // Tab-scoped instances added by Show() or Replace() that are still in their
   // InfoBarManager. An instance leaves when it is removed or replaced, before

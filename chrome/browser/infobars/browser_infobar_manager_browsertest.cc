@@ -5,8 +5,10 @@
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 
 #include <optional>
+#include <utility>
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +21,11 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/browser/ui/views/infobars/confirm_infobar.h"
+#include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -29,15 +36,16 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "url/gurl.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "ui/views/view.h"
-#endif
+#include "ui/views/view_observer.h"
+#include "url/gurl.h"
 
 namespace infobars {
 
@@ -60,6 +68,51 @@ size_t InfoBarCountIn(BrowserWindowInterface* browser) {
       ->infobars()
       .size();
 }
+
+class ViewBoundsAndVisibilityObserver : public views::ViewObserver {
+ public:
+  explicit ViewBoundsAndVisibilityObserver(views::View* view) {
+    observation_.Observe(view);
+  }
+
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view,
+                               bool visible) override {
+    if (observed_view == observation_.GetSource() && !visible) {
+      became_hidden_ = true;
+    }
+  }
+
+  void OnViewBoundsChanged(views::View* observed_view) override {
+    bounds_heights_.push_back(observed_view->bounds().height());
+  }
+
+  void OnViewPreferredSizeChanged(views::View* observed_view) override {
+    preferred_heights_.push_back(observed_view->GetPreferredSize().height());
+  }
+
+  void OnViewIsDeleting(views::View* observed_view) override {
+    observation_.Reset();
+  }
+
+  bool became_hidden() const { return became_hidden_; }
+  const std::vector<int>& bounds_heights() const { return bounds_heights_; }
+  const std::vector<int>& preferred_heights() const {
+    return preferred_heights_;
+  }
+
+  void Reset() {
+    became_hidden_ = false;
+    bounds_heights_.clear();
+    preferred_heights_.clear();
+  }
+
+ private:
+  bool became_hidden_ = false;
+  std::vector<int> bounds_heights_;
+  std::vector<int> preferred_heights_;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
 
 }  // namespace
 
@@ -1499,7 +1552,6 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   EXPECT_EQ(0u, infobar_manager->infobars().size());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, CustomViewCallback) {
   const auto identifier = InfoBarDelegate::TEST_INFOBAR;
   manager()->Register(InfoBarSpec::Builder(identifier)
@@ -1525,7 +1577,6 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, CustomViewCallback) {
   auto* confirm_infobar = static_cast<ConfirmInfoBar*>(infobar);
   EXPECT_EQ(created_view, confirm_infobar->message_view_for_testing());
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
                        HideCalledDuringDismissalDefersRemovalUntilViewReturns) {
@@ -2007,6 +2058,149 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   EXPECT_TRUE(manager()->Replace(non_promo, promo_tab_id));
   EXPECT_TRUE(manager()->ShowGlobally(promo_global_id));
   EXPECT_EQ(2u, infobar_manager->infobars().size());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       GlobalInfoBarDoesNotAnimateOrReflowAcrossTabSwitches) {
+  const auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Global Message")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .SetExpireOnNavigation(false)
+                          .Build());
+
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, /*foreground=*/false);
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
+  ASSERT_EQ(0, browser()->GetTabStripModel()->active_index());
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_NE(nullptr, browser_view);
+  InfoBarContainerView* infobar_container = browser_view->infobar_container();
+  ContentsWebView* contents_view =
+      browser_view->contents_web_view_for_testing();
+  ASSERT_NE(nullptr, infobar_container);
+  ASSERT_NE(nullptr, contents_view);
+
+  const int contents_height_without_infobar = contents_view->bounds().height();
+
+  ASSERT_TRUE(manager()->ShowGlobally(identifier));
+  infobars::InfoBar* initial_infobar =
+      ContentInfoBarManager::FromWebContents(
+          browser()->GetTabStripModel()->GetActiveWebContents())
+          ->infobars()[0];
+  EXPECT_TRUE(initial_infobar->animation_for_testing()->is_animating());
+
+  initial_infobar->animation_for_testing()->End();
+  ASSERT_FALSE(initial_infobar->animation_for_testing()->is_animating());
+
+  const int steady_infobar_height = initial_infobar->target_height();
+  ASSERT_GT(steady_infobar_height, 0);
+  ASSERT_TRUE(infobar_container->GetVisible());
+  ASSERT_EQ(steady_infobar_height, infobar_container->bounds().height());
+
+  const int steady_contents_height = contents_view->bounds().height();
+  EXPECT_LT(steady_contents_height, contents_height_without_infobar);
+
+  ViewBoundsAndVisibilityObserver container_observer(infobar_container);
+  ViewBoundsAndVisibilityObserver contents_observer(contents_view);
+
+  auto verify_tab_switch_stability = [&]() {
+    EXPECT_FALSE(container_observer.became_hidden());
+    EXPECT_THAT(container_observer.bounds_heights(),
+                testing::Each(steady_infobar_height));
+    EXPECT_THAT(container_observer.preferred_heights(),
+                testing::Each(steady_infobar_height));
+    EXPECT_TRUE(infobar_container->GetVisible());
+    EXPECT_EQ(steady_infobar_height, infobar_container->bounds().height());
+
+    auto* active_manager = ContentInfoBarManager::FromWebContents(
+        browser()->GetTabStripModel()->GetActiveWebContents());
+    ASSERT_EQ(1u, active_manager->infobars().size());
+    infobars::InfoBar* active_infobar = active_manager->infobars()[0];
+    EXPECT_FALSE(active_infobar->animation_for_testing()->is_animating());
+    EXPECT_EQ(steady_infobar_height, active_infobar->computed_height());
+
+    EXPECT_THAT(contents_observer.bounds_heights(),
+                testing::Each(steady_contents_height));
+    EXPECT_EQ(steady_contents_height, contents_view->bounds().height());
+
+    container_observer.Reset();
+    contents_observer.Reset();
+  };
+
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  verify_tab_switch_stability();
+
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  verify_tab_switch_stability();
+
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, /*foreground=*/true);
+  ASSERT_EQ(2, browser()->GetTabStripModel()->active_index());
+  verify_tab_switch_stability();
+
+  browser()->GetTabStripModel()->CloseWebContentsAt(2,
+                                                    TabCloseTypes::CLOSE_NONE);
+  ASSERT_EQ(0, browser()->GetTabStripModel()->active_index());
+  auto* active_manager = ContentInfoBarManager::FromWebContents(
+      browser()->GetTabStripModel()->GetActiveWebContents());
+  ASSERT_EQ(1u, active_manager->infobars().size());
+  EXPECT_FALSE(
+      active_manager->infobars()[0]->animation_for_testing()->is_animating());
+  EXPECT_EQ(steady_infobar_height,
+            active_manager->infobars()[0]->computed_height());
+  EXPECT_EQ(steady_infobar_height, infobar_container->bounds().height());
+  EXPECT_EQ(steady_contents_height, contents_view->bounds().height());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       MultipleGlobalInfoBarsPreserveShowOrderAcrossTabSwitch) {
+  constexpr auto lower_id = InfoBarDelegate::TEST_INFOBAR;
+  constexpr auto higher_id =
+      InfoBarDelegate::POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE;
+  static_assert(higher_id > lower_id);
+
+  manager()->Register(InfoBarSpec::Builder(higher_id)
+                          .SetMessageText(u"First Shown Global")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .Build());
+  manager()->Register(InfoBarSpec::Builder(lower_id)
+                          .SetMessageText(u"Second Shown Global")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .Build());
+
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, /*foreground=*/false);
+  ASSERT_EQ(0, browser()->GetTabStripModel()->active_index());
+
+  // Higher ID shown first occupies the single visible kDefault slot.
+  ASSERT_TRUE(manager()->ShowGlobally(higher_id));
+  ASSERT_TRUE(manager()->ShowGlobally(lower_id));
+
+  auto expect_visible_first = [](BrowserWindowInterface* target_browser,
+                                 InfoBarDelegate::InfoBarIdentifier expected) {
+    auto* active_manager = ContentInfoBarManager::FromWebContents(
+        target_browser->GetTabStripModel()->GetActiveWebContents());
+    ASSERT_EQ(2u, active_manager->infobars().size());
+    EXPECT_EQ(expected, active_manager->infobars()[0]->GetIdentifier());
+
+    InfoBarContainerView* container =
+        BrowserView::GetBrowserViewForBrowser(target_browser)
+            ->infobar_container();
+    // Children are visible InfoBarViews followed by the trailing shadow view.
+    ASSERT_EQ(2u, container->children().size());
+    EXPECT_EQ(expected, static_cast<InfoBarView*>(container->children().front())
+                            ->GetIdentifier());
+  };
+
+  expect_visible_first(browser(), higher_id);
+
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  expect_visible_first(browser(), higher_id);
+
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
+  expect_visible_first(browser2, higher_id);
 }
 
 }  // namespace infobars

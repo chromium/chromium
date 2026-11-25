@@ -4,16 +4,20 @@
 
 #include <memory>
 
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
+#include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_controller.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
@@ -32,7 +36,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace session_restore_infobar {
@@ -40,6 +49,40 @@ namespace session_restore_infobar {
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTabContents);
+
+class ViewBoundsAndVisibilityObserver : public views::ViewObserver {
+ public:
+  void Observe(views::View* view, int expected_height) {
+    expected_height_ = expected_height;
+    observation_.Observe(view);
+  }
+
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view,
+                               bool visible) override {
+    if (observed_view == observation_.GetSource() && !visible) {
+      collapsed_or_resized_ = true;
+    }
+  }
+
+  void OnViewBoundsChanged(views::View* observed_view) override {
+    if (observed_view->bounds().height() != expected_height_) {
+      collapsed_or_resized_ = true;
+    }
+  }
+
+  void OnViewIsDeleting(views::View* observed_view) override {
+    observation_.Reset();
+  }
+
+  bool collapsed_or_resized() const { return collapsed_or_resized_; }
+
+ private:
+  int expected_height_ = 0;
+  bool collapsed_or_resized_ = false;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
 }  // namespace
 
 class SessionRestoreInfobarInteractiveTest
@@ -404,5 +447,80 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          SessionRestoreInfobarInteractiveTest,
                          testing::Bool());
+
+class SessionRestoreInfobarCentralizedInteractiveTest
+    : public InteractiveBrowserTest {
+ protected:
+  SessionRestoreInfobarCentralizedInteractiveTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSessionRestoreInfobar,
+          {{features::kSetDefaultToContinueSession.name, "true"}}},
+         {infobars::kCentralizedInfoBarFramework,
+          {{"MigratedSessionRestore", "true"}}}},
+        {omnibox::kOmniboxEverywhere});
+  }
+  ~SessionRestoreInfobarCentralizedInteractiveTest() override = default;
+
+  void CreateInfobar(BrowserWindowInterface* browser,
+                     bool is_post_crash_launch) {
+    auto* controller =
+        session_restore_infobar::SessionRestoreInfobarController::From(browser);
+    controller->MaybeShowInfoBar(*browser->GetProfile(), is_post_crash_launch);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreInfobarCentralizedInteractiveTest,
+                       DoesNotAnimateOrCollapseAcrossTabSwitches) {
+  const auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+
+  ViewBoundsAndVisibilityObserver container_observer;
+  int steady_height = 0;
+
+  CreateInfobar(browser(), false);
+
+  RunTestSequence(
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+      WithView(ConfirmInfoBar::kInfoBarElementId,
+               [&](ConfirmInfoBar* infobar) {
+                 infobar->animation_for_testing()->End();
+                 steady_height = infobar->target_height();
+               }),
+      WithView(kInfoBarContainerElementId,
+               [&](InfoBarContainerView* container) {
+                 container->GetWidget()->LayoutRootViewIfNecessary();
+                 ASSERT_GT(steady_height, 0);
+                 ASSERT_EQ(steady_height, container->bounds().height());
+                 container_observer.Observe(container, steady_height);
+               }),
+      AddInstrumentedTab(kSecondTabContents, GURL("about:blank")),
+      CheckView(ConfirmInfoBar::kInfoBarElementId,
+                [&](ConfirmInfoBar* infobar) {
+                  return !infobar->animation_for_testing()->is_animating() &&
+                         infobar->computed_height() == steady_height;
+                }),
+      AddInstrumentedTab(kThirdTabContents, GURL("about:blank")),
+      CheckView(ConfirmInfoBar::kInfoBarElementId,
+                [&](ConfirmInfoBar* infobar) {
+                  return !infobar->animation_for_testing()->is_animating() &&
+                         infobar->computed_height() == steady_height;
+                }),
+      SelectTab(kTabStripElementId, 0),
+      CheckView(ConfirmInfoBar::kInfoBarElementId,
+                [&](ConfirmInfoBar* infobar) {
+                  return !infobar->animation_for_testing()->is_animating() &&
+                         infobar->computed_height() == steady_height;
+                }),
+      SelectTab(kTabStripElementId, 1),
+      CheckView(ConfirmInfoBar::kInfoBarElementId,
+                [&](ConfirmInfoBar* infobar) {
+                  return !infobar->animation_for_testing()->is_animating() &&
+                         infobar->computed_height() == steady_height;
+                }),
+      Check([&]() { return !container_observer.collapsed_or_resized(); }));
+}
 
 }  // namespace session_restore_infobar

@@ -239,6 +239,28 @@ class DetachedWebContentsActionObserver : public InfoBarManager::Observer {
       observation_{this};
 };
 
+class HideOnAddObserver : public InfoBarManager::Observer {
+ public:
+  HideOnAddObserver(InfoBarManager* tab_manager,
+                    BrowserInfoBarManager* browser_manager,
+                    InfoBarDelegate::InfoBarIdentifier identifier)
+      : browser_manager_(browser_manager), identifier_(identifier) {
+    observation_.Observe(tab_manager);
+  }
+
+  void OnInfoBarAdded(InfoBar* infobar) override {
+    if (infobar->GetIdentifier() == identifier_) {
+      browser_manager_->Hide(identifier_);
+    }
+  }
+
+ private:
+  raw_ptr<BrowserInfoBarManager> browser_manager_;
+  InfoBarDelegate::InfoBarIdentifier identifier_;
+  base::ScopedObservation<InfoBarManager, InfoBarManager::Observer>
+      observation_{this};
+};
+
 }  // namespace
 
 class BrowserInfoBarManagerUnitTest : public testing::Test {
@@ -1166,6 +1188,135 @@ TEST_F(BrowserInfoBarManagerUnitTest, ShowAndHideForNonTabWebContents) {
   EXPECT_EQ(0u, content_manager->infobars().size());
 
   webui::SetBrowserWindowInterface(side_panel_contents.get(), nullptr);
+}
+
+TEST_F(BrowserInfoBarManagerUnitTest,
+       PrepareForActiveTabChangePopulatesIncomingTabAndPreservesOrder) {
+  EXPECT_EQ(nullptr, BrowserInfoBarManager::From(nullptr));
+
+  constexpr auto lower_id = InfoBarDelegate::TEST_INFOBAR;
+  constexpr auto higher_id = InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE;
+  static_assert(higher_id > lower_id);
+
+  std::vector<InfoBarResult> results;
+  auto record_result = base::BindLambdaForTesting(
+      [&](content::WebContents*, InfoBarResult result) {
+        results.push_back(result);
+      });
+
+  auto browser_filter =
+      base::BindLambdaForTesting([](BrowserWindowInterface* bwi) {
+        return bwi->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
+      });
+
+  manager()->Register(InfoBarSpec::Builder(higher_id)
+                          .SetMessageText(u"First Global")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .SetBrowserFilter(browser_filter)
+                          .SetResultCallback(record_result)
+                          .Build());
+  manager()->Register(InfoBarSpec::Builder(lower_id)
+                          .SetMessageText(u"Second Global")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .SetBrowserFilter(browser_filter)
+                          .SetResultCallback(record_result)
+                          .Build());
+
+  auto fake_browser = CreateBrowserWindow();
+  content::WebContents* tab0 = fake_browser->AddTab(/*foreground=*/true);
+  content::WebContents* tab1 = fake_browser->AddTab(/*foreground=*/false);
+
+  manager()->PrepareForActiveTabChange(&fake_browser->window());
+  EXPECT_EQ(0u,
+            ContentInfoBarManager::FromWebContents(tab0)->infobars().size());
+
+  ASSERT_TRUE(manager()->ShowGlobally(higher_id));
+  ASSERT_TRUE(manager()->ShowGlobally(lower_id));
+
+  auto* tab0_manager = ContentInfoBarManager::FromWebContents(tab0);
+  auto* tab1_manager = ContentInfoBarManager::FromWebContents(tab1);
+  ASSERT_EQ(2u, tab0_manager->infobars().size());
+  EXPECT_EQ(higher_id, tab0_manager->infobars()[0]->GetIdentifier());
+  EXPECT_EQ(lower_id, tab0_manager->infobars()[1]->GetIdentifier());
+  EXPECT_EQ(0u, tab1_manager->infobars().size());
+
+  // Mirror Browser::OnActiveTabChanged(): prepare before notifying.
+  fake_browser->tab_strip_model().ActivateTabAt(1);
+  manager()->PrepareForActiveTabChange(&fake_browser->window());
+
+  ASSERT_EQ(2u, tab1_manager->infobars().size());
+  infobars::InfoBar* tab1_first = tab1_manager->infobars()[0];
+  infobars::InfoBar* tab1_second = tab1_manager->infobars()[1];
+  EXPECT_EQ(higher_id, tab1_first->GetIdentifier());
+  EXPECT_EQ(lower_id, tab1_second->GetIdentifier());
+  EXPECT_EQ(2u, tab0_manager->infobars().size());
+
+  fake_browser->NotifyActiveTabChanged();
+
+  EXPECT_EQ(0u, tab0_manager->infobars().size());
+  ASSERT_EQ(2u, tab1_manager->infobars().size());
+  EXPECT_EQ(tab1_first, tab1_manager->infobars()[0]);
+  EXPECT_EQ(tab1_second, tab1_manager->infobars()[1]);
+  EXPECT_TRUE(results.empty());
+
+  auto popup_browser =
+      CreateBrowserWindow(BrowserWindowInterface::Type::TYPE_POPUP);
+  std::unique_ptr<tabs::TabModel> detached =
+      fake_browser->tab_strip_model().DetachTabAtForInsertion(1);
+  popup_browser->tab_strip_model().AppendTab(std::move(detached),
+                                             /*foreground=*/true);
+  manager()->PrepareForActiveTabChange(&popup_browser->window());
+  popup_browser->NotifyActiveTabChanged();
+  EXPECT_EQ(0u, tab1_manager->infobars().size());
+  EXPECT_TRUE(results.empty());
+
+  manager()->Hide(higher_id);
+  manager()->Hide(lower_id);
+}
+
+TEST_F(BrowserInfoBarManagerUnitTest,
+       PrepareForActiveTabChangeHandlesReentrantHideDuringCreationOrAdd) {
+  constexpr auto custom_view_hide_id = InfoBarDelegate::TEST_INFOBAR;
+  constexpr auto observer_hide_id =
+      InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE;
+
+  bool hide_in_custom_view = false;
+  manager()->Register(
+      InfoBarSpec::Builder(custom_view_hide_id)
+          .SetMessageText(u"Hide In Custom View")
+          .SetScope(InfoBarScope::kGlobal)
+          .SetCustomViewCallback(base::BindLambdaForTesting(
+              [&](content::WebContents*) -> std::unique_ptr<views::View> {
+                if (hide_in_custom_view) {
+                  manager()->Hide(custom_view_hide_id);
+                }
+                return nullptr;
+              }))
+          .Build());
+  manager()->Register(InfoBarSpec::Builder(observer_hide_id)
+                          .SetMessageText(u"Hide In Observer")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .Build());
+
+  auto fake_browser = CreateBrowserWindow();
+  content::WebContents* tab0 = fake_browser->AddTab(/*foreground=*/true);
+  content::WebContents* tab1 = fake_browser->AddTab(/*foreground=*/false);
+  auto* tab0_manager = ContentInfoBarManager::FromWebContents(tab0);
+  auto* tab1_manager = ContentInfoBarManager::FromWebContents(tab1);
+
+  ASSERT_TRUE(manager()->ShowGlobally(custom_view_hide_id));
+  ASSERT_TRUE(manager()->ShowGlobally(observer_hide_id));
+  ASSERT_EQ(2u, tab0_manager->infobars().size());
+
+  hide_in_custom_view = true;
+  HideOnAddObserver hide_on_add(tab1_manager, manager(), observer_hide_id);
+
+  fake_browser->tab_strip_model().ActivateTabAt(1);
+  manager()->PrepareForActiveTabChange(&fake_browser->window());
+  fake_browser->NotifyActiveTabChanged();
+
+  EXPECT_EQ(0u, tab0_manager->infobars().size());
+  EXPECT_EQ(0u, tab1_manager->infobars().size());
 }
 
 }  // namespace infobars

@@ -78,6 +78,7 @@ class InfoBar : public gfx::AnimationDelegate {
   void SetTargetHeight(int height);
 
   const gfx::SlideAnimation& animation() const { return animation_; }
+  gfx::SlideAnimation* animation_for_testing() { return &animation_; }
   int computed_height() const { return height_; }
   int target_height() const { return target_height_; }
 
