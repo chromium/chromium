@@ -96,6 +96,28 @@
  *         this.$.myElement,
  *         'my-custom-event-name');
  *     ```
+ *
+ * ## Anchored dialogs and focus traversal
+ *
+ * When the browser anchors a dialog that can take focus (e.g. a bubble) to a
+ * tracked element, the dialog becomes part of this document's sequential focus
+ * navigation, right after the element and all of its descendants, the same
+ * way views::FocusSearch handles dialogs anchored to Views. To let Blink do
+ * the ordering, an empty focusable element (a sentinel) is inserted right
+ * after the tracked element while the dialog is there. When Tab or Shift+Tab
+ * moves focus to it, the browser is asked to move focus on into the dialog.
+ *
+ * This means that while the dialog is there, the parent of the tracked element
+ * has a child that it didn't create. Code that owns the parent should not
+ * assume that all children are its own (e.g. it should select its children by
+ * tag name instead of using `children`), and should keep the sentinel right
+ * after the element. Lit templates do the latter already: Lit removes and
+ * moves ranges of nodes (see `ChildPart`), which the sentinel is in if and
+ * only if the element is, so the sentinel is removed and moved together with
+ * the element.
+ *
+ * If other code separates the two, the sentinel is put back when Tab is
+ * pressed, with a warning in the console.
  */
 
 import type {InsetsF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
@@ -103,7 +125,8 @@ import {InputType, TextEntryMode} from '//resources/mojo/ui/webui/resources/js/t
 import type {TrackedElementHandlerInterface, TrackedElementIdentifier} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 
 import {assert} from '../assert.js';
-import {debounceEnd} from '../util.js';
+import {isMac} from '../platform.js';
+import {debounceEnd, getDeepActiveElement} from '../util.js';
 
 import {TrackedElementProxyImpl} from './tracked_element_proxy.js';
 
@@ -189,6 +212,19 @@ interface TrackedElementData {
   onHighlightChanged?: HighlightChangedCallback;
   lastReportedVisible?: boolean;
   lastReportedBounds?: RectF;
+  // Set while the browser has a dialog anchored to the element that takes part
+  // in sequential focus navigation: an empty focusable element right after the
+  // element, which stands in for the dialog in this document's focus order.
+  dialogSentinel?: HTMLElement;
+  // The element that had focus before Tab moved focus to `dialogSentinel`, if
+  // known. Focus goes back to it once the dialog has taken focus.
+  focusedBeforeDialog?: HTMLElement;
+}
+
+/** A Tab key press that is about to move focus. */
+interface PendingTabKey {
+  origin: EventTarget|undefined;
+  reverse: boolean;
 }
 
 /**
@@ -274,6 +310,7 @@ export class TrackedElementManager {
   // Observes document subtree for detached elements being added to DOM.
   private documentMutationObserver_: MutationObserver;
   private debouncedUpdateAllBoundsCallback_: () => void;
+  private pendingTabKey_: PendingTabKey|null = null;
 
   private constructor() {
     this.trackedElementHandler_ =
@@ -283,6 +320,8 @@ export class TrackedElementManager {
         callbackRouter.$.bindNewPipeAndPassRemote());
     callbackRouter.onElementHighlightChanged.addListener(
         this.onElementHighlightChanged_.bind(this));
+    callbackRouter.onElementAnchoredDialogChanged.addListener(
+        this.onElementAnchoredDialogChanged_.bind(this));
     callbackRouter.clickElement.addListener(this.clickElement_.bind(this));
     callbackRouter.focusElement.addListener(this.focusElement_.bind(this));
     callbackRouter.selectTab.addListener(this.selectTab_.bind(this));
@@ -357,6 +396,37 @@ export class TrackedElementManager {
     // Observe the entire document to catch detached elements being added.
     this.documentMutationObserver_.observe(
         document, {childList: true, subtree: true});
+
+    // Remembers the Tab key press that is about to move focus, for
+    // `onDialogSentinelFocused_()`. If it does, that happens right after the
+    // event is dispatched, before the timeout. This doesn't handle the event,
+    // and listens in the capture phase so that it also sees key presses whose
+    // propagation is stopped by the element that handles them.
+    window.addEventListener('keydown', e => {
+      // Aligned with KeyboardEventManager::DefaultTabEventHandler() in Blink,
+      // which doesn't move focus when Tab is pressed with Ctrl or Meta, or with
+      // Alt except on Mac, where Option-Tab moves focus too.
+      if (e.key === 'Tab' && !e.ctrlKey && !e.metaKey && (isMac || !e.altKey)) {
+        // Blink only looks for the next element once the event has been
+        // dispatched, so it finds the sentinels that this puts back.
+        this.repairDialogSentinels_();
+        this.pendingTabKey_ = {
+          origin: e.composedPath()[0],
+          reverse: e.shiftKey,
+        };
+        setTimeout(() => this.pendingTabKey_ = null);
+      }
+    }, {capture: true});
+
+    // This document loses focus when focus moves on into a dialog. Don't leave
+    // it on the dialog's sentinel, so that when the document gets focus back,
+    // it is where it was before, like when a dialog is entered in any other
+    // way.
+    window.addEventListener('blur', () => {
+      for (const data of this.trackedElements_.values()) {
+        data.elements.forEach(el => this.leaveDialogSentinel_(el));
+      }
+    });
   }
 
   static getElementId(element: HTMLElement): TrackedElementIdentifier
@@ -444,6 +514,9 @@ export class TrackedElementManager {
     this.documentMutationObserver_.disconnect();
     document.removeEventListener(
         'scroll', this.debouncedUpdateAllBoundsCallback_);
+    for (const data of this.trackedElements_.values()) {
+      data.elements.forEach(el => this.removeDialogSentinel_(el));
+    }
     this.trackedElements_.clear();
 
     // Reconnect global observers after clearing.
@@ -626,6 +699,11 @@ export class TrackedElementManager {
     const wasVisible = trackedElement.visible;
     trackedElement.visible = visible;
     trackedElement.bounds = bounds;
+    if (!visible) {
+      // The browser drops its element (and with it, any anchored dialog) when
+      // told that the element is no longer visible.
+      this.removeDialogSentinel_(trackedElement);
+    }
     if (visible && !wasVisible && trackedElement.onHighlightChanged) {
       // The C++ tracker drops its state when it is destroyed and recreated
       // during a visibility bounce (e.g., from a 0x0 size during a CSS
@@ -672,6 +750,124 @@ export class TrackedElementManager {
     if (maybeCallback) {
       maybeCallback(highlighted, trackedElement.element);
     }
+  }
+
+  /* Called from browser when an anchored dialog is added or removed. */
+  private onElementAnchoredDialogChanged_(
+      id: TrackedElementIdentifier, hasAnchoredDialog: boolean) {
+    const trackedElement = this.getDataForId_(id);
+    if (!trackedElement) {
+      return;
+    }
+    if (!hasAnchoredDialog) {
+      this.removeDialogSentinel_(trackedElement);
+      return;
+    }
+    if (trackedElement.dialogSentinel) {
+      return;
+    }
+
+    const sentinel = document.createElement('div');
+    sentinel.tabIndex = 0;
+    // Empty and out of flow, so that it doesn't affect layout.
+    sentinel.style.position = 'absolute';
+    sentinel.style.outline = 'none';
+    sentinel.slot = trackedElement.element.slot;
+    sentinel.addEventListener(
+        'focus', () => this.onDialogSentinelFocused_(trackedElement));
+    // See the file overview for what keeps the sentinel there.
+    trackedElement.element.after(sentinel);
+    trackedElement.dialogSentinel = sentinel;
+  }
+
+  private removeDialogSentinel_(trackedElement: TrackedElementData) {
+    if (trackedElement.dialogSentinel) {
+      this.leaveDialogSentinel_(trackedElement);
+      trackedElement.dialogSentinel.remove();
+      trackedElement.dialogSentinel = undefined;
+    }
+  }
+
+  /**
+   * Puts the sentinels that are no longer right after their elements back
+   * there. This is for code that changes the DOM around a tracked element
+   * without knowing about the sentinel. See the file overview.
+   */
+  private repairDialogSentinels_() {
+    for (const data of this.trackedElements_.values()) {
+      for (const trackedElement of data.elements.values()) {
+        const {element, dialogSentinel} = trackedElement;
+        // An element that isn't in the document loses its sentinel when it is
+        // found to no longer be visible.
+        if (!dialogSentinel || !element.isConnected ||
+            element.nextSibling === dialogSentinel) {
+          continue;
+        }
+        console.warn(
+            `TrackedElementManager: The dialog sentinel of ${
+                TrackedElementManager.idToString_(
+                    TrackedElementManager.elementToIdentifier_(
+                        trackedElement))} was no longer right after the ` +
+            `element. See "Anchored dialogs and focus traversal" in ` +
+            `tracked_element_manager.ts.`);
+        element.after(dialogSentinel);
+      }
+    }
+  }
+
+  /**
+   * If the dialog sentinel of `trackedElement` has focus, moves focus back to
+   * the element that had it before Tab moved it to the sentinel, e.g. to the
+   * anchor if Tab was pressed on it.
+   *
+   * Normally this is called when this document has just lost focus to the
+   * dialog. Changing the focused element of a document that doesn't have focus
+   * dispatches no focus events and shows no focus ring. It only decides where
+   * focus is once the document gets focus back, e.g. when the dialog closes.
+   */
+  private leaveDialogSentinel_(trackedElement: TrackedElementData) {
+    const sentinel = trackedElement.dialogSentinel;
+    const focusedBefore = trackedElement.focusedBeforeDialog;
+    trackedElement.focusedBeforeDialog = undefined;
+    if (!sentinel || getDeepActiveElement() !== sentinel) {
+      return;
+    }
+    if (focusedBefore?.isConnected) {
+      focusedBefore.focus({focusVisible: true});
+    } else {
+      sentinel.blur();
+    }
+  }
+
+  private onDialogSentinelFocused_(trackedElement: TrackedElementData) {
+    const sentinel = trackedElement.dialogSentinel;
+    const tabKey = this.pendingTabKey_;
+    this.pendingTabKey_ = null;
+    trackedElement.focusedBeforeDialog =
+        tabKey?.origin instanceof HTMLElement ? tabKey.origin : undefined;
+    // Focus stays on the sentinel for now. `leaveDialogSentinel_()` moves it
+    // back to `focusedBeforeDialog` once the dialog has taken focus, which is
+    // when this document loses focus (see the 'blur' listener in the
+    // constructor). Doing that here, while this document still has focus,
+    // would dispatch focus events on that element as if it had been focused
+    // again. If the dialog can't take focus, the sentinel is removed below,
+    // which also moves focus back.
+    //
+    // Without a key press, focus came from outside of this document. The
+    // sentinel of a dialog is rarely the first thing in a document, so assume
+    // that focus is going backwards.
+    this.trackedElementHandler_
+        .focusAnchoredDialog(
+            TrackedElementManager.elementToIdentifier_(trackedElement),
+            /*reverse=*/ tabKey ? tabKey.reverse : true)
+        .then(({success}) => {
+          // The dialog didn't take focus, e.g. because it went away in the
+          // meantime. Removing the sentinel moves focus back to where it was,
+          // so this key press is lost, but the next one moves past the anchor.
+          if (!success && trackedElement.dialogSentinel === sentinel) {
+            this.removeDialogSentinel_(trackedElement);
+          }
+        });
   }
 
   private async waitUntilNotDisabled_(

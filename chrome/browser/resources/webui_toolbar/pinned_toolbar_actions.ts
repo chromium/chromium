@@ -61,9 +61,14 @@ export class PinnedToolbarActionsElement extends
         s => s.key === PinnedToolbarAction.kDivider.toString());
   }
 
+  // OverflowableToolbarActionContainerMixin override. Selects the actions and
+  // the dividers by tag name, since they may not be the only children:
+  // TrackedElementManager adds an element after an action while a dialog is
+  // anchored to it.
   override getActions(): OverflowableToolbarActionElement[] {
-    return Array.from(this.shadowRoot.children) as
-        OverflowableToolbarActionElement[];
+    return Array.from(
+        this.shadowRoot.querySelectorAll<OverflowableToolbarActionElement>(
+            `${this.childTagName}, toolbar-divider`));
   }
 
   // ToolbarActionContainerMixin override

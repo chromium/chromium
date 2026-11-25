@@ -48,6 +48,7 @@ class TestTrackedElementHandler extends TestBrowserProxy implements
       'trackedElementActivated',
       'trackedElementCustomEvent',
       'trackedElementCanHighlightChanged',
+      'focusAnchoredDialog',
     ]);
   }
 
@@ -75,6 +76,11 @@ class TestTrackedElementHandler extends TestBrowserProxy implements
       id: TrackedElementIdentifier, canHighlight: boolean) {
     this.methodCalled(
         'trackedElementCanHighlightChanged', id.nativeIdentifier, canHighlight);
+  }
+
+  focusAnchoredDialog(id: TrackedElementIdentifier, reverse: boolean) {
+    this.methodCalled('focusAnchoredDialog', id.nativeIdentifier, reverse);
+    return Promise.resolve({success: false});
   }
 }
 
