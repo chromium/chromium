@@ -28,6 +28,7 @@ BASE_FEATURE(kSettingsSuperchargedSearchJourney,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCustomizeChromeJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kReadAnythingJourney, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSplitViewJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabSearchJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // HaTS.
@@ -53,6 +54,10 @@ const char kHatsSurveyTriggerCustomizeChromeJourney[] =
 BASE_FEATURE(kHappinessTrackingSurveysForReadAnythingJourney,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const char kHatsSurveyTriggerReadAnythingJourney[] = "read-anything-journey";
+
+BASE_FEATURE(kHappinessTrackingSurveysForSplitViewJourney,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kHatsSurveyTriggerSplitViewJourney[] = "split-view-journey";
 
 BASE_FEATURE(kHappinessTrackingSurveysForTabSearchJourney,
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -104,6 +104,7 @@ class SharingWindowController;
 class SidePanelRegistry;
 class SidePanelUI;
 class SigninViewController;
+class SplitViewCujController;
 class SplitViewIphController;
 class TabDragServiceFeature;
 class TabGroupFocusIphController;
@@ -448,6 +449,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<SharingWindowController> sharing_window_controller_;
   std::unique_ptr<SidePanelRegistry> side_panel_registry_;
   std::unique_ptr<SigninViewController> signin_view_controller_;
+  std::unique_ptr<SplitViewCujController> split_view_cuj_controller_;
   std::unique_ptr<SplitViewIphController> split_view_iph_controller_;
   std::unique_ptr<BrowserSyncedWindowDelegate> synced_window_delegate_;
   std::unique_ptr<TabDragServiceFeature> tab_drag_service_feature_;

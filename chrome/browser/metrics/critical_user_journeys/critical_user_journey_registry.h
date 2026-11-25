@@ -76,6 +76,21 @@ enum class ReadAnythingJourneySteps {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SplitViewJourneySteps)
+enum class SplitViewJourneySteps {
+  kEnteredViaTabContextMenu = 1,
+  kEnteredViaToolbar = 2,
+  kEnteredViaDragLink = 3,
+  kEnteredViaLinkContextMenu = 4,
+  kEnteredViaOther = 5,
+  kSustainedComparison = 6,
+  kExitedOnNtp = 7,
+  kExitedEarly = 8,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:SplitViewJourneySteps)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // LINT.IfChange(TabSearchJourneySteps)
 enum class TabSearchJourneySteps {
   kOpenTabSearch = 1,

@@ -25,6 +25,7 @@ BASE_DECLARE_FEATURE(kSettingsSitesDashboardJourney);
 BASE_DECLARE_FEATURE(kSettingsSuperchargedSearchJourney);
 BASE_DECLARE_FEATURE(kCustomizeChromeJourney);
 BASE_DECLARE_FEATURE(kReadAnythingJourney);
+BASE_DECLARE_FEATURE(kSplitViewJourney);
 BASE_DECLARE_FEATURE(kTabSearchJourney);
 
 // HaTS Survey feature flags.
@@ -42,6 +43,9 @@ extern const char kHatsSurveyTriggerCustomizeChromeJourney[];
 
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForReadAnythingJourney);
 extern const char kHatsSurveyTriggerReadAnythingJourney[];
+
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForSplitViewJourney);
+extern const char kHatsSurveyTriggerSplitViewJourney[];
 
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForTabSearchJourney);
 extern const char kHatsSurveyTriggerTabSearchJourney[];

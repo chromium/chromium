@@ -81,9 +81,13 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/hats:test_support",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_menu",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support",
     "//components/keyed_service/content",
+    "//components/prefs",
     "//content/test:test_support",
     "//ui/base/interaction",
   ]

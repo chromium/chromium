@@ -42,6 +42,7 @@ chromium-metrics-reviews@google.com.
       summary="Settings Sites Dashboard &amp; Permissions"/>
   <variant name="SettingsSuperchargedSearchJourney"
       summary="Settings Supercharged Search"/>
+  <variant name="SplitViewJourney" summary="Split View"/>
   <variant name="TabSearchJourney" summary="Tab Search &amp; Switch Tab"/>
   <variant name="ViewDownloadedFileFromAppMenuJourney"/>
   <variant name="ViewDownloadedFileJourney"/>
@@ -157,6 +158,16 @@ chromium-metrics-reviews@google.com.
   <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
 </histogram>
 
+<histogram name="CriticalUserJourney.SplitViewJourney.{StepAction}"
+    enum="SplitViewJourneySteps" expires_after="2027-05-17">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a step is {StepAction} in the SplitViewJourney.
+  </summary>
+  <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
+</histogram>
+
 <histogram name="CriticalUserJourney.TabSearchJourney.{StepAction}"
     enum="TabSearchJourneySteps" expires_after="2027-11-23">
   <owner>dljames@chromium.org</owner>
@@ -244,12 +255,16 @@ chromium-metrics-reviews@google.com.
     <variant name="2"/>
     <variant name="3"/>
     <variant name="4"/>
+    <variant name="5"/>
   </token>
   <token key="ToStep">
     <variant name="2"/>
     <variant name="3"/>
     <variant name="4"/>
     <variant name="5"/>
+    <variant name="6"/>
+    <variant name="7"/>
+    <variant name="8"/>
   </token>
 </histogram>
 

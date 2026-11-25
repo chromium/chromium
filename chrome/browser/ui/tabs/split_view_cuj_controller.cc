@@ -32,6 +32,8 @@
 namespace {
 
 const void* const kProfileSplitViewCujStateKey = &kProfileSplitViewCujStateKey;
+base::TimeDelta g_sustained_delay =
+    SplitViewCujController::kDefaultSustainedComparisonDelay;
 
 class SplitPaneNavObserver : public content::WebContentsObserver {
  public:
@@ -158,7 +160,7 @@ struct ProfileSplitViewCujState : public base::SupportsUserData::Data {
     if (FindVisiblePopulatedElements()) {
       if (!sustained_timer.IsRunning()) {
         sustained_timer.Start(
-            FROM_HERE, SplitViewCujController::kDefaultSustainedComparisonDelay,
+            FROM_HERE, g_sustained_delay,
             base::BindOnce(&ProfileSplitViewCujState::OnTimerFired,
                            base::Unretained(this)));
       }
@@ -270,6 +272,13 @@ void SplitViewCujController::OnTabStripModelChanged(
       state && state->active_splits.contains(*split_id)) {
     state->Refresh();
   }
+}
+
+// static
+base::AutoReset<base::TimeDelta>
+SplitViewCujController::SetSustainedComparisonDelayForTesting(
+    base::TimeDelta delay) {
+  return base::AutoReset<base::TimeDelta>(&g_sustained_delay, delay);
 }
 
 void SplitViewCujController::OnSplitTabChanged(const SplitTabChange& change) {

@@ -40,6 +40,9 @@ void CriticalUserJourneyRegistry::AddJourneys() {
   read_anything_hats_params.trigger =
       metrics::kHatsSurveyTriggerReadAnythingJourney;
 
+  HatsParams split_view_hats_params;
+  split_view_hats_params.trigger = metrics::kHatsSurveyTriggerSplitViewJourney;
+
   HatsParams tab_search_hats_params;
   tab_search_hats_params.trigger =
       metrics::kHatsSurveyTriggerTabSearchJourney;
@@ -159,6 +162,39 @@ void CriticalUserJourneyRegistry::AddJourneys() {
                    ReadAnythingJourneySteps::kReadAnythingViewShown,
                    ui::InteractionSequence::ContextMode::kAny)
           .LaunchHatsSurveyOnCompletion(read_anything_hats_params)
+          .Build());
+
+  // Split View
+  AddJourney(
+      CriticalUserJourney::Builder(&kSplitViewJourney)
+          .AddAnyOf({Branch(kSplitViewEnteredViaTabContextMenuCustomEventId,
+                            SplitViewJourneySteps::kEnteredViaTabContextMenu)
+                         .SetHatsEntryPoint("tab context menu"),
+                     Branch(kSplitViewEnteredViaToolbarCustomEventId,
+                            SplitViewJourneySteps::kEnteredViaToolbar)
+                         .SetHatsEntryPoint("toolbar button"),
+                     Branch(kSplitViewEnteredViaDragLinkCustomEventId,
+                            SplitViewJourneySteps::kEnteredViaDragLink)
+                         .SetHatsEntryPoint("drag link"),
+                     Branch(kSplitViewEnteredViaLinkContextMenuCustomEventId,
+                            SplitViewJourneySteps::kEnteredViaLinkContextMenu)
+                         .SetHatsEntryPoint("link context menu"),
+                     Branch(kSplitViewEnteredViaOtherCustomEventId,
+                            SplitViewJourneySteps::kEnteredViaOther)
+                         .SetHatsEntryPoint("other")})
+          .SetStepTimeout(base::Minutes(30))
+          .AddAnyOf({Branch(kSplitViewSustainedComparisonCustomEventId,
+                            SplitViewJourneySteps::kSustainedComparison,
+                            ui::InteractionSequence::ContextMode::kAny),
+                     Branch(kSplitViewExitedOnNtpCustomEventId,
+                            SplitViewJourneySteps::kExitedOnNtp,
+                            ui::InteractionSequence::ContextMode::kAny)
+                         .SetExitBranch(),
+                     Branch(kSplitViewExitedEarlyCustomEventId,
+                            SplitViewJourneySteps::kExitedEarly,
+                            ui::InteractionSequence::ContextMode::kAny)
+                         .SetExitBranch()})
+          .LaunchHatsSurveyOnCompletion(split_view_hats_params)
           .Build());
 
   // Tab Search

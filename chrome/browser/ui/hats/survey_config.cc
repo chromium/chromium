@@ -731,6 +731,13 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*product_specific_string_data_fields=*/cuj_string_psd_fields);
 
   survey_configs.emplace_back(
+      &metrics::kHappinessTrackingSurveysForSplitViewJourney,
+      metrics::kHatsSurveyTriggerSplitViewJourney,
+      /*presupplied_trigger_id=*/"JWstXsEYP0ugnJ3q1cK0V5mWVWfQ",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/cuj_string_psd_fields);
+
+  survey_configs.emplace_back(
       &metrics::kHappinessTrackingSurveysForTabSearchJourney,
       metrics::kHatsSurveyTriggerTabSearchJourney,
       /*presupplied_trigger_id=*/"AD85aHvUu0ugnJ3q1cK0UCSRt6XZ",

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_SPLIT_VIEW_CUJ_CONTROLLER_H_
 #define CHROME_BROWSER_UI_TABS_SPLIT_VIEW_CUJ_CONTROLLER_H_
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -25,6 +26,9 @@ class SplitViewCujController : public TabStripModelObserver {
 
   SplitViewCujController(const SplitViewCujController&) = delete;
   SplitViewCujController& operator=(const SplitViewCujController&) = delete;
+
+  static base::AutoReset<base::TimeDelta> SetSustainedComparisonDelayForTesting(
+      base::TimeDelta delay);
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

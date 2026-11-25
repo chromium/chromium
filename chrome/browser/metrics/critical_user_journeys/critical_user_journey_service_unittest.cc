@@ -423,4 +423,82 @@ TEST_F(CriticalUserJourneyProductionJourneysTest,
       "CriticalUserJourney.SettingsSearchEngineJourney.StepReached", 3, 1);
 }
 
+TEST_F(CriticalUserJourneyProductionJourneysTest,
+       SplitViewJourneyOutcomesAndHatsEntryPoints) {
+  ASSERT_TRUE(CriticalUserJourneyServiceFactory::GetForProfile(&profile_));
+  auto* mock_hats = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetForProfile(&profile_, true));
+
+  std::vector<SurveyStringData> captured_psds;
+  base::OnceClosure on_survey_launched;
+  EXPECT_CALL(*mock_hats, LaunchSurvey(kHatsSurveyTriggerSplitViewJourney,
+                                       testing::_, testing::_, testing::_,
+                                       testing::_, testing::_, testing::_))
+      .Times(3)
+      .WillRepeatedly([&](const std::string&, base::OnceClosure success_cb,
+                          base::OnceClosure, const SurveyBitsData&,
+                          const SurveyStringData& psd,
+                          const std::optional<std::string>&,
+                          const HatsService::SurveyOptions&) {
+        captured_psds.push_back(psd);
+        std::move(success_cb).Run();
+        if (on_survey_launched) {
+          std::move(on_survey_launched).Run();
+        }
+        return HatsService::LaunchError::kNone;
+      });
+
+  base::HistogramTester histograms;
+  ui::test::TestElement browser_view_1(kBrowserViewElementId, kTestContext);
+  browser_view_1.Show();
+  ui::test::TestElement browser_view_2(
+      kBrowserViewElementId,
+      ui::ElementContext::CreateFakeContextForTesting(2));
+  browser_view_2.Show();
+
+  auto run_journey =
+      [&](ui::TrackedElement* start_el, ui::CustomElementEventType start_event,
+          ui::TrackedElement* end_el, ui::CustomElementEventType end_event) {
+        base::RunLoop run_loop;
+        on_survey_launched = run_loop.QuitClosure();
+        ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+            start_el, start_event);
+        ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+            end_el, end_event);
+        run_loop.Run();
+      };
+
+  // Tab Context Menu -> cross-window sustained comparison (`kCompleted`).
+  run_journey(&browser_view_1, kSplitViewEnteredViaTabContextMenuCustomEventId,
+              &browser_view_2, kSplitViewSustainedComparisonCustomEventId);
+
+  // Toolbar -> unpopulated NTP exit (`kAbandoned`).
+  run_journey(&browser_view_1, kSplitViewEnteredViaToolbarCustomEventId,
+              &browser_view_1, kSplitViewExitedOnNtpCustomEventId);
+
+  // Drag Link -> quick reversal before 15s (`kAbandoned`).
+  run_journey(&browser_view_1, kSplitViewEnteredViaDragLinkCustomEventId,
+              &browser_view_1, kSplitViewExitedEarlyCustomEventId);
+
+  ASSERT_EQ(captured_psds.size(), 3u);
+  EXPECT_EQ(captured_psds[0][kCujEntryStepKey], "tab context menu");
+  EXPECT_EQ(captured_psds[0][kCujJourneyOutcomeKey],
+            kCujJourneyOutcomeCompleted);
+  EXPECT_EQ(captured_psds[1][kCujEntryStepKey], "toolbar button");
+  EXPECT_EQ(captured_psds[1][kCujJourneyOutcomeKey],
+            kCujJourneyOutcomeAbandoned);
+  EXPECT_EQ(captured_psds[2][kCujEntryStepKey], "drag link");
+  EXPECT_EQ(captured_psds[2][kCujJourneyOutcomeKey],
+            kCujJourneyOutcomeAbandoned);
+
+  histograms.ExpectBucketCount(
+      "CriticalUserJourney.SplitViewJourney.Result",
+      CriticalUserJourneySession::JourneyResult::kCompleted, 1);
+  histograms.ExpectBucketCount(
+      "CriticalUserJourney.SplitViewJourney.Result",
+      CriticalUserJourneySession::JourneyResult::kAbandoned, 2);
+  histograms.ExpectTotalCount(
+      "CriticalUserJourney.SplitViewJourney.OverallDuration", 1);
+}
+
 }  // namespace metrics

@@ -138,6 +138,21 @@ This file defines enums used in Critical User Journey histograms.
 
 <!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:SettingsSuperchargedSearchJourneySteps) -->
 
+<!-- LINT.IfChange(SplitViewJourneySteps) -->
+
+<enum name="SplitViewJourneySteps">
+  <int value="1" label="Entered split view via tab context menu"/>
+  <int value="2" label="Entered split view via toolbar"/>
+  <int value="3" label="Entered split view via link drag"/>
+  <int value="4" label="Entered split view via link context menu"/>
+  <int value="5" label="Entered split view via other source"/>
+  <int value="6" label="Sustained populated two-page comparison"/>
+  <int value="7" label="Exited split view with unpopulated NTP pane"/>
+  <int value="8" label="Exited split view before sustained comparison"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:SplitViewJourneySteps) -->
+
 <!-- LINT.IfChange(TabSearchJourneySteps) -->
 
 <enum name="TabSearchJourneySteps">

@@ -29,6 +29,10 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/tabs/split_tab_menu_model.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/split_view_cuj_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
@@ -358,7 +362,8 @@ class RealCriticalUserJourneyServiceInteractiveTest
   RealCriticalUserJourneyServiceInteractiveTest() {
     feature_list_.InitWithFeatures(
         {kCriticalUserJourneyService, kViewDownloadedFileJourney,
-         kViewDownloadedFileFromAppMenuJourney, kClearBrowsingHistoryJourney},
+         kViewDownloadedFileFromAppMenuJourney, kClearBrowsingHistoryJourney,
+         kSplitViewJourney},
         {});
   }
   ~RealCriticalUserJourneyServiceInteractiveTest() override = default;
@@ -595,6 +600,61 @@ IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
                                1);  // Clear browsing data history event
   histograms.ExpectUniqueSample(
       result, CriticalUserJourneySession::JourneyResult::kCompleted, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
+                       SplitViewJourneyCompletionAndNtpExit) {
+  auto fast_delay =
+      SplitViewCujController::SetSustainedComparisonDelayForTesting(
+          base::Milliseconds(50));
+  base::HistogramTester histograms;
+
+  const std::string step_reached =
+      base::StrCat({GetMetricJourneyPrefix(kSplitViewJourney), ".StepReached"});
+  const std::string result =
+      base::StrCat({GetMetricJourneyPrefix(kSplitViewJourney), ".Result"});
+
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
+                                                  true);
+
+  // Toolbar Split View opens an NTP 2nd pane; exiting without populating it
+  // routes to the exit branch (`JourneyResult::kAbandoned`).
+  RunTestSequence(WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
+                  PressButton(kToolbarSplitTabsToolbarButtonElementId),
+                  PressButton(kToolbarSplitTabsToolbarButtonElementId),
+                  WaitForShow(SplitTabMenuModel::kExitSplitMenuItem),
+                  SelectMenuItem(SplitTabMenuModel::kExitSplitMenuItem),
+                  WaitForHide(SplitTabMenuModel::kExitSplitMenuItem));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               result, CriticalUserJourneySession::JourneyResult::kAbandoned) ==
+           1;
+  }));
+  histograms.ExpectBucketCount(
+      step_reached, static_cast<int>(SplitViewJourneySteps::kEnteredViaToolbar),
+      1);
+  histograms.ExpectBucketCount(
+      step_reached, static_cast<int>(SplitViewJourneySteps::kExitedOnNtp), 1);
+
+  // Splitting two non-NTP tabs sustains past the dwell floor to complete
+  // (`JourneyResult::kCompleted`).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIVersionURL)));
+  browser()->tab_strip_model()->AddToNewSplit(
+      {0}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               result, CriticalUserJourneySession::JourneyResult::kCompleted) ==
+           1;
+  }));
+  histograms.ExpectBucketCount(
+      step_reached,
+      static_cast<int>(SplitViewJourneySteps::kEnteredViaTabContextMenu), 1);
+  histograms.ExpectBucketCount(
+      step_reached,
+      static_cast<int>(SplitViewJourneySteps::kSustainedComparison), 1);
 }
 
 }  // namespace metrics

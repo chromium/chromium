@@ -36,6 +36,8 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_service_factory.h"
+#include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -101,6 +103,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
 #include "chrome/browser/ui/tabs/split_tab_highlight_controller.h"
+#include "chrome/browser/ui/tabs/split_view_cuj_controller.h"
 #include "chrome/browser/ui/tabs/split_view_iph_controller.h"
 #include "chrome/browser/ui/tabs/tab_drag_api/desktop_tab_drag_impl/tab_drag_window_adapter_impl.h"
 #include "chrome/browser/ui/tabs/tab_drag_api/tab_drag_service_feature.h"
@@ -620,6 +623,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       session_service_tab_group_sync_observer_ =
           std::make_unique<tab_groups::SessionServiceTabGroupSyncObserver>(
               profile, browser->GetTabStripModel(), browser->GetSessionID());
+    }
+
+    if (metrics::CriticalUserJourneyServiceFactory::GetForProfile(profile) &&
+        base::FeatureList::IsEnabled(metrics::kSplitViewJourney)) {
+      split_view_cuj_controller_ =
+          std::make_unique<SplitViewCujController>(browser);
     }
 
     std::optional<bool> restored_state_collapsed =
@@ -1303,6 +1312,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   // Init (reverse).
 
   // TYPE_NORMAL members.
+  split_view_cuj_controller_.reset();
   glic_iph_controller_.reset();
   glic_split_button_controller_.reset();
   initial_web_ui_manager_.reset();
