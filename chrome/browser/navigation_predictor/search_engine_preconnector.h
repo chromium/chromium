@@ -11,14 +11,17 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/navigation_predictor/search_engine_dictionary_prewarmer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "content/public/browser/preconnect_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/reconnect_notifier.h"
 #include "net/net_buildflags.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -33,6 +36,8 @@ class WebContents;
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 class DeviceBoundSessionPrewarmer;
 #endif
+
+class TemplateURLService;
 
 namespace features {
 BASE_DECLARE_FEATURE(kPreconnectFromKeyedService);
@@ -99,6 +104,7 @@ class SearchEnginePreconnector
     : public content::PreconnectManager::Delegate,
       public WebContentVisibilityManager,
       public KeyedService,
+      public TemplateURLServiceObserver,
       public network::mojom::ConnectionChangeObserverClient {
  public:
   static bool ShouldBeEnabledAsKeyedService();
@@ -144,6 +150,10 @@ class SearchEnginePreconnector
   void OnWebContentsVisibilityChanged(content::WebContents* web_contents,
                                       bool is_in_foreground) override;
 
+  // TemplateURLServiceObserver:
+  void OnTemplateURLServiceChanged() override;
+  void OnTemplateURLServiceShuttingDown() override;
+
   // Calculate the backoff multiplier to exponentially backoff when preconnects
   // are consecutively failing. The returned value should be within the range
   // of int32_t's binary digits.
@@ -161,13 +171,7 @@ class SearchEnginePreconnector
     is_short_session_for_testing_ = is_short_session;
   }
 
-  void ResetStateForTesting() {
-    StopPreconnecting();
-    ResetReceiver();
-    preconnect_manager_.reset();
-    consecutive_connection_failure_ = 0;
-    last_preconnect_attempt_time_.reset();
-  }
+  void ResetStateForTesting();
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   bool HasDeviceBoundSessionPrewarmerForTesting() const {
@@ -304,6 +308,13 @@ class SearchEnginePreconnector
   // `network::mojom::ConnectionChangeObserverClient` interface.
   mojo::Receiver<network::mojom::ConnectionChangeObserverClient> receiver_{
       this};
+
+  // Origin URL of the default search engine currently observed by `receiver_`.
+  // Cleared whenever `receiver_` is reset or disconnected.
+  GURL bound_preconnect_url_;
+
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      template_url_service_observation_{this};
 
   // How many times the connection has consecutively failed. This is used for
   // exponential backoff the preconnect retries.

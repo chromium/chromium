@@ -414,14 +414,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTestWithSearch,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // Now there should be an onload preconnect as well as a navigation
-  // preconnect. If `SearchEnginePreconnect2` is enabled, we will have one
-  // additional preresolve count because navigating to a URL will start a
-  // preconnect due to a change in web visibility (i.e. the app is foregrounded)
-  // for the first navigation.
-  int preresolve_count =
-      SearchEnginePreconnector::SearchEnginePreconnect2Enabled() ? 4 : 3;
-  WaitForPreresolveCount(preresolve_count);
-  EXPECT_EQ(preresolve_count, preresolve_done_count_);
+  // preconnect.
+  WaitForPreresolveCount(3);
+  EXPECT_EQ(3, preresolve_done_count_);
 }
 
 class NavigationPredictorPreconnectClientLocalURLBrowserTest

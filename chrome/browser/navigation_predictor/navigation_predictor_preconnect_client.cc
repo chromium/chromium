@@ -69,6 +69,11 @@ NavigationPredictorPreconnectClient::GetSearchEnginePreconnector() {
 
 void NavigationPredictorPreconnectClient::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
   // Notify search engine preconnector of any same-document navigations that
   // may be captured here. Same-document navigations imply that user is
   // interacting with the browser app.
@@ -76,11 +81,6 @@ void NavigationPredictorPreconnectClient::DidFinishNavigation(
   if (search_engine_preconnector) {
     search_engine_preconnector->OnWebContentsVisibilityChanged(
         web_contents(), current_visibility_ == content::Visibility::VISIBLE);
-  }
-
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted()) {
-    return;
   }
 
   if (!navigation_handle->IsSameDocument()) {

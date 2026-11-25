@@ -377,6 +377,7 @@ void SearchEnginePreconnector::PreconnectDSE(bool is_startup) {
   absl::Cleanup reset_dictionary_prewarmer = [this] {
     dictionary_prewarmer_.reset();
   };
+  absl::Cleanup reset_receiver = [this] { ResetReceiver(); };
   if (!base::FeatureList::IsEnabled(features::kPreconnectToSearch)) {
     return;
   }
@@ -409,41 +410,54 @@ void SearchEnginePreconnector::PreconnectDSE(bool is_startup) {
       "IsBrowserAppLikelyInForeground",
       is_browser_app_likely_in_foreground);
 
-  std::optional<net::ConnectionKeepAliveConfig> keepalive_config;
-  mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient> observer;
-  if (SearchEnginePreconnect2Enabled()) {
-    keepalive_config = GetConnectionKeepAliveConfig();
-
-    if (RebindPreconnectReceiversEnabled() &&
-        !OnlyBindOnConnectionClosedOrFailed()) {
-      ResetReceiver();
-    }
-
-    if (!receiver_.is_bound()) {
-      observer = receiver_.BindNewPipeAndPassRemote();
-      receiver_.set_disconnect_handler(base::BindOnce(
-          &SearchEnginePreconnector::OnReconnectObserverPipeDisconnected,
-          base::Unretained(this)));
-    }
-  } else {
-    if (std::optional<base::TimeDelta> initial_rtt =
-            net::features::GetQuicPreconnectInitialRtt()) {
-      keepalive_config.emplace();
-      keepalive_config->initial_rtt = *initial_rtt;
-    }
-    if (std::optional<net::RequestPriority> preconnect_priority =
-            net::features::GetPreconnectInitialPriority()) {
-      if (!keepalive_config.has_value()) {
-        keepalive_config.emplace();
-      }
-      keepalive_config->preconnect_priority = *preconnect_priority;
-    }
-  }
-
   if (!base::GetFieldTrialParamByFeatureAsBool(features::kPreconnectToSearch,
                                                "skip_in_background",
                                                kDefaultSkipInBackground) ||
       is_browser_app_likely_in_foreground) {
+    std::optional<net::ConnectionKeepAliveConfig> keepalive_config;
+    mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+        observer;
+    if (SearchEnginePreconnect2Enabled()) {
+      keepalive_config = GetConnectionKeepAliveConfig();
+
+      if ((RebindPreconnectReceiversEnabled() &&
+           !OnlyBindOnConnectionClosedOrFailed()) ||
+          (receiver_.is_bound() && bound_preconnect_url_ != preconnect_url)) {
+        ResetReceiver();
+      }
+
+      if (!receiver_.is_bound()) {
+        observer = receiver_.BindNewPipeAndPassRemote();
+        bound_preconnect_url_ = preconnect_url;
+        receiver_.set_disconnect_handler(base::BindOnce(
+            &SearchEnginePreconnector::OnReconnectObserverPipeDisconnected,
+            base::Unretained(this)));
+      }
+      if (auto* template_service = TemplateURLServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(browser_context_));
+          template_service &&
+          !template_url_service_observation_.IsObservingSource(
+              template_service)) {
+        template_url_service_observation_.Reset();
+        template_url_service_observation_.Observe(template_service);
+      }
+    } else {
+      if (std::optional<base::TimeDelta> initial_rtt =
+              net::features::GetQuicPreconnectInitialRtt()) {
+        keepalive_config.emplace();
+        keepalive_config->initial_rtt = *initial_rtt;
+      }
+      if (std::optional<net::RequestPriority> preconnect_priority =
+              net::features::GetPreconnectInitialPriority()) {
+        if (!keepalive_config.has_value()) {
+          keepalive_config.emplace();
+        }
+        keepalive_config->preconnect_priority = *preconnect_priority;
+      }
+    }
+
+    std::move(reset_receiver).Cancel();
+
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
     if (MaybeCreateDeviceBoundSessionPrewarmer(preconnect_url, is_startup)) {
       std::move(reset_prewarmer).Cancel();
@@ -589,18 +603,23 @@ void SearchEnginePreconnector::OnWebContentsVisibilityChanged(
     return;
   }
 
-  // Early stop when we know that the visibility change did not trigger
-  // foregrounding of the app and also when the preconnector is not started.
-  if (!IsBrowserAppLikelyInForeground() || !preconnector_started_) {
+  // Early stop when the visibility change did not foreground a WebContents or
+  // when the preconnector is not started. When `is_in_foreground` is true, the
+  // call above adds `web_contents` to `visible_web_contents_` and refreshes the
+  // activity timestamp, so `IsBrowserAppLikelyInForeground()` is already true.
+  if (!is_in_foreground || !preconnector_started_) {
     return;
   }
 
-  // Stop the timer explicitly here so that we do not have any duplicate
-  // attempts.
-  timer_.Stop();
+  // Avoid tearing down an active connection observer or preempting a pending
+  // timer (startup delay, exponential backoff, or low-power retry interval).
+  if (receiver_.is_bound() || timer_.IsRunning()) {
+    return;
+  }
 
-  // Attempt reconnect again in case the visibility has changed after the last
-  // preconnect attempt so that we will preconnect sooner.
+  // Only attempt an immediate preconnect when no connection observer is active
+  // and no scheduled attempt is pending (for example, after an earlier attempt
+  // was skipped while backgrounded).
   PreconnectDSE(/*is_startup=*/false);
 }
 
@@ -683,8 +702,31 @@ void SearchEnginePreconnector::OnConnectionFailed() {
                            PreconnectTriggerEvent::kConnectionFailed);
 }
 
+void SearchEnginePreconnector::ResetStateForTesting() {
+  StopPreconnecting();
+  ResetReceiver();
+  template_url_service_observation_.Reset();
+  preconnect_manager_.reset();
+  consecutive_connection_failure_ = 0;
+  last_preconnect_attempt_time_.reset();
+}
+
+void SearchEnginePreconnector::OnTemplateURLServiceChanged() {
+  if (!receiver_.is_bound()) {
+    return;
+  }
+  if (GetDefaultSearchEngineOriginURL() != bound_preconnect_url_) {
+    ResetReceiver();
+  }
+}
+
+void SearchEnginePreconnector::OnTemplateURLServiceShuttingDown() {
+  template_url_service_observation_.Reset();
+}
+
 void SearchEnginePreconnector::OnReconnectObserverPipeDisconnected() {
   receiver_.reset();
+  bound_preconnect_url_ = GURL();
   // Only call `OnConnectionFailed` when the `timer_` is not running since we
   // might already be waiting for reconnect attempt from other reasons.
   if (!timer_.IsRunning()) {
@@ -693,6 +735,7 @@ void SearchEnginePreconnector::OnReconnectObserverPipeDisconnected() {
 }
 
 void SearchEnginePreconnector::ResetReceiver() {
+  bound_preconnect_url_ = GURL();
   if (!receiver_.is_bound()) {
     return;
   }

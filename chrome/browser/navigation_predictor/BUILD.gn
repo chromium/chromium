@@ -23,6 +23,7 @@ source_set("navigation_predictor") {
     "//chrome/browser/page_load_metrics",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
+    "//components/search_engines",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",

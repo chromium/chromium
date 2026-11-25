@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -16,19 +17,38 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
+#include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
+#include "chrome/browser/navigation_predictor/search_engine_preconnector_keyed_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
+#include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/preconnect_manager.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "navigation_predictor_metrics_document_data.h"
+#include "net/base/features.h"
+#include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -1443,4 +1463,345 @@ TEST_F(NavigationPredictorNewViewportFeaturesTest,
   EXPECT_EQ(nullptr,
             ukm_recorder.GetEntryMetric(
                 entries[0], UkmEntry::kDistanceFromLastPointerDownName));
+}
+
+namespace {
+
+class NavigationPredictorPreconnectClientTest
+    : public ChromeRenderViewHostTestHarness,
+      public content::PreconnectManager::Observer {
+ public:
+  NavigationPredictorPreconnectClientTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPreconnectToSearch,
+          {{"skip_in_background", "true"}, {"startup_delay_ms", "5000"}}},
+         {net::features::kSearchEnginePreconnect2, {}},
+         {features::kPreconnectManagerDirectFastPath, {}}},
+        {});
+  }
+
+  ~NavigationPredictorPreconnectClientTest() override = default;
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    template_url_service_util_ =
+        std::make_unique<TemplateURLServiceFactoryTestUtil>(profile());
+    template_url_service_util_->VerifyLoad();
+
+    TemplateURL* template_url = AddSearchEngine(
+        u"test", "https://www.fakesearch.com/search?q={searchTerms}",
+        /*preconnect_to_search_url=*/true);
+    ASSERT_TRUE(template_url);
+    template_url_service_util_->model()->SetUserSelectedDefaultSearchProvider(
+        template_url);
+
+    preconnector_ =
+        SearchEnginePreconnectorKeyedServiceFactory::GetForProfile(profile());
+    ASSERT_TRUE(preconnector_);
+    preconnector_->ResetStateForTesting();
+    preconnector_->SetTickClockForTesting(
+        task_environment()->GetMockTickClock());
+    preconnector_->GetPreconnectManager().SetObserverForTesting(this);
+
+    client_ =
+        std::make_unique<NavigationPredictorPreconnectClient>(web_contents());
+  }
+
+  void TearDown() override {
+    client_.reset();
+    if (preconnector_) {
+      preconnector_->GetPreconnectManager().SetObserverForTesting(nullptr);
+      preconnector_->ResetStateForTesting();
+      preconnector_->SetTickClockForTesting(
+          base::DefaultTickClock::GetInstance());
+      preconnector_ = nullptr;
+    }
+    observer_remote_.reset();
+    template_url_service_util_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  void OnPreconnectUrl(
+      const GURL& url,
+      int num_sockets,
+      bool allow_credentials,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+          connection_change_observer_client) override {
+    ++preconnect_counts_[url];
+    if (connection_change_observer_client.is_valid()) {
+      observer_remote_.reset();
+      observer_remote_.Bind(std::move(connection_change_observer_client));
+    }
+  }
+
+  TemplateURL* AddSearchEngine(std::u16string_view short_name,
+                               const std::string& url,
+                               bool preconnect_to_search_url) {
+    TemplateURLData data;
+    data.SetShortName(short_name);
+    data.SetKeyword(data.short_name());
+    data.SetURL(url);
+    data.preconnect_to_search_url = preconnect_to_search_url;
+    return template_url_service_util_->model()->Add(
+        std::make_unique<TemplateURL>(data));
+  }
+
+  int PreconnectCountFor(const GURL& url) const {
+    auto it = preconnect_counts_.find(url);
+    return it == preconnect_counts_.end() ? 0 : it->second;
+  }
+
+  int dse_preconnect_count() const {
+    return PreconnectCountFor(GURL("https://www.fakesearch.com/"));
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<TemplateURLServiceFactoryTestUtil> template_url_service_util_;
+  raw_ptr<SearchEnginePreconnector> preconnector_ = nullptr;
+  std::unique_ptr<NavigationPredictorPreconnectClient> client_;
+  mojo::Remote<network::mojom::ConnectionChangeObserverClient> observer_remote_;
+  std::map<GURL, int> preconnect_counts_;
+};
+
+}  // namespace
+
+TEST_F(NavigationPredictorPreconnectClientTest,
+       SubframeAndUncommittedNavigationsDoNotNotifySearchEnginePreconnector) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/"));
+  ASSERT_TRUE(preconnector_->IsBrowserAppLikelyInForeground());
+
+  // Advance past the 120s foreground activity window so the preconnector treats
+  // the browser as backgrounded until a real foreground signal arrives.
+  task_environment()->FastForwardBy(base::Seconds(121));
+  ASSERT_FALSE(preconnector_->IsBrowserAppLikelyInForeground());
+
+  preconnector_->StartPreconnecting(/*with_startup_delay=*/false);
+  EXPECT_EQ(0, dse_preconnect_count());
+
+  // Subframe navigations must not notify SearchEnginePreconnector or trigger
+  // DSE preconnects.
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://sub.example.com/"), subframe);
+  EXPECT_FALSE(preconnector_->IsBrowserAppLikelyInForeground());
+  EXPECT_EQ(0, dse_preconnect_count());
+
+  // Uncommitted / aborted primary main-frame navigations must not notify
+  // SearchEnginePreconnector or trigger DSE preconnects.
+  content::NavigationSimulator::NavigateAndFailFromBrowser(
+      web_contents(), GURL("https://example.org/"), net::ERR_ABORTED);
+  EXPECT_FALSE(preconnector_->IsBrowserAppLikelyInForeground());
+  EXPECT_EQ(0, dse_preconnect_count());
+
+  // Committed primary main-frame same-document navigations still notify
+  // SearchEnginePreconnector.
+  content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com/#section"), main_rfh())
+      ->CommitSameDocument();
+  EXPECT_TRUE(preconnector_->IsBrowserAppLikelyInForeground());
+  EXPECT_EQ(1, dse_preconnect_count());
+}
+
+TEST_F(NavigationPredictorPreconnectClientTest,
+       RedundantVisibilityAndForegroundNotificationsSuppressedWhileActive) {
+  // Drive the first show through UpdateWebContentsVisibility() so the
+  // WebContents transitions past its initial `!did_first_set_visible_` state.
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  ASSERT_TRUE(preconnector_->IsBrowserAppLikelyInForeground());
+  task_environment()->FastForwardBy(base::Seconds(121));
+  ASSERT_FALSE(preconnector_->IsBrowserAppLikelyInForeground());
+
+  preconnector_->StartPreconnecting(/*with_startup_delay=*/false);
+  EXPECT_EQ(0, dse_preconnect_count());
+
+  // A redundant UpdateWebContentsVisibility(VISIBLE) update is deduplicated by
+  // WebContentsImpl and must not notify SearchEnginePreconnector.
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  EXPECT_FALSE(preconnector_->IsBrowserAppLikelyInForeground());
+  EXPECT_EQ(0, dse_preconnect_count());
+
+  // Start with a 5s startup delay; a foreground main-frame navigation while
+  // the timer is running must not cancel the timer to preconnect early.
+  preconnector_->StartPreconnecting(/*with_startup_delay=*/true);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/page1"));
+  EXPECT_TRUE(preconnector_->IsBrowserAppLikelyInForeground());
+  EXPECT_EQ(0, dse_preconnect_count());
+
+  // Once the startup delay elapses, the scheduled preconnect fires and binds
+  // the connection observer receiver.
+  task_environment()->FastForwardBy(base::Milliseconds(5000));
+  EXPECT_EQ(1, dse_preconnect_count());
+  ASSERT_TRUE(observer_remote_.is_bound());
+  EXPECT_TRUE(observer_remote_.is_connected());
+
+  // Subsequent foreground main-frame navigations and hide/show transitions
+  // while the receiver is bound must not trigger redundant DSE preconnects.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/page2"));
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::HIDDEN);
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  EXPECT_TRUE(preconnector_->IsBrowserAppLikelyInForeground());
+  EXPECT_EQ(1, dse_preconnect_count());
+}
+
+TEST_F(NavigationPredictorPreconnectClientTest,
+       SessionClosedInBackgroundReconnectsWhenForegrounded) {
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  ASSERT_TRUE(preconnector_->IsBrowserAppLikelyInForeground());
+
+  preconnector_->StartPreconnecting(/*with_startup_delay=*/false);
+  EXPECT_EQ(1, dse_preconnect_count());
+  ASSERT_TRUE(observer_remote_.is_bound());
+  EXPECT_TRUE(observer_remote_.is_connected());
+
+  // Hiding the WebContents must not trigger a foreground preconnect even during
+  // the 1s foreground cooldown window.
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::HIDDEN);
+  EXPECT_EQ(content::Visibility::HIDDEN, web_contents()->GetVisibility());
+  EXPECT_EQ(1, dse_preconnect_count());
+
+  // Advance past the 1s cooldown so the app is considered backgrounded.
+  task_environment()->FastForwardBy(base::Seconds(2));
+  ASSERT_FALSE(preconnector_->IsBrowserAppLikelyInForeground());
+
+  // Close the session while backgrounded and let the retry timer fire. The
+  // preconnect should be skipped in background and the receiver reset so
+  // returning to the foreground re-establishes the connection.
+  preconnector_->OnSessionClosed(/*was_ever_used_to_create_streams=*/true);
+  task_environment()->FastForwardBy(
+      base::Seconds(net::features::kMaxPreconnectRetryInterval.Get()));
+  observer_remote_.FlushForTesting();
+  EXPECT_EQ(1, dse_preconnect_count());
+  EXPECT_FALSE(observer_remote_.is_connected());
+
+  // With receiver_ unbound and timer_ stopped, a non-foreground visibility
+  // transition (HIDDEN -> OCCLUDED) refreshes the 1s cooldown in
+  // WebContentVisibilityManager but must not trigger a DSE preconnect.
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::OCCLUDED);
+  EXPECT_EQ(content::Visibility::OCCLUDED, web_contents()->GetVisibility());
+  EXPECT_EQ(1, dse_preconnect_count());
+  task_environment()->FastForwardBy(base::Seconds(2));
+  ASSERT_FALSE(preconnector_->IsBrowserAppLikelyInForeground());
+
+  // Foregrounding the WebContents should immediately reconnect to the DSE.
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  EXPECT_EQ(content::Visibility::VISIBLE, web_contents()->GetVisibility());
+  EXPECT_TRUE(preconnector_->IsBrowserAppLikelyInForeground());
+  EXPECT_EQ(2, dse_preconnect_count());
+  ASSERT_TRUE(observer_remote_.is_bound());
+  EXPECT_TRUE(observer_remote_.is_connected());
+}
+
+TEST_F(NavigationPredictorPreconnectClientTest,
+       FirstVisibleNotificationForInitiallyVisibleWebContentsIsPreserved) {
+  // A WebContents created with initially_hidden=false starts with
+  // GetVisibility() == VISIBLE before its first UpdateWebContentsVisibility()
+  // call. Verify that an early navigation commit does not suppress that first
+  // show notification once the initial foreground window expires.
+  ASSERT_EQ(content::Visibility::VISIBLE, web_contents()->GetVisibility());
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/"));
+  ASSERT_TRUE(preconnector_->IsBrowserAppLikelyInForeground());
+  task_environment()->FastForwardBy(base::Seconds(121));
+  ASSERT_FALSE(preconnector_->IsBrowserAppLikelyInForeground());
+
+  preconnector_->StartPreconnecting(/*with_startup_delay=*/false);
+  EXPECT_EQ(0, dse_preconnect_count());
+
+  // The first real show dispatch must still register the WebContents as
+  // foregrounded and trigger the initial DSE preconnect.
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  EXPECT_TRUE(preconnector_->IsBrowserAppLikelyInForeground());
+  EXPECT_EQ(1, dse_preconnect_count());
+  ASSERT_TRUE(observer_remote_.is_bound());
+  EXPECT_TRUE(observer_remote_.is_connected());
+
+  // After the first show completes, advance past the 120s window and reset
+  // receiver_ via a background session close; a subsequent unchanged VISIBLE
+  // update is deduplicated by WebContentsImpl.
+  task_environment()->FastForwardBy(base::Seconds(121));
+  ASSERT_FALSE(preconnector_->IsBrowserAppLikelyInForeground());
+  preconnector_->OnSessionClosed(/*was_ever_used_to_create_streams=*/true);
+  task_environment()->FastForwardBy(
+      base::Seconds(net::features::kMaxPreconnectRetryInterval.Get()));
+  observer_remote_.FlushForTesting();
+  EXPECT_EQ(1, dse_preconnect_count());
+  EXPECT_FALSE(observer_remote_.is_connected());
+
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  EXPECT_FALSE(preconnector_->IsBrowserAppLikelyInForeground());
+  EXPECT_EQ(1, dse_preconnect_count());
+}
+
+TEST_F(NavigationPredictorPreconnectClientTest,
+       DefaultSearchEngineChangeResetsReceiverAndPreconnectsToNewEngine) {
+  const GURL search_engine_a("https://www.fakesearch.com/");
+  const GURL search_engine_b("https://www.othersearch.com/");
+  const GURL disabled_engine("https://www.nopreconnect.com/");
+
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  ASSERT_TRUE(preconnector_->IsBrowserAppLikelyInForeground());
+
+  // Establish a preconnect and bound connection observer to Search Engine A.
+  preconnector_->StartPreconnecting(/*with_startup_delay=*/false);
+  EXPECT_EQ(1, PreconnectCountFor(search_engine_a));
+  ASSERT_TRUE(observer_remote_.is_bound());
+  EXPECT_TRUE(observer_remote_.is_connected());
+  mojo::Remote<network::mojom::ConnectionChangeObserverClient>
+      initial_observer_remote = std::move(observer_remote_);
+
+  // Adding a non-default search engine must not disconnect Search Engine A's
+  // observer or trigger an extra preconnect.
+  TemplateURL* other_template_url = AddSearchEngine(
+      u"other", "https://www.othersearch.com/search?q={searchTerms}",
+      /*preconnect_to_search_url=*/true);
+  ASSERT_TRUE(other_template_url);
+  initial_observer_remote.FlushForTesting();
+  EXPECT_TRUE(initial_observer_remote.is_connected());
+  EXPECT_EQ(0, PreconnectCountFor(search_engine_b));
+
+  // Changing the default search engine from A to B resets the receiver bound to
+  // A so the next foreground navigation preconnects to B with a new observer.
+  template_url_service_util_->model()->SetUserSelectedDefaultSearchProvider(
+      other_template_url);
+  initial_observer_remote.FlushForTesting();
+  EXPECT_FALSE(initial_observer_remote.is_connected());
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/"));
+  EXPECT_EQ(1, PreconnectCountFor(search_engine_a));
+  EXPECT_EQ(1, PreconnectCountFor(search_engine_b));
+  ASSERT_TRUE(observer_remote_.is_bound());
+  EXPECT_TRUE(observer_remote_.is_connected());
+
+  // Subsequent foreground navigations while B's observer is bound must not
+  // trigger redundant preconnects.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/next"));
+  EXPECT_EQ(1, PreconnectCountFor(search_engine_b));
+
+  // Changing to a non-preconnectable default search engine resets B's receiver
+  // and issues no new preconnects on subsequent navigations.
+  TemplateURL* disabled_template_url = AddSearchEngine(
+      u"disabled", "https://www.nopreconnect.com/search?q={searchTerms}",
+      /*preconnect_to_search_url=*/false);
+  ASSERT_TRUE(disabled_template_url);
+  template_url_service_util_->model()->SetUserSelectedDefaultSearchProvider(
+      disabled_template_url);
+  observer_remote_.FlushForTesting();
+  EXPECT_FALSE(observer_remote_.is_connected());
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/after-disable"));
+  EXPECT_EQ(1, PreconnectCountFor(search_engine_a));
+  EXPECT_EQ(1, PreconnectCountFor(search_engine_b));
+  EXPECT_EQ(0, PreconnectCountFor(disabled_engine));
 }
