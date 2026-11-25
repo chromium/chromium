@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.View;
 
@@ -13,42 +14,30 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.IphEvent;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.IphFeature;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
-/** Controller manage when an IPH bubble for Toolbar is shown. */
+import java.util.concurrent.TimeUnit;
+
+/** Controls when an IPH bubble for the toolbar is shown. */
 @NullMarked
 public class ToolbarIphController {
 
-    // 2 seconds.
-    private static final long MIN_DELAY_BEFORE_TOUCH_DISMISS_MS = 2000;
-    // 5 seconds.
-    @VisibleForTesting static final int GLIC_IPH_AUTO_DISMISS_TIMEOUT_MS = 5 * 1000;
+    private static final long MIN_DELAY_BEFORE_TOUCH_DISMISS_MS = TimeUnit.SECONDS.toMillis(2);
 
-    private final Context mContext;
+    @VisibleForTesting
+    static final int GLIC_IPH_AUTO_DISMISS_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(5);
+
+    private final Resources mResources;
     private final UserEducationHelper mEducationHelper;
 
     ToolbarIphController(Context context, UserEducationHelper educationHelper) {
-        mContext = context;
+        mResources = context.getResources();
         mEducationHelper = educationHelper;
-    }
-
-    /**
-     * Attempts to show the price drop in-product help bubble.
-     *
-     * @param anchorView The view to anchor the IPH bubble on.
-     */
-    @VisibleForTesting
-    public void showPriceDropIph(View anchorView) {
-        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
-        params.setBoundsRespectPadding(true);
     }
 
     /**
@@ -56,7 +45,6 @@ public class ToolbarIphController {
      *
      * @param anchorView The view to anchor the IPH bubble on.
      */
-    @VisibleForTesting
     public void showBottomToolbarIph(View anchorView) {
         showAddressBarIph(
                 anchorView,
@@ -90,9 +78,9 @@ public class ToolbarIphController {
             @StringRes int stringId,
             @Nullable Runnable onShowCallback,
             @Nullable Runnable onDismissCallback) {
-        int yInset = mContext.getResources().getDimensionPixelOffset(R.dimen.toolbar_iph_y_inset);
+        int yInset = mResources.getDimensionPixelOffset(R.dimen.toolbar_iph_y_inset);
         IphCommandBuilder builder =
-                new IphCommandBuilder(mContext.getResources(), featureName, stringId, stringId)
+                new IphCommandBuilder(mResources, featureName, stringId, stringId)
                         .setInsetRect(new Rect(0, 0, 0, yInset))
                         .setAnchorView(anchorView)
                         .setDelayedDismissOnTouch(MIN_DELAY_BEFORE_TOUCH_DISMISS_MS);
@@ -113,7 +101,7 @@ public class ToolbarIphController {
     public void showGlicIph(View anchorView) {
         mEducationHelper.requestShowIph(
                 new IphCommandBuilder(
-                                mContext.getResources(),
+                                mResources,
                                 FeatureConstants.GLIC_PROMO_ANDROID_FEATURE,
                                 R.string.iph_glic_promo_text,
                                 R.string.iph_glic_promo_accessibility_text)

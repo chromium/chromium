@@ -135,4 +135,7 @@ found in the LICENSE file.
     <dimen name="download_progress_ring_stroke_width">2.5dp</dimen>
     <dimen name="download_progress_ring_badge_radius">7dp</dimen>
     <dimen name="download_progress_ring_badge_text_size">9dp</dimen>
+
+    <!-- Toolbar IPH dimens. -->
+    <dimen name="toolbar_iph_y_inset">4dp</dimen>
 </resources>

@@ -1586,7 +1586,6 @@ if (is_android) {
     sources = [
       "//chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManagerUnitTest.java",
       "src/org/chromium/chrome/browser/toolbar/AppThemeColorProviderUnitTest.java",
-      "src/org/chromium/chrome/browser/toolbar/ToolbarIphControllerUnitTest.java",
       "src/org/chromium/chrome/browser/toolbar/ToolbarTabControllerImplTest.java",
       "src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerActivityTest.java",
     ]

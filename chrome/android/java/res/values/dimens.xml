@@ -10,8 +10,6 @@ found in the LICENSE file.
     <dimen name="toolbar_swipe_space_between_tabs">30dp</dimen>
     <!-- TabSwitcher - The minimum distance from the edge to commit a toolbar side swap. -->
     <dimen name="toolbar_swipe_commit_distance">90dp</dimen>
-    <!-- Toolbar IPH dimens. -->
-    <dimen name="toolbar_iph_y_inset">4dp</dimen>
 
     <!-- Tab title -->
     <dimen name="border_texture_title_fade">24dp</dimen>                    <!-- 40px hdpi -->
