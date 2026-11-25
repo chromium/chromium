@@ -124,6 +124,11 @@ void InitSkiaGraphiteFeatureParams(const base::Feature* feature) {
           feature, "triple_buffered_dcomp_root_surface",
           g_skia_graphite_feature_params.triple_buffered_dcomp_root_surface)
           .Get();
+  g_skia_graphite_feature_params.use_draw_for_buggy_depth_clear =
+      base::FeatureParam<bool>(
+          feature, "use_draw_for_buggy_depth_clear",
+          g_skia_graphite_feature_params.use_draw_for_buggy_depth_clear)
+          .Get();
 #endif
 
   GetGraphiteParamsInitFlag().Set();

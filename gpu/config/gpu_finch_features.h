@@ -127,6 +127,10 @@ struct GPU_CONFIG_EXPORT SkiaGraphiteFeatureParams {
 
   // Whether to use triple buffering for DirectComposition root surface.
   bool triple_buffered_dcomp_root_surface = false;
+
+  // Whether to use draw instead of ClearDepthStencilView to work around buggy
+  // D3D11 depth clears.
+  bool use_draw_for_buggy_depth_clear = false;
 #endif
 };
 
@@ -189,6 +193,9 @@ inline bool SkiaGraphiteFlushD3D11TileRasterCommandsToDriver() {
 }
 inline bool SkiaGraphiteTripleBufferedDCompRootSurface() {
   return GetSkiaGraphiteFeatureParams().triple_buffered_dcomp_root_surface;
+}
+inline bool SkiaGraphiteUseDrawForBuggyDepthClear() {
+  return GetSkiaGraphiteFeatureParams().use_draw_for_buggy_depth_clear;
 }
 #endif
 

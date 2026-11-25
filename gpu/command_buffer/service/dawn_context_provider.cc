@@ -198,6 +198,23 @@ void EmitErrorReport(wgpu::ErrorType error_type, std::string_view message) {
   base::UmaHistogramEnumeration("GPU.GraphiteDawn.Error", *uma_error);
 }
 
+#if BUILDFLAG(IS_WIN)
+bool UseD3D11DelayFlushQueue(const GpuDriverBugWorkarounds& workarounds) {
+  if (!features::SkiaGraphiteDawnD3D11DelayFlush()) {
+    return false;
+  }
+
+  if (workarounds.graphite_d3d11_depth_clear_is_buggy &&
+      !features::SkiaGraphiteUseDrawForBuggyDepthClear()) {
+    // Fall back to disabling delayed flush, which also appears to work around
+    // the buggy depth clear when not using draw-based depth clears.
+    return false;
+  }
+
+  return true;
+}
+#endif
+
 // NOTE: Update the toggles in GpuInfoCollector whenever a toggle is disabled
 // here.
 std::vector<const char*> GetDisabledToggles(
@@ -222,8 +239,7 @@ std::vector<const char*> GetDisabledToggles(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (!features::SkiaGraphiteDawnD3D11DelayFlush() ||
-      workarounds.disable_graphite_d3d11_delay_flush) {
+  if (!UseD3D11DelayFlushQueue(workarounds)) {
     disabled_toggles.push_back("d3d11_delay_flush_to_gpu");
   }
 #endif
@@ -236,7 +252,8 @@ std::vector<const char*> GetDisabledToggles(
 std::vector<const char*> GetEnabledToggles(
     wgpu::BackendType backend_type,
     bool force_fallback_adapter,
-    const GpuPreferences& gpu_preferences) {
+    const GpuPreferences& gpu_preferences,
+    const GpuDriverBugWorkarounds& workarounds) {
   // If a new toggle is added here, ForceDawnTogglesForSkia() which collects
   // info for about:gpu should be updated as well.
   std::vector<const char*> enabled_toggles;
@@ -272,7 +289,12 @@ std::vector<const char*> GetEnabledToggles(
     // format.
     enabled_toggles.push_back("use_packed_depth24_unorm_stencil8_format");
 
-    if (features::SkiaGraphiteDawnD3D11DelayFlush()) {
+    if (workarounds.graphite_d3d11_depth_clear_is_buggy &&
+        features::SkiaGraphiteUseDrawForBuggyDepthClear()) {
+      enabled_toggles.push_back("clear_depth_with_draw");
+    }
+
+    if (UseD3D11DelayFlushQueue(workarounds)) {
       // Tell Dawn to defer sending commands to GPU until swapchain's Present.
       // This will batch the commands better.
       enabled_toggles.push_back("d3d11_delay_flush_to_gpu");
@@ -901,8 +923,8 @@ bool DawnSharedContext::Initialize(
   instance_ = webgpu::DawnInstance::CreateForGraphite(
       gpu_preferences, progress_reporter, &dawn_instance_desc);
 
-  std::vector<const char*> enabled_toggles =
-      GetEnabledToggles(backend_type, force_fallback_adapter, gpu_preferences);
+  std::vector<const char*> enabled_toggles = GetEnabledToggles(
+      backend_type, force_fallback_adapter, gpu_preferences, workarounds);
   std::vector<const char*> disabled_toggles =
       GetDisabledToggles(gpu_preferences, workarounds);
 

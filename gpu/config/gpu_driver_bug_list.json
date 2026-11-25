@@ -3314,13 +3314,13 @@
     {
       "id": 506,
       "cr_bugs": [568041933],
-      "description": "Delaying D3D11 flush to GPU causes flickering with Skia Graphite on NVIDIA GPUs.",
+      "description": "D3D11 depth clear causes flickering with Skia Graphite on NVIDIA GPUs.",
       "os": {
         "type": "win"
       },
       "vendor_id": "0x10de",
       "features": [
-        "disable_graphite_d3d11_delay_flush"
+        "graphite_d3d11_depth_clear_is_buggy"
       ]
     },
     {
