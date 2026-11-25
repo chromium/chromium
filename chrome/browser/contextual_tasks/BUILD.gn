@@ -668,6 +668,13 @@ mojom("mojo_bindings") {
     "contextual_tasks_types.mojom",
   ]
   webui_module_path = "/"
+
+  # The Contextual Tasks component extension bundles generated MojoJS bindings
+  # into its MV3 service worker (background.js), which //content persists across
+  # browser updates. Disable message ID scrambling so method ordinals remain
+  # consistent across Chrome builds if a cached worker outlives an update.
+  scramble_message_ids = false
+
   public_deps = [
     "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
     "//components/omnibox/browser:mojo_bindings",
