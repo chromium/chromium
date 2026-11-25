@@ -1,0 +1,3 @@
+# Strict Privacy reviews needed for the allowlist of histograms to be reported
+# to Chrome Enterprise.
+per-file enterprise_reported_histograms_allowlist.h=file://components/enterprise/browser/reporting/browser_histogram/PRIVACY_OWNERS

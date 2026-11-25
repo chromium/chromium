@@ -1,0 +1,5 @@
+# Histograms that are allowlisted to be reported to Chrome Enterprise require
+# additional privacy scrutiny.
+
+dullweber@chromium.org
+msramek@chromium.org

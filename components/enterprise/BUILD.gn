@@ -12,6 +12,7 @@ static_library("enterprise") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
+    "browser/reporting/browser_histogram/enterprise_reported_histograms_allowlist.h",
     "browser/reporting/browser_launch/browser_launch_event_controller.cc",
     "browser/reporting/browser_launch/browser_launch_event_controller.h",
     "browser/reporting/browser_launch/browser_launch_event_uploader.h",
