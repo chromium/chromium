@@ -5,16 +5,21 @@
 #include "components/google/core/common/google_util.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <array>
+#include <compare>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/i18n/language_tag.h"
 #include "base/no_destructor.h"
@@ -36,6 +41,36 @@ namespace google_util {
 // Helpers --------------------------------------------------------------------
 
 namespace {
+
+// Stores TLDs inline in .rodata to avoid dynamic ELF relocations; 7 bytes holds
+// the longest entry in google_tld_list.h (6 chars).
+struct FixedTld {
+  std::array<char, 7> chars{};
+  uint8_t length = 0;
+
+  // Needed for brace-init with literals.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  consteval FixedTld(const char* s) {
+    std::string_view sv(s);
+    CHECK_LE(sv.size(), chars.size());
+    length = static_cast<uint8_t>(sv.size());
+    base::span(chars).copy_prefix_from(sv);
+  }
+
+  constexpr explicit operator std::string_view() const LIFETIME_BOUND {
+    return std::string_view(chars).substr(0, length);
+  }
+
+  friend constexpr auto operator<=>(const FixedTld& lhs, const FixedTld& rhs) {
+    return std::string_view(lhs) <=> std::string_view(rhs);
+  }
+  friend constexpr auto operator<=>(const FixedTld& lhs, std::string_view rhs) {
+    return std::string_view(lhs) <=> rhs;
+  }
+};
+
+constexpr auto kGoogleTlds =
+    base::MakeFixedFlatSet<FixedTld>(base::sorted_unique, {GOOGLE_TLD_LIST});
 
 bool IsPathHomePageBase(std::string_view path) {
   return (path == "/") || (path == "/webhp");
@@ -77,7 +112,7 @@ bool IsValidHostName(std::string_view host,
   // Remove the trailing dot from tld if present, as for Google domains it's the
   // same page.
   StripTrailingDot(&*tld);
-  if (!allowed_tlds.contains(tld)) {
+  if (!allowed_tlds.contains(*tld)) {
     return false;
   }
 
@@ -119,16 +154,14 @@ bool IsCanonicalHostGoogleHostname(std::string_view canonical_host,
     return true;
   }
 
-  static constexpr auto google_tlds =
-      base::MakeFixedFlatSet<std::string_view>({GOOGLE_TLD_LIST});
   return IsValidHostName(canonical_host, "google", subdomain_permission,
-                         google_tlds);
+                         kGoogleTlds);
 }
 
 bool IsCanonicalHostYoutubeHostname(std::string_view canonical_host,
                                     SubdomainPermission subdomain_permission) {
   static constexpr auto youtube_tlds =
-      base::MakeFixedFlatSet<std::string_view>({YOUTUBE_TLD_LIST});
+      base::MakeFixedFlatSet<FixedTld>(base::sorted_unique, {YOUTUBE_TLD_LIST});
 
   return IsValidHostName(canonical_host, "youtube", subdomain_permission,
                          youtube_tlds);
@@ -402,10 +435,9 @@ const std::vector<std::string>& GetGoogleRegistrableDomains() {
   static base::NoDestructor<std::vector<std::string>>
       kGoogleRegisterableDomains([]() {
         std::vector<std::string> domains;
-
-        std::vector<std::string> tlds{GOOGLE_TLD_LIST};
-        for (const std::string& tld : tlds) {
-          std::string domain = "google." + tld;
+        domains.reserve(kGoogleTlds.size());
+        for (const FixedTld& tld : kGoogleTlds) {
+          std::string domain = base::StrCat({"google.", std::string_view(tld)});
 
           // The Google TLD list might contain domains that are not considered
           // to be registrable domains by net::registry_controlled_domains.
