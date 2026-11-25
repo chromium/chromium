@@ -142,8 +142,8 @@ struct InsecureDownloadData {
     // Configure mixed content status.
     // Some downloads don't qualify for blocking, and are thus never
     // mixed-content. At a minimum, this includes:
-    //  - retries/reloads (since the original DL would have been blocked, and
-    //    initiating context is lost on retry anyway),
+    //  - explicit user retries (since the original DL would have been blocked,
+    //    and initiating context is lost on retry anyway),
     //  - anything triggered directly from the address bar or similar.
     //  - internal-Chrome downloads (e.g. downloading profile photos),
     //  - webview/CCT,
@@ -156,8 +156,7 @@ struct InsecureDownloadData {
     auto download_source = item->GetDownloadSource();
     auto transition_type = item->GetTransitionType();
     if (download_source == DownloadSource::RETRY ||
-        ui::PageTransitionCoreTypeIs(transition_type,
-                                     ui::PAGE_TRANSITION_RELOAD) ||
+        download_source == DownloadSource::RETRY_FROM_BUBBLE ||
         ui::PageTransitionCoreTypeIs(transition_type,
                                      ui::PAGE_TRANSITION_TYPED) ||
         (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
@@ -186,8 +185,7 @@ struct InsecureDownloadData {
     // downloads. For example, downloads are blocked even if they're initiated
     // from the omnibox.
     if (download_source == DownloadSource::RETRY ||
-        ui::PageTransitionCoreTypeIs(transition_type,
-                                     ui::PAGE_TRANSITION_RELOAD) ||
+        download_source == DownloadSource::RETRY_FROM_BUBBLE ||
         (transition_type & ui::PAGE_TRANSITION_FROM_API) ||
         download_source == DownloadSource::OFFLINE_PAGE ||
         download_source == DownloadSource::INTERNAL_API ||

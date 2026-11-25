@@ -1628,6 +1628,64 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked_Regression) {
   }
 }
 
+// Regression test for https://crbug.com/583622450: PAGE_TRANSITION_RELOAD must
+// not bypass insecure or mixed-content download blocking, while explicit user
+// retries from chrome://downloads or the download bubble remain exempt.
+TEST_F(ChromeDownloadManagerDelegateTest,
+       InsecureDownloadsBlocked_ReloadBlockedButExplicitRetryAllowed) {
+  const GURL kInsecureFile("http://example.com/foo.zip");
+  const auto kInsecureOrigin = Origin::Create(GURL("http://example.org"));
+  const auto kSecureOrigin = Origin::Create(GURL("https://example.org"));
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  content::PluginService::GetInstance()->Init();
+#endif
+  pref_service()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+
+  {
+    std::unique_ptr<download::MockDownloadItem> download_item =
+        PrepareDownloadItemForInsecureBlocking(kInsecureFile, kInsecureOrigin,
+                                               std::nullopt);
+    ON_CALL(*download_item, GetTransitionType())
+        .WillByDefault(::testing::Return(ui::PAGE_TRANSITION_RELOAD));
+    download::DownloadTargetInfo target_info =
+        DetermineDownloadTarget(download_item.get());
+    EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE,
+              target_info.interrupt_reason);
+    EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::BLOCK,
+              target_info.insecure_download_status);
+  }
+
+  {
+    std::unique_ptr<download::MockDownloadItem> download_item =
+        PrepareDownloadItemForInsecureBlocking(kInsecureFile, kSecureOrigin,
+                                               std::nullopt);
+    ON_CALL(*download_item, GetTransitionType())
+        .WillByDefault(::testing::Return(ui::PAGE_TRANSITION_RELOAD));
+    download::DownloadTargetInfo target_info =
+        DetermineDownloadTarget(download_item.get());
+    EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED,
+              target_info.interrupt_reason);
+    EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK,
+              target_info.insecure_download_status);
+  }
+
+  for (auto retry_source : {download::DownloadSource::RETRY,
+                            download::DownloadSource::RETRY_FROM_BUBBLE}) {
+    std::unique_ptr<download::MockDownloadItem> download_item =
+        PrepareDownloadItemForInsecureBlocking(kInsecureFile, kSecureOrigin,
+                                               std::nullopt);
+    ON_CALL(*download_item, GetDownloadSource())
+        .WillByDefault(::testing::Return(retry_source));
+    download::DownloadTargetInfo target_info =
+        DetermineDownloadTarget(download_item.get());
+    EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE,
+              target_info.interrupt_reason);
+    EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::SAFE,
+              target_info.insecure_download_status);
+  }
+}
+
 // Verify that insecure downloads not blocked normally are blocked when
 // HTTPS-First mode is enabled.
 TEST_F(ChromeDownloadManagerDelegateTest,
