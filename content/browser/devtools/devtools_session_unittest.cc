@@ -173,23 +173,56 @@ TEST(DevToolsSessionValidateMessageTest, JsonMessage_ExpectCborTrue_Invalid) {
 }
 
 TEST(DevToolsSessionValidateMessageTest, BrowserOnlyDomainEvent_Invalid) {
-  for (const bool expect_cbor : {false, true}) {
-    const std::string json =
-        "{\"method\": \"Target.attachedToTarget\", \"params\": {}}";
-    std::vector<uint8_t> message =
-        expect_cbor ? JsonToCbor(json) : ToVector(json);
-    EXPECT_FALSE(
-        DevToolsSession::ValidateMessage("", false, message, expect_cbor));
+  for (const char* method : {
+           "Autofill.addressFormFilled",
+           "BackgroundService.recordingStateChanged",
+           "BluetoothEmulation.gattOperationReceived",
+           "Browser.downloadWillBegin",
+           "Cast.sinksUpdated",
+           "DeviceAccess.deviceRequestPrompted",
+           "DigitalCredentials.request",
+           "Extensions.event",
+           "FedCm.dialogShown",
+           "Fetch.authRequired",
+           "Fetch.requestPaused",
+           "FindInPage.event",
+           "Input.dragIntercepted",
+           "NativeProfiling.event",
+           "PWA.event",
+           "Security.visibleSecurityStateChanged",
+           "ServiceWorker.workerRegistrationUpdated",
+           "SmartCardEmulation.statusRequested",
+           "SystemInfo.event",
+           "Target.attachedToTarget",
+           "Tethering.accepted",
+           "Tracing.tracingComplete",
+           "VisualDebugger.frameResponse",
+           "WebAuthn.credentialAdded",
+           "WindowManager.event",
+       }) {
+    for (const bool expect_cbor : {false, true}) {
+      const std::string json =
+          std::string("{\"method\": \"") + method + "\", \"params\": {}}";
+      std::vector<uint8_t> message =
+          expect_cbor ? JsonToCbor(json) : ToVector(json);
+      EXPECT_FALSE(
+          DevToolsSession::ValidateMessage("", false, message, expect_cbor))
+          << method << " expect_cbor=" << expect_cbor;
+    }
   }
 }
 
 TEST(DevToolsSessionValidateMessageTest,
      ChildSession_BrowserOnlyDomainEvent_Invalid) {
-  std::vector<uint8_t> message = ToVector(
-      "{\"method\": \"Target.detachedFromTarget\", \"params\": {}, "
-      "\"sessionId\": \"session1\"}");
-  EXPECT_FALSE(DevToolsSession::ValidateMessage("session1", false, message,
-                                                /*expect_cbor=*/false));
+  for (const char* method :
+       {"Target.detachedFromTarget", "Fetch.requestPaused"}) {
+    std::vector<uint8_t> message =
+        ToVector(std::string("{\"method\": \"") + method +
+                 "\", \"params\": {}, \"sessionId\": \"session1\"}");
+    EXPECT_FALSE(DevToolsSession::ValidateMessage("session1", false, message,
+                                                  /*expect_cbor=*/false))
+        << method;
+  }
 }
 
 TEST(DevToolsSessionValidateMessageTest,
@@ -250,11 +283,178 @@ TEST(DevToolsSessionValidateMessageTest, CborString8NonAsciiMethod_Invalid) {
                                                 /*expect_cbor=*/true));
 }
 
-TEST(DevToolsSessionValidateMessageTest, SimilarDomainEvent_Valid) {
-  std::vector<uint8_t> message =
-      ToVector("{\"method\": \"TargetLike.eventFired\"}");
-  EXPECT_TRUE(DevToolsSession::ValidateMessage("", false, message,
+TEST(DevToolsSessionValidateMessageTest,
+     BrowserOnlyEventInSharedDomain_Invalid) {
+  for (const char* method : {
+           "Emulation.screenOrientationLockChanged",
+           "Inspector.detached",
+           "Inspector.targetCrashed",
+           "Inspector.targetReloadedAfterCrash",
+           "Network.deviceBoundSessionEventOccurred",
+           "Network.deviceBoundSessionsAdded",
+           "Network.policyUpdated",
+           "Network.reportingApiEndpointsChangedForOrigin",
+           "Network.reportingApiReportAdded",
+           "Network.reportingApiReportUpdated",
+           "Network.requestIntercepted",
+           "Network.requestWillBeSentExtraInfo",
+           "Network.responseReceivedEarlyHints",
+           "Network.responseReceivedExtraInfo",
+           "Network.signedExchangeReceived",
+           "Network.subresourceWebBundleInnerResponseError",
+           "Network.subresourceWebBundleInnerResponseParsed",
+           "Network.subresourceWebBundleMetadataError",
+           "Network.subresourceWebBundleMetadataReceived",
+           "Network.trustTokenOperationDone",
+           "Overlay.inspectPanelShowRequested",
+           "Overlay.inspectedElementWindowRestored",
+           "Page.backForwardCacheNotUsed",
+           "Page.colorPicked",
+           "Page.downloadProgress",
+           "Page.downloadWillBegin",
+           "Page.frameStartedLoading",
+           "Page.frameStartedNavigating",
+           "Page.frameStoppedLoading",
+           "Page.interstitialHidden",
+           "Page.interstitialShown",
+           "Page.javascriptDialogClosed",
+           "Page.javascriptDialogOpening",
+           "Page.navigationRequested",
+           "Page.screencastFrame",
+           "Page.screencastVisibilityChanged",
+           "Preload.prefetchStatusUpdated",
+           "Preload.preloadEnabledStateUpdated",
+           "Preload.prerenderStatusUpdated",
+       }) {
+    for (const bool expect_cbor : {false, true}) {
+      const std::string json =
+          std::string("{\"method\": \"") + method + "\", \"params\": {}}";
+      std::vector<uint8_t> message =
+          expect_cbor ? JsonToCbor(json) : ToVector(json);
+      EXPECT_FALSE(
+          DevToolsSession::ValidateMessage("", false, message, expect_cbor))
+          << method << " expect_cbor=" << expect_cbor;
+    }
+  }
+}
+
+TEST(DevToolsSessionValidateMessageTest,
+     MissingOrMalformedMethodInNotification_Invalid) {
+  for (const char* json : {
+           "{\"params\": {}}",
+           "{\"method\": \"\"}",
+           "{\"method\": \"TargetLike.eventFired\"}",
+           "{\"method\": \"Unknown.event\"}",
+           "{\"method\": \"Storage.indexedDBContentUpdated\"}",
+           "{\"method\": \"Page\"}",
+           "{\"method\": \"Page.\"}",
+           "{\"method\": \".loadEventFired\"}",
+           "{\"method\": \"Page.unknownEvent\"}",
+       }) {
+    for (const bool expect_cbor : {false, true}) {
+      std::vector<uint8_t> message =
+          expect_cbor ? JsonToCbor(json) : ToVector(json);
+      EXPECT_FALSE(
+          DevToolsSession::ValidateMessage("", false, message, expect_cbor))
+          << json << " expect_cbor=" << expect_cbor;
+    }
+  }
+}
+
+TEST(DevToolsSessionValidateMessageTest,
+     NotificationWithResponseFields_Invalid) {
+  for (const char* json :
+       {"{\"method\": \"Page.loadEventFired\", \"result\": {}}",
+        "{\"method\": \"Page.loadEventFired\", \"error\": {}}"}) {
+    for (const bool expect_cbor : {false, true}) {
+      std::vector<uint8_t> message =
+          expect_cbor ? JsonToCbor(json) : ToVector(json);
+      EXPECT_FALSE(
+          DevToolsSession::ValidateMessage("", false, message, expect_cbor))
+          << json << " expect_cbor=" << expect_cbor;
+    }
+  }
+}
+
+TEST(DevToolsSessionValidateMessageTest,
+     ResponseWithNotificationFields_Invalid) {
+  for (const char* json :
+       {"{\"id\": 1, \"method\": \"Fetch.requestPaused\", \"result\": {}}",
+        "{\"method\": \"Fetch.requestPaused\", \"params\": {}}",
+        "{\"id\": 1, \"result\": {}, \"params\": {}}"}) {
+    for (const bool expect_cbor : {false, true}) {
+      std::vector<uint8_t> message =
+          expect_cbor ? JsonToCbor(json) : ToVector(json);
+      EXPECT_FALSE(
+          DevToolsSession::ValidateMessage("", true, message, expect_cbor))
+          << json << " expect_cbor=" << expect_cbor;
+    }
+  }
+}
+
+TEST(DevToolsSessionValidateMessageTest, NestedMethodInResponseResult_Valid) {
+  const std::string json = "{\"id\": 1, \"result\": {\"method\": \"GET\"}}";
+  EXPECT_TRUE(DevToolsSession::ValidateMessage("", true, ToVector(json),
                                                /*expect_cbor=*/false));
+  EXPECT_TRUE(DevToolsSession::ValidateMessage("", true, JsonToCbor(json),
+                                               /*expect_cbor=*/true));
+}
+
+TEST(DevToolsSessionValidateMessageTest, String16TopLevelKeyInCbor_Invalid) {
+  std::vector<uint8_t> cbor;
+  crdtp::cbor::EnvelopeEncoder envelope;
+  envelope.EncodeStart(&cbor);
+  cbor.push_back(crdtp::cbor::EncodeIndefiniteLengthMapStart());
+  crdtp::cbor::EncodeString8(crdtp::SpanFrom("method"), &cbor);
+  crdtp::cbor::EncodeString8(crdtp::SpanFrom("Page.loadEventFired"), &cbor);
+  const uint16_t kMethod16[] = {'m', 'e', 't', 'h', 'o', 'd'};
+  crdtp::cbor::EncodeString16(
+      crdtp::span<uint16_t>(kMethod16, std::size(kMethod16)), &cbor);
+  crdtp::cbor::EncodeString8(crdtp::SpanFrom("Fetch.requestPaused"), &cbor);
+  cbor.push_back(crdtp::cbor::EncodeStop());
+  EXPECT_TRUE(envelope.EncodeStop(&cbor));
+
+  EXPECT_FALSE(DevToolsSession::ValidateMessage("", false, cbor,
+                                                /*expect_cbor=*/true));
+}
+
+TEST(DevToolsSessionValidateMessageTest, AllowedRendererNotifications_Valid) {
+  for (const char* method : {
+           "Accessibility.loadComplete",
+           "Animation.animationStarted",
+           "Audits.issueAdded",
+           "CSS.styleSheetAdded",
+           "Console.messageAdded",
+           "DOM.documentUpdated",
+           "DOMStorage.domStorageItemsCleared",
+           "Debugger.paused",
+           "Emulation.virtualTimeBudgetExpired",
+           "HeapProfiler.resetProfiles",
+           "Inspector.workerScriptLoaded",
+           "LayerTree.layerPainted",
+           "Log.entryAdded",
+           "Media.playerCreated",
+           "Network.requestWillBeSent",
+           "Overlay.inspectNodeRequested",
+           "Page.loadEventFired",
+           "Performance.metrics",
+           "PerformanceTimeline.timelineEventAdded",
+           "Preload.ruleSetUpdated",
+           "Profiler.consoleProfileStarted",
+           "Runtime.consoleAPICalled",
+           "WebAudio.contextCreated",
+           "WebMCP.toolsAdded",
+       }) {
+    for (const bool expect_cbor : {false, true}) {
+      const std::string json =
+          std::string("{\"method\": \"") + method + "\", \"params\": {}}";
+      std::vector<uint8_t> message =
+          expect_cbor ? JsonToCbor(json) : ToVector(json);
+      EXPECT_TRUE(
+          DevToolsSession::ValidateMessage("", false, message, expect_cbor))
+          << method << " expect_cbor=" << expect_cbor;
+    }
+  }
 }
 
 }  // namespace

@@ -97,20 +97,160 @@ const char kResumeMethod[] = "Runtime.runIfWaitingForDebugger";
 const char kSessionId[] = "sessionId";
 const char kMethod[] = "method";
 
-// Domains that are implemented only in the browser process. An agent in
-// another process does not send messages of these domains.
-constexpr std::string_view kBrowserOnlyDomainPrefixes[] = {
-    "Target.",
-};
+// CDP notifications that may originate from a renderer process (Blink or V8
+// inspector agents). Notifications from browser-only domains (e.g. Fetch,
+// Target, Browser, Storage, Security) and browser-only events in shared domains
+// (e.g. Page, Network, Inspector, Overlay, Preload, Emulation) are excluded.
+// Keep in sync with third_party/blink/renderer/core/inspector/
+// inspector_protocol_config.json and v8/include/js_protocol.pdl.
+constexpr auto kAllowedRendererNotifications =
+    base::MakeFixedFlatSet<std::string_view>({
+        "Accessibility.loadComplete",
+        "Accessibility.nodesUpdated",
+        "Animation.animationCanceled",
+        "Animation.animationCreated",
+        "Animation.animationStarted",
+        "Animation.animationUpdated",
+        "Audits.issueAdded",
+        "CSS.computedStyleUpdated",
+        "CSS.fontsUpdated",
+        "CSS.mediaQueryResultChanged",
+        "CSS.styleSheetAdded",
+        "CSS.styleSheetChanged",
+        "CSS.styleSheetRemoved",
+        "Console.messageAdded",
+        "DOM.adRelatedStateUpdated",
+        "DOM.adoptedStyleSheetsModified",
+        "DOM.affectedByStartingStylesFlagUpdated",
+        "DOM.attributeModified",
+        "DOM.attributeRemoved",
+        "DOM.characterDataModified",
+        "DOM.childNodeCountUpdated",
+        "DOM.childNodeInserted",
+        "DOM.childNodeRemoved",
+        "DOM.distributedNodesUpdated",
+        "DOM.documentUpdated",
+        "DOM.inlineStyleInvalidated",
+        "DOM.pseudoElementAdded",
+        "DOM.pseudoElementRemoved",
+        "DOM.scrollableFlagUpdated",
+        "DOM.setChildNodes",
+        "DOM.shadowRootPopped",
+        "DOM.shadowRootPushed",
+        "DOM.topLayerElementsUpdated",
+        "DOMStorage.domStorageItemAdded",
+        "DOMStorage.domStorageItemRemoved",
+        "DOMStorage.domStorageItemUpdated",
+        "DOMStorage.domStorageItemsCleared",
+        "Debugger.breakpointResolved",
+        "Debugger.paused",
+        "Debugger.resumed",
+        "Debugger.scriptFailedToParse",
+        "Debugger.scriptParsed",
+        "Emulation.virtualTimeBudgetExpired",
+        "HeapProfiler.addHeapSnapshotChunk",
+        "HeapProfiler.heapStatsUpdate",
+        "HeapProfiler.lastSeenObjectId",
+        "HeapProfiler.reportHeapSnapshotProgress",
+        "HeapProfiler.resetProfiles",
+        "Inspector.workerScriptLoaded",
+        "LayerTree.layerPainted",
+        "LayerTree.layerTreeDidChange",
+        "Log.entryAdded",
+        "Media.playerCreated",
+        "Media.playerErrorsRaised",
+        "Media.playerEventsAdded",
+        "Media.playerMessagesLogged",
+        "Media.playerPropertiesChanged",
+        "Network.dataReceived",
+        "Network.directTCPSocketAborted",
+        "Network.directTCPSocketChunkReceived",
+        "Network.directTCPSocketChunkSent",
+        "Network.directTCPSocketClosed",
+        "Network.directTCPSocketCreated",
+        "Network.directTCPSocketOpened",
+        "Network.directUDPSocketAborted",
+        "Network.directUDPSocketChunkReceived",
+        "Network.directUDPSocketChunkSent",
+        "Network.directUDPSocketClosed",
+        "Network.directUDPSocketCreated",
+        "Network.directUDPSocketJoinedMulticastGroup",
+        "Network.directUDPSocketLeftMulticastGroup",
+        "Network.directUDPSocketOpened",
+        "Network.eventSourceMessageReceived",
+        "Network.loadingFailed",
+        "Network.loadingFinished",
+        "Network.requestServedFromCache",
+        "Network.requestWillBeSent",
+        "Network.resourceChangedPriority",
+        "Network.responseReceived",
+        "Network.webSocketClosed",
+        "Network.webSocketCreated",
+        "Network.webSocketFrameError",
+        "Network.webSocketFrameReceived",
+        "Network.webSocketFrameSent",
+        "Network.webSocketHandshakeResponseReceived",
+        "Network.webSocketWillSendHandshakeRequest",
+        "Network.webTransportClosed",
+        "Network.webTransportConnectionEstablished",
+        "Network.webTransportCreated",
+        "Overlay.inspectModeCanceled",
+        "Overlay.inspectNodeRequested",
+        "Overlay.nodeHighlightRequested",
+        "Overlay.screenshotRequested",
+        "Page.compilationCacheProduced",
+        "Page.documentOpened",
+        "Page.domContentEventFired",
+        "Page.fileChooserOpened",
+        "Page.frameAttached",
+        "Page.frameClearedScheduledNavigation",
+        "Page.frameDetached",
+        "Page.frameNavigated",
+        "Page.frameRequestedNavigation",
+        "Page.frameResized",
+        "Page.frameScheduledNavigation",
+        "Page.frameSubtreeWillBeDetached",
+        "Page.lifecycleEvent",
+        "Page.loadEventFired",
+        "Page.navigatedWithinDocument",
+        "Page.windowOpen",
+        "Performance.metrics",
+        "PerformanceTimeline.timelineEventAdded",
+        "Preload.preloadingAttemptSourcesUpdated",
+        "Preload.ruleSetRemoved",
+        "Preload.ruleSetUpdated",
+        "Profiler.consoleProfileFinished",
+        "Profiler.consoleProfileStarted",
+        "Profiler.preciseCoverageDeltaUpdate",
+        "Runtime.bindingCalled",
+        "Runtime.consoleAPICalled",
+        "Runtime.exceptionRevoked",
+        "Runtime.exceptionThrown",
+        "Runtime.executionContextCreated",
+        "Runtime.executionContextDestroyed",
+        "Runtime.executionContextsCleared",
+        "Runtime.inspectRequested",
+        "WebAudio.audioListenerCreated",
+        "WebAudio.audioListenerWillBeDestroyed",
+        "WebAudio.audioNodeCreated",
+        "WebAudio.audioNodeWillBeDestroyed",
+        "WebAudio.audioParamCreated",
+        "WebAudio.audioParamWillBeDestroyed",
+        "WebAudio.contextChanged",
+        "WebAudio.contextCreated",
+        "WebAudio.contextWillBeDestroyed",
+        "WebAudio.nodeParamConnected",
+        "WebAudio.nodeParamDisconnected",
+        "WebAudio.nodesConnected",
+        "WebAudio.nodesDisconnected",
+        "WebMCP.toolInvoked",
+        "WebMCP.toolResponded",
+        "WebMCP.toolsAdded",
+        "WebMCP.toolsRemoved",
+    });
 
-bool IsBrowserOnlyMethod(crdtp::span<uint8_t> method) {
-  const std::string_view method_view = base::as_string_view(method);
-  for (std::string_view prefix : kBrowserOnlyDomainPrefixes) {
-    if (method_view.starts_with(prefix)) {
-      return true;
-    }
-  }
-  return false;
+bool IsAllowedRendererNotification(crdtp::span<uint8_t> method) {
+  return kAllowedRendererNotifications.contains(base::as_string_view(method));
 }
 
 // Clients match against this error message verbatim (http://crbug.com/1001678).
@@ -846,15 +986,19 @@ bool DevToolsSession::ValidateMessage(const std::string& expected_session_id,
     }
   }
 
-  if (!expected_has_id &&
-      crdtp::cbor::HasKeyInMap(span_message, crdtp::SpanFrom("id"))) {
-    DLOG(ERROR) << "Expected no id in the message but received one";
-    return false;
-  }
-
-  // The method, if present, must be a unique 7-bit string, and it must not
-  // belong to a domain that is implemented only in the browser process.
-  if (crdtp::cbor::HasKeyInMap(span_message, crdtp::SpanFrom(kMethod))) {
+  if (expected_has_id) {
+    if (crdtp::cbor::HasKeyInMap(span_message, crdtp::SpanFrom(kMethod)) ||
+        crdtp::cbor::HasKeyInMap(span_message, crdtp::SpanFrom("params"))) {
+      DLOG(ERROR) << "Expected no method or params in response message";
+      return false;
+    }
+  } else {
+    if (crdtp::cbor::HasKeyInMap(span_message, crdtp::SpanFrom("id")) ||
+        crdtp::cbor::HasKeyInMap(span_message, crdtp::SpanFrom("result")) ||
+        crdtp::cbor::HasKeyInMap(span_message, crdtp::SpanFrom("error"))) {
+      DLOG(ERROR) << "Expected no response fields in notification message";
+      return false;
+    }
     crdtp::span<uint8_t> method = crdtp::cbor::GetString8ValueFromMap(
         span_message, crdtp::SpanFrom(kMethod));
     // GetString8ValueFromMap accepts well-formed multi-byte UTF-8 in a CBOR
@@ -863,7 +1007,7 @@ bool DevToolsSession::ValidateMessage(const std::string& expected_session_id,
       DLOG(ERROR) << "Expected a unique 7-bit string method";
       return false;
     }
-    if (IsBrowserOnlyMethod(method)) {
+    if (!IsAllowedRendererNotification(method)) {
       DLOG(ERROR) << "Unexpected method: " << base::as_string_view(method);
       return false;
     }

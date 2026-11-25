@@ -2289,13 +2289,13 @@ IN_PROC_BROWSER_TEST_F(FlattenedDevToolsProtocolTest,
 
   // Simulate a message from the renderer that HAS the correct sessionId.
   std::string message_json =
-      "{\"method\":\"Test.test\",\"params\":{},\"sessionId\":\"" + session_id +
-      "\"}";
+      "{\"method\":\"Page.loadEventFired\",\"params\":{},\"sessionId\":\"" +
+      session_id + "\"}";
 
   ClearNotifications();
   DispatchProtocolNotification(host_impl, session_id, message_json, false);
 
-  WaitForNotification("Test.test", true);
+  WaitForNotification("Page.loadEventFired", true);
 }
 
 IN_PROC_BROWSER_TEST_F(FlattenedDevToolsProtocolTest,
@@ -2322,7 +2322,8 @@ IN_PROC_BROWSER_TEST_F(FlattenedDevToolsProtocolTest,
       static_cast<DevToolsAgentHostImpl*>(agent_host_.get());
 
   // Simulate a message from the renderer that MISSES the sessionId.
-  std::string message_json = "{\"method\":\"Test.test\",\"params\":{}}";
+  std::string message_json =
+      "{\"method\":\"Page.loadEventFired\",\"params\":{}}";
 
   DispatchProtocolNotification(host_impl, session_id, message_json, true);
 }
@@ -2352,7 +2353,8 @@ IN_PROC_BROWSER_TEST_F(FlattenedDevToolsProtocolTest,
 
   // Simulate a message from the renderer that has a WRONG sessionId.
   std::string message_json =
-      "{\"method\":\"Test.test\",\"params\":{},\"sessionId\":\"wrong_id\"}";
+      "{\"method\":\"Page.loadEventFired\",\"params\":{},\"sessionId\":"
+      "\"wrong_id\"}";
 
   DispatchProtocolNotification(host_impl, session_id, message_json, true);
 }
@@ -2370,7 +2372,8 @@ IN_PROC_BROWSER_TEST_F(FlattenedDevToolsProtocolTest,
 
   // Root session message with a sessionId should fail.
   std::string message_json =
-      "{\"method\":\"Test.test\",\"params\":{},\"sessionId\":\"12345\"}";
+      "{\"method\":\"Page.loadEventFired\",\"params\":{},\"sessionId\":"
+      "\"12345\"}";
 
   DispatchProtocolNotification(host_impl, "", message_json, true);
 }
@@ -2400,7 +2403,8 @@ IN_PROC_BROWSER_TEST_F(FlattenedDevToolsProtocolTest,
 
   // Simulate a message from the renderer that has a WRONG sessionId in CBOR.
   std::string message_json =
-      "{\"method\":\"Test.test\",\"params\":{},\"sessionId\":\"wrong_id\"}";
+      "{\"method\":\"Page.loadEventFired\",\"params\":{},\"sessionId\":"
+      "\"wrong_id\"}";
 
   DispatchProtocolNotification(host_impl, session_id, message_json, true,
                                /*use_cbor=*/true);
@@ -2438,6 +2442,39 @@ IN_PROC_BROWSER_TEST_F(FlattenedDevToolsProtocolTest,
   ClearNotifications();
   DispatchProtocolNotification(host_impl, session_id, message_json, true);
   EXPECT_FALSE(HasExistingNotification("Target.attachedToTarget"));
+}
+
+IN_PROC_BROWSER_TEST_F(FlattenedDevToolsProtocolTest,
+                       FetchDomainValidationFails) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url =
+      embedded_test_server()->GetURL("/devtools/page-with-oopif.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  Attach();
+
+  // Root session, auto-attach OOPIF.
+  base::DictValue command_params;
+  command_params.Set("autoAttach", true);
+  command_params.Set("waitForDebuggerOnStart", false);
+  command_params.Set("flatten", true);
+  SendCommandSync("Target.setAutoAttach", std::move(command_params));
+
+  auto notification = WaitForNotification("Target.attachedToTarget", true);
+  const std::string* session_id_ptr = notification.FindString("sessionId");
+  ASSERT_TRUE(session_id_ptr);
+  std::string session_id = *session_id_ptr;
+
+  DevToolsAgentHostImpl* host_impl =
+      static_cast<DevToolsAgentHostImpl*>(agent_host_.get());
+
+  // Simulate a forged Fetch.requestPaused notification from the renderer.
+  std::string message_json =
+      "{\"method\":\"Fetch.requestPaused\",\"params\":{},\"sessionId\":\"" +
+      session_id + "\"}";
+
+  ClearNotifications();
+  DispatchProtocolNotification(host_impl, session_id, message_json, true);
+  EXPECT_FALSE(HasExistingNotification("Fetch.requestPaused"));
 }
 
 // TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
