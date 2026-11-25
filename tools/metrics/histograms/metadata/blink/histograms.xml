@@ -2123,7 +2123,7 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Recorded each time that the identity provider's account-management link in
-    the FedCM prompt is clicked on desktop.
+    the FedCM prompt is clicked.
   </summary>
 </histogram>
 
@@ -2134,7 +2134,7 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Recorded each time that the identity provider's privacy-policy link in the
-    FedCM prompt is clicked on desktop.
+    FedCM prompt is clicked.
   </summary>
 </histogram>
 
@@ -2145,7 +2145,7 @@ chromium-metrics-reviews@google.com.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Recorded each time that the identity provider's terms-of-service link in the
-    FedCM prompt is clicked on desktop.
+    FedCM prompt is clicked.
   </summary>
 </histogram>
 

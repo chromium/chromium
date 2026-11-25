@@ -51,6 +51,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetFeatureMap;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content.webid.IdentityRequestDialogLinkType;
@@ -73,6 +74,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Contains the logic for the AccountSelection component. It sets the state of the model and reacts
@@ -980,6 +982,9 @@ class AccountSelectionMediator {
     }
 
     void showUrl(Context context, @IdentityRequestDialogLinkType int linkType, GURL url) {
+        // Content only passes valid HTTP(S) URLs, so this check is preventative, as in desktop's
+        // `FedCmAccountSelectionView::ShowUrl()`.
+        if (GURL.isEmptyOrInvalid(url) || !UrlUtilities.isHttpOrHttps(url)) return;
         switch (linkType) {
             case IdentityRequestDialogLinkType.TERMS_OF_SERVICE:
                 RecordHistogram.recordBooleanHistogram(
@@ -989,10 +994,19 @@ class AccountSelectionMediator {
                 RecordHistogram.recordBooleanHistogram(
                         "Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
                 break;
-            case IdentityRequestDialogLinkType.IDP_LINK:
-                // Not recorded, so that the histograms above only count the RP's links.
-                // TODO(crbug.com/581372729): Record clicks on each of the identity provider's
-                // links, and how often the links are shown.
+            // TODO(crbug.com/581372729): Record how often the identity provider's links are shown,
+            // so that these clicks can be turned into click rates.
+            case IdentityRequestDialogLinkType.IDP_ACCOUNT_MANAGEMENT:
+                RecordHistogram.recordBooleanHistogram(
+                        "Blink.FedCm.SignUp.IdpAccountManagementClicked", true);
+                break;
+            case IdentityRequestDialogLinkType.IDP_PRIVACY_POLICY:
+                RecordHistogram.recordBooleanHistogram(
+                        "Blink.FedCm.SignUp.IdpPrivacyPolicyClicked", true);
+                break;
+            case IdentityRequestDialogLinkType.IDP_TERMS_OF_SERVICE:
+                RecordHistogram.recordBooleanHistogram(
+                        "Blink.FedCm.SignUp.IdpTermsOfServiceClicked", true);
                 break;
         }
         CustomTabActivity.showInfoPage(context, url.getSpec());
@@ -1681,6 +1695,29 @@ class AccountSelectionMediator {
         // Only the active mode sheet shows the identity provider's links, in the container UI.
         boolean showIdpLinks =
                 mRpMode == RpMode.ACTIVE && ChromeFeatureList.sFedCmIdpLinks.isEnabled();
+        // Each link opens the URL that the dialog shows for it.
+        GURL idpAccountManagementUrl = GURL.emptyGURL();
+        GURL idpPrivacyPolicyUrl = GURL.emptyGURL();
+        GURL idpTermsOfServiceUrl = GURL.emptyGURL();
+        Consumer<Context> idpAccountManagementClickCallback = null;
+        Consumer<Context> idpPrivacyPolicyClickCallback = null;
+        Consumer<Context> idpTermsOfServiceClickCallback = null;
+        if (showIdpLinks) {
+            idpAccountManagementUrl = idpMetadata.getAccountManagementUrl();
+            idpPrivacyPolicyUrl = idpMetadata.getPrivacyPolicyUrl();
+            idpTermsOfServiceUrl = idpMetadata.getTermsOfServiceUrl();
+            idpAccountManagementClickCallback =
+                    createIdpLinkClickCallback(
+                            IdentityRequestDialogLinkType.IDP_ACCOUNT_MANAGEMENT,
+                            idpAccountManagementUrl);
+            idpPrivacyPolicyClickCallback =
+                    createIdpLinkClickCallback(
+                            IdentityRequestDialogLinkType.IDP_PRIVACY_POLICY, idpPrivacyPolicyUrl);
+            idpTermsOfServiceClickCallback =
+                    createIdpLinkClickCallback(
+                            IdentityRequestDialogLinkType.IDP_TERMS_OF_SERVICE,
+                            idpTermsOfServiceUrl);
+        }
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties(
                         identityProvider.getIdpForDisplay(),
@@ -1698,18 +1735,30 @@ class AccountSelectionMediator {
                                     IdentityRequestDialogLinkType.PRIVACY_POLICY,
                                     metadata.getPrivacyPolicyUrl());
                         },
-                        showIdpLinks ? idpMetadata.getAccountManagementUrl() : GURL.emptyGURL(),
-                        showIdpLinks ? idpMetadata.getPrivacyPolicyUrl() : GURL.emptyGURL(),
-                        showIdpLinks ? idpMetadata.getTermsOfServiceUrl() : GURL.emptyGURL(),
-                        (Context context, GURL url) -> {
-                            showUrl(context, IdentityRequestDialogLinkType.IDP_LINK, url);
-                        },
+                        idpAccountManagementUrl,
+                        idpPrivacyPolicyUrl,
+                        idpTermsOfServiceUrl,
+                        idpAccountManagementClickCallback,
+                        idpPrivacyPolicyClickCallback,
+                        idpTermsOfServiceClickCallback,
                         this::setFocusView,
                         account.getFields());
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)
                 .build();
+    }
+
+    /**
+     * Returns a click callback for the identity provider's link of type {@code linkType}, which
+     * opens {@code url} unless the click comes too soon after the sheet is shown.
+     */
+    private Consumer<Context> createIdpLinkClickCallback(
+            @IdentityRequestDialogLinkType int linkType, GURL url) {
+        return (Context context) -> {
+            if (!shouldInputBeProcessed()) return;
+            showUrl(context, linkType, url);
+        };
     }
 
     private PropertyModel createIdpSignInItem(@Nullable String idpForDisplay) {

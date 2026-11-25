@@ -70,7 +70,6 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -446,8 +445,8 @@ class AccountSelectionViewBinder {
     }
 
     static SpanApplier.@Nullable SpanInfo createLink(
-            Context context, String tag, GURL url, Consumer<Context> clickCallback) {
-        if (GURL.isEmptyOrInvalid(url)) return null;
+            Context context, String tag, GURL url, @Nullable Consumer<Context> clickCallback) {
+        if (GURL.isEmptyOrInvalid(url) || clickCallback == null) return null;
 
         String startTag = "<" + tag + ">";
         String endTag = "</" + tag + ">";
@@ -491,24 +490,29 @@ class AccountSelectionViewBinder {
      */
     private static @Nullable SpannableString getIdpLinksText(
             Context context, DataSharingConsentProperties.Properties properties) {
+        if (properties.mIdpAccountManagementClickCallback == null
+                && properties.mIdpPrivacyPolicyClickCallback == null
+                && properties.mIdpTermsOfServiceClickCallback == null) {
+            return null;
+        }
         SpanApplier.SpanInfo accountManagementSpan =
-                createIdpLink(
+                createLink(
                         context,
                         "link_idp_account",
                         properties.mIdpAccountManagementUrl,
-                        properties.mIdpLinkClickCallback);
+                        properties.mIdpAccountManagementClickCallback);
         SpanApplier.SpanInfo privacyPolicySpan =
-                createIdpLink(
+                createLink(
                         context,
                         "link_idp_privacy_policy",
                         properties.mIdpPrivacyPolicyUrl,
-                        properties.mIdpLinkClickCallback);
+                        properties.mIdpPrivacyPolicyClickCallback);
         SpanApplier.SpanInfo termsOfServiceSpan =
-                createIdpLink(
+                createLink(
                         context,
                         "link_idp_terms_of_service",
                         properties.mIdpTermsOfServiceUrl,
-                        properties.mIdpLinkClickCallback);
+                        properties.mIdpTermsOfServiceClickCallback);
 
         @StringRes int textId;
         if (accountManagementSpan != null) {
@@ -543,16 +547,6 @@ class AccountSelectionViewBinder {
         return SpanApplier.applySpans(
                 context.getString(textId, properties.mIdpForDisplay),
                 spans.toArray(new SpanApplier.SpanInfo[0]));
-    }
-
-    /** Returns a link for `url` that calls `clickCallback` with it, or null if `url` is empty. */
-    private static SpanApplier.@Nullable SpanInfo createIdpLink(
-            Context context, String tag, GURL url, BiConsumer<Context, GURL> clickCallback) {
-        return createLink(
-                context,
-                tag,
-                url,
-                (Context clickContext) -> clickCallback.accept(clickContext, url));
     }
 
     /**

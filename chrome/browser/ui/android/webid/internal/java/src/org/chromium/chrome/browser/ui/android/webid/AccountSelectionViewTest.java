@@ -15,7 +15,6 @@ import static org.robolectric.Shadows.shadowOf;
 
 import static java.util.Arrays.asList;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.Spanned;
@@ -67,7 +66,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * View tests for the Account Selection component ensure that model changes are reflected in the
@@ -502,7 +501,7 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                             mTestIdpAccountManagementUrl,
                             mTestIdpPrivacyPolicyUrl,
                             mTestIdpTermsOfServiceUrl,
-                            (context, url) -> {}));
+                            url -> {}));
             assertNull(mContentView.findViewById(R.id.idp_links_row));
         }
     }
@@ -524,7 +523,7 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                         accountManagementUrl,
                         privacyPolicyUrl,
                         termsOfServiceUrl,
-                        (context, url) -> clickedUrls.add(url)));
+                        clickedUrls::add));
 
         View row = mContentView.findViewById(R.id.idp_links_row);
         assertTrue(row.isShown());
@@ -548,7 +547,7 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                         .replaceAll(LINK_TAG_REGEX, ""),
                 idpLinks.getText().toString());
 
-        // Clicking each link, in order, passes its URL to the click callback.
+        // Clicking each link, in order, calls the click callback for that link.
         Spanned text = (Spanned) idpLinks.getText();
         ClickableSpan[] spans = text.getSpans(0, text.length(), ClickableSpan.class);
         Arrays.sort(spans, (a, b) -> text.getSpanStart(a) - text.getSpanStart(b));
@@ -818,19 +817,19 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
 
     private PropertyModel buildDataSharingConsentItem(String idpEtldPlusOne) {
         return buildDataSharingConsentItem(
-                idpEtldPlusOne,
-                GURL.emptyGURL(),
-                GURL.emptyGURL(),
-                GURL.emptyGURL(),
-                (context, url) -> {});
+                idpEtldPlusOne, GURL.emptyGURL(), GURL.emptyGURL(), GURL.emptyGURL(), url -> {});
     }
 
+    /**
+     * Returns the disclosure text with the given identity provider links, where clicking each link
+     * calls {@code idpLinkClickCallback} with the URL of that link.
+     */
     private PropertyModel buildDataSharingConsentItem(
             String idpEtldPlusOne,
             GURL idpAccountManagementUrl,
             GURL idpPrivacyPolicyUrl,
             GURL idpTermsOfServiceUrl,
-            BiConsumer<Context, GURL> idpLinkClickCallback) {
+            Consumer<GURL> idpLinkClickCallback) {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties(
                         idpEtldPlusOne,
@@ -841,7 +840,9 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                         idpAccountManagementUrl,
                         idpPrivacyPolicyUrl,
                         idpTermsOfServiceUrl,
-                        idpLinkClickCallback,
+                        context -> idpLinkClickCallback.accept(idpAccountManagementUrl),
+                        context -> idpLinkClickCallback.accept(idpPrivacyPolicyUrl),
+                        context -> idpLinkClickCallback.accept(idpTermsOfServiceUrl),
                         /* setFocusViewCallback= */ null,
                         DEFAULT_DISCLOSURE_FIELDS);
 

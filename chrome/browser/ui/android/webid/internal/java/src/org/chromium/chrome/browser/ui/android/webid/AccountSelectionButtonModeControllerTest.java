@@ -30,6 +30,7 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_CONTEXT;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
@@ -75,6 +76,7 @@ import org.chromium.url.GURL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 /** Controller tests verify that the Account Selection Active Mode delegate modifies the model. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -1152,11 +1154,14 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         assertTrue(properties.mIdpAccountManagementUrl.isEmpty());
         assertTrue(properties.mIdpPrivacyPolicyUrl.isEmpty());
         assertTrue(properties.mIdpTermsOfServiceUrl.isEmpty());
+        assertNull(properties.mIdpAccountManagementClickCallback);
+        assertNull(properties.mIdpPrivacyPolicyClickCallback);
+        assertNull(properties.mIdpTermsOfServiceClickCallback);
     }
 
     /**
-     * Tests that each of the identity provider's links opens its URL in a Custom Tab, without
-     * recording the RP's link metrics.
+     * Tests that each of the identity provider's links opens its URL in a Custom Tab and records
+     * its own histogram, without recording the other link histograms.
      */
     @Test
     // Opening a Custom Tab checks `CCTDontOverrideIntentMimeType`, so it needs a test value.
@@ -1166,20 +1171,45 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
     })
     public void testClickIdpLinks() {
         DataSharingConsentProperties.Properties properties = showRequestPermissionDialog();
-        HistogramWatcher histogramWatcher =
+        checkClickIdpLink(
+                properties.mIdpAccountManagementClickCallback,
+                mTestIdpAccountManagementUrl,
+                "Blink.FedCm.SignUp.IdpAccountManagementClicked");
+        checkClickIdpLink(
+                properties.mIdpPrivacyPolicyClickCallback,
+                mTestIdpPrivacyPolicyUrl,
+                "Blink.FedCm.SignUp.IdpPrivacyPolicyClicked");
+        checkClickIdpLink(
+                properties.mIdpTermsOfServiceClickCallback,
+                mTestIdpTermsOfServiceUrl,
+                "Blink.FedCm.SignUp.IdpTermsOfServiceClicked");
+    }
+
+    /**
+     * Clicks one of the identity provider's links in the request permission dialog of an active
+     * mode request through {@code clickCallback}, and checks that it opens {@code url} in a Custom
+     * Tab and records only {@code expectedHistogram}.
+     */
+    private void checkClickIdpLink(
+            Consumer<Context> clickCallback, GURL url, String expectedHistogram) {
+        HistogramWatcher.Builder builder =
                 HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(expectedHistogram, true)
                         .expectNoRecords("Blink.FedCm.SignUp.PrivacyPolicyClicked")
-                        .expectNoRecords("Blink.FedCm.SignUp.TermsOfServiceClicked")
-                        .build();
-        for (GURL url :
+                        .expectNoRecords("Blink.FedCm.SignUp.TermsOfServiceClicked");
+        for (String idpHistogram :
                 Arrays.asList(
-                        properties.mIdpAccountManagementUrl,
-                        properties.mIdpPrivacyPolicyUrl,
-                        properties.mIdpTermsOfServiceUrl)) {
-            properties.mIdpLinkClickCallback.accept(mContext, url);
-            Intent intent = shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
-            assertEquals(url.getSpec(), intent.getDataString());
+                        "Blink.FedCm.SignUp.IdpAccountManagementClicked",
+                        "Blink.FedCm.SignUp.IdpPrivacyPolicyClicked",
+                        "Blink.FedCm.SignUp.IdpTermsOfServiceClicked")) {
+            if (!idpHistogram.equals(expectedHistogram)) {
+                builder.expectNoRecords(idpHistogram);
+            }
         }
+        HistogramWatcher histogramWatcher = builder.build();
+        clickCallback.accept(mContext);
+        Intent intent = shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
+        assertEquals(url.getSpec(), intent.getDataString());
         histogramWatcher.assertExpected();
     }
 
@@ -1238,6 +1268,18 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
     @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
     public void testRequestPermissionFromPassiveSheetIgnoresEarlyClick() {
         showRequestPermissionFromPassiveSheet(Arrays.asList(mNewUserAccount));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Blink.FedCm.SignUp.IdpAccountManagementClicked")
+                        .build();
+        DataSharingConsentProperties.Properties consentProperties =
+                mModel.get(ItemProperties.DATA_SHARING_CONSENT)
+                        .get(DataSharingConsentProperties.PROPERTIES);
+        assertNotNull(consentProperties.mIdpAccountManagementClickCallback);
+        consentProperties.mIdpAccountManagementClickCallback.accept(mContext);
+        assertNull(shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity());
+        histogramWatcher.assertExpected();
 
         ContinueButtonProperties.Properties continueButton =
                 mModel.get(ItemProperties.CONTINUE_BUTTON).get(ContinueButtonProperties.PROPERTIES);
@@ -1332,6 +1374,31 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
         assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, headerModel.get(TYPE));
         assertEquals(mTestEtldPlusOne2, headerModel.get(IDP_FOR_DISPLAY));
         verify(mMockDelegate, never()).onAccountSelected(any());
+    }
+
+    /**
+     * Tests that clicking one of the identity provider's links in the request permission dialog
+     * shown for a passive mode request records its histogram.
+     */
+    @Test
+    // Opening a Custom Tab checks `CCTDontOverrideIntentMimeType`, so it needs a test value.
+    @EnableFeatures({
+        ChromeFeatureList.FED_CM_IDP_LINKS,
+        ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE
+    })
+    public void testClickIdpLinkOnRequestPermissionFromPassiveSheet() {
+        showRequestPermissionFromPassiveSheet(Arrays.asList(mNewUserAccount));
+        mMediator.setComponentShowTime(-1000);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Blink.FedCm.SignUp.IdpPrivacyPolicyClicked", true);
+
+        mModel.get(ItemProperties.DATA_SHARING_CONSENT)
+                .get(DataSharingConsentProperties.PROPERTIES)
+                .mIdpPrivacyPolicyClickCallback
+                .accept(mContext);
+
+        histogramWatcher.assertExpected();
     }
 
     /**

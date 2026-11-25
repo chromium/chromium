@@ -236,10 +236,6 @@ class CONTENT_EXPORT IdentityRequestDialogController {
     IDP_ACCOUNT_MANAGEMENT,
     IDP_PRIVACY_POLICY,
     IDP_TERMS_OF_SERVICE,
-    // Legacy value kept temporarily while Android migrates to the per-link
-    // values above.
-    // TODO(crbug.com/581372729): Remove once Android uses the per-link values.
-    IDP_LINK,
   };
 
   // The volume of the dialog to show when in passive mode.

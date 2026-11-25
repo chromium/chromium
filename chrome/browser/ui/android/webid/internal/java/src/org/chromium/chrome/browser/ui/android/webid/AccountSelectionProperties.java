@@ -32,7 +32,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /** Properties defined here reflect the state of the AccountSelection-components. */
@@ -183,8 +182,11 @@ class AccountSelectionProperties {
             public final GURL mIdpAccountManagementUrl;
             public final GURL mIdpPrivacyPolicyUrl;
             public final GURL mIdpTermsOfServiceUrl;
-            // Called with the URL of the identity provider's link that the user clicks.
-            public final BiConsumer<Context, GURL> mIdpLinkClickCallback;
+            // Called when the user clicks each of the identity provider's links, or null if the
+            // identity provider's links aren't shown.
+            public final @Nullable Consumer<Context> mIdpAccountManagementClickCallback;
+            public final @Nullable Consumer<Context> mIdpPrivacyPolicyClickCallback;
+            public final @Nullable Consumer<Context> mIdpTermsOfServiceClickCallback;
             public final @Nullable Callback<View> mSetFocusViewCallback;
             public final @IdentityRequestDialogDisclosureField int[] mDisclosureFields;
 
@@ -197,7 +199,9 @@ class AccountSelectionProperties {
                     GURL idpAccountManagementUrl,
                     GURL idpPrivacyPolicyUrl,
                     GURL idpTermsOfServiceUrl,
-                    BiConsumer<Context, GURL> idpLinkClickCallback,
+                    @Nullable Consumer<Context> idpAccountManagementClickCallback,
+                    @Nullable Consumer<Context> idpPrivacyPolicyClickCallback,
+                    @Nullable Consumer<Context> idpTermsOfServiceClickCallback,
                     @Nullable Callback<View> setFocusViewCallback,
                     @IdentityRequestDialogDisclosureField int[] disclosureFields) {
                 mIdpForDisplay = idpForDisplay;
@@ -208,7 +212,9 @@ class AccountSelectionProperties {
                 mIdpAccountManagementUrl = idpAccountManagementUrl;
                 mIdpPrivacyPolicyUrl = idpPrivacyPolicyUrl;
                 mIdpTermsOfServiceUrl = idpTermsOfServiceUrl;
-                mIdpLinkClickCallback = idpLinkClickCallback;
+                mIdpAccountManagementClickCallback = idpAccountManagementClickCallback;
+                mIdpPrivacyPolicyClickCallback = idpPrivacyPolicyClickCallback;
+                mIdpTermsOfServiceClickCallback = idpTermsOfServiceClickCallback;
                 mSetFocusViewCallback = setFocusViewCallback;
                 mDisclosureFields = disclosureFields;
             }

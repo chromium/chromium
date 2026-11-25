@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.android.webid;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,6 +40,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.IntentHandler;
@@ -55,12 +57,14 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.content.webid.IdentityRequestDialogLinkType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
@@ -280,6 +284,38 @@ public class AccountSelectionCoordinatorTest {
         verify(mMockDelegate, never()).onDismissed(anyInt());
         assertEquals(HeaderType.SIGN_IN, mCoordinator.getMediator().getHeaderType());
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
+    }
+
+    /**
+     * Tests that `showUrl()`, which the RP's and the identity provider's links and DevTools'
+     * `FedCm.openUrl` use, doesn't open empty, invalid or non-HTTP(S) URLs nor record their
+     * histograms. Content only passes valid HTTP(S) URLs, so this is a preventative check.
+     */
+    @Test
+    public void testShowUrlIgnoresUrlsThatAreNotValidHttpOrHttps() {
+        assertTrue(
+                mCoordinator.showAccounts(
+                        mRpData,
+                        Arrays.asList(mNewAccount),
+                        Arrays.asList(mIdpData),
+                        /* newAccounts= */ Collections.emptyList()));
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Blink.FedCm.SignUp.TermsOfServiceClicked")
+                        .expectNoRecords("Blink.FedCm.SignUp.PrivacyPolicyClicked")
+                        .expectNoRecords("Blink.FedCm.SignUp.IdpAccountManagementClicked")
+                        .expectNoRecords("Blink.FedCm.SignUp.IdpPrivacyPolicyClicked")
+                        .expectNoRecords("Blink.FedCm.SignUp.IdpTermsOfServiceClicked")
+                        .build();
+
+        mCoordinator.showUrl(IdentityRequestDialogLinkType.TERMS_OF_SERVICE, GURL.emptyGURL());
+        mCoordinator.showUrl(
+                IdentityRequestDialogLinkType.PRIVACY_POLICY, JUnitTestGURLs.INVALID_URL);
+        mCoordinator.showUrl(
+                IdentityRequestDialogLinkType.IDP_PRIVACY_POLICY, JUnitTestGURLs.CHROME_ABOUT);
+
+        assertNull(shadowOf(mActivity).getNextStartedActivity());
+        histogramWatcher.assertExpected();
     }
 
     @Test

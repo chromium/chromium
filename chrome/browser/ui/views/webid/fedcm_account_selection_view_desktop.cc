@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_util.h"
@@ -757,9 +756,6 @@ void FedCmAccountSelectionView::ShowUrl(LinkType link_type, const GURL& url) {
       UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.IdpTermsOfServiceClicked",
                             true);
       break;
-
-    case LinkType::IDP_LINK:
-      NOTREACHED();
   }
 }
 
