@@ -8,22 +8,11 @@
 
 #include "base/functional/bind.h"
 #include "components/browser_actuator/public/browser_actuator_task_client.h"
+#include "components/browser_actuator/test_support/fake_browser_actuator_task_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace browser_actuator {
 namespace {
-
-class FakeTaskClient : public BrowserActuatorTaskClient {
- public:
-  FakeTaskClient() = default;
-  ~FakeTaskClient() override = default;
-
-  // BrowserActuatorTaskClient:
-  void StartTask(UseCase use_case,
-                 const google::protobuf::MessageLite& feature_payload,
-                 Observer* observer) override {}
-  void Cancel() override {}
-};
 
 TEST(BrowserActuatorServiceImplTest, IsInitialized) {
   BrowserActuatorServiceImpl service;
@@ -37,9 +26,9 @@ TEST(BrowserActuatorServiceImplTest, CreateTaskClientReturnsNullByDefault) {
 
 TEST(BrowserActuatorServiceImplTest, SetTaskClientFactoryCreatesTaskClient) {
   BrowserActuatorServiceImpl service;
-  service.SetTaskClientFactory(base::BindRepeating(
-      []() -> std::unique_ptr<BrowserActuatorTaskClient> {
-        return std::make_unique<FakeTaskClient>();
+  service.SetTaskClientFactory(
+      base::BindRepeating([]() -> std::unique_ptr<BrowserActuatorTaskClient> {
+        return std::make_unique<FakeBrowserActuatorTaskClient>();
       }));
 
   std::unique_ptr<BrowserActuatorTaskClient> client1 =
@@ -58,9 +47,9 @@ TEST(BrowserActuatorServiceImplTest, SetTaskClientFactoryCreatesTaskClient) {
 
 TEST(BrowserActuatorServiceImplTest, ShutdownResetsTaskClientFactory) {
   BrowserActuatorServiceImpl service;
-  service.SetTaskClientFactory(base::BindRepeating(
-      []() -> std::unique_ptr<BrowserActuatorTaskClient> {
-        return std::make_unique<FakeTaskClient>();
+  service.SetTaskClientFactory(
+      base::BindRepeating([]() -> std::unique_ptr<BrowserActuatorTaskClient> {
+        return std::make_unique<FakeBrowserActuatorTaskClient>();
       }));
   EXPECT_NE(service.CreateTaskClient(), nullptr);
 

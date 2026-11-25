@@ -25,6 +25,7 @@ source_set("fake_task_client") {
   visibility = [
     ":*",
     "//chrome/browser/browser_actuator:*",
+    "//components/browser_actuator/internal:*",
   ]
 
   sources = [
