@@ -37,6 +37,7 @@ source_set("internal") {
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/side_panel/android",
+    "//components/input",
     "//content/public/browser",
     "//extensions/browser",
     "//extensions/common",

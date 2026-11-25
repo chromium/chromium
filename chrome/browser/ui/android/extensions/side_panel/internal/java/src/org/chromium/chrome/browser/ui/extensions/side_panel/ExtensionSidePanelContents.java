@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.extensions.side_panel;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.View;
 
 import org.jni_zero.CalledByNative;
@@ -26,6 +27,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.KeyboardShortcutsDelegate;
 
 /**
  * Manages the Java-side representation and composition of an extension side panel's WebContents.
@@ -39,6 +41,7 @@ public class ExtensionSidePanelContents implements Destroyable {
     private static boolean sSkipViewEventSinkForTesting;
 
     private final WebContents mWebContents;
+    private final WindowAndroid mWindowAndroid;
     private final ThinWebView mThinWebView;
 
     public static void setSkipViewEventSinkForTesting(boolean skip) {
@@ -87,17 +90,26 @@ public class ExtensionSidePanelContents implements Destroyable {
         thinWebView.attachWebContents(
                 webContents, contentView, new ThinWebViewAttachParams.Builder().build());
 
-        return new ExtensionSidePanelContents(webContents, thinWebView);
+        return new ExtensionSidePanelContents(webContents, windowAndroid, thinWebView);
     }
 
-    private ExtensionSidePanelContents(WebContents webContents, ThinWebView thinWebView) {
+    private ExtensionSidePanelContents(
+            WebContents webContents, WindowAndroid windowAndroid, ThinWebView thinWebView) {
         mWebContents = webContents;
+        mWindowAndroid = windowAndroid;
         mThinWebView = thinWebView;
     }
 
     @CalledByNative
     public View getView() {
         return mThinWebView.getView();
+    }
+
+    /** Forwards an unhandled renderer key event to the host window's shortcut delegate. */
+    @CalledByNative
+    boolean handleKeyboardEvent(KeyEvent event) {
+        KeyboardShortcutsDelegate delegate = mWindowAndroid.getKeyboardShortcutsDelegate();
+        return delegate != null && delegate.handleKeyboardEvent(event);
     }
 
     @Override

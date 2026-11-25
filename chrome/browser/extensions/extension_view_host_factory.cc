@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_view_host.h"
@@ -18,11 +19,20 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/callback_list.h"
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "ui/android/ui_android_features.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"  // nogncheck
@@ -146,7 +156,19 @@ class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
 // Delegate for ExtensionViewHost on Android.
 class ExtensionViewHostDelegateAndroid : public ExtensionViewHost::Delegate {
  public:
-  ExtensionViewHostDelegateAndroid() = default;
+  ExtensionViewHostDelegateAndroid(BrowserWindowInterface* browser,
+                                   tabs::TabInterface* tab_interface)
+      : browser_(browser),
+        tab_handle_(tab_interface ? tab_interface->GetHandle()
+                                  : tabs::TabHandle::Null()) {
+    CHECK((browser != nullptr) != (tab_interface != nullptr));
+    if (browser_) {
+      browser_did_close_subscription_ =
+          browser_->RegisterBrowserDidClose(base::BindRepeating(
+              &ExtensionViewHostDelegateAndroid::OnBrowserDidClose,
+              base::Unretained(this)));
+    }
+  }
   ExtensionViewHostDelegateAndroid(const ExtensionViewHostDelegateAndroid&) =
       delete;
   ExtensionViewHostDelegateAndroid& operator=(
@@ -169,9 +191,19 @@ class ExtensionViewHostDelegateAndroid : public ExtensionViewHost::Delegate {
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       content::WebContents* source,
       const input::NativeWebKeyboardEvent& event) override {
-    // TODO(cbrug.com/385987224): Implement this method for Android.
-    NOTIMPLEMENTED();
-    return content::KeyboardEventProcessingResult::NOT_HANDLED;
+    if (!base::FeatureList::IsEnabled(ui::kAndroidUnifiedKeyboardShortcuts)) {
+      return content::KeyboardEventProcessingResult::NOT_HANDLED;
+    }
+    content::WebContents* tab_contents = GetActiveTabContents();
+    if (!tab_contents) {
+      return content::KeyboardEventProcessingResult::NOT_HANDLED;
+    }
+    content::WebContentsDelegate* delegate = tab_contents->GetDelegate();
+    if (!delegate) {
+      return content::KeyboardEventProcessingResult::NOT_HANDLED;
+    }
+    CHECK(!source || delegate != source->GetDelegate());
+    return delegate->PreHandleKeyboardEvent(tab_contents, event);
   }
 
   std::unique_ptr<content::EyeDropper> OpenEyeDropper(
@@ -187,6 +219,28 @@ class ExtensionViewHostDelegateAndroid : public ExtensionViewHost::Delegate {
     NOTIMPLEMENTED();
     return nullptr;
   }
+
+ private:
+  void OnBrowserDidClose(BrowserWindowInterface* /*browser*/) {
+    browser_ = nullptr;
+  }
+
+  // Returns null if the bound tab closed or the window is in Android's 0-tab
+  // state.
+  content::WebContents* GetActiveTabContents() const {
+    if (tabs::TabInterface* tab = tab_handle_.Get()) {
+      return tab->GetContents();
+    }
+    TabListInterface* tab_list =
+        browser_ ? TabListInterface::From(browser_) : nullptr;
+    tabs::TabInterface* active_tab =
+        tab_list ? tab_list->GetActiveTab() : nullptr;
+    return active_tab ? active_tab->GetContents() : nullptr;
+  }
+
+  raw_ptr<BrowserWindowInterface> browser_;
+  const tabs::TabHandle tab_handle_;
+  base::CallbackListSubscription browser_did_close_subscription_;
 };
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -266,7 +320,8 @@ std::unique_ptr<ExtensionViewHost> ExtensionViewHostFactory::CreatePopupHost(
 #if !BUILDFLAG(IS_ANDROID)
   auto delegate = std::make_unique<ExtensionViewHostBrowserDelegate>(browser);
 #else
-  auto delegate = std::make_unique<ExtensionViewHostDelegateAndroid>();
+  auto delegate = std::make_unique<ExtensionViewHostDelegateAndroid>(
+      browser, /*tab_interface=*/nullptr);
 #endif
 
   return CreateExtensionViewHost(extension, url, browser->GetProfile(),
@@ -296,7 +351,8 @@ ExtensionViewHostFactory::CreateSidePanelHost(
                     tab_interface->GetContents());
 #else
   std::unique_ptr<ExtensionViewHost::Delegate> delegate =
-      std::make_unique<ExtensionViewHostDelegateAndroid>();
+      std::make_unique<ExtensionViewHostDelegateAndroid>(browser,
+                                                         tab_interface);
 #endif
 
   return CreateExtensionViewHost(extension, url, profile,

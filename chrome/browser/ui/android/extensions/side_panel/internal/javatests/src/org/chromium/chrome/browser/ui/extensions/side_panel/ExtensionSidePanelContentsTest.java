@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.ui.extensions.side_panel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -16,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.View;
 
 import org.junit.After;
@@ -38,6 +41,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.KeyboardShortcutsDelegate;
 
 import java.lang.ref.WeakReference;
 
@@ -169,5 +173,25 @@ public class ExtensionSidePanelContentsTest {
 
         verify(mThinWebView).destroy();
         verify(mWebContents, never()).setTopLevelNativeWindow(any());
+    }
+
+    @Test
+    public void testHandleKeyboardEvent() {
+        ExtensionSidePanelContents contents =
+                ExtensionSidePanelContents.create(mWebContents, mWindowAndroid);
+        assertNotNull(contents);
+
+        KeyEvent handledEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_L);
+        KeyboardShortcutsDelegate shortcutsDelegate = mock(KeyboardShortcutsDelegate.class);
+        mWindowAndroid.setKeyboardShortcutsDelegate(shortcutsDelegate);
+        when(shortcutsDelegate.handleKeyboardEvent(handledEvent)).thenReturn(true);
+        assertTrue(contents.handleKeyboardEvent(handledEvent));
+
+        KeyEvent unhandledEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_A);
+        when(shortcutsDelegate.handleKeyboardEvent(unhandledEvent)).thenReturn(false);
+        assertFalse(contents.handleKeyboardEvent(unhandledEvent));
+
+        mWindowAndroid.setKeyboardShortcutsDelegate(null);
+        assertFalse(contents.handleKeyboardEvent(handledEvent));
     }
 }

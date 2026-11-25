@@ -6,8 +6,11 @@
 
 #include "base/android/jni_android.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "chrome/browser/extensions/extension_view_host.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/android/ui_android_features.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -92,10 +95,14 @@ void ExtensionSidePanelContentsAndroid::RenderFrameCreated(
 
 bool ExtensionSidePanelContentsAndroid::HandleKeyboardEvent(
     content::WebContents* /*source*/,
-    const input::NativeWebKeyboardEvent& /*event*/) {
-  // Unhandled keyboard events fall back to default Android window event
-  // routing.
-  return false;
+    const input::NativeWebKeyboardEvent& event) {
+  if (!base::FeatureList::IsEnabled(ui::kAndroidUnifiedKeyboardShortcuts) ||
+      !java_object_ || event.os_event.is_null()) {
+    return false;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_ExtensionSidePanelContents_handleKeyboardEvent(env, java_object_,
+                                                             event.os_event);
 }
 
 void ExtensionSidePanelContentsAndroid::OnLoaded() {

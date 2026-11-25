@@ -712,6 +712,7 @@ source_set("extensions") {
       "//chrome/browser/ui/android/tab_model",
       "//components/content_settings/browser",
       "//components/optimization_guide/core:features",
+      "//ui/android",
     ]
 
     if (enable_desktop_android_extensions) {
@@ -2663,6 +2664,10 @@ source_set("browser_tests") {
     deps += [
       "//chrome/test:test_support_jni_headers",
       "//chrome/test/base:android_ui_test_utils",
+      "//components/input",
+      "//third_party/jni_zero",
+      "//ui/android",
+      "//ui/events",
     ]
   } else {
     deps += [
