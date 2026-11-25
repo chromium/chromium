@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>CSS Pseudo-Elements Test: highlight pseudos honor text-underline-position</title>
+<link rel="author" title="Chromium contributors" href="https://chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#highlight-styling">
+<meta name="assert" content="text-underline-position applies to highlight pseudo-elements.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+#target::highlight(test),
+#target::selection,
+#target::target-text,
+#target::spelling-error,
+#target::grammar-error,
+#target::search-text {
+  text-decoration-line: underline;
+  text-underline-position: under;
+}
+</style>
+<div id="parent"><span id="target">Highlighted text</span></div>
+<script>
+const range = new Range();
+range.selectNodeContents(target);
+CSS.highlights.set("test", new Highlight(range));
+
+for (const pseudo of [
+  "::highlight(test)", "::selection", "::target-text", "::spelling-error",
+  "::grammar-error", "::search-text",
+]) {
+  test(() => {
+    assert_equals(getComputedStyle(target, pseudo)
+                      .getPropertyValue("text-underline-position"),
+                  "under");
+  }, `${pseudo} accepts text-underline-position`);
+}
+</script>

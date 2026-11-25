@@ -6727,6 +6727,7 @@
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
+      valid_for_highlight: true,
       valid_for_page_context: true,
       invalidate: ["text-decoration"],
     },
