@@ -731,7 +731,9 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       if (type == EventType::kGestureShowPress ||
           type == EventType::kGestureTap ||
           type == EventType::kGestureTapUnconfirmed) {
-        CHECK_EQ(0U, i, base::NotFatalUntil::M163);
+        // TODO(crbug.com/588452626): CHECK-exclusion: Convert to a CHECK once
+        // we are confident it won't be triggered.
+        DCHECK_EQ(0U, i);
         diameter = max_diameter_before_show_press_;
         x = tap_down_point_.x();
         y = tap_down_point_.y();
