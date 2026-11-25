@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressHelper.OnKeyDownHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
-import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
@@ -88,14 +87,14 @@ public class BookmarkActivity extends SnackbarActivity {
         @Nullable ComponentName parentComponent =
                 IntentUtils.safeGetParcelableExtra(
                         getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT);
-        // Use the original profile: `profile` may be an OTR profile that gets destroyed while this
-        // activity is still showing (e.g. last incognito tab closed), which would make the
-        // supplier return null.
+        // Eagerly resolve the original profile: `profile` may be an OTR profile that gets
+        // destroyed while this activity is still showing (e.g. last incognito tab closed),
+        // zeroing its native pointer before the supplier is read.
         Profile originalProfile = profile.getOriginalProfile();
         mOriginalProfile = originalProfile;
         mBookmarkOpener =
                 new BookmarkOpenerImpl(
-                        () -> BookmarkModel.getForProfile(originalProfile),
+                        () -> originalProfile,
                         /* context= */ this,
                         /* componentName= */ parentComponent,
                         /* multiInstanceManager= */ null,

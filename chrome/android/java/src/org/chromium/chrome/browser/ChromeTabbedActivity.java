@@ -1454,7 +1454,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 getProfileProviderSupplier(),
                 (profile) ->
                         new BookmarkOpenerImpl(
-                                () -> BookmarkModel.getForProfile(profile),
+                                () -> profile,
                                 this,
                                 getComponentName(),
                                 /* multiInstanceManager= */ null,

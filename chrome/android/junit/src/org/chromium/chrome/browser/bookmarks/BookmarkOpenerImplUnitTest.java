@@ -35,6 +35,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -53,8 +54,11 @@ import java.util.List;
 public class BookmarkOpenerImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private BookmarkBridge.Natives mBookmarkBridgeNatives;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private MultiInstanceManager mMultiInstanceManager;
+    @Mock private Profile mProfile;
+    @Mock private Profile mOtrProfile;
     @Mock private Tab mTab;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
@@ -163,10 +167,12 @@ public class BookmarkOpenerImplUnitTest {
                 .thenReturn(
                         Arrays.asList(mBookmarkId1, mBookmarkId2, mNestedFolderId, mBookmarkId3));
 
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        BookmarkModel.setInstanceForTesting(mBookmarkModel);
         mCurrentTab = mTab;
         mOpener =
                 new BookmarkOpenerImpl(
-                        () -> mBookmarkModel,
+                        () -> mProfile,
                         mActivity,
                         new ComponentName(mActivity, "TestActivity"),
                         mMultiInstanceManager,
@@ -441,5 +447,26 @@ public class BookmarkOpenerImplUnitTest {
         List<String> additionalUrls =
                 startedIntent.getStringArrayListExtra(IntentHandler.EXTRA_ADDITIONAL_URLS);
         assertEquals(Collections.singletonList(mBookmarkItem2.getUrl().getSpec()), additionalUrls);
+    }
+
+    @Test
+    public void testOpenBookmark_offTheRecordProfile_usesOriginalProfile() {
+        BookmarkModel.setInstanceForTesting(null);
+        BookmarkBridgeJni.setInstanceForTesting(mBookmarkBridgeNatives);
+        when(mOtrProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mBookmarkBridgeNatives.nativeGetForProfile(mProfile)).thenReturn(mBookmarkModel);
+
+        BookmarkOpenerImpl opener =
+                new BookmarkOpenerImpl(
+                        () -> mOtrProfile,
+                        mActivity,
+                        new ComponentName(mActivity, "TestActivity"),
+                        mMultiInstanceManager,
+                        () -> mCurrentTab);
+
+        assertTrue(opener.openBookmarkInCurrentTab(mBookmarkId1, /* incognito= */ true));
+        verify(mBookmarkBridgeNatives).nativeGetForProfile(mProfile);
+        verify(mBookmarkBridgeNatives, never()).nativeGetForProfile(mOtrProfile);
+        assertNotNull(shadowOf(mActivity).getNextStartedActivity());
     }
 }

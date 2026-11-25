@@ -3356,7 +3356,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                                     AppMenuPropertiesDelegateImpl.BOOKMARK_ID_BUNDLE_KEY));
             BookmarkOpener opener =
                     new BookmarkOpenerImpl(
-                            mBookmarkModelSupplier,
+                            mTabModelProfileSupplier,
                             this,
                             getComponentName(),
                             /* multiInstanceManager= */ null,

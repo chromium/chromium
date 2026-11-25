@@ -34,7 +34,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.download.home.DownloadPage;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
-import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bricks.BricksPage;
@@ -329,6 +328,8 @@ public class NativePageFactory {
 
         protected NativePage buildBookmarksPage(Tab tab) {
             Profile profile = tab.getProfile();
+            // Eagerly resolve the original profile in case an OTR profile is destroyed before open.
+            Profile originalProfile = profile.getOriginalProfile();
             return new BookmarkPage(
                     mWindowAndroid,
                     mActivity,
@@ -342,7 +343,7 @@ public class NativePageFactory {
                             mTabModelSelector,
                             mEdgeToEdgeControllerSupplier),
                     new BookmarkOpenerImpl(
-                            () -> BookmarkModel.getForProfile(profile),
+                            () -> originalProfile,
                             mActivity,
                             mActivity.getComponentName(),
                             /* multiInstanceManager= */ null,

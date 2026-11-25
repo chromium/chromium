@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -28,6 +26,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -43,15 +42,17 @@ import java.util.function.Supplier;
 /** Opens bookmarks via intents, or executes {@code javascript:} bookmarklets on the current tab. */
 @NullMarked
 public class BookmarkOpenerImpl implements BookmarkOpener {
-    private final Supplier<@Nullable BookmarkModel> mBookmarkModelSupplier;
+    private final Supplier<@Nullable Profile> mProfileSupplier;
     private final Context mContext;
     private final @Nullable ComponentName mComponentName;
     private final @Nullable MultiInstanceManager mMultiInstanceManager;
     private final @Nullable Supplier<@Nullable Tab> mCurrentTabSupplier;
 
     /**
-     * @param bookmarkModelSupplier Supplies the bookmark model, used to query for bookmark urls and
-     *     type.
+     * Constructs a {@link BookmarkOpenerImpl}. Off-the-record profiles from {@code profileSupplier}
+     * are normalized via {@link Profile#getOriginalProfile()}.
+     *
+     * @param profileSupplier Supplies the active regular or off-the-record {@link Profile}.
      * @param context The android activity context, used to build the intent to open bookmarks.
      * @param componentName The name of the parent component, or null if unknown (e.g. when launched
      *     without a parent activity).
@@ -59,12 +60,12 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
      * @param currentTabSupplier Supplies the active tab for bookmarklet execution, if available.
      */
     public BookmarkOpenerImpl(
-            Supplier<@Nullable BookmarkModel> bookmarkModelSupplier,
+            Supplier<@Nullable Profile> profileSupplier,
             Context context,
             @Nullable ComponentName componentName,
             @Nullable MultiInstanceManager multiInstanceManager,
             @Nullable Supplier<@Nullable Tab> currentTabSupplier) {
-        mBookmarkModelSupplier = bookmarkModelSupplier;
+        mProfileSupplier = profileSupplier;
         mContext = context;
         mComponentName = componentName;
         mMultiInstanceManager = multiInstanceManager;
@@ -74,7 +75,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
     @Override
     public boolean openBookmarkInCurrentTab(BookmarkId id, boolean incognito) {
         if (id == null) return false;
-        BookmarkItem item = assumeNonNull(mBookmarkModelSupplier.get()).getBookmarkById(id);
+        BookmarkItem item = getBookmarkModel().getBookmarkById(id);
         if (item == null || item.isFolder()) return false;
         if (BookmarkUtils.isJavascriptBookmark(item)) {
             return openJavascriptBookmarkInCurrentTab(item, incognito);
@@ -174,7 +175,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
             List<BookmarkId> bookmarkIds, boolean incognito) {
         if (bookmarkIds.isEmpty()) return null;
 
-        BookmarkModel bookmarkModel = assumeNonNull(mBookmarkModelSupplier.get());
+        BookmarkModel bookmarkModel = getBookmarkModel();
         List<BookmarkItem> bookmarksToOpen = new ArrayList<>();
         for (BookmarkId id : bookmarkIds) {
             BookmarkItem item = bookmarkModel.getBookmarkById(id);
@@ -257,7 +258,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
 
     @VisibleForTesting
     List<BookmarkId> extractBookmarkChildrenFromFolder(BookmarkId folderId) {
-        BookmarkModel bookmarkModel = assumeNonNull(mBookmarkModelSupplier.get());
+        BookmarkModel bookmarkModel = getBookmarkModel();
         List<BookmarkId> children = bookmarkModel.getChildIds(folderId);
         List<BookmarkId> bookmarksToOpen = new ArrayList<>();
         for (BookmarkId childId : children) {
@@ -308,9 +309,18 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
 
     private void maybeMarkReadingListItemAsRead(BookmarkItem item) {
         if (item.getId().getType() == BookmarkType.READING_LIST) {
-            assumeNonNull(mBookmarkModelSupplier.get())
-                    .setReadStatusForReadingList(item.getId(), true);
+            getBookmarkModel().setReadStatusForReadingList(item.getId(), /* read= */ true);
         }
+    }
+
+    private BookmarkModel getBookmarkModel() {
+        return BookmarkModel.getForProfile(getOriginalProfile());
+    }
+
+    private Profile getOriginalProfile() {
+        Profile profile = mProfileSupplier.get();
+        assert profile != null;
+        return profile.getOriginalProfile();
     }
 
     // Metrics
