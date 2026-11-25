@@ -6918,6 +6918,21 @@
             ]
         }
     ],
+    "DCLayerTree2": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DCLayerTree2"
+                    ]
+                }
+            ]
+        }
+    ],
     "DebugToolbarPositioning": [
         {
             "platforms": [
