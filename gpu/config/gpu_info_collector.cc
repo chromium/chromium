@@ -420,6 +420,17 @@ void ReportWebGPUAdapterMetrics(
   }
 }
 
+// WebGPU on OpenGLES is only supported via ANGLE (see WebGPUDecoderImpl),
+// because Dawn's GL backend does not carry ANGLE's driver workarounds
+// (e.g. PowerVR surfaceless eglMakeCurrent crash, https://crbug.com/590145667).
+bool CanProbeDawnOpenGLES() {
+#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  return gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE;
+#else
+  return false;
+#endif
+}
+
 void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
                                 const gpu::GpuPreferences& gpu_preferences,
                                 const wgpu::ChainedStruct* chained_toggles) {
@@ -524,7 +535,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
 #elif BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   // Core backends always take precedence in WebGPUSupport, so only probe
   // OpenGLES compatibility mode when no usable Core adapter was found.
-  if (!has_core_usable_adapter) {
+  if (!has_core_usable_adapter && CanProbeDawnOpenGLES()) {
     adapter_options.backendType = wgpu::BackendType::OpenGLES;
     adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
 
@@ -1160,20 +1171,25 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
     wgpu::FeatureLevel feature_level;
     wgpu::BackendType backend_type;
   };
-  const AdapterQuery kQueries[] = {
-      {wgpu::FeatureLevel::Core, wgpu::BackendType::Undefined},
-#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-      {wgpu::FeatureLevel::Compatibility, wgpu::BackendType::OpenGLES},
-#endif
+  std::vector<AdapterQuery> queries = {
 #if BUILDFLAG(IS_WIN)
+      {wgpu::FeatureLevel::Core, wgpu::BackendType::D3D12},
       {wgpu::FeatureLevel::Compatibility, wgpu::BackendType::D3D11},
 #endif
+#if BUILDFLAG(IS_APPLE)
+      {wgpu::FeatureLevel::Core, wgpu::BackendType::Metal},
+#endif
+      {wgpu::FeatureLevel::Core, wgpu::BackendType::Vulkan},
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
       {wgpu::FeatureLevel::Compatibility, wgpu::BackendType::OpenGL},
 #endif
   };
+  if (CanProbeDawnOpenGLES()) {
+    queries.emplace_back(wgpu::FeatureLevel::Compatibility,
+                         wgpu::BackendType::OpenGLES);
+  }
 
-  for (const auto& query : kQueries) {
+  for (const auto& query : queries) {
     adapter_options.featureLevel = query.feature_level;
     adapter_options.backendType = query.backend_type;
     std::vector<dawn::native::Adapter> adapters = instance->EnumerateAdapters(
