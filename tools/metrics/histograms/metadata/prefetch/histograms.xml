@@ -964,16 +964,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrefetchProxy.Prefetch.Mainframe.CookiesToCopy" units="count"
-    expires_after="2024-09-01">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    Records the number of cookies that needed to be copied from the prefetch
-    navigation to the user's profile after a prefetched link is navigated to.
-  </summary>
-</histogram>
-
 <histogram name="PrefetchProxy.Prefetch.Mainframe.NetError"
     enum="NetErrorCodes" expires_after="2027-03-28">
   <owner>kouhei@chromium.org</owner>
@@ -995,16 +985,6 @@ chromium-metrics-reviews@google.com.
     Records the HTTP response code encountered when prefetching a mainframe HTML
     resource. Recorded for non-network error prefetches only. Redirects are not
     included here.
-  </summary>
-</histogram>
-
-<histogram name="PrefetchProxy.Prefetch.Mainframe.RetryAfter" units="ms"
-    expires_after="2024-09-01">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    Records the duration of a Retry-After header on a 503 response to a
-    mainframe prefetch request.
   </summary>
 </histogram>
 

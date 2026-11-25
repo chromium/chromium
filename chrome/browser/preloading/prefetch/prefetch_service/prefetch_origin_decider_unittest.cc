@@ -4,7 +4,6 @@
 
 #include "chrome/browser/preloading/prefetch/prefetch_service/prefetch_origin_decider.h"
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "components/prefs/testing_pref_service.h"
@@ -22,12 +21,9 @@ class PrefetchOriginDeciderTest : public testing::Test {
 
   base::SimpleTestClock* clock() { return &clock_; }
 
-  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
-
  private:
   TestingPrefServiceSimple pref_service_;
   base::SimpleTestClock clock_;
-  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PrefetchOriginDeciderTest, DefaultEligible) {
@@ -49,8 +45,6 @@ TEST_F(PrefetchOriginDeciderTest, WaitsForDelta) {
   auto decider = NewDecider();
 
   decider->ReportOriginRetryAfter(url, base::Seconds(15));
-  histogram_tester()->ExpectUniqueTimeSample(
-      "PrefetchProxy.Prefetch.Mainframe.RetryAfter", base::Seconds(15), 1);
 
   for (size_t i = 0; i <= 15; i++) {
     EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
@@ -64,8 +58,6 @@ TEST_F(PrefetchOriginDeciderTest, ByOrigin) {
   auto decider = NewDecider();
 
   decider->ReportOriginRetryAfter(GURL("http://foo.com"), base::Seconds(1));
-  histogram_tester()->ExpectUniqueTimeSample(
-      "PrefetchProxy.Prefetch.Mainframe.RetryAfter", base::Seconds(1), 1);
 
   // Any url for the origin should be ineligible.
   for (const GURL& url : {
@@ -94,8 +86,6 @@ TEST_F(PrefetchOriginDeciderTest, Clear) {
   auto decider = NewDecider();
 
   decider->ReportOriginRetryAfter(url, base::Seconds(1));
-  histogram_tester()->ExpectUniqueTimeSample(
-      "PrefetchProxy.Prefetch.Mainframe.RetryAfter", base::Seconds(1), 1);
   EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
 
   decider->OnBrowsingDataCleared();
@@ -109,12 +99,6 @@ TEST_F(PrefetchOriginDeciderTest, PersistentPrefs) {
     decider->ReportOriginRetryAfter(GURL("http://expired.com"),
                                     base::Seconds(1));
     decider->ReportOriginRetryAfter(GURL("http://foo.com"), base::Seconds(3));
-    histogram_tester()->ExpectTimeBucketCount(
-        "PrefetchProxy.Prefetch.Mainframe.RetryAfter", base::Seconds(1), 1);
-    histogram_tester()->ExpectTimeBucketCount(
-        "PrefetchProxy.Prefetch.Mainframe.RetryAfter", base::Seconds(3), 1);
-    histogram_tester()->ExpectTotalCount(
-        "PrefetchProxy.Prefetch.Mainframe.RetryAfter", 2);
   }
 
   clock()->Advance(base::Seconds(2));

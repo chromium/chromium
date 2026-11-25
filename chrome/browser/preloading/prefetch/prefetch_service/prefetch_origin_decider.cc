@@ -9,7 +9,6 @@
 
 #include "base/json/values_util.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -61,9 +60,6 @@ void PrefetchOriginDecider::ReportOriginRetryAfter(
   if (retry_after.is_negative()) {
     return;
   }
-
-  UMA_HISTOGRAM_CUSTOM_TIMES("PrefetchProxy.Prefetch.Mainframe.RetryAfter",
-                             retry_after, base::Seconds(1), base::Days(7), 100);
 
   origin_retry_afters_.emplace(url::Origin::Create(url),
                                clock_->Now() + retry_after);

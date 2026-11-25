@@ -47,12 +47,6 @@ void RecordCookieCopyTimes(
       base::Seconds(5), 50);
 }
 
-void RecordPrefetchProxyPrefetchMainframeCookiesToCopy(
-    size_t cookie_list_size) {
-  UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.Mainframe.CookiesToCopy",
-                           cookie_list_size);
-}
-
 }  // namespace
 
 PrefetchSingleRedirectHop::PrefetchSingleRedirectHop(
@@ -199,8 +193,6 @@ void PrefetchSingleRedirectHop::OnGotIsolatedCookiesForCopy(
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& excluded_cookies) {
   OnIsolatedCookiesReadCompleteAndWriteStart();
-
-  RecordPrefetchProxyPrefetchMainframeCookiesToCopy(cookie_list.size());
 
   if (cookie_list.empty()) {
     OnIsolatedCookieCopyComplete();
