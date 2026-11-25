@@ -12,8 +12,6 @@ static_library("autofill") {
   sources = [
     "address_normalizer_factory.cc",
     "address_normalizer_factory.h",
-    "at_memory/at_memory_query_service_factory.cc",
-    "at_memory/at_memory_query_service_factory.h",
     "autocomplete_history_manager_factory.cc",
     "autocomplete_history_manager_factory.h",
     "autofill_ai_model_cache_factory.cc",

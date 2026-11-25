@@ -36,7 +36,6 @@
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
-#include "chrome/browser/autofill/at_memory/at_memory_query_service_factory.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
 #include "chrome/browser/autofill/autofill_ai_model_executor_factory.h"
@@ -529,11 +528,6 @@ AutofillComposeDelegate* ChromeAutofillClient::GetComposeDelegate() {
 #else
   return nullptr;
 #endif
-}
-
-AtMemoryQueryService* ChromeAutofillClient::GetAtMemoryQueryService() {
-  Profile* profile = GetProfile();
-  return AtMemoryQueryServiceFactory::GetForProfile(profile);
 }
 
 personal_context::PersonalContextEligibilityState
