@@ -68,8 +68,10 @@ AudioManagerPulse::~AudioManagerPulse() = default;
 
 void AudioManagerPulse::ShutdownOnAudioThread() {
   AudioManagerBase::ShutdownOnAudioThread();
+  loopback_manager_.reset();
   // The Pulse objects are the last things to be destroyed since
-  // AudioManagerBase::ShutdownOnAudioThread() needs them.
+  // AudioManagerBase::ShutdownOnAudioThread() and `loopback_manager_` need
+  // them.
   pulse::DestroyPulse(input_mainloop_.ExtractAsDangling(),
                       input_context_.ExtractAsDangling());
 }
@@ -332,6 +334,11 @@ void AudioManagerPulse::DisconnectForTesting() {
 void AudioManagerPulse::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
+}
+
+size_t AudioManagerPulse::GetLoopbackStreamCountForTesting() const {
+  CHECK(GetTaskRunner()->BelongsToCurrentThread());
+  return loopback_manager_ ? loopback_manager_->stream_count() : 0u;
 }
 
 void AudioManagerPulse::ReconnectIfDisconnected() {

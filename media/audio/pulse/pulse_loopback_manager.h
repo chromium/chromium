@@ -6,15 +6,16 @@
 #define MEDIA_AUDIO_PULSE_PULSE_LOOPBACK_MANAGER_H_
 
 #include <pulse/pulseaudio.h>
+#include <stddef.h>
+
+#include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "pulse_loopback.h"
-
-#include <memory>
-#include <string>
 
 namespace media {
 
@@ -41,11 +42,13 @@ class PulseLoopbackManager {
       AudioManager::LogCallback log_callback,
       bool should_mute_system_audio);
 
-  // Removes a loopback stream.
-  void RemoveStream(AudioInputStream* stream);
-
   // Current default sink monitor name.
   const std::string& GetLoopbackSourceName();
+
+  size_t stream_count() const {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return streams_.size();
+  }
 
  private:
   // Called by PulseAudio when an event occurs. Runs on a PulseAudio thread.
@@ -60,13 +63,16 @@ class PulseLoopbackManager {
                        pa_context* context,
                        pa_threaded_mainloop* mainloop);
 
+  // Removes a closed loopback stream.
+  void RemoveStream(AudioInputStream* stream);
+
   // Called when either the default sink or source changes.
   void OnServerChangeEvent();
 
   // Name of the monitor associated with the current default sink.
   std::string default_monitor_name_;
 
-  // Passed to newly created streams to be called when they close.
+  // Called when a loopback stream closes, after removing it from `streams_`.
   ReleaseStreamCallback release_stream_callback_;
 
   // Global PulseAudio context and mainloop.

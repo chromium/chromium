@@ -4,6 +4,9 @@
 
 #include "media/audio/pulse/pulse_loopback_manager.h"
 
+#include <utility>
+
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "media/audio/pulse/audio_manager_pulse.h"
@@ -89,8 +92,21 @@ PulseLoopbackAudioStream* PulseLoopbackManager::MakeLoopbackStream(
     return nullptr;
   }
 
+  auto on_stream_closed = base::BindOnce(
+      [](base::WeakPtr<PulseLoopbackManager> manager,
+         ReleaseStreamCallback release_stream_callback,
+         AudioInputStream* stream) {
+        // Remove `stream` before `release_stream_callback` deletes it to avoid
+        // a dangling raw_ptr in `streams_`.
+        if (manager) {
+          manager->RemoveStream(stream);
+        }
+        std::move(release_stream_callback).Run(stream);
+      },
+      weak_this_, release_stream_callback_);
+
   auto* stream = new PulseLoopbackAudioStream(
-      release_stream_callback_, GetLoopbackSourceName(), params, mainloop_,
+      std::move(on_stream_closed), GetLoopbackSourceName(), params, mainloop_,
       context_, std::move(log_callback), should_mute_system_audio);
 
   streams_.emplace_back(stream);
@@ -105,7 +121,15 @@ PulseLoopbackAudioStream* PulseLoopbackManager::MakeLoopbackStream(
 
 void PulseLoopbackManager::RemoveStream(AudioInputStream* stream) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  std::erase(streams_, reinterpret_cast<PulseLoopbackAudioStream*>(stream));
+  const size_t erased_count =
+      std::erase(streams_, static_cast<PulseLoopbackAudioStream*>(stream));
+  CHECK_EQ(erased_count, 1u);
+  // A muting loopback cannot currently coexist with other loopback streams
+  // (see crbug.com/359102845), so an empty `streams_` means no muting loopback
+  // remains.
+  if (streams_.empty()) {
+    has_muting_loopback_ = false;
+  }
 }
 
 const std::string& PulseLoopbackManager::GetLoopbackSourceName() {

@@ -183,7 +183,11 @@ class AudioManagerTest : public ::testing::Test {
   AudioManagerTest() : message_loop_(base::MessagePumpType::IO) {
     CreateAudioManagerForTesting();
   }
-  ~AudioManagerTest() override { audio_manager_->Shutdown(); }
+  ~AudioManagerTest() override {
+    if (audio_manager_) {
+      audio_manager_->Shutdown();
+    }
+  }
 
   // Helper method which verifies that the device list starts with a valid
   // default record followed by non-default device names.
@@ -252,8 +256,10 @@ class AudioManagerTest : public ::testing::Test {
     // initialized and ready to use before returning from this function.
     // TODO(alokp): We should perhaps do this in AudioManager::Create().
     base::RunLoop().RunUntilIdle();
-    device_info_accessor_ =
-        std::make_unique<AudioDeviceInfoAccessorForTests>(audio_manager_.get());
+    if (audio_manager_) {
+      device_info_accessor_ = std::make_unique<AudioDeviceInfoAccessorForTests>(
+          audio_manager_.get());
+    }
   }
 
   base::TestMessageLoop message_loop_;
@@ -345,6 +351,42 @@ TEST_F(AudioManagerTest, EnumerateOutputDevicesPulseaudio) {
   } else {
     LOG(WARNING) << "No pulseaudio on this system.";
   }
+}
+
+TEST_F(AudioManagerTest, CreateAndCloseLoopbackStreamPulseaudio) {
+  ABORT_AUDIO_TEST_IF_NOT(OutputDevicesAvailable());
+
+  CreateAudioManagerForTesting<AudioManagerPulse>();
+  if (!audio_manager_) {
+    LOG(WARNING) << "No pulseaudio on this system.";
+    return;
+  }
+
+  auto* manager = static_cast<AudioManagerPulse*>(audio_manager_.get());
+  EXPECT_EQ(manager->GetLoopbackStreamCountForTesting(), 0u);
+
+  const AudioParameters params =
+      device_info_accessor_->GetInputStreamParameters(
+          AudioDeviceDescription::kLoopbackInputDeviceId);
+  ASSERT_TRUE(params.IsValid());
+
+  AudioInputStream* first_stream = audio_manager_->MakeAudioInputStream(
+      params, AudioDeviceDescription::kLoopbackInputDeviceId,
+      AudioManager::LogCallback());
+  ASSERT_TRUE(first_stream);
+  EXPECT_EQ(manager->GetLoopbackStreamCountForTesting(), 1u);
+
+  AudioInputStream* second_stream = audio_manager_->MakeAudioInputStream(
+      params, AudioDeviceDescription::kLoopbackInputDeviceId,
+      AudioManager::LogCallback());
+  ASSERT_TRUE(second_stream);
+  EXPECT_EQ(manager->GetLoopbackStreamCountForTesting(), 2u);
+
+  first_stream->Close();
+  EXPECT_EQ(manager->GetLoopbackStreamCountForTesting(), 1u);
+
+  second_stream->Close();
+  EXPECT_EQ(manager->GetLoopbackStreamCountForTesting(), 0u);
 }
 
 // Losing the connection to the sound server, e.g. because it restarts, must

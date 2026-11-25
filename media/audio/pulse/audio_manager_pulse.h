@@ -6,6 +6,7 @@
 #define MEDIA_AUDIO_PULSE_AUDIO_MANAGER_PULSE_H_
 
 #include <pulse/pulseaudio.h>
+#include <stddef.h>
 
 #include <memory>
 #include <string>
@@ -76,6 +77,7 @@ class MEDIA_EXPORT AudioManagerPulse : public AudioManagerBase {
   // Disconnects from the sound server, as if the server had gone away.
   void DisconnectForTesting();
   void SetTickClockForTesting(const base::TickClock* tick_clock);
+  size_t GetLoopbackStreamCountForTesting() const;
 
  protected:
   void ShutdownOnAudioThread() override;
