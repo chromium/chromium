@@ -25,22 +25,24 @@ namespace {{cpp_namespace}} {
 // Tags
 
 {% if generate_tag_enum %}
+// TagToQualifiedName() indexes tag_storage directly via (tag - 1), relying on
+// kUnknown == 0 and the same case_sensitive=True sort order as tag_storage.
 enum class {{namespace}}Tag {
   // Explicitly give unknown a value of 0 as comparison to unknown happens a
   // lot, and comparing to 0 saves an instruction on some hardware.
   kUnknown = 0,
-{% for tag in tags|sort(attribute='name') %}
+{% for tag in tags|sort(attribute='name', case_sensitive=True) %}
   {{tag|tag_symbol}},
 {% endfor %}
 };
 {% endif %}
 
-{% for tag in tags|sort(attribute='name') %}
+{% for tag in tags|sort(attribute='name', case_sensitive=True) %}
 {{symbol_export}}extern const blink::{{namespace}}QualifiedName& {{tag|symbol}}Tag;
 {% endfor %}
 
 // Attributes
-{% for attr in attrs|sort(attribute='name') %}
+{% for attr in attrs|sort(attribute='name', case_sensitive=True) %}
 {{symbol_export}}extern const blink::QualifiedNameWithHash& {{attr|symbol}}Attr;
 {% endfor %}
 

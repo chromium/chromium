@@ -20,6 +20,10 @@ DEFINE_GLOBAL(, AtomicString, {{namespace_prefix}}NamespaceURI);
 void* tag_storage[kTagsCount * ((sizeof({{namespace}}QualifiedName) + sizeof(void *) - 1) / sizeof(void *))];
 {% for tag in tags|sort(attribute='name', case_sensitive=True) %}
 const {{namespace}}QualifiedName& {{tag|symbol}}Tag = reinterpret_cast<{{namespace}}QualifiedName*>(&tag_storage)[{{loop.index0}}];
+{# {{namespace}}Tag is only declared when --generate_tag_enum is passed (HTML only; MathML and SVG have tags without a Tag enum). #}
+{% if generate_tag_enum %}
+static_assert(static_cast<size_t>({{namespace}}Tag::{{tag|tag_symbol}}) == {{loop.index}});
+{% endif %}
 {% endfor %}
 
 
@@ -118,14 +122,13 @@ void Init() {
 {% if generate_tag_enum %}
 const blink::{{namespace}}QualifiedName& TagToQualifiedName(
     {{namespace}}Tag tag) {
-  switch (tag) {
-{% for tag in tags|sort(attribute='name', case_sensitive=True) %}
-    case {{namespace}}Tag::{{tag|tag_symbol}}:
-      return {{tag|symbol}}Tag;
-{% endfor %}
-    case {{namespace}}Tag::kUnknown:
-      return static_cast<const blink::{{namespace}}QualifiedName&>(g_null_name);
+  if (tag == {{namespace}}Tag::kUnknown) {
+    return static_cast<const blink::{{namespace}}QualifiedName&>(g_null_name);
   }
+  size_t index = static_cast<size_t>(tag) - 1;
+  CHECK_LT(index, kTagsCount);
+  return reinterpret_cast<const blink::{{namespace}}QualifiedName*>(
+      &tag_storage)[index];
 }
 {% endif %}
 

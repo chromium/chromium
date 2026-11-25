@@ -66,4 +66,13 @@ TEST_F(QualifiedNameTest, CaseInsensitiveBloomFilter) {
             Element::FilterForString(mixed_case.LocalNameUpper()));
 }
 
+TEST_F(QualifiedNameTest, TagToQualifiedName) {
+  EXPECT_EQ(&html_names::TagToQualifiedName(html_names::HTMLTag::kUnknown),
+            &g_null_name);
+  EXPECT_EQ(&html_names::TagToQualifiedName(html_names::HTMLTag::kA),
+            &html_names::kATag);
+  EXPECT_EQ(&html_names::TagToQualifiedName(html_names::HTMLTag::kXmp),
+            &html_names::kXmpTag);
+}
+
 }  // namespace blink
