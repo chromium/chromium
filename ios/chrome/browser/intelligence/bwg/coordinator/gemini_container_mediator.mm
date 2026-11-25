@@ -127,6 +127,12 @@ bool IsPageContextComputationEligible(
          state == ios::provider::GeminiPageContextComputationState::kPending;
 }
 
+// Returns whether `startup_state` requests auto-submitting a non-empty prompt.
+bool IsAutoSubmitStartupState(GeminiStartupState* startup_state) {
+  return startup_state.shouldAutoSubmit &&
+         startup_state.prepopulatedPrompt.length > 0;
+}
+
 // Internal C++ observer for `WebStateList` active `WebState` changes.
 class GeminiContainerMediatorWebStateListObserver
     : public WebStateListObserver {
@@ -375,7 +381,7 @@ class GeminiContainerMediatorTabHelperObserver
 - (void)prepareForPresentation {
   [self cancelPendingPresentation];
 
-  if (!_startupState.shouldAutoSubmit) {
+  if (!IsAutoSubmitStartupState(self.startupState)) {
     [self notifyReadyForPresentationWithPageContext:nil];
     return;
   }
@@ -528,7 +534,8 @@ class GeminiContainerMediatorTabHelperObserver
     ios::provider::ShowAccountSnackbar();
   }
 
-  if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+  if (!IsAutoSubmitStartupState(startupState) &&
+      IsIOSGeminiBottomSheetMigrationEnabled()) {
     [self exitFullscreen];
     // Assumes it's minimized.
     [_containerHandler animateAssistantContainerToDetent:kMedium];
@@ -948,6 +955,8 @@ class GeminiContainerMediatorTabHelperObserver
 
 - (void)didChangeUIState:(GeminiContainerUIState)containerUIState {
   [self.consumer updateZeroStateVisibility:containerUIState.zeroStateVisible];
+  [self.consumer setHasPadding:(containerUIState.detent !=
+                                AssistantContainerDetent::kMinimized)];
   [self updateWorklogDisplayModeForUIState:containerUIState];
   [self.consumer setActuationActive:containerUIState.actuating];
 
@@ -1158,8 +1167,20 @@ class GeminiContainerMediatorTabHelperObserver
 
   [self.containerHandler setAssistantContainerLargestUndimmedDetent:
                              AssistantContainerDetent::kMinimized];
-  [_stateManager
-      setupInitialUIStateWithConversation:config.serverID.length > 0];
+  if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+    BOOL isAutoSubmit = IsAutoSubmitStartupState(self.startupState);
+    [_sessionMetricsManager
+        setInitialDetent:isAutoSubmit ? kMinimized : kMedium];
+    if (isAutoSubmit) {
+      [_stateManager setupInitialUIStateForAutoSubmit];
+    } else {
+      [_stateManager
+          setupInitialUIStateWithConversation:config.serverID.length > 0];
+    }
+  } else {
+    [_stateManager
+        setupInitialUIStateWithConversation:config.serverID.length > 0];
+  }
 
   // In initial zero state the view shouldn't be focused for input.
   [self.consumer dismissKeyboard];

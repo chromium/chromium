@@ -41,6 +41,10 @@ enum class GeminiViewState;
 // duration and records expansion/collapse transitions.
 - (void)didChangeViewState:(ios::provider::GeminiViewState)viewState;
 
+// Seeds the initial container detent state without recording a view-state
+// transition.
+- (void)setInitialDetent:(AssistantContainerDetent)detent;
+
 // Called when the Gemini container detent changes to `detent`. Tracks
 // minimized duration and records expansion/collapse transitions.
 - (void)didChangeDetent:(AssistantContainerDetent)detent;

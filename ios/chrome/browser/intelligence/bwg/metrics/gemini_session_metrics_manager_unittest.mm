@@ -132,3 +132,25 @@ TEST_F(GeminiSessionMetricsManagerTest, TestDidChangeDetent) {
   histogram_tester_.ExpectUniqueTimeSample(kFloatyTimeMinimizedHistogram,
                                            base::Seconds(4), 1);
 }
+
+// Tests that `setInitialDetent:` seeds the minimized state without recording a
+// collapse transition, suppresses duplicate minimized notifications, and
+// accurately records subsequent expansion metrics.
+TEST_F(GeminiSessionMetricsManagerTest, TestSetInitialDetentMinimized) {
+  [metrics_manager_ setInitialDetent:AssistantContainerDetent::kMinimized];
+  histogram_tester_.ExpectTotalCount(kFloatyViewStateTransitionHistogram, 0);
+
+  // Duplicate minimized notification must not record a collapse transition.
+  [metrics_manager_ didChangeDetent:AssistantContainerDetent::kMinimized];
+  histogram_tester_.ExpectTotalCount(kFloatyViewStateTransitionHistogram, 0);
+
+  task_environment_.FastForwardBy(base::Seconds(3));
+
+  // Expanding to medium records `kCollapsedToExpanded` without recording
+  // minimized time since there was no prior collapse transition.
+  [metrics_manager_ didChangeDetent:AssistantContainerDetent::kMedium];
+  histogram_tester_.ExpectBucketCount(
+      kFloatyViewStateTransitionHistogram,
+      IOSGeminiViewStateTransition::kCollapsedToExpanded, 1);
+  histogram_tester_.ExpectTotalCount(kFloatyTimeMinimizedHistogram, 0);
+}
