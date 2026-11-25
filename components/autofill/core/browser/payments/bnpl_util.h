@@ -21,6 +21,10 @@
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 class AutofillClient;
@@ -113,7 +117,7 @@ Suggestion::Icon GetBnplSuggestionIcon(BnplIssuer::IssuerId issuer_id);
 // Returns the selection option text for a given BNPL issuer.
 std::u16string GetBnplIssuerSelectionOptionText(
     BnplIssuer::IssuerId issuer_id,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::span<const BnplIssuerContext> issuer_contexts);
 
 // Returns the footer text to be displayed in a BNPL flow.

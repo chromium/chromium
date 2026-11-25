@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/select_bnpl_issuer_dialog.h"
 
+#include "base/i18n/language_tag.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -45,7 +46,8 @@ class SelectBnplIssuerDialogBrowserTest
                        select_bnpl_issuer_dialog_controller_->GetWeakPtr(),
                        base::Unretained(web_contents), has_seen_ai_terms),
         std::move(issuer_contexts_),
-        /*app_locale=*/"en-US", base::DoNothing(), base::DoNothing());
+        /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
+        base::DoNothing(), base::DoNothing());
   }
 
   bool VerifyUi() override {

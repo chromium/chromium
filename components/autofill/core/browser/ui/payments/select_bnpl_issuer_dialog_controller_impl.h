@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
@@ -36,7 +37,7 @@ class SelectBnplIssuerDialogControllerImpl
       base::OnceCallback<std::unique_ptr<SelectBnplIssuerView>()>
           create_and_show_dialog_callback,
       std::vector<BnplIssuerContext> issuer_contexts,
-      std::string app_locale,
+      const base::i18n::LanguageTag& app_locale,
       base::RepeatingCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback);
 
@@ -50,7 +51,7 @@ class SelectBnplIssuerDialogControllerImpl
   void OnUserCancelled() override;
   void Dismiss() override;
   const std::vector<BnplIssuerContext>& GetIssuerContexts() const override;
-  const std::string& GetAppLocale() const override;
+  const base::i18n::LanguageTag& GetAppLocale() const override;
   std::u16string GetTitle() const override;
   const PaymentsDataManager& GetPaymentsDataManager() const override;
 
@@ -62,7 +63,7 @@ class SelectBnplIssuerDialogControllerImpl
   // selection view.
   std::vector<BnplIssuerContext> issuer_contexts_;
 
-  std::string app_locale_;
+  base::i18n::LanguageTag app_locale_ = base::i18n::GetKnownLanguageTag("und");
 
   // Callback invoked when the user confirmed an issuer to use.
   base::RepeatingCallback<void(BnplIssuer)> selected_issuer_callback_;

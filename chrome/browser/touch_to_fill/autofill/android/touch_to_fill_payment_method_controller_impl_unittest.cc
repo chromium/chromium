@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_delegate_android_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
@@ -97,7 +98,7 @@ class MockTouchToFillPaymentMethodViewImpl
       (base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
        std::optional<int64_t> extracted_amount,
        bool is_amount_supported_by_any_issuer,
-       const std::optional<std::string>& app_locale));
+       const std::optional<base::i18n::LanguageTag>& app_locale));
   MOCK_METHOD(bool,
               ShowProgressScreen,
               (TouchToFillPaymentMethodViewController * controller));
@@ -105,7 +106,7 @@ class MockTouchToFillPaymentMethodViewImpl
       bool,
       ShowBnplIssuers,
       (base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
-       const std::string& app_locale));
+       const base::i18n::LanguageTag& app_locale));
   MOCK_METHOD(bool,
               ShowErrorScreen,
               (TouchToFillPaymentMethodViewController * controller,
@@ -467,7 +468,8 @@ TEST_F(TouchToFillPaymentMethodControllerImplTest,
 TEST_F(TouchToFillPaymentMethodControllerImplTest,
        OnPurchaseAmountExtractedOnPreexistingView) {
   std::optional<int64_t> extracted_amount = 12345;
-  std::optional<std::string> app_locale = "en-US";
+  std::optional<base::i18n::LanguageTag> app_locale =
+      base::i18n::GetKnownLanguageTag("en-US");
   EXPECT_CALL(*mock_view_,
               ShowPaymentMethods(
                   &payment_method_controller(), ElementsAreArray(suggestions_),
@@ -501,7 +503,8 @@ TEST_F(TouchToFillPaymentMethodControllerImplTest,
   payment_method_controller().OnPurchaseAmountExtracted(
       bnpl_issuer_contexts_, /*extracted_amount=*/12345,
       /*is_amount_supported_by_any_issuer=*/true,
-      /*app_locale=*/"en-US", /*selected_issuer_callback=*/base::DoNothing(),
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
+      /*selected_issuer_callback=*/base::DoNothing(),
       /*cancel_callback=*/base::DoNothing());
   OnAfterAskForValuesToFill();
 }
@@ -577,13 +580,14 @@ TEST_F(TouchToFillPaymentMethodControllerImplTest,
                           EqualBnplIssuerContext(bnpl_issuer_contexts_[0]),
                           EqualBnplIssuerContext(bnpl_issuer_contexts_[1]),
                           EqualBnplIssuerContext(bnpl_issuer_contexts_[2])),
-                      "en-US"));
+                      base::i18n::GetKnownLanguageTag("en-US")));
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
   payment_method_controller().ShowBnplIssuers(
-      bnpl_issuer_contexts_, /*app_locale=*/"en-US",
+      bnpl_issuer_contexts_,
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
       /*selected_issuer_callback=*/base::DoNothing(),
       /*cancel_callback=*/base::DoNothing());
   OnAfterAskForValuesToFill();
@@ -599,7 +603,8 @@ TEST_F(TouchToFillPaymentMethodControllerImplTest,
                   payments::TouchToFillDisplayOptions{
                       .show_scan_credit_card = true, .show_gpay_logo = true}));
   EXPECT_CALL(*mock_view_,
-              ShowBnplIssuers(ElementsAreArray(bnpl_issuer_contexts_), "en-US"))
+              ShowBnplIssuers(ElementsAreArray(bnpl_issuer_contexts_),
+                              base::i18n::GetKnownLanguageTag("en-US")))
       .WillOnce(Return(true));
   EXPECT_CALL(ttf_delegate(), SetCancelCallback);
   EXPECT_CALL(ttf_delegate(), SetSelectedIssuerCallback);
@@ -608,7 +613,8 @@ TEST_F(TouchToFillPaymentMethodControllerImplTest,
   payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
   payment_method_controller().ShowBnplIssuers(
-      bnpl_issuer_contexts_, /*app_locale=*/"en-US",
+      bnpl_issuer_contexts_,
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
       mock_selected_issuer_callback.Get(), mock_cancel_callback.Get());
   OnAfterAskForValuesToFill();
 }
@@ -623,7 +629,8 @@ TEST_F(TouchToFillPaymentMethodControllerImplTest,
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowBnplIssuers(
-      bnpl_issuer_contexts_, /*app_locale=*/"en-US",
+      bnpl_issuer_contexts_,
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
       mock_selected_issuer_callback.Get(), mock_cancel_callback.Get());
   OnAfterAskForValuesToFill();
 }
@@ -851,7 +858,8 @@ TEST_F(TouchToFillPaymentMethodControllerImplTest,
 TEST_F(TouchToFillPaymentMethodControllerImplTest,
        OnBnplIssuerSuggestionSelected_ForwardsCallToDelegate) {
   EXPECT_CALL(*mock_view_,
-              ShowBnplIssuers(ElementsAreArray(bnpl_issuer_contexts_), "en-US"))
+              ShowBnplIssuers(ElementsAreArray(bnpl_issuer_contexts_),
+                              base::i18n::GetKnownLanguageTag("en-US")))
       .WillOnce(Return(true));
   EXPECT_CALL(ttf_delegate(),
               OnBnplIssuerSuggestionSelected(/*issuer_id=*/"affirm"));
@@ -861,7 +869,7 @@ TEST_F(TouchToFillPaymentMethodControllerImplTest,
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
   payment_method_controller().ShowBnplIssuers(
       bnpl_issuer_contexts_,
-      /*app_locale=*/"en-US",
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
       /*selected_issuer_callback=*/base::DoNothing(),
       /*cancel_callback=*/base::DoNothing());
   OnAfterAskForValuesToFill();

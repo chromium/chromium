@@ -43,11 +43,11 @@ void SelectBnplIssuerDialogControllerImpl::ShowDialog(
     base::OnceCallback<std::unique_ptr<SelectBnplIssuerView>()>
         create_and_show_dialog_callback,
     std::vector<BnplIssuerContext> issuer_contexts,
-    std::string app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::RepeatingCallback<void(BnplIssuer)> selected_issuer_callback,
     base::OnceClosure cancel_callback) {
   issuer_contexts_ = std::move(issuer_contexts);
-  app_locale_ = std::move(app_locale);
+  app_locale_ = app_locale;
   selected_issuer_callback_ = std::move(selected_issuer_callback);
   cancel_callback_ = std::move(cancel_callback);
 
@@ -87,7 +87,8 @@ SelectBnplIssuerDialogControllerImpl::GetIssuerContexts() const {
   return issuer_contexts_;
 }
 
-const std::string& SelectBnplIssuerDialogControllerImpl::GetAppLocale() const {
+const base::i18n::LanguageTag&
+SelectBnplIssuerDialogControllerImpl::GetAppLocale() const {
   return app_locale_;
 }
 

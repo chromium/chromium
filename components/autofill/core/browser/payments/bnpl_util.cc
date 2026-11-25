@@ -20,6 +20,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -229,14 +230,14 @@ Suggestion::Icon GetBnplSuggestionIcon(BnplIssuer::IssuerId issuer_id) {
 
 std::u16string GetBnplIssuerSelectionOptionText(
     BnplIssuer::IssuerId issuer_id,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::span<const BnplIssuerContext> issuer_contexts) {
   // TODO(crbug.com/403361321): Add a util function that returns all supported
   // locales.
-  CHECK_EQ(app_locale, "en-US");
+  CHECK_EQ(app_locale, base::i18n::GetKnownLanguageTag("en-US"));
   ::payments::CurrencyFormatter formatter = ::payments::CurrencyFormatter(
       /*currency_code=*/"USD",
-      /*locale_name=*/app_locale);
+      /*locale_name=*/std::string(app_locale.tag_string()));
   formatter.SetMaxFractionalDigits(/*max_fractional_digits=*/2);
 
   BnplIssuerContext issuer_context;

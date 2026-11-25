@@ -10,6 +10,10 @@
 
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 class PaymentsDataManager;
 }  // namespace autofill
@@ -37,7 +41,7 @@ class SelectBnplIssuerDialogController {
   // List of issuers with their corresponding contexts to be displayed on the
   // Select BNPL issuer dialog.
   virtual const std::vector<BnplIssuerContext>& GetIssuerContexts() const = 0;
-  virtual const std::string& GetAppLocale() const = 0;
+  virtual const base::i18n::LanguageTag& GetAppLocale() const = 0;
   virtual const PaymentsDataManager& GetPaymentsDataManager() const = 0;
 
  protected:

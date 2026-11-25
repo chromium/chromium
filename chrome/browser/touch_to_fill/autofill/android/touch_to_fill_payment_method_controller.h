@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_controller_base.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
@@ -95,7 +97,7 @@ class TouchToFillPaymentMethodController
       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
       std::optional<int64_t> extracted_amount,
       bool is_amount_supported_by_any_issuer,
-      const std::optional<std::string>& app_locale,
+      const std::optional<base::i18n::LanguageTag>& app_locale,
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) = 0;
 
@@ -118,7 +120,7 @@ class TouchToFillPaymentMethodController
   // BNPL flow. Returns whether the surface was successfully shown.
   virtual bool ShowBnplIssuers(
       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) = 0;
 

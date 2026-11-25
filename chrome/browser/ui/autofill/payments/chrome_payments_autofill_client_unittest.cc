@@ -752,7 +752,8 @@ TEST_F(ChromePaymentsAutofillClientTest, ShowTouchToFillBnplIssuers) {
               ShowBnplIssuers(ElementsAre(EqualsBnplIssuerContext(
                                   issuer_context[0].issuer.issuer_id(),
                                   issuer_context[0].eligibility)),
-                              /*app_locale=*/"en-US", _, _));
+                              /*app_locale=*/
+                              base::i18n::GetKnownLanguageTag("en-US"), _, _));
 
   chrome_payments_client()->ShowTouchToFillBnplIssuers(
       issuer_context, /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
@@ -771,14 +772,14 @@ TEST_F(ChromePaymentsAutofillClientTest, OnPurchaseAmountExtracted) {
           test::GetTestLinkedBnplIssuer(),
           payments::BnplIssuerEligibilityForPage::kIsEligible)};
 
-  EXPECT_CALL(*ttf_payment_method_controller,
-              OnPurchaseAmountExtracted(
-                  ElementsAre(EqualsBnplIssuerContext(
-                      issuer_context[0].issuer.issuer_id(),
-                      issuer_context[0].eligibility)),
-                  extracted_amount,
-                  /*is_amount_supported_by_any_issuer=*/true,
-                  /*app_locale=*/std::optional<std::string>("en-US"), _, _));
+  EXPECT_CALL(
+      *ttf_payment_method_controller,
+      OnPurchaseAmountExtracted(ElementsAre(EqualsBnplIssuerContext(
+                                    issuer_context[0].issuer.issuer_id(),
+                                    issuer_context[0].eligibility)),
+                                extracted_amount,
+                                /*is_amount_supported_by_any_issuer=*/true,
+                                /*app_locale=*/app_locale, _, _));
 
   chrome_payments_client()->OnPurchaseAmountExtracted(
       issuer_context, extracted_amount,

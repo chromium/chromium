@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -81,7 +82,8 @@ TEST_P(BnplUtilEligibleTest, GetBnplIssuerSelectionOptionText) {
                         BnplIssuerEligibilityForPage::kIsEligible)};
 
   EXPECT_EQ(
-      GetBnplIssuerSelectionOptionText(params.issuer_id, "en-US",
+      GetBnplIssuerSelectionOptionText(params.issuer_id,
+                                       base::i18n::GetKnownLanguageTag("en-US"),
                                        issuer_contexts),
       l10n_util::GetStringUTF16(params.expected_issuer_selection_text_id));
 }
@@ -199,7 +201,8 @@ TEST_F(
       BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant)};
 
   EXPECT_EQ(
-      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm, "en-US",
+      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm,
+                                       base::i18n::GetKnownLanguageTag("en-US"),
                                        issuer_contexts),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_NOT_AVAILABLE_FOR_MERCHANT));
@@ -217,7 +220,8 @@ TEST_F(
       BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant)};
 
   EXPECT_EQ(
-      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm, "en-US",
+      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm,
+                                       base::i18n::GetKnownLanguageTag("en-US"),
                                        issuer_contexts),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_NOT_SUPPORTED_BY_MERCHANT));
@@ -233,7 +237,8 @@ TEST_F(BnplUtilTest,
       BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)};
 
   EXPECT_EQ(
-      GetBnplIssuerSelectionOptionText(IssuerId::kBnplZip, "en-US",
+      GetBnplIssuerSelectionOptionText(IssuerId::kBnplZip,
+                                       base::i18n::GetKnownLanguageTag("en-US"),
                                        issuer_contexts),
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
@@ -250,7 +255,8 @@ TEST_F(BnplUtilTest,
       BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh)};
 
   EXPECT_EQ(
-      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAfterpay, "en-US",
+      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAfterpay,
+                                       base::i18n::GetKnownLanguageTag("en-US"),
                                        issuer_contexts),
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH,
@@ -269,7 +275,8 @@ TEST_F(
       BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)};
 
   EXPECT_EQ(
-      GetBnplIssuerSelectionOptionText(IssuerId::kBnplZip, "en-US",
+      GetBnplIssuerSelectionOptionText(IssuerId::kBnplZip,
+                                       base::i18n::GetKnownLanguageTag("en-US"),
                                        issuer_contexts),
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
@@ -288,7 +295,8 @@ TEST_F(
       BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh)};
 
   EXPECT_EQ(
-      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAfterpay, "en-US",
+      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAfterpay,
+                                       base::i18n::GetKnownLanguageTag("en-US"),
                                        issuer_contexts),
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH,
@@ -310,7 +318,8 @@ TEST_F(BnplUtilTest,
       issuer, BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh)};
 
   EXPECT_EQ(
-      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm, "en-US",
+      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm,
+                                       base::i18n::GetKnownLanguageTag("en-US"),
                                        issuer_contexts),
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH,
@@ -333,7 +342,8 @@ TEST_F(BnplUtilTest,
 
   // Check that `$49.491234` truncates to `$49.49`.
   EXPECT_EQ(
-      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm, "en-US",
+      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm,
+                                       base::i18n::GetKnownLanguageTag("en-US"),
                                        issuer_contexts),
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
@@ -356,7 +366,8 @@ TEST_F(BnplUtilTest,
 
   // Check that `$99.9999` rounds up to `$100.00`.
   EXPECT_EQ(
-      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm, "en-US",
+      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm,
+                                       base::i18n::GetKnownLanguageTag("en-US"),
                                        issuer_contexts),
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
@@ -688,7 +699,8 @@ TEST_F(
                             kNotEligibleAmountExtractionErrorNegativeAmount)};
 
   EXPECT_EQ(
-      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm, "en-US",
+      GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm,
+                                       base::i18n::GetKnownLanguageTag("en-US"),
                                        issuer_contexts),
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
@@ -716,8 +728,9 @@ TEST_P(BnplUtilAmountExtractionErrorTest, GetSortedBnplIssuerContext) {
   ASSERT_EQ(contexts.size(), 1U);
   EXPECT_EQ(contexts[0].eligibility, params.expected_eligibility);
   EXPECT_FALSE(contexts[0].IsEligible());
-  EXPECT_EQ(GetBnplIssuerSelectionOptionText(IssuerId::kBnplAffirm, "en-US",
-                                             contexts),
+  EXPECT_EQ(GetBnplIssuerSelectionOptionText(
+                IssuerId::kBnplAffirm, base::i18n::GetKnownLanguageTag("en-US"),
+                contexts),
             l10n_util::GetStringUTF16(params.expected_string_id));
 }
 

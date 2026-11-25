@@ -484,8 +484,7 @@ std::vector<Suggestion> GetSuggestionsForBnpl(
               : Suggestion::Acceptability::kUnselectableAndUnacceptable;
       bnpl_suggestion.labels = {
           {Suggestion::Text(payments::GetBnplIssuerSelectionOptionText(
-              issuer_context.issuer.issuer_id(),
-              std::string(app_locale.tag_string()),
+              issuer_context.issuer.issuer_id(), app_locale,
               base::span_from_ref(issuer_context)))}};
     } else {
       bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(

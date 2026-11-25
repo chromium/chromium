@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/i18n/language_tag.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
@@ -48,7 +49,8 @@ class SelectBnplIssuerDialogControllerImplTest
     controller_ = std::make_unique<SelectBnplIssuerDialogControllerImpl>(
         &payments_autofill_client());
     controller_->ShowDialog(
-        create_view_callback_.Get(), issuer_contexts_, /*app_locale=*/"en-US",
+        create_view_callback_.Get(), issuer_contexts_,
+        /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
         selected_issuer_callback_.Get(), cancel_callback_.Get());
   }
 
@@ -73,7 +75,8 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest, Getters) {
                          BnplIssuerEligibilityForPage::kIsEligible)});
   InitController();
   EXPECT_EQ(controller_->GetIssuerContexts(), issuer_contexts_);
-  EXPECT_EQ(controller_->GetAppLocale(), "en-US");
+  EXPECT_EQ(controller_->GetAppLocale(),
+            base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(&controller_->GetPaymentsDataManager(),
             &payments_autofill_client().GetPaymentsDataManager());
   EXPECT_CALL(selected_issuer_callback_, Run(issuer_contexts_[0].issuer));

@@ -62,7 +62,7 @@ base::android::ScopedJavaLocalRef<jobject>
 CreateJavaBnplIssuerContextFromNative(
     JNIEnv* env,
     const payments::BnplIssuerContext& bnpl_issuer_context,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   const std::u16string selection_text =
       payments::GetBnplIssuerSelectionOptionText(
           bnpl_issuer_context.issuer.issuer_id(), app_locale,
@@ -213,7 +213,7 @@ bool TouchToFillPaymentMethodViewImpl::OnPurchaseAmountExtracted(
     base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
     std::optional<int64_t> extracted_amount,
     bool is_amount_supported_by_any_issuer,
-    const std::optional<std::string>& app_locale) {
+    const std::optional<base::i18n::LanguageTag>& app_locale) {
   if (!java_object_) {
     return false;
   }
@@ -253,7 +253,7 @@ bool TouchToFillPaymentMethodViewImpl::ShowProgressScreen(
 
 bool TouchToFillPaymentMethodViewImpl::ShowBnplIssuers(
     base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   if (!java_object_) {
     return false;
   }

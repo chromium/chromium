@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_VIEW_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_VIEW_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/i18n/language_tag.h"
 
 namespace autofill {
 
@@ -46,12 +48,12 @@ class TouchToFillPaymentMethodView {
       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
       std::optional<int64_t> extracted_amount,
       bool is_amount_supported_by_any_issuer,
-      const std::optional<std::string>& app_locale) = 0;
+      const std::optional<base::i18n::LanguageTag>& app_locale) = 0;
   virtual bool ShowProgressScreen(
       TouchToFillPaymentMethodViewController* controller) = 0;
   virtual bool ShowBnplIssuers(
       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
-      const std::string& app_locale) = 0;
+      const base::i18n::LanguageTag& app_locale) = 0;
   virtual bool ShowErrorScreen(
       TouchToFillPaymentMethodViewController* controller,
       const std::u16string& title,

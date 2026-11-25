@@ -13,6 +13,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
@@ -74,7 +75,7 @@ class MockTouchToFillPaymentMethodController
       (base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
        std::optional<int64_t> extracted_amount,
        bool is_amount_supported_by_any_issuer,
-       const std::optional<std::string>& app_locale,
+       const std::optional<base::i18n::LanguageTag>& app_locale,
        base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
        base::OnceClosure cancel_callback),
       (override));
@@ -87,7 +88,7 @@ class MockTouchToFillPaymentMethodController
       bool,
       ShowBnplIssuers,
       (base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
-       const std::string& app_locale,
+       const base::i18n::LanguageTag& app_locale,
        base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
        base::OnceClosure cancel_callback),
       (override));

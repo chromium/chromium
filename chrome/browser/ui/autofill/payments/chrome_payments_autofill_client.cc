@@ -1040,12 +1040,9 @@ bool ChromePaymentsAutofillClient::OnPurchaseAmountExtracted(
     base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
     base::OnceClosure cancel_callback) {
 #if BUILDFLAG(IS_ANDROID)
-  std::optional<std::string> app_locale_str =
-      app_locale ? std::make_optional(std::string(app_locale->tag_string()))
-                 : std::nullopt;
   return GetTouchToFillPaymentMethodController()->OnPurchaseAmountExtracted(
       bnpl_issuer_contexts, extracted_amount, is_amount_supported_by_any_issuer,
-      app_locale_str, std::move(selected_issuer_callback),
+      app_locale, std::move(selected_issuer_callback),
       std::move(cancel_callback));
 #else
   // Touch To Fill is not supported on Desktop.
@@ -1072,8 +1069,8 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillBnplIssuers(
     base::OnceClosure cancel_callback) {
 #if BUILDFLAG(IS_ANDROID)
   return GetTouchToFillPaymentMethodController()->ShowBnplIssuers(
-      bnpl_issuer_contexts, std::string(app_locale.tag_string()),
-      std::move(selected_issuer_callback), std::move(cancel_callback));
+      bnpl_issuer_contexts, app_locale, std::move(selected_issuer_callback),
+      std::move(cancel_callback));
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();
