@@ -537,11 +537,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kAutofillAtMemory,
                    base::Seconds(30));
 
-// Controls whether the Autosuggest nudging logic is used. If enabled, user are
-// encouraged to use the AtMemory feature.
-BASE_FEATURE(kAutofillAtMemoryInactivityNudge,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether the previously filled suggestions from AtMemory are shown.
 // Takes no effect when `kAutofillAtMemorySearchStatefulness` is disabled.
 BASE_FEATURE(kAutofillAtMemoryPreviouslyFilled,
