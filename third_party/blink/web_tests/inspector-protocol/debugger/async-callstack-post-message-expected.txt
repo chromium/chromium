@@ -15,7 +15,8 @@ Call stack:
     [setTimeout]
     0) testFunction (async-callstack-post-message.js:4)
     [setTimeout]
-    0) (anonymous) (schedule-test-function.js:2)
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
 
 Call stack:
     0) onMessageReceivedInFrame (post-message-listener.html:4)
@@ -25,7 +26,8 @@ Call stack:
     [setTimeout]
     0) testFunction (async-callstack-post-message.js:4)
     [setTimeout]
-    0) (anonymous) (schedule-test-function.js:2)
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
 
 Call stack:
     0) onMessageReceivedInParent (async-callstack-post-message.js:16)
@@ -44,7 +46,8 @@ Call stack:
     [setTimeout]
     0) testFunction (async-callstack-post-message.js:4)
     [setTimeout]
-    0) (anonymous) (schedule-test-function.js:2)
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
 
 Call stack:
     0) onMessageReceivedInParent (async-callstack-post-message.js:16)
@@ -57,7 +60,8 @@ Call stack:
     [setTimeout]
     0) testFunction (async-callstack-post-message.js:4)
     [setTimeout]
-    0) (anonymous) (schedule-test-function.js:2)
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
 
 Call stack:
     0) onMessageReceivedInParent (async-callstack-post-message.js:16)
@@ -67,6 +71,6 @@ Call stack:
     [setTimeout]
     0) testFunction (async-callstack-post-message.js:4)
     [setTimeout]
-    0) (anonymous) (schedule-test-function.js:2)
-
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
 

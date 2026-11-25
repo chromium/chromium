@@ -1,0 +1,46 @@
+Tests asynchronous call stacks for async functions.
+Set timer for test function.
+Captured call stacks in no particular order:
+Call stack:
+    0) errorCallback (async-callstack-async-await1.js:86)
+    1) doTestSettledPromisesRejected (async-callstack-async-await1.js:118)
+    [await]
+    0) testFunctionTimeout (async-callstack-async-await1.js:76)
+    [setTimeout]
+    0) testFunction (async-callstack-async-await1.js:65)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Call stack:
+    0) promiseCallback (async-callstack-async-await1.js:94)
+    1) doTestPromiseConstructor (async-callstack-async-await1.js:92)
+    2) testFunctionTimeout (async-callstack-async-await1.js:76)
+    [setTimeout]
+    0) testFunction (async-callstack-async-await1.js:65)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Call stack:
+    0) thenCallback (async-callstack-async-await1.js:81)
+    1) doTestPromiseConstructor (async-callstack-async-await1.js:96)
+    [await]
+    0) testFunctionTimeout (async-callstack-async-await1.js:76)
+    [setTimeout]
+    0) testFunction (async-callstack-async-await1.js:65)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Call stack:
+    0) thenCallback (async-callstack-async-await1.js:81)
+    1) doTestSettledPromisesResolved (async-callstack-async-await1.js:106)
+    [await]
+    0) testFunctionTimeout (async-callstack-async-await1.js:76)
+    [setTimeout]
+    0) testFunction (async-callstack-async-await1.js:65)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
