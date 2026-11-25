@@ -258,7 +258,8 @@ class FakeSafetyModelHolder final {
 class FakeDecisionModel final : public mojom::DecisionModel,
                                 public mojom::DecisionSession {
  public:
-  explicit FakeDecisionModel(mojom::DecisionModelParamsPtr params);
+  FakeDecisionModel(FakeOnDeviceServiceSettings* settings,
+                    mojom::DecisionModelParamsPtr params);
   ~FakeDecisionModel() override;
 
   // mojom::DecisionModel:
@@ -270,11 +271,23 @@ class FakeDecisionModel final : public mojom::DecisionModel,
   void Decide(const std::string& input, DecideCallback callback) override;
 
   const std::string& data() const { return data_; }
+  const std::vector<mojom::DecisionQueryPtr>& queries() const {
+    return queries_;
+  }
+  const std::vector<std::string>& inputs() const { return inputs_; }
 
  private:
+  void FinishDecide(
+      DecideCallback callback,
+      std::optional<std::vector<mojom::DecisionQuestionResultPtr>> results);
+
+  raw_ptr<FakeOnDeviceServiceSettings> settings_;
   bool has_decision_model_ = false;
   std::string data_;
+  std::vector<mojom::DecisionQueryPtr> queries_;
+  std::vector<std::string> inputs_;
   mojo::ReceiverSet<mojom::DecisionSession, mojom::DecisionQueryPtr> sessions_;
+  base::WeakPtrFactory<FakeDecisionModel> weak_factory_{this};
 };
 
 // FakeDecisionModelHolder holds a single FakeDecisionModel for testing.
@@ -283,7 +296,8 @@ class FakeDecisionModelHolder final {
   FakeDecisionModelHolder();
   ~FakeDecisionModelHolder();
 
-  void Reset(mojom::DecisionModelParamsPtr params,
+  void Reset(FakeOnDeviceServiceSettings* settings,
+             mojom::DecisionModelParamsPtr params,
              mojo::PendingReceiver<mojom::DecisionModel> model_receiver);
 
   FakeDecisionModel* model() {

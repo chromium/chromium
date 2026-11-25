@@ -192,6 +192,7 @@ source_set("unit_tests") {
     "ai_utils_unittest.cc",
     "semantic_embedder_spaces_unittest.cc",
   ]
+  deps = []
   if (!is_android) {
     sources += [
       "ai_embedding_gemma_v1_decision_model_unittest.cc",
@@ -206,8 +207,9 @@ source_set("unit_tests") {
       "decision_model_prompt_builder_unittest.cc",
       "decision_model_schema_compiler_unittest.cc",
     ]
+    deps += [ "//services/on_device_model/public/cpp/test_support" ]
   }
-  deps = [
+  deps += [
     ":ai",
     ":test_support",
     "//chrome/browser/component_updater",
