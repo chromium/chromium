@@ -18,6 +18,8 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/protocol/attachment.pb.h"
+#include "components/sync/protocol/attachment_metadata.h"
 #include "components/sync/protocol/collaboration_metadata.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -397,6 +399,28 @@ TEST_F(CommitContributionImplTest, ShouldPopulateAttachment) {
       PREFERENCES, *CreateCommitRequestData(std::move(data)), &entity);
 
   EXPECT_TRUE(entity.has_attachment());
+  EXPECT_THAT(entity.attachment(), EqualsProto(attachment_metadata.ToProto()));
+}
+
+// Verifies that `PopulateCommitProto` copies a timestamp-only attachment into
+// `SyncEntity::attachment`.
+TEST_F(CommitContributionImplTest,
+       ShouldPopulateExistingAttachmentModificationTime) {
+  std::unique_ptr<EntityData> data = CreateDefaultPreferenceEntityData();
+  sync_pb::Attachment attachment_proto;
+  attachment_proto.set_modification_time_unix_epoch_millis(987654321);
+  const AttachmentMetadata attachment_metadata =
+      AttachmentMetadata::FromProto(attachment_proto);
+  data->attachment_metadata = attachment_metadata;
+
+  SyncEntity entity;
+  CommitContributionImpl::PopulateCommitProto(
+      PREFERENCES, *CreateCommitRequestData(std::move(data)), &entity);
+
+  EXPECT_TRUE(entity.has_attachment());
+  EXPECT_FALSE(entity.attachment().has_temporary_blob_id());
+  EXPECT_EQ(entity.attachment().modification_time_unix_epoch_millis(),
+            987654321);
   EXPECT_THAT(entity.attachment(), EqualsProto(attachment_metadata.ToProto()));
 }
 

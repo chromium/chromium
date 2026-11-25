@@ -7,7 +7,10 @@
 
 #include <cstddef>
 #include <iosfwd>
+#include <optional>
 #include <string>
+
+#include "base/time/time.h"
 
 namespace sync_pb {
 class Attachment;
@@ -31,6 +34,15 @@ class AttachmentMetadata {
   AttachmentMetadata& operator=(AttachmentMetadata&& other);
   ~AttachmentMetadata();
 
+  // The temporary blob ID assigned when uploading a new attachment (may be
+  // empty).
+  const std::string& temporary_blob_id() const { return temporary_blob_id_; }
+
+  // The server-assigned modification time of an existing attachment (if set).
+  std::optional<base::Time> server_provided_modification_time() const {
+    return server_provided_modification_time_;
+  }
+
   sync_pb::Attachment ToProto() const;
 
   size_t EstimateMemoryUsage() const;
@@ -42,10 +54,15 @@ class AttachmentMetadata {
   friend void PrintTo(const AttachmentMetadata& attachment_metadata,
                       std::ostream* os);
 
-  explicit AttachmentMetadata(std::string temporary_blob_id);
+  AttachmentMetadata(
+      std::string temporary_blob_id,
+      std::optional<base::Time> server_provided_modification_time);
 
   // Populated when committing a newly uploaded attachment to the Sync server.
   std::string temporary_blob_id_;
+  // Populated for an already-committed attachment with its server-assigned
+  // modification time.
+  std::optional<base::Time> server_provided_modification_time_;
 };
 
 // gMock printer helper.
