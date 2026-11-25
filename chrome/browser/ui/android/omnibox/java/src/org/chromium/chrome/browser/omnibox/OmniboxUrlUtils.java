@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.url.GURL;
 
 /** Utility methods for evaluating URLs within the Omnibox and LocationBar components. */
@@ -35,5 +36,21 @@ public final class OmniboxUrlUtils {
      */
     public static boolean isNtpUrl(@Nullable GURL url) {
         return url != null && (GURL.isEmptyOrInvalid(url) || UrlUtilities.isNtpUrl(url));
+    }
+
+    /**
+     * Returns the destination {@link GURL} when a classified voice match should navigate directly,
+     * or {@code null} when it should fall back to a voice search query.
+     *
+     * <p>A match qualifies for direct navigation only if it is non-null, is not a search
+     * suggestion, and has a valid HTTP or HTTPS URL.
+     *
+     * @param match The classified autocomplete match, if any.
+     * @return The validated HTTP(S) URL to navigate to directly, or {@code null}.
+     */
+    public static @Nullable GURL getDirectVoiceNavigationUrl(@Nullable AutocompleteMatch match) {
+        if (match == null || match.isSearchSuggestion()) return null;
+        GURL url = match.getUrl();
+        return url.isValid() && UrlUtilities.isHttpOrHttps(url) ? url : null;
     }
 }

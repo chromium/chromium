@@ -869,4 +869,24 @@ public class VoiceRecognitionHandlerUnitTest {
         verify(mOmniboxStub).beginInput(mInputCaptor.capture());
         assertEquals(AutocompleteRequestType.AI_MODE, mInputCaptor.getValue().getRequestType());
     }
+
+    @Test
+    public void testParseResults_nonHttpUrlNotConverted() {
+        doReturn(false).when(mMatch).isSearchSuggestion();
+        doReturn(JUnitTestGURLs.CHROME_ABOUT).when(mMatch).getUrl();
+        doReturn(mMatch).when(mAutocompleteController).classify(any());
+
+        String[] texts = new String[] {"chrome : // about"};
+        float[] confidences = new float[] {1.0f};
+        List<VoiceResult> rawResults =
+                VoiceRecognitionIntentHandler.convertBundleToVoiceResults(
+                        RecognitionTestHelper.createPlaceholderBundle(texts, confidences),
+                        /* forcedConfidence= */ null);
+
+        mHandler.handleTranscriptionResult(rawResults);
+
+        verify(mAutocompleteCoordinator).onVoiceResults(mVoiceResults.capture());
+        RecognitionTestHelper.assertVoiceResultsAreEqual(
+                mVoiceResults.getValue(), texts, confidences);
+    }
 }

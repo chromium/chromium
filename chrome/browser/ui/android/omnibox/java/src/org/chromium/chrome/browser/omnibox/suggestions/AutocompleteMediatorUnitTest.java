@@ -2560,6 +2560,33 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    public void loadUrlFromVoice_nonHttpMatch_fallsBackToSearch() {
+        mMediator.beginInput(createSession(AutocompleteRequestType.SEARCH));
+        doReturn(createExactUrlMatch(JUnitTestGURLs.CHROME_ABOUT))
+                .when(mAutocompleteController)
+                .classify(any());
+        doReturn(JUnitTestGURLs.BLUE_1).when(mTemplateUrlService).getUrlForVoiceSearchQuery(any());
+
+        mMediator.loadUrlFromVoice("chrome://about", /* fallbackProfile= */ null);
+
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(JUnitTestGURLs.BLUE_1.getSpec(), mOmniboxLoadUrlParamsCaptor.getValue().url);
+    }
+
+    @Test
+    public void loadUrlFromVoice_nonHttpMatchWithoutDefaultSearch_doesNotLoadUrl() {
+        mMediator.beginInput(createSession(AutocompleteRequestType.SEARCH));
+        doReturn(createExactUrlMatch(JUnitTestGURLs.CHROME_ABOUT))
+                .when(mAutocompleteController)
+                .classify(any());
+        doReturn(GURL.emptyGURL()).when(mTemplateUrlService).getUrlForVoiceSearchQuery(any());
+
+        mMediator.loadUrlFromVoice("chrome://about", /* fallbackProfile= */ null);
+
+        verify(mAutocompleteDelegate, never()).loadUrl(any());
+    }
+
+    @Test
     public void fuseboxStateChanges() {
         doReturn(false).when(mEmbedder).isPhoneStyleWindow();
         mMediator.beginInput(createEmptySession());

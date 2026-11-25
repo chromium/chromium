@@ -4,13 +4,18 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -49,5 +54,43 @@ public final class OmniboxUrlUtilsUnitTest {
     public void isNtpUrl_otherInternalUrlReturnsFalse() {
         assertFalse(OmniboxUrlUtils.isNtpUrl(JUnitTestGURLs.ABOUT_BLANK));
         assertFalse(OmniboxUrlUtils.isNtpUrl(new GURL("chrome://settings")));
+    }
+
+    @Test
+    public void getDirectVoiceNavigationUrl_nullMatchReturnsNull() {
+        assertNull(OmniboxUrlUtils.getDirectVoiceNavigationUrl(null));
+    }
+
+    @Test
+    public void getDirectVoiceNavigationUrl_searchSuggestionReturnsNull() {
+        AutocompleteMatch match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
+                        .setUrl(JUnitTestGURLs.BLUE_1)
+                        .build();
+        assertNull(OmniboxUrlUtils.getDirectVoiceNavigationUrl(match));
+    }
+
+    @Test
+    public void getDirectVoiceNavigationUrl_nonHttpOrInvalidUrlReturnsNull() {
+        AutocompleteMatch chromeMatch =
+                new AutocompleteMatchBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
+                        .setUrl(new GURL("chrome://settings"))
+                        .build();
+        assertNull(OmniboxUrlUtils.getDirectVoiceNavigationUrl(chromeMatch));
+
+        AutocompleteMatch invalidMatch =
+                new AutocompleteMatchBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
+                        .setUrl(new GURL("invalid-url"))
+                        .build();
+        assertNull(OmniboxUrlUtils.getDirectVoiceNavigationUrl(invalidMatch));
+    }
+
+    @Test
+    public void getDirectVoiceNavigationUrl_validHttpOrHttpsUrlReturnsUrl() {
+        AutocompleteMatch match =
+                new AutocompleteMatchBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
+                        .setUrl(JUnitTestGURLs.BLUE_1)
+                        .build();
+        assertEquals(JUnitTestGURLs.BLUE_1, OmniboxUrlUtils.getDirectVoiceNavigationUrl(match));
     }
 }

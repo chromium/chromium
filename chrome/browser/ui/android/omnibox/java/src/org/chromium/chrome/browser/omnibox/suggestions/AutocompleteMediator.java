@@ -1920,14 +1920,16 @@ class AutocompleteMediator
         @Nullable AutocompleteMatch match =
                 autocomplete != null ? autocomplete.classify(query) : null;
 
-        GURL url;
-        if (match == null
-                || match.isSearchSuggestion()
-                || ToolModeUtils.isAimRequest(requestType)) {
-            url = TemplateUrlServiceFactory.getForProfile(profile).getUrlForVoiceSearchQuery(query);
-        } else {
-            url = match.getUrl();
-        }
+        @Nullable GURL directUrl =
+                ToolModeUtils.isAimRequest(requestType)
+                        ? null
+                        : OmniboxUrlUtils.getDirectVoiceNavigationUrl(match);
+        GURL url =
+                directUrl != null
+                        ? directUrl
+                        : TemplateUrlServiceFactory.getForProfile(profile)
+                                .getUrlForVoiceSearchQuery(query);
+        if (GURL.isEmptyOrInvalid(url)) return;
 
         boolean openInNewTab = shouldOpenAimRequestInNewTab();
         adjustGurlForRequestType(url, finalUrl -> finishLoadUrlFromVoice(finalUrl, openInNewTab));

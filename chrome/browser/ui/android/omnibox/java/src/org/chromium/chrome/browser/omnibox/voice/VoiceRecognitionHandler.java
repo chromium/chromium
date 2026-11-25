@@ -19,6 +19,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
+import org.chromium.chrome.browser.omnibox.OmniboxUrlUtils;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceResult;
@@ -226,12 +227,10 @@ public class VoiceRecognitionHandler {
                                 ? null
                                 : AutocompleteCoordinator.classify(profile, culledString);
 
-                String urlOrSearchQuery;
-                if (match == null || match.isSearchSuggestion()) {
-                    urlOrSearchQuery = matchText;
-                } else {
-                    urlOrSearchQuery = culledString;
-                }
+                String urlOrSearchQuery =
+                        OmniboxUrlUtils.getDirectVoiceNavigationUrl(match) != null
+                                ? culledString
+                                : matchText;
                 classifiedResults.add(new VoiceResult(urlOrSearchQuery, result.getConfidence()));
             }
         } else {
