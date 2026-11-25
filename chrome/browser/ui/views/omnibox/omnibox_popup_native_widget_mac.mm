@@ -67,6 +67,12 @@ class OmniboxPopupNativeWidgetMac : public views::NativeWidgetMac {
   return YES;
 }
 
+// Focusing the omnibox makes the popup the key window, which would otherwise
+// block AppKit cursor updates on its ancestor browser window.
+- (BOOL)ancestorsUpdateCursorWhileKey {
+  return YES;
+}
+
 // The root parent: in immersive fullscreen the direct parent is an overlay.
 - (NSWindow*)windowManagementTarget {
   NSWindow* target = self;

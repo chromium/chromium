@@ -196,6 +196,12 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Called by the NSWindowDelegate when the window becomes or resigns key.
   void OnWindowKeyStatusChangedTo(bool is_key);
 
+  // Called when a descendant window that opted in through
+  // -ancestorsUpdateCursorWhileKey became key. AppKit resets the cursor on a
+  // key window change, so if this window holds mouse capture, e.g. mid-press
+  // on a resize handle, its cursor is applied again.
+  void OnCursorDelegatingWindowBecameKey();
+
   // Called by the window show animation when it completes and wants to destroy
   // itself.
   void OnShowAnimationComplete();

@@ -1904,6 +1904,15 @@ bool NativeWidgetNSWindowBridge::PostCapturedEvent(NSEvent* event) {
   return true;
 }
 
+void NativeWidgetNSWindowBridge::OnCursorDelegatingWindowBecameKey() {
+  if (!HasCapture() || !KeyWindowDelegatesCursorTo(window_)) {
+    return;
+  }
+  if (NSCursor* cursor = [window_delegate_ cursor]) {
+    [cursor set];
+  }
+}
+
 void NativeWidgetNSWindowBridge::OnMouseCaptureLost() {
   host_->OnMouseCaptureActiveChanged(false);
 }

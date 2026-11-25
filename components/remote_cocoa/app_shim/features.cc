@@ -47,4 +47,10 @@ BASE_FEATURE(kClearFirstResponderInToolbarFullScreenWindow,
 // rather than only tracking windows that contain a `WebContentsViewCocoa`.
 BASE_FEATURE(kTrackAllTopLevelWindowsForOcclusion,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Killswitch for allowing ancestor windows to apply cursor updates while an
+// opted-in child window (such as the Full WebUI omnibox popup) is the key
+// window.
+BASE_FEATURE(kMacCursorUpdatesUnderKeyChildWindow,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace remote_cocoa::features

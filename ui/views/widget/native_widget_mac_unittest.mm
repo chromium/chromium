@@ -107,6 +107,7 @@ class WidgetModalVisibilityObserver : public views::WidgetObserver {
 @property(readonly, nonatomic) int setStyleMaskCount;
 @property(assign, nonatomic) BOOL fakeOnInactiveSpace;
 @property(assign, nonatomic) BOOL fakeOcclusionStateVisible;
+@property(assign, nonatomic) BOOL fakeAncestorsUpdateCursorWhileKey;
 @property(assign, nonatomic) bool* deallocFlag;
 @end
 
@@ -1929,6 +1930,183 @@ TEST_F(NativeWidgetMacTest, SetCursor) {
   EXPECT_EQ(arrow, [NSCursor currentCursor]);
 
   widget->CloseNow();
+}
+
+// Tests that a widget which isn't key applies its cursor while a child window
+// that opted in through -ancestorsUpdateCursorWhileKey is key.
+TEST_F(NativeWidgetMacTest, SetCursorWhileChildWindowIsKey) {
+  NSCursor* arrow = [NSCursor arrowCursor];
+  NSCursor* hand = [NSCursor pointingHandCursor];
+  NSCursor* ibeam = [NSCursor IBeamCursor];
+
+  NativeWidgetMacTestWindow* parent_window = nil;
+  Widget* parent = CreateWidgetWithTestWindow(
+      CreateParams(Widget::InitParams::TYPE_WINDOW), &parent_window);
+  parent->SetBounds(gfx::Rect(0, 0, 300, 300));
+  auto* view_hand = parent->non_client_view()->frame_view()->AddChildView(
+      std::make_unique<CursorView>(0, ui::mojom::CursorType::kHand));
+  auto* view_ibeam = parent->non_client_view()->frame_view()->AddChildView(
+      std::make_unique<CursorView>(100, ui::mojom::CursorType::kIBeam));
+
+  Widget::InitParams child_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  child_params.parent = parent->GetNativeView();
+  child_params.bounds = gfx::Rect(20, 20, 100, 100);
+  NativeWidgetMacTestWindow* child_window = nil;
+  Widget* child =
+      CreateWidgetWithTestWindow(std::move(child_params), &child_window);
+
+  [child_window makeKeyWindow];
+  ASSERT_TRUE([child_window isKeyWindow]);
+  ASSERT_FALSE([parent_window isKeyWindow]);
+
+  ui::test::EventGenerator event_generator(GetContext(),
+                                           gfx::NativeWindow(parent_window));
+
+  // A key child that didn't opt in: the parent's cursor is not applied.
+  [arrow set];
+  event_generator.MoveMouseTo(view_hand->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(arrow, [NSCursor currentCursor]);
+
+  // Once the child opts in, the parent's cursor changes are applied.
+  child_window.fakeAncestorsUpdateCursorWhileKey = YES;
+  event_generator.MoveMouseTo(view_ibeam->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(ibeam, [NSCursor currentCursor]);
+  event_generator.MoveMouseTo(view_hand->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(hand, [NSCursor currentCursor]);
+
+  // They are not applied while the feature is disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        remote_cocoa::features::kMacCursorUpdatesUnderKeyChildWindow);
+    [arrow set];
+    event_generator.MoveMouseTo(view_ibeam->GetBoundsInScreen().CenterPoint());
+    EXPECT_EQ(arrow, [NSCursor currentCursor]);
+  }
+
+  child->CloseNow();
+  parent->CloseNow();
+}
+
+// AppKit resets the cursor when the key window changes. Tests that a widget
+// holding mouse capture applies its cursor again when a child window that opted
+// in through -ancestorsUpdateCursorWhileKey becomes key.
+TEST_F(NativeWidgetMacTest, ReappliesCursorWhenChildWindowBecomesKeyInCapture) {
+  NSCursor* arrow = [NSCursor arrowCursor];
+  NSCursor* hand = [NSCursor pointingHandCursor];
+
+  NativeWidgetMacTestWindow* parent_window = nil;
+  Widget* parent = CreateWidgetWithTestWindow(
+      CreateParams(Widget::InitParams::TYPE_WINDOW), &parent_window);
+  parent->SetBounds(gfx::Rect(0, 0, 300, 300));
+  auto* view_hand = parent->non_client_view()->frame_view()->AddChildView(
+      std::make_unique<CursorView>(0, ui::mojom::CursorType::kHand));
+
+  Widget::InitParams child_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  child_params.parent = parent->GetNativeView();
+  child_params.bounds = gfx::Rect(20, 20, 100, 100);
+  NativeWidgetMacTestWindow* child_window = nil;
+  Widget* child =
+      CreateWidgetWithTestWindow(std::move(child_params), &child_window);
+
+  BridgedNativeWidgetTestApi(parent).bridge()->SetCursor(hand);
+  [child_window makeKeyWindow];
+  ASSERT_TRUE([child_window isKeyWindow]);
+  child_window.fakeAncestorsUpdateCursorWhileKey = YES;
+
+  // Without capture, the parent leaves the cursor alone.
+  [arrow set];
+  [child_window becomeKeyWindow];
+  EXPECT_EQ(arrow, [NSCursor currentCursor]);
+
+  parent->SetCapture(view_hand);
+
+  // A key child that didn't opt in doesn't trigger it.
+  child_window.fakeAncestorsUpdateCursorWhileKey = NO;
+  [arrow set];
+  [child_window becomeKeyWindow];
+  EXPECT_EQ(arrow, [NSCursor currentCursor]);
+  child_window.fakeAncestorsUpdateCursorWhileKey = YES;
+
+  // Neither does anything while the feature is disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        remote_cocoa::features::kMacCursorUpdatesUnderKeyChildWindow);
+    [arrow set];
+    [child_window becomeKeyWindow];
+    EXPECT_EQ(arrow, [NSCursor currentCursor]);
+  }
+
+  // With capture, opt-in, and the feature enabled, the cursor is applied again.
+  [arrow set];
+  [child_window becomeKeyWindow];
+  EXPECT_EQ(hand, [NSCursor currentCursor]);
+
+  parent->ReleaseCapture();
+  child->CloseNow();
+  parent->CloseNow();
+}
+
+// Tests that the cursor is applied again in capture when a window that isn't a
+// NativeWidgetMacNSWindow sits between the widget and the window that becomes
+// key. In immersive fullscreen, AppKit's NSToolbarFullScreenWindow sits between
+// the browser window and the overlay window that parents the omnibox popup.
+TEST_F(NativeWidgetMacTest, ReappliesCursorInCaptureThroughNonWidgetWindow) {
+  NSCursor* arrow = [NSCursor arrowCursor];
+  NSCursor* hand = [NSCursor pointingHandCursor];
+
+  NativeWidgetMacTestWindow* parent_window = nil;
+  Widget* parent = CreateWidgetWithTestWindow(
+      CreateParams(Widget::InitParams::TYPE_WINDOW), &parent_window);
+  parent->SetBounds(gfx::Rect(0, 0, 300, 300));
+  auto* view_hand = parent->non_client_view()->frame_view()->AddChildView(
+      std::make_unique<CursorView>(0, ui::mojom::CursorType::kHand));
+
+  Widget::InitParams child_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  child_params.parent = parent->GetNativeView();
+  child_params.bounds = gfx::Rect(20, 20, 100, 100);
+  NativeWidgetMacTestWindow* child_window = nil;
+  Widget* child =
+      CreateWidgetWithTestWindow(std::move(child_params), &child_window);
+
+  // Stands in for AppKit's NSToolbarFullScreenWindow.
+  NSWindow* toolbar_window =
+      [[NSWindow alloc] initWithContentRect:NSMakeRect(20, 20, 100, 100)
+                                  styleMask:NSWindowStyleMaskBorderless
+                                    backing:NSBackingStoreBuffered
+                                      defer:NO];
+  toolbar_window.releasedWhenClosed = NO;
+  [parent_window removeChildWindow:child_window];
+  [parent_window addChildWindow:toolbar_window ordered:NSWindowAbove];
+  [toolbar_window addChildWindow:child_window ordered:NSWindowAbove];
+  ASSERT_EQ(toolbar_window, child_window.parentWindow);
+  ASSERT_EQ(parent_window, toolbar_window.parentWindow);
+
+  BridgedNativeWidgetTestApi(parent).bridge()->SetCursor(hand);
+  [child_window makeKeyWindow];
+  ASSERT_TRUE([child_window isKeyWindow]);
+  child_window.fakeAncestorsUpdateCursorWhileKey = YES;
+
+  // Without capture, the parent leaves the cursor alone.
+  [arrow set];
+  [child_window becomeKeyWindow];
+  EXPECT_EQ(arrow, [NSCursor currentCursor]);
+
+  // With capture, the cursor is applied again.
+  parent->SetCapture(view_hand);
+  [arrow set];
+  [child_window becomeKeyWindow];
+  EXPECT_EQ(hand, [NSCursor currentCursor]);
+
+  parent->ReleaseCapture();
+  child->CloseNow();
+  [parent_window removeChildWindow:toolbar_window];
+  [toolbar_window close];
+  parent->CloseNow();
 }
 
 // Tests that an accessibility request from the system makes its way through to
@@ -4249,6 +4427,8 @@ TEST_F(NativeWidgetMacTest, ImmersiveFullscreenWithTransparentTitlebar) {
 @synthesize setStyleMaskCount = _setStyleMaskCount;
 @synthesize fakeOnInactiveSpace = _fakeOnInactiveSpace;
 @synthesize fakeOcclusionStateVisible = _fakeOcclusionStateVisible;
+@synthesize fakeAncestorsUpdateCursorWhileKey =
+    _fakeAncestorsUpdateCursorWhileKey;
 @synthesize deallocFlag = _deallocFlag;
 
 - (void)dealloc {
@@ -4270,6 +4450,10 @@ TEST_F(NativeWidgetMacTest, ImmersiveFullscreenWithTransparentTitlebar) {
 
 - (BOOL)isOnActiveSpace {
   return !_fakeOnInactiveSpace;
+}
+
+- (BOOL)ancestorsUpdateCursorWhileKey {
+  return _fakeAncestorsUpdateCursorWhileKey;
 }
 
 - (NSWindowOcclusionState)occlusionState {

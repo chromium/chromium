@@ -290,6 +290,10 @@ struct NSEdgeAndCornerThicknesses {
   return NO;
 }
 
+- (BOOL)ancestorsUpdateCursorWhileKey {
+  return NO;
+}
+
 // This is called by the "Move Window to {Left/Right} Side of Screen"
 // Window menu alternate items (must press Option to see).
 // Without this, selecting these items will move child windows like
@@ -329,6 +333,20 @@ struct NSEdgeAndCornerThicknesses {
 - (void)becomeKeyWindow {
   [super becomeKeyWindow];
   [self notifyParentOfKeyChange];
+  if (base::FeatureList::IsEnabled(
+          remote_cocoa::features::kMacCursorUpdatesUnderKeyChildWindow) &&
+      [self ancestorsUpdateCursorWhileKey]) {
+    // AppKit resets the cursor when the key window changes. Let an ancestor
+    // that holds mouse capture, e.g. mid-press on a resize handle, apply its
+    // cursor again.
+    for (NSWindow* ancestor = self.parentWindow; ancestor;
+         ancestor = ancestor.parentWindow) {
+      if (auto* bridge =
+              base::apple::ObjCCast<NativeWidgetMacNSWindow>(ancestor).bridge) {
+        bridge->OnCursorDelegatingWindowBecameKey();
+      }
+    }
+  }
 }
 
 - (void)resignKeyWindow {
@@ -1304,3 +1322,26 @@ struct NSEdgeAndCornerThicknesses {
 #endif  // NDEBUG
 
 @end
+
+namespace remote_cocoa {
+
+bool KeyWindowDelegatesCursorTo(NSWindow* window) {
+  if (!base::FeatureList::IsEnabled(
+          features::kMacCursorUpdatesUnderKeyChildWindow)) {
+    return false;
+  }
+  NativeWidgetMacNSWindow* key_window =
+      base::apple::ObjCCast<NativeWidgetMacNSWindow>([NSApp keyWindow]);
+  if (!key_window || ![key_window ancestorsUpdateCursorWhileKey]) {
+    return false;
+  }
+  for (NSWindow* parent = [key_window parentWindow]; parent;
+       parent = [parent parentWindow]) {
+    if (parent == window) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace remote_cocoa

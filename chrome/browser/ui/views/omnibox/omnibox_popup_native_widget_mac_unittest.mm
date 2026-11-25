@@ -180,4 +180,17 @@ TEST_F(OmniboxPopupNativeWidgetMacTest, UnattachedNonPopupConstrained) {
       << NSStringFromRect(child_window.frame).UTF8String;
 }
 
+TEST_F(OmniboxPopupNativeWidgetMacTest,
+       OmniboxPopupAncestorsUpdateCursorWhileKey) {
+  std::unique_ptr<views::Widget> browser = CreateWindowWidget();
+  std::unique_ptr<views::Widget> popup =
+      CreateChildWidget(browser.get(), /*popup=*/true);
+  std::unique_ptr<views::Widget> plain_child =
+      CreateChildWidget(browser.get(), /*popup=*/false);
+
+  EXPECT_TRUE([GetNSWindow(popup.get()) ancestorsUpdateCursorWhileKey]);
+  EXPECT_FALSE([GetNSWindow(plain_child.get()) ancestorsUpdateCursorWhileKey]);
+  EXPECT_FALSE([GetNSWindow(browser.get()) ancestorsUpdateCursorWhileKey]);
+}
+
 }  // namespace
