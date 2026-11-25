@@ -116,7 +116,7 @@ class CORE_EXPORT LineInfo {
     DCHECK(token->IsInParallelBlockFlow());
     parallel_flow_break_tokens_.push_back(token);
   }
-  void RemoveParallelFlowBreakToken(unsigned item_index);
+  void RemoveParallelFlowBreakToken(wtf_size_t item_index);
 
   std::optional<LayoutUnit> MinimumSpaceShortage() const {
     return minimum_space_shortage_;
@@ -188,37 +188,37 @@ class CORE_EXPORT LineInfo {
 
   // Start offset of this line.
   const InlineItemTextIndex& Start() const { return start_; }
-  unsigned StartOffset() const { return start_.text_offset; }
+  wtf_size_t StartOffset() const { return start_.text_offset; }
   void SetStart(const InlineItemTextIndex& index) { start_ = index; }
 
   // Start text offset of this line, excluding out-of-flow objects, and
   // zero-length items.
   // Returns EndTextOffset() if the line is empty or all item results are
   // excluded.
-  unsigned InflowStartOffset() const;
+  wtf_size_t InflowStartOffset() const;
 
   // End offset of this line. This is the same as the start offset of the next
   // line, or the end of block if this is the last line.
   InlineItemTextIndex End() const;
-  unsigned EndTextOffset() const;
+  wtf_size_t EndTextOffset() const;
   // End text offset of this line, excluding out-of-flow objects such as
   // floating or positioned.
-  unsigned InflowEndOffset() const {
+  wtf_size_t InflowEndOffset() const {
     return InflowEndOffsetInternal(/* skip_forced_break */ false);
   }
   // In addition to the above, forced breaks and collapsed spaces are excluded.
-  unsigned InflowEndOffsetWithoutForcedBreak() const {
+  wtf_size_t InflowEndOffsetWithoutForcedBreak() const {
     return InflowEndOffsetInternal(/* skip_forced_break */ true);
   }
   // End text offset for `text-align: justify`. This excludes preserved trailing
   // spaces. Available only when |TextAlign()| is |kJustify|.
-  unsigned EndOffsetForJustify() const {
+  wtf_size_t EndOffsetForJustify() const {
     DCHECK_EQ(text_align_, ETextAlign::kJustify);
     return end_offset_for_justify_;
   }
   // End item index of this line.
-  unsigned EndItemIndex() const { return end_item_index_; }
-  void SetEndItemIndex(unsigned index) { end_item_index_ = index; }
+  wtf_size_t EndItemIndex() const { return end_item_index_; }
+  void SetEndItemIndex(wtf_size_t index) { end_item_index_ = index; }
 
   bool GlyphCountIsGreaterThan(wtf_size_t limit) const;
 
@@ -293,8 +293,8 @@ class CORE_EXPORT LineInfo {
 
   // The width of preserved trailing spaces.
   LayoutUnit ComputeTrailingSpaceWidth(
-      unsigned* end_offset_out = nullptr) const;
-  unsigned InflowEndOffsetInternal(bool skip_forced_break) const;
+      wtf_size_t* end_offset_out = nullptr) const;
+  wtf_size_t InflowEndOffsetInternal(bool skip_forced_break) const;
 
   Member<const InlineItemsData> items_data_;
   Member<const ComputedStyle> line_style_;
@@ -320,8 +320,8 @@ class CORE_EXPORT LineInfo {
   LayoutUnit initial_letter_box_block_size_;
 
   InlineItemTextIndex start_;
-  unsigned end_item_index_;
-  unsigned end_offset_for_justify_;
+  wtf_size_t end_item_index_;
+  wtf_size_t end_offset_for_justify_;
 
   // Text scaling factor computed in `text-fit` processing.
   // ApplyTextBoxTrim() refers to this.

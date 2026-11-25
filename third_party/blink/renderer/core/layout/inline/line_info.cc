@@ -178,7 +178,7 @@ bool LineInfo::ComputeNeedsAccurateEndPosition() const {
   return false;
 }
 
-unsigned LineInfo::InflowStartOffset() const {
+wtf_size_t LineInfo::InflowStartOffset() const {
   for (const auto& item_result : Results()) {
     const InlineItem& item = *item_result.item;
     if ((item.Type() == InlineItem::kText ||
@@ -188,7 +188,7 @@ unsigned LineInfo::InflowStartOffset() const {
       return item_result.StartOffset();
     } else if (item_result.IsRubyColumn()) {
       const LineInfo& base_line = item_result.ruby_column->base_line;
-      unsigned start_offset = base_line.InflowStartOffset();
+      wtf_size_t start_offset = base_line.InflowStartOffset();
       if (start_offset != base_line.EndTextOffset()) {
         return start_offset;
       }
@@ -207,7 +207,7 @@ InlineItemTextIndex LineInfo::End() const {
   return ItemsData().End();
 }
 
-unsigned LineInfo::EndTextOffset() const {
+wtf_size_t LineInfo::EndTextOffset() const {
   if (GetBreakToken()) {
     return GetBreakToken()->StartTextOffset();
   }
@@ -217,7 +217,7 @@ unsigned LineInfo::EndTextOffset() const {
   return ItemsData().text_content.length();
 }
 
-unsigned LineInfo::InflowEndOffsetInternal(bool skip_forced_break) const {
+wtf_size_t LineInfo::InflowEndOffsetInternal(bool skip_forced_break) const {
   for (const auto& item_result : std::views::reverse(Results())) {
     DCHECK(item_result.item);
     const InlineItem& item = *item_result.item;
@@ -235,7 +235,7 @@ unsigned LineInfo::InflowEndOffsetInternal(bool skip_forced_break) const {
       return item_result.EndOffset();
     } else if (item_result.IsRubyColumn()) {
       const LineInfo& base_line = item_result.ruby_column->base_line;
-      unsigned end_offset =
+      wtf_size_t end_offset =
           base_line.InflowEndOffsetInternal(skip_forced_break);
       if (end_offset != base_line.StartOffset()) {
         return end_offset;
@@ -288,7 +288,8 @@ void LineInfo::UpdateTextAlign() {
     end_offset_for_justify_ = InflowEndOffset();
 }
 
-LayoutUnit LineInfo::ComputeTrailingSpaceWidth(unsigned* end_offset_out) const {
+LayoutUnit LineInfo::ComputeTrailingSpaceWidth(
+    wtf_size_t* end_offset_out) const {
   if (!has_trailing_spaces_) {
     if (end_offset_out)
       *end_offset_out = InflowEndOffset();
@@ -313,7 +314,7 @@ LayoutUnit LineInfo::ComputeTrailingSpaceWidth(unsigned* end_offset_out) const {
     LayoutUnit trailing_item_width;
     bool will_continue = false;
 
-    unsigned end_offset = item_result.EndOffset();
+    wtf_size_t end_offset = item_result.EndOffset();
 
     if (item.Type() == InlineItem::kControl ||
         item_result.has_only_pre_wrap_trailing_spaces) {
@@ -532,7 +533,7 @@ LayoutUnit LineInfo::ComputeTotalBlockSize(
   return std::max(initial_letter_box_block_size_, line_height_with_annotation);
 }
 
-void LineInfo::RemoveParallelFlowBreakToken(unsigned item_index) {
+void LineInfo::RemoveParallelFlowBreakToken(wtf_size_t item_index) {
 #if EXPENSIVE_DCHECKS_ARE_ON()
   DCHECK(std::is_sorted(parallel_flow_break_tokens_.begin(),
                         parallel_flow_break_tokens_.end(),

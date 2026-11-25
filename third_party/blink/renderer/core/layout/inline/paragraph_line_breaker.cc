@@ -158,7 +158,7 @@ std::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
   const int lines_until_clamp =
       space.GetLineClampData().LinesUntilClamp().value_or(0);
   if (lines_until_clamp > 0 &&
-      static_cast<unsigned>(lines_until_clamp) <= max_lines) {
+      static_cast<wtf_size_t>(lines_until_clamp) <= max_lines) {
     if (lines_until_clamp == 1) {
       return std::nullopt;  // Balancing not needed for single line paragraphs.
     }
@@ -175,9 +175,8 @@ std::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
       return std::nullopt;
     }
 
-    DCHECK_LE(normal_lines.Size(),
-              static_cast<unsigned int>(lines_until_clamp));
-    if (normal_lines.Size() != static_cast<unsigned int>(lines_until_clamp)) {
+    DCHECK_LE(normal_lines.Size(), static_cast<wtf_size_t>(lines_until_clamp));
+    if (normal_lines.Size() != static_cast<wtf_size_t>(lines_until_clamp)) {
       // The paragraph ended before the ellipsis line. The bisecting algorithm
       // will consider the last line in `normal_lines` as having the ellipsis,
       // which is wrong in this case. So we clear the ellipsis width to make

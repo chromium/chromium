@@ -47,7 +47,7 @@ class LineBreakerTest : public RenderingTest {
   }
 
   // Break lines using the specified available width.
-  Vector<std::pair<String, unsigned>> BreakLines(
+  Vector<std::pair<String, wtf_size_t>> BreakLines(
       InlineNode node,
       LayoutUnit available_width,
       void (*callback)(const LineBreaker&, const LineInfo&) = nullptr,
@@ -56,7 +56,7 @@ class LineBreakerTest : public RenderingTest {
     node.PrepareLayoutIfNeeded();
     ConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
     const InlineBreakToken* break_token = nullptr;
-    Vector<std::pair<String, unsigned>> lines;
+    Vector<std::pair<String, wtf_size_t>> lines;
     trailing_whitespaces_.resize(0);
     ExclusionSpace exclusion_space;
     LeadingFloats leading_floats;
@@ -224,7 +224,7 @@ TEST_F(LineBreakerTest, SingleNode) {
     <div id=container>123 456 789</div>
   )HTML");
 
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(80));
   EXPECT_EQ(2u, lines.size());
   EXPECT_EQ("123 456", lines[0].first);
@@ -250,7 +250,7 @@ TEST_F(LineBreakerTest, TextCombineCloseTag) {
       "<div id=container>"
       "abc<tcy style='white-space:pre'>XYZ</tcy>def");
 
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(30));
   EXPECT_EQ(1u, lines.size());
   // |LineBreaker::auto_wrap_| doesn't care about CSS "white-space" property
@@ -274,7 +274,7 @@ TEST_F(LineBreakerTest, TextCombineBreak) {
       "tcy { text-combine-upright: all }");
   InlineNode node = CreateInlineNode("<div id=container>abc<tcy>-</tcy>def");
 
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(30));
   EXPECT_EQ(2u, lines.size());
   // LineBreaker attempts to break line for "abc-def".
@@ -292,7 +292,7 @@ TEST_F(LineBreakerTest, TextCombineNoBreak) {
       "tcy { text-combine-upright: all }");
   InlineNode node = CreateInlineNode("<div id=container>abc<tcy>XYZ</tcy>def");
 
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(30));
   EXPECT_EQ(1u, lines.size());
   // LineBreaker attempts to break line for "abcXYZdef".
@@ -309,7 +309,7 @@ TEST_F(LineBreakerTest, TextCombineNoBreakWithSpace) {
       "tcy { text-combine-upright: all }");
   InlineNode node = CreateInlineNode("<div id=container>abc<tcy>X Z</tcy>def");
 
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(30));
   EXPECT_EQ(1u, lines.size());
   // LineBreaker checks whether can break after "Z" in "abcX Zdef".
@@ -329,7 +329,7 @@ TEST_F(LineBreakerTest, OverflowWord) {
   )HTML");
 
   // The first line overflows, but the last line does not.
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(40));
   EXPECT_EQ(2u, lines.size());
   EXPECT_EQ("12345", lines[0].first);
@@ -357,7 +357,7 @@ TEST_F(LineBreakerTest, OverflowTab) {
     <div id=container>12345&#9;&#9;678</div>
   )HTML");
 
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(100));
   EXPECT_EQ(2u, lines.size());
   EXPECT_EQ("12345\t\t", lines[0].first);
@@ -380,7 +380,7 @@ TEST_F(LineBreakerTest, OverflowTabBreakWord) {
     <div id=container>12345&#9;&#9;678</div>
   )HTML");
 
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(100));
   EXPECT_EQ(2u, lines.size());
   EXPECT_EQ("12345\t\t", lines[0].first);
@@ -404,7 +404,7 @@ TEST_F(LineBreakerTest, OverflowAtomicInline) {
     <div id=container>12345<span></span>678</div>
   )HTML");
 
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(80));
   EXPECT_EQ(2u, lines.size());
   EXPECT_EQ(String(u"12345\uFFFC"), lines[0].first);
@@ -447,7 +447,7 @@ TEST_F(LineBreakerTest, OverflowMargin) {
   // While "123 456" can fit in a line, "456" has a right margin that cannot
   // fit. Since "456" and its right margin is not breakable, "456" should be on
   // the next line.
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(80));
   EXPECT_EQ(3u, lines.size());
   EXPECT_EQ("123", lines[0].first);
@@ -479,7 +479,7 @@ TEST_F(LineBreakerTest, OverflowAfterSpacesAcrossElements) {
     <div id=container><span>12345 </span> 1234567890123</div>
   )HTML");
 
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(100));
   EXPECT_EQ(3u, lines.size());
   EXPECT_EQ("12345  ", lines[0].first);
@@ -500,7 +500,7 @@ TEST_F(LineBreakerTest, WrapLastWord) {
     <div id=container>AAA AAA AAA <span>BB</span> CC</div>
   )HTML");
 
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(100));
   EXPECT_EQ(2u, lines.size());
   EXPECT_EQ("AAA AAA", lines[0].first);
@@ -520,7 +520,7 @@ TEST_F(LineBreakerTest, WrapLetterSpacing) {
     <div id=container>Star Wars</div>
   )HTML");
 
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(100));
   EXPECT_EQ(2u, lines.size());
   EXPECT_EQ("Star", lines[0].first);
@@ -541,7 +541,7 @@ TEST_F(LineBreakerTest, BoundaryInWord) {
 
   // The element boundary within "456789" should not cause a break.
   // Since "789" does not fit, it should go to the next line along with "456".
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(80));
   EXPECT_EQ(3u, lines.size());
   EXPECT_EQ("123", lines[0].first);
@@ -569,7 +569,7 @@ TEST_F(LineBreakerTest, BoundaryInFirstWord) {
     <div id=container><span>123</span>456 789</div>
   )HTML");
 
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(80));
   EXPECT_EQ(2u, lines.size());
   EXPECT_EQ("123456", lines[0].first);
@@ -605,7 +605,7 @@ TEST_F(LineBreakerTest, IdeographicTrailingSpaces) {
 
   // The ideographic spaces overflows the line at 60px but fully fits at 90px.
   for (LayoutUnit width : {LayoutUnit(60), LayoutUnit(90)}) {
-    Vector<std::pair<String, unsigned>> lines = BreakLines(node, width);
+    Vector<std::pair<String, wtf_size_t>> lines = BreakLines(node, width);
     EXPECT_EQ(2u, lines.size());
     EXPECT_EQ(expectedLine, lines[0].first);
     EXPECT_EQ(expectedLine, lines[1].first);
@@ -689,7 +689,7 @@ TEST_P(WhitespaceStateTest, WhitespaceState) {
 struct TrailingSpaceWidthTestData {
   const char* html;
   const char* white_space;
-  unsigned hanging_space_width;
+  wtf_size_t hanging_space_width;
 } trailing_space_width_test_data[] = {{" ", "pre", 0},
                                       {"   ", "pre", 0},
                                       {"1 ", "pre", 0},
@@ -823,7 +823,7 @@ TEST_F(LineBreakerTest, SplitTextZero) {
       ->splitText(0, ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
 
-  Vector<std::pair<String, unsigned>> lines;
+  Vector<std::pair<String, wtf_size_t>> lines;
   lines = BreakLines(node, LayoutUnit(100));
   EXPECT_EQ(2u, lines.size());
   EXPECT_EQ("0123456789", lines[0].first);
@@ -963,8 +963,8 @@ TEST_F(LineBreakerTest, SplitTextIntoSegementsCrash) {
   BreakLines(
       node, LayoutUnit::Max(),
       [](const LineBreaker& line_breaker, const LineInfo& line_info) {
-        Vector<unsigned> text_results_indices;
-        for (unsigned i = 0; i < line_info.Results().size(); ++i) {
+        Vector<wtf_size_t> text_results_indices;
+        for (wtf_size_t i = 0; i < line_info.Results().size(); ++i) {
           if (line_info.Results()[i].item->Type() == InlineItem::kText) {
             text_results_indices.push_back(i);
           }

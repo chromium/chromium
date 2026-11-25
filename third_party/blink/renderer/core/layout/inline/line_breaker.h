@@ -154,7 +154,9 @@ class CORE_EXPORT LineBreaker {
   const String& Text() const { return text_content_; }
   const InlineItems& Items() const { return items_data_->items; }
 
-  InlineItemResult* AddItem(const InlineItem&, unsigned end_offset, LineInfo*);
+  InlineItemResult* AddItem(const InlineItem&,
+                            wtf_size_t end_offset,
+                            LineInfo*);
   InlineItemResult* AddItem(const InlineItem&, LineInfo*);
   InlineItemResult* AddEmptyItem(const InlineItem&, LineInfo*);
 
@@ -218,11 +220,11 @@ class CORE_EXPORT LineBreaker {
 
   const ShapeResultView* TruncateLineEndResult(const LineInfo&,
                                                const InlineItemResult&,
-                                               unsigned end_offset);
+                                               wtf_size_t end_offset);
   void UpdateShapeResult(const LineInfo&, InlineItemResult*);
   const ShapeResult* ShapeText(const InlineItem&,
-                               unsigned start,
-                               unsigned end,
+                               wtf_size_t start,
+                               wtf_size_t end,
                                ShapeOptions = ShapeOptions());
 
   void HandleTrailingSpaces(const InlineItem&, LineInfo*);
@@ -283,14 +285,14 @@ class CORE_EXPORT LineBreaker {
   //    kNoBreakSpace (U+00A0) if |sticky_images_quirk_|.
   bool MayBeAtomicInline(wtf_size_t offset) const;
   const InlineItem* TryGetAtomicInlineItemAfter(const InlineItem& item) const;
-  unsigned IgnorableBidiControlLength(const InlineItem& item) const;
+  wtf_size_t IgnorableBidiControlLength(const InlineItem& item) const;
 
   bool ShouldPushFloatAfterLine(UnpositionedFloat*, LineInfo*);
   void HandleFloat(const InlineItem&,
                    const BlockBreakToken* float_break_token,
                    LineInfo*);
   void UpdateLineOpportunity();
-  void RewindFloats(unsigned new_end, LineInfo&, InlineItemResults&);
+  void RewindFloats(wtf_size_t new_end, LineInfo&, InlineItemResults&);
 
   void HandleInitialLetter(const InlineItem&, LineInfo*);
   void HandleOutOfFlowPositioned(const InlineItem&, LineInfo*);
@@ -302,11 +304,11 @@ class CORE_EXPORT LineBreaker {
   // NOINLINE prevents a compiler for Android 64bit from code size bloat.
   NOINLINE void HandleOverflow(LineInfo*);
   void RetryAfterOverflow(LineInfo*, InlineItemResults*);
-  void RewindOverflow(unsigned new_end, LineInfo*);
-  void Rewind(unsigned new_end, LineInfo*);
+  void RewindOverflow(wtf_size_t new_end, LineInfo*);
+  void Rewind(wtf_size_t new_end, LineInfo*);
   void ResetRewindLoopDetector() { last_rewind_.reset(); }
 
-  const ComputedStyle& ComputeCurrentStyle(unsigned item_result_index,
+  const ComputedStyle& ComputeCurrentStyle(wtf_size_t item_result_index,
                                            LineInfo*) const;
   void SetCurrentStyle(const ComputedStyle&);
   void SetCurrentStyleForce(const ComputedStyle&);
@@ -354,7 +356,7 @@ class CORE_EXPORT LineBreaker {
   // Represents the current offset of the input.
   LineBreakState state_;
   InlineItemTextIndex current_;
-  unsigned svg_addressable_offset_ = 0;
+  wtf_size_t svg_addressable_offset_ = 0;
   LineBreakPoint break_at_;
 
   // |WhitespaceState| of the current end. When a line is broken, this indicates
@@ -508,7 +510,7 @@ class CORE_EXPORT LineBreaker {
 
   // Keep track of handled float items. See HandleFloat().
   const LeadingFloats& leading_floats_;
-  unsigned leading_floats_index_ = 0u;
+  wtf_size_t leading_floats_index_ = 0u;
 
   // Cache for computing |MinMaxSize|. See |MaxSizeCache|.
   MaxSizeCache* max_size_cache_ = nullptr;
@@ -521,7 +523,7 @@ class CORE_EXPORT LineBreaker {
   TextDirection base_direction_;
 
   // Fields for `box-decoration-break: clone`.
-  unsigned cloned_box_decorations_count_ = 0;
+  wtf_size_t cloned_box_decorations_count_ = 0;
   LayoutUnit cloned_box_decorations_initial_size_;
   LayoutUnit cloned_box_decorations_end_size_;
   bool has_cloned_box_decorations_ = false;

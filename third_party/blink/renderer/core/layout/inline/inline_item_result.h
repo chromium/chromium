@@ -71,7 +71,7 @@ struct CORE_EXPORT InlineItemResult {
  public:
   InlineItemResult() = default;
   InlineItemResult(const InlineItem&,
-                   unsigned index,
+                   wtf_size_t index,
                    const TextOffsetRange& text_offset,
                    bool break_anywhere_if_overflow,
                    bool should_create_line_box,
@@ -109,7 +109,7 @@ struct CORE_EXPORT InlineItemResult {
   // Note that use `item_index` with caution, which may not always be the actual
   // item index in the items list. See `LineBreaker::AddItem`.
   Member<const InlineItem> item;
-  unsigned item_index = 0;
+  wtf_size_t item_index = 0;
 
   // The range of text content for this item.
   TextOffsetRange text_offset;
