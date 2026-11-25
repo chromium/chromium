@@ -2338,7 +2338,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/gemmlowp.git' + '@' + '16e8662c34917be0065110bfcd9cc27d30f52fdf',
 
   'src/third_party/glib/src': {
-      'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/glib.git' + '@' + 'e05063ccc6c8f222465a1080927f4c14349f3de6',
+      'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/glib.git' + '@' + 'ba72ed0b188741619bfc2ae0a022230981ab2cff',
       'condition': 'checkout_linux and checkout_mutter',
   },
 
