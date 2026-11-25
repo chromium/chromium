@@ -873,6 +873,11 @@ def main(
         '-Xlint:-removal',
         # Disable all annotation processors (we run them via Turbine).
         '-proc:none',
+        # Enable Chromium's fast classpath handling (skip manifest Class-Path
+        # expansion, cache directory canonicalization, and lazily index JARs
+        # from raw ZIP central directories). Honored by Chromium's native-image
+        # javac/error_prone launchers and ignored by standard javac.
+        '-XDcrFastClassPath',
     ]
 
     # Apply -Xlint:unchecked to Chromium-owned code only. Third-party code

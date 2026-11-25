@@ -15,10 +15,12 @@ _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_ROOT = next(p for p in _THIS_DIR.parents
                  if (p / 'build' / '3pp_common').is_dir())
 sys.path.insert(1, str(_SRC_ROOT / 'build' / '3pp_common'))
+sys.path.insert(1, str(_THIS_DIR / 'launcher'))
 
 import common
 import fetch_github_release
 import graalvm
+import javac_launcher
 
 # Must match GraalVM's major version, since jdk-tools-graalvm mixes GraalVM's
 # java.base with this JDK's jdk.compiler and jdk.jdeps.
@@ -47,7 +49,7 @@ public class JdkToolsMain {
     String[] toolArgs = Arrays.copyOfRange(args, 1, args.length);
     switch (args[0]) {
       case "javac":
-        com.sun.tools.javac.Main.main(toolArgs);
+        JavacLauncher.main(toolArgs);
         break;
       case "javap":
         com.sun.tools.javap.Main.main(toolArgs);
@@ -169,13 +171,19 @@ def _build_native_jdk_tools(jdk_home):
     add_exports = [
         'jdk.jdeps/com.sun.tools.javap',
         'jdk.jdeps/com.sun.tools.jdeps',
-    ]
+    ] + javac_launcher.JAVAC_EXPORTS
     main_src = os.path.join(work_dir, 'JdkToolsMain.java')
     main_classes_dir = os.path.join(work_dir, 'main_classes')
+    javac_launcher.compile_launcher(
+        os.path.join(jdk_home, 'bin', 'javac'), main_classes_dir)
     pathlib.Path(main_src).write_text(_JDK_TOOLS_MAIN_JAVA, encoding='utf-8')
     common.run_cmd(
-        [os.path.join(jdk_home, 'bin', 'javac'), '--add-modules=jdk.jdeps'] +
-        [f'--add-exports={exp}=ALL-UNNAMED' for exp in add_exports] +
+        [
+            os.path.join(jdk_home, 'bin', 'javac'),
+            '--add-modules=jdk.jdeps',
+            '-cp',
+            main_classes_dir,
+        ] + [f'--add-exports={exp}=ALL-UNNAMED' for exp in add_exports] +
         ['-d', main_classes_dir, main_src])
 
     sample_java = os.path.join(work_dir, 'Sample.java')
@@ -230,17 +238,28 @@ def _build_native_jdk_tools(jdk_home):
         # Traced using GraalVM's own jdk.compiler/jdk.jdeps (rather than this
         # JDK's), which is fine so long as their major versions match.
         tracing_args_list=(
-            [['javac'] + javac_args +
-             ['-d', os.path.join(work_dir, 'trace_out'), sample_java]] +
-            sample_tool_cmds(sample_class)),
+            [['javac', '-XDcrFastClassPath'] + javac_args + [
+                '-cp',
+                sample_jar,
+                '-d',
+                os.path.join(work_dir, 'trace_out'),
+                sample_java,
+            ]] + sample_tool_cmds(sample_class)),
         pgo_args_list=[
-            ['javac'] + base_javac_args + [
+            ['javac', '-XDcrFastClassPath'] + base_javac_args + [
                 '-d',
                 os.path.join(work_dir, 'pgo_out'),
                 '--module-source-path',
                 pgo_src_dir,
                 '--module',
                 'jdk.compiler',
+            ],
+            ['javac', '-XDcrFastClassPath'] + javac_args + [
+                '-cp',
+                os.pathsep.join([pgo_jar, sample_jar]),
+                '-d',
+                os.path.join(work_dir, 'pgo_cp_out'),
+                sample_java,
             ],
             # Sample both jar:file:// URLs (jni_zero) and loose .class files
             # (Cronet) rather than `-cp <jar> <class>` which javap resolves
@@ -303,6 +322,12 @@ def _build_native_jdk_tools(jdk_home):
         if not os.path.exists(smoke_class):
             raise RuntimeError('jdk-tools-graalvm javac smoke test failed')
 
+        javac_launcher.smoke_test(
+            [output_path, 'javac', '--release', _MAJOR_VERSION],
+            work_dir,
+            env=env,
+        )
+
         smoke_cmds = (
             [[t, '-version'] for t in ('javac', 'javap', 'jdeps')] +
             sample_tool_cmds(smoke_class))
@@ -353,7 +378,10 @@ def main():
     common.main(
         do_latest=do_latest,
         do_install=do_install,
-        version_deps=['//third_party/jdk/3pp/README.chromium.template'],
+        version_deps=[
+            '//third_party/jdk/3pp/README.chromium.template',
+            '//third_party/jdk/3pp/launcher',
+        ],
         # Used on all platforms (even though only linux uses GraalVM) since
         # DEPS requires the version to be identical across platforms.
         version_strings_func=graalvm.version_strings,

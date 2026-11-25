@@ -21,10 +21,13 @@ import zipfile
 # Inside docker: //path/to/project/install.py
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_ROOT = _THIS_DIR.parents[3 if _THIS_DIR.name == '3pp' else 2]
+_LAUNCHER_DIR = 'third_party/jdk/3pp/launcher'
 
 sys.path.insert(1, str(_SRC_ROOT / 'build' / '3pp_common'))
+sys.path.insert(1, str(_SRC_ROOT / _LAUNCHER_DIR))
 import common
 import graalvm
+import javac_launcher
 import maven
 
 _NULLAWAY_PACKAGE = 'com.uber.nullaway:nullaway'
@@ -158,6 +161,7 @@ def _error_prone_args(xep_flags, extra_args):
         '-XDcompilePolicy=simple',
         '-XDshould-stop.ifError=FLOW',
         '-XDshould-stop.ifNoError=FLOW',
+        '-XDcrFastClassPath',
         '-proc:none',
         ' '.join(['-Xplugin:ErrorProne', '-XepAllErrorsAsWarnings'] +
                  xep_flags),
@@ -168,6 +172,12 @@ def _build_native_image(error_prone_jar, nullaway_jar, plugin_jar,
                         output_path):
     work_dir = os.path.abspath('native_image_inputs')
     os.makedirs(work_dir)
+    graal_home = graalvm.ensure_graalvm()
+    launcher_classes_dir = os.path.join(work_dir, 'launcher_classes')
+    javac_launcher.compile_launcher(
+        os.path.join(graal_home, 'bin', 'javac'),
+        launcher_classes_dir,
+    )
     sample_java = os.path.join(work_dir, 'Sample.java')
     pathlib.Path(sample_java).write_text(_SAMPLE_JAVA, encoding='utf-8')
     # Error Prone finds NullAway & Chromium's checks via ServiceLoader on the
@@ -222,8 +232,8 @@ def _build_native_image(error_prone_jar, nullaway_jar, plugin_jar,
     graalvm.build_native_image(
         error_prone_jar,
         output_path,
-        main_class='com.sun.tools.javac.Main',
-        extra_cp=[nullaway_jar, plugin_jar],
+        main_class='JavacLauncher',
+        extra_cp=[launcher_classes_dir, nullaway_jar, plugin_jar],
         add_exports=_JAVAC_EXPORTS,
         add_opens=_JAVAC_OPENS,
         # Enable all checks so that they are all traced.
@@ -260,7 +270,7 @@ def _build_native_image(error_prone_jar, nullaway_jar, plugin_jar,
 
     # Ensure that Chromium's checks and NullAway are both active.
     output = common.run_cmd(
-        [output_path, '-Djava.home=' + graalvm.ensure_graalvm()] +
+        [output_path, '-Djava.home=' + graal_home] +
         _error_prone_args(
             nullaway_flags,
             common_args + sample_args('smoke_out'),
@@ -274,6 +284,11 @@ def _build_native_image(error_prone_jar, nullaway_jar, plugin_jar,
         if check not in output:
             raise RuntimeError(
                 f'error_prone smoke test did not report {check}:\n{output}')
+
+    javac_launcher.smoke_test(
+        [output_path, '-Djava.home=' + graal_home, '--release', '25'],
+        work_dir,
+    )
 
 
 def _post_process(src_jar_path, dst_jar_path):
@@ -319,7 +334,15 @@ maven.main(
     package='com.google.errorprone:error_prone_core',
     maven_url=maven.APACHE_MAVEN_URL,
     post_process_func=_post_process,
-    runtime_deps=['//' + _PLUGIN_DIR, '//' + _SERVICE_IMPL_JAVA],
-    version_deps=['//' + _PLUGIN_DIR, '//' + _SERVICE_IMPL_JAVA],
+    runtime_deps=[
+        '//' + _PLUGIN_DIR,
+        '//' + _SERVICE_IMPL_JAVA,
+        '//' + _LAUNCHER_DIR,
+    ],
+    version_deps=[
+        '//' + _PLUGIN_DIR,
+        '//' + _SERVICE_IMPL_JAVA,
+        '//' + _LAUNCHER_DIR,
+    ],
     version_strings_func=_version_strings,
 )
