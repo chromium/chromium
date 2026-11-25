@@ -1266,6 +1266,7 @@ public class FullscreenManagerTest {
     @MediumTest
     @Feature({"Fullscreen"})
     @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // https://crbug.com/572787748
     public void testFullscreenPageHeightLegacy() throws Throwable {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE, false);
         Assert.assertTrue(getPersistentFullscreenMode());
