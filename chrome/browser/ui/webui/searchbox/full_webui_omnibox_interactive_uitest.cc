@@ -6368,8 +6368,16 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // Verifies that double-clicking an elided URL in the unfocused WebUI location
 // bar, where the second click unelides the URL and selects only part of it,
 // keeps the dropdown opened by the first click and preserves its matches.
+// TODO(crbug.com/590394492): Flaky on Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_WebUIDoubleClickOnElidedUrlKeepsDropdownOpen \
+  DISABLED_WebUIDoubleClickOnElidedUrlKeepsDropdownOpen
+#else
+#define MAYBE_WebUIDoubleClickOnElidedUrlKeepsDropdownOpen \
+  WebUIDoubleClickOnElidedUrlKeepsDropdownOpen
+#endif
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       WebUIDoubleClickOnElidedUrlKeepsDropdownOpen) {
+                       MAYBE_WebUIDoubleClickOnElidedUrlKeepsDropdownOpen) {
   if (!features::IsWebUILocationBarEnabled()) {
     GTEST_SKIP() << "Only applies to the WebUI location bar.";
   }
