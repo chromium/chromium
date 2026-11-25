@@ -1,0 +1,129 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2024";
+
+package personal_context.proto;
+
+import "components/personal_context/proto/features/common_data.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Request for Project Resume. Currently has no parameters: every request
+// regenerates the user's project cards.
+message ProjectResumeRequest {}
+
+message ProjectResumeResponse {
+  // The user's project cards: projects first, then areas, each sorted by score
+  // descending.
+  repeated ProjectCard cards = 1;
+}
+
+// One Project Resume card: an ongoing project or area of responsibility the
+// user is driving or participating in, grouped from their recent Gmail,
+// Calendar and Drive activity.
+message ProjectCard {
+  // Kind of card.
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    // An effort with a goal or outcome (e.g. a launch).
+    KIND_PROJECT = 1;
+    // An ongoing responsibility without a finish line (e.g. oncall).
+    KIND_AREA = 2;
+  }
+
+  // Current state of the project or area.
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    // Recent activity.
+    STATUS_ACTIVE = 1;
+    // The user is blocked on others or waiting for a reply.
+    STATUS_WAITING = 2;
+    // Activity is tapering and the effort is nearing completion.
+    STATUS_WINDING_DOWN = 3;
+  }
+
+  // An explicit ask waiting on the user ("Needs you").
+  message PendingAction {
+    // Type of the ask.
+    enum Type {
+      TYPE_UNSPECIFIED = 0;
+      // Reply to an email or message.
+      TYPE_REPLY = 1;
+      // Review a change or document.
+      TYPE_REVIEW = 2;
+      // Respond to a document comment or assignment.
+      TYPE_COMMENT = 3;
+      // Make a decision or approve.
+      TYPE_DECISION = 4;
+      // Any other explicit ask.
+      TYPE_OTHER = 5;
+    }
+
+    // Short imperative describing what to do (e.g. "Reply to Alex's quote").
+    string text = 1;
+
+    // Type of the ask.
+    Type type = 2;
+
+    // The references evidencing the ask.
+    repeated SourceReference source_references = 3;
+  }
+
+  // A concrete change in the last 7 days ("What changed").
+  message Highlight {
+    // Short description of the change.
+    string text = 1;
+
+    // The references evidencing the change.
+    repeated SourceReference source_references = 2;
+  }
+
+  // An item to open to resume the work ("Resume").
+  message Resource {
+    // Short reason why the item is useful now (e.g. "latest quote").
+    string reason = 1;
+
+    // The referenced item.
+    SourceReference source_reference = 2;
+  }
+
+  // Model-generated slug for the card (e.g. "kitchen_remodel"), unique within
+  // a response.
+  string card_id = 1;
+
+  // Short title (e.g. "Kitchen remodel").
+  string title = 2;
+
+  // Where the effort stands now.
+  string summary = 3;
+
+  // Kind of card.
+  Kind kind = 4;
+
+  // Current state of the project or area.
+  Status status = 5;
+
+  // Ranking score from 0.0 to 1.0.
+  float score = 6;
+
+  // The user's part in the project (e.g. "You own the offline evals, not the
+  // product").
+  string user_focus = 7;
+
+  // Explicit asks waiting on the user.
+  repeated PendingAction pending_actions = 8;
+
+  // Concrete changes in the last 7 days.
+  repeated Highlight highlights = 9;
+
+  // Items to open to resume the work.
+  repeated Resource resources = 10;
+
+  // All references that belong to the card, most important first.
+  repeated SourceReference source_references = 11;
+
+  // Date of the latest activity on the card.
+  Date last_activity_date = 12;
+}

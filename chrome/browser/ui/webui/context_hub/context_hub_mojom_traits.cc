@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
+#include "components/personal_context/proto/features/common_data.pb.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
@@ -459,6 +460,7 @@ UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
     case personal_context::proto::SourceReference::kSearchQuery:
       return browser::context_hub::mojom::SourceReferenceDataView::Tag::
           kSearchQuery;
+    case personal_context::proto::SourceReference::kCalendarEvent:
     case personal_context::proto::SourceReference::SOURCE_REFERENCE_NOT_SET:
       NOTREACHED();
   }

@@ -143,6 +143,7 @@ message SourceReference {
     DriveFile drive = 3;
     ChromeHistoryEntry chrome_history_entry = 4;
     SearchQuery search_query = 5;
+    CalendarEvent calendar_event = 6;
   }
 }
 
@@ -202,6 +203,16 @@ message ChromeHistoryEntry {
   string title = 2;
   // UTC timestamp of when the page was visited.
   Timestamp visit_timestamp = 3;
+}
+
+// Represents a reference to a Calendar event.
+message CalendarEvent {
+  // Link to the event in the Google Calendar web UI.
+  string event_url = 1;
+  // Title of the event.
+  string title = 2;
+  // Start date or time of the event.
+  DateTime start_time = 3;
 }
 
 // Represents a reference to a Search History query.
