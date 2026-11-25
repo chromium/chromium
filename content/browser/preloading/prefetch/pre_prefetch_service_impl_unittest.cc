@@ -41,8 +41,7 @@ class PrePrefetchServiceImplTest : public testing::Test {
  public:
   PrePrefetchServiceImplTest()
       : test_shared_url_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {}
+            test_url_loader_factory_.GetSafeWeakWrapper()) {}
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -301,9 +300,7 @@ TEST_F(PrePrefetchServiceImplTest,
       true);
 
   auto local_factory = std::make_unique<network::TestURLLoaderFactory>();
-  auto shared_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          local_factory.get());
+  auto shared_factory = local_factory->GetSafeWeakWrapper();
   SetTerminalPrefetchURLLoaderFactoryForTesting(shared_factory.get());
 
   const GURL prefetch_url("https://example.com/prefetch");
@@ -342,9 +339,7 @@ TEST_F(PrePrefetchServiceImplTest,
 TEST_F(PrePrefetchServiceImplTest,
        StartPrePrefetchRequestRefreshesURLLoaderFactoryOnDisconnection) {
   auto local_factory1 = std::make_unique<network::TestURLLoaderFactory>();
-  auto shared_factory1 =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          local_factory1.get());
+  auto shared_factory1 = local_factory1->GetSafeWeakWrapper();
   SetTerminalPrefetchURLLoaderFactoryForTesting(shared_factory1.get());
 
   const GURL prefetch_url("https://example.com/prefetch");
@@ -362,9 +357,7 @@ TEST_F(PrePrefetchServiceImplTest,
   // The pending factory on `PrePrefetchServiceCore` is not updated and thus
   // still disconnected.
   auto local_factory2 = std::make_unique<network::TestURLLoaderFactory>();
-  auto shared_factory2 =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          local_factory2.get());
+  auto shared_factory2 = local_factory2->GetSafeWeakWrapper();
   SetTerminalPrefetchURLLoaderFactoryForTesting(shared_factory2.get());
 
   // Destroy the first factory to close the pipe.
