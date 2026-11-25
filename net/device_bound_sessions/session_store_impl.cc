@@ -103,6 +103,70 @@ bool SetWrappedSigningKey(const UnexportableKeyService& key_service,
   return true;
 }
 
+// Sets the wrapped attestation key of `session_proto` from
+// `attestation_key_id` and returns the outcome. `site_proto` is the stored
+// entry of the session's site.
+SessionStoreImpl::AttestationKeySaveOutcome SetWrappedAttestationKey(
+    const UnexportableKeyService& key_service,
+    const proto::SiteSessions& site_proto,
+    const Session::MaybeAttestationKeyIdOrError& attestation_key_id,
+    SessionStore::SaveSessionMode mode,
+    proto::Session& session_proto) {
+  using AttestationKeySaveOutcome = SessionStoreImpl::AttestationKeySaveOutcome;
+
+  // The in-memory session indicates the attestation key is not yet loaded into
+  // the TPM by returning `ServiceError::kKeyNotReady`.
+  //
+  // During a session refresh (`kRefresh`), the refreshed session is expected
+  // to reuse the same attestation key. Since loading it is an expensive
+  // operation, we delay loading it until it is actually needed, and in the
+  // meantime, we preserve the existing wrapped key by copying it from the
+  // database entry of the old session.
+  //
+  // If this is a new session (`kNewSession`), key preservation is disabled to
+  // avoid leaking a key between two independent sessions.
+  if (mode == SessionStore::SaveSessionMode::kRefresh &&
+      attestation_key_id == base::unexpected(ServiceError::kKeyNotReady)) {
+    // A stored site always has at least one session, so an empty `site_proto`
+    // means that the site isn't stored.
+    if (site_proto.sessions().empty()) {
+      return AttestationKeySaveOutcome::kKeyNotReadyNoSiteInDb;
+    }
+
+    const proto::Session* old_session =
+        base::FindOrNull(site_proto.sessions(), session_proto.id());
+    if (!old_session || !old_session->has_wrapped_attestation_key()) {
+      return old_session ? AttestationKeySaveOutcome::kKeyNotReadyNoOldKeyToCopy
+                         : AttestationKeySaveOutcome::kKeyNotReadyNoSessionInDb;
+    }
+
+    session_proto.set_wrapped_attestation_key(
+        old_session->wrapped_attestation_key());
+    return AttestationKeySaveOutcome::kKeyNotReadyCopiedOldKey;
+  }
+
+  // Unexpected error (e.g. kFailure or kKeyNotFound).
+  ASSIGN_OR_RETURN(
+      std::optional<unexportable_keys::UnexportableAttestationKeyId>
+          maybe_aik_id,
+      attestation_key_id, AttestationKeySaveOutcome::kUnexpectedError);
+
+  // No key is expected (nullopt). Do not set it in the proto (clearing it).
+  if (!maybe_aik_id) {
+    session_proto.clear_wrapped_attestation_key();
+    return AttestationKeySaveOutcome::kNoAttestationKey;
+  }
+
+  // Wrap the attestation key and save it.
+  ASSIGN_OR_RETURN(std::vector<uint8_t> wrapped_attestation_key,
+                   key_service.GetWrappedKey(*maybe_aik_id),
+                   AttestationKeySaveOutcome::kGetWrappedKeyFailure);
+
+  session_proto.set_wrapped_attestation_key(
+      base::as_string_view(wrapped_attestation_key));
+  return AttestationKeySaveOutcome::kSaveSessionKeySuccess;
+}
+
 SessionStoreImpl::DBStatus InitializeOnDbSequence(
     sql::Database* db,
     base::FilePath db_storage_path,
@@ -308,8 +372,9 @@ void SessionStoreImpl::SaveSession(const SchemefulSite& site,
   }
 
   // Handle attestation key if present.
-  AttestationKeySaveOutcome outcome =
-      SetWrappedAttestationKey(site, session, session_proto, mode);
+  AttestationKeySaveOutcome outcome = SetWrappedAttestationKey(
+      *key_service_, site_proto,
+      session.maybe_unexportable_attestation_key_id(), mode, session_proto);
   base::UmaHistogramEnumeration(
       "Net.DeviceBoundSessions.AttestationKeySaveOutcome", outcome);
 
@@ -317,68 +382,6 @@ void SessionStoreImpl::SaveSession(const SchemefulSite& site,
       std::move(session_proto);
 
   session_data_->UpdateData(site_str, site_proto);
-}
-
-SessionStoreImpl::AttestationKeySaveOutcome
-SessionStoreImpl::SetWrappedAttestationKey(const SchemefulSite& site,
-                                           const Session& session,
-                                           proto::Session& session_proto,
-                                           SessionStore::SaveSessionMode mode) {
-  const auto& maybe_aik_id_or_error =
-      session.maybe_unexportable_attestation_key_id();
-
-  // The in-memory session indicates the attestation key is not yet loaded into
-  // the TPM by returning `ServiceError::kKeyNotReady`.
-  //
-  // During a session refresh (`kRefresh`), the refreshed session is expected
-  // to reuse the same attestation key. Since loading it is an expensive
-  // operation, we delay loading it until it is actually needed, and in the
-  // meantime, we preserve the existing wrapped key by copying it from the
-  // database entry of the old session.
-  //
-  // If this is a new session (`kNewSession`), key preservation is disabled to
-  // avoid leaking a key between two independent sessions.
-  if (mode == SessionStore::SaveSessionMode::kRefresh &&
-      maybe_aik_id_or_error == base::unexpected(ServiceError::kKeyNotReady)) {
-    proto::SiteSessions old_site_proto;
-    if (!session_data_->TryGetData(site.Serialize(), &old_site_proto)) {
-      return AttestationKeySaveOutcome::kKeyNotReadyNoSiteInDb;
-    }
-
-    const proto::Session* old_session =
-        base::FindOrNull(old_site_proto.sessions(), *session.id());
-    if (!old_session || !old_session->has_wrapped_attestation_key()) {
-      return old_session ? AttestationKeySaveOutcome::kKeyNotReadyNoOldKeyToCopy
-                         : AttestationKeySaveOutcome::kKeyNotReadyNoSessionInDb;
-    }
-
-    session_proto.set_wrapped_attestation_key(
-        old_session->wrapped_attestation_key());
-    return AttestationKeySaveOutcome::kKeyNotReadyCopiedOldKey;
-  }
-
-  // Unexpected error (e.g. kFailure or kKeyNotFound).
-  ASSIGN_OR_RETURN(
-      std::optional<unexportable_keys::UnexportableAttestationKeyId>
-          maybe_aik_id,
-      maybe_aik_id_or_error,
-      [](auto) { return AttestationKeySaveOutcome::kUnexpectedError; });
-
-  // No key is expected (nullopt). Do not set it in the proto (clearing it).
-  if (!maybe_aik_id) {
-    session_proto.clear_wrapped_attestation_key();
-    return AttestationKeySaveOutcome::kNoAttestationKey;
-  }
-
-  // Wrap the attestation key and save it.
-  ASSIGN_OR_RETURN(std::vector<uint8_t> wrapped_attestation_key,
-                   key_service_->GetWrappedKey(*maybe_aik_id), [](auto) {
-                     return AttestationKeySaveOutcome::kGetWrappedKeyFailure;
-                   });
-
-  session_proto.set_wrapped_attestation_key(
-      base::as_string_view(wrapped_attestation_key));
-  return AttestationKeySaveOutcome::kSaveSessionKeySuccess;
 }
 
 void SessionStoreImpl::DeleteSession(const SessionKey& key) {

@@ -158,14 +158,6 @@ class NET_EXPORT SessionStoreImpl : public SessionStore {
   std::optional<proto::Session> GetSessionProto(
       const SessionKey& session_key) const;
 
-  // Helper function to handle attestation key serialization. Returns the
-  // outcome.
-  AttestationKeySaveOutcome SetWrappedAttestationKey(
-      const SchemefulSite& site,
-      const Session& session,
-      proto::Session& session_proto,
-      SessionStore::SaveSessionMode mode);
-
   void StartGarbageCollection();
   void OnGetAllKeysForGarbageCollection(
       unexportable_keys::ServiceErrorOr<
