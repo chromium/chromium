@@ -191,7 +191,8 @@ bool IsNamespaceIdValid(const std::string& namespace_id) {
   std::string namespace_uuid_string = namespace_id;
   std::ranges::replace(namespace_uuid_string, '_', '-');
 
-  base::Uuid namespace_uuid = base::Uuid::ParseLowercase(namespace_uuid_string);
+  base::Uuid namespace_uuid =
+      base::Uuid::ParseCaseInsensitive(namespace_uuid_string);
   return namespace_uuid.is_valid();
 }
 

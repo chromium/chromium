@@ -2999,6 +2999,24 @@ TEST_P(SessionStorageImplTest, DeleteAfterCloneWithoutMojoClone) {
   EXPECT_EQ(1ul, data.size());
 }
 
+TEST_P(SessionStorageImplTest, UppercaseNamespaceIdPersists) {
+  const std::string namespace_id = "36356E0B_1627_4492_A474_DB76A8996BED";
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("https://example.com");
+
+  session_storage()->CreateNamespace(namespace_id);
+  FlushMojo();
+  ASSERT_FALSE(bad_message_called_);
+
+  DoTestPut(namespace_id, storage_key, "key", "value",
+            /*should_persist=*/true);
+  ShutDownSessionStorage();
+
+  EXPECT_EQ(DoTestGet(namespace_id, storage_key, "key"),
+            StringViewToUint8Vector("value"));
+  EXPECT_FALSE(bad_message_called_);
+}
+
 // Regression test for https://crbug.com/574512015.
 TEST_P(SessionStorageImplTest,
        InvalidNamespaceDeletionDoesNotLeakDataAcrossOrigins) {

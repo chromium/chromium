@@ -38,6 +38,29 @@ std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
 
+TEST(SessionStorageNamespaceIdTest, ValidNamespaceIds) {
+  for (const char* namespace_id : {
+           "36356e0b_1627_4492_a474_db76a8996bed",
+           "36356E0B_1627_4492_A474_DB76A8996BED",
+           "36356e0B_1627_4492_A474_db76A8996bEd",
+       }) {
+    EXPECT_TRUE(IsNamespaceIdValid(namespace_id)) << namespace_id;
+  }
+}
+
+TEST(SessionStorageNamespaceIdTest, InvalidNamespaceIds) {
+  for (const char* namespace_id : {
+           "",
+           "36356E0B_1627_4492_A474_DB76A8996BE",
+           "36356E0B_1627_4492_A474_DB76A8996BED0",
+           "36356E0B-1627-4492-A474-DB76A8996BED",
+           "36356E0B_1627_4492-A474_DB76A8996BED",
+           "36356E0B_1627_4492_A474_DB76A8996BEG",
+       }) {
+    EXPECT_FALSE(IsNamespaceIdValid(namespace_id)) << namespace_id;
+  }
+}
+
 class SessionStorageMetadataTest : public base::test::WithFeatureOverride,
                                    public testing::Test {
  public:
