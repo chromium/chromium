@@ -258,19 +258,19 @@ std::unique_ptr<views::StyledLabel> CreateIdpLinksLabel(
 
   // Add the links in the same order as they appear in `resource_id`.
   std::vector<views::Link::ClickedCallback> link_callbacks;
-  auto add_link = [&](const GURL& url) {
+  auto add_link = [&](LinkType link_type, const GURL& url) {
     link_callbacks.push_back(
         base::BindRepeating(&FedCmAccountSelectionView::OnLinkClicked,
-                            base::Unretained(owner), LinkType::IDP_LINK, url));
+                            base::Unretained(owner), link_type, url));
   };
   if (has_account_management) {
-    add_link(metadata.account_management_url);
+    add_link(LinkType::IDP_ACCOUNT_MANAGEMENT, metadata.account_management_url);
   }
   if (has_privacy_policy) {
-    add_link(metadata.privacy_policy_url);
+    add_link(LinkType::IDP_PRIVACY_POLICY, metadata.privacy_policy_url);
   }
   if (has_terms_of_service) {
-    add_link(metadata.terms_of_service_url);
+    add_link(LinkType::IDP_TERMS_OF_SERVICE, metadata.terms_of_service_url);
   }
 
   auto label = std::make_unique<views::StyledLabel>();

@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -1121,6 +1122,57 @@ IN_PROC_BROWSER_TEST_F(FedCmIdpLinksBrowserTest,
   // selects the account.
   EXPECT_TRUE(account_selection_view_->OnAccountSelected(accounts_[0], event));
   EXPECT_TRUE(account_selected.IsReady());
+}
+
+// Tests that clicks on the RP's and the identity provider's links in the modal
+// dialog that replaced the bubble each record their own histogram. The test
+// calls `OnLinkClicked()`, which the links call when clicked;
+// `AccountSelectionModalViewIdpLinksTest.ClickIdpLinks` clicks the links
+// themselves.
+IN_PROC_BROWSER_TEST_F(FedCmIdpLinksBrowserTest, LinkClicksAreRecorded) {
+  ShowAccounts(browser(), /*requires_disclosure=*/true);
+  content::ClientMetadata& client_metadata = idps_[0]->client_metadata;
+  client_metadata.privacy_policy_url = GURL("https://rp-example.com/privacy");
+  client_metadata.terms_of_service_url = GURL("https://rp-example.com/terms");
+  content::IdentityProviderMetadata& metadata = idps_[0]->idp_metadata;
+  metadata.account_management_url = GURL("https://idp-example.com/account");
+  metadata.privacy_policy_url = GURL("https://idp-example.com/privacy");
+  metadata.terms_of_service_url = GURL("https://idp-example.com/terms");
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::PointF(),
+                             gfx::PointF(), base::TimeTicks::Now(),
+                             ui::EF_LEFT_MOUSE_BUTTON, 0);
+  ASSERT_TRUE(account_selection_view_->OnAccountSelected(accounts_[0], event));
+
+  using LinkType = content::IdentityRequestDialogController::LinkType;
+  struct LinkExpectation {
+    LinkType link_type;
+    GURL url;
+    const char* histogram;
+  };
+  const LinkExpectation expectations[] = {
+      {LinkType::PRIVACY_POLICY, client_metadata.privacy_policy_url,
+       "Blink.FedCm.SignUp.PrivacyPolicyClicked"},
+      {LinkType::TERMS_OF_SERVICE, client_metadata.terms_of_service_url,
+       "Blink.FedCm.SignUp.TermsOfServiceClicked"},
+      {LinkType::IDP_ACCOUNT_MANAGEMENT, metadata.account_management_url,
+       "Blink.FedCm.SignUp.IdpAccountManagementClicked"},
+      {LinkType::IDP_PRIVACY_POLICY, metadata.privacy_policy_url,
+       "Blink.FedCm.SignUp.IdpPrivacyPolicyClicked"},
+      {LinkType::IDP_TERMS_OF_SERVICE, metadata.terms_of_service_url,
+       "Blink.FedCm.SignUp.IdpTermsOfServiceClicked"},
+  };
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  const int rp_tab_index = tab_strip_model->active_index();
+  for (const auto& expectation : expectations) {
+    base::HistogramTester histogram_tester;
+    account_selection_view_->OnLinkClicked(expectation.link_type,
+                                           expectation.url, event);
+    histogram_tester.ExpectUniqueSample(expectation.histogram, true, 1);
+    EXPECT_EQ(
+        histogram_tester.GetTotalCountsForPrefix("Blink.FedCm.SignUp.").size(),
+        1u);
+    tab_strip_model->ActivateTabAt(rp_tab_index);
+  }
 }
 
 class FedCmAccountSelectionViewPopupTest : public PopupTestBase,

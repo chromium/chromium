@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_util.h"
@@ -741,11 +742,24 @@ void FedCmAccountSelectionView::ShowUrl(LinkType link_type, const GURL& url) {
       UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
       break;
 
-    case LinkType::IDP_LINK:
-      // Not recorded, so that the histograms above only count the RP's links.
-      // TODO(crbug.com/581372729): Record clicks on each of the identity
-      // provider's links, and how often the links are shown.
+    // TODO(crbug.com/581372729): Record how often the identity provider's
+    // links are shown, so that these clicks can be turned into click rates.
+    case LinkType::IDP_ACCOUNT_MANAGEMENT:
+      UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.IdpAccountManagementClicked",
+                            true);
       break;
+
+    case LinkType::IDP_PRIVACY_POLICY:
+      UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.IdpPrivacyPolicyClicked", true);
+      break;
+
+    case LinkType::IDP_TERMS_OF_SERVICE:
+      UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.IdpTermsOfServiceClicked",
+                            true);
+      break;
+
+    case LinkType::IDP_LINK:
+      NOTREACHED();
   }
 }
 

@@ -1625,36 +1625,42 @@ IN_PROC_BROWSER_TEST_P(AccountSelectionModalViewIdpLinksTest,
 }
 
 // Tests that each of the identity provider's links opens its URL in a new
-// foreground tab, without recording the RP's link metrics.
+// foreground tab and records its own histogram, without recording the RP's link
+// histograms.
 IN_PROC_BROWSER_TEST_P(AccountSelectionModalViewIdpLinksTest, ClickIdpLinks) {
-  base::HistogramTester histogram_tester;
   views::View* container = ShowRequestPermissionWithIdpLinks(
       kIdpAccountManagementUrl, kIdpPrivacyPolicyUrl, kIdpTermsOfServiceUrl);
   ASSERT_EQ(container->children().size(), 2u);
   views::StyledLabel* label = GetRowLabel(container->children()[1]);
   ASSERT_TRUE(label);
   std::vector<views::LinkFragment*> links = GetLinks(label);
-  const std::array<const char*, 3> expected_urls = {
-      kIdpAccountManagementUrl, kIdpPrivacyPolicyUrl, kIdpTermsOfServiceUrl};
-  ASSERT_EQ(links.size(), expected_urls.size());
+  const std::array<std::pair<const char*, const char*>, 3> expected_links = {{
+      {kIdpAccountManagementUrl,
+       "Blink.FedCm.SignUp.IdpAccountManagementClicked"},
+      {kIdpPrivacyPolicyUrl, "Blink.FedCm.SignUp.IdpPrivacyPolicyClicked"},
+      {kIdpTermsOfServiceUrl, "Blink.FedCm.SignUp.IdpTermsOfServiceClicked"},
+  }};
+  ASSERT_EQ(links.size(), expected_links.size());
   AcceptAllInput();
 
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   const int rp_tab_index = tab_strip_model->active_index();
   for (size_t i = 0; i < links.size(); ++i) {
+    base::HistogramTester histogram_tester;
     links[i]->OnKeyPressed(
         ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_SPACE, ui::EF_NONE));
+    const auto& [expected_url, expected_histogram] = expected_links[i];
     EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetVisibleURL(),
-              GURL(expected_urls[i]));
+              GURL(expected_url));
+    histogram_tester.ExpectUniqueSample(expected_histogram, true, 1);
+    EXPECT_EQ(
+        histogram_tester.GetTotalCountsForPrefix("Blink.FedCm.SignUp.").size(),
+        1u);
     tab_strip_model->ActivateTabAt(rp_tab_index);
   }
   // The RP's tab, plus one tab per link.
   EXPECT_EQ(static_cast<size_t>(tab_strip_model->count()),
-            expected_urls.size() + 1);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.SignUp.PrivacyPolicyClicked",
-                                    0);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.SignUp.TermsOfServiceClicked",
-                                    0);
+            expected_links.size() + 1);
 }
 
 }  //  namespace webid

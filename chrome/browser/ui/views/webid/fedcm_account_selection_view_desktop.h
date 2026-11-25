@@ -217,7 +217,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const content::IdentityRequestAccount& account) const;
 
   // Called when the user clicks the RP's "privacy policy" or "terms of service"
-  // link, or one of the identity provider's links (`LinkType::IDP_LINK`).
+  // link, or one of the identity provider's links.
   void OnLinkClicked(
       content::IdentityRequestDialogController::LinkType link_type,
       const GURL& url,

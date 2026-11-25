@@ -230,10 +230,15 @@ class CONTENT_EXPORT IdentityRequestDialogController {
     // The RP's privacy policy and terms of service.
     PRIVACY_POLICY,
     TERMS_OF_SERVICE,
-    // Any of the identity provider's links: its account management page,
-    // privacy policy or terms of service.
-    // TODO(crbug.com/581372729): Replace with one value per link, so that
-    // ShowUrl() and DevTools can tell the links apart, e.g. for metrics.
+    // The identity provider's account management page, privacy policy and
+    // terms of service.
+    // TODO(crbug.com/590120554): Support these in DevTools' `FedCm.openUrl`.
+    IDP_ACCOUNT_MANAGEMENT,
+    IDP_PRIVACY_POLICY,
+    IDP_TERMS_OF_SERVICE,
+    // Legacy value kept temporarily while Android migrates to the per-link
+    // values above.
+    // TODO(crbug.com/581372729): Remove once Android uses the per-link values.
     IDP_LINK,
   };
 
