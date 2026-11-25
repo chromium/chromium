@@ -107,9 +107,6 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
                                  gpu::SharedImageUsageSet usage,
                                  std::string_view debug_label,
                                  gpu::SurfaceHandle surface_handle) override;
-  gpu::Mailbox CreateSolidColorSharedImage(
-      const SkColor4f& color,
-      const gfx::ColorSpace& color_space) override;
   void DestroySharedImage(const gpu::Mailbox& mailbox) override;
   const std::vector<gpu::Mailbox>& destroyed_mailboxes() const {
     return destroyed_mailboxes_;

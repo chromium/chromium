@@ -2727,29 +2727,6 @@ void SkiaOutputSurfaceImplOnGpu::CreateSharedImage(
   skia_representations_.emplace(mailbox, nullptr);
 }
 
-void SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage(
-    gpu::Mailbox mailbox,
-    const SkColor4f& color,
-    const gfx::ColorSpace& color_space) {
-  gfx::Size size(1, 1);
-  // Premultiply the SkColor4f to support transparent quads.
-  SkColor4f premul{color[0] * color[3], color[1] * color[3],
-                   color[2] * color[3], color[3]};
-  const uint32_t premul_rgba_bytes = premul.toBytes_RGBA();
-  uint32_t premul_bytes = premul_rgba_bytes;
-  auto pixel_span = base::byte_span_from_ref(premul_bytes);
-
-  shared_image_factory_->CreateSharedImage(
-      mailbox,
-      gpu::SharedImageInfo(SinglePlaneFormat::kRGBA_8888, size, color_space,
-                           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                           gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-                           "SkiaSolidColor"),
-      pixel_span);
-  solid_color_images_.insert(mailbox);
-}
-
 void SkiaOutputSurfaceImplOnGpu::DestroySharedImage(gpu::Mailbox mailbox) {
   shared_image_factory_->DestroySharedImage(mailbox);
   // Under normal circumstances the write access should be destroyed already in
@@ -2758,7 +2735,6 @@ void SkiaOutputSurfaceImplOnGpu::DestroySharedImage(gpu::Mailbox mailbox) {
   DCHECK(!overlay_pass_accesses_.contains(mailbox) || context_is_lost_);
   overlay_pass_accesses_.erase(mailbox);
   skia_representations_.erase(mailbox);
-  solid_color_images_.erase(mailbox);
 }
 
 void SkiaOutputSurfaceImplOnGpu::SetSharedImagePurgeable(

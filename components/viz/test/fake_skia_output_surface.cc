@@ -390,12 +390,6 @@ gpu::Mailbox FakeSkiaOutputSurface::CreateSharedImage(
   return gpu::Mailbox::Generate();
 }
 
-gpu::Mailbox FakeSkiaOutputSurface::CreateSolidColorSharedImage(
-    const SkColor4f& color,
-    const gfx::ColorSpace& color_space) {
-  return gpu::Mailbox::Generate();
-}
-
 void FakeSkiaOutputSurface::DestroySharedImage(const gpu::Mailbox& mailbox) {
   destroyed_mailboxes_.push_back(mailbox);
 }

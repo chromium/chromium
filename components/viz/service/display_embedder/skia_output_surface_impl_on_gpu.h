@@ -268,9 +268,6 @@ class SkiaOutputSurfaceImplOnGpu
                          gpu::SharedImageUsageSet usage,
                          std::string debug_label,
                          gpu::SurfaceHandle surface_handle);
-  void CreateSolidColorSharedImage(gpu::Mailbox mailbox,
-                                   const SkColor4f& color,
-                                   const gfx::ColorSpace& color_space);
   void DestroySharedImage(gpu::Mailbox mailbox);
   void SetSharedImagePurgeable(const gpu::Mailbox& mailbox, bool purgeable);
 
@@ -619,10 +616,6 @@ class SkiaOutputSurfaceImplOnGpu
   base::circular_deque<std::pair<GrBackendSemaphore,
                                  base::OnceCallback<void(gfx::GpuFenceHandle)>>>
       pending_release_fence_cbs_;
-
-  // A cache of solid color image mailboxes so we can destroy them in the
-  // destructor.
-  base::flat_set<gpu::Mailbox> solid_color_images_;
 
   THREAD_CHECKER(thread_checker_);
 

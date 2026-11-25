@@ -1642,20 +1642,6 @@ gpu::Mailbox SkiaOutputSurfaceImpl::CreateSharedImage(
   return mailbox;
 }
 
-gpu::Mailbox SkiaOutputSurfaceImpl::CreateSolidColorSharedImage(
-    const SkColor4f& color,
-    const gfx::ColorSpace& color_space) {
-  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
-
-  auto task = base::BindOnce(
-      &SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage,
-      base::Unretained(impl_on_gpu_.get()), mailbox, color, color_space);
-  EnqueueGpuTask(std::move(task), {}, /*make_current=*/true,
-                 /*need_framebuffer=*/false);
-
-  return mailbox;
-}
-
 void SkiaOutputSurfaceImpl::DestroySharedImage(const gpu::Mailbox& mailbox) {
   TRACE_EVENT("viz", "SkiaOutputSurfaceImpl::DestroySharedImage", "mailbox",
               mailbox.ToDebugString());

@@ -193,11 +193,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
                                          std::string_view debug_label,
                                          gpu::SurfaceHandle surface_handle) = 0;
 
-  // Enqueue a GPU task to create a 1x1 shared image of the specified color.
-  virtual gpu::Mailbox CreateSolidColorSharedImage(
-      const SkColor4f& color,
-      const gfx::ColorSpace& color_space) = 0;
-
   // Enqueue a GPU task to delete the specified shared image.
   virtual void DestroySharedImage(const gpu::Mailbox& mailbox) = 0;
 
