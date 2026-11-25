@@ -25,6 +25,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.LayoutInflaterUtils;
@@ -285,19 +286,29 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
                 .setDuration(ENTER_EXIT_ANIMATION_DURATION_MS)
                 .alpha(1f)
                 .setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR)
+                // onEnd() doesn't run when runExitAnimation() cancels this animation, so a dialog
+                // being dismissed doesn't take focus or become important for accessibility again.
                 .setListener(
-                        new AnimatorListenerAdapter() {
+                        new CancelAwareAnimatorListener() {
                             @Override
-                            public void onAnimationStart(Animator animation) {
+                            public void onStart(Animator animation) {
                                 assumeNonNull(mDialogView)
                                         .onEnterAnimationStarted(animation.getDuration());
                             }
 
                             @Override
                             @SuppressWarnings("AccessibilityFocus")
-                            public void onAnimationEnd(Animator animation) {
+                            public void onEnd(Animator animation) {
                                 if (mDialogView != null) {
                                     updateContainerHierarchy(true);
+                                    // Take keyboard focus only if the dialog came to the front,
+                                    // which marks it important for accessibility. A subclass can
+                                    // keep it behind, e.g. while the URL bar has focus.
+                                    if (mDialogView.getImportantForAccessibility()
+                                                    == View.IMPORTANT_FOR_ACCESSIBILITY_YES
+                                            && !mDialogView.hasFocus()) {
+                                        mDialogView.requestFocus();
+                                    }
                                     mDialogView.post(
                                             () -> {
                                                 if (mDialogView != null) {
