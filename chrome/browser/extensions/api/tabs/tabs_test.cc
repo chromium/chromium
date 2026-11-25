@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -6633,6 +6634,112 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   EXPECT_EQ(0, result.FindInt("index"));
   EXPECT_EQ(true, result.FindBool("active"));
   EXPECT_EQ(true, result.FindBool("highlighted"));
+}
+
+// Verifies that WindowsEventRouter::OnWindowFocusChanged() only clears the
+// focused window when the unfocused WindowController is the currently focused
+// window in the router's profile, preventing out-of-order or cross-profile
+// focus-loss notifications from clobbering another active window.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionTabsTest,
+    WindowsEventRouter_FocusLossDoesNotClobberOtherActiveWindow) {
+  ASSERT_NE(nullptr, TabsWindowsAPI::Get(profile())->windows_event_router());
+
+  // windows.onFocusChanged is only broadcast while a listener is registered.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("WindowsFocusStandaloneTest").Build();
+  EventRouter* event_router = EventRouter::Get(profile());
+  content::RenderProcessHost* process =
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetProcess();
+  event_router->AddEventListenerForURL(api::windows::OnFocusChanged::kEventName,
+                                       process, extension->url());
+
+  TestEventRouterObserver event_observer(event_router);
+
+  // Focus events only use the controllers' window IDs and profiles.
+  const SessionID window_id_1 = SessionID::NewUnique();
+  const SessionID window_id_2 = SessionID::NewUnique();
+  TestStandaloneWindowController controller_1(
+      /*base_window=*/nullptr, profile(), window_id_1,
+      /*web_contents=*/nullptr);
+  TestStandaloneWindowController controller_2(
+      /*base_window=*/nullptr, profile(), window_id_2,
+      /*web_contents=*/nullptr);
+
+  TestingProfile other_profile;
+  const SessionID other_window_id = SessionID::NewUnique();
+  TestStandaloneWindowController other_controller(
+      /*base_window=*/nullptr, &other_profile, other_window_id,
+      /*web_contents=*/nullptr);
+
+  // Returns the window ID the last windows.onFocusChanged event would deliver
+  // to `extension`. The arguments are computed per listener by the event's
+  // `will_dispatch_callback`.
+  auto last_focused_window_id = [&]() -> std::optional<int> {
+    auto it =
+        event_observer.events().find(api::windows::OnFocusChanged::kEventName);
+    if (it == event_observer.events().end()) {
+      return std::nullopt;
+    }
+    std::optional<base::ListValue> args_out;
+    mojom::EventFilteringInfoPtr event_filtering_info_out;
+    if (!it->second->will_dispatch_callback.Run(
+            profile(), mojom::ContextType::kPrivilegedExtension,
+            extension.get(), /*listener_filter=*/nullptr, args_out,
+            event_filtering_info_out,
+            /*dispatch_separate_event_out=*/nullptr) ||
+        !args_out || args_out->empty()) {
+      return std::nullopt;
+    }
+    return (*args_out)[0].GetIfInt();
+  };
+  auto has_focus_event = [&]() {
+    return event_observer.events().contains(
+        api::windows::OnFocusChanged::kEventName);
+  };
+
+  // Focus `controller_1`.
+  event_observer.ClearEvents();
+  controller_1.NotifyWindowFocusChanged(/*has_focus=*/true);
+  EXPECT_EQ(window_id_1.id(), last_focused_window_id());
+
+  // Simulate out-of-order focus delivery: `controller_2` activates before
+  // `controller_1` reports focus loss. `controller_1` losing focus must not
+  // overwrite `focused_window_id_` to WINDOW_ID_NONE.
+  event_observer.ClearEvents();
+  controller_2.NotifyWindowFocusChanged(/*has_focus=*/true);
+  EXPECT_EQ(window_id_2.id(), last_focused_window_id());
+
+  event_observer.ClearEvents();
+  controller_1.NotifyWindowFocusChanged(/*has_focus=*/false);
+  EXPECT_FALSE(has_focus_event());
+
+  // Cross-profile focus loss must also not clobber `controller_2`.
+  event_observer.ClearEvents();
+  other_controller.NotifyWindowFocusChanged(/*has_focus=*/false);
+  EXPECT_FALSE(has_focus_event());
+
+  // Focusing the currently focused `controller_2` again is deduplicated, which
+  // also confirms `focused_window_id_` remained `window_id_2`.
+  event_observer.ClearEvents();
+  controller_2.NotifyWindowFocusChanged(/*has_focus=*/true);
+  EXPECT_FALSE(has_focus_event());
+
+  // When the currently focused `controller_2` itself loses focus, the router
+  // dispatches WINDOW_ID_NONE.
+  event_observer.ClearEvents();
+  controller_2.NotifyWindowFocusChanged(/*has_focus=*/false);
+  EXPECT_EQ(extension_misc::kUnknownWindowId, last_focused_window_id());
+
+  // Cross-profile focus gain transitions a focused window in `profile()` to
+  // WINDOW_ID_NONE.
+  controller_1.NotifyWindowFocusChanged(/*has_focus=*/true);
+  event_observer.ClearEvents();
+  other_controller.NotifyWindowFocusChanged(/*has_focus=*/true);
+  EXPECT_EQ(extension_misc::kUnknownWindowId, last_focused_window_id());
+
+  event_router->RemoveEventListenerForURL(
+      api::windows::OnFocusChanged::kEventName, process, extension->url());
 }
 
 }  // namespace extensions

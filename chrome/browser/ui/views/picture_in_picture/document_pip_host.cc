@@ -1242,8 +1242,8 @@ void DocumentPipHost::RemoveObserver(
 void DocumentPipHost::OnWidgetActivationChanged(views::Widget* widget,
                                                 bool active) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (window_controller_) {
-    window_controller_->NotifyWindowFocusChanged(active);
+  if (active && window_controller_) {
+    window_controller_->NotifyWindowFocusChanged(/*has_focus=*/true);
   }
 #endif
   if (!active || !restore_focus_on_activation_) {
