@@ -518,7 +518,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ukey2
   # and whatever else without interference from each other.
-  'ukey2_revision': '0275885d8e6038c39b8a8ca55e75d1d4d1727f47',
+  'ukey2_revision': '10fc737aa901e873a3367e7e26b88eb01cd55d69',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.

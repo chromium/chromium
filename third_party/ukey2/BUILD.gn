@@ -24,6 +24,8 @@ proto_library("proto") {
 config("ukey2_config") {
   include_dirs = [
     "$root_gen_dir/third_party/ukey2",
+    "$root_gen_dir/third_party/ukey2/proto",
+    "src",
     "src/src/main/cpp/include",
   ]
 }
@@ -47,6 +49,7 @@ source_set("ukey2") {
 
   public_deps = [
     ":proto",
+    "//third_party/abseil-cpp:absl",
     "//third_party/securemessage",
     "//third_party/securemessage:securemessage_cpp_protobuf",
     "//third_party/securemessage:securemessage_openssl",
