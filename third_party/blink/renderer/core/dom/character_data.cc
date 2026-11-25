@@ -77,7 +77,7 @@ String CharacterData::substringData(unsigned offset,
   return data().substr(offset, count);
 }
 
-void CharacterData::ParserAppendData(const String& data) {
+void CharacterData::ParserAppendData(const StringView& data) {
   String new_str = StrCat({this->data(), data});
 
   SetDataAndUpdate(new_str,

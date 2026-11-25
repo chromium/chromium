@@ -987,7 +987,7 @@ bool XMLDocumentParserRs::UpdateLeafTextNode() {
     return true;
   }
 
-  leaf_text_node_->ParserAppendData(buffered_text_.ToString());
+  leaf_text_node_->ParserAppendData(buffered_text_);
   buffered_text_.Clear();
   leaf_text_node_ = nullptr;
 

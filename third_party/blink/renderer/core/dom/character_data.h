@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -65,7 +66,7 @@ class CORE_EXPORT CharacterData : public Node {
 
   bool ContainsOnlyWhitespaceOrEmpty() const;
 
-  void ParserAppendData(const String&);
+  void ParserAppendData(const StringView&);
 
  protected:
   CharacterData(TreeScope& tree_scope,
