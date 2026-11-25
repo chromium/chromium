@@ -40,6 +40,10 @@ using InstallerAttribute = std::pair<std::string, std::string>;
 // Returns true if the |status_code| represents a server error 5xx.
 bool IsHttpServerError(int status_code);
 
+// Returns the milliseconds elapsed since `start`, rounded down, or 0 if `start`
+// is later than now.
+uint64_t ElapsedMillisecondsSince(base::TimeTicks start);
+
 // Deletes the file and its directory, if the directory is empty. If the
 // parent directory is not empty, the function ignores deleting the directory.
 // Returns true if the file and the empty directory are deleted,

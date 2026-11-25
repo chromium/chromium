@@ -58,9 +58,9 @@ class FailingSuccessorDownloader : public CrxDownloader {
 
   CancelCallback DoStartDownload(const GURL& url) override {
     ADD_FAILURE() << "Successor started after cancellation: " << url;
-    DownloadMetrics metrics;
-    metrics.url = url;
-    metrics.error = std::to_underlying(CrxDownloaderError::GENERIC_ERROR);
+    const DownloadMetrics metrics = {
+        .url = url,
+        .error = std::to_underlying(CrxDownloaderError::GENERIC_ERROR)};
     OnDownloadComplete(/*is_handled=*/true, {.error = metrics.error}, metrics);
     return base::DoNothing();
   }
@@ -88,17 +88,13 @@ class ControlledDownloader : public CrxDownloader {
   // Fails the attempt in progress with `error`. The URL is not handled, so
   // the download may go on with the next URL or the successor downloader.
   void FailAttempt(int error) {
-    DownloadMetrics metrics;
-    metrics.url = url();
-    metrics.error = error;
-    OnDownloadComplete(/*is_handled=*/false, {.error = error}, metrics);
+    OnDownloadComplete(/*is_handled=*/false, {.error = error},
+                       {.url = url(), .error = error});
   }
 
   // Completes the attempt in progress with the downloaded file at `path`.
   void SucceedAttempt(const base::FilePath& path) {
-    DownloadMetrics metrics;
-    metrics.url = url();
-    OnDownloadComplete(/*is_handled=*/true, {.response = path}, metrics);
+    OnDownloadComplete(/*is_handled=*/true, {.response = path}, {.url = url()});
   }
 
   // Sets a callback to run when the next attempt starts.
@@ -128,9 +124,9 @@ class ControlledDownloader : public CrxDownloader {
     if (!completes_on_cancel_) {
       return;
     }
-    DownloadMetrics metrics;
-    metrics.url = url();
-    metrics.error = std::to_underlying(CrxDownloaderError::CANCELLED);
+    const DownloadMetrics metrics = {
+        .url = url(),
+        .error = std::to_underlying(CrxDownloaderError::CANCELLED)};
     OnDownloadComplete(/*is_handled=*/true, {.error = metrics.error}, metrics);
   }
 

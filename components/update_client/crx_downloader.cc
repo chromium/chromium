@@ -94,10 +94,9 @@ CancelCallback CrxDownloader::StartDownload(
   }
 
   if (error != CrxDownloaderError::NONE) {
-    Result result;
-    result.error = static_cast<int>(error);
     main_task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(download_callback), result));
+        FROM_HERE, base::BindOnce(std::move(download_callback),
+                                  Result{.error = std::to_underlying(error)}));
     return base::DoNothing();
   }
 
@@ -193,7 +192,7 @@ void CrxDownloader::OnDownloadComplete(
               return;
             }
             result.response.clear();
-            result.error = static_cast<int>(error);
+            result.error = std::to_underlying(error);
             download_metrics.error = result.error;
             downloader->main_task_runner()->PostTask(
                 FROM_HERE,
@@ -240,9 +239,8 @@ void CrxDownloader::HandleDownloadError(
   // error. Don't start a new transfer in that case.
   if (is_cancelled_) {
     // The metrics keep the actual error and extra code of the transfer.
-    Result cancelled_result;
-    cancelled_result.error = std::to_underlying(CrxDownloaderError::CANCELLED);
-    FinishDownload(cancelled_result);
+    FinishDownload(
+        {.error = std::to_underlying(CrxDownloaderError::CANCELLED)});
     return;
   }
 

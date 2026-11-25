@@ -37,6 +37,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/time/time.h"
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "components/update_client/task_traits.h"
@@ -568,11 +569,8 @@ void BackgroundDownloader::EndDownload(HRESULT error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
   CheckIsMta();
 
-  const base::TimeTicks download_end_time(base::TimeTicks::Now());
-  const base::TimeDelta download_time =
-      download_end_time >= download_start_time_
-          ? download_end_time - download_start_time_
-          : base::TimeDelta();
+  const uint64_t download_time_ms =
+      ElapsedMillisecondsSince(download_start_time_);
 
   int64_t downloaded_bytes = -1;
   int64_t total_bytes = -1;
@@ -592,16 +590,15 @@ void BackgroundDownloader::EndDownload(HRESULT error) {
 
   const int error_to_report = SUCCEEDED(error) ? 0 : error;
 
-  DownloadMetrics download_metrics;
-  download_metrics.url = url();
-  download_metrics.downloader = DownloadMetrics::kBits;
-  download_metrics.error = error_to_report;
-  download_metrics.downloaded_bytes = downloaded_bytes;
-  download_metrics.total_bytes = total_bytes;
-  download_metrics.download_time_ms = download_time.InMilliseconds();
+  const DownloadMetrics download_metrics = {
+      .url = url(),
+      .downloader = DownloadMetrics::kBits,
+      .error = error_to_report,
+      .downloaded_bytes = downloaded_bytes,
+      .total_bytes = total_bytes,
+      .download_time_ms = download_time_ms};
 
-  Result result;
-  result.error = error_to_report;
+  Result result = {.error = error_to_report};
   if (!result.error) {
     result.response = response_;
   }

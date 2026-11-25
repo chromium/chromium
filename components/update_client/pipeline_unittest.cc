@@ -89,9 +89,9 @@ class RecordingDownloader : public CrxDownloader {
 
   void CancelAttempt(CancelMode mode) {
     cancelled_mode_ = mode;
-    DownloadMetrics metrics;
-    metrics.url = url();
-    metrics.error = std::to_underlying(CrxDownloaderError::CANCELLED);
+    const DownloadMetrics metrics = {
+        .url = url(),
+        .error = std::to_underlying(CrxDownloaderError::CANCELLED)};
     OnDownloadComplete(/*is_handled=*/true, {.error = metrics.error}, metrics);
   }
 

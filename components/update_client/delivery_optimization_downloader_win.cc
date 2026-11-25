@@ -242,9 +242,8 @@ HRESULT FindDownloadsIf(
     Predicate pred,
     const Microsoft::WRL::ComPtr<IDOManager>& do_manager,
     std::vector<Microsoft::WRL::ComPtr<IDODownload>>* downloads) {
-  DO_DOWNLOAD_ENUM_CATEGORY category = {};
-  category.Property = DODownloadProperty_DisplayName;
-  category.Value = kDownloadName;
+  const DO_DOWNLOAD_ENUM_CATEGORY category = {
+      .Property = DODownloadProperty_DisplayName, .Value = kDownloadName};
 
   Microsoft::WRL::ComPtr<IEnumUnknown> enum_downloads;
   HRESULT hr = do_manager->EnumDownloads(&category, &enum_downloads);
@@ -690,11 +689,8 @@ void DeliveryOptimizationDownloader::EndDownload(
   DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
   CheckIsMta();
 
-  const base::TimeTicks download_end_time(base::TimeTicks::Now());
-  const base::TimeDelta download_time =
-      download_end_time >= download_start_time_
-          ? download_end_time - download_start_time_
-          : base::TimeDelta();
+  const uint64_t download_time_ms =
+      ElapsedMillisecondsSince(download_start_time_);
 
   // The byte counts and errors are taken from |last_status_|, which is
   // recorded by |OnDownloading| before dispatching to the state handlers. It
@@ -723,20 +719,19 @@ void DeliveryOptimizationDownloader::EndDownload(
   do_manager_ = nullptr;
 
   const int error_to_report = SUCCEEDED(error) ? 0 : error;
-
-  DownloadMetrics download_metrics;
-  download_metrics.url = url();
-  download_metrics.downloader = DownloadMetrics::kDeliveryOptimization;
-  download_metrics.error = error_to_report;
-  download_metrics.extra_code1 =
+  const int extra_code1 =
       FAILED(error) && extended_error != error ? extended_error : 0;
-  download_metrics.downloaded_bytes = downloaded_bytes_;
-  download_metrics.total_bytes = total_bytes_;
-  download_metrics.download_time_ms = download_time.InMilliseconds();
 
-  Result result;
-  result.error = error_to_report;
-  result.extra_code1 = download_metrics.extra_code1;
+  const DownloadMetrics download_metrics = {
+      .url = url(),
+      .downloader = DownloadMetrics::kDeliveryOptimization,
+      .error = error_to_report,
+      .extra_code1 = extra_code1,
+      .downloaded_bytes = downloaded_bytes_,
+      .total_bytes = total_bytes_,
+      .download_time_ms = download_time_ms};
+
+  Result result = {.error = error_to_report, .extra_code1 = extra_code1};
   if (!result.error) {
     result.response = response_;
   }

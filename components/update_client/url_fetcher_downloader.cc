@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/update_client/cancellation.h"
 #include "components/update_client/network.h"
@@ -96,11 +97,8 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(int net_error,
                                                     int64_t content_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const base::TimeTicks download_end_time(base::TimeTicks::Now());
-  const base::TimeDelta download_time =
-      download_end_time >= download_start_time_
-          ? download_end_time - download_start_time_
-          : base::TimeDelta();
+  const uint64_t download_time_ms =
+      ElapsedMillisecondsSince(download_start_time_);
 
   // Consider a 5xx response from the server as an indication to terminate
   // the request and avoid overloading the server in this case.
@@ -123,24 +121,22 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(int net_error,
   // A cancelled download is handled: CrxDownloader does not retry it.
   const bool is_handled = error == 0 || IsHttpServerError(error) || cancelled_;
 
-  Result result;
-  result.error = error;
-  result.extra_code1 = extra_code1;
+  Result result = {.error = error, .extra_code1 = extra_code1};
   if (!error) {
     result.response = file_path_;
   }
 
-  DownloadMetrics download_metrics;
-  download_metrics.url = url();
-  download_metrics.downloader = DownloadMetrics::kUrlFetcher;
-  download_metrics.error = error;
-  download_metrics.extra_code1 = extra_code1;
-  // Tests expected -1, in case of failures and no content is available. A
-  // cancelled download reports the partial content it received.
-  download_metrics.downloaded_bytes =
-      error ? (cancelled_ ? downloaded_bytes_ : -1) : content_size;
-  download_metrics.total_bytes = total_bytes_;
-  download_metrics.download_time_ms = download_time.InMilliseconds();
+  const DownloadMetrics download_metrics = {
+      .url = url(),
+      .downloader = DownloadMetrics::kUrlFetcher,
+      .error = error,
+      .extra_code1 = extra_code1,
+      // A failed download reports -1, except a cancelled one, which reports
+      // the bytes it received.
+      .downloaded_bytes =
+          error ? (cancelled_ ? downloaded_bytes_ : -1) : content_size,
+      .total_bytes = total_bytes_,
+      .download_time_ms = download_time_ms};
 
   VLOG(1) << (error ? "Download failed: " : "Download succeeded: ")
           << download_metrics << ", file: " << result.response;

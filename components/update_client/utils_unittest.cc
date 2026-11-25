@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,6 +20,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/update_client/test_utils.h"
@@ -48,6 +50,22 @@ constexpr base::FilePath::CharType kTestDownloadFilename[] =
     FILE_PATH_LITERAL("test_file.txt");
 constexpr char kTestDownloadContent[] = "Hello, World!";
 }  // namespace
+
+TEST(UpdateClientUtils, ElapsedMillisecondsSince) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  const base::TimeTicks start = base::TimeTicks::Now();
+  EXPECT_EQ(ElapsedMillisecondsSince(start), 0u);
+  task_environment.AdvanceClock(base::Microseconds(1999));
+  EXPECT_EQ(ElapsedMillisecondsSince(start), 1u);
+  task_environment.AdvanceClock(base::Seconds(2));
+  EXPECT_EQ(ElapsedMillisecondsSince(start), 2001u);
+  EXPECT_EQ(ElapsedMillisecondsSince(base::TimeTicks::Now() + base::Hours(1)),
+            0u);
+  EXPECT_EQ(ElapsedMillisecondsSince(base::TimeTicks::Max()), 0u);
+  EXPECT_EQ(ElapsedMillisecondsSince(base::TimeTicks::Min()),
+            static_cast<uint64_t>(std::numeric_limits<int64_t>::max()));
+}
 
 TEST(UpdateClientUtils, VerifyFileHash256) {
   EXPECT_TRUE(VerifyFileHash256(

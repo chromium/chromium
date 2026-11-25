@@ -188,22 +188,13 @@ class BackgroundDownloaderSharedSessionImpl {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!session_) {
-      CrxDownloader::DownloadMetrics metrics = GetDefaultMetrics(url);
-      metrics.error =
-          static_cast<int>(CrxDownloaderError::MAC_BG_SESSION_INVALIDATED);
-      callback.Run(false,
-                   {metrics.error, metrics.extra_code1, base::FilePath()},
-                   metrics);
+      ReportError(callback, url,
+                  CrxDownloaderError::MAC_BG_SESSION_INVALIDATED);
       return;
     }
 
     if (downloads_.contains(url)) {
-      CrxDownloader::DownloadMetrics metrics = GetDefaultMetrics(url);
-      metrics.error =
-          static_cast<int>(CrxDownloaderError::MAC_BG_DUPLICATE_DOWNLOAD);
-      callback.Run(false,
-                   {metrics.error, metrics.extra_code1, base::FilePath()},
-                   metrics);
+      ReportError(callback, url, CrxDownloaderError::MAC_BG_DUPLICATE_DOWNLOAD);
       return;
     }
 
@@ -233,12 +224,8 @@ class BackgroundDownloaderSharedSessionImpl {
     if (has_download) {
       downloads_.emplace(url, callback);
     } else if (num_tasks >= kMaxTasks) {
-      CrxDownloader::DownloadMetrics metrics = GetDefaultMetrics(url);
-      metrics.error =
-          static_cast<int>(CrxDownloaderError::MAC_BG_SESSION_TOO_MANY_TASKS);
-      callback.Run(false,
-                   {metrics.error, metrics.extra_code1, base::FilePath()},
-                   metrics);
+      ReportError(callback, url,
+                  CrxDownloaderError::MAC_BG_SESSION_TOO_MANY_TASKS);
     } else {
       NSMutableURLRequest* urlRequest =
           [[NSMutableURLRequest alloc] initWithURL:NSURLWithGURL(url)];
@@ -261,17 +248,6 @@ class BackgroundDownloaderSharedSessionImpl {
 
  private:
   struct DownloadResult {
-    DownloadResult(bool is_handled,
-                   const CrxDownloader::Result& result,
-                   const CrxDownloader::DownloadMetrics& download_metrics)
-        : is_handled(is_handled),
-          result(result),
-          download_metrics(download_metrics) {}
-
-    explicit DownloadResult(uint64_t download_time_ms) {
-      download_metrics.download_time_ms = download_time_ms;
-    }
-
     bool is_handled = false;
     CrxDownloader::Result result;
     CrxDownloader::DownloadMetrics download_metrics;
@@ -301,13 +277,12 @@ class BackgroundDownloaderSharedSessionImpl {
       } else {
         LOG(ERROR) << "Failed determine file size for " << cached_path;
       }
-      CrxDownloader::DownloadMetrics metrics = GetDefaultMetrics(url);
-      metrics.downloaded_bytes = download_size;
-      metrics.total_bytes = download_size;
-      callback.Run(true,
-                   {static_cast<int>(CrxDownloaderError::NONE),
-                    /*extra_code1=*/0, cached_path},
-                   metrics);
+      callback.Run(
+          true, {.response = cached_path},
+          {.url = url,
+           .downloader = CrxDownloader::DownloadMetrics::kBackgroundMac,
+           .downloaded_bytes = download_size,
+           .total_bytes = download_size});
     }
 
     return true;
@@ -359,32 +334,34 @@ class BackgroundDownloaderSharedSessionImpl {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     bool had_result = results_.contains(url);
-    bool is_handled = error == 0 || (error >= 500 && error < 600);
-    CrxDownloader::Result result = {error, /*extra_code1=*/0, location};
-    CrxDownloader::DownloadMetrics download_metrics =
-        had_result ? results_.at(url).download_metrics
-                   : CrxDownloader::DownloadMetrics{};
-    download_metrics.url = url;
-    download_metrics.downloader =
-        update_client::CrxDownloader::DownloadMetrics::kBackgroundMac;
-    download_metrics.error = error;
-    download_metrics.downloaded_bytes = downloaded_bytes;
-    download_metrics.total_bytes = total_bytes;
+    // An existing entry may hold the download time, the only metric that
+    // `OnMetricsCollected()` records.
+    const uint64_t download_time_ms =
+        had_result ? results_.at(url).download_metrics.download_time_ms : 0;
     results_.insert_or_assign(
-        url, DownloadResult(is_handled, result, download_metrics));
+        url,
+        DownloadResult{
+            .is_handled = error == 0 || (error >= 500 && error < 600),
+            .result = {.error = error, .response = location},
+            .download_metrics = {
+                .url = url,
+                .downloader = CrxDownloader::DownloadMetrics::kBackgroundMac,
+                .error = error,
+                .downloaded_bytes = downloaded_bytes,
+                .total_bytes = total_bytes,
+                .download_time_ms = download_time_ms}});
 
     if (had_result) {
       OnDownloadResultReady(url);
     }
   }
 
-  // Called by the delegate when the download has completed.
+  // Called by the delegate when it has collected the download metrics.
   void OnMetricsCollected(const GURL& url, uint64_t download_time_ms) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     bool had_result = results_.contains(url);
-    DownloadResult result =
-        had_result ? results_.at(url) : DownloadResult(download_time_ms);
+    DownloadResult result = had_result ? results_.at(url) : DownloadResult{};
     result.download_metrics.download_time_ms = download_time_ms;
     results_.insert_or_assign(url, std::move(result));
 
@@ -486,15 +463,14 @@ class BackgroundDownloaderSharedSessionImpl {
     last_progress_times_ = std::move(filtered_progresses);
   }
 
-  // Returns a `CrxDownloader::DownloadMetrics` with url and downloader set.
-  static CrxDownloader::DownloadMetrics GetDefaultMetrics(const GURL& url) {
-    CrxDownloader::DownloadMetrics metrics;
-    metrics.url = url;
-    metrics.downloader =
-        CrxDownloader::DownloadMetrics::Downloader::kBackgroundMac;
-    metrics.error = 0;
-    metrics.extra_code1 = 0;
-    return metrics;
+  // Runs `callback` for `url` with `is_handled` false and `error`.
+  static void ReportError(const OnDownloadCompleteCallback& callback,
+                          const GURL& url,
+                          CrxDownloaderError error) {
+    callback.Run(false, {.error = std::to_underlying(error)},
+                 {.url = url,
+                  .downloader = CrxDownloader::DownloadMetrics::kBackgroundMac,
+                  .error = std::to_underlying(error)});
   }
 
   SEQUENCE_CHECKER(sequence_checker_);

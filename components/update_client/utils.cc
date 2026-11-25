@@ -25,6 +25,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -62,6 +63,11 @@ constexpr char kTempDir[] = "/var/lib/odml/chrome_component_updater";
 
 bool IsHttpServerError(int status_code) {
   return 500 <= status_code && status_code < 600;
+}
+
+uint64_t ElapsedMillisecondsSince(base::TimeTicks start) {
+  return base::saturated_cast<uint64_t>(
+      (base::TimeTicks::Now() - start).InMilliseconds());
 }
 
 bool DeleteFileAndEmptyParentDirectory(const base::FilePath& filepath) {

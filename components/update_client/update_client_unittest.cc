@@ -1195,15 +1195,12 @@ TEST_P(UpdateClientCancelModeTest, CancelRunningUpdateCancelsActiveDownload) {
 
     void Cancel(const GURL& url, CancelMode mode) {
       EXPECT_EQ(expected_mode_, mode);
-      DownloadMetrics download_metrics;
-      download_metrics.url = url;
-      download_metrics.downloader = DownloadMetrics::kNone;
-      download_metrics.error = static_cast<int>(CrxDownloaderError::CANCELLED);
-      download_metrics.downloaded_bytes = 10;
-      download_metrics.total_bytes = 1015;
-      download_metrics.download_time_ms = 0;
-      Result result;
-      result.error = static_cast<int>(CrxDownloaderError::CANCELLED);
+      const DownloadMetrics download_metrics = {
+          .url = url,
+          .error = std::to_underlying(CrxDownloaderError::CANCELLED),
+          .downloaded_bytes = 10,
+          .total_bytes = 1015};
+      const Result result = {.error = download_metrics.error};
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
                                     base::Unretained(this), true, result,
@@ -1331,21 +1328,16 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
     ~MockCrxDownloader() override = default;
 
     CancelCallback DoStartDownload(const GURL& url) override {
-      DownloadMetrics download_metrics;
-      download_metrics.url = url;
-      download_metrics.downloader = DownloadMetrics::kNone;
-      download_metrics.error = 0;
-      download_metrics.downloaded_bytes = 1015;
-      download_metrics.total_bytes = 1015;
-      download_metrics.download_time_ms = 1000;
+      const DownloadMetrics download_metrics = {.url = url,
+                                                .downloaded_bytes = 1015,
+                                                .total_bytes = 1015,
+                                                .download_time_ms = 1000};
 
       base::FilePath path;
       EXPECT_TRUE(MakeTestFile(
           GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
-      Result result;
-      result.error = 0;
-      result.response = path;
+      const Result result = {.response = path};
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadProgress,
@@ -1514,21 +1506,16 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
     ~MockCrxDownloader() override = default;
 
     CancelCallback DoStartDownload(const GURL& url) override {
-      DownloadMetrics download_metrics;
-      download_metrics.url = url;
-      download_metrics.downloader = DownloadMetrics::kNone;
-      download_metrics.error = 0;
-      download_metrics.downloaded_bytes = 1015;
-      download_metrics.total_bytes = 1015;
-      download_metrics.download_time_ms = 1000;
+      const DownloadMetrics download_metrics = {.url = url,
+                                                .downloaded_bytes = 1015,
+                                                .total_bytes = 1015,
+                                                .download_time_ms = 1000};
 
       base::FilePath path;
       EXPECT_TRUE(MakeTestFile(
           GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
-      Result result;
-      result.error = 0;
-      result.response = path;
+      const Result result = {.response = path};
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadProgress,
@@ -1686,18 +1673,15 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
       base::FilePath path;
       Result result;
       if (url.GetPath() == "/download/jebgalgnebhfojomionfpkfelancnnkf.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 1015;
-        download_metrics.total_bytes = 1015;
-        download_metrics.download_time_ms = 1000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 1015,
+                            .total_bytes = 1015,
+                            .download_time_ms = 1000};
 
         EXPECT_TRUE(MakeTestFile(
             GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       } else {
         ADD_FAILURE();
       }
@@ -1928,29 +1912,25 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
       base::FilePath path;
       Result result;
       if (url.GetPath() == "/download/jebgalgnebhfojomionfpkfelancnnkf.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = -118;
-        download_metrics.downloaded_bytes = 0;
-        download_metrics.total_bytes = 0;
-        download_metrics.download_time_ms = 1000;
+        download_metrics = {.url = url,
+                            .error = -118,
+                            .downloaded_bytes = 0,
+                            .total_bytes = 0,
+                            .download_time_ms = 1000};
 
         // The result must not include a file path in the case of errors.
-        result.error = -118;
+        result = {.error = -118};
       } else if (url.GetPath() ==
                  "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 54014;
-        download_metrics.total_bytes = 54014;
-        download_metrics.download_time_ms = 2000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 54014,
+                            .total_bytes = 54014,
+                            .download_time_ms = 2000};
 
         EXPECT_TRUE(MakeTestFile(
             GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       } else {
         ADD_FAILURE();
       }
@@ -2265,33 +2245,27 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
       base::FilePath path;
       Result result;
       if (url.GetPath() == "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 54014;
-        download_metrics.total_bytes = 54014;
-        download_metrics.download_time_ms = 2000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 54014,
+                            .total_bytes = 54014,
+                            .download_time_ms = 2000};
 
         EXPECT_TRUE(MakeTestFile(
             GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       } else if (url.GetPath() ==
                  "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 1680;
-        download_metrics.total_bytes = 1680;
-        download_metrics.download_time_ms = 1000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 1680,
+                            .total_bytes = 1680,
+                            .download_time_ms = 1000};
 
         EXPECT_TRUE(MakeTestFile(
             GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"),
             &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       } else {
         ADD_FAILURE() << url.GetPath();
       }
@@ -2569,21 +2543,16 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
     ~MockCrxDownloader() override = default;
 
     CancelCallback DoStartDownload(const GURL& url) override {
-      DownloadMetrics download_metrics;
-      download_metrics.url = url;
-      download_metrics.downloader = DownloadMetrics::kNone;
-      download_metrics.error = 0;
-      download_metrics.downloaded_bytes = 1015;
-      download_metrics.total_bytes = 1015;
-      download_metrics.download_time_ms = 1000;
+      const DownloadMetrics download_metrics = {.url = url,
+                                                .downloaded_bytes = 1015,
+                                                .total_bytes = 1015,
+                                                .download_time_ms = 1000};
 
       base::FilePath path;
       EXPECT_TRUE(MakeTestFile(
           GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
-      Result result;
-      result.error = 0;
-      result.response = path;
+      const Result result = {.response = path};
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadProgress,
@@ -2879,44 +2848,37 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
       base::FilePath path;
       Result result;
       if (url.GetPath() == "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 54014;
-        download_metrics.total_bytes = 54014;
-        download_metrics.download_time_ms = 2000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 54014,
+                            .total_bytes = 54014,
+                            .download_time_ms = 2000};
 
         EXPECT_TRUE(MakeTestFile(
             GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       } else if (url.GetPath() ==
                  "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff") {
         // A download error is injected on this execution path.
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = -1;
-        download_metrics.downloaded_bytes = 0;
-        download_metrics.total_bytes = 1680;
-        download_metrics.download_time_ms = 1000;
+        download_metrics = {.url = url,
+                            .error = -1,
+                            .downloaded_bytes = 0,
+                            .total_bytes = 1680,
+                            .download_time_ms = 1000};
 
         // The response must not include a file path in the case of errors.
-        result.error = -1;
+        result = {.error = -1};
       } else if (url.GetPath() ==
                  "/download/ihfokbkgjpifnbbojhneepfflplebdkc_2.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 54409;
-        download_metrics.total_bytes = 54409;
-        download_metrics.download_time_ms = 1000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 54409,
+                            .total_bytes = 54409,
+                            .download_time_ms = 1000};
 
         EXPECT_TRUE(MakeTestFile(
             GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_2.crx"), &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       }
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -3248,18 +3210,15 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
       base::FilePath path;
       Result result;
       if (url.GetPath() == "/download/jebgalgnebhfojomionfpkfelancnnkf.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 1015;
-        download_metrics.total_bytes = 1015;
-        download_metrics.download_time_ms = 1000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 1015,
+                            .total_bytes = 1015,
+                            .download_time_ms = 1000};
 
         EXPECT_TRUE(MakeTestFile(
             GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       } else {
         ADD_FAILURE();
       }
@@ -3920,18 +3879,15 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
       base::FilePath path;
       Result result;
       if (url.GetPath() == "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 54014;
-        download_metrics.total_bytes = 54014;
-        download_metrics.download_time_ms = 2000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 54014,
+                            .total_bytes = 54014,
+                            .download_time_ms = 2000};
 
         EXPECT_TRUE(MakeTestFile(
             GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       } else {
         ADD_FAILURE();
       }
@@ -4108,14 +4064,16 @@ INSTANTIATE_TEST_SUITE_P(SendPingTestCases,
                          SendPingTest,
                          ::testing::ValuesIn(std::vector<SendPingTestCase>{
                              // Install ping.
-                             {protocol_request::kEventInstall, 1, 2, 3},
+                             {.event_type = protocol_request::kEventInstall,
+                              .result = 1,
+                              .error_code = 2,
+                              .extra_code1 = 3},
 
                              // Uninstall ping.
-                             {protocol_request::kEventUninstall,
-                              1,
-                              {},
-                              10,
-                              base::Version("1.2.3.4")},
+                             {.event_type = protocol_request::kEventUninstall,
+                              .result = 1,
+                              .extra_code1 = 10,
+                              .previous_version = base::Version("1.2.3.4")},
                          }));
 
 TEST_P(SendPingTest, SendPingTestCases) {
@@ -4377,18 +4335,15 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
       base::FilePath path;
       Result result;
       if (url.GetPath() == "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 54014;
-        download_metrics.total_bytes = 54014;
-        download_metrics.download_time_ms = 2000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 54014,
+                            .total_bytes = 54014,
+                            .download_time_ms = 2000};
 
         EXPECT_TRUE(MakeTestFile(
             GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       } else {
         ADD_FAILURE();
       }
@@ -4543,22 +4498,18 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
     ~MockCrxDownloader() override = default;
 
     CancelCallback DoStartDownload(const GURL& url) override {
-      DownloadMetrics download_metrics;
-      download_metrics.url = url;
-      download_metrics.downloader = DownloadMetrics::kNone;
-      download_metrics.error = 200;
-      download_metrics.extra_code1 = -2147012894;
-      download_metrics.downloaded_bytes = 1015 / 2;
-      download_metrics.total_bytes = 1015;
-      download_metrics.download_time_ms = 1000;
+      const DownloadMetrics download_metrics = {.url = url,
+                                                .error = 200,
+                                                .extra_code1 = -2147012894,
+                                                .downloaded_bytes = 1015 / 2,
+                                                .total_bytes = 1015,
+                                                .download_time_ms = 1000};
 
       base::FilePath path;
       EXPECT_TRUE(MakeTestFile(
           GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
-      Result result;
-      result.error = 200;
-      result.extra_code1 = -2147012894;
+      const Result result = {.error = 200, .extra_code1 = -2147012894};
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadProgress,
@@ -5045,18 +4996,15 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
       base::FilePath path;
       Result result;
       if (url.GetPath() == "/download/runaction_test_win.crx3") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 48141;
-        download_metrics.total_bytes = 48141;
-        download_metrics.download_time_ms = 1000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 48141,
+                            .total_bytes = 48141,
+                            .download_time_ms = 1000};
 
         EXPECT_TRUE(
             MakeTestFile(GetTestFilePath("runaction_test_win.crx3"), &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       } else {
         ADD_FAILURE();
       }
@@ -5453,18 +5401,15 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
       base::FilePath path;
       Result result;
       if (url.GetPath() == "/download/jebgalgnebhfojomionfpkfelancnnkf.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 1015;
-        download_metrics.total_bytes = 1015;
-        download_metrics.download_time_ms = 1000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 1015,
+                            .total_bytes = 1015,
+                            .download_time_ms = 1000};
 
         EXPECT_TRUE(MakeTestFile(
             GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       } else {
         ADD_FAILURE();
       }
@@ -5553,18 +5498,15 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
       base::FilePath path;
       Result result;
       if (url.GetPath() == "/download/jebgalgnebhfojomionfpkfelancnnkf.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 1015;
-        download_metrics.total_bytes = 1015;
-        download_metrics.download_time_ms = 1000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 1015,
+                            .total_bytes = 1015,
+                            .download_time_ms = 1000};
 
         EXPECT_TRUE(MakeTestFile(
             GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       } else {
         ADD_FAILURE();
       }
@@ -5695,18 +5637,15 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
       base::FilePath path;
       Result result;
       if (url.GetPath() == "/download/jebgalgnebhfojomionfpkfelancnnkf.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 1015;
-        download_metrics.total_bytes = 1015;
-        download_metrics.download_time_ms = 1000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 1015,
+                            .total_bytes = 1015,
+                            .download_time_ms = 1000};
 
         EXPECT_TRUE(MakeTestFile(
             GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       } else {
         ADD_FAILURE();
       }
@@ -6457,21 +6396,16 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
     ~MockCrxDownloader() override = default;
 
     CancelCallback DoStartDownload(const GURL& url) override {
-      DownloadMetrics download_metrics;
-      download_metrics.url = url;
-      download_metrics.downloader = DownloadMetrics::kNone;
-      download_metrics.error = 0;
-      download_metrics.downloaded_bytes = 54014;
-      download_metrics.total_bytes = 54014;
-      download_metrics.download_time_ms = 2000;
+      const DownloadMetrics download_metrics = {.url = url,
+                                                .downloaded_bytes = 54014,
+                                                .total_bytes = 54014,
+                                                .download_time_ms = 2000};
 
       base::FilePath path;
       EXPECT_TRUE(MakeTestFile(
           GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
-      Result result;
-      result.error = 0;
-      result.response = path;
+      const Result result = {.response = path};
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadProgress,
@@ -7133,18 +7067,15 @@ TEST_F(UpdateClientTest, Install_StopCancelsActiveDownload) {
       base::FilePath path;
       Result result;
       if (url.GetPath() == "/download/jebgalgnebhfojomionfpkfelancnnkf.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 1015;
-        download_metrics.total_bytes = 1015;
-        download_metrics.download_time_ms = 1000;
+        download_metrics = {.url = url,
+                            .downloaded_bytes = 1015,
+                            .total_bytes = 1015,
+                            .download_time_ms = 1000};
 
         EXPECT_TRUE(MakeTestFile(
             GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), &path));
 
-        result.error = 0;
-        result.response = path;
+        result = {.response = path};
       } else {
         ADD_FAILURE();
       }
