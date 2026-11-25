@@ -97,7 +97,9 @@ public class PageInfoHistoryController
                         mHost,
                         mTabSupplier,
                         new HistoryUmaRecorder(),
-                        new BrowsingHistoryBridge(profile),
+                        sProviderForTests != null
+                                ? sProviderForTests
+                                : new BrowsingHistoryBridge(profile),
                         new ChromeAsyncTabLauncher(
                                 /* incognito= */ false, mMainController.getActivity()),
                         new ChromeAsyncTabLauncher(
