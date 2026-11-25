@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/byte_size.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -87,13 +88,19 @@ void DeletePathAndFiles(const base::FilePath& file_path) {
 static int64_t CalculateRequiredSpace(const base::FilePath& share_dir,
                                       const uint64_t total_file_size) {
   DVLOG(1) << __func__;
-  int64_t free_disk_space =
-      base::SysInfo::AmountOfFreeDiskSpace(share_dir).value_or(-1);
+  // A failed query is treated as having no free disk space.
+  const base::ByteSize free_disk_space =
+      base::SysInfo::AmountOfDiskSpace(share_dir)
+          .transform([](const base::SysInfo::DiskSpaceInfo& disk_space) {
+            return disk_space.available;
+          })
+          .value_or(base::ByteSize());
   VLOG(1) << "Free disk space: " << free_disk_space;
   int64_t shared_files_size =
       static_cast<int64_t>(cryptohome::kMinFreeSpaceInBytes + total_file_size);
   VLOG(1) << "Shared file size: " << shared_files_size;
-  return shared_files_size - free_disk_space;
+  return shared_files_size -
+         base::checked_cast<int64_t>(free_disk_space.InBytes());
 }
 
 base::FilePath GetUserCacheFilePath(Profile* const profile) {

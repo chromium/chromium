@@ -152,14 +152,11 @@ const char kRootPath[] = "/";
 void GetSizeStatsAsync(const base::FilePath& mount_path,
                        uint64_t* total_size,
                        uint64_t* remaining_size) {
-  std::optional<int64_t> size =
-      base::SysInfo::AmountOfTotalDiskSpace(mount_path);
-  if (size) {
-    *total_size = *size;
-  }
-  size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
-  if (size) {
-    *remaining_size = *size;
+  const std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+      base::SysInfo::AmountOfDiskSpace(mount_path);
+  if (disk_space) {
+    *total_size = disk_space->total.InBytes();
+    *remaining_size = disk_space->available.InBytes();
   }
 }
 

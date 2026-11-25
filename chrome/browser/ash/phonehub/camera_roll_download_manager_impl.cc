@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
@@ -46,8 +47,10 @@ scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
 bool HasEnoughDiskSpace(const base::FilePath& root_path,
                         const proto::CameraRollItemMetadata& item_metadata) {
   CHECK(item_metadata.file_size_bytes() >= 0, base::NotFatalUntil::M161);
-  return base::SysInfo::AmountOfFreeDiskSpace(root_path) >=
-         item_metadata.file_size_bytes();
+  const std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+      base::SysInfo::AmountOfDiskSpace(root_path);
+  return disk_space && disk_space->available.AsByteSizeDelta() >=
+                           base::ByteSizeDelta(item_metadata.file_size_bytes());
 }
 
 std::optional<secure_channel::mojom::PayloadFilesPtr> DoCreatePayloadFiles(

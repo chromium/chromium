@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/chrome_camera_app_ui_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -14,6 +15,7 @@
 #include "ash/webui/camera_app_ui/pdf_builder.mojom.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
@@ -101,8 +103,8 @@ std::string DeviceTypeToString(chromeos::DeviceType device_type) {
       return "unknown";
   }
 }
-const int64_t kStorageLowThreshold = 128 * 1024 * 1024;           // 128MB
-const int64_t kStorageCriticallyLowThreshold = 32 * 1024 * 1024;  // 32MB
+constexpr base::ByteSize kStorageLowThreshold = base::MiB(128);
+constexpr base::ByteSize kStorageCriticallyLowThreshold = base::MiB(32);
 
 // PDFs saved from CCA are always 72 dpi.
 constexpr int kPdfDpi = 72;
@@ -266,14 +268,15 @@ ChromeCameraAppUIDelegate::StorageMonitor::GetWeakPtr() {
 
 ChromeCameraAppUIDelegate::StorageMonitorStatus
 ChromeCameraAppUIDelegate::StorageMonitor::GetCurrentStatus() {
-  auto current_storage = base::SysInfo::AmountOfFreeDiskSpace(monitor_path_);
+  const std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+      base::SysInfo::AmountOfDiskSpace(monitor_path_);
   auto status = StorageMonitorStatus::kNormal;
-  if (current_storage < 0) {
+  if (!disk_space) {
     LOG(ERROR) << "Failed to get the amount of free disk space.";
     status = StorageMonitorStatus::kError;
-  } else if (current_storage < kStorageCriticallyLowThreshold) {
+  } else if (disk_space->available < kStorageCriticallyLowThreshold) {
     status = StorageMonitorStatus::kCriticallyLow;
-  } else if (current_storage < kStorageLowThreshold) {
+  } else if (disk_space->available < kStorageLowThreshold) {
     status = StorageMonitorStatus::kLow;
   }
   return status;

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <optional>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -15,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -69,15 +71,13 @@ std::set<std::string> GetDifference(const std::set<std::string>& first,
 std::unique_ptr<em::AppInstallReportLogEvent> AddDiskSpaceInfoToEvent(
     std::unique_ptr<em::AppInstallReportLogEvent> event,
     const base::FilePath& stateful_path) {
-  const std::optional<int64_t> stateful_total =
-      base::SysInfo::AmountOfTotalDiskSpace(stateful_path);
-  if (stateful_total.has_value()) {
-    event->set_stateful_total(*stateful_total);
-  }
-  const std::optional<int64_t> stateful_free =
-      base::SysInfo::AmountOfFreeDiskSpace(stateful_path);
-  if (stateful_free.has_value()) {
-    event->set_stateful_free(*stateful_free);
+  const std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+      base::SysInfo::AmountOfDiskSpace(stateful_path);
+  if (disk_space) {
+    event->set_stateful_total(
+        base::checked_cast<int64_t>(disk_space->total.InBytes()));
+    event->set_stateful_free(
+        base::checked_cast<int64_t>(disk_space->available.InBytes()));
   }
   return event;
 }

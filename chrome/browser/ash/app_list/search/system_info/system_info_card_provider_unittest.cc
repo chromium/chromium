@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/system_info/system_info_card_provider.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -13,6 +14,7 @@
 #include "base/byte_size.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -860,10 +862,13 @@ TEST_F(SystemInfoCardProviderTest, Storage) {
   // [android files]/Download.
   AddFile("video.ogv", kDownloadsPathBytes, downloads_path);  // ~55.4 KB
 
+  const std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+      base::SysInfo::AmountOfDiskSpace(mount_path);
+  ASSERT_TRUE(disk_space);
   int64_t total_bytes =
-      base::SysInfo::AmountOfTotalDiskSpace(mount_path).value_or(-1);
+      base::checked_cast<int64_t>(disk_space->total.InBytes());
   int64_t available_bytes =
-      base::SysInfo::AmountOfFreeDiskSpace(mount_path).value_or(-1);
+      base::checked_cast<int64_t>(disk_space->available.InBytes());
   int64_t rounded_total_size = ash::settings::RoundByteSize(total_bytes);
 
   int64_t in_use_bytes = rounded_total_size - available_bytes;

@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
@@ -213,9 +214,11 @@ TEST_F(CameraRollDownloadManagerImplTest,
        CreatePayloadFilesWithInsufficientDiskSpace) {
   proto::CameraRollItemMetadata item_metadata;
   item_metadata.set_file_name("IMG_0001.jpeg");
-  int64_t free_disk_space_bytes =
-      base::SysInfo::AmountOfFreeDiskSpace(GetDownloadPath()).value_or(-1);
-  item_metadata.set_file_size_bytes(free_disk_space_bytes + 1);
+  const std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+      base::SysInfo::AmountOfDiskSpace(GetDownloadPath());
+  ASSERT_TRUE(disk_space);
+  item_metadata.set_file_size_bytes(
+      base::checked_cast<int64_t>(disk_space->available.InBytes()) + 1);
 
   CreatePayloadFilesResult error =
       CreatePayloadFilesAndGetError(/*payload_id=*/1234, item_metadata);
