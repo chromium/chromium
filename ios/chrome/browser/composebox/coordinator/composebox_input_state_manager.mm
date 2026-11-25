@@ -394,17 +394,20 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
 }
 
 - (void)onContextChanged {
-  if (!_inputStateModel) {
-    return;
+  if (_inputStateModel) {
+    _inputStateModel->OnContextChanged();
   }
-  _inputStateModel->OnContextChanged();
-  // With dynamic AIM fulfillment, routing only accounts for an attachment once
-  // it is in the session, which happens after `-onItemsUpdated`.
-  [self switchToAIModeIfNeeded];
 }
 
 - (void)onItemsUpdated {
-  [self switchToAIModeIfNeeded];
+  // AI mode is implicitly enabled by items attachment.
+  BOOL shouldSwitchToAIM =
+      self.items && !self.items.empty && [self isRegularSearch];
+  if (shouldSwitchToAIM) {
+    [self setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
+    [self.metricsRecorder
+        recordAiModeActivationSource:AiModeActivationSource::kImplicit];
+  }
 }
 
 - (void)recordInputStateOnSubmission {
@@ -672,31 +675,18 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
 // Updates the underlying C++ model, invalidates disallowed attachments, and
 // notifies the delegate after `_activeToolMode` changes.
 - (void)handleToolModeChange {
-  // With dynamic AIM fulfillment, clearing the model in
-  // `-updateModelOnModeChange` only leaves AI Mode once the attachments that
-  // need it are gone. Otherwise `InputStateModel` routes them back to AI Mode.
-  BOOL invalidateAttachmentsBeforeModelReset =
-      [self isRegularSearch] && [self isDynamicAimFulfillmentEnabled];
-  if (invalidateAttachmentsBeforeModelReset) {
-    [self notifyDelegateOfModeChange];
-  }
-
   [self setActiveToolInInputState:self.activeToolMode];
   [self updateModelOnModeChange];
 
-  if (!invalidateAttachmentsBeforeModelReset) {
-    [self notifyDelegateOfModeChange];
-  }
-  [self.delegate inputStateManagerDidUpdateUIState:self];
-}
+  // Invalidate items/attachments for the current mode.
+  NSArray<ComposeboxInputItem*>* invalidatedItems =
+      [self invalidItemsInActiveMode];
 
-// Notifies the delegate of the mode change with the attachments that are
-// invalid in the new mode.
-- (void)notifyDelegateOfModeChange {
   [self.delegate
            inputStateManager:self
                didChangeMode:ComposeboxModeForToolMode(self.activeToolMode)
-      invalidatedAttachments:[self invalidItemsInActiveMode]];
+      invalidatedAttachments:invalidatedItems];
+  [self.delegate inputStateManagerDidUpdateUIState:self];
 }
 
 /// Updates the active model on tool mode change.
@@ -766,9 +756,6 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
   if (_prefService) {
     _inputStateModel->SetPrefService(_prefService);
   }
-  if ([self isDynamicAimFulfillmentEnabled]) {
-    _inputStateModel->EnableDynamicAimFulfillment();
-  }
 
   [self startInputStateObservation];
   // `Initialize` is synchronous and immediately notifies observers, updating
@@ -810,8 +797,8 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
 // Returns `YES` if the given `model` matches `modelMode`.
 - (BOOL)isModel:(omnibox::ModelMode)model
     matchingModelMode:(omnibox::ModelMode)modelMode {
-  if ([self isRegularSearch] || ![self willFulfillInAIM]) {
-    // Any model is valid in regular search or on the Search results page.
+  if ([self isRegularSearch]) {
+    // Any model is valid in regular search.
     return YES;
   }
   if (model == omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
@@ -1073,22 +1060,6 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
   return self.activeToolMode == omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
 }
 
-// Switches regular search to AI Mode when its attachments require it: any
-// attachment without dynamic AIM fulfillment, or when `InputStateModel` routes
-// the composition to AI Mode with it.
-- (void)switchToAIModeIfNeeded {
-  if (![self isRegularSearch] || !self.items || self.items.empty) {
-    return;
-  }
-  if ([self isDynamicAimFulfillmentEnabled] &&
-      !(_inputState.has_value() && _inputState->will_fulfill_in_aim)) {
-    return;
-  }
-  [self setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
-  [self.metricsRecorder
-      recordAiModeActivationSource:AiModeActivationSource::kImplicit];
-}
-
 // Sets the active model in input state model.
 - (void)setActiveModelInInputState:(omnibox::ModelMode)model
                 explicitUserAction:(BOOL)explicitUserAction {
@@ -1098,13 +1069,9 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
   // `InputStateModel` expects a concrete model from `allowed_models` (and
   // resets `MODEL_MODE_UNSPECIFIED` on config updates). Resolve
   // `MODEL_MODE_UNSPECIFIED` to the server's default model so compatibility
-  // rules and query parameters are evaluated against the default model. With
-  // dynamic AIM fulfillment, regular search passes `MODEL_MODE_UNSPECIFIED`
-  // through instead, which makes `InputStateModel` leave AI Mode.
-  BOOL leavesAIMode =
-      [self isRegularSearch] && [self isDynamicAimFulfillmentEnabled];
+  // rules and query parameters are evaluated against the default model.
   omnibox::ModelMode requestedModelMode =
-      model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED || leavesAIMode
+      model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           ? model
           : _inputState->GetDefaultModel();
 
@@ -1149,28 +1116,9 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
 
 #pragma mark - Eligibility & Availability
 
-/// Returns whether dynamic AIM fulfillment is enabled for this composebox.
-- (BOOL)isDynamicAimFulfillmentEnabled {
-  return [self isEligibleToAIM] && IsDynamicAimFulfillmentEnabled(_entrypoint);
-}
-
-/// Returns whether submitting the current composition opens AI Mode.
-- (BOOL)willFulfillInAIM {
-  if (![self isDynamicAimFulfillmentEnabled] || !_inputState.has_value()) {
-    return ![self isRegularSearch];
-  }
-  if ([self isRegularSearch] && (!self.items || self.items.empty)) {
-    return NO;
-  }
-  if (self.activeToolMode == omnibox::ToolMode::TOOL_MODE_AIM) {
-    return YES;
-  }
-  return _inputState->will_fulfill_in_aim;
-}
-
 /// Returns the default model for the active tool mode.
 - (omnibox::ModelMode)defaultModel {
-  if (![self willFulfillInAIM] || !_inputState.has_value()) {
+  if ([self isRegularSearch] || !_inputState.has_value()) {
     return omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
   }
   return _inputState->GetDefaultModel();

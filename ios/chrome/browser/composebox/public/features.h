@@ -7,7 +7,6 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 
 // Used to enable development tools for the composebox.
 BASE_DECLARE_FEATURE(kComposeboxDevTools);
@@ -84,8 +83,5 @@ BASE_DECLARE_FEATURE(kComposeboxConnectedAppsSetting);
 
 // Returns whether to enable the Connected Apps setting entry.
 bool IsComposeboxConnectedAppsSettingEnabled();
-
-// Returns whether dynamic AIM fulfillment is enabled for `entrypoint`.
-bool IsDynamicAimFulfillmentEnabled(ComposeboxEntrypoint entrypoint);
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_FEATURES_H_

@@ -123,10 +123,6 @@ class WebStateID;
 - (void)setActiveModel:(omnibox::ModelMode)model
     explicitUserAction:(BOOL)explicitUserAction;
 
-// Whether submitting the current composition opens AI Mode rather than the
-// Search results page.
-- (BOOL)willFulfillInAIM;
-
 // Retrieves additional query parameters for the current state.
 - (std::map<std::string, std::string>)additionalQueryParams;
 
