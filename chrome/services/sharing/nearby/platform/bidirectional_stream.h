@@ -24,6 +24,9 @@ class OutputStream;
 
 namespace chrome {
 
+class InputStreamImpl;
+class OutputStreamImpl;
+
 // A wrapper around input and output stream implementations that read/write
 // from/to |receive_stream|/|send_stream|. These Mojo DataPipes are passed into
 // the constructor by the specified |medium| implementation. This class handles
@@ -42,6 +45,9 @@ class BidirectionalStream {
   OutputStream* GetOutputStream();
   Exception Close();
 
+  InputStreamImpl* input_stream_for_testing() { return input_stream_.get(); }
+  OutputStreamImpl* output_stream_for_testing() { return output_stream_.get(); }
+
  private:
   // Input/output stream implementations require the streams to be created and
   // destroyed on the |task_runner_|.
@@ -52,8 +58,8 @@ class BidirectionalStream {
 
   connections::mojom::Medium medium_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  std::unique_ptr<InputStream> input_stream_;
-  std::unique_ptr<OutputStream> output_stream_;
+  std::unique_ptr<InputStreamImpl> input_stream_;
+  std::unique_ptr<OutputStreamImpl> output_stream_;
 };
 
 }  // namespace chrome

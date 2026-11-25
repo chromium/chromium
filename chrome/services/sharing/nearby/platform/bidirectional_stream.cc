@@ -4,6 +4,9 @@
 
 #include "chrome/services/sharing/nearby/platform/bidirectional_stream.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -28,11 +31,22 @@ BidirectionalStream::BidirectionalStream(
 }
 
 BidirectionalStream::~BidirectionalStream() {
+  CHECK(!task_runner_->RunsTasksInCurrentSequence());
+
+  // Close both streams and wait for any in-flight Read()/Write() calls to
+  // return before destroying the streams on |task_runner_|. Waiting must occur
+  // on the destroying thread rather than |task_runner_| because |task_runner_|
+  // does not allow base sync primitives and may still need to run
+  // StartRead()/StartWrite() so blocked callers wake up.
+  Close();
+  input_stream_->WaitForInFlightReads();
+  output_stream_->WaitForInFlightWrites();
+
   base::WaitableEvent task_run_waitable_event;
-  task_runner_->PostTask(
+  CHECK(task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&BidirectionalStream::DestroyStreams,
-                     base::Unretained(this), &task_run_waitable_event));
+                     base::Unretained(this), &task_run_waitable_event)));
   task_run_waitable_event.Wait();
 }
 

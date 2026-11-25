@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -91,7 +92,7 @@ class InputStreamImplTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::ScopedDataPipeProducerHandle receive_stream_;
-  std::unique_ptr<InputStream> input_stream_;
+  std::unique_ptr<InputStreamImpl> input_stream_;
 };
 
 TEST_F(InputStreamImplTest, Read) {
@@ -217,6 +218,141 @@ TEST_F(InputStreamImplTest, ResetHandle) {
       input_stream_->Read(message.size());
   ASSERT_FALSE(exception_or_byte_array.ok());
   EXPECT_EQ(Exception::kIo, exception_or_byte_array.exception());
+}
+
+TEST_F(InputStreamImplTest, WaitForInFlightReads) {
+  base::WaitableEvent read_pending;
+  base::WaitableEvent read_finished;
+  ExceptionOr<ByteArray> read_result;
+  input_stream_->SetOnReadPendingForTesting(base::BindOnce(
+      &base::WaitableEvent::Signal, base::Unretained(&read_pending)));
+
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                   base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+                   read_result = input_stream_->Read(4);
+                   read_finished.Signal();
+                 }));
+
+  read_pending.Wait();
+
+  EXPECT_EQ(Exception::kSuccess, input_stream_->Close().value);
+  input_stream_->WaitForInFlightReads();
+  // Subsequent calls with no in-flight reads return immediately.
+  input_stream_->WaitForInFlightReads();
+
+  read_finished.Wait();
+  EXPECT_EQ(Exception::kIo, read_result.exception());
+}
+
+TEST_F(InputStreamImplTest, ConcurrentReadSupersedesPendingRead) {
+  base::WaitableEvent read1_pending;
+  base::WaitableEvent read1_finished;
+  ExceptionOr<ByteArray> read1_result;
+  input_stream_->SetOnReadPendingForTesting(base::BindOnce(
+      &base::WaitableEvent::Signal, base::Unretained(&read1_pending)));
+
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                   base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+                   read1_result = input_stream_->Read(4);
+                   read1_finished.Signal();
+                 }));
+
+  read1_pending.Wait();
+
+  base::WaitableEvent read2_pending;
+  base::WaitableEvent read2_finished;
+  ExceptionOr<ByteArray> read2_result;
+  input_stream_->SetOnReadPendingForTesting(base::BindOnce(
+      &base::WaitableEvent::Signal, base::Unretained(&read2_pending)));
+
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                   base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+                   read2_result = input_stream_->Read(4);
+                   read2_finished.Signal();
+                 }));
+
+  read1_finished.Wait();
+  read2_pending.Wait();
+  EXPECT_EQ(Exception::kIo, read1_result.exception());
+
+  std::string message = "test";
+  size_t bytes_written = 0;
+  EXPECT_EQ(MOJO_RESULT_OK, receive_stream_->WriteData(
+                                base::as_byte_span(message),
+                                MOJO_WRITE_DATA_FLAG_NONE, bytes_written));
+  EXPECT_EQ(message.size(), bytes_written);
+
+  read2_finished.Wait();
+  ASSERT_TRUE(read2_result.ok());
+  EXPECT_EQ(message, std::string(read2_result.result()));
+}
+
+TEST_F(InputStreamImplTest, ConcurrentReadAndClose) {
+  auto reader_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  auto closer_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+
+  // Repeatedly race Read() and Close() across threads to verify no lost-signal
+  // deadlock can occur regardless of StartRead()/DoClose() ordering.
+  for (int i = 0; i < 25; ++i) {
+    mojo::ScopedDataPipeProducerHandle producer;
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    ASSERT_EQ(MOJO_RESULT_OK,
+              mojo::CreateDataPipe(/*options=*/nullptr, producer, consumer));
+
+    std::unique_ptr<InputStreamImpl> stream;
+    base::WaitableEvent created;
+    task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                             stream = std::make_unique<InputStreamImpl>(
+                                 connections::mojom::Medium::kBluetooth,
+                                 task_runner_, std::move(consumer));
+                             created.Signal();
+                           }));
+    created.Wait();
+
+    base::WaitableEvent reader_ready;
+    base::WaitableEvent closer_ready;
+    base::WaitableEvent start;
+    base::WaitableEvent read_done;
+    base::WaitableEvent close_done;
+    ExceptionOr<ByteArray> read_result;
+
+    reader_runner->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&] {
+          base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+          reader_ready.Signal();
+          start.Wait();
+          read_result = stream->Read(4);
+          read_done.Signal();
+        }));
+    closer_runner->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&] {
+          base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+          closer_ready.Signal();
+          start.Wait();
+          EXPECT_EQ(Exception::kSuccess, stream->Close().value);
+          close_done.Signal();
+        }));
+
+    reader_ready.Wait();
+    closer_ready.Wait();
+    start.Signal();
+
+    read_done.Wait();
+    close_done.Wait();
+    EXPECT_EQ(Exception::kIo, read_result.exception());
+
+    base::WaitableEvent destroyed;
+    task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                             stream.reset();
+                             destroyed.Signal();
+                           }));
+    destroyed.Wait();
+  }
 }
 
 }  // namespace nearby::chrome

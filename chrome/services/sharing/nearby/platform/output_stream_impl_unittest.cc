@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -96,7 +97,7 @@ class OutputStreamImplTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::ScopedDataPipeConsumerHandle send_stream_;
-  std::unique_ptr<OutputStream> output_stream_;
+  std::unique_ptr<OutputStreamImpl> output_stream_;
 };
 
 TEST_F(OutputStreamImplTest, Write) {
@@ -219,6 +220,182 @@ TEST_F(OutputStreamImplTest, ResetHandle) {
   std::string message = "SentMessage";
   ByteArray byte_array(message);
   EXPECT_EQ(Exception::kIo, output_stream_->Write(byte_array).value);
+}
+
+TEST_F(OutputStreamImplTest, WriteEmptyByteArray) {
+  EXPECT_EQ(Exception::kSuccess, output_stream_->Write(ByteArray()).value);
+  EXPECT_EQ(Exception::kSuccess, output_stream_->Close().value);
+}
+
+TEST_F(OutputStreamImplTest, WaitForInFlightWrites) {
+  base::WaitableEvent write_pending;
+  base::WaitableEvent write_finished;
+  Exception write_result;
+  output_stream_->SetOnWritePendingForTesting(base::BindOnce(
+      &base::WaitableEvent::Signal, base::Unretained(&write_pending)));
+
+  constexpr uint32_t kMessageSize = 1024 * 1024;
+  ByteArray payload(std::string(kMessageSize, 'A'));
+
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                   base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+                   write_result = output_stream_->Write(payload);
+                   write_finished.Signal();
+                 }));
+
+  write_pending.Wait();
+  base::WaitableEvent task_runner_flushed;
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
+                                base::Unretained(&task_runner_flushed)));
+  task_runner_flushed.Wait();
+
+  EXPECT_EQ(Exception::kSuccess, output_stream_->Close().value);
+  output_stream_->WaitForInFlightWrites();
+  // Subsequent calls with no in-flight writes return immediately.
+  output_stream_->WaitForInFlightWrites();
+
+  write_finished.Wait();
+  EXPECT_EQ(Exception::kIo, write_result.value);
+}
+
+TEST_F(OutputStreamImplTest, ConcurrentWriteSupersedesPendingWrite) {
+  base::WaitableEvent write1_pending;
+  base::WaitableEvent write1_finished;
+  Exception write1_result;
+  output_stream_->SetOnWritePendingForTesting(base::BindOnce(
+      &base::WaitableEvent::Signal, base::Unretained(&write1_pending)));
+
+  constexpr uint32_t kMessageSize = 1024 * 1024;
+  ByteArray payload1(std::string(kMessageSize, 'A'));
+
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                   base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+                   write1_result = output_stream_->Write(payload1);
+                   write1_finished.Signal();
+                 }));
+
+  write1_pending.Wait();
+  base::WaitableEvent task_runner_flushed;
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
+                                base::Unretained(&task_runner_flushed)));
+  task_runner_flushed.Wait();
+
+  base::WaitableEvent write2_pending;
+  base::WaitableEvent write2_finished;
+  Exception write2_result;
+  output_stream_->SetOnWritePendingForTesting(base::BindOnce(
+      &base::WaitableEvent::Signal, base::Unretained(&write2_pending)));
+
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                   base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+                   write2_result = output_stream_->Write(ByteArray("second"));
+                   write2_finished.Signal();
+                 }));
+
+  write1_finished.Wait();
+  write2_pending.Wait();
+  EXPECT_EQ(Exception::kIo, write1_result.value);
+
+  std::string received;
+  std::vector<char> chunk(64 * 1024);
+  while (!write2_finished.IsSignaled()) {
+    size_t bytes_read = 0;
+    MojoResult result =
+        send_stream_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                               base::as_writable_byte_span(chunk), bytes_read);
+    if (result == MOJO_RESULT_OK) {
+      received.append(chunk.data(), bytes_read);
+    }
+  }
+  write2_finished.Wait();
+  while (true) {
+    size_t bytes_read = 0;
+    MojoResult result =
+        send_stream_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                               base::as_writable_byte_span(chunk), bytes_read);
+    if (result != MOJO_RESULT_OK || bytes_read == 0) {
+      break;
+    }
+    received.append(chunk.data(), bytes_read);
+  }
+
+  EXPECT_EQ(Exception::kSuccess, write2_result.value);
+  EXPECT_TRUE(received.ends_with("second"));
+}
+
+TEST_F(OutputStreamImplTest, ConcurrentWriteAndClose) {
+  auto writer_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  auto closer_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+
+  // Larger than the default 64KB Mojo data pipe capacity so Write() cannot
+  // finish without a consumer draining the pipe.
+  constexpr uint32_t kMessageSize = 128 * 1024;
+  ByteArray payload(std::string(kMessageSize, 'A'));
+
+  // Repeatedly race Write() and Close() across threads to verify no lost-signal
+  // deadlock can occur regardless of StartWrite()/DoClose() ordering.
+  for (int i = 0; i < 25; ++i) {
+    mojo::ScopedDataPipeProducerHandle producer;
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    ASSERT_EQ(MOJO_RESULT_OK,
+              mojo::CreateDataPipe(/*options=*/nullptr, producer, consumer));
+
+    std::unique_ptr<OutputStreamImpl> stream;
+    base::WaitableEvent created;
+    task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                             stream = std::make_unique<OutputStreamImpl>(
+                                 connections::mojom::Medium::kBluetooth,
+                                 task_runner_, std::move(producer));
+                             created.Signal();
+                           }));
+    created.Wait();
+
+    base::WaitableEvent writer_ready;
+    base::WaitableEvent closer_ready;
+    base::WaitableEvent start;
+    base::WaitableEvent write_done;
+    base::WaitableEvent close_done;
+    Exception write_result;
+
+    writer_runner->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&] {
+          base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+          writer_ready.Signal();
+          start.Wait();
+          write_result = stream->Write(payload);
+          write_done.Signal();
+        }));
+    closer_runner->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&] {
+          base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+          closer_ready.Signal();
+          start.Wait();
+          EXPECT_EQ(Exception::kSuccess, stream->Close().value);
+          close_done.Signal();
+        }));
+
+    writer_ready.Wait();
+    closer_ready.Wait();
+    start.Signal();
+
+    write_done.Wait();
+    close_done.Wait();
+    EXPECT_EQ(Exception::kIo, write_result.value);
+
+    base::WaitableEvent destroyed;
+    task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                             stream.reset();
+                             destroyed.Signal();
+                           }));
+    destroyed.Wait();
+  }
 }
 
 }  // namespace nearby::chrome

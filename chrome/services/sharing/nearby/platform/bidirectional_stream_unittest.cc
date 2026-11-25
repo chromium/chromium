@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -132,6 +133,121 @@ TEST_F(BidirectionalStreamTest, CloseCalledFromMultipleThreads) {
         quit_callback);
   }
   run_loop.Run();
+}
+
+TEST_F(BidirectionalStreamTest, DestroyWhileReadBlocked) {
+  base::WaitableEvent read_pending;
+  base::WaitableEvent read_finished;
+  ExceptionOr<ByteArray> read_result;
+  InputStream* input_stream = bidirectional_stream_->GetInputStream();
+  bidirectional_stream_->input_stream_for_testing()->SetOnReadPendingForTesting(
+      base::BindOnce(&base::WaitableEvent::Signal,
+                     base::Unretained(&read_pending)));
+
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                   base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+                   read_result = input_stream->Read(4);
+                   read_finished.Signal();
+                 }));
+
+  // Wait until StartRead() has registered the pending read on |task_runner_|.
+  read_pending.Wait();
+
+  // Destroying |bidirectional_stream_| must wait for the blocked Read() to
+  // unwind cleanly without use-after-free, deadlock, or CHECK failure.
+  bidirectional_stream_.reset();
+
+  read_finished.Wait();
+  EXPECT_EQ(Exception::kIo, read_result.exception());
+}
+
+TEST_F(BidirectionalStreamTest, DestroyWhileWriteBlocked) {
+  base::WaitableEvent write_pending;
+  base::WaitableEvent write_finished;
+  Exception write_result;
+  OutputStream* output_stream = bidirectional_stream_->GetOutputStream();
+  bidirectional_stream_->output_stream_for_testing()
+      ->SetOnWritePendingForTesting(base::BindOnce(
+          &base::WaitableEvent::Signal, base::Unretained(&write_pending)));
+
+  // Write a payload larger than the default 64KB Mojo data pipe capacity so
+  // Write() blocks waiting for the pipe to drain.
+  constexpr uint32_t kMessageSize = 1024 * 1024;
+  ByteArray payload(std::string(kMessageSize, 'A'));
+
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                   base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+                   write_result = output_stream->Write(payload);
+                   write_finished.Signal();
+                 }));
+
+  // Wait until StartWrite() has registered the pending write on |task_runner_|,
+  // then flush |task_runner_| once so SendMore() has filled the pipe and parked
+  // waiting for writable space.
+  write_pending.Wait();
+  base::WaitableEvent task_runner_flushed;
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
+                                base::Unretained(&task_runner_flushed)));
+  task_runner_flushed.Wait();
+
+  // Destroying |bidirectional_stream_| must wait for the blocked Write() to
+  // unwind cleanly without use-after-free, deadlock, or CHECK failure.
+  bidirectional_stream_.reset();
+
+  write_finished.Wait();
+  EXPECT_EQ(Exception::kIo, write_result.value);
+}
+
+TEST_F(BidirectionalStreamTest, DestroyWhileReadAndWriteBlocked) {
+  base::WaitableEvent read_pending;
+  base::WaitableEvent read_finished;
+  base::WaitableEvent write_pending;
+  base::WaitableEvent write_finished;
+  ExceptionOr<ByteArray> read_result;
+  Exception write_result;
+  InputStream* input_stream = bidirectional_stream_->GetInputStream();
+  OutputStream* output_stream = bidirectional_stream_->GetOutputStream();
+  bidirectional_stream_->input_stream_for_testing()->SetOnReadPendingForTesting(
+      base::BindOnce(&base::WaitableEvent::Signal,
+                     base::Unretained(&read_pending)));
+  bidirectional_stream_->output_stream_for_testing()
+      ->SetOnWritePendingForTesting(base::BindOnce(
+          &base::WaitableEvent::Signal, base::Unretained(&write_pending)));
+
+  constexpr uint32_t kMessageSize = 1024 * 1024;
+  ByteArray payload(std::string(kMessageSize, 'A'));
+
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                   base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+                   read_result = input_stream->Read(4);
+                   read_finished.Signal();
+                 }));
+
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                   base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+                   write_result = output_stream->Write(payload);
+                   write_finished.Signal();
+                 }));
+
+  read_pending.Wait();
+  write_pending.Wait();
+  base::WaitableEvent task_runner_flushed;
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
+                                base::Unretained(&task_runner_flushed)));
+  task_runner_flushed.Wait();
+
+  bidirectional_stream_.reset();
+
+  read_finished.Wait();
+  write_finished.Wait();
+  EXPECT_EQ(Exception::kIo, read_result.exception());
+  EXPECT_EQ(Exception::kIo, write_result.value);
 }
 
 }  // namespace nearby::chrome
