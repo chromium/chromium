@@ -6,11 +6,16 @@ import("//build/buildflag_header.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//testing/test.gni")
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+}
+
+# Disable DEX on Windows Official Builds.
+_enable_dex = !(is_win && is_official_build)
+
 buildflag_header("buildflags") {
   header = "buildflags.h"
 
-  # Disable DEX on Windows Official Builds.
-  _enable_dex = !(is_win && is_official_build)
   _enable_elf = true
   _enable_win = true
 
@@ -221,6 +226,55 @@ if (is_win) {
   }
 }
 
+if (is_android && _enable_dex) {
+  template("dex_test_archive") {
+    action(target_name) {
+      testonly = true
+      visibility = [ ":*" ]
+      script = "testdata/build_dex_test_archive.py"
+      inputs = [
+        "//third_party/jdk/current/bin/javac",
+        "//third_party/jdk/current/bin/java",
+        "//third_party/r8/cipd/lib/r8.jar",
+        android_sdk_jar,
+        invoker.java_src,
+      ]
+      _output = "$root_out_dir/zucchini_testdata/${target_name}.zip"
+      outputs = [ _output ]
+      args = [
+        "--javac",
+        rebase_path("//third_party/jdk/current/bin/javac", root_build_dir),
+        "--java",
+        rebase_path("//third_party/jdk/current/bin/java", root_build_dir),
+        "--r8-jar",
+        rebase_path("//third_party/r8/cipd/lib/r8.jar", root_build_dir),
+        "--android-jar",
+        rebase_path(android_sdk_jar, root_build_dir),
+        "--min-api",
+        "${invoker.min_api}",
+        "--expected-dex-version",
+        invoker.expected_dex_version,
+        "--java-src",
+        rebase_path(invoker.java_src, root_build_dir),
+        "--output",
+        rebase_path(_output, root_build_dir),
+      ]
+    }
+  }
+
+  dex_test_archive("dex_v039_old") {
+    java_src = "testdata/dex_v039_old/TestSample.java"
+    min_api = 28
+    expected_dex_version = "039"
+  }
+
+  dex_test_archive("dex_v039_new") {
+    java_src = "testdata/dex_v039_new/TestSample.java"
+    min_api = 28
+    expected_dex_version = "039"
+  }
+}
+
 test("zucchini_unittests") {
   sources = [
     "abs32_utils_unittest.cc",
@@ -276,6 +330,28 @@ test("zucchini_unittests") {
 
   if (is_win) {
     sources += [ "exception_filter_helper_win_unittest.cc" ]
+  }
+}
+
+if (is_android && _enable_dex) {
+  test("zucchini_dex_integration_test") {
+    sources = [ "dex_integration_unittest.cc" ]
+
+    deps = [
+      ":zucchini_lib",
+      "//base",
+      "//base/test:run_all_unittests",
+      "//base/test:test_support",
+      "//testing/gtest",
+    ]
+
+    data_deps = [
+      ":dex_v039_new",
+      ":dex_v039_old",
+    ]
+
+    data = get_target_outputs(":dex_v039_old") +
+           get_target_outputs(":dex_v039_new")
   }
 }
 
