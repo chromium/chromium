@@ -6,7 +6,10 @@
 
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -16,18 +19,60 @@ namespace {
 // Point size of the SF symbols in chips and labeled items.
 constexpr CGFloat kIconSize = 16.0;
 
+// Point size of the header button symbols.
+constexpr CGFloat kHeaderButtonPointSize = 14.0;
+
+// Accessibility label of the header pause button.
+// TODO(crbug.com/573515833): Localize the string.
+NSString* const kPauseButtonTitle = @"Pause";
+
+// Returns the header button pausing the task.
+IntelligenceHeaderItem* PauseHeaderItem() {
+  // The mocks use the stop symbol for the pause button.
+  return [IntelligenceHeaderItem
+           itemWithIdentifier:kActuationHeaderPauseItemIdentifier
+                         icon:SymbolWithPointSize(SymbolStopFill,
+                                                  kHeaderButtonPointSize)
+                        title:kPauseButtonTitle
+      accessibilityIdentifier:
+          kActuationHeaderPauseButtonAccessibilityIdentifier];
+}
+
+// Returns the primary header button for `task_state`: a pausable task shows
+// pause, and any other task shows stop.
+IntelligenceHeaderItem* PrimaryHeaderItem(actor::ActorTaskState task_state) {
+  switch (task_state) {
+    case actor::ActorTaskState::kInit:
+    case actor::ActorTaskState::kActing:
+    case actor::ActorTaskState::kReflecting:
+    case actor::ActorTaskState::kWaitingOnUser:
+      return PauseHeaderItem();
+    case actor::ActorTaskState::kPausedByActor:
+    case actor::ActorTaskState::kPausedByUser:
+    case actor::ActorTaskState::kCancelled:
+    case actor::ActorTaskState::kFinished:
+    case actor::ActorTaskState::kFailed:
+      return ActuationHeaderCloseItem();
+  }
+}
+
 // Returns header content with a status message above `task_title`.
-ActuationHeaderContent* ContentWithStatus(int message_id,
-                                          NSString* task_title) {
+ActuationHeaderContent* ContentWithStatus(
+    int message_id,
+    NSString* task_title,
+    IntelligenceHeaderItem* primary_item) {
   return [[ActuationHeaderContent alloc]
       initWithTitle:l10n_util::GetNSString(message_id)
-           subtitle:task_title];
+           subtitle:task_title
+        primaryItem:primary_item];
 }
 
 // Returns the header content for the minimized display mode.
-ActuationHeaderContent* MinimizedHeaderContent(NSString* task_title,
-                                               actor::ActorTaskState task_state,
-                                               NSString* current_step) {
+ActuationHeaderContent* MinimizedHeaderContent(
+    NSString* task_title,
+    actor::ActorTaskState task_state,
+    NSString* current_step,
+    IntelligenceHeaderItem* primary_item) {
   switch (task_state) {
     case actor::ActorTaskState::kInit:
     case actor::ActorTaskState::kActing:
@@ -37,18 +82,23 @@ ActuationHeaderContent* MinimizedHeaderContent(NSString* task_title,
       // TODO(crbug.com/571141885): Show a placeholder subtitle for the `kInit`
       // state, since at that point we don't have a task update yet.
       return [[ActuationHeaderContent alloc] initWithTitle:task_title
-                                                  subtitle:current_step];
+                                                  subtitle:current_step
+                                               primaryItem:primary_item];
     case actor::ActorTaskState::kWaitingOnUser:
-      return ContentWithStatus(IDS_IOS_ACTOR_HEADER_INPUT_NEEDED, task_title);
+      return ContentWithStatus(IDS_IOS_ACTOR_HEADER_INPUT_NEEDED, task_title,
+                               primary_item);
     case actor::ActorTaskState::kFinished:
-      return ContentWithStatus(IDS_IOS_ACTOR_HEADER_TASK_DONE, task_title);
+      return ContentWithStatus(IDS_IOS_ACTOR_HEADER_TASK_DONE, task_title,
+                               primary_item);
     // `kCancelled` is meant to only represent user cancellations. Other stop
     // reasons are expected to map to `kFinished` or `kFailed` once
     // crbug.com/532978481 is fixed.
     case actor::ActorTaskState::kCancelled:
-      return ContentWithStatus(IDS_IOS_ACTOR_HEADER_TASK_STOPPED, task_title);
+      return ContentWithStatus(IDS_IOS_ACTOR_HEADER_TASK_STOPPED, task_title,
+                               primary_item);
     case actor::ActorTaskState::kFailed:
-      return ContentWithStatus(IDS_IOS_ACTOR_HEADER_TASK_FAILED, task_title);
+      return ContentWithStatus(IDS_IOS_ACTOR_HEADER_TASK_FAILED, task_title,
+                               primary_item);
   }
 }
 
@@ -109,32 +159,29 @@ ActuationWorklogChip* ActuationWorklogChipForToolType(
   }
 }
 
-ActuationHeaderPrimaryAction ActuationHeaderPrimaryActionForTaskState(
-    actor::ActorTaskState task_state) {
-  switch (task_state) {
-    case actor::ActorTaskState::kInit:
-    case actor::ActorTaskState::kActing:
-    case actor::ActorTaskState::kReflecting:
-    case actor::ActorTaskState::kWaitingOnUser:
-      return ActuationHeaderPrimaryAction::kPause;
-    case actor::ActorTaskState::kPausedByActor:
-    case actor::ActorTaskState::kPausedByUser:
-    case actor::ActorTaskState::kCancelled:
-    case actor::ActorTaskState::kFinished:
-    case actor::ActorTaskState::kFailed:
-      return ActuationHeaderPrimaryAction::kStop;
-  }
+IntelligenceHeaderItem* ActuationHeaderCloseItem() {
+  return [IntelligenceHeaderItem
+           itemWithIdentifier:kActuationHeaderCloseItemIdentifier
+                         icon:SymbolWithPointSize(SymbolXMark,
+                                                  kHeaderButtonPointSize)
+                        title:l10n_util::GetNSString(IDS_CLOSE)
+      accessibilityIdentifier:
+          kActuationHeaderCloseButtonAccessibilityIdentifier];
 }
 
 ActuationHeaderContentVariants* ActuationHeaderContentVariantsForTask(
     NSString* task_title,
     actor::ActorTaskState task_state,
     NSString* current_step) {
+  IntelligenceHeaderItem* primary_item = PrimaryHeaderItem(task_state);
   ActuationHeaderContent* default_content =
-      [[ActuationHeaderContent alloc] initWithTitle:task_title subtitle:nil];
+      [[ActuationHeaderContent alloc] initWithTitle:task_title
+                                           subtitle:nil
+                                        primaryItem:primary_item];
   return [[ActuationHeaderContentVariants alloc]
       initWithMinimizedContent:MinimizedHeaderContent(task_title, task_state,
-                                                      current_step)
+                                                      current_step,
+                                                      primary_item)
                 compactContent:default_content
                expandedContent:default_content];
 }

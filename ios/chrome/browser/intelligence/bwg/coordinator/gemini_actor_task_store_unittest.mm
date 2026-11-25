@@ -20,9 +20,11 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion_favicon_data_source.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -258,6 +260,12 @@ class GeminiActorTaskStoreTest : public PlatformTest {
     return [observer_.state.headerContent contentForDisplayMode:mode];
   }
 
+  // Returns the identifier of the header's primary item in the latest state.
+  NSString* HeaderPrimaryItemIdentifier() {
+    return HeaderContent(ActuationWorklogDisplayModeCompact)
+        .primaryItem.identifier;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -345,14 +353,14 @@ TEST_F(GeminiActorTaskStoreTest, IgnoresEmptyAndDuplicateUpdates) {
 // Tests that state changes are published.
 TEST_F(GeminiActorTaskStoreTest, StateChangeIsPublished) {
   AttachAndRegister();
-  EXPECT_EQ(observer_.state.headerPrimaryAction,
-            ActuationHeaderPrimaryAction::kPause);
+  EXPECT_NSEQ(HeaderPrimaryItemIdentifier(),
+              kActuationHeaderPauseItemIdentifier);
 
   [store_ actorTaskWithID:task_id_ didChangeState:kFinished fromState:kActing];
 
   EXPECT_FALSE(observer_.state.actuationActive);
-  EXPECT_EQ(observer_.state.headerPrimaryAction,
-            ActuationHeaderPrimaryAction::kStop);
+  EXPECT_NSEQ(HeaderPrimaryItemIdentifier(),
+              kActuationHeaderCloseItemIdentifier);
   EXPECT_NSEQ(HeaderContent(ActuationWorklogDisplayModeMinimized).title,
               l10n_util::GetNSString(IDS_IOS_ACTOR_HEADER_TASK_DONE));
 }
@@ -938,8 +946,8 @@ TEST_F(GeminiActorTaskStoreTest, PauseShowsResumeCard) {
   // Drain remaining notifications before checking that no entry is added.
   actor::FlushCurrentSequence();
   EXPECT_EQ(observer_.items.count, item_count);
-  EXPECT_EQ(observer_.state.headerPrimaryAction,
-            ActuationHeaderPrimaryAction::kStop);
+  EXPECT_NSEQ(HeaderPrimaryItemIdentifier(),
+              kActuationHeaderCloseItemIdentifier);
   EXPECT_EQ(observer_.intervention.type, ActuationInterventionType::kCard);
   EXPECT_NSEQ(observer_.intervention.title, @"Task paused");
   EXPECT_NSEQ(observer_.intervention.subtitle, @(kTaskTitle));
@@ -1069,13 +1077,13 @@ TEST_F(GeminiActorTaskStoreTest, PauseTaskWhileConfirmingShowsResumeCard) {
   AttachAndRegister();
   ASSERT_EQ(RequestConfirmation(task_id_), std::nullopt);
   ASSERT_NSEQ(observer_.intervention.title, @(kConfirmationTitle));
-  ASSERT_EQ(observer_.state.headerPrimaryAction,
-            ActuationHeaderPrimaryAction::kPause);
+  ASSERT_NSEQ(HeaderPrimaryItemIdentifier(),
+              kActuationHeaderPauseItemIdentifier);
 
   [store_ pauseTask];
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return observer_.state.headerPrimaryAction ==
-           ActuationHeaderPrimaryAction::kStop;
+    return [HeaderPrimaryItemIdentifier()
+        isEqualToString:kActuationHeaderCloseItemIdentifier];
   }));
 
   EXPECT_EQ(actor_service_->GetActiveTaskState(), kPausedByUser);
@@ -1210,8 +1218,8 @@ TEST_F(GeminiActorTaskStoreTest,
 
   [store_ pauseTask];
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return observer_.state.headerPrimaryAction ==
-           ActuationHeaderPrimaryAction::kStop;
+    return [HeaderPrimaryItemIdentifier()
+        isEqualToString:kActuationHeaderCloseItemIdentifier];
   }));
   EXPECT_NSEQ(observer_.intervention.title, @"Task paused");
   EXPECT_EQ(observer_.items.count, item_count);

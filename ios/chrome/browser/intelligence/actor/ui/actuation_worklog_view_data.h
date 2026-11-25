@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class ActorFormSuggestion;
+@class IntelligenceHeaderItem;
 
 // Supported layout styles for the actuation worklog item.
 enum class ActuationWorklogItemStyle {
@@ -219,15 +220,8 @@ enum class InterventionActionIdentifier : NSInteger {
 
 @end
 
-// Action of the header's primary button.
-enum class ActuationHeaderPrimaryAction {
-  // Pauses the running task.
-  kPause,
-  // Stops the task.
-  kStop,
-};
-
-// View data object describing the text displayed in the actuation header.
+// View data object describing the content and primary button displayed in the
+// actuation header.
 @interface ActuationHeaderContent : NSObject
 
 // Main title text.
@@ -236,9 +230,14 @@ enum class ActuationHeaderPrimaryAction {
 // Optional subtitle text displayed below `title`.
 @property(nonatomic, copy, readonly) NSString* subtitle;
 
+// Primary button of the header, if any.
+@property(nonatomic, strong, readonly) IntelligenceHeaderItem* primaryItem;
+
 // Designated initializer.
 - (instancetype)initWithTitle:(NSString*)title
-                     subtitle:(NSString*)subtitle NS_DESIGNATED_INITIALIZER;
+                     subtitle:(NSString*)subtitle
+                  primaryItem:(IntelligenceHeaderItem*)primaryItem
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -290,10 +289,6 @@ enum class ActuationHeaderPrimaryAction {
 @property(nonatomic, assign, readonly, getter=isActuationActive)
     BOOL actuationActive;
 
-// Action of the header's primary button.
-@property(nonatomic, assign, readonly)
-    ActuationHeaderPrimaryAction headerPrimaryAction;
-
 // Header content to display in each display mode.
 @property(nonatomic, strong, readonly)
     ActuationHeaderContentVariants* headerContent;
@@ -323,7 +318,6 @@ enum class ActuationHeaderPrimaryAction {
 // valid index in `suggestions` when set or `NSNotFound` when `nil`.
 - (instancetype)
     initWithActuationActive:(BOOL)actuationActive
-        headerPrimaryAction:(ActuationHeaderPrimaryAction)headerPrimaryAction
               headerContent:(ActuationHeaderContentVariants*)headerContent
                     entries:(NSArray<ActuationWorklogEntry*>*)entries
                intervention:(ActuationInterventionData*)intervention

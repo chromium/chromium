@@ -291,6 +291,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/intelligence/proto_wrappers:test_support",
+    "//ios/chrome/browser/intelligence/ui",
     "//ios/chrome/browser/intelligence/zero_state_suggestions",
     "//ios/chrome/browser/intelligence/zero_state_suggestions/ui",
     "//ios/chrome/browser/ntp/model",

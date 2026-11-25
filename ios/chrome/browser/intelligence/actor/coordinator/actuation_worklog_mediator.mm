@@ -80,7 +80,6 @@
   _state = state;
 
   [self.consumer setActuationActive:state.actuationActive];
-  [self.consumer setHeaderPrimaryAction:state.headerPrimaryAction];
   [self.consumer setHeaderContentVariants:state.headerContent];
   [self updateEntriesWithDiff:diff
                     lastEntry:state.entries.lastObject

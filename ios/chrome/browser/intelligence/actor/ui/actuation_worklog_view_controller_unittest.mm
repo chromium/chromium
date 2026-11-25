@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_view.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
@@ -45,6 +46,29 @@ using chrome_test_util::FindViewsByClass;
 // Arbitrary identifier for the test action.
 constexpr InterventionActionIdentifier kActionIdentifier =
     InterventionActionIdentifier::kContinue;
+
+// Returns a header item with `identifier` and accessibility identifier
+// `accessibility_id`.
+IntelligenceHeaderItem* CreateHeaderItem(NSString* identifier,
+                                         NSString* accessibility_id) {
+  return [IntelligenceHeaderItem itemWithIdentifier:identifier
+                                               icon:[[UIImage alloc] init]
+                                              title:@"Header item"
+                            accessibilityIdentifier:accessibility_id];
+}
+
+// Returns header variants displaying `primary_item` in every mode.
+ActuationHeaderContentVariants* CreateHeaderContentVariants(
+    IntelligenceHeaderItem* primary_item) {
+  ActuationHeaderContent* content =
+      [[ActuationHeaderContent alloc] initWithTitle:@"Task Title"
+                                           subtitle:nil
+                                        primaryItem:primary_item];
+  return
+      [[ActuationHeaderContentVariants alloc] initWithMinimizedContent:content
+                                                        compactContent:content
+                                                       expandedContent:content];
+}
 
 class ActuationWorklogViewControllerTest : public PlatformTest {
  protected:
@@ -107,13 +131,7 @@ TEST_F(ActuationWorklogViewControllerTest, SetActuationActive) {
 
 // Tests that reset clears title and worklog content.
 TEST_F(ActuationWorklogViewControllerTest, TestResetClearsContent) {
-  ActuationHeaderContent* header_content =
-      [[ActuationHeaderContent alloc] initWithTitle:@"Task Title" subtitle:nil];
-  [consumer()
-      setHeaderContentVariants:[[ActuationHeaderContentVariants alloc]
-                                   initWithMinimizedContent:header_content
-                                             compactContent:header_content
-                                            expandedContent:header_content]];
+  [consumer() setHeaderContentVariants:CreateHeaderContentVariants(nil)];
   ActuationWorklogItem* item =
       [ActuationWorklogItem simpleItemWithTitle:@"Step 1"];
   [consumer() updateWorklogWithItem:item chip:nil animated:NO];
@@ -139,13 +157,16 @@ TEST_F(ActuationWorklogViewControllerTest, TestHeaderContentVariants) {
 
   ActuationHeaderContent* minimized =
       [[ActuationHeaderContent alloc] initWithTitle:@"Minimized Title"
-                                           subtitle:@"Minimized Subtitle"];
+                                           subtitle:@"Minimized Subtitle"
+                                        primaryItem:nil];
   ActuationHeaderContent* compact =
       [[ActuationHeaderContent alloc] initWithTitle:@"Compact Title"
-                                           subtitle:nil];
+                                           subtitle:nil
+                                        primaryItem:nil];
   ActuationHeaderContent* expanded =
       [[ActuationHeaderContent alloc] initWithTitle:@"Expanded Title"
-                                           subtitle:nil];
+                                           subtitle:nil
+                                        primaryItem:nil];
   [consumer() setHeaderContentVariants:[[ActuationHeaderContentVariants alloc]
                                            initWithMinimizedContent:minimized
                                                      compactContent:compact
@@ -220,9 +241,49 @@ TEST_F(ActuationWorklogViewControllerTest, TestSameInterventionIsNotRedrawn) {
   EXPECT_NE(FindViewById(view_controller_.view, button_id), nil);
 }
 
-// Tests that the header's primary button pauses or stops the task according
-// to the primary action, and that reset restores the stop button.
-TEST_F(ActuationWorklogViewControllerTest, TestHeaderPrimaryAction) {
+// Tests that the header shows the close button without variants, displays the
+// primary item of the current display mode (or none when nil), routes its taps
+// to the mutator by identifier, keeps the button while the identifier is
+// unchanged, and that reset restores the close button.
+TEST_F(ActuationWorklogViewControllerTest, TestHeaderPrimaryItem) {
+  UIButton* fallback_close_button = FindViewById<UIButton>(
+      view_controller_.view,
+      kActuationHeaderCloseButtonAccessibilityIdentifier);
+  ASSERT_NE(fallback_close_button, nil);
+  [fallback_close_button
+      sendActionsForControlEvents:UIControlEventPrimaryActionTriggered];
+  EXPECT_TRUE(fake_mutator_.stopActuationCalled);
+  fake_mutator_.stopActuationCalled = NO;
+
+  IntelligenceHeaderItem* pause_item =
+      CreateHeaderItem(kActuationHeaderPauseItemIdentifier,
+                       kActuationHeaderPauseButtonAccessibilityIdentifier);
+  IntelligenceHeaderItem* close_item =
+      CreateHeaderItem(kActuationHeaderCloseItemIdentifier,
+                       kActuationHeaderCloseButtonAccessibilityIdentifier);
+
+  [consumer() setHeaderContentVariants:CreateHeaderContentVariants(pause_item)];
+  UIButton* pause_button = FindViewById<UIButton>(
+      view_controller_.view,
+      kActuationHeaderPauseButtonAccessibilityIdentifier);
+  ASSERT_NE(pause_button, nil);
+  [pause_button
+      sendActionsForControlEvents:UIControlEventPrimaryActionTriggered];
+  EXPECT_TRUE(fake_mutator_.pauseActuationCalled);
+  EXPECT_FALSE(fake_mutator_.stopActuationCalled);
+
+  [consumer() setHeaderContentVariants:
+                  CreateHeaderContentVariants(CreateHeaderItem(
+                      kActuationHeaderPauseItemIdentifier,
+                      kActuationHeaderPauseButtonAccessibilityIdentifier))];
+  EXPECT_EQ(FindViewById(view_controller_.view,
+                         kActuationHeaderPauseButtonAccessibilityIdentifier),
+            pause_button);
+
+  [consumer() setHeaderContentVariants:CreateHeaderContentVariants(close_item)];
+  EXPECT_EQ(FindViewById(view_controller_.view,
+                         kActuationHeaderPauseButtonAccessibilityIdentifier),
+            nil);
   UIButton* close_button = FindViewById<UIButton>(
       view_controller_.view,
       kActuationHeaderCloseButtonAccessibilityIdentifier);
@@ -231,19 +292,34 @@ TEST_F(ActuationWorklogViewControllerTest, TestHeaderPrimaryAction) {
       sendActionsForControlEvents:UIControlEventPrimaryActionTriggered];
   EXPECT_TRUE(fake_mutator_.stopActuationCalled);
 
-  [consumer() setHeaderPrimaryAction:ActuationHeaderPrimaryAction::kPause];
+  [consumer() setHeaderContentVariants:CreateHeaderContentVariants(nil)];
   EXPECT_EQ(FindViewById(view_controller_.view,
                          kActuationHeaderCloseButtonAccessibilityIdentifier),
             nil);
-  UIButton* pause_button = FindViewById<UIButton>(
-      view_controller_.view,
-      kActuationHeaderPauseButtonAccessibilityIdentifier);
-  ASSERT_NE(pause_button, nil);
-  [pause_button
-      sendActionsForControlEvents:UIControlEventPrimaryActionTriggered];
-  EXPECT_TRUE(fake_mutator_.pauseActuationCalled);
+  EXPECT_EQ(FindViewById(view_controller_.view,
+                         kActuationHeaderPauseButtonAccessibilityIdentifier),
+            nil);
 
-  [consumer() setHeaderPrimaryAction:ActuationHeaderPrimaryAction::kStop];
+  ActuationHeaderContent* minimized =
+      [[ActuationHeaderContent alloc] initWithTitle:@"Task Title"
+                                           subtitle:nil
+                                        primaryItem:close_item];
+  ActuationHeaderContent* compact =
+      [[ActuationHeaderContent alloc] initWithTitle:@"Task Title"
+                                           subtitle:nil
+                                        primaryItem:pause_item];
+  [consumer() setHeaderContentVariants:[[ActuationHeaderContentVariants alloc]
+                                           initWithMinimizedContent:minimized
+                                                     compactContent:compact
+                                                    expandedContent:compact]];
+  EXPECT_NE(FindViewById(view_controller_.view,
+                         kActuationHeaderPauseButtonAccessibilityIdentifier),
+            nil);
+  EXPECT_EQ(FindViewById(view_controller_.view,
+                         kActuationHeaderCloseButtonAccessibilityIdentifier),
+            nil);
+
+  view_controller_.displayMode = ActuationWorklogDisplayModeMinimized;
   EXPECT_EQ(FindViewById(view_controller_.view,
                          kActuationHeaderPauseButtonAccessibilityIdentifier),
             nil);
@@ -251,7 +327,7 @@ TEST_F(ActuationWorklogViewControllerTest, TestHeaderPrimaryAction) {
                          kActuationHeaderCloseButtonAccessibilityIdentifier),
             nil);
 
-  [consumer() setHeaderPrimaryAction:ActuationHeaderPrimaryAction::kPause];
+  view_controller_.displayMode = ActuationWorklogDisplayModeCompact;
   [consumer() reset];
   EXPECT_EQ(FindViewById(view_controller_.view,
                          kActuationHeaderPauseButtonAccessibilityIdentifier),

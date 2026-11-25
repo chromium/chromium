@@ -63,8 +63,6 @@ ActuationWorklogState* ActuationWorklogStateForBrowserActuationsBlock(
   // Completed tasks only display their entries, but a state requires a header.
   return [[ActuationWorklogState alloc]
       initWithActuationActive:NO
-          headerPrimaryAction:ActuationHeaderPrimaryActionForTaskState(
-                                  actor::ActorTaskState::kFinished)
                 headerContent:ActuationHeaderContentVariantsForTask(
                                   /*task_title=*/nil,
                                   actor::ActorTaskState::kFinished,

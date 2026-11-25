@@ -6,7 +6,9 @@
 
 #import <utility>
 
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -35,25 +37,50 @@ TEST_F(ActuationWorklogViewDataBuildersTest, TestNoChipForToolType) {
   EXPECT_FALSE(ActuationWorklogChipForToolType(kUnknown));
 }
 
-// Tests that the header's primary action is pause for a pausable task, and stop
-// for any other task.
+// Tests that the header's primary item pauses a pausable task, and stops any
+// other task, in every display mode.
 TEST_F(ActuationWorklogViewDataBuildersTest,
-       TestHeaderPrimaryActionForTaskState) {
-  const std::pair<actor::ActorTaskState, ActuationHeaderPrimaryAction>
-      kExpectations[] = {
-          {kInit, ActuationHeaderPrimaryAction::kPause},
-          {kActing, ActuationHeaderPrimaryAction::kPause},
-          {kReflecting, ActuationHeaderPrimaryAction::kPause},
-          {kWaitingOnUser, ActuationHeaderPrimaryAction::kPause},
-          {kPausedByActor, ActuationHeaderPrimaryAction::kStop},
-          {kPausedByUser, ActuationHeaderPrimaryAction::kStop},
-          {kCancelled, ActuationHeaderPrimaryAction::kStop},
-          {kFinished, ActuationHeaderPrimaryAction::kStop},
-          {kFailed, ActuationHeaderPrimaryAction::kStop},
-      };
-  for (const auto& [state, action] : kExpectations) {
-    SCOPED_TRACE(static_cast<int>(state));
-    EXPECT_EQ(ActuationHeaderPrimaryActionForTaskState(state), action);
+       TestHeaderPrimaryItemForTaskState) {
+  struct Expectation {
+    actor::ActorTaskState state;
+    NSString* identifier;
+    NSString* accessibility_id;
+  };
+  const Expectation kExpectations[] = {
+      {kInit, kActuationHeaderPauseItemIdentifier,
+       kActuationHeaderPauseButtonAccessibilityIdentifier},
+      {kActing, kActuationHeaderPauseItemIdentifier,
+       kActuationHeaderPauseButtonAccessibilityIdentifier},
+      {kReflecting, kActuationHeaderPauseItemIdentifier,
+       kActuationHeaderPauseButtonAccessibilityIdentifier},
+      {kWaitingOnUser, kActuationHeaderPauseItemIdentifier,
+       kActuationHeaderPauseButtonAccessibilityIdentifier},
+      {kPausedByActor, kActuationHeaderCloseItemIdentifier,
+       kActuationHeaderCloseButtonAccessibilityIdentifier},
+      {kPausedByUser, kActuationHeaderCloseItemIdentifier,
+       kActuationHeaderCloseButtonAccessibilityIdentifier},
+      {kCancelled, kActuationHeaderCloseItemIdentifier,
+       kActuationHeaderCloseButtonAccessibilityIdentifier},
+      {kFinished, kActuationHeaderCloseItemIdentifier,
+       kActuationHeaderCloseButtonAccessibilityIdentifier},
+      {kFailed, kActuationHeaderCloseItemIdentifier,
+       kActuationHeaderCloseButtonAccessibilityIdentifier},
+  };
+  for (const auto& expectation : kExpectations) {
+    SCOPED_TRACE(static_cast<int>(expectation.state));
+    ActuationHeaderContentVariants* variants =
+        ActuationHeaderContentVariantsForTask(kTaskTitle, expectation.state,
+                                              kCurrentStep);
+    for (ActuationWorklogDisplayMode mode :
+         {ActuationWorklogDisplayModeMinimized,
+          ActuationWorklogDisplayModeCompact,
+          ActuationWorklogDisplayModeExpanded}) {
+      SCOPED_TRACE(mode);
+      ActuationHeaderContent* content = [variants contentForDisplayMode:mode];
+      EXPECT_NSEQ(content.primaryItem.identifier, expectation.identifier);
+      EXPECT_NSEQ(content.primaryItem.accessibilityIdentifier,
+                  expectation.accessibility_id);
+    }
   }
 }
 

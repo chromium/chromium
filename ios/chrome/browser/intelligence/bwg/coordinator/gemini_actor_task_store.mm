@@ -643,8 +643,6 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
 - (void)publishState {
   _state = [[ActuationWorklogState alloc]
       initWithActuationActive:!actor::IsTerminalState(_taskState)
-          headerPrimaryAction:ActuationHeaderPrimaryActionForTaskState(
-                                  _taskState)
                 headerContent:ActuationHeaderContentVariantsForTask(
                                   _taskTitle, _taskState, _latestTaskUpdate)
                       entries:_entries

@@ -234,11 +234,14 @@ constexpr NSUInteger kMaxColumnActionCount = 3;
 
 @implementation ActuationHeaderContent
 
-- (instancetype)initWithTitle:(NSString*)title subtitle:(NSString*)subtitle {
+- (instancetype)initWithTitle:(NSString*)title
+                     subtitle:(NSString*)subtitle
+                  primaryItem:(IntelligenceHeaderItem*)primaryItem {
   self = [super init];
   if (self) {
     _title = [title copy];
     _subtitle = [subtitle copy];
+    _primaryItem = primaryItem;
   }
   return self;
 }
@@ -296,7 +299,6 @@ constexpr NSUInteger kMaxColumnActionCount = 3;
 
 - (instancetype)
     initWithActuationActive:(BOOL)actuationActive
-        headerPrimaryAction:(ActuationHeaderPrimaryAction)headerPrimaryAction
               headerContent:(ActuationHeaderContentVariants*)headerContent
                     entries:(NSArray<ActuationWorklogEntry*>*)entries
                intervention:(ActuationInterventionData*)intervention
@@ -317,7 +319,6 @@ constexpr NSUInteger kMaxColumnActionCount = 3;
   self = [super init];
   if (self) {
     _actuationActive = actuationActive;
-    _headerPrimaryAction = headerPrimaryAction;
     _headerContent = headerContent;
     _entries = [entries copy];
     _intervention = intervention;
