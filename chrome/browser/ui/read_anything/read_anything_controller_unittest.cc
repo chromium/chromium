@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -20,17 +21,18 @@
 #include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_PDF)
 #include "url/gurl.h"
-#endif  // BUILDFLAG(ENABLE_PDF)
 
 using read_anything::mojom::ReadAnythingOpenTrigger;
 using read_anything::mojom::ReadAnythingPresentationState;
@@ -151,6 +153,53 @@ class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
   void SetPresentationState(ReadAnythingPresentationState new_state) {
     controller_->set_presentation_state(new_state);
   }
+  void NotifyReadAnythingVisibilityChanged(content::Visibility visibility) {
+    controller_->OnReadAnythingVisibilityChanged(visibility);
+  }
+
+  // Creates a WebUI wrapper, simulates it becoming visible and shown, and
+  // returns ownership to the controller so the wrapper stays cached for reuse.
+  base::WeakPtr<content::WebContents> CreateAndCacheShownWebUIWrapper(
+      ReadAnythingPresentationState presentation) {
+    ReadAnythingContentsWrapper wrapper =
+        controller_->GetOrCreateWebUIWrapper(presentation);
+    base::WeakPtr<content::WebContents> contents =
+        wrapper->web_contents()->GetWeakPtr();
+    NotifyReadAnythingVisibilityChanged(content::Visibility::VISIBLE);
+    controller_->OnEntryShown(ReadAnythingOpenTrigger::kOmniboxChip);
+    NotifyReadAnythingVisibilityChanged(content::Visibility::HIDDEN);
+    controller_->TransferWebUiOwnership(std::move(wrapper), presentation);
+    controller_->OnEntryHidden();
+    return contents;
+  }
+
+  void ExpectShowImmersiveOpensIn(ReadAnythingPresentationState expected) {
+    base::HistogramTester histogram_tester;
+    if (expected == ReadAnythingPresentationState::kInSidePanel) {
+      EXPECT_CALL(mock_immersive_observer_, OnShowImmersive).Times(0);
+      EXPECT_CALL(*mock_side_panel_ui_,
+                  Show(SidePanelEntryId::kReadAnything, testing::_, testing::_))
+          .Times(1);
+    } else {
+      EXPECT_EQ(expected, ReadAnythingPresentationState::kInImmersiveOverlay);
+      EXPECT_CALL(mock_immersive_observer_,
+                  OnShowImmersive(ReadAnythingOpenTrigger::kOmniboxChip))
+          .Times(1);
+      EXPECT_CALL(*mock_side_panel_ui_,
+                  Show(SidePanelEntryId::kReadAnything, testing::_, testing::_))
+          .Times(0);
+    }
+    ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+    EXPECT_EQ(controller_->GetPresentationState(), expected);
+    if (expected == ReadAnythingPresentationState::kInSidePanel) {
+      histogram_tester.ExpectUniqueSample(
+          "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState",
+          ReadAnythingOpenTrigger::kOmniboxChip, 1);
+    } else {
+      histogram_tester.ExpectTotalCount(
+          "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState", 0);
+    }
+  }
 
   // Makes the hosts report to the controller when they show or hide Reading
   // Mode, like the real hosts. These tests only show the side panel by
@@ -261,6 +310,83 @@ TEST_F(ReadAnythingControllerUnitTest,
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState",
       ReadAnythingOpenTrigger::kOmniboxChip, 1);
+}
+
+TEST_F(ReadAnythingControllerUnitTest, PrimaryPageChanged_ResetsEmptyState) {
+  NavigateAndCommit(GURL("https://a.test/"));
+  SetPresentationState(ReadAnythingPresentationState::kInactive);
+  controller_->OnEmptyStateChanged(/*is_empty=*/true);
+
+  // The new page hasn't been distilled yet, so the previous page's empty state
+  // shouldn't redirect Reading Mode to the side panel.
+  NavigateAndCommit(GURL("https://b.test/"));
+
+  ExpectShowImmersiveOpensIn(
+      ReadAnythingPresentationState::kInImmersiveOverlay);
+}
+
+TEST_F(ReadAnythingControllerUnitTest,
+       OnSoftNavigation_IgnoresEmptyStateUntilRecreated) {
+  SetPresentationState(ReadAnythingPresentationState::kInSidePanel);
+  controller_->OnSoftNavigation();
+
+  // The doomed WebUI stays alive in the side panel until replaced; if it
+  // reports empty state before closing, reopening should still open immersive
+  // because a fresh WebUI will be created.
+  controller_->OnEmptyStateChanged(/*is_empty=*/true);
+  SetPresentationState(ReadAnythingPresentationState::kInactive);
+
+  ExpectShowImmersiveOpensIn(
+      ReadAnythingPresentationState::kInImmersiveOverlay);
+}
+
+TEST_F(ReadAnythingControllerUnitTest,
+       GetOrCreateWebUIWrapper_ResetsEmptyState) {
+  content::ScopedWebUIConfigRegistration config_registration(
+      std::make_unique<ReadAnythingUIUntrustedConfig>());
+
+  base::WeakPtr<content::WebContents> original_contents =
+      CreateAndCacheShownWebUIWrapper(
+          ReadAnythingPresentationState::kInSidePanel);
+  ASSERT_TRUE(original_contents);
+
+  controller_->RecreateWebUIWrapper();
+  controller_->OnEmptyStateChanged(/*is_empty=*/true);
+
+  // Creating a fresh WebUI replaces the cached wrapper, clears
+  // should_recreate_web_ui_, and must also clear the old WebUI's empty state so
+  // closing and reopening doesn't inherit it.
+  ReadAnythingContentsWrapper replacement =
+      controller_->GetOrCreateWebUIWrapper(
+          ReadAnythingPresentationState::kInImmersiveOverlay);
+  EXPECT_FALSE(original_contents);
+
+  SetPresentationState(ReadAnythingPresentationState::kInactive);
+  ExpectShowImmersiveOpensIn(
+      ReadAnythingPresentationState::kInImmersiveOverlay);
+}
+
+TEST_F(ReadAnythingControllerUnitTest,
+       GetOrCreateWebUIWrapper_PreservesEmptyStateOnReuse) {
+  content::ScopedWebUIConfigRegistration config_registration(
+      std::make_unique<ReadAnythingUIUntrustedConfig>());
+
+  base::WeakPtr<content::WebContents> original_contents =
+      CreateAndCacheShownWebUIWrapper(
+          ReadAnythingPresentationState::kInImmersiveOverlay);
+  ASSERT_TRUE(original_contents);
+
+  controller_->OnEmptyStateChanged(/*is_empty=*/true);
+
+  // Reusing the existing WebUI wrapper must preserve is_showing_empty_state_.
+  ReadAnythingContentsWrapper reused_wrapper =
+      controller_->GetOrCreateWebUIWrapper(
+          ReadAnythingPresentationState::kInSidePanel);
+  EXPECT_EQ(reused_wrapper->web_contents(), original_contents.get());
+  controller_->TransferWebUiOwnership(
+      std::move(reused_wrapper), ReadAnythingPresentationState::kInSidePanel);
+
+  ExpectShowImmersiveOpensIn(ReadAnythingPresentationState::kInSidePanel);
 }
 
 TEST_F(ReadAnythingControllerUnitTest, AutomaticToggleDoesNotUpdatePreference) {

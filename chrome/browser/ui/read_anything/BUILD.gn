@@ -274,6 +274,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/hats:test_support",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/side_panel:test_support",
+    "//chrome/browser/ui/webui/side_panel/read_anything",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/tabs:test_support",

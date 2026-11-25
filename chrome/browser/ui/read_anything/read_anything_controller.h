@@ -375,7 +375,9 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   void ReleaseMainContentsCapture();
 
   // Whether Reading Mode's content is empty, as last reported by
-  // OnEmptyStateChanged().
+  // OnEmptyStateChanged(). Reset when the primary page changes or a new WebUI
+  // is created in GetOrCreateWebUIWrapper(). Ignored when
+  // should_recreate_web_ui_ is true, since the WebUI will be replaced.
   bool is_showing_empty_state_ = false;
 
   // The handle returned by web_contents_->IncrementCapturerCount. This is

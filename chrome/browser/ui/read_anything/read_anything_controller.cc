@@ -345,6 +345,7 @@ ReadAnythingContentsWrapper ReadAnythingController::GetOrCreateWebUIWrapper(
   if (should_recreate_web_ui_ || !web_ui_wrapper_) {
     should_recreate_web_ui_ = false;
     has_shown_ui_ = false;
+    is_showing_empty_state_ = false;
     Profile* profile = tab_->GetBrowserWindowInterface()->GetProfile();
     web_ui_wrapper_ = ReadAnythingContentsWrapper(
         std::make_unique<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>(
@@ -472,8 +473,9 @@ void ReadAnythingController::MaybeUpdateFindBarController() {
 
 void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
   // If Reading Mode's content is empty, open it in the side panel instead so
-  // that the user can still see the page.
-  if (is_showing_empty_state_ &&
+  // that the user can still see the page. Skip this when the WebUI is going to
+  // be recreated, since the new WebUI will distill the page again.
+  if (is_showing_empty_state_ && !should_recreate_web_ui_ &&
       GetPresentationState() == PresentationState::kInactive) {
     base::UmaHistogramEnumeration(
         "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState", trigger);
@@ -700,6 +702,9 @@ ReadAnythingController::GetPresentationState() const {
 }
 
 void ReadAnythingController::PrimaryPageChanged(content::Page& page) {
+  // The previous page's empty state doesn't apply to the new page, which
+  // Reading Mode hasn't distilled yet.
+  is_showing_empty_state_ = false;
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
     CloseImmersiveUI(ReadAnythingCloseReason::kPageChanged);
   }
