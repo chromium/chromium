@@ -457,7 +457,9 @@ void TabSearchPageHandler::ReplaceActiveSplitTab(int32_t replacement_tab_id) {
     const auto result = GetTabStripService(browser_)->ReplaceTabInSplit(
         tabs_api::NodeId::FromTabHandle(active_tab->GetHandle()),
         tabs_api::NodeId::FromTabHandle(tabs::TabHandle(replacement_tab_id)));
-    CHECK(result.has_value(), base::NotFatalUntil::M162);
+    // TODO(crbug.com/590111100): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(result.has_value());
   }
 }
 
