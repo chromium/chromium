@@ -18,19 +18,20 @@
   --cr-searchbox-border-radius: 16px;
   --cr-searchbox-icon-size-in-searchbox: 18px;
   --cr-searchbox-icon-container-size: 32px;
-  --cr-searchbox-icon-left-position: 16px;
+  --cr-searchbox-icon-left-position: 9px;
   --cr-searchbox-icon-right-position: 0px;
   --cr-searchbox-icon-width: 26px;
-  --cr-searchbox-match-padding-inline-start: 16px;
+  --cr-searchbox-dropdown-header-padding-inline-start: 9px;
+  --cr-searchbox-match-padding-inline-start: 9px;
   --cr-searchbox-match-text-padding-inline-start: 8px;
   --cr-searchbox-voice-icon-offset: 16px;
   --cr-searchbox-voice-search-button-width: 0px;
   --cr-compose-button-width: 104px;
   --cr-searchbox-icon-spacing: 11px;
   --cr-composebox-background-color: var(--color-searchbox-background);
-  /* Easing and duration tokens for expand/collapse animations (300ms
+  /* Easing and duration tokens for expand/collapse animations (340ms
    * when expanded, overridden to 220ms when collapsed). */
-  --loomnibox-animation-duration: 300ms;
+  --loomnibox-animation-duration: 340ms;
   --loomnibox-animation-easing: cubic-bezier(0.2, 0, 0, 1);
   border: var(--cr-searchbox-border, 2px solid transparent);
   box-sizing: border-box;
@@ -93,21 +94,60 @@
 }
 
 #inputWrapper {
+  --cr-searchbox-dropdown-header-padding-inline-start: 9px;
+  --cr-searchbox-icon-left-position: 9px;
+  --cr-searchbox-match-padding-inline-start: 9px;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  isolation: isolate;
+  min-height: var(--cr-searchbox-height);
+  padding-top: 6px;
+  position: relative;
+  width: 100%;
+}
+
+/* Animate the pill/card surface independently so the Super G stays static at
+ * 16px in the 1-line pill, and on expand the card grows outward around the G
+ * and profile icon (-7px left/right via inset-inline-start/end; top expansion
+ * via #inputWrapper margin-top 8px -> padding-top 6px) to center-align G with
+ * the 32px match icons/thumbnails and 16px card inset below. */
+#inputWrapper::before {
   background: linear-gradient(
           var(--omnibox-inactive-hover-overlay, transparent),
           var(--omnibox-inactive-hover-overlay, transparent)),
       var(--color-searchbox-background);
   border-radius: var(--cr-searchbox-border-radius);
+  bottom: 0;
   box-shadow: 0 4px 20px 2px rgba(0, 0, 0, 0.25);
-  display: flex;
-  flex-direction: column;
-  height: auto;
-  min-height: var(--cr-searchbox-height);
-  padding-top: 6px;
-  position: relative;
+  content: '';
+  inset-inline-end: -7px;
+  inset-inline-start: -7px;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
   transition: border-radius var(--loomnibox-animation-duration)
-      var(--loomnibox-animation-easing);
-  width: 100%;
+          var(--loomnibox-animation-easing),
+      inset-inline-end var(--loomnibox-animation-duration)
+          var(--loomnibox-animation-easing),
+      inset-inline-start var(--loomnibox-animation-duration)
+          var(--loomnibox-animation-easing);
+  z-index: -1;
+}
+
+/* search-animated-glow uses 'border-radius: inherit', which would inherit 0px
+ * from #inputWrapper now that the rounded surface lives on #inputWrapper::before. */
+search-animated-glow {
+  border-radius: var(--cr-searchbox-border-radius);
+  inset-inline-start: -7px;
+  top: 0;
+  width: calc(100% + 14px);
+  transition: border-radius var(--loomnibox-animation-duration)
+          var(--loomnibox-animation-easing),
+      inset-inline-start var(--loomnibox-animation-duration)
+          var(--loomnibox-animation-easing),
+      width var(--loomnibox-animation-duration)
+          var(--loomnibox-animation-easing);
 }
 
 :host([in-voice-search-mode]) #inputWrapper {
@@ -264,7 +304,7 @@ cr-searchbox-input:has(#lensPlaceholder:not([hidden]))::part(
 --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start
   : 0px;
   --text-input-inline-start-spacing: 16px;
-  --cr-searchbox-match-padding-inline-start: 16px;
+  --cr-searchbox-match-padding-inline-start: 9px;
 
   /* Used in search-animated-glow-element. */
   --search-animated-glow-drag-drop-placeholder-top: 18px;
@@ -331,7 +371,7 @@ cr-composebox-contextual-entrypoint-and-menu,
 
 :host([is-fusebox-enabled]) cr-searchbox-input {
   --cr-searchbox-icon-container-size: 32px;
-  --cr-searchbox-icon-left-position: 16px;
+  --cr-searchbox-icon-left-position: 9px;
   --cr-searchbox-icon-right-position: 0px;
 }
 
@@ -392,6 +432,7 @@ cr-composebox-contextual-entrypoint-and-menu,
 #bottomControls {
   padding-block-start: 4px;
   padding-block-end: 12px;
+  padding-inline-start: 5px;
 }
 
 #bottomControls #context {
@@ -444,18 +485,30 @@ cr-searchbox-input::part(icon),
   height: var(--cr-searchbox-height, 48px);
 }
 
-/* Overrides the defaults on :host when collapsed to a single-line pill. */
-:host(:not([dropdown-is-visible]):not([has-user-input])) {
-  --cr-searchbox-border-radius: calc(var(--cr-searchbox-height, 48px) / 2);
+/* Overrides the defaults when collapsed to a single-line pill. Set on
+ * #inputWrapper (not :host) so outer app.css --cr-searchbox-height: 48px
+ * cannot override the 44px collapsed pill height. */
+:host(:not([dropdown-is-visible]):not([has-user-input])) #inputWrapper {
+  --cr-searchbox-border-radius: 22px;
+  --cr-searchbox-height: 44px;
+  --cr-searchbox-input-height: 44px;
   --enterprise-profile-clearance: 24px;
   --loomnibox-animation-duration: 220ms;
-  --omnibox-everywhere-top-actions-top: 10px;
-  --search-animated-glow-drag-drop-placeholder-top: 12px;
+  --omnibox-everywhere-top-actions-top: 8px;
+  --search-animated-glow-drag-drop-placeholder-top: 10px;
+  margin-top: 8px;
+  padding-top: 0;
 }
 
-:host(:not([dropdown-is-visible]):not([has-user-input])) #inputWrapper {
-  margin-top: 6px;
-  padding-top: 0;
+:host(:not([dropdown-is-visible]):not([has-user-input])) #inputWrapper::before {
+  inset-inline-end: 0;
+  inset-inline-start: 0;
+}
+
+:host(:not([dropdown-is-visible]):not([has-user-input])) search-animated-glow {
+  height: 100%;
+  inset-inline-start: 0;
+  width: 100%;
 }
 
 /* 48px profile offset + 3x28px buttons + 2x4px gaps + 8px clearance. */
@@ -469,9 +522,11 @@ cr-searchbox-input::part(icon),
 }
 
 :host(:not([dropdown-is-visible]):not([has-user-input]))
-    cr-searchbox-input::part(searchbox-input) {
-  height: var(--cr-searchbox-height, 48px);
+    cr-searchbox-input::part(searchbox-input),
+:host(:not([dropdown-is-visible]):not([has-user-input])) #lensPlaceholder {
+  height: var(--cr-searchbox-height, 44px);
   overflow: hidden;
+  padding-block: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -492,7 +547,7 @@ cr-searchbox-input::part(icon),
   inset-inline-end: 48px;
   padding: 0;
   position: absolute;
-  top: var(--omnibox-everywhere-top-actions-top, 10px);
+  top: var(--omnibox-everywhere-top-actions-top, 8px);
   width: auto;
 }
 
@@ -515,18 +570,6 @@ cr-searchbox-input::part(icon),
   display: block;
 }
 
-:host([has-expanded]:not([dropdown-is-visible]):not([has-user-input]))
-    #bottomControls,
-:host(:is([dropdown-is-visible], [has-user-input])) #composeButton {
-  animation: loomniboxTopControlsEnter var(--loomnibox-animation-duration)
-      var(--loomnibox-animation-easing);
-}
-
-:host(:is([dropdown-is-visible], [has-user-input])) #bottomControls {
-  animation: loomniboxBottomControlsExpand var(--loomnibox-animation-duration)
-      var(--loomnibox-animation-easing);
-}
-
 @keyframes loomniboxDropdownExpand {
   from {
     opacity: 0;
@@ -534,27 +577,9 @@ cr-searchbox-input::part(icon),
   }
 }
 
-/* Fades and slides controls up into the top row (#composeButton when expanding,
- * #bottomControls when collapsing back to the 1-line pill). */
-@keyframes loomniboxTopControlsEnter {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-}
-
-/* Counter-animates the vertical shift when #bottomControls moves from the
- * inline 1-line pill position to the 2-line expanded bottom row. */
-@keyframes loomniboxBottomControlsExpand {
-  from {
-    opacity: 0;
-    transform: translateY(-16px);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   :host,
-  :host(:not([dropdown-is-visible]):not([has-user-input])) {
+  :host(:not([dropdown-is-visible]):not([has-user-input])) #inputWrapper {
     --loomnibox-animation-duration: 0ms;
   }
 }

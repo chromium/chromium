@@ -39,9 +39,6 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
     </div>
     ${this.composeButtonEnabled ? html`
       <cr-searchbox-compose-button id="composeButton" slot="compose-button"
-          ?dynamic="${this.ntpRealboxDynamicAiModeButtonEnabled_}"
-          ?inherit-visibility="${
-              this.ntpRealboxDynamicAiModeButtonPreventEarlyPaint_}"
           ?has-user-input="${this.hasUserInput_}"
           ?virtual-focus-enabled="${this.virtualFocusEnabled}"
           ?has-virtual-focus="${this.isAiModeVirtualFocused()}"
@@ -64,8 +61,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
         ?hidden="${!this.dropdownIsVisible}">
     </cr-searchbox-dropdown>
   </div>
-  <div id="bottomControls" @animationend="${this.onBottomControlsAnimationEnd_}"
-      @animationcancel="${this.onBottomControlsAnimationEnd_}">
+  <div id="bottomControls">
     ${this.isFuseboxEnabled ? html`
       <div
           class="contextualEntrypointContainer

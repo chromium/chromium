@@ -146,8 +146,6 @@ export class OmniboxEverywhereOmniboxElement extends
         reflect: true,
         attribute: 'has-user-input',
       },
-      ntpRealboxDynamicAiModeButtonEnabled_: {type: Boolean},
-      ntpRealboxDynamicAiModeButtonPreventEarlyPaint_: {type: Boolean},
       inputState_: {type: Object},
       contextManagementInComposeboxEnabled: {type: Boolean},
       isDraggingFile: {
@@ -224,10 +222,6 @@ export class OmniboxEverywhereOmniboxElement extends
   protected accessor isFuseboxEnabled: boolean =
       loadTimeData.getBoolean('isFuseboxEnabled');
   protected accessor hasUserInput_: boolean = false;
-  protected accessor ntpRealboxDynamicAiModeButtonEnabled_: boolean =
-      loadTimeData.getBoolean('ntpRealboxDynamicAiModeButton');
-  protected accessor ntpRealboxDynamicAiModeButtonPreventEarlyPaint_: boolean =
-      loadTimeData.getBoolean('ntpRealboxDynamicAiModeButtonPreventEarlyPaint');
   protected accessor inputState_: InputState|null = null;
 
   private pageHandler_: PageHandlerInterface;
@@ -327,22 +321,10 @@ export class OmniboxEverywhereOmniboxElement extends
     }
     this.placeholderCycler_?.stop();
     this.isPlaceholderCycling_ = false;
-    this.removeAttribute('has-expanded');
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
-    // `has-expanded` marks that the omnibox has been expanded at least once in
-    // the current session so collapsing back to `!dropdownIsVisible &&
-    // !hasUserInput_` plays the collapse animation on `#bottomControls`
-    // (whereas initial mount does not). `willUpdate()` re-applies
-    // `has-expanded` on every subsequent expansion after it is cleared by
-    // voice search or `onBottomControlsAnimationEnd_()`.
-    if (this.inVoiceSearchMode) {
-      this.removeAttribute('has-expanded');
-    } else if (this.dropdownIsVisible || this.hasUserInput_) {
-      this.toggleAttribute('has-expanded', true);
-    }
     if (!this.canCyclePlaceholders_()) {
       this.showLensPlaceholder_ = false;
     }
@@ -882,18 +864,6 @@ export class OmniboxEverywhereOmniboxElement extends
         width: Math.round(rect.width),
         height: Math.round(rect.height),
       });
-    }
-  }
-
-  // `#bottomControls` animates on both expand (`loomniboxBottomControlsExpand`)
-  // and collapse (`loomniboxTopControlsEnter`). Clear `has-expanded` only when
-  // the collapse animation finishes (`!dropdownIsVisible && !hasUserInput_`) so
-  // the 1-line pill is back at rest until the next expansion.
-  protected onBottomControlsAnimationEnd_(e: AnimationEvent) {
-    if (e.target === e.currentTarget &&
-        e.animationName === 'loomniboxTopControlsEnter' &&
-        !this.dropdownIsVisible && !this.hasUserInput_) {
-      this.removeAttribute('has-expanded');
     }
   }
 
