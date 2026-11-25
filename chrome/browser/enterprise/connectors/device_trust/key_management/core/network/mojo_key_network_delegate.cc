@@ -51,6 +51,7 @@ std::unique_ptr<network::SimpleURLLoader> CreateURLLoader(
             "administrators issue key rotation remote commands."
           data: "Public key and Google DM token."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://m.google.com/devicemanagement/data/api"
         }
         policy {
           cookies_allowed: NO
