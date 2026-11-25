@@ -135,8 +135,12 @@ class VectorBuffer {
   //
   // The objects in `from` are destroyed afterward.
   static void MoveConstructRange(span<T> from, span<T> to) {
-    CHECK(!RangesOverlap(from, to));
     CHECK_EQ(from.size(), to.size());
+    CHECK(!RangesOverlap(from, to));
+
+    if (from.empty()) {
+      return;
+    }
 
     if constexpr (is_trivially_copyable_or_relocatable<T>) {
       // We can't use span::copy_from() as it tries to call copy constructors,
@@ -160,11 +164,13 @@ class VectorBuffer {
   }
 
  private:
+  // Returns whether `a` and `b` share any bytes.
   static bool RangesOverlap(span<T> a, span<T> b) {
+    DCHECK_EQ(a.size(), b.size());
     const auto a_start = reinterpret_cast<uintptr_t>(a.data());
-    const auto a_end = reinterpret_cast<uintptr_t>(a.data()) + a.size();
+    const auto a_end = a_start + a.size_bytes();
     const auto b_start = reinterpret_cast<uintptr_t>(b.data());
-    const auto b_end = reinterpret_cast<uintptr_t>(b.data()) + b.size();
+    const auto b_end = b_start + b.size_bytes();
     return a_end > b_start && a_start < b_end;
   }
 

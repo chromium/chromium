@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/copy_only_int.h"
+#include "base/test/gtest_util.h"
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -179,6 +180,49 @@ TEST(VectorBuffer, TrivialAbiMove) {
   dest.DestructRange(dest.as_span());
   EXPECT_EQ(destruction_count, kHaveTrivialRelocation ? size : size * 2);
   EXPECT_EQ(move_count, kHaveTrivialRelocation ? 0 : size);
+}
+
+TEST(VectorBuffer, MoveConstructRangeAdjacent) {
+  // Adjacent, non-overlapping ranges can be moved in either direction.
+  {
+    VectorBuffer<int> buffer(8);
+    for (int i = 0; i < 4; i++) {
+      buffer[i] = i + 1;
+    }
+    VectorBuffer<int>::MoveConstructRange(buffer.subspan(0, 4),
+                                          buffer.subspan(4, 4));
+    for (int i = 0; i < 4; i++) {
+      EXPECT_EQ(i + 1, buffer[i + 4]);
+    }
+  }
+  {
+    VectorBuffer<int> buffer(8);
+    for (int i = 0; i < 4; i++) {
+      buffer[i + 4] = i + 1;
+    }
+    VectorBuffer<int>::MoveConstructRange(buffer.subspan(4, 4),
+                                          buffer.subspan(0, 4));
+    for (int i = 0; i < 4; i++) {
+      EXPECT_EQ(i + 1, buffer[i]);
+    }
+  }
+}
+
+TEST(VectorBuffer, MoveConstructRangeEmpty) {
+  // Empty ranges never overlap, so moving one onto itself must not CHECK.
+  VectorBuffer<int> buffer(8);
+  VectorBuffer<int>::MoveConstructRange(buffer.subspan(2, 0),
+                                        buffer.subspan(2, 0));
+}
+
+TEST(VectorBufferDeathTest, MoveConstructRangeOverlap) {
+  // `subspan(0, 2)` and `subspan(1, 2)` start `sizeof(int)` bytes apart and
+  // each covers `2 * sizeof(int)` bytes, so they overlap.
+  VectorBuffer<int> buffer(8);
+  EXPECT_CHECK_DEATH(VectorBuffer<int>::MoveConstructRange(
+      buffer.subspan(0, 2), buffer.subspan(1, 2)));
+  EXPECT_CHECK_DEATH(VectorBuffer<int>::MoveConstructRange(
+      buffer.subspan(1, 2), buffer.subspan(0, 2)));
 }
 
 }  // namespace base::internal
