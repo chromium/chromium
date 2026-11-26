@@ -1733,6 +1733,11 @@ ci.thin_tester(
         mixins = [
             "linux_nvidia_gtx_1660_stable",
         ],
+        per_test_modifications = {
+            "webgl_conformance_webgl_on_webgpu_tests": targets.remove(
+                reason = "crbug.com/590568715",
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
