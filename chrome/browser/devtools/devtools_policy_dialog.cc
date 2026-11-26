@@ -5,12 +5,12 @@
 #include "chrome/browser/devtools/devtools_policy_dialog.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
-#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -71,7 +71,8 @@ DevToolsPolicyDialog::GetCurrentDialogs() {
 }
 
 // static
-bool DevToolsPolicyDialog::Show(content::WebContents* web_contents) {
+bool DevToolsPolicyDialog::Show(content::WebContents* web_contents,
+                                DevToolsBlockReason reason) {
   CHECK(web_contents, base::NotFatalUntil::M161);
   if (GetCurrentDialogs().count(web_contents)) {
     return false;
@@ -84,9 +85,10 @@ bool DevToolsPolicyDialog::Show(content::WebContents* web_contents) {
   base::UmaHistogramEnumeration(
       "DevTools.BlockedByPolicy",
       policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(profile));
-  base::UmaHistogramEnumeration(
-      "DevTools.BlockedByPolicy.Reason",
-      DevToolsWindow::GetBlockReasonFor(profile, web_contents));
+  // `reason` comes from the check that actually blocked. Recomputing it from
+  // `web_contents` would misattribute blocks of other contexts, e.g. a
+  // view-source load blocked on the URL being viewed in a still-empty tab.
+  base::UmaHistogramEnumeration("DevTools.BlockedByPolicy.Reason", reason);
 
   auto dialog_manager = base::WrapUnique<DevToolsPolicyDialog>(
       new DevToolsPolicyDialog(web_contents));

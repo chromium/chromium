@@ -3941,7 +3941,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 if (!DevToolsWindow::AllowDevToolsFor(bwi->GetProfile(),
                                                       web_contents)) {
 #if !BUILDFLAG(IS_ANDROID)
-                  DevToolsPolicyDialog::Show(web_contents);
+                  DevToolsPolicyDialog::Show(
+                      web_contents, DevToolsWindow::GetBlockReasonFor(
+                                        bwi->GetProfile(), web_contents));
 #endif  // !BUILDFLAG(IS_ANDROID)
                 } else {
                   web_contents->GetPrimaryMainFrame()->ViewSource();
@@ -5211,7 +5213,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 }
                 if (!DevToolsWindow::AllowDevToolsFor(bwi->GetProfile(),
                                                       web_contents)) {
-                  DevToolsPolicyDialog::Show(web_contents);
+                  DevToolsPolicyDialog::Show(
+                      web_contents, DevToolsWindow::GetBlockReasonFor(
+                                        bwi->GetProfile(), web_contents));
                 } else {
                   chrome::ToggleJavaScriptFromAppleEventsAllowed(bwi);
                 }

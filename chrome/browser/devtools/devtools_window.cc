@@ -973,7 +973,7 @@ void DevToolsWindow::ToggleDevToolsWindow(
       // for this tab, so repeated attempts are not counted twice. Non-policy UI
       // restrictions (e.g. kiosk mode) still show the dialog, but are excluded
       // from `AllowedByPolicy` so they are not misattributed to policy.
-      if (DevToolsPolicyDialog::Show(inspected_web_contents) &&
+      if (DevToolsPolicyDialog::Show(inspected_web_contents, block_reason) &&
           IsPolicyBlockReason(block_reason)) {
         RecordDevToolsOpenAttemptAllowedByPolicy(profile, /*allowed=*/false);
       }

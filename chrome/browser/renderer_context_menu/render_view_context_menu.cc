@@ -57,6 +57,7 @@
 #include "chrome/browser/contextual_tasks/search_journey_tracker.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -4359,14 +4360,15 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_VIEW_SOURCE:
-    case IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE:
+    case IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE: {
       // The policy on the source_web_contents_ applies; when performing the
       // action, do it on the appropriate target (the embedder_web_contents_ or
       // the RenderFrameHost, respectively).
-      if (!DevToolsWindow::AllowDevToolsFor(GetProfile(),
-                                            source_web_contents_)) {
+      const DevToolsBlockReason block_reason =
+          DevToolsWindow::GetBlockReasonFor(GetProfile(), source_web_contents_);
+      if (block_reason != DevToolsBlockReason::kNotBlocked) {
 #if !BUILDFLAG(IS_ANDROID)
-        DevToolsPolicyDialog::Show(source_web_contents_);
+        DevToolsPolicyDialog::Show(source_web_contents_, block_reason);
 #endif
       } else {
         if (id == IDC_VIEW_SOURCE) {
@@ -4376,6 +4378,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         }
       }
       break;
+    }
 
     case IDC_CONTENT_CONTEXT_INSPECTELEMENT:
       ExecInspectElement();

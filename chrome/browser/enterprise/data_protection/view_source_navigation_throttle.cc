@@ -41,12 +41,15 @@ GURL GetURLWithViewSourcePrefix(content::NavigationHandle* handle) {
               handle->GetURL().spec());
 }
 
-bool IsViewSourceAllowedByPolicy(Profile* profile,
-                                 content::NavigationHandle* navigation_handle) {
+// Returns why the DevTools policies block viewing the source of the page loaded
+// by `navigation_handle`, or DevToolsBlockReason::kNotBlocked.
+DevToolsBlockReason GetViewSourceBlockReason(
+    Profile* profile,
+    content::NavigationHandle* navigation_handle) {
   // When inspecting a "view-source" page, the policy should be checked against
   // the URL being viewed, not the "view-source:" URL itself.
-  return IsInspectionAllowed(profile->GetOriginalProfile(),
-                             navigation_handle->GetURL());
+  return GetDevToolsBlockReason(profile->GetOriginalProfile(),
+                                navigation_handle->GetURL());
 }
 
 bool IsEnterpriseLookupEnabled(Profile* profile) {
@@ -191,9 +194,15 @@ ViewSourceNavigationThrottle::WillProcessResponse() {
     return content::NavigationThrottle::ThrottleCheckResult(
         CANCEL, net::ERR_BLOCKED_BY_CLIENT, error_page_content);
   }
-  if (!IsViewSourceAllowedByPolicy(profile_, navigation_handle())) {
+  const DevToolsBlockReason block_reason =
+      GetViewSourceBlockReason(profile_, navigation_handle());
+  if (block_reason != DevToolsBlockReason::kNotBlocked) {
 #if !BUILDFLAG(IS_ANDROID)
-    DevToolsPolicyDialog::Show(navigation_handle()->GetWebContents());
+    // Pass the reason computed for the URL being viewed: the dialog's tab may
+    // be a new view-source tab that has not committed anything yet, so its own
+    // state would not reflect why the load was blocked.
+    DevToolsPolicyDialog::Show(navigation_handle()->GetWebContents(),
+                               block_reason);
 #endif
     return content::NavigationThrottle::ThrottleCheckResult(CANCEL);
   }

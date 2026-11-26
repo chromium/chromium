@@ -12,6 +12,8 @@
 
 #include "base/no_destructor.h"
 
+enum class DevToolsBlockReason;
+
 namespace content {
 class WebContents;
 }
@@ -28,11 +30,17 @@ class DevToolsPolicyDialog {
 
   // Shows the policy dialog for `web_contents` unless one is already open for
   // that tab. `web_contents` must not be null; it is not retained beyond the
-  // lifetime of the dialog, which is closed when the tab is destroyed. Returns
-  // true if a new dialog was shown. Callers that only need the dialog (e.g.
-  // view-source entry points) may ignore the result; it exists so
+  // lifetime of the dialog, which is closed when the tab is destroyed.
+  // `reason` is the check that blocked DevTools (or view source) and is
+  // recorded in DevTools.BlockedByPolicy.Reason. It must come from the
+  // caller's own check rather than be derived from `web_contents`: the
+  // blocked context can differ from the tab, e.g. a view-source load blocked
+  // on the URL being viewed is shown on a tab that has not committed it.
+  // Returns true if a new dialog was shown. Callers that only need the dialog
+  // (e.g. view-source entry points) may ignore the result; it exists so
   // `DevToolsWindow` can avoid double-counting repeated attempts.
-  static bool Show(content::WebContents* web_contents);
+  static bool Show(content::WebContents* web_contents,
+                   DevToolsBlockReason reason);
 
   static void TestOnlyCloseDialog(content::WebContents* web_contents);
 

@@ -47,6 +47,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
@@ -3549,6 +3550,34 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyContextMenuBrowserTest, DevToolsAllowed) {
   // View Source should be enabled.
   EXPECT_TRUE(menu->IsItemPresent(IDC_VIEW_SOURCE));
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_VIEW_SOURCE));
+}
+
+// Executing View Source while DevTools are blocked for the page shows the
+// policy dialog on the page's tab and records the check that blocked.
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyContextMenuBrowserTest,
+                       ViewSourceRecordsBlockReason) {
+  SetDevToolsAvailability(policy::DeveloperToolsAvailability::kDisallowed);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
+      GURL(), GURL(), u"", blink::mojom::ContextMenuDataMediaType::kNone,
+      ui::mojom::MenuSourceType::kTouch);
+  ASSERT_TRUE(menu);
+
+  base::HistogramTester histogram_tester;
+  menu->ExecuteCommand(IDC_VIEW_SOURCE, 0);
+
+  // The page's own tab is blocked, so no view-source tab is opened.
+  EXPECT_EQ(web_contents,
+            browser()->GetTabStripModel()->GetActiveWebContents());
+  histogram_tester.ExpectUniqueSample("DevTools.BlockedByPolicy.Reason",
+                                      DevToolsBlockReason::kPolicyDisallowed,
+                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest,

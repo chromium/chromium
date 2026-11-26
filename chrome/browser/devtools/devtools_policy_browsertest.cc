@@ -14,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_policy_dialog.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/policy/developer_tools_policy_checker.h"
 #include "chrome/browser/policy/developer_tools_policy_checker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -34,6 +36,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -57,6 +60,12 @@ constexpr char kOpenAttemptAllowedByPolicyHistogram[] =
     "DevTools.OpenAttempt.AllowedByPolicy";
 constexpr char kOpenAttemptAllowedOnProfileWithPolicyCheckHistogram[] =
     "DevTools.OpenAttempt.AllowedByPolicy.OnProfileWithPolicyCheck";
+
+// Reason passed by the tests that call `DevToolsPolicyDialog::Show()` directly.
+// The URL lists can block under every `DeveloperToolsAvailability` value, so it
+// is a plausible reason whichever value a test sets.
+constexpr DevToolsBlockReason kTestBlockReason =
+    DevToolsBlockReason::kUrlAllowlistOrBlocklist;
 
 class TestObserverImpl : public DevToolsPolicyDialog::TestObserver {
  public:
@@ -207,11 +216,11 @@ std::string DeveloperToolsAvailabilityToString(
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest, ShowDialogOnce) {
   base::HistogramTester histogram_tester;
   auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
-  DevToolsPolicyDialog::Show(web_contents);
+  DevToolsPolicyDialog::Show(web_contents, kTestBlockReason);
   EXPECT_EQ(1, observer_.shown_count());
   // Trying to show it again on the same WebContents should not create a new
   // dialog.
-  DevToolsPolicyDialog::Show(web_contents);
+  DevToolsPolicyDialog::Show(web_contents, kTestBlockReason);
   EXPECT_EQ(1, observer_.shown_count());
   // Only the dialog that was actually shown is counted, bucketed by the
   // effective DeveloperToolsAvailability policy value (default when unset).
@@ -220,12 +229,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest, ShowDialogOnce) {
       policy::DeveloperToolsAvailability::
           kDisallowedForForceInstalledExtensions,
       1);
+  // The reason is the one passed by the caller, not one recomputed from the
+  // tab, which no DevTools policy blocks here.
+  histogram_tester.ExpectUniqueSample(kBlockedByPolicyReasonHistogram,
+                                      kTestBlockReason, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest, ShowDialogOnTwoWebContents) {
   base::HistogramTester histogram_tester;
   auto* web_contents1 = chrome_test_utils::GetActiveWebContents(this);
-  DevToolsPolicyDialog::Show(web_contents1);
+  DevToolsPolicyDialog::Show(web_contents1, kTestBlockReason);
   EXPECT_EQ(1, observer_.shown_count());
 
   // Open a new tab.
@@ -235,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest, ShowDialogOnTwoWebContents) {
   ASSERT_TRUE(tab2);
   auto* web_contents2 = tab2->GetContents();
   ASSERT_NE(web_contents1, web_contents2);
-  DevToolsPolicyDialog::Show(web_contents2);
+  DevToolsPolicyDialog::Show(web_contents2, kTestBlockReason);
   EXPECT_EQ(2, observer_.shown_count());
   // A dialog on a different tab is a separate block.
   histogram_tester.ExpectTotalCount(kBlockedByPolicyHistogram, 2);
@@ -245,10 +258,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest, ShowDialogOnTwoWebContents) {
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest, ShowDialogTwice) {
   base::HistogramTester histogram_tester;
   auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
-  DevToolsPolicyDialog::Show(web_contents);
+  DevToolsPolicyDialog::Show(web_contents, kTestBlockReason);
   EXPECT_EQ(1, observer_.shown_count());
   DevToolsPolicyDialog::TestOnlyCloseDialog(web_contents);
-  DevToolsPolicyDialog::Show(web_contents);
+  DevToolsPolicyDialog::Show(web_contents, kTestBlockReason);
   EXPECT_EQ(2, observer_.shown_count());
   // Showing the dialog again after it was closed is a new block.
   histogram_tester.ExpectTotalCount(kBlockedByPolicyHistogram, 2);
@@ -258,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest, ShowDialogTwice) {
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest,
                        DialogCleanedUpOnWebContentsDestruction) {
   auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
-  DevToolsPolicyDialog::Show(web_contents);
+  DevToolsPolicyDialog::Show(web_contents, kTestBlockReason);
   EXPECT_EQ(1u, DevToolsPolicyDialog::GetCurrentDialogsSizeForTesting());
 
   base::RunLoop run_loop;
@@ -284,7 +297,8 @@ IN_PROC_BROWSER_TEST_P(DevToolsPolicyDialogHistogramTest,
   base::HistogramTester histogram_tester;
   SetDevToolsAvailability(GetParam());
 
-  DevToolsPolicyDialog::Show(chrome_test_utils::GetActiveWebContents(this));
+  DevToolsPolicyDialog::Show(chrome_test_utils::GetActiveWebContents(this),
+                             kTestBlockReason);
 
   EXPECT_EQ(1, observer_.shown_count());
   histogram_tester.ExpectUniqueSample(kBlockedByPolicyHistogram, GetParam(), 1);
@@ -364,6 +378,171 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest,
                                       false, 1);
   histogram_tester.ExpectUniqueSample(
       kOpenAttemptAllowedOnProfileWithPolicyCheckHistogram, false, 1);
+}
+
+// Regression test: a view-source load of a URL on the blocklist is attributed
+// to the URL lists. `ViewSourceNavigationThrottle` blocks on the URL being
+// viewed, which the dialog's tab never commits, so a reason recomputed from the
+// tab would fall back to the default `DeveloperToolsAvailability` value and be
+// recorded as `kNotBlocked`.
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest,
+                       BlockedViewSourceRecordsUrlReason) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  const GURL url =
+      embedded_test_server()->GetURL("blocked.example", "/title1.html");
+  ASSERT_NO_FATAL_FAILURE(BlockDevToolsOn(url));
+  const GURL view_source_url("view-source:" + url.spec());
+
+  // The throttle shows the dialog and cancels the navigation. `NavigateToURL()`
+  // returns false for a navigation that does not commit instead of waiting for
+  // one that does.
+  EXPECT_FALSE(content::NavigateToURL(web_contents, view_source_url));
+  EXPECT_EQ(1, observer_.shown_count());
+  histogram_tester.ExpectUniqueSample(
+      kBlockedByPolicyHistogram,
+      policy::DeveloperToolsAvailability::
+          kDisallowedForForceInstalledExtensions,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      kBlockedByPolicyReasonHistogram,
+      DevToolsBlockReason::kUrlAllowlistOrBlocklist, 1);
+  // A blocked view-source load is not an attempt to open DevTools.
+  histogram_tester.ExpectTotalCount(kOpenAttemptAllowedByPolicyHistogram, 0);
+}
+
+// With `DeveloperToolsAvailability` set to Disallowed, a blocked view-source
+// load is attributed to that policy.
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest,
+                       BlockedViewSourceRecordsPolicyDisallowedReason) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  SetDevToolsAvailability(policy::DeveloperToolsAvailability::kDisallowed);
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  const GURL view_source_url(
+      "view-source:" +
+      embedded_test_server()->GetURL("other.example", "/title1.html").spec());
+
+  EXPECT_FALSE(content::NavigateToURL(web_contents, view_source_url));
+  EXPECT_EQ(1, observer_.shown_count());
+  histogram_tester.ExpectUniqueSample(
+      kBlockedByPolicyHistogram,
+      policy::DeveloperToolsAvailability::kDisallowed, 1);
+  histogram_tester.ExpectUniqueSample(kBlockedByPolicyReasonHistogram,
+                                      DevToolsBlockReason::kPolicyDisallowed,
+                                      1);
+}
+
+// Regression test: "View frame source" from the context menu, on a frame
+// restricted by the URL blocklist in a page DevTools are allowed on. The
+// context menu checks the tab, which with target-level evaluation only looks at
+// the main frame and passes, so content loads the frame's source in a new tab
+// where `ViewSourceNavigationThrottle` blocks it. The recorded reason must be
+// the one for the frame's URL; recomputing it for the new tab, which has not
+// committed anything, would record `kNotBlocked`.
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest,
+                       BlockedViewFrameSourceRecordsUrlReason) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  const GURL page_url =
+      embedded_test_server()->GetURL("allowed.example", "/iframe.html");
+  const GURL frame_url =
+      embedded_test_server()->GetURL("blocked.example", "/title1.html");
+  ASSERT_NO_FATAL_FAILURE(BlockDevToolsOn(frame_url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, page_url));
+  ASSERT_TRUE(content::NavigateIframeToURL(web_contents, "test", frame_url));
+  content::RenderFrameHost* frame = content::ChildFrameAt(web_contents, 0);
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(frame_url, frame->GetLastCommittedURL());
+
+  content::ContextMenuParams params;
+  params.page_url = page_url;
+  params.frame_url = frame_url;
+  params.is_subframe = true;
+  TestRenderViewContextMenu menu(*frame, params);
+  menu.Init();
+  ASSERT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE));
+  ASSERT_TRUE(menu.IsCommandIdEnabled(IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE));
+
+  base::HistogramTester histogram_tester;
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE, /*event_flags=*/0);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer_.shown_count() == 1; }));
+
+  histogram_tester.ExpectUniqueSample(
+      kBlockedByPolicyReasonHistogram,
+      DevToolsBlockReason::kUrlAllowlistOrBlocklist, 1);
+}
+
+// Regression test: a view-source load of a page of a policy-installed extension
+// is attributed to the restriction that the default
+// `DeveloperToolsAvailability` value puts on such extensions. A reason
+// recomputed from the dialog's tab, which has no extension, would be
+// `kNotBlocked`.
+IN_PROC_BROWSER_TEST_F(
+    DevToolsPolicyDialogTest,
+    BlockedViewSourceOfForceInstalledExtensionRecordsReason) {
+  // Same setup as in
+  // `ForceInstalledExtensionWithoutDevToolsPolicyRecordsBothHistograms`.
+  extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass;
+  extensions::TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(R"({
+    "name": "Force Installed Test Extension",
+    "version": "1.0",
+    "manifest_version": 3
+  })");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("page.html"),
+                          "<html><body>extension page</body></html>");
+  extensions::ChromeTestExtensionLoader loader(
+      chrome_test_utils::GetProfile(this));
+  loader.set_location(extensions::mojom::ManifestLocation::kExternalPolicy);
+  loader.set_pack_extension(true);
+  loader.set_ignore_manifest_warnings(true);
+  scoped_refptr<const extensions::Extension> extension =
+      loader.LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  // Start from a regular page, so that the tab showing the dialog does not
+  // belong to the extension while its view-source load is blocked.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("regular.example", "/title1.html")));
+
+  base::HistogramTester histogram_tester;
+  const GURL view_source_url("view-source:" +
+                             extension->GetResourceURL("page.html").spec());
+
+  EXPECT_FALSE(content::NavigateToURL(web_contents, view_source_url));
+  EXPECT_EQ(1, observer_.shown_count());
+  histogram_tester.ExpectUniqueSample(
+      kBlockedByPolicyReasonHistogram,
+      DevToolsBlockReason::kForceInstalledExtension, 1);
+}
+
+// Negative control: a view-source load that no DevTools policy blocks commits
+// without showing the dialog or recording either histogram.
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyDialogTest,
+                       AllowedViewSourceRecordsNothing) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_NO_FATAL_FAILURE(BlockDevToolsOn(
+      embedded_test_server()->GetURL("blocked.example", "/title1.html")));
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  const GURL view_source_url(
+      "view-source:" +
+      embedded_test_server()->GetURL("other.example", "/title1.html").spec());
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, view_source_url));
+  EXPECT_EQ(0, observer_.shown_count());
+  histogram_tester.ExpectTotalCount(kBlockedByPolicyHistogram, 0);
+  histogram_tester.ExpectTotalCount(kBlockedByPolicyReasonHistogram, 0);
 }
 
 // Negative control: with no DevTools policy checks active on the profile,

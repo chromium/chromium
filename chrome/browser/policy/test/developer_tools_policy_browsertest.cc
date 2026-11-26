@@ -5,10 +5,12 @@
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
@@ -315,12 +317,17 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_VIEW_SOURCE));
 
   // Verify that executing ViewSource shows the policy dialog.
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_VIEW_SOURCE));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   web_modal::WebContentsModalDialogManager* dialog_manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(contents);
   EXPECT_TRUE(dialog_manager->IsDialogActive());
+  // The dialog records the check that blocked view source.
+  histogram_tester.ExpectUniqueSample("DevTools.BlockedByPolicy.Reason",
+                                      DevToolsBlockReason::kPolicyDisallowed,
+                                      1);
   dialog_manager->CloseAllDialogs();
 }
 
