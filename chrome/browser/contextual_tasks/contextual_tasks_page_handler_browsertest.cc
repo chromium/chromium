@@ -26,6 +26,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -125,6 +126,26 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenFeedbackUi) {
       .Times(1);
 
   contextual_tasks_ui_->OpenFeedbackUi();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest,
+                       OpenDogfoodFeedback) {
+  const GURL active_tab_url("about:blank?active_tab");
+  ASSERT_TRUE(content::NavigateToURL(web_contents_, active_tab_url));
+
+  std::unique_ptr<content::WebContents> panel_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_));
+  webui::SetBrowserWindowInterface(panel_web_contents.get(), browser());
+  content::TestWebUI panel_web_ui;
+  panel_web_ui.set_web_contents(panel_web_contents.get());
+  ContextualTasksUI panel_ui(&panel_web_ui);
+
+  EXPECT_CALL(*mock_contextual_tasks_ui_service_,
+              OpenDogfoodFeedbackUi(browser(), active_tab_url))
+      .Times(1);
+
+  panel_ui.OpenDogfoodFeedback();
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPageHandlerBrowserTest, OpenMyActivityUi) {

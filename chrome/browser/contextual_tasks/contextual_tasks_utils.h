@@ -21,6 +21,7 @@
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/base/mojom/window_open_disposition.mojom-forward.h"
+#include "url/gurl.h"
 
 class Profile;
 class BrowserWindowInterface;
@@ -330,6 +331,12 @@ enum class ContextualTasksLinkOpenDisposition {
 // disposition.
 void RecordSidePanelLinkClickedMetrics(
     ui::mojom::WindowOpenDisposition disposition);
+
+// Returns the URL to associate with a feedback report: prefers the active tab's
+// committed URL in `browser` when non-empty, falling back to
+// `fallback_web_contents`'s committed URL.
+GURL GetFeedbackPageUrl(BrowserWindowInterface* browser,
+                        content::WebContents* fallback_web_contents);
 
 }  // namespace contextual_tasks
 

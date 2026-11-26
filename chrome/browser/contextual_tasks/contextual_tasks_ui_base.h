@@ -92,6 +92,10 @@ class ContextualTasksUIBase
   static content::WebUIDataSource* RegisterWebUIDataSource(Profile* profile);
   static base::DictValue GetContextualTasksLoadTimeData(Profile* profile);
 
+  // Returns the load time data that controls the dogfood feedback buttons in
+  // the top toolbar and the tab picker.
+  static base::DictValue GetDogfoodFeedbackLoadTimeData();
+
   // contextual_tasks_toolbar::mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page> page,
@@ -106,6 +110,7 @@ class ContextualTasksUIBase
   void OpenManageAccountUi() override;
   void OpenLogOutFlow() override;
   void OpenFeedbackUi() override;
+  void OpenDogfoodFeedback() override;
   void MoveTaskUiToNewTab() override;
   void ShowThreadHistory() override;
   void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;

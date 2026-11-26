@@ -27,10 +27,10 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_types.h"
@@ -313,6 +313,19 @@ void ContextualTasksExtensionHandler::GetLensCropPreview(
 void ContextualTasksExtensionHandler::RemoveLensCrop() {
   if (auto* user_data = GetOrCreateWebContentsUserData()) {
     user_data->RemoveLensCrop();
+  }
+}
+
+void ContextualTasksExtensionHandler::OpenDogfoodFeedback() {
+  BrowserWindowInterface* browser = GetBrowserWindowInterface();
+  if (!browser) {
+    return;
+  }
+  const GURL page_url = contextual_tasks::GetFeedbackPageUrl(
+      browser, content::WebContents::FromRenderFrameHost(&render_frame_host()));
+  if (auto* ui_service = contextual_tasks::ContextualTasksUiServiceFactory::
+          GetForBrowserContext(render_frame_host().GetBrowserContext())) {
+    ui_service->OpenDogfoodFeedbackUi(browser, page_url);
   }
 }
 

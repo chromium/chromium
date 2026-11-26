@@ -21,6 +21,7 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_extension_bridge.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -8813,6 +8815,93 @@ IN_PROC_BROWSER_TEST_F(
   std::vector<searchbox::mojom::TabInfoPtr> tabs = FetchRecentTabs();
   ASSERT_EQ(tabs.size(), 1u);
   EXPECT_EQ(tabs[0]->url, unknown_url);
+}
+
+class ContextualTasksExtensionHandlerDogfoodFeedbackBrowserTest
+    : public ContextualTasksExtensionHandlerBrowserTest {
+ public:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    ContextualTasksExtensionHandlerBrowserTest::
+        SetUpBrowserContextKeyedServices(context);
+    ContextualTasksUiServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          return std::make_unique<
+              testing::NiceMock<MockContextualTasksUiService>>(
+              profile, ContextualTasksServiceFactory::GetForProfile(profile),
+              /*identity_manager=*/nullptr,
+              /*aim_eligibility_service=*/nullptr,
+              /*eligibility_manager=*/nullptr,
+              /*cookie_synchronizer=*/nullptr);
+        }));
+  }
+
+ protected:
+  testing::NiceMock<MockContextualTasksUiService>* mock_ui_service() {
+    return static_cast<testing::NiceMock<MockContextualTasksUiService>*>(
+        ContextualTasksUiServiceFactory::GetForBrowserContext(
+            browser()->GetProfile()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerDogfoodFeedbackBrowserTest,
+    OpenDogfoodFeedback_PassesActiveTabUrl) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUIChromeURLsURL),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  ASSERT_NE(mock_ui_service(), nullptr);
+  EXPECT_CALL(
+      *mock_ui_service(),
+      OpenDogfoodFeedbackUi(browser(), GURL(chrome::kChromeUIChromeURLsURL)))
+      .Times(1);
+
+  handler_->OpenDogfoodFeedback();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerDogfoodFeedbackBrowserTest,
+    OpenDogfoodFeedback_UncommittedActiveTabPreservesFallbackUrl) {
+  auto uncommitted_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser()->GetProfile()));
+  ASSERT_TRUE(uncommitted_contents->GetLastCommittedURL().is_empty());
+  browser()->tab_strip_model()->AppendWebContents(
+      std::move(uncommitted_contents), /*foreground=*/true);
+  ASSERT_TRUE(TabListInterface::From(browser())
+                  ->GetActiveTab()
+                  ->GetContents()
+                  ->GetLastCommittedURL()
+                  .is_empty());
+
+  ASSERT_NE(mock_ui_service(), nullptr);
+  EXPECT_CALL(
+      *mock_ui_service(),
+      OpenDogfoodFeedbackUi(browser(), GURL(chrome::kChromeUIVersionURL)))
+      .Times(1);
+
+  handler_->OpenDogfoodFeedback();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerDogfoodFeedbackBrowserTest,
+    OpenDogfoodFeedback_UnattachedFromBrowser_SafeNoOp) {
+  auto unattached_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser()->GetProfile()));
+  content::RenderFrameHost* rfh = unattached_contents->GetPrimaryMainFrame();
+  ASSERT_NE(rfh, nullptr);
+  ContextualTasksExtensionHandler::CreateForCurrentDocument(rfh);
+  auto* unattached_handler =
+      ContextualTasksExtensionHandler::GetForCurrentDocument(rfh);
+  ASSERT_NE(unattached_handler, nullptr);
+
+  ASSERT_NE(mock_ui_service(), nullptr);
+  EXPECT_CALL(*mock_ui_service(), OpenDogfoodFeedbackUi(_, _)).Times(0);
+
+  unattached_handler->OpenDogfoodFeedback();
 }
 
 }  // namespace contextual_tasks

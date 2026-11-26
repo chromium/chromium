@@ -45,7 +45,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -856,6 +855,7 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
 #endif
   dict.Set("contextualTasksUnboundedMenuEnabled",
            contextual_tasks::IsContextualTasksUnboundedMenuEnabled());
+  dict.Merge(GetDogfoodFeedbackLoadTimeData());
 
   const bool use_google_com_sign_out_label = base::FeatureList::IsEnabled(
       contextual_tasks::kContextualTasksAccountMenuGoogleComSignOutLabel);
@@ -871,6 +871,28 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
               ? IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_SIGN_OUT_OF_ALL_GOOGLE_COM_ACCOUNTS
               : IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_SIGN_OUT_OF_ALL_ACCOUNTS));
 
+  return dict;
+}
+
+// static
+base::DictValue ContextualTasksUIBase::GetDogfoodFeedbackLoadTimeData() {
+  base::DictValue dict;
+  // The dogfood feedback form can only be opened on desktop.
+#if BUILDFLAG(IS_ANDROID)
+  const bool enabled = false;
+  const char* attribute = "";
+#else
+  const bool enabled =
+      contextual_tasks::IsContextualTasksDogfoodFeedbackEnabled();
+  const char* attribute = enabled ? "dogfood-feedback-enabled" : "";
+#endif
+  dict.Set("contextualTasksDogfoodFeedbackEnabled", enabled);
+  // tab_picker.html doesn't load strings.m.js, so it sets this as an attribute
+  // of <tab-picker-app> through a template replacement instead.
+  dict.Set("contextualTasksDogfoodFeedbackAttribute", attribute);
+  // Dogfood only, so not translated.
+  dict.Set("dogfoodFeedbackTooltip",
+           "Submit Contextual Tasks Dogfood Feedback");
   return dict;
 }
 
@@ -987,19 +1009,22 @@ void ContextualTasksUIBase::OpenFeedbackUi() {
   if (!browser) {
     return;
   }
-  content::WebContents* web_contents = GetWebUIWebContents();
-  GURL page_url = web_contents ? web_contents->GetLastCommittedURL() : GURL();
-  if (auto* tab_list = TabListInterface::From(browser)) {
-    if (auto* active_tab = tab_list->GetActiveTab()) {
-      if (active_tab->GetContents()) {
-        page_url = active_tab->GetContents()->GetLastCommittedURL();
-      }
-    }
+
+  if (auto* ui_service = GetUiService()) {
+    ui_service->OpenFeedbackUi(
+        browser, GetFeedbackPageUrl(browser, GetWebUIWebContents()));
+  }
+}
+
+void ContextualTasksUIBase::OpenDogfoodFeedback() {
+  BrowserWindowInterface* browser = GetBrowser();
+  if (!browser) {
+    return;
   }
 
-  if (auto* ui_service =
-          ContextualTasksUiServiceFactory::GetForBrowserContext(GetProfile())) {
-    ui_service->OpenFeedbackUi(browser, page_url);
+  if (auto* ui_service = GetUiService()) {
+    ui_service->OpenDogfoodFeedbackUi(
+        browser, GetFeedbackPageUrl(browser, GetWebUIWebContents()));
   }
 }
 

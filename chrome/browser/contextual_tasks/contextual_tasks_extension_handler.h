@@ -98,6 +98,7 @@ class ContextualTasksExtensionHandler
                            GetHandshakeMessageCallback callback) override;
   void GetLensCropPreview(GetLensCropPreviewCallback callback) override;
   void RemoveLensCrop() override;
+  void OpenDogfoodFeedback() override;
 
   base::WeakPtr<contextual_search::InputStateModel>
   GetOrCreateInputStateModelForTesting() {
