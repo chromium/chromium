@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -187,13 +187,13 @@ bool IsArchitectureSupported(const std::string& arch,
           ::GetModuleHandle(L"kernel32.dll"), "IsWow64GuestMachineSupported"));
 
   if (is_wow64_guest_machine_supported) {
-    const base::flat_map<std::string, int> kNativeArchitectureStringsToImages =
-        {
+    static constexpr auto kNativeArchitectureStringsToImages =
+        base::MakeFixedFlatMap<std::string_view, int>({
             {update_client::kArchIntel, IMAGE_FILE_MACHINE_I386},
             {kArchAmd64Omaha3, IMAGE_FILE_MACHINE_AMD64},
             {update_client::kArchAmd64, IMAGE_FILE_MACHINE_AMD64},
             {update_client::kArchArm64, IMAGE_FILE_MACHINE_ARM64},
-        };
+        });
 
     const auto image = kNativeArchitectureStringsToImages.find(arch);
     if (image != kNativeArchitectureStringsToImages.end()) {
