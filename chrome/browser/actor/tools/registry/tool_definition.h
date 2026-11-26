@@ -108,7 +108,9 @@ enum class ToolId {
   kSiteBasedSearch = 40,
   // Captures a screenshot of the active webpage's current viewport.
   kGetScreenshot = 41,
-  kMaxValue = kGetScreenshot,
+  // Reports what the user pointed at on the active webpage.
+  kGetPointer = 42,
+  kMaxValue = kGetPointer,
 };
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
 // building instances with `ToolDefinitionBuilder`.

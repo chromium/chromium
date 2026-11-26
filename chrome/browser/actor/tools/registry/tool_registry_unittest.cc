@@ -23,6 +23,7 @@
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
+#include "chrome/browser/actor/tools/get_pointer/get_pointer_tool_request.h"
 #include "chrome/browser/actor/tools/get_screenshot_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
@@ -573,6 +574,17 @@ TEST(ToolRegistryTest, CloseGeminiPanelToolDefinition) {
                                              base::Value(base::DictValue())));
 }
 
+TEST(ToolRegistryTest, GetPointerToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      GetPointerToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kGetPointer);
+  EXPECT_EQ(definition->name, GetPointerToolRequest::kModelFacingName);
+  EXPECT_THAT(definition->parameters_json_schema,
+              base::test::DictionaryHasValue("properties",
+                                             base::Value(base::DictValue())));
+}
+
 TEST(ToolRegistryTest, GetScreenshotToolDefinition) {
   const std::optional<ToolDefinition> definition =
       GetScreenshotToolRequest::GetToolDefinition();
@@ -965,6 +977,17 @@ TEST(ToolRegistryTest, GetAllToolsContainsCloseGeminiPanelTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kCloseGeminiPanel,
                                     &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsGetPointerTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  ASSERT_TRUE(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kGetPointer, &ToolDefinition::id));
 }
 
 TEST(ToolRegistryTest, GetAllToolsContainsGetScreenshotTool) {
