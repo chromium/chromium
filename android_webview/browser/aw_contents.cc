@@ -39,6 +39,7 @@
 #include "android_webview/browser/permission/permission_callback.h"
 #include "android_webview/browser/permission/permission_request_handler.h"
 #include "android_webview/browser/permission/simple_permission_request.h"
+#include "android_webview/browser/popup_touch_handle_drawable.h"
 #include "android_webview/browser/prefetch/aw_preloading_utils.h"
 #include "android_webview/browser/signin/aw_google_accounts_delegate.h"
 #include "android_webview/browser/state_serializer.h"
@@ -1373,8 +1374,12 @@ ui::TouchHandleDrawable* AwContents::CreateDrawable() {
   if (!obj) {
     return nullptr;
   }
-  return reinterpret_cast<ui::TouchHandleDrawable*>(
-      Java_AwContents_onCreateTouchHandle(env, obj));
+  ScopedJavaLocalRef<jobject> java_drawable =
+      Java_AwContents_onCreateTouchHandle(env, obj);
+  if (!java_drawable) {
+    return nullptr;
+  }
+  return new PopupTouchHandleDrawable(env, java_drawable);
 }
 
 void AwContents::SetDipScale(JNIEnv* env, float dip_scale) {

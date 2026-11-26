@@ -25,7 +25,6 @@ import android.widget.PopupWindow;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ObserverList;
@@ -55,9 +54,6 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
     private ViewGroup mContainerView;
     private ViewPositionObserver mParentPositionObserver;
     private Drawable mDrawable;
-
-    // The native side of this object.
-    private final long mNativeDrawable;
 
     // The position of the handle relative to the parent view in DIP.
     private float mOriginXDip;
@@ -192,9 +188,6 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
                 };
         GestureListenerManager.fromWebContents(mWebContents)
                 .addListener(mGestureStateListener, ALL_UPDATES);
-        mNativeDrawable =
-                PopupTouchHandleDrawableJni.get()
-                        .init(this, HandleViewResources.getHandleHorizontalPaddingRatio());
     }
 
     public static PopupTouchHandleDrawable create(
@@ -202,10 +195,6 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
             WebContents webContents,
             ViewGroup containerView) {
         return new PopupTouchHandleDrawable(drawableObserverList, webContents, containerView);
-    }
-
-    public long getNativeDrawable() {
-        return mNativeDrawable;
     }
 
     private static Drawable getHandleDrawable(Context context, int orientation) {
@@ -673,8 +662,8 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
         mContainerView = newContainerView;
     }
 
-    @NativeMethods
-    interface Natives {
-        long init(PopupTouchHandleDrawable self, float horizontalPaddingRatio);
+    @CalledByNative
+    private static float getHorizontalPaddingRatio() {
+        return HandleViewResources.getHandleHorizontalPaddingRatio();
     }
 }

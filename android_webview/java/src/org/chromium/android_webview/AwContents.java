@@ -4483,11 +4483,8 @@ public class AwContents implements SmartClipProvider {
     }
 
     @CalledByNative
-    private long onCreateTouchHandle() {
-        PopupTouchHandleDrawable drawable =
-                PopupTouchHandleDrawable.create(
-                        mTouchHandleDrawables, mWebContents, mContainerView);
-        return drawable.getNativeDrawable();
+    private PopupTouchHandleDrawable onCreateTouchHandle() {
+        return PopupTouchHandleDrawable.create(mTouchHandleDrawables, mWebContents, mContainerView);
     }
 
     /** Callback for generateMHTML. */
