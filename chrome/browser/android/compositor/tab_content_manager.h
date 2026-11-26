@@ -64,9 +64,11 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   void SetUIResourceProvider(
       base::WeakPtr<ui::UIResourceProvider> ui_resource_provider);
 
-  // Get the live layer from the cache.
-  virtual scoped_refptr<cc::slim::Layer> GetLiveLayer(int tab_id);
+  // Get the live layer from the cache. `tab_id` must not be
+  // `TabAndroid::kInvalidTabId`.
+  scoped_refptr<cc::slim::Layer> GetLiveLayer(int tab_id);
 
+  // `tab_id` must not be `TabAndroid::kInvalidTabId`.
   TabAndroid* GetTab(int tab_id);
 
   // Returns the static ThumbnailLayer for a `tab_id`. Note that the lifecycle

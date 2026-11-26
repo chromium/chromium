@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/compositor/scene_layer/static_tab_scene_layer.h"
 
+#include <utility>
+
 #include "cc/input/android/offset_tag_android.h"
 #include "cc/slim/filter.h"
 #include "cc/slim/layer.h"
@@ -53,21 +55,24 @@ void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
       << "TabContentManager must be set before updating the layer";
 
   tab_id_ = id;
-  background_color_ = id == -1 ? SK_ColorTRANSPARENT
-                               : static_cast<SkColor>(default_background_color);
+  background_color_ = id == TabAndroid::kInvalidTabId
+                          ? SK_ColorTRANSPARENT
+                          : static_cast<SkColor>(default_background_color);
   if (!content_layer_.get()) {
     content_layer_ = android::ContentLayer::Create(tab_content_manager_);
     layer_->AddChild(content_layer_->layer());
   }
 
-  if (id != -1 && can_use_live_layer) {
-    TabAndroid* tab = tab_content_manager_->GetTab(id);
-    if (tab && tab->web_contents() && tab->web_contents()->GetNativeView()) {
-      tab->web_contents()->GetNativeView()->set_content_offset_x(x);
+  scoped_refptr<cc::slim::Layer> live_layer;
+  if (can_use_live_layer && id != TabAndroid::kInvalidTabId) {
+    if (TabAndroid* tab = tab_content_manager_->GetTab(id)) {
+      live_layer = tab->GetContentLayer();
+      if (tab->web_contents() && tab->web_contents()->GetNativeView()) {
+        tab->web_contents()->GetNativeView()->set_content_offset_x(x);
+      }
     }
   }
-
-  content_layer_->SetProperties(id, can_use_live_layer, can_use_thumbnail_);
+  content_layer_->SetProperties(id, can_use_thumbnail_, std::move(live_layer));
 
   content_layer_->layer()->SetPosition(gfx::PointF(x, y));
   content_layer_->layer()->SetIsDrawable(true);

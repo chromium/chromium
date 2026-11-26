@@ -44,8 +44,9 @@ void ToolbarSwipeSceneLayer::UpdateLayer(JNIEnv* env,
   if (id < 0)
     return;
 
-  content_layer->SetProperties(id, can_use_live_layer,
-                               /*can_use_thumbnail=*/true);
+  content_layer->SetProperties(
+      id, /*can_use_thumbnail=*/true,
+      can_use_live_layer ? tab_content_manager_->GetLiveLayer(id) : nullptr);
   content_layer->layer()->SetPosition(gfx::PointF(x, y));
 }
 

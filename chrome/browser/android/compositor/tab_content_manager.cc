@@ -19,6 +19,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -348,13 +349,14 @@ scoped_refptr<cc::slim::Layer> TabContentManager::GetLiveLayer(int tab_id) {
 }
 
 TabAndroid* TabContentManager::GetTab(int tab_id) {
+  CHECK_NE(tab_id, TabAndroid::kInvalidTabId);
   JNIEnv* env = AttachCurrentThread();
   return Java_TabContentManager_getTabById(
       env, weak_java_tab_content_manager_.get(env), tab_id);
 }
 
 ThumbnailLayer* TabContentManager::GetStaticLayer(int tab_id) {
-  if (tab_id == -1) {
+  if (tab_id == TabAndroid::kInvalidTabId) {
     return nullptr;
   }
   auto it = static_layer_cache_.find(tab_id);

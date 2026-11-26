@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_CONTENT_LAYER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 
 namespace cc::slim {
@@ -29,8 +30,8 @@ class ContentLayer : public Layer {
   ContentLayer& operator=(const ContentLayer&) = delete;
 
   void SetProperties(int id,
-                     bool can_use_live_layer,
-                     bool can_use_thumbnail);
+                     bool can_use_thumbnail,
+                     scoped_refptr<cc::slim::Layer> live_layer);
 
   scoped_refptr<cc::slim::Layer> layer() override;
 

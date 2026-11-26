@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 
+#include <cstddef>
+
 #include "cc/slim/layer.h"
 #include "chrome/browser/android/compositor/layer/thumbnail_layer.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
@@ -44,32 +46,48 @@ static bool DoesLayerDrawContent(const cc::slim::Layer* layer) {
 }
 
 void ContentLayer::SetProperties(int id,
-                                 bool can_use_live_layer,
-                                 bool can_use_thumbnail) {
-  scoped_refptr<cc::slim::Layer> live_layer =
-      tab_content_manager_->GetLiveLayer(id);
+                                 bool can_use_thumbnail,
+                                 scoped_refptr<cc::slim::Layer> live_layer) {
   if (live_layer) {
-    live_layer->SetHideLayerAndSubtree(!can_use_live_layer);
-  }
-
-  layer_->RemoveAllChildren();
-
-  if (live_layer.get()) {
+    live_layer->SetHideLayerAndSubtree(false);
     live_layer->SetMasksToBounds(false);
     live_layer->SetBounds(gfx::Size());
     // Don't override the opacity for layers internal to the WebContents.
     live_layer->SetOpacity(1.0f);
-
-    layer_->AddChild(live_layer);
   }
 
+  scoped_refptr<cc::slim::Layer> static_layer;
   if (can_use_thumbnail && !DoesLayerDrawContent(live_layer.get())) {
-    ThumbnailLayer* static_layer = tab_content_manager_->GetStaticLayer(id);
-    if (static_layer) {
-      static_layer->layer()->SetIsDrawable(true);
-      static_layer->layer()->SetOpacity(1.0f);
-      layer_->AddChild(static_layer->layer());
+    if (ThumbnailLayer* thumbnail_layer =
+            tab_content_manager_->GetStaticLayer(id)) {
+      static_layer = thumbnail_layer->layer();
+      static_layer->SetIsDrawable(true);
+      static_layer->SetOpacity(1.0f);
     }
+  }
+
+  // `layer_` only ever hosts `live_layer` and/or `static_layer` (in that
+  // order). Remove any stale children first, then insert missing ones in order
+  // so unchanged children are not detached and re-attached across frames.
+  const auto& children = layer_->children();
+  for (size_t i = children.size(); i-- > 0;) {
+    // Retain a ref across RemoveFromParent() in case `layer_->children()` holds
+    // the last reference to `child`.
+    scoped_refptr<cc::slim::Layer> child = children[i];
+    if (child != live_layer && child != static_layer) {
+      child->RemoveFromParent();
+    }
+  }
+
+  size_t next_index = 0;
+  for (const auto& desired : {live_layer, static_layer}) {
+    if (!desired) {
+      continue;
+    }
+    if (next_index >= children.size() || children[next_index] != desired) {
+      layer_->InsertChild(desired, next_index);
+    }
+    ++next_index;
   }
 }
 
