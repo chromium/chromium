@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -80,7 +81,8 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(arc::FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(),
+        /*android_management_checker_factory=*/base::NullCallback());
   }
 
   void TearDown() override {

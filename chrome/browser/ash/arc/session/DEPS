@@ -23,7 +23,6 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/test_support",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/net",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/login",
@@ -41,6 +40,7 @@ specific_include_rules = {
   ],
 
   "arc_service_launcher\\.cc": [
+    "+chrome/browser/net",
     "+chrome/browser/web_applications/web_app_utils.h",
   ],
 

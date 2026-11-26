@@ -512,6 +512,8 @@ ArcSessionManager::ArcSessionManager(
     std::unique_ptr<ArcSessionRunner> arc_session_runner,
     std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
         adb_sideloading_availability_delegate,
+    ArcRequirementChecker::AndroidManagementCheckerFactory
+        android_management_checker_factory,
     ArcDlcInstaller* arc_dlc_installer)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
@@ -520,11 +522,14 @@ ArcSessionManager::ArcSessionManager(
       adb_sideloading_availability_delegate_(
           std::move(adb_sideloading_availability_delegate)),
       android_management_checker_factory_(
-          ArcRequirementChecker::GetDefaultAndroidManagementCheckerFactory()),
+          std::move(android_management_checker_factory)),
       arc_dlc_installer_(arc_dlc_installer),
       attempt_restart_callback_(base::BindRepeating(
           []() { session_manager::SessionManager::Get()->RequestRestart(); })) {
   if (!metrics_service_) {
+    CHECK_IS_TEST();
+  }
+  if (!android_management_checker_factory_) {
     CHECK_IS_TEST();
   }
 

@@ -152,12 +152,15 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // outlive `this`.
   // `metrics_service` may be null in tests. If non-null, it must remain valid
   // until Shutdown() is called.
+  // `android_management_checker_factory` may be null in tests.
   ArcSessionManager(PrefService* local_state,
                     const ApplicationLocaleStorage* application_locale_storage,
                     metrics::MetricsService* metrics_service,
                     std::unique_ptr<ArcSessionRunner> arc_session_runner,
                     std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
                         adb_sideloading_availability_delegate,
+                    ArcRequirementChecker::AndroidManagementCheckerFactory
+                        android_management_checker_factory,
                     ArcDlcInstaller* arc_dlc_installer);
 
   ArcSessionManager(const ArcSessionManager&) = delete;
@@ -358,11 +361,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   ArcSessionRunner* GetArcSessionRunnerForTesting();
   void SetAttemptRestartCallbackForTesting(
       const base::RepeatingClosure& callback);
-  void SetAndroidManagementCheckerFactoryForTesting(
-      ArcRequirementChecker::AndroidManagementCheckerFactory
-          android_management_checker_factory) {
-    android_management_checker_factory_ = android_management_checker_factory;
-  }
 
   // Returns whether the Play Store app is requested to be launched by this
   // class. Should be used only for tests.
@@ -582,7 +580,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<ArcDataRemover> data_remover_;
 
-  ArcRequirementChecker::AndroidManagementCheckerFactory
+  const ArcRequirementChecker::AndroidManagementCheckerFactory
       android_management_checker_factory_;
   std::unique_ptr<ArcRequirementChecker> requirement_checker_;
 

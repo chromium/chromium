@@ -74,6 +74,7 @@ static_library("service_launcher") {
     "//components/prefs",
     "//media:media_buildflags",
     "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
 
     # Deps for allow_circular_includes_from.
     "//chrome/browser/ash/login/session",
@@ -130,7 +131,6 @@ static_library("session") {
     "//chrome/browser/ash/policy/arc",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/handlers",
-    "//chrome/browser/net",
     "//chrome/browser/policy",
     "//chrome/browser/prefs:util",
     "//chrome/browser/ui:browser_commands",
@@ -162,6 +162,7 @@ static_library("session") {
     "//components/session_manager/core",
     "//components/sync_preferences",
     "//components/user_manager",
+    "//services/network/public/cpp",
     "//ui/message_center",
   ]
 

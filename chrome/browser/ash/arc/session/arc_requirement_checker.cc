@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_default_negotiator.h"
@@ -14,7 +17,6 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
@@ -70,27 +72,23 @@ CoreAccountId GetDeviceAccountId(Profile* profile) {
   return identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 }
 
-std::unique_ptr<ArcAndroidManagementChecker> CreateAndroidManagementChecker(
+}  // namespace
+
+// static
+std::unique_ptr<ArcAndroidManagementChecker>
+ArcRequirementChecker::CreateAndroidManagementChecker(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     Profile* profile,
     bool retry_on_error) {
+  CHECK(shared_url_loader_factory);
   signin::IdentityManager* identity_manager =
       ash::IdentityManagerProvider::Get().Find(GetAccountId(profile));
   const CoreAccountId device_account_id = GetDeviceAccountId(profile);
   return std::make_unique<ArcAndroidManagementChecker>(
       profile, identity_manager, device_account_id, retry_on_error,
       std::make_unique<policy::AndroidManagementClientImpl>(
-          GetDeviceManagementService(),
-          g_browser_process->system_network_context_manager()
-              ->GetSharedURLLoaderFactory(),
+          GetDeviceManagementService(), std::move(shared_url_loader_factory),
           device_account_id, identity_manager));
-}
-
-}  // namespace
-
-// static
-ArcRequirementChecker::AndroidManagementCheckerFactory
-ArcRequirementChecker::GetDefaultAndroidManagementCheckerFactory() {
-  return base::BindRepeating(&CreateAndroidManagementChecker);
 }
 
 ArcRequirementChecker::ArcRequirementChecker(
@@ -101,7 +99,8 @@ ArcRequirementChecker::ArcRequirementChecker(
     : metrics_service_(metrics_service),
       profile_(profile),
       support_host_(support_host),
-      android_management_checker_factory_(android_management_checker_factory) {}
+      android_management_checker_factory_(
+          std::move(android_management_checker_factory)) {}
 
 ArcRequirementChecker::~ArcRequirementChecker() {
   profile_->GetProfilePolicyConnector()->policy_service()->RemoveObserver(
@@ -200,6 +199,7 @@ void ArcRequirementChecker::StartBackgroundChecks(
   if (!g_enable_check_android_management_in_tests.value_or(g_ui_enabled))
     return;
 
+  CHECK(android_management_checker_factory_);
   android_management_checker_ = android_management_checker_factory_.Run(
       profile_.get(), true /* retry_on_error */);
   android_management_checker_->StartCheck(base::BindOnce(
@@ -263,6 +263,7 @@ void ArcRequirementChecker::StartAndroidManagementCheck() {
   if (!g_ui_enabled)
     return;
 
+  CHECK(android_management_checker_factory_);
   android_management_checker_ = android_management_checker_factory_.Run(
       profile_.get(), false /* retry_on_error */);
   android_management_checker_->StartCheck(

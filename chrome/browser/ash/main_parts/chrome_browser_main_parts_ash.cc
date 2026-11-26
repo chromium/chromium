@@ -903,6 +903,7 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
       g_browser_process->local_state(),
       g_browser_process->GetFeatures()->application_locale_storage(),
       g_browser_process->metrics_service(),
+      g_browser_process->shared_url_loader_factory(),
       g_browser_process->platform_part()->scheduler_configuration_manager());
 
   // This should be created after ArcServiceLauncher creation.

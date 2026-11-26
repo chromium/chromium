@@ -14,7 +14,9 @@
 namespace arc {
 std::unique_ptr<ArcSessionManager> CreateTestArcSessionManager(
     std::unique_ptr<ArcSessionRunner> arc_session_runner,
-    ArcDlcInstaller* arc_dlc_installer) {
+    ArcDlcInstaller* arc_dlc_installer,
+    ArcRequirementChecker::AndroidManagementCheckerFactory
+        android_management_checker_factory) {
   auto manager = std::make_unique<ArcSessionManager>(
       TestingBrowserProcess::GetGlobal()->local_state(),
       TestingBrowserProcess::GetGlobal()
@@ -23,7 +25,7 @@ std::unique_ptr<ArcSessionManager> CreateTestArcSessionManager(
       TestingBrowserProcess::GetGlobal()->metrics_service(),
       std::move(arc_session_runner),
       std::make_unique<AdbSideloadingAvailabilityDelegateImpl>(),
-      arc_dlc_installer);
+      std::move(android_management_checker_factory), arc_dlc_installer);
   // Our unit tests the ArcSessionManager::ExpandPropertyFiles() function won't
   // be automatically called. Because of that, we can call
   // OnExpandPropertyFilesForTesting() instead with |true| for easier unit

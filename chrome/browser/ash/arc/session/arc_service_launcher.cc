@@ -59,6 +59,7 @@
 #include "chrome/browser/ash/arc/session/arc_disk_space_monitor.h"
 #include "chrome/browser/ash/arc/session/arc_initial_optin_metrics_recorder_factory.h"
 #include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
+#include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/sharesheet/arc_sharesheet_bridge.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
@@ -115,6 +116,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 #include "base/task/sequenced_task_runner.h"
@@ -144,10 +146,12 @@ ArcSessionRunner* g_arc_session_runner_for_testing = nullptr;
 // outlive the returned object.
 // `metrics_service` may be null in tests. If non-null, it must remain valid
 // until Shutdown() of the returned object is called.
+// `shared_url_loader_factory` must be non-null.
 std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
     metrics::MetricsService* metrics_service,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     ArcBridgeService* arc_bridge_service,
     version_info::Channel channel,
     ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager,
@@ -162,7 +166,11 @@ std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
   }
   return std::make_unique<ArcSessionManager>(
       local_state, application_locale_storage, metrics_service,
-      std::move(runner), std::move(delegate), arc_dlc_installer);
+      std::move(runner), std::move(delegate),
+      base::BindRepeating(
+          &ArcRequirementChecker::CreateAndroidManagementChecker,
+          std::move(shared_url_loader_factory)),
+      arc_dlc_installer);
 }
 
 }  // namespace
@@ -171,10 +179,12 @@ ArcServiceLauncher::ArcServiceLauncher(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
     metrics::MetricsService* metrics_service,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       metrics_service_(metrics_service),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       arc_service_manager_(std::make_unique<ArcServiceManager>()),
       scheduler_configuration_manager_(scheduler_configuration_manager),
       arc_dlc_installer_(std::make_unique<ArcDlcInstaller>()),
@@ -182,10 +192,12 @@ ArcServiceLauncher::ArcServiceLauncher(
           CreateArcSessionManager(&local_state_.get(),
                                   &application_locale_storage_.get(),
                                   metrics_service_,
+                                  shared_url_loader_factory_,
                                   arc_service_manager_->arc_bridge_service(),
                                   ash::GetChannel(),
                                   scheduler_configuration_manager,
                                   arc_dlc_installer_.get())) {
+  CHECK(shared_url_loader_factory_);
   CHECK(g_arc_service_launcher == nullptr, base::NotFatalUntil::M160);
   g_arc_service_launcher = this;
 
@@ -454,8 +466,9 @@ void ArcServiceLauncher::ResetForTesting() {
   // unexpected behavior, specifically on test teardown.
   arc_session_manager_ = CreateArcSessionManager(
       &local_state_.get(), &application_locale_storage_.get(), metrics_service_,
-      arc_service_manager_->arc_bridge_service(), ash::GetChannel(),
-      scheduler_configuration_manager_, arc_dlc_installer_.get());
+      shared_url_loader_factory_, arc_service_manager_->arc_bridge_service(),
+      ash::GetChannel(), scheduler_configuration_manager_,
+      arc_dlc_installer_.get());
 }
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)

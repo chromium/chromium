@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/app_types_util.h"
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
@@ -66,7 +67,8 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(arc::FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(),
+        /*android_management_checker_factory=*/base::NullCallback());
     testing_profile_ = std::make_unique<TestingProfile>();
     policy_ =
         WorkingSetTrimmerPolicyArcVm::CreateForTesting(testing_profile_.get());

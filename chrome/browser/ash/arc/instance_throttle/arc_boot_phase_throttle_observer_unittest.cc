@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -69,7 +70,8 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(),
+        /*android_management_checker_factory=*/base::NullCallback());
 
     user_session_test_environment_->LogIn(account_id);
 

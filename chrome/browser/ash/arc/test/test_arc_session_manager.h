@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
+
 namespace arc {
 
 class ArcDlcInstaller;
@@ -18,7 +20,9 @@ class ArcSessionRunner;
 // has already successfully been done.
 std::unique_ptr<ArcSessionManager> CreateTestArcSessionManager(
     std::unique_ptr<ArcSessionRunner> arc_session_runner,
-    ArcDlcInstaller* arc_dlc_installer);
+    ArcDlcInstaller* arc_dlc_installer,
+    ArcRequirementChecker::AndroidManagementCheckerFactory
+        android_management_checker_factory);
 
 // Does something similar to CreateTestArcSessionManager(), but for an existing
 // object. This function is useful for ARC browser_tests where ArcSessionManager

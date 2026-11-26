@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -50,7 +51,8 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(),
+        /*android_management_checker_factory=*/base::NullCallback());
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
 

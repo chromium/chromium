@@ -9,6 +9,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
@@ -91,7 +92,8 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(),
+        /*android_management_checker_factory=*/base::NullCallback());
 
     BrowserWithTestWindowTest::SetUp();
     arc_service_manager_->set_browser_context(profile());

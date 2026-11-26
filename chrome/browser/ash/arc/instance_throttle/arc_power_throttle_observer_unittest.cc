@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -52,7 +53,8 @@ class ArcPowerThrottleObserverTest : public testing::Test {
     session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(),
+        /*android_management_checker_factory=*/base::NullCallback());
     testing_profile_ = std::make_unique<TestingProfile>();
 
     SetArcAvailableCommandLineForTesting(

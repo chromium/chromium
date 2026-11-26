@@ -17,6 +17,7 @@
 #include "base/byte_size.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -121,7 +122,8 @@ class StorageHandlerTest : public testing::Test {
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(arc::FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(),
+        /*android_management_checker_factory=*/base::NullCallback());
 
     // Initialize profile.
     profile_manager_ = std::make_unique<TestingProfileManager>(

@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -220,7 +221,8 @@ class ArcSessionManagerInLoginScreenTest : public testing::Test {
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(),
+        /*android_management_checker_factory=*/base::NullCallback());
   }
 
   ArcSessionManagerInLoginScreenTest(
@@ -362,7 +364,7 @@ class ArcSessionManagerTestBase : public testing::Test {
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(), GetAndroidManagementCheckerFactory());
 
     AccountId account_id = SimulateAddUser();
     SimulateUserLogin(account_id);
@@ -466,6 +468,10 @@ class ArcSessionManagerTestBase : public testing::Test {
   }
 
  private:
+  virtual ArcRequirementChecker::AndroidManagementCheckerFactory
+  GetAndroidManagementCheckerFactory() {
+    return base::NullCallback();
+  }
   void StartPreferenceSyncing() const {
     PrefServiceSyncableFromProfile(profile_.get())
         ->GetSyncableService(syncer::PREFERENCES)
@@ -2622,14 +2628,26 @@ class ArcTransitionToManagedTest
 
     const std::string profile_name = profile()->GetProfileUserName();
     identity_test_environment_.MakeAccountAvailable(profile_name);
-    signin::IdentityManager* identity_manager =
-        identity_test_environment_.identity_manager();
-    CoreAccountId account_id = identity_manager->PickAccountIdForAccount(
-        signin::GetTestGaiaIdForEmail(profile_name), profile_name);
+  }
 
+  bool user_become_managed() const { return GetParam(); }
+
+  bool ShouldArcTransitionToManaged() const { return user_become_managed(); }
+
+ protected:
+  signin::IdentityTestEnvironment identity_test_environment_;
+
+ private:
+  ArcRequirementChecker::AndroidManagementCheckerFactory
+  GetAndroidManagementCheckerFactory() override {
     // Inject a fake AndroidManagementClient to return MANAGED as the result.
-    arc_session_manager()->SetAndroidManagementCheckerFactoryForTesting(
-        base::BindLambdaForTesting([=](Profile* profile, bool retry_on_error) {
+    return base::BindLambdaForTesting(
+        [this](Profile* profile, bool retry_on_error) {
+          const std::string profile_name = profile->GetProfileUserName();
+          signin::IdentityManager* identity_manager =
+              identity_test_environment_.identity_manager();
+          CoreAccountId account_id = identity_manager->PickAccountIdForAccount(
+              signin::GetTestGaiaIdForEmail(profile_name), profile_name);
           auto fake_client =
               std::make_unique<policy::FakeAndroidManagementClient>();
           fake_client->SetResult(
@@ -2638,17 +2656,8 @@ class ArcTransitionToManagedTest
           return std::make_unique<ArcAndroidManagementChecker>(
               profile, identity_manager, account_id, retry_on_error,
               std::move(fake_client));
-        }));
+        });
   }
-
-  bool user_become_managed() const { return GetParam(); }
-
-  bool ShouldArcTransitionToManaged() const {
-    return user_become_managed();
-  }
-
- protected:
-  signin::IdentityTestEnvironment identity_test_environment_;
 };
 
 TEST_P(ArcTransitionToManagedTest, TransitionFlow) {

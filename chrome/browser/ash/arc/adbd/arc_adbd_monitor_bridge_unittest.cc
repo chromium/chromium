@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -68,7 +69,8 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(arc::FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(),
+        /*android_management_checker_factory=*/base::NullCallback());
 
     user_session_test_environment_ =
         std::make_unique<ash::test::UserSessionTestEnvironment>(

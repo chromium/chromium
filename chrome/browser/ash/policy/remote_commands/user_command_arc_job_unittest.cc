@@ -87,7 +87,8 @@ UserCommandArcJobTest::UserCommandArcJobTest()
   arc_session_manager_ = CreateTestArcSessionManager(
       std::make_unique<arc::ArcSessionRunner>(
           base::BindRepeating(arc::FakeArcSession::Create)),
-      arc_dlc_installer_.get());
+      arc_dlc_installer_.get(),
+      /*android_management_checker_factory=*/base::NullCallback());
   arc_policy_bridge_ =
       arc::ArcPolicyBridge::GetForBrowserContextForTesting(profile_.get());
   policy_instance_ = std::make_unique<arc::FakePolicyInstance>();

@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -119,7 +120,8 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(),
+        /*android_management_checker_factory=*/base::NullCallback());
     preference_handler_ =
         std::make_unique<ArcPlayStoreEnabledPreferenceHandler>(
             profile_.get(), arc_session_manager_.get(),

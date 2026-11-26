@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
@@ -68,7 +69,8 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(),
+        /*android_management_checker_factory=*/base::NullCallback());
 
     // This creates |profile()|, so it has to come after the arc managers.
     BrowserWithTestWindowTest::SetUp();

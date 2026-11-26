@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/idle_manager/arc_cpu_throttle_observer.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_throttle_test_observer.h"
@@ -46,7 +47,8 @@ class ArcCpuThrottleObserverTest : public testing::Test {
     session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(),
+        /*android_management_checker_factory=*/base::NullCallback());
     testing_profile_ = std::make_unique<TestingProfile>();
 
     StabilityMetricsManager::Initialize(

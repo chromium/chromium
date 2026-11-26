@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -75,7 +76,8 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(arc::FakeArcSession::Create)),
-        arc_dlc_installer_.get());
+        arc_dlc_installer_.get(),
+        /*android_management_checker_factory=*/base::NullCallback());
     arc_session_manager_->SetProfile(profile_);
 
     service_ =

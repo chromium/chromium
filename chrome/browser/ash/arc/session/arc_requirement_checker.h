@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -21,6 +22,10 @@ class Profile;
 namespace metrics {
 class MetricsService;
 }  // namespace metrics
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace arc {
 
@@ -45,11 +50,18 @@ class ArcRequirementChecker : public policy::PolicyService::Observer {
       base::RepeatingCallback<std::unique_ptr<ArcAndroidManagementChecker>(
           Profile* profile,
           bool retry_on_error)>;
-  static AndroidManagementCheckerFactory
-  GetDefaultAndroidManagementCheckerFactory();
+
+  // `shared_url_loader_factory` must not be null.
+  static std::unique_ptr<ArcAndroidManagementChecker>
+  CreateAndroidManagementChecker(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      Profile* profile,
+      bool retry_on_error);
 
   // `metrics_service` and `support_host` must outlive `this`.
   // `metrics_service` must be non-null if `support_host` is non-null.
+  // `android_management_checker_factory` must not be null if Android management
+  // check is enabled.
   ArcRequirementChecker(
       metrics::MetricsService* metrics_service,
       Profile* profile,

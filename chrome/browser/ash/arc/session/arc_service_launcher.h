@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
@@ -29,6 +30,10 @@ class ConsentAuditor;
 namespace metrics {
 class MetricsService;
 }  // namespace metrics
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace ash {
 class SchedulerConfigurationManagerBase;
@@ -57,12 +62,13 @@ class ArcServiceLauncher {
   // `local_state` and `application_locale_storage` must be non-null and must
   // outlive `this`.
   // `metrics_service` may be null in tests. If non-null, it must remain valid
-  // until Shutdown() is called. `scheduler_configuration_manager` must outlive
-  // `this` object.
+  // until Shutdown() is called. `shared_url_loader_factory` must be non-null.
+  // `scheduler_configuration_manager` must outlive `this` object.
   ArcServiceLauncher(
       PrefService* local_state,
       const ApplicationLocaleStorage* application_locale_storage,
       metrics::MetricsService* metrics_service,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager);
 
   ArcServiceLauncher(const ArcServiceLauncher&) = delete;
@@ -144,6 +150,8 @@ class ArcServiceLauncher {
   const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
   raw_ptr<metrics::MetricsService> metrics_service_ = nullptr;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   // |scheduler_configuration_manager_| outlives |this|.
