@@ -9,7 +9,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/check_is_test.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
@@ -173,11 +172,13 @@ void UpdateManifestFetcher::DownloadUpdateManifest(
   simple_url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&UpdateManifestFetcher::OnUpdateManifestDownloaded,
-                     weak_factory_.GetWeakPtr()),
+                     weak_factory_.GetWeakPtr(),
+                     client_security_state_address_space),
       kMaxUpdateManifestLength);
 }
 
 void UpdateManifestFetcher::OnUpdateManifestDownloaded(
+    network::mojom::IPAddressSpace client_security_state_address_space,
     std::optional<std::string> update_manifest_content) {
   if (report_histogram_manifest_result_) {
     int error_or_http_response_code_ = 0;
@@ -208,11 +209,21 @@ void UpdateManifestFetcher::OnUpdateManifestDownloaded(
       simple_url_loader_->ResponseInfo()
           ? simple_url_loader_->ResponseInfo()->response_address_space
           : network::mojom::IPAddressSpace::kUnknown;
+  // The network service reports kUnknown when the response came through a
+  // proxy (or the remote endpoint is otherwise unknown). Fall back to
+  // classifying the final URL (hostnames are treated as public), but never let
+  // the result be less public than the address space of the initial request,
+  // so that a redirect to a private URL can't escalate privileges.
   if (manifest_address_space == network::mojom::IPAddressSpace::kUnknown) {
-    CHECK_IS_TEST();
-    manifest_address_space =
+    network::mojom::IPAddressSpace initial_address_space =
+        client_security_state_address_space ==
+                network::mojom::IPAddressSpace::kUnknown
+            ? network::mojom::IPAddressSpace::kPublic
+            : client_security_state_address_space;
+    manifest_address_space = std::max(
         network::GetAddressSpaceFromUrl(simple_url_loader_->GetFinalURL())
-            .value_or(network::mojom::IPAddressSpace::kPublic);
+            .value_or(network::mojom::IPAddressSpace::kPublic),
+        initial_address_space, network::IsLessPublicAddressSpace);
   }
 
   simple_url_loader_.reset();

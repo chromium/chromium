@@ -76,6 +76,7 @@ class UpdateManifestFetcher {
       network::mojom::IPAddressSpace client_security_state_address_space);
 
   void OnUpdateManifestDownloaded(
+      network::mojom::IPAddressSpace client_security_state_address_space,
       std::optional<std::string> update_manifest_content);
 
   void ParseUpdateManifest(

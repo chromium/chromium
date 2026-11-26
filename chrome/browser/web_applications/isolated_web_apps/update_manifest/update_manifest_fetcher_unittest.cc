@@ -20,6 +20,7 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -243,6 +244,86 @@ TEST_F(UpdateManifestFetcherTest, ReturnsLoopbackAddressSpaceForLocalhost) {
 
   EXPECT_EQ(fetch_result.address_space,
             network::mojom::IPAddressSpace::kLoopback);
+}
+
+// Responses received through a proxy have an unknown address space. This must
+// not crash in production and must be treated as public for hostnames.
+TEST_F(UpdateManifestFetcherTest, UnknownAddressSpaceFallsBackToPublic) {
+  constexpr char kProxiedManifestUrl[] =
+      "https://proxied.example.com/manifest.json";
+  AddJsonResponse(kProxiedManifestUrl, R"({ "versions": [] })",
+                  network::mojom::IPAddressSpace::kUnknown);
+  auto fetcher = UpdateManifestFetcher(
+      GURL(kProxiedManifestUrl), PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
+      shared_url_loader_factory_, &fake_network_context_);
+
+  base::test::TestFuture<base::expected<UpdateManifestWithAddressSpace,
+                                        UpdateManifestFetcher::Error>>
+      future;
+  fetcher.FetchUpdateManifest(future.GetCallback());
+  ASSERT_OK_AND_ASSIGN(auto fetch_result, future.Take());
+
+  EXPECT_EQ(fetch_result.address_space,
+            network::mojom::IPAddressSpace::kPublic);
+}
+
+TEST_F(UpdateManifestFetcherTest,
+       UnknownAddressSpaceFallsBackToIpLiteralAddressSpace) {
+  constexpr char kProxiedManifestUrl[] = "http://192.168.1.1/manifest.json";
+  AddJsonResponse(kProxiedManifestUrl, R"({ "versions": [] })",
+                  network::mojom::IPAddressSpace::kUnknown);
+  auto fetcher = UpdateManifestFetcher(
+      GURL(kProxiedManifestUrl), PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
+      shared_url_loader_factory_, &fake_network_context_);
+
+  base::test::TestFuture<base::expected<UpdateManifestWithAddressSpace,
+                                        UpdateManifestFetcher::Error>>
+      future;
+  fetcher.FetchUpdateManifest(future.GetCallback());
+  ASSERT_OK_AND_ASSIGN(auto fetch_result, future.Take());
+
+  EXPECT_EQ(fetch_result.address_space, network::mojom::IPAddressSpace::kLocal);
+}
+
+// A public manifest URL that redirects (through a proxy, so with an unknown
+// response address space) to a non-public URL must not escalate the address
+// space beyond that of the initial request.
+TEST_F(UpdateManifestFetcherTest,
+       UnknownAddressSpaceAfterRedirectToNonPublicUrlStaysPublic) {
+  constexpr char kPublicManifestUrl[] =
+      "https://public.example.com/manifest.json";
+  for (std::string_view redirect_target :
+       {"http://192.168.1.1/manifest.json", "http://10.0.0.1/manifest.json",
+        "http://localhost/manifest.json", "http://127.0.0.1/manifest.json"}) {
+    SCOPED_TRACE(redirect_target);
+    net::RedirectInfo redirect_info;
+    redirect_info.new_url = GURL(redirect_target);
+    redirect_info.status_code = net::HTTP_FOUND;
+    network::TestURLLoaderFactory::Redirects redirects;
+    redirects.emplace_back(redirect_info,
+                           network::mojom::URLResponseHead::New());
+
+    network::mojom::URLResponseHeadPtr head =
+        network::CreateURLResponseHead(net::HttpStatusCode::HTTP_OK);
+    head->mime_type = "application/json";
+    head->response_address_space = network::mojom::IPAddressSpace::kUnknown;
+    test_factory_.AddResponse(
+        GURL(kPublicManifestUrl), std::move(head), R"({ "versions": [] })",
+        network::URLLoaderCompletionStatus(), std::move(redirects));
+
+    auto fetcher = UpdateManifestFetcher(
+        GURL(kPublicManifestUrl), PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
+        shared_url_loader_factory_, &fake_network_context_);
+
+    base::test::TestFuture<base::expected<UpdateManifestWithAddressSpace,
+                                          UpdateManifestFetcher::Error>>
+        future;
+    fetcher.FetchUpdateManifest(future.GetCallback());
+    ASSERT_OK_AND_ASSIGN(auto fetch_result, future.Take());
+
+    EXPECT_EQ(fetch_result.address_space,
+              network::mojom::IPAddressSpace::kPublic);
+  }
 }
 
 TEST_F(UpdateManifestFetcherTest, SetsCorrectClientSecurityState) {
