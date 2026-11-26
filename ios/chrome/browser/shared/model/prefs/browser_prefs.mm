@@ -158,9 +158,6 @@
 
 namespace {
 
-// Deprecated 12/2025.
-inline constexpr char kAutofillStatesDataDir[] = "autofill.states_data_dir";
-
 // Deprecated 01/2026.
 inline constexpr char kMagicStackSafetyCheckNotificationsShown[] =
     "ios.home_customization.magic_stack.safety_check.notifications_shown";
@@ -897,9 +894,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   signin::RegisterAccountSwitchingPromoProfilePrefs(registry);
 
-  // Deprecated 12/2025.
-  registry->RegisterStringPref(kAutofillStatesDataDir, std::string());
-
   // Deprecated 04/2026.
   registry->RegisterStringPref(kDeprecatedGoogleServicesLastSyncingGaiaId,
                                std::string());
@@ -1009,9 +1003,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
-
-  // Added 12/2025.
-  prefs->ClearPref(kAutofillStatesDataDir);
 
   // Added 04/2026.
   prefs->ClearPref(kDeprecatedGoogleServicesLastSyncingGaiaId);
