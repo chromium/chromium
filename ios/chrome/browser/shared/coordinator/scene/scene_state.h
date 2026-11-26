@@ -29,6 +29,7 @@
 @class SceneUIBlockerState;
 class SigninInProgress;
 @class TabGridState;
+@class TaskRequest;
 
 // An object containing the state of a UIWindowScene. One state object
 // corresponds to one scene.
@@ -81,7 +82,11 @@ class SigninInProgress;
 // YES if there is at least one external intent waiting to be executed or
 // currently being executed on this scene. Only set when `kEnableNewStartupFlow`
 // is enabled.
-@property(nonatomic, assign) BOOL hasPendingIntent;
+@property(nonatomic, readonly) BOOL hasPendingIntent;
+
+// External intent tasks waiting to be executed on this scene, in the order they
+// were added. Only used when `kEnableNewStartupFlow` is enabled.
+@property(nonatomic, readonly) NSArray<TaskRequest*>* pendingTasks;
 
 // URLs passed to `UIWindowSceneDelegate scene:openURLContexts:` that needs to
 // be open next time the scene is activated.

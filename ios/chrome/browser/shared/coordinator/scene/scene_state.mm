@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
+#import "base/check.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/ios/ios_util.h"
 #import "base/logging.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state+task_management.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
@@ -56,6 +58,9 @@
   // example due to simultaneous tap on a IPH signin promo and on the NTP’s
   // identity disc.
   NSInteger _numberOfSigninInProgress;
+
+  // Backing storage of `pendingTasks`.
+  NSMutableArray<TaskRequest*>* _pendingTasks;
 }
 
 @synthesize multipleScenesAvailable = _multipleScenesAvailable;
@@ -65,6 +70,7 @@
     _observers = [SceneStateObserverList
         observersWithProtocol:@protocol(SceneStateObserver)];
     _agents = [[NSMutableArray alloc] init];
+    _pendingTasks = [[NSMutableArray alloc] init];
     _uiBlockerState = [[SceneUIBlockerState alloc] init];
     _tabGridState = [[TabGridState alloc] init];
     _incognitoState = [[IncognitoState alloc] initWithSceneState:self];
@@ -100,6 +106,14 @@
 }
 
 #pragma mark - Setters & Getters.
+
+- (NSArray<TaskRequest*>*)pendingTasks {
+  return [_pendingTasks copy];
+}
+
+- (BOOL)hasPendingIntent {
+  return _pendingTasks.count > 0;
+}
 
 - (std::string_view)sceneSessionID {
   return _sceneSessionID;
@@ -253,6 +267,33 @@
   }
   _signinUIBlocker.reset();
   [_observers signinDidEnd:self];
+}
+
+@end
+
+#pragma mark - SceneState (TaskManagement)
+
+@implementation SceneState (TaskManagement)
+
+- (void)addPendingTask:(TaskRequest*)task {
+  CHECK(task);
+  [_pendingTasks addObject:task];
+}
+
+- (void)removePendingTask:(TaskRequest*)task {
+  [_pendingTasks removeObjectIdenticalTo:task];
+}
+
+- (void)removeAllPendingTasks {
+  [_pendingTasks removeAllObjects];
+}
+
+- (void)removeTasksWithBlock:(BOOL(NS_NOESCAPE ^)(TaskRequest*))block {
+  NSIndexSet* indexes = [_pendingTasks
+      indexesOfObjectsPassingTest:^BOOL(TaskRequest* task, NSUInteger, BOOL*) {
+        return block(task);
+      }];
+  [_pendingTasks removeObjectsAtIndexes:indexes];
 }
 
 @end

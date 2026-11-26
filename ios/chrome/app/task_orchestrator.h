@@ -19,8 +19,8 @@
 @interface TaskOrchestrator : NSObject
 
 // Adds a new task for execution. Executes immediately if the minimum
-// TaskExecutionStage is met; otherwise, queues the task in _pendingTasks
-// for later execution.
+// TaskExecutionStage is met; otherwise, queues the task in the `pendingTasks`
+// of the scene's `SceneState` for later execution.
 - (void)addTaskRequest:(TaskRequest*)request;
 
 // Called when the app progresses through lifecycle for `sceneState`.
@@ -32,9 +32,9 @@
 - (NSString*)gaiaIDForScene:(SceneState*)sceneState;
 
 // Drops the pending tasks of `sceneState` and forgets its execution stage.
-// Called when the scene is disconnected. Tasks are kept if a profile or account
-// switch started by the orchestrator is in progress for that scene, as the
-// switch disconnects and reconnects the scene.
+// Called when the scene is disconnected. The execution stage is kept if a
+// profile or account switch started by the orchestrator is in progress for that
+// scene, as the switch disconnects and reconnects the scene.
 - (void)clearTasksForScene:(SceneState*)sceneState;
 
 @end

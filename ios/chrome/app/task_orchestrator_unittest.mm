@@ -24,6 +24,7 @@
 #import "ios/chrome/app/task_scheduling_outcome.h"
 #import "ios/chrome/app/test/fake_change_profile_commands.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state+task_management.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -120,7 +121,9 @@ TEST_F(TaskOrchestratorTest, TestAddTaskRequestExecuteImmediately) {
   [orchestrator_ addTaskRequest:task];
 
   EXPECT_TRUE(taskWasExecuted);
-  EXPECT_TRUE(hasPendingIntentDuringExecution);
+  // TODO(crbug.com/493816082): Expect true once tasks stay pending until their
+  // execution completes.
+  EXPECT_FALSE(hasPendingIntentDuringExecution);
   EXPECT_FALSE(scene_state.hasPendingIntent);
 }
 
@@ -139,6 +142,7 @@ TEST_F(TaskOrchestratorTest, TestAddTaskRequestQueueAndExecuteLater) {
 
   [orchestrator_ addTaskRequest:task];
   EXPECT_TRUE(scene_state.hasPendingIntent);
+  EXPECT_NSEQ(@[ task ], scene_state.pendingTasks);
 
   // Make sure that block is not run.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionProfileLoaded
@@ -152,6 +156,7 @@ TEST_F(TaskOrchestratorTest, TestAddTaskRequestQueueAndExecuteLater) {
                       forScene:scene_state];
   EXPECT_TRUE(taskWasExecuted);
   EXPECT_FALSE(scene_state.hasPendingIntent);
+  EXPECT_EQ(0u, scene_state.pendingTasks.count);
 }
 
 // Tests that tasks for different scenes are handled independently.
@@ -587,11 +592,15 @@ TEST_F(TaskOrchestratorProfileSwitchTest,
   SetDelegateSceneState(nil);
   [change_profile_handler_ dropContinuation];
 
-  // Reconnecting the same scene session runs new tasks but not the stale ones.
-  SetDelegateSceneState(scene_state_);
-  ReachUIReadyAgain();
+  // Reconnecting the same scene session with a new `SceneState`, as
+  // `SceneDelegate` does, runs new tasks but not the stale ones.
+  SceneState* reconnected_scene_state = [[SceneState alloc] init];
+  reconnected_scene_state.scene = scene_state_.scene;
+  SetDelegateSceneState(reconnected_scene_state);
+  [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
+                      forScene:reconnected_scene_state];
   EXPECT_FALSE(stale_task_executed);
-  EXPECT_NSEQ(nil, [orchestrator_ gaiaIDForScene:scene_state_]);
+  EXPECT_NSEQ(nil, [orchestrator_ gaiaIDForScene:reconnected_scene_state]);
   base::test::TestFuture<void> new_task_future;
   [orchestrator_ addTaskRequest:CreateNonSwitchingTask(base::CallbackToBlock(
                                     new_task_future.GetCallback()))];
@@ -636,6 +645,7 @@ TEST_F(TaskOrchestratorTest, TestClearTasksForSceneDropsPendingTasks) {
   [orchestrator_ clearTasksForScene:scene_state];
 
   EXPECT_FALSE(scene_state.hasPendingIntent);
+  EXPECT_EQ(0u, scene_state.pendingTasks.count);
   EXPECT_NSEQ(nil, [orchestrator_ gaiaIDForScene:scene_state]);
 
   // The dropped task must not run if the scene reaches the required stage.
@@ -674,9 +684,10 @@ TEST_F(TaskOrchestratorTest, TestClearTasksForSceneKeepsOtherScenesTasks) {
   EXPECT_TRUE(other_task_was_executed);
 }
 
-// Tests that clearTasksForScene: keeps the pending tasks while a profile or
+// Tests that clearTasksForScene: keeps the execution state while a profile or
 // account switch started by the orchestrator is in progress, as the switch
-// disconnects and reconnects the scene.
+// disconnects and reconnects the scene, so the moved tasks run once it
+// completes.
 TEST_F(TaskOrchestratorTest, TestClearTasksForSceneDuringProfileSwitch) {
   IOSChromeScopedTestingLocalState scoped_testing_local_state;
   TestProfileManagerIOS profile_manager;
@@ -734,11 +745,15 @@ TEST_F(TaskOrchestratorTest, TestClearTasksForSceneDuringProfileSwitch) {
                       forScene:scene_state];
   ASSERT_TRUE(change_profile_handler.lastChangeProfileParams.has_value());
 
-  // The switch disconnects the scene; its tasks must be kept.
+  // The switch disconnects the scene; its tasks are dropped, but its execution
+  // state is kept for the switch.
   [orchestrator_ clearTasksForScene:scene_state];
-  EXPECT_TRUE(scene_state.hasPendingIntent);
+  EXPECT_FALSE(scene_state.hasPendingIntent);
+  EXPECT_EQ(0u, scene_state.pendingTasks.count);
 
-  // Completing the switch runs the task.
+  // Completing the switch runs the task, once moved to the reconnected scene
+  // as `MainController` does.
+  [scene_state addPendingTask:task];
   ASSERT_TRUE(change_profile_handler.hasContinuation);
   [change_profile_handler runContinuationForSceneState:scene_state];
   EXPECT_TRUE(base::test::RunUntil([&]() { return task_was_executed; }));

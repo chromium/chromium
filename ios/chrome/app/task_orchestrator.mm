@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/google_one/shared/google_one_deep_link_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state+task_management.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/url_context.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -59,16 +60,6 @@ struct SceneInfo {
   // Last Gaia ID for which a switch was initiated in the current pending task
   // batch.
   NSString* switched_gaia_id;
-  // Tasks to be executed on a scene.
-  NSMutableArray<TaskRequest*>* pending_tasks;
-
-  // Adds a task to pending_tasks.
-  void AddTask(TaskRequest* task) {
-    if (!pending_tasks) {
-      pending_tasks = [NSMutableArray array];
-    }
-    [pending_tasks addObject:task];
-  }
 };
 
 // Returns an identifier for `scene` that will be stable for the current
@@ -89,12 +80,13 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
 }  // namespace
 
 @interface TaskOrchestrator () {
-  // SceneInfo needed to execute tasks per scene.
+  // Execution state of each scene, keyed by its persistentIdentifier. The
+  // pending tasks themselves are stored on the `SceneState`.
   // It's okay to use persistentIdentifier here because we don't care if the ID
   // changes when the app is closed.
   // TODO(crbug.com/462018636): Add implementation to handle the case where a
   // task can be executed on any scene.
-  absl::flat_hash_map<std::string, SceneInfo> _tasksPerScene;
+  absl::flat_hash_map<std::string, SceneInfo> _sceneInfos;
 }
 
 @end
@@ -118,11 +110,10 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
   const std::string sceneKey = GetSceneIdentifier(task.scene);
   CHECK(!sceneKey.empty());
 
-  SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
+  SceneInfo& sceneInfo = _sceneInfos[sceneKey];
   sceneInfo.scene = task.scene;
-  sceneInfo.AddTask(task);
   SceneState* sceneState = GetSceneStateForScene(task.scene);
-  sceneState.hasPendingIntent = YES;
+  [sceneState addPendingTask:task];
   [self executeTasksForScene:sceneKey];
 }
 
@@ -133,9 +124,8 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
     return;
   }
 
-  SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
+  SceneInfo& sceneInfo = _sceneInfos[sceneKey];
   sceneInfo.scene = sceneState.scene;
-  sceneState.hasPendingIntent = (sceneInfo.pending_tasks.count > 0);
   TaskExecutionStage previousStage = sceneInfo.current_stage;
   sceneInfo.current_stage = stage;
   if (previousStage < stage) {
@@ -144,18 +134,7 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
 }
 
 - (NSString*)gaiaIDForScene:(SceneState*)sceneState {
-  const std::string sceneKey = GetSceneIdentifier(sceneState.scene);
-  if (sceneKey.empty()) {
-    return nil;
-  }
-
-  auto it = _tasksPerScene.find(sceneKey);
-  if (it == _tasksPerScene.end()) {
-    return nil;
-  }
-
-  SceneInfo& sceneInfo = it->second;
-  for (TaskRequest* pendingTask in sceneInfo.pending_tasks) {
+  for (TaskRequest* pendingTask in sceneState.pendingTasks) {
     if (pendingTask.gaiaID) {
       return pendingTask.gaiaID;
     }
@@ -164,17 +143,17 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
 }
 
 - (void)clearTasksForScene:(SceneState*)sceneState {
-  auto it = _tasksPerScene.find(GetSceneIdentifier(sceneState.scene));
-  if (it == _tasksPerScene.end()) {
+  auto it = _sceneInfos.find(GetSceneIdentifier(sceneState.scene));
+  if (it == _sceneInfos.end()) {
     return;
   }
+  [sceneState removeAllPendingTasks];
   // The profile or account switch recreates the SceneState by disconnecting and
-  // reconnecting the scene; keep the tasks waiting for that switch.
+  // reconnecting the scene; keep its execution state for that switch.
   if (it->second.is_switching) {
     return;
   }
-  _tasksPerScene.erase(it);
-  sceneState.hasPendingIntent = NO;
+  _sceneInfos.erase(it);
 }
 
 #pragma mark - Private
@@ -188,9 +167,8 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
     return NO;
   }
 
-  const std::string sceneKey = GetSceneIdentifier(task.scene);
-  SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
-  for (TaskRequest* pendingTask in sceneInfo.pending_tasks) {
+  SceneState* sceneState = GetSceneStateForScene(task.scene);
+  for (TaskRequest* pendingTask in sceneState.pendingTasks) {
     NSString* pendingGaiaID = pendingTask.gaiaID;
     if (pendingGaiaID && ![pendingGaiaID isEqualToString:taskGaiaID]) {
       base::UmaHistogramEnumeration(
@@ -206,7 +184,7 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
 
 // Internal logic to filter and execute tasks based on the current stage.
 - (void)executeTasksForScene:(std::string_view)sceneKey {
-  SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
+  SceneInfo& sceneInfo = _sceneInfos[sceneKey];
   if (sceneInfo.is_switching) {
     return;
   }
@@ -218,33 +196,30 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
     return;
   }
 
-  NSMutableArray<TaskRequest*>* pendingTasks =
-      std::exchange(sceneInfo.pending_tasks, [NSMutableArray new]);
-  bool hasPendingGaiaTask = false;
-  for (TaskRequest* task in pendingTasks) {
-    if (task.minimumStage <= sceneInfo.current_stage) {
-      [task execute];
-    } else {
-      if (task.gaiaID.length > 0) {
-        hasPendingGaiaTask = true;
-      }
-      sceneInfo.AddTask(task);
+  SceneState* sceneState = GetSceneStateForScene(sceneInfo.scene);
+  // Executes the tasks in order, until the stage of a task isn't reached. The
+  // tasks requiring a profile or account switch can be executed too, as the
+  // switch, if any, is done above.
+  while (TaskRequest* task = sceneState.pendingTasks.firstObject) {
+    if (task.minimumStage > sceneInfo.current_stage) {
+      break;
     }
+    [sceneState removePendingTask:task];
+    [task execute];
   }
-  if (!hasPendingGaiaTask) {
+  if (![self gaiaIDForScene:sceneState]) {
     sceneInfo.switched_gaia_id = nil;
   }
-  SceneState* sceneState = GetSceneStateForScene(sceneInfo.scene);
-  sceneState.hasPendingIntent = sceneInfo.pending_tasks.count > 0;
 }
 
 // Initiates a profile or account switch via `ChangeProfileCommands` if a
 // pending task for `sceneKey` requires a different profile or identity.
 // Returns YES if an asynchronous switch was started.
 - (BOOL)switchProfileOrAccountIfNeededForScene:(std::string_view)sceneKey {
-  SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
+  SceneInfo& sceneInfo = _sceneInfos[sceneKey];
+  SceneState* sceneState = GetSceneStateForScene(sceneInfo.scene);
   TaskRequest* gaiaTask = nil;
-  for (TaskRequest* task in sceneInfo.pending_tasks) {
+  for (TaskRequest* task in sceneState.pendingTasks) {
     if (task.gaiaID.length > 0) {
       gaiaTask = task;
       break;
@@ -255,7 +230,6 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
     return NO;
   }
 
-  SceneState* sceneState = GetSceneStateForScene(gaiaTask.scene);
   ProfileIOS* profile = sceneState.profileState.profile;
   if (!sceneState || !profile ||
       sceneState.profileState.appState.initStage < AppInitStage::kFinal) {
@@ -353,7 +327,7 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
 // has completed its authentication continuation.
 - (void)onProfileOrAccountSwitchCompletedForScene:(std::string_view)sceneKey
                                        completion:(base::OnceClosure)closure {
-  SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
+  SceneInfo& sceneInfo = _sceneInfos[sceneKey];
   sceneInfo.is_switching = false;
   [self executeTasksForScene:sceneKey];
   std::move(closure).Run();
@@ -364,19 +338,20 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
 // replaced its `SceneState`). Resets the switching state so the scene is not
 // left permanently stuck with `is_switching` set.
 - (void)onProfileOrAccountSwitchDroppedForScene:(std::string_view)sceneKey {
-  auto it = _tasksPerScene.find(sceneKey);
-  if (it == _tasksPerScene.end()) {
+  auto it = _sceneInfos.find(sceneKey);
+  if (it == _sceneInfos.end()) {
     return;
   }
   SceneInfo& sceneInfo = it->second;
   SceneState* sceneState = GetSceneStateForScene(sceneInfo.scene);
   // `SceneDelegate` detaches the `SceneState` of a disconnected scene before
   // releasing it, and with it the continuation, so a missing or disconnected
-  // `SceneState` means the scene is gone. `clearTasksForScene:` kept its tasks
-  // only because the switch was in progress, so finish that cleanup now.
+  // `SceneState` means the scene is gone. `clearTasksForScene:` kept its
+  // execution state only because the switch was in progress, so finish that
+  // cleanup now.
   if (!sceneState ||
       sceneState.activationLevel == SceneActivationLevelDisconnected) {
-    _tasksPerScene.erase(it);
+    _sceneInfos.erase(it);
     return;
   }
 
@@ -386,11 +361,9 @@ SceneState* GetSceneStateForScene(UIScene* scene) {
   // could undo a profile explicitly chosen since. The other tasks run in the
   // scene's current profile, right away if the scene already reached their
   // stage, as the stage updates received during the switch were ignored.
-  NSIndexSet* gaiaTaskIndexes = [sceneInfo.pending_tasks
-      indexesOfObjectsPassingTest:^BOOL(TaskRequest* task, NSUInteger, BOOL*) {
-        return task.gaiaID.length > 0;
-      }];
-  [sceneInfo.pending_tasks removeObjectsAtIndexes:gaiaTaskIndexes];
+  [sceneState removeTasksWithBlock:^BOOL(TaskRequest* task) {
+    return task.gaiaID.length > 0;
+  }];
   [self executeTasksForScene:sceneKey];
 }
 

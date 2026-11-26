@@ -124,6 +124,7 @@
 #import "ios/chrome/browser/share_extension/model/share_extension_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/chrome_connection_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state+task_management.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -1759,6 +1760,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
     // Pretend the scene has been disconnected, then reconnect it.
     const SceneActivationLevel savedLevel = sceneState.activationLevel;
     ChromeConnectionOptions* savedOptions = sceneState.connectionOptions;
+    NSArray<TaskRequest*>* pendingTasks = sceneState.pendingTasks;
 
     // Disconnect the old SceneState and reconnect the scene with
     // the saved options. This will attach a profile based on the
@@ -1771,6 +1773,10 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
     sceneState = sceneDelegate.sceneState;
     DCHECK(sceneState);
     DCHECK(sceneState.profileState);
+
+    for (TaskRequest* task in pendingTasks) {
+      [sceneState addPendingTask:task];
+    }
 
     while (sceneState.activationLevel < savedLevel) {
       sceneState.activationLevel = static_cast<SceneActivationLevel>(
