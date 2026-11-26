@@ -402,15 +402,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserListForceCloseWithBeforeUnload) {
 
 // Tests closing the browser by BrowserList::CloseAllBrowsersWithProfile, with a
 // beforeunload handler and clicking Stay in the beforeunload confirm dialog.
-// TODO(crbug.com/40241736): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_BrowserListCloseBeforeUnloadCancel \
-  DISABLED_BrowserListCloseBeforeUnloadCancel
-#else
-#define MAYBE_BrowserListCloseBeforeUnloadCancel \
-  BrowserListCloseBeforeUnloadCancel
-#endif
-IN_PROC_BROWSER_TEST_F(UnloadTest, MAYBE_BrowserListCloseBeforeUnloadCancel) {
+IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserListCloseBeforeUnloadCancel) {
   NavigateToDataURL(BEFORE_UNLOAD_HTML, "beforeunload");
   PrepareForDialog(browser());
 
