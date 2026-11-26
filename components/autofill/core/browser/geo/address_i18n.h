@@ -12,6 +12,10 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace i18n::addressinput {
 struct AddressData;
 }  // namespace i18n::addressinput
@@ -25,7 +29,7 @@ namespace i18n {
 // Creates an `AddressData` from `profile`.
 std::unique_ptr<::i18n::addressinput::AddressData>
 CreateAddressDataFromAutofillProfile(const AutofillProfile& profile,
-                                     std::string_view app_locale);
+                                     const base::i18n::LanguageTag& app_locale);
 
 // Returns the corresponding Autofill server type for `field`.
 FieldType TypeForField(::i18n::addressinput::AddressField field);

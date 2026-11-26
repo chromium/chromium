@@ -61,8 +61,7 @@ bool NormalizeProfileWithValidator(AutofillProfile* profile,
 
   // Create the AddressData from the profile.
   ::i18n::addressinput::AddressData address_data =
-      *i18n::CreateAddressDataFromAutofillProfile(*profile,
-                                                  app_locale.tag_string());
+      *i18n::CreateAddressDataFromAutofillProfile(*profile, app_locale);
 
   // Normalize the address.
   if (!address_validator->NormalizeAddress(&address_data)) {
@@ -153,8 +152,8 @@ class AddressNormalizerImpl::NormalizationRequest {
     // The phone number formatting doesn't require the rules to have been
     // successfully loaded. Therefore it is done for every request regardless of
     // |success|.
-    const std::string region_code = data_util::GetCountryCodeWithFallback(
-        profile_, app_locale_.tag_string());
+    const std::string region_code =
+        data_util::GetCountryCodeWithFallback(profile_, app_locale_);
     FormatPhoneNumberToE164(&profile_, region_code, app_locale_);
 
     if (!success) {
@@ -235,7 +234,7 @@ void AddressNormalizerImpl::NormalizeAddressAsync(
   // If the rules are already loaded for |region_code| and the validator is
   // initialized, the |request| will callback synchronously.
   const std::string region_code =
-      data_util::GetCountryCodeWithFallback(profile, app_locale_.tag_string());
+      data_util::GetCountryCodeWithFallback(profile, app_locale_);
   if (address_validator_ && AreRulesLoadedForRegion(region_code)) {
     request->OnRulesLoaded(/*success=*/true, address_validator_.get());
     return;
@@ -256,7 +255,7 @@ bool AddressNormalizerImpl::NormalizeAddressSync(AutofillProfile* profile) {
   // Phone number is always formatted, regardless of whether the address rules
   // are loaded for |region_code|.
   const std::string region_code =
-      data_util::GetCountryCodeWithFallback(*profile, app_locale_.tag_string());
+      data_util::GetCountryCodeWithFallback(*profile, app_locale_);
   FormatPhoneNumberToE164(profile, region_code, app_locale_);
   if (!address_validator_) {
     // Can't normalize the address synchronously. Add an empty

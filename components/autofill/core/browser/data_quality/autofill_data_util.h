@@ -13,6 +13,10 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 class AutofillProfile;
@@ -121,8 +125,9 @@ bool IsValidCountryCode(std::u16string_view country_code);
 // Returns a country code to be used when validating this profile. If the
 // profile has a valid country code set, it is returned. If not, a country code
 // associated with `app_locale` is used as a fallback.
-std::string GetCountryCodeWithFallback(const AutofillProfile& profile,
-                                       std::string_view app_locale);
+std::string GetCountryCodeWithFallback(
+    const AutofillProfile& profile,
+    const base::i18n::LanguageTag& app_locale);
 
 // Returns true if `country_code1` and `country_code2` are the same, or if at
 // least one of them is invalid.

@@ -117,7 +117,7 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
         _personalDataManager->address_data_manager();
     _selectedCountryCode =
         base::SysUTF8ToNSString(autofill::data_util::GetCountryCodeWithFallback(
-            *autofillProfile, address_data_manager.app_locale().tag_string()));
+            *autofillProfile, address_data_manager.app_locale()));
     _editedFields = [[NSMutableSet<NSString*> alloc] init];
 
     // Initially ignore the error warnings when adding an address manually

@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -75,7 +76,7 @@ TEST(AutofillCountryTest, CountryCodeForLocale) {
 // geo ip country code could be retrieved.
 TEST(AutofillCountryTest, GetDefaultCountryCodeForNewAddressFromAppLocale) {
   EXPECT_EQ(AutofillCountry::GetDefaultCountryCodeForNewAddress(
-                GeoIpCountryCode(""), "en_US")
+                GeoIpCountryCode(""), base::i18n::GetKnownLanguageTag("en-US"))
                 .value(),
             "US");
 }
@@ -83,10 +84,11 @@ TEST(AutofillCountryTest, GetDefaultCountryCodeForNewAddressFromAppLocale) {
 // Test that the country code is is set as the geo ip country code,
 // and that it is not extracted from the app locale.
 TEST(AutofillCountryTest, GetDefaultCountryCodeForNewAddressFromGeoIp) {
-  EXPECT_EQ(AutofillCountry::GetDefaultCountryCodeForNewAddress(
-                GeoIpCountryCode("DE"), "en_US")
-                .value(),
-            "DE");
+  EXPECT_EQ(
+      AutofillCountry::GetDefaultCountryCodeForNewAddress(
+          GeoIpCountryCode("DE"), base::i18n::GetKnownLanguageTag("en-US"))
+          .value(),
+      "DE");
 }
 
 // Test the address requirement methods for the US.

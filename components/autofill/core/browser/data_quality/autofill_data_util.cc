@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/i18n/char_iterator.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -519,12 +520,14 @@ bool IsValidCountryCode(std::u16string_view country_code) {
   return IsValidCountryCode(base::UTF16ToUTF8(country_code));
 }
 
-std::string GetCountryCodeWithFallback(const AutofillProfile& profile,
-                                       std::string_view app_locale) {
+std::string GetCountryCodeWithFallback(
+    const AutofillProfile& profile,
+    const base::i18n::LanguageTag& app_locale) {
   std::string country_code =
       base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
   if (!IsValidCountryCode(country_code)) {
-    country_code = AutofillCountry::CountryCodeForLocale(app_locale);
+    country_code =
+        AutofillCountry::CountryCodeForLocale(app_locale.tag_string());
   }
   return country_code;
 }

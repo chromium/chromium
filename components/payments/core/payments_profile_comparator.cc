@@ -236,8 +236,8 @@ PaymentsProfileComparator::ComputeMissingFields(
   // otherwise. Note that international format numbers will always work--this
   // is just the region that will be used to check if the number is
   // potentially in a local format.
-  const std::string country = autofill::data_util::GetCountryCodeWithFallback(
-      profile, app_locale().tag_string());
+  const std::string country =
+      autofill::data_util::GetCountryCodeWithFallback(profile, app_locale());
 
   std::u16string phone = profile.GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER,
                                          app_locale().tag_string());
@@ -320,8 +320,8 @@ std::u16string PaymentsProfileComparator::GetTitleForMissingFields(
 bool PaymentsProfileComparator::AreRequiredAddressFieldsPresent(
     const autofill::AutofillProfile& profile) const {
   std::unique_ptr<::i18n::addressinput::AddressData> data =
-      autofill::i18n::CreateAddressDataFromAutofillProfile(
-          profile, app_locale().tag_string());
+      autofill::i18n::CreateAddressDataFromAutofillProfile(profile,
+                                                           app_locale());
 
   return autofill::addressinput::HasAllRequiredFields(*data);
 }

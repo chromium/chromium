@@ -962,8 +962,7 @@ std::u16string AutofillProfile::ConstructInferredLabel(
   }
 
   std::unique_ptr<AddressData> address_data =
-      i18n::CreateAddressDataFromAutofillProfile(trimmed_profile,
-                                                 app_locale.tag_string());
+      i18n::CreateAddressDataFromAutofillProfile(trimmed_profile, app_locale);
   std::string address_line;
   ::i18n::addressinput::GetFormattedNationalAddressLine(*address_data,
                                                         &address_line);

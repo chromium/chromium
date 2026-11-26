@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/i18n/language_tag.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,10 +24,11 @@ using ::i18n::addressinput::AddressData;
 using ::i18n::addressinput::AddressField;
 
 std::unique_ptr<::i18n::addressinput::AddressData>
-CreateAddressDataFromAutofillProfile(const AutofillProfile& profile,
-                                     std::string_view app_locale) {
-  auto get_info = [&profile, app_locale](FieldType type) {
-    return base::UTF16ToUTF8(profile.GetInfo(type, app_locale));
+CreateAddressDataFromAutofillProfile(
+    const AutofillProfile& profile,
+    const base::i18n::LanguageTag& app_locale) {
+  auto get_info = [&profile, &app_locale](FieldType type) {
+    return base::UTF16ToUTF8(profile.GetInfo(type, app_locale.tag_string()));
   };
 
   auto address_data = std::make_unique<AddressData>();

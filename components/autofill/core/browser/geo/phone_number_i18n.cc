@@ -353,7 +353,7 @@ std::u16string GetFormattedPhoneNumberForDisplay(
   // Always favor the tentative international phone number if it's determined as
   // being a valid number.
   const std::string country_code =
-      data_util::GetCountryCodeWithFallback(profile, locale.tag_string());
+      data_util::GetCountryCodeWithFallback(profile, locale);
   if (IsValidPhoneNumber(tentative_intl_phone, country_code)) {
     return base::UTF8ToUTF16(FormatPhoneNumber(
         tentative_intl_phone, country_code, PhoneFormat::kInternational));

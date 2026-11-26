@@ -111,13 +111,13 @@ std::string AutofillCountry::CountryCodeForLocale(std::string_view locale) {
 // static
 AddressCountryCode AutofillCountry::GetDefaultCountryCodeForNewAddress(
     const GeoIpCountryCode& geo_ip_country_code,
-    std::string_view locale) {
+    const base::i18n::LanguageTag& locale) {
   // Capitalize the country code, because some APIs might not allow the usage of
   // lowercase country codes.
-  return AddressCountryCode(
-      base::ToUpperASCII(geo_ip_country_code.value().empty()
-                             ? AutofillCountry::CountryCodeForLocale(locale)
-                             : geo_ip_country_code.value()));
+  return AddressCountryCode(base::ToUpperASCII(
+      geo_ip_country_code.value().empty()
+          ? AutofillCountry::CountryCodeForLocale(locale.tag_string())
+          : geo_ip_country_code.value()));
 }
 
 // Prints a formatted log of a |AutofillCountry| to a |LogBuffer|.

@@ -386,7 +386,7 @@ void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {
 AddressCountryCode AddressDataManager::GetDefaultCountryCodeForNewAddress()
     const {
   return AutofillCountry::GetDefaultCountryCodeForNewAddress(
-      variation_country_code_, app_locale_.tag_string());
+      variation_country_code_, app_locale_);
 }
 
 bool AddressDataManager::IsProfileMigrationBlocked(

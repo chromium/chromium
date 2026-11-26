@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -124,8 +125,8 @@ TEST(AddressI18nTest, CreateAddressDataFromAutofillProfile) {
                                      .with_phone("16502111111")
                                      .Build());
   profile.set_language_code("en");
-  std::unique_ptr<AddressData> actual =
-      CreateAddressDataFromAutofillProfile(profile, "en_US");
+  std::unique_ptr<AddressData> actual = CreateAddressDataFromAutofillProfile(
+      profile, base::i18n::GetKnownLanguageTag("en-US"));
 
   AddressData expected;
   expected.region_code = "US";
@@ -147,8 +148,8 @@ TEST(AddressI18nTest, ProfileOnlyWithAddressLine2ReturnsOneAddressLine) {
       &profile,
       test::SetProfileInfoOptionsBuilder().with_address2("Apt 8").Build());
   profile.set_language_code("en");
-  std::unique_ptr<AddressData> actual =
-      CreateAddressDataFromAutofillProfile(profile, "en_US");
+  std::unique_ptr<AddressData> actual = CreateAddressDataFromAutofillProfile(
+      profile, base::i18n::GetKnownLanguageTag("en-US"));
 
   AddressData expected;
   expected.address_line.push_back("Apt 8");

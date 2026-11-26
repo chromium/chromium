@@ -34,8 +34,8 @@ void CountryComboboxModel::SetCountries(
 
   // Insert the default country at the top as well as in the ordered list.
   std::string default_country_code =
-      AutofillCountry::GetDefaultCountryCodeForNewAddress(
-          geo_ip_country_code, app_locale.tag_string())
+      AutofillCountry::GetDefaultCountryCodeForNewAddress(geo_ip_country_code,
+                                                          app_locale)
           .value();
   DCHECK(!default_country_code.empty());
 

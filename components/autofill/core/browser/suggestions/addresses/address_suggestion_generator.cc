@@ -203,8 +203,7 @@ std::u16string GetProfileSuggestionMainText(
   if (trigger_field_type == ADDRESS_HOME_STREET_ADDRESS) {
     std::string street_address_line;
     ::i18n::addressinput::GetStreetAddressLinesAsSingleLine(
-        *i18n::CreateAddressDataFromAutofillProfile(profile,
-                                                    app_locale.tag_string()),
+        *i18n::CreateAddressDataFromAutofillProfile(profile, app_locale),
         &street_address_line);
     return base::UTF8ToUTF16(street_address_line);
   }

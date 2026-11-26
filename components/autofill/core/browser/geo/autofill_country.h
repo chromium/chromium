@@ -14,6 +14,10 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 class LogBuffer;
@@ -67,7 +71,7 @@ class AutofillCountry {
   // country field was observed in the submitted form.
   static AddressCountryCode GetDefaultCountryCodeForNewAddress(
       const GeoIpCountryCode& geo_ip_country_code,
-      std::string_view locale);
+      const base::i18n::LanguageTag& locale);
 
   // Gets all the `AddressFormatExtension`s available for `country_code()`.
   base::span<const AddressFormatExtension> address_format_extensions() const;

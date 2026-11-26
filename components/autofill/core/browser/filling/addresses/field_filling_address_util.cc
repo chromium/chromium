@@ -220,8 +220,7 @@ std::u16string GetValueForProfileForInput(
   }
   if (field_type == ADDRESS_HOME_STATE) {
     return GetStateTextForInput(
-        value,
-        data_util::GetCountryCodeWithFallback(profile, app_locale.tag_string()),
+        value, data_util::GetCountryCodeWithFallback(profile, app_locale),
         field.max_length(), failure_to_fill);
   }
   if (IsAlternativeNameType(field_type)) {
@@ -244,15 +243,14 @@ std::optional<SelectOption> GetOptionForProfileSelectControl(
       return GetCountrySelectControlOption(value, field_options,
                                            failure_to_fill);
     case ADDRESS_HOME_STATE:
-      return GetStateSelectControlOption(value, field_options,
-                                         data_util::GetCountryCodeWithFallback(
-                                             profile, app_locale.tag_string()),
-                                         address_normalizer, failure_to_fill);
+      return GetStateSelectControlOption(
+          value, field_options,
+          data_util::GetCountryCodeWithFallback(profile, app_locale),
+          address_normalizer, failure_to_fill);
     case PHONE_HOME_COUNTRY_CODE:
       return GetPhoneCountryCodeSelectControlValue(
           value, field_options,
-          data_util::GetCountryCodeWithFallback(profile,
-                                                app_locale.tag_string()),
+          data_util::GetCountryCodeWithFallback(profile, app_locale),
           failure_to_fill);
     default:
       return GetSelectControlOption(value, field_options, failure_to_fill);

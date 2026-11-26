@@ -403,7 +403,7 @@ std::u16string ShippingAddressEditorViewController::GetValueForType(
     std::string street_address_line;
     i18n::addressinput::GetStreetAddressLinesAsSingleLine(
         *autofill::i18n::CreateAddressDataFromAutofillProfile(
-            profile, std::string(state()->GetApplicationLocale().tag_string())),
+            profile, state()->GetApplicationLocale()),
         &street_address_line);
     return base::UTF8ToUTF16(street_address_line);
   }
