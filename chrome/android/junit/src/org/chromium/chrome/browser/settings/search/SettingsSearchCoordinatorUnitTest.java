@@ -29,6 +29,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.ActionMenuView;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -105,8 +106,18 @@ import java.util.concurrent.TimeUnit;
 public class SettingsSearchCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private ActivityController<FragmentActivity> mActivityController;
-    private FragmentActivity mActivity;
+    public static class TestFragmentActivity extends FragmentActivity {
+        int mInvalidateOptionsMenuCount;
+
+        @Override
+        public void invalidateOptionsMenu() {
+            mInvalidateOptionsMenuCount++;
+            super.invalidateOptionsMenu();
+        }
+    }
+
+    private ActivityController<TestFragmentActivity> mActivityController;
+    private TestFragmentActivity mActivity;
     private Toolbar mToolbar;
     @Mock private MultiColumnSettings mMultiColumnSettings;
     @Mock private SettingsContainmentHelper mContainmentHelper;
@@ -131,7 +142,7 @@ public class SettingsSearchCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        mActivityController = Robolectric.buildActivity(FragmentActivity.class).create();
+        mActivityController = Robolectric.buildActivity(TestFragmentActivity.class).create();
         mActivity = mActivityController.get();
         mActivity.setTheme(R.style.Theme_Chromium_Settings);
 
@@ -624,10 +635,10 @@ public class SettingsSearchCoordinatorUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     @Config(qualifiers = "w800dp-h1280dp")
-    public void testUpdateHelpMenuVisibility_withSettingsInTab_withMenuItems_showsMenu() {
+    public void testUpdateOptionsMenuVisibility_withSettingsInTab_withMenuItems_showsMenu() {
         mCoordinator = createCoordinator(/* shownInTab= */ true);
         mToolbar.getMenu().add(Menu.NONE, R.id.delete_menu_id, Menu.NONE, "Delete");
-        mCoordinator.updateHelpMenuVisibility();
+        mCoordinator.updateOptionsMenuVisibility();
         ShadowLooper.idleMainLooper();
 
         assertEquals(View.VISIBLE, getActionMenuView().getVisibility());
@@ -636,10 +647,10 @@ public class SettingsSearchCoordinatorUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     @Config(qualifiers = "w800dp-h1280dp")
-    public void testUpdateHelpMenuVisibility_withSettingsInTab_withoutMenuItems_hidesMenu() {
+    public void testUpdateOptionsMenuVisibility_withSettingsInTab_withoutMenuItems_hidesMenu() {
         mCoordinator = createCoordinator(/* shownInTab= */ true);
         mToolbar.getMenu().clear();
-        mCoordinator.updateHelpMenuVisibility();
+        mCoordinator.updateOptionsMenuVisibility();
         ShadowLooper.idleMainLooper();
 
         assertEquals(View.GONE, getActionMenuView().getVisibility());
@@ -648,31 +659,125 @@ public class SettingsSearchCoordinatorUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     @Config(qualifiers = "w800dp-h1280dp")
-    public void testUpdateHelpMenuVisibility_withSettingsInTab_inSearchState_hidesMenu() {
+    public void testUpdateOptionsMenuVisibility_withSettingsInTab_inSearchState_hidesMenu() {
         mCoordinator = createCoordinator(/* shownInTab= */ true);
         mToolbar.getMenu().add(Menu.NONE, R.id.delete_menu_id, Menu.NONE, "Delete");
         mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SEARCH);
-        mCoordinator.updateHelpMenuVisibility();
+        mCoordinator.updateOptionsMenuVisibility();
         ShadowLooper.idleMainLooper();
 
         assertEquals(View.GONE, getActionMenuView().getVisibility());
     }
 
     @Test
-    public void testUpdateHelpMenuVisibility_withoutSettingsInTab_showsMenu() {
-        mToolbar.getMenu().clear();
-        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SETTINGS);
-        mCoordinator.updateHelpMenuVisibility();
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @Config(qualifiers = "w800dp-h1280dp")
+    public void testUpdateOptionsMenuVisibility_withSettingsInTab_inResultsState_showsDeleteMenu() {
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
+        mToolbar.getMenu().add(Menu.NONE, R.id.delete_menu_id, Menu.NONE, "Delete");
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_RESULTS);
+        mCoordinator.updateOptionsMenuVisibility();
         ShadowLooper.idleMainLooper();
 
         assertEquals(View.VISIBLE, getActionMenuView().getVisibility());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @Config(qualifiers = "w800dp-h1280dp")
+    public void
+            testUpdateOptionsMenuVisibility_withSettingsInTab_inResultsState_withoutMenuItems_hidesMenu() {
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
+        mToolbar.getMenu().clear();
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_RESULTS);
+        mCoordinator.updateOptionsMenuVisibility();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.GONE, getActionMenuView().getVisibility());
+    }
+
+    @Test
+    public void testUpdateOptionsMenuVisibility_withoutSettingsInTab_showsMenu() {
+        mToolbar.getMenu().clear();
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SETTINGS);
+        mCoordinator.updateOptionsMenuVisibility();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.VISIBLE, getActionMenuView().getVisibility());
+    }
+
+    @Test
+    public void
+            testUpdateOptionsMenuVisibility_withoutSettingsInTab_inResultsState_withMenuItems_showsMenu() {
+        mToolbar.getMenu().clear();
+        mToolbar.getMenu().add(Menu.NONE, R.id.delete_menu_id, Menu.NONE, "Delete");
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_RESULTS);
+        mCoordinator.updateOptionsMenuVisibility();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.VISIBLE, getActionMenuView().getVisibility());
+    }
+
+    @Test
+    public void
+            testUpdateOptionsMenuVisibility_withoutSettingsInTab_inResultsState_withoutMenuItems_hidesMenu() {
+        mToolbar.getMenu().clear();
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_RESULTS);
+        mCoordinator.updateOptionsMenuVisibility();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.GONE, getActionMenuView().getVisibility());
+    }
+
+    @Test
+    public void
+            testUpdateOptionsMenuVisibility_withoutSettingsInTab_inSearchState_withMenuItems_hidesMenu() {
+        mToolbar.getMenu().clear();
+        mToolbar.getMenu().add(Menu.NONE, R.id.delete_menu_id, Menu.NONE, "Delete");
+        getActionMenuView().addView(new SearchView(mActivity));
+        mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SEARCH);
+        mCoordinator.updateOptionsMenuVisibility();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.GONE, getActionMenuView().getVisibility());
+    }
+
+    @Test
+    public void testEnterAndExitSearchState_notShownInTab_invalidatesOptionsMenu() {
+        SettingsIndexData.createInstance().resetNeedsIndexing();
+        setUpMultiColumnSettings();
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        mActivity.mInvalidateOptionsMenuCount = 0;
+        mCoordinator.enterSearchState(/* isRestored= */ false);
+        assertEquals(1, mActivity.mInvalidateOptionsMenuCount);
+
+        mCoordinator.exitSearchState();
+        assertEquals(2, mActivity.mInvalidateOptionsMenuCount);
+    }
+
+    @Test
+    public void testEnterAndExitSearchState_shownInTab_doesNotInvalidateOptionsMenu() {
+        SettingsIndexData.createInstance().resetNeedsIndexing();
+        setUpMultiColumnSettings();
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        mActivity.mInvalidateOptionsMenuCount = 0;
+        mCoordinator.enterSearchState(/* isRestored= */ false);
+        assertEquals(0, mActivity.mInvalidateOptionsMenuCount);
+
+        mCoordinator.exitSearchState();
+        assertEquals(0, mActivity.mInvalidateOptionsMenuCount);
     }
 
     /** Regression test for https://crbug.com/545872336. */
     @Test
-    public void testUpdateHelpMenuVisibility_whenDestroyed_doesNotCrash() {
+    public void testUpdateOptionsMenuVisibility_whenDestroyed_doesNotCrash() {
         mUseMultiColumn = false;
-        mCoordinator.updateHelpMenuVisibility();
+        mCoordinator.updateOptionsMenuVisibility();
 
         // Destroy the coordinator before the posted Runnable executes on the Looper (e.g. during
         // theme change / Activity recreation).
