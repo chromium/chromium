@@ -194,6 +194,12 @@ void PaymentRequest::Init(
     return;
   }
 
+  if (!web_contents() || web_contents()->WasDiscarded()) {
+    RecordFirstAbortReason(JourneyLogger::ABORT_REASON_OTHER);
+    ResetAndDeleteThis();
+    return;
+  }
+
   journey_logger_.RecordCheckoutStep(
       JourneyLogger::CheckoutFunnelStep::kInitiated);
   content::RenderFrameHost* rfh = delegate_->GetRenderFrameHost();
@@ -969,8 +975,16 @@ void PaymentRequest::OnPaymentResponseAvailable(
   // apps request a CVC, so they are always interactive at this point. A payment
   // handler may elect to be non-interactive by not showing a confirmation page
   // to the user.
-  if (delegate_->IsInteractive())
+  if (delegate_->IsInteractive()) {
+    // ShowProcessingSpinner() can synchronously change view visibility and
+    // trigger re-entrant teardown of the document or WebContents, deleting
+    // `this`.
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     delegate_->ShowProcessingSpinner();
+    if (!weak_this) {
+      return;
+    }
+  }
 
   client_->OnPaymentResponse(std::move(response));
 }
@@ -1124,6 +1138,21 @@ void PaymentRequest::ReadyToCommitNavigation(
   RecordFirstAbortReason(is_user_initiated
                              ? JourneyLogger::ABORT_REASON_USER_NAVIGATION
                              : JourneyLogger::ABORT_REASON_MERCHANT_NAVIGATION);
+}
+
+void PaymentRequest::WasDiscarded() {
+  // WebContentsImpl::Discard() notifies observers even when
+  // FrameTree::Discard() declines the discard (e.g., pending-commit
+  // navigation), leaving WebContents::WasDiscarded() false.
+  if (!web_contents() || !web_contents()->WasDiscarded()) {
+    return;
+  }
+  // Under kWebContentsDiscard, discarding a tab preserves the RenderFrameHost
+  // and its DocumentServices until the next reload. Tear down the
+  // PaymentRequest immediately so it and its dialog cannot outlive the
+  // discarded document.
+  RecordFirstAbortReason(JourneyLogger::ABORT_REASON_OTHER);
+  ResetAndDeleteThis();
 }
 
 void PaymentRequest::WillBeDestroyed(

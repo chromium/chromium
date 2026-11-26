@@ -384,14 +384,19 @@ ServiceWorkerPaymentApp::CreatePaymentRequestEventData() {
 
 void ServiceWorkerPaymentApp::OnPaymentAppResponse(
     mojom::PaymentHandlerResponsePtr response) {
-  if (!delegate_)
+  // Clear `delegate_` before notifying it, since the callback may
+  // synchronously destroy `this` (via PaymentRequest teardown).
+  base::WeakPtr<PaymentApp::Delegate> delegate =
+      std::exchange(delegate_, nullptr);
+  if (!delegate) {
     return;
+  }
 
   if (response->response_type ==
       mojom::PaymentEventResponseType::PAYMENT_EVENT_SUCCESS) {
     DCHECK(!response->method_name.empty());
     DCHECK(!response->stringified_details.empty());
-    delegate_->OnInstrumentDetailsReady(
+    delegate->OnInstrumentDetailsReady(
         response->method_name, response->stringified_details,
         PayerData(response->payer_name.value_or(""),
                   response->payer_email.value_or(""),
@@ -406,13 +411,11 @@ void ServiceWorkerPaymentApp::OnPaymentAppResponse(
     DCHECK(response->payer_phone.value_or("").empty());
     DCHECK(!response->shipping_address);
     DCHECK(response->shipping_option.value_or("").empty());
-    delegate_->OnInstrumentDetailsError(
+    delegate->OnInstrumentDetailsError(
         response->response_type,
         std::string(ConvertPaymentEventResponseTypeToErrorString(
             response->response_type)));
   }
-
-  delegate_ = nullptr;
 }
 
 bool ServiceWorkerPaymentApp::IsCompleteForPayment() const {

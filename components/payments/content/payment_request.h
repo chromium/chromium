@@ -47,7 +47,8 @@ enum class SPCTransactionMode;
 // been used to track the lifetime of the RenderFrameHost, which is now done by
 // DocumentService. Instead, the WebContentsObserver is used to watch for
 // navigations that would destroy this object's document _in the future_ in
-// order to record metrics.
+// order to record metrics, and for WebContents discard (which under
+// kWebContentsDiscard preserves the RenderFrameHost until reload).
 class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
                        public PaymentHandlerHost::Delegate,
                        public PaymentRequestSpec::Observer,
@@ -111,6 +112,7 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   // WebContentsObserver:
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void WasDiscarded() override;
 
   // PaymentRequestState::Delegate:
   void OnPaymentResponseAvailable(mojom::PaymentResponsePtr response) override;

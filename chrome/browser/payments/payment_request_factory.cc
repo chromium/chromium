@@ -14,6 +14,7 @@
 #include "components/payments/core/payment_request_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
@@ -68,6 +69,15 @@ void CreatePaymentRequest(
     // removed from the page, which is not a use case that we support.
     // Abandoning the `receiver` will close the mojo connection, so blink
     // PaymentRequest will receive a connection error and will clean up itself.
+    return;
+  }
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (!web_contents || web_contents->WasDiscarded()) {
+    // Under kWebContentsDiscard, a discarded RenderFrameHost remains active
+    // until reload, and WasDiscarded() has already been notified. Reject new
+    // PaymentRequests on the discarded document.
     return;
   }
 

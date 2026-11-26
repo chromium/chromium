@@ -8,45 +8,42 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/language_tag.h"
+#include "base/notreached.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/payments/content/mock_content_payment_request_delegate.h"
 #include "components/payments/content/payment_request_display_manager.h"
+#include "components/payments/core/payment_request_metrics.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/payments/payment_request.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
 namespace payments {
 namespace {
 
-class PaymentRequestValidationTest : public content::RenderViewHostTestHarness,
-                                     public testing::WithParamInterface<bool> {
+class PaymentRequestTestBase : public content::RenderViewHostTestHarness {
  protected:
-  PaymentRequestValidationTest() = default;
-  ~PaymentRequestValidationTest() override = default;
+  PaymentRequestTestBase() = default;
+  ~PaymentRequestTestBase() override = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    if (IsSecurePaymentConfirmationEnabled()) {
-      scoped_features_.InitAndEnableFeature(
-          ::features::kSecurePaymentConfirmation);
-    } else {
-      scoped_features_.InitAndDisableFeature(
-          ::features::kSecurePaymentConfirmation);
-    }
     personal_data_manager_.test_address_data_manager()
         .SetAutofillProfileEnabled(false);
     NavigateAndCommit(page_url_);
   }
-
-  bool IsSecurePaymentConfirmationEnabled() const { return GetParam(); }
 
   std::unique_ptr<testing::NiceMock<MockContentPaymentRequestDelegate>>
   CreateMockDelegate() {
@@ -67,6 +64,41 @@ class PaymentRequestValidationTest : public content::RenderViewHostTestHarness,
         .WillByDefault(testing::Return(true));
     return delegate;
   }
+
+  mojom::PaymentDetailsPtr CreateDummyDetails() {
+    auto details = mojom::PaymentDetails::New();
+    details->id = "12345";
+    details->total = mojom::PaymentItem::New();
+    details->total->label = "Total";
+    details->total->amount = mojom::PaymentCurrencyAmount::New();
+    details->total->amount->currency = "USD";
+    details->total->amount->value = "1.00";
+    return details;
+  }
+
+  const GURL page_url_{"https://a.com"};
+  autofill::TestPersonalDataManager personal_data_manager_;
+  PaymentRequestDisplayManager display_manager_;
+};
+
+class PaymentRequestValidationTest : public PaymentRequestTestBase,
+                                     public testing::WithParamInterface<bool> {
+ protected:
+  PaymentRequestValidationTest() = default;
+  ~PaymentRequestValidationTest() override = default;
+
+  void SetUp() override {
+    if (IsSecurePaymentConfirmationEnabled()) {
+      scoped_features_.InitAndEnableFeature(
+          ::features::kSecurePaymentConfirmation);
+    } else {
+      scoped_features_.InitAndDisableFeature(
+          ::features::kSecurePaymentConfirmation);
+    }
+    PaymentRequestTestBase::SetUp();
+  }
+
+  bool IsSecurePaymentConfirmationEnabled() const { return GetParam(); }
 
   mojom::PaymentMethodDataPtr CreateSpcMethodData() {
     auto spc_method = mojom::PaymentMethodData::New();
@@ -91,20 +123,6 @@ class PaymentRequestValidationTest : public content::RenderViewHostTestHarness,
     return spc_method;
   }
 
-  mojom::PaymentDetailsPtr CreateDummyDetails() {
-    auto details = mojom::PaymentDetails::New();
-    details->id = "12345";
-    details->total = mojom::PaymentItem::New();
-    details->total->label = "Total";
-    details->total->amount = mojom::PaymentCurrencyAmount::New();
-    details->total->amount->currency = "USD";
-    details->total->amount->value = "1.00";
-    return details;
-  }
-
-  const GURL page_url_{"https://a.com"};
-  autofill::TestPersonalDataManager personal_data_manager_;
-  PaymentRequestDisplayManager display_manager_;
   base::test::ScopedFeatureList scoped_features_;
 };
 
@@ -406,7 +424,136 @@ TEST_P(PaymentRequestValidationTest,
   EXPECT_FALSE(weak_request);
 }
 
+class MockPaymentRequestClient
+    : public mojom::PaymentRequestClientInterceptorForTesting {
+ public:
+  mojom::PaymentRequestClient* GetForwardingInterface() override {
+    NOTREACHED();
+  }
+  MOCK_METHOD(void,
+              OnPaymentResponse,
+              (mojom::PaymentResponsePtr response),
+              (override));
+};
+
+// Tests that OnPaymentResponseAvailable handles synchronous teardown of the
+// hosting document / WebContents (and therefore PaymentRequest) during
+// ShowProcessingSpinner() without dereferencing freed memory or notifying the
+// client.
+TEST_P(PaymentRequestValidationTest,
+       OnPaymentResponseAvailableWithSynchronousWebContentsDestruction) {
+  auto delegate = CreateMockDelegate();
+  auto* delegate_ptr = delegate.get();
+
+  mojo::Remote<mojom::PaymentRequest> payment_request;
+  PaymentRequest* request = base::MakeSelfDeleting<PaymentRequest>(
+      std::move(delegate), payment_request.BindNewPipeAndPassReceiver());
+  base::WeakPtr<PaymentRequest> weak_request = request->GetWeakPtr();
+
+  MockPaymentRequestClient mock_client;
+  mojo::Receiver<mojom::PaymentRequestClient> client_receiver(&mock_client);
+
+  std::vector<mojom::PaymentMethodDataPtr> method_data;
+  method_data.push_back(CreateSpcMethodData());
+
+  payment_request->Init(client_receiver.BindNewPipeAndPassRemote(),
+                        std::move(method_data), CreateDummyDetails(),
+                        mojom::PaymentOptions::New());
+  payment_request.FlushForTesting();
+  ASSERT_TRUE(weak_request);
+
+  ON_CALL(*delegate_ptr, IsInteractive()).WillByDefault(testing::Return(true));
+  EXPECT_CALL(*delegate_ptr, ShowProcessingSpinner()).WillOnce([this] {
+    DeleteContents();
+  });
+  EXPECT_CALL(mock_client, OnPaymentResponse).Times(0);
+
+  mojom::PaymentResponsePtr response = mojom::PaymentResponse::New();
+  response->method_name = "https://a.com";
+  response->stringified_details = "{}";
+  response->payer = mojom::PayerDetail::New();
+  request->OnPaymentResponseAvailable(std::move(response));
+  client_receiver.FlushForTesting();
+
+  EXPECT_FALSE(weak_request);
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PaymentRequestValidationTest, testing::Bool());
+
+class PaymentRequestDiscardTest : public PaymentRequestTestBase {
+ protected:
+  PaymentRequestDiscardTest() {
+    scoped_features_.InitAndEnableFeature(::features::kWebContentsDiscard);
+  }
+
+  std::vector<mojom::PaymentMethodDataPtr> CreateDummyMethodData() {
+    std::vector<mojom::PaymentMethodDataPtr> method_data;
+    auto method = mojom::PaymentMethodData::New();
+    method->supported_method = "https://a.com";
+    method->stringified_data = "{}";
+    method_data.push_back(std::move(method));
+    return method_data;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+// Tests that discarding the hosting WebContents under kWebContentsDiscard
+// immediately destroys the PaymentRequest, closes its dialog, and records
+// kAbortedOther.
+TEST_F(PaymentRequestDiscardTest, WasDiscardedDestroysPaymentRequest) {
+  base::HistogramTester histogram_tester;
+  auto delegate = CreateMockDelegate();
+  auto* delegate_ptr = delegate.get();
+
+  mojo::Remote<mojom::PaymentRequest> payment_request;
+  PaymentRequest* request = base::MakeSelfDeleting<PaymentRequest>(
+      std::move(delegate), payment_request.BindNewPipeAndPassReceiver());
+  base::WeakPtr<PaymentRequest> weak_request = request->GetWeakPtr();
+
+  mojo::PendingRemote<mojom::PaymentRequestClient> client_remote;
+  auto dummy_receiver = client_remote.InitWithNewPipeAndPassReceiver();
+
+  payment_request->Init(std::move(client_remote), CreateDummyMethodData(),
+                        CreateDummyDetails(), mojom::PaymentOptions::New());
+  payment_request.FlushForTesting();
+  ASSERT_TRUE(weak_request);
+
+  EXPECT_CALL(*delegate_ptr, CloseDialog()).Times(1);
+
+  web_contents()->Discard(base::NullCallback());
+
+  EXPECT_FALSE(weak_request);
+  histogram_tester.ExpectUniqueSample("PaymentRequest.Outcome",
+                                      PaymentRequestOutcome::kAbortedOther, 1);
+}
+
+// Tests that initializing a PaymentRequest on an already-discarded WebContents
+// immediately tears it down instead of keeping a zombie request alive.
+TEST_F(PaymentRequestDiscardTest,
+       InitOnAlreadyDiscardedWebContentsDestroysPaymentRequest) {
+  web_contents()->Discard(base::NullCallback());
+  ASSERT_TRUE(web_contents()->WasDiscarded());
+
+  base::HistogramTester histogram_tester;
+  auto delegate = CreateMockDelegate();
+  mojo::Remote<mojom::PaymentRequest> payment_request;
+  PaymentRequest* request = base::MakeSelfDeleting<PaymentRequest>(
+      std::move(delegate), payment_request.BindNewPipeAndPassReceiver());
+  base::WeakPtr<PaymentRequest> weak_request = request->GetWeakPtr();
+
+  mojo::PendingRemote<mojom::PaymentRequestClient> client_remote;
+  auto dummy_receiver = client_remote.InitWithNewPipeAndPassReceiver();
+
+  payment_request->Init(std::move(client_remote), CreateDummyMethodData(),
+                        CreateDummyDetails(), mojom::PaymentOptions::New());
+  payment_request.FlushForTesting();
+
+  EXPECT_FALSE(weak_request);
+  histogram_tester.ExpectUniqueSample("PaymentRequest.Outcome",
+                                      PaymentRequestOutcome::kAbortedOther, 1);
+}
 
 }  // namespace
 }  // namespace payments

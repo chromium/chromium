@@ -204,16 +204,25 @@ void PaymentRequestDialogView::CloseDialog() {
 }
 
 void PaymentRequestDialogView::ShowErrorMessage() {
-  if (being_closed_ || !request_->spec()) {
+  if (being_closed_ || !request_ || !request_->spec()) {
     return;
   }
 
+  // Pushing with `animate = false` synchronously hides covered sheets
+  // (including any Payment Handler WebView). Hiding that opaque Aura window
+  // synchronously recomputes occlusion, which can transition a discarded or
+  // needs-reload merchant tab to VISIBLE and tear down `request_` (and, when
+  // widget close is synchronous, this dialog) before Push() returns.
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   view_stack_->Push(CreateViewAndInstallController(
                         std::make_unique<ErrorMessageViewController>(
                             request_->spec(), request_->state(),
                             weak_ptr_factory_.GetWeakPtr()),
                         &controller_map_),
                     /* animate = */ false);
+  if (!weak_this || being_closed_ || !request_) {
+    return;
+  }
 
   if (base::FeatureList::IsEnabled(
           features::kPaymentRequestMandatoryPaymentAppUi)) {
@@ -619,6 +628,11 @@ void PaymentRequestDialogView::EditorViewUpdated() {
 }
 
 void PaymentRequestDialogView::HideProcessingSpinner() {
+  // OnDialogClosed() destroys `view_stack_` and sets `being_closed_`; nothing
+  // remains to reveal or notify once the dialog is tearing down.
+  if (being_closed_) {
+    return;
+  }
   if (throbber_overlay_) {
     RemoveChildViewT(std::exchange(throbber_overlay_, nullptr));
   }
@@ -846,6 +860,13 @@ void PaymentRequestDialogView::OnOcclusionStateChanged(bool occluded) {
 }
 
 void PaymentRequestDialogView::ResizeDialogWindow(const gfx::Size& size) {
+  // Because CloseDialog() posts Widget::Close() asynchronously when
+  // kPaymentRequestMandatoryPaymentAppUi is enabled, `request_` can be
+  // destroyed before OnDialogClosed() runs (e.g., if a payment handler
+  // resizeTo() IPC arrives while close is pending).
+  if (!request_) {
+    return;
+  }
   SetPreferredSize(size);
   content::WebContents* const web_contents = request_->web_contents();
   if (GetWidget() && web_contents) {

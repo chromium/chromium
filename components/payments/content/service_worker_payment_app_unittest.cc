@@ -26,7 +26,8 @@
 namespace payments {
 
 class ServiceWorkerPaymentAppTest : public testing::Test,
-                                    public PaymentRequestSpec::Observer {
+                                    public PaymentRequestSpec::Observer,
+                                    public PaymentApp::Delegate {
  public:
   ServiceWorkerPaymentAppTest() {
     web_contents_ =
@@ -43,6 +44,24 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
   const SkBitmap* icon_bitmap() const { return icon_bitmap_; }
 
   void OnSpecUpdated() override {}
+
+  // PaymentApp::Delegate:
+  void OnInstrumentDetailsReady(const std::string& method_name,
+                                const std::string& stringified_details,
+                                const PayerData& payer_data) override {
+    on_instrument_details_ready_called_ = true;
+    if (destroy_app_on_delegate_callback_) {
+      ResetApp();
+    }
+  }
+
+  void OnInstrumentDetailsError(mojom::PaymentEventResponseType error,
+                                const std::string& error_message) override {
+    on_instrument_details_error_called_ = true;
+    if (destroy_app_on_delegate_callback_) {
+      ResetApp();
+    }
+  }
 
   void SetUp() override {
     mojom::PaymentDetailsPtr details = mojom::PaymentDetails::New();
@@ -185,6 +204,23 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
   bool CanMakePaymentEventSkipped() {
     return app_->GetCanMakePaymentEventSkippedForTesting();
   }
+
+  void AttachSelfAsDelegate() {
+    app_->delegate_ = weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void TriggerOnPaymentAppResponse(mojom::PaymentHandlerResponsePtr response) {
+    app_->OnPaymentAppResponse(std::move(response));
+  }
+
+  void ResetApp() {
+    icon_bitmap_ = nullptr;
+    app_.reset();
+  }
+
+  bool destroy_app_on_delegate_callback_ = false;
+  bool on_instrument_details_ready_called_ = false;
+  bool on_instrument_details_error_called_ = false;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -336,6 +372,48 @@ TEST_F(ServiceWorkerPaymentAppTest, IsValidForModifier) {
   EXPECT_TRUE(GetApp()->IsValidForModifier(/*method=*/"https://bobpay.test"));
   EXPECT_FALSE(GetApp()->IsValidForModifier(/*method=*/"basic-card"));
   EXPECT_FALSE(GetApp()->IsValidForModifier(/*method=*/"foo-bar"));
+}
+
+// Tests that OnPaymentAppResponse() does not access freed members when
+// OnInstrumentDetailsReady() synchronously destroys the
+// ServiceWorkerPaymentApp.
+TEST_F(ServiceWorkerPaymentAppTest,
+       OnPaymentAppResponseSuccessWithSynchronousDestruction) {
+  CreateInstalledServiceWorkerPaymentApp(/*with_url_method=*/true);
+  destroy_app_on_delegate_callback_ = true;
+  AttachSelfAsDelegate();
+
+  mojom::PaymentHandlerResponsePtr response =
+      mojom::PaymentHandlerResponse::New();
+  response->response_type =
+      mojom::PaymentEventResponseType::PAYMENT_EVENT_SUCCESS;
+  response->method_name = "https://bobpay.test";
+  response->stringified_details = "{}";
+
+  TriggerOnPaymentAppResponse(std::move(response));
+
+  EXPECT_TRUE(on_instrument_details_ready_called_);
+  EXPECT_EQ(nullptr, GetApp());
+}
+
+// Tests that OnPaymentAppResponse() does not access freed members when
+// OnInstrumentDetailsError() synchronously destroys the
+// ServiceWorkerPaymentApp.
+TEST_F(ServiceWorkerPaymentAppTest,
+       OnPaymentAppResponseErrorWithSynchronousDestruction) {
+  CreateInstalledServiceWorkerPaymentApp(/*with_url_method=*/true);
+  destroy_app_on_delegate_callback_ = true;
+  AttachSelfAsDelegate();
+
+  mojom::PaymentHandlerResponsePtr response =
+      mojom::PaymentHandlerResponse::New();
+  response->response_type =
+      mojom::PaymentEventResponseType::PAYMENT_EVENT_REJECT;
+
+  TriggerOnPaymentAppResponse(std::move(response));
+
+  EXPECT_TRUE(on_instrument_details_error_called_);
+  EXPECT_EQ(nullptr, GetApp());
 }
 
 }  // namespace payments
