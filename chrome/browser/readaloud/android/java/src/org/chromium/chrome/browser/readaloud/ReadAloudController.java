@@ -357,7 +357,6 @@ public class ReadAloudController
         private final boolean mPlaying;
         // Value of dateModified tag or 0
         private final long mDateModified;
-        private final PlaybackData mData;
         // Word to resume from if the saved playback was a NativePlayback. Always null for legacy.
         private final NativePlayback.@Nullable WordPosition mNativeWordPosition;
 
@@ -373,13 +372,7 @@ public class ReadAloudController
                 Tab tab,
                 @Nullable PlaybackData data,
                 long dateModified) {
-            this(
-                    controller,
-                    tab,
-                    data,
-                    /* useOffsetInParagraph= */ true,
-                    /* shouldPlayOverride= */ null,
-                    dateModified);
+            this(controller, tab, data, /* shouldPlayOverride= */ null, dateModified);
         }
 
         /**
@@ -393,13 +386,10 @@ public class ReadAloudController
                 ReadAloudController controller,
                 Tab tab,
                 @Nullable PlaybackData data,
-                boolean useOffsetInParagraph,
                 @Nullable Boolean shouldPlayOverride,
                 long dateModified) {
             assert !GURL.isEmptyOrInvalid(tab.getUrl());
-            assumeNonNull(data);
             mTab = tab;
-            mData = data;
             mDateModified = dateModified;
             if (data == null) {
                 mParagraphIndex = 0;
@@ -415,11 +405,7 @@ public class ReadAloudController
                 mPlaying = data == null ? true : data.state() != PAUSED && data.state() != STOPPED;
             }
 
-            // Only capture from the current playback, not from state re-wrapped from another
-            // activity (see onTabSelected()).
-            boolean isCurrentPlaybackData = data != null && data == controller.mCurrentPlaybackData;
-            if (isCurrentPlaybackData
-                    && controller.mPlayback instanceof NativePlayback nativePlayback) {
+            if (controller.mPlayback instanceof NativePlayback nativePlayback) {
                 mNativeWordPosition = nativePlayback.getCurrentWordPosition();
             } else {
                 mNativeWordPosition = null;
@@ -428,15 +414,6 @@ public class ReadAloudController
 
         Tab getTab() {
             return mTab;
-        }
-
-        long getDateModified() {
-            return mDateModified;
-        }
-
-        @Nullable
-        PlaybackData getPlaybackData() {
-            return mData;
         }
 
         /** Apply the saved playback state to {@code controller}. */
@@ -855,23 +832,14 @@ public class ReadAloudController
                                     }
                                 }
                                 RestoreState restored =
-                                        tab.getUserDataHost().getUserData(USER_DATA_KEY) != null
-                                                ? tab.getUserDataHost().getUserData(USER_DATA_KEY)
-                                                : null;
-                                if (restored != null
-                                        && restored.getTab().getUrl().equals(tab.getUrl())) {
+                                        tab.getUserDataHost().getUserData(USER_DATA_KEY);
+                                if (restored != null) {
                                     mRestoringPlayer = true;
                                     Log.d(
                                             TAG,
                                             "Restore state: swapping tab from the old activity with"
                                                     + " this one");
-                                    RestoreState updatedRestored =
-                                            new RestoreState(
-                                                    ReadAloudController.this,
-                                                    tab,
-                                                    restored.getPlaybackData(),
-                                                    restored.getDateModified());
-                                    updatedRestored.restore(ReadAloudController.this);
+                                    restored.restore(ReadAloudController.this);
                                     tab.getUserDataHost().removeUserData(USER_DATA_KEY);
                                 }
                                 maybeAddTranslationObserver(tab);
@@ -2434,7 +2402,6 @@ public class ReadAloudController
                         this,
                         activeTab,
                         mCurrentPlaybackData,
-                        /* useOffsetInParagraph= */ true,
                         /* shouldPlayOverride= */ false,
                         mDateModified);
     }

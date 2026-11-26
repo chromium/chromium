@@ -3231,6 +3231,30 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testOnActivityAttachmentChanged_nativeEnabled_resumesFromCurrentWord() {
+        startNativePlaybackReadingWord();
+        // Detaching stops the playback. The saved state must not pick up the stopped state.
+        Mockito.doAnswer(
+                        invocation -> {
+                            mController.onPlaybackStateChanged(PlaybackListener.State.STOPPED);
+                            return null;
+                        })
+                .when(mNativeBridgeNatives)
+                .stop(any());
+
+        mController
+                .getTabModelTabObserverforTests()
+                .onActivityAttachmentChanged(mTab, /* window= */ null);
+        TabModelUtils.selectTabById(mTabModelSelector, mTab.getId(), TabSelectionType.FROM_NEW);
+        resolvePromises();
+
+        // The playback restored after reparenting keeps playing from the same word.
+        verify(mNativeBridgeNatives, times(2)).play(any(), eq(mWebContents));
+        verify(mNativeBridgeNatives).seekToWord(any(), eq(1), eq(4));
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testSetPlaybackMode_nativeEnabled_restartsFromBeginning() {
         startNativePlaybackReadingWord();
 
@@ -4628,7 +4652,7 @@ public class ReadAloudControllerUnitTest {
         mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
         var data = Mockito.mock(PlaybackData.class);
         ReadAloudController.RestoreState restoreState =
-                new ReadAloudController.RestoreState(mController, mTab, data, true, false, 0L);
+                new ReadAloudController.RestoreState(mController, mTab, data, false, 0L);
         mController.setStateToRestoreOnBringingToForegroundForTests(restoreState);
         // for some reason the tab url goes null
         mTab.setGurlOverrideForTesting(new GURL(""));
