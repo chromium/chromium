@@ -39,6 +39,13 @@ export function getHtml(this: TopToolbarElement) {
     ${this.title}
   </div>
   <div class="top-toolbar-action-buttons">
+    ${this.dogfoodFeedbackEnabled_ ? html`
+      <cr-icon-button id="dogfoodFeedbackButton" class="no-overlap"
+          title="$i18n{dogfoodFeedbackTooltip}"
+          aria-label="$i18n{dogfoodFeedbackTooltip}"
+          @click="${this.onDogfoodFeedbackClick_}">
+      </cr-icon-button>
+    ` : ''}
     <cr-icon-button id="newThreadButton" @click="${this.onNewThreadClick_}"
         iron-icon="${this.webuiRoundedIconsEnabled_ ?
             'contextual_tasks:edit-square' :

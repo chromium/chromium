@@ -112,6 +112,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
         attribute: 'is-side-panel-rearchitecture-enabled',
       },
       webuiRoundedIconsEnabled_: {type: Boolean},
+      dogfoodFeedbackEnabled_: {type: Boolean},
       // <if expr="not is_android">
       permissionDashboardState: {type: Object},
       permissionChipDelegate_: {type: Object},
@@ -174,6 +175,8 @@ export class TopToolbarElement extends TopToolbarElementBase {
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private wasProfileIndicatorShown_: boolean = false;
+  protected accessor dogfoodFeedbackEnabled_: boolean =
+      loadTimeData.getBoolean('contextualTasksDogfoodFeedbackEnabled');
   private boundOnWindowBlur_: () => void = this.onWindowBlur_.bind(this);
 
   override connectedCallback() {
@@ -398,6 +401,9 @@ export class TopToolbarElement extends TopToolbarElementBase {
     this.toolbarBrowserProxy_.handler.moveTaskUiToNewTab();
   }
 
+  protected onDogfoodFeedbackClick_() {
+    this.toolbarBrowserProxy_.handler.openDogfoodFeedback();
+  }
 
   protected onLogoPointerdown_() {
     if (!this.isSidePanelRearchitectureEnabled_) {
