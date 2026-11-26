@@ -32,6 +32,7 @@ class CORE_EXPORT JSBasedEventListener : public EventListener {
 
   // blink::EventListener overrides:
   bool BelongsToTheCurrentWorld(ExecutionContext*) const final;
+  bool BelongsToTheMainWorld() const final;
   // Implements step 2. of "inner invoke".
   // See: https://dom.spec.whatwg.org/#concept-event-listener-inner-invoke
   void Invoke(ExecutionContext*, Event*) final;

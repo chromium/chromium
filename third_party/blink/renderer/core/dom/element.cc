@@ -14738,10 +14738,11 @@ void Element::SetElementAttributeEventListenerFromScriptBody(
     AttributeModificationReason reason,
     JSEventHandler::HandlerType type) {
   ExecutionContext* context = GetExecutionContext();
-  EventListener* listener = JSEventHandlerForContentAttribute::Create(
-      context, attribute_name, script_body, type);
+  JSEventHandlerForContentAttribute* listener =
+      JSEventHandlerForContentAttribute::Create(context, attribute_name,
+                                                script_body, type);
   if (!ShouldBlockInlineScriptAttributeSet(this, listener, reason)) {
-    SetAttributeEventListener(event_type_name, listener);
+    SetContentAttributeEventListener(event_type_name, listener);
   }
 }
 
@@ -14752,10 +14753,11 @@ void Element::SetDocumentAttributeEventListenerFromScriptBody(
     AttributeModificationReason reason,
     JSEventHandler::HandlerType type) {
   ExecutionContext* context = GetExecutionContext();
-  EventListener* listener = JSEventHandlerForContentAttribute::Create(
-      context, attribute_name, script_body, type);
+  JSEventHandlerForContentAttribute* listener =
+      JSEventHandlerForContentAttribute::Create(context, attribute_name,
+                                                script_body, type);
   if (!ShouldBlockInlineScriptAttributeSet(this, listener, reason)) {
-    GetDocument().SetAttributeEventListener(event_type_name, listener);
+    GetDocument().SetContentAttributeEventListener(event_type_name, listener);
   }
 }
 
@@ -14766,10 +14768,13 @@ void Element::SetWindowAttributeEventListenerFromScriptBody(
     AttributeModificationReason reason,
     JSEventHandler::HandlerType type) {
   ExecutionContext* context = GetExecutionContext();
-  EventListener* listener = JSEventHandlerForContentAttribute::Create(
-      context, attribute_name, script_body, type);
+  JSEventHandlerForContentAttribute* listener =
+      JSEventHandlerForContentAttribute::Create(context, attribute_name,
+                                                script_body, type);
   if (!ShouldBlockInlineScriptAttributeSet(this, listener, reason)) {
-    GetDocument().SetWindowAttributeEventListener(event_type_name, listener);
+    if (LocalDOMWindow* dom_window = GetDocument().domWindow()) {
+      dom_window->SetContentAttributeEventListener(event_type_name, listener);
+    }
   }
 }
 

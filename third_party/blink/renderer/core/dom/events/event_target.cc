@@ -38,6 +38,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_add_event_listener_options.h"
@@ -653,15 +654,7 @@ bool EventTarget::AddEventListenerInternal(
     }
   }
 
-  V8DOMActivityLogger* activity_logger =
-      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld(
-          execution_context->GetIsolate());
-  if (activity_logger) {
-    Vector<String> argv;
-    argv.push_back(ToNode() ? ToNode()->nodeName() : InterfaceName());
-    argv.push_back(event_type);
-    activity_logger->LogEvent(execution_context, "blinkAddEventListener", argv);
-  }
+  MaybeLogAddEventListener(event_type);
 
   RegisteredEventListener* registered_listener = nullptr;
   bool added = EnsureEventTargetData().event_listener_map.Add(
@@ -815,31 +808,78 @@ void EventTarget::RemovedEventListener(
     const AtomicString& event_type,
     const RegisteredEventListener& registered_listener) {}
 
+void EventTarget::MaybeLogAddEventListener(const AtomicString& event_type) {
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (!execution_context) {
+    return;
+  }
+  if (V8DOMActivityLogger* activity_logger =
+          V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld(
+              execution_context->GetIsolate())) {
+    const String argv[] = {ToNode() ? ToNode()->nodeName() : InterfaceName(),
+                           event_type};
+    activity_logger->LogEvent(execution_context, "blinkAddEventListener", argv);
+  }
+}
+
 RegisteredEventListener* EventTarget::GetAttributeRegisteredEventListener(
-    const AtomicString& event_type) {
+    const AtomicString& event_type,
+    EventHandlerWorld world) {
   EventListenerVector* listener_vector = GetEventListeners(event_type);
   if (!listener_vector)
     return nullptr;
 
+  ExecutionContext* execution_context = nullptr;
+  if (world == EventHandlerWorld::kCurrent) {
+    execution_context = GetExecutionContext();
+    if (!execution_context) {
+      return nullptr;
+    }
+  }
+
   for (auto& registered_listener : *listener_vector) {
     EventListener* listener = registered_listener->Callback();
-    if (GetExecutionContext() && listener->IsEventHandler() &&
-        listener->BelongsToTheCurrentWorld(GetExecutionContext()))
+    if (!listener->IsEventHandler()) {
+      continue;
+    }
+    const bool matches_world =
+        world == EventHandlerWorld::kMain
+            ? listener->BelongsToTheMainWorld()
+            : listener->BelongsToTheCurrentWorld(execution_context);
+    if (matches_world) {
       return registered_listener.Get();
+    }
   }
   return nullptr;
 }
 
 bool EventTarget::SetAttributeEventListener(const AtomicString& event_type,
                                             EventListener* listener) {
+  DCHECK(!listener || !listener->IsEventHandlerForContentAttribute());
+  return SetAttributeEventListenerInternal(event_type, listener,
+                                           EventHandlerWorld::kCurrent);
+}
+
+bool EventTarget::SetContentAttributeEventListener(
+    const AtomicString& event_type,
+    JSEventHandlerForContentAttribute* listener) {
+  return SetAttributeEventListenerInternal(event_type, listener,
+                                           EventHandlerWorld::kMain);
+}
+
+bool EventTarget::SetAttributeEventListenerInternal(
+    const AtomicString& event_type,
+    EventListener* listener,
+    EventHandlerWorld world) {
   RegisteredEventListener* registered_listener =
-      GetAttributeRegisteredEventListener(event_type);
+      GetAttributeRegisteredEventListener(event_type, world);
   if (!listener) {
     if (registered_listener)
       removeEventListener(event_type, registered_listener->Callback(), false);
     return false;
   }
   if (registered_listener) {
+    MaybeLogAddEventListener(event_type);
     registered_listener->SetCallback(listener);
     return true;
   }

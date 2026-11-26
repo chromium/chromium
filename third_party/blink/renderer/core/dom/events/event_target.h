@@ -54,6 +54,7 @@ class Event;
 class EventListenerOptions;
 class ExceptionState;
 class ExecutionContext;
+class JSEventHandlerForContentAttribute;
 class LocalDOMWindow;
 class MessagePort;
 class Node;
@@ -216,6 +217,11 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   // Used for legacy "onEvent" attribute APIs.
   virtual bool SetAttributeEventListener(const AtomicString& event_type,
                                          EventListener*);
+  // Used for event handler content attributes (e.g. `onclick="..."`), whose
+  // handlers always belong to the main world regardless of the current V8
+  // context's world.
+  bool SetContentAttributeEventListener(const AtomicString& event_type,
+                                        JSEventHandlerForContentAttribute*);
   EventListener* GetAttributeEventListener(const AtomicString& event_type);
 
   bool HasEventListeners() const;
@@ -392,13 +398,23 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   EventTargetData& EnsureEventTargetData();
 
  private:
+  enum class EventHandlerWorld {
+    kCurrent,
+    kMain,
+  };
+
   LocalDOMWindow* ExecutingWindow();
   void SetDefaultAddEventListenerOptions(const AtomicString& event_type,
                                          EventListener*,
                                          AddEventListenerOptionsResolved&);
+  void MaybeLogAddEventListener(const AtomicString& event_type);
 
+  bool SetAttributeEventListenerInternal(const AtomicString& event_type,
+                                         EventListener*,
+                                         EventHandlerWorld);
   RegisteredEventListener* GetAttributeRegisteredEventListener(
-      const AtomicString& event_type);
+      const AtomicString& event_type,
+      EventHandlerWorld = EventHandlerWorld::kCurrent);
 
   // Fire event listeners. This method makes a copy of the `EventListenerVector`
   // on invocation to match the HTML spec. Do not try to optimize it away.

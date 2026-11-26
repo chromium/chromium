@@ -73,6 +73,29 @@ if (window.testRunner && window.eventSender) {
         xhr.send(null);
     }
 
+    function removeAndReplaceTextAttributeEventListener()
+    {
+        var container = document.createElement("div");
+        container.innerHTML = "<button id='buttonRemove' onclick='window.removedHandlerFired = true'></button>";
+        var buttonRemove = container.firstChild;
+        buttonRemove.removeAttribute("onclick");
+        document.getElementById("test").appendChild(buttonRemove);
+        buttonRemove.click();
+        buttonRemove.remove();
+
+        var buttonReplace = document.getElementById("buttonReplace");
+        buttonReplace.onclick = function() {
+            window.isolatedOnclickCount = (window.isolatedOnclickCount || 0) + 1;
+        };
+        buttonReplace.setAttribute("onclick", "window.replaceLog.push('second')");
+        buttonReplace.setAttribute("onclick", "window.replaceLog.push('third')");
+        buttonReplace.click();
+        buttonReplace.removeAttribute("onclick");
+        buttonReplace.click();
+        if (window.isolatedOnclickCount === 2)
+            document.getElementById("log").innerHTML += "ISOLATED_OK ";
+    }
+
     function runTestInWorld(worldId, funcName)
     {
         testRunner.evaluateScriptInIsolatedWorld(worldId, String(eval(funcName)) + "\n" + funcName + "();");
@@ -89,6 +112,18 @@ if (window.testRunner && window.eventSender) {
         var button1 = document.getElementById("button1");
         button1.click();
         button1.parentElement.removeChild(button1);
+
+        newTest("Removing or replacing text attribute event listeners in isolated world updates main world without clobbering isolated world");
+        window.removedHandlerFired = false;
+        window.replaceLog = [];
+        document.getElementById("test").innerHTML =
+            "<button id='buttonReplace' onclick=\"window.replaceLog.push('first')\"></button>";
+        runTestInWorld(1, "removeAndReplaceTextAttributeEventListener");
+        document.getElementById("test").innerHTML = "";
+        if (!window.removedHandlerFired && window.replaceLog.join(",") === "third")
+            document.getElementById("log").innerHTML += "PASS";
+        else
+            document.getElementById("log").innerHTML += "FAIL (" + window.removedHandlerFired + "; " + window.replaceLog.join(",") + ")";
 
         newTest("Function attribute event listeners should fire in the world where they were created");
         runTestInWorld(1, "functionAttributeEventListener");

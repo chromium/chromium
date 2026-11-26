@@ -64,6 +64,10 @@ bool JSBasedEventListener::BelongsToTheCurrentWorld(
   return false;
 }
 
+bool JSBasedEventListener::BelongsToTheMainWorld() const {
+  return GetWorld().IsMainWorld();
+}
+
 // Implements step 2. of "inner invoke".
 // https://dom.spec.whatwg.org/#concept-event-listener-inner-invoke
 void JSBasedEventListener::Invoke(

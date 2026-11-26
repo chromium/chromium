@@ -68,6 +68,9 @@ class CORE_EXPORT EventListener : public GarbageCollected<EventListener>,
     return false;
   }
 
+  // Returns true if this event listener belongs to the main world.
+  virtual bool BelongsToTheMainWorld() const { return false; }
+
   // Returns true if this event listener is considered as the same with the
   // other event listener (in context of EventTarget.removeEventListener).
   // See also |RegisteredEventListener::Matches|.
