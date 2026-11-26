@@ -472,25 +472,6 @@ MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   return &Recorder()->getRecordingCanvas();
 }
 
-void CanvasRenderingContext2D::WillDraw(
-    const gfx::Rect& dirty_rect,
-    CanvasPerformanceMonitor::DrawType draw_type) {
-  CHECK(HasBacking());
-  if (GetState().ShouldAntialias()) {
-    gfx::Rect inflated_dirty_rect = dirty_rect;
-    inflated_dirty_rect.Outset(1);
-    CanvasRenderingContext::DidDraw(inflated_dirty_rect, draw_type);
-  } else {
-    CanvasRenderingContext::DidDraw(dirty_rect, draw_type);
-  }
-
-  // Always draw everything during printing.
-  if (layer_count_ == 0) [[likely]] {
-    // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
-    FlushIfRecordingLimitExceeded();
-  }
-}
-
 std::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
   if (!canvas()) {

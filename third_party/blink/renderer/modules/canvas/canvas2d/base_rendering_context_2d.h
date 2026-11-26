@@ -28,6 +28,7 @@
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_fill_rule.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_smoothing_quality.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
@@ -133,6 +134,9 @@ class MODULES_EXPORT BaseRenderingContext2D
     return kRespectImageOrientation;
   }
   Color GetCurrentColor() const override { return Color::kBlack; }
+
+  void WillDraw(const gfx::Rect& dirty_rect,
+                CanvasPerformanceMonitor::DrawType draw_type) override;
 
   bool clear_frame() const { return clear_frame_; }
   void set_clear_frame(bool clear_frame) { clear_frame_ = clear_frame; }

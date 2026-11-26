@@ -154,6 +154,7 @@
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -1929,6 +1930,23 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
   }
   animated_image_frame_index_maps_.clear();
   return recording;
+}
+
+void BaseRenderingContext2D::WillDraw(
+    const gfx::Rect& dirty_rect,
+    CanvasPerformanceMonitor::DrawType draw_type) {
+  CHECK(HasBacking());
+  gfx::Rect adjusted_dirty_rect = dirty_rect;
+  if (GetState().ShouldAntialias()) {
+    adjusted_dirty_rect.Outset(1);
+  }
+
+  CanvasRenderingContext::DidDraw(adjusted_dirty_rect, draw_type);
+
+  if (layer_count_ == 0) [[likely]] {
+    // TODO(crbug.com/40196561): Make auto-flushing layer friendly.
+    FlushIfRecordingLimitExceeded();
+  }
 }
 
 void BaseRenderingContext2D::FlushIfRecordingLimitExceeded() {

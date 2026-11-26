@@ -344,23 +344,6 @@ OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   return GetPaintCanvas();
 }
 
-void OffscreenCanvasRenderingContext2D::WillDraw(
-    const gfx::Rect& dirty_rect,
-    CanvasPerformanceMonitor::DrawType draw_type) {
-  CHECK(HasBacking());
-  gfx::Rect adjusted_dirty_rect = dirty_rect;
-  if (GetState().ShouldAntialias()) {
-    adjusted_dirty_rect.Outset(1);
-  }
-
-  CanvasRenderingContext::DidDraw(adjusted_dirty_rect, draw_type);
-
-  if (layer_count_ == 0) [[likely]] {
-    // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
-    FlushIfRecordingLimitExceeded();
-  }
-}
-
 sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
   return GetState().GetFilterForOffscreenCanvas(Host()->Size(), this);
 }

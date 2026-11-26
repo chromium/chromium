@@ -78,9 +78,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   MemoryManagedPaintCanvas* GetOrCreatePaintCanvas() final;
 
-  void WillDraw(const gfx::Rect& dirty_rect,
-                CanvasPerformanceMonitor::DrawType) final;
-
   sk_sp<PaintFilter> StateGetFilter() final;
 
   void LoseContext(LostContextMode) override;
