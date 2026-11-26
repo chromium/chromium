@@ -62,9 +62,6 @@ std::optional<uint16_t> SSLContextConfig::RequestServerPadding() const {
 }
 
 bool SSLContextConfig::ShouldAdvertiseTrustAnchorIDs() const {
-  if (!base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
-    return false;
-  }
   // Only `trust_anchor_ids` is used in this condition, since it should never
   // be the case that it is empty but `time_bound_trust_anchor_ids` is
   // non-empty.

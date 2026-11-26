@@ -157,24 +157,20 @@ SSLConfigServiceManager::SSLConfigServiceManager(PrefService* local_state) {
   OnDisabledCipherSuitesChange(local_state);
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  if (base::FeatureList::IsEnabled(net::features::kTLSTrustAnchorIDs)) {
-    // Populate initial trust anchor ID state from compiled-in values.
-    //
-    // Theoretically there should be some check here for whether Chrome Root
-    // Store is enabled, on builds where it is optional. That is currently
-    // configured through the GetCertVerifierServiceFactory
-    // SetUseChromeRootStore() call, so the status is not easily accessible from
-    // here. Currently the only platform where CRS is optional and disabled is
-    // android webview, which doesn't use this file, so this is okay.
-    InitializeTrustAnchorIDs(
-        base::FeatureList::IsEnabled(net::features::kNonMtcTrustAnchorIDs)
-            ? net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore()
-            : base::span<const std::vector<uint8_t>>(),
-        base::FeatureList::IsEnabled(net::features::kVerifyMTCs)
-            ? net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore()
-            : base::span<const std::vector<uint8_t>>(),
-        std::nullopt);
-  }
+  // Populate initial trust anchor ID state from compiled-in values.
+  //
+  // Theoretically there should be some check here for whether Chrome Root
+  // Store is enabled, on builds where it is optional. That is currently
+  // configured through the GetCertVerifierServiceFactory
+  // SetUseChromeRootStore() call, so the status is not easily accessible from
+  // here. Currently the only platform where CRS is optional and disabled is
+  // android webview, which doesn't use this file, so this is okay.
+  InitializeTrustAnchorIDs(
+      net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(),
+      base::FeatureList::IsEnabled(net::features::kVerifyMTCs)
+          ? net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore()
+          : base::span<const std::vector<uint8_t>>(),
+      std::nullopt);
 #endif
 }
 
@@ -241,10 +237,6 @@ void SSLConfigServiceManager::UpdateTrustAnchorIDs(
     base::span<const std::vector<uint8_t>> classic_trust_anchor_ids,
     base::span<const std::vector<uint8_t>> mtc_standalone_only_trust_anchor_ids,
     std::optional<SSLConfigServiceMtcLandmarkInfo> mtc_landmark_info) {
-  if (!base::FeatureList::IsEnabled(net::features::kTLSTrustAnchorIDs)) {
-    return;
-  }
-
   InitializeTrustAnchorIDs(classic_trust_anchor_ids,
                            mtc_standalone_only_trust_anchor_ids,
                            std::move(mtc_landmark_info));

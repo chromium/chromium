@@ -1316,9 +1316,7 @@ class PKIMetadataComponentChromeRootStoreMtcMetadataTest
   PKIMetadataComponentChromeRootStoreMtcMetadataTest() {
     feature_list_.InitWithFeatureStates(
         {{net::features::kVerifyMTCs, mtcs_enabled()},
-         {net::features::kTestRootStore, test_roots_enabled()},
-         {net::features::kTLSTrustAnchorIDs, true},
-         {net::features::kNonMtcTrustAnchorIDs, true}});
+         {net::features::kTestRootStore, test_roots_enabled()}});
   }
 
   bool mtcs_enabled() const { return std::get<0>(GetParam()); }
@@ -3327,22 +3325,8 @@ INSTANTIATE_TEST_SUITE_P(
                     CTEnforcement::kDisabledByProto,
                     CTEnforcement::kDisabledByFeature));
 
-class PKIMetadataComponentChromeRootStoreUpdateTrustAnchorIDsTest
-    : public PKIMetadataComponentChromeRootStoreUpdateTest {
- public:
-  PKIMetadataComponentChromeRootStoreUpdateTrustAnchorIDsTest() {
-    feature_list_.InitWithFeatures({net::features::kTLSTrustAnchorIDs,
-                                    net::features::kNonMtcTrustAnchorIDs},
-                                   {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PKIMetadataComponentChromeRootStoreUpdateTrustAnchorIDsTest,
-    TrustAnchorIDs) {
+IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
+                       TrustAnchorIDs) {
   static constexpr uint8_t kIntermediateTrustAnchorId[] = {0x01, 0x02, 0x03};
   static constexpr uint8_t kNotServedTrustAnchorId[] = {0x07, 0x08, 0x09};
 

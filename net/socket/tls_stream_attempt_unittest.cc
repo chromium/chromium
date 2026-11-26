@@ -646,72 +646,35 @@ TEST_F(TlsStreamAttemptTest, EchStrictRetryEmptyFail) {
   EXPECT_THAT(rv, IsError(ERR_STRICT_ECH_REQUIRED));
 }
 
-// Tests that TlsStreamAttempt sends TLS Trust Anchor IDs unconditionally based
-// on features.
+// Tests that TlsStreamAttempt sends TLS Trust Anchor IDs unconditionally when
+// configured.
 TEST_F(TlsStreamAttemptTest, TrustAnchorIDsInitialSuccess) {
   const std::vector<uint8_t> id1 = {0x01, 0x02, 0x03};
   const std::vector<uint8_t> id2 = {0x02, 0x02};
   const std::vector<uint8_t> id3 = {0x03, 0x03};
   const std::vector<uint8_t> id4 = {0x04, 0x04};
 
-  for (bool trust_anchor_ids_enabled : {false, true}) {
-    SCOPED_TRACE(trust_anchor_ids_enabled);
+  SetTrustedTrustAnchorIDs({id1, id2, id3, id4});
+  ServiceEndpoint service_endpoint;
 
-    SetTrustedTrustAnchorIDs({id1, id2, id3, id4});
-    ServiceEndpoint service_endpoint;
+  StaticSocketDataProvider data;
+  socket_factory().AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.expected_trust_anchor_ids = std::vector<std::vector<uint8_t>>{
+      {0x01, 0x02, 0x03}, {0x02, 0x02}, {0x03, 0x03}, {0x04, 0x04}};
+  socket_factory().AddSSLSocketDataProvider(&ssl);
 
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
+  TlsStreamAttemptHelper helper(params(), SSLConfig(),
+                                std::move(service_endpoint));
+  int rv = helper.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-    if (trust_anchor_ids_enabled) {
-      enabled_features.push_back(features::kTLSTrustAnchorIDs);
-    } else {
-      disabled_features.push_back(features::kTLSTrustAnchorIDs);
-    }
-
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(enabled_features, disabled_features);
-
-    StaticSocketDataProvider data;
-    socket_factory().AddSocketDataProvider(&data);
-    SSLSocketDataProvider ssl(ASYNC, OK);
-
-    if (trust_anchor_ids_enabled) {
-      std::vector<std::vector<uint8_t>> expected_ids;
-      expected_ids.push_back({0x01, 0x02, 0x03});
-      expected_ids.push_back({0x02, 0x02});
-      expected_ids.push_back({0x03, 0x03});
-      expected_ids.push_back({0x04, 0x04});
-      ssl.expected_trust_anchor_ids = expected_ids;
-    } else {
-      ssl.expect_no_trust_anchor_ids = true;
-    }
-    socket_factory().AddSSLSocketDataProvider(&ssl);
-
-    TlsStreamAttemptHelper helper(params(), SSLConfig(),
-                                  std::move(service_endpoint));
-    int rv = helper.Start();
-    EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-
-    rv = helper.WaitForCompletion();
-    EXPECT_THAT(rv, IsOk());
-  }
+  rv = helper.WaitForCompletion();
+  EXPECT_THAT(rv, IsOk());
 }
 
-// Tests that if the Trust Anchor IDs feature is enabled, but no IDs are
-// configured, the extension is not sent.
+// Tests that if no Trust Anchor IDs are configured, the extension is not sent.
 TEST_F(TlsStreamAttemptTest, TrustAnchorIDsNoTrustAnchorIDsConfigured) {
-  base::test::ScopedFeatureList feature_list;
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  feature_list.InitWithFeatures(
-      {features::kTLSTrustAnchorIDs, features::kVerifyMTCs,
-       features::kNonMtcTrustAnchorIDs},
-      {});
-#else
-  feature_list.InitWithFeatures(
-      {features::kTLSTrustAnchorIDs, features::kNonMtcTrustAnchorIDs}, {});
-#endif
-
   ServiceEndpoint service_endpoint;
 
   StaticSocketDataProvider data;

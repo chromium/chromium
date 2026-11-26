@@ -315,8 +315,7 @@ TEST_F(SSLConfigServiceManagerTest,
 // dynamically-configured Trust Anchor IDs when present.
 TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureStates({{net::features::kTLSTrustAnchorIDs, true},
-                                      {net::features::kVerifyMTCs, true},
+  feature_list.InitWithFeatureStates({{net::features::kVerifyMTCs, true},
                                       {net::features::kTestRootStore, false}});
 
   TestingPrefServiceSimple local_state;
@@ -514,8 +513,7 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDs) {
 TEST_F(SSLConfigServiceManagerTest,
        InitialTrustAnchorIDsMtcEnabledWithTestRoots) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureStates({{net::features::kTLSTrustAnchorIDs, true},
-                                      {net::features::kVerifyMTCs, true},
+  feature_list.InitWithFeatureStates({{net::features::kVerifyMTCs, true},
                                       {net::features::kTestRootStore, true}});
 
   TestingPrefServiceSimple local_state;
@@ -533,8 +531,7 @@ TEST_F(SSLConfigServiceManagerTest,
 
 TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDsMtcDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureStates({{net::features::kTLSTrustAnchorIDs, true},
-                                      {net::features::kVerifyMTCs, false}});
+  feature_list.InitWithFeatureStates({{net::features::kVerifyMTCs, false}});
 
   TestingPrefServiceSimple local_state;
   SSLConfigServiceManager::RegisterPrefs(local_state.registry());
@@ -545,25 +542,6 @@ TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDsMtcDisabled) {
       net::x509_util::ParseTlsTrustAnchorIDs(initial_config_->trust_anchor_ids),
       testing::ElementsAreArray(Sorted(
           net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore())));
-  EXPECT_FALSE(initial_config_->time_bound_trust_anchor_ids);
-}
-
-TEST_F(SSLConfigServiceManagerTest, InitialTrustAnchorIDsNonMtcDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureStates(
-      {{net::features::kTLSTrustAnchorIDs, true},
-       {net::features::kNonMtcTrustAnchorIDs, false},
-       {net::features::kVerifyMTCs, true}});
-
-  TestingPrefServiceSimple local_state;
-  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
-
-  std::unique_ptr<SSLConfigServiceManager> config_manager =
-      SetUpConfigServiceManager(&local_state);
-  EXPECT_THAT(
-      net::x509_util::ParseTlsTrustAnchorIDs(initial_config_->trust_anchor_ids),
-      testing::ElementsAreArray(Sorted(
-          net::TrustStoreChrome::GetTrustedMtcCaIDsFromCompiledInRootStore())));
   EXPECT_FALSE(initial_config_->time_bound_trust_anchor_ids);
 }
 

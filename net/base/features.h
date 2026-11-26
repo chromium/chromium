@@ -853,17 +853,7 @@ NET_EXPORT extern const base::FeatureParam<std::string>
 // Finch-controlled list of ports that should be blocked on localhost.
 NET_EXPORT BASE_DECLARE_FEATURE(kRestrictAbusePortsOnLocalhost);
 
-// Enables TLS Trust Anchor IDs
-// (https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html),
-// a TLS extension to help the server serve a certificate that the client will
-// trust.
-NET_EXPORT BASE_DECLARE_FEATURE(kTLSTrustAnchorIDs);
-
-// Controls whether TLS Trust Anchor IDs that are not for MTCs are sent.
-NET_EXPORT BASE_DECLARE_FEATURE(kNonMtcTrustAnchorIDs);
-
-// Enables support for Merkle Tree Certificates. `kTLSTrustAnchorIDs` must also
-// be enabled for this to be useful.
+// Enables support for Merkle Tree Certificates.
 NET_EXPORT BASE_DECLARE_FEATURE(kVerifyMTCs);
 
 // Indicates if the client is participating in TCP socket pool limit

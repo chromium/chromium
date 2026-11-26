@@ -169,19 +169,6 @@ TEST(SSLContextConfigTest, GetSupportedGroups) {
             expected_key_shares);
 }
 
-TEST(SSLContextConfigTest, TrustAnchorIDsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kTLSTrustAnchorIDs);
-
-  SSLContextConfig config;
-
-  EXPECT_FALSE(config.ShouldAdvertiseTrustAnchorIDs());
-
-  config.trust_anchor_ids = {0x00, 0x02, 0x01, 0x11};
-
-  EXPECT_FALSE(config.ShouldAdvertiseTrustAnchorIDs());
-}
-
 TEST(SSLContextConfigTest, RequestServerPadding) {
   {
     base::test::ScopedFeatureList feature_list;
@@ -210,7 +197,6 @@ TEST(SSLContextConfigTest, RequestServerPadding) {
 }
 
 TEST(SSLContextConfigTest, TrustAnchorIDs) {
-  base::test::ScopedFeatureList feature_list{features::kTLSTrustAnchorIDs};
   SSLContextConfig config;
 
   EXPECT_FALSE(config.ShouldAdvertiseTrustAnchorIDs());

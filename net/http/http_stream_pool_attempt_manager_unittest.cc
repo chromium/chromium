@@ -8022,39 +8022,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   EXPECT_FALSE(pool().GetGroupForTesting(requester.GetStreamKey()));
 }
 
-// Tests that TLS Trust Anchor IDs are not sent when the feature flag is
-// disabled.
-TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsDisabled) {
-  AddScopedFeatureList().InitAndDisableFeature(features::kTLSTrustAnchorIDs);
-
-  SSLContextConfig config = ssl_config_service()->GetSSLContextConfig();
-  config.trust_anchor_ids = x509_util::EncodeTlsRequestedTrustAnchorIDList(
-      {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}});
-  ssl_config_service()->UpdateSSLConfigAndNotify(config);
-
-  SequencedSocketData data;
-  socket_factory()->AddSocketDataProvider(&data);
-  SSLSocketDataProvider ssl(ASYNC, OK);
-  // Trust Anchor IDs should not be sent because the feature is disabled.
-  ssl.expect_no_trust_anchor_ids = true;
-  socket_factory()->AddSSLSocketDataProvider(&ssl);
-
-  resolver()
-      ->AddFakeRequest()
-      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
-      .CompleteStartSynchronously(OK);
-
-  StreamRequester requester;
-  requester.set_destination(kDefaultDestination).RequestStream(pool());
-
-  requester.WaitForResult();
-  EXPECT_THAT(requester.result(), Optional(IsOk()));
-}
-
-// Tests that TLS Trust Anchor IDs are sent when the feature flag is enabled.
+// Tests that TLS Trust Anchor IDs are sent when configured.
 TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDs) {
-  AddScopedFeatureList().InitAndEnableFeature(features::kTLSTrustAnchorIDs);
-
   SSLContextConfig config = ssl_config_service()->GetSSLContextConfig();
   config.trust_anchor_ids = x509_util::EncodeTlsRequestedTrustAnchorIDList(
       {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}});
@@ -8082,8 +8051,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDs) {
 
 // Tests that TLS Trust Anchor IDs are sent even when ECH is disabled.
 TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsEnabledWithECHDisabled) {
-  AddScopedFeatureList().InitAndEnableFeature(features::kTLSTrustAnchorIDs);
-
   SSLContextConfig config = ssl_config_service()->GetSSLContextConfig();
   config.trust_anchor_ids = x509_util::EncodeTlsRequestedTrustAnchorIDList(
       {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}});

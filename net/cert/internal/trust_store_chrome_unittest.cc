@@ -283,8 +283,7 @@ TEST(TrustStoreChromeTestNoFixture, MTCConstraints) {
 
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatureStates(
-        {{net::features::kTLSTrustAnchorIDs, true},
-         {net::features::kVerifyMTCs, true},
+        {{net::features::kVerifyMTCs, true},
          {net::features::kTestRootStore, use_test_roots}});
 
     constexpr uint8_t kUnconstrainedAnchorCaId[] = {0x09, 0x01, 0x03, 0x04};
@@ -586,9 +585,7 @@ TEST(TrustStoreChromeTestNoFixture,
 }
 
 TEST(TrustStoreChromeTestNoFixture, CrsRootIds) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {{features::kTLSTrustAnchorIDs, features::kVerifyMTCs}}, {});
+  base::test::ScopedFeatureList feature_list{features::kVerifyMTCs};
 
   std::map<std::string /* SHA-256 hash of certificate */,
            std::optional<int32_t>>
@@ -651,8 +648,7 @@ TEST(TrustStoreChromeTestNoFixture, CrsRootIdsFromProto) {
 
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatureStates(
-        {{net::features::kTLSTrustAnchorIDs, true},
-         {net::features::kVerifyMTCs, true},
+        {{net::features::kVerifyMTCs, true},
          {net::features::kTestRootStore, use_test_roots}});
 
     chrome_root_store::RootStore root_store;
@@ -929,8 +925,7 @@ TEST(TrustStoreChromeTestNoFixture, LoadCompiledInMtcTrustAnchorCaIds) {
 
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatureStates(
-        {{net::features::kTLSTrustAnchorIDs, true},
-         {net::features::kVerifyMTCs, true},
+        {{net::features::kVerifyMTCs, true},
          {net::features::kTestRootStore, use_test_roots}});
 
     chrome_root_store::SignerSet signer_set;
@@ -1063,8 +1058,7 @@ TEST_P(TrustStoreChromeMtcTest, LoadMtcTrustAnchors) {
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatureStates(
-      {{net::features::kTLSTrustAnchorIDs, true},
-       {net::features::kVerifyMTCs, true},
+      {{net::features::kVerifyMTCs, true},
        {net::features::kTestRootStore, use_test_roots()}});
 
   chrome_root_store::SignerSet signer_set;
@@ -1909,8 +1903,7 @@ class TrustStoreChromeMtcCosignerPolicyTest : public ::testing::Test {
   static constexpr char kOperator2[] = "op2";
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {{features::kTLSTrustAnchorIDs, features::kVerifyMTCs}}, {});
+    feature_list_.InitAndEnableFeature(features::kVerifyMTCs);
 
     chrome_root_store::RootStore root_store;
 

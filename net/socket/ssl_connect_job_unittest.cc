@@ -1190,9 +1190,8 @@ TEST_P(SSLConnectJobTest, NoAdditionalDnsAliases) {
               testing::ElementsAre("host"));
 }
 
-// Test that when `kTLSTrustAnchorIDs` is enabled, `SSLConnectJob`
-// unconditionally selects all Trust Anchor IDs that are allowed by the
-// sub-flags.
+// Test that `SSLConnectJob` unconditionally selects all configured Trust Anchor
+// IDs.
 TEST_P(SSLConnectJobTest, TrustAnchorIDs) {
   HostResolverEndpointResult endpoint;
   endpoint.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
@@ -1209,70 +1208,34 @@ TEST_P(SSLConnectJobTest, TrustAnchorIDs) {
                                                       {0x06, 0x06}});
   ssl_config_service_->UpdateSSLConfigAndNotify(config);
 
-  for (bool trust_anchor_ids_enabled : {false, true}) {
-    SCOPED_TRACE(trust_anchor_ids_enabled);
+  StaticSocketDataProvider data;
+  data.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.expected_trust_anchor_ids = std::vector<std::vector<uint8_t>>{
+      {0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04},
+      {0x07, 0x08, 0x09}, {0x06, 0x06},
+  };
+  socket_factory_.AddSSLSocketDataProvider(&ssl);
 
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (trust_anchor_ids_enabled) {
-      enabled_features.push_back(features::kTLSTrustAnchorIDs);
-    } else {
-      disabled_features.push_back(features::kTLSTrustAnchorIDs);
-    }
-
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(enabled_features, disabled_features);
-
-    StaticSocketDataProvider data;
-    data.set_expected_addresses(AddressList(endpoint.ip_endpoints));
-    data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
-    socket_factory_.AddSocketDataProvider(&data);
-    SSLSocketDataProvider ssl(ASYNC, OK);
-
-    std::vector<std::string> expected_strings;
-    bool expect_any = false;
-    if (trust_anchor_ids_enabled) {
-      std::vector<std::vector<uint8_t>> expected_ids;
-      expect_any = true;
-      expected_strings.push_back("1.2.3");
-      expected_strings.push_back("2.2");
-      expected_strings.push_back("4.4");
-      expected_ids.push_back({0x01, 0x02, 0x03});
-      expected_ids.push_back({0x02, 0x02});
-      expected_ids.push_back({0x04, 0x04});
-      expected_strings.push_back("7.8.9");
-      expected_strings.push_back("6.6");
-      expected_ids.push_back({0x07, 0x08, 0x09});
-      expected_ids.push_back({0x06, 0x06});
-      ssl.expected_trust_anchor_ids = expected_ids;
-    } else {
-      ssl.expect_no_trust_anchor_ids = true;
-    }
-    socket_factory_.AddSSLSocketDataProvider(&ssl);
-
-    TestConnectJobDelegate test_delegate;
-    RecordingNetLogObserver net_log_observer(common_connect_job_params_.net_log,
-                                             NetLogCaptureMode::kDefault);
-    std::unique_ptr<ConnectJob> ssl_connect_job =
-        CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
-    EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
-    EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
-    auto events = net_log_observer.GetEntriesWithType(
-        NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT);
-    ASSERT_EQ(1u, events.size());
-    EXPECT_FALSE(
-        events[0].params.contains("selected_trust_anchor_ids_for_retry"));
-    if (!expect_any) {
-      EXPECT_FALSE(events[0].params.contains("selected_trust_anchor_ids"));
-    } else {
-      EXPECT_THAT(
-          base::SplitString(
-              GetStringValueFromParams(events[0], "selected_trust_anchor_ids"),
-              ", ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY),
-          testing::UnorderedElementsAreArray(expected_strings));
-    }
-  }
+  TestConnectJobDelegate test_delegate;
+  RecordingNetLogObserver net_log_observer(common_connect_job_params_.net_log,
+                                           NetLogCaptureMode::kDefault);
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+  auto events = net_log_observer.GetEntriesWithType(
+      NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT);
+  ASSERT_EQ(1u, events.size());
+  EXPECT_FALSE(
+      events[0].params.contains("selected_trust_anchor_ids_for_retry"));
+  EXPECT_THAT(
+      base::SplitString(
+          GetStringValueFromParams(events[0], "selected_trust_anchor_ids"),
+          ", ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY),
+      testing::UnorderedElementsAre("1.2.3", "2.2", "4.4", "7.8.9", "6.6"));
 }
 
 // Test that `SSLConnectJob` passes the ECHConfigList from DNS to

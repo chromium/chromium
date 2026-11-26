@@ -9603,11 +9603,6 @@
     "expiry_milestone": 166
   },
   {
-    "name": "tls-trust-anchor-ids",
-    "owners": ["trusty-transport@chromium.org"],
-    "expiry_milestone": 155
-  },
-  {
     "name": "toolbar-capture-fix-for-spas",
     "owners": [ "peilinwang@google.com" ],
     "expiry_milestone": 160

@@ -4797,11 +4797,6 @@ inline constexpr char kTintCompositedContentDescription[] =
     "Tint contents composited using Viz with a shade of red to help debug and "
     "study overlay support.";
 
-inline constexpr char kTLSTrustAnchorIDsName[] = "TLS Trust Anchor IDs";
-inline constexpr char kTLSTrustAnchorIDsDescription[] =
-    "This option configures TLS Trust Anchor IDs, allowing compatible servers "
-    "to select between available certificates issued by different CAs.";
-
 inline constexpr char kToolbarGlowUpName[] = "Toolbar Glow Up";
 inline constexpr char kToolbarGlowUpDescription[] =
     "Enables the Toolbar Glow Up feature.";
@@ -4935,8 +4930,7 @@ inline constexpr char kVcWebApiDescription[] =
 inline constexpr char kVerifyMTCsName[] = "Verify MTCs";
 inline constexpr char kVerifyMTCsDescription[] =
     "Enables verification of Merkle Tree Certificates as described in "
-    "https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/. "
-    "Requires #tls-trust-anchor-ids.";
+    "https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/.";
 
 inline constexpr char kVerifyQWACsName[] = "Verify QWACs";
 inline constexpr char kVerifyQWACsDescription[] =

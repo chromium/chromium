@@ -199,10 +199,8 @@ PKIMetadataComponentInstallerService::PKIMetadataComponentInstallerService() {
   // to initialize the data from the compiled in versions so that on
   // startup/first run the TAI data is calculated correctly regardless which
   // order and timing the components initialize in.
-  if (base::FeatureList::IsEnabled(net::features::kNonMtcTrustAnchorIDs)) {
-    crs_trust_anchor_ids_ =
-        net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
-  }
+  crs_trust_anchor_ids_ =
+      net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
 
   if (base::FeatureList::IsEnabled(net::features::kVerifyMTCs)) {
     auto trusted_mtc_ca_ids =
@@ -546,9 +544,6 @@ bool PKIMetadataComponentInstallerService::UpdateSignerSetTrustAnchorIDs(
 
 bool PKIMetadataComponentInstallerService::UpdateCRSTrustAnchorIDs(
     const mojo_base::ProtoWrapper& chrome_root_store) {
-  if (!base::FeatureList::IsEnabled(net::features::kNonMtcTrustAnchorIDs)) {
-    return false;
-  }
   auto message = chrome_root_store.As<chrome_root_store::RootStore>();
   if (!message.has_value()) {
     LOG(ERROR) << "error parsing proto for Chrome Root Store";
