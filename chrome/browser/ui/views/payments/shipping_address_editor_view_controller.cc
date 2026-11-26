@@ -384,7 +384,7 @@ std::u16string ShippingAddressEditorViewController::GetValueForType(
     // For the state, check if the initial value matches either a region code or
     // a region name.
     std::u16string initial_region =
-        profile.GetInfo(type, state()->GetApplicationLocale().tag_string());
+        profile.GetInfo(type, state()->GetApplicationLocale());
     autofill::l10n::CaseInsensitiveCompare compare;
 
     for (const auto& region : region_model_->GetRegions()) {
@@ -408,7 +408,7 @@ std::u16string ShippingAddressEditorViewController::GetValueForType(
     return base::UTF8ToUTF16(street_address_line);
   }
 
-  return profile.GetInfo(type, state()->GetApplicationLocale().tag_string());
+  return profile.GetInfo(type, state()->GetApplicationLocale());
 }
 
 bool ShippingAddressEditorViewController::GetSheetId(DialogViewID* sheet_id) {
@@ -443,8 +443,7 @@ void ShippingAddressEditorViewController::UpdateCountries(
   // |chosen_country_index_|.
   if (IsEditingExistingItem()) {
     std::u16string chosen_country(temporary_profile_.GetInfo(
-        autofill::ADDRESS_HOME_COUNTRY,
-        state()->GetApplicationLocale().tag_string()));
+        autofill::ADDRESS_HOME_COUNTRY, state()->GetApplicationLocale()));
     for (chosen_country_index_ = 0; chosen_country_index_ < countries_.size();
          ++chosen_country_index_) {
       if (chosen_country == countries_[chosen_country_index_].second) {

@@ -47,8 +47,9 @@ void CompanyInfo::GetMatchingTypes(std::u16string_view text,
   }
 }
 
-std::u16string CompanyInfo::GetInfo(FieldType type,
-                                    std::string_view app_locale) const {
+std::u16string CompanyInfo::GetInfo(
+    FieldType type,
+    const base::i18n::LanguageTag& app_locale) const {
   return GetRawInfo(type);
 }
 

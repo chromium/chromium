@@ -155,8 +155,8 @@ std::u16string GetFormattedPhoneNumber(
     const AutofillProfile& profile,
     const base::i18n::LanguageTag& app_locale,
     FieldType trigger_field_type) {
-  const std::string phone_home_whole_number = base::UTF16ToUTF8(
-      profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale.tag_string()));
+  const std::string phone_home_whole_number =
+      base::UTF16ToUTF8(profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale));
   const std::string address_home_country =
       base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
@@ -210,10 +210,10 @@ std::u16string GetProfileSuggestionMainText(
   if (ShouldTransliterateMainTextToKatakana(profile, trigger_field,
                                             trigger_field_type)) {
     return TransliterateAlternativeName(
-        profile.GetInfo(trigger_field_type, app_locale.tag_string()),
+        profile.GetInfo(trigger_field_type, app_locale),
         /*inverse_transliteration=*/true);
   }
-  return profile.GetInfo(trigger_field_type, app_locale.tag_string());
+  return profile.GetInfo(trigger_field_type, app_locale);
 }
 
 // Returns for each profile in `profiles` a differentiating label string to be
@@ -305,7 +305,7 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
   for (const AutofillProfile& test_address : test_addresses) {
     CHECK(test_address.is_devtools_testing_profile());
     const std::u16string test_address_country =
-        test_address.GetInfo(ADDRESS_HOME_COUNTRY, locale.tag_string());
+        test_address.GetInfo(ADDRESS_HOME_COUNTRY, locale);
     suggestion.children.emplace_back(test_address_country,
                                      SuggestionType::kDevtoolsTestAddressEntry);
     suggestion.children.back().payload = Suggestion::AutofillProfilePayload(
@@ -768,8 +768,8 @@ MaybeFetchAddressOnTypingSuggestionData(
         if (seen_profile_data.size() == kMaxValuesToUsePerFieldType) {
           break;
         }
-        std::u16string suggestion_text = profile->GetInfo(
-            type, address_data_manager.app_locale().tag_string());
+        std::u16string suggestion_text =
+            profile->GetInfo(type, address_data_manager.app_locale());
         const std::u16string profile_data =
             NormalizeForComparisonForType(suggestion_text, type);
         if (profile_data.empty() ||
@@ -801,8 +801,8 @@ MaybeFetchAddressOnTypingSuggestionData(
         continue;
       }
 
-      std::u16string suggestion_text = profile->GetInfo(
-          type, address_data_manager.app_locale().tag_string());
+      std::u16string suggestion_text =
+          profile->GetInfo(type, address_data_manager.app_locale());
       const std::u16string profile_data =
           NormalizeForComparisonForType(suggestion_text, type);
       if (profile_data.empty()) {

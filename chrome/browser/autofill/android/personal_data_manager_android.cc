@@ -84,14 +84,15 @@ using jni_zero::ScopedJavaLocalRef;
 void RecordAlternativeNameSeparatorUsage(
     const AutofillProfile& profile,
     const AutofillProfile* existing_profile) {
+  const base::i18n::LanguageTag& app_locale =
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag();
   const std::u16string existing_alternative_name =
       existing_profile
-          ? existing_profile->GetInfo(ALTERNATIVE_FULL_NAME,
-                                      g_browser_process->GetApplicationLocale())
+          ? existing_profile->GetInfo(ALTERNATIVE_FULL_NAME, app_locale)
           : std::u16string();
 
-  const std::u16string saved_alternative_name = profile.GetInfo(
-      ALTERNATIVE_FULL_NAME, g_browser_process->GetApplicationLocale());
+  const std::u16string saved_alternative_name =
+      profile.GetInfo(ALTERNATIVE_FULL_NAME, app_locale);
 
   if (!saved_alternative_name.empty() &&
       saved_alternative_name != existing_alternative_name) {

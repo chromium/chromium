@@ -133,7 +133,7 @@ void AddMetadataToResult(MemorySearchResult& entry,
                          const FormGroup& form_group,
                          MemoryDataType metadata_type,
                          MemoryDataType primary_type,
-                         std::string_view app_locale) {
+                         const base::i18n::LanguageTag& app_locale) {
   if (std::optional<FieldType> field_type = ToFieldType(metadata_type)) {
     AddMetadataToResult(entry, metadata_type, primary_type,
                         form_group.GetInfo(*field_type, app_locale));
@@ -207,7 +207,7 @@ MemorySearchResult CreateResultFromAddressProfile(
     const AutofillProfile& profile,
     std::u16string value,
     MemoryDataType memory_data_type,
-    std::string_view app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   MemorySearchResult entry = MemorySearchResult(
       memory_data_type, GetMemoryDataTypeNameForI18n(memory_data_type),
       std::move(value), profile.GetRankingScore(base::Time::Now()));
@@ -269,13 +269,13 @@ std::vector<MemorySearchResult> FetchDataFromAddressProfiles(
           l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR),
           &value);
     } else {
-      value = profile->GetInfo(field_type, app_locale.tag_string());
+      value = profile->GetInfo(field_type, app_locale);
     }
     if (!YieldsEntry(memory_data_type, value, query)) {
       continue;
     }
     entries.push_back(CreateResultFromAddressProfile(
-        *profile, std::move(value), memory_data_type, app_locale.tag_string()));
+        *profile, std::move(value), memory_data_type, app_locale));
   }
   return entries;
 }
@@ -545,8 +545,8 @@ std::vector<MemorySearchResult> AutofillDataProvider::FetchCreditCardData(
     MemoryDataType memory_data_type,
     base::optional_ref<const RawValueQuery> query) {
   std::vector<MemorySearchResult> entries;
-  const std::string_view app_locale =
-      personal_data_manager_->address_data_manager().app_locale().tag_string();
+  const base::i18n::LanguageTag& app_locale =
+      personal_data_manager_->address_data_manager().app_locale();
   for (const CreditCard* credit_card : GetCreditCardsToSuggest(
            personal_data_manager_->payments_data_manager())) {
     // Content queries are matched against the raw values, which are only

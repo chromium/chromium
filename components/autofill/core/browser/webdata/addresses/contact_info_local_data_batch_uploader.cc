@@ -63,8 +63,8 @@ void ContactInfoLocalDataBatchUploader::GetLocalDataDescription(
 
   syncer::LocalDataDescription local_data;
   local_data.type = syncer::DataType::CONTACT_INFO;
-  const std::string_view app_locale =
-      GetAddressDataManager().app_locale().tag_string();
+  const base::i18n::LanguageTag& app_locale =
+      GetAddressDataManager().app_locale();
   for (const AutofillProfile* profile : local_profiles) {
     syncer::LocalDataItemModel item;
     item.id = profile->guid();

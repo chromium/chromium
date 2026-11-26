@@ -55,7 +55,7 @@ ObservationType GetObservationTypeForEditedField(
   }
 
   if (base::LevenshteinDistance(
-          base::ToLowerASCII(profile.GetInfo(type, app_locale.tag_string())),
+          base::ToLowerASCII(profile.GetInfo(type, app_locale)),
           base::ToLowerASCII(edited_value),
           ProfileTokenQuality::kMaximumLevenshteinDistance) <=
       ProfileTokenQuality::kMaximumLevenshteinDistance) {
@@ -68,8 +68,8 @@ ObservationType GetObservationTypeForEditedField(
     const l10n::CaseInsensitiveCompare compare;
     return std::ranges::any_of(types, [&](FieldType type) {
       return profile.HasInfo(type) &&
-             compare.StringsEqual(
-                 edited_value, profile.GetInfo(type, app_locale.tag_string()));
+             compare.StringsEqual(edited_value,
+                                  profile.GetInfo(type, app_locale));
     });
   };
 

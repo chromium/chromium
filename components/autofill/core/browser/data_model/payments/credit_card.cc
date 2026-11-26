@@ -619,8 +619,7 @@ void CreditCard::GetMatchingTypes(std::u16string_view text,
                                   FieldTypeSet* matching_types) const {
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
 
-  std::u16string card_number =
-      GetInfo(CREDIT_CARD_NUMBER, app_locale.tag_string());
+  std::u16string card_number = GetInfo(CREDIT_CARD_NUMBER, app_locale);
   if (!card_number.empty() && IsValidCreditCardNumber(text)) {
     // We only have the last four digits for masked cards, so match against
     // that if |this| is a masked card.
@@ -686,8 +685,8 @@ void CreditCard::SetNickname(const std::u16string& nickname) {
 bool CreditCard::UpdateFromImportedCard(
     const CreditCard& imported_card,
     const base::i18n::LanguageTag& app_locale) {
-  if (this->GetInfo(CREDIT_CARD_NUMBER, app_locale.tag_string()) !=
-      imported_card.GetInfo(CREDIT_CARD_NUMBER, app_locale.tag_string())) {
+  if (this->GetInfo(CREDIT_CARD_NUMBER, app_locale) !=
+      imported_card.GetInfo(CREDIT_CARD_NUMBER, app_locale)) {
     return false;
   }
 
@@ -1097,7 +1096,7 @@ std::u16string CreditCard::CardIdentifierStringAndDescriptiveExpiration(
   return l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_NAME,
       CardNameAndLastFourDigits(customized_nickname),
-      GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale.tag_string()));
+      GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale));
 }
 
 std::optional<std::u16string> CreditCard::CardIdentifierForAutofillDisplay(
@@ -1118,7 +1117,7 @@ std::u16string CreditCard::DescriptiveExpiration(
     const base::i18n::LanguageTag& app_locale) const {
   return l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_CARD_NUMBER,
-      GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale.tag_string()));
+      GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale));
 }
 
 std::u16string CreditCard::AbbreviatedExpirationDateForDisplay(
@@ -1192,8 +1191,9 @@ FieldTypeSet CreditCard::GetSupportedTypes() const {
   return supported_types;
 }
 
-std::u16string CreditCard::GetInfo(FieldType type,
-                                   std::string_view app_locale) const {
+std::u16string CreditCard::GetInfo(
+    FieldType type,
+    const base::i18n::LanguageTag& app_locale) const {
   if (type == CREDIT_CARD_NUMBER) {
     // Web pages should never actually be filled by a masked server card,
     // but this function is used at the preview stage.

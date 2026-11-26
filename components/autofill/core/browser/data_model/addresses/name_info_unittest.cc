@@ -41,8 +41,10 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
 
-constexpr char kLocale[] = "en-US";
-constexpr char kJapaneseLocale[] = "ja";
+constexpr base::i18n::LanguageTag kLocale =
+    base::i18n::GetKnownLanguageTag("en-US");
+constexpr base::i18n::LanguageTag kJapaneseLocale =
+    base::i18n::GetKnownLanguageTag("ja");
 
 struct FullNameTestCase {
   std::string full_name_input;
@@ -67,13 +69,13 @@ TEST_P(SetFullNameTest, SetFullName) {
   name.SetInfo(NAME_FULL, ASCIIToUTF16(test_case.full_name_input),
                base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_TRUE(name.FinalizeAfterImport());
-  EXPECT_EQ(name.GetInfo(NAME_FIRST, "en-US"),
+  EXPECT_EQ(name.GetInfo(NAME_FIRST, kLocale),
             ASCIIToUTF16(test_case.given_name_output));
-  EXPECT_EQ(name.GetInfo(NAME_MIDDLE, "en-US"),
+  EXPECT_EQ(name.GetInfo(NAME_MIDDLE, kLocale),
             ASCIIToUTF16(test_case.middle_name_output));
-  EXPECT_EQ(name.GetInfo(NAME_LAST, "en-US"),
+  EXPECT_EQ(name.GetInfo(NAME_LAST, kLocale),
             ASCIIToUTF16(test_case.family_name_output));
-  EXPECT_EQ(name.GetInfo(NAME_FULL, "en-US"),
+  EXPECT_EQ(name.GetInfo(NAME_FULL, kLocale),
             ASCIIToUTF16(test_case.full_name_input));
 }
 
@@ -88,11 +90,11 @@ TEST_P(SetFullAlternativeNameTest, SetFullAlternativeName) {
   name.SetInfo(ALTERNATIVE_FULL_NAME, test_case.full_name_input,
                base::i18n::GetKnownLanguageTag("ja"));
   EXPECT_TRUE(name.FinalizeAfterImport());
-  EXPECT_EQ(name.GetInfo(ALTERNATIVE_GIVEN_NAME, "ja"),
+  EXPECT_EQ(name.GetInfo(ALTERNATIVE_GIVEN_NAME, kJapaneseLocale),
             test_case.given_name_output);
-  EXPECT_EQ(name.GetInfo(ALTERNATIVE_FAMILY_NAME, "ja"),
+  EXPECT_EQ(name.GetInfo(ALTERNATIVE_FAMILY_NAME, kJapaneseLocale),
             test_case.family_name_output);
-  EXPECT_EQ(name.GetInfo(ALTERNATIVE_FULL_NAME, "ja"),
+  EXPECT_EQ(name.GetInfo(ALTERNATIVE_FULL_NAME, kJapaneseLocale),
             test_case.full_name_input);
 }
 

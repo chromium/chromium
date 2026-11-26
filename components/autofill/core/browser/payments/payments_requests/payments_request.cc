@@ -181,9 +181,9 @@ base::DictValue PaymentsRequest::BuildCreditCardDictionary(
   card.Set("unique_id", credit_card.guid());
 
   const std::u16string exp_month =
-      credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale.tag_string());
-  const std::u16string exp_year = credit_card.GetInfo(
-      CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale.tag_string());
+      credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale);
+  const std::u16string exp_year =
+      credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale);
   int value = 0;
   if (base::StringToInt(exp_month, &value))
     card.Set("expiration_month", value);
@@ -205,7 +205,7 @@ void PaymentsRequest::AppendStringIfNotEmpty(
     const FieldType& type,
     const base::i18n::LanguageTag& app_locale,
     base::ListValue& list) {
-  std::u16string value = profile.GetInfo(type, app_locale.tag_string());
+  std::u16string value = profile.GetInfo(type, app_locale);
   if (!value.empty())
     list.Append(value);
 }
@@ -217,7 +217,7 @@ void PaymentsRequest::SetStringIfNotEmpty(
     const base::i18n::LanguageTag& app_locale,
     const std::string& path,
     base::DictValue& dictionary) {
-  std::u16string value = form_group.GetInfo(type, app_locale.tag_string());
+  std::u16string value = form_group.GetInfo(type, app_locale);
   if (!value.empty())
     dictionary.Set(path, std::move(value));
 }

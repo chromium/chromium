@@ -25,6 +25,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
@@ -1633,8 +1634,8 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           suggestion.GetPayload<Suggestion::AutofillProfilePayload>()
               .guid.value());
       CHECK(profile);
-      autofill_metrics::OnDevtoolsTestAddressesAccepted(
-          profile->GetInfo(ADDRESS_HOME_COUNTRY, "en-US"));
+      autofill_metrics::OnDevtoolsTestAddressesAccepted(profile->GetInfo(
+          ADDRESS_HOME_COUNTRY, base::i18n::GetKnownLanguageTag("en-US")));
       AutofillForm(suggestion.type, suggestion.payload, metadata,
                    /*is_preview=*/false, GetTriggerSource(), form_id, field_id);
       break;

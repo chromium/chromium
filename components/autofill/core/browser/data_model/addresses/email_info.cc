@@ -35,8 +35,9 @@ FieldTypeSet EmailInfo::GetSupportedTypes() const {
   return supported_types;
 }
 
-std::u16string EmailInfo::GetInfo(FieldType type,
-                                  std::string_view app_locale) const {
+std::u16string EmailInfo::GetInfo(
+    FieldType type,
+    const base::i18n::LanguageTag& app_locale) const {
   return GetRawInfo(type);
 }
 

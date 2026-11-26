@@ -6,6 +6,8 @@
 
 #import <string>
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_type.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -47,7 +49,9 @@ TEST_F(CWVAutofillProfileTest, ModifyProperties) {
   CWVAutofillProfile* cwv_profile =
       [[CWVAutofillProfile alloc] initWithProfile:profile];
 
-  std::string locale = l10n_util::GetLocaleOverride();
+  base::i18n::LanguageTag locale =
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
   autofill::AutofillProfile new_profile = autofill::test::GetFullProfile2();
   NSString* new_name = base::SysUTF16ToNSString(
       new_profile.GetInfo(autofill::NAME_FULL, locale));

@@ -90,7 +90,7 @@ std::string GetProfileInfoFromAddressField(const AutofillProfile profile,
   return base::UTF16ToUTF8(profile.GetInfo(
       TypeNameToFieldType(
           *address_field.GetDict().FindStringByDottedPath("name")),
-      "en-US"));
+      base::i18n::GetKnownLanguageTag("en-US")));
 }
 
 // Adds waiting capabilities to BrowserAutofillManager.
@@ -537,9 +537,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
     EXPECT_THAT(
         ff, FilledFieldHasAttributeWithValue(
                 "autofillType", base::JoinString(field_type_strings, ", ")));
-    EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16(
-                        "value",
-                        profile.GetInfo(af->Type().GetAddressType(), "en-us")));
+    EXPECT_THAT(ff,
+                FilledFieldHasAttributeWithValue16(
+                    "value",
+                    profile.GetInfo(af->Type().GetAddressType(),
+                                    base::i18n::GetKnownLanguageTag("en-US"))));
     EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16(
                         "frameId",
                         base::UTF8ToUTF16(

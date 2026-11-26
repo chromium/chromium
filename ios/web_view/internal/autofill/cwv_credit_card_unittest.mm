@@ -7,6 +7,8 @@
 #import <string>
 
 #import "base/base_paths.h"
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -74,7 +76,9 @@ TEST_F(CWVCreditCardTest, ReadProperties) {
   CWVCreditCard* cwv_credit_card =
       [[CWVCreditCard alloc] initWithCreditCard:credit_card];
 
-  std::string locale = l10n_util::GetLocaleOverride();
+  base::i18n::LanguageTag locale =
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
   NSString* card_holder_full_name = base::SysUTF16ToNSString(
       credit_card.GetInfo(autofill::CREDIT_CARD_NAME_FULL, locale));
   NSString* card_number = base::SysUTF16ToNSString(

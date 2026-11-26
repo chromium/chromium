@@ -572,7 +572,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     return false;
   }
 
-  const std::string_view app_locale = comparator.app_locale().tag_string();
+  const base::i18n::LanguageTag& app_locale = comparator.app_locale();
   const AddressComponent& address = GetAddress().GetRoot();
   const AddressComponent& other_address = profile.GetAddress().GetRoot();
 
@@ -602,8 +602,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
         return false;
       }
     } else if (type == NAME_FULL) {
-      if (!profile.GetNameInfo().IsNameVariantOf(value,
-                                                 comparator.app_locale())) {
+      if (!profile.GetNameInfo().IsNameVariantOf(value, app_locale)) {
         // Check whether the full name of |this| can be derived from the full
         // name of |profile| if the form contains a full name field.
         //
@@ -621,7 +620,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
       if (!i18n::PhoneNumbersMatch(
               value, other_value,
               base::UTF16ToASCII(GetRawInfo(ADDRESS_HOME_COUNTRY)),
-              app_locale)) {
+              app_locale.tag_string())) {
         return false;
       }
     } else if (type == EMAIL_ADDRESS) {
@@ -954,8 +953,7 @@ std::u16string AutofillProfile::ConstructInferredLabel(
       continue;
     }
 
-    std::u16string field_value =
-        GetInfo(included_fields[i], app_locale.tag_string());
+    std::u16string field_value = GetInfo(included_fields[i], app_locale);
     if (field_value.empty()) {
       continue;
     }
@@ -978,7 +976,7 @@ std::u16string AutofillProfile::ConstructInferredLabel(
     if (*it == PHONE_HOME_WHOLE_NUMBER) {
       field_value = GetRawInfo(*it);
     } else {
-      field_value = GetInfo(*it, app_locale.tag_string());
+      field_value = GetInfo(*it, app_locale);
     }
     if (field_value.empty()) {
       continue;
@@ -1041,8 +1039,9 @@ VerificationStatus AutofillProfile::GetVerificationStatus(
   return form_group->GetVerificationStatus(type);
 }
 
-std::u16string AutofillProfile::GetInfo(FieldType type,
-                                        std::string_view app_locale) const {
+std::u16string AutofillProfile::GetInfo(
+    FieldType type,
+    const base::i18n::LanguageTag& app_locale) const {
   const FormGroup* form_group = FormGroupForType(type);
   if (!form_group) {
     return std::u16string();
@@ -1092,8 +1091,7 @@ void AutofillProfile::CreateInferredLabelsHelper(
 
     for (const auto& it : indices) {
       const AutofillProfile* profile = profiles[it];
-      std::u16string field_text =
-          profile->GetInfo(field_type, app_locale.tag_string());
+      std::u16string field_text = profile->GetInfo(field_type, app_locale);
 
       // If this label is not already in the map, add it with frequency 0.
       if (!field_text_frequencies.contains(field_text)) {
@@ -1119,8 +1117,7 @@ void AutofillProfile::CreateInferredLabelsHelper(
     bool found_differentiating_field = false;
     for (FieldType field_type : field_types) {
       // Skip over empty fields.
-      std::u16string field_text =
-          profile->GetInfo(field_type, app_locale.tag_string());
+      std::u16string field_text = profile->GetInfo(field_type, app_locale);
       if (field_text.empty()) {
         continue;
       }

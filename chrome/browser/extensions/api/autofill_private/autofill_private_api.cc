@@ -197,16 +197,15 @@ bool HasNameSeparator(const std::string& name) {
 void RecordAlternativeNameSeparatorUsage(
     const autofill::AutofillProfile& profile,
     const autofill::AutofillProfile* existing_profile) {
+  const base::i18n::LanguageTag& app_locale =
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag();
   const std::u16string existing_alternative_name =
-      existing_profile
-          ? existing_profile->GetInfo(autofill::ALTERNATIVE_FULL_NAME,
-                                      extensions::ExtensionsBrowserClient::Get()
-                                          ->GetApplicationLocale())
-          : std::u16string();
+      existing_profile ? existing_profile->GetInfo(
+                             autofill::ALTERNATIVE_FULL_NAME, app_locale)
+                       : std::u16string();
 
-  const std::u16string saved_alternative_name = profile.GetInfo(
-      autofill::ALTERNATIVE_FULL_NAME,
-      extensions::ExtensionsBrowserClient::Get()->GetApplicationLocale());
+  const std::u16string saved_alternative_name =
+      profile.GetInfo(autofill::ALTERNATIVE_FULL_NAME, app_locale);
 
   if (!saved_alternative_name.empty() &&
       saved_alternative_name != existing_alternative_name) {

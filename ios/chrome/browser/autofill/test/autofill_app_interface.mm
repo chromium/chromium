@@ -487,51 +487,41 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
 
 + (NSString*)exampleProfileName {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  std::u16string name =
-      profile.GetInfo(autofill::NAME_FULL, GetApplicationContext()
-                                               ->GetApplicationLocaleStorage()
-                                               ->GetTag()
-                                               .tag_string());
+  std::u16string name = profile.GetInfo(
+      autofill::NAME_FULL,
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag());
   return base::SysUTF16ToNSString(name);
 }
 
 + (NSString*)exampleProfileAddress {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  std::u16string address = profile.GetInfo(autofill::ADDRESS_HOME_LINE1,
-                                           GetApplicationContext()
-                                               ->GetApplicationLocaleStorage()
-                                               ->GetTag()
-                                               .tag_string());
+  std::u16string address = profile.GetInfo(
+      autofill::ADDRESS_HOME_LINE1,
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag());
   return base::SysUTF16ToNSString(address);
 }
 
 + (NSString*)exampleProfileCity {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  std::u16string city = profile.GetInfo(autofill::ADDRESS_HOME_CITY,
-                                        GetApplicationContext()
-                                            ->GetApplicationLocaleStorage()
-                                            ->GetTag()
-                                            .tag_string());
+  std::u16string city = profile.GetInfo(
+      autofill::ADDRESS_HOME_CITY,
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag());
   return base::SysUTF16ToNSString(city);
 }
 
 + (NSString*)exampleProfileState {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  std::u16string state = profile.GetInfo(autofill::ADDRESS_HOME_STATE,
-                                         GetApplicationContext()
-                                             ->GetApplicationLocaleStorage()
-                                             ->GetTag()
-                                             .tag_string());
+  std::u16string state = profile.GetInfo(
+      autofill::ADDRESS_HOME_STATE,
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag());
   return base::SysUTF16ToNSString(state);
 }
 
 + (NSString*)exampleProfileZip {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  std::u16string zip = profile.GetInfo(autofill::ADDRESS_HOME_ZIP,
-                                       GetApplicationContext()
-                                           ->GetApplicationLocaleStorage()
-                                           ->GetTag()
-                                           .tag_string());
+  std::u16string zip = profile.GetInfo(
+      autofill::ADDRESS_HOME_ZIP,
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag());
   return base::SysUTF16ToNSString(zip);
 }
 

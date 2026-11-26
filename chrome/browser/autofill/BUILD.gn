@@ -273,6 +273,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    "//base/i18n:language_tag",
     "//base/version_info",
     "//chrome/browser/autofill",
     "//chrome/browser/ui/navigator",

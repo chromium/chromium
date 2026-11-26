@@ -239,15 +239,14 @@ PaymentsProfileComparator::ComputeMissingFields(
   const std::string country =
       autofill::data_util::GetCountryCodeWithFallback(profile, app_locale());
 
-  std::u16string phone = profile.GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER,
-                                         app_locale().tag_string());
+  std::u16string phone =
+      profile.GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER, app_locale());
   std::u16string intl_phone = base::UTF8ToUTF16("+" + base::UTF16ToUTF8(phone));
   if (!(autofill::IsPossiblePhoneNumber(phone, country) ||
         autofill::IsPossiblePhoneNumber(intl_phone, country)))
     missing |= kPhone;
 
-  std::u16string email =
-      profile.GetInfo(autofill::EMAIL_ADDRESS, app_locale().tag_string());
+  std::u16string email = profile.GetInfo(autofill::EMAIL_ADDRESS, app_locale());
   if (!autofill::IsValidEmailAddress(email))
     missing |= kEmail;
 

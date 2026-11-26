@@ -4,6 +4,8 @@
 
 #import <optional>
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/ios/ios_util.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
@@ -211,7 +213,9 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 // Checks that the chip buttons of the local card are all visible.
 void CheckChipButtonsOfLocalCard() {
   autofill::CreditCard card = autofill::test::GetCreditCard();
-  std::string locale = l10n_util::GetLocaleOverride();
+  base::i18n::LanguageTag locale =
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
 
   // A rendering issue in tests prevents some cells from displaying correctly.
   // This scroll action ensures their proper visibility.
@@ -1132,7 +1136,9 @@ void DismissPaymentBottomSheet() {
 
 // Verify credit card infos are filled.
 - (void)verifyCreditCardInfosHaveBeenFilled:(autofill::CreditCard)card {
-  std::string locale = l10n_util::GetLocaleOverride();
+  base::i18n::LanguageTag locale =
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
 
   // Credit card name.
   NSString* name = base::SysUTF16ToNSString(

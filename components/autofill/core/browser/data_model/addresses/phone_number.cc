@@ -136,8 +136,7 @@ void PhoneNumber::GetMatchingTypes(std::u16string_view text,
   // "+33249197070" whereas the US number "+1 (234) 567-8901" would be
   // normalized to "12345678901".
   if (!matching_types->contains(PHONE_HOME_WHOLE_NUMBER)) {
-    std::u16string whole_number =
-        GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale.tag_string());
+    std::u16string whole_number = GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale);
     if (!whole_number.empty()) {
       std::u16string normalized_number = i18n::NormalizePhoneNumber(
           text, GetRegion(*profile_, app_locale.tag_string()));
@@ -150,8 +149,7 @@ void PhoneNumber::GetMatchingTypes(std::u16string_view text,
   // the digits extracted from the `stripped_text` match the `country_code`.
   std::u16string candidate =
       data_util::FindPossiblePhoneCountryCode(stripped_text);
-  std::u16string country_code =
-      GetInfo(PHONE_HOME_COUNTRY_CODE, app_locale.tag_string());
+  std::u16string country_code = GetInfo(PHONE_HOME_COUNTRY_CODE, app_locale);
   if (candidate.size() > 0 && candidate == country_code)
     matching_types->insert(PHONE_HOME_COUNTRY_CODE);
 
@@ -182,9 +180,10 @@ void PhoneNumber::GetMatchingTypes(std::u16string_view text,
 //   (650)2345678 -> 6502345678
 //   1-800-FLOWERS -> 18003569377
 // If the phone cannot be normalized, returns the stored value verbatim.
-std::u16string PhoneNumber::GetInfo(FieldType type,
-                                    std::string_view app_locale) const {
-  UpdateCacheIfNeeded(app_locale);
+std::u16string PhoneNumber::GetInfo(
+    FieldType type,
+    const base::i18n::LanguageTag& app_locale) const {
+  UpdateCacheIfNeeded(app_locale.tag_string());
 
   // When the phone number autofill has stored cannot be normalized, it
   // responds to queries for complete numbers with whatever the raw stored value

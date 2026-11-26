@@ -41,7 +41,7 @@ void FormGroup::GetMatchingTypes(std::u16string_view text,
 
   for (FieldType type : GetSupportedTypes()) {
     if (AutofillProfileComparator::Compare(
-            canonicalized_text, GetInfo(type, app_locale.tag_string()),
+            canonicalized_text, GetInfo(type, app_locale),
             normalization::WhitespaceSpec::kDiscard, type)) {
       matching_types->insert(type);
     }
@@ -51,7 +51,7 @@ void FormGroup::GetMatchingTypes(std::u16string_view text,
 void FormGroup::GetNonEmptyTypes(const base::i18n::LanguageTag& app_locale,
                                  FieldTypeSet* non_empty_types) const {
   for (FieldType type : GetSupportedTypes()) {
-    if (!GetInfo(type, app_locale.tag_string()).empty()) {
+    if (!GetInfo(type, app_locale).empty()) {
       non_empty_types->insert(type);
     }
   }
@@ -71,7 +71,7 @@ bool FormGroup::SetInfo(FieldType type,
 bool FormGroup::HasInfo(FieldType type) const {
   // Use "en-US" as a placeholder locale. We are only interested in emptiness,
   // not in the presentation of the string.
-  return !GetInfo(type, "en-US").empty();
+  return !GetInfo(type, base::i18n::GetKnownLanguageTag("en-US")).empty();
 }
 
 void FormGroup::SetRawInfo(FieldType type, std::u16string_view value) {

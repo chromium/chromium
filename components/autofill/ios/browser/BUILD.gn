@@ -49,6 +49,7 @@ source_set("browser") {
     ":suggestion_controller_js",
     ":util",
     "//base",
+    "//base/i18n:language_tag",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/common",

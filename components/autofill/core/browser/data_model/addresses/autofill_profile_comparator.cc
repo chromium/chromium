@@ -69,10 +69,9 @@ AutofillProfileComparator::GetProfileDifference(
   difference.reserve(types.size());
 
   for (auto type : types) {
-    const std::u16string& first_value =
-        first_profile.GetInfo(type, app_locale.tag_string());
+    const std::u16string& first_value = first_profile.GetInfo(type, app_locale);
     const std::u16string& second_value =
-        second_profile.GetInfo(type, app_locale.tag_string());
+        second_profile.GetInfo(type, app_locale);
     if (first_value != second_value) {
       difference.emplace_back(
           ProfileValueDifference{type, first_value, second_value});
@@ -141,10 +140,8 @@ bool AutofillProfileComparator::Compare(
 std::optional<EmailInfo> AutofillProfileComparator::MergeEmailAddresses(
     const AutofillProfile& new_profile,
     const AutofillProfile& old_profile) const {
-  const std::u16string& e1 =
-      new_profile.GetInfo(EMAIL_ADDRESS, app_locale_.tag_string());
-  const std::u16string& e2 =
-      old_profile.GetInfo(EMAIL_ADDRESS, app_locale_.tag_string());
+  const std::u16string& e1 = new_profile.GetInfo(EMAIL_ADDRESS, app_locale_);
+  const std::u16string& e2 = old_profile.GetInfo(EMAIL_ADDRESS, app_locale_);
 
   if (!e1.empty() && !e2.empty() &&
       !l10n::CaseInsensitiveCompare().StringsEqual(e1, e2)) {
@@ -179,9 +176,9 @@ std::optional<CompanyInfo> AutofillProfileComparator::MergeCompanyNames(
   };
 
   const std::u16string& new_company_name =
-      new_profile.GetInfo(COMPANY_NAME, app_locale_.tag_string());
+      new_profile.GetInfo(COMPANY_NAME, app_locale_);
   const std::u16string& old_company_name =
-      old_profile.GetInfo(COMPANY_NAME, app_locale_.tag_string());
+      old_profile.GetInfo(COMPANY_NAME, app_locale_);
 
   if (normalization::HasOnlySkippableCharacters(new_company_name)) {
     return create_company(old_company_name);
@@ -466,8 +463,7 @@ bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
              p2.GetNameInfo().GetValueForComparisonForType(type,
                                                            common_country_code);
     }
-    return p1.GetInfo(type, app_locale.tag_string()) !=
-           p2.GetInfo(type, app_locale.tag_string());
+    return p1.GetInfo(type, app_locale) != p2.GetInfo(type, app_locale);
   });
 }
 

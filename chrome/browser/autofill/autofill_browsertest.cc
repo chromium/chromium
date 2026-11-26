@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/rand_util.h"
@@ -441,8 +442,8 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, MAYBE_ProfileSavedWithValidCountryPhone) {
   std::vector<std::u16string> actual_phone_numbers;
   for (const AutofillProfile* profile :
        personal_data_manager()->address_data_manager().GetProfiles()) {
-    actual_phone_numbers.push_back(
-        profile->GetInfo(PHONE_HOME_WHOLE_NUMBER, "en-US"));
+    actual_phone_numbers.push_back(profile->GetInfo(
+        PHONE_HOME_WHOLE_NUMBER, base::i18n::GetKnownLanguageTag("en-US")));
   }
   // Two valid phone numbers are imported, two invalid ones are removed.
   EXPECT_THAT(
@@ -569,7 +570,8 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, MAYBE_UsePlusSignForInternationalNumber) {
       expectation = "14088714567";
 
     EXPECT_EQ(ASCIIToUTF16(expectation),
-              profile->GetInfo(PHONE_HOME_WHOLE_NUMBER, ""));
+              profile->GetInfo(PHONE_HOME_WHOLE_NUMBER,
+                               base::i18n::GetKnownLanguageTag("und")));
   }
 }
 

@@ -5,6 +5,8 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -63,7 +65,9 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
   autofill::CreditCard serverCard = autofill::test::GetMaskedServerCard();
 
   NSString* username = base::SysUTF16ToNSString(serverCard.GetInfo(
-      autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride()));
+      autofill::CREDIT_CARD_NAME_FULL,
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"))));
   if ([ChromeEarlGrey isIPadIdiom]) {
     // On iPad, the suggestion text is an attributed string containing the
     // obfuscated credit card on the 2nd line.
@@ -246,7 +250,9 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
 // Verify credit card infos are filled.
 - (void)verifyCreditCardInfosHaveBeenFilled:(autofill::CreditCard)card {
-  std::string locale = l10n_util::GetLocaleOverride();
+  base::i18n::LanguageTag locale =
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
 
   // Credit card name.
   NSString* name = base::SysUTF16ToNSString(

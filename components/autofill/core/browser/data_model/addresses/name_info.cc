@@ -550,8 +550,7 @@ bool NameInfo::IsNameVariantOf(
     std::u16string_view value,
     const base::i18n::LanguageTag& app_locale) const {
   return IsNormalizedNameVariantOf(
-      normalization::NormalizeForComparison(
-          GetInfo(NAME_FULL, app_locale.tag_string())),
+      normalization::NormalizeForComparison(GetInfo(NAME_FULL, app_locale)),
       normalization::NormalizeForComparison(value));
 }
 
@@ -636,8 +635,9 @@ FieldTypeSet NameInfo::GetSupportedTypes() const {
   return supported_types;
 }
 
-std::u16string NameInfo::GetInfo(FieldType type,
-                                 std::string_view app_locale) const {
+std::u16string NameInfo::GetInfo(
+    FieldType type,
+    const base::i18n::LanguageTag& app_locale) const {
   return GetRawInfo(type);
 }
 

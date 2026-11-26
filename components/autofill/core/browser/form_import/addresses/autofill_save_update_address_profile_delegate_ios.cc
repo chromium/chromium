@@ -153,7 +153,7 @@ AutofillSaveUpdateAddressProfileDelegateIOS::GetOriginalProfile() const {
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetProfileInfo(
     FieldType type) const {
-  return profile_.GetInfo(type, locale_.tag_string());
+  return profile_.GetInfo(type, locale_);
 }
 
 std::vector<ProfileValueDifference>

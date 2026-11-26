@@ -7,8 +7,10 @@
 #include "base/i18n/language_tag.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -25,8 +27,10 @@ constexpr char16_t kPhoneNumberInvalid[] = u"123";
 constexpr char16_t kEmailAddress[] = u"kirby@example.test";
 constexpr char16_t kEmailAddressInvalid[] = u"kirby";
 
-std::string GetLocale() {
-  return g_browser_process->GetApplicationLocale();
+const base::i18n::LanguageTag& GetLocale() {
+  return g_browser_process->GetFeatures()
+      ->application_locale_storage()
+      ->GetTag();
 }
 
 }  // namespace

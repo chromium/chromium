@@ -204,33 +204,32 @@ std::u16string SaveUpdateAddressProfilePromptController::GetNegativeButtonText()
 }
 
 std::u16string SaveUpdateAddressProfilePromptController::GetAddress() const {
+  const base::i18n::LanguageTag& locale =
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag();
   if (IsMigrationToAccount()) {
-    const std::u16string name =
-        profile_.GetInfo(NAME_FULL, g_browser_process->GetApplicationLocale());
-    const std::u16string address = profile_.GetInfo(
-        ADDRESS_HOME_LINE1, g_browser_process->GetApplicationLocale());
+    const std::u16string name = profile_.GetInfo(NAME_FULL, locale);
+    const std::u16string address = profile_.GetInfo(ADDRESS_HOME_LINE1, locale);
     const std::u16string separator =
         !name.empty() && !address.empty() ? u"\n" : u"";
     return base::StrCat({name, separator, address});
   } else {
-    return GetEnvelopeStyleAddress(profile_,
-                                   g_browser_process->GetFeatures()
-                                       ->application_locale_storage()
-                                       ->GetTag(),
+    return GetEnvelopeStyleAddress(profile_, locale,
                                    /*include_recipient=*/true,
                                    /*include_country=*/true);
   }
 }
 
 std::u16string SaveUpdateAddressProfilePromptController::GetEmail() const {
-  return profile_.GetInfo(EMAIL_ADDRESS,
-                          g_browser_process->GetApplicationLocale());
+  return profile_.GetInfo(
+      EMAIL_ADDRESS,
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
 }
 
 std::u16string SaveUpdateAddressProfilePromptController::GetPhoneNumber()
     const {
-  return profile_.GetInfo(PHONE_HOME_WHOLE_NUMBER,
-                          g_browser_process->GetApplicationLocale());
+  return profile_.GetInfo(
+      PHONE_HOME_WHOLE_NUMBER,
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
 }
 
 std::u16string SaveUpdateAddressProfilePromptController::GetSubtitle() const {

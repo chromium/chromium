@@ -7,6 +7,8 @@
 
 #import <tuple>
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -184,7 +186,9 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestion() {
   autofill::CreditCard card = autofill::test::GetCreditCard();
 
   NSString* username = base::SysUTF16ToNSString(card.GetInfo(
-      autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride()));
+      autofill::CREDIT_CARD_NAME_FULL,
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"))));
   if ([ChromeEarlGrey isIPadIdiom]) {
     // On iPad, the suggestion text is an attributed string containing the
     // obfuscated credit card on the 2nd line.
@@ -512,7 +516,9 @@ void SlowlyTypeText(NSString* text) {
 
 // Verify credit card infos are filled.
 - (void)verifyCreditCardInfosHaveBeenFilled:(autofill::CreditCard)card {
-  std::string locale = l10n_util::GetLocaleOverride();
+  base::i18n::LanguageTag locale =
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
   // Credit card name.
   NSString* name = base::SysUTF16ToNSString(
       card.GetInfo(autofill::CREDIT_CARD_NAME_FULL, locale));
@@ -536,7 +542,9 @@ void SlowlyTypeText(NSString* text) {
 
 // Verify address infos are filled.
 - (void)verifyAddressInfosHaveBeenFilled:(autofill::AutofillProfile)profile {
-  std::string locale = l10n_util::GetLocaleOverride();
+  base::i18n::LanguageTag locale =
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
   // Address name.
   NSString* name =
       base::SysUTF16ToNSString(profile.GetInfo(autofill::NAME_FULL, locale));
@@ -831,7 +839,9 @@ TAG_SMOKE_TEST(FormInputAccessoryEGTest, testFillCreditCardFieldsOnForm);
   [[EarlGrey selectElementWithMatcher:cc_chip] performAction:grey_tap()];
 
   // Verify that the credit card fields were filled correctly across frames.
-  std::string locale = l10n_util::GetLocaleOverride();
+  base::i18n::LanguageTag locale =
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
   std::vector<std::tuple<autofill::FieldType, std::string, std::string>>
       fields_to_verify = {
           std::make_tuple(autofill::CREDIT_CARD_NAME_FULL, "", kFormCardName),
@@ -881,7 +891,9 @@ TAG_SMOKE_TEST(FormInputAccessoryEGTest, testFillCreditCardFieldsOnForm);
   // unfilled because the limit of child frames was busted which results in not
   // building the frame tree for the form.
 
-  std::string locale = l10n_util::GetLocaleOverride();
+  base::i18n::LanguageTag locale =
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
 
   // Verify that the cardholder name field on the main frame was filled which
   // doesn't require the frame tree.
@@ -967,7 +979,9 @@ TAG_SMOKE_TEST(FormInputAccessoryEGTest, testFillCreditCardFieldsOnForm);
   [[EarlGrey selectElementWithMatcher:cc_chip] performAction:grey_tap()];
 
   // Verify that the credit card fields were filled correctly across frames.
-  std::string locale = l10n_util::GetLocaleOverride();
+  base::i18n::LanguageTag locale =
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
   std::vector<std::tuple<autofill::FieldType, std::string, std::string>>
       fields_to_verify = {
           std::make_tuple(autofill::CREDIT_CARD_NAME_FULL, "", kFormCardName),

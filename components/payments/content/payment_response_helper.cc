@@ -164,8 +164,8 @@ mojom::PayerDetailPtr PaymentResponseHelper::GeneratePayerDetail(
       payer->name = payer_data_from_app_.payer_name;
     } else {
       DCHECK(selected_contact_profile);
-      payer->name = base::UTF16ToUTF8(selected_contact_profile->GetInfo(
-          autofill::NAME_FULL, app_locale_.tag_string()));
+      payer->name = base::UTF16ToUTF8(
+          selected_contact_profile->GetInfo(autofill::NAME_FULL, app_locale_));
     }
   }
   if (spec_->request_payer_email()) {
@@ -189,7 +189,7 @@ mojom::PayerDetailPtr PaymentResponseHelper::GeneratePayerDetail(
       // https://w3c.github.io/payment-request/#paymentrequest-updated-algorithm
       const std::string original_number =
           base::UTF16ToUTF8(selected_contact_profile->GetInfo(
-              autofill::PHONE_HOME_WHOLE_NUMBER, app_locale_.tag_string()));
+              autofill::PHONE_HOME_WHOLE_NUMBER, app_locale_));
 
       const std::string default_region_code =
           autofill::AutofillCountry::CountryCodeForLocale(

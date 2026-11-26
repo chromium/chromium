@@ -204,15 +204,14 @@ std::u16string GetValueForProfileForInput(
     }
     return AutofillCountry(country_code, app_locale.tag_string()).name();
   }
-  const std::u16string value =
-      profile.GetInfo(field_type, app_locale.tag_string());
+  const std::u16string value = profile.GetInfo(field_type, app_locale);
   if (value.empty()) {
     return {};
   }
   if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kPhone) {
     return GetPhoneNumberValueForInput(
         field.max_length(), value,
-        profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale.tag_string()));
+        profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
   }
   if (field_type == ADDRESS_HOME_STREET_ADDRESS) {
     return GetStreetAddressForInput(value, profile.language_code(),

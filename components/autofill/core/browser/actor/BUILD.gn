@@ -30,6 +30,7 @@ source_set("actor") {
   ]
 
   deps = [
+    "//base/i18n:language_tag",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//ui/gfx/geometry",
@@ -74,6 +75,7 @@ source_set("unit_tests") {
     ":actor",
     ":test_support",
     "//base",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/critical_actions/core/browser",

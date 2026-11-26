@@ -2098,9 +2098,10 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoNameAvailable) {
 
   // Verify the card details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_NAME_FULL, "en-US"),
-            user_provided_details.cardholder_name);
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.cardholder_name);
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -2317,9 +2318,10 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify the cardholder name in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_NAME_FULL, "en-US"),
-            user_provided_details.cardholder_name);
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.cardholder_name);
 }
 
 // TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
@@ -2751,9 +2753,10 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify the card details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_NAME_FULL, "en-US"),
-            user_provided_details.cardholder_name);
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.cardholder_name);
 }
 
 // Tests that if credit card form is submitted with a conflicting cardholder
@@ -2812,9 +2815,10 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify the card details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_NAME_FULL, "en-US"),
-            user_provided_details.cardholder_name);
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.cardholder_name);
 }
 
 // Tests that if credit card form is submitted with a conflicting cardholder
@@ -2881,9 +2885,10 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NamesCanMismatch) {
 
   // Verify the card details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_NAME_FULL, "en-US"),
-            user_provided_details.cardholder_name);
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.cardholder_name);
 }
 
 // TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
@@ -2987,9 +2992,10 @@ TEST_F(
 
   // Verify the cardholder name in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_NAME_FULL, "en-US"),
-            user_provided_details.cardholder_name);
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.cardholder_name);
 }
 
 // Tests that if credit card form is submitted with a conflicting cardholder
@@ -3046,9 +3052,10 @@ TEST_F(
 
   // Verify the cardholder name in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_NAME_FULL, "en-US"),
-            user_provided_details.cardholder_name);
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.cardholder_name);
 }
 
 TEST_F(CreditCardSaveManagerTest,
@@ -3321,9 +3328,10 @@ TEST_F(
 
   // Verify the card details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_NAME_FULL, "en-US"),
-            user_provided_details.cardholder_name);
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.cardholder_name);
 
   // Set the billing_customer_number to designate existence of a Payments
   // account.
@@ -3401,9 +3409,10 @@ TEST_F(
 
   // Verify the card details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_NAME_FULL, "en-US"),
-            user_provided_details.cardholder_name);
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.cardholder_name);
 }
 #endif  // BUILDFLAG(IS_IOS)
 
@@ -3452,11 +3461,13 @@ TEST_F(
 
   // Verify expiry details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_EXP_MONTH, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.expiration_date_month);
   EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_MONTH, "en-US"),
-            user_provided_details.expiration_date_month);
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+                CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                base::i18n::GetKnownLanguageTag("en-US")),
             user_provided_details.expiration_date_year);
 
   // Edit the data, include a expiration date, and submit this time.
@@ -3481,11 +3492,13 @@ TEST_F(
 
   // Verify expiry details in `UploadRequest` matches the one provided during
   // the second form submission.
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_EXP_MONTH, base::i18n::GetKnownLanguageTag("en-US")),
+      ASCIIToUTF16(FiveMonthsFromNow()));
   EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_MONTH, "en-US"),
-            ASCIIToUTF16(FiveMonthsFromNow()));
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+                CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                base::i18n::GetKnownLanguageTag("en-US")),
             ASCIIToUTF16(FiveYearsFromNow()));
 }
 
@@ -3580,11 +3593,13 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify expiry details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_EXP_MONTH, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.expiration_date_month);
   EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_MONTH, "en-US"),
-            user_provided_details.expiration_date_month);
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+                CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                base::i18n::GetKnownLanguageTag("en-US")),
             user_provided_details.expiration_date_year);
 }
 
@@ -3714,14 +3729,17 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify the details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.cardholder_name);
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_EXP_MONTH, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.expiration_date_month);
   EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_NAME_FULL, "en-US"),
-            user_provided_details.cardholder_name);
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_MONTH, "en-US"),
-            user_provided_details.expiration_date_month);
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+                CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                base::i18n::GetKnownLanguageTag("en-US")),
             user_provided_details.expiration_date_year);
 }
 #endif  // BUILDFLAG(IS_IOS)
@@ -3780,11 +3798,13 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify expiry details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_EXP_MONTH, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.expiration_date_month);
   EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_MONTH, "en-US"),
-            user_provided_details.expiration_date_month);
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+                CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                base::i18n::GetKnownLanguageTag("en-US")),
             user_provided_details.expiration_date_year);
 }
 
@@ -3842,11 +3862,13 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify expiry details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_EXP_MONTH, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.expiration_date_month);
   EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_MONTH, "en-US"),
-            user_provided_details.expiration_date_month);
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+                CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                base::i18n::GetKnownLanguageTag("en-US")),
             user_provided_details.expiration_date_year);
 }
 
@@ -3906,11 +3928,13 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify expiry details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_EXP_MONTH, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.expiration_date_month);
   EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_MONTH, "en-US"),
-            user_provided_details.expiration_date_month);
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+                CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                base::i18n::GetKnownLanguageTag("en-US")),
             user_provided_details.expiration_date_year);
 }
 
@@ -3968,11 +3992,13 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify expiry details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_EXP_MONTH, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.expiration_date_month);
   EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_MONTH, "en-US"),
-            user_provided_details.expiration_date_month);
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+                CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                base::i18n::GetKnownLanguageTag("en-US")),
             user_provided_details.expiration_date_year);
 }
 
@@ -4034,11 +4060,13 @@ TEST_F(
 
   // Verify expiry details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_EXP_MONTH, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.expiration_date_month);
   EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_MONTH, "en-US"),
-            user_provided_details.expiration_date_month);
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"),
+                CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                base::i18n::GetKnownLanguageTag("en-US")),
             user_provided_details.expiration_date_year);
 }
 
@@ -5119,9 +5147,10 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify the card details in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_NAME_FULL, "en-US"),
-            user_provided_details.cardholder_name);
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.cardholder_name);
 }
 
 // Tests that if credit card form is submitted with a conflicting cardholder
@@ -5184,9 +5213,10 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify the cardholder name in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_NAME_FULL, "en-US"),
-            user_provided_details.cardholder_name);
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.cardholder_name);
 }
 
 // TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
@@ -5379,9 +5409,10 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify the cardholder name in `UploadRequest` matches the one in
   // `UserProvidedCardDetails`.
-  EXPECT_EQ(credit_card_save_manager().upload_request()->card.GetInfo(
-                CREDIT_CARD_NAME_FULL, "en-US"),
-            user_provided_details.cardholder_name);
+  EXPECT_EQ(
+      credit_card_save_manager().upload_request()->card.GetInfo(
+          CREDIT_CARD_NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+      user_provided_details.cardholder_name);
 }
 
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadOfLocalCard) {

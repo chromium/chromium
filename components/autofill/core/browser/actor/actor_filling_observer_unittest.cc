@@ -6,6 +6,7 @@
 
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
@@ -338,12 +339,15 @@ TEST_F(ActorFillingObserverTest, FilledInformationAddressProfile) {
       base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>{},
       profile);
 
-  std::string expected_data = base::UTF16ToUTF8(
-      base::JoinString({profile->GetInfo(NAME_FULL, "en-US"),
-                        profile->GetInfo(ADDRESS_HOME_ADDRESS, "en-US"),
-                        profile->GetInfo(PHONE_HOME_WHOLE_NUMBER, "en-US"),
-                        profile->GetInfo(EMAIL_ADDRESS, "en-US")},
-                       u"\n"));
+  std::string expected_data = base::UTF16ToUTF8(base::JoinString(
+      {profile->GetInfo(NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+       profile->GetInfo(ADDRESS_HOME_ADDRESS,
+                        base::i18n::GetKnownLanguageTag("en-US")),
+       profile->GetInfo(PHONE_HOME_WHOLE_NUMBER,
+                        base::i18n::GetKnownLanguageTag("en-US")),
+       profile->GetInfo(EMAIL_ADDRESS,
+                        base::i18n::GetKnownLanguageTag("en-US"))},
+      u"\n"));
 
   ASSERT_THAT(future.Get(), HasValue());
   ActorFillingObserver::TriggerFieldToFilledEntity filled_data =

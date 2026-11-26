@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -164,7 +166,9 @@ void CheckChipButtonVisibility(std::u16string title) {
 // Checks that the chip buttons of the example profile are all visible.
 void CheckChipButtonsOfExampleProfile() {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  std::string locale = l10n_util::GetLocaleOverride();
+  base::i18n::LanguageTag locale =
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
 
   CheckChipButtonVisibility(profile.GetInfo(autofill::NAME_FIRST, locale));
   CheckChipButtonVisibility(profile.GetInfo(autofill::NAME_MIDDLE, locale));
@@ -541,7 +545,9 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 
 // Verify that the address info has been filled.
 - (void)verifyAddressInfoHasBeenFilled:(autofill::AutofillProfile)profile {
-  std::string locale = l10n_util::GetLocaleOverride();
+  base::i18n::LanguageTag locale =
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"));
 
   // Full name.
   NSString* name =

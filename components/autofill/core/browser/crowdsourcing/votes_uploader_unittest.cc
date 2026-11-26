@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/i18n/language_tag.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -288,8 +289,8 @@ TEST_F(AutofillVotesUploaderTest, MostRecentVoteForSameFormWins) {
 
   auto form1 = std::make_unique<FormStructure>(form_data);
   auto form2 = std::make_unique<FormStructure>(form_data);
-  form2->fields()[0]->set_value(
-      test::GetFullProfile().GetInfo(NAME_FULL, "en"));
+  form2->fields()[0]->set_value(test::GetFullProfile().GetInfo(
+      NAME_FULL, base::i18n::GetKnownLanguageTag("en")));
 
   ASSERT_EQ(form1->form_signature(), form2->form_signature());
   ASSERT_TRUE(form1->fields()[0]->value().empty());

@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -112,7 +113,8 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 using ::testing::VariantWith;
 
-constexpr char kAppLocale[] = "en-US";
+constexpr base::i18n::LanguageTag kAppLocale =
+    base::i18n::GetKnownLanguageTag("en-US");
 
 // Action `SaveArgElementsTo<k>(pointer)` saves the value pointed to by the
 // `k`th (0-based) argument of the mock function by moving it to `*pointer`.

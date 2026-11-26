@@ -11,6 +11,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/i18n/language_tag.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -76,7 +77,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // empty.
 NSString* GetFallbackDetailTextForLocalProfile(
     const autofill::AutofillProfile& autofill_profile,
-    const std::string& locale) {
+    const base::i18n::LanguageTag& locale) {
   const autofill::FieldType fallback_types[] = {
       autofill::ADDRESS_HOME_CITY, autofill::ADDRESS_HOME_STATE,
       autofill::ADDRESS_HOME_ZIP, autofill::ADDRESS_HOME_COUNTRY};
@@ -273,10 +274,8 @@ NSString* GetFallbackDetailTextForLocalProfile(
     (const autofill::AutofillProfile&)autofillProfile {
   AutofillProfileItem* item =
       [[AutofillProfileItem alloc] initWithType:ItemTypeAddress];
-  std::string locale(GetApplicationContext()
-                         ->GetApplicationLocaleStorage()
-                         ->GetTag()
-                         .tag_string());
+  const base::i18n::LanguageTag& locale =
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag();
   autofill::AutofillProfile::RecordType recordType =
       autofillProfile.record_type();
 

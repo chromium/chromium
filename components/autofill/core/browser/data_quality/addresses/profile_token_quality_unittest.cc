@@ -155,12 +155,10 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
   // Clear the value of field 0.
   EditFieldValue(form, 0, u"");
   // Edit field 1 to a different token of the same `profile`.
-  EditFieldValue(form, 1,
-                 profile.GetInfo(NAME_MIDDLE, adm().app_locale().tag_string()));
+  EditFieldValue(form, 1, profile.GetInfo(NAME_MIDDLE, adm().app_locale()));
   // Edit field 2 to a value similar to the originally filled one.
-  ASSERT_EQ(
-      profile.GetInfo(ADDRESS_HOME_LINE1, adm().app_locale().tag_string()),
-      u"666 Erebus St.");
+  ASSERT_EQ(profile.GetInfo(ADDRESS_HOME_LINE1, adm().app_locale()),
+            u"666 Erebus St.");
   EditFieldValue(form, 2, u"666 erbus str");
   // Edit field 3 to a completely different token.
   EditFieldValue(form, 3, u"different value");
@@ -195,13 +193,11 @@ TEST_F(ProfileTokenQualityTest,
   FillForm(form, profile);
 
   // Edit field 0 to the same token of a another profile.
-  EditFieldValue(
-      form, 0,
-      other_profile.GetInfo(EMAIL_ADDRESS, adm().app_locale().tag_string()));
+  EditFieldValue(form, 0,
+                 other_profile.GetInfo(EMAIL_ADDRESS, adm().app_locale()));
   // Edit field 1 to a different token of another profile.
   EditFieldValue(form, 1,
-                 other_profile.GetInfo(ADDRESS_HOME_STATE,
-                                       adm().app_locale().tag_string()));
+                 other_profile.GetInfo(ADDRESS_HOME_STATE, adm().app_locale()));
 
   const FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());

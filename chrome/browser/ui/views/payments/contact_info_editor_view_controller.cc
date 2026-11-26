@@ -171,7 +171,7 @@ std::u16string ContactInfoEditorViewController::GetValueForType(
         profile, state()->GetApplicationLocale());
   }
 
-  return profile.GetInfo(type, state()->GetApplicationLocale().tag_string());
+  return profile.GetInfo(type, state()->GetApplicationLocale());
 }
 
 ContactInfoEditorViewController::ContactInfoValidationDelegate::

@@ -228,8 +228,7 @@ std::u16string GetEnvelopeStyleAddress(
                                component.field == ALTERNATIVE_FULL_NAME)) {
       return true;
     }
-    return profile.GetInfo(component.field, ui_language_code.tag_string())
-        .empty();
+    return profile.GetInfo(component.field, ui_language_code).empty();
   });
 
   // Remove delimiters from the beginning and the end.
@@ -252,16 +251,14 @@ std::u16string GetEnvelopeStyleAddress(
       }
       continue;
     }
-    std::u16string info =
-        profile.GetInfo(component.field, ui_language_code.tag_string());
+    std::u16string info = profile.GetInfo(component.field, ui_language_code);
     pieces.push_back(info);
     last_field_was_non_empty = true;
   }
 
   if (include_country) {
     pieces.push_back(u"\n");
-    pieces.push_back(
-        profile.GetInfo(ADDRESS_HOME_COUNTRY, ui_language_code.tag_string()));
+    pieces.push_back(profile.GetInfo(ADDRESS_HOME_COUNTRY, ui_language_code));
   }
 
   std::string address_utf8 = base::UTF16ToUTF8(base::StrCat(pieces));
@@ -298,7 +295,7 @@ std::u16string GetProfileDescription(
       ADDRESS_HOME_COUNTRY};
 
   if (!include_address_and_contacts) {
-    return profile.GetInfo(NAME_FULL, ui_language_code.tag_string());
+    return profile.GetInfo(NAME_FULL, ui_language_code);
   }
 
   return profile.ConstructInferredLabel(kDetailsFields,
@@ -359,7 +356,7 @@ std::u16string GetProfileSummaryForMigrationPrompt(
   std::vector<std::u16string> values;
   values.reserve(fields.size());
   for (FieldType field : fields) {
-    std::u16string value = profile.GetInfo(field, app_locale.tag_string());
+    std::u16string value = profile.GetInfo(field, app_locale);
     if (!value.empty()) {
       values.push_back(value);
     }

@@ -258,7 +258,7 @@ std::u16string GetCreditCardNumberForInput(
             : credit_card
                   .ObfuscatedNumberWithVisibleLastFourDigitsForSplitFields();
   } else {
-    value = credit_card.GetInfo(CREDIT_CARD_NUMBER, app_locale.tag_string());
+    value = credit_card.GetInfo(CREDIT_CARD_NUMBER, app_locale);
   }
   // Check to truncate card number based on the field's credit card number
   // offset and length of the credit card number.
@@ -425,7 +425,7 @@ std::u16string GetFillingValueForCreditCardForInput(
                                        field.max_length());
     default:
       // All other cases handled here.
-      return credit_card.GetInfo(field_type, app_locale.tag_string());
+      return credit_card.GetInfo(field_type, app_locale);
   }
 }
 
@@ -469,7 +469,7 @@ std::u16string GetValueForVirtualCardInputPreview(
           /*is_cvc_filling_supported=*/true, failure_to_fill));
     default:
       // All other cases handled here.
-      return virtual_card.GetInfo(field_type, app_locale.tag_string());
+      return virtual_card.GetInfo(field_type, app_locale);
   }
 }
 

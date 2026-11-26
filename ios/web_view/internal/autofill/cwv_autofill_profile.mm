@@ -142,7 +142,9 @@
 - (NSString*)valueForType:(autofill::FieldType)type {
   const std::string& locale =
       ios_web_view::ApplicationContext::GetInstance()->GetApplicationLocale();
-  return base::SysUTF16ToNSString(_internalProfile->GetInfo(type, locale));
+  return base::SysUTF16ToNSString(_internalProfile->GetInfo(
+      type, base::i18n::GetLanguageTagFromString(locale).value_or(
+                base::i18n::GetKnownLanguageTag("und"))));
 }
 
 @end

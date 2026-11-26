@@ -108,7 +108,7 @@ void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(
         base::UTF16ToUTF8(profile->GetRawInfo(ADDRESS_HOME_COUNTRY)));
 
     const AlternativeStateNameMap::StateName state_name(profile->GetInfo(
-        ADDRESS_HOME_STATE, address_data_manager_->app_locale().tag_string()));
+        ADDRESS_HOME_STATE, address_data_manager_->app_locale()));
     const AlternativeStateNameMap::StateName normalized_state =
         AlternativeStateNameMap::NormalizeStateName(state_name);
 

@@ -28,7 +28,7 @@ CreateAddressDataFromAutofillProfile(
     const AutofillProfile& profile,
     const base::i18n::LanguageTag& app_locale) {
   auto get_info = [&profile, &app_locale](FieldType type) {
-    return base::UTF16ToUTF8(profile.GetInfo(type, app_locale.tag_string()));
+    return base::UTF16ToUTF8(profile.GetInfo(type, app_locale));
   };
 
   auto address_data = std::make_unique<AddressData>();

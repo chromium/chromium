@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   EXPECT_EQ(1U, request->state()->available_apps().size());
   EXPECT_EQ(nullptr, request->state()->selected_app());
   EXPECT_EQ(card.GetInfo(autofill::CREDIT_CARD_NAME_FULL,
-                         request->state()->GetApplicationLocale().tag_string()),
+                         request->state()->GetApplicationLocale()),
             request->state()->available_apps()[0]->GetSublabel());
 
   OpenPaymentMethodScreen();

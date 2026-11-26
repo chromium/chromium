@@ -340,9 +340,8 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
       [self typeNameToFieldType:editedFieldType];
   NSString* fieldOriginalValue =
       base::SysUTF16ToNSString(_autofillProfile->GetInfo(
-          serverFieldType, _personalDataManager->address_data_manager()
-                               .app_locale()
-                               .tag_string()));
+          serverFieldType,
+          _personalDataManager->address_data_manager().app_locale()));
   if (contains && [fieldOriginalValue isEqualToString:value]) {
     [_editedFields removeObject:editedFieldType];
   } else if (!contains && ![fieldOriginalValue isEqualToString:value]) {
@@ -375,9 +374,8 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
   autofill::FieldType serverFieldType =
       [self typeNameToFieldType:autofillFieldType];
   return _autofillProfile
-      ->GetInfo(serverFieldType, _personalDataManager->address_data_manager()
-                                     .app_locale()
-                                     .tag_string())
+      ->GetInfo(serverFieldType,
+                _personalDataManager->address_data_manager().app_locale())
       .empty();
 }
 
@@ -480,8 +478,8 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
                         kStaticFieldsTypes.size();
   NSMutableDictionary<NSString*, NSString*>* fieldValuesMap =
       [[NSMutableDictionary alloc] initWithCapacity:totalFieldCount];
-  const std::string_view app_locale =
-      _personalDataManager->address_data_manager().app_locale().tag_string();
+  const base::i18n::LanguageTag& app_locale =
+      _personalDataManager->address_data_manager().app_locale();
   for (AutofillEditProfileField* field in self.inputNonAddressFields) {
     NSString* fieldValue = base::SysUTF16ToNSString(_autofillProfile->GetInfo(
         [self typeNameToFieldType:field.fieldType], app_locale));

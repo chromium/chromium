@@ -59,8 +59,9 @@ class FormGroup {
 
   // Returns the string that should be auto-filled into a text field given the
   // type of that field, localized to the given `app_locale` if appropriate.
-  virtual std::u16string GetInfo(FieldType type,
-                                 std::string_view app_locale) const = 0;
+  virtual std::u16string GetInfo(
+      FieldType type,
+      const base::i18n::LanguageTag& app_locale) const = 0;
 
   // Returns the verification status associated with the type.
   // Returns kNoStatus if the type does not support a verification status.

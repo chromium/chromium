@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
@@ -153,7 +154,7 @@ FillRequest BillingAddressFillRequest(std::vector<FieldGlobalId> field_ids,
 
 // Returns the value that `group` would fill into a field with a certain `type`.
 std::u16string GetFillValue(const FormGroup& group, FieldType type) {
-  return group.GetInfo(type, "en-us");
+  return group.GetInfo(type, base::i18n::GetKnownLanguageTag("en-US"));
 }
 
 constexpr ActorFormFillingError kActorFormFillingSuccessForMetrics =
@@ -1123,8 +1124,12 @@ TEST_F(ActorFormFillingServiceTest, FillSuggestions_FilledData) {
           .Set("requested_data", "ADDRESS")
           .Set("value",
                base::StrCat(
-                   {expected_profile.GetInfo(NAME_FULL, "en-us"), u"\n",
-                    expected_profile.GetInfo(ADDRESS_HOME_ADDRESS, "en-us")})));
+                   {expected_profile.GetInfo(
+                        NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")),
+                    u"\n",
+                    expected_profile.GetInfo(
+                        ADDRESS_HOME_ADDRESS,
+                        base::i18n::GetKnownLanguageTag("en-US"))})));
 
   ASSERT_THAT(fill_future.Get(), HasValue());
 

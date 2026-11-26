@@ -34,6 +34,7 @@ source_set("eg2_tests") {
   deps = [
     ":eg_test_support+eg2",
     "//base",
+    "//base/i18n:language_tag",
     "//components/autofill/core/browser:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common:features",

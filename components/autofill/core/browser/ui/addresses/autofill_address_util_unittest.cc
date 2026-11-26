@@ -84,12 +84,11 @@ TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressSanity) {
   // some more highlevel conditions that are less probable to change.
 
   // The full name should be part of the envelope style address.
-  EXPECT_NE(address.find(profile.GetInfo(NAME_FULL, GetLocale().tag_string())),
+  EXPECT_NE(address.find(profile.GetInfo(NAME_FULL, GetLocale())),
             std::string::npos);
 
   // City should be part of the envelope style address.
-  EXPECT_NE(address.find(
-                profile.GetInfo(ADDRESS_HOME_CITY, GetLocale().tag_string())),
+  EXPECT_NE(address.find(profile.GetInfo(ADDRESS_HOME_CITY, GetLocale())),
             std::string::npos);
 
   // Check that some literals are properly returned.
@@ -215,9 +214,8 @@ TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWithExtensions) {
                                                    /*include_country=*/true);
   // Expect the zip code, followed by a new line and the state.
   EXPECT_NE(
-      address.find(
-          profile.GetInfo(ADDRESS_HOME_ZIP, GetLocale().tag_string()) + u"\n" +
-          profile.GetInfo(ADDRESS_HOME_STATE, GetLocale().tag_string())),
+      address.find(profile.GetInfo(ADDRESS_HOME_ZIP, GetLocale()) + u"\n" +
+                   profile.GetInfo(ADDRESS_HOME_STATE, GetLocale())),
       std::string::npos);
 }
 
@@ -395,8 +393,9 @@ TEST_F(AddressFormattingTest,
           profile2.SetRawInfo(type, u"Test Value");
           break;
       }
-      ASSERT_NE(profile1.GetInfo(type, "en-US"),
-                profile2.GetInfo(type, "en-US"));
+      ASSERT_NE(
+          profile1.GetInfo(type, base::i18n::GetKnownLanguageTag("en-US")),
+          profile2.GetInfo(type, base::i18n::GetKnownLanguageTag("en-US")));
       EXPECT_FALSE(
           GetProfileDifferenceForUi(profile1, profile2,
                                     base::i18n::GetKnownLanguageTag("en-US"))

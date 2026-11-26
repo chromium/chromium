@@ -83,8 +83,7 @@ void FormatPhoneNumberToE164(AutofillProfile* profile,
                              const std::string& region_code,
                              const base::i18n::LanguageTag& app_locale) {
   const std::string formatted_number = i18n::FormatPhoneForResponse(
-      base::UTF16ToUTF8(
-          profile->GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale.tag_string())),
+      base::UTF16ToUTF8(profile->GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale)),
       region_code);
 
   profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER,

@@ -117,7 +117,7 @@ TEST_F(SaveAddressBubbleControllerTest, SavingNonAccountAddress) {
       GetEnvelopeStyleAddress(profile, app_locale(), /*include_recipient=*/true,
                               /*include_country=*/true));
   EXPECT_EQ(controller->GetProfileEmail(),
-            profile.GetInfo(EMAIL_ADDRESS, app_locale().tag_string()));
+            profile.GetInfo(EMAIL_ADDRESS, app_locale()));
   EXPECT_EQ(controller->GetProfilePhone(),
             i18n::GetFormattedPhoneNumberForDisplay(profile, app_locale()));
   EXPECT_EQ(controller->GetOkButtonLabel(),
@@ -147,7 +147,7 @@ TEST_F(SaveAddressBubbleControllerTest, SavingAccountAddress) {
       GetEnvelopeStyleAddress(profile, app_locale(), /*include_recipient=*/true,
                               /*include_country=*/true));
   EXPECT_EQ(controller->GetProfileEmail(),
-            profile.GetInfo(EMAIL_ADDRESS, app_locale().tag_string()));
+            profile.GetInfo(EMAIL_ADDRESS, app_locale()));
   EXPECT_EQ(controller->GetProfilePhone(),
             i18n::GetFormattedPhoneNumberForDisplay(profile, app_locale()));
   EXPECT_EQ(controller->GetOkButtonLabel(),
@@ -223,7 +223,7 @@ TEST_F(SaveAddressBubbleControllerTest, CombiningAccountsTypes) {
                                     /*include_recipient=*/true,
                                     /*include_country=*/true));
   EXPECT_EQ(controller->GetProfileEmail(),
-            merged_profile.GetInfo(EMAIL_ADDRESS, app_locale().tag_string()));
+            merged_profile.GetInfo(EMAIL_ADDRESS, app_locale()));
 
   EXPECT_EQ(controller->GetCancelCallbackValue(),
             AutofillClient::AddressPromptUserDecision::kDeclined);

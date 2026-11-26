@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/i18n/language_tag.h"
 #import "base/memory/ptr_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
@@ -915,11 +916,20 @@ TEST_F(AutofillControllerTest, ProfileImport) {
     FAIL() << "Not exactly one profile found after attempted import";
   }
   const AutofillProfile& profile = *profiles[0];
-  EXPECT_EQ(u"Homer Simpson", profile.GetInfo(NAME_FULL, "en-US"));
-  EXPECT_EQ(u"123 Main Street", profile.GetInfo(ADDRESS_HOME_LINE1, "en-US"));
-  EXPECT_EQ(u"Springfield", profile.GetInfo(ADDRESS_HOME_CITY, "en-US"));
-  EXPECT_EQ(u"IL", profile.GetInfo(ADDRESS_HOME_STATE, "en-US"));
-  EXPECT_EQ(u"55123", profile.GetInfo(ADDRESS_HOME_ZIP, "en-US"));
+  EXPECT_EQ(
+      u"Homer Simpson",
+      profile.GetInfo(NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")));
+  EXPECT_EQ(u"123 Main Street",
+            profile.GetInfo(ADDRESS_HOME_LINE1,
+                            base::i18n::GetKnownLanguageTag("en-US")));
+  EXPECT_EQ(u"Springfield",
+            profile.GetInfo(ADDRESS_HOME_CITY,
+                            base::i18n::GetKnownLanguageTag("en-US")));
+  EXPECT_EQ(u"IL", profile.GetInfo(ADDRESS_HOME_STATE,
+                                   base::i18n::GetKnownLanguageTag("en-US")));
+  EXPECT_EQ(u"55123",
+            profile.GetInfo(ADDRESS_HOME_ZIP,
+                            base::i18n::GetKnownLanguageTag("en-US")));
 }
 
 void AutofillControllerTest::SetUpForSuggestions(
@@ -1205,12 +1215,18 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
       personal_data_manager->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, credit_cards.size());
   const CreditCard& credit_card = *credit_cards[0];
-  EXPECT_EQ(u"Superman", credit_card.GetInfo(CREDIT_CARD_NAME_FULL, "en-US"));
+  EXPECT_EQ(u"Superman",
+            credit_card.GetInfo(CREDIT_CARD_NAME_FULL,
+                                base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_EQ(u"4000444444444444",
-            credit_card.GetInfo(CREDIT_CARD_NUMBER, "en-US"));
-  EXPECT_EQ(u"11", credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, "en-US"));
+            credit_card.GetInfo(CREDIT_CARD_NUMBER,
+                                base::i18n::GetKnownLanguageTag("en-US")));
+  EXPECT_EQ(u"11",
+            credit_card.GetInfo(CREDIT_CARD_EXP_MONTH,
+                                base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_EQ(u"2999",
-            credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"));
+            credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                                base::i18n::GetKnownLanguageTag("en-US")));
 
   histogram_tester_->ExpectUniqueSample(
       /*name=*/kAutofillSubmissionDetectionSourceHistogram,
@@ -1264,12 +1280,18 @@ TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
       personal_data_manager->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, credit_cards.size());
   const CreditCard& credit_card = *credit_cards[0];
-  EXPECT_EQ(u"Superman", credit_card.GetInfo(CREDIT_CARD_NAME_FULL, "en-US"));
+  EXPECT_EQ(u"Superman",
+            credit_card.GetInfo(CREDIT_CARD_NAME_FULL,
+                                base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_EQ(u"4000444444444444",
-            credit_card.GetInfo(CREDIT_CARD_NUMBER, "en-US"));
-  EXPECT_EQ(u"11", credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, "en-US"));
+            credit_card.GetInfo(CREDIT_CARD_NUMBER,
+                                base::i18n::GetKnownLanguageTag("en-US")));
+  EXPECT_EQ(u"11",
+            credit_card.GetInfo(CREDIT_CARD_EXP_MONTH,
+                                base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_EQ(u"2999",
-            credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"));
+            credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                                base::i18n::GetKnownLanguageTag("en-US")));
 
   histogram_tester_->ExpectUniqueSample(
       /*name=*/kAutofillSubmissionDetectionSourceHistogram,
@@ -1350,12 +1372,18 @@ TEST_F(AutofillControllerTest,
   ASSERT_EQ(1U, credit_cards.size());
   const CreditCard& credit_card = *credit_cards[0];
 
-  EXPECT_EQ(u"Chuck", credit_card.GetInfo(CREDIT_CARD_NAME_FULL, "en-US"));
+  EXPECT_EQ(u"Chuck",
+            credit_card.GetInfo(CREDIT_CARD_NAME_FULL,
+                                base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_EQ(u"5425233430109903",
-            credit_card.GetInfo(CREDIT_CARD_NUMBER, "en-US"));
-  EXPECT_EQ(u"12", credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, "en-US"));
+            credit_card.GetInfo(CREDIT_CARD_NUMBER,
+                                base::i18n::GetKnownLanguageTag("en-US")));
+  EXPECT_EQ(u"12",
+            credit_card.GetInfo(CREDIT_CARD_EXP_MONTH,
+                                base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_EQ(u"2998",
-            credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"));
+            credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                                base::i18n::GetKnownLanguageTag("en-US")));
 }
 
 // Checks that an HTML page containing a profile-type formless form which is
@@ -1397,11 +1425,20 @@ TEST_F(AutofillControllerTest, ProfileImportAfterFormlessFormRemoval) {
     FAIL() << "Not exactly one profile found after attempted import";
   }
   const AutofillProfile& profile = *profiles[0];
-  EXPECT_EQ(u"Homer Simpson", profile.GetInfo(NAME_FULL, "en-US"));
-  EXPECT_EQ(u"123 Main Street", profile.GetInfo(ADDRESS_HOME_LINE1, "en-US"));
-  EXPECT_EQ(u"Springfield", profile.GetInfo(ADDRESS_HOME_CITY, "en-US"));
-  EXPECT_EQ(u"IL", profile.GetInfo(ADDRESS_HOME_STATE, "en-US"));
-  EXPECT_EQ(u"55123", profile.GetInfo(ADDRESS_HOME_ZIP, "en-US"));
+  EXPECT_EQ(
+      u"Homer Simpson",
+      profile.GetInfo(NAME_FULL, base::i18n::GetKnownLanguageTag("en-US")));
+  EXPECT_EQ(u"123 Main Street",
+            profile.GetInfo(ADDRESS_HOME_LINE1,
+                            base::i18n::GetKnownLanguageTag("en-US")));
+  EXPECT_EQ(u"Springfield",
+            profile.GetInfo(ADDRESS_HOME_CITY,
+                            base::i18n::GetKnownLanguageTag("en-US")));
+  EXPECT_EQ(u"IL", profile.GetInfo(ADDRESS_HOME_STATE,
+                                   base::i18n::GetKnownLanguageTag("en-US")));
+  EXPECT_EQ(u"55123",
+            profile.GetInfo(ADDRESS_HOME_ZIP,
+                            base::i18n::GetKnownLanguageTag("en-US")));
 
   histogram_tester_->ExpectUniqueSample(
       /*name=*/kAutofillSubmissionDetectionSourceHistogram,

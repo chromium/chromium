@@ -4,6 +4,8 @@
 
 #import "components/autofill/ios/browser/credit_card_util.h"
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 
@@ -12,7 +14,9 @@ namespace autofill {
 NSString* GetCreditCardName(const CreditCard& credit_card,
                             const std::string& locale) {
   return base::SysUTF16ToNSString(
-      credit_card.GetInfo(autofill::CREDIT_CARD_NAME_FULL, locale));
+      credit_card.GetInfo(autofill::CREDIT_CARD_NAME_FULL,
+                          base::i18n::GetLanguageTagFromString(locale).value_or(
+                              base::i18n::GetKnownLanguageTag("und"))));
 }
 
 NSString* GetCreditCardNameAndLastFourDigits(const CreditCard& credit_card) {

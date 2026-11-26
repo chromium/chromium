@@ -15,6 +15,10 @@
 #include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/field_types.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 class AddressComponent;
@@ -72,8 +76,9 @@ class NameInfo : public FormGroup {
   bool operator==(const NameInfo& other) const;
 
   // FormGroup:
-  std::u16string GetInfo(FieldType type,
-                         std::string_view app_locale) const override;
+  std::u16string GetInfo(
+      FieldType type,
+      const base::i18n::LanguageTag& app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
 
   void SetRawInfoWithVerificationStatus(FieldType type,

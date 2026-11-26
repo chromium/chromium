@@ -28,7 +28,8 @@ namespace payments {
 
 namespace {
 
-constexpr char kLocale[] = "en_US";
+constexpr base::i18n::LanguageTag kLocale =
+    base::i18n::GetKnownLanguageTag("en-US");
 constexpr char16_t kNameFull[] = u"Bob Jones";
 constexpr char16_t kHomeAddress[] = u"42 Answers-All Avenue";
 constexpr char16_t kHomeCity[] = u"Question-City";

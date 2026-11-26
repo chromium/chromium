@@ -25,7 +25,8 @@ using base::ASCIIToUTF16;
 
 namespace autofill {
 
-constexpr char kLocale[] = "en_US";
+constexpr base::i18n::LanguageTag kLocale =
+    base::i18n::GetKnownLanguageTag("en-US");
 
 struct MatchingTypesTestCase {
   std::u16string input;
@@ -265,16 +266,16 @@ TEST(PhoneNumberTest, UpdateCachedPhoneNumber) {
 
   PhoneNumber phone(&profile);
   phone.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"6502345678");
-  EXPECT_EQ(phone.GetInfo(PHONE_HOME_CITY_CODE, "US"), u"650");
+  EXPECT_EQ(phone.GetInfo(PHONE_HOME_CITY_CODE, kLocale), u"650");
 
   // Update the area code.
   phone.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"8322345678");
-  EXPECT_EQ(phone.GetInfo(PHONE_HOME_CITY_CODE, "US"), u"832");
+  EXPECT_EQ(phone.GetInfo(PHONE_HOME_CITY_CODE, kLocale), u"832");
 
   // Change the phone number to have a UK format, but try to parse with the
   // wrong locale.
   phone.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"07023456789");
-  EXPECT_EQ(phone.GetInfo(PHONE_HOME_CITY_CODE, "US"), std::u16string());
+  EXPECT_EQ(phone.GetInfo(PHONE_HOME_CITY_CODE, kLocale), std::u16string());
 
   // Now try parsing using the correct locale.  Note that the profile's country
   // code should override the app locale, which is still set to "US".
@@ -282,7 +283,7 @@ TEST(PhoneNumberTest, UpdateCachedPhoneNumber) {
   // Set profile country after phone number to ensure the change of the profile
   // country triggers the cache invalidation.
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"GB");
-  EXPECT_EQ(phone.GetInfo(PHONE_HOME_CITY_CODE, "US"), u"70");
+  EXPECT_EQ(phone.GetInfo(PHONE_HOME_CITY_CODE, kLocale), u"70");
 }
 
 // Tests that adding a country to the profile re-parses the cached number, even
@@ -322,8 +323,8 @@ TEST(PhoneCombineHelperTest, SetInfoAndParseNumber) {
   helper.SetInfo(PHONE_HOME_NUMBER_PREFIX, u"234");
   helper.SetInfo(PHONE_HOME_NUMBER_SUFFIX, u"5682");
 
-  const std::optional<std::u16string> parsed_phone =
-      helper.ParseNumber(AutofillCountry::CountryCodeForLocale(kLocale));
+  const std::optional<std::u16string> parsed_phone = helper.ParseNumber(
+      AutofillCountry::CountryCodeForLocale(kLocale.tag_string()));
   EXPECT_EQ(parsed_phone, u"(650) 234-5682");
 }
 
@@ -341,8 +342,8 @@ TEST(PhoneCombineHelperTest, FromObservedValues) {
   const PhoneNumber::PhoneCombineHelper helper =
       PhoneNumber::PhoneCombineHelper::FromObservedValues(observed_values);
 
-  const std::optional<std::u16string> parsed_phone =
-      helper.ParseNumber(AutofillCountry::CountryCodeForLocale(kLocale));
+  const std::optional<std::u16string> parsed_phone = helper.ParseNumber(
+      AutofillCountry::CountryCodeForLocale(kLocale.tag_string()));
   EXPECT_EQ(parsed_phone, u"(650) 234-5682");
 }
 
@@ -433,7 +434,7 @@ TEST(PhoneNumberTest, InternationalPhoneHomeCityAndNumber_US) {
   PhoneNumber phone_number(&profile);
   phone_number.SetInfo(PHONE_HOME_WHOLE_NUMBER, phone,
                        base::i18n::GetKnownLanguageTag("en-US"));
-  EXPECT_EQ(phone_number.GetInfo(PHONE_HOME_CITY_AND_NUMBER, "en-US"),
+  EXPECT_EQ(phone_number.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale),
             u"6502345678");
 }
 
@@ -449,7 +450,7 @@ TEST(PhoneNumberTest, InternationalPhoneHomeCityAndNumber_DE) {
                        base::i18n::GetKnownLanguageTag("en-US"));
   // Note that for German numbers (unlike US numbers), the
   // PHONE_HOME_CITY_AND_NUMBER should start with a 0.
-  EXPECT_EQ(phone_number.GetInfo(PHONE_HOME_CITY_AND_NUMBER, "en-US"),
+  EXPECT_EQ(phone_number.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale),
             u"01741234567");
 }
 
@@ -465,7 +466,8 @@ TEST(PhoneNumberTest, TrunkPrefix) {
                         const std::u16string& city_number_with_trunk,
                         const std::u16string& city_number_without_trunk) {
     // The `locale` is irrelevant, as the `profile` has country information.
-    const std::string locale = "en-US";
+    const base::i18n::LanguageTag locale =
+        base::i18n::GetKnownLanguageTag("en-US");
     PhoneNumber phone_number(&profile);
     phone_number.SetInfo(PHONE_HOME_WHOLE_NUMBER, number,
                          base::i18n::GetKnownLanguageTag("en-US"));
@@ -531,7 +533,8 @@ TEST(PhoneNumberTest, NumberPreAndSuffixes) {
                         const std::u16string& prefix,
                         const std::u16string& suffix) {
     // The `locale` is irrelevant, as the `profile` has country information.
-    const std::string locale = "en-US";
+    const base::i18n::LanguageTag locale =
+        base::i18n::GetKnownLanguageTag("en-US");
     PhoneNumber phone_number(&profile);
     EXPECT_TRUE(phone_number.SetInfo(PHONE_HOME_WHOLE_NUMBER, number,
                                      base::i18n::GetKnownLanguageTag("en-US")));
@@ -563,7 +566,8 @@ TEST(PhoneNumberTest, NumberPreAndSuffixes) {
 TEST(PhoneNumberTest, Extension) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   PhoneNumber phone(&profile);
-  const std::string locale = "en-US";
+  const base::i18n::LanguageTag locale =
+      base::i18n::GetKnownLanguageTag("en-US");
   EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"(650) 234-2345 ext. 234",
                             base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_EQ(phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER), u"(650) 234-2345");
@@ -643,8 +647,7 @@ TEST_P(PhoneImportAndGetTest, TestSettingAndParsing) {
   for (const auto& [field_type, expected_value] : test.expected_values) {
     SCOPED_TRACE(::testing::Message()
                  << "GetInfo(" << FieldTypeToStringView(field_type) << ")");
-    EXPECT_EQ(expected_value,
-              profile.GetInfo(field_type, faked_app_locale.tag_string()));
+    EXPECT_EQ(expected_value, profile.GetInfo(field_type, faked_app_locale));
   }
 }
 

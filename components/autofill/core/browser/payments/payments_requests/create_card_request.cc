@@ -89,10 +89,10 @@ std::string CreateCardRequest::GetRequestContent() {
     card_info.Set("cvc", "__param:s7e_13_cvc");
   }
   int value = 0;
-  const std::u16string exp_month = request_details_.card.GetInfo(
-      CREDIT_CARD_EXP_MONTH, app_locale.tag_string());
-  const std::u16string exp_year = request_details_.card.GetInfo(
-      CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale.tag_string());
+  const std::u16string exp_month =
+      request_details_.card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale);
+  const std::u16string exp_year =
+      request_details_.card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale);
   if (base::StringToInt(exp_month, &value)) {
     card_info.Set("expiration_month", value);
   }
@@ -123,8 +123,8 @@ std::string CreateCardRequest::GetRequestContent() {
   }
   request_dict.Set("card_info", std::move(card_info));
 
-  const std::u16string pan = request_details_.card.GetInfo(
-      CREDIT_CARD_NUMBER, app_locale.tag_string());
+  const std::u16string pan =
+      request_details_.card.GetInfo(CREDIT_CARD_NUMBER, app_locale);
   std::string json_request = base::WriteJson(request_dict).value_or("");
   std::string request_content;
   if (request_details_.cvc.empty()) {

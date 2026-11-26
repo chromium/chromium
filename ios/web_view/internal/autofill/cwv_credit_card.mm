@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -112,7 +114,9 @@
 - (NSString*)valueForType:(autofill::FieldType)type {
   const std::string& locale =
       ios_web_view::ApplicationContext::GetInstance()->GetApplicationLocale();
-  return base::SysUTF16ToNSString(_internalCard.GetInfo(type, locale));
+  return base::SysUTF16ToNSString(_internalCard.GetInfo(
+      type, base::i18n::GetLanguageTagFromString(locale).value_or(
+                base::i18n::GetKnownLanguageTag("und"))));
 }
 
 @end

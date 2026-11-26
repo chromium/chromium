@@ -7,15 +7,18 @@
 #include <memory>
 #include <utility>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -152,7 +155,8 @@ TEST_F(EditAddressProfileViewTest, Sanity) {
 TEST_F(EditAddressProfileViewTest, SaveInvokesTheCallbackWithEditedFullname) {
   CreateViewAndShow();
   const std::u16string kNewFirstName = u"New First Name";
-  const std::string locale = g_browser_process->GetApplicationLocale();
+  const base::i18n::LanguageTag& locale =
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag();
   // Confirm that the new name is indeed different from the original one from
   // the controller.
   ASSERT_NE(kNewFirstName,
@@ -174,7 +178,8 @@ TEST_F(EditAddressProfileViewTest,
        SaveInvokesTheCallbackWithEditedInvalidPhoneNumber) {
   CreateViewAndShow();
   const std::u16string kNewPhoneNumber = u"123456789";
-  const std::string locale = g_browser_process->GetApplicationLocale();
+  const base::i18n::LanguageTag& locale =
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag();
   // Confirm that the new phone number is indeed different from the original one
   // from the controller.
   ASSERT_NE(kNewPhoneNumber, address_profile_to_edit().GetInfo(
@@ -199,7 +204,8 @@ TEST_F(EditAddressProfileViewTest,
 TEST_F(EditAddressProfileViewTest, SaveInvokesTheCallbackWithEditedEmail) {
   CreateViewAndShow();
   const std::u16string kNewEmail = u"abc@xyz.com";
-  const std::string locale = g_browser_process->GetApplicationLocale();
+  const base::i18n::LanguageTag& locale =
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag();
   // Confirm that the new email is indeed different from the original one
   // from the controller.
   ASSERT_NE(kNewEmail, address_profile_to_edit().GetInfo(

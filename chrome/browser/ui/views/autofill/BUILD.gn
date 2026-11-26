@@ -273,7 +273,9 @@ source_set("unit_tests") {
     ":edit_address_profile_view",
     ":save_address_profile_view",
     ":update_address_profile_view",
+    "//base/i18n:language_tag",
     "//chrome/test:test_support",
+    "//components/application_locale_storage",
   ]
 }
 

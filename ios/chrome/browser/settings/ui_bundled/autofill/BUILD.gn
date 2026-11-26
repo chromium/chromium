@@ -24,6 +24,7 @@ source_set("autofill") {
   deps = [
     ":constants",
     ":shared_ui",
+    "//base/i18n:language_tag",
     "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",

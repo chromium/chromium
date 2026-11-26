@@ -44,15 +44,21 @@ TEST_F(AddressTest, GetCountry) {
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"");
 
   // Make sure that nothing breaks when the country code is missing.
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY,
+                            base::i18n::GetKnownLanguageTag("en-US")),
+            u"");
 
   address.SetInfo(ADDRESS_HOME_COUNTRY, u"US",
                   base::i18n::GetKnownLanguageTag("en-US"));
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"United States");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY,
+                            base::i18n::GetKnownLanguageTag("en-US")),
+            u"United States");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
 
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"Canada");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY,
+                            base::i18n::GetKnownLanguageTag("en-US")),
+            u"Canada");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"CA");
 }
 
@@ -65,52 +71,70 @@ TEST_F(AddressTest, SetCountry) {
   address.SetInfo(ADDRESS_HOME_COUNTRY, u"United States",
                   base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"United States");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY,
+                            base::i18n::GetKnownLanguageTag("en-US")),
+            u"United States");
 
   // Test basic synonym detection.
   address.SetInfo(ADDRESS_HOME_COUNTRY, u"USA",
                   base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"United States");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY,
+                            base::i18n::GetKnownLanguageTag("en-US")),
+            u"United States");
 
   // Test case-insensitivity.
   address.SetInfo(ADDRESS_HOME_COUNTRY, u"canADA",
                   base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"CA");
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"Canada");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY,
+                            base::i18n::GetKnownLanguageTag("en-US")),
+            u"Canada");
 
   // Test country code detection.
   address.SetInfo(ADDRESS_HOME_COUNTRY, u"JP",
                   base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"JP");
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"Japan");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY,
+                            base::i18n::GetKnownLanguageTag("en-US")),
+            u"Japan");
 
   // Test that we ignore unknown countries.
   address.SetInfo(ADDRESS_HOME_COUNTRY, u"Unknown",
                   base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"");
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY,
+                            base::i18n::GetKnownLanguageTag("en-US")),
+            u"");
 
   address.SetInfo(ADDRESS_HOME_COUNTRY, u"US",
                   base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"United States");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY,
+                            base::i18n::GetKnownLanguageTag("en-US")),
+            u"United States");
 
   // Test case-insensitivity when setting a country code.
   address.SetInfo(ADDRESS_HOME_COUNTRY, u"cA",
                   base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"CA");
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"Canada");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY,
+                            base::i18n::GetKnownLanguageTag("en-US")),
+            u"Canada");
 
   // Test non-standard / localized country names.
   address.SetInfo(ADDRESS_HOME_COUNTRY, u"deutschland",
                   base::i18n::GetKnownLanguageTag("de"));
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"DE");
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "de"), u"Deutschland");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY,
+                            base::i18n::GetKnownLanguageTag("de")),
+            u"Deutschland");
   address.SetInfo(ADDRESS_HOME_COUNTRY, u"日本",
                   base::i18n::GetKnownLanguageTag("ja-JP"));
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"JP");
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"Japan");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY,
+                            base::i18n::GetKnownLanguageTag("en-US")),
+            u"Japan");
 }
 
 // Test setting and getting the new structured address tokens
@@ -170,14 +194,17 @@ TEST_F(AddressTest, GetStreetAddress) {
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_STREET_ADDRESS, "en-US"), u"");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_STREET_ADDRESS,
+                            base::i18n::GetKnownLanguageTag("en-US")),
+            u"");
 
   // Address has only line 1.
   address.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example Ave.");
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_STREET_ADDRESS, "en-US"),
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_STREET_ADDRESS,
+                            base::i18n::GetKnownLanguageTag("en-US")),
             u"123 Example Ave.");
 
   // Address has only line 2.
@@ -186,7 +213,8 @@ TEST_F(AddressTest, GetStreetAddress) {
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_STREET_ADDRESS, "en-US"),
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_STREET_ADDRESS,
+                            base::i18n::GetKnownLanguageTag("en-US")),
             u"\nApt 42.");
 
   // Address has lines 1 and 2.
@@ -198,7 +226,8 @@ TEST_F(AddressTest, GetStreetAddress) {
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
             u"123 Example Ave.\n"
             u"Apt. 42");
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_STREET_ADDRESS, "en-US"),
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_STREET_ADDRESS,
+                            base::i18n::GetKnownLanguageTag("en-US")),
             u"123 Example Ave.\n"
             u"Apt. 42");
 

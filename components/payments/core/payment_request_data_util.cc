@@ -35,31 +35,29 @@ mojom::PaymentAddressPtr GetPaymentAddressFromAutofillProfile(
     return payment_address;
   }
 
-  const std::string_view app_locale_str = app_locale.tag_string();
-
   payment_address->country =
       base::UTF16ToUTF8(profile.GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
   DCHECK(PaymentsValidators::IsValidCountryCodeFormat(payment_address->country,
                                                       nullptr));
 
-  payment_address->address_line = base::SplitString(
-      base::UTF16ToUTF8(profile.GetInfo(autofill::ADDRESS_HOME_STREET_ADDRESS,
-                                        app_locale_str)),
-      "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  payment_address->address_line =
+      base::SplitString(base::UTF16ToUTF8(profile.GetInfo(
+                            autofill::ADDRESS_HOME_STREET_ADDRESS, app_locale)),
+                        "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   payment_address->region = base::UTF16ToUTF8(
-      profile.GetInfo(autofill::ADDRESS_HOME_STATE, app_locale_str));
+      profile.GetInfo(autofill::ADDRESS_HOME_STATE, app_locale));
   payment_address->city = base::UTF16ToUTF8(
-      profile.GetInfo(autofill::ADDRESS_HOME_CITY, app_locale_str));
-  payment_address->dependent_locality = base::UTF16ToUTF8(profile.GetInfo(
-      autofill::ADDRESS_HOME_DEPENDENT_LOCALITY, app_locale_str));
+      profile.GetInfo(autofill::ADDRESS_HOME_CITY, app_locale));
+  payment_address->dependent_locality = base::UTF16ToUTF8(
+      profile.GetInfo(autofill::ADDRESS_HOME_DEPENDENT_LOCALITY, app_locale));
   payment_address->postal_code = base::UTF16ToUTF8(
-      profile.GetInfo(autofill::ADDRESS_HOME_ZIP, app_locale_str));
+      profile.GetInfo(autofill::ADDRESS_HOME_ZIP, app_locale));
   payment_address->sorting_code = base::UTF16ToUTF8(
-      profile.GetInfo(autofill::ADDRESS_HOME_SORTING_CODE, app_locale_str));
-  payment_address->organization = base::UTF16ToUTF8(
-      profile.GetInfo(autofill::COMPANY_NAME, app_locale_str));
+      profile.GetInfo(autofill::ADDRESS_HOME_SORTING_CODE, app_locale));
+  payment_address->organization =
+      base::UTF16ToUTF8(profile.GetInfo(autofill::COMPANY_NAME, app_locale));
   payment_address->recipient =
-      base::UTF16ToUTF8(profile.GetInfo(autofill::NAME_FULL, app_locale_str));
+      base::UTF16ToUTF8(profile.GetInfo(autofill::NAME_FULL, app_locale));
 
   // TODO(crbug.com/40512882): Format phone number according to spec.
   payment_address->phone =

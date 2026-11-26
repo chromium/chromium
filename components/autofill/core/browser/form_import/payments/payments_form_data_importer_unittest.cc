@@ -46,7 +46,8 @@ using ::testing::_;
 using ::testing::Return;
 using ::testing::Truly;
 
-constexpr char kLocale[] = "en_US";
+constexpr base::i18n::LanguageTag kLocale =
+    base::i18n::GetKnownLanguageTag("en-US");
 constexpr char kDefaultCreditCardName[] = "Biggie Smalls";
 constexpr char kDefaultCreditCardNumber[] = "4111 1111 1111 1111";
 constexpr char kDefaultCreditCardExpMonth[] = "01";

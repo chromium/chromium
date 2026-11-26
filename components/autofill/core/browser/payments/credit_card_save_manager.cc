@@ -19,6 +19,7 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/string_search.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -247,7 +248,7 @@ CreditCardSaveManager::~CreditCardSaveManager() = default;
 
 bool CreditCardSaveManager::AttemptToOfferCardLocalSave(
     const CreditCard& card) {
-  const std::string_view app_locale = client_->GetAppLocale().tag_string();
+  const base::i18n::LanguageTag& app_locale = client_->GetAppLocale();
   if (!payments_autofill_client().LocalCardSaveIsSupported()) {
     return false;
   }
@@ -795,7 +796,7 @@ bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
 void CreditCardSaveManager::OnDidUploadCard(
     PaymentsRpcResult result,
     const payments::UploadCardResponseDetails& upload_card_response_details) {
-  const std::string_view app_locale = client_->GetAppLocale().tag_string();
+  const base::i18n::LanguageTag& app_locale = client_->GetAppLocale();
   if (observer_for_testing_) {
     observer_for_testing_->OnReceivedUploadCardResponse();
   }
@@ -1324,7 +1325,7 @@ void CreditCardSaveManager::LogStrikesPresentWhenCardSaved(
 void CreditCardSaveManager::SetProfilesForCreditCardUpload(
     const CreditCard& card,
     payments::UploadCardRequestDetails* upload_request) {
-  const std::string_view app_locale = client_->GetAppLocale().tag_string();
+  const base::i18n::LanguageTag& app_locale = client_->GetAppLocale();
   std::vector<AutofillProfile> candidate_profiles;
   const base::Time now = AutofillClock::Now();
   const base::TimeDelta fifteen_minutes = base::Minutes(15);
@@ -1435,7 +1436,7 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
 }
 
 int CreditCardSaveManager::GetDetectedValues() const {
-  const std::string_view app_locale = client_->GetAppLocale().tag_string();
+  const base::i18n::LanguageTag& app_locale = client_->GetAppLocale();
   int detected_values = 0;
 
   // Report detecting CVC if it was found.
@@ -1969,7 +1970,7 @@ void CreditCardSaveManager::LogCardUploadDecisionsToAutofillInternals(
 }
 
 void CreditCardSaveManager::LogSaveCardRequestExpirationDateReasonMetric() {
-  const std::string_view app_locale = client_->GetAppLocale().tag_string();
+  const base::i18n::LanguageTag& app_locale = client_->GetAppLocale();
   bool is_month_empty =
       upload_request_.card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale).empty();
   bool is_year_empty =

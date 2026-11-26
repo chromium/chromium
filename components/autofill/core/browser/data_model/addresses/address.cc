@@ -195,7 +195,7 @@ void Address::GetMatchingTypes(std::u16string_view text,
 
   if (!state_name.empty() || !state_abbreviation.empty()) {
     std::u16string canon_profile_state = normalization::NormalizeForComparison(
-        GetInfo(ADDRESS_HOME_STATE, app_locale.tag_string()));
+        GetInfo(ADDRESS_HOME_STATE, app_locale));
     if ((!state_name.empty() &&
          compare.StringsEqual(state_name, canon_profile_state)) ||
         (!state_abbreviation.empty() &&
@@ -209,10 +209,11 @@ FieldTypeSet Address::GetSupportedTypes() const {
   return GetRoot().GetSupportedTypes();
 }
 
-std::u16string Address::GetInfo(FieldType type, std::string_view locale) const {
+std::u16string Address::GetInfo(FieldType type,
+                                const base::i18n::LanguageTag& locale) const {
   if (type == ADDRESS_HOME_COUNTRY) {
     return AutofillCountry(GetRoot().GetValueForType(ADDRESS_HOME_COUNTRY),
-                           locale)
+                           locale.tag_string())
         .name();
   }
 

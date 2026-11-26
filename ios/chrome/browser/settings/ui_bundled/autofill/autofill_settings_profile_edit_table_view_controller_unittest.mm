@@ -126,8 +126,7 @@ class AutofillSettingsProfileEditTableViewControllerTest
       expected_values.push_back(
           {type, profile_->GetInfo(type, GetApplicationContext()
                                              ->GetApplicationLocaleStorage()
-                                             ->GetTag()
-                                             .tag_string())});
+                                             ->GetTag())});
     }
 
     size_t totalItems = (size_t)[model numberOfItemsInSection:0] +

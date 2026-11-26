@@ -4,6 +4,8 @@
 
 #import <string_view>
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -228,7 +230,9 @@ void MakeSurePaymentMethodSuggestionsAreVisible() {
   // bottom sheet.
   autofill::CreditCard card = autofill::test::GetCreditCard();
   NSString* cc_text = base::SysUTF16ToNSString(card.GetInfo(
-      autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride()));
+      autofill::CREDIT_CARD_NAME_FULL,
+      base::i18n::GetLanguageTagFromString(l10n_util::GetLocaleOverride())
+          .value_or(base::i18n::GetKnownLanguageTag("und"))));
   if ([ChromeEarlGrey isIPadIdiom]) {
     // On iPad, the suggestion text is an attributed string containing the
     // obfuscated credit card on the 2nd line.

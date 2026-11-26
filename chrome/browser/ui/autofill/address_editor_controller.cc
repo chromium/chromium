@@ -126,7 +126,7 @@ void AddressEditorController::SetProfileInfo(FieldType type,
 
 std::u16string AddressEditorController::GetProfileInfo(FieldType type) {
   // TDOD(mamir): Update the implementation to format strings properly.
-  return profile_to_edit_.GetInfo(type, locale_.tag_string());
+  return profile_to_edit_.GetInfo(type, locale_);
 }
 
 const AutofillProfile& AddressEditorController::GetAddressProfile() {

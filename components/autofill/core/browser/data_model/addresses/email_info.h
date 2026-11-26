@@ -34,8 +34,9 @@ class EmailInfo : public FormGroup {
   bool operator==(const EmailInfo& other) const;
 
   // FormGroup:
-  std::u16string GetInfo(FieldType type,
-                         std::string_view app_locale) const override;
+  std::u16string GetInfo(
+      FieldType type,
+      const base::i18n::LanguageTag& app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         std::u16string_view value,

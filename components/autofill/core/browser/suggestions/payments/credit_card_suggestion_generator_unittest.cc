@@ -514,8 +514,8 @@ class CreditCardSuggestionGeneratorTest
     return autofill_manager().GetAmountExtractionManager();
   }
 
-  std::string_view app_locale() {
-    return payments_data().app_locale().tag_string();
+  const base::i18n::LanguageTag& app_locale() {
+    return payments_data().app_locale();
   }
 
   void SetCreditCardUploadEnabledForTest(bool credit_card_upload_enabled) {

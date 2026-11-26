@@ -122,8 +122,7 @@ std::u16string SaveAddressBubbleController::GetAddressSummary() const {
       std::u16string value =
           address_profile_.GetInfo(field, g_browser_process->GetFeatures()
                                               ->application_locale_storage()
-                                              ->GetTag()
-                                              .tag_string());
+                                              ->GetTag());
       if (!value.empty()) {
         values.push_back(value);
       }
@@ -148,11 +147,9 @@ std::u16string SaveAddressBubbleController::GetProfileEmail() const {
     return {};
   }
 
-  return address_profile_.GetInfo(EMAIL_ADDRESS,
-                                  g_browser_process->GetFeatures()
-                                      ->application_locale_storage()
-                                      ->GetTag()
-                                      .tag_string());
+  return address_profile_.GetInfo(
+      EMAIL_ADDRESS,
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
 }
 
 std::u16string SaveAddressBubbleController::GetProfilePhone() const {

@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -16,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_util.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -47,9 +47,10 @@ namespace {
 // Returns why the cardholder name of `existing_server_card` can't be updated
 // from `extracted_credit_card`, or nullopt if it can.
 std::optional<autofill_metrics::CardholderNameUpdateFlowEligibility>
-GetCardholderNameUpdateExclusionReason(const CreditCard& existing_server_card,
-                                       const CreditCard& extracted_credit_card,
-                                       std::string_view app_locale) {
+GetCardholderNameUpdateExclusionReason(
+    const CreditCard& existing_server_card,
+    const CreditCard& extracted_credit_card,
+    const base::i18n::LanguageTag& app_locale) {
   using autofill_metrics::CardholderNameUpdateFlowEligibility;
   if (existing_server_card.HasNameOnCard()) {
     return CardholderNameUpdateFlowEligibility::kServerCardAlreadyHasName;
@@ -159,8 +160,7 @@ PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
       return;
     }
     const FieldType field_type = field.Type().GetCreditCardType();
-    std::u16string old_value =
-        result.card.GetInfo(field_type, app_locale.tag_string());
+    std::u16string old_value = result.card.GetInfo(field_type, app_locale);
     if (field.form_control_type() == FormControlType::kInputMonth) {
       // If |field| is an HTML5 month input, handle it as a special case.
       DCHECK_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, field_type);
@@ -190,8 +190,7 @@ PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
       }
     }
 
-    std::u16string new_value =
-        result.card.GetInfo(field_type, app_locale.tag_string());
+    std::u16string new_value = result.card.GetInfo(field_type, app_locale);
     // Skip duplicate field check if the field is a split credit card
     // number field.
     const bool skip_duplication_check =
@@ -218,8 +217,7 @@ PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
         std::erase_if(fields, [&](const AutofillField* field) {
           return std::invoke(pred, *field) ||
                  !result.card
-                      .GetInfo(field->Type().GetCreditCardType(),
-                               app_locale.tag_string())
+                      .GetInfo(field->Type().GetCreditCardType(), app_locale)
                       .empty();
         });
       };
@@ -324,8 +322,8 @@ std::optional<CreditCard> PaymentsFormDataImporter::ExtractCreditCard(
   // Capture the cardholder name extracted from `form` before merging with local
   // cards, so a matched server card does not inherit a local card's name when
   // `form` has no cardholder name field.
-  const std::u16string extracted_name = candidate.GetInfo(
-      CREDIT_CARD_NAME_FULL, client_->GetAppLocale().tag_string());
+  const std::u16string extracted_name =
+      candidate.GetInfo(CREDIT_CARD_NAME_FULL, client_->GetAppLocale());
 
   // Attempt to merge with an existing local credit card without presenting a
   // prompt.
@@ -427,9 +425,9 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
       // Only count the cardholder name update as suppressed if it would
       // otherwise have been offered.
       autofill_metrics::LogCardholderNameUpdateFlowEligibility(
-          GetCardholderNameUpdateExclusionReason(
-              *existing_server_card, *extracted_credit_card,
-              client_->GetAppLocale().tag_string())
+          GetCardholderNameUpdateExclusionReason(*existing_server_card,
+                                                 *extracted_credit_card,
+                                                 client_->GetAppLocale())
               .value_or(autofill_metrics::CardholderNameUpdateFlowEligibility::
                             kSuppressedByVcnEnrollment));
     }
@@ -499,7 +497,7 @@ bool PaymentsFormDataImporter::ShouldOfferCardholderNameUpdate(
   if (std::optional<autofill_metrics::CardholderNameUpdateFlowEligibility>
           exclusion_reason = GetCardholderNameUpdateExclusionReason(
               *existing_server_card, extracted_credit_card,
-              client_->GetAppLocale().tag_string())) {
+              client_->GetAppLocale())) {
     autofill_metrics::LogCardholderNameUpdateFlowEligibility(*exclusion_reason);
     return false;
   }

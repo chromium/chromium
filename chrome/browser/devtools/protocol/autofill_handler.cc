@@ -11,7 +11,6 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
-#include "base/i18n/tag_converters.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/devtools/protocol/autofill.h"
@@ -282,7 +281,8 @@ void AutofillHandler::SetAddresses(
   std::optional<std::vector<autofill::AutofillProfile>> autofill_profiles =
       autofill::AutofillProfilesFromJSON(&profiles);
   if (autofill_profiles) {
-    const std::string locale = "en-US";
+    const base::i18n::LanguageTag locale =
+        base::i18n::GetKnownLanguageTag("en-US");
     for (autofill::AutofillProfile& profile : *autofill_profiles) {
       const std::u16string test_address_country =
           profile.GetInfo(autofill::FieldType::ADDRESS_HOME_COUNTRY, locale);
@@ -345,7 +345,8 @@ void AutofillHandler::OnFillOrPreviewForm(
   }();
 
   // Devtools is already in English, so we can default the locale to en-US.
-  const std::string locale = "en-US";
+  const base::i18n::LanguageTag locale =
+      base::i18n::GetKnownLanguageTag("en-US");
 
   auto filled_fields_to_be_sent_to_devtools =
       std::make_unique<protocol::Array<protocol::Autofill::FilledField>>();
@@ -412,8 +413,7 @@ void AutofillHandler::OnFillOrPreviewForm(
   autofill::GetAddressComponents(
       base::UTF16ToUTF8(profile_used_to_fill_form->GetRawInfo(
           autofill::ADDRESS_HOME_COUNTRY)),
-      base::i18n::GetLanguageTagFromString(locale).value_or(
-          base::i18n::GetKnownLanguageTag("und")),
+      locale,
       /*include_literals=*/false, &components, nullptr);
 
   // `profile_address_fields` is used to represent a profile as seen in the
