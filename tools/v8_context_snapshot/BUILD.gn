@@ -90,68 +90,75 @@ if (use_v8_context_snapshot) {
 
     outputs = [ output_file ]
   }
+}
 
-  if (v8_snapshot_toolchain == current_toolchain) {
-    executable("v8_context_snapshot_generator") {
-      sources = [ "v8_context_snapshot_generator.cc" ]
+# The generator runs on the build host in the V8 snapshot toolchain for both
+# V8 context snapshot generation and WebUI code cache generation. The
+# default-toolchain copy serves webui_resources_tools_python_unittests, which
+# run it next to the snapshot in the root build directory.
+if (v8_snapshot_toolchain == current_toolchain ||
+    current_toolchain == default_toolchain) {
+  executable("v8_context_snapshot_generator") {
+    sources = [ "v8_context_snapshot_generator.cc" ]
 
-      deps = [
-        "//gin",
-        "//mojo/core/embedder",
-        "//services/service_manager/public/cpp",
-        "//third_party/blink/public:blink",
-        "//v8",
-      ]
+    deps = [
+      ":buildflags",
+      "//base",
+      "//gin",
+      "//mojo/core/embedder",
+      "//services/service_manager/public/cpp",
+      "//third_party/blink/public:blink",
+      "//v8",
+    ]
 
-      configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+    configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+    configs += [
+      "//build/config/compiler:thinlto_optimize_none",
+      "//v8:external_startup_data",
+      ":disable_icf",
+    ]
+
+    # This binary only runs at build time to generate the snapshot and WebUI
+    # code caches; skip debug info emission (including split DWARF .dwo files)
+    # and slow shipping linker optimizations.
+    if (!is_win && !is_apple) {
+      configs -= [ "//build/config/compiler:default_symbols" ]
       configs += [
-        "//build/config/compiler:thinlto_optimize_none",
-        "//v8:external_startup_data",
-        ":disable_icf",
+        "//build/config/compiler:no_symbols",
+        "//build/config/compiler:strip_debug",
       ]
-
-      # This binary only runs at build time to generate the snapshot; skip
-      # debug info emission (including split DWARF .dwo files) and slow
-      # shipping linker optimizations.
-      if (!is_win && !is_apple) {
-        configs -= [ "//build/config/compiler:default_symbols" ]
-        configs += [
-          "//build/config/compiler:no_symbols",
-          "//build/config/compiler:strip_debug",
+      if (use_lld || linker_path != "") {
+        ldflags = [
+          "-Wl,-O0",
+          "-Wl,--build-id=none",
         ]
-        if (use_lld || linker_path != "") {
-          ldflags = [
-            "-Wl,-O0",
-            "-Wl,--build-id=none",
-          ]
-        }
-      } else if (is_apple) {
-        configs -= [ "//build/config/apple:strip_all" ]
-        configs += [ "//build/config/apple:no_dsym" ]
-        if (use_lld) {
-          ldflags = [
-            "-Wl,--no-deduplicate-strings",
-            "-Wl,-no-deduplicate-symbol-strings",
-          ]
-        }
+      }
+    } else if (is_apple) {
+      configs -= [ "//build/config/apple:strip_all" ]
+      configs += [ "//build/config/apple:no_dsym" ]
+      if (use_lld) {
+        ldflags = [
+          "-Wl,--no-deduplicate-strings",
+          "-Wl,-no-deduplicate-symbol-strings",
+        ]
       }
     }
   }
+}
 
-  # This config disables a link time optimization "ICF", which may merge
-  # different functions into one if the function signature and body of them are
-  # identical.
-  #
-  # ICF breaks 1:1 mappings of the external references for V8 snapshot, so we
-  # disable it while taking a V8 snapshot.
-  config("disable_icf") {
-    visibility = [ ":*" ]  # Only targets in this file can depend on this.
-    if (is_win) {
-      ldflags = [ "/OPT:NOICF" ]  # link.exe, but also lld-link.exe.
-    } else if (is_apple && !use_lld) {
-      ldflags = [ "-Wl,-no_deduplicate" ]  # ld64.
-    } else if (use_lld || linker_path != "") {
-      ldflags = [ "-Wl,--icf=none" ]
-    }
+# This config disables a link time optimization "ICF", which may merge
+# different functions into one if the function signature and body of them are
+# identical.
+#
+# ICF breaks 1:1 mappings of the external references for V8 snapshot, so we
+# disable it while taking a V8 snapshot.
+config("disable_icf") {
+  visibility = [ ":*" ]  # Only targets in this file can depend on this.
+  if (is_win) {
+    ldflags = [ "/OPT:NOICF" ]  # link.exe, but also lld-link.exe.
+  } else if (is_apple && !use_lld) {
+    ldflags = [ "-Wl,-no_deduplicate" ]  # ld64.
+  } else if (use_lld || linker_path != "") {
+    ldflags = [ "-Wl,--icf=none" ]
   }
 }

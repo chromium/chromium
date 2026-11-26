@@ -38,7 +38,7 @@ class GenerateCodeCacheTest(unittest.TestCase):
     )
     args = [
       "--util_path",
-      os.path.join(_BUILD_DIR, "code_cache_generator"),
+      os.path.join(_BUILD_DIR, "v8_context_snapshot_generator"),
       "--in_folder",
       os.path.join(_HERE_DIR, "tests", "generate_code_cache"),
       "--in_files",

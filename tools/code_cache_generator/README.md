@@ -1,7 +1,8 @@
 # WebUI code cache generator
 
-[`code_cache_generator`](code_cache_generator.cc) compiles WebUI JavaScript
-modules at build time and writes the V8 code cache for each one. Chrome ships
+[`v8_context_snapshot_generator --generate_code_cache`](/tools/v8_context_snapshot/v8_context_snapshot_generator.cc)
+compiles WebUI JavaScript modules at build time and writes the V8 code cache
+for each one. Chrome ships
 the result as resources, so a WebUI renderer can deserialize compiled code
 instead of compiling its scripts on first use. This matters most for top-chrome
 WebUIs such as the toolbar, whose renderer otherwise compiles hundreds of
@@ -89,8 +90,9 @@ the same arrangement V8 uses for `mksnapshot` and Chrome uses for
 
 To get that arrangement,
 [generate_code_cache.gni](/ui/webui/resources/tools/generate_code_cache.gni)
-builds the generator in `v8_snapshot_toolchain`, which
-[snapshot_toolchain.gni](/v8/gni/snapshot_toolchain.gni) selects. For an x64
+reuses `v8_context_snapshot_generator` in `v8_snapshot_toolchain`, which
+[snapshot_toolchain.gni](/v8/gni/snapshot_toolchain.gni) selects, so Blink and
+V8 are only linked once. For an x64
 Mac target on an arm64 Mac, that toolchain is `clang_arm64_v8_x64` in
 [build/toolchain/mac/BUILD.gn](/build/toolchain/mac/BUILD.gn), which produces
 an arm64 program with x64 V8 inside. For 64-bit ChromeOS device targets, it is
@@ -99,15 +101,15 @@ an arm64 program with x64 V8 inside. For 64-bit ChromeOS device targets, it is
 program with the target CPU's V8 inside. 32-bit arm device builds skip
 generation because their x86 snapshot toolchain needs 32-bit host libraries
 absent from the ChromeOS ebuild. For native builds it is the default toolchain.
-[BUILD.gn](BUILD.gn) also keeps a default-toolchain copy for the Python unit
-test.
+[tools/v8_context_snapshot/BUILD.gn](/tools/v8_context_snapshot/BUILD.gn) also
+keeps a default-toolchain copy for the Python unit test.
 
 A generator from another toolchain would load the snapshot built next to
 itself, which belongs to the build machine. To avoid that, the build passes
 the target's snapshot explicitly with `--snapshot_blob` or
-`--context_snapshot`, which `main()` in
-[code_cache_generator.cc](code_cache_generator.cc) loads before falling back to
-the default snapshot.
+`--context_snapshot`, which `RunCodeCacheGenerator()` in
+[v8_context_snapshot_generator.cc](/tools/v8_context_snapshot/v8_context_snapshot_generator.cc)
+loads before falling back to the default snapshot.
 
 The two switches are deliberate. The switch tells the generator which kind of
 snapshot it is loading, `gin::V8SnapshotFileType::kDefault` or
@@ -176,21 +178,21 @@ Mac builds on Linux machines turn off `use_v8_context_snapshot` so that Blink
 is not built a second time in the snapshot toolchain (see
 [v8_context_snapshot.gni](/tools/v8_context_snapshot/v8_context_snapshot.gni)).
 The generator links Blink, so building it there would bring that cost back. On
-Mac machines the snapshot toolchain already builds Blink for
-`v8_context_snapshot_generator`, and the generator adds one link plus the
-generation actions.
+Mac machines the snapshot toolchain already builds Blink and links
+`v8_context_snapshot_generator`, so code cache generation reuses that binary
+and only adds the generation actions.
 
 ## Cost
 
 *   Size: the cache for the current set of WebUIs is about 3.5 MB per CPU,
     so about 7.1 MB in a universal Mac app. Linux, Windows, and ChromeOS ship
     the same data inside `resources.pak`.
-*   Build time: Mac builds on Mac machines add one link, the generator, plus
-    the generation actions. The snapshot toolchain already builds Blink there.
-    Mac builds on Linux machines are unchanged, since they skip generation.
+*   Build time: Mac builds on Mac machines reuse `v8_context_snapshot_generator`
+    and only add the generation actions. Mac builds on Linux machines are
+    unchanged, since they skip generation.
     ChromeOS device builds disable `use_v8_context_snapshot`, so enabling
-    generation adds a Blink build in `cros:v8_snapshot` for the generator
-    plus the generation actions.
+    generation adds a Blink build and link in `cros:v8_snapshot` for the
+    generator plus the generation actions.
 
 ## Testing
 
