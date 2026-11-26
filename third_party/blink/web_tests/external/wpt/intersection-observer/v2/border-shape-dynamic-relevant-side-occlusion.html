@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dynamic border-shape relevant-side failover updates visual overflow for occlusion</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #target {
+    position: absolute;
+    left: 200px;
+    top: 150px;
+    width: 100px;
+    height: 100px;
+    background: blue;
+  }
+  #occluder {
+    position: absolute;
+    left: 100px;
+    top: 100px;
+    width: 10px;
+    height: 10px;
+    border-shape: circle(5px at 50% 50%);
+    /* Initially block-start (top) is the relevant side with 0 used width,
+       so the 10px-tall box at y=100..110 does not overlap #target at y=150..250.
+       When border-top-style changes to none, the relevant side fails over to
+       inline-start (left, 500px), expanding the stroke vertically over #target. */
+    border-top: 0px hidden transparent;
+    border-left: 500px solid red;
+    box-sizing: border-box;
+    background: red;
+  }
+</style>
+<div id="target"></div>
+<div id="occluder"></div>
+
+<script>
+  promise_test(async () => {
+    const target = document.getElementById("target");
+    const occluder = document.getElementById("occluder");
+
+    function observeVisibility() {
+      return new Promise(resolve => {
+        const observer = new IntersectionObserver(entries => {
+          observer.disconnect();
+          resolve(entries[0].isVisible);
+        }, {trackVisibility: true, delay: 100});
+        observer.observe(target);
+      });
+    }
+
+    assert_true(await observeVisibility(),
+                "Target should initially be visible when border-top-style is hidden");
+
+    // Switching border-top-style from hidden to none keeps all four used border
+    // widths unchanged (0px vs 0px on top), so layout is not invalidated, but
+    // border-shape's relevant side fails over to border-left (500px).
+    occluder.style.borderTopStyle = "none";
+    assert_false(await observeVisibility(),
+                 "Target should be occluded after relevant-side failover from hidden to none");
+
+    // Also verify failover from a 0px solid border to none.
+    occluder.style.borderTop = "0px solid transparent";
+    assert_true(await observeVisibility(),
+                "Target should be visible again when border-top is 0px solid");
+
+    occluder.style.borderTopStyle = "none";
+    assert_false(await observeVisibility(),
+                 "Target should be occluded after relevant-side failover from 0px solid to none");
+  }, "Dynamic border-shape relevant-side failover invalidates visual overflow for IOv2 occlusion");
+</script>

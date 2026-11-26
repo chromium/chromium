@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -2966,6 +2967,54 @@ TEST_F(ComputedStyleTest, BorderVisuallyEqualIndependentOfVisitedState) {
       visited_current->VisualInvalidationDiff(GetDocument(), *visited_explicit);
   EXPECT_TRUE(unvisited_diff.NeedsNormalPaintInvalidation());
   EXPECT_TRUE(visited_diff.NeedsNormalPaintInvalidation());
+}
+
+TEST_F(ComputedStyleTest, BorderShapeRelevantSideFailoverRecomputesVisualOverflow) {
+  ScopedCSSBorderShapeForTest scoped_border_shape(true);
+  Document& document = GetDocument();
+  document.body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="occluder" style="
+      position: absolute;
+      left: 10px;
+      top: 100px;
+      width: 10px;
+      height: 10px;
+      border-shape: circle(5px at 50% 50%);
+      border-top: 0px hidden transparent;
+      border-left: 500px solid red;
+      box-sizing: border-box;
+    "></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* occluder = GetElementById("occluder");
+  ASSERT_TRUE(occluder);
+  const auto* box = To<LayoutBox>(occluder->GetLayoutObject());
+  ASSERT_TRUE(box);
+
+  const ComputedStyle* old_style = occluder->GetComputedStyle();
+  ASSERT_TRUE(old_style);
+  EXPECT_TRUE(old_style->HasBorderShape());
+  const PhysicalRect initial_overflow = box->VisualOverflowRect();
+  EXPECT_EQ(initial_overflow.Width(), LayoutUnit(500));
+  EXPECT_LT(initial_overflow.Height(), LayoutUnit(100));
+
+  // Changing border-top-style from hidden to none leaves all four used border
+  // widths unchanged, so layout is not dirtied, but border-shape's relevant
+  // side fails over to border-left (500px). Visual overflow must be recomputed.
+  occluder->SetInlineStyleProperty(CSSPropertyID::kBorderTopStyle,
+                                   CSSValueID::kNone);
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  const ComputedStyle* new_style = occluder->GetComputedStyle();
+  ASSERT_TRUE(new_style);
+  StyleDifference diff =
+      old_style->VisualInvalidationDiff(document, *new_style);
+  EXPECT_TRUE(diff.needs_recompute_visual_overflow);
+
+  const PhysicalRect updated_overflow = box->VisualOverflowRect();
+  EXPECT_GE(updated_overflow.Width(), initial_overflow.Width());
+  EXPECT_GT(updated_overflow.Height(), LayoutUnit(400));
 }
 
 }  // namespace blink

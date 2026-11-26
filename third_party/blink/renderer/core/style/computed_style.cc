@@ -1206,6 +1206,11 @@ bool ComputedStyle::DiffNeedsRecomputeVisualOverflow(
     return true;
   }
 
+  if ((field_diff & kBorderWidth) &&
+      (HasBorderShape() || other.HasBorderShape())) {
+    return true;
+  }
+
   if ((field_diff & kOutline) && !OutlineVisuallyEqual(other)) {
     return true;
   }

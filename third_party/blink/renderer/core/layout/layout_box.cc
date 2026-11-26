@@ -705,12 +705,15 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       }
     }
 
-    // When box-shadow changes while border-shape is active, force a paint
-    // property update to ensure the InnerBorderShapeClip overflow hierarchy is
-    // re-evaluated consistently with the visual overflow recomputation.
-    if (!base::ValuesEquivalent(old_style->BoxShadow(),
-                                new_style.BoxShadow()) &&
-        (new_style.HasBorderShape() || old_style->HasBorderShape())) {
+    // When box-shadow or visual overflow (e.g. border-shape stroke thickness
+    // from border-style/border-width changes) changes while border-shape is
+    // active, force a paint property update to ensure the InnerBorderShapeClip
+    // overflow hierarchy is re-evaluated consistently with the visual overflow
+    // recomputation.
+    if ((new_style.HasBorderShape() || old_style->HasBorderShape()) &&
+        (diff.needs_recompute_visual_overflow ||
+         !base::ValuesEquivalent(old_style->BoxShadow(),
+                                 new_style.BoxShadow()))) {
       SetNeedsPaintPropertyUpdate();
     }
 
