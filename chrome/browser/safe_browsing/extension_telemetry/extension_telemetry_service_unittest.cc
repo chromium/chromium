@@ -119,7 +119,8 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
   explicit ExtensionTelemetryServiceTest(
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-      const std::vector<base::test::FeatureRef>& enabled_features = {});
+      const std::vector<base::test::FeatureRef>& enabled_features = {},
+      bool isolated_mode_replaces_incognito = false);
   void SetUp() override {
     ASSERT_NE(telemetry_service_, nullptr);
     ASSERT_TRUE(extensions_root_dir_.CreateUniqueTempDir());
@@ -244,8 +245,10 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
   }
 
   // Initialized before the task environment and the profile, so that their
-  // services see the enabled features.
+  // services see the enabled features and Isolated Mode override.
   base::test::ScopedFeatureList scoped_feature_list_;
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
   // Test directory that serves as the root directory for all test extension
   // files.
   base::ScopedTempDir extensions_root_dir_;
@@ -262,8 +265,11 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
 
 ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest(
     base::test::TaskEnvironment::TimeSource time_source,
-    const std::vector<base::test::FeatureRef>& enabled_features)
-    : scoped_feature_list_(enabled_features), task_environment_{time_source} {
+    const std::vector<base::test::FeatureRef>& enabled_features,
+    bool isolated_mode_replaces_incognito)
+    : scoped_feature_list_(enabled_features),
+      scoped_isolated_mode_(isolated_mode_replaces_incognito),
+      task_environment_{time_source} {
   // Create extension prefs and registry instances.
   extension_prefs_ = extensions::ExtensionPrefs::Get(&profile_);
   extension_registrar_ = extensions::ExtensionRegistrar::Get(&profile_);
@@ -1965,7 +1971,8 @@ class ExtensionTelemetryServiceIsolatedModeTest
       : ExtensionTelemetryServiceTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             {enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2,
-             extensions_features::kEnterpriseExtensionDOMActivityTelemetry}) {
+             extensions_features::kEnterpriseExtensionDOMActivityTelemetry},
+            /*isolated_mode_replaces_incognito=*/true) {
     isolated_profile_ =
         profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
@@ -1983,9 +1990,6 @@ class ExtensionTelemetryServiceIsolatedModeTest
     ExtensionTelemetryServiceTest::SetUp();
   }
 
-  // Makes the primary Off-The-Record profile an Isolated Mode profile.
-  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
-      scoped_isolated_mode_;
   raw_ptr<Profile> isolated_profile_ = nullptr;
 };
 
