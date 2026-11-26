@@ -167,8 +167,8 @@ void ReadInstallCommandFromManifest(
   }
 }
 
-bool IsArchitectureSupported(const std::string& arch,
-                             const std::string& current_architecture) {
+bool IsArchitectureSupported(std::string_view arch,
+                             std::string_view current_architecture) {
   if (arch.empty()) {
     return true;
   }
@@ -208,13 +208,13 @@ bool IsArchitectureSupported(const std::string& arch,
   return arch == update_client::kArchIntel;
 }
 
-bool IsPlatformCompatible(const std::string& platform) {
+bool IsPlatformCompatible(std::string_view platform) {
   return platform.empty() || base::EqualsCaseInsensitiveASCII(platform, "win");
 }
 
-bool IsArchitectureCompatible(const std::string& arch_list,
-                              const std::string& current_architecture) {
-  std::vector<std::string> architectures = base::SplitString(
+bool IsArchitectureCompatible(std::string_view arch_list,
+                              std::string_view current_architecture) {
+  std::vector<std::string_view> architectures = base::SplitStringPiece(
       arch_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   if (architectures.empty()) {
@@ -224,12 +224,12 @@ bool IsArchitectureCompatible(const std::string& arch_list,
   std::ranges::sort(architectures);
 
   if (std::ranges::find_if(
-          architectures, [&current_architecture](const std::string& narch) {
+          architectures, [current_architecture](std::string_view narch) {
             if (narch[0] != '-') {
               return false;
             }
 
-            const std::string arch = narch.substr(1);
+            std::string_view arch = narch.substr(1);
 
             // This code accounts for Omaha 3 Offline manifests having `arch` as
             // "x64", but `GetArchitecture` returning "x86_64" for amd64.
@@ -240,15 +240,15 @@ bool IsArchitectureCompatible(const std::string& arch_list,
     return false;
   }
   std::erase_if(architectures,
-                [](const std::string& arch) { return arch[0] == '-'; });
+                [](std::string_view arch) { return arch[0] == '-'; });
   return architectures.empty() ||
          std::ranges::find_if(
-             architectures, [&current_architecture](const std::string& arch) {
+             architectures, [current_architecture](std::string_view arch) {
                return IsArchitectureSupported(arch, current_architecture);
              }) != architectures.end();
 }
 
-bool IsOSVersionCompatible(const std::string& min_os_version) {
+bool IsOSVersionCompatible(std::string_view min_os_version) {
   if (min_os_version.empty()) {
     return true;
   }

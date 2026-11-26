@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_WIN_MANIFEST_UTIL_H_
 
 #include <string>
+#include <string_view>
 
 #include "chrome/updater/win/protocol_parser_xml.h"
 
@@ -64,11 +65,11 @@ void ReadInstallCommandFromManifest(
 // `::IsWow64GuestMachineSupported()`.
 //   * If `::IsWow64GuestMachineSupported()` is not available, returns `true`
 //     if `arch` is x86.
-bool IsArchitectureSupported(const std::string& arch,
-                             const std::string& current_architecture);
+bool IsArchitectureSupported(std::string_view arch,
+                             std::string_view current_architecture);
 
 // Returns `true` if `platform` is empty or equals "win".
-bool IsPlatformCompatible(const std::string& platform);
+bool IsPlatformCompatible(std::string_view platform);
 
 // Checks if the current architecture is compatible with the entries in
 // `arch_list`. `arch_list` can be a single entry, or multiple entries separated
@@ -93,8 +94,8 @@ bool IsPlatformCompatible(const std::string& platform);
 // * `arch_list` == "x86,x64,-arm64": returns `false` if the underlying host is
 // arm64.
 // * `arch_list` == "-arm64": returns `false` if the underlying host is arm64.
-bool IsArchitectureCompatible(const std::string& arch_list,
-                              const std::string& current_architecture);
+bool IsArchitectureCompatible(std::string_view arch_list,
+                              std::string_view current_architecture);
 
 // Returns `true` if `min_os_version` is valid and is less than or equal to the
 // current OS version in the format "major.minor.build.patch".
@@ -108,7 +109,7 @@ bool IsArchitectureCompatible(const std::string& arch_list,
 // is a minimum `major.minor` version. For example, `6.0` will match all OS
 // versions that are at or above that version, regardless of `build` and `patch`
 // numbers.
-bool IsOSVersionCompatible(const std::string& min_os_version);
+bool IsOSVersionCompatible(std::string_view min_os_version);
 
 // Returns `true` if the platform, architecture, and OS within the parser
 // `requirements` are all compatible with the current OS.
