@@ -409,7 +409,6 @@ crbug.com/442817314 [ iOS26 iOS27 ] TabGroupIndicatorTestCase/testTabGroupIndica
 crbug.com/40678419 [ Device ] DownloadManagerTestCase/testSuccessfulDownloadInIncognito [ Pass Failure ]
 crbug.com/438749917 [ iPhone Simulator ] DownloadManagerTestCase/testAccessibilityOnCompletedDownloadToolbar [ Pass Failure ]
 crbug.com/438749917 [ iPhone ] DownloadManagerTestCase/testVisibleFileNameAndOpenInDownloads [ Pass Failure ]
-crbug.com/515624708 [ iPhone Device ] DownloadManagerTestCase/testVisibleFileNameAndOpenInDownloads [ Failure ]
 crbug.com/438749917 [ iPhone ] DownloadManagerTestCase/testSwitchTabsAndOpenInDownloads [ Pass Failure ]
 crbug.com/515613762 [ iPhone Device ] DownloadManagerTestCase/testSwitchTabsAndOpenInDownloads [ Pass Failure ]
 crbug.com/518764990 [ iPad ] DownloadManagerTestCase/testDownloadWarnProceedWhenDownloadProtectionEnabled [ Pass Failure ]
