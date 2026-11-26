@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -77,6 +78,7 @@ public class TtcSessionMediatorTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private UserPrefs.Natives mUserPrefsJni;
     @Mock private PrefService mPrefService;
+    @Mock private TtcShortcutHandler.Natives mShortcutHandlerJni;
 
     private PropertyModel mModel;
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
@@ -105,6 +107,8 @@ public class TtcSessionMediatorTest {
         when(mWindowAndroid.getActivity())
                 .thenReturn(new WeakReference<>(Robolectric.buildActivity(Activity.class).get()));
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
+        TtcShortcutHandlerJni.setInstanceForTesting(mShortcutHandlerJni);
+        when(mShortcutHandlerJni.init(any(), any(), any())).thenReturn(1L);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
@@ -248,6 +252,64 @@ public class TtcSessionMediatorTest {
         mediator.toggleSession();
         verify(mService).endSession();
         verify(mService, never()).startSession();
+    }
+
+    @Test
+    public void testShortcutsHandledWhileSessionsCanRun() {
+        TtcSessionMediator mediator = createMediator();
+        verify(mShortcutHandlerJni).init(any(), eq(mWindowAndroid), eq(mProfile));
+
+        mediator.destroy();
+        verify(mShortcutHandlerJni).destroy(1L);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TTC)
+    public void testShortcutsNotHandledWhenTtcIsDisabled() {
+        createMediator();
+        verify(mShortcutHandlerJni, never()).init(any(), any(), any());
+    }
+
+    @Test
+    public void testShortcutsNotHandledInIncognito() {
+        createMediator();
+        switchToIncognito(mProfileSupplier);
+        verify(mShortcutHandlerJni).destroy(anyLong());
+    }
+
+    @Test
+    public void testKeyboardShortcutTogglesSession() {
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.onKeyboardShortcut();
+        verify(mService).startSession();
+
+        when(mService.isSessionActive()).thenReturn(true);
+        mediator.onKeyboardShortcut();
+        verify(mService).endSession();
+    }
+
+    @Test
+    public void testHoldToSpeakStartsSessionUntilReleased() {
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.onHoldToSpeakPressed();
+        verify(mService).startSession();
+
+        when(mService.isSessionActive()).thenReturn(true);
+        mediator.onHoldToSpeakReleased();
+        verify(mService).endSession();
+    }
+
+    @Test
+    public void testHoldToSpeakDuringSessionDoesNotEndIt() {
+        when(mService.isSessionActive()).thenReturn(true);
+        TtcSessionMediator mediator = createMediator();
+
+        mediator.onHoldToSpeakPressed();
+        mediator.onHoldToSpeakReleased();
+        verify(mService, never()).startSession();
+        verify(mService, never()).endSession();
     }
 
     @Test

@@ -415,6 +415,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/flags:flags_android",
+      "//chrome/browser/ttc/android:unit_tests",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/android/tab_model:test_support",
       "//chrome/browser/ui/browser_window",

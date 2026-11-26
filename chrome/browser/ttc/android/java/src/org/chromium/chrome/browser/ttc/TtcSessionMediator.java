@@ -43,7 +43,10 @@ import org.chromium.ui.modelutil.PropertyModel;
  * no window is visible, rather than ending it when this window alone stops.
  */
 @NullMarked
-class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativeObserver {
+class TtcSessionMediator
+        implements TtcKeyedService.Observer,
+                StartStopWithNativeObserver,
+                TtcShortcutHandler.Delegate {
     /**
      * How long the pill keeps showing an error after the session ends. The native side ends the
      * session as soon as it reports a fatal error, so without this the error would never be seen.
@@ -74,6 +77,12 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
     // The first run dialog while it is showing, so it can be dismissed if the service goes away
     // or a session starts from another window.
     private @Nullable PropertyModel mFreDialog;
+
+    // Handles TTC's keyboard shortcuts in this window while sessions can run.
+    private @Nullable TtcShortcutHandler mShortcutHandler;
+
+    // Whether the hold to speak shortcut started the session, so releasing it ends the session.
+    private boolean mSessionStartedByHold;
 
     /**
      * @param model The pill's model; {@link TtcSessionProperties#VISIBLE} is false until a session
@@ -213,6 +222,32 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
                 });
     }
 
+    // TtcShortcutHandler.Delegate:
+
+    @Override
+    public void onKeyboardShortcut() {
+        toggleSession();
+    }
+
+    @Override
+    public void onHoldToSpeakPressed() {
+        if (mService == null) return;
+        // Holding the shortcut during a session doesn't end it when the shortcut is released.
+        mSessionStartedByHold = !mService.isSessionActive();
+        if (mSessionStartedByHold) toggleSession();
+    }
+
+    @Override
+    public void onHoldToSpeakReleased() {
+        if (!mSessionStartedByHold) return;
+        mSessionStartedByHold = false;
+        // TtcKeyedService#endSession() is a no-op when no session is active, e.g. when the first
+        // run dialog or the microphone permission prompt opened instead. Either one takes focus
+        // while the shortcut is held, and losing focus reports the release right away (see
+        // TtcShortcutHandlerAndroid::StartHolding()).
+        if (mService != null) mService.endSession();
+    }
+
     // StartStopWithNativeObserver:
 
     @Override
@@ -280,6 +315,7 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
                 mModel.set(TtcSessionProperties.VISIBLE, false);
                 updateEntryPoint(false);
             } else {
+                mShortcutHandler = new TtcShortcutHandler(mWindowAndroid, profile, this);
                 mService.addObserver(this);
                 onServiceStateChanged(
                         mService.isSessionActive()
@@ -307,6 +343,11 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
         clearError();
         // A pending first run dialog is for the old profile's service.
         dismissFreDialog();
+        mSessionStartedByHold = false;
+        if (mShortcutHandler != null) {
+            mShortcutHandler.destroy();
+            mShortcutHandler = null;
+        }
         if (mService == null) return;
         mService.getWindowTracker().removeVisibleWindow(this);
         mService.removeObserver(this);

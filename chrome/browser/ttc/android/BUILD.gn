@@ -16,6 +16,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionProperties.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionViewBinder.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcSessionWindowTracker.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcShortcutHandler.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcVoicePlateView.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcWaveformView.java",
   ]
@@ -181,6 +182,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/ttc/TtcKeyedService.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcKeyedServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/ttc/TtcShortcutHandler.java",
   ]
 }
 
@@ -197,6 +199,8 @@ source_set("android") {
     "session_view_android.h",
     "ttc_keyed_service_android.cc",
     "ttc_keyed_service_android.h",
+    "ttc_shortcut_handler_android.cc",
+    "ttc_shortcut_handler_android.h",
     "ttc_shortcut_utils_android.cc",
   ]
   deps = [
@@ -205,9 +209,27 @@ source_set("android") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ttc/core",
+    "//chrome/browser/ttc/core:prefs",
     "//chrome/browser/ttc/core:shortcut",
+    "//components/prefs",
     "//components/ttc/app/public",
     "//ui/android",
     "//ui/base",
+    "//ui/events",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ttc_shortcut_handler_android_unittest.cc" ]
+  deps = [
+    ":android",
+    "//base",
+    "//chrome/browser/ttc/core:prefs",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events",
   ]
 }
