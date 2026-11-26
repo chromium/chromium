@@ -69,6 +69,11 @@ class SafetyPromoBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public boolean showHandlebar() {
+        return true;
+    }
+
+    @Override
     public float getHalfHeightRatio() {
         return HeightMode.DISABLED;
     }

@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View.MeasureSpec;
-import android.widget.ScrollView;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -64,6 +63,7 @@ public class SafetyPromoBottomSheetContentUnitTest {
         assertNull(mBottomSheetContent.getToolbarView());
         assertEquals(ContentPriority.HIGH, mBottomSheetContent.getPriority());
         assertTrue(mBottomSheetContent.swipeToDismissEnabled());
+        assertTrue(mBottomSheetContent.showHandlebar());
         assertEquals(
                 HeightMode.DISABLED,
                 mBottomSheetContent.getHalfHeightRatio(),
@@ -75,18 +75,29 @@ public class SafetyPromoBottomSheetContentUnitTest {
     }
 
     @Test
+    public void testContentView_hasNoCustomDragHandle() {
+        assertEquals(1, mContentView.getChildCount());
+        assertSame(
+                mContentView.findViewById(R.id.safety_promo_bottom_sheet_scroll_content),
+                mContentView.getChildAt(0));
+        int expectedPaddingTopPx =
+                mContentView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.safety_fre_bottom_sheet_padding_top);
+        assertEquals(expectedPaddingTopPx, mContentView.getPaddingTop());
+    }
+
+    @Test
     public void testGetVerticalScrollOffset_isScrollViewScrollOffset() {
         assertEquals(0, mBottomSheetContent.getVerticalScrollOffset());
 
         // Make the scroll view content taller than the sheet, so that the scroll view can scroll.
-        ScrollView scrollView =
-                mContentView.findViewById(R.id.safety_promo_bottom_sheet_scroll_view);
-        scrollView.getChildAt(0).setMinimumHeight(2 * SHEET_HEIGHT_PX);
+        mContentView.getChildAt(0).setMinimumHeight(2 * SHEET_HEIGHT_PX);
         mContentView.measure(
                 MeasureSpec.makeMeasureSpec(SHEET_WIDTH_PX, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(SHEET_HEIGHT_PX, MeasureSpec.EXACTLY));
         mContentView.layout(0, 0, SHEET_WIDTH_PX, SHEET_HEIGHT_PX);
-        scrollView.scrollTo(0, SCROLL_Y_PX);
+        mContentView.scrollTo(0, SCROLL_Y_PX);
 
         assertEquals(SCROLL_Y_PX, mBottomSheetContent.getVerticalScrollOffset());
     }

@@ -6,62 +6,42 @@ found in the LICENSE file.
 -->
 <org.chromium.chrome.browser.safety_promo.bottom_sheet.SafetyPromoBottomSheetView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:paddingTop="@dimen/safety_fre_bottom_sheet_padding_top"
     android:paddingBottom="@dimen/safety_fre_bottom_sheet_padding_bottom">
 
-  <ImageView
-      android:id="@+id/safety_promo_bottom_sheet_drag_handle"
-      android:layout_width="@dimen/safety_fre_bottom_sheet_drag_handle_width"
-      android:layout_height="@dimen/safety_fre_bottom_sheet_drag_handle_height"
-      android:layout_gravity="center_horizontal"
-      android:layout_marginTop=
-          "@dimen/safety_fre_bottom_sheet_drag_handle_margin_top"
-      android:layout_marginBottom=
-          "@dimen/safety_fre_bottom_sheet_drag_handle_margin_bottom"
-      android:importantForAccessibility="no"
-      android:src="@drawable/drag_handlebar"
-      app:tint="@macro/drag_handle_color" />
-
-  <ScrollView
-      android:id="@+id/safety_promo_bottom_sheet_scroll_view"
+  <LinearLayout
+      android:id="@+id/safety_promo_bottom_sheet_scroll_content"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content">
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:paddingHorizontal=
+          "@dimen/safety_fre_bottom_sheet_padding_horizontal">
 
-    <LinearLayout
-        android:id="@+id/safety_promo_bottom_sheet_scroll_content"
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/safety_promo_bottom_sheet_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal=
-            "@dimen/safety_fre_bottom_sheet_padding_horizontal">
+        android:layout_marginBottom=
+            "@dimen/safety_fre_bottom_sheet_title_margin_bottom"
+        android:accessibilityHeading="true"
+        android:gravity="center_horizontal"
+        android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
-      <org.chromium.ui.widget.TextViewWithLeading
-          android:id="@+id/safety_promo_bottom_sheet_title"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom=
-              "@dimen/safety_fre_bottom_sheet_title_margin_bottom"
-          android:accessibilityHeading="true"
-          android:gravity="center_horizontal"
-          android:textAppearance="@style/TextAppearance.Headline.Primary" />
+    <LinearLayout
+        android:id="@+id/safety_promo_bottom_sheet_instructions_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
 
-      <LinearLayout
-          android:id="@+id/safety_promo_bottom_sheet_instructions_container"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:orientation="vertical" />
-
-      <org.chromium.ui.widget.ButtonCompat
-          android:id="@+id/safety_promo_bottom_sheet_got_it_button"
-          style="@style/FilledButton"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop=
-              "@dimen/safety_fre_bottom_sheet_button_margin_top"
-          android:text="@string/got_it" />
-    </LinearLayout>
-  </ScrollView>
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/safety_promo_bottom_sheet_got_it_button"
+        style="@style/FilledButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop=
+            "@dimen/safety_fre_bottom_sheet_button_margin_top"
+        android:text="@string/got_it" />
+  </LinearLayout>
 </org.chromium.chrome.browser.safety_promo.bottom_sheet.SafetyPromoBottomSheetView>

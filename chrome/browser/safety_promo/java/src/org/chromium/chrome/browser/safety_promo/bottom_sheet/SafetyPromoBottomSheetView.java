@@ -26,8 +26,7 @@ import java.util.Locale;
 
 /** View for the Safety Promo "Show me how" bottom sheet. */
 @NullMarked
-public class SafetyPromoBottomSheetView extends LinearLayout {
-    private ScrollView mScrollView;
+public class SafetyPromoBottomSheetView extends ScrollView {
     private LinearLayout mScrollContent;
     private TextView mTitleView;
     private LinearLayout mInstructionsContainer;
@@ -40,7 +39,6 @@ public class SafetyPromoBottomSheetView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mScrollView = findViewById(R.id.safety_promo_bottom_sheet_scroll_view);
         mScrollContent = findViewById(R.id.safety_promo_bottom_sheet_scroll_content);
         mTitleView = findViewById(R.id.safety_promo_bottom_sheet_title);
         mInstructionsContainer =
@@ -94,6 +92,6 @@ public class SafetyPromoBottomSheetView extends LinearLayout {
 
     /** Returns how far the sheet content is scrolled. */
     int getVerticalScrollOffset() {
-        return mScrollView.getScrollY();
+        return getScrollY();
     }
 }
