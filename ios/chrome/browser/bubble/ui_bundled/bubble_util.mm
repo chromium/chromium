@@ -363,4 +363,16 @@ CGFloat FloatingArrowAlignmentOffset(CGFloat bounding_width,
              BubbleDefaultAlignmentOffset());
 }
 
+// Returns whether `x` is in the leading half of a superview `bounding_width`
+// wide. `is_rtl` is `true` if the coordinates are in right-to-left language
+// coordinates. Exposed for testing.
+bool IsInLeadingHalf(CGFloat x, CGFloat bounding_width, bool is_rtl) {
+  CGFloat middle = bounding_width / 2.0;
+  return is_rtl ? x > middle : x < middle;
+}
+
+bool IsInLeadingHalf(CGFloat x, CGFloat bounding_width) {
+  return IsInLeadingHalf(x, bounding_width, base::i18n::IsRTL());
+}
+
 }  // namespace bubble_util

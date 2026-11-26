@@ -11,6 +11,9 @@
 // for tests.
 @interface BubbleViewControllerPresenter (Testing)
 
+// The alignment of the bubble's arrow.
+@property(nonatomic, assign, readonly) BubbleAlignment alignment;
+
 // The underlying BubbleViewController managed by this object.
 // `bubbleViewController` manages the BubbleView instance.
 @property(nonatomic, strong, readonly)

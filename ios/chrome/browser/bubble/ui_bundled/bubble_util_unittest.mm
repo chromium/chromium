@@ -30,6 +30,8 @@ CGFloat FloatingArrowAlignmentOffset(CGFloat bounding_width,
                                      CGPoint anchor_point,
                                      BubbleAlignment alignment);
 
+bool IsInLeadingHalf(CGFloat x, CGFloat bounding_width, bool is_rtl);
+
 }  // namespace bubble_util
 
 class BubbleUtilTest : public PlatformTest {
@@ -559,4 +561,22 @@ TEST_F(BubbleUtilTest, FractionalAnchorPointBottomOrTrailing) {
             container_size_.width);
   EXPECT_LE(bubble_frame.origin.y + bubble_frame.size.height,
             container_size_.height);
+}
+
+// Tests that `IsInLeadingHalf` is true in the left half in LTR and in the right
+// half in RTL, and false in the middle.
+TEST_F(BubbleUtilTest, IsInLeadingHalf) {
+  CGFloat width = container_size_.width;
+  EXPECT_TRUE(bubble_util::IsInLeadingHalf(left_aligned_anchor_point_.x, width,
+                                           /*is_rtl=*/false));
+  EXPECT_FALSE(bubble_util::IsInLeadingHalf(right_aligned_anchor_point_.x,
+                                            width, /*is_rtl=*/false));
+  EXPECT_FALSE(bubble_util::IsInLeadingHalf(left_aligned_anchor_point_.x, width,
+                                            /*is_rtl=*/true));
+  EXPECT_TRUE(bubble_util::IsInLeadingHalf(right_aligned_anchor_point_.x, width,
+                                           /*is_rtl=*/true));
+  for (bool is_rtl : {false, true}) {
+    EXPECT_FALSE(bubble_util::IsInLeadingHalf(width / 2, width, is_rtl))
+        << is_rtl;
+  }
 }

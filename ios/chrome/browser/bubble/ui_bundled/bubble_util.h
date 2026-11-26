@@ -60,6 +60,14 @@ CGRect BubbleFrame(CGPoint anchor_point,
 CGFloat FloatingArrowAlignmentOffset(CGFloat bounding_width,
                                      CGPoint anchor_point,
                                      BubbleAlignment alignment);
+
+// Returns whether `x` is in the leading half of a superview `bounding_width`
+// wide: its left half, or its right half in RTL. A bubble anchored there is
+// leading aligned to extend toward the trailing side and stay on screen, as
+// `BubbleAlignment` is expressed in leading and trailing terms. Uses the ICU
+// default locale of the device to determine whether the language is RTL.
+bool IsInLeadingHalf(CGFloat x, CGFloat bounding_width);
+
 }  // namespace bubble_util
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_UI_BUNDLED_BUBBLE_UTIL_H_

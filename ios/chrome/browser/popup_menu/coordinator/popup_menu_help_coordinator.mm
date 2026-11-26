@@ -78,6 +78,16 @@ enum class PopupMenuIPHSessionType {
   // Active session when Level Up Payment Methods walkthrough IPH is triggered.
   kLevelUpPaymentMethodsWalkthrough,
 };
+
+// Returns the alignment of a bubble anchored at `anchor_x` in the overflow
+// menu, `parent_view_width` wide, that keeps it in the menu.
+BubbleAlignment OverflowMenuBubbleAlignment(CGFloat anchor_x,
+                                            CGFloat parent_view_width) {
+  return bubble_util::IsInLeadingHalf(anchor_x, parent_view_width)
+             ? BubbleAlignmentTopOrLeading
+             : BubbleAlignmentBottomOrTrailing;
+}
+
 }  // namespace
 
 @interface PopupMenuHelpCoordinator () <SceneStateObserver>
@@ -773,9 +783,8 @@ enum class PopupMenuIPHSessionType {
                                     dismissalCallback:
                                         (CallbackWithIPHDismissalReasonType)
                                             dismissalCallback {
-  BubbleAlignment alignment = anchorXInParent < 0.5 * parentViewWidth
-                                  ? BubbleAlignmentTopOrLeading
-                                  : BubbleAlignmentBottomOrTrailing;
+  BubbleAlignment alignment =
+      OverflowMenuBubbleAlignment(anchorXInParent, parentViewWidth);
   BubbleArrowDirection arrowDirection = BubbleArrowDirectionUp;
   BubbleViewControllerPresenter* bubbleViewControllerPresenter =
       [[BubbleViewControllerPresenter alloc] initWithText:text
@@ -872,9 +881,8 @@ enum class PopupMenuIPHSessionType {
         [weakSelf levelUpPaymentMethodsIPHDismissedWithReason:reason];
       };
 
-  BubbleAlignment alignment = anchorXInParent < 0.5 * parentViewWidth
-                                  ? BubbleAlignmentTopOrLeading
-                                  : BubbleAlignmentBottomOrTrailing;
+  BubbleAlignment alignment =
+      OverflowMenuBubbleAlignment(anchorXInParent, parentViewWidth);
 
   NSString* customNextButtonTitle =
       l10n_util::GetNSString(IDS_IOS_IPH_BUBBLE_NEXT);
@@ -1070,8 +1078,9 @@ enum class PopupMenuIPHSessionType {
 // screen
 - (BOOL)isToolsMenuAtLeading {
   if (IsChromeNextIaEnabled()) {
-    return CGRectGetMidX([self toolsMenuFrameInBaseView]) <
-           CGRectGetWidth(self.baseViewController.view.bounds) / 2.0;
+    return bubble_util::IsInLeadingHalf(
+        CGRectGetMidX([self toolsMenuFrameInBaseView]),
+        CGRectGetWidth(self.baseViewController.view.bounds));
   }
   return NO;
 }
