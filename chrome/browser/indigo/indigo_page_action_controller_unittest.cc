@@ -250,6 +250,7 @@ class IndigoPageActionControllerTestBase : public testing::Test {
     profile_.reset();
     testing_profile_manager_ = nullptr;
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+    component_updater::ResetIndigoInstallDirForTesting();
   }
 
   void CreateController(CreateControllerOptions options = {}) {
