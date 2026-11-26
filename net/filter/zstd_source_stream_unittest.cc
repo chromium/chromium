@@ -489,21 +489,6 @@ TEST_F(ZstdSourceStreamTest, OutOfWindowOffsetAfterRingBufferWrap) {
       0x84, 0x08,              // offset extra bits: +132 -> offset = 2177
   };
 
-  // Populate and free chunks in the ZSTD_DCtx size class (95976 bytes) with
-  // non-zero placeholder bytes before creating the ZstdSourceStream.
-  constexpr size_t kDCtxSize = 95976;
-  constexpr size_t kNumChunks = 8;
-  void* chunks[kNumChunks];
-  for (void*& chunk : chunks) {
-    chunk = malloc(kDCtxSize);
-    ASSERT_TRUE(chunk);
-    // SAFETY: `chunk` points to `kDCtxSize` bytes allocated by `malloc`.
-    UNSAFE_BUFFERS(memset(chunk, 'Z', kDCtxSize));
-  }
-  for (void* chunk : chunks) {
-    free(chunk);
-  }
-
   auto test_source = std::make_unique<MockSourceStream>();
   test_source->set_expect_all_input_consumed(false);
   test_source->AddReadResult(kOutOfWindowOffsetFrame, OK,
@@ -512,18 +497,21 @@ TEST_F(ZstdSourceStreamTest, OutOfWindowOffsetAfterRingBufferWrap) {
   std::unique_ptr<SourceStream> test_zstd_stream =
       CreateZstdSourceStream(std::move(test_source));
 
-  scoped_refptr<IOBufferWithSize> test_out_buffer =
-      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
-  TestCompletionCallback callback;
-  int bytes_read = test_zstd_stream->Read(
-      test_out_buffer.get(), kDefaultBufferSize, callback.callback());
-  ASSERT_EQ(2193, bytes_read);
+  int rv = OK;
+  while (true) {
+    scoped_refptr<IOBufferWithSize> test_out_buffer =
+        base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+    TestCompletionCallback callback;
+    rv = test_zstd_stream->Read(test_out_buffer.get(), kDefaultBufferSize,
+                                callback.callback());
+    if (rv <= 0) {
+      break;
+    }
+  }
+  EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, rv);
+
   const std::string expected_prefix =
       std::string(1024, 'A') + std::string(1024, 'B') + std::string(129, 'C');
-  EXPECT_EQ(expected_prefix,
-            base::as_string_view(test_out_buffer->first(2177u)));
-  EXPECT_EQ(std::string(16, '\0'),
-            base::as_string_view(test_out_buffer->first(2193u).subspan(2177u)));
 
   // Verify that an equivalent frame whose match offset after ring buffer wrap
   // stays within the 1024-byte window (offset = 1024) decodes normally.

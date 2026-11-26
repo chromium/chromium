@@ -73,6 +73,7 @@ source_set("common") {
     "src/lib/common/allocations.h",
     "src/lib/common/bits.h",
     "src/lib/common/bitstream.h",
+    "src/lib/common/bmi2.h",
     "src/lib/common/compiler.h",
     "src/lib/common/cpu.h",
     "src/lib/common/debug.c",
