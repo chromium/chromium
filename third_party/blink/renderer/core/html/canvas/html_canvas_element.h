@@ -407,6 +407,8 @@ class CORE_EXPORT HTMLCanvasElement final
     return hit_testable_descendants_;
   }
 
+  void DisposeForTesting() { Dispose(); }
+
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
   void DidRecalcStyle(const StyleRecalcChange change) override;

@@ -23,7 +23,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_base.h"
 #include "base/notreached.h"
-#include "base/pending_task.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -1601,14 +1600,12 @@ TEST_P(CanvasRenderingContext2DTest, CanvasDisposedBeforeContext) {
   CreateContext();
   Context2D()->fillRect(0, 0, 1, 1);  // results in task observer registration
 
-  Context2D()->DetachHost();
-
-  // This is the only method that is callable after DetachHost
-  // Test passes by not crashing.
-  base::PendingTask dummy_pending_task(FROM_HERE, base::OnceClosure());
-  Context2D()->DidProcessTask(dummy_pending_task);
-
-  // Test passes by not crashing during teardown
+  // Dispose the canvas element before the context, matching the case where
+  // HTMLCanvasElement::Dispose() runs before
+  // CanvasRenderingContext2D::Dispose() within the same Oilpan GC pause.
+  CanvasRenderingContext2D* context = Context2D();
+  CanvasElement().DisposeForTesting();
+  context->DisposeForTesting();
 }
 
 TEST_P(CanvasRenderingContext2DTest, ContextDisposedBeforeCanvas) {
