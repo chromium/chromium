@@ -5953,28 +5953,52 @@ bool LocalFrameView::RemovePendingOpacityUpdate(const LayoutObject& object) {
 
 bool LocalFrameView::ExecuteAllPendingUpdates() {
   DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
+  // Copy to a local weak set before iterating, since executing an update may
+  // detach layout objects and mutate the pending updates set.
+  auto take_as_weak_set = [](GCedHeapHashSet<Member<LayoutObject>>& updates) {
+    HeapHashSet<WeakMember<LayoutObject>> result;
+    result.ReserveCapacityForSize(updates.size());
+    for (LayoutObject* object : updates) {
+      result.insert(object);
+    }
+    updates.clear();
+    return result;
+  };
   bool updated = false;
-  ForAllNonThrottledLocalFrameViews([&updated](LocalFrameView& frame_view) {
+  ForAllNonThrottledLocalFrameViews([&updated, &take_as_weak_set](
+                                        LocalFrameView& frame_view) {
     if (frame_view.pending_opacity_updates_ &&
         !frame_view.pending_opacity_updates_->empty()) {
-      for (LayoutObject* object : *frame_view.pending_opacity_updates_) {
+      for (const WeakMember<LayoutObject>& weak_object :
+           take_as_weak_set(*frame_view.pending_opacity_updates_)) {
+        LayoutObject* object = LayoutObject::GetWeak(weak_object);
+        if (!object ||
+            !PaintPropertyTreeBuilder::CanDoDeferredOpacityNodeUpdate(
+                *object)) {
+          continue;
+        }
         DCHECK(
             !DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object));
         PaintPropertyTreeBuilder::DirectlyUpdateOpacityValue(*object);
+        updated = true;
       }
-      updated = true;
-      frame_view.pending_opacity_updates_->clear();
     }
     if (frame_view.pending_transform_updates_ &&
         !frame_view.pending_transform_updates_->empty()) {
-      for (LayoutObject* object : *frame_view.pending_transform_updates_) {
+      for (const WeakMember<LayoutObject>& weak_object :
+           take_as_weak_set(*frame_view.pending_transform_updates_)) {
+        LayoutObject* object = LayoutObject::GetWeak(weak_object);
+        if (!object ||
+            !PaintPropertyTreeBuilder::CanDoDeferredTransformNodeUpdate(
+                *object)) {
+          continue;
+        }
         DCHECK(
             !DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object));
         PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(*object);
+        frame_view.SetIntersectionObservationState(kDesired);
+        updated = true;
       }
-      updated = true;
-      frame_view.SetIntersectionObservationState(kDesired);
-      frame_view.pending_transform_updates_->clear();
     }
   });
   return updated;
@@ -6019,15 +6043,22 @@ bool LocalFrameView::HasPendingStickyUpdate(
 }
 
 void LocalFrameView::ExecutePendingStickyUpdates() {
-  if (pending_sticky_updates_) {
+  if (pending_sticky_updates_ && !pending_sticky_updates_->empty()) {
     UseCounter::Count(frame_->GetDocument(), WebFeature::kPositionSticky);
+
+    // Move to a local set before iterating, since updating sticky constraints
+    // may detach layout objects and mutate `pending_sticky_updates_`.
+    HeapHashSet<Member<PaintLayerScrollableArea>> sticky_updates;
+    pending_sticky_updates_->swap(sticky_updates);
 
     // Iteration order of the scrollable-areas doesn't matter as
     // sticky-positioned objects are contained within each scrollable-area.
-    for (PaintLayerScrollableArea* scrollable_area : *pending_sticky_updates_) {
+    for (PaintLayerScrollableArea* scrollable_area : sticky_updates) {
+      if (!scrollable_area->GetLayoutBox()) {
+        continue;
+      }
       scrollable_area->UpdateAllStickyConstraints();
     }
-    pending_sticky_updates_->clear();
   }
 }
 
@@ -6119,13 +6150,21 @@ void LocalFrameView::RemovePendingScrollMarkerSelectionUpdate(
 }
 
 void LocalFrameView::ExecutePendingScrollMarkerSelectionUpdates() {
-  if (pending_scroll_marker_selection_updates_) {
-    for (const auto& update : *pending_scroll_marker_selection_updates_) {
+  if (pending_scroll_marker_selection_updates_ &&
+      !pending_scroll_marker_selection_updates_->empty()) {
+    // Move to a local map before iterating, since scrolling a marker into view
+    // may detach layout objects and mutate
+    // `pending_scroll_marker_selection_updates_`.
+    HeapHashMap<Member<ScrollMarkerGroupPseudoElement>, bool> selection_updates;
+    pending_scroll_marker_selection_updates_->swap(selection_updates);
+    for (const auto& update : selection_updates) {
       ScrollMarkerGroupPseudoElement* scroll_marker_group = update.key;
+      if (!scroll_marker_group->GetLayoutBox()) {
+        continue;
+      }
       scroll_marker_group->ScrollSelectedIntoView(
           /*apply_snap_alignment*/ update.value);
     }
-    pending_scroll_marker_selection_updates_->clear();
   }
 }
 

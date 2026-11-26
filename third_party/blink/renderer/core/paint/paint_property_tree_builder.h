@@ -489,6 +489,9 @@ class PaintPropertyTreeBuilder {
   static bool ScheduleDeferredTransformNodeUpdate(LayoutObject& object);
   static bool ScheduleDeferredOpacityNodeUpdate(LayoutObject& object);
 
+  static bool CanDoDeferredTransformNodeUpdate(const LayoutObject& object);
+  static bool CanDoDeferredOpacityNodeUpdate(const LayoutObject& object);
+
   // Returns the parent of the highest effect that has a reference filter
   // applied.
   static const blink::EffectPaintPropertyNode*
@@ -506,9 +509,6 @@ class PaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdateGlobalMainThreadRepaintReasonsForScroll();
 
   bool IsInNGFragmentTraversal() const { return pre_paint_info_; }
-
-  static bool CanDoDeferredTransformNodeUpdate(const LayoutObject& object);
-  static bool CanDoDeferredOpacityNodeUpdate(const LayoutObject& object);
 
   const LayoutObject& object_;
   PrePaintInfo* pre_paint_info_;
