@@ -1811,7 +1811,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="257088987046510401">Temalar</translation>
 <translation id="2573147659521059501"><ph name="NUM" /> sekme</translation>
 <translation id="2573276323521243649">Avatar seçme sayfasından geri dön</translation>
-<translation id="2574037773163798130">{NUM_TABS,plural, =1{Sekmeyi Gemini ile paylaş}other{# sekmeyi Gemini ile paylaş}}</translation>
+<translation id="2574037773163798130">{NUM_TABS,plural, =1{Sekmeyi Gemini ile Paylaş}other{# Sekmeyi Gemini ile Paylaş}}</translation>
 <translation id="2575247648642144396">Uzantı, mevcut sayfada işlem yapabildiğinde bu simge görünür. Simgeyi tıklayarak veya <ph name="EXTENSION_SHORTCUT" /> tuşuna basarak bu uzantıyı kullanın.</translation>
 <translation id="2575407791320728464">Geçersiz URL. Doğru biçimlendirildiğinden emin olun.</translation>
 <translation id="2575441894380764255">Araya giren veya yanıltıcı reklamlar göstermesine izin verilmeyenler</translation>
