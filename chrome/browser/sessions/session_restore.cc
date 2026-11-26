@@ -1647,8 +1647,9 @@ BrowserWindowInterface* SessionRestore::RestoreSession(
                                                     false);
 #endif
   CHECK(profile, base::NotFatalUntil::M163);
-  CHECK(SessionServiceFactory::GetForProfile(profile),
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/590156006): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(SessionServiceFactory::GetForProfile(profile));
   profile->set_restored_last_session(true);
 
   LogSessionServiceRestoreInitiatedEvent(profile, (behavior & SYNCHRONOUS) != 0,
