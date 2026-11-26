@@ -77,6 +77,22 @@ class PaintManagerTest : public testing::Test {
     run_loop.Run();
   }
 
+  // Waits for an OnPaint() call and reports all of its paint rects as pending,
+  // so that the paint manager flushes nothing and paints again later.
+  void WaitForPendingPaint(const std::vector<gfx::Rect>& expected_paint_rects) {
+    base::RunLoop run_loop;
+    EXPECT_CALL(client_, UpdateSnapshot).Times(0);
+    EXPECT_CALL(client_, OnPaint(expected_paint_rects, _, _))
+        .WillOnce([&run_loop](const std::vector<gfx::Rect>& paint_rects,
+                              std::vector<PaintReadyRect>& ready,
+                              std::vector<gfx::Rect>& pending) {
+          pending = paint_rects;
+          run_loop.Quit();
+        });
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&client_);
+  }
+
   void SetSizeAndInstall(const gfx::Size& new_size, float device_scale) {
     // This size check matches the one in PaintManager::SetSize() to replicate
     // its behavior.
@@ -191,9 +207,12 @@ class PaintManagerTest : public testing::Test {
                                   cc::ExactPixelComparator()));
   }
 
+  // If `pending_first` is true, the client does not finish painting the area
+  // the scroll exposed in its first pass.
   void TestScroll(const gfx::Vector2d& scroll_amount,
                   const gfx::Rect& expected_paint_rect,
-                  std::string_view expected_png) {
+                  std::string_view expected_png,
+                  bool pending_first = false) {
     // Paint non-uniform initial image.
     gfx::Size plugin_size = paint_manager_.GetEffectiveSize();
     ASSERT_GE(plugin_size.width(), 4);
@@ -214,6 +233,9 @@ class PaintManagerTest : public testing::Test {
 
     // Scroll by `scroll_amount`, painting `expected_paint_rect` magenta.
     paint_manager_.ScrollRect(gfx::Rect(plugin_size), scroll_amount);
+    if (pending_first) {
+      WaitForPendingPaint({expected_paint_rect});
+    }
     sk_sp<SkImage> snapshot = WaitForFlush(
         /*expected_paint_rects=*/{expected_paint_rect},
         /*fake_ready=*/
@@ -402,6 +424,23 @@ TEST_F(PaintManagerTest, ScrollIgnored) {
 
   histograms.ExpectTotalCount(kRenderAndPaintTimeMetric, 16);
   histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 16);
+}
+
+TEST_F(PaintManagerTest, ScrollWithPendingPaint) {
+  base::HistogramTester histograms;
+
+  SetSizeAndInstall({4, 5}, 1.0f);
+
+  // The pass that leaves the paint pending flushes nothing. The pass after it
+  // must still carry over the previous frame and apply the scroll.
+  TestScroll(/*scroll_amount=*/{1, 0}, /*expected_paint_rect=*/{0, 0, 1, 5},
+             "scroll_right.png", /*pending_first=*/true);
+  TestScroll(/*scroll_amount=*/{0, 3}, /*expected_paint_rect=*/{0, 0, 4, 3},
+             "scroll_down.png", /*pending_first=*/true);
+
+  // Only the passes that flush are timed: two per TestScroll() call.
+  histograms.ExpectTotalCount(kRenderAndPaintTimeMetric, 4);
+  histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 4);
 }
 
 TEST_F(PaintManagerTest, ResizeRecyclesDrawBuffer) {

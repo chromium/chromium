@@ -29,10 +29,9 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/core/SkRegion.h"
-#include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -63,6 +62,26 @@ void SkiaBufferReleaseProc(const void* data, void* ctx) {
   base::SingleThreadTaskRunner::GetMainThreadDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PaintManager::BufferFinishedOnMainThread,
                                 buffer_data->owner, std::move(buffer_data)));
+}
+
+// Copies the pixels in `source_rect` of `source` to `destination`, placing
+// them at `destination_origin`. `source_rect` must be inside `source`. When
+// the two have the same SkImageInfo, Skia copies the rows without converting
+// them.
+void CopyPixels(const SkPixmap& source,
+                const gfx::Rect& source_rect,
+                SkSurface& destination,
+                const gfx::Point& destination_origin) {
+  if (source_rect.IsEmpty()) {
+    return;
+  }
+
+  SkPixmap subset;
+  CHECK(source.extractSubset(&subset, gfx::RectToSkIRect(source_rect)));
+  CHECK_EQ(subset.width(), source_rect.width());
+  CHECK_EQ(subset.height(), source_rect.height());
+  destination.writePixels(subset, destination_origin.x(),
+                          destination_origin.y());
 }
 
 }  // namespace
@@ -311,49 +330,20 @@ void PaintManager::DoPaint() {
   surface_->getCanvas()->drawRect(SkRect::Make(bottom_buffer_area), paint);
   surface_->getCanvas()->drawRect(SkRect::Make(right_buffer_area), paint);
 
-  // Draw the parts of the frame which weren't updated from the previous one.
-  if (previous_frame_.has_value()) {
-    std::vector<SkIRect> all_draws;
-    for (auto& ready_rect : ready_rects) {
-      all_draws.push_back(gfx::RectToSkIRect(ready_rect.rect()));
-    }
-    // Do not include the padding area (see GetNewContextSize()), which hasn't
-    // been drawn into.
-    all_draws.push_back(right_buffer_area);
-    all_draws.push_back(bottom_buffer_area);
-
-    SkRegion draw_region;
-    draw_region.setRects(all_draws.data(), all_draws.size());
-
-    surface_->getCanvas()->clipRegion(draw_region, SkClipOp::kDifference);
-    surface_->getCanvas()->drawImage(*previous_frame_, 0, 0);
-    surface_->getCanvas()->restore();
-  }
   surface_->notifyContentWillChange(SkSurface::kDiscard_ContentChangeMode);
 
   std::vector<PaintReadyRect> ready_now;
+  bool apply_scroll = false;
   if (pending_rects.empty()) {
     aggregator_.SetIntermediateResults(std::move(ready_rects),
                                        std::move(pending_rects));
     ready_now = aggregator_.TakeReadyRects();
     aggregator_.ClearPendingUpdate();
 
-    // First, apply any scroll amount less than the surface's size.
-    if (update.has_scroll &&
-        std::abs(update.scroll_delta.x()) < surface_->width() &&
-        std::abs(update.scroll_delta.y()) < surface_->height()) {
-      if (previous_frame_.has_value()) {
-        // Draw the scroll if there is one via a rect offset from the previous
-        // frame.
-        SkRect destination_rect = gfx::RectToSkRect(gfx::IntersectRects(
-            (update.scroll_rect + update.scroll_delta), update.scroll_rect));
-        SkRect source_rect = gfx::RectToSkRect(gfx::IntersectRects(
-            (update.scroll_rect - update.scroll_delta), update.scroll_rect));
-        surface_->getCanvas()->drawImageRect(
-            *previous_frame_, source_rect, destination_rect,
-            SkSamplingOptions(), nullptr, SkCanvas::kFast_SrcRectConstraint);
-      }
-    }
+    // Apply any scroll amount less than the surface's size.
+    apply_scroll = update.has_scroll &&
+                   std::abs(update.scroll_delta.x()) < surface_->width() &&
+                   std::abs(update.scroll_delta.y()) < surface_->height();
 
     view_size_changed_waiting_for_paint_ = false;
   } else {
@@ -379,6 +369,58 @@ void PaintManager::DoPaint() {
     if (ready_now.empty()) {
       EnsureCallbackPending();
       return;
+    }
+  }
+
+  // This paint will be flushed. Copy the previous frame into the new one,
+  // moving the scrolled part if there is a scroll to apply; the ready rects
+  // are then copied over it below. The previous frame and the surface have
+  // the same SkImageInfo and nothing needs to be blended, so
+  // SkSurface::writePixels() copies rows directly. Going through
+  // SkCanvas::drawImage() instead is several times slower when the buffers are
+  // unpremultiplied, as Skia then uses its generic raster pipeline.
+  if (previous_frame_.has_value()) {
+    SkPixmap previous_pixmap;
+    CHECK((*previous_frame_)->peekPixels(&previous_pixmap));
+
+    // Do not include the padding area (see GetNewContextSize()), which hasn't
+    // been drawn into.
+    gfx::Rect frame_rect(plugin_size_);
+    frame_rect.Intersect(gfx::SkIRectToRect(previous_pixmap.bounds()));
+    frame_rect.Intersect(gfx::Rect(surface_->width(), surface_->height()));
+
+    gfx::Rect scroll_destination;
+    if (apply_scroll) {
+      const gfx::Rect scroll_rect =
+          gfx::IntersectRects(update.scroll_rect, frame_rect);
+      scroll_destination =
+          gfx::IntersectRects(scroll_rect + update.scroll_delta, scroll_rect);
+    }
+
+    if (scroll_destination.IsEmpty()) {
+      CopyPixels(previous_pixmap, frame_rect, *surface_, frame_rect.origin());
+    } else {
+      // The scrolled pixels.
+      CopyPixels(previous_pixmap, scroll_destination - update.scroll_delta,
+                 *surface_, scroll_destination.origin());
+
+      // Everything around them stays where it was, split into four rects so
+      // that no pixel is copied twice. The area the scroll exposed is included
+      // here; the client's ready rects cover it.
+      const gfx::Rect above(frame_rect.x(), frame_rect.y(), frame_rect.width(),
+                            scroll_destination.y() - frame_rect.y());
+      const gfx::Rect below(frame_rect.x(), scroll_destination.bottom(),
+                            frame_rect.width(),
+                            frame_rect.bottom() - scroll_destination.bottom());
+      const gfx::Rect left(frame_rect.x(), scroll_destination.y(),
+                           scroll_destination.x() - frame_rect.x(),
+                           scroll_destination.height());
+      const gfx::Rect right(scroll_destination.right(), scroll_destination.y(),
+                            frame_rect.right() - scroll_destination.right(),
+                            scroll_destination.height());
+      for (const gfx::Rect& rect : {above, below, left, right}) {
+        CopyPixels(previous_pixmap, rect, *surface_, rect.origin());
+      }
     }
   }
 
