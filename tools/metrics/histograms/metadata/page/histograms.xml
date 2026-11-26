@@ -1643,6 +1643,28 @@ chromium-metrics-reviews@google.com.
   <token key="Visibility" variants="AdsPageLoadVisibility"/>
 </histogram>
 
+<histogram name="PageLoad.Clients.AgentContextAtCommit"
+    enum="PageLoadAgentContext" expires_after="2027-11-13">
+  <owner>fredmello@chromium.org</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    Whether, when a page load committed, an actor task was acting on the tab
+    (used by the Glic agent), a DevTools client was attached to the tab's page
+    or tab target, or both. A DevTools client is anything attached over the
+    DevTools protocol, including an open DevTools window. Recorded once per page
+    load, when the main frame navigation commits. A prerendered page is recorded
+    when it is activated instead.
+
+    Covers HTML and XHTML pages loaded over HTTP(S) or, on desktop, from an
+    Isolated Web App. Unlike the core PageLoad.* histograms, this includes
+    prerendered pages once they are activated. It is not recorded for the New
+    Tab Page and other built-in pages, error pages, back/forward cache restores,
+    same-document navigations, fenced frames, NoStatePrefetch loads, or
+    prerendered pages that are never activated. A DevTools client that attaches
+    after the commit, or only to the browser target, is not counted.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe"
     units="ms" expires_after="2027-07-03">

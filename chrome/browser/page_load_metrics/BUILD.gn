@@ -12,6 +12,7 @@ if (is_android) {
 source_set("page_load_metrics") {
   public = [
     "chrome_navigation_initiator.h",
+    "observers/agent_context_page_load_metrics_observer.h",
     "observers/bookmark_bar_page_load_metrics_observer.h",
     "observers/captcha_metrics_observer.h",
     "observers/captcha_provider_manager.h",
@@ -91,6 +92,7 @@ source_set("page_load_metrics") {
 source_set("impl") {
   sources = [
     "chrome_navigation_initiator.cc",
+    "observers/agent_context_page_load_metrics_observer.cc",
     "observers/bookmark_bar_page_load_metrics_observer.cc",
     "observers/captcha_metrics_observer.cc",
     "observers/captcha_provider_manager.cc",
@@ -224,6 +226,7 @@ source_set("unit_tests") {
 
   sources = [
     "metrics_web_contents_observer_unittest.cc",
+    "observers/agent_context_page_load_metrics_observer_unittest.cc",
     "observers/captcha_metrics_observer_unittest.cc",
     "observers/captcha_provider_manager_unittest.cc",
     "observers/core/amp_page_load_metrics_observer_unittest.cc",

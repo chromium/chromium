@@ -304,6 +304,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Multiple Actions Shown"/>
 </enum>
 
+<!-- LINT.IfChange(PageLoadAgentContext) -->
+
+<enum name="PageLoadAgentContext">
+  <int value="0" label="No known agent"/>
+  <int value="1" label="Actor task acting on the tab"/>
+  <int value="2" label="DevTools client attached"/>
+  <int value="3" label="Actor task and DevTools client"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/page_load_metrics/observers/agent_context_page_load_metrics_observer.h:AgentContext) -->
+
 <enum name="PageLoadBackForwardCacheEvent">
   <int value="0" label="Enter back-forward cache"/>
   <int value="1" label="Restore from back-forward cache"/>
