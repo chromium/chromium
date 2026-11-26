@@ -1325,6 +1325,21 @@ CanvasRenderingContext2DSettings* BaseRenderingContext2D::getContextAttributes()
   return ToCanvasRenderingContext2DSettings(CreationAttributes());
 }
 
+void BaseRenderingContext2D::LoseContext(LostContextMode lost_mode) {
+  if (context_lost_mode_ != kNotLostContext) {
+    return;
+  }
+  context_lost_mode_ = lost_mode;
+  ResetInternal();
+  ResetRecorder();
+  if (CanvasRenderingContextHost* host = Host()) [[likely]] {
+    ResetBacking();
+    host->DiscardResources();
+    host->DiscardResourceDispatcher();
+  }
+  ScheduleContextLostEvent();
+}
+
 void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
   CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
   if (!host) {

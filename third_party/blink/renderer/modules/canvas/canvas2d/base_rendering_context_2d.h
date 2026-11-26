@@ -338,6 +338,7 @@ class MODULES_EXPORT BaseRenderingContext2D
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;
   void DisableAccelerationForCanvas2D() final { DisableAcceleration(); }
+  void LoseContext(LostContextMode lost_mode) final;
   void PageVisibilityChanged() override {}
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override;
@@ -441,6 +442,9 @@ class MODULES_EXPORT BaseRenderingContext2D
   void UpdateRecordingLimits(bool is_graphite);
   virtual bool IsHibernating() const { return false; }
   virtual void EnableAccelerationIfPossible() {}
+  // Schedules dispatching the contextlost event (or defers it until the
+  // context is visible). Called at the end of `LoseContext()`.
+  virtual void ScheduleContextLostEvent() = 0;
   // When glyph_run is non-null, draws its slice directly from the
   // PlainTextNode and direction captured by shapeText() instead of reshaping
   void DrawTextInternal(const String& text,

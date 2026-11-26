@@ -131,8 +131,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void drawFocusIfNeeded(Element*);
   void drawFocusIfNeeded(Path2D*, Element*);
 
-  void LoseContext(LostContextMode) override;
-
   // TaskObserver implementation
   void DidProcessTask(const base::PendingTask&) final;
 
@@ -249,7 +247,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void ResetInternal() override;
   void Reshape(gfx::Size old_size, gfx::Size new_size) override;
-  void ScheduleContextLostEvent();
+  void ScheduleContextLostEvent() final;
 
   void Dispose() override;
 

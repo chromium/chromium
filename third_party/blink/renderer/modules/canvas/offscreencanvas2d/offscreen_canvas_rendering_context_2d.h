@@ -80,8 +80,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   sk_sp<PaintFilter> StateGetFilter() final;
 
-  void LoseContext(LostContextMode) override;
-
   ImageBitmap* TransferToImageBitmap(ScriptState* script_state,
                                      ExceptionState& exception_state) final;
 
@@ -105,7 +103,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
  private:
   void FinalizeFrame(FlushReason) final;
-  void ScheduleContextLostEvent();
+  void ScheduleContextLostEvent() final;
 
   scoped_refptr<ExportedCanvasResource> ProduceCanvasResource(FlushReason);
 

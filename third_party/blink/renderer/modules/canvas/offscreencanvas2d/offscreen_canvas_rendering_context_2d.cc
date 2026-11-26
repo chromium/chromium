@@ -348,21 +348,6 @@ sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
   return GetState().GetFilterForOffscreenCanvas(Host()->Size(), this);
 }
 
-void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
-  if (context_lost_mode_ != kNotLostContext) {
-    return;
-  }
-  context_lost_mode_ = lost_mode;
-  ResetInternal();
-  ResetRecorder();
-  if (CanvasRenderingContextHost* host = Host()) [[likely]] {
-    ResetBacking();
-    host->DiscardResources();
-    host->DiscardResourceDispatcher();
-  }
-  ScheduleContextLostEvent();
-}
-
 void OffscreenCanvasRenderingContext2D::ScheduleContextLostEvent() {
   uint32_t delay = base::RandIntInclusive(1, kMaxIframeContextLoseDelay);
   dispatch_context_lost_event_timer_.StartOneShot(base::Milliseconds(delay),

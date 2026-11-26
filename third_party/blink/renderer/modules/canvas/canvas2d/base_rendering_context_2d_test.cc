@@ -204,6 +204,7 @@ class TestRenderingContext2D final
   }
 
   bool InitializeBacking() override { return false; }
+  void ScheduleContextLostEvent() override {}
 
   // Implementing pure virtual functions from CanvasRenderingContext.
   scoped_refptr<StaticBitmapImage> GetImage() override { return nullptr; }
