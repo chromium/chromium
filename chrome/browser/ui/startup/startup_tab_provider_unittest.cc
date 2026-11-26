@@ -4,7 +4,14 @@
 
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 
+#include <array>
+#include <string>
+
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -345,7 +352,7 @@ namespace {
 // platform differences for string types.
 static base::CommandLine MakeCommandLine(std::string_view argument) {
 #if BUILDFLAG(IS_WIN)
-  return base::CommandLine({L"", base::ASCIIToWide(argument)});
+  return base::CommandLine({L"", base::UTF8ToWide(argument)});
 #else
   return base::CommandLine({"", std::string(argument)});
 #endif
@@ -482,6 +489,82 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 }
+
+TEST(StartupTabProviderTest,
+     GetCommandLineTabsCustomSchemeSkipsRelativeFileFixup) {
+  const std::string scheme = shell_integration::GetDirectLaunchUrlScheme();
+  const std::string scheme_prefix = base::StrCat({scheme, "://"});
+  base::test::ScopedFeatureList feature_list{features::kGoogleChromeScheme};
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  TemplateURLServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
+      &profile, base::BindOnce(&TemplateURLServiceFactory::BuildInstanceFor));
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath cur_dir = temp_dir.GetPath();
+  const base::FilePath host_dir = cur_dir.AppendASCII("example.com");
+  const base::FilePath sub_dir = host_dir.AppendASCII("sub");
+  ASSERT_TRUE(base::CreateDirectory(sub_dir));
+  ASSERT_TRUE(base::WriteFile(host_dir.AppendASCII("existing.txt"), "test"));
+  ASSERT_TRUE(base::WriteFile(sub_dir.AppendASCII("existing.txt"), "test"));
+  ASSERT_TRUE(base::WriteFile(cur_dir.AppendASCII("local.html"), "test"));
+
+  // Custom-scheme arguments without an explicit web-safe inner scheme are
+  // parsed directly as URLs without relative-file fixup, regardless of whether
+  // matching paths exist under `cur_dir`.
+  const auto rejected_args = std::to_array<std::string>({
+      base::StrCat({scheme_prefix, "example.com/existing.txt"}),
+      base::StrCat({scheme_prefix, "example.com/missing.txt"}),
+      base::StrCat({scheme_prefix, "example.com/sub%2Fexisting.txt"}),
+      base::StrCat({scheme_prefix, "example.com/sub%2Fmissing.txt"}),
+      base::StrCat({scheme_prefix, "example.com/sub%5Cexisting.txt"}),
+      base::StrCat({scheme_prefix, "example.com/sub%5Cmissing.txt"}),
+      base::StrCat({scheme_prefix, "missing.example"}),
+      base::StrCat({scheme, ":missing.example"}),
+      base::StrCat({scheme_prefix, "local.html"}),
+  });
+
+  for (const std::string& arg : rejected_args) {
+    SCOPED_TRACE(arg);
+    base::CommandLine command_line = MakeCommandLine(arg);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, cur_dir, &profile);
+    EXPECT_EQ(0u, output.size());
+    EXPECT_EQ(CommandLineTabsPresent::kNo,
+              instance.HasCommandLineTabs(command_line, cur_dir));
+  }
+
+  // Valid web-safe inner URLs, including `about:blank` and non-ASCII UTF-8
+  // URLs, continue to open as untrusted launches.
+  {
+    const std::string arg = base::StrCat({scheme_prefix, "about:blank"});
+    base::CommandLine command_line = MakeCommandLine(arg);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, cur_dir, &profile);
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("about:blank"), output[0].url);
+    EXPECT_TRUE(output[0].is_untrusted_launch);
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, cur_dir));
+  }
+
+  {
+    const std::string arg =
+        base::StrCat({scheme_prefix, "https://example.com/caf\xC3\xA9"});
+    base::CommandLine command_line = MakeCommandLine(arg);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, cur_dir, &profile);
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("https://example.com/caf%C3%A9"), output[0].url);
+    EXPECT_TRUE(output[0].is_untrusted_launch);
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, cur_dir));
+  }
+}
 #endif  // BUILDFLAG(CHROME_FOR_TESTING)
 
 // This test fails on Windows. TODO(crbug.com/40265634): Investigate and
@@ -510,4 +593,26 @@ TEST(StartupTabProviderTest, MAYBE_GetCommandLineTabsFileUrl) {
     EXPECT_EQ(CommandLineTabsPresent::kYes,
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
+}
+
+TEST(StartupTabProviderTest, GetCommandLineTabsRelativeFileInCurrentDirectory) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  TemplateURLServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
+      &profile, base::BindOnce(&TemplateURLServiceFactory::BuildInstanceFor));
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath cur_dir = temp_dir.GetPath();
+  ASSERT_TRUE(base::WriteFile(cur_dir.AppendASCII("local.html"), "test"));
+
+  base::CommandLine command_line({CMD_ARG(""), CMD_ARG("local.html")});
+  StartupTabProviderImpl instance;
+  StartupTabs output =
+      instance.GetCommandLineTabs(command_line, cur_dir, &profile);
+  ASSERT_EQ(1u, output.size());
+  EXPECT_TRUE(output[0].url.SchemeIsFile());
+  EXPECT_FALSE(output[0].is_untrusted_launch);
+  EXPECT_EQ(CommandLineTabsPresent::kYes,
+            instance.HasCommandLineTabs(command_line, cur_dir));
 }

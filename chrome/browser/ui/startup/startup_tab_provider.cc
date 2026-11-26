@@ -50,6 +50,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/filename_util.h"
 #include "net/base/url_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/string_util_win.h"
@@ -325,9 +326,21 @@ StartupTabProviderImpl::ParseTabFromCommandLineArg(
   } else {
     // Otherwise, fall through to treating it as a URL; stripping off the
     // direct-launch scheme (e.g. "google-chrome://") if present.
-    // This will create a file URL or a regular URL.
     const bool was_stripped = startup::StripGoogleChromeScheme(arg);
-    if (!was_stripped || !arg.empty()) {
+    if (was_stripped) {
+      // The remainder comes from an untrusted external context. Parse it as a
+      // URL only; never resolve it against the local filesystem.
+#if BUILDFLAG(IS_WIN)
+      GURL url(base::AsStringPiece16(arg));
+#else
+      GURL url(arg);
+#endif
+      if (startup::ValidateLaunchUrlWebSafe(url)) {
+        return {CommandLineTabsPresent::kYes, std::move(url),
+                /*is_untrusted_launch=*/true};
+      }
+    } else {
+      // This will create a file URL or a regular URL.
       const base::FilePath arg_path(arg);
       GURL url(arg_path.MaybeAsASCII());
 
@@ -344,11 +357,8 @@ StartupTabProviderImpl::ParseTabFromCommandLineArg(
         url = url_formatter::FixupRelativeFile(cur_dir, arg_path);
       }
 
-      const bool is_valid = was_stripped
-                                ? startup::ValidateLaunchUrlWebSafe(url)
-                                : startup::ValidateLaunchUrlWebUnsafe(url);
-      if (is_valid) {
-        return {CommandLineTabsPresent::kYes, std::move(url), was_stripped};
+      if (startup::ValidateLaunchUrlWebUnsafe(url)) {
+        return {CommandLineTabsPresent::kYes, std::move(url)};
       }
     }
   }
