@@ -5,6 +5,7 @@
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,6 +31,10 @@ void MockVideoFrameHandler::ReleaseAccessedFrames() {
     frame_access_handler_->OnFinishedConsumingBuffer(buffer_id);
   }
   accessed_frame_ids_.clear();
+}
+
+void MockVideoFrameHandler::SetDisconnectHandler(base::OnceClosure handler) {
+  video_frame_handler_.set_disconnect_handler(std::move(handler));
 }
 
 void MockVideoFrameHandler::OnNewBuffer(

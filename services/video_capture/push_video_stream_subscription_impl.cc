@@ -4,6 +4,8 @@
 
 #include "services/video_capture/push_video_stream_subscription_impl.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "services/video_capture/broadcasting_receiver.h"
@@ -21,12 +23,13 @@ PushVideoStreamSubscriptionImpl::PushVideoStreamSubscriptionImpl(
       subscriber_(std::move(subscriber)),
       requested_settings_(requested_settings),
       creation_callback_(std::move(creation_callback)),
-      broadcaster_(broadcaster),
-      broadcaster_client_id_(0) {
+      broadcaster_(broadcaster) {
   DCHECK(broadcaster_);
 }
 
-PushVideoStreamSubscriptionImpl::~PushVideoStreamSubscriptionImpl() = default;
+PushVideoStreamSubscriptionImpl::~PushVideoStreamSubscriptionImpl() {
+  ResetBroadcasterClient();
+}
 
 void PushVideoStreamSubscriptionImpl::SetOnClosedHandler(
     base::OnceCallback<void(base::OnceClosure done_cb)> handler) {
@@ -84,7 +87,7 @@ void PushVideoStreamSubscriptionImpl::Suspend(SuspendCallback callback) {
     std::move(callback).Run();
     return;
   }
-  broadcaster_->SuspendClient(broadcaster_client_id_);
+  broadcaster_->SuspendClient(*broadcaster_client_id_);
   status_ = Status::kSuspended;
   std::move(callback).Run();
 }
@@ -92,7 +95,7 @@ void PushVideoStreamSubscriptionImpl::Suspend(SuspendCallback callback) {
 void PushVideoStreamSubscriptionImpl::Resume() {
   if (status_ != Status::kSuspended)
     return;
-  broadcaster_->ResumeClient(broadcaster_client_id_);
+  broadcaster_->ResumeClient(*broadcaster_client_id_);
   status_ = Status::kActive;
 }
 
@@ -147,24 +150,31 @@ void PushVideoStreamSubscriptionImpl::Close(CloseCallback callback) {
     case Status::kClosed:
       std::move(callback).Run();
       return;
-    case Status::kActive:  // Fall through.
-    case Status::kSuspended:
-      broadcaster_->RemoveClient(broadcaster_client_id_);
-      status_ = Status::kClosed;
-      if (on_closed_handler_)
-        std::move(on_closed_handler_).Run(std::move(callback));
-      return;
     case Status::kNotYetActivated:
+    case Status::kActive:
+    case Status::kSuspended:
+      ResetBroadcasterClient();
       status_ = Status::kClosed;
-      if (on_closed_handler_)
+      if (on_closed_handler_) {
         std::move(on_closed_handler_).Run(std::move(callback));
+      }
       return;
   }
 }
 
 void PushVideoStreamSubscriptionImpl::OnConnectionLost() {
-  if (on_closed_handler_)
+  ResetBroadcasterClient();
+  status_ = Status::kClosed;
+  if (on_closed_handler_) {
     std::move(on_closed_handler_).Run(base::DoNothing());
+  }
+}
+
+void PushVideoStreamSubscriptionImpl::ResetBroadcasterClient() {
+  if (broadcaster_client_id_) {
+    broadcaster_->RemoveClient(*broadcaster_client_id_);
+    broadcaster_client_id_.reset();
+  }
 }
 
 void PushVideoStreamSubscriptionImpl::ProcessFeedback(

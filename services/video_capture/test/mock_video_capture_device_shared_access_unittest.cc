@@ -474,6 +474,25 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
   SendFrameAndExpectToArriveOnlyAtSubscriber2();
 }
 
+TEST_F(MockVideoCaptureDeviceSharedAccessTest,
+       NoMoreFramesArriveAfterDiscardingSubscription) {
+  LetTwoClientsConnectWithDifferentSettings();
+  subscription_1_->Activate();
+  subscription_2_->Activate();
+
+  SendFrameAndExpectToArriveAtBothSubscribers();
+
+  // Drop subscription_1_ without calling Close(). The service must unregister
+  // subscriber 1 from the broadcaster so it stops receiving frames even while
+  // subscriber 2 keeps the device running.
+  base::RunLoop disconnected;
+  mock_video_frame_handler_1_.SetDisconnectHandler(disconnected.QuitClosure());
+  subscription_1_.reset();
+  disconnected.Run();
+
+  SendFrameAndExpectToArriveOnlyAtSubscriber2();
+}
+
 TEST_F(MockVideoCaptureDeviceSharedAccessTest, SuspendAndResume) {
   LetTwoClientsConnectWithDifferentSettings();
   subscription_1_->Activate();

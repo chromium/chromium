@@ -71,8 +71,7 @@ class BroadcastingReceiver : public media::VideoFrameReceiver {
                     media::VideoCaptureBufferType target_buffer_type);
   void SuspendClient(int32_t client_id);
   void ResumeClient(int32_t client_id);
-  // Returns ownership of the client back to the caller.
-  mojo::Remote<mojom::VideoFrameHandler> RemoveClient(int32_t client_id);
+  void RemoveClient(int32_t client_id);
 
   // media::VideoFrameReceiver:
   void OnCaptureConfigurationChanged() override;

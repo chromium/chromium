@@ -240,7 +240,7 @@ class CONTENT_EXPORT VideoCaptureController
       ControllerClient* client,
       int buffer_id,
       const media::VideoCaptureFeedback& feedback);
-  void ReleaseBufferContext(
+  std::vector<BufferContext>::iterator ReleaseBufferContext(
       const std::vector<BufferContext>::iterator& buffer_state_iter);
 
   using EventHandlerAction =
@@ -284,6 +284,12 @@ class CONTENT_EXPORT VideoCaptureController
   // various ControllerClients.
   bool was_crop_ever_called_ = false;
 
+  // WeakPtrFactory for callbacks bound to the currently launched or launching
+  // device (VideoFrameReceiver and connection_lost_cb). Invalidated in
+  // ReleaseDeviceAsync() so stale events from a released device cannot reach
+  // this controller, while keeping `weak_ptr_factory_` valid for clients such
+  // as VideoCaptureHost.
+  base::WeakPtrFactory<VideoCaptureController> device_weak_ptr_factory_{this};
   base::WeakPtrFactory<VideoCaptureController> weak_ptr_factory_{this};
 };
 

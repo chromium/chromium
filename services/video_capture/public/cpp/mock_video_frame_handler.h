@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -25,6 +26,7 @@ class MockVideoFrameHandler : public mojom::VideoFrameHandler {
 
   void HoldAccessPermissions();
   void ReleaseAccessedFrames();
+  void SetDisconnectHandler(base::OnceClosure handler);
 
   // Use forwarding method to work around gmock not supporting move-only types.
   void OnNewBuffer(int32_t buffer_id,
@@ -53,7 +55,7 @@ class MockVideoFrameHandler : public mojom::VideoFrameHandler {
   MOCK_METHOD0(OnStopped, void());
 
  private:
-  const mojo::Receiver<mojom::VideoFrameHandler> video_frame_handler_;
+  mojo::Receiver<mojom::VideoFrameHandler> video_frame_handler_;
   std::vector<int32_t> known_buffer_ids_;
   bool should_store_access_permissions_;
   mojo::Remote<video_capture::mojom::VideoFrameAccessHandler>

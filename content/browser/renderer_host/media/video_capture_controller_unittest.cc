@@ -28,6 +28,7 @@
 #include "content/browser/renderer_host/media/media_stream_provider.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
 #include "content/browser/renderer_host/media/video_capture_controller_event_handler.h"
+#include "content/browser/renderer_host/media/video_capture_device_launch_observer.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1166,6 +1167,208 @@ TEST_F(VideoCaptureControllerTest, StopSessionStopsAllClientsForSession) {
   Mock::VerifyAndClearExpectations(client_a_.get());
   Mock::VerifyAndClearExpectations(client_b_.get());
   EXPECT_EQ(1u, controller_->GetClientCount());
+}
+
+TEST_F(VideoCaptureControllerTest,
+       ReleaseDeviceAsyncInvalidatesDeviceWeakPtrAndRetiresBuffers) {
+  class MockLaunchObserver : public VideoCaptureDeviceLaunchObserver {
+   public:
+    MOCK_METHOD(void, OnDeviceLaunched, (VideoCaptureController*), (override));
+    MOCK_METHOD(void,
+                OnDeviceLaunchFailed,
+                (VideoCaptureController*, media::VideoCaptureError),
+                (override));
+    MOCK_METHOD(void, OnDeviceLaunchAborted, (), (override));
+    MOCK_METHOD(void,
+                OnDeviceConnectionLost,
+                (VideoCaptureController*),
+                (override));
+  };
+
+  NiceMock<MockLaunchObserver> launch_observer;
+  auto device_launcher = std::make_unique<MockVideoCaptureDeviceLauncher>();
+  auto* device_launcher_ptr = device_launcher.get();
+  media::VideoCaptureParams params;
+  params.requested_format = arbitrary_format_;
+  scoped_refptr<VideoCaptureController> controller =
+      base::MakeRefCounted<VideoCaptureController>(
+          "device_id", blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+          params, std::move(device_launcher), base::DoNothing());
+
+  auto client = std::make_unique<MockVideoCaptureControllerEventHandler>(
+      controller.get());
+  client->set_enable_auto_return_buffer_on_buffer_ready(false);
+  const VideoCaptureControllerID route_id = base::UnguessableToken::Create();
+  controller->AddClient(route_id, {}, client.get(),
+                        base::UnguessableToken::Create(), params);
+
+  // Save a controller-level WeakPtr (as VideoCaptureHost holds) to ensure
+  // ReleaseDeviceAsync() does not invalidate it.
+  base::WeakPtr<VideoCaptureController> host_weak_ptr =
+      controller->GetWeakPtrForIOThread();
+
+  struct LaunchResult {
+    base::WeakPtr<media::VideoFrameReceiver> receiver;
+    base::OnceClosure connection_lost_cb;
+    raw_ptr<MockLaunchedVideoCaptureDevice> device = nullptr;
+  };
+  auto launch_device = [&]() {
+    LaunchResult result;
+    EXPECT_CALL(*device_launcher_ptr, LaunchDeviceAsync(_, _, _, _, _, _, _))
+        .WillOnce([&](const std::string&, blink::mojom::MediaStreamType,
+                      const media::VideoCaptureParams&,
+                      base::WeakPtr<media::VideoFrameReceiver> receiver,
+                      base::OnceClosure connection_lost_cb,
+                      VideoCaptureDeviceLauncher::Callbacks* callbacks,
+                      base::OnceClosure done_cb) {
+          result.receiver = std::move(receiver);
+          result.connection_lost_cb = std::move(connection_lost_cb);
+          auto device =
+              std::make_unique<NiceMock<MockLaunchedVideoCaptureDevice>>();
+          result.device = device.get();
+          callbacks->OnDeviceLaunched(std::move(device));
+          std::move(done_cb).Run();
+        });
+    controller->CreateAndStartDeviceAsync(params, &launch_observer,
+                                          base::DoNothing());
+    return result;
+  };
+
+  LaunchResult first_launch = launch_device();
+  ASSERT_TRUE(first_launch.receiver);
+  ASSERT_TRUE(controller->IsDeviceAlive());
+
+  auto make_buffer_handle = []() {
+    auto region = base::UnsafeSharedMemoryRegion::Create(64);
+    EXPECT_TRUE(region.IsValid());
+    return media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+        std::move(region));
+  };
+  auto make_frame = [&](int buffer_id) {
+    auto info = media::mojom::VideoFrameInfo::New();
+    info->coded_size = arbitrary_format_.frame_size;
+    info->visible_rect = gfx::Rect(arbitrary_format_.frame_size);
+    info->pixel_format = arbitrary_format_.pixel_format;
+    info->color_space = arbitrary_color_space_;
+    info->metadata.reference_time = base::TimeTicks::Now();
+    return media::ReadyFrameInBuffer(buffer_id, /*frame_feedback_id=*/1,
+                                     nullptr, std::move(info));
+  };
+
+  // Register two buffers (ids 0 and 1), deliver frames in both, and return
+  // only buffer 0 so buffer 0 is unused while buffer 1 is still in use.
+  int client_buffer_id_0 = -1;
+  int client_buffer_id_1 = -1;
+  EXPECT_CALL(*client, DoBufferCreated(route_id, _))
+      .WillOnce(SaveArg<1>(&client_buffer_id_0))
+      .WillOnce(SaveArg<1>(&client_buffer_id_1));
+  EXPECT_CALL(*client, DoBufferReady(_)).Times(2);
+  first_launch.receiver->OnNewBuffer(/*buffer_id=*/0, make_buffer_handle());
+  first_launch.receiver->OnFrameReadyInBuffer(make_frame(/*buffer_id=*/0));
+  first_launch.receiver->OnNewBuffer(/*buffer_id=*/1, make_buffer_handle());
+  first_launch.receiver->OnFrameReadyInBuffer(make_frame(/*buffer_id=*/1));
+  ASSERT_TRUE(controller->ReturnBuffer(route_id, client.get(),
+                                       client_buffer_id_0,
+                                       media::VideoCaptureFeedback()));
+  Mock::VerifyAndClearExpectations(client.get());
+
+  // Releasing the device must immediately destroy unused buffer 0, retire (but
+  // not yet destroy) in-use buffer 1, invalidate `first_launch.receiver`, and
+  // keep `host_weak_ptr` valid.
+  EXPECT_CALL(*client, DoBufferDestroyed(route_id, client_buffer_id_0))
+      .Times(1);
+  EXPECT_CALL(*client, DoBufferDestroyed(route_id, client_buffer_id_1))
+      .Times(0);
+  EXPECT_CALL(launch_observer, OnDeviceConnectionLost(_)).Times(0);
+  first_launch.device = nullptr;
+  controller->ReleaseDeviceAsync(base::DoNothing());
+  EXPECT_FALSE(controller->IsDeviceAlive());
+  EXPECT_FALSE(first_launch.receiver);
+  EXPECT_TRUE(host_weak_ptr);
+  // Stale connection_lost_cb from the released device must be a no-op.
+  std::move(first_launch.connection_lost_cb).Run();
+  Mock::VerifyAndClearExpectations(client.get());
+
+  // Relaunch the device while buffer 1 is still being consumed, and replay
+  // OnNewBuffer with the exact same buffer_ids (0 and 1) — mirroring what
+  // BroadcastingReceiver::AddClient() does on screen unlock when a
+  // co-subscriber kept the VideoSourceImpl alive.
+  LaunchResult second_launch = launch_device();
+  ASSERT_TRUE(second_launch.receiver);
+  ASSERT_TRUE(second_launch.device);
+
+  int new_client_buffer_id_0 = -1;
+  int new_client_buffer_id_1 = -1;
+  EXPECT_CALL(*client, DoBufferCreated(route_id, _))
+      .WillOnce(SaveArg<1>(&new_client_buffer_id_0))
+      .WillOnce(SaveArg<1>(&new_client_buffer_id_1));
+  EXPECT_CALL(*client, DoBufferReady(_)).Times(2);
+  second_launch.receiver->OnNewBuffer(/*buffer_id=*/0, make_buffer_handle());
+  second_launch.receiver->OnFrameReadyInBuffer(make_frame(/*buffer_id=*/0));
+  second_launch.receiver->OnNewBuffer(/*buffer_id=*/1, make_buffer_handle());
+  second_launch.receiver->OnFrameReadyInBuffer(make_frame(/*buffer_id=*/1));
+  EXPECT_NE(new_client_buffer_id_1, client_buffer_id_1);
+  Mock::VerifyAndClearExpectations(client.get());
+
+  // Returning the old in-use buffer 1 now destroys only the old retired
+  // context and does not forward stale feedback to the new device.
+  EXPECT_CALL(*client, DoBufferDestroyed(route_id, client_buffer_id_1))
+      .Times(1);
+  EXPECT_CALL(*client, DoBufferDestroyed(route_id, new_client_buffer_id_1))
+      .Times(0);
+  EXPECT_CALL(*second_launch.device, OnUtilizationReport(_)).Times(0);
+  EXPECT_TRUE(controller->ReturnBuffer(route_id, client.get(),
+                                       client_buffer_id_1,
+                                       media::VideoCaptureFeedback(0.5)));
+  Mock::VerifyAndClearExpectations(client.get());
+  Mock::VerifyAndClearExpectations(second_launch.device.get());
+
+  // Cleanup client and device.
+  controller->RemoveClient(route_id, client.get());
+  second_launch.device = nullptr;
+  controller->ReleaseDeviceAsync(base::DoNothing());
+}
+
+TEST_F(VideoCaptureControllerTest,
+       ReleaseDeviceAsyncDuringPendingLaunchInvalidatesWeakPtrAndRetires) {
+  auto device_launcher = std::make_unique<MockVideoCaptureDeviceLauncher>();
+  auto* device_launcher_ptr = device_launcher.get();
+  media::VideoCaptureParams params;
+  params.requested_format = arbitrary_format_;
+  scoped_refptr<VideoCaptureController> controller =
+      base::MakeRefCounted<VideoCaptureController>(
+          "device_id", blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+          params, std::move(device_launcher), base::DoNothing());
+
+  base::WeakPtr<media::VideoFrameReceiver> pending_receiver;
+  EXPECT_CALL(*device_launcher_ptr, LaunchDeviceAsync(_, _, _, _, _, _, _))
+      .WillOnce(
+          [&](const std::string&, blink::mojom::MediaStreamType,
+              const media::VideoCaptureParams&,
+              base::WeakPtr<media::VideoFrameReceiver> receiver,
+              base::OnceClosure, VideoCaptureDeviceLauncher::Callbacks*,
+              base::OnceClosure) { pending_receiver = std::move(receiver); });
+  controller->CreateAndStartDeviceAsync(params, nullptr, base::DoNothing());
+  ASSERT_TRUE(pending_receiver);
+
+  // Deliver a buffer before OnDeviceLaunched() has fired.
+  auto region = base::UnsafeSharedMemoryRegion::Create(64);
+  ASSERT_TRUE(region.IsValid());
+  pending_receiver->OnNewBuffer(
+      /*buffer_id=*/0,
+      media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(std::move(region)));
+
+  EXPECT_CALL(*device_launcher_ptr, AbortLaunch()).Times(1);
+  controller->ReleaseDeviceAsync(base::DoNothing());
+  EXPECT_FALSE(pending_receiver);
+
+  // Subsequent OnNewBuffer with the same buffer_id must not collide with any
+  // unretired buffer left over from the aborted launch.
+  auto region2 = base::UnsafeSharedMemoryRegion::Create(64);
+  ASSERT_TRUE(region2.IsValid());
+  controller->OnNewBuffer(
+      /*buffer_id=*/0, media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+                           std::move(region2)));
 }
 
 }  // namespace

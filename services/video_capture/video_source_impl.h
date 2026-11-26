@@ -75,11 +75,14 @@ class VideoSourceImpl : public mojom::VideoSource {
   mojo::ReceiverSet<mojom::VideoSource> receivers_;
   base::RepeatingClosure on_last_binding_closed_cb_;
 
+  // Declared before `push_subscriptions_` so that `broadcaster_` outlives the
+  // subscriptions, which hold a raw_ptr to it and unregister on destruction.
+  BroadcastingReceiver broadcaster_;
+
   // We use the address of each instance as keys to itself.
   std::map<PushVideoStreamSubscriptionImpl*,
            std::unique_ptr<PushVideoStreamSubscriptionImpl>>
       push_subscriptions_;
-  BroadcastingReceiver broadcaster_;
   DeviceStatus device_status_;
   raw_ptr<Device, AcrossTasksDanglingUntriaged> device_{nullptr};
   media::VideoCaptureParams device_start_settings_;

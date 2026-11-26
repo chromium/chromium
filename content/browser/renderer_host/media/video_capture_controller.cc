@@ -149,7 +149,7 @@ void VideoCaptureController::BufferContext::IncreaseConsumerCount() {
 void VideoCaptureController::BufferContext::DecreaseConsumerCount() {
   consumer_hold_count_--;
   if (consumer_hold_count_ == 0) {
-    if (consumer_feedback_observer_ != nullptr &&
+    if (!is_retired_ && consumer_feedback_observer_ != nullptr &&
         !combined_consumer_feedback_.Empty()) {
       // We set this now since frame_feedback_id_ may be updated at anytime.
       combined_consumer_feedback_.frame_id = frame_feedback_id_;
@@ -696,9 +696,9 @@ void VideoCaptureController::CreateAndStartDeviceAsync(
   time_of_start_request_ = base::TimeTicks::Now();
   device_launch_observer_ = observer;
   device_launcher_->LaunchDeviceAsync(
-      device_id_, stream_type_, params, GetWeakPtrForIOThread(),
+      device_id_, stream_type_, params, device_weak_ptr_factory_.GetWeakPtr(),
       base::BindOnce(&VideoCaptureController::OnDeviceConnectionLost,
-                     GetWeakPtrForIOThread()),
+                     device_weak_ptr_factory_.GetWeakPtr()),
       this, std::move(done_cb));
 }
 
@@ -710,14 +710,26 @@ void VideoCaptureController::ReleaseDeviceAsync(base::OnceClosure done_cb) {
   string_stream << "VideoCaptureController::ReleaseDeviceAsync: serial_id = "
                 << serial_id() << ", device_id = " << device_id();
   EmitLogMessage(string_stream.str(), 1);
+  // Invalidate weak pointers handed to the old device so no stale or in-flight
+  // frames/events can reach this controller after release.
+  device_weak_ptr_factory_.InvalidateWeakPtrs();
+  // `buffer_contexts_` contain references to `launched_device_` as observers.
+  // Clear those observer references and retire all unretired buffers since the
+  // detached device will no longer deliver OnBufferRetired events.
+  for (auto it = buffer_contexts_.begin(); it != buffer_contexts_.end();) {
+    if (!it->HasConsumers()) {
+      it = ReleaseBufferContext(it);
+    } else {
+      it->set_consumer_feedback_observer(nullptr);
+      it->set_is_retired();
+      ++it;
+    }
+  }
   if (!launched_device_) {
     device_launcher_->AbortLaunch();
     return;
   }
-  // |buffer_contexts_| contain references to |launched_device_| as observers.
-  // Clear those observer references prior to resetting |launced_device_|.
-  for (auto& entry : buffer_contexts_)
-    entry.set_consumer_feedback_observer(nullptr);
+  device_launch_observer_ = nullptr;
   launched_device_.reset();
 }
 
@@ -841,7 +853,8 @@ void VideoCaptureController::OnClientFinishedConsumingBuffer(
   }
 }
 
-void VideoCaptureController::ReleaseBufferContext(
+std::vector<VideoCaptureController::BufferContext>::iterator
+VideoCaptureController::ReleaseBufferContext(
     const std::vector<BufferContext>::iterator& buffer_context_iter) {
   for (const auto& client : controller_clients_) {
     if (client->session_closed)
@@ -855,7 +868,7 @@ void VideoCaptureController::ReleaseBufferContext(
           client->controller_id, buffer_context_iter->buffer_context_id());
     }
   }
-  buffer_contexts_.erase(buffer_context_iter);
+  return buffer_contexts_.erase(buffer_context_iter);
 }
 
 void VideoCaptureController::PerformForClientsWithOpenSession(

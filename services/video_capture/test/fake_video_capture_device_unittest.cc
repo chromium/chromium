@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -145,21 +147,26 @@ TEST_F(FakeVideoCaptureDeviceTest, BuffersGetReused) {
   ASSERT_LE(num_buffers_created, kMaxBufferPoolBuffers);
 }
 
-// Tests that when the device is stopped OnBufferRetired() events get sent out
-// to the receiver followed by OnStopped().
+// Tests that when the device is stopped (triggered by a second subscriber
+// forcing a reopen with different settings), all previously allocated buffers
+// are retired via OnBufferRetired().
 TEST_F(FakeVideoCaptureDeviceTest, BuffersGetRetiredWhenDeviceIsStopped) {
   base::RunLoop wait_for_frames_loop;
   static const int kNumFramesToWaitFor = 2;
-  std::vector<int32_t> known_buffer_ids;
+  std::vector<int32_t> buffers_to_retire;
+  bool collecting_buffers = true;
   int num_frames_arrived = 0;
   mojo::PendingRemote<mojom::VideoFrameHandler> handler_remote;
   MockVideoFrameHandler video_frame_handler(
       handler_remote.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(video_frame_handler, DoOnNewBuffer(_, _))
-      .WillRepeatedly([&known_buffer_ids](int32_t buffer_id,
-                                          media::mojom::VideoBufferHandlePtr*) {
-        known_buffer_ids.push_back(buffer_id);
-      });
+      .WillRepeatedly(
+          [&buffers_to_retire, &collecting_buffers](
+              int32_t buffer_id, media::mojom::VideoBufferHandlePtr*) {
+            if (collecting_buffers) {
+              buffers_to_retire.push_back(buffer_id);
+            }
+          });
   EXPECT_CALL(video_frame_handler, DoOnFrameReadyInBuffer(_, _, _))
       .WillRepeatedly([&wait_for_frames_loop, &num_frames_arrived]() {
         if (++num_frames_arrived >= kNumFramesToWaitFor) {
@@ -183,23 +190,49 @@ TEST_F(FakeVideoCaptureDeviceTest, BuffersGetRetiredWhenDeviceIsStopped) {
           }));
 
   wait_for_frames_loop.Run();
+  collecting_buffers = false;
+  ASSERT_FALSE(buffers_to_retire.empty());
 
-  base::RunLoop wait_for_on_stopped_loop;
+  base::RunLoop wait_for_reopen_and_retire_loop;
+  auto barrier =
+      base::BarrierClosure(2, wait_for_reopen_and_retire_loop.QuitClosure());
+  bool all_retired = false;
   EXPECT_CALL(video_frame_handler, DoOnBufferRetired(_))
-      .WillRepeatedly([&known_buffer_ids](int32_t buffer_id) {
-        auto iter = std::ranges::find(known_buffer_ids, buffer_id);
-        ASSERT_TRUE(iter != known_buffer_ids.end());
-        known_buffer_ids.erase(iter);
-      });
+      .WillRepeatedly(
+          [&buffers_to_retire, &all_retired, &barrier](int32_t buffer_id) {
+            std::erase(buffers_to_retire, buffer_id);
+            if (!all_retired && buffers_to_retire.empty()) {
+              all_retired = true;
+              barrier.Run();
+            }
+          });
 
-  EXPECT_CALL(video_frame_handler, OnStopped())
-      .WillOnce(
-          [&wait_for_on_stopped_loop]() { wait_for_on_stopped_loop.Quit(); });
+  // Stop (and reopen) the device by creating a second subscription with
+  // different settings and `force_reopen_with_new_settings` = true.
+  media::VideoCaptureParams different_settings = requestable_settings_;
+  different_settings.requested_format.frame_size =
+      gfx::Size(requestable_settings_.requested_format.frame_size.width() / 2,
+                requestable_settings_.requested_format.frame_size.height() / 2);
+  ASSERT_FALSE(different_settings == requestable_settings_);
 
-  // Stop the device
-  subscription.reset();
-  wait_for_on_stopped_loop.Run();
-  ASSERT_TRUE(known_buffer_ids.empty());
+  mojo::PendingRemote<mojom::VideoFrameHandler> handler_remote_2;
+  MockVideoFrameHandler video_frame_handler_2(
+      handler_remote_2.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<video_capture::mojom::PushVideoStreamSubscription>
+      subscription_2;
+  i420_fake_source_remote_->CreatePushSubscription(
+      std::move(handler_remote_2), different_settings,
+      /*force_reopen_with_new_settings=*/true,
+      subscription_2.BindNewPipeAndPassReceiver(),
+      base::BindLambdaForTesting(
+          [&barrier](video_capture::mojom::CreatePushSubscriptionResultCodePtr
+                         result_code,
+                     const media::VideoCaptureParams&) {
+            EXPECT_TRUE(result_code->is_success_code());
+            barrier.Run();
+          }));
+
+  wait_for_reopen_and_retire_loop.Run();
 }
 
 }  // namespace video_capture

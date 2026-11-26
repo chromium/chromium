@@ -235,19 +235,29 @@ int32_t BroadcastingReceiver::AddClient(
 }
 
 void BroadcastingReceiver::SuspendClient(int32_t client_id) {
-  clients_.at(client_id).set_is_suspended(true);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = clients_.find(client_id);
+  if (it == clients_.end()) {
+    // Client may have already been removed by OnClientDisconnected().
+    return;
+  }
+  it->second.set_is_suspended(true);
 }
 
 void BroadcastingReceiver::ResumeClient(int32_t client_id) {
-  clients_.at(client_id).set_is_suspended(false);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = clients_.find(client_id);
+  if (it == clients_.end()) {
+    // Client may have already been removed by OnClientDisconnected().
+    return;
+  }
+  it->second.set_is_suspended(false);
 }
 
-mojo::Remote<mojom::VideoFrameHandler> BroadcastingReceiver::RemoveClient(
-    int32_t client_id) {
+void BroadcastingReceiver::RemoveClient(int32_t client_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto client = std::move(clients_.at(client_id));
+  // No-op if the client was already removed by OnClientDisconnected().
   clients_.erase(client_id);
-  return std::move(client.client());
 }
 
 void BroadcastingReceiver::OnCaptureConfigurationChanged() {

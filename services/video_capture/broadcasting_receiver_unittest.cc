@@ -7,6 +7,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -63,6 +64,10 @@ class BroadcastingReceiverTest : public ::testing::Test {
 
   size_t HoldBufferContextSize() {
     return broadcaster_.scoped_access_permissions_by_buffer_context_id_.size();
+  }
+
+  bool HasClient(int32_t client_id) {
+    return broadcaster_.clients_.contains(client_id);
   }
 
  protected:
@@ -254,6 +259,28 @@ TEST_F(BroadcastingReceiverTest, OnNewCaptureVersion) {
 
   run_loop_1.Run();
   run_loop_2.Run();
+}
+
+TEST_F(BroadcastingReceiverTest,
+       RemoveSuspendResumeAfterClientDisconnectedDoesNotCrash) {
+  // Disconnect client 1's VideoFrameHandler pipe so OnClientDisconnected()
+  // removes it from `clients_` before Remove/Suspend/Resume are called.
+  mock_video_frame_handler_1_.reset();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !HasClient(client_id_1_); }));
+
+  broadcaster_.SuspendClient(client_id_1_);
+  broadcaster_.ResumeClient(client_id_1_);
+  broadcaster_.RemoveClient(client_id_1_);
+
+  // Remaining client still receives frames cleanly.
+  base::RunLoop frame_arrived;
+  EXPECT_CALL(*mock_video_frame_handler_2_, DoOnFrameReadyInBuffer(_, _, _))
+      .WillOnce(RunOnceClosure(frame_arrived.QuitClosure()));
+  broadcaster_.OnFrameReadyInBuffer(
+      media::ReadyFrameInBuffer(kArbitraryBufferId, kArbitraryFrameFeedbackId,
+                                std::make_unique<StubReadWritePermission>(),
+                                media::mojom::VideoFrameInfo::New()));
+  frame_arrived.Run();
 }
 
 }  // namespace video_capture

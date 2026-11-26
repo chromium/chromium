@@ -5,6 +5,8 @@
 #ifndef SERVICES_VIDEO_CAPTURE_PUSH_VIDEO_STREAM_SUBSCRIPTION_IMPL_H_
 #define SERVICES_VIDEO_CAPTURE_PUSH_VIDEO_STREAM_SUBSCRIPTION_IMPL_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -64,6 +66,7 @@ class PushVideoStreamSubscriptionImpl
   };
 
   void OnConnectionLost();
+  void ResetBroadcasterClient();
 
   mojo::Receiver<mojom::PushVideoStreamSubscription> receiver_;
   mojo::PendingRemote<mojom::VideoFrameHandler> subscriber_;
@@ -73,12 +76,12 @@ class PushVideoStreamSubscriptionImpl
   raw_ptr<Device, AcrossTasksDanglingUntriaged> device_;
   Status status_{Status::kCreationCallbackNotYetRun};
 
-  // Client id handed out by |broadcaster_| when registering |this| as its
+  // Client id handed out by `broadcaster_` when registering `this` as its
   // client.
-  int32_t broadcaster_client_id_;
+  std::optional<int32_t> broadcaster_client_id_;
 
-  // A callback that we invoke when this instance changes |status_| to
-  // kClosed via a call to Close().
+  // A callback that we invoke when this instance changes `status_` to
+  // kClosed via a call to Close() or when the connection is lost.
   base::OnceCallback<void(base::OnceClosure done_cb)> on_closed_handler_;
 
   base::WeakPtrFactory<PushVideoStreamSubscriptionImpl> weak_factory_{this};
