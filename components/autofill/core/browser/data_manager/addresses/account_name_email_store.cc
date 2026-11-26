@@ -178,6 +178,11 @@ bool AccountNameEmailStore::ReconcileProfileWithBlockReason() {
           prefs::kAutofillNameAndEmailProfileNotSelectedCounter);
       pref_service_->ClearPref(prefs::kAutofillWasNameAndEmailProfileUsed);
       return false;
+    case ProfileUpdateBlockReason::kAutofillProfileDisabled:
+      // `AddressDataManager::AddProfile()` ignores additions when address
+      // autofill is disabled. Avoid mutating synced prefs without persisting
+      // the profile.
+      return false;
     case ProfileUpdateBlockReason::kDataNotLoaded:
       // Defer call. When data is loaded, `OnStateChanged` will be called
       // again, reattempting to create the profile.
@@ -328,6 +333,10 @@ AccountNameEmailStore::GetBlockAccountNameEmailUpdateReason() {
            ->GetSelectedTypes()
            .Has(syncer::UserSelectableType::kAutofill)) {
     return ProfileUpdateBlockReason::kAutofillSyncToggleDisabled;
+  }
+
+  if (!address_data_manager_->IsAutofillProfileEnabled()) {
+    return ProfileUpdateBlockReason::kAutofillProfileDisabled;
   }
 
   switch (sync_service_observer_.GetSource()->GetDownloadStatusFor(

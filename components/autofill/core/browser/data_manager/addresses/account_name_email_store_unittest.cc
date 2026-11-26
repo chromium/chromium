@@ -49,7 +49,9 @@ class AccountNameEmailStoreTest : public testing::Test {
   AccountNameEmailStoreTest()
       : prefs_(test::PrefServiceForTesting()),
         identity_manager_(identity_test_env_.identity_manager()),
-        store_(test_adm_, *identity_manager_, sync_service_, *prefs_) {}
+        store_(test_adm_, *identity_manager_, sync_service_, *prefs_) {
+    test_adm_.SetAutofillProfileEnabled(true);
+  }
 
   void CreatePrimaryAccount(std::string_view name, std::string_view email) {
     // Calling `MakePrimaryAccountAvailable()` registers the account with the
@@ -105,6 +107,10 @@ class AccountNameEmailStoreTest : public testing::Test {
     sync_service().GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false, selected_sync_types);
     sync_service().FireStateChanged();
+  }
+
+  void SetAutofillProfileEnabled(bool enabled) {
+    test_adm_.SetAutofillProfileEnabled(enabled);
   }
 
   AccountNameEmailStore& account_name_email_store() { return store_; }
@@ -217,6 +223,65 @@ TEST_F(AccountNameEmailStoreTest, ProfileNotCreatedBeforeDataLoaded) {
 
   CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
   EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+}
+
+// Tests that neither the kAccountNameEmail profile nor the synced signature
+// pref is updated when address autofill is disabled.
+TEST_F(AccountNameEmailStoreTest,
+       AutofillProfileDisabled_DoesNotCreateProfileOrUpdatePrefs) {
+  SetAutofillProfileEnabled(false);
+
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+  EXPECT_THAT(
+      pref_service().GetString(prefs::kAutofillNameAndEmailProfileSignature),
+      IsEmpty());
+}
+
+// Tests that repeated sync state changes do not overwrite a synced signature
+// pref when address autofill is disabled, preventing cross-device pref
+// ping-pong loops.
+TEST_F(AccountNameEmailStoreTest,
+       AutofillProfileDisabled_DoesNotOverwriteSyncedSignatureOnSyncEvents) {
+  SetAutofillProfileEnabled(false);
+  constexpr char kForeignSignature[] = "foreign_signature_hash";
+  pref_service().SetString(prefs::kAutofillNameAndEmailProfileSignature,
+                           kForeignSignature);
+  pref_service().SetInteger(
+      prefs::kAutofillNameAndEmailProfileNotSelectedCounter, 3);
+
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  sync_service().FireStateChanged();
+  sync_service().FireStateChanged();
+
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+  EXPECT_EQ(
+      pref_service().GetString(prefs::kAutofillNameAndEmailProfileSignature),
+      kForeignSignature);
+  EXPECT_EQ(pref_service().GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            3);
+}
+
+// Tests that once address autofill is re-enabled, a subsequent update creates
+// the kAccountNameEmail profile and persists the signature pref.
+TEST_F(AccountNameEmailStoreTest,
+       AutofillProfileReenabled_CreatesProfileOnNextUpdate) {
+  SetAutofillProfileEnabled(false);
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  ASSERT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+
+  SetAutofillProfileEnabled(true);
+  sync_service().FireStateChanged();
+
+  EXPECT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(IsCorrectAccountNameEmail(
+                  base::UTF8ToUTF16(kTestName1),
+                  base::UTF8ToUTF16(kTestEmailAddress1))));
+  EXPECT_EQ(
+      pref_service().GetString(prefs::kAutofillNameAndEmailProfileSignature),
+      test_api(&account_name_email_store())
+          .HashAccountInfo(GetPrimaryAccountInfo()));
 }
 
 // Tests that the created profile holds the correct data.
@@ -439,6 +504,37 @@ TEST_F(AccountNameEmailStoreTest, SignOut) {
   sync_service().FireStateChanged();
 
   EXPECT_THAT(address_data_manager().GetProfiles(), testing::IsEmpty());
+  EXPECT_THAT(
+      pref_service().GetString(prefs::kAutofillNameAndEmailProfileSignature),
+      IsEmpty());
+  EXPECT_EQ(pref_service().GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            0);
+  EXPECT_FALSE(
+      pref_service().GetBoolean(prefs::kAutofillWasNameAndEmailProfileUsed));
+}
+
+// Tests that signing out while address autofill is disabled still clears the
+// local kAccountNameEmail prefs.
+TEST_F(AccountNameEmailStoreTest,
+       SignOutWhileAutofillProfileDisabled_ClearsPrefs) {
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  ASSERT_THAT(
+      address_data_manager().GetProfiles(),
+      ElementsAre(Property(&AutofillProfile::record_type,
+                           AutofillProfile::RecordType::kAccountNameEmail)));
+
+  pref_service().SetInteger(
+      prefs::kAutofillNameAndEmailProfileNotSelectedCounter, 5);
+  pref_service().SetBoolean(prefs::kAutofillWasNameAndEmailProfileUsed, true);
+  SetAutofillProfileEnabled(false);
+
+  identity_test_env().EnableRemovalOfExtendedAccountInfo();
+  identity_test_env().ClearPrimaryAccount();
+  sync_service().SetSignedOut();
+  sync_service().FireStateChanged();
+
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
   EXPECT_THAT(
       pref_service().GetString(prefs::kAutofillNameAndEmailProfileSignature),
       IsEmpty());

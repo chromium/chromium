@@ -118,6 +118,8 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
     // TODO(crbug.com/40066949): Do not block profile creation when
     // sync-the-feature gets removed.
     kSyncDisabled = 3,
+    // The user disabled address autofill (`prefs::kAutofillProfileEnabled`).
+    kAutofillProfileDisabled = 4,
   };
 
   // Updates the kAccountNameEmail autofill profile with the account `info`. If
@@ -128,9 +130,9 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   std::string HashAccountInfo(const AccountInfo& info) const;
 
   // Determines if the conditions for creating or updating the kAccountNameEmail
-  // profile are not met. The operation should be blocked if sync is disabled
-  // for Autofill or if sync is enabled but the necessary data has not yet been
-  // downloaded.
+  // profile are not met. The operation should be blocked if sync or address
+  // autofill is disabled, or if sync is enabled but the necessary data has not
+  // yet been downloaded.
   // Returns a blocking reason or nullopt if the operation shouldn't be blocked.
   std::optional<ProfileUpdateBlockReason>
   GetBlockAccountNameEmailUpdateReason();
