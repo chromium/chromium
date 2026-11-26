@@ -222,9 +222,15 @@ void RawPtrAsanService::PartitionAllocHook(
 
   // We should not mark the memory region as miracle-ptr protected.
   {
+    // On Windows, ASan doesn't intercept `_aligned_malloc()`, so an aligned
+    // allocation from a non-BRP root can point into the middle of the ASan
+    // allocation. Use the start of the ASan allocation, which is where
+    // `MallocHook()` placed the marker.
+    void* allocation_begin = const_cast<void*>(
+        __sanitizer_get_allocated_begin(notification_data.address()));
+    CHECK(allocation_begin);
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
-    uintptr_t address =
-        reinterpret_cast<uintptr_t>(notification_data.address());
+    uintptr_t address = reinterpret_cast<uintptr_t>(allocation_begin);
     // Note: Do not clear *GetShadow(header) in V2. IgnoreFreeHook() treats
     // *GetShadow(header) != kAsanUserPoisonedMemoryMagic as an early
     // allocation; clearing it would cause non-BRP allocations to be quarantined
@@ -237,8 +243,11 @@ void RawPtrAsanService::PartitionAllocHook(
     // allocation guard, mark BrpDisabledAllocation for BRP-disabled allocation.
     it->second.quarantine_flag = QuarantineFlag::BrpDisabledAllocation;
 #else
-    uint8_t* header = UNSAFE_BUFFERS(
-        static_cast<uint8_t*>(notification_data.address()) - kChunkHeaderSize);
+    // SAFETY: `allocation_begin` is the start of an ASan heap allocation, and
+    // ASan places its `kChunkHeaderSize`-byte chunk header immediately before
+    // it. `Configure()` validates this layout.
+    uint8_t* header = UNSAFE_BUFFERS(static_cast<uint8_t*>(allocation_begin) -
+                                     kChunkHeaderSize);
     CHECK_EQ(*RawPtrAsanService::GetInstance().GetShadow(header),
              kAsanUserPoisonedMemoryMagic);
     *RawPtrAsanService::GetInstance().GetShadow(header) =

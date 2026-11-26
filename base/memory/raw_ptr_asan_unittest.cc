@@ -898,6 +898,31 @@ TEST_F(AsanBackupRefPtrTest, AllocFromNonBrpRootUnprotected) {
   allocator.root()->ResetForTesting(false);
 }
 
+// On Windows, an aligned allocation from a non-BRP root is served by
+// `_aligned_malloc()`, which returns a pointer into the middle of the ASan
+// allocation.
+TEST_F(AsanBackupRefPtrTest, AlignedAllocFromNonBrpRootUnprotected) {
+  partition_alloc::PartitionOptions opts;
+  opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
+  opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
+  partition_alloc::PartitionAllocator allocator(opts);
+
+  constexpr uint8_t kMarker = 0xA7;
+  constexpr size_t kAlignment = 16384;
+  constexpr size_t kSize = 4;
+
+  uint8_t* buf =
+      static_cast<uint8_t*>(allocator.root()->AlignedAlloc(kAlignment, kSize));
+  *buf = 'a';
+  raw_ptr<uint8_t> ptr = buf;
+  allocator.root()->AlignedFree(buf);
+
+  EXPECT_DEATH_IF_SUPPORTED(*ptr = kMarker,
+                            "use-after-free[\\s\\S]*MiraclePtr Status: NOT "
+                            "PROTECTED\\n");
+  allocator.root()->ResetForTesting(false);
+}
+
 }  // namespace base::internal
 
 TEST(AsanBackupRefPtrImpl, RawRefGet) {
