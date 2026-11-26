@@ -240,7 +240,7 @@ void TriggerPostOpeningAction(id<TabOpening> tab_opener,
 
   // Only widgets and share extension support profile/account switching when
   // handling an intent.
-  bool isWidget = [URL.scheme isEqualToString:@"chromewidgetkit"];
+  bool isWidget = [URL.scheme isEqualToString:kWidgetKitSchemeChrome];
   bool isShareExtension = app_group::IsShareExtensionCommandURL(URL);
 
   if (!isWidget && !isShareExtension) {
