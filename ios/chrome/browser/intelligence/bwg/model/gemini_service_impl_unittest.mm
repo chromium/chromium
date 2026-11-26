@@ -126,7 +126,6 @@ class GeminiServiceImplTest : public PlatformTest {
     FakeSystemIdentity* identity = [FakeSystemIdentity fakeManagedIdentity];
     InitializeGeminiServiceForProfile(AddManagedProfileWithBuilder(
         profile_manager_, identity, CreateProfileBuilder()));
-    auth_service_->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
     if (capability != signin::Tribool::kUnknown) {
       SetCapabilityForAccount(
           identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),

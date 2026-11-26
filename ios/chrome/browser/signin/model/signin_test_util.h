@@ -13,7 +13,9 @@
 class TestProfileManagerIOS;
 
 // Registers `managed_identity` in `FakeSystemIdentityManager` (if not already
-// registered) and adds a managed `TestProfileIOS` for `managed_identity` to
+// registered), adds the default `AuthenticationServiceFactory` and
+// `SyncServiceFactory` testing factories required for sign-in to `builder`, and
+// adds a signed-in managed `TestProfileIOS` for `managed_identity` to
 // `profile_manager` using `builder`. The personal profile must already have
 // been added to `profile_manager`, and `managed_identity` must represent a
 // managed account. Returns a pointer to the created `TestProfileIOS`.

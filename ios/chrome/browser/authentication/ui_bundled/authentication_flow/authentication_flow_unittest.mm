@@ -28,6 +28,7 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/test/ios/test_utils.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/enterprise/public/managed_profile_creation_constants.h"
@@ -52,7 +53,6 @@
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
-#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
@@ -90,13 +90,18 @@ class AuthenticationFlowTest : public PlatformTest {
     std::ignore =
         AuthenticationServiceFactory::GetForProfile(personal_profile_.get());
 
+    // Do not use `AddManagedProfileWithBuilder()` here: these tests exercise
+    // the initial sign-in flow before the managed profiles are signed in and
+    // marked fully initialized.
     managed_identity1_ = [FakeSystemIdentity fakeManagedIdentity];
-    managed_profile1_ = AddManagedProfileWithBuilder(
-        profile_manager_, managed_identity1_, CreateProfileBuilder());
+    fake_system_identity_manager()->AddIdentity(managed_identity1_);
+    managed_profile1_ = profile_manager_.AddManagedProfileForGaiaIDWithBuilder(
+        managed_identity1_.gaiaId, CreateProfileBuilder());
     managed_browser1_ = std::make_unique<TestBrowser>(managed_profile1_.get());
     managed_identity2_ = [FakeSystemIdentity identityWithEmail:@"bar@foo.com"];
-    managed_profile2_ = AddManagedProfileWithBuilder(
-        profile_manager_, managed_identity2_, CreateProfileBuilder());
+    fake_system_identity_manager()->AddIdentity(managed_identity2_);
+    managed_profile2_ = profile_manager_.AddManagedProfileForGaiaIDWithBuilder(
+        managed_identity2_.gaiaId, CreateProfileBuilder());
     managed_browser2_ = std::make_unique<TestBrowser>(managed_profile2_.get());
 
     run_loop_ = std::make_unique<base::RunLoop>();

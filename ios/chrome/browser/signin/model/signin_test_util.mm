@@ -7,15 +7,23 @@
 #import <utility>
 
 #import "base/check.h"
+#import "base/functional/bind.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 
 TestProfileIOS* AddManagedProfileWithBuilder(
     TestProfileManagerIOS& profile_manager,
     id<SystemIdentity> managed_identity,
     TestProfileIOS::Builder builder) {
+  // `CHECK()`s are used in this function because `ASSERT_*()`s produce a void
+  // return, which cannot be used in a function returning a pointer.
   CHECK(managed_identity);
   FakeSystemIdentityManager* system_identity_manager =
       FakeSystemIdentityManager::FromSystemIdentityManager(
@@ -23,6 +31,16 @@ TestProfileIOS* AddManagedProfileWithBuilder(
   if (!system_identity_manager->ContainsIdentity(managed_identity)) {
     system_identity_manager->AddIdentity(managed_identity);
   }
-  return profile_manager.AddManagedProfileForGaiaIDWithBuilder(
-      managed_identity.gaiaId, std::move(builder));
+  builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
+                            AuthenticationServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                            base::BindOnce(&CreateTestSyncService));
+  TestProfileIOS* managed_profile =
+      profile_manager.AddManagedProfileForGaiaIDWithBuilder(
+          managed_identity.gaiaId, std::move(builder));
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForProfile(managed_profile);
+  CHECK(authentication_service);
+  CHECK(authentication_service->HasPrimaryIdentity());
+  return managed_profile;
 }

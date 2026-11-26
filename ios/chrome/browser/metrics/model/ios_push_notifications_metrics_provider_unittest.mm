@@ -7,15 +7,12 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "components/signin/public/base/signin_metrics.h"
-#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/signin_test_util.h"
@@ -74,16 +71,7 @@ class IOSPushNotificationsMetricsProviderTest : public PlatformTest {
     profile_manager_.AddProfileWithBuilder(CreateProfileBuilder());
   }
 
-  // Creates a work TestProfileIOS and pretends it is signed-in with
-  // `managed_identity`.
-  void AddWorkProfileForManagedIdentity(FakeSystemIdentity* managed_identity) {
-    ProfileIOS* managed_profile = AddManagedProfileWithBuilder(
-        profile_manager_, managed_identity, CreateProfileBuilder());
-
-    AuthenticationServiceFactory::GetForProfile(managed_profile)
-        ->SignIn(managed_identity, signin_metrics::AccessPoint::kSettings);
-  }
-
+  TestProfileManagerIOS& profile_manager() { return profile_manager_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
@@ -203,7 +191,8 @@ TEST_F(IOSPushNotificationsMetricsProviderTest,
 
   // Add a few BrowserStates and record the metrics.
   AddPersonalProfile();
-  AddWorkProfileForManagedIdentity([FakeSystemIdentity fakeManagedIdentity]);
+  AddManagedProfileWithBuilder(profile_manager(),
+                               [FakeSystemIdentity fakeManagedIdentity]);
   provider.ProvideCurrentSessionData(/*uma_proto*/ nullptr);
 
   // The status of the notification authorization must always be logged

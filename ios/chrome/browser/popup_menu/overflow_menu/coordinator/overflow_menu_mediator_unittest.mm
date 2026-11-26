@@ -906,20 +906,10 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
   // Add managed account to sign in with.
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
-  TestProfileIOS::Builder builder;
-  builder.SetPrefService(CreatePrefServiceForProfile());
-  builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
-                            AuthenticationServiceFactory::GetDefaultFactory());
-  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            base::BindOnce(&CreateTestSyncService));
-  TestProfileIOS* managed_profile = AddManagedProfileWithBuilder(
-      profile_manager_, fake_system_identity, std::move(builder));
-
-  // Emulate signing in with managed account.
+  TestProfileIOS* managed_profile =
+      AddManagedProfileWithBuilder(profile_manager_, fake_system_identity);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(managed_profile);
-  authentication_service->SignIn(fake_system_identity,
-                                 signin_metrics::AccessPoint::kStartPage);
   EXPECT_TRUE(authentication_service->HasPrimaryIdentityManaged());
 
   CreateMediator(/*incognito=*/NO);
