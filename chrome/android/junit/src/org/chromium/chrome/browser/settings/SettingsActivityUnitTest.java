@@ -43,7 +43,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
@@ -62,10 +61,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link SettingsActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
-})
 public class SettingsActivityUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -84,6 +79,8 @@ public class SettingsActivityUnitTest {
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
         SettingsIndexData.createInstance().resetNeedsIndexing();
         MainSettings.setSkipPreferencesForTesting(true);
+        // On wide screens, settings would otherwise open in a tab instead of SettingsActivity.
+        SettingsInTab.setShouldOpenSettingsInTabForTesting(false);
     }
 
     @After

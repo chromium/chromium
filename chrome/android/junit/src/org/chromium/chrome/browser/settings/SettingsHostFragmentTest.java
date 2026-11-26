@@ -136,12 +136,13 @@ public class SettingsHostFragmentTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
-    public void testConstructor_SettingsInTabDisabled_Succeeds() {
+    @Config(qualifiers = "sw320dp")
+    public void testConstructor_NarrowScreen_Succeeds() {
         // The framework re-instantiates this fragment when the activity is recreated, which can
         // happen after a screen width change that makes SettingsInTab.shouldOpenSettingsInTab()
         // return false. Construction must keep working so the open settings tab survives. See
         // crbug.com/562619494.
+        assertFalse(SettingsInTab.shouldOpenSettingsInTab());
         SettingsHostFragment fragment = new SettingsHostFragment();
         assertTrue(fragment.isShownInTab());
     }

@@ -274,8 +274,7 @@ public class SettingsNavigationImplTest {
      * crbug.com/562619494.
      */
     @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
-    public void testFinishCurrentSettings_SettingsInTabDisabled_DelegatesToHostFragment() {
+    public void testFinishCurrentSettings_NarrowScreen_DelegatesToHostFragment() {
         var scenario = Robolectric.buildActivity(TestActivity.class).setup();
         TestActivity activity = scenario.get();
         TestSettingsHostFragment hostFragment = new TestSettingsHostFragment();
@@ -417,8 +416,7 @@ public class SettingsNavigationImplTest {
      * become false (e.g. screen width changed on a foldable device).
      */
     @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
-    public void testStartSettings_SettingsInTabDisabled_ShowsInHostFragment() {
+    public void testStartSettings_NarrowScreen_ShowsInHostFragment() {
         var scenario = Robolectric.buildActivity(TestActivity.class).setup();
         TestActivity activity = scenario.get();
         TestSettingsHostFragment hostFragment = new TestSettingsHostFragment();
@@ -443,9 +441,8 @@ public class SettingsNavigationImplTest {
      * SettingsInTab#shouldOpenSettingsInTab()} is false.
      */
     @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void
-            testCreateSettingsIntent_SettingsInTabDisabled_WithHostFragment_LaunchesChromeLauncherActivity() {
+            testCreateSettingsIntent_NarrowScreen_WithHostFragment_LaunchesChromeLauncherActivity() {
         var scenario = Robolectric.buildActivity(TestActivity.class).setup();
         TestActivity activity = scenario.get();
         TestSettingsHostFragment hostFragment = new TestSettingsHostFragment();

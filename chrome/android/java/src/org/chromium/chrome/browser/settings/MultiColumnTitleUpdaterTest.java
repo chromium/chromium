@@ -44,7 +44,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -246,8 +245,7 @@ public class MultiColumnTitleUpdaterTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
-    public void testMultipleTitles_settingsInTabDisabled_noBackButton() {
+    public void testMultipleTitles_notShownInTab_noBackButton() {
         List<MultiColumnSettings.Title> titles = new ArrayList<>();
         titles.add(
                 new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
@@ -258,8 +256,8 @@ public class MultiColumnTitleUpdaterTest {
 
         updater.onTitleUpdated();
 
-        // When SettingsInTab is disabled, back button is not shown and all titles are added with
-        // separators.
+        // When settings is not shown in a tab, back button is not shown and all titles are added
+        // with separators.
         assertEquals(3, mContainer.getChildCount());
 
         assertTrue(mContainer.getChildAt(0) instanceof TextView);
@@ -856,7 +854,6 @@ public class MultiColumnTitleUpdaterTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
     public void testTitles_focusHighlightOnlyOnClickableTitles() {
         List<MultiColumnSettings.Title> titles = new ArrayList<>();
         titles.add(

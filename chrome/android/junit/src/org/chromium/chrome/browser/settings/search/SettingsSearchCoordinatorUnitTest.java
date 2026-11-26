@@ -494,7 +494,6 @@ public class SettingsSearchCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     @Config(qualifiers = "w800dp-h1280dp")
     public void testSingleColumnSearchUiWidth_withoutSettingsInTab_accountsForToolbarPadding() {
         setUpMultiColumnSettings();
@@ -549,7 +548,6 @@ public class SettingsSearchCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     @Config(qualifiers = "w800dp-h1280dp")
     public void testSingleColumnSearchUiWidth_inRtl_withMenuIcon_adjustsEndMargin() {
         // Enable RTL layout direction.
@@ -661,7 +659,6 @@ public class SettingsSearchCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testUpdateHelpMenuVisibility_withoutSettingsInTab_showsMenu() {
         mToolbar.getMenu().clear();
         mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_SETTINGS);

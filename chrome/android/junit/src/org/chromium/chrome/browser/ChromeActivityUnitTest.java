@@ -633,8 +633,7 @@ public class ChromeActivityUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
-    public void testPreferencesMenuItem_SettingsInTabDisabled() {
+    public void testPreferencesMenuItem_Phone() {
         TestChromeActivity chromeActivity = new TestChromeActivity();
 
         when(mTabModel.getProfile()).thenReturn(mProfile);
