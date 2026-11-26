@@ -213,6 +213,7 @@ export class OmniboxEverywhereAppElement extends
   private wasJustActivated_ = false;
   private activationTimeoutId_: number|null = null;
   private impressionRecordedForSession_ = false;
+  private pendingFreDismissal_: (() => void)|null = null;
 
   constructor() {
     super();
@@ -253,6 +254,9 @@ export class OmniboxEverywhereAppElement extends
       // browser demotes the widget (`onDemoted_`). Transient window blurs
       // (e.g. native menus) intentionally do not shrink it.
       this.smallLoomnibox_ = this.isResting_();
+    }
+    if (!this.shouldShowFre_() && this.pendingFreDismissal_) {
+      this.pendingFreDismissal_();
     }
   }
 
@@ -330,6 +334,7 @@ export class OmniboxEverywhereAppElement extends
         this.callbackRouter_.setFreState.addListener((state: FreState) => {
           if (this.freStage_ !== state.stage) {
             this.impressionRecordedForSession_ = false;
+            this.pendingFreDismissal_ = null;
           }
           this.freStage_ = state.stage;
           this.hotkeyTokens_ = state.currentHotkeyTokens;
@@ -375,6 +380,7 @@ export class OmniboxEverywhereAppElement extends
         omniboxEverywhereCallbackRouter.focusInput.addListener(() => {
           // Expand even if the input can't take focus (e.g. under the FRE
           // intro modal).
+          this.isActive_ = true;
           this.isExpanded_ = true;
           this.focusActiveInput_();
         }),
@@ -489,14 +495,16 @@ export class OmniboxEverywhereAppElement extends
     }
   }
 
-  protected isFreIntroModal_(): boolean {
-    return this.freStage_ === FreStage.kIntroModal && !this.isComposeboxMode_;
+  // FRE surfaces are hidden while the window is inactive or resting in
+  // persistent mode so they do not appear transparent or clipped at the
+  // compact resting width. Hiding them keeps the FRE session latched so
+  // refocusing does not record a new impression.
+  private shouldShowFre_(): boolean {
+    return !this.isComposeboxMode_ && this.isActive_ && !this.isResting_();
   }
 
-  private isFreChin_(): boolean {
-    return (this.freStage_ === FreStage.kShortcutSetupChin ||
-            this.freStage_ === FreStage.kShortcutReminderChin) &&
-        !this.isComposeboxMode_;
+  protected isFreIntroModal_(): boolean {
+    return this.freStage_ === FreStage.kIntroModal && this.shouldShowFre_();
   }
 
   private maybeRecordFreImpression_() {
@@ -521,18 +529,17 @@ export class OmniboxEverywhereAppElement extends
   }
 
   protected isMostVisitedHidden_(): boolean {
-    return !this.hasMostVisitedTiles_ || this.isFreIntroModal_() ||
-        this.isFreChin_();
+    return !this.hasMostVisitedTiles_ || this.freStage_ !== FreStage.kNone;
   }
 
   protected isFreShortcutSetupChin_(): boolean {
     return this.freStage_ === FreStage.kShortcutSetupChin &&
-        !this.isComposeboxMode_;
+        this.shouldShowFre_();
   }
 
   protected isFreShortcutReminderChin_(): boolean {
     return this.freStage_ === FreStage.kShortcutReminderChin &&
-        !this.isComposeboxMode_;
+        this.shouldShowFre_();
   }
 
   protected getMaxMostVisitedTiles_(): number {
@@ -571,6 +578,7 @@ export class OmniboxEverywhereAppElement extends
         return;
       }
       dismissed = true;
+      this.pendingFreDismissal_ = null;
       SearchboxBrowserProxy.getInstance().handler.dismissFre(stageToDismiss);
     };
 
@@ -586,6 +594,11 @@ export class OmniboxEverywhereAppElement extends
       }
     };
 
+    this.pendingFreDismissal_ = () => {
+      freElement.removeEventListener('animationend', onAnimationDone);
+      freElement.removeEventListener('animationcancel', onAnimationDone);
+      finishDismissal();
+    };
     freElement.addEventListener('animationend', onAnimationDone);
     freElement.addEventListener('animationcancel', onAnimationDone);
   }
@@ -690,7 +703,8 @@ export class OmniboxEverywhereAppElement extends
   }
 
   private shouldAutoFocusInput_(): boolean {
-    if (this.isFreIntroModal_() || this.showVoiceSearchOverlay_) {
+    if ((this.freStage_ === FreStage.kIntroModal && !this.isComposeboxMode_) ||
+        this.showVoiceSearchOverlay_) {
       return false;
     }
     const openDialog = this.shadowRoot?.querySelector('dialog[open]');
@@ -714,6 +728,9 @@ export class OmniboxEverywhereAppElement extends
 
   private onDemoted_() {
     this.isExpanded_ = false;
+    if (this.isPersistentMode_) {
+      this.isActive_ = false;
+    }
     if (this.showVoiceSearchOverlay_) {
       this.onVoiceSearchOverlayClose_();
     }

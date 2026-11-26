@@ -4093,6 +4093,7 @@ suite('OmniboxEverywhereAppTest', () => {
       'dynamicSizing hotkey expands even while the FRE intro modal shows',
       async () => {
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        testProxy.handler.resetResolver('recordFreImpression');
         loadTimeData.overrideValues({
           omniboxEverywhereMostVisitedEnabled: true,
           dynamicSizing: true,
@@ -4103,21 +4104,29 @@ suite('OmniboxEverywhereAppTest', () => {
         document.body.appendChild(dynamicApp);
         await microtasksFinished();
         assertTrue(!!dynamicApp.shadowRoot.querySelector('fre-modal'));
+        assertDeepEquals(
+            [FreStage.kIntroModal],
+            testProxy.handler.getArgs('recordFreImpression'));
 
         testEverywherePage.onDemoted();
         await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        assertFalse(dynamicApp.hasAttribute('is-active'));
+        assertFalse(!!dynamicApp.shadowRoot.querySelector('fre-modal'));
 
         // The input can't take focus under the modal, but the hotkey still
-        // expands Loomnibox (and the FRE modal with it).
+        // expands Loomnibox and restores the FRE modal without counting a new
+        // impression.
         testEverywherePage.focusInput();
         await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+        assertTrue(dynamicApp.hasAttribute('is-active'));
         assertFalse(
             dynamicApp.shadowRoot.querySelector('fre-modal')!.hasAttribute(
                 'small-loomnibox'));
+        assertEquals(1, testProxy.handler.getCallCount('recordFreImpression'));
       });
 
   test(
@@ -4955,6 +4964,233 @@ suite('OmniboxEverywhereAppTest', () => {
     await microtasksFinished();
     assertTrue(ephemeralApp.hasAttribute('is-active'));
   });
+
+  test(
+      'FRE hides when inactive or demoted in persistent mode without ' +
+          'counting a new impression',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        testProxy.handler.resetResolver('recordFreImpression');
+        loadTimeData.overrideValues({
+          omniboxEverywhereMostVisitedEnabled: true,
+          dynamicSizing: false,
+          isPersistentMode: true,
+          initialFreStage: FreStage.kIntroModal,
+        });
+        const mvHandler = TestMock.fromClass(MostVisitedPageHandlerRemote);
+        const {instance: mvInstance, remote: mvRemote} =
+            browserProxyFactory.createForTest(mvHandler);
+        browserProxyFactory.setInstance(mvInstance);
+        mvHandler.setResultFor(
+            'getMostVisitedExpandedState',
+            Promise.resolve({isExpanded: false}));
+
+        const persistentApp = document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(persistentApp);
+        await microtasksFinished();
+
+        mvRemote.setMostVisitedInfo({
+          customLinksEnabled: false,
+          enterpriseShortcutsEnabled: false,
+          tiles: [{
+            title: 'Google',
+            titleDirection: TextDirection.LEFT_TO_RIGHT,
+            url: 'https://www.google.com/',
+            source: 0,
+            titleSource: 0,
+            isQueryTile: false,
+            allowUserEdit: false,
+            allowUserDelete: false,
+          }],
+          visible: true,
+        });
+        await mvRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        const mvContainer = persistentApp.shadowRoot.querySelector<HTMLElement>(
+            '#mostVisitedContainer')!;
+        assertTrue(!!mvContainer);
+
+        // Stage 1: Intro modal is visible initially and records 1 impression.
+        assertTrue(!!persistentApp.shadowRoot.querySelector('fre-modal'));
+        assertTrue(mvContainer.hidden);
+        assertDeepEquals(
+            [FreStage.kIntroModal],
+            testProxy.handler.getArgs('recordFreImpression'));
+
+        // Blurring hides the intro modal while keeping MVT hidden.
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+        assertFalse(persistentApp.hasAttribute('is-active'));
+        assertFalse(!!persistentApp.shadowRoot.querySelector('fre-modal'));
+        assertTrue(mvContainer.hidden);
+
+        // Refocusing restores the intro modal without counting a new
+        // impression.
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        assertTrue(persistentApp.hasAttribute('is-active'));
+        assertTrue(!!persistentApp.shadowRoot.querySelector('fre-modal'));
+        assertEquals(1, testProxy.handler.getCallCount('recordFreImpression'));
+
+        // Demoting also hides the intro modal immediately; focusInput restores
+        // it without counting another impression.
+        testEverywherePage.onDemoted();
+        await testEverywherePage.$.flushForTesting();
+        await microtasksFinished();
+        assertFalse(persistentApp.hasAttribute('is-active'));
+        assertFalse(!!persistentApp.shadowRoot.querySelector('fre-modal'));
+        assertTrue(mvContainer.hidden);
+
+        testEverywherePage.focusInput();
+        await testEverywherePage.$.flushForTesting();
+        await microtasksFinished();
+        assertTrue(persistentApp.hasAttribute('is-active'));
+        assertTrue(!!persistentApp.shadowRoot.querySelector('fre-modal'));
+        assertEquals(1, testProxy.handler.getCallCount('recordFreImpression'));
+
+        // Stage 2: Shortcut setup chin hides on blur and restores on focus
+        // without counting another impression.
+        testProxy.page.setFreState({
+          stage: FreStage.kShortcutSetupChin,
+          currentHotkeyTokens: [],
+        });
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertTrue(
+            !!persistentApp.shadowRoot.querySelector('#freShortcutSetupChin'));
+        assertEquals(2, testProxy.handler.getCallCount('recordFreImpression'));
+
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+        assertFalse(
+            !!persistentApp.shadowRoot.querySelector('#freShortcutSetupChin'));
+        assertTrue(mvContainer.hidden);
+
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        assertTrue(
+            !!persistentApp.shadowRoot.querySelector('#freShortcutSetupChin'));
+        assertEquals(2, testProxy.handler.getCallCount('recordFreImpression'));
+
+        // Stage 3: Shortcut reminder chin hides on demote and restores on
+        // focusInput without counting another impression.
+        testProxy.page.setFreState({
+          stage: FreStage.kShortcutReminderChin,
+          currentHotkeyTokens: ['Alt', 'Space'],
+        });
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        assertTrue(!!persistentApp.shadowRoot.querySelector(
+            '#freShortcutReminderChin'));
+        assertEquals(3, testProxy.handler.getCallCount('recordFreImpression'));
+
+        testEverywherePage.onDemoted();
+        await testEverywherePage.$.flushForTesting();
+        await microtasksFinished();
+        assertFalse(!!persistentApp.shadowRoot.querySelector(
+            '#freShortcutReminderChin'));
+        assertTrue(mvContainer.hidden);
+
+        testEverywherePage.focusInput();
+        await testEverywherePage.$.flushForTesting();
+        await microtasksFinished();
+        assertTrue(!!persistentApp.shadowRoot.querySelector(
+            '#freShortcutReminderChin'));
+        assertEquals(3, testProxy.handler.getCallCount('recordFreImpression'));
+
+        // In ephemeral mode, blur does not hide FRE.
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          isPersistentMode: false,
+          initialFreStage: FreStage.kIntroModal,
+        });
+        const ephemeralApp = document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(ephemeralApp);
+        await microtasksFinished();
+        assertTrue(!!ephemeralApp.shadowRoot.querySelector('fre-modal'));
+
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+        assertTrue(!!ephemeralApp.shadowRoot.querySelector('fre-modal'));
+      });
+
+  test(
+      'dynamicSizing keeps FRE hidden while resting at small width until ' +
+          'expanded',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        testProxy.handler.resetResolver('recordFreImpression');
+        loadTimeData.overrideValues({
+          omniboxEverywhereMostVisitedEnabled: true,
+          dynamicSizing: true,
+          isPersistentMode: true,
+          initialFreStage: FreStage.kIntroModal,
+        });
+        const dynamicApp = document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(dynamicApp);
+        await microtasksFinished();
+        assertTrue(!!dynamicApp.shadowRoot.querySelector('fre-modal'));
+        assertEquals(1, testProxy.handler.getCallCount('recordFreImpression'));
+
+        // Demoting shrinks to resting width and hides FRE.
+        testEverywherePage.onDemoted();
+        await testEverywherePage.$.flushForTesting();
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        assertFalse(!!dynamicApp.shadowRoot.querySelector('fre-modal'));
+
+        // Focusing the window alone (e.g. drag or non-input click) keeps the
+        // compact resting width and keeps FRE hidden so it is never clipped.
+        window.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+        assertTrue(dynamicApp.hasAttribute('is-active'));
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        assertFalse(!!dynamicApp.shadowRoot.querySelector('fre-modal'));
+
+        // Focusing the text input expands Loomnibox and restores FRE at full
+        // width without counting a new impression.
+        const searchbox =
+            dynamicApp.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.$.input.inputElement.dispatchEvent(
+            new FocusEvent('focusin', {bubbles: true, composed: true}));
+        await microtasksFinished();
+        assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+        const freModal = dynamicApp.shadowRoot.querySelector('fre-modal');
+        assertTrue(!!freModal);
+        assertFalse(freModal.hasAttribute('small-loomnibox'));
+        assertEquals(1, testProxy.handler.getCallCount('recordFreImpression'));
+      });
+
+  test(
+      'blurring mid-dismiss animation still completes FRE dismissal once',
+      async () => {
+        testProxy.handler.resetResolver('dismissFre');
+        testProxy.page.setFreState({
+          stage: FreStage.kIntroModal,
+          currentHotkeyTokens: [],
+        });
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
+
+        const freModal = app.shadowRoot.querySelector('fre-modal');
+        assertTrue(!!freModal);
+        const closeBtn =
+            freModal.shadowRoot?.querySelector<HTMLElement>('.close-button');
+        assertTrue(!!closeBtn);
+        closeBtn.click();
+        await microtasksFinished();
+        assertTrue(freModal.classList.contains('dismissing'));
+        assertEquals(0, testProxy.handler.getCallCount('dismissFre'));
+
+        // Blurring unmounts the FRE element before fadeOutFre completes;
+        // dismissal must still be sent to the browser exactly once.
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+        assertFalse(!!app.shadowRoot.querySelector('fre-modal'));
+        assertDeepEquals(
+            [FreStage.kIntroModal], testProxy.handler.getArgs('dismissFre'));
+      });
 });
 
 suite('OmniboxEverywhereProfileIconTest', () => {

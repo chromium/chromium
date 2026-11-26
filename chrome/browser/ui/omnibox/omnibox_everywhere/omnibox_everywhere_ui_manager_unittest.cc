@@ -3552,6 +3552,64 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringHotkeyDropdown) {
   ui_manager->Shutdown();
 }
 
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PersistentModeDemotesAfterHotkeyDropdownClosedWhenInactive \
+  PersistentModeDemotesAfterHotkeyDropdownClosedWhenInactive
+#else
+#define MAYBE_PersistentModeDemotesAfterHotkeyDropdownClosedWhenInactive \
+  DISABLED_PersistentModeDemotesAfterHotkeyDropdownClosedWhenInactive
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MAYBE_PersistentModeDemotesAfterHotkeyDropdownClosedWhenInactive) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_FALSE(ui_manager->is_demoted());
+
+  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  ASSERT_TRUE(service->fre_controller());
+  service->fre_controller()->IncrementImpression(
+      omnibox_everywhere::FreStage::kIntroModal);
+  EXPECT_EQ(1, profile_.GetPrefs()->GetInteger(
+                   omnibox_everywhere::prefs::kFreIntroImpressionCount));
+
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
+
+  // Open hotkey dropdown and activate another widget so OE loses activation.
+  ui_manager->OnHotkeyDropdownOpened();
+  auto other_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  other_widget->Show();
+  views::test::WaitForWidgetActive(other_widget.get(), true);
+  EXPECT_FALSE(widget->IsActive());
+  EXPECT_FALSE(ui_manager->is_demoted());
+
+  // Closing the hotkey dropdown while inactive in persistent mode demotes the
+  // widget without ending the FRE session.
+  ui_manager->OnHotkeyDropdownClosed();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return ui_manager->is_demoted(); }));
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Reactivating still preserves the latched FRE session (no extra impression).
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  service->fre_controller()->IncrementImpression(
+      omnibox_everywhere::FreStage::kIntroModal);
+  EXPECT_EQ(1, profile_.GetPrefs()->GetInteger(
+                   omnibox_everywhere::prefs::kFreIntroImpressionCount));
+
+  ui_manager->Shutdown();
+}
+
 TEST_F(OmniboxEverywhereUIManagerTest,
        CapturerCountMaintainedWhileHiddenForAutoResize) {
   auto ui_manager = CreateUIManager();

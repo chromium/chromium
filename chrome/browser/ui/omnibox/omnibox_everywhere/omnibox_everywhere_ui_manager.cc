@@ -1302,7 +1302,7 @@ void OmniboxEverywhereUIManager::OnHotkeyDropdownClosed() {
 
 void OmniboxEverywhereUIManager::CheckDeactivationAfterHotkeyDropdownClosed() {
   if (widget_ && !widget_->IsActive() && !HasOpenModalDialog() &&
-      !context_menu_controller_->IsOpen() && prefs::IsEphemeralModelEnabled()) {
+      !context_menu_controller_->IsOpen()) {
     HandleWidgetDeactivated();
   }
 }
