@@ -7091,21 +7091,6 @@
             ]
         }
     ],
-    "DeferBackgroundTabLoadsWhileVisiblePageLoads": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DeferBackgroundTabLoadsWhileVisiblePageLoads"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeferTabSwitchThumbnailCapture": [
         {
             "platforms": [
@@ -10608,8 +10593,7 @@
         {
             "platforms": [
                 "android",
-                "android_desktop",
-                "chromeos"
+                "android_desktop"
             ],
             "experiments": [
                 {
@@ -12842,8 +12826,7 @@
         {
             "platforms": [
                 "android",
-                "android_desktop",
-                "chromeos"
+                "android_desktop"
             ],
             "experiments": [
                 {
@@ -15096,7 +15079,6 @@
             "platforms": [
                 "android",
                 "android_desktop",
-                "chromeos",
                 "ios"
             ],
             "experiments": [
@@ -16858,22 +16840,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PrioritizeMainFrameNavigationNetworkResponse"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PrioritizeResizeTaskRunnerOnStartupStudy": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrioritizeCompositorTaskRunnerOnStartup",
-                        "PrioritizeResizeTaskRunnerOnStartup"
                     ]
                 }
             ]
@@ -22146,18 +22112,64 @@
                     ]
                 }
             ]
-        }
-    ],
-    "WebUISyncDataPipeWrite": [
+        },
         {
             "platforms": [
                 "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_160_20261120",
+                    "params": {
+                        "WebUIReloadButtonBypassLoaderThrottles": "true",
+                        "WebUIReloadButtonDeferBrowserViewShow": "false",
+                        "WebUIReloadButtonKeepVisibleUntilPaint": "true",
+                        "WebUIReloadButtonRestartUnresponsive": "true",
+                        "WebUIReloadButtonRestartUnresponsiveRenderersTimeout": "5s",
+                        "config": "CjsKOUV2ZW50TGF0ZW5jeS5HZXN0dXJlU2Nyb2xsVXBkYXRlLlRvdWNoc2NyZWVuLlRvdGFsTGF0ZW5jeQooCiZQYWdlTG9hZC5JbnRlcmFjdGl2ZVRpbWluZy5JbnB1dERlbGF5Mwo4CjZHcmFwaGljcy5TbW9vdGhuZXNzLlBlcmNlbnREcm9wcGVkRnJhbWVzMy5BbGxTZXF1ZW5jZXM=",
+                        "deadline_in_frames": "12000",
+                        "high_stream_priority": "true",
+                        "renderer_commit_delay_ms": "100000"
+                    },
                     "enable_features": [
-                        "WebUISyncDataPipeWrite"
+                        "BypassOutdatedSurfaceActivation",
+                        "DeferBackgroundTabLoadsWhileVisiblePageLoads",
+                        "DeferHistoryBackendInit",
+                        "DeferLayoutDuringBrowserStartup",
+                        "DeferSessionStorageScavengingOnStartup",
+                        "DeferSpellcheckInitialization",
+                        "GpuPersistentCacheAsyncInitialize",
+                        "GtkCacheNavButtonIcons",
+                        "GtkPrefetchNavButtonIcons",
+                        "InitialWebUI",
+                        "InitialWebUIChromeOptimizations",
+                        "InitialWebUISurfaceSync",
+                        "InitialWebUIWithoutExtensions",
+                        "InitialWebUIWithoutSpellCheckForNtp",
+                        "InitialWebUIWithoutTranslateForNtp",
+                        "LazyKeyedServiceInstantiation",
+                        "MacDeferInputContextUntilFirstPaint",
+                        "MacPumpTasksBeforeFinishLaunching",
+                        "OmniboxAimPopupDeferCreation",
+                        "OmniboxWebUIPopupDeferCreation",
+                        "OptimizeVariationsIpc",
+                        "PerDependencyDeadlines",
+                        "PrioritizeCompositorTaskRunnerOnStartup",
+                        "PrioritizeResizeTaskRunnerOnStartup",
+                        "PrioritizeWebUINavigationURLLoader",
+                        "SendGPUChannelEarly",
+                        "SkipIPCChannelPausingForNonGuests",
+                        "WebUIBackForwardButton",
+                        "WebUIBundledCodeCache",
+                        "WebUIBundledCodeCacheForNewTabPage",
+                        "WebUIBypassMojoConnections",
+                        "WebUIHomeButton",
+                        "WebUIInProcessResourceLoadingV2",
+                        "WebUIReloadButton",
+                        "WebUISplitTabsButton",
+                        "WebUISyncDataPipeWrite",
+                        "WebUIToolbarFrameEvictionOptOut",
+                        "WebiumMetricsMapping"
                     ]
                 }
             ]
