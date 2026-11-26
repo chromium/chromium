@@ -267,6 +267,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       const DOMWrapperWorld* world,
       const KURL& url,
       Element* element,
+      ExecutionContext* initiator_context,
       network::mojom::CSPDisposition csp_disposition =
           network::mojom::CSPDisposition::CHECK);
 

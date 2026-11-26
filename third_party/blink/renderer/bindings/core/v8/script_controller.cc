@@ -222,7 +222,8 @@ void ScriptController::DiscardFrame() {
 void ScriptController::ExecuteJavaScriptURL(
     const KURL& url,
     network::mojom::CSPDisposition csp_disposition,
-    const DOMWrapperWorld* world_for_csp) {
+    const DOMWrapperWorld* world_for_csp,
+    ExecutionContext* initiator_context) {
   DCHECK(url.ProtocolIsJavaScript());
 
   if (!window_->GetFrame())
@@ -237,7 +238,8 @@ void ScriptController::ExecuteJavaScriptURL(
   const KURL base_url = window_->BaseURL();
 
   String script_source = window_->CheckAndGetJavascriptUrl(
-      world_for_csp, url, nullptr /* element */, csp_disposition);
+      world_for_csp, url, nullptr /* element */, initiator_context,
+      csp_disposition);
 
   // Executing a Trusted Types default policy in CheckAndGetJavascriptUrl() may
   // have detached this frame or committed a new document (even if the initial

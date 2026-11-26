@@ -538,6 +538,7 @@ String LocalDOMWindow::CheckAndGetJavascriptUrl(
     const DOMWrapperWorld* world,
     const KURL& url,
     Element* element,
+    ExecutionContext* initiator_context,
     network::mojom::CSPDisposition csp_disposition) {
   const int kJavascriptSchemeLength = sizeof("javascript:") - 1;
   String decoded_url = DecodeUrlEscapeSequences(
@@ -570,8 +571,8 @@ String LocalDOMWindow::CheckAndGetJavascriptUrl(
 
   // https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-pre-navigation-check
   // 4.9.1.1. require-trusted-types-for Pre-Navigation check
-  script_source =
-      TrustedTypesCheckForJavascriptURLinNavigation(script_source, this);
+  script_source = TrustedTypesCheckForJavascriptURLinNavigation(
+      script_source, initiator_context ? initiator_context : this);
 
   return script_source;
 }

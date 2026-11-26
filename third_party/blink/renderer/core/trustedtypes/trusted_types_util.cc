@@ -332,7 +332,11 @@ String GetStringFromScriptHelper(
   //   we are not executing a source String, but an already compiled callback
   //   function.
   v8::HandleScope handle_scope(context->GetIsolate());
-  ScriptState::Scope script_state_scope(ToScriptStateForMainWorld(context));
+  ScriptState* script_state = ToScriptStateForMainWorld(context);
+  // Can happen when the initiator context has been detached before the URL has
+  // executed. We don't know how to recover from that.
+  CHECK(script_state);
+  ScriptState::Scope script_state_scope(script_state);
   DummyExceptionStateForTesting exception_state;
 
   TrustedTypePolicy* default_policy = GetDefaultPolicy(context);

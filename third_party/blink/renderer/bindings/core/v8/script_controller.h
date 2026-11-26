@@ -82,10 +82,13 @@ class CORE_EXPORT ScriptController final
 
   // Executes a javascript url in the main world. |world_for_csp| denotes the
   // javascript world in which this navigation initiated and which should be
-  // used for CSP checks.
+  // used for CSP checks. |initiator_context| denotes the execution context
+  // that initiated the navigation (or nullptr if none was specified) and is
+  // used for the Trusted Types pre-navigation check.
   void ExecuteJavaScriptURL(const KURL&,
                             network::mojom::CSPDisposition,
-                            const DOMWrapperWorld* world_for_csp);
+                            const DOMWrapperWorld* world_for_csp,
+                            ExecutionContext* initiator_context);
 
   // Disables eval for the main world.
   void DisableEval(const String& error_message);

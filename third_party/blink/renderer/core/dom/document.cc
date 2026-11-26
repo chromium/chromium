@@ -9929,7 +9929,7 @@ void Document::ExecuteJavaScriptUrls() {
                                 &url_to_execute->async_task_context);
     dom_window_->GetScriptController().ExecuteJavaScriptURL(
         url_to_execute->url, network::mojom::CSPDisposition::CHECK,
-        url_to_execute->world.Get());
+        url_to_execute->world.Get(), url_to_execute->initiator_context.Get());
     if (!GetFrame())
       break;
   }
@@ -9937,13 +9937,14 @@ void Document::ExecuteJavaScriptUrls() {
 }
 
 void Document::ProcessJavaScriptUrl(const KURL& url,
-                                    const DOMWrapperWorld* world) {
+                                    const DOMWrapperWorld* world,
+                                    ExecutionContext* initiator_context) {
   DCHECK(url.ProtocolIsJavaScript());
   if (is_initial_empty_document_)
     load_event_progress_ = kLoadEventNotRun;
   GetFrame()->Loader().Progress().ProgressStarted();
   pending_javascript_urls_.push_back(MakeGarbageCollected<PendingJavascriptUrl>(
-      GetExecutionContext(), url, world));
+      GetExecutionContext(), url, world, initiator_context));
   if (!javascript_url_task_handle_.IsActive()) {
     javascript_url_task_handle_ = PostCancellableTask(
         *GetTaskRunner(TaskType::kNetworking), FROM_HERE,
@@ -10276,8 +10277,9 @@ Document::PaintPreviewScope::~PaintPreviewScope() {
 Document::PendingJavascriptUrl::PendingJavascriptUrl(
     ExecutionContext* context,
     const KURL& input_url,
-    const DOMWrapperWorld* world)
-    : url(input_url), world(world) {
+    const DOMWrapperWorld* world,
+    ExecutionContext* initiator_context)
+    : url(input_url), world(world), initiator_context(initiator_context) {
   async_task_context.Schedule(context, "javascriptURL",
                               probe::AsyncTaskContext::StackOptions::kScan);
 }
@@ -10286,6 +10288,7 @@ Document::PendingJavascriptUrl::~PendingJavascriptUrl() = default;
 
 void Document::PendingJavascriptUrl::Trace(Visitor* visitor) const {
   visitor->Trace(world);
+  visitor->Trace(initiator_context);
 }
 
 void Document::ResetAgent(Agent& agent) {

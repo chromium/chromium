@@ -3387,7 +3387,8 @@ void LocalFrame::LoadJavaScriptURL(const KURL& url) {
   auto* window = DomWindow();
   window->GetScriptController().ExecuteJavaScriptURL(
       url, network::mojom::CSPDisposition::DO_NOT_CHECK,
-      &DOMWrapperWorld::MainWorld(window->GetIsolate()));
+      &DOMWrapperWorld::MainWorld(window->GetIsolate()),
+      /*initiator_context=*/nullptr);
 }
 
 void LocalFrame::RequestExecuteScript(

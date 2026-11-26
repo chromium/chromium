@@ -361,7 +361,8 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   if (url.ProtocolIsJavaScript()) {
     if (opener_window
             .CheckAndGetJavascriptUrl(request.JavascriptWorld(), url,
-                                      nullptr /* element */)
+                                      nullptr /* element */,
+                                      request.GetOriginWindow())
             .empty()) {
       return nullptr;
     }

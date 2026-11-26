@@ -934,8 +934,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
           LogJavaScriptUrlHistogram(origin_window, url.GetPath());
         }
 
-        frame_->GetDocument()->ProcessJavaScriptUrl(url,
-                                                    request.JavascriptWorld());
+        frame_->GetDocument()->ProcessJavaScriptUrl(
+            url, request.JavascriptWorld(), origin_window);
       } else {
         // Any possible navigation policy that ends up creating a new browsing
         // context will create a browsing context with no opener relation. The

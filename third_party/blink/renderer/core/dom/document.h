@@ -2044,7 +2044,9 @@ class CORE_EXPORT Document : public ContainerNode,
   void IncrementNumberOfCanvases();
   unsigned GetNumberOfCanvases() const { return num_canvases_; }
 
-  void ProcessJavaScriptUrl(const KURL&, const DOMWrapperWorld* world);
+  void ProcessJavaScriptUrl(const KURL&,
+                            const DOMWrapperWorld* world,
+                            ExecutionContext* initiator_context);
 
   DisplayLockDocumentState& GetDisplayLockDocumentState() const;
 
@@ -2869,7 +2871,8 @@ class CORE_EXPORT Document : public ContainerNode,
    public:
     PendingJavascriptUrl(ExecutionContext*,
                          const KURL& input_url,
-                         const DOMWrapperWorld* world);
+                         const DOMWrapperWorld* world,
+                         ExecutionContext* initiator_context);
     ~PendingJavascriptUrl();
 
     void Trace(Visitor* visitor) const;
@@ -2877,6 +2880,9 @@ class CORE_EXPORT Document : public ContainerNode,
     KURL url;
     // The world in which the navigation to |url| initiated. Non-null.
     Member<const DOMWrapperWorld> world;
+    // The execution context in which the navigation to |url| initiated, or
+    // nullptr if none was specified.
+    Member<ExecutionContext> initiator_context;
 
     probe::AsyncTaskContext async_task_context;
   };
