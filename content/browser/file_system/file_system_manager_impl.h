@@ -258,17 +258,10 @@ class CONTENT_EXPORT FileSystemManagerImpl
                      const base::FilePath& file_path,
                      storage::FileSystemContext::ResolvedEntryType type);
   void DidCreateSnapshot(CreateSnapshotFileCallback callback,
-                         const storage::FileSystemURL& url,
                          base::File::Error result,
                          const base::File::Info& info,
                          const base::FilePath& platform_path,
                          storage::ScopedFile temp_file);
-  void ContinueDidCreateSnapshot(CreateSnapshotFileCallback callback,
-                                 const storage::FileSystemURL& url,
-                                 base::File::Error result,
-                                 const base::File::Info& info,
-                                 const base::FilePath& platform_path,
-                                 bool security_check_success);
   void DidGetPlatformPath(scoped_refptr<storage::FileSystemContext> context,
                           GetPlatformPathCallback callback,
                           base::FilePath platform_path);

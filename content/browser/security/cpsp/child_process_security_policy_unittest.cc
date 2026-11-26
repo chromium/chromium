@@ -937,21 +937,13 @@ TEST_P(ChildProcessSecurityPolicyTest, SpecificFile) {
   EXPECT_FALSE(p->CanCommitURL(renderer_id, icon_url));
   EXPECT_FALSE(p->CanCommitURL(renderer_id, sensitive_url));
 
-  // Verify that RevokeAllPermissionsForFile() revokes the permission granted
-  // by GrantRequestOfSpecificFile().
-  p->RevokeAllPermissionsForFile(process.GetID(), icon_path);
-  EXPECT_FALSE(p->CanRequestURL(renderer_id, icon_url));
-  p->GrantRequestOfSpecificFile(process.GetID(), icon_path);
-  EXPECT_TRUE(p->CanRequestURL(renderer_id, icon_url));
-
-  // Verify that GrantRequestOfSpecificFile() and RevokeAllPermissionsForFile()
-  // ignore trailing separators.
-  p->RevokeAllPermissionsForFile(process.GetID(),
-                                 icon_path.AsEndingWithSeparator());
-  EXPECT_FALSE(p->CanRequestURL(renderer_id, icon_url));
-  p->GrantRequestOfSpecificFile(process.GetID(),
+  // Verify that GrantRequestOfSpecificFile() ignores trailing separators.
+  MockRenderProcessHost other_process(browser_context());
+  LockProcessIfNeeded(other_process.GetID(), browser_context(), sensitive_url);
+  EXPECT_FALSE(p->CanRequestURL(other_process.GetDeprecatedID(), icon_url));
+  p->GrantRequestOfSpecificFile(other_process.GetID(),
                                 icon_path.AsEndingWithSeparator());
-  EXPECT_TRUE(p->CanRequestURL(renderer_id, icon_url));
+  EXPECT_TRUE(p->CanRequestURL(other_process.GetDeprecatedID(), icon_url));
 
   p->GrantCommitURL(renderer_id, icon_url);
   EXPECT_TRUE(p->CanRequestURL(renderer_id, icon_url));
@@ -1091,7 +1083,7 @@ TEST_P(ChildProcessSecurityPolicyTest, FileSystemGrantsTest) {
   storage::IsolatedContext::GetInstance()->RevokeFileSystem(delete_from_id);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, FilePermissionGrantingAndRevoking) {
+TEST_P(ChildProcessSecurityPolicyTest, FilePermissionGranting) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -1114,7 +1106,7 @@ TEST_P(ChildProcessSecurityPolicyTest, FilePermissionGrantingAndRevoking) {
   // Test initially having no permissions.
   CheckHasNoFileSystemFilePermission(p, process_id, renderer_id, file, url);
 
-  // Testing every combination of permissions granting and revoking.
+  // Test granting read permission, then extending it to create/read/write.
   p->GrantReadFile(process_id, file);
   EXPECT_TRUE(p->CanReadFile(process_id, file));
   EXPECT_FALSE(p->CanCreateReadWriteFile(renderer_id, file));
@@ -1124,8 +1116,6 @@ TEST_P(ChildProcessSecurityPolicyTest, FilePermissionGrantingAndRevoking) {
   EXPECT_FALSE(p->CanCreateReadWriteFileSystemFile(process_id, url));
   EXPECT_FALSE(p->CanCopyIntoFileSystemFile(process_id, url));
   EXPECT_FALSE(p->CanDeleteFileSystemFile(process_id, url));
-  p->RevokeAllPermissionsForFile(process_id, file);
-  CheckHasNoFileSystemFilePermission(p, process_id, renderer_id, file, url);
 
   p->GrantCreateReadWriteFile(renderer_id, file);
   EXPECT_TRUE(p->CanReadFile(process_id, file));
@@ -1136,19 +1126,8 @@ TEST_P(ChildProcessSecurityPolicyTest, FilePermissionGrantingAndRevoking) {
   EXPECT_TRUE(p->CanCreateReadWriteFileSystemFile(process_id, url));
   EXPECT_TRUE(p->CanCopyIntoFileSystemFile(process_id, url));
   EXPECT_TRUE(p->CanDeleteFileSystemFile(process_id, url));
-  p->RevokeAllPermissionsForFile(process_id, file);
-  CheckHasNoFileSystemFilePermission(p, process_id, renderer_id, file, url);
 
-  // Test revoke permissions on process removal.
-  p->GrantCreateReadWriteFile(renderer_id, file);
-  EXPECT_TRUE(p->CanReadFile(process_id, file));
-  EXPECT_TRUE(p->CanCreateReadWriteFile(renderer_id, file));
-  EXPECT_TRUE(p->CanReadFileSystemFile(process_id, url));
-  EXPECT_TRUE(p->CanWriteFileSystemFile(process_id, url));
-  EXPECT_TRUE(p->CanCreateFileSystemFile(process_id, url));
-  EXPECT_TRUE(p->CanCreateReadWriteFileSystemFile(process_id, url));
-  EXPECT_TRUE(p->CanCopyIntoFileSystemFile(process_id, url));
-  EXPECT_TRUE(p->CanDeleteFileSystemFile(process_id, url));
+  // Test revoking permissions on process removal.
   process.reset();
   CheckHasNoFileSystemFilePermission(p, process_id, renderer_id, file, url);
 
@@ -1273,13 +1252,6 @@ TEST_P(ChildProcessSecurityPolicyTest, FilePermissions) {
   EXPECT_TRUE(p->HasPermissionsForFile(process_id, granted_file,
                                        base::File::FLAG_WIN_TEMPORARY));
 
-  // Revoke all permissions for the file (it should inherit its permissions
-  // from the directory again).
-  p->RevokeAllPermissionsForFile(process_id, granted_file);
-  EXPECT_TRUE(p->HasPermissionsForFile(
-      process_id, granted_file, base::File::FLAG_OPEN | base::File::FLAG_READ));
-  EXPECT_FALSE(p->HasPermissionsForFile(process_id, granted_file,
-                                        base::File::FLAG_WIN_TEMPORARY));
   p->Remove(process_id);
 
   p->AddForTesting(process_id, browser_context());

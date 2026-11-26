@@ -451,14 +451,10 @@ void FileSystemDispatcher::CreateSnapshotFileSync(
   base::File::Info file_info;
   base::FilePath platform_path;
   base::File::Error error_code = base::File::FILE_ERROR_FAILED;
-  mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-      snapshot_permission_token;
   GetFileSystemManager().CreateSnapshotFile(file_path, &file_info,
-                                            &platform_path, &error_code,
-                                            &snapshot_permission_token);
+                                            &platform_path, &error_code);
   DidCreateSnapshotFile(std::move(callbacks), std::move(file_info),
-                        std::move(platform_path), error_code,
-                        std::move(snapshot_permission_token));
+                        std::move(platform_path), error_code);
 }
 
 void FileSystemDispatcher::Trace(Visitor* visitor) const {
@@ -591,15 +587,12 @@ void FileSystemDispatcher::DidCreateSnapshotFile(
     std::unique_ptr<SnapshotFileCallbackBase> callbacks,
     const base::File::Info& file_info,
     const base::FilePath& platform_path,
-    base::File::Error error_code,
-    mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-        snapshot_permission_token) {
+    base::File::Error error_code) {
   if (error_code == base::File::FILE_OK) {
     FileMetadata file_metadata = FileMetadata::From(file_info);
     file_metadata.platform_path = FilePathToString(platform_path);
 
-    callbacks->DidCreateSnapshotFile(file_metadata,
-                                     std::move(snapshot_permission_token));
+    callbacks->DidCreateSnapshotFile(file_metadata);
   } else {
     callbacks->DidFail(error_code);
   }

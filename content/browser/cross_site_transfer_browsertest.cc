@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_entry.h"
@@ -32,12 +33,39 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "third_party/blink/public/mojom/frame/remote_frame.mojom-test-utils.h"
 #include "url/gurl.h"
 
 namespace content {
+
+class MaliciousFilePathOpenURLInterceptor
+    : public blink::mojom::RemoteFrameHostInterceptorForTesting {
+ public:
+  MaliciousFilePathOpenURLInterceptor(RenderFrameProxyHost* proxy,
+                                      base::FilePath file_path)
+      : file_path_(std::move(file_path)),
+        swapped_impl_(proxy->frame_host_receiver_for_testing(), this) {}
+
+  void OpenURL(blink::mojom::OpenURLParamsPtr params) override {
+    ReplaceFilePathInResourceRequestBodyForTesting(params->post_body.get(),
+                                                   file_path_);
+    GetForwardingInterface()->OpenURL(std::move(params));
+  }
+
+ private:
+  blink::mojom::RemoteFrameHost* GetForwardingInterface() override {
+    return swapped_impl_.old_impl();
+  }
+
+  const base::FilePath file_path_;
+  mojo::test::ScopedSwapImplForTesting<blink::mojom::RemoteFrameHost>
+      swapped_impl_;
+};
 
 // WebContentsDelegate that fails to open a URL when there's a request that
 // needs to be transferred between renderers.
@@ -376,36 +404,46 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
   base::FilePath file_path;
   std::string file_content("test-file-content");
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath selected_file_path;
+  ASSERT_TRUE(
+      base::CreateTemporaryFileInDir(temp_dir.GetPath(), &selected_file_path));
+  ASSERT_TRUE(base::WriteFile(selected_file_path, file_content));
   ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &file_path));
-  ASSERT_TRUE(base::WriteFile(file_path, file_content));
+  ASSERT_TRUE(base::WriteFile(file_path, "malicious-file-content"));
 
   base::RunLoop run_loop;
-  // Fill out the form to refer to the test file.
   std::unique_ptr<FileChooserDelegate> delegate(
-      new FileChooserDelegate(file_path, run_loop.QuitClosure()));
+      new FileChooserDelegate(selected_file_path, run_loop.QuitClosure()));
   form_contents->Focus();
   form_contents->SetDelegate(delegate.get());
   EXPECT_TRUE(
       ExecJs(form_contents, "document.getElementById('file').click();"));
   run_loop.Run();
+
   ChildProcessSecurityPolicyImpl* security_policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(security_policy->CanReadFile(
-      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path));
-
-  // Simulate a malicious situation, where the renderer doesn't really have
-  // access to the file.
-  security_policy->RevokeAllPermissionsForFile(
-      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path);
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      selected_file_path));
   EXPECT_FALSE(security_policy->CanReadFile(
       form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path));
   EXPECT_FALSE(security_policy->CanReadFile(
       target_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
       file_path));
 
-  // Submit the form and wait until the malicious renderer gets killed.
-  RenderProcessHostBadIpcMessageWaiter kill_waiter(
-      form_contents->GetPrimaryMainFrame()->GetProcess());
+  RenderFrameHostImpl* form_frame =
+      static_cast<RenderFrameHostImpl*>(form_contents->GetPrimaryMainFrame());
+  RenderFrameHostImpl* target_frame =
+      static_cast<RenderFrameHostImpl*>(target_contents->GetPrimaryMainFrame());
+  RenderFrameProxyHost* target_proxy =
+      target_frame->browsing_context_state()->GetRenderFrameProxyHost(
+          form_frame->GetSiteInstance()->group());
+  ASSERT_TRUE(target_proxy);
+
+  // Submit the real form, but simulate a compromised renderer replacing the
+  // selected file path in its OpenURL message with an unauthorized file path.
+  MaliciousFilePathOpenURLInterceptor interceptor(target_proxy, file_path);
+  RenderProcessHostBadIpcMessageWaiter kill_waiter(form_frame->GetProcess());
   EXPECT_TRUE(ExecJs(
       form_contents,
       "setTimeout(\n"

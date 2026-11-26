@@ -16,14 +16,12 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/blob_data_snapshot.h"
 #include "storage/browser/blob/blob_storage_constants.h"
 #include "storage/browser/blob/blob_storage_context.h"
-#include "storage/browser/blob/shareable_file_reference.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
@@ -44,19 +42,6 @@ constexpr uint64_t kSize = 16;
 constexpr char kMainFrameUrl[] = "https://google.com";
 constexpr char kSubframeUrl[] = "https://example.com/subframe";
 
-class SnapshotPermissionTokenForTesting
-    : public blink::mojom::SnapshotPermissionToken {
- public:
-  SnapshotPermissionTokenForTesting(
-      scoped_refptr<storage::ShareableFileReference> file_ref,
-      base::OnceClosure released)
-      : file_ref_(std::move(file_ref)), released_(std::move(released)) {}
-  ~SnapshotPermissionTokenForTesting() override { std::move(released_).Run(); }
-
- private:
-  const scoped_refptr<storage::ShareableFileReference> file_ref_;
-  base::OnceClosure released_;
-};
 }  // namespace
 
 class FileBackedBlobFactoryFrameImplTest
@@ -87,8 +72,6 @@ class FileBackedBlobFactoryFrameImplTest
 TEST_F(FileBackedBlobFactoryFrameImplTest, Register_UnreadableFile) {
   const base::FilePath path = base::FilePath(TEST_PATH("/dir/testfile"));
 
-  ChildProcessSecurityPolicyImpl::GetInstance()->RevokeAllPermissionsForFile(
-      process_id_, path);
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
       process_id_, path));
 
@@ -98,7 +81,7 @@ TEST_F(FileBackedBlobFactoryFrameImplTest, Register_UnreadableFile) {
   mojo::Remote<blink::mojom::Blob> blob;
   base::test::TestFuture<std::string> uuid_future;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kType,
-                         std::move(element), mojo::NullRemote(),
+                         std::move(element),
                          uuid_future.GetCallback<const std::string&>());
   blob.FlushForTesting();
 
@@ -129,7 +112,7 @@ TEST_F(FileBackedBlobFactoryFrameImplTest, Register_ValidFile) {
   mojo::Remote<blink::mojom::Blob> blob;
   base::test::TestFuture<std::string> uuid_future;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kType,
-                         std::move(element), mojo::NullRemote(),
+                         std::move(element),
                          uuid_future.GetCallback<const std::string&>());
   blob.FlushForTesting();
   const std::string uuid = uuid_future.Get();
@@ -152,54 +135,6 @@ TEST_F(FileBackedBlobFactoryFrameImplTest, Register_ValidFile) {
   expected_blob_data.set_content_type(kType);
 
   EXPECT_EQ(expected_blob_data, *handle->CreateSnapshot());
-}
-
-// Makes sure that a permission token is held during FileBackedBlob registration
-// until blob storage context takes a new `ShareableFileReference` on the
-// underlying file.
-TEST_F(FileBackedBlobFactoryFrameImplTest, Register_SnapshotPermissionToken) {
-  const base::FilePath path = base::FilePath(TEST_PATH("/dir/testfile"));
-  ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(process_id_,
-                                                               path);
-  scoped_refptr<storage::ShareableFileReference> file_ref =
-      storage::ShareableFileReference::GetOrCreate(
-          path, storage::ShareableFileReference::DONT_DELETE_ON_FINAL_RELEASE,
-          nullptr);
-  base::test::TestFuture<base::FilePath> released_file;
-  file_ref->AddFinalReleaseCallback(
-      released_file.GetCallback<const base::FilePath&>());
-  base::RunLoop token_released;
-  mojo::PendingRemote<blink::mojom::SnapshotPermissionToken> token;
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<SnapshotPermissionTokenForTesting>(
-          std::move(file_ref), token_released.QuitClosure()),
-      token.InitWithNewPipeAndPassReceiver());
-
-  mojo::Remote<blink::mojom::Blob> blob;
-  base::test::TestFuture<std::string> uuid;
-  factory_->RegisterBlob(
-      blob.BindNewPipeAndPassReceiver(), kType,
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt),
-      std::move(token), uuid.GetCallback<const std::string&>());
-  token_released.Run();
-  EXPECT_FALSE(released_file.IsReady());
-
-  std::unique_ptr<storage::BlobDataHandle> handle =
-      ChromeBlobStorageContext::GetFor(main_test_rfh()->GetBrowserContext())
-          ->context()
-          ->GetBlobDataFromUUID(uuid.Get());
-  ASSERT_TRUE(handle);
-  WaitForBlobCompletion(handle.get());
-  std::unique_ptr<storage::BlobDataSnapshot> snapshot =
-      handle->CreateSnapshot();
-  ASSERT_EQ(1u, snapshot->items().size());
-  EXPECT_EQ(path, snapshot->items()[0]->path());
-  EXPECT_TRUE(storage::ShareableFileReference::Get(path));
-
-  snapshot.reset();
-  handle.reset();
-  blob.reset();
-  EXPECT_EQ(path, released_file.Get());
 }
 
 TEST_F(FileBackedBlobFactoryFrameImplTest,
@@ -225,7 +160,7 @@ TEST_F(FileBackedBlobFactoryFrameImplTest,
   mojo::Remote<blink::mojom::Blob> blob;
   base::test::TestFuture<std::string> uuid_future;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kType,
-                         std::move(element), mojo::NullRemote(),
+                         std::move(element),
                          uuid_future.GetCallback<const std::string&>());
   blob.FlushForTesting();
   const std::string uuid = uuid_future.Get();
@@ -284,7 +219,7 @@ TEST_F(FileBackedBlobFactoryFrameImplTest,
   mojo::Remote<blink::mojom::Blob> blob;
   base::test::TestFuture<std::string> uuid_future;
   child_factory->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kType,
-                              std::move(element), mojo::NullRemote(),
+                              std::move(element),
                               uuid_future.GetCallback<const std::string&>());
   blob.FlushForTesting();
 

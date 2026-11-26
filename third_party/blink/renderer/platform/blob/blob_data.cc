@@ -35,7 +35,6 @@
 
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -285,9 +284,7 @@ scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFile(
     int64_t offset,
     int64_t length,
     const std::optional<base::Time>& expected_modification_time,
-    const String& content_type,
-    mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-        snapshot_permission_token) {
+    const String& content_type) {
   mojom::blink::DataElementFilePtr element = mojom::blink::DataElementFile::New(
       StringToFilePath(path), offset, length, expected_modification_time);
   uint64_t size = length == BlobData::kToEndOfFile
@@ -295,8 +292,7 @@ scoped_refptr<BlobDataHandle> BlobDataHandle::CreateForFile(
                       : length;
   scoped_refptr<BlobDataHandle> handle = base::AdoptRef(
       new BlobDataHandle(content_type, size, length == BlobData::kToEndOfFile));
-  handle->RegisterFile(file_backed_blob_factory, std::move(element),
-                       std::move(snapshot_permission_token));
+  handle->RegisterFile(file_backed_blob_factory, std::move(element));
   return handle;
 }
 
@@ -332,15 +328,12 @@ void BlobDataHandle::Register(Vector<mojom::blink::DataElementPtr> elements) {
 
 void BlobDataHandle::RegisterFile(
     mojom::blink::FileBackedBlobFactory* file_backed_blob_factory,
-    mojom::blink::DataElementFilePtr file_element,
-    mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-        snapshot_permission_token) {
+    mojom::blink::DataElementFilePtr file_element) {
   if (file_backed_blob_factory) {
     base::AutoLock locker(blob_remote_lock_);
     file_backed_blob_factory->RegisterBlob(
         blob_remote_.InitWithNewPipeAndPassReceiver(),
         type_.IsNull() ? "" : type_, std::move(file_element),
-        std::move(snapshot_permission_token),
         base::BindOnce(&BlobDataHandle::DidGetUuid, base::RetainedRef(this)));
   } else {
     // This path is taken for sandboxed filesystems (kTemporary or kPersistent)
@@ -349,16 +342,10 @@ void BlobDataHandle::RegisterFile(
     elements.push_back(DataElement::NewFile(std::move(file_element)));
 
     base::AutoLock locker(blob_remote_lock_);
-    // In the normal BlobRegistry case, just hold onto the token locally until
-    // the UUID is returned. This works because the BlobRegistry synchronously
-    // builds the blob (on the IO thread), whereas FileBackedBlobFactory does it
-    // asynchronously.
     GetThreadSpecificRegistry()->Register(
         blob_remote_.InitWithNewPipeAndPassReceiver(),
         type_.IsNull() ? "" : type_, std::move(elements),
-        base::BindOnce(&BlobDataHandle::DidGetUuid, base::RetainedRef(this))
-            .Then(base::OnceClosure(base::DoNothingWithBoundArgs(
-                std::move(snapshot_permission_token)))));
+        base::BindOnce(&BlobDataHandle::DidGetUuid, base::RetainedRef(this)));
   }
 }
 

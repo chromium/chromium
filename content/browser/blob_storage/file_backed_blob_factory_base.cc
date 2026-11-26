@@ -57,9 +57,7 @@ void ContinueRegisterBlob(
     file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
         file_access,
     bool security_check_success,
-    scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
-    mojo::PendingRemote<blink::mojom::SnapshotPermissionToken>
-        snapshot_permission_token) {
+    scoped_refptr<ChromeBlobStorageContext> blob_storage_context) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
 
   if (!security_check_success) {
@@ -85,8 +83,6 @@ void ContinueRegisterBlob(
   CHECK(!handle->IsBroken());
 
   storage::BlobImpl::Create(std::move(handle), std::move(blob));
-
-  // `snapshot_permission_token` is dropped.
 }
 
 }  // namespace
@@ -100,8 +96,6 @@ void FileBackedBlobFactoryBase::RegisterBlob(
     mojo::PendingReceiver<blink::mojom::Blob> blob,
     const std::string& content_type,
     blink::mojom::DataElementFilePtr file,
-    mojo::PendingRemote<blink::mojom::SnapshotPermissionToken>
-        snapshot_permission_token,
     RegisterBlobCallback finish_callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
@@ -116,8 +110,7 @@ void FileBackedBlobFactoryBase::RegisterBlob(
   base::OnceClosure do_register = base::BindOnce(
       &ContinueRegisterBlob, std::move(blob), uuid, content_type,
       std::move(file), GetAccessCallback(url_for_file_access_checks),
-      security_check_success, blob_storage_context_,
-      std::move(snapshot_permission_token));
+      security_check_success, blob_storage_context_);
   content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
                                                std::move(do_register));
 }

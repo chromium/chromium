@@ -31,8 +31,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -113,15 +111,11 @@ class CORE_EXPORT File final : public Blob {
   //
   // Otherwise calling size(), lastModifiedTime() and slice() will synchronously
   // query the file metadata.
-  static File* CreateForFileSystemFile(
-      ExecutionContext* context,
-      const String& name,
-      const FileMetadata& metadata,
-      UserVisibility user_visibility,
-      mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-          snapshot_permission_token = {}) {
-    return MakeGarbageCollected<File>(context, name, metadata, user_visibility,
-                                      std::move(snapshot_permission_token));
+  static File* CreateForFileSystemFile(ExecutionContext* context,
+                                       const String& name,
+                                       const FileMetadata& metadata,
+                                       UserVisibility user_visibility) {
+    return MakeGarbageCollected<File>(context, name, metadata, user_visibility);
   }
 
   // KURL has a String() operator, so if this signature is called and not
@@ -151,9 +145,7 @@ class CORE_EXPORT File final : public Blob {
        const String& path,
        const std::optional<String>& name = std::nullopt,
        ContentTypeLookupPolicy = kWellKnownContentTypes,
-       UserVisibility = File::kIsUserVisible,
-       mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-           snapshot_permission_token = {});
+       UserVisibility = File::kIsUserVisible);
   File(const String& path,
        const String& name,
        const String& relative_path,
@@ -168,9 +160,7 @@ class CORE_EXPORT File final : public Blob {
   File(ExecutionContext* context,
        const String& name,
        const FileMetadata& metadata,
-       UserVisibility user_visibility,
-       mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-           snapshot_permission_token = {});
+       UserVisibility user_visibility);
   File(const KURL& file_system_url,
        const FileMetadata& metadata,
        UserVisibility user_visibility,
@@ -196,16 +186,11 @@ class CORE_EXPORT File final : public Blob {
         File::kAllContentTypes, File::kIsUserVisible);
   }
 
-  static File* CreateForFileSystemFile(
-      const String& path,
-      const String& name,
-      mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-          snapshot_permission_token = {}) {
+  static File* CreateForFileSystemFile(const String& path, const String& name) {
     return MakeGarbageCollected<File>(
         /*context=*/nullptr, path,
         name.empty() ? std::nullopt : std::make_optional(name),
-        kWellKnownContentTypes, File::kIsNotUserVisible,
-        std::move(snapshot_permission_token));
+        kWellKnownContentTypes, File::kIsNotUserVisible);
   }
 
   File* Clone(const String& name = String()) const;

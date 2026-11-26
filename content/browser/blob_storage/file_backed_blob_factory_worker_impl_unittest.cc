@@ -78,8 +78,6 @@ class FileBackedBlobFactoryWorkerImplTest : public testing::Test {
 TEST_F(FileBackedBlobFactoryWorkerImplTest, Register_UnreadableFile) {
   const base::FilePath path = base::FilePath(TEST_PATH("/dir/testfile"));
 
-  ChildProcessSecurityPolicyImpl::GetInstance()->RevokeAllPermissionsForFile(
-      process_id_, path);
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
       process_id_, path));
 
@@ -89,7 +87,7 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest, Register_UnreadableFile) {
   mojo::Remote<blink::mojom::Blob> blob;
   base::test::TestFuture<std::string> uuid_future;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kType,
-                         std::move(element), mojo::NullRemote(),
+                         std::move(element),
                          uuid_future.GetCallback<const std::string&>());
   blob.FlushForTesting();
 
@@ -119,7 +117,7 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest, Register_ValidFile) {
   mojo::Remote<blink::mojom::Blob> blob;
   base::test::TestFuture<std::string> uuid_future;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kType,
-                         std::move(element), mojo::NullRemote(),
+                         std::move(element),
                          uuid_future.GetCallback<const std::string&>());
   blob.FlushForTesting();
   const std::string uuid = uuid_future.Get();
@@ -162,7 +160,7 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest,
   mojo::Remote<blink::mojom::Blob> blob;
   base::test::TestFuture<std::string> uuid_future;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kType,
-                         std::move(element), mojo::NullRemote(),
+                         std::move(element),
                          uuid_future.GetCallback<const std::string&>());
   blob.FlushForTesting();
   const std::string uuid = uuid_future.Get();
@@ -209,7 +207,7 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest,
   mojo::Remote<blink::mojom::Blob> blob;
   base::test::TestFuture<std::string> uuid_future;
   factory->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kType,
-                        std::move(element), mojo::NullRemote(),
+                        std::move(element),
                         uuid_future.GetCallback<const std::string&>());
   factory.FlushForTesting();
   blob.FlushForTesting();
@@ -268,7 +266,7 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest, MultipleBindings) {
   mojo::Remote<blink::mojom::Blob> blob;
   base::test::TestFuture<std::string> uuid_future;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kType,
-                         std::move(element), mojo::NullRemote(),
+                         std::move(element),
                          uuid_future.GetCallback<const std::string&>());
   blob.FlushForTesting();
 
@@ -277,7 +275,7 @@ TEST_F(FileBackedBlobFactoryWorkerImplTest, MultipleBindings) {
   mojo::Remote<blink::mojom::Blob> blob2;
   base::test::TestFuture<std::string> uuid_future2;
   factory2->RegisterBlob(blob2.BindNewPipeAndPassReceiver(), kType,
-                         std::move(element2), mojo::NullRemote(),
+                         std::move(element2),
                          uuid_future2.GetCallback<const std::string&>());
   blob2.FlushForTesting();
   const std::string uuid = uuid_future.Get();

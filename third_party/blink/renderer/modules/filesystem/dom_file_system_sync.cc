@@ -111,13 +111,9 @@ class CreateFileHelper final : public SnapshotFileCallbackBase {
 
   ~CreateFileHelper() override = default;
 
-  void DidCreateSnapshotFile(
-      const FileMetadata& metadata,
-      mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-          snapshot_permission_token) override {
+  void DidCreateSnapshotFile(const FileMetadata& metadata) override {
     result_->file_ =
-        DOMFileSystemBase::CreateFile(context_, metadata, url_, type_, name_,
-                                      std::move(snapshot_permission_token));
+        DOMFileSystemBase::CreateFile(context_, metadata, url_, type_, name_);
   }
 
  private:

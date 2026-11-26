@@ -55,6 +55,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "ui/base/page_transition_types.h"
@@ -590,6 +591,25 @@ void FileChooserDelegate::RunFileChooser(
   params_ = params.Clone();
   if (callback_)
     std::move(callback_).Run();
+}
+
+void ReplaceFilePathInResourceRequestBodyForTesting(
+    network::ResourceRequestBody* post_body,
+    const base::FilePath& file_path) {
+  if (!post_body) {
+    return;
+  }
+
+  for (network::DataElement& element : *post_body->elements_mutable()) {
+    const network::DataElementFile* file =
+        element.TryAs<network::DataElementFile>();
+    if (!file) {
+      continue;
+    }
+    element = network::DataElement(
+        network::DataElementFile(file_path, file->offset(), file->length(),
+                                 file->expected_modification_time()));
+  }
 }
 
 FrameTestNavigationManager::FrameTestNavigationManager(

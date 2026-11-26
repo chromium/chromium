@@ -290,17 +290,13 @@ SnapshotFileCallback::SnapshotFileCallback(DOMFileSystemBase* filesystem,
       success_callback_(std::move(success_callback)),
       error_callback_(std::move(error_callback)) {}
 
-void SnapshotFileCallback::DidCreateSnapshotFile(
-    const FileMetadata& metadata,
-    mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-        snapshot_permission_token) {
+void SnapshotFileCallback::DidCreateSnapshotFile(const FileMetadata& metadata) {
   if (!success_callback_)
     return;
 
   std::move(success_callback_)
       .Run(DOMFileSystemBase::CreateFile(execution_context_, metadata, url_,
-                                         file_system_->GetType(), name_,
-                                         std::move(snapshot_permission_token)));
+                                         file_system_->GetType(), name_));
 }
 
 void SnapshotFileCallback::DidFail(base::File::Error error) {

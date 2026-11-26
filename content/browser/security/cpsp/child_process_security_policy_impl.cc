@@ -739,13 +739,6 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
   }
 #endif
 
-  // Revokes all permissions granted to a file.
-  void RevokeAllPermissionsForFile(const base::FilePath& file) {
-    base::FilePath stripped = file.StripTrailingSeparators();
-    file_permissions_.erase(stripped);
-    request_file_set_.erase(stripped);
-  }
-
   // Grant certain permissions to a file.
   void GrantPermissionsForFileSystem(const std::string& filesystem_id,
                                      int permissions) {
@@ -1651,16 +1644,6 @@ void ChildProcessSecurityPolicyImpl::GrantPermissionsForFile(
 
   if (auto* state = process_states_.GetProcessStateForMutation(child_id)) {
     state->GrantPermissionsForFile(file, permissions);
-  }
-}
-
-void ChildProcessSecurityPolicyImpl::RevokeAllPermissionsForFile(
-    ChildProcessId child_id,
-    const base::FilePath& file) {
-  base::AutoLock lock(lock_);
-
-  if (auto* state = process_states_.GetProcessStateForMutation(child_id)) {
-    state->RevokeAllPermissionsForFile(file);
   }
 }
 

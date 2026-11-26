@@ -27,12 +27,10 @@
 #include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/blob/scoped_file.h"
-#include "storage/browser/blob/shareable_file_reference.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_permission_policy.h"
@@ -46,7 +44,6 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
-#include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -61,27 +58,6 @@ using storage::FileSystemURL;
 namespace content {
 
 namespace {
-
-class SnapshotPermissionTokenImpl
-    : public blink::mojom::SnapshotPermissionToken {
- public:
-  explicit SnapshotPermissionTokenImpl(
-      scoped_refptr<storage::ShareableFileReference> file_ref)
-      : file_ref_(std::move(file_ref)) {}
-  ~SnapshotPermissionTokenImpl() override = default;
-
- private:
-  const scoped_refptr<storage::ShareableFileReference> file_ref_;
-};
-
-void RevokeFilePermission(ChildProcessId child_id, const base::FilePath& path) {
-  // This call happens on the IO thread, where there is no guarantee that the
-  // corresponding ProcessState is still modifiable, because the
-  // RenderProcessHost may be gone. In that case, the call will silently have no
-  // effect.
-  ChildProcessSecurityPolicyImpl::GetInstance()->RevokeAllPermissionsForFile(
-      child_id, path);
-}
 
 bool IsUncrackedTopLevelSiblingInIsolatedFileSystem(
     const FileSystemURL& source,
@@ -1084,7 +1060,7 @@ void FileSystemManagerImpl::CreateSnapshotFile(
   std::optional<base::File::Error> opt_error = ValidateFileSystemURL(url);
   if (opt_error) {
     std::move(callback).Run(base::File::Info(), base::FilePath(),
-                            opt_error.value(), mojo::NullRemote());
+                            opt_error.value());
     return;
   }
   // Run the access check on the UI thread using a duplicated
@@ -1109,8 +1085,7 @@ void FileSystemManagerImpl::ContinueCreateSnapshotFile(
 
   if (!security_check_success) {
     std::move(callback).Run(base::File::Info(), base::FilePath(),
-                            base::File::FILE_ERROR_SECURITY,
-                            mojo::NullRemote());
+                            base::File::FILE_ERROR_SECURITY);
     return;
   }
 
@@ -1134,7 +1109,7 @@ void FileSystemManagerImpl::ContinueCreateSnapshotFile(
   } else {
     fs_op_runner->CreateSnapshotFile(
         url, base::BindOnce(&FileSystemManagerImpl::DidCreateSnapshot,
-                            GetWeakPtr(), std::move(callback), url));
+                            GetWeakPtr(), std::move(callback)));
   }
 }
 
@@ -1249,7 +1224,7 @@ void FileSystemManagerImpl::DidGetMetadataForStreaming(
   // For now, streaming Blobs are implemented as a successful snapshot file
   // creation with an empty path.
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
-  std::move(callback).Run(info, base::FilePath(), result, mojo::NullRemote());
+  std::move(callback).Run(info, base::FilePath(), result);
 }
 
 void FileSystemManagerImpl::DidReadDirectory(
@@ -1355,7 +1330,6 @@ void FileSystemManagerImpl::DidResolveURL(
 
 void FileSystemManagerImpl::DidCreateSnapshot(
     CreateSnapshotFileCallback callback,
-    const storage::FileSystemURL& url,
     base::File::Error result,
     const base::File::Info& info,
     const base::FilePath& platform_path,
@@ -1363,8 +1337,7 @@ void FileSystemManagerImpl::DidCreateSnapshot(
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   CHECK(temp_file.path().empty());
   if (result != base::File::FILE_OK) {
-    std::move(callback).Run(base::File::Info(), base::FilePath(), result,
-                            mojo::NullRemote());
+    std::move(callback).Run(base::File::Info(), base::FilePath(), result);
     return;
   }
 
@@ -1372,22 +1345,24 @@ void FileSystemManagerImpl::DidCreateSnapshot(
   // ChildProcessSecurityPolicy::Handle, ensuring the ProcessState exists when
   // the task runs even if this instance and its Handle are gone at the time.
   // Access to these functions on the IO thread should be avoided.
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(
           [](std::unique_ptr<ChildProcessSecurityPolicyImpl::Handle>
                  security_policy_handle,
              const base::FilePath& platform_path) {
-            bool can_read_file =
-                security_policy_handle->CanReadFile(platform_path);
-            if (!can_read_file) {
-              // Give per-file read permission to the snapshot file if it hasn't
-              // it yet. In order for the renderer to be able to read the file
-              // via File object, it must be granted per-file read permission
-              // for the file's platform path. By now, it has already been
-              // verified that the renderer has sufficient permissions to read
-              // the file, so giving per-file permission here must be safe.
-              // Note that ProcessState mutations are only allowed if the
+            // Give per-file read permission to the snapshot file only if it
+            // doesn't already have permission. The `CanReadFile` check prevents
+            // overwriting pre-existing read/write permissions (on ancestor
+            // directories) with a narrower read-only (on this file; since the
+            // narrowest permission is given precedence).
+            if (!security_policy_handle->CanReadFile(platform_path)) {
+              // In order for the renderer to be able to read the file via File
+              // object, it must be granted per-file read permission for the
+              // file's platform path. By now, it has already been verified that
+              // the renderer has sufficient permissions to read the file, so
+              // giving per-file permission here must be safe. Note that
+              // ProcessState mutations are only allowed if the
               // RenderProcessHost still exists, so check that it exists at the
               // time the task runs on the UI thread.
               ChildProcessId child_id = security_policy_handle->child_id();
@@ -1396,51 +1371,12 @@ void FileSystemManagerImpl::DidCreateSnapshot(
                     child_id, platform_path);
               }
             }
-            return can_read_file;
           },
           std::make_unique<ChildProcessSecurityPolicyImpl::Handle>(
               security_policy_handle_.Duplicate()),
           platform_path),
-      base::BindOnce(&FileSystemManagerImpl::ContinueDidCreateSnapshot,
-                     weak_factory_.GetWeakPtr(), std::move(callback), url,
-                     result, info, platform_path));
-}
-
-void FileSystemManagerImpl::ContinueDidCreateSnapshot(
-    CreateSnapshotFileCallback callback,
-    const storage::FileSystemURL& url,
-    base::File::Error result,
-    const base::File::Info& info,
-    const base::FilePath& platform_path,
-    bool security_check_success) {
-  scoped_refptr<storage::ShareableFileReference> file_ref =
-      storage::ShareableFileReference::Get(platform_path);
-
-  if (!security_check_success) {
-    // Revoke all permissions for the file when the last ref of the file
-    // is dropped.
-    if (!file_ref.get()) {
-      // Create a reference for temporary permission handling.
-      file_ref = storage::ShareableFileReference::GetOrCreate(
-          platform_path,
-          storage::ShareableFileReference::DONT_DELETE_ON_FINAL_RELEASE,
-          context_->default_file_task_runner());
-    }
-    file_ref->AddFinalReleaseCallback(base::BindOnce(
-        &RevokeFilePermission, security_policy_handle_.child_id()));
-  }
-
-  if (file_ref.get()) {
-    mojo::PendingRemote<blink::mojom::SnapshotPermissionToken> token;
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<SnapshotPermissionTokenImpl>(std::move(file_ref)),
-        token.InitWithNewPipeAndPassReceiver());
-    std::move(callback).Run(info, platform_path, result, std::move(token));
-    return;
-  }
-
-  // Return the file info and platform_path.
-  std::move(callback).Run(info, platform_path, result, mojo::NullRemote());
+      base::BindOnce(std::move(callback), info, platform_path,
+                     base::File::FILE_OK));
 }
 
 void FileSystemManagerImpl::DidGetPlatformPath(

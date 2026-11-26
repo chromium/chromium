@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
 #include "third_party/blink/renderer/modules/filesystem/file_system_callbacks.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -185,9 +184,7 @@ class FileSystemDispatcher : public GarbageCollected<FileSystemDispatcher>,
       std::unique_ptr<SnapshotFileCallbackBase> callbacks,
       const base::File::Info& file_info,
       const base::FilePath& platform_path,
-      base::File::Error error_code,
-      mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-          snapshot_permission_token);
+      base::File::Error error_code);
 
   void RemoveOperationRemote(int operation_id);
 

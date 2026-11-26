@@ -318,6 +318,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   // These interceptors need access to frame_host_receiver_for_testing().
   friend class InitiatorClosingOpenURLInterceptor;
+  friend class MaliciousFilePathOpenURLInterceptor;
   friend class RemoteFrameHostInterceptor;
   friend class CapabilityDelegationRemoteFrameHostInterceptor;
   friend class UpdateViewportIntersectionMessageFilter;

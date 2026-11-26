@@ -41,6 +41,10 @@
 #include "third_party/blink/public/mojom/page/widget.mojom-test-utils.h"
 #include "url/gurl.h"
 
+namespace network {
+class ResourceRequestBody;
+}
+
 namespace content {
 
 class FrameTreeNode;
@@ -255,6 +259,10 @@ class FileChooserDelegate : public WebContentsDelegate {
   base::OnceClosure callback_;
   blink::mojom::FileChooserParamsPtr params_;
 };
+
+void ReplaceFilePathInResourceRequestBodyForTesting(
+    network::ResourceRequestBody* post_body,
+    const base::FilePath& file_path);
 
 // This class is a TestNavigationManager that only monitors notifications within
 // the given frame tree node.

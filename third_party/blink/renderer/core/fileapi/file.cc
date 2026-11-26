@@ -68,9 +68,7 @@ static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFile(
     ExecutionContext* context,
     const String& path,
     const std::optional<String>& name,
-    File::ContentTypeLookupPolicy policy,
-    mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-        snapshot_permission_token) {
+    File::ContentTypeLookupPolicy policy) {
   if (path.empty() && !name) {
     auto blob_data = std::make_unique<BlobData>();
     blob_data->SetContentType("application/octet-stream");
@@ -80,23 +78,19 @@ static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFile(
       FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(context), path,
       /*offset=*/0, BlobData::kToEndOfFile,
       /*expected_modification_time=*/std::nullopt,
-      GetContentTypeFromFileName(name.value_or(path), policy),
-      std::move(snapshot_permission_token));
+      GetContentTypeFromFileName(name.value_or(path), policy));
 }
 
 static scoped_refptr<BlobDataHandle> CreateBlobDataHandleForFileWithMetadata(
     ExecutionContext* context,
     const String& file_system_name,
-    const FileMetadata& metadata,
-    mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-        snapshot_permission_token) {
+    const FileMetadata& metadata) {
   return BlobDataHandle::CreateForFile(
       FileBackedBlobFactoryDispatcher::GetFileBackedBlobFactory(context),
       metadata.platform_path,
       /*offset=*/0, metadata.length, metadata.modification_time,
       GetContentTypeFromFileName(file_system_name,
-                                 File::kWellKnownContentTypes),
-      std::move(snapshot_permission_token));
+                                 File::kWellKnownContentTypes));
 }
 
 // static
@@ -192,14 +186,8 @@ File::File(ExecutionContext* context,
            const String& path,
            const std::optional<String>& name,
            ContentTypeLookupPolicy policy,
-           UserVisibility user_visibility,
-           mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-               snapshot_permission_token)
-    : Blob(CreateBlobDataHandleForFile(context,
-                                       path,
-                                       name,
-                                       policy,
-                                       std::move(snapshot_permission_token))),
+           UserVisibility user_visibility)
+    : Blob(CreateBlobDataHandleForFile(context, path, name, policy)),
       has_backing_file_(true),
       user_visibility_(user_visibility),
       path_(path),
@@ -241,14 +229,8 @@ File::File(const String& name,
 File::File(ExecutionContext* context,
            const String& name,
            const FileMetadata& metadata,
-           UserVisibility user_visibility,
-           mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>
-               snapshot_permission_token)
-    : Blob(CreateBlobDataHandleForFileWithMetadata(
-          context,
-          name,
-          metadata,
-          std::move(snapshot_permission_token))),
+           UserVisibility user_visibility)
+    : Blob(CreateBlobDataHandleForFileWithMetadata(context, name, metadata)),
       has_backing_file_(true),
       user_visibility_(user_visibility),
       path_(metadata.platform_path),

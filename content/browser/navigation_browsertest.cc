@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -93,6 +94,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/fake_network_url_loader_factory.h"
+#include "content/test/frame_host_interceptor.h"
 #include "content/test/render_document_feature.h"
 #include "content/test/task_runner_deferring_throttle.h"
 #include "content/test/test_render_frame_host_factory.h"
@@ -110,6 +112,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -117,8 +120,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-test-utils.h"
+#include "third_party/blink/public/mojom/frame/remote_frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -127,6 +132,28 @@
 namespace content {
 
 namespace {
+class BeginNavigationFilePathInterceptor : public FrameHostInterceptor {
+ public:
+  BeginNavigationFilePathInterceptor(WebContents* web_contents,
+                                     base::FilePath file_path)
+      : FrameHostInterceptor(web_contents), file_path_(std::move(file_path)) {}
+
+  bool WillDispatchBeginNavigation(
+      RenderFrameHost* render_frame_host,
+      blink::mojom::CommonNavigationParamsPtr* common_params,
+      blink::mojom::BeginNavigationParamsPtr* begin_params,
+      mojo::PendingRemote<blink::mojom::BlobURLToken>* blob_url_token,
+      mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client)
+      override {
+    ReplaceFilePathInResourceRequestBodyForTesting(
+        (*common_params)->post_data.get(), file_path_);
+    return true;
+  }
+
+ private:
+  const base::FilePath file_path_;
+};
+
 class InterceptAndCancelDidCommitProvisionalLoad
     : public DidCommitNavigationInterceptor {
  public:
@@ -980,23 +1007,26 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestReferrerPolicy, ReferrerPolicy) {
 // Test to verify that an exploited renderer process trying to upload a file
 // it hasn't been explicitly granted permissions to is correctly terminated.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PostUploadIllegalFilePath) {
-  GURL form_url(
-      embedded_test_server()->GetURL("/form_that_posts_to_echoall.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), form_url));
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "/form_that_posts_cross_site.html")));
 
-  // Prepare a file for the upload form.
+  // Prepare a selected file and an unauthorized file for the upload.
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   base::FilePath file_path;
   std::string file_content("test-file-content");
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath selected_file_path;
+  ASSERT_TRUE(
+      base::CreateTemporaryFileInDir(temp_dir.GetPath(), &selected_file_path));
+  ASSERT_TRUE(base::WriteFile(selected_file_path, file_content));
   ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &file_path));
   ASSERT_TRUE(base::WriteFile(file_path, file_content));
 
   base::RunLoop run_loop;
   // Fill out the form to refer to the test file.
   std::unique_ptr<FileChooserDelegate> delegate(
-      new FileChooserDelegate(file_path, run_loop.QuitClosure()));
+      new FileChooserDelegate(selected_file_path, run_loop.QuitClosure()));
   web_contents()->SetDelegate(delegate.get());
   EXPECT_TRUE(
       ExecJs(web_contents(), "document.getElementById('file').click();"));
@@ -1005,17 +1035,16 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PostUploadIllegalFilePath) {
   // Ensure that the process is allowed to access to the chosen file and
   // does not have access to the other file name.
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
+      current_frame_host()->GetProcess()->GetID(), selected_file_path));
+  EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
       current_frame_host()->GetProcess()->GetID(), file_path));
 
-  // Revoke the access to the file and submit the form. The renderer process
-  // should be terminated.
+  BeginNavigationFilePathInterceptor interceptor(web_contents(), file_path);
+  // Submit the real form, but simulate a compromised renderer replacing the
+  // selected file path in its BeginNavigation message with an unauthorized
+  // file path.
   RenderProcessHostBadIpcMessageWaiter process_kill_waiter(
       current_frame_host()->GetProcess());
-  ChildProcessSecurityPolicyImpl* security_policy =
-      ChildProcessSecurityPolicyImpl::GetInstance();
-  security_policy->RevokeAllPermissionsForFile(
-      current_frame_host()->GetProcess()->GetID(), file_path);
-
   // Use EvalJs and respond back to the browser process before doing the actual
   // submission. This will ensure that the process termination is guaranteed to
   // arrive after the response from the executed JavaScript.

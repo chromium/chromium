@@ -80,9 +80,7 @@ class SnapshotFileCallbackBase {
   virtual ~SnapshotFileCallbackBase() = default;
 
   // Called when a snapshot file is created successfully.
-  virtual void DidCreateSnapshotFile(
-      const FileMetadata&,
-      mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>) = 0;
+  virtual void DidCreateSnapshotFile(const FileMetadata&) = 0;
 
   virtual void DidFail(base::File::Error error) = 0;
 };
@@ -245,9 +243,7 @@ class SnapshotFileCallback final : public SnapshotFileCallbackBase,
                        ExecutionContext*);
 
   // Called when a snapshot file is created successfully.
-  void DidCreateSnapshotFile(
-      const FileMetadata&,
-      mojo::PendingRemote<mojom::blink::SnapshotPermissionToken>) override;
+  void DidCreateSnapshotFile(const FileMetadata&) override;
 
   // Called when a request operation has failed.
   void DidFail(base::File::Error error) override;

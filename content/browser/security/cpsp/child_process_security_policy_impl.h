@@ -594,10 +594,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                         const GURL& url);
 #endif
 
-  // Revokes all permissions granted to the given file.
-  void RevokeAllPermissionsForFile(ChildProcessId child_id,
-                                   const base::FilePath& file);
-
   // Grant the child process the ability to use WebUI Bindings. Individual types
   // of WebUI bindings are not tracked at this level. Callers are responsible
   // for ensuring the child process is locked to a WebUI-permitted site.
