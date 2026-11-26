@@ -1603,6 +1603,9 @@ public class ImeTest {
     @Test
     @MediumTest
     @Feature({"TextInput"})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "https://crbug.com/590803615")
     public void testInputTextEvents_ComposingText() throws Throwable {
         mRule.setComposingText("a", 1);
         mRule.waitAndVerifyUpdateSelection(0, 1, 1, 0, 1);
