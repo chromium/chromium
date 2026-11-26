@@ -438,7 +438,12 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
       base::BindRepeating(
           &AmbientLoginPermissionBubbleView::OnSignInButtonClicked,
           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN));
+      l10n_util::GetStringUTF16(
+          ambient_request->button_label() ==
+                  ambient_signin::AmbientLoginPermissionRequest::ButtonLabel::
+                      kContinue
+              ? IDS_SIGNIN_CONTINUE
+              : IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN));
   sign_in_button->SetStyle(ui::ButtonStyle::kProminent);
   sign_in_button->SetProperty(views::kElementIdentifierKey,
                               kAllowButtonElementId);

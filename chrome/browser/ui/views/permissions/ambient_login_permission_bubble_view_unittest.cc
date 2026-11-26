@@ -442,6 +442,9 @@ TEST_F(AmbientLoginPermissionBubbleViewTest, FederatedCredentialsDisplay) {
   views::MdTextButton* sign_in_button =
       views::AsViewClass<views::MdTextButton>(bubble->children()[2]);
   ASSERT_NE(sign_in_button, nullptr);
+  EXPECT_EQ(
+      sign_in_button->GetText(),
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN));
 
   ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
                              gfx::Point(), ui::EventTimeForNow(),
@@ -450,6 +453,37 @@ TEST_F(AmbientLoginPermissionBubbleViewTest, FederatedCredentialsDisplay) {
   EXPECT_CALL(delegate, Accept).Times(1);
   views::test::ButtonTestApi(sign_in_button).NotifyClick(click_event);
   EXPECT_EQ(selected_fed_index, 0u);
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest, ButtonLabelCanBeContinue) {
+  std::vector<ambient_signin::FederatedCredential> fed_creds = {
+      {u"idp.example.com", u"Carol", u"carol@example.com",
+       GURL("https://idp.example.com")}};
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.push_back(
+      std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+          GURL("https://example.com"),
+          /*credentials=*/
+          std::vector<ambient_signin::PasskeyOrPasswordCredential>{},
+          /*credential_selected_callback=*/base::NullCallback(),
+          std::move(fed_creds), base::DoNothing(),
+          ambient_signin::AmbientLoginPermissionRequest::Options{
+              .button_label = ambient_signin::AmbientLoginPermissionRequest::
+                  ButtonLabel::kContinue}));
+
+  MockAmbientDelegate delegate(GURL("https://example.com"));
+  delegate.set_requests(std::move(requests));
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+
+  ASSERT_EQ(bubble->children().size(), 4u);
+  auto* sign_in_button =
+      views::AsViewClass<views::MdTextButton>(bubble->children()[2]);
+  ASSERT_NE(sign_in_button, nullptr);
+  EXPECT_EQ(sign_in_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_SIGNIN_CONTINUE));
+  // The description still identifies the credential.
+  EXPECT_EQ(sign_in_button->GetViewAccessibility().GetCachedDescription(),
+            u"Carol idp.example.com");
 }
 
 TEST_F(AmbientLoginPermissionBubbleViewTest,

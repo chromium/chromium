@@ -90,6 +90,16 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   using FederatedCredentialSelectedCallback =
       base::OnceCallback<void(size_t index)>;
 
+  // The label of the button that chooses the credential shown in the collapsed
+  // bubble.
+  enum class ButtonLabel {
+    // "Sign in".
+    kSignIn,
+    // "Continue", e.g. if choosing the credential creates an account rather
+    // than signing in to an existing one.
+    kContinue,
+  };
+
   // A set of optional callbacks and values configured at creation time.
   struct Options {
     // When present, if a user selected a credential then this is called after
@@ -110,6 +120,7 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
     // `std::nullopt`, the title shows the requesting origin if it isn't the
     // embedding origin.
     std::optional<std::u16string> title_origin_for_display;
+    ButtonLabel button_label = ButtonLabel::kSignIn;
   };
 
   // Constructor supporting both WebAuthn/password credentials and FedCM
@@ -140,6 +151,7 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   const std::optional<std::u16string>& title_origin_for_display() const {
     return title_origin_for_display_;
   }
+  ButtonLabel button_label() const { return button_label_; }
 
   // Records the chosen credential index to be passed to
   // `credential_selected_callback_` when the permission request is accepted.
@@ -187,6 +199,7 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   std::optional<size_t> selected_federated_index_;
   const bool bubble_starts_open_;
   const std::optional<std::u16string> title_origin_for_display_;
+  const ButtonLabel button_label_;
 };
 
 }  // namespace ambient_signin

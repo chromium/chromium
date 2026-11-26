@@ -1971,7 +1971,9 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
   // FedCM is invoked from an iframe.
   const GURL origin = main_frame->GetLastCommittedOrigin().GetURL();
   // If all accounts would sign up rather than sign in, only the chip is shown,
-  // and the bubble opens when the user clicks it.
+  // and the bubble opens when the user clicks it. Its button then says
+  // "Continue" rather than "Sign in". Otherwise, the collapsed bubble shows an
+  // account that signs in, since those are sorted first.
   const bool bubble_starts_open = std::ranges::any_of(
       accounts, [](const IdentityRequestAccountPtr& account) {
         return account->idp_claimed_login_state.value_or(
@@ -1996,7 +1998,13 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
               .title_origin_for_display =
                   rp_data_->iframe_for_display.empty()
                       ? std::nullopt
-                      : std::make_optional(rp_data_->iframe_for_display)});
+                      : std::make_optional(rp_data_->iframe_for_display),
+              .button_label =
+                  bubble_starts_open
+                      ? ambient_signin::AmbientLoginPermissionRequest::
+                            ButtonLabel::kSignIn
+                      : ambient_signin::AmbientLoginPermissionRequest::
+                            ButtonLabel::kContinue});
 
   // Set before adding the request, since the decided callback runs
   // synchronously if the request is rejected right away.

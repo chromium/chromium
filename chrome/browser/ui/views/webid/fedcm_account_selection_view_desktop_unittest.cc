@@ -3996,11 +3996,15 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts_);
 
-  // Only the chip is shown, and the bubble opens when the user clicks it.
+  // Only the chip is shown, and the bubble opens when the user clicks it. Its
+  // button says "Continue".
   ambient_signin::AmbientLoginPermissionRequest* request =
       WaitForAmbientBubble();
   ASSERT_TRUE(request);
   EXPECT_FALSE(request->ShouldBubbleStartOpen());
+  EXPECT_EQ(
+      request->button_label(),
+      ambient_signin::AmbientLoginPermissionRequest::ButtonLabel::kContinue);
 }
 
 TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
@@ -4011,11 +4015,33 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts_);
 
-  // The bubble opens along with the chip.
+  // The bubble opens along with the chip, and its button says "Sign in".
   ambient_signin::AmbientLoginPermissionRequest* request =
       WaitForAmbientBubble();
   ASSERT_TRUE(request);
   EXPECT_TRUE(request->ShouldBubbleStartOpen());
+  EXPECT_EQ(
+      request->button_label(),
+      ambient_signin::AmbientLoginPermissionRequest::ButtonLabel::kSignIn);
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       SignUpAccountWithoutDisclosureShowsContinue) {
+  accounts_ = CreateAccounts({{kAccountId1, LoginState::kSignUp}}, idp_data_);
+  // No fields are shared, so choosing the account signs up right away.
+  accounts_[0]->fields.clear();
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+
+  // The button still says "Continue", since the account signs up.
+  ambient_signin::AmbientLoginPermissionRequest* request =
+      WaitForAmbientBubble();
+  ASSERT_TRUE(request);
+  ASSERT_EQ(request->federated_credentials().size(), 1u);
+  EXPECT_TRUE(request->federated_credentials()[0].signs_in_directly);
+  EXPECT_EQ(
+      request->button_label(),
+      ambient_signin::AmbientLoginPermissionRequest::ButtonLabel::kContinue);
 }
 
 TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,

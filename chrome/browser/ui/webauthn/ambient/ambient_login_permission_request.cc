@@ -48,7 +48,8 @@ AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
       bubble_shown_callback_(std::move(options.bubble_shown_callback)),
       bubble_dismissed_callback_(std::move(options.bubble_dismissed_callback)),
       bubble_starts_open_(options.bubble_starts_open),
-      title_origin_for_display_(std::move(options.title_origin_for_display)) {}
+      title_origin_for_display_(std::move(options.title_origin_for_display)),
+      button_label_(options.button_label) {}
 
 AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
     const GURL& requesting_origin,

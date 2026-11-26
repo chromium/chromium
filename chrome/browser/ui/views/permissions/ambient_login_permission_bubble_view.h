@@ -47,7 +47,8 @@ class MdTextButton;
 // `mediation:'conditional', uiMode:'passive'`.
 //
 // Initially displays a compact summary for the first credential with a "Sign
-// in" button and an expand button:
+// in" (or "Continue", see `AmbientLoginPermissionRequest::ButtonLabel`) button
+// and an expand button:
 // |-------------------------------------------------------|
 // | Title                                             [X] |
 // |-------------------------------------------------------|
