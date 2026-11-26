@@ -48,8 +48,19 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
+
+struct SameSizeAsEvent : public ScriptWrappable, public DOMOriginUtils {
+  AtomicString type;
+  probe::AsyncTaskContext async_task_context;
+  base::TimeTicks platform_time_stamp;
+  Member<void*> members[5];
+  uint8_t flags_and_enums[4];
+};
+
+ASSERT_SIZE(Event, SameSizeAsEvent);
 
 Event::Event() : Event(g_empty_atom, Bubbles::kNo, Cancelable::kNo) {
   was_initialized_ = false;
@@ -81,6 +92,10 @@ Event::Event(const AtomicString& event_type,
              ComposedMode composed_mode,
              base::TimeTicks platform_time_stamp)
     : type_(event_type),
+      platform_time_stamp_(platform_time_stamp),
+      current_target_(nullptr),
+      handling_passive_(PassiveMode::kNotPassiveDefault),
+      event_phase_(Event::PhaseType::kNone),
       bubbles_(bubbles == Bubbles::kYes),
       cancelable_(cancelable == Cancelable::kYes),
       composed_(composed_mode == ComposedMode::kComposed),
@@ -94,11 +109,7 @@ Event::Event(const AtomicString& event_type,
       legacy_did_listeners_throw_flag_(false),
       fire_only_capture_listeners_at_target_(false),
       fire_only_non_capture_listeners_at_target_(false),
-      copy_event_path_from_underlying_event_(false),
-      handling_passive_(PassiveMode::kNotPassiveDefault),
-      event_phase_(Event::PhaseType::kNone),
-      current_target_(nullptr),
-      platform_time_stamp_(platform_time_stamp) {}
+      copy_event_path_from_underlying_event_(false) {}
 
 Event::Event(const AtomicString& event_type,
              const EventInit* initializer,

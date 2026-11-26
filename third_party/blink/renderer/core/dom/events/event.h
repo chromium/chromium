@@ -371,6 +371,24 @@ class CORE_EXPORT Event : public ScriptWrappable, public DOMOriginUtils {
 
  private:
   AtomicString type_;
+  probe::AsyncTaskContext async_task_context_;
+  // The monotonic platform time in seconds, for input events it is the
+  // event timestamp provided by the host OS and reported in the original
+  // WebInputEvent instance.
+  base::TimeTicks platform_time_stamp_;
+
+  Member<EventTarget> current_target_;
+  Member<EventTarget> target_;
+  // Set eagerly in SetPseudoElementTarget() while the pseudo is connected.
+  // Storing CSSPseudoElement directly avoids calling From() on a possibly
+  // disconnected pseudo later during dispatch.
+  Member<CSSPseudoElement> pseudo_element_target_;
+  Member<const Event> underlying_event_;
+  Member<EventPath> event_path_;
+
+  PassiveMode handling_passive_;
+  PhaseType event_phase_;
+
   bool bubbles_ : 1;
   bool cancelable_ : 1;
   bool composed_ : 1;
@@ -397,23 +415,6 @@ class CORE_EXPORT Event : public ScriptWrappable, public DOMOriginUtils {
   bool copy_event_path_from_underlying_event_ : 1;
 
   bool invocation_target_in_shadow_tree_ : 1;
-
-  PassiveMode handling_passive_;
-  PhaseType event_phase_;
-  probe::AsyncTaskContext async_task_context_;
-
-  Member<EventTarget> current_target_;
-  Member<EventTarget> target_;
-  // Set eagerly in SetPseudoElementTarget() while the pseudo is connected.
-  // Storing CSSPseudoElement directly avoids calling From() on a possibly
-  // disconnected pseudo later during dispatch.
-  Member<CSSPseudoElement> pseudo_element_target_;
-  Member<const Event> underlying_event_;
-  Member<EventPath> event_path_;
-  // The monotonic platform time in seconds, for input events it is the
-  // event timestamp provided by the host OS and reported in the original
-  // WebInputEvent instance.
-  base::TimeTicks platform_time_stamp_;
 };
 
 }  // namespace blink
