@@ -32,7 +32,6 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/lens/lens_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_controller.h"
@@ -127,20 +126,12 @@ MATCHER(IsChipCollapsed, "Check if the chip is collapsed") {
 class PageActionUiTestBase {
  public:
   PageActionUiTestBase() {
-    // TODO(crbug.com/424806660): These tests should not be reliant on
-    // kLensOverlayOmniboxEntryPoint being enabled, but disabling it causes them
-    // to fail.
-    // TODO(crbug.com/482339938): SuggestionChipReordersMultipleActions is
-    // failing when kPageActionsPrioritySelector is enabled, since those 2 chips
-    // are no longer allowed to show at the same time.
-    feature_list_.InitWithFeaturesAndParameters(
+    feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
-            {lens::features::kLensOverlayOmniboxEntryPoint, {}},
+            features::kPageActionsPrioritySelector,
         },
         /*disabled_features=*/{
-            lens::features::kLensOverlay,
-            features::kPageActionsPrioritySelector,
             features::kWebUILocationBar,
         });
   }
@@ -178,10 +169,14 @@ class PageActionUiTestBase {
     EnsureLayout();
   }
 
-  void ShowSuggestionChip(actions::ActionId action_id) const {
+  void ShowSuggestionChip(actions::ActionId action_id,
+                          PageActionPriorityCategory priority =
+                              PageActionPriorityCategory::kUnknown) const {
     EnsurePageActionEnabled(GetBrowser(), action_id);
-    page_action_controller()->ShowSuggestionChip(
-        action_id, {.should_animate = false, .should_announce_chip = false});
+    page_action_controller()->ShowSuggestionChip(action_id,
+                                                 {.should_animate = false,
+                                                  .should_announce_chip = false,
+                                                  .priority = priority});
   }
 
   void HideSuggestionChip(actions::ActionId action_id) const {
@@ -225,9 +220,10 @@ class PageActionUiTestBase {
     ShowPageAction(kActionFakePageActionForDebug);
   }
 
-  void ShowTestSuggestionChip() const {
+  void ShowTestSuggestionChip(PageActionPriorityCategory priority =
+                                  PageActionPriorityCategory::kUnknown) const {
     ShowPageAction(kActionFakePageActionForDebug);
-    ShowSuggestionChip(kActionFakePageActionForDebug);
+    ShowSuggestionChip(kActionFakePageActionForDebug, priority);
   }
 
   void ShowMemorySaverPageActionIcon() const {
@@ -235,9 +231,11 @@ class PageActionUiTestBase {
     ShowPageAction(kActionShowMemorySaverChip);
   }
 
-  void ShowMemorySaverSuggestionChip() const {
+  void ShowMemorySaverSuggestionChip(
+      PageActionPriorityCategory priority =
+          PageActionPriorityCategory::kUnknown) const {
     ShowPageAction(kActionShowMemorySaverChip);
-    ShowSuggestionChip(kActionShowMemorySaverChip);
+    ShowSuggestionChip(kActionShowMemorySaverChip, priority);
   }
 
   // Dynamically adjust the available space in the location bar by setting
@@ -476,8 +474,11 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   EXPECT_LT(initial_memory_saver_index.value(), initial_test_index.value());
 
   // Step 1: Activate suggestion chip for the test action only.
+  // Use kSecurityTrustAndPermissions so multiple suggestion chips are allowed
+  // to show concurrently under PriorityChipSelector.
   // This should trigger PageActionContainerView::NormalizePageActionViewOrder.
-  ShowTestSuggestionChip();
+  ShowTestSuggestionChip(
+      PageActionPriorityCategory::kSecurityTrustAndPermissions);
 
   // Expect test view to move to the front (index 0) as it's the only chip.
   {
@@ -498,7 +499,8 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   // Step 2: Activate suggestion chip for the memory saver page action as well.
   // This should trigger PageActionContainerView::NormalizePageActionViewOrder
   // again.
-  ShowMemorySaverSuggestionChip();
+  ShowMemorySaverSuggestionChip(
+      PageActionPriorityCategory::kSecurityTrustAndPermissions);
 
   // Now both are chips. The new logic sorts chips by their initial insertion
   // order. Since memory saver was initially before the test action, memory
@@ -540,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   // Step 4: Hide the memory saver suggestion chip.
   // This should trigger PageActionContainerView::NormalizePageActionViewOrder.
   // No chips are active.
-  HidePageAction(kActionShowMemorySaverChip);
+  HideSuggestionChip(kActionShowMemorySaverChip);
 
   // With no active chips, all icons should revert to their original relative
   // order.
