@@ -3212,6 +3212,10 @@ ci.builder(
         android_config = builder_config.android_config(
             config = "base_config",
         ),
+        # Also enables the check on android-arm64-rel, which mirrors this
+        # builder. "ci/Android Release (Pixel 2)" sets the same value for
+        # mirroring.
+        gn_check_generated = True,
     ),
     gn_args = gn_args.config(
         configs = [

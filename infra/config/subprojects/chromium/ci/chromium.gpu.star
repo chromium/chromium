@@ -89,6 +89,8 @@ shared_gpu.ci.linux_builder(
         android_config = builder_config.android_config(
             config = "base_config",
         ),
+        # Kept in sync with "ci/android-14-arm64-rel" for mirroring.
+        gn_check_generated = True,
     ),
     gn_args = gn_args.config(
         configs = [

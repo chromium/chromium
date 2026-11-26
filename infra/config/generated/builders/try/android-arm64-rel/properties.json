@@ -19,6 +19,7 @@
             "builder_spec": {
               "builder_group": "chromium.gpu",
               "execution_mode": "COMPILE_AND_TEST",
+              "gn_check_generated": true,
               "legacy_android_config": {
                 "config": "base_config"
               },
@@ -50,6 +51,7 @@
             "builder_spec": {
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
+              "gn_check_generated": true,
               "legacy_android_config": {
                 "config": "base_config"
               },
