@@ -594,11 +594,6 @@ void TtcMesClient::SendContextUpdate(PageContextUpdate update) {
                    }
                  },
                  [&](const RestrictedPageContext& restricted) {
-                   // An empty tab replaces the previous page's context on
-                   // servers that do not know `restriction_reason` yet.
-                   // TODO(crbug.com/585618943): Remove once the server supports
-                   // `restriction_reason`.
-                   ctx->mutable_active_tab();
                    ctx->set_restriction_reason(
                        ToProtoRestrictionReason(restricted.reason));
                  },

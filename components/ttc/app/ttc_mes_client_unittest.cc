@@ -923,10 +923,7 @@ TEST_F(TtcMesClientTest, SendContextUpdateMapsRestrictionReasons) {
     ASSERT_TRUE(sent.has_context_update());
     const auto& ctx = sent.context_update();
     EXPECT_EQ(ctx.restriction_reason(), tc.want);
-    EXPECT_TRUE(ctx.has_active_tab());
-    EXPECT_TRUE(ctx.active_tab().url().empty());
-    EXPECT_TRUE(ctx.active_tab().title().empty());
-    EXPECT_TRUE(ctx.active_tab().mime_type().empty());
+    EXPECT_FALSE(ctx.has_active_tab());
     EXPECT_FALSE(ctx.has_annotated_page_content());
   }
 }

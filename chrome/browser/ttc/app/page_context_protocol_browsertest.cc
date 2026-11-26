@@ -234,10 +234,7 @@ IN_PROC_BROWSER_TEST_F(TtcPageContextProtocolBrowserTest,
   proto::ContextUpdate restricted_update = TakeNextContextUpdate();
   EXPECT_EQ(restricted_update.restriction_reason(),
             proto::ContextUpdate::PAGE_RESTRICTION_REASON_UNSUPPORTED_SCHEME);
-  EXPECT_TRUE(restricted_update.has_active_tab());
-  EXPECT_TRUE(restricted_update.active_tab().url().empty());
-  EXPECT_TRUE(restricted_update.active_tab().title().empty());
-  EXPECT_TRUE(restricted_update.active_tab().mime_type().empty());
+  EXPECT_FALSE(restricted_update.has_active_tab());
   EXPECT_FALSE(restricted_update.has_annotated_page_content());
 }
 
