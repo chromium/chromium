@@ -74,7 +74,7 @@ BASE_FEATURE(kArabicIndicDigitInput, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, runs beforeunload handlers asynchronously when the user
 // hasn't interacted with the frame. (See: https://crbug.com/475716933)
-BASE_FEATURE(kAsyncBeforeUnload, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAsyncBeforeUnload, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kAsyncBeforeUnloadTimeout,
