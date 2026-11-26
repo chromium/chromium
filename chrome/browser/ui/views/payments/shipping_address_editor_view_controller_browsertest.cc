@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -508,7 +509,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   // Add incomplete address.
   autofill::AutofillProfile profile(autofill::AddressCountryCode(
       base::UTF16ToUTF8(kCountryWithoutStatesCode)));
-  profile.SetInfo(autofill::NAME_FULL, kNameFull, kLocale);
+  profile.SetInfo(autofill::NAME_FULL, kNameFull,
+                  base::i18n::GetKnownLanguageTag("en-US"));
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -607,7 +609,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   // Add address with only the name set, so that another view takes focus.
   autofill::AutofillProfile profile(
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile.SetInfo(autofill::NAME_FULL, kNameFull, "fr_CA");
+  profile.SetInfo(autofill::NAME_FULL, kNameFull,
+                  base::i18n::GetKnownLanguageTag("fr-CA"));
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -823,7 +826,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address with a country but no state.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -868,7 +872,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address with a country but no state.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"INVALIDSTATE", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"INVALIDSTATE",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -892,8 +897,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country or no state.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -939,8 +946,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country or no state.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"INVALIDSTATE", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"INVALIDSTATE",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -987,8 +996,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country but a valid state for the default country.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"California", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"California",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -1035,8 +1046,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country but a valid state for the default country.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"California", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"California",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -1083,8 +1096,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country but a valid state for the default country.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"ca", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"ca",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -1112,8 +1127,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country but a valid state for the default country.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"california", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"california",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -1139,8 +1156,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country but a valid state for the default country.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::NAME_FULL, kNameFull, kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
+  profile.SetInfo(autofill::NAME_FULL, kNameFull,
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();

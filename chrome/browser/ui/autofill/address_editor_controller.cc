@@ -116,7 +116,7 @@ void AddressEditorController::SetProfileInfo(FieldType type,
   // `SetRawInfo()`.
   if (type == ADDRESS_HOME_COUNTRY || type == NAME_FULL) {
     profile_to_edit_.SetInfoWithVerificationStatus(
-        type, value, locale_.tag_string(), VerificationStatus::kUserVerified);
+        type, value, locale_, VerificationStatus::kUserVerified);
     return;
   }
 

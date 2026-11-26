@@ -11,6 +11,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
@@ -106,7 +107,9 @@ class SaveUpdateAddressProfilePromptControllerTest
   void SigninUser();
   void SetUpController(SaveUpdateAddressProfilePromptMode prompt_mode);
 
-  std::string GetLocale() { return "en-US"; }
+  base::i18n::LanguageTag GetLocale() {
+    return base::i18n::GetKnownLanguageTag("en-US");
+  }
 
   signin::IdentityTestEnvironment identity_test_env_;
   syncer::TestSyncService sync_service_;

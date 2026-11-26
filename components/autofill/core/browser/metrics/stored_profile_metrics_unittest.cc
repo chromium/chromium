@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -98,15 +99,20 @@ TEST(StoredProfileMetricsTest, TotalPostalAddressProfiles) {
   AutofillProfile postal_address = test::GetFullProfile();
   // A profile with only one address field is not a postal address.
   AutofillProfile partial_address(AddressCountryCode("US"));
-  partial_address.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
+  partial_address.SetInfo(ADDRESS_HOME_CITY, u"Mountain View",
+                          base::i18n::GetKnownLanguageTag("en-US"));
   // A profile with two address fields is a postal address.
   AutofillProfile minimal_postal_address(AddressCountryCode("US"));
-  minimal_postal_address.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
-  minimal_postal_address.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
+  minimal_postal_address.SetInfo(ADDRESS_HOME_CITY, u"Mountain View",
+                                 base::i18n::GetKnownLanguageTag("en-US"));
+  minimal_postal_address.SetInfo(ADDRESS_HOME_ZIP, u"94043",
+                                 base::i18n::GetKnownLanguageTag("en-US"));
   // A profile with just name and email is not a postal address.
   AutofillProfile name_and_email_profile(AddressCountryCode("US"));
-  name_and_email_profile.SetInfo(NAME_FULL, u"John Doe", "en-US");
-  name_and_email_profile.SetInfo(EMAIL_ADDRESS, u"john@doe.com", "en-US");
+  name_and_email_profile.SetInfo(NAME_FULL, u"John Doe",
+                                 base::i18n::GetKnownLanguageTag("en-US"));
+  name_and_email_profile.SetInfo(EMAIL_ADDRESS, u"john@doe.com",
+                                 base::i18n::GetKnownLanguageTag("en-US"));
 
   base::HistogramTester histogram_tester;
   LogStoredProfileMetrics({&postal_address, &partial_address,
@@ -120,10 +126,12 @@ TEST(StoredProfileMetricsTest, TotalPostalAddressProfiles) {
 TEST_P(StoredProfileMetricsTestByCategory, StoredProfilesWithAlternativeName) {
   // Create profiles with alternative names.
   AutofillProfile profile0 = test::GetFullProfile(AddressCountryCode("JP"));
-  profile0.SetInfo(ALTERNATIVE_FULL_NAME, u"あおい", "ja");
+  profile0.SetInfo(ALTERNATIVE_FULL_NAME, u"あおい",
+                   base::i18n::GetKnownLanguageTag("ja"));
 
   AutofillProfile profile1 = test::GetFullProfile2(AddressCountryCode("JP"));
-  profile1.SetInfo(ALTERNATIVE_FULL_NAME, u"やまもと·あおい", "ja");
+  profile1.SetInfo(ALTERNATIVE_FULL_NAME, u"やまもと·あおい",
+                   base::i18n::GetKnownLanguageTag("ja"));
 
   // Create a profile without the alternative name set.
   AutofillProfile profile2 = test::GetFullProfile();

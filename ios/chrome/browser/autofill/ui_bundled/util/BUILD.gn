@@ -11,6 +11,7 @@ source_set("util") {
   ]
   deps = [
     "//base",
+    "//base/i18n:language_tag",
     "//components/autofill/core/browser",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -30,6 +31,7 @@ source_set("unit_tests") {
   deps = [
     ":util",
     "//base",
+    "//base/i18n:language_tag",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//ios/chrome/browser/autofill/model/message",

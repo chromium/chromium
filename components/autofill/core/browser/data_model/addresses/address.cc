@@ -219,14 +219,15 @@ std::u16string Address::GetInfo(FieldType type, std::string_view locale) const {
   return GetRawInfo(type);
 }
 
-bool Address::SetInfoWithVerificationStatus(FieldType type,
-                                            std::u16string_view value,
-                                            std::string_view locale,
-                                            VerificationStatus status) {
+bool Address::SetInfoWithVerificationStatus(
+    FieldType type,
+    std::u16string_view value,
+    const base::i18n::LanguageTag& locale,
+    VerificationStatus status) {
   if (type == ADDRESS_HOME_COUNTRY) {
     // `ParseCountry` handles empty values, trying to parse the country from a
     // country code or a country name
-    const std::string country_code = ParseCountry(value, locale);
+    const std::string country_code = ParseCountry(value, locale.tag_string());
 
     SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY,
                                      base::UTF8ToUTF16(country_code), status);

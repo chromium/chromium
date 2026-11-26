@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
@@ -745,9 +746,10 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
   EXPECT_CALL(client(), ShowEmailVerificationErrorToast);
 
   AutofillProfile profile = test::GetFullProfile();
-  profile.SetInfoWithVerificationStatus(EMAIL_ADDRESS, u"test@example.com",
-                                        "en-US",
-                                        VerificationStatus::kUserVerified);
+  profile.SetInfoWithVerificationStatus(
+      EMAIL_ADDRESS, u"test@example.com",
+      base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kUserVerified);
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id(), form->field(1)->global_id()};
   delegate().OnFillOrPreviewForm(
@@ -946,9 +948,10 @@ TEST_F(EmailVerifierDelegateTest,
   SetUpVerificationExpectations(*form, "test@example.com");
 
   AutofillProfile profile = test::GetFullProfile();
-  profile.SetInfoWithVerificationStatus(EMAIL_ADDRESS, u"test@example.com",
-                                        "en-US",
-                                        VerificationStatus::kUserVerified);
+  profile.SetInfoWithVerificationStatus(
+      EMAIL_ADDRESS, u"test@example.com",
+      base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kUserVerified);
 
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id(), form->field(1)->global_id()};
@@ -980,9 +983,10 @@ TEST_F(EmailVerifierDelegateTest, BlockedByStrikes) {
   EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
-  profile.SetInfoWithVerificationStatus(EMAIL_ADDRESS, u"test@example.com",
-                                        "en-US",
-                                        VerificationStatus::kUserVerified);
+  profile.SetInfoWithVerificationStatus(
+      EMAIL_ADDRESS, u"test@example.com",
+      base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kUserVerified);
 
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
@@ -1114,9 +1118,10 @@ TEST_F(EmailVerifierDelegateTest, BlockedByNotSignedInStrikes) {
   EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
-  profile.SetInfoWithVerificationStatus(EMAIL_ADDRESS, u"test@example.com",
-                                        "en-US",
-                                        VerificationStatus::kUserVerified);
+  profile.SetInfoWithVerificationStatus(
+      EMAIL_ADDRESS, u"test@example.com",
+      base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kUserVerified);
 
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};

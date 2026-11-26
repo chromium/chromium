@@ -267,7 +267,8 @@ TEST_F(AddressDataCleanerTest, Deduplicate_MergingSubsets) {
   // Setup subset with count: 5 and use date: Now - 5 minutes.
   AutofillProfile subset_profile(AddressCountryCode("US"));
   subset_profile.SetInfoWithVerificationStatus(
-      EMAIL_ADDRESS, u"test@gmail.com", "en-US",
+      EMAIL_ADDRESS, u"test@gmail.com",
+      base::i18n::GetKnownLanguageTag("en-US"),
       VerificationStatus::kUserVerified);
   test_api(subset_profile)
       .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
@@ -278,10 +279,12 @@ TEST_F(AddressDataCleanerTest, Deduplicate_MergingSubsets) {
   // Setup superset with count: 10 and use date: Now - 10 minutes.
   AutofillProfile superset_profile_1(AddressCountryCode("US"));
   superset_profile_1.SetInfoWithVerificationStatus(
-      EMAIL_ADDRESS, u"test@gmail.com", "en-US",
+      EMAIL_ADDRESS, u"test@gmail.com",
+      base::i18n::GetKnownLanguageTag("en-US"),
       VerificationStatus::kUserVerified);
   superset_profile_1.SetInfoWithVerificationStatus(
-      ADDRESS_HOME_CITY, u"Warsaw", "en-US", VerificationStatus::kUserVerified);
+      ADDRESS_HOME_CITY, u"Warsaw", base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kUserVerified);
   test_api(superset_profile_1)
       .set_record_type(AutofillProfile::RecordType::kAccount);
   superset_profile_1.usage_history().set_use_date(now - base::Minutes(10));
@@ -292,10 +295,12 @@ TEST_F(AddressDataCleanerTest, Deduplicate_MergingSubsets) {
   // use date: Now.
   AutofillProfile superset_profile_2(AddressCountryCode("US"));
   superset_profile_2.SetInfoWithVerificationStatus(
-      EMAIL_ADDRESS, u"test@gmail.com", "en-US",
+      EMAIL_ADDRESS, u"test@gmail.com",
+      base::i18n::GetKnownLanguageTag("en-US"),
       VerificationStatus::kUserVerified);
   superset_profile_2.SetInfoWithVerificationStatus(
-      ADDRESS_HOME_CITY, u"Munich", "en-US", VerificationStatus::kUserVerified);
+      ADDRESS_HOME_CITY, u"Munich", base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kUserVerified);
   test_api(superset_profile_2)
       .set_record_type(AutofillProfile::RecordType::kAccount);
   superset_profile_2.usage_history().set_use_date(now);
@@ -407,9 +412,11 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountNameEmailSubset) {
 
   AutofillProfile account_name_email_profile(AddressCountryCode("XX"));
   account_name_email_profile.SetInfoWithVerificationStatus(
-      NAME_FULL, u"John Doe", "en-US", VerificationStatus::kUserVerified);
+      NAME_FULL, u"John Doe", base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kUserVerified);
   account_name_email_profile.SetInfoWithVerificationStatus(
-      EMAIL_ADDRESS, u"test@gmail.com", "en-US",
+      EMAIL_ADDRESS, u"test@gmail.com",
+      base::i18n::GetKnownLanguageTag("en-US"),
       VerificationStatus::kUserVerified);
   account_name_email_profile.usage_history().set_use_date(now);
   account_name_email_profile.FinalizeAfterImport();
@@ -419,9 +426,11 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountNameEmailSubset) {
 
   AutofillProfile superset_profile = test::StandardProfile();
   superset_profile.SetInfoWithVerificationStatus(
-      NAME_FULL, u"John Doe", "en-US", VerificationStatus::kUserVerified);
+      NAME_FULL, u"John Doe", base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kUserVerified);
   superset_profile.SetInfoWithVerificationStatus(
-      EMAIL_ADDRESS, u"test@gmail.com", "en-US",
+      EMAIL_ADDRESS, u"test@gmail.com",
+      base::i18n::GetKnownLanguageTag("en-US"),
       VerificationStatus::kUserVerified);
   superset_profile.usage_history().set_use_date(now);
   superset_profile.FinalizeAfterImport();

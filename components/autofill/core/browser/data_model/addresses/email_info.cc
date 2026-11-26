@@ -55,10 +55,11 @@ void EmailInfo::SetRawInfoWithVerificationStatus(FieldType type,
   email_ = value;
 }
 
-bool EmailInfo::SetInfoWithVerificationStatus(FieldType type,
-                                              std::u16string_view value,
-                                              std::string_view app_locale,
-                                              const VerificationStatus status) {
+bool EmailInfo::SetInfoWithVerificationStatus(
+    FieldType type,
+    std::u16string_view value,
+    const base::i18n::LanguageTag& app_locale,
+    const VerificationStatus status) {
   SetRawInfoWithVerificationStatus(type, value, status);
   return true;
 }

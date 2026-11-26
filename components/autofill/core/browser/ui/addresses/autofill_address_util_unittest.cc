@@ -232,10 +232,12 @@ TEST_F(AddressFormattingTest,
 TEST_F(AddressFormattingTest,
        GetEnvelopeStyleAddressHasDifferenceInUiWhenFullnameDiffers) {
   AutofillProfile profile1 = test::GetFullProfile();
-  profile1.SetInfo(NAME_FULL, u"John H. Doe", "en-US");
+  profile1.SetInfo(NAME_FULL, u"John H. Doe",
+                   base::i18n::GetKnownLanguageTag("en-US"));
 
   AutofillProfile profile2 = profile1;
-  profile2.SetInfo(NAME_FULL, u"John Doe", "en-US");
+  profile2.SetInfo(NAME_FULL, u"John Doe",
+                   base::i18n::GetKnownLanguageTag("en-US"));
 
   EXPECT_THAT(GetProfileDifferenceForUi(
                   profile1, profile2, base::i18n::GetKnownLanguageTag("en-US")),
@@ -246,10 +248,12 @@ TEST_F(AddressFormattingTest,
 TEST_F(AddressFormattingTest,
        GetEnvelopeStyleAddressHasDifferenceInUiWhenAlternativeFullnameDiffers) {
   AutofillProfile profile1 = test::GetFullProfile(AddressCountryCode("JP"));
-  profile1.SetInfo(ALTERNATIVE_FULL_NAME, u"", "ja-JP");
+  profile1.SetInfo(ALTERNATIVE_FULL_NAME, u"",
+                   base::i18n::GetKnownLanguageTag("ja-JP"));
 
   AutofillProfile profile2 = profile1;
-  profile2.SetInfo(ALTERNATIVE_FULL_NAME, u"やまもと あおい", "ja-JP");
+  profile2.SetInfo(ALTERNATIVE_FULL_NAME, u"やまもと あおい",
+                   base::i18n::GetKnownLanguageTag("ja-JP"));
 
   EXPECT_THAT(GetProfileDifferenceForUi(
                   profile1, profile2, base::i18n::GetKnownLanguageTag("ja-JP")),
@@ -260,10 +264,12 @@ TEST_F(AddressFormattingTest,
 TEST_F(AddressFormattingTest,
        GetEnvelopeStyleAddressHasDifferenceInUiWhenZipcodeDiffers) {
   AutofillProfile profile1 = test::GetFullProfile();
-  profile1.SetInfo(ADDRESS_HOME_ZIP, u"91111", "en-US");
+  profile1.SetInfo(ADDRESS_HOME_ZIP, u"91111",
+                   base::i18n::GetKnownLanguageTag("en-US"));
 
   AutofillProfile profile2 = profile1;
-  profile2.SetInfo(ADDRESS_HOME_ZIP, u"90000", "en-US");
+  profile2.SetInfo(ADDRESS_HOME_ZIP, u"90000",
+                   base::i18n::GetKnownLanguageTag("en-US"));
 
   constexpr base::i18n::LanguageTag kEnUs =
       base::i18n::GetKnownLanguageTag("en-US");
@@ -289,7 +295,7 @@ TEST(GetProfileDescription, NameAndAddress) {
 
 TEST(GetProfileDescription, EmptyName) {
   AutofillProfile profile = test::GetFullProfile();
-  profile.SetInfo(NAME_FULL, u"", "en-US");
+  profile.SetInfo(NAME_FULL, u"", base::i18n::GetKnownLanguageTag("en-US"));
   std::u16string description =
       GetProfileDescription(profile, base::i18n::GetKnownLanguageTag("en-US"),
                             /*include_address_and_contacts=*/true);
@@ -318,9 +324,12 @@ TEST(GetProfileDescription, ProfileDescriptionForMigration) {
 // just a name, email and country
 TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWithSparseProfile) {
   AutofillProfile profile(AddressCountryCode("US"));
-  profile.SetInfo(NAME_FULL, u"John Doe", "en-US");
-  profile.SetInfo(EMAIL_ADDRESS, u"john@doe.com", "en-US");
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
+  profile.SetInfo(NAME_FULL, u"John Doe",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(EMAIL_ADDRESS, u"john@doe.com",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US",
+                  base::i18n::GetKnownLanguageTag("en-US"));
 
   constexpr base::i18n::LanguageTag kEnUs =
       base::i18n::GetKnownLanguageTag("en-US");
@@ -342,9 +351,11 @@ TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWithSparseProfile) {
 TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWithPartialAddress) {
   AutofillProfile profile(AddressCountryCode("US"));
   profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS, u"742 Evergreen Terrace",
-                  "en-US");
-  profile.SetInfo(ADDRESS_HOME_CITY, u"Springfield", "en-US");
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_CITY, u"Springfield",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US",
+                  base::i18n::GetKnownLanguageTag("en-US"));
 
   std::u16string address =
       GetEnvelopeStyleAddress(profile, base::i18n::GetKnownLanguageTag("en-US"),

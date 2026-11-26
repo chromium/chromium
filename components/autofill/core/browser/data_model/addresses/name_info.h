@@ -81,7 +81,7 @@ class NameInfo : public FormGroup {
                                         VerificationStatus status) override;
   bool SetInfoWithVerificationStatus(FieldType type,
                                      std::u16string_view value,
-                                     std::string_view app_locale,
+                                     const base::i18n::LanguageTag& app_locale,
                                      VerificationStatus status) override;
   // Return the verification status of a structured name value.
   VerificationStatus GetVerificationStatus(FieldType type) const override;

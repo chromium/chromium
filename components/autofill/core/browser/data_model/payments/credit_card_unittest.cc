@@ -1679,24 +1679,29 @@ TEST(CreditCardTest, SetExpirationMonth) {
   EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"07");
   EXPECT_EQ(card.expiration_month(), 7);
 
-  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"January", "en-US");
+  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"January",
+               base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"01");
   EXPECT_EQ(card.expiration_month(), 1);
 
-  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"Apr", "en-US");
+  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"Apr",
+               base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"04");
   EXPECT_EQ(card.expiration_month(), 4);
 
-  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"FÉVRIER", "fr-FR");
+  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"FÉVRIER",
+               base::i18n::GetKnownLanguageTag("fr-FR"));
   EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"02");
   EXPECT_EQ(card.expiration_month(), 2);
 
   // Substring matches inside words should fail and preserve the previous value.
-  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"MayTheForceBeWithYou", "en-US");
+  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"MayTheForceBeWithYou",
+               base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"02");
   EXPECT_EQ(card.expiration_month(), 2);
 
-  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"SecretMay2026!", "en-US");
+  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"SecretMay2026!",
+               base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"02");
   EXPECT_EQ(card.expiration_month(), 2);
 }

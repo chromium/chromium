@@ -406,11 +406,9 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
     case AutofillCreditCardUIType::kNumber:
       return [AutofillCreditCardUtil
           isValidCreditCardNumber:value
-                         appLocal:std::string(
-                                      GetApplicationContext()
-                                          ->GetApplicationLocaleStorage()
-                                          ->GetTag()
-                                          .tag_string())];
+                         appLocal:GetApplicationContext()
+                                      ->GetApplicationLocaleStorage()
+                                      ->GetTag()];
     case AutofillCreditCardUIType::kExpMonth: {
       std::pair<NSString*, NSString*> parsedDate = ParseExpirationDate(value);
       NSString* expMonth = parsedDate.first;
@@ -423,11 +421,9 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
             [AutofillCreditCardUtil
                 isValidCreditCardExpirationYear:expYear
                                        appLocal:
-                                           std::string(
-                                               GetApplicationContext()
-                                                   ->GetApplicationLocaleStorage()
-                                                   ->GetTag()
-                                                   .tag_string())];
+                                           GetApplicationContext()
+                                               ->GetApplicationLocaleStorage()
+                                               ->GetTag()];
       }
       return NO;
     }

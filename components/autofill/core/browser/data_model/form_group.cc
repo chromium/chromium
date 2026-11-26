@@ -63,7 +63,7 @@ bool FormGroup::HasRawInfo(FieldType type) const {
 
 bool FormGroup::SetInfo(FieldType type,
                         std::u16string_view value,
-                        std::string_view app_locale) {
+                        const base::i18n::LanguageTag& app_locale) {
   return SetInfoWithVerificationStatus(type, value, app_locale,
                                        VerificationStatus::kNoStatus);
 }

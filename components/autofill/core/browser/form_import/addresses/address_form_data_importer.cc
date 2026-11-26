@@ -458,8 +458,7 @@ AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
   if (const std::u16string* country =
           base::FindOrNull(observed_values, ADDRESS_HOME_COUNTRY)) {
     if (candidate_profile.SetInfoWithVerificationStatus(
-            ADDRESS_HOME_COUNTRY, *country,
-            client_->GetAppLocale().tag_string(),
+            ADDRESS_HOME_COUNTRY, *country, client_->GetAppLocale(),
             VerificationStatus::kObserved)) {
       import_metadata.country_source =
           ProfileCountrySource::kExplicitlyObserved;
@@ -479,8 +478,7 @@ AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
         GetFallbackCountry(combined_phone);
 
     if (!candidate_profile.SetInfoWithVerificationStatus(
-            ADDRESS_HOME_COUNTRY, fallback_country,
-            client_->GetAppLocale().tag_string(),
+            ADDRESS_HOME_COUNTRY, fallback_country, client_->GetAppLocale(),
             VerificationStatus::kObserved)) {
       import_metadata.country_source = ProfileCountrySource::kNoCountry;
     }
@@ -500,8 +498,7 @@ AutofillProfile AddressFormDataImporter::ConstructProfileFromObservedValues(
     }
 
     candidate_profile.SetInfoWithVerificationStatus(
-        type, value, client_->GetAppLocale().tag_string(),
-        VerificationStatus::kObserved);
+        type, value, client_->GetAppLocale(), VerificationStatus::kObserved);
   }
 
   // Track if the form contains split zip fields such that at least zip prefix

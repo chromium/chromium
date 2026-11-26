@@ -26,6 +26,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/metrics_hashes.h"
@@ -2019,7 +2020,8 @@ TEST_F(BrowserAutofillManagerTest,
       /*disabled_features=*/{features::kAutofillNewSuggestionGeneration});
 
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile.SetInfo(ADDRESS_HOME_LINE1, u"sherman wallaby 42 sidney", "en-US");
+  profile.SetInfo(ADDRESS_HOME_LINE1, u"sherman wallaby 42 sidney",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().test_address_data_manager().AddProfile(profile);
 
   FormData form =
@@ -7222,7 +7224,8 @@ TEST_F(BrowserAutofillManagerTest,
       features::kAutofillAddressSuggestionsOnTyping};
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   const std::u16string address_home_line1 = u"sherman wallaby 42 sidney";
-  profile.SetInfo(ADDRESS_HOME_LINE1, address_home_line1, "en-US");
+  profile.SetInfo(ADDRESS_HOME_LINE1, address_home_line1,
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().test_address_data_manager().ClearProfiles();
   personal_data().test_address_data_manager().AddProfile(profile);
 

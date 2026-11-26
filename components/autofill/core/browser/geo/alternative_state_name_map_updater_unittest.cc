@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -252,7 +253,8 @@ TEST_F(AlternativeStateNameMapUpdaterTest,
   test::ClearAlternativeStateNameMapForTesting();
 
   AutofillProfile profile(AddressCountryCode("DE"));
-  profile.SetInfo(ADDRESS_HOME_STATE, u"Bavaria", "en-US");
+  profile.SetInfo(ADDRESS_HOME_STATE, u"Bavaria",
+                  base::i18n::GetKnownLanguageTag("en-US"));
 
   base::RunLoop run_loop;
   MockAlternativeStateNameMapUpdater mock_alternative_state_name_updater(

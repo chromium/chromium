@@ -191,7 +191,7 @@ class CreditCard : public FormGroup {
                                         VerificationStatus status) override;
   bool SetInfoWithVerificationStatus(FieldType type,
                                      std::u16string_view value,
-                                     std::string_view app_locale,
+                                     const base::i18n::LanguageTag& app_locale,
                                      VerificationStatus status) override;
   VerificationStatus GetVerificationStatus(FieldType type) const override;
 

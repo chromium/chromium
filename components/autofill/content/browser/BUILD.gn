@@ -145,6 +145,7 @@ source_set("unit_tests") {
     ":browser",
     ":test_support",
     "//base",
+    "//base/i18n:language_tag",
     "//components/autofill/content/common/mojom",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",

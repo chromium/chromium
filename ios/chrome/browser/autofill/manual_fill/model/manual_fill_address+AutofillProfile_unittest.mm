@@ -22,11 +22,9 @@ void SetProfileFieldTypeValue(AutofillProfile* profile,
                               const autofill::FieldType fieldType,
                               NSString* value) {
   const std::u16string v = base::SysNSStringToUTF16(value);
-  std::string_view app_locale = GetApplicationContext()
-                                    ->GetApplicationLocaleStorage()
-                                    ->GetTag()
-                                    .tag_string();
-  profile->SetInfo(fieldType, v, app_locale);
+  profile->SetInfo(
+      fieldType, v,
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag());
 }
 
 }  // namespace

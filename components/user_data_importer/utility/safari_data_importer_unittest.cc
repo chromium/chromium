@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -188,7 +189,7 @@ class SafariDataImporterTest : public testing::Test {
         &autofill_client_.GetPersonalDataManager().payments_data_manager(),
         history_service_.get(), bookmark_model_.get(),
         reading_list_model_.get(), &sync_service_, &pref_service_,
-        std::move(parser), "en-US");
+        std::move(parser), base::i18n::GetKnownLanguageTag("en-US"));
 
     mojo::PendingRemote<password_manager::mojom::CSVPasswordParser>
         pending_remote{receiver_.BindNewPipeAndPassRemote()};

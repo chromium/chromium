@@ -79,7 +79,7 @@ scoped_refptr<base::SequencedTaskRunner> GetRunner() {
 
 autofill::CreditCard ConvertToAutofillCreditCard(
     const user_data_importer::PaymentCardEntry& card,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   autofill::CreditCard credit_card;
 
   credit_card.SetNumber(RustStringToUTF16(card.card_number));
@@ -282,7 +282,7 @@ SafariDataImporter::SafariDataImporter(
     syncer::SyncService* sync_service,
     PrefService* pref_service,
     std::unique_ptr<BookmarkParser> bookmark_parser,
-    std::string app_locale)
+    const base::i18n::LanguageTag& app_locale)
     : blocking_queue_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       blocking_worker_(blocking_queue_, std::move(bookmark_parser)),
@@ -297,7 +297,7 @@ SafariDataImporter::SafariDataImporter(
       sync_service_(sync_service),
       pref_service_(pref_service),
       metrics_recorder_(ImporterMetricsRecorder::Source::kSafari),
-      app_locale_(std::move(app_locale)) {}
+      app_locale_(app_locale) {}
 
 SafariDataImporter::~SafariDataImporter() = default;
 

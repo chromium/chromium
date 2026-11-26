@@ -181,7 +181,7 @@ class AutofillProfile : public FormGroup {
   static AutofillProfile CreateFromJavaObject(
       const base::android::JavaRef<jobject>& jprofile,
       const AutofillProfile* existing_profile,
-      std::string_view app_locale);
+      const base::i18n::LanguageTag& app_locale);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // FormGroup:
@@ -196,7 +196,7 @@ class AutofillProfile : public FormGroup {
                                         VerificationStatus status) override;
   bool SetInfoWithVerificationStatus(FieldType type,
                                      std::u16string_view value,
-                                     std::string_view app_locale,
+                                     const base::i18n::LanguageTag& app_locale,
                                      VerificationStatus status) override;
   VerificationStatus GetVerificationStatus(const FieldType type) const override;
   FieldTypeSet GetSupportedTypes() const override;

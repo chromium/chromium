@@ -459,10 +459,9 @@ void ShippingAddressEditorViewController::UpdateCountries(
       if (!countries_.empty()) {
         LOG(ERROR) << "Unexpected country: " << chosen_country;
         chosen_country_index_ = 0;
-        temporary_profile_.SetInfo(
-            autofill::ADDRESS_HOME_COUNTRY,
-            countries_[chosen_country_index_].second,
-            state()->GetApplicationLocale().tag_string());
+        temporary_profile_.SetInfo(autofill::ADDRESS_HOME_COUNTRY,
+                                   countries_[chosen_country_index_].second,
+                                   state()->GetApplicationLocale());
       } else {
         LOG(ERROR) << "Unexpected empty country list!";
         chosen_country_index_ = kInvalidCountryIndex;
@@ -545,7 +544,7 @@ void ShippingAddressEditorViewController::OnDataChanged(bool synchronous) {
 bool ShippingAddressEditorViewController::SaveFieldsToProfile(
     autofill::AutofillProfile* profile,
     bool ignore_errors) {
-  const std::string_view locale = state()->GetApplicationLocale().tag_string();
+  const base::i18n::LanguageTag& locale = state()->GetApplicationLocale();
   // The country must be set first, because the profile uses the country to
   // interpret some of the data (e.g., phone numbers) passed to SetInfo.
   views::Combobox* combobox =

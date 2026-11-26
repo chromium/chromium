@@ -71,7 +71,7 @@ class Address : public FormGroup {
                                         VerificationStatus status) override;
   bool SetInfoWithVerificationStatus(FieldType type,
                                      std::u16string_view value,
-                                     std::string_view locale,
+                                     const base::i18n::LanguageTag& locale,
                                      VerificationStatus status) override;
   void GetMatchingTypes(std::u16string_view text,
                         const base::i18n::LanguageTag& locale,

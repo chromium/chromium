@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORTER_H_
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/i18n/language_tag.h"
 #include "base/threading/sequence_bound.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
 #include "components/prefs/pref_service.h"
@@ -67,7 +68,7 @@ class SafariDataImporter {
                      syncer::SyncService* sync_service,
                      PrefService* pref_service,
                      std::unique_ptr<BookmarkParser> bookmark_parser,
-                     std::string app_locale);
+                     const base::i18n::LanguageTag& app_locale);
   ~SafariDataImporter();
 
   // Opens the ZIP file provided in `path` and prepares to import the data
@@ -289,7 +290,7 @@ class SafariDataImporter {
   ImporterMetricsRecorder metrics_recorder_;
 
   // The application locale, used to set credit card information.
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
 
   // Number of URLs imported during the history import process.
   size_t history_urls_imported_;

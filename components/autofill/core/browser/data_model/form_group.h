@@ -70,13 +70,13 @@ class FormGroup {
   // according to the specified `app_locale` prior to storing, if appropriate.
   bool SetInfo(FieldType type,
                std::u16string_view value,
-               std::string_view app_locale);
+               const base::i18n::LanguageTag& app_locale);
 
   // Same as `SetInfo` but supports a verification status.
   virtual bool SetInfoWithVerificationStatus(
       FieldType type,
       std::u16string_view value,
-      std::string_view app_locale,
+      const base::i18n::LanguageTag& app_locale,
       const VerificationStatus status) = 0;
 
   // Returns true iff the string associated with `type` is nonempty.

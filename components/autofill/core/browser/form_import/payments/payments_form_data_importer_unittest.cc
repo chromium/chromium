@@ -2446,7 +2446,8 @@ class PaymentsFormDataImporterCardholderNameUpdateTest
     payments_data_manager().AddServerCreditCard(server_card);
 
     extracted_card_ = server_card;
-    extracted_card_.SetInfo(CREDIT_CARD_NAME_FULL, u"John Dillinger", kLocale);
+    extracted_card_.SetInfo(CREDIT_CARD_NAME_FULL, u"John Dillinger",
+                            base::i18n::GetKnownLanguageTag("en-US"));
     extracted_card_.set_cvc(u"123");
     form_structure_ = ConstructDefaultCreditCardFormStructure();
     test_api(payments_form_data_importer())
@@ -2475,7 +2476,8 @@ class PaymentsFormDataImporterCardholderNameUpdateTest
     CreditCard server_card =
         *payments_data_manager().GetCreditCardByInstrumentId(
             extracted_card_.instrument_id());
-    server_card.SetInfo(CREDIT_CARD_NAME_FULL, u"Clyde Barrow", kLocale);
+    server_card.SetInfo(CREDIT_CARD_NAME_FULL, u"Clyde Barrow",
+                        base::i18n::GetKnownLanguageTag("en-US"));
     payments_data_manager().ClearCreditCards();
     payments_data_manager().AddServerCreditCard(server_card);
   }
@@ -2560,7 +2562,8 @@ TEST_F(PaymentsFormDataImporterCardholderNameUpdateTest,
        NotOffered_ServerCardHasName) {
   CreditCard server_card = *payments_data_manager().GetCreditCardByInstrumentId(
       extracted_card_.instrument_id());
-  server_card.SetInfo(CREDIT_CARD_NAME_FULL, u"Clyde Barrow", kLocale);
+  server_card.SetInfo(CREDIT_CARD_NAME_FULL, u"Clyde Barrow",
+                      base::i18n::GetKnownLanguageTag("en-US"));
   payments_data_manager().ClearCreditCards();
   payments_data_manager().AddServerCreditCard(server_card);
   EXPECT_CALL(credit_card_save_manager(), AttemptToOfferCardholderNameUpdate)
@@ -2572,7 +2575,8 @@ TEST_F(PaymentsFormDataImporterCardholderNameUpdateTest,
 
 TEST_F(PaymentsFormDataImporterCardholderNameUpdateTest,
        NotOffered_NoExtractedName) {
-  extracted_card_.SetInfo(CREDIT_CARD_NAME_FULL, u"", kLocale);
+  extracted_card_.SetInfo(CREDIT_CARD_NAME_FULL, u"",
+                          base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_CALL(credit_card_save_manager(), AttemptToOfferCardholderNameUpdate)
       .Times(0);
   EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable);
@@ -2711,7 +2715,8 @@ TEST_F(PaymentsFormDataImporterCardholderNameUpdateTest,
        Metrics_Eligibility_ServerCardAlreadyHasName) {
   CreditCard server_card = *payments_data_manager().GetCreditCardByInstrumentId(
       extracted_card_.instrument_id());
-  server_card.SetInfo(CREDIT_CARD_NAME_FULL, u"Clyde Barrow", kLocale);
+  server_card.SetInfo(CREDIT_CARD_NAME_FULL, u"Clyde Barrow",
+                      base::i18n::GetKnownLanguageTag("en-US"));
   payments_data_manager().ClearCreditCards();
   payments_data_manager().AddServerCreditCard(server_card);
   base::HistogramTester histogram_tester;
@@ -2727,7 +2732,8 @@ TEST_F(PaymentsFormDataImporterCardholderNameUpdateTest,
 
 TEST_F(PaymentsFormDataImporterCardholderNameUpdateTest,
        Metrics_Eligibility_NoNameExtractedFromForm) {
-  extracted_card_.SetInfo(CREDIT_CARD_NAME_FULL, u"", kLocale);
+  extracted_card_.SetInfo(CREDIT_CARD_NAME_FULL, u"",
+                          base::i18n::GetKnownLanguageTag("en-US"));
   base::HistogramTester histogram_tester;
 
   ProcessExtractedCreditCard();
@@ -2801,7 +2807,8 @@ TEST_F(PaymentsFormDataImporterCardholderNameUpdateTest,
 
 TEST_F(PaymentsFormDataImporterCardholderNameUpdateTest,
        Metrics_Eligibility_VcnEnrollmentOffered_NoNameExtractedFromForm) {
-  extracted_card_.SetInfo(CREDIT_CARD_NAME_FULL, u"", kLocale);
+  extracted_card_.SetInfo(CREDIT_CARD_NAME_FULL, u"",
+                          base::i18n::GetKnownLanguageTag("en-US"));
   SetUpVirtualCardEnrollmentOffer();
   base::HistogramTester histogram_tester;
 

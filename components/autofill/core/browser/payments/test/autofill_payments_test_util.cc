@@ -7,6 +7,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -25,15 +26,17 @@ AutofillProfile BuildProfile(std::string_view first_name,
                              std::string_view phone_number) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
 
-  profile.SetInfo(NAME_FIRST, base::ASCIIToUTF16(first_name), "en-US");
-  profile.SetInfo(NAME_LAST, base::ASCIIToUTF16(last_name), "en-US");
+  const base::i18n::LanguageTag kAppLocale =
+      base::i18n::GetKnownLanguageTag("en-US");
+  profile.SetInfo(NAME_FIRST, base::ASCIIToUTF16(first_name), kAppLocale);
+  profile.SetInfo(NAME_LAST, base::ASCIIToUTF16(last_name), kAppLocale);
   profile.SetInfo(ADDRESS_HOME_LINE1, base::ASCIIToUTF16(address_line),
-                  "en-US");
-  profile.SetInfo(ADDRESS_HOME_CITY, base::ASCIIToUTF16(city), "en-US");
-  profile.SetInfo(ADDRESS_HOME_STATE, base::ASCIIToUTF16(state), "en-US");
-  profile.SetInfo(ADDRESS_HOME_ZIP, base::ASCIIToUTF16(zip), "en-US");
+                  kAppLocale);
+  profile.SetInfo(ADDRESS_HOME_CITY, base::ASCIIToUTF16(city), kAppLocale);
+  profile.SetInfo(ADDRESS_HOME_STATE, base::ASCIIToUTF16(state), kAppLocale);
+  profile.SetInfo(ADDRESS_HOME_ZIP, base::ASCIIToUTF16(zip), kAppLocale);
   profile.SetInfo(PHONE_HOME_WHOLE_NUMBER, base::ASCIIToUTF16(phone_number),
-                  "en-US");
+                  kAppLocale);
   profile.FinalizeAfterImport();
   return profile;
 }

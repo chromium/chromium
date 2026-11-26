@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -167,10 +168,13 @@ class AutofillCounterTest : public InProcessBrowserTest {
     std::string id = base::Uuid::GenerateRandomV4().AsLowercaseString();
     address_ids_.push_back(id);
     profile.set_guid(id);
-    profile.SetInfo(autofill::NAME_FIRST, base::ASCIIToUTF16(name), "en-US");
-    profile.SetInfo(autofill::NAME_LAST, base::ASCIIToUTF16(surname), "en-US");
+    const base::i18n::LanguageTag kAppLocale =
+        base::i18n::GetKnownLanguageTag("en-US");
+    profile.SetInfo(autofill::NAME_FIRST, base::ASCIIToUTF16(name), kAppLocale);
+    profile.SetInfo(autofill::NAME_LAST, base::ASCIIToUTF16(surname),
+                    kAppLocale);
     profile.SetInfo(autofill::ADDRESS_HOME_LINE1, base::ASCIIToUTF16(address),
-                    "en-US");
+                    kAppLocale);
     personal_data_manager_->address_data_manager().AddProfile(profile);
     autofill::PersonalDataChangedWaiter(*personal_data_manager_).Wait();
   }

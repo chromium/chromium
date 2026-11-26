@@ -476,7 +476,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   AddAutofillProfile(billing_profile);
   card.set_billing_address_id(billing_profile.guid());
   // Clear the name.
-  card.SetInfo(autofill::CREDIT_CARD_NAME_FULL, std::u16string(), "en-US");
+  card.SetInfo(autofill::CREDIT_CARD_NAME_FULL, std::u16string(),
+               base::i18n::GetKnownLanguageTag("en-US"));
   AddCreditCard(card);
 
   InvokePaymentRequestUI();

@@ -37,7 +37,6 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -96,8 +95,9 @@ class AutofillProfileTableViewControllerTest
     autofill::AutofillProfile autofill_profile(
         autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
     for (const auto& pair : data) {
-      autofill_profile.SetInfo(pair.first, base::ASCIIToUTF16(pair.second),
-                               l10n_util::GetLocaleOverride());
+      autofill_profile.SetInfo(
+          pair.first, base::ASCIIToUTF16(pair.second),
+          personal_data_manager->address_data_manager().app_locale());
     }
     personal_data_manager->address_data_manager().AddProfile(autofill_profile);
     std::move(waiter).Wait();  // Wait for completion of the async operation.

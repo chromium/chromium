@@ -295,7 +295,7 @@ void AddressNormalizerImpl::StartAddressNormalization(
     const jni_zero::JavaRef<jobject>& jdelegate) {
   // TODO(crbug.com/40282123): Check if existing profile needs to be passed.
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
-      jprofile, /*existing_profile=*/nullptr, app_locale_.tag_string());
+      jprofile, /*existing_profile=*/nullptr, app_locale_);
 
   // Start the normalization.
   NormalizeAddressAsync(

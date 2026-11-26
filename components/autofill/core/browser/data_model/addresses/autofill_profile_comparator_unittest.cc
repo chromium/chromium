@@ -342,8 +342,8 @@ TEST_F(AutofillProfileComparatorTest,
   AutofillProfile profile_a =
       CreateProfileWithPhoneNumber("+49 1 415 555 0199");
   AutofillProfile profile_b = CreateProfileWithPhoneNumber("1 415 555 0199");
-  profile_a.SetInfo(ADDRESS_HOME_COUNTRY, u"US", kLocale);
-  profile_b.SetInfo(ADDRESS_HOME_COUNTRY, u"US", kLocale);
+  profile_a.SetInfo(ADDRESS_HOME_COUNTRY, u"US", kLocaleTag);
+  profile_b.SetInfo(ADDRESS_HOME_COUNTRY, u"US", kLocaleTag);
 
   PhoneNumber merged_number(&profile_b);
   EXPECT_FALSE(comparator_.MergePhoneNumbers(profile_a, profile_b).has_value());
@@ -644,9 +644,9 @@ TEST_F(AutofillProfileComparatorTest, MergePhoneNumbers_Intl) {
       CreateProfileWithPhoneNumber("+49 4921 801 856-11");
   AutofillProfile profile_c = CreateProfileWithPhoneNumber("04921 80185611");
 
-  profile_a.SetInfo(ADDRESS_HOME_COUNTRY, u"DE", kLocale);
-  profile_b.SetInfo(ADDRESS_HOME_COUNTRY, u"DE", kLocale);
-  profile_c.SetInfo(ADDRESS_HOME_COUNTRY, u"DE", kLocale);
+  profile_a.SetInfo(ADDRESS_HOME_COUNTRY, u"DE", kLocaleTag);
+  profile_b.SetInfo(ADDRESS_HOME_COUNTRY, u"DE", kLocaleTag);
+  profile_c.SetInfo(ADDRESS_HOME_COUNTRY, u"DE", kLocaleTag);
 
   // Profile A
   MergePhoneNumbersAndExpect(profile_a, profile_a, u"+49492180185611");

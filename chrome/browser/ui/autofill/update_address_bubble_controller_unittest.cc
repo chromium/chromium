@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
@@ -80,7 +81,9 @@ class UpdateAddressBubbleControllerTest : public ::testing::Test {
  protected:
   content::WebContents* web_contents() { return web_contents_.get(); }
 
-  std::string GetLocale() { return "en-US"; }
+  base::i18n::LanguageTag GetLocale() {
+    return base::i18n::GetKnownLanguageTag("en-US");
+  }
 
  private:
   MockDelegate delegate_;

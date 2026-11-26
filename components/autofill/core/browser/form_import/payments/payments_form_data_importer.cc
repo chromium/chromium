@@ -128,13 +128,13 @@ PaymentsFormDataImporter::ExtractCreditCardFromFormResult
 PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   // Populated by the lambdas below.
   ExtractCreditCardFromFormResult result;
-  const std::string_view app_locale = client_->GetAppLocale().tag_string();
+  const base::i18n::LanguageTag& app_locale = client_->GetAppLocale();
 
   // Populates `result` from `field` if it's a credit card field.
   // For example, if `field` contains credit card number, this sets the number
   // of `result.card` to the `field`'s value.
-  auto extract_if_credit_card_field = [&result,
-                                       app_locale](const AutofillField& field) {
+  auto extract_if_credit_card_field = [&result, &app_locale](
+                                          const AutofillField& field) {
     std::u16string value = [&field] {
       if (field.Type().GetCreditCardType() == FieldType::CREDIT_CARD_NUMBER ||
           field.Type().GetCreditCardType() ==
@@ -159,7 +159,8 @@ PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
       return;
     }
     const FieldType field_type = field.Type().GetCreditCardType();
-    std::u16string old_value = result.card.GetInfo(field_type, app_locale);
+    std::u16string old_value =
+        result.card.GetInfo(field_type, app_locale.tag_string());
     if (field.form_control_type() == FormControlType::kInputMonth) {
       // If |field| is an HTML5 month input, handle it as a special case.
       DCHECK_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, field_type);
@@ -189,7 +190,8 @@ PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
       }
     }
 
-    std::u16string new_value = result.card.GetInfo(field_type, app_locale);
+    std::u16string new_value =
+        result.card.GetInfo(field_type, app_locale.tag_string());
     // Skip duplicate field check if the field is a split credit card
     // number field.
     const bool skip_duplication_check =
@@ -216,7 +218,8 @@ PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
         std::erase_if(fields, [&](const AutofillField* field) {
           return std::invoke(pred, *field) ||
                  !result.card
-                      .GetInfo(field->Type().GetCreditCardType(), app_locale)
+                      .GetInfo(field->Type().GetCreditCardType(),
+                               app_locale.tag_string())
                       .empty();
         });
       };
@@ -598,7 +601,7 @@ PaymentsFormDataImporter::TryMatchingExistingServerCard(
           base::FeatureList::IsEnabled(
               features::kAutofillEnableCardholderNameFixFlow)) {
         server_card_with_cvc.SetInfo(CREDIT_CARD_NAME_FULL, extracted_name,
-                                     client_->GetAppLocale().tag_string());
+                                     client_->GetAppLocale());
       }
 
       // If `credit_card_import_type_` was local card, then a local card was

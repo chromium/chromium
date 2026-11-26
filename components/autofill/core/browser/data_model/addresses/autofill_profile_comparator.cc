@@ -165,7 +165,7 @@ std::optional<EmailInfo> AutofillProfileComparator::MergeEmailAddresses(
   }
 
   EmailInfo merged_value;
-  merged_value.SetInfo(EMAIL_ADDRESS, best, app_locale_.tag_string());
+  merged_value.SetInfo(EMAIL_ADDRESS, best, app_locale_);
   return merged_value;
 }
 
@@ -174,8 +174,7 @@ std::optional<CompanyInfo> AutofillProfileComparator::MergeCompanyNames(
     const AutofillProfile& old_profile) const {
   auto create_company = [&](std::u16string_view company_name) {
     CompanyInfo merged_company;
-    merged_company.SetInfo(COMPANY_NAME, company_name,
-                           app_locale_.tag_string());
+    merged_company.SetInfo(COMPANY_NAME, company_name, app_locale_);
     return merged_company;
   };
 

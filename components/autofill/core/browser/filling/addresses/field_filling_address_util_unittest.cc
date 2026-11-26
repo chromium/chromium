@@ -403,13 +403,15 @@ TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextArea) {
                            ADDRESS_HOME_STREET_ADDRESS);
 
   std::u16string value = u"123 Fake St.\nApt. 42";
-  profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS, value, "en-US");
+  profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS, value,
+                  base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(value, GetValueForProfile(profile, kAppLocale,
                                       ADDRESS_HOME_STREET_ADDRESS, field,
                                       /*address_normalizer=*/nullptr));
 
   std::u16string ja_value = u"桜丘町26-1\nセルリアンタワー6階";
-  profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS, ja_value, "ja-JP");
+  profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS, ja_value,
+                  base::i18n::GetKnownLanguageTag("ja-JP"));
   profile.set_language_code("ja-JP");
   EXPECT_EQ(
       ja_value,
@@ -427,14 +429,16 @@ TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextField) {
       {test::CreateFieldPrediction(ADDRESS_HOME_STREET_ADDRESS)});
 
   std::u16string value = u"123 Fake St.\nApt. 42";
-  profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS, value, "en-US");
+  profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS, value,
+                  base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(GetValueForProfile(profile, kAppLocale, ADDRESS_HOME_STREET_ADDRESS,
                                field,
                                /*address_normalizer=*/nullptr),
             u"123 Fake St., Apt. 42");
 
   std::u16string ja_value = u"桜丘町26-1\nセルリアンタワー6階";
-  profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS, ja_value, "ja-JP");
+  profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS, ja_value,
+                  base::i18n::GetKnownLanguageTag("ja-JP"));
   profile.set_language_code("ja-JP");
   EXPECT_EQ(
       GetValueForProfile(

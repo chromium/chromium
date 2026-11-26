@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check.h"
+#import "base/i18n/language_tag.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
@@ -18,13 +19,14 @@
 
 @implementation AutofillCreditCardUtil
 
-+ (autofill::CreditCard)creditCardWithHolderName:(NSString*)cardHolderName
-                                      cardNumber:(NSString*)cardNumber
-                                 expirationMonth:(NSString*)expirationMonth
-                                  expirationYear:(NSString*)expirationYear
-                                    cardNickname:(NSString*)cardNickname
-                                         cardCvc:(NSString*)cardCvc
-                                        appLocal:(const std::string&)appLocal {
++ (autofill::CreditCard)
+    creditCardWithHolderName:(NSString*)cardHolderName
+                  cardNumber:(NSString*)cardNumber
+             expirationMonth:(NSString*)expirationMonth
+              expirationYear:(NSString*)expirationYear
+                cardNickname:(NSString*)cardNickname
+                     cardCvc:(NSString*)cardCvc
+                    appLocal:(const base::i18n::LanguageTag&)appLocal {
   autofill::CreditCard creditCard = autofill::CreditCard();
   [self updateCreditCard:&creditCard
           cardHolderName:cardHolderName
@@ -42,7 +44,7 @@
            expirationYear:(NSString*)expirationYear
              cardNickname:(NSString*)cardNickname
                   cardCvc:(NSString*)cardCvc
-                 appLocal:(const std::string&)appLocal {
+                 appLocal:(const base::i18n::LanguageTag&)appLocal {
   return (
       [self isValidCreditCardNumber:cardNumber appLocal:appLocal] &&
       [self isValidCreditCardExpirationMonth:expirationMonth] &&
@@ -57,7 +59,7 @@
           expirationYear:(NSString*)expirationYear
             cardNickname:(NSString*)cardNickname
                  cardCvc:(NSString*)cardCvc
-                appLocal:(const std::string&)appLocal {
+                appLocal:(const base::i18n::LanguageTag&)appLocal {
   [self updateCreditCard:creditCard
                   cardProperty:cardHolderName
       autofillCreditCardUIType:AutofillCreditCardUIType::kFullName
@@ -87,7 +89,7 @@
 }
 
 + (BOOL)isValidCreditCardNumber:(NSString*)cardNumber
-                       appLocal:(const std::string&)appLocal {
+                       appLocal:(const base::i18n::LanguageTag&)appLocal {
   autofill::CreditCard creditCard = [self creditCardWithHolderName:nil
                                                         cardNumber:cardNumber
                                                    expirationMonth:nil
@@ -104,7 +106,8 @@
 }
 
 + (BOOL)isValidCreditCardExpirationYear:(NSString*)expirationYear
-                               appLocal:(const std::string&)appLocal {
+                               appLocal:
+                                   (const base::i18n::LanguageTag&)appLocal {
   autofill::CreditCard creditCard =
       [self creditCardWithHolderName:nil
                           cardNumber:nil
@@ -174,7 +177,7 @@
 + (void)updateCreditCard:(autofill::CreditCard*)creditCard
                 cardProperty:(NSString*)cardValue
     autofillCreditCardUIType:(AutofillCreditCardUIType)autofillCreditCardUIType
-                    appLocal:(const std::string&)appLocal {
+                    appLocal:(const base::i18n::LanguageTag&)appLocal {
   creditCard->SetInfo(
       AutofillTypeFromAutofillUITypeForCard(autofillCreditCardUIType),
       base::SysNSStringToUTF16(cardValue), appLocal);

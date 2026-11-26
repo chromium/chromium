@@ -88,14 +88,11 @@
     std::unique_ptr<user_data_importer::IOSBookmarkParser> bookmarkParser =
         std::make_unique<user_data_importer::IOSBookmarkParser>();
     _localState = localState;
-    std::string locale(GetApplicationContext()
-                           ->GetApplicationLocaleStorage()
-                           ->GetTag()
-                           .tag_string());
     _importer = std::make_unique<user_data_importer::SafariDataImporter>(
         _importClient.get(), _savedPasswordsPresenter.get(),
         paymentsDataManager, historyService, bookmarkModel, readingListModel,
-        syncService, prefService, std::move(bookmarkParser), locale);
+        syncService, prefService, std::move(bookmarkParser),
+        GetApplicationContext()->GetApplicationLocaleStorage()->GetTag());
     _faviconLoader = faviconLoader;
   }
   return self;

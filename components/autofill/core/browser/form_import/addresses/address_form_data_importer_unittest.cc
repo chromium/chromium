@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/to_vector.h"
+#include "base/i18n/language_tag.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -53,8 +54,6 @@ using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
-
-constexpr char kLocale[] = "en_US";
 
 // Define values for various default address profiles.
 constexpr char kDefaultFullName[] = "Thomas Neo Anderson";
@@ -502,7 +501,8 @@ TEST_F(AddressFormDataImporterTest, ComplementCountry_PhoneNumberParsing) {
   // The `expected_profile` can successfully parse the number, as the
   // profile's country is "DE".
   EXPECT_TRUE(expected_profile.SetInfo(
-      PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16(kNationalNumber), kLocale));
+      PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16(kNationalNumber),
+      base::i18n::GetKnownLanguageTag("en-US")));
   ExtractAddressProfilesAndVerifyExpectation(*form_structure,
                                              {expected_profile});
   histogram_tester.ExpectUniqueSample(kHistogramName, true, 1);
@@ -548,9 +548,9 @@ TEST_F(AddressFormDataImporterTest, ParseI18nPhoneNumberInCityAndNumberField) {
 
   AutofillProfile expected_profile = ConstructDefaultProfile();
   // Despite the US default profile, we expect the international number.
-  ASSERT_TRUE(expected_profile.SetInfo(PHONE_HOME_WHOLE_NUMBER,
-                                       base::UTF8ToUTF16(kInternationalNumber),
-                                       kLocale));
+  ASSERT_TRUE(expected_profile.SetInfo(
+      PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16(kInternationalNumber),
+      base::i18n::GetKnownLanguageTag("en-US")));
 
   // Create an address form with `kInternationalNumber`.
   TypeValuePairs type_value_pairs =
@@ -1547,15 +1547,17 @@ TEST_F(AddressFormDataImporterTest, MultiStepImport_Complement_ExternalUpdate) {
 
   // Update the profile's ZIP through external means.
   AutofillProfile profile = *address_data_manager().GetProfiles()[0];
-  profile.SetInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"12345", kLocale,
-                                        VerificationStatus::kObserved);
+  profile.SetInfoWithVerificationStatus(
+      ADDRESS_HOME_ZIP, u"12345", base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kObserved);
   address_data_manager().UpdateProfile(profile);
 
   // Expect that the updated profile is complemented with an email address.
   form_structure = ConstructDefaultEmailFormStructure();
   AutofillProfile expected_profile = ConstructDefaultProfile();
   expected_profile.SetInfoWithVerificationStatus(
-      ADDRESS_HOME_ZIP, u"12345", kLocale, VerificationStatus::kObserved);
+      ADDRESS_HOME_ZIP, u"12345", base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kObserved);
   ExtractAddressProfilesAndVerifyExpectation(*form_structure,
                                              {expected_profile});
 }

@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/i18n/language_tag.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -229,7 +230,8 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
 TEST_F(EditAddressProfileDialogControllerImplTest,
        ControllerGettersInitialization) {
   AutofillProfile custom_profile(AddressCountryCode("US"));
-  custom_profile.SetInfo(NAME_FULL, u"Jane Doe", "en-US");
+  custom_profile.SetInfo(NAME_FULL, u"Jane Doe",
+                         base::i18n::GetKnownLanguageTag("en-US"));
   const std::u16string custom_footer = u"Custom footer message";
 
   controller()->OfferEdit(custom_profile,

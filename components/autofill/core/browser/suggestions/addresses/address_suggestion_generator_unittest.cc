@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1830,25 +1831,34 @@ TEST_F(AddressSuggestionGeneratorTest, AlreadyAutofilledMergeValues) {
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile1.set_guid(MakeGuid(103));
   profile1.usage_history().set_use_date(base::Time::Now() - base::Days(2));
-  profile1.SetInfo(NAME_FIRST, u"Robin", "en-US");
-  profile1.SetInfo(NAME_LAST, u"Grimes", "en-US");
-  profile1.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
+  profile1.SetInfo(NAME_FIRST, u"Robin",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile1.SetInfo(NAME_LAST, u"Grimes",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile1.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   address_data().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile2.set_guid(MakeGuid(124));
   profile2.usage_history().set_use_date(base::Time::Now() - base::Days(1));
-  profile2.SetInfo(NAME_FIRST, u"Carl", "en-US");
-  profile2.SetInfo(NAME_LAST, u"Grimes", "en-US");
-  profile2.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
+  profile2.SetInfo(NAME_FIRST, u"Carl",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile2.SetInfo(NAME_LAST, u"Grimes",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile2.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   address_data().AddProfile(profile2);
 
   AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile3.set_guid(MakeGuid(126));
   profile3.usage_history().set_use_date(base::Time::Now());
-  profile3.SetInfo(NAME_FIRST, u"Aaron", "en-US");
-  profile3.SetInfo(NAME_LAST, u"Googler", "en-US");
-  profile3.SetInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheater pkwy", "en-US");
+  profile3.SetInfo(NAME_FIRST, u"Aaron",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile3.SetInfo(NAME_LAST, u"Googler",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile3.SetInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheater pkwy",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   address_data().AddProfile(profile3);
 
   // Create a form with three fields: NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1.

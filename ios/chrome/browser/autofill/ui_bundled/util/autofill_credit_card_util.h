@@ -11,18 +11,23 @@
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 @interface AutofillCreditCardUtil : NSObject
 
 // Returns a new autofill::CreditCard object with `cardHolderName`,
 // `cardNumber`, `expirationMonth`, `expirationYear`, `cardNickname`
 // `cardCvc`
-+ (autofill::CreditCard)creditCardWithHolderName:(NSString*)cardHolderName
-                                      cardNumber:(NSString*)cardNumber
-                                 expirationMonth:(NSString*)expirationMonth
-                                  expirationYear:(NSString*)expirationYear
-                                    cardNickname:(NSString*)cardNickname
-                                         cardCvc:(NSString*)cardCvc
-                                        appLocal:(const std::string&)appLocal;
++ (autofill::CreditCard)
+    creditCardWithHolderName:(NSString*)cardHolderName
+                  cardNumber:(NSString*)cardNumber
+             expirationMonth:(NSString*)expirationMonth
+              expirationYear:(NSString*)expirationYear
+                cardNickname:(NSString*)cardNickname
+                     cardCvc:(NSString*)cardCvc
+                    appLocal:(const base::i18n::LanguageTag&)appLocal;
 
 // Returns true if the card details are valid.
 + (bool)isValidCreditCard:(NSString*)cardNumber
@@ -30,7 +35,7 @@
            expirationYear:(NSString*)expirationYear
              cardNickname:(NSString*)cardNickname
                   cardCvc:(NSString*)cardCvc
-                 appLocal:(const std::string&)appLocal;
+                 appLocal:(const base::i18n::LanguageTag&)appLocal;
 
 // Updates received credit card with received data.
 + (void)updateCreditCard:(autofill::CreditCard*)creditCard
@@ -40,18 +45,19 @@
           expirationYear:(NSString*)expirationYear
             cardNickname:(NSString*)cardNickname
                  cardCvc:(NSString*)cardCvc
-                appLocal:(const std::string&)appLocal;
+                appLocal:(const base::i18n::LanguageTag&)appLocal;
 
 // Checks if a credit card has a valid `cardNumber`.
 + (BOOL)isValidCreditCardNumber:(NSString*)cardNumber
-                       appLocal:(const std::string&)appLocal;
+                       appLocal:(const base::i18n::LanguageTag&)appLocal;
 
 // Checks if a credit card has a valid `expirationMonth`.
 + (BOOL)isValidCreditCardExpirationMonth:(NSString*)expirationMonth;
 
 // Checks if a credit card has a valid `expirationYear`.
 + (BOOL)isValidCreditCardExpirationYear:(NSString*)expirationYear
-                               appLocal:(const std::string&)appLocal;
+                               appLocal:
+                                   (const base::i18n::LanguageTag&)appLocal;
 
 // Checks if a credit card has a valid `nickname`.
 + (BOOL)isValidCardNickname:(NSString*)cardNickname;

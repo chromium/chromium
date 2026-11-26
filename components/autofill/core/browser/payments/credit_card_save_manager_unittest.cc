@@ -2454,14 +2454,18 @@ TEST_F(CreditCardSaveManagerTest,
   // instead of submitting a form, because they're deduped on form submit.
   AutofillProfile profile1(AddressCountryCode("US"));
   profile1.set_guid("00000000-0000-0000-0000-000000000001");
-  profile1.SetInfo(NAME_FULL, u"Jane Doe", "en-US");
-  profile1.SetInfo(ADDRESS_HOME_ZIP, u"H3B2Y5", "en-US");
+  profile1.SetInfo(NAME_FULL, u"Jane Doe",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile1.SetInfo(ADDRESS_HOME_ZIP, u"H3B2Y5",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile1);
 
   AutofillProfile profile2(AddressCountryCode("US"));
   profile2.set_guid("00000000-0000-0000-0000-000000000002");
-  profile2.SetInfo(NAME_FULL, u"Jane Doe", "en-US");
-  profile2.SetInfo(ADDRESS_HOME_ZIP, u"h3b 2y5", "en-US");
+  profile2.SetInfo(NAME_FULL, u"Jane Doe",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile2.SetInfo(ADDRESS_HOME_ZIP, u"h3b 2y5",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile2);
 
   // Set up our credit card form data.
@@ -4416,7 +4420,8 @@ TEST_F(CreditCardSaveManagerTest, DetectAddressName) {
   // Set up a new address profile.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
+  profile.SetInfo(NAME_FULL, u"John Smith",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -4446,7 +4451,8 @@ TEST_F(CreditCardSaveManagerTest, DetectCardholderAndAddressNameIfMatching) {
   // Set up a new address profile.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
+  profile.SetInfo(NAME_FULL, u"John Smith",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -4477,7 +4483,8 @@ TEST_F(CreditCardSaveManagerTest, DetectNoUniqueNameIfNamesConflict) {
   // Set up a new address profile.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
+  profile.SetInfo(NAME_FULL, u"John Smith",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -4507,7 +4514,8 @@ TEST_F(CreditCardSaveManagerTest, DetectPostalCode) {
   // Set up a new address profile.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
+  profile.SetInfo(ADDRESS_HOME_ZIP, u"94043",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -4537,11 +4545,13 @@ TEST_F(CreditCardSaveManagerTest, DetectNoUniquePostalCodeIfZipsConflict) {
   // Set up two new address profiles with conflicting postal codes.
   AutofillProfile profile1(AddressCountryCode("US"));
   profile1.set_guid("00000000-0000-0000-0000-000000000200");
-  profile1.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
+  profile1.SetInfo(ADDRESS_HOME_ZIP, u"94043",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile1);
   AutofillProfile profile2(AddressCountryCode("US"));
   profile2.set_guid("00000000-0000-0000-0000-000000000201");
-  profile2.SetInfo(ADDRESS_HOME_ZIP, u"95051", "en-US");
+  profile2.SetInfo(ADDRESS_HOME_ZIP, u"95051",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile2);
 
   // Set up our credit card form data.
@@ -4568,7 +4578,8 @@ TEST_F(CreditCardSaveManagerTest, DetectAddressLine) {
   // Set up a new address profile.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
+  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -4598,7 +4609,8 @@ TEST_F(CreditCardSaveManagerTest, DetectLocality) {
   // Set up a new address profile.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
+  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -4627,7 +4639,8 @@ TEST_F(CreditCardSaveManagerTest, DetectAdministrativeArea) {
   // Set up a new address profile.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
+  profile.SetInfo(ADDRESS_HOME_STATE, u"California",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -4657,7 +4670,8 @@ TEST_F(CreditCardSaveManagerTest, DetectCountryCode) {
   // Set up a new address profile.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
+  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -4716,11 +4730,16 @@ TEST_F(CreditCardSaveManagerTest, DetectEverythingAtOnce) {
   // Set up a new address profile.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
-  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
-  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
-  profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
-  profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
+  profile.SetInfo(NAME_FULL, u"John Smith",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_STATE, u"California",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_ZIP, u"94043",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -4757,9 +4776,12 @@ TEST_F(CreditCardSaveManagerTest, DetectSubsetOfPossibleFields) {
   // Set up a new address profile, taking out address line and state.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
-  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
-  profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
+  profile.SetInfo(NAME_FULL, u"John Smith",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_ZIP, u"94043",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -4795,19 +4817,23 @@ TEST_F(CreditCardSaveManagerTest, DetectAddressComponentsAcrossProfiles) {
   // Set up four new address profiles, each with a different address component.
   AutofillProfile profile1(AddressCountryCode("US"));
   profile1.set_guid("00000000-0000-0000-0000-000000000200");
-  profile1.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
+  profile1.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile1);
   AutofillProfile profile2(AddressCountryCode("US"));
   profile2.set_guid("00000000-0000-0000-0000-000000000201");
-  profile2.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
+  profile2.SetInfo(ADDRESS_HOME_CITY, u"Mountain View",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile2);
   AutofillProfile profile3(AddressCountryCode("US"));
   profile3.set_guid("00000000-0000-0000-0000-000000000202");
-  profile3.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
+  profile3.SetInfo(ADDRESS_HOME_STATE, u"California",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile3);
   AutofillProfile profile4(AddressCountryCode("US"));
   profile4.set_guid("00000000-0000-0000-0000-000000000203");
-  profile4.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
+  profile4.SetInfo(ADDRESS_HOME_COUNTRY, u"US",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile4);
 
   // Set up our credit card form data.
@@ -4848,9 +4874,12 @@ TEST_F(CreditCardSaveManagerTest,
   // Set up a new address profile without a name or postal code.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
-  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
-  profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
+  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_STATE, u"California",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -4905,11 +4934,16 @@ TEST_F(
   // Set up a new address profile.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(NAME_FULL, u"John Smith", "en-US");
-  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
-  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
-  profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
-  profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
+  profile.SetInfo(NAME_FULL, u"John Smith",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_STATE, u"California",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_ZIP, u"94043",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -4947,9 +4981,12 @@ TEST_F(
   // Set up a new address profile without a name or postal code.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
-  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
-  profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
+  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_STATE, u"California",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -5160,10 +5197,14 @@ TEST_F(CreditCardSaveManagerTest,
   // Set up a new address profile without a postal code.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(NAME_FULL, u"Jane Doe", "en-US");
-  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
-  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
-  profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
+  profile.SetInfo(NAME_FULL, u"Jane Doe",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_STATE, u"California",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.
@@ -5210,19 +5251,29 @@ TEST_F(CreditCardSaveManagerTest,
   // Set up two new address profiles with conflicting postal codes.
   AutofillProfile profile1(AddressCountryCode("US"));
   profile1.set_guid("00000000-0000-0000-0000-000000000200");
-  profile1.SetInfo(NAME_FULL, u"Jane Doe", "en-US");
-  profile1.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
-  profile1.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
-  profile1.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
-  profile1.SetInfo(ADDRESS_HOME_ZIP, u"94043", "en-US");
+  profile1.SetInfo(NAME_FULL, u"Jane Doe",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile1.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile1.SetInfo(ADDRESS_HOME_CITY, u"Mountain View",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile1.SetInfo(ADDRESS_HOME_STATE, u"California",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile1.SetInfo(ADDRESS_HOME_ZIP, u"94043",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile1);
   AutofillProfile profile2(AddressCountryCode("US"));
   profile2.set_guid("00000000-0000-0000-0000-000000000201");
-  profile2.SetInfo(NAME_FULL, u"Jane Doe", "en-US");
-  profile2.SetInfo(ADDRESS_HOME_LINE1, u"234 Other Place", "en-US");
-  profile2.SetInfo(ADDRESS_HOME_CITY, u"Fake City", "en-US");
-  profile2.SetInfo(ADDRESS_HOME_STATE, u"Stateland", "en-US");
-  profile2.SetInfo(ADDRESS_HOME_ZIP, u"12345", "en-US");
+  profile2.SetInfo(NAME_FULL, u"Jane Doe",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile2.SetInfo(ADDRESS_HOME_LINE1, u"234 Other Place",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile2.SetInfo(ADDRESS_HOME_CITY, u"Fake City",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile2.SetInfo(ADDRESS_HOME_STATE, u"Stateland",
+                   base::i18n::GetKnownLanguageTag("en-US"));
+  profile2.SetInfo(ADDRESS_HOME_ZIP, u"12345",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile2);
 
   // Set up our credit card form data.
@@ -5269,9 +5320,12 @@ TEST_F(CreditCardSaveManagerTest,
   // Set up a new address profile without a name or postal code.
   AutofillProfile profile(AddressCountryCode("US"));
   profile.set_guid("00000000-0000-0000-0000-000000000200");
-  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.", "en-US");
-  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", "en-US");
-  profile.SetInfo(ADDRESS_HOME_STATE, u"California", "en-US");
+  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Testing St.",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View",
+                  base::i18n::GetKnownLanguageTag("en-US"));
+  profile.SetInfo(ADDRESS_HOME_STATE, u"California",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   personal_data().address_data_manager().AddProfile(profile);
 
   // Set up our credit card form data.

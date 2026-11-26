@@ -64,7 +64,8 @@ TEST_P(SetFullNameTest, SetFullName) {
   SCOPED_TRACE(test_case.full_name_input);
 
   NameInfo name(/*alternative_names_supported=*/false);
-  name.SetInfo(NAME_FULL, ASCIIToUTF16(test_case.full_name_input), "en-US");
+  name.SetInfo(NAME_FULL, ASCIIToUTF16(test_case.full_name_input),
+               base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_TRUE(name.FinalizeAfterImport());
   EXPECT_EQ(name.GetInfo(NAME_FIRST, "en-US"),
             ASCIIToUTF16(test_case.given_name_output));
@@ -84,7 +85,8 @@ TEST_P(SetFullAlternativeNameTest, SetFullAlternativeName) {
   SCOPED_TRACE(test_case.full_name_input);
 
   NameInfo name(/*alternative_names_supported=*/true);
-  name.SetInfo(ALTERNATIVE_FULL_NAME, test_case.full_name_input, "ja");
+  name.SetInfo(ALTERNATIVE_FULL_NAME, test_case.full_name_input,
+               base::i18n::GetKnownLanguageTag("ja"));
   EXPECT_TRUE(name.FinalizeAfterImport());
   EXPECT_EQ(name.GetInfo(ALTERNATIVE_GIVEN_NAME, "ja"),
             test_case.given_name_output);

@@ -641,10 +641,11 @@ std::u16string NameInfo::GetInfo(FieldType type,
   return GetRawInfo(type);
 }
 
-bool NameInfo::SetInfoWithVerificationStatus(FieldType type,
-                                             std::u16string_view value,
-                                             std::string_view app_locale,
-                                             VerificationStatus status) {
+bool NameInfo::SetInfoWithVerificationStatus(
+    FieldType type,
+    std::u16string_view value,
+    const base::i18n::LanguageTag& app_locale,
+    VerificationStatus status) {
   // When `kAutofillWipeInvalidNameStructure` is enabled, this logic is handled
   // in `SetRawInfoWithVerificationStatus()`.
   if (!base::FeatureList::IsEnabled(

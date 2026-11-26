@@ -238,7 +238,7 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
       serverFieldType == autofill::NAME_FULL) {
     _autofillProfile->SetInfoWithVerificationStatus(
         serverFieldType, base::SysNSStringToUTF16(value),
-        _personalDataManager->address_data_manager().app_locale().tag_string(),
+        _personalDataManager->address_data_manager().app_locale(),
         autofill::VerificationStatus::kUserVerified);
   } else {
     _autofillProfile->SetRawInfoWithVerificationStatus(

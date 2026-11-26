@@ -42,6 +42,8 @@ source_set("safari_data_importer") {
     "safari_data_importer.h",
   ]
 
+  public_deps = [ "//base/i18n:language_tag" ]
+
   deps = [
     ":bookmarks",
     ":utility",

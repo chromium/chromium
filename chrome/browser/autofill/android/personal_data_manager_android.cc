@@ -235,7 +235,7 @@ std::string PersonalDataManagerAndroid::SetProfile(
     const std::string& guid) {
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
       jprofile, address_data_manager().GetProfileByGUID(guid),
-      g_browser_process->GetApplicationLocale());
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
 
   const bool use_existing_profile = !guid.empty();
   const AutofillProfile* existing_profile = nullptr;
@@ -260,7 +260,8 @@ std::string PersonalDataManagerAndroid::SetProfileToLocal(
   const AutofillProfile* target_profile =
       address_data_manager().GetProfileByGUID(guid);
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
-      jprofile, target_profile, g_browser_process->GetApplicationLocale());
+      jprofile, target_profile,
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
 
   if (target_profile != nullptr) {
     address_data_manager().UpdateProfile(profile);
@@ -301,7 +302,7 @@ PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
 
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
       jprofile, address_data_manager().GetProfileByGUID(guid),
-      g_browser_process->GetApplicationLocale());
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
 
   return profile.ConstructInferredLabel(
       label_fields, /*num_fields_to_use=*/label_fields.size(),

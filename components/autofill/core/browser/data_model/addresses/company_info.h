@@ -37,7 +37,7 @@ class CompanyInfo : public FormGroup {
                                         VerificationStatus status) override;
   bool SetInfoWithVerificationStatus(FieldType type,
                                      std::u16string_view value,
-                                     std::string_view locale,
+                                     const base::i18n::LanguageTag& locale,
                                      VerificationStatus status) override;
 
   VerificationStatus GetVerificationStatus(FieldType type) const override;

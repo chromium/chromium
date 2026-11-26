@@ -258,10 +258,8 @@ void SaveAndFillManagerImpl::PopulateCreditCardInfo(
     CreditCard& card,
     const UserProvidedCardSaveAndFillDetails&
         user_provided_card_save_and_fill_details) {
-  const std::string_view app_locale = payments_autofill_client()
-                                          ->GetPaymentsDataManager()
-                                          .app_locale()
-                                          .tag_string();
+  const base::i18n::LanguageTag& app_locale =
+      payments_autofill_client()->GetPaymentsDataManager().app_locale();
 
   card.SetInfo(CREDIT_CARD_NUMBER,
                user_provided_card_save_and_fill_details.card_number,

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_type.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -131,7 +133,10 @@
 - (void)setValue:(NSString*)value forType:(autofill::FieldType)type {
   const std::string& locale =
       ios_web_view::ApplicationContext::GetInstance()->GetApplicationLocale();
-  _internalProfile->SetInfo(type, base::SysNSStringToUTF16(value), locale);
+  _internalProfile->SetInfo(
+      type, base::SysNSStringToUTF16(value),
+      base::i18n::GetLanguageTagFromString(locale).value_or(
+          base::i18n::GetKnownLanguageTag("und")));
 }
 
 - (NSString*)valueForType:(autofill::FieldType)type {

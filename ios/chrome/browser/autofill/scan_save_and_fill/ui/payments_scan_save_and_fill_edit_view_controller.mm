@@ -414,10 +414,8 @@ NSString* ScannedExpirationMonthForDisplay(NSString* month) {
                                    expirationYear];
   }
 
-  std::string appLocale(GetApplicationContext()
-                            ->GetApplicationLocaleStorage()
-                            ->GetTag()
-                            .tag_string());
+  const base::i18n::LanguageTag& appLocale =
+      GetApplicationContext()->GetApplicationLocaleStorage()->GetTag();
 
   base::UmaHistogramBoolean(
       "IOS.ScanCardOfferToSave.ValidNumber",

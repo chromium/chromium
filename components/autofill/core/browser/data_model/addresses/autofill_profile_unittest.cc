@@ -561,7 +561,7 @@ TEST_F(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
                            .Build());
   profiles.back()->set_language_code("ko_Latn");
   profiles.back()->SetInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Yeoksam-Dong",
-                           "en-US");
+                           base::i18n::GetKnownLanguageTag("en-US"));
   static constexpr auto kExpectedLabelsOld = std::to_array<std::u16string_view>(
       {u"", u"Park Jae-sang", u"Park Jae-sang, Gangnam Finance Center",
        u"Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro",
@@ -1269,16 +1269,19 @@ TEST_F(AutofillProfileTest, SetInfo_DynamicallyCreatingAlternativeNameTree) {
   // Initially the profile's country does not support alternative names, so
   // setting it should do nothing.
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile.SetInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
-                                        "en-US", VerificationStatus::kObserved);
+  profile.SetInfoWithVerificationStatus(
+      ALTERNATIVE_GIVEN_NAME, u"alt_name",
+      base::i18n::GetKnownLanguageTag("en-US"), VerificationStatus::kObserved);
   ASSERT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), IsEmpty());
 
   // Changing the profile's country does to one that supports alternative names
   // should result in the value being stored correctly.
-  profile.SetInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"JP", "en-US",
-                                        VerificationStatus::kObserved);
-  profile.SetInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
-                                        "en-US", VerificationStatus::kObserved);
+  profile.SetInfoWithVerificationStatus(
+      ADDRESS_HOME_COUNTRY, u"JP", base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kObserved);
+  profile.SetInfoWithVerificationStatus(
+      ALTERNATIVE_GIVEN_NAME, u"alt_name",
+      base::i18n::GetKnownLanguageTag("en-US"), VerificationStatus::kObserved);
   EXPECT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), u"alt_name");
 }
 
@@ -1286,17 +1289,20 @@ TEST_F(AutofillProfileTest, SetInfo_DynamicallyDeletingAlternativeNameTree) {
   // Initially the profile's country supports alternative names, so setting it
   // should store the value as usual.
   AutofillProfile profile(AddressCountryCode("JP"));
-  profile.SetInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
-                                        "en-US", VerificationStatus::kObserved);
+  profile.SetInfoWithVerificationStatus(
+      ALTERNATIVE_GIVEN_NAME, u"alt_name",
+      base::i18n::GetKnownLanguageTag("en-US"), VerificationStatus::kObserved);
   ASSERT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), u"alt_name");
 
   // Changing the profile's country to one that doesn't support alternative
   // names should result in the value being wiped and not set in the future.
-  profile.SetInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"XX", "en-US",
-                                        VerificationStatus::kObserved);
+  profile.SetInfoWithVerificationStatus(
+      ADDRESS_HOME_COUNTRY, u"XX", base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kObserved);
   EXPECT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), IsEmpty());
-  profile.SetInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
-                                        "en-US", VerificationStatus::kObserved);
+  profile.SetInfoWithVerificationStatus(
+      ALTERNATIVE_GIVEN_NAME, u"alt_name",
+      base::i18n::GetKnownLanguageTag("en-US"), VerificationStatus::kObserved);
   EXPECT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), IsEmpty());
 }
 
@@ -1305,14 +1311,16 @@ TEST_F(AutofillProfileTest,
   // Initially the profile's country supports alternative names, so setting it
   // should store the value as usual.
   AutofillProfile profile(AddressCountryCode("JP"));
-  profile.SetInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"alt_name",
-                                        "en-US", VerificationStatus::kObserved);
+  profile.SetInfoWithVerificationStatus(
+      ALTERNATIVE_GIVEN_NAME, u"alt_name",
+      base::i18n::GetKnownLanguageTag("en-US"), VerificationStatus::kObserved);
   ASSERT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), u"alt_name");
 
   // Setting the profile's country value to the existing one, shouldn't wipe the
   // data in the tree.
-  profile.SetInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"Japan", "en-US",
-                                        VerificationStatus::kObserved);
+  profile.SetInfoWithVerificationStatus(
+      ADDRESS_HOME_COUNTRY, u"Japan", base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kObserved);
   EXPECT_THAT(profile.GetInfo(ALTERNATIVE_GIVEN_NAME, "en-US"), u"alt_name");
 }
 
@@ -1750,26 +1758,30 @@ TEST_F(AutofillProfileTest, SetAndGetInfoWithValidationStatus) {
             VerificationStatus::kNoStatus);
 
   // Set a value with verification status and verify the results.
-  profile.SetInfoWithVerificationStatus(NAME_FULL, u"full name", "en-US",
-                                        VerificationStatus::kFormatted);
+  profile.SetInfoWithVerificationStatus(
+      NAME_FULL, u"full name", base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kFormatted);
   EXPECT_EQ(profile.GetVerificationStatus(NAME_FULL),
             VerificationStatus::kFormatted);
   EXPECT_EQ(profile.GetRawInfo(NAME_FULL), u"full name");
 
   // Settings an unknown type should result in false.
   EXPECT_FALSE(profile.SetInfoWithVerificationStatus(
-      UNKNOWN_TYPE, u"DM", "en-US", VerificationStatus::kFormatted));
+      UNKNOWN_TYPE, u"DM", base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kFormatted));
 
   // Set a value with verification status and verify the results.
   EXPECT_TRUE(profile.SetInfoWithVerificationStatus(
-      NAME_MIDDLE_INITIAL, u"MK", "en-US", VerificationStatus::kFormatted));
+      NAME_MIDDLE_INITIAL, u"MK", base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kFormatted));
   EXPECT_EQ(profile.GetVerificationStatus(NAME_MIDDLE_INITIAL),
             VerificationStatus::kFormatted);
   EXPECT_EQ(profile.GetRawInfo(NAME_MIDDLE_INITIAL), u"MK");
 
   // Set a value with verification status and verify the results.
   EXPECT_TRUE(profile.SetInfoWithVerificationStatus(
-      NAME_MIDDLE_INITIAL, u"CS", "en-US", VerificationStatus::kFormatted));
+      NAME_MIDDLE_INITIAL, u"CS", base::i18n::GetKnownLanguageTag("en-US"),
+      VerificationStatus::kFormatted));
   EXPECT_EQ(profile.GetVerificationStatus(NAME_MIDDLE_INITIAL),
             VerificationStatus::kFormatted);
   EXPECT_EQ(profile.GetRawInfo(NAME_MIDDLE_INITIAL), u"CS");
@@ -2138,7 +2150,7 @@ TEST_F(AutofillProfileTest, SetInfoPreservesLineBreaks) {
   profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS,
                   u"123 Super St.\n"
                   u"Apt. #42",
-                  "en-US");
+                  base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
             u"123 Super St.\n"
             u"Apt. #42");
@@ -2167,7 +2179,8 @@ TEST_F(AutofillProfileTest, SetRawInfoWorksForBetweenStreets) {
 
 TEST_F(AutofillProfileTest, SetInfoTrimsWhitespace) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  profile.SetInfo(EMAIL_ADDRESS, u"\tuser@example.com    ", "en-US");
+  profile.SetInfo(EMAIL_ADDRESS, u"\tuser@example.com    ",
+                  base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_EQ(profile.GetRawInfo(EMAIL_ADDRESS), u"user@example.com");
 }
 
@@ -2418,7 +2431,8 @@ TEST_F(AutofillProfileTest, JavaObjectConversion_ExistingProfile) {
 
   // Reconstruct C++ profile using `existing_profile`.
   AutofillProfile reconstructed = AutofillProfile::CreateFromJavaObject(
-      jprofile, /*existing_profile=*/&profile, "en-US");
+      jprofile, /*existing_profile=*/&profile,
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   // Using `existing_profile` preserves the usage stats of a profile.
   EXPECT_TRUE(test_api(reconstructed).EqualsIncludingUsageStats(profile));
@@ -2435,7 +2449,8 @@ TEST_F(AutofillProfileTest, JavaObjectConversion_WithoutExistingProfile) {
   ASSERT_TRUE(jprofile);
 
   const AutofillProfile reconstructed = AutofillProfile::CreateFromJavaObject(
-      jprofile, /*existing_profile=*/nullptr, "en-US");
+      jprofile, /*existing_profile=*/nullptr,
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   // Check fields individually since the `VerificationStatus` does not match,
   // e.g. `NAME_FIRST` is `kParsed` in `reconstructed` since it was deduced from
@@ -2497,8 +2512,8 @@ TEST_F(AutofillProfileTest,
       profile.GetRawInfo(EMAIL_ADDRESS),
       std::to_underlying(VerificationStatus::kNoStatus));
 
-  AutofillProfile modified_profile =
-      AutofillProfile::CreateFromJavaObject(jprofile, &profile, "en-US");
+  AutofillProfile modified_profile = AutofillProfile::CreateFromJavaObject(
+      jprofile, &profile, base::i18n::GetKnownLanguageTag("en-US"));
 
   EXPECT_EQ(modified_profile.GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
   EXPECT_EQ(modified_profile.GetVerificationStatus(ADDRESS_HOME_COUNTRY),

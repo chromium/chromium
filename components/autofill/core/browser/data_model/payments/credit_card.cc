@@ -1203,12 +1203,13 @@ std::u16string CreditCard::GetInfo(FieldType type,
   return GetRawInfo(type);
 }
 
-bool CreditCard::SetInfoWithVerificationStatus(FieldType type,
-                                               std::u16string_view value,
-                                               std::string_view app_locale,
-                                               VerificationStatus status) {
+bool CreditCard::SetInfoWithVerificationStatus(
+    FieldType type,
+    std::u16string_view value,
+    const base::i18n::LanguageTag& app_locale,
+    VerificationStatus status) {
   if (type == CREDIT_CARD_EXP_MONTH) {
-    return SetExpirationMonthFromString(value, app_locale);
+    return SetExpirationMonthFromString(value, app_locale.tag_string());
   }
 
   if (type == CREDIT_CARD_NUMBER) {

@@ -1760,7 +1760,7 @@ void CreditCardSaveManager::OnUserDidAcceptExpirationDateFixFlow(
 void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
     const payments::PaymentsAutofillClient::UserProvidedCardDetails&
         user_provided_card_details) {
-  const std::string_view app_locale = client_->GetAppLocale().tag_string();
+  const base::i18n::LanguageTag& app_locale = client_->GetAppLocale();
   // If cardholder name was explicitly requested for the user to enter/confirm,
   // replace the name on |upload_request_.card| with the entered name.  (Note
   // that it is possible a name already existed on the card if conflicting names

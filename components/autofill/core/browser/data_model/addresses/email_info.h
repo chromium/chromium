@@ -11,6 +11,10 @@
 #include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/field_types.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 enum class VerificationStatus;
@@ -38,7 +42,7 @@ class EmailInfo : public FormGroup {
                                         VerificationStatus status) override;
   bool SetInfoWithVerificationStatus(FieldType type,
                                      std::u16string_view value,
-                                     std::string_view app_locale,
+                                     const base::i18n::LanguageTag& app_locale,
                                      const VerificationStatus status) override;
   VerificationStatus GetVerificationStatus(FieldType type) const override;
 

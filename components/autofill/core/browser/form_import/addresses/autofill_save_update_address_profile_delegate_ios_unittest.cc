@@ -225,7 +225,8 @@ class DelegateStringsTest
 // Tests the message title, subtitle and action text strings.
 TEST_P(DelegateStringsTest, TestStrings) {
   AutofillProfile original_profile = test::GetFullProfile();
-  original_profile.SetInfo(NAME_FULL, u"John Doe", "en-US");
+  original_profile.SetInfo(NAME_FULL, u"John Doe",
+                           base::i18n::GetKnownLanguageTag("en-US"));
   if (is_home_work_profile()) {
     test_api(original_profile)
         .set_record_type(AutofillProfile::RecordType::kAccountHome);

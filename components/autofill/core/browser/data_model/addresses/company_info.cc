@@ -67,7 +67,7 @@ void CompanyInfo::SetRawInfoWithVerificationStatus(FieldType type,
 bool CompanyInfo::SetInfoWithVerificationStatus(
     FieldType type,
     std::u16string_view value,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const VerificationStatus status) {
   SetRawInfoWithVerificationStatus(type, value, status);
   return true;

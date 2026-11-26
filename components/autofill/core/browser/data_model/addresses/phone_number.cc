@@ -294,10 +294,11 @@ std::u16string PhoneNumber::GetInfo(FieldType type,
   }
 }
 
-bool PhoneNumber::SetInfoWithVerificationStatus(FieldType type,
-                                                std::u16string_view value,
-                                                std::string_view app_locale,
-                                                VerificationStatus status) {
+bool PhoneNumber::SetInfoWithVerificationStatus(
+    FieldType type,
+    std::u16string_view value,
+    const base::i18n::LanguageTag& app_locale,
+    VerificationStatus status) {
   SetRawInfoWithVerificationStatus(type, value, status);
 
   if (number_.empty()) {
@@ -306,7 +307,7 @@ bool PhoneNumber::SetInfoWithVerificationStatus(FieldType type,
 
   // `SetRawInfoWithVerificationStatus()` invalidated `cached_parsed_phone_` and
   // calling `UpdateCacheIfNeeded()` will thus try parsing the `number_` here.
-  UpdateCacheIfNeeded(app_locale);
+  UpdateCacheIfNeeded(app_locale.tag_string());
   // If the number invalid, setting fails and `GetRawInfo()` and `GetInfo()`
   // should return an empty string. Clear both representations of the number.
   if (!cached_parsed_phone_.IsValidNumber()) {
@@ -456,7 +457,7 @@ bool PhoneNumber::ImportPhoneNumberToProfile(
           combined_phone.ParseNumber(
               GetRegion(profile, app_locale.tag_string()))) {
     return profile.SetInfoWithVerificationStatus(
-        PHONE_HOME_WHOLE_NUMBER, *constructed_number, app_locale.tag_string(),
+        PHONE_HOME_WHOLE_NUMBER, *constructed_number, app_locale,
         VerificationStatus::kObserved);
   }
   return false;

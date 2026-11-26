@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
@@ -205,7 +206,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
 
   autofill::AutofillProfile incomplete_profile(
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
-  incomplete_profile.SetInfo(autofill::NAME_FULL, kNameFull, GetLocale());
+  incomplete_profile.SetInfo(autofill::NAME_FULL, kNameFull,
+                             base::i18n::GetKnownLanguageTag("en-US"));
   AddAutofillProfile(incomplete_profile);
 
   // Show a Payment Request.
@@ -257,12 +259,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
 
   autofill::AutofillProfile incomplete_profile(
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
-  incomplete_profile.SetInfo(autofill::NAME_FULL, kNameFull, GetLocale());
+  incomplete_profile.SetInfo(autofill::NAME_FULL, kNameFull,
+                             base::i18n::GetKnownLanguageTag("en-US"));
   AddAutofillProfile(incomplete_profile);
 
   autofill::AutofillProfile other_incomplete_profile(
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
-  other_incomplete_profile.SetInfo(autofill::NAME_FULL, u"other", GetLocale());
+  other_incomplete_profile.SetInfo(autofill::NAME_FULL, u"other",
+                                   base::i18n::GetKnownLanguageTag("en-US"));
   AddAutofillProfile(other_incomplete_profile);
 
   // Show a Payment Request.

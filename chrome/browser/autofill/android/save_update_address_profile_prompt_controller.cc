@@ -313,7 +313,8 @@ void SaveUpdateAddressProfilePromptController::OnUserEdited(
     existing_profile = &original_profile_.value();
   }
   AutofillProfile edited_profile = AutofillProfile::CreateFromJavaObject(
-      jprofile, existing_profile, g_browser_process->GetApplicationLocale());
+      jprofile, existing_profile,
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
   profile_ = edited_profile;
   RunSaveAddressProfileCallback(
       AutofillClient::AddressPromptUserDecision::kEditAccepted);

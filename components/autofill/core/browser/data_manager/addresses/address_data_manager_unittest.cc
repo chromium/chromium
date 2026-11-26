@@ -554,7 +554,8 @@ TEST_F(AddressDataManagerTest, AddProfile_CrazyCharacters) {
                       u"\u898f\u7ba1\u5c0e\u904a");
   profile1.SetRawInfo(ADDRESS_HOME_ZIP, u"YOHO_54676");
   profile1.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"861088828000");
-  profile1.SetInfo(ADDRESS_HOME_COUNTRY, u"India", "en-US");
+  profile1.SetInfo(ADDRESS_HOME_COUNTRY, u"India",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   profile1.FinalizeAfterImport();
   profiles.push_back(profile1);
 
@@ -625,7 +626,8 @@ TEST_F(AddressDataManagerTest, AddProfile_CrazyCharacters) {
   profile7.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
   profile7.SetRawInfo(ADDRESS_HOME_ZIP, u"94086");
   profile7.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"15466784565");
-  profile7.SetInfo(ADDRESS_HOME_COUNTRY, u"United States", "en-US");
+  profile7.SetInfo(ADDRESS_HOME_COUNTRY, u"United States",
+                   base::i18n::GetKnownLanguageTag("en-US"));
   profile7.FinalizeAfterImport();
   profiles.push_back(profile7);
 
@@ -650,7 +652,8 @@ TEST_F(AddressDataManagerTest, AddProfile_Invalid) {
   without_invalid.SetRawInfo(ADDRESS_HOME_CITY, u"Sunnyvale");
   without_invalid.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
   without_invalid.SetRawInfo(ADDRESS_HOME_ZIP, u"my_zip");
-  without_invalid.SetInfo(ADDRESS_HOME_COUNTRY, u"United States", "en-US");
+  without_invalid.SetInfo(ADDRESS_HOME_COUNTRY, u"United States",
+                          base::i18n::GetKnownLanguageTag("en-US"));
 
   AutofillProfile with_invalid = without_invalid;
   with_invalid.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"Invalid_Phone_Number");

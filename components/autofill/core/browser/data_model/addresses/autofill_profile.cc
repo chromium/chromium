@@ -318,7 +318,7 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject()
 AutofillProfile AutofillProfile::CreateFromJavaObject(
     const base::android::JavaRef<jobject>& jprofile,
     const AutofillProfile* existing_profile,
-    std::string_view app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   JNIEnv* env = base::android::AttachCurrentThread();
   AutofillProfile profile =
       CreateStarterProfile(jprofile, env, existing_profile);
@@ -959,8 +959,7 @@ std::u16string AutofillProfile::ConstructInferredLabel(
     if (field_value.empty()) {
       continue;
     }
-    trimmed_profile.SetInfo(included_fields[i], field_value,
-                            app_locale.tag_string());
+    trimmed_profile.SetInfo(included_fields[i], field_value, app_locale);
     --num_fields_to_use;
   }
 
@@ -1051,10 +1050,11 @@ std::u16string AutofillProfile::GetInfo(FieldType type,
   return form_group->GetInfo(type, app_locale);
 }
 
-bool AutofillProfile::SetInfoWithVerificationStatus(FieldType type,
-                                                    std::u16string_view value,
-                                                    std::string_view app_locale,
-                                                    VerificationStatus status) {
+bool AutofillProfile::SetInfoWithVerificationStatus(
+    FieldType type,
+    std::u16string_view value,
+    const base::i18n::LanguageTag& app_locale,
+    VerificationStatus status) {
   FormGroup* form_group = MutableFormGroupForType(type);
   if (!form_group) {
     return false;
