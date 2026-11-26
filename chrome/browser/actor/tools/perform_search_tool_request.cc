@@ -40,9 +40,19 @@ constexpr std::string_view kPerformSearchToolDescription =
 // Description for the `query` parameter of the `perform_search` tool.
 constexpr std::string_view kQueryParamDescription = "The terms to search for.";
 
-base::expected<GURL, mojom::ActionResultPtr> ResolveSearchUrl(
-    Profile& profile,
-    std::string_view query) {
+}  // namespace
+
+PerformSearchToolRequest::PerformSearchToolRequest(
+    ActorSurfaceHandle actor_surface_handle,
+    std::string query)
+    : TabToolRequest(actor_surface_handle), query_(std::move(query)) {}
+
+PerformSearchToolRequest::~PerformSearchToolRequest() = default;
+
+// static
+base::expected<GURL, mojom::ActionResultPtr>
+PerformSearchToolRequest::ResolveDefaultSearchUrl(Profile& profile,
+                                                  std::string_view query) {
   const std::string_view trimmed_query =
       base::TrimWhitespaceASCII(query, base::TRIM_ALL);
   if (trimmed_query.empty()) {
@@ -91,15 +101,6 @@ base::expected<GURL, mojom::ActionResultPtr> ResolveSearchUrl(
   return search_url;
 }
 
-}  // namespace
-
-PerformSearchToolRequest::PerformSearchToolRequest(
-    ActorSurfaceHandle actor_surface_handle,
-    std::string query)
-    : TabToolRequest(actor_surface_handle), query_(std::move(query)) {}
-
-PerformSearchToolRequest::~PerformSearchToolRequest() = default;
-
 // static
 std::optional<ToolDefinition> PerformSearchToolRequest::GetToolDefinition() {
   return ToolDefinitionBuilder(ToolId::kPerformSearch, kModelFacingName,
@@ -123,7 +124,7 @@ ToolRequest::CreateToolResult PerformSearchToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
   base::expected<GURL, mojom::ActionResultPtr> search_url =
-      ResolveSearchUrl(tool_delegate.GetProfile(), query_);
+      ResolveDefaultSearchUrl(tool_delegate.GetProfile(), query_);
   if (!search_url.has_value()) {
     return {/*tool=*/nullptr, std::move(search_url.error())};
   }

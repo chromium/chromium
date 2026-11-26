@@ -10,8 +10,13 @@
 #include <string>
 #include <string_view>
 
+#include "base/types/expected.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "components/actor/public/mojom/actor_types.mojom-forward.h"
+#include "url/gurl.h"
+
+class Profile;
 
 namespace actor {
 class ToolRequestVisitorFunctor;
@@ -33,6 +38,14 @@ class PerformSearchToolRequest : public TabToolRequest {
 
   // Returns the `ToolId::kPerformSearch` tool schema definition.
   static std::optional<ToolDefinition> GetToolDefinition();
+
+  // Returns the URL of the profile's default search engine's results page for
+  // `query`, or an error result if the query is blank or the default search
+  // engine can't produce a search URL. This is where `PerformSearchTool`
+  // navigates; other tools that fall back to a default search can use it too.
+  static base::expected<GURL, mojom::ActionResultPtr> ResolveDefaultSearchUrl(
+      Profile& profile,
+      std::string_view query);
 
   bool RequiresUrlCheckInCurrentTab() const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
