@@ -265,6 +265,9 @@
       <!-- Instant Extended API toolbar background is common for all platforms. -->
       <structure type="chrome_scaled_image" name="IDR_THEME_WINDOW_CONTROL_BACKGROUND" file="notused.png" />
       <structure type="chrome_scaled_image" name="IDR_TRANSLATE_BUBBLE_ICON" file="common/translate_bubble_icon.png" />
+      <if expr="not is_android and _google_chrome">
+        <structure type="chrome_scaled_image" name="IDR_TTC_FRE_BANNER" file="google_chrome/ttc_fre_banner.png" />
+      </if>
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_SCANNING" file="common/upload_scanning.png" />
         <structure type="chrome_scaled_image" name="IDR_UPLOAD_SUCCESS" file="common/upload_success.png" />

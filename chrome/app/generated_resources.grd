@@ -14441,6 +14441,26 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TTC_VOICE_PLATE_UNMUTE" desc="Tooltip label of the TTC voice plate button that unmutes the microphone in TTC." translateable="false">
         Unmute microphone
       </message>
+      <if expr="not is_android">
+        <message name="IDS_TTC_FRE_TITLE" translateable="false" desc="Placeholder title of the TTC first run dialog.">
+          Placeholder title
+        </message>
+        <message name="IDS_TTC_FRE_ACTIONS" translateable="false" desc="Placeholder text for the first item in the TTC first run dialog.">
+          Placeholder text for the first item.
+        </message>
+        <message name="IDS_TTC_FRE_DATA_SHARING" translateable="false" desc="Placeholder text for the second item in the TTC first run dialog.">
+          Placeholder text for the second item.
+        </message>
+        <message name="IDS_TTC_FRE_MICROPHONE" translateable="false" desc="Placeholder text for the third item in the TTC first run dialog.">
+          Placeholder text for the third item.
+        </message>
+        <message name="IDS_TTC_FRE_DISCLAIMER" translateable="false" desc="Placeholder disclaimer at the bottom of the TTC first run dialog, followed by a link to learn more.">
+          Placeholder disclaimer. <ph name="LEARN_MORE_LINK">$1<ex>Learn more</ex></ph>
+        </message>
+        <message name="IDS_TTC_FRE_ALLOW" translateable="false" desc="Label of the button that accepts the TTC first run dialog.">
+          Allow
+        </message>
+      </if>
 
       <!-- Web and message center notifications -->
       <message name="IDS_NOTIFICATION_BUTTON_SETTINGS" desc="Short button label to go to the notification settings panel">
