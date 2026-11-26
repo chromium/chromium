@@ -47,7 +47,9 @@ ArcShelfSpinnerItemController::~ArcShelfSpinnerItemController() {
 
 void ArcShelfSpinnerItemController::SetHost(
     const base::WeakPtr<ShelfSpinnerController>& controller) {
-  CHECK(!observed_profile_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/590272803): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!observed_profile_);
   observed_profile_ = controller->OwnerProfile();
   ArcAppListPrefs::Get(observed_profile_)->AddObserver(this);
 
