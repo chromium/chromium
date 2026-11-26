@@ -94,13 +94,14 @@ class AccountPreviewDataService : public KeyedService {
   virtual std::optional<AccountPreviewPreference>
   GetPreferredAccountForSwitching() const = 0;
 
-  // Computes the preview preference for a single account specified by
-  // `gaia_id`. If data is already cached or sign-in is disallowed/the feature
-  // is disabled/the account is invalid/tokens are unloaded/rate-limited,
-  // `callback` is invoked synchronously with the result. Otherwise, attaches to
-  // an ongoing fetch if one exists or starts a new network fetch (without
-  // computing preferred/switching accounts), and invokes `callback`
-  // asynchronously upon completion.
+  // Retrieves the preview preference for a single account specified by
+  // `gaia_id`. If data is already cached in memory or stored in prefs (as the
+  // preferred signin or switching account), or if sign-in is disallowed/the
+  // feature is disabled/the account is invalid/tokens are
+  // unloaded/rate-limited, `callback` is invoked synchronously with the result.
+  // Otherwise, attaches to an ongoing fetch if one exists or starts a new
+  // network fetch (without computing preferred/switching accounts), and invokes
+  // `callback` asynchronously upon completion.
   virtual void GetPreviewPreferenceForAccount(
       const GaiaId& gaia_id,
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>

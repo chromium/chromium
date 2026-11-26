@@ -176,6 +176,15 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void ComputeAndStoreSwitchingAccount(
       base::span<const AccountPreviewHeuristicContext> contexts);
 
+  std::optional<CoreAccountId> GetValidAccountIdForSingleRequest(
+      const GaiaId& gaia_id) const;
+  std::optional<AccountPreviewPreference>
+  FindMatchingStoredPreviewPreferenceForAccount(const GaiaId& gaia_id) const;
+  void EnqueueSinglePreviewDataRequest(
+      const CoreAccountId& account_id,
+      const GaiaId& gaia_id,
+      base::OnceCallback<void(std::optional<AccountPreviewData>)> callback);
+
   void NotifyBatchBarrierOnFetchCompleted(const GaiaId& gaia_id);
   void MaybeNotifySinglePendingRequests(const GaiaId& gaia_id);
   void ClearAllSinglePendingRequests();

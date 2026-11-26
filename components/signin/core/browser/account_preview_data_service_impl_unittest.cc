@@ -199,6 +199,24 @@ class AccountPreviewDataServiceTest : public testing::Test {
             .Build(email));
   }
 
+  // Recreates `service_` while preserving `prefs_` and marking the periodic
+  // refresh as recently completed to simulate a restart with cold in-memory
+  // caches.
+  void RecreateService() {
+    prefs_.SetTime(prefs::kAccountPreviewDataLastUpdatePref, base::Time::Now());
+    network_delay_helper_ = nullptr;
+    service_.reset();
+
+    auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
+    network_delay_helper_ = helper.get();
+    service_ = std::make_unique<AccountPreviewDataServiceImpl>(
+        identity_test_env_.signin_client(),
+        identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+        &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(),
+        std::move(helper), version_info::Channel::UNKNOWN,
+        &profile_metrics_service_);
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
@@ -2979,6 +2997,312 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_TRUE(waiter.is_all_data_available());
   EXPECT_TRUE(
       service_->GetAccountPreviewData(account1.GetGaiaId()).has_value());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewPreferenceForAccountUsesStoredPreferredAccountPref) {
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  const std::vector<DevicePreview> devices = {DevicePreview{
+      .cache_guid = "device_1",
+      .last_updated = base::Time::Now(),
+      .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE,
+      .interested_data_types = {syncer::BOOKMARKS, syncer::PASSWORDS},
+  }};
+
+  AccountInfo account;
+  {
+    AllDataAvailableWaiter initial_waiter(service_.get());
+    account = MakeRegularAccountAvailable("user@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    identity_test_env_.SetCookieAccounts(
+        {{std::string(account.GetEmail()), account.GetGaiaId()}});
+#endif
+    SimulateSuccessfulFetch(&test_url_loader_factory_,
+                            {.bookmark_count = 15, .password_count = 100},
+                            devices);
+    initial_waiter.Wait();
+  }
+
+  std::optional<AccountPreviewPreference> stored_pref =
+      service_->GetPreferredAccountForSignin();
+  ASSERT_THAT(stored_pref,
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account.GetGaiaId())));
+
+  // Simulate restart so in-memory `cached_data_` is empty while prefs persist.
+  RecreateService();
+  test_url_loader_factory_.ClearResponses();
+  EXPECT_CALL(*mock_network_context_, PreconnectSockets).Times(0);
+
+  ASSERT_FALSE(
+      service_->GetAccountPreviewData(account.GetGaiaId()).has_value());
+  ASSERT_FALSE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+
+  base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
+  service_->GetPreviewPreferenceForAccount(account.GetGaiaId(),
+                                           future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Take(), stored_pref);
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_FALSE(
+      service_->GetAccountPreviewData(account.GetGaiaId()).has_value());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewPreferenceForAccountUsesStoredSwitchingAccountPref) {
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  const std::vector<DevicePreview> other_devices = {DevicePreview{
+      .cache_guid = "other_device",
+      .last_updated = base::Time::Now(),
+      .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE,
+      .interested_data_types = {syncer::PASSWORDS},
+  }};
+
+  AccountInfo primary;
+  AccountInfo secondary;
+  {
+    AllDataAvailableWaiter initial_waiter(service_.get());
+    primary = MakeRegularPrimaryAccountAvailable("primary@gmail.com",
+                                                 ConsentLevel::kSignin);
+    secondary = MakeRegularAccountAvailable("secondary@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    identity_test_env_.SetCookieAccounts(
+        {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+         {std::string(secondary.GetEmail()), secondary.GetGaiaId()}});
+#endif
+    SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 0});
+    SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 100},
+                            other_devices);
+    initial_waiter.Wait();
+  }
+
+  std::optional<AccountPreviewPreference> stored_switching_pref =
+      service_->GetPreferredAccountForSwitching();
+  ASSERT_THAT(stored_switching_pref,
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, secondary.GetGaiaId())));
+
+  // Simulate restart and clear `kAccountPreviewPreference` to verify lookup
+  // falls back to `kAccountPreviewSwitchingPreference`.
+  RecreateService();
+  prefs_.ClearPref(prefs::kAccountPreviewPreference);
+  test_url_loader_factory_.ClearResponses();
+
+  ASSERT_EQ(service_->GetPreferredAccountForSignin(), std::nullopt);
+  ASSERT_EQ(service_->GetPreferredAccountForSwitching(), stored_switching_pref);
+  ASSERT_FALSE(
+      service_->GetAccountPreviewData(secondary.GetGaiaId()).has_value());
+
+  {
+    EXPECT_CALL(*mock_network_context_, PreconnectSockets).Times(0);
+    base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
+    service_->GetPreviewPreferenceForAccount(secondary.GetGaiaId(),
+                                             future.GetCallback());
+    EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Take(), stored_switching_pref);
+    EXPECT_FALSE(service_->HasActiveFetcherForTesting(secondary.GetGaiaId()));
+    EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+    testing::Mock::VerifyAndClearExpectations(mock_network_context_);
+  }
+
+  // When `kEnableAccountPreviewSwitchingAccount` is disabled, stored switching
+  // prefs are ignored and a network fetch is triggered instead.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{switches::kEnableAccountPreviewPreferredAccount},
+      /*disabled_features=*/{switches::kEnableAccountPreviewSwitchingAccount});
+
+  base::test::TestFuture<std::optional<AccountPreviewPreference>> fetch_future;
+  service_->GetPreviewPreferenceForAccount(secondary.GetGaiaId(),
+                                           fetch_future.GetCallback());
+  EXPECT_FALSE(fetch_future.IsReady());
+  EXPECT_TRUE(service_->HasActiveFetcherForTesting(secondary.GetGaiaId()));
+
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.bookmark_count = 20});
+  EXPECT_THAT(fetch_future.Take(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, secondary.GetGaiaId())));
+  EXPECT_TRUE(
+      service_->GetAccountPreviewData(secondary.GetGaiaId()).has_value());
+}
+
+TEST_F(
+    AccountPreviewDataServiceTest,
+    GetPreviewPreferenceForAccountInMemoryCacheTakesPrecedenceOverStoredPref) {
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AccountInfo account;
+  {
+    AllDataAvailableWaiter initial_waiter(service_.get());
+    account = MakeRegularAccountAvailable("user@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    identity_test_env_.SetCookieAccounts(
+        {{std::string(account.GetEmail()), account.GetGaiaId()}});
+#endif
+    SimulateSuccessfulFetch(&test_url_loader_factory_, {.bookmark_count = 100});
+    initial_waiter.Wait();
+  }
+
+  std::optional<AccountPreviewPreference> stored_pref =
+      service_->GetPreferredAccountForSignin();
+  ASSERT_TRUE(stored_pref.has_value());
+  ASSERT_THAT(stored_pref->preferred_data_types,
+              testing::ElementsAre(testing::Field(
+                  &PreferredDataTypeInfo::data_type, syncer::BOOKMARKS)));
+  EXPECT_EQ(stored_pref->other_device_info.form_factor,
+            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_UNSPECIFIED);
+
+  // Restart clears `cached_data_` while `stored_pref` remains in prefs.
+  RecreateService();
+  test_url_loader_factory_.ClearResponses();
+
+  // Populate `cached_data_` via `GetPreviewDataForAccount()` with newer data
+  // without recomputing `kAccountPreviewPreference`.
+  const std::vector<DevicePreview> newer_devices = {DevicePreview{
+      .cache_guid = "tablet_device",
+      .last_updated = base::Time::Now(),
+      .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET,
+      .interested_data_types = {syncer::PASSWORDS},
+  }};
+  base::test::TestFuture<std::optional<AccountPreviewData>> data_future;
+  service_->GetPreviewDataForAccount(account.GetGaiaId(),
+                                     data_future.GetCallback());
+  SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 200},
+                          newer_devices);
+  ASSERT_TRUE(data_future.Take().has_value());
+  ASSERT_EQ(service_->GetPreferredAccountForSignin(), stored_pref);
+
+  // `GetPreviewPreferenceForAccount()` should reflect the fresher in-memory
+  // cache rather than the older stored pref.
+  base::test::TestFuture<std::optional<AccountPreviewPreference>> pref_future;
+  service_->GetPreviewPreferenceForAccount(account.GetGaiaId(),
+                                           pref_future.GetCallback());
+  EXPECT_TRUE(pref_future.IsReady());
+  std::optional<AccountPreviewPreference> result = pref_future.Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_NE(result, stored_pref);
+  EXPECT_THAT(result->preferred_data_types,
+              testing::ElementsAre(testing::Field(
+                  &PreferredDataTypeInfo::data_type, syncer::PASSWORDS)));
+  EXPECT_EQ(result->other_device_info.form_factor,
+            sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewPreferenceForAccountStoredPrefRespectsGuardsAndRateLimit) {
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  AccountInfo account;
+  {
+    AllDataAvailableWaiter initial_waiter(service_.get());
+    account = MakeRegularAccountAvailable("user@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    identity_test_env_.SetCookieAccounts(
+        {{std::string(account.GetEmail()), account.GetGaiaId()}});
+#endif
+    SimulateSuccessfulFetch(&test_url_loader_factory_, {.bookmark_count = 50});
+    initial_waiter.Wait();
+  }
+  std::optional<AccountPreviewPreference> stored_pref =
+      service_->GetPreferredAccountForSignin();
+  ASSERT_THAT(stored_pref,
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account.GetGaiaId())));
+
+  // Add a second account whose fetch fails so it has no cached data or stored
+  // pref.
+  MockFailedStatsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  AccountInfo uncached_account;
+  {
+    AllDataAvailableWaiter waiter(service_.get());
+    uncached_account = MakeRegularAccountAvailable("uncached@gmail.com");
+    waiter.Wait();
+  }
+
+  // Activate 429 rate limit and restart with cold in-memory cache.
+  prefs_.SetTime(prefs::kAccountPreviewDataLast429TimePref, base::Time::Now());
+  RecreateService();
+  test_url_loader_factory_.ClearResponses();
+  ASSERT_TRUE(service_->IsRateLimitedForTesting());
+
+  // Stored pref is still served synchronously while rate-limited without
+  // recording `SingleRequestRateLimited`.
+  base::HistogramTester histograms;
+  {
+    base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
+    service_->GetPreviewPreferenceForAccount(account.GetGaiaId(),
+                                             future.GetCallback());
+    EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Take(), stored_pref);
+    histograms.ExpectTotalCount(
+        "Signin.AccountPreview.SingleRequestRateLimited", 0);
+  }
+
+  // Account without stored pref is blocked by rate limiting.
+  {
+    base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
+    service_->GetPreviewPreferenceForAccount(uncached_account.GetGaiaId(),
+                                             future.GetCallback());
+    EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Take(), std::nullopt);
+    histograms.ExpectBucketCount(
+        "Signin.AccountPreview.SingleRequestRateLimited", true, 1);
+  }
+
+  // Account with a persistent refresh token error does not receive a stale
+  // stored pref.
+  {
+    AccountInfo error_account = identity_test_env_.MakeAccountAvailable(
+        identity_test_env_.CreateAccountAvailabilityOptionsBuilder()
+            .WithoutRefreshToken()
+            .Build("error@gmail.com"));
+    identity_test_env_.SetInvalidRefreshTokenForAccount(
+        error_account.GetAccountId());
+    base::DictValue dict;
+    dict.Set("gaia_id", error_account.GetGaiaId().ToString());
+    prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
+
+    base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
+    service_->GetPreviewPreferenceForAccount(error_account.GetGaiaId(),
+                                             future.GetCallback());
+    EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Take(), std::nullopt);
+
+    // Restore `account` in `kAccountPreviewPreference` for remaining checks.
+    base::DictValue valid_dict;
+    valid_dict.Set("gaia_id", account.GetGaiaId().ToString());
+    prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(valid_dict));
+  }
+
+  // When refresh tokens are not loaded, stored prefs are not served.
+  {
+    identity_test_env_.ResetToAccountsNotYetLoadedFromDiskState();
+    base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
+    service_->GetPreviewPreferenceForAccount(account.GetGaiaId(),
+                                             future.GetCallback());
+    EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Take(), std::nullopt);
+  }
+
+  // When sign-in is disallowed, stored prefs are not served.
+  {
+    prefs_.SetBoolean(prefs::kSigninAllowed, false);
+    base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
+    service_->GetPreviewPreferenceForAccount(account.GetGaiaId(),
+                                             future.GetCallback());
+    EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Take(), std::nullopt);
+  }
 }
 
 TEST_F(AccountPreviewDataServiceTest,

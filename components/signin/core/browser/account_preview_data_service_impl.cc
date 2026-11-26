@@ -324,13 +324,33 @@ void AccountPreviewDataServiceImpl::GetPreviewPreferenceForAccount(
     const GaiaId& gaia_id,
     base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
         callback) {
-  if (!IsPreferredAccountSelectionEnabled()) {
+  if (!IsPreferredAccountSelectionEnabled() ||
+      !profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
     std::move(callback).Run(std::nullopt);
     return;
   }
 
-  GetPreviewDataForAccount(
-      gaia_id,
+  if (auto it = cached_data_.find(gaia_id); it != cached_data_.end()) {
+    std::move(callback).Run(
+        ComputeAccountPreviewPreference(gaia_id, it->second));
+    return;
+  }
+
+  std::optional<CoreAccountId> account_id =
+      GetValidAccountIdForSingleRequest(gaia_id);
+  if (!account_id.has_value()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  if (std::optional<AccountPreviewPreference> preference =
+          FindMatchingStoredPreviewPreferenceForAccount(gaia_id)) {
+    std::move(callback).Run(std::move(preference));
+    return;
+  }
+
+  EnqueueSinglePreviewDataRequest(
+      *account_id, gaia_id,
       base::BindOnce(
           [](const GaiaId& gaia_id, std::optional<AccountPreviewData> data)
               -> std::optional<AccountPreviewPreference> {
@@ -351,15 +371,26 @@ void AccountPreviewDataServiceImpl::GetPreviewDataForAccount(
     return;
   }
 
-  auto it = cached_data_.find(gaia_id);
-  if (it != cached_data_.end()) {
+  if (auto it = cached_data_.find(gaia_id); it != cached_data_.end()) {
     std::move(callback).Run(it->second);
     return;
   }
 
-  if (!identity_manager_ || !identity_manager_->AreRefreshTokensLoaded()) {
+  std::optional<CoreAccountId> account_id =
+      GetValidAccountIdForSingleRequest(gaia_id);
+  if (!account_id.has_value()) {
     std::move(callback).Run(std::nullopt);
     return;
+  }
+
+  EnqueueSinglePreviewDataRequest(*account_id, gaia_id, std::move(callback));
+}
+
+std::optional<CoreAccountId>
+AccountPreviewDataServiceImpl::GetValidAccountIdForSingleRequest(
+    const GaiaId& gaia_id) const {
+  if (!identity_manager_ || !identity_manager_->AreRefreshTokensLoaded()) {
+    return std::nullopt;
   }
 
   AccountInfo account_info =
@@ -369,10 +400,37 @@ void AccountPreviewDataServiceImpl::GetPreviewDataForAccount(
           account_info.GetAccountId()) ||
       identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
           account_info.GetAccountId())) {
-    std::move(callback).Run(std::nullopt);
-    return;
+    return std::nullopt;
   }
 
+  return account_info.GetAccountId();
+}
+
+std::optional<AccountPreviewDataService::AccountPreviewPreference>
+AccountPreviewDataServiceImpl::FindMatchingStoredPreviewPreferenceForAccount(
+    const GaiaId& gaia_id) const {
+  if (std::optional<AccountPreviewPreference> preferred =
+          ReadPreferredAccountFromPrefs();
+      preferred.has_value() && preferred->gaia_id == gaia_id) {
+    return preferred;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewSwitchingAccount)) {
+    if (std::optional<AccountPreviewPreference> switching =
+            ReadSwitchingAccountFromPrefs();
+        switching.has_value() && switching->gaia_id == gaia_id) {
+      return switching;
+    }
+  }
+
+  return std::nullopt;
+}
+
+void AccountPreviewDataServiceImpl::EnqueueSinglePreviewDataRequest(
+    const CoreAccountId& account_id,
+    const GaiaId& gaia_id,
+    base::OnceCallback<void(std::optional<AccountPreviewData>)> callback) {
   if (IsRateLimited()) {
     base::UmaHistogramBoolean("Signin.AccountPreview.SingleRequestRateLimited",
                               true);
@@ -380,7 +438,7 @@ void AccountPreviewDataServiceImpl::GetPreviewDataForAccount(
     return;
   }
 
-  account_id_to_gaia_id_[account_info.GetAccountId()] = gaia_id;
+  account_id_to_gaia_id_[account_id] = gaia_id;
   single_pending_requests_[gaia_id].push_back(std::move(callback));
 
   if (!active_fetchers_.contains(gaia_id)) {
