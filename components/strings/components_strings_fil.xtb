@@ -1560,7 +1560,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para magpatakbo ng pag-check sa kaligtasan sa mga setting ng Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Hindi ma-save ang IBAN na ito sa Google Wallet. Na-save lang ito sa Chrome sa device na ito. Tatanungin ka ulit ng Chrome sa susunod na pagkakataong gamitin mo ang IBAN na ito.</translation>
-<translation id="3621401353678567613">Para makatanggap ng mga alerto sa pagbaba ng presyo para sa mga produktong sinusubaybayan mo, i-on ang mga notification sa mga setting.</translation>
 <translation id="362276910939193118">Ipakita ang Buong History</translation>
 <translation id="3623041590998910684">Para gamitin ang iyong camera, bigyan ng access ang Chrome sa <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Mga Label (Matte)</translation>
@@ -2270,6 +2269,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4775456404799771098">Permanenteng mawawala sa iyo ang file</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Na-block ang pop-up}one{# pop-up ang na-block}other{# na pop-up ang na-block}}</translation>
 <translation id="4780366598804516005">Mailbox 1</translation>
+<translation id="4784349455504343791">Gustong gamitin ng <ph name="WEBSITE_ORIGIN" /> ang personal na impormasyon mula sa iyong digital wallet.</translation>
 <translation id="4785273477715803444">I-filter ang mga log</translation>
 <translation id="4785376858512657294">Pamahalaan ang Google Account</translation>
 <translation id="4785689107224900852">Lumipat sa tab na ito</translation>
@@ -2889,7 +2889,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5787146423283493983">Pangunahing Kasunduan</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Made-delete ang paraan ng pagbabayad na ito sa device na ito</translation>
-<translation id="5794065675298686371">I-on ang mga notification sa pagsubaybay sa presyo</translation>
 <translation id="5794093550048860249">Tracking number</translation>
 <translation id="5796050750059455142">I-on ang “<ph name="BEGIN_LINK" />Mga smart feature sa iba pang produkto ng Google<ph name="LINK_END" />”</translation>
 <translation id="5797916798049571144">Naka-save ito kasama ng impormasyon ng card mo para awtomatiko itong mapunan sa pag-checkout</translation>
@@ -4865,6 +4864,7 @@ Mga karagdagang detalye:
 <translation id="9155211586651734179">Naka-attach ang mga peripheral ng audio</translation>
 <translation id="9157595877708044936">Nagse-set up...</translation>
 <translation id="9158491153040481956">Nagpalit ka kamakailan ng password na nakita sa isang pampublikong breach sa data. Kung magkakaproblema, matutulungan ka ng Password Manager na mag-sign in.</translation>
+<translation id="9161172953291434881">Pinagkakatiwalaan mo ba ang site na ito sa iyong data?</translation>
 <translation id="9161794544616754735">{0,plural, =1{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_NAME" />}one{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_COUNT" /> file}other{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_COUNT" /> na file}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Para lumabas sa full screen, pindutin ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Mensahe sa Slack</translation>

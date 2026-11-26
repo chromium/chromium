@@ -981,7 +981,6 @@
 <translation id="4777866634702576038">要删除标签页分组吗？</translation>
 <translation id="4778653490315793244">尚无可显示的内容</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" />是默认搜索引擎</translation>
-<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> 想使用您数字钱包中的个人信息。</translation>
 <translation id="4787736314074622408">是否要删除 <ph name="ITEM_TITLE" />？</translation>
 <translation id="4793679854893018356">了解 Chrome 如何保障您的安全</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -2165,7 +2164,6 @@
 <translation id="9153056436992761257">选择您偏好的位置</translation>
 <translation id="9157212632995922070">选择一个账号以继续访问 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">仅分享内容</translation>
-<translation id="9161172953291434881">您是否信任此网站处理您的数据？</translation>
 <translation id="916607977885256133">画中画</translation>
 <translation id="9168847423516963845">将地址栏移到底部</translation>
 <translation id="9169507124922466868">导航历史记录在下半屏中显示</translation>

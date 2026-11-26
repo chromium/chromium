@@ -1560,7 +1560,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定で安全チェックを実行できます</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />、<ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">この IBAN を Google ウォレットに保存できませんでした。代わりにこのデバイスの Chrome に保存されました。次回この IBAN を使用するときに再度確認が行われます。</translation>
-<translation id="3621401353678567613">追跡している商品の値下げアラートを受け取るには、設定で通知をオンにしてください。</translation>
 <translation id="362276910939193118">全履歴を表示</translation>
 <translation id="3623041590998910684">カメラを使用するには、<ph name="LINK" /> で Chrome にアクセスを許可してください。</translation>
 <translation id="3624292976554877583">ラベル（非光沢）</translation>
@@ -2270,6 +2269,7 @@
 <translation id="4775456404799771098">ファイルは完全に失われます</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ポップアップがブロックされました}other{# 件のポップアップがブロックされました}}</translation>
 <translation id="4780366598804516005">用紙受け 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> は、デジタル ウォレットの個人情報の使用を求めています。</translation>
 <translation id="4785273477715803444">ログのフィルタ</translation>
 <translation id="4785376858512657294">Google アカウントを管理</translation>
 <translation id="4785689107224900852">このタブに切り替え</translation>
@@ -2889,7 +2889,6 @@
 <translation id="5787146423283493983">キー合意</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">このお支払い方法はこのデバイスから削除されます</translation>
-<translation id="5794065675298686371">価格トラッキングの通知をオンにする</translation>
 <translation id="5794093550048860249">追跡番号</translation>
 <translation id="5796050750059455142">[<ph name="BEGIN_LINK" />他の Google サービスのスマート機能<ph name="LINK_END" />] をオンにします</translation>
 <translation id="5797916798049571144">カード情報とともに保存され、購入手続き時に自動入力されます</translation>
@@ -4865,6 +4864,7 @@
 <translation id="9155211586651734179">接続されたオーディオ周辺機器</translation>
 <translation id="9157595877708044936">セットアップ中...</translation>
 <translation id="9158491153040481956">一般に報告されているデータ侵害で検出されたパスワードを最近変更しました。問題が発生した場合は、パスワード マネージャーを使用してログインできます。</translation>
+<translation id="9161172953291434881">このサイトを信頼してデータの使用を許可しますか？</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> にはデリケートなコンテンツが含まれている可能性があります}other{<ph name="FILE_COUNT" /> 個のファイルにデリケートなコンテンツが含まれている可能性があります}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – 全画面表示を終了するには、|<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="9163287596625611517">Slack メッセージ</translation>

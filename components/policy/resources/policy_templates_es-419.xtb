@@ -974,6 +974,11 @@ La "Entrada del usuario" se define con las APIs del sistema operativo y comprend
       Si estableces la política como falsa, los usuarios no podrán agregar ni configurar sus propias impresoras. Tampoco podrán imprimir documentos con las impresoras configuradas previamente.
       </translation>
 <translation id="1613327425322354195">Informar el estado de seguridad del dispositivo</translation>
+<translation id="1613552398317518165">Esta política dejó de estar disponible y no tiene efecto. Las solicitudes de búsqueda predeterminadas siempre se envían con el método GET, por lo que nunca se aplican los parámetros que especifica esta política. En su lugar, usa <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> para configurar la URL de búsqueda, incluido el marcador de posición <ph name="SEARCH_TERM_MARKER" />.
+
+Los parámetros POST solo se admiten para la búsqueda con imágenes, a través de <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Anteriormente, si se activaba <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, la finalidad de establecer <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> era especificar los parámetros cuando se buscaba una URL con POST, como pares nombre-valor separados por comas.</translation>
 <translation id="1615221548356595305">Permitir la integración de conexiones HTTP/2 para estos hosts incluso cuando se usan certificados de cliente</translation>
 <translation id="1616280227447957376">Permite continuar desde la página de advertencia de SSL en orígenes específicos</translation>
 <translation id="1617235075406854669">Habilita la eliminación del historial de descargas y del navegador.</translation>
@@ -4792,15 +4797,6 @@ Ten en cuenta que esta política no tiene efecto si la política <ph name="ENTER
       Cada entrada de la lista contiene un diccionario que debe incluir el ID de extensión en el campo "extension-id" y su URL de actualización en el campo "update-url".</translation>
 <translation id="3869180930654347954">Inhabilitar First-Party Sets para todos los usuarios afectados</translation>
 <translation id="3869566220234507038">Cargar siempre el navegador <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /></translation>
-<translation id="3869959969423392506">La política controla si las apps web aisladas (IWA) podrán agregar apps secundarias de forma predeterminada.
-
-Si estableces la política en 1, los orígenes de IWA podrán agregar apps secundarias y omitir los requisitos de gestos del usuario o confirmación del usuario.
-
-Si estableces la política en 2, se impedirá que los orígenes de IWA agreguen apps secundarias.
-
-Si estableces la política en 3 o no la estableces, los orígenes de apps web aisladas podrán agregar apps secundarias con la confirmación del usuario.
-
-Esta política puede anularse para orígenes específicos de apps web aisladas a través de las políticas <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> y <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" />.</translation>
 <translation id="3870035799352372700">Bloquear el acceso de Asistente de Google al contexto en pantalla durante las interacciones</translation>
 <translation id="3870059789954671543">Habilita la función de accesibilidad para destacar el cursor del teclado en la pantalla de acceso.
 
@@ -6214,6 +6210,11 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="DE
 <translation id="4725801978265372736">Solicitar que el nombre del usuario local y el propietario del host de acceso remoto coincidan</translation>
 <translation id="4726228171190098009">No permitir que el dispositivo solicite usar powerwash</translation>
 <translation id="4726895359147376813">Asigna desde IDs persistentes hasta opciones de configuración de VM</translation>
+<translation id="473189306848333308">Esta política dejó de estar disponible y no tiene efecto. Las solicitudes de sugerencias siempre se envían con el método GET, por lo que nunca se aplican los parámetros que especifica esta política. En su lugar, usa <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> para configurar la URL de sugerencias, incluido el marcador de posición <ph name="SEARCH_TERM_MARKER" />.
+
+Los parámetros POST solo se admiten para la búsqueda con imágenes, a través de <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Anteriormente, si se activaba <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, la finalidad de establecer <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> era especificar los parámetros durante la búsqueda de sugerencias con POST, como pares nombre-valor separados por comas.</translation>
 <translation id="4732069502693984686">Habilitar la captura de pantalla automática de varias pantallas</translation>
 <translation id="4733471537137819387">Políticas relacionadas con la autenticación de HTTP integrada</translation>
 <translation id="4737832614429402441">Usar el valor predeterminado para el acuerdo de claves poscuántico en TLS</translation>

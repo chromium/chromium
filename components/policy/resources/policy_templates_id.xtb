@@ -4808,15 +4808,6 @@ Perhatikan bahwa kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="E
       Setiap entri listingan berisi kamus yang harus menyertakan ID ekstensi dalam bidang 'extension-id', dan URL pembaruannya dalam bidang 'update-url'.</translation>
 <translation id="3869180930654347954">Nonaktifkan Set Pihak Pertama untuk semua pengguna yang terpengaruh</translation>
 <translation id="3869566220234507038">Selalu muat browser <ph name="LACROS_NAME" /> <ph name="LACROS_ROOTFS_NAME" /></translation>
-<translation id="3869959969423392506">Kebijakan ini mengontrol apakah Aplikasi Web Terisolasi (IWA) secara default dapat menambahkan Sub Apps.
-
-Jika kebijakan ini disetel ke 1, origin IWA dapat menambahkan Sub Apps dan mengabaikan persyaratan gestur pengguna atau konfirmasi pengguna.
-
-Jika kebijakan ini disetel ke 2, origin IWA tidak akan dapat menambahkan Sub Apps.
-
-Jika kebijakan ini disetel ke 3 atau tidak disetel, origin Aplikasi Web Terisolasi akan dapat menambahkan Sub Apps setelah pengguna mengonfirmasi.
-
-Kebijakan ini dapat diganti untuk origin Aplikasi Web Terisolasi tertentu menggunakan kebijakan <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> dan <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" />.</translation>
 <translation id="3870035799352372700">Blokir Asisten Google agar tidak mengakses konteks layar selama interaksi</translation>
 <translation id="3870059789954671543">Mengaktifkan fitur aksesibilitas penyorotan fokus keyboard di layar login.
 

@@ -1556,7 +1556,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">இந்த IBANனை Google Walletடில் சேமிக்க முடியவில்லை. அதற்குப் பதிலாக, இந்தச் சாதனத்தில் உள்ள Chrome பிரவுசரில் சேமிக்கப்பட்டது. இந்த IBANனை அடுத்த முறை பயன்படுத்தும்போது Chrome உங்களிடம் மீண்டும் கேட்கும்.</translation>
-<translation id="3621401353678567613">நீங்கள் கண்காணிக்கும் தயாரிப்புகளின் விலை குறைவது தொடர்பான விழிப்பூட்டல்களைப் பெற அமைப்புகளில் அறிவிப்புகளை இயக்கவும்.</translation>
 <translation id="362276910939193118">முழு வரலாற்றையும் காண்பி</translation>
 <translation id="3623041590998910684">கேமராவைப் பயன்படுத்த, Chromeமிற்கு <ph name="LINK" /> இல் அணுகலை வழங்குங்கள்.</translation>
 <translation id="3624292976554877583">மேட் லேபிள்கள்</translation>
@@ -2266,6 +2265,7 @@
 <translation id="4775456404799771098">ஃபைலை நிரந்தரமாக இழந்துவிடுவீர்கள்</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{பாப்-அப் தடுக்கப்பட்டது}other{# பாப்-அப்கள் தடுக்கப்பட்டன}}</translation>
 <translation id="4780366598804516005">அஞ்சல் பெட்டி 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> உங்கள் டிஜிட்டல் வாலட்டில் உள்ள தனிப்பட்ட தகவல்களைப் பயன்படுத்த விரும்புகிறது.</translation>
 <translation id="4785273477715803444">பதிவுகளை ஃபில்டர் செய்யுங்கள்</translation>
 <translation id="4785376858512657294">Google கணக்கை நிர்வகியுங்கள்</translation>
 <translation id="4785689107224900852">இந்தத் தாவலுக்கு மாற்றும்</translation>
@@ -2885,7 +2885,6 @@
 <translation id="5787146423283493983">விசை ஒப்பந்தம்</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">இந்தச் சாதனத்திலிருந்து இந்தப் பேமெண்ட் முறை நீக்கப்படும்</translation>
-<translation id="5794065675298686371">விலைக் கண்காணிப்பு அறிவிப்புகளை இயக்குதல்</translation>
 <translation id="5794093550048860249">கண்காணிப்பு எண்</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />பிற Google தயாரிப்புகளில் உள்ள ஸ்மார்ட் அம்சங்கள்<ph name="LINK_END" />” என்பதை ஆன் செய்யுங்கள்</translation>
 <translation id="5797916798049571144">இது உங்கள் கார்டு தகவல்களுடன் சேமிக்கப்பட்டுள்ளதால் செக்-அவுட்டின்போது தானாகவே நிரப்பப்படும்</translation>
@@ -4861,6 +4860,7 @@
 <translation id="9155211586651734179">இணைக்கப்பட்டுள்ள ஆடியோ சாதனங்கள்</translation>
 <translation id="9157595877708044936">அமைக்கிறது...</translation>
 <translation id="9158491153040481956">நீங்கள் சமீபத்தில் மாற்றிய கடவுச்சொல் பொதுவான தரவு மீறலுக்கு உட்பட்டிருப்பதாகக் கண்டறியப்பட்டுள்ளது. சிக்கல் இருந்தால், Password Manager உதவியுடன் நீங்கள் உள்நுழையலாம்.</translation>
+<translation id="9161172953291434881">உங்கள் தரவைப் பகிர்ந்துகொள்ள இந்தத் தளத்தை நம்புகிறீர்களா?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ஃபைலில் பாதுகாக்கவேண்டிய உள்ளடக்கம் இருக்கக்கூடும்}other{<ph name="FILE_COUNT" /> ஃபைல்களில் பாதுகாக்கவேண்டிய உள்ளடக்கம் இருக்கக்கூடும்}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – முழுத்திரையில் இருந்து வெளியேற, |<ph name="ACCELERATOR" />| பட்டனை அழுத்தவும்</translation>
 <translation id="9163287596625611517">Slack மெசேஜ்</translation>

@@ -1558,7 +1558,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ସେଟିଂସରେ ଏକ ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାଇବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">ଏହି IBANକୁ Google Walletରେ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଏହାକୁ ଏହି ଡିଭାଇସରେ Chromeରେ ସେଭ କରାଯାଇଛି। ଆଗାମୀ ଥର ଆପଣ ଏହି IBAN ବ୍ୟବହାର କଲେ Chrome ଆପଣଙ୍କୁ ପୁଣି ପଚାରିବ।</translation>
-<translation id="3621401353678567613">ଆପଣ ଟ୍ରାକ କରୁଥିବା ପ୍ରଡକ୍ଟଗୁଡ଼ିକ ପାଇଁ ମୂଲ୍ୟ ହ୍ରାସ ଆଲର୍ଟ ପାଇବାକୁ ସେଟିଂସରେ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="362276910939193118">ସମ୍ପୂର୍ଣ୍ଣ ଇତିବୃତ୍ତି ଦେଖାନ୍ତୁ</translation>
 <translation id="3623041590998910684">ଆପଣଙ୍କ କେମେରାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ <ph name="LINK" />ରେ Chromeକୁ ଆକ୍ସେସ ଦିଅନ୍ତୁ।</translation>
 <translation id="3624292976554877583">ଲେବଲ (ମେଟ)</translation>
@@ -2267,6 +2266,7 @@
 <translation id="4775456404799771098">ଆପଣ ସ୍ଥାୟୀ ଭାବେ ଫାଇଲ ହରାଇବେ</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ପପ୍‍-ଅପ୍ ବ୍ଲକ୍ କରାଯାଇଛି}other{#ଟି ପପ୍‍-ଅପ୍ ବ୍ଲକ୍ କରାଯାଇଛି}}</translation>
 <translation id="4780366598804516005">ମେଲବକ୍ସ 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ଆପଣଙ୍କ ଡିଜିଟାଲ ୱାଲେଟରୁ ବ୍ୟକ୍ତିଗତ ସୂଚନା ବ୍ୟବହାର କରିବାକୁ ଚାହେଁ।</translation>
 <translation id="4785273477715803444">ଲଗଗୁଡ଼ିକୁ ଫିଲ୍ଟର କରନ୍ତୁ</translation>
 <translation id="4785376858512657294">Google ଆକାଉଣ୍ଟକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="4785689107224900852">ଏହି ଟାବ୍‌କୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
@@ -2886,7 +2886,6 @@
 <translation id="5787146423283493983">କୀ ସହମତି</translation>
 <translation id="5789643057113097023">।</translation>
 <translation id="5793317771769868848">ଏହି ଡିଭାଇସରୁ ଏହି ପେମେଣ୍ଟ ପଦ୍ଧତିକୁ ଡିଲିଟ କରିଦିଆଯିବ</translation>
-<translation id="5794065675298686371">ମୂଲ୍ୟ ଟ୍ରାକିଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5794093550048860249">ଟ୍ରାକିଂ ନମ୍ୱର</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />ଅନ୍ୟ Google ପ୍ରଡକ୍ଟରେ ସ୍ମାର୍ଟ ଫିଚର<ph name="LINK_END" />”କୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5797916798049571144">ଏହା ଆପଣଙ୍କ କାର୍ଡ ସୂଚନା ସହିତ ସେଭ ହୋଇଛି, ତେଣୁ ଏହା ଚେକଆଉଟ ସମୟରେ ସ୍ୱତଃ ପୂରଣ ହେବ</translation>
@@ -4859,6 +4858,7 @@
 <translation id="9155211586651734179">ଆଟାଚ କରାଯାଇଥିବା ଅଡିଓ ପେରିଫେରାଲଗୁଡ଼ିକ</translation>
 <translation id="9157595877708044936">ସେଟ୍‍‍ଅପ୍ କରାଯାଉଛି...</translation>
 <translation id="9158491153040481956">ଆପଣ ବର୍ତ୍ତମାନ ଏକ ପବ୍ଲିକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଥିବା ଏକ ପାସୱାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି। ସମସ୍ୟା ହେଲେ, Password Manager ଆପଣଙ୍କୁ ସାଇନ ଇନ କରିବାରେ ସାହାଯ୍ୟ କରିପାରିବ।</translation>
+<translation id="9161172953291434881">ଆପଣ ଆପଣଙ୍କ ଡାଟା ସହ ଏହି ସାଇଟକୁ ବିଶ୍ୱାସ କରନ୍ତି?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />ରେ ସମ୍ବେଦନଶୀଳ ବିଷୟବସ୍ତୁ ଥାଇପାରେ}other{<ph name="FILE_COUNT" /> ଫାଇଲରେ ସମ୍ବେଦନଶୀଳ ବିଷୟବସ୍ତୁ ଥାଇପାରେ}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବା ପାଇଁ, |<ph name="ACCELERATOR" />| ଦବାନ୍ତୁ</translation>
 <translation id="9163287596625611517">Slack ମେସେଜ</translation>

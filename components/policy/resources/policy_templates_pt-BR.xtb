@@ -4795,15 +4795,6 @@ Esta política não terá efeito se a <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR
       Cada entrada da lista contém um dicionário que deve incluir a identificação de extensão no campo 'extensão-id', e o URL de atualização no campo 'update-url'.</translation>
 <translation id="3869180930654347954">Desativar o First-Party Sets para todos os usuários afetados</translation>
 <translation id="3869566220234507038">Sempre carregar o navegador <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /></translation>
-<translation id="3869959969423392506">A política controla se os Apps Isolados da Web (AIWs) vão poder adicionar Sub Apps por padrão.
-
-Se a política for definida como 1, as origens de AIW poderão adicionar Sub Apps e ignorar os requisitos de interação ou confirmação do usuário.
-
-Se ela for definida como 2, as origens do AIW não poderão adicionar Sub Apps.
-
-Se a política for definida como 3 ou deixada sem definição, as origens de Apps Isolados da Web poderão adicionar Sub Apps após a confirmação do usuário.
-
-Essa política pode ser substituída para origens específicas de Apps Isolados da Web usando as políticas <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> e <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" />.</translation>
 <translation id="3870035799352372700">Impedir que o Google Assistente acesse o contexto na tela durante interações</translation>
 <translation id="3870059789954671543">Ativar o recurso de acessibilidade de destaque do foco no teclado na tela de login.
 

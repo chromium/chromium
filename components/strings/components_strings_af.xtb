@@ -1560,7 +1560,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om veiligheidskontrole in Chrome-instellings te doen</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Hierdie IBAN kon nie in Google Wallet gestoor word nie. Dit word in plaas daarvan in Chrome op hierdie toestel gestoor. Chrome sal jou weer vra die volgende keer as jy hierdie IBAN gebruik.</translation>
-<translation id="3621401353678567613">Skakel kennisgewings in instellings aan vir opletberigte oor prysverlagings van produkte wat jy naspoor.</translation>
 <translation id="362276910939193118">Wys hele geskiedenis</translation>
 <translation id="3623041590998910684">Gee in <ph name="LINK" /> vir Chrome toegang om jou kamera te gebruik.</translation>
 <translation id="3624292976554877583">Etikette (mat)</translation>
@@ -2270,6 +2269,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4775456404799771098">Jy sal die lêer permanent verloor</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Opspringer is geblokkeer}other{# opspringers is geblokkeer}}</translation>
 <translation id="4780366598804516005">Posbus 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> wil persoonlike inligting gebruik wat in jou digitale beursie is.</translation>
 <translation id="4785273477715803444">Filtreer loglêers</translation>
 <translation id="4785376858512657294">Bestuur Google-rekening</translation>
 <translation id="4785689107224900852">Skakel oor na hierdie oortjie toe</translation>
@@ -2889,7 +2889,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5787146423283493983">Sleutelooreenkoms</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Hierdie betaalmetode sal van hierdie toestel af uitgevee word</translation>
-<translation id="5794065675298686371">Skakel kennisgewings oor prysnasporing aan</translation>
 <translation id="5794093550048860249">Naspoornommer</translation>
 <translation id="5796050750059455142">Skakel “<ph name="BEGIN_LINK" />Slimkenmerke in ander Google-produkte<ph name="LINK_END" />” aan</translation>
 <translation id="5797916798049571144">Dit word saam met jou kaartinligting gestoor sodat dit by die betaalpunt geoutovul sal word</translation>
@@ -4864,6 +4863,7 @@ Bykomende besonderhede:
 <translation id="9155211586651734179">Oudiorandtoestelle is aangeheg</translation>
 <translation id="9157595877708044936">Stel tans op …</translation>
 <translation id="9158491153040481956">Jy het onlangs ’n wagwoord verander wat in ’n publieke dataskending gekry is. Wagwoordbestuurder kan jou help om aan te meld as jy sukkel.</translation>
+<translation id="9161172953291434881">Vertrou jy hierdie werf met jou data?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> bevat dalk sensitiewe inhoud}other{<ph name="FILE_COUNT" /> lêers bevat dalk sensitiewe inhoud}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Druk |<ph name="ACCELERATOR" />| om volskerm te verlaat</translation>
 <translation id="9163287596625611517">Slack-boodskap</translation>

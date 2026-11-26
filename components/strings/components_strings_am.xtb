@@ -1559,7 +1559,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በChrome ቅንብሮች ውስጥ የደህንነት ፍተሻን ለማሄድ ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />፣ <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">ይህ አይቢኤኤን Google Wallet ውስጥ ሊቀመጥ አልቻለም። በምትኩ በዚህ መሣሪያ ላይ ወደ Chrome ተቀምጧል። Chrome ይህን አይቢኤኤን በሚጠቀሙበት ቀጣይ ጊዜ እንደገና ይጠይቅዎታል።</translation>
-<translation id="3621401353678567613">እርስዎ ለሚከታተሏቸው ምርቶች የዋጋ መውረድ ማንቂያዎችን ለማግኘት ቅንብሮች ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
 <translation id="362276910939193118">ሙሉ ታሪክ አሳይ</translation>
 <translation id="3623041590998910684">ካሜራዎን ለመጠቀም በ<ph name="LINK" /> ውስጥ ለChrome መዳረሻ ይስጡ።</translation>
 <translation id="3624292976554877583">መሰየሚያዎች (ድብዳብ)</translation>
@@ -2269,6 +2268,7 @@
 <translation id="4775456404799771098">ፋይሉን በቋሚነት ያጣሉ</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ብቅ-ባይ ታግዷል}one{# ብቅ-ባዮች ታግዷል}other{# ብቅ-ባዮች ታግዷል}}</translation>
 <translation id="4780366598804516005">የመልዕክት ሳጥን 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ከእርስዎ ዲጂታል የኪስ ቦርሳ ላይ ግላዊ መረጃን መጠቀም ይፈልጋል።</translation>
 <translation id="4785273477715803444">ምዝግብ ማስታወሻዎችን ያጣሩ</translation>
 <translation id="4785376858512657294">የGoogle መለያን ያቀናብሩ</translation>
 <translation id="4785689107224900852">ወደዚህ ትር ቀይር</translation>
@@ -2888,7 +2888,6 @@
 <translation id="5787146423283493983">ቁልፍ ስምምነት</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ይህ የመክፈያ ዘዴ ከዚህ መሣሪያ ላይ ይሰረዛል</translation>
-<translation id="5794065675298686371">የዋጋ ክትትል ማሳወቂያዎችን ያብሩ</translation>
 <translation id="5794093550048860249">የመከታተያ ቁጥር</translation>
 <translation id="5796050750059455142">«<ph name="BEGIN_LINK" />በሌሎች የGoogle ምርቶች ውስጥ ዘመናዊ ባህሪያት<ph name="LINK_END" />» የሚለውን ያብሩ</translation>
 <translation id="5797916798049571144">ክፍያ ማጠናቀቅ ላይ በራስ-ሰር እንዲሞላ ከካርድ መረጃዎ ጋር ተቀምጧል</translation>
@@ -4865,6 +4864,7 @@
 <translation id="9155211586651734179">የድምፅ መሳሪያዎች ተያይዘዋል</translation>
 <translation id="9157595877708044936">በማዋቀር ላይ…</translation>
 <translation id="9158491153040481956">በይፋዊ የውሂብ ጥሰት ውስጥ የተገኘ የይለፍ ቃልን በቅርብ ጊዜ ለውጠዋል። ችግር ካጋጠመ የይለፍ ቃል አስተዳዳሪ በመለያ እንዲገቡ ሊያግዝዎት ይችላል።</translation>
+<translation id="9161172953291434881">ይህን ጣቢያ ለውሂብዎ ያምኑታል?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ልዩ ጥንቃቄ የሚያስፈልገው ይዘት ሊይዝ ይችላል}one{<ph name="FILE_COUNT" /> ፋይል ልዩ ጥንቃቄ የሚያስፈልገው ይዘት ሊይዝ ይችላል}other{<ph name="FILE_COUNT" /> ፋይሎች ልዩ ጥንቃቄ የሚያስፈልገው ይዘት ሊይዙ ይችላሉ}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – ከሙሉ ገጽ ዕይታ ለመውጣት፣ |<ph name="ACCELERATOR" />| ላይ ይጫኑ</translation>
 <translation id="9163287596625611517">Slack መልዕክት</translation>

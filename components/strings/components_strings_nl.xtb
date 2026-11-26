@@ -1556,7 +1556,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om een veiligheidscheck uit te voeren in de Chrome-instellingen</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Dit IBAN kan niet worden opgeslagen in Google Wallet. Het is opgeslagen in Chrome op dit apparaat. Chrome vraagt het je opnieuw wanneer je dit IBAN weer gebruikt.</translation>
-<translation id="3621401353678567613">Als je meldingen wilt krijgen over prijsdalingen voor producten die je volgt, zet je meldingen aan via de instellingen.</translation>
 <translation id="362276910939193118">Volledige geschiedenis bekijken</translation>
 <translation id="3623041590998910684">Geef Chrome toegang via <ph name="LINK" /> om je camera te gebruiken.</translation>
 <translation id="3624292976554877583">Labels (mat)</translation>
@@ -2264,6 +2263,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4775456404799771098">Je raakt het bestand definitief kwijt</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up geblokkeerd}other{# pop-ups geblokkeerd}}</translation>
 <translation id="4780366598804516005">Mailbox 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> wil persoonlijke informatie uit je digitale portemonnee gebruiken.</translation>
 <translation id="4785273477715803444">Logboeken filteren</translation>
 <translation id="4785376858512657294">Google-account beheren</translation>
 <translation id="4785689107224900852">Overschakelen naar dit tabblad</translation>
@@ -2883,7 +2883,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5787146423283493983">Sleutelovereenkomst</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Deze betaalmethode wordt verwijderd van dit apparaat</translation>
-<translation id="5794065675298686371">Meldingen voor prijzen volgen aanzetten</translation>
 <translation id="5794093550048860249">Trackingcode</translation>
 <translation id="5796050750059455142">Zet <ph name="BEGIN_LINK" />Slimme functies in andere Google-producten<ph name="LINK_END" /> aan</translation>
 <translation id="5797916798049571144">De naam wordt opgeslagen met je kaartgegevens, zodat deze automatisch wordt ingevuld bij het afrekenen</translation>
@@ -4857,6 +4856,7 @@ Aanvullende informatie:
 <translation id="9155211586651734179">Aangesloten audiorandapparaten</translation>
 <translation id="9157595877708044936">Bezig met instellen...</translation>
 <translation id="9158491153040481956">Je hebt recent een wachtwoord gewijzigd dat is gevonden bij een openbaar gegevenslek. Als je problemen ondervindt, kan Wachtwoordmanager je helpen inloggen.</translation>
+<translation id="9161172953291434881">Vertrouw je deze site met je gegevens?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> bevat misschien gevoelige content}other{<ph name="FILE_COUNT" /> bestanden bevatten misschien gevoelige content}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Druk op |<ph name="ACCELERATOR" />| om het volledige scherm te sluiten</translation>
 <translation id="9163287596625611517">Slack-bericht</translation>

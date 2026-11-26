@@ -1560,7 +1560,6 @@
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי להריץ בדיקת אבטחה בהגדרות Chrome</translation>
 <translation id="3615354126333642335">‫<ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">‏לא ניתן לשמור את הכרטיס הזה ב-Google Wallet. במקום זאת, הוא נשמר ב-Chrome במכשיר הזה. בפעם הבאה שייעשה שימוש ב-IBAN הזה, תוצג לך שאלה מ-Chrome שוב.</translation>
-<translation id="3621401353678567613">כדי לקבל התראות על ירידות במחיר של המוצרים שבמעקב, צריך להפעיל את ההתראות בהגדרות.</translation>
 <translation id="362276910939193118">כל ההיסטוריה</translation>
 <translation id="3623041590998910684">‏כדי להשתמש במצלמה, צריך לתת ל-Chrome גישה ל<ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Labels (Matte)</translation>
@@ -2274,6 +2273,7 @@ Del</translation>
 <translation id="4775456404799771098">הקובץ יימחק באופן סופי</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{חלון קופץ נחסם}one{# חלונות קופצים נחסמו}two{# חלונות קופצים נחסמו}other{# חלונות קופצים נחסמו}}</translation>
 <translation id="4780366598804516005">תיבת דואר 1</translation>
+<translation id="4784349455504343791">האתר <ph name="WEBSITE_ORIGIN" /> רוצה להשתמש בפרטים האישיים מהארנק הדיגיטלי שלך.</translation>
 <translation id="4785273477715803444">סינון היומנים</translation>
 <translation id="4785376858512657294">‏ניהול חשבון Google</translation>
 <translation id="4785689107224900852">החלפה לכרטיסייה זו</translation>
@@ -2894,7 +2894,6 @@ Del</translation>
 <translation id="5787146423283493983">הסכם מפתח</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">אמצעי התשלום הזה יימחק מהמכשיר הזה</translation>
-<translation id="5794065675298686371">הפעלת התראות על מעקב מחירים</translation>
 <translation id="5794093550048860249">מספר מעקב</translation>
 <translation id="5796050750059455142">‏מפעילים את ההגדרה <ph name="BEGIN_LINK" />תכונות חכמות במוצרים אחרים של Google<ph name="LINK_END" /></translation>
 <translation id="5797916798049571144">השם נשמר עם פרטי הכרטיס, כך שהוא ימולא אוטומטית בשלב התשלום</translation>
@@ -4870,6 +4869,7 @@ Del</translation>
 <translation id="9155211586651734179">ציוד האודיו הההיקפי מחובר</translation>
 <translation id="9157595877708044936">ההגדרה מתבצעת...</translation>
 <translation id="9158491153040481956">שינית לאחרונה סיסמה שנכללה במידע שדלף בפרצה באבטחת מידע. אם נתקלת בבעיה, מנהל הסיסמאות יכול לעזור לך להיכנס לחשבון.</translation>
+<translation id="9161172953291434881">האם לדעתך הנתונים שלך יהיו בטוחים באתר הזה?</translation>
 <translation id="9161794544616754735">{0,plural, =1{יכול להיות שהקובץ <ph name="FILE_NAME" /> מכיל תוכן רגיש}one{יכול להיות ש-<ph name="FILE_COUNT" /> קבצים מכילים תוכן רגיש}two{יכול להיות ש-<ph name="FILE_COUNT" /> קבצים מכילים תוכן רגיש}other{יכול להיות ש-<ph name="FILE_COUNT" /> קבצים מכילים תוכן רגיש}}</translation>
 <translation id="9162097962559874470">‫<ph name="ORIGIN" /> – כדי לצאת מהמסך המלא, צריך ללחוץ על |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">‏הודעה ב-Slack</translation>

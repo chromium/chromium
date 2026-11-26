@@ -1560,7 +1560,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk menjalankan pemeriksaan keamanan di setelan Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">IBAN ini tidak dapat disimpan di Google Wallet. Sebaliknya, IBAN tersebut disimpan ke Chrome di perangkat ini. Chrome akan menanyakan hal ini lagi saat Anda menggunakan IBAN tersebut di lain waktu.</translation>
-<translation id="3621401353678567613">Untuk mendapatkan notifikasi penurunan harga untuk produk yang Anda pantau, aktifkan notifikasi di setelan.</translation>
 <translation id="362276910939193118">Tampilkan Histori Lengkap</translation>
 <translation id="3623041590998910684">Untuk menggunakan kamera, beri Chrome akses di <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Label (Matte)</translation>
@@ -2270,6 +2269,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4775456404799771098">Anda akan kehilangan file secara permanen</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up diblokir}other{# pop-up diblokir}}</translation>
 <translation id="4780366598804516005">Kotak surat 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ingin menggunakan info pribadi dari dompet digital Anda.</translation>
 <translation id="4785273477715803444">Filter log</translation>
 <translation id="4785376858512657294">Kelola Akun Google</translation>
 <translation id="4785689107224900852">Pindah ke tab ini</translation>
@@ -2889,7 +2889,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5787146423283493983">Perjanjian Kunci</translation>
 <translation id="5789643057113097023">:</translation>
 <translation id="5793317771769868848">Metode pembayaran ini akan dihapus dari perangkat ini</translation>
-<translation id="5794065675298686371">Aktifkan notifikasi pemantauan harga</translation>
 <translation id="5794093550048860249">Nomor pelacakan</translation>
 <translation id="5796050750059455142">Aktifkan “<ph name="BEGIN_LINK" />Fitur cerdas di produk Google lainnya<ph name="LINK_END" />”</translation>
 <translation id="5797916798049571144">Nama disimpan dengan info kartu Anda sehingga akan otomatis diisi saat checkout</translation>
@@ -4861,6 +4860,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="9155211586651734179">Periferal audio yang terpasang</translation>
 <translation id="9157595877708044936">Menyiapkan...</translation>
 <translation id="9158491153040481956">Anda baru-baru ini mengubah sandi yang ditemukan dalam pelanggaran data publik. Jika terjadi masalah, Pengelola Sandi dapat membantu Anda login.</translation>
+<translation id="9161172953291434881">Apakah Anda memercayai situs ini untuk menggunakan data Anda?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> mungkin berisi konten sensitif}other{<ph name="FILE_COUNT" /> file mungkin berisi konten sensitif}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Untuk keluar dari layar penuh, tekan |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Pesan Slack</translation>

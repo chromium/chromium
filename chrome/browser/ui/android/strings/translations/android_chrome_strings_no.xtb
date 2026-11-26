@@ -981,7 +981,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4777866634702576038">Vil du slette fanegruppen?</translation>
 <translation id="4778653490315793244">Ingenting å vise ennå</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> er standardsøkemotoren din</translation>
-<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vil bruke personopplysninger fra den digitale lommeboken din.</translation>
 <translation id="4787736314074622408">Vil du slette <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Finn ut hvordan Chrome holder deg trygg</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -2167,7 +2166,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="9153056436992761257">Velg ønsket posisjon</translation>
 <translation id="9157212632995922070">Velg en konto for å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Del kun innhold</translation>
-<translation id="9161172953291434881">Vil du gi dette nettstedet tilgang til dataene dine?</translation>
 <translation id="916607977885256133">Bilde i bilde</translation>
 <translation id="9168847423516963845">Flytt adressefeltet til bunnen</translation>
 <translation id="9169507124922466868">Navigasjonshistorikken er halvveis åpnet</translation>

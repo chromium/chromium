@@ -4572,15 +4572,6 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
        Jeder Eintrag enthält ein Verzeichnis, in dem im Feld "extension-id" die Erweiterungs-ID und im Feld "update-url" die Aktualisierungs-URL angegeben werden müssen.</translation>
 <translation id="3869180930654347954">„First-Party-Sets“ für alle betroffenen Nutzer deaktivieren</translation>
 <translation id="3869566220234507038">Immer den <ph name="LACROS_ROOTFS_NAME" />-<ph name="LACROS_NAME" />-Browser laden</translation>
-<translation id="3869959969423392506">Mit dieser Richtlinie wird festgelegt, ob isolierte Web-Apps (IWAs) standardmäßig Sub Apps hinzufügen können.
-
-Wenn die Richtlinie auf 1 gesetzt ist, können IWA-Ursprünge Sub Apps hinzufügen und die Anforderungen für Nutzergesten oder Nutzerbestätigungen umgehen.
-
-Wenn die Richtlinie auf „2“ gesetzt ist, können IWA-Ursprünge keine Sub Apps hinzufügen.
-
-Wenn die Richtlinie auf „3“ gesetzt oder nicht konfiguriert ist, können Ursprünge von isolierten Web-Apps nach Bestätigung durch den Nutzer Sub Apps hinzufügen.
-
-Diese Richtlinie kann für bestimmte Ursprünge der isolierten Web-App überschrieben werden. Hierfür stehen die Richtlinien „<ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" />“ und „<ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" />“ zur Verfügung.</translation>
 <translation id="3870035799352372700">Nicht zulassen, dass Google Assistant bei Interaktionen auf den Bildschirmkontext zugreift</translation>
 <translation id="3870059789954671543">Hiermit wird die Bedienungshilfe "Objekt mit Tastaturfokus hervorheben" auf dem Anmeldebildschirm aktiviert.
 

@@ -1563,7 +1563,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab បន្ទាប់មក Enter ដើម្បីដំណើរការ​ការពិនិត្យ​សុវត្ថិភាព​នៅក្នុង​ការកំណត់ Chrome</translation>
 <translation id="3615354126333642335"><ph name="SUBTEXT" />, <ph name="TEXT" /></translation>
 <translation id="3620865353340165509">មិនអាច​រក្សាទុក IBAN នេះ​នៅក្នុង Google Wallet បានទេ។ វា​ត្រូវបាន​រក្សាទុក​ទៅក្នុង Chrome នៅលើ​ឧបករណ៍នេះ​ជំនួសវិញ។ Chrome នឹងសួរអ្នកម្ដងទៀត នៅពេលអ្នកប្រើ IBAN នេះលើកក្រោយ។</translation>
-<translation id="3621401353678567613">ដើម្បី​ទទួលបាន​ការជូន​ដំណឹង​អំពី​ការធ្លាក់តម្លៃ​សម្រាប់​ផលិតផល​ដែលអ្នក​តាមដាន សូមបើក​ការជូន​ដំណឹង​នៅក្នុង​ការកំណត់។</translation>
 <translation id="362276910939193118">បង្ហាញប្រវត្តិពេញលេញ</translation>
 <translation id="3623041590998910684">ដើម្បីប្រើកាមេរ៉ារបស់អ្នក សូមផ្ដល់សិទ្ធិចូលប្រើឱ្យ Chrome នៅក្នុង<ph name="LINK" />។</translation>
 <translation id="3624292976554877583">ស្លាក (គ្រើម)</translation>
@@ -2274,6 +2273,7 @@
 <translation id="4775456404799771098">អ្នកនឹង​បាត់បង់​ឯកសារនេះ​ជាអចិន្ត្រៃយ៍</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{​ផ្ទាំងផុសត្រូវ​បាន​ទប់ស្កាត់}other{​ផ្ទាំងផុស # ត្រូវ​បាន​ទប់ស្កាត់}}</translation>
 <translation id="4780366598804516005">ប្រអប់​សំបុត្រទី 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ចង់ប្រើ​ព័ត៌មានផ្ទាល់ខ្លួន​ពីកាបូប​ឌីជីថល​របស់អ្នក។</translation>
 <translation id="4785273477715803444">ត្រង​កំណត់​ហេតុ</translation>
 <translation id="4785376858512657294">គ្រប់គ្រង​គណនី Google</translation>
 <translation id="4785689107224900852">ប្ដូរ​ទៅ​ផ្ទាំងនេះ</translation>
@@ -2893,7 +2893,6 @@
 <translation id="5787146423283493983">ការព្រមព្រៀងចំពោះសោ</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">វិធីបង់ប្រាក់នេះនឹងត្រូវបានលុបចេញពីឧបករណ៍នេះ</translation>
-<translation id="5794065675298686371">បើក​ការជូនដំណឹង​អំពី​ការតាមដាន​តម្លៃ</translation>
 <translation id="5794093550048860249">លេខ​តាមដាន</translation>
 <translation id="5796050750059455142">បើក “<ph name="BEGIN_LINK" />មុខងារឆ្លាតវៃនៅក្នុងផលិតផល Google ផ្សេងទៀត<ph name="LINK_END" />”</translation>
 <translation id="5797916798049571144">វាត្រូវបានរក្សាទុកជាមួយព័ត៌មានកាតរបស់អ្នក ដូច្នេះវានឹងត្រូវបានបំពេញដោយស្វ័យប្រវត្តិនៅពេលបង់ប្រាក់ចេញ</translation>
@@ -4869,6 +4868,7 @@
 <translation id="9155211586651734179">បានភ្ជាប់ឧបករណ៍សំឡេងខាងក្រៅ</translation>
 <translation id="9157595877708044936">កំពុងតំឡើង...</translation>
 <translation id="9158491153040481956">ថ្មីៗនេះ អ្នក​បានប្ដូរ​ពាក្យ​សម្ងាត់​ដែលត្រូវបាន​រកឃើញ​នៅក្នុង​ការបែកធ្លាយ​ទិន្នន័យ​សាធារណៈ។ ក្នុងករណី​ដែលមានបញ្ហា កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់​អាចជួយអ្នក​ក្នុងការ​ចូលគណនី​បាន។</translation>
+<translation id="9161172953291434881">តើអ្នក​ទុកចិត្តឱ្យ​គេហទំព័រនេះ​ប្រើប្រាស់​ទិន្នន័យ​របស់អ្នក​ដែរទេ?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> អាចមាន​ខ្លឹមសារ​រសើប}other{ឯកសារ <ph name="FILE_COUNT" /> អាចមាន​ខ្លឹមសារ​រសើប}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – ដើម្បី​ចាកចេញពី​អេក្រង់ពេញ សូមចុច |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">សារ Slack</translation>

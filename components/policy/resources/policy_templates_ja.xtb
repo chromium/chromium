@@ -4482,15 +4482,6 @@ Protected Audience API のサポート終了により、このポリシーは <p
       リストの各エントリには辞書を指定し、[extension-id] フィールドに拡張機能 ID、[update-url] フィールドに更新 URL を指定する必要があります。</translation>
 <translation id="3869180930654347954">対象となるすべてのユーザーに対して First-Party Sets を無効にする</translation>
 <translation id="3869566220234507038">常に <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> ブラウザを読み込む</translation>
-<translation id="3869959969423392506">このポリシーでは、デフォルトで、独立したウェブアプリ（IWA）がサブアプリを追加できるようにするかどうかを制御します。
-
-このポリシーを 1 に設定した場合、IWA のオリジンによるサブアプリの追加が許可され、ユーザーによる操作または確認は求められません。
-
-このポリシーを 2 に設定した場合、IWA のオリジンによるサブアプリの追加がブロックされます。
-
-このポリシーを 3 に設定するか未設定のままにした場合、独立したウェブアプリのオリジンによるサブアプリの追加は、ユーザーが確認した場合に許可されます。
-
-<ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> ポリシーと <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" /> ポリシーを使用して、特定の独立したウェブアプリについて、このポリシーをオーバーライドできます。</translation>
 <translation id="3870035799352372700">操作中に Google アシスタントが画面のコンテキストにアクセスできないようにする</translation>
 <translation id="3870059789954671543">ログイン画面で「キーボード フォーカスによるハイライト表示」ユーザー補助機能を有効にします。
 

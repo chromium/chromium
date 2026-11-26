@@ -1554,7 +1554,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter spustíte bezpečnostní kontrolu v nastavení Chromu</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Tento kód IBAN se nepodařilo uložit do Peněženky Google. Uložil se do Chromu na tomto zařízení. Při příštím použití tohoto kódu IBAN se vás Chrome zase zeptá.</translation>
-<translation id="3621401353678567613">Pokud chcete dostávat upozornění na pokles cen produktů, které sledujete, zapněte v nastavení oznámení.</translation>
 <translation id="362276910939193118">Zobrazit celou historii</translation>
 <translation id="3623041590998910684">Pokud chcete používat kameru, udělte Chromu přístup v <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Štítky (matné)</translation>
@@ -2263,6 +2262,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4775456404799771098">O soubor trvale přijdete</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Zablokováno vyskakovací okno}few{Zablokována # vyskakovací okna}many{Zablokováno # vyskakovacího okna}other{Zablokováno # vyskakovacích oken}}</translation>
 <translation id="4780366598804516005">Schránka 1</translation>
+<translation id="4784349455504343791">Web <ph name="WEBSITE_ORIGIN" /> chce použít osobní údaje z vaší digitální peněženky.</translation>
 <translation id="4785273477715803444">Filtrovat protokoly</translation>
 <translation id="4785376858512657294">Spravovat účet Google</translation>
 <translation id="4785689107224900852">Přejít na tuto kartu</translation>
@@ -2882,7 +2882,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5787146423283493983">Smlouva o klíči</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Tato platební metoda bude z tohoto zařízení smazána</translation>
-<translation id="5794065675298686371">Zapněte oznámení o sledování cen</translation>
 <translation id="5794093550048860249">Číslo zásilky</translation>
 <translation id="5796050750059455142">Zapněte možnost <ph name="BEGIN_LINK" />Chytré funkce v jiných službách Google<ph name="LINK_END" /></translation>
 <translation id="5797916798049571144">Je uloženo s údaji o vaší kartě, takže se při placení automaticky vyplní</translation>
@@ -4855,6 +4854,7 @@ Další podrobnosti:
 <translation id="9155211586651734179">Jsou připojeny zvukové periferie</translation>
 <translation id="9157595877708044936">Nastavování...</translation>
 <translation id="9158491153040481956">Nedávno jste změnili heslo, které bylo nalezeno ve veřejném seznamu dat prozrazených při porušení zabezpečení údajů. V případě potíží vám s přihlášením může pomoct Správce hesel.</translation>
+<translation id="9161172953291434881">Svěříte tomuhle webu své údaje?</translation>
 <translation id="9161794544616754735">{0,plural, =1{Soubor <ph name="FILE_NAME" /> může zahrnovat citlivý obsah}few{<ph name="FILE_COUNT" /> soubory mohou zahrnovat citlivý obsah}many{<ph name="FILE_COUNT" /> souboru může zahrnovat citlivý obsah}other{<ph name="FILE_COUNT" /> souborů může zahrnovat citlivý obsah}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Pokud chcete ukončit režim celé obrazovky, stiskněte |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Zpráva pro Slack</translation>

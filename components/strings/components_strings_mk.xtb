@@ -1557,7 +1557,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да извршите безбедносна проверка во поставките за Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Овој IBAN не можеше да се зачува во Google Wallet. Наместо тоа, се зачува во Chrome на уредов. Chrome ќе ве праша повторно следниот пат кога ќе го користите овој IBAN.</translation>
-<translation id="3621401353678567613">За да добивате известувања за намалување на цената за производите што ги следите, вклучете ги известувањата во поставките.</translation>
 <translation id="362276910939193118">Покажи целосна историја</translation>
 <translation id="3623041590998910684">За да ја користи камерата, дајте му пристап на Chrome во <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Етикети (мат)</translation>
@@ -2267,6 +2266,7 @@
 <translation id="4775456404799771098">Трајно ќе ја изгубите датотеката</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Скокачкиот прозорец е блокиран}one{# скокачки прозорец е блокиран}other{# скокачки прозорци се блокирани}}</translation>
 <translation id="4780366598804516005">Поштенско сандаче 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> сака да користи лични податоци од вашиот дигитален паричник.</translation>
 <translation id="4785273477715803444">Филтрирајте ја евиденцијата</translation>
 <translation id="4785376858512657294">Управувајте со сметката на Google</translation>
 <translation id="4785689107224900852">Префрлете се на оваа картичка</translation>
@@ -2886,7 +2886,6 @@
 <translation id="5787146423283493983">Клучен договор</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Начинов на плаќање ќе се избрише од уредов</translation>
-<translation id="5794065675298686371">Вклучете известувања за следење цена</translation>
 <translation id="5794093550048860249">Број за следење</translation>
 <translation id="5796050750059455142">Вклучете „<ph name="BEGIN_LINK" />Паметни функции во други производи на Google<ph name="LINK_END" />“</translation>
 <translation id="5797916798049571144">Зачувано е со податоците за вашата картичка, па автоматски ќе се пополни при плаќањето</translation>
@@ -4860,6 +4859,7 @@
 <translation id="9155211586651734179">Поврзани периферни уреди за аудио</translation>
 <translation id="9157595877708044936">Се поставува…</translation>
 <translation id="9158491153040481956">Неодамна променивте лозинка најдена при јавен упад во податоци. Ако се соочите со проблем, Password Manager може да ви помогне да се најавите.</translation>
+<translation id="9161172953291434881">Дали му верувате на сајтов за да му ги доверите вашите податоци?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> можеби содржи чувствителни содржини}one{<ph name="FILE_COUNT" /> датотека можеби содржат чувствителни содржини}other{<ph name="FILE_COUNT" /> датотеки можеби содржат чувствителни содржини}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – за да излезете од цел екран, притиснете |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Порака на Slack</translation>

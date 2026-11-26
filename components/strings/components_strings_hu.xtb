@@ -1555,7 +1555,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt a biztonsági ellenőrzés futtatásához a Chrome beállításaiban.</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Nem sikerült elmenteni az IBAN-t a Google Walletbe. Csak az eszköz Chrome alkalmazásába mentette a rendszer. A Chrome újra rákérdez, amikor Ön legközelebb ezt az IBAN-t használja.</translation>
-<translation id="3621401353678567613">Ha értesítést szeretne kapni a nyomon követett termékek árcsökkenéséről, kapcsolja be az értesítéseket a beállításokban.</translation>
 <translation id="362276910939193118">Az összes előzmény</translation>
 <translation id="3623041590998910684">A kamera használatához adjon hozzáférést a Chrome-nak itt: <ph name="LINK" /></translation>
 <translation id="3624292976554877583">Címkék (matt)</translation>
@@ -2264,6 +2263,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4775456404799771098">A fájl véglegesen elveszik</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Előugró ablak letiltva}other{# előugró ablak letiltva}}</translation>
 <translation id="4780366598804516005">1. postaláda</translation>
+<translation id="4784349455504343791">A(z) <ph name="WEBSITE_ORIGIN" /> használni szeretné az Ön digitális pénztárcájából származó személyes adatokat.</translation>
 <translation id="4785273477715803444">Naplók szűrése</translation>
 <translation id="4785376858512657294">Google-fiók kezelése</translation>
 <translation id="4785689107224900852">Váltás erre a lapra</translation>
@@ -2883,7 +2883,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5787146423283493983">Kulcsmegegyezés</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Ez a fizetési mód törölve lesz erről az eszközről.</translation>
-<translation id="5794065675298686371">Az árfigyelési értesítések bekapcsolása</translation>
 <translation id="5794093550048860249">Azonosító szám</translation>
 <translation id="5796050750059455142">Kapcsolja be az „<ph name="BEGIN_LINK" />Okos funkciók más Google-termékekben<ph name="LINK_END" />” beállítást</translation>
 <translation id="5797916798049571144">A kártyaadatokkal együtt mentésre került, így a rendszer automatikusan kitölti a fizetéskor</translation>
@@ -4859,6 +4858,7 @@ További részletek:
 <translation id="9155211586651734179">Csatlakoztatott hangperifériák</translation>
 <translation id="9157595877708044936">Előkészítés...</translation>
 <translation id="9158491153040481956">Nemrég módosított egy olyan jelszót, amely egy nyilvános adatvédelmi incidensben volt érintett. Probléma esetén a Jelszókezelő segíthet a bejelentkezésben.</translation>
+<translation id="9161172953291434881">Rábízza a webhelyre az adatait?</translation>
 <translation id="9161794544616754735">{0,plural, =1{A(z) <ph name="FILE_NAME" /> bizalmas adatokat tartalmazhat}other{<ph name="FILE_COUNT" /> fájl bizalmas adatokat tartalmazhat}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – A teljes képernyős nézetből való kilépéshez nyomja le a következőt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack-üzenet</translation>

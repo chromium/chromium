@@ -1560,7 +1560,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a rula verificarea de siguranță în setările Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Codul IBAN nu a putut fi salvat în Portofelul Google. A fost salvat în Chrome pe acest dispozitiv. Chrome te va întreba din nou data viitoare când folosești acest IBAN.</translation>
-<translation id="3621401353678567613">Pentru a primi alerte privind scăderea prețurilor pentru produsele pe care le urmărești, activează notificările în setări.</translation>
 <translation id="362276910939193118">Afișează întregul istoric</translation>
 <translation id="3623041590998910684">Pentru a folosi camera foto, permite accesul browserului Chrome în <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Etichete (mat)</translation>
@@ -2270,6 +2269,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4775456404799771098">Vei pierde definitiv fișierul</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Fereastră pop-up blocată}few{# ferestre pop-up blocate}other{# de ferestre pop-up blocate}}</translation>
 <translation id="4780366598804516005">Căsuța de e-mail 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> dorește să-ți folosească informațiile cu caracter personal din portofelul digital.</translation>
 <translation id="4785273477715803444">Filtrează jurnalele</translation>
 <translation id="4785376858512657294">Gestionează Contul Google</translation>
 <translation id="4785689107224900852">Comută la această filă</translation>
@@ -2889,7 +2889,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5787146423283493983">Acord privind cheia</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Metoda de plată se va șterge de pe acest dispozitiv</translation>
-<translation id="5794065675298686371">Activează notificările de urmărire a prețurilor</translation>
 <translation id="5794093550048860249">Număr de urmărire</translation>
 <translation id="5796050750059455142">Activează <ph name="BEGIN_LINK" />Funcții inteligente în alte produse Google<ph name="LINK_END" /></translation>
 <translation id="5797916798049571144">S-a salvat împreună cu informațiile cardului, astfel încât să fie completat automat la finalizarea achiziției</translation>
@@ -4866,6 +4865,7 @@ Detalii suplimentare:
 <translation id="9155211586651734179">dispozitivele periferice audio conectate;</translation>
 <translation id="9157595877708044936">Se configurează...</translation>
 <translation id="9158491153040481956">Ai schimbat recent o parolă găsită într-o încălcare a securității datelor publice. În caz de probleme, Managerul de parole te poate ajuta să te conectezi.</translation>
+<translation id="9161172953291434881">Ai încredere să oferi datele tale acestui site?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> poate să includă conținut sensibil}few{<ph name="FILE_COUNT" /> fișiere pot include conținut sensibil}other{<ph name="FILE_COUNT" /> de fișiere pot include conținut sensibil}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Pentru a ieși din ecranul complet, apasă pe |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Mesaj Slack</translation>

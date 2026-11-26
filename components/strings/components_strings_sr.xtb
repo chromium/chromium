@@ -1557,7 +1557,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте покренули проверу безбедности у Chrome подешавањима</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Чување овог IBAN-а у Google новчанику није успело. Уместо тога, сачуван је у Chrome-у на овом уређају. Chrome ће вас поново питати следећи пут када користите овај IBAN.</translation>
-<translation id="3621401353678567613">Да бисте добијали обавештења о снижењима за производе које пратите, укључите обавештења у подешавањима.</translation>
 <translation id="362276910939193118">Прикажи комплетну историју</translation>
 <translation id="3623041590998910684">Да бисте користили камеру, одобрите Chrome-у приступ у: <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Налепнице (мат)</translation>
@@ -2267,6 +2266,7 @@
 <translation id="4775456404799771098">Трајно ћете изгубити фајл</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Искачући прозор је блокиран}one{# искачући прозор је блокиран}few{# искачућа прозора су блокирана}other{# искачућих прозора је блокирано}}</translation>
 <translation id="4780366598804516005">1. поштанско сандуче</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> жели да користи личне податке из дигиталног новчаника.</translation>
 <translation id="4785273477715803444">Филтрирајте евиденције</translation>
 <translation id="4785376858512657294">Управљајте Google налогом</translation>
 <translation id="4785689107224900852">Пређите на ову картицу</translation>
@@ -2886,7 +2886,6 @@
 <translation id="5787146423283493983">Слагање кључа</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Овај начин плаћања ће бити избрисан са овог уређаја</translation>
-<translation id="5794065675298686371">Укључите обавештења о праћењу цена</translation>
 <translation id="5794093550048860249">Број за праћење</translation>
 <translation id="5796050750059455142">Укључите <ph name="BEGIN_LINK" />Паметне функције у другим Google производима<ph name="LINK_END" /></translation>
 <translation id="5797916798049571144">Сачувано је са информацијама о картици и аутоматски се попуњава при плаћању</translation>
@@ -4861,6 +4860,7 @@
 <translation id="9155211586651734179">Аудио периферни уређаји су прикључени</translation>
 <translation id="9157595877708044936">Подешавање...</translation>
 <translation id="9158491153040481956">Недавно сте променили лозинку која је пронађена у јавној повреди података. У случају проблема, Mенаџер лозинки може да вам помогне да се пријавите.</translation>
+<translation id="9161172953291434881">Да ли овај сајт сматрате поузданим за своје податке?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> можда има осетљив садржај}one{<ph name="FILE_COUNT" /> фајл можда има осетљив садржај}few{<ph name="FILE_COUNT" /> фајла можда имају осетљив садржај}other{<ph name="FILE_COUNT" /> фајлова можда има осетљив садржај}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Да бисте изашли из режима целог екрана, притисните |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack порука</translation>

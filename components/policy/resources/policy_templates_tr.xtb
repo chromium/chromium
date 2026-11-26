@@ -4737,15 +4737,6 @@ Bu politika yalnızca kullanıcı politikası olarak ayarlanabilir.
       Her bir liste girişi, 'extension-id' alanında uzantı kimliği ve 'update-url' alanında güncelleme URL'si bulunması gereken bir sözlük içerir.</translation>
 <translation id="3869180930654347954">Etkilenen tüm kullanıcılar için First-Party Sets özelliğini devre dışı bırak</translation>
 <translation id="3869566220234507038">Her zaman <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> tarayıcıyı yükle</translation>
-<translation id="3869959969423392506">Politika, yalıtılmış web uygulamalarının (IWA'lar) varsayılan olarak Sub Apps ekleyip ekleyemeyeceğini kontrol eder.
-
-Politika, 1 değerine ayarlanırsa IWA kaynaklarının Sub Apps eklemesine ve kullanıcı hareketi veya kullanıcı onayı şartlarını atlamasına izin verilir.
-
-Politika, 2 değerine ayarlanırsa IWA kaynaklarının Sub Apps eklemesine izin verilmez.
-
-Politika, 3 değerine ayarlanır veya ayarlanmadan bırakılırsa yalıtılmış web uygulaması kaynaklarının, kullanıcı onayı alındıktan sonra Sub Apps eklemesine izin verilir.
-
-Bu politika, <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> ve <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" /> politikaları kullanılarak belirli yalıtılmış web uygulaması kaynakları için geçersiz kılınabilir.</translation>
 <translation id="3870035799352372700">Google Asistan'ın etkileşimler sırasında ekran içeriğine erişmesini engelle</translation>
 <translation id="3870059789954671543">Giriş ekranında, klavye odağını vurgulama erişilebilirlik özelliğini etkinleştirir.
 

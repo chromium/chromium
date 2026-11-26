@@ -1557,7 +1557,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili ufanye ukaguzi wa usalama katika mipangilio ya Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Imeshindwa kuhifadhi IBAN hii kwenye Pochi ya Google. Imehifadhiwa kwenye Chrome katika kifaa hiki badala yake. Chrome itakuuliza tena wakati mwingine utakapotumia IBAN hii.</translation>
-<translation id="3621401353678567613">Washa arifa kwenye mipangilio ili upate arifa kuhusu punguzo la bei za bidhaa unazofuatilia.</translation>
 <translation id="362276910939193118">Onyesha Historia Kamili</translation>
 <translation id="3623041590998910684">Ili utumie kamera yako, ipatie Chrome ufikiaji kwenye <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Lebo (Zisizong'aa)</translation>
@@ -2267,6 +2266,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4775456404799771098">Utapoteza faili kabisa</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Imezuia dirisha ibukizi}other{Imezuia madirisha # ibukizi}}</translation>
 <translation id="4780366598804516005">Kikasha cha barua cha kwanza</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ingependa kutumia taarifa binafsi zilizo kwenye pochi yako dijitali.</translation>
 <translation id="4785273477715803444">Chuja kumbukumbu</translation>
 <translation id="4785376858512657294">Dhibiti Akaunti ya Google</translation>
 <translation id="4785689107224900852">Badili utumie kichupo hiki</translation>
@@ -2886,7 +2886,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="5787146423283493983">Makubaliano ya Funguo</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Njia hii ya kulipa itafutwa kwenye kifaa hiki</translation>
-<translation id="5794065675298686371">Washa arifa za ufuatiliaji wa bei</translation>
 <translation id="5794093550048860249">Namba ya ufuatiliaji</translation>
 <translation id="5796050750059455142">Washa “<ph name="BEGIN_LINK" />Vipengele mahiri katika bidhaa nyingine za Google<ph name="LINK_END" />”</translation>
 <translation id="5797916798049571144">Maelezo haya yamehifadhiwa pamoja na taarifa za kadi yako ili yajazwe kiotomatiki wakati wa kulipa</translation>
@@ -4858,6 +4857,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="9155211586651734179">Vifaa vya sauti vimeambatishwa</translation>
 <translation id="9157595877708044936">Inasanidi...</translation>
 <translation id="9158491153040481956">Ulibadilisha nenosiri hivi majuzi lililopatikana kwenye ufichuzi haramu wa data ya umma. Iwapo utatatizika, Kidhibiti cha Manenosiri kinaweza kukusaidia kuingia katika akaunti.</translation>
+<translation id="9161172953291434881">Je, unaiamini tovuti hii kuhusiana na data yako?</translation>
 <translation id="9161794544616754735">{0,plural, =1{Huenda <ph name="FILE_NAME" /> ikawa na maudhui nyeti}other{Huenda faili <ph name="FILE_COUNT" /> zikawa na maudhui nyeti}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Ili ufunge hali ya skrini nzima, bonyeza |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Ujumbe wa Slack</translation>

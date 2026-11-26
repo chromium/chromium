@@ -1557,7 +1557,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å kjøre en sikkerhetssjekk i Chrome-innstillingene</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Dette kortet kunne ikke lagres i Google Wallet. Det ble lagret i Chrome på denne enheten i stedet. Chrome spør deg på nytt neste gang du bruker dette IBAN-nummeret.</translation>
-<translation id="3621401353678567613">For å få varsler om avslag på produkter du sporer, slå på varsler i innstillingene.</translation>
 <translation id="362276910939193118">Vis fullstendig logg</translation>
 <translation id="3623041590998910684">For å bruke kameraet må du gi Chrome tilgang i <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Etiketter (matt)</translation>
@@ -2267,6 +2266,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4775456404799771098">Du mister filen for godt</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Et forgrunnsvindu er blokkert}other{# forgrunnsvinduer er blokkert}}</translation>
 <translation id="4780366598804516005">Postkasse 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vil bruke personopplysninger fra den digitale lommeboken din.</translation>
 <translation id="4785273477715803444">Filtrer logger</translation>
 <translation id="4785376858512657294">Administrer Google-konto</translation>
 <translation id="4785689107224900852">Bytt til denne fanen</translation>
@@ -2886,7 +2886,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5787146423283493983">Nøkkelavtale</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Denne betalingsmåten blir slettet fra denne enheten</translation>
-<translation id="5794065675298686371">Slå på varsler for prissporing</translation>
 <translation id="5794093550048860249">Sporingsnummer</translation>
 <translation id="5796050750059455142">Slå på «<ph name="BEGIN_LINK" />Smartfunksjoner i andre Google-produkter<ph name="LINK_END" />»</translation>
 <translation id="5797916798049571144">Det lagres sammen med kortinformasjonen, slik at det blir fylt ut automatisk i kassen</translation>
@@ -4860,6 +4859,7 @@ Mer informasjon:
 <translation id="9155211586651734179">Eksterne lydenheter er tilkoblet</translation>
 <translation id="9157595877708044936">Konfigurerer ...</translation>
 <translation id="9158491153040481956">Du har nylig endret et passord som ble funnet i et offentlig databrudd. Hvis du har problemer, kan Passordlagring hjelpe deg med å logge på.</translation>
+<translation id="9161172953291434881">Vil du gi dette nettstedet tilgang til dataene dine?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> kan ha sensitivt innhold}other{<ph name="FILE_COUNT" /> filer kan ha sensitivt innhold}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – For å gå ut av fullskjerm, trykk på |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack-melding</translation>

@@ -4694,15 +4694,6 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
       각 목록 항목에는 '확장 프로그램 ID' 입력란에 확장 프로그램 ID를, 'url 업데이트' 입력란에 업데이트 URL을 포함해야 하는 사전이 포함됩니다.</translation>
 <translation id="3869180930654347954">영향을 받는 모든 사용자에 대해 First-Party Sets 사용 중지</translation>
 <translation id="3869566220234507038">항상 <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> 브라우저 로드</translation>
-<translation id="3869959969423392506">이 정책은 분리형 웹 앱(IWA)이 기본적으로 하위 앱을 추가할 수 있는지 여부를 제어합니다.
-
-정책을 1로 설정하면 IWA 출처에서 하위 앱을 추가하고 사용자 동작 또는 사용자 확인 요구사항을 우회할 수 있습니다.
-
-정책을 2로 설정하면 IWA 출처에서 하위 앱을 추가하지 못하도록 차단합니다.
-
-정책을 3으로 설정하거나 설정하지 않으면 분리형 웹 앱 출처에서 사용자 확인을 받고 하위 앱을 추가할 수 있습니다.
-
-<ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> 및 <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" /> 정책을 사용하는 특정 분리형 웹 앱 출처의 경우 이 정책보다 우선 적용될 수 있습니다.</translation>
 <translation id="3870035799352372700">상호 작용 중 Google 어시스턴트의 화면 컨텍스트 액세스를 차단</translation>
 <translation id="3870059789954671543">로그인 화면에서 키보드 포커스 강조표시 접근성 기능을 사용 설정합니다.
 
@@ -6025,7 +6016,7 @@ SpeculationRules 미리 가져오기가 허용되지 않습니다. 이는 기존
 
 0 또는 1로 설정된 경우 사용자가 보안 시크릿 모드에서 확장 프로그램을 명시적으로 사용 설정하거나 사용 중지하면 사용자의 선택이 정책 기본값보다 우선 적용됩니다.
 
-매니페스트에서 <ph name="INCOGNITO_MANIFEST_KEY" /> 옵션을 <ph name="INCOGNITO_NOT_ALLOWED_VALUE" /> 값으로 설정하는 확장 프로그램은 이 정책과 관계없이 보안 시크릿 모드에서 실행할 수 없습니다.
+매니페스트에서 <ph name="INCOGNITO_MANIFEST_KEY" /> 옵션을 <ph name="INCOGNITO_NOT_ALLOWED_VALUE" />(으)로 설정하는 확장 프로그램은 이 정책과 관계없이 보안 시크릿 모드에서 실행할 수 없습니다.
 
 이 정책은 <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> 정책이 사용 설정된 경우에만 적용됩니다.
 

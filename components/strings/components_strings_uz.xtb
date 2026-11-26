@@ -1556,7 +1556,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali xavfsizlik tekshiruvini bajarish uchun avval Tab, keyin Enter tugmalarini bosing</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Bu IBAN raqamini Google Wallet hamyoniga saqlash imkonsiz. Ammo u bu qurilmadagi Chrome xotirasiga saqlandi. Chrome keyingi safar bu IBAN raqamini ishlatish uchun qayta ruxsat soʻraydi.</translation>
-<translation id="3621401353678567613">Kuzatuvdagi mahsulotlar narxi tushganda xabar olish uchun sozlamalarda bildirishnomalarni yoqing.</translation>
 <translation id="362276910939193118">To‘liq tarixni ko‘rsatish</translation>
 <translation id="3623041590998910684">Kameradan foydalanishi uchun Chrome brauzeringizga <ph name="LINK" />ga kirishi ruxsat bering.</translation>
 <translation id="3624292976554877583">Yorliqlar (jilosiz)</translation>
@@ -2265,6 +2264,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4775456404799771098">Faylni butunlay yoʻqotasiz</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Qalqib chiquvchi oyna bloklandi}other{# ta qalqib chiquvchi oyna bloklandi}}</translation>
 <translation id="4780366598804516005">Pochta qutisi 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> elektron hamyoningizdagi shaxsiy maʼlumotlardan foydalanmoqchi.</translation>
 <translation id="4785273477715803444">Jurnallarni filtrlash</translation>
 <translation id="4785376858512657294">Google hisobini boshqarish</translation>
 <translation id="4785689107224900852">Shu varaqqa o‘tish</translation>
@@ -2884,7 +2884,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5787146423283493983">Asosiy kelishuv</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Bu toʻlov usuli ushbu qurilmadan olib tashlanadi</translation>
-<translation id="5794065675298686371">Narx kuzatuvi bildirishnomalarini yoqish</translation>
 <translation id="5794093550048860249">Treking raqami</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />Boshqa Google mahsulotlaridagi smart funksiyalar<ph name="LINK_END" />” sozlamasini yoqing</translation>
 <translation id="5797916798049571144">Bu axborot karta maʼlumotlari bilan saqlanadi, shuning uchun hisob-kitob vaqtida avtomatik kiritiladi</translation>
@@ -4858,6 +4857,7 @@ Batafsil axborot:
 <translation id="9155211586651734179">Audio jihozlar biriktirildi</translation>
 <translation id="9157595877708044936">Sozlanmoqda...</translation>
 <translation id="9158491153040481956">Yaqinda oʻzgartirilgan parolingiz ommaviy oshkor qilinganligi aniqlandi. Muammo yuz bersa, hisobga Paroller menejeri orqali kirishingiz mumkin.</translation>
+<translation id="9161172953291434881">Bu saytga ishonasizmi?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ta fayl tarkibida maxfiy kontent boʻlishi mumkin}other{<ph name="FILE_COUNT" /> ta fayl tarkibida maxfiy kontent boʻlishi mumkin}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" />: Butun ekrandan chiqish uchun |<ph name="ACCELERATOR" />| tugmasini bosing</translation>
 <translation id="9163287596625611517">Slack xabari</translation>

@@ -981,7 +981,6 @@
 <translation id="4777866634702576038">Да се избрише групата картички?</translation>
 <translation id="4778653490315793244">Сѐ уште нема што да се прикаже</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> е вашиот стандарден пребарувач</translation>
-<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> сака да користи лични податоци од вашиот дигитален паричник.</translation>
 <translation id="4787736314074622408">Сакате да се избрише <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Дознајте како Chrome ве штити</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -2167,7 +2166,6 @@
 <translation id="9153056436992761257">Изберете ја претпочитаната позиција</translation>
 <translation id="9157212632995922070">Изберете сметка за да продолжите на <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Сподели само содржини</translation>
-<translation id="9161172953291434881">Дали му верувате на сајтов за да му ги доверите вашите податоци?</translation>
 <translation id="916607977885256133">Слика во слика</translation>
 <translation id="9168847423516963845">Премести ја лентата за адреса најдолу</translation>
 <translation id="9169507124922466868">Историјата на навигација е отворена до половина екран</translation>

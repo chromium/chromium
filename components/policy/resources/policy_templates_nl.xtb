@@ -4612,15 +4612,6 @@ Dit beleid heeft geen effect als het beleid <ph name="ENTERPRISE_PROFILE_BADGE_T
       Elke lijstvermelding bevat een woordenboek dat de extensie-ID moet bevatten in het veld 'Extensie-ID' en de update-URL in het veld 'Update-URL'.</translation>
 <translation id="3869180930654347954">First-Party Sets uitzetten voor alle betrokken gebruikers</translation>
 <translation id="3869566220234507038"><ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" />-browser altijd laden</translation>
-<translation id="3869959969423392506">Met het beleid bepaal je of geïsoleerde web-apps (GWA's) standaard sub-apps kunnen toevoegen.
-
-Als je het beleid instelt op 1, kunnen GWA-oorsprongen sub-apps toevoegen en de vereisten voor gebruikersactivatie of gebruikersbevestiging omzeilen.
-
-Als je het beleid instelt op 2, wordt voorkomen dat GWA-oorsprongen sub-apps toevoegen.
-
-Als je het beleid instelt op 3 of niet instelt, kunnen geïsoleerde web-app-oorsprongen sub-apps toevoegen na bevestiging van de gebruiker.
-
-Dit beleid kan worden overschreven voor specifieke geïsoleerde web-app-oorsprongen met het beleid <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> en <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" />.</translation>
 <translation id="3870035799352372700">Voorkomen dat de Google Assistent toegang heeft tot het scherm tijdens interacties</translation>
 <translation id="3870059789954671543">Zet de toegankelijkheidsfunctie voor markeren via toetsenbordfocus aan op het inlogscherm.
 

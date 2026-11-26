@@ -1561,7 +1561,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite paleisti saugos patikrą „Chrome“ nustatymuose</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Šio IBAN nepavyko išsaugoti „Google Wallet“. Vietoje to jis išsaugotas naršyklėje „Chrome“ šiame įrenginyje. „Chrome“ dar kartą paprašys, kai kitą kartą naudosite šį IBAN.</translation>
-<translation id="3621401353678567613">Jei norite gauti įspėjimus apie sumažintas stebimų produktų kainas, įjunkite pranešimus nustatymų skiltyje.</translation>
 <translation id="362276910939193118">Rodyti visą istoriją</translation>
 <translation id="3623041590998910684">Jei norite naudoti vaizdo kamerą, suteikite „Chrome“ prieigą <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Etiketės (matinės)</translation>
@@ -2271,6 +2270,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4775456404799771098">Failą prarasite visam laikui</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Iššokantysis langas užblokuotas}one{# iššokantysis langas užblokuotas}few{# iššokantieji langai užblokuoti}many{# iššokančiojo lango užblokuota}other{# iššokančiųjų langų užblokuota}}</translation>
 <translation id="4780366598804516005">1 pašto dėžutė</translation>
+<translation id="4784349455504343791">„<ph name="WEBSITE_ORIGIN" />“ nori naudoti asmens informaciją iš skaitmeninės piniginės.</translation>
 <translation id="4785273477715803444">Filtruoti žurnalu</translation>
 <translation id="4785376858512657294">Tvarkyti „Google“ paskyrą</translation>
 <translation id="4785689107224900852">Perjungti į šį skirtuką</translation>
@@ -2890,7 +2890,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5787146423283493983">Sutartis dėl rakto</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Šis mokėjimo metodas bus ištrintas iš šio įrenginio</translation>
-<translation id="5794065675298686371">Įjunkite kainų stebėjimo pranešimus</translation>
 <translation id="5794093550048860249">Stebėjimo numeris</translation>
 <translation id="5796050750059455142">Įjunkite parinktį „<ph name="BEGIN_LINK" />Išmaniosios funkcijos kituose „Google“ produktuose<ph name="LINK_END" />“.</translation>
 <translation id="5797916798049571144">Jie išsaugoti su kortelės informacija, todėl bus automatiškai įvesti atsiskaitant</translation>
@@ -4867,6 +4866,7 @@ Papildoma išsami informacija:
 <translation id="9155211586651734179">Pridėti garso įrenginiai</translation>
 <translation id="9157595877708044936">Nustatoma...</translation>
 <translation id="9158491153040481956">Neseniai pakeitėte slaptažodį, kuris buvo rastas viešajame duomenų saugos pažeidime. Kilus problemų, Slaptažodžių tvarkyklė gali padėti prisijungti.</translation>
+<translation id="9161172953291434881">Ar pasitikite šia svetaine ir norite jai patikėti savo duomenis?</translation>
 <translation id="9161794544616754735">{0,plural, =1{Faile „<ph name="FILE_NAME" />“ gali būti neskelbtino turinio}one{<ph name="FILE_COUNT" /> faile gali būti neskelbtino turinio}few{<ph name="FILE_COUNT" /> failuose gali būti neskelbtino turinio}many{<ph name="FILE_COUNT" /> failo gali būti neskelbtino turinio}other{<ph name="FILE_COUNT" /> failų gali būti neskelbtino turinio}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – jei norite išeiti iš viso ekrano režimo, paspauskite |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">„Slack“ pranešimas</translation>

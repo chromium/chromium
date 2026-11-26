@@ -1557,7 +1557,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆಯನ್ನು ರನ್ ಮಾಡಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">ಈ IBAN ಅನ್ನು Google Wallet ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಬದಲಿಗೆ ಇದನ್ನು ಈ ಸಾಧನದಲ್ಲಿನ Chrome ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಮುಂದಿನ ಬಾರಿ ನೀವು ಈ IBAN ಅನ್ನು ಬಳಸುವಾಗ Chrome ನಿಮ್ಮನ್ನು ಮತ್ತೆ ಕೇಳುತ್ತದೆ.</translation>
-<translation id="3621401353678567613">ನೀವು ಟ್ರ್ಯಾಕ್ ಮಾಡುವ ಉತ್ಪನ್ನಗಳಿಗೆ ಬೆಲೆ ಇಳಿಕೆಯ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪಡೆಯಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಿ.</translation>
 <translation id="362276910939193118">ಪೂರ್ಣ ಇತಿಹಾಸ ತೋರಿಸಿ</translation>
 <translation id="3623041590998910684">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು, Chrome ಗೆ <ph name="LINK" /> ನಲ್ಲಿ ಆ್ಯಕ್ಸೆಸ್ ನೀಡಿ.</translation>
 <translation id="3624292976554877583">ಲೇಬಲ್‌ಗಳು (ಮ್ಯಾಟ್)</translation>
@@ -2266,6 +2265,7 @@
 <translation id="4775456404799771098">ನೀವು ಫೈಲ್ ಅನ್ನು ಶಾಶ್ವತವಾಗಿ ಕಳೆದುಕೊಳ್ಳುತ್ತೀರಿ</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ಪಾಪ್-ಅಪ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{# ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{# ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
 <translation id="4780366598804516005">ಮೇಲ್‌ಬಾಕ್ಸ್ 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ನಿಮ್ಮ ಡಿಜಿಟಲ್ ವಾಲೆಟ್‌ನಿಂದ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="4785273477715803444">ಲಾಗ್‌ಗಳನ್ನು ಫಿಲ್ಟರ್ ಮಾಡಿ</translation>
 <translation id="4785376858512657294">Google ಖಾತೆ ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4785689107224900852">ಈ ಟ್ಯಾಬ್‌ಗೆ ಬದಲಾಯಿಸಿ</translation>
@@ -2885,7 +2885,6 @@
 <translation id="5787146423283493983">ಪ್ರಮುಖ ಒಪ್ಪಂದ</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ಈ ಪಾವತಿ ವಿಧಾನವನ್ನು ಈ ಸಾಧನದಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
-<translation id="5794065675298686371">ಬೆಲೆ ಟ್ರ್ಯಾಕಿಂಗ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="5794093550048860249">ಟ್ರ್ಯಾಕಿಂಗ್ ಸಂಖ್ಯೆ</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />ಇತರ Google ಉತ್ಪನ್ನಗಳಲ್ಲಿ ಸ್ಮಾರ್ಟ್ ಫೀಚರ್‌ಗಳನ್ನು<ph name="LINK_END" />” ಆನ್ ಮಾಡಿ</translation>
 <translation id="5797916798049571144">ನಿಮ್ಮ ಕಾರ್ಡ್ ಮಾಹಿತಿಯೊಂದಿಗೆ ಇದನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, ಆದ್ದರಿಂದ ಚೆಕ್ ಔಟ್ ಮಾಡುವಾಗ ಇದನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಭರ್ತಿ ಮಾಡಲಾಗುತ್ತದೆ</translation>
@@ -4860,6 +4859,7 @@
 <translation id="9155211586651734179">ಆಡಿಯೋ ಬಾಹ್ಯೋಪಕರಣಗಳನ್ನು ಲಗತ್ತಿಸಲಾಗಿದೆ</translation>
 <translation id="9157595877708044936">ಹೊಂದಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="9158491153040481956">ನೀವು ಇತ್ತೀಚೆಗೆ ಬದಲಾಯಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಸಾರ್ವಜನಿಕ ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ಕಂಡುಬಂದಿದೆ. ತೊಂದರೆ ಉಂಟಾದರೆ, Password Manager ನಿಮಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.</translation>
+<translation id="9161172953291434881">ನಿಮ್ಮ ಡೇಟಾದೊಂದಿಗೆ ಈ ಸೈಟ್ ಅನ್ನು ನೀವು ನಂಬುತ್ತೀರಾ?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ಫೈಲ್‌ ಸೆನ್ಸಿಟಿವ್ ಕಂಟೆಂಟ್ ಅನ್ನು ಒಳಗೊಂಡಿರಬಹುದು}one{<ph name="FILE_COUNT" /> ಫೈಲ್‌ಗಳು ಸೆನ್ಸಿಟಿವ್ ಕಂಟೆಂಟ್ ಅನ್ನು ಒಳಗೊಂಡಿರಬಹುದು}other{<ph name="FILE_COUNT" /> ಫೈಲ್‌ಗಳು ಸೆನ್ಸಿಟಿವ್ ಕಂಟೆಂಟ್ ಅನ್ನು ಒಳಗೊಂಡಿರಬಹುದು}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – ಫುಲ್ ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು, |<ph name="ACCELERATOR" />| ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="9163287596625611517">Slack ಸಂದೇಶ</translation>

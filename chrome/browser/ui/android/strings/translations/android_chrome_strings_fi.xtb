@@ -981,7 +981,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4777866634702576038">Poistetaanko välilehtiryhmä?</translation>
 <translation id="4778653490315793244">Ei vielä näytettävää</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> on oletushakukoneesi</translation>
-<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> haluaa käyttää henkilökohtaisia tietoja digitaalisesta lompakostasi.</translation>
 <translation id="4787736314074622408">Poistetaanko <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Katso, miten Chrome pitää sinut turvassa</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -2167,7 +2166,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="9153056436992761257">Valitse haluamasi sijainti</translation>
 <translation id="9157212632995922070">Valitse tili jatkaaksesi (<ph name="SITE_ETLD_PLUS_ONE" />)</translation>
 <translation id="9158770349521403363">Jaa vain sisältö</translation>
-<translation id="9161172953291434881">Luotatko datasi tämän sivuston käsiteltäväksi?</translation>
 <translation id="916607977885256133">Kuva kuvassa</translation>
 <translation id="9168847423516963845">Siirrä osoitepalkki alareunaan</translation>
 <translation id="9169507124922466868">Navigointihistoria on puoliksi auki</translation>

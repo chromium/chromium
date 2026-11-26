@@ -968,6 +968,11 @@ La soglia minima è di 1 minuto.
       Se la policy viene impostata su False, gli utenti non possono aggiungere né configurare le proprie stampanti. Inoltre, non possono utilizzare nessuna delle stampanti precedentemente configurate.
       </translation>
 <translation id="1613327425322354195">Segnala stato di sicurezza del dispositivo</translation>
+<translation id="1613552398317518165">Questa policy è deprecata e non ha alcun effetto. Le richieste di ricerca predefinite vengono sempre inviate utilizzando il metodo Get, quindi i parametri specificati da questa policy non vengono mai applicati. Utilizza invece <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> per configurare l'URL di ricerca, incluso il segnaposto <ph name="SEARCH_TERM_MARKER" />.
+
+I parametri POST sono supportati solo per la ricerca immagini, tramite <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+In precedenza, se <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> era attiva, l'impostazione di <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> consentiva di specificare i parametri durante la ricerca di un URL con POST, come coppie nome-valore separate da virgole.</translation>
 <translation id="1615221548356595305">Consenti la coalescenza di connessioni HTTP/2 per questi host anche quando sono in uso i certificati client</translation>
 <translation id="1616280227447957376">Consenti di proseguire dalla pagina di avviso SSL su origini specifiche</translation>
 <translation id="1617235075406854669">Attiva eliminazione cronologia del browser e dei download</translation>
@@ -4692,15 +4697,6 @@ Tieni presente che questa policy non ha alcun effetto se <ph name="ENTERPRISE_PR
       Ogni voce dell'elenco contiene un dizionario che deve includere l'ID dell'estensione nel campo "extension-id" e il relativo URL di aggiornamento nel campo "update-url".</translation>
 <translation id="3869180930654347954">Disattiva First-Party Sets per tutti gli utenti interessati</translation>
 <translation id="3869566220234507038">Carica sempre il browser <ph name="LACROS_NAME" /> <ph name="LACROS_ROOTFS_NAME" /></translation>
-<translation id="3869959969423392506">La policy consente di stabilire se le app web isolate (IWA) potranno aggiungere Sub Apps per impostazione predefinita.
-
-Se la policy viene impostata su 1, le origini delle IWA possono aggiungere Sub Apps e bypassare i requisiti relativi all'attivazione dall'utente o alla conferma dell'utente.
-
-Se la policy viene impostata su 2, le origini delle IWA non possono aggiungere Sub Apps.
-
-Se la policy viene impostata su 3 o se non viene configurata, le origini delle app web isolate possono aggiungere Sub Apps dopo la conferma dell'utente.
-
-È possibile eseguire l'override di questa policy per origini di app web isolate specifiche utilizzando le policy <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> e <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" />.</translation>
 <translation id="3870035799352372700">Blocca l'accesso dell'Assistente Google al contesto dello schermo durante le interazioni</translation>
 <translation id="3870059789954671543">Consente di attivare la funzione di accessibilità di evidenziazione dell'elemento attivo tramite tastiera nella schermata di accesso.
 
@@ -6095,6 +6091,11 @@ Questa policy non avrà alcun effetto se la policy <ph name="DEVICE_SCREENSAVER_
 <translation id="4725801978265372736">Richiedi la corrispondenza tra il nome dell'utente locale e il proprietario dell'host di accesso remoto</translation>
 <translation id="4726228171190098009">Non consentire al dispositivo di richiedere il Powerwash</translation>
 <translation id="4726895359147376813">Mappatura di ID permanenti a configurazioni delle VM</translation>
+<translation id="473189306848333308">Questa policy è deprecata e non ha alcun effetto. Le richieste di suggerimenti vengono sempre inviate utilizzando il metodo Get, quindi i parametri specificati da questa policy non vengono mai applicati. Utilizza invece <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> per configurare l'URL dei suggerimenti, incluso il segnaposto <ph name="SEARCH_TERM_MARKER" />.
+
+I parametri POST sono supportati solo per la ricerca immagini, tramite <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+In precedenza, se <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> era attiva, l'impostazione di <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> consentiva di specificare i parametri durante la ricerca di suggerimenti con POST, come coppie nome-valore separate da virgole.</translation>
 <translation id="4732069502693984686">Attiva l'acquisizione automatica di più schermate</translation>
 <translation id="4733471537137819387">Norme relative all'autenticazione HTTP integrata.</translation>
 <translation id="4737832614429402441">Utilizza il valore predefinito per l'accordo chiave post-quantistico per TLS</translation>
@@ -8266,6 +8267,15 @@ Se il valore viene impostato su false, non potranno accedere alla funzionalità.
 <translation id="6075316301208933536">Se la policy <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> viene impostata su <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> consente di personalizzare quando viene interrotta la ricarica della batteria, in base alla percentuale di carica. Il valore della policy <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> deve essere inferiore di almeno 5 punti percentuali rispetto a quello della policy <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Se la policy non viene configurata, viene applicata la modalità di ricarica della batteria di <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />.</translation>
+<translation id="6077759101739558312">Se la policy viene impostata su Attivata, Navigazione sicura considera attendibili i domini indicati. Non farà alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura (non supportato su iOS) non farà alcun controllo sui download ospitati su questi domini. Il servizio di protezione delle password di Navigazione sicura non farà alcun controllo per il riutilizzo delle password.
+
+Se la policy non viene configurata, la protezione predefinita di Navigazione sicura viene applicata a tutte le risorse.
+
+Questa policy non supporta espressioni regolari, ma i sottodomini di un determinato dominio sono consentiti. I nomi di dominio completi non sono obbligatori.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6082161804984853051">L'impostazione della policy determina l'utilizzo da parte di <ph name="PRODUCT_NAME" /> della directory che fornisci per l'archiviazione dei file memorizzati nella cache sul disco, indipendentemente dalla specificazione del flag --disk-cache-dir da parte degli utenti.
 
       Se la policy non viene impostata, <ph name="PRODUCT_NAME" /> utilizza la directory della cache predefinita, ma gli utenti possono modificare l'impostazione tramite il flag della riga di comando --disk-cache-dir.

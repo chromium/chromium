@@ -981,7 +981,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4777866634702576038">Smazat skupinu karet?</translation>
 <translation id="4778653490315793244">Zatím tu nic není</translation>
 <translation id="4782929588435725897">Vaším výchozím vyhledávačem je <ph name="SEARCH_ENGINE" /></translation>
-<translation id="4784349455504343791">Web <ph name="WEBSITE_ORIGIN" /> chce použít osobní údaje z vaší digitální peněženky.</translation>
 <translation id="4787736314074622408">Opravdu chcete smazat položku <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Přečtěte si, jak vás Chrome chrání</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -2167,7 +2166,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="9153056436992761257">Vyberte preferovanou pozici</translation>
 <translation id="9157212632995922070">Vyberte účet, pomocí kterého chcete pokračovat na web <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Sdílet pouze obsah</translation>
-<translation id="9161172953291434881">Svěříte tomuhle webu své údaje?</translation>
 <translation id="916607977885256133">Obraz v obraze</translation>
 <translation id="9168847423516963845">Přesunout adresní řádek dolů</translation>
 <translation id="9169507124922466868">Historie navigace je otevřená na půlce</translation>

@@ -1557,7 +1557,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ ছেটিঙত সুৰক্ষা পৰীক্ষা চলাবলৈ টেবত আৰু তাৰ পাছত এণ্টাৰত টিপক</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">এই IBAN Google Walletত ছেভ কৰিব পৰা নগ’ল। তাৰ পৰিৱৰ্তে সেইখন এই ডিভাইচটোৰ Chromeত ছেভ কৰা হৈছে। পৰৱৰ্তী বাৰ আপুনি এই IBAN ব্যৱহাৰ কৰাৰ সময়ত Chromeএ আপোনাক পুনৰ সুধিব।</translation>
-<translation id="3621401353678567613">আপুনি ট্ৰেক কৰা প্ৰ’ডাক্টৰ বাবে মূল্য হ্ৰাস হোৱাৰ সতৰ্কবাৰ্তা পাবলৈ ছেটিঙত জাননী অন কৰক।</translation>
 <translation id="362276910939193118">সম্পূৰ্ণ ইতিহাস দেখুৱাওক</translation>
 <translation id="3623041590998910684">আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ <ph name="LINK" />ত Chromeক এক্সেছ দিয়ক।</translation>
 <translation id="3624292976554877583">লেবেল (মেট)</translation>
@@ -2266,6 +2265,7 @@
 <translation id="4775456404799771098">আপুনি ফাইলটো স্থায়ীভাৱে হেৰুৱাব</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{পপ-আপ অৱৰোধ কৰা হ’ল}one{#টা পপ-আপ অৱৰোধ কৰা হৈছে}other{#টা পপ-আপ অৱৰোধ কৰা হৈছে}}</translation>
 <translation id="4780366598804516005">মেইলবক্স ১</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" />এ আপোনাৰ ডিজিটেল ৱালেটৰ পৰা ব্যক্তিগত তথ্য ব্যৱহাৰ কৰিব বিচাৰে।</translation>
 <translation id="4785273477715803444">লগসমূহ ফিল্টাৰ কৰক</translation>
 <translation id="4785376858512657294">Google একাউণ্ট পৰিচালনা কৰক</translation>
 <translation id="4785689107224900852">এই টেবটোলৈ যাওক</translation>
@@ -2885,7 +2885,6 @@
 <translation id="5787146423283493983">মুখ্য চুক্তি</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">এই পৰিশোধ পদ্ধতিটো এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব</translation>
-<translation id="5794065675298686371">মূল্য ট্ৰেকিঙৰ জাননী অন কৰক</translation>
 <translation id="5794093550048860249">ট্ৰেকিং নম্বৰ</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />Googleৰ অন্য প্ৰ’ডাক্টসমূহত স্মাৰ্ট সুবিধা<ph name="LINK_END" />” অন কৰক</translation>
 <translation id="5797916798049571144">এইটো আপোনাৰ কাৰ্ডৰ তথ্যৰ সৈতে ছেভ কৰা হৈছে যাতে চেকআউটত এইটো স্বয়ংক্ৰিয়ভাৱে পূৰ কৰা হয়</translation>
@@ -4859,6 +4858,7 @@
 <translation id="9155211586651734179">অডিঅ’ পৰিধীয় সংযুক্ত কৰা হ’ল</translation>
 <translation id="9157595877708044936">ছেট আপ কৰি থকা হৈছে...</translation>
 <translation id="9158491153040481956">এটা ৰাজহুৱা ডেটা উলংঘনত পোৱা এটা পাছৱৰ্ড আপুনি শেহতীয়াকৈ সলনি কৰিছে। যদি কিবা সমস্যা হয়, Password Managerএ আপোনাক ছাইন ইন কৰাত সহায় কৰিব পাৰে।</translation>
+<translation id="9161172953291434881">আপোনাৰ ডেটাৰ ক্ষেত্ৰত আপুনি এই ছাইটটোৰ ওপৰত বিশ্বাস কৰেনে?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />ত সংবেদনশীল সমল থাকিব পাৰে}one{<ph name="FILE_COUNT" /> টা ফাইলত সংবেদনশীল সমল থাকিব পাৰে}other{<ph name="FILE_COUNT" /> টা ফাইলত সংবেদনশীল সমল থাকিব পাৰে}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হ’বলৈ, |<ph name="ACCELERATOR" />| টিপক</translation>
 <translation id="9163287596625611517">Slack Message</translation>

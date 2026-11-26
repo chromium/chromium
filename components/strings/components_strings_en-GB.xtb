@@ -1560,7 +1560,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to run a safety check in Chrome settings</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">This IBAN couldn't be saved in Google Wallet. It's been saved to Chrome on this device instead. Chrome will ask you again the next time that you use this IBAN.</translation>
-<translation id="3621401353678567613">To get price drop alerts for products that you track, turn on notifications in settings.</translation>
 <translation id="362276910939193118">Show full history</translation>
 <translation id="3623041590998910684">To use your camera, give Chrome access in <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Labels (matte)</translation>
@@ -2270,6 +2269,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4775456404799771098">You will lose the file permanently</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up blocked}other{# pop-ups blocked}}</translation>
 <translation id="4780366598804516005">Mailbox 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> wants to use personal info from your digital wallet.</translation>
 <translation id="4785273477715803444">Filter logs</translation>
 <translation id="4785376858512657294">Manage Google Account</translation>
 <translation id="4785689107224900852">Switch to this tab</translation>
@@ -2889,7 +2889,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5787146423283493983">Key Agreement</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">This payment method will be deleted from this device</translation>
-<translation id="5794065675298686371">Turn on price tracking notifications</translation>
 <translation id="5794093550048860249">Tracking number</translation>
 <translation id="5796050750059455142">Turn on “<ph name="BEGIN_LINK" />Smart features in other Google products<ph name="LINK_END" />”</translation>
 <translation id="5797916798049571144">It's saved with your card info so it will be automatically filled at checkout</translation>
@@ -4865,6 +4864,7 @@ Additional details:
 <translation id="9155211586651734179">Audio peripherals attached</translation>
 <translation id="9157595877708044936">Setting up...</translation>
 <translation id="9158491153040481956">You recently changed a password found in a public data breach. In case of trouble, Password Manager can help you sign in.</translation>
+<translation id="9161172953291434881">Do you trust this site with your data?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> may contain sensitive content}other{<ph name="FILE_COUNT" /> files may contain sensitive content}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – to exit full screen, press |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack message</translation>

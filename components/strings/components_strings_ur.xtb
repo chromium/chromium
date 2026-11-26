@@ -1561,7 +1561,6 @@
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں موجود سیفٹی چیک چلانے کے لئے ٹیب پھر Enter دبائیں</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />، <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">‏اس IBAN کو Google والٹ میں محفوظ نہیں کیا جا سکا۔ اس کی بجائے اسے اس آلہ پر Chrome میں محفوظ کر دیا گیا ہے۔ اگلی بار آپ کے اس IBAN کو استعمال کرنے پر Chrome آپ سے دوبارہ پوچھے گا۔</translation>
-<translation id="3621401353678567613">آپ جن پروڈکٹس کو ٹریک کر رہے ہیں، ان کی قیمت میں کمی سے متعلق الرٹس حاصل کرنے کیلئے ترتیبات میں اطلاعات کو آن کریں۔</translation>
 <translation id="362276910939193118">پوری سرگزشت دکھائیں</translation>
 <translation id="3623041590998910684">‏اپنے کیمرے کا استعمال کرنے کے لیے، <ph name="LINK" /> میں جا کر Chrome کو رسائی فراہم کریں۔</translation>
 <translation id="3624292976554877583">لیبلز (مَیٹ)</translation>
@@ -2271,6 +2270,7 @@
 <translation id="4775456404799771098">آپ فائل سے مستقل طور پر محروم ہو جائیں گے</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{پاپ اپ مسدود کر دیا گیا}other{# پاپ اپس مسدود کر دیے گئے}}</translation>
 <translation id="4780366598804516005">میل باکس 1</translation>
+<translation id="4784349455504343791">‫<ph name="WEBSITE_ORIGIN" /> آپ کے ڈیجیٹل والٹ سے ذاتی معلومات استعمال کرنا چاہتی ہے۔</translation>
 <translation id="4785273477715803444">لاگز کو فلٹر کریں</translation>
 <translation id="4785376858512657294">‏Google اکاؤنٹ کا نظم کریں</translation>
 <translation id="4785689107224900852">اس ٹیب پر سوئچ کریں</translation>
@@ -2890,7 +2890,6 @@
 <translation id="5787146423283493983">کلیدی اقرارنامہ</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ادائیگی کا یہ طریقہ اس آلے سے حذف کر دیا جائے گا</translation>
-<translation id="5794065675298686371">قیمت کی ٹریکنگ کرنے والی اطلاعات کو آن کریں</translation>
 <translation id="5794093550048860249">ٹریکنگ نمبر</translation>
 <translation id="5796050750059455142">‏"<ph name="BEGIN_LINK" />‫Google کے دیگر پروڈکٹس میں اسمارٹ خصوصیات<ph name="LINK_END" />" کو آن کریں</translation>
 <translation id="5797916798049571144">یہ آپ کے کارڈ کی معلومات کے ساتھ محفوظ ہے لہذا یہ چیک آؤٹ پر خودکار طور پر پُر ہو جائے گا</translation>
@@ -4866,6 +4865,7 @@
 <translation id="9155211586651734179">آڈیو پیریفیرلز منسلک ہیں</translation>
 <translation id="9157595877708044936">تشکیل دیا جا رہا ہے…</translation>
 <translation id="9158491153040481956">آپ نے حال ہی میں عوامی ڈیٹا کی خلاف ورزی میں پایا جانے والا پاس ورڈ تبدیل کیا ہے۔ دشواری کی صورت میں، پاس ورڈ مینیجر سائن ان کرنے میں آپ کی مدد کر سکتا ہے۔</translation>
+<translation id="9161172953291434881">کیا آپ کو اپنے ڈیٹا کے ساتھ اس سائٹ پر بھروسہ ہے؟</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> میں حساس مواد ہو سکتا ہے}other{<ph name="FILE_COUNT" /> فائلز میں حساس مواد ہو سکتا ہے}}</translation>
 <translation id="9162097962559874470">‫<ph name="ORIGIN" /> – پوری اسکرین سے باہر نکلنے کے لیے، |<ph name="ACCELERATOR" />| کو دبائیں</translation>
 <translation id="9163287596625611517">‏‫Slack پیغام</translation>

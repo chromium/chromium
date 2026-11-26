@@ -1557,7 +1557,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para executar a confirmação de segurança nas configurações do Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Não foi possível salvar o IBAN na Carteira do Google. Ele foi salvo no Chrome neste dispositivo. O Chrome vai perguntar de novo na próxima vez que você usar esse IBAN.</translation>
-<translation id="3621401353678567613">Para receber alertas de redução no preço dos produtos que você monitora, ative as notificações nas configurações.</translation>
 <translation id="362276910939193118">Mostrar histórico completo</translation>
 <translation id="3623041590998910684">Para usar a câmera, permita o acesso ao Chrome em <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Rótulos (foscos)</translation>
@@ -2267,6 +2266,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4775456404799771098">Você vai perder o arquivo permanentemente</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up bloqueado}one{# pop-up bloqueado}other{# pop-ups bloqueados}}</translation>
 <translation id="4780366598804516005">Caixa de e-mails 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> quer usar informações pessoais da sua carteira digital.</translation>
 <translation id="4785273477715803444">Filtre registros</translation>
 <translation id="4785376858512657294">Gerenciar Conta do Google</translation>
 <translation id="4785689107224900852">Mudar para esta guia</translation>
@@ -2886,7 +2886,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5787146423283493983">Acordo de chave</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">A forma de pagamento será excluída do dispositivo</translation>
-<translation id="5794065675298686371">Ative as notificações de monitoramento de preços</translation>
 <translation id="5794093550048860249">Número de rastreamento</translation>
 <translation id="5796050750059455142">Ative os "<ph name="BEGIN_LINK" />Recursos inteligentes em outros produtos do Google<ph name="LINK_END" />"</translation>
 <translation id="5797916798049571144">Ele foi salvo com as informações do seu cartão para ser preenchido automaticamente na finalização da compra</translation>
@@ -4863,6 +4862,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9155211586651734179">Periféricos de áudio conectados</translation>
 <translation id="9157595877708044936">Configurando...</translation>
 <translation id="9158491153040481956">Você mudou recentemente uma senha encontrada em uma violação de dados pública. Em caso de problemas, o Gerenciador de senhas pode ajudar você a fazer login.</translation>
+<translation id="9161172953291434881">Você confia seus dados a este site?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> pode incluir conteúdo sensível}one{<ph name="FILE_COUNT" /> arquivo pode incluir conteúdo sensível}other{<ph name="FILE_COUNT" /> arquivos podem incluir conteúdo sensível}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Para sair do modo tela cheia, pressione |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Mensagem do Slack</translation>

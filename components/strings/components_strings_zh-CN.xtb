@@ -1554,7 +1554,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可从 Chrome 设置中运行安全检查</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />，<ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">此 IBAN 无法保存到 Google 钱包中，已改为保存到此设备上的 Chrome 中。Chrome 会在您下次使用此 IBAN 时再次询问您。</translation>
-<translation id="3621401353678567613">如需接收所跟踪商品的降价提醒，请在设置中开启通知。</translation>
 <translation id="362276910939193118">显示全部历史记录</translation>
 <translation id="3623041590998910684">如需使用摄像头，请在<ph name="LINK" />中授予 Chrome 访问权限。</translation>
 <translation id="3624292976554877583">标签（哑光）</translation>
@@ -2263,6 +2262,7 @@
 <translation id="4775456404799771098">您将永久丢失该文件</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{已拦截弹出式窗口}other{已拦截 # 个弹出式窗口}}</translation>
 <translation id="4780366598804516005">信箱 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> 想使用您数字钱包中的个人信息。</translation>
 <translation id="4785273477715803444">过滤日志</translation>
 <translation id="4785376858512657294">管理 Google 账号</translation>
 <translation id="4785689107224900852">切换到这个标签页</translation>
@@ -2882,7 +2882,6 @@
 <translation id="5787146423283493983">密钥协议</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">此付款方式将从本设备中删除</translation>
-<translation id="5794065675298686371">开启价格跟踪通知</translation>
 <translation id="5794093550048860249">跟踪编号</translation>
 <translation id="5796050750059455142">开启“<ph name="BEGIN_LINK" />其他 Google 产品中的智能功能<ph name="LINK_END" />”</translation>
 <translation id="5797916798049571144">此信息已与卡信息一起保存，因此在结账时会自动填充</translation>
@@ -4856,6 +4855,7 @@
 <translation id="9155211586651734179">已连接音频外围设备</translation>
 <translation id="9157595877708044936">正在设置...</translation>
 <translation id="9158491153040481956">您最近更改的密码已在某次公开数据泄露事件中外泄。如果您遇到问题，密码管理工具可以帮助您登录。</translation>
+<translation id="9161172953291434881">您是否信任此网站处理您的数据？</translation>
 <translation id="9161794544616754735">{0,plural, =1{“<ph name="FILE_NAME" />”可能包含敏感内容}other{<ph name="FILE_COUNT" /> 个文件可能包含敏感内容}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> - 若要退出全屏模式，请按 |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack 消息</translation>

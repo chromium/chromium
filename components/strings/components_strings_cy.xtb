@@ -1560,7 +1560,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i gynnal gwiriad diogelwch yng ngosodiadau Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Ni fu modd cadw'r IBAN hwn yn Google Wallet. Mae wedi'i gadw i Chrome ar y ddyfais hon yn lle hynny. Bydd Chrome yn gofyn i chi eto y tro nesaf y byddwch yn defnyddio'r IBAN hwn.</translation>
-<translation id="3621401353678567613">I gael rhybuddion gostyngiad pris ar gyfer cynhyrchion rydych yn eu holrhain, trowch hysbysiadau ymlaen yn y gosodiadau.</translation>
 <translation id="362276910939193118">Dangos Hanes Llawn</translation>
 <translation id="3623041590998910684">I ddefnyddio'ch camera, rhowch fynediad i Chrome yn <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Labeli (Matte)</translation>
@@ -2270,6 +2269,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4775456404799771098">Byddwch yn colli'r ffeil yn barhaol</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Rhwystrwyd ffenestr naid}zero{Rhwystrwyd # ffenestr naid}two{Rhwystrwyd # ffenestr naid}few{Rhwystrwyd # ffenestr naid}many{Rhwystrwyd # ffenestr naid}other{Rhwystrwyd # ffenestr naid}}</translation>
 <translation id="4780366598804516005">Blwch negeseuon 1</translation>
+<translation id="4784349455504343791">Mae <ph name="WEBSITE_ORIGIN" /> eisiau defnyddio gwybodaeth bersonol o'ch waled ddigidol.</translation>
 <translation id="4785273477715803444">Hidlo logiau</translation>
 <translation id="4785376858512657294">Rheoli Cyfrif Google</translation>
 <translation id="4785689107224900852">Newid i'r tab hwn</translation>
@@ -2889,7 +2889,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5787146423283493983">Cytundeb Allweddol</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Bydd y dull talu hwn yn cael ei ddileu o'r ddyfais hon</translation>
-<translation id="5794065675298686371">Trowch hysbysiadau olrhain prisiau ymlaen</translation>
 <translation id="5794093550048860249">Rhif olrhain</translation>
 <translation id="5796050750059455142">Trowch “<ph name="BEGIN_LINK" />Nodweddion clyfar mewn cynhyrchion Google eraill<ph name="LINK_END" />” ymlaen</translation>
 <translation id="5797916798049571144">Mae wedi'i gadw gyda gwybodaeth eich cerdyn felly bydd yn cael ei lenwi'n awtomatig wrth dalu</translation>
@@ -4864,6 +4863,7 @@ Manylion ychwanegol:
 <translation id="9155211586651734179">Wedi atodi perifferolion sain.</translation>
 <translation id="9157595877708044936">Wrthi'n gosod...</translation>
 <translation id="9158491153040481956">Yn ddiweddar, gwnaethoch newid cyfrinair a ganfuwyd mewn achos o dor data cyhoeddus. Mewn achos o drafferth, gall y Rheolwr Cyfrineiriau eich helpu i fewngofnodi.</translation>
+<translation id="9161172953291434881">Ydych chi'n ymddiried yn y wefan hon gyda'ch data?</translation>
 <translation id="9161794544616754735">{0,plural, =1{Mae'n bosib bod <ph name="FILE_NAME" /> yn cynnwys deunydd sensitif}zero{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}two{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}few{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}many{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}other{Mae'n bosib bod <ph name="FILE_COUNT" /> ffeil yn cynnwys deunydd sensitif}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – I adael y sgrîn lawn, pwyswch |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Neges Slack</translation>

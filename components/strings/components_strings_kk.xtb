@@ -1555,7 +1555,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінен қауіпсіздік тексерісін іске қосу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Бұл IBAN нөмірін Google Wallet-ке сақтау мүмкін болмады. Ол осы құрылғыдағы Chrome-ға сақталды. Келесі жолы осы IBAN нөмірін қолданған кезде, Chrome сізден қайтадан рұқсат сұрайды.</translation>
-<translation id="3621401353678567613">Бақылап жүрген өнімдеріңіздің бағасы түскен кезде хабарландыру алу үшін параметрлерде хабарландыруларды қосыңыз.</translation>
 <translation id="362276910939193118">Тарихты толық көрсету</translation>
 <translation id="3623041590998910684">Камераны пайдалану үшін <ph name="LINK" /> бөлімінде Chrome-ға рұқсат беріңіз.</translation>
 <translation id="3624292976554877583">Белгілер (күңгірт)</translation>
@@ -2265,6 +2264,7 @@
 <translation id="4775456404799771098">Файл біржола жойылады.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Қалқымалы терезе бөгелді}other{# қалқымалы терезе бөгелді}}</translation>
 <translation id="4780366598804516005">1-ші пошта жәшігі</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> цифрлық әмияныңыздағы жеке ақпаратыңызды пайдалануға рұқсат сұрайды.</translation>
 <translation id="4785273477715803444">Журналдарды іріктеу</translation>
 <translation id="4785376858512657294">Google аккаунтын басқару</translation>
 <translation id="4785689107224900852">Осы қойындыға ауысу</translation>
@@ -2884,7 +2884,6 @@
 <translation id="5787146423283493983">Негізгі келісім</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Бұл төлеу әдісі осы құрылғыдан жойылады</translation>
-<translation id="5794065675298686371">Баға бақылау хабарландыруларын қосу</translation>
 <translation id="5794093550048860249">Бақылау нөмірі</translation>
 <translation id="5796050750059455142">"<ph name="BEGIN_LINK" />Басқа Google өнімдеріндегі смарт функциялар<ph name="LINK_END" />" параметрін қосыңыз.</translation>
 <translation id="5797916798049571144">Ол картаңыз туралы ақпаратпен бірге сақталады, сондықтан төлеу кезінде автоматты түрде толтырылады.</translation>
@@ -4857,6 +4856,7 @@
 <translation id="9155211586651734179">Жалғанған перифериялық аудиоқұрылғылар</translation>
 <translation id="9157595877708044936">Орнатылуда…</translation>
 <translation id="9158491153040481956">Баршаға ашық қолды болған деректерден табылған құпия сөзіңізді жақында өзгерттіңіз. Қиындық туындаса, Password Manager аккаунтқа кіруге көмектесе алады.</translation>
+<translation id="9161172953291434881">Бұл сайтқа деректеріңізді сеніп тапсыра аласыз ба?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> файлында шетін контент болуы мүмкін.}other{<ph name="FILE_COUNT" /> файлда шетін контент болуы мүмкін.}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Толық экран режимінен шығу үшін |<ph name="ACCELERATOR" />| пернесін басыңыз</translation>
 <translation id="9163287596625611517">Slack хабары</translation>

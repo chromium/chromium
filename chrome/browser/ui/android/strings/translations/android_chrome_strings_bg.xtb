@@ -981,7 +981,6 @@
 <translation id="4777866634702576038">Да се изтрие ли групата раздели?</translation>
 <translation id="4778653490315793244">Още няма нищо за показване</translation>
 <translation id="4782929588435725897">Основната ви търсеща машина е <ph name="SEARCH_ENGINE" /></translation>
-<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> иска да използва лична информация от дигиталния ви портфейл.</translation>
 <translation id="4787736314074622408">Искате ли да изтриете <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Научете как Chrome се грижи за безопасността ви</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -2167,7 +2166,6 @@
 <translation id="9153056436992761257">Изберете предпочитаната от вас позиция.</translation>
 <translation id="9157212632995922070">Изберете профил, за да продължите към <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Споделяне само на съдържанието</translation>
-<translation id="9161172953291434881">Доверявате ли данните си на този сайт?</translation>
 <translation id="916607977885256133">Картина в картината</translation>
 <translation id="9168847423516963845">Преместване на адресната лента в долната част</translation>
 <translation id="9169507124922466868">Историята на навигацията е наполовина отворена</translation>

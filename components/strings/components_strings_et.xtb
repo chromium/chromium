@@ -1557,7 +1557,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage tabulaatorit ja siis sisestusklahvi, et Chrome'i seadetes ohutuskontroll käitada</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Seda IBAN-it saanud Google Walletisse salvestada. See salvestati selles seadmes hoopis Chrome’i. Kui kasutate seda IBAN-it järgmine kord, küsib Chrome teilt seda uuesti.</translation>
-<translation id="3621401353678567613">Jälgitavate toodete hinnalanguse teavituste saamiseks lülitage seadetes sisse märguanded.</translation>
 <translation id="362276910939193118">Näita kogu ajalugu</translation>
 <translation id="3623041590998910684">Kaamera kasutamiseks andke Chrome'ile juurdepääs jaotises <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Etiketid (matt)</translation>
@@ -2267,6 +2266,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4775456404799771098">Kaotate faili jäädavalt.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Hüpikaken blokeeriti}other{# hüpikakent blokeeriti}}</translation>
 <translation id="4780366598804516005">Postkast 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> soovib kasutada teie digitaalsest rahakotist pärinevat isiklikku teavet.</translation>
 <translation id="4785273477715803444">Filtreerige logisid</translation>
 <translation id="4785376858512657294">Google'i konto haldamine</translation>
 <translation id="4785689107224900852">Lülitage sellele vahelehele</translation>
@@ -2886,7 +2886,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5787146423283493983">Võtme ühildumine</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">See makseviis kustutatakse sellest seadmest</translation>
-<translation id="5794065675298686371">Hinnajälgimise märguannete sisselülitamine</translation>
 <translation id="5794093550048860249">Jälgimisnumber</translation>
 <translation id="5796050750059455142">Lülitage sisse seade „<ph name="BEGIN_LINK" />Nutifunktsioonid muudes Google'i teenustes<ph name="LINK_END" />“.</translation>
 <translation id="5797916798049571144">See salvestatakse koos teie kaarditeabega, et see täidetaks maksmisel automaatselt.</translation>
@@ -4861,6 +4860,7 @@ Lisateave:
 <translation id="9155211586651734179">Välised heliseadmed on ühendatud</translation>
 <translation id="9157595877708044936">Seadistamine...</translation>
 <translation id="9158491153040481956">Muutsite hiljuti avalikust andmetega seotud rikkumisest leitud parooli. Probleemide korral saab Paroolihaldur aidata teil sisse logida.</translation>
+<translation id="9161172953291434881">Kas usaldate sellele saidile oma andmeid?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> võib sisaldada tundlikku sisu}other{<ph name="FILE_COUNT" /> faili võivad sisaldada tundlikku sisu}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – täisekraanilt väljumiseks vajutage klahvi |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slacki sõnum</translation>

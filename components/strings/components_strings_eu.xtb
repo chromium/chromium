@@ -1552,7 +1552,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" tekla Chrome-ren ezarpenetan segurtasun-egiaztapena egiteko</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Ezin izan da gorde IBANa Google Wallet-en. Horren ordez, gailu honetako Chrome-n gorde da. IBANa erabiltzen duzun hurrengoan, Chrome-k berriro galdetuko dizu.</translation>
-<translation id="3621401353678567613">Jarraipena egiten diezun produktuen prezioak jaisten direnean alertak jasotzeko, aktibatu jakinarazpenak ezarpenetan.</translation>
 <translation id="362276910939193118">Erakutsi historia osoa</translation>
 <translation id="3623041590998910684">Kamera erabiltzeko, eman Chrome-ri baimena hemen: <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Etiketak (mateak)</translation>
@@ -2262,6 +2261,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4775456404799771098">Fitxategia betiko galduko duzu</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Leiho gainerakor bat blokeatu da}other{# leiho gainerakor blokeatu dira}}</translation>
 <translation id="4780366598804516005">1. postontzia</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> webguneak diru-zorro digitaleko informazio pertsonala erabili nahi du.</translation>
 <translation id="4785273477715803444">Iragazi erregistroak</translation>
 <translation id="4785376858512657294">Kudeatu Google-ko kontua</translation>
 <translation id="4785689107224900852">Aldatu fitxa honetara</translation>
@@ -2881,7 +2881,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5787146423283493983">Gakoei buruzko akordioa</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Ordainketa-metodoa gailutik ezabatuko da</translation>
-<translation id="5794065675298686371">Aktibatu prezioen jarraipenari buruzko jakinarazpenak</translation>
 <translation id="5794093550048860249">Jarraipen-zenbakia</translation>
 <translation id="5796050750059455142">Aktibatu "<ph name="BEGIN_LINK" />Eginbide adimendunak" Google-ren beste produktu batzuetan<ph name="LINK_END" /></translation>
 <translation id="5797916798049571144">Txartelari buruzko informazioarekin batera gorde da; beraz, automatikoki beteko da ordainketa-prozesuan</translation>
@@ -4851,6 +4850,7 @@ Xehetasun gehiago:
 <translation id="9155211586651734179">erantsitako audio-gailu periferikoak</translation>
 <translation id="9157595877708044936">Konfiguratzen…</translation>
 <translation id="9158491153040481956">Datuen isilpekotasunaren urratze publiko batean aurkitu zen pasahitz bat aldatu duzu duela gutxi. Arazorik baduzu, Pasahitz-kudeatzailea zerbitzuak saioa hasten lagun diezazuke.</translation>
+<translation id="9161172953291434881">Webgune honi zure datuak emateaz fidatzen zara?</translation>
 <translation id="9161794544616754735">{0,plural, =1{Baliteke <ph name="FILE_NAME" /> fitxategiak kontuzko edukia izatea}other{Baliteke <ph name="FILE_COUNT" /> fitxategik kontuzko edukia izatea}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" />: pantaila osotik irteteko, sakatu |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack-eko mezua</translation>

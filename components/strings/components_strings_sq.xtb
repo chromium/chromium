@@ -1556,7 +1556,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të ekzekutuar një kontroll sigurie te cilësimet e Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Ky numër IBAN nuk mund të ruhej te "Portofoli i Google". Në vend të kësaj, ai është ruajtur në Chrome në këtë pajisje. Chrome do të të pyesë përsëri herën tjetër kur ta përdorësh këtë numër IBAN.</translation>
-<translation id="3621401353678567613">Për të marrë sinjalizime për uljen e çmimit për produktet që monitoron ti, aktivizo njoftimet te cilësimet.</translation>
 <translation id="362276910939193118">Shfaq historikun e plotë</translation>
 <translation id="3623041590998910684">Për të përdorur kamerën, jepi qasje Chrome te <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Etiketa (mat)</translation>
@@ -2266,6 +2265,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4775456404799771098">Do ta humbasësh skedarin përgjithmonë</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Një dritare kërcyese u bllokua}other{# dritare kërcyese u bllokuan}}</translation>
 <translation id="4780366598804516005">Kutia postare 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> kërkon të përdorë informacionet e tua personale nga portofoli yt dixhital.</translation>
 <translation id="4785273477715803444">Filtro evidencat</translation>
 <translation id="4785376858512657294">Menaxho "Llogarinë e Google"</translation>
 <translation id="4785689107224900852">Kalo te kjo skedë</translation>
@@ -2885,7 +2885,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5787146423283493983">Marrëveshja kryesore</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Kjo mënyrë pagese do të fshihet nga kjo pajisje</translation>
-<translation id="5794065675298686371">Aktivizo njoftimet për monitorimin e çmimeve</translation>
 <translation id="5794093550048860249">Numri i gjurmimit</translation>
 <translation id="5796050750059455142">Aktivizo "<ph name="BEGIN_LINK" />Veçoritë inteligjente në produktet e tjera të Google<ph name="LINK_END" />"</translation>
 <translation id="5797916798049571144">Ai është ruajtur me informacionet e kartës sate, kështu që do të plotësohet automatikisht në përfundim të blerjes</translation>
@@ -4858,6 +4857,7 @@ Detaje shtesë:
 <translation id="9155211586651734179">Pajisjet periferike audio të lidhura</translation>
 <translation id="9157595877708044936">Po konfiguron...</translation>
 <translation id="9158491153040481956">Së fundi ke ndryshuar një fjalëkalim të gjetur në një nxjerrje të paautorizuar të të dhënave publike. Në rast se ke probleme, "Menaxheri i fjalëkalimeve" mund të të ndihmojë të identifikohesh.</translation>
+<translation id="9161172953291434881">A ke besim te ky sajt me të dhënat e tua?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> mund të përfshijë përmbajtje delikate}other{<ph name="FILE_COUNT" /> skedarë mund të përfshijnë përmbajtje delikate}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> - Për të dalë nga ekrani i plotë, shtyp |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Mesazh i Slack</translation>

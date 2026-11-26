@@ -946,6 +946,11 @@ Une "entrée utilisateur" est définie par les API du système d'exploitation et
       Si cette règle est définie sur "False", ils ne pourront pas ajouter ni configurer leurs propres imprimantes. Ils ne pourront pas non plus se servir d'imprimantes préalablement configurées pour lancer des impressions.
       </translation>
 <translation id="1613327425322354195">Signaler l'état de sécurité des appareils</translation>
+<translation id="1613552398317518165">Cette règle est obsolète et n'a aucun effet. Les requêtes de recherche par défaut sont toujours envoyées à l'aide de la méthode get. Les paramètres spécifiés par cette règle ne sont donc jamais appliqués. Utilisez plutôt la règle <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> pour configurer l'URL de recherche, y compris l'espace réservé <ph name="SEARCH_TERM_MARKER" />.
+
+Les paramètres POST ne sont acceptés que pour la recherche par image, à l'aide de <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Auparavant, si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> était activée, <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> permettait de définir les paramètres lors de la recherche d'une URL à l'aide de la méthode POST, sous forme de paires nom-valeur séparées par une virgule.</translation>
 <translation id="1615221548356595305">Autoriser le multiplexage des connexions HTTP/2 pour les hôtes qui utilisent des certificats client</translation>
 <translation id="1616280227447957376">Autoriser l'accès malgré un avertissement SSL depuis certaines origines</translation>
 <translation id="1617235075406854669">Activer la suppression de l'historique du navigateur et de l'historique des téléchargements</translation>
@@ -4607,15 +4612,6 @@ Notez que cette règle n'aura aucun effet si la règle <ph name="ENTERPRISE_PROF
        Chaque entrée de la liste contient un dictionnaire qui doit inclure l'identifiant d'extension dans le champ "extension-id", ainsi que son adresse URL dans le champ "update-url".</translation>
 <translation id="3869180930654347954">Désactiver les ensembles propriétaires pour tous les utilisateurs concernés</translation>
 <translation id="3869566220234507038">Toujours charger le navigateur <ph name="LACROS_NAME" /> <ph name="LACROS_ROOTFS_NAME" /></translation>
-<translation id="3869959969423392506">Cette règle détermine si les applications Web isolées (AWI) peuvent ajouter des sous-applis par défaut.
-
-Si cette règle est définie sur 1, les origines d'AWI peuvent ajouter des sous-applis et ignorer les exigences de geste ou de confirmation de l'utilisateur.
-
-Si cette règle est définie sur 2, les origines d'AWI ne peuvent pas ajouter de sous-applis.
-
-Si cette règle est définie sur 3, ou si elle n'est pas configurée, les origines d'applications Web isolées peuvent ajouter des sous-applis après confirmation de l'utilisateur.
-
-Pour les origines d'applications Web isolées spécifiques, cette règle peut être remplacée en utilisant les règles <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> et <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" />.</translation>
 <translation id="3870035799352372700">Empêcher l'Assistant Google d'accéder au contexte de l'écran durant les interactions</translation>
 <translation id="3870059789954671543">Permet d'activer la fonctionnalité d'accessibilité de mise en surbrillance au clavier sur l'écran de connexion.
 
@@ -5997,6 +5993,11 @@ Cette règle n'a aucune incidence lorsque la règle <ph name="DEVICE_SCREENSAVER
 <translation id="4725801978265372736">Exiger que le nom de l'utilisateur local corresponde à celui du propriétaire de l'hôte d'accès à distance</translation>
 <translation id="4726228171190098009">Ne pas autoriser l'appareil à lancer Powerwash</translation>
 <translation id="4726895359147376813">Mappage avec les configurations de VM à partir des ID persistants</translation>
+<translation id="473189306848333308">Cette règle est obsolète et n'a aucun effet. Les requêtes de suggestion sont toujours envoyées à l'aide de la méthode get. Les paramètres spécifiés par cette règle ne sont donc jamais appliqués. Utilisez plutôt la règle <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> pour configurer l'URL de suggestion, y compris l'espace réservé <ph name="SEARCH_TERM_MARKER" />.
+
+Les paramètres POST ne sont acceptés que pour la recherche par image, à l'aide de <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Auparavant, si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> était activée, <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> permettait de définir les paramètres d'une recherche de suggestions à l'aide de la méthode POST, sous la forme de paires nom-valeur séparées par une virgule.</translation>
 <translation id="4732069502693984686">Active la capture d'écran automatique de plusieurs écrans</translation>
 <translation id="4733471537137819387">Stratégies liées à l'authentification HTTP intégrée</translation>
 <translation id="4737832614429402441">Utiliser la valeur par défaut pour l'accord de clé post-quantique activé pour TLS</translation>

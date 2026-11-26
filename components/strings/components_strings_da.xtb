@@ -1560,7 +1560,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />– tryk på Tab-tasten efterfulgt af Enter for at køre et sikkerhedstjek i Chrome-indstillingerne</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Dette IBAN kunne ikke gemmes i Google Wallet. Det er gemt i Chrome på denne enhed i stedet. Chrome spørger dig igen, næste gang du bruger dette IBAN.</translation>
-<translation id="3621401353678567613">Hvis du vil have notifikationer om prisfald på produkter, du sporer, kan du aktivere notifikationer i indstillingerne.</translation>
 <translation id="362276910939193118">Vis hele historikken</translation>
 <translation id="3623041590998910684">Giv Chrome adgang i <ph name="LINK" /> for at bruge kameraet.</translation>
 <translation id="3624292976554877583">Etiketter (matte)</translation>
@@ -2270,6 +2269,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4775456404799771098">Du mister filen permanent</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop op-vinduet er blokeret}one{# pop op-vindue er blokeret}other{# pop op-vinduer er blokeret}}</translation>
 <translation id="4780366598804516005">Postkasse 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vil gerne bruge personlige oplysninger fra din digitale pung.</translation>
 <translation id="4785273477715803444">Filtrér logs</translation>
 <translation id="4785376858512657294">Administrer Google-konto</translation>
 <translation id="4785689107224900852">Skift til denne fane</translation>
@@ -2889,7 +2889,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5787146423283493983">Nøgleoverensstemmelse</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Betalingsmetoden slettes fra denne enhed</translation>
-<translation id="5794065675298686371">Aktivér prissporingsnotifikationer</translation>
 <translation id="5794093550048860249">Sporingsnummer</translation>
 <translation id="5796050750059455142">Aktivér "<ph name="BEGIN_LINK" />Smartfunktioner i andre Google-produkter<ph name="LINK_END" />"</translation>
 <translation id="5797916798049571144">Det gemmes sammen med dine kortoplysninger, så det udfyldes automatisk ved betaling</translation>
@@ -4866,6 +4865,7 @@ Yderligere oplysninger:
 <translation id="9155211586651734179">Forbundne eksterne lydenheder</translation>
 <translation id="9157595877708044936">Konfigurerer...</translation>
 <translation id="9158491153040481956">Du har for nylig ændret en adgangskode, der blev lækket i forbindelse med et offentligt brud på datasikkerheden. Hvis du har problemer, kan Adgangskodeadministrator hjælpe dig med at logge ind.</translation>
+<translation id="9161172953291434881">Har du tillid til, at dette website kan håndtere dine data?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> indeholder muligvis følsomt indhold}one{<ph name="FILE_COUNT" /> fil indeholder muligvis følsomt indhold}other{<ph name="FILE_COUNT" /> filer indeholder muligvis følsomt indhold}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Tryk på |<ph name="ACCELERATOR" />| for at afslutte fuld skærm</translation>
 <translation id="9163287596625611517">Slack-besked</translation>

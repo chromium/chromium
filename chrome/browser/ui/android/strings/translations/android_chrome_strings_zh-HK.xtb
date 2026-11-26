@@ -981,7 +981,6 @@
 <translation id="4777866634702576038">要刪除分頁群組嗎？</translation>
 <translation id="4778653490315793244">未有可以顯示內容</translation>
 <translation id="4782929588435725897">預設搜尋引擎已設定為 <ph name="SEARCH_ENGINE" /></translation>
-<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> 想使用你電子錢包中的個人資料。</translation>
 <translation id="4787736314074622408">係咪想刪除 <ph name="ITEM_TITLE" />？</translation>
 <translation id="4793679854893018356">瞭解 Chrome 如何保護使用者的網上安全</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -2167,7 +2166,6 @@
 <translation id="9153056436992761257">選擇偏好位置</translation>
 <translation id="9157212632995922070">選擇要繼續在 <ph name="SITE_ETLD_PLUS_ONE" /> 使用的帳戶</translation>
 <translation id="9158770349521403363">只分享內容</translation>
-<translation id="9161172953291434881">你信任此網站處理你的資料嗎？</translation>
 <translation id="916607977885256133">畫中畫</translation>
 <translation id="9168847423516963845">將網址列移至底部</translation>
 <translation id="9169507124922466868">導覽記錄喺畫面下半部分顯示</translation>

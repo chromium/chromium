@@ -4648,15 +4648,6 @@ Ten en cuenta que esta política no tendrá efecto si se asigna el valor <ph nam
       Cada entrada de la lista contiene un diccionario, que debe incluir el ID de la extensión en el campo "extension-id" y una URL de actualización en el campo "update-url".</translation>
 <translation id="3869180930654347954">Inhabilita Conjuntos propios para todos los usuarios afectados</translation>
 <translation id="3869566220234507038">Cargar siempre el navegador <ph name="LACROS_NAME" /> (<ph name="LACROS_ROOTFS_NAME" />)</translation>
-<translation id="3869959969423392506">Esta política controla si las aplicaciones web aisladas (IWAs) podrán añadir subaplicaciones de forma predeterminada.
-
-Si se le asigna el valor 1 a esta política, los orígenes de IWAs podrán añadir subaplicaciones y omitir los requisitos de gesto o confirmación del usuario.
-
-Si se le asigna el valor 2 a esta política, se impedirá que los orígenes de IWAs añadan subaplicaciones.
-
-Si se le asigna el valor 3 a esta política o no se define, los orígenes de aplicaciones web aisladas podrán añadir subaplicaciones con la confirmación del usuario.
-
-Esta política se puede anular para orígenes de aplicaciones web aisladas específicos usando las políticas <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> y <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" />.</translation>
 <translation id="3870035799352372700">Impedir que el Asistente de Google acceda al contexto de la pantalla durante las interacciones</translation>
 <translation id="3870059789954671543">Habilitar la función de accesibilidad que permite destacar el foco del teclado en la pantalla de inicio de sesión.
 

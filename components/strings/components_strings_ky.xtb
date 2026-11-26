@@ -1559,7 +1559,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлеринен коопсуздукту текшерүү үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Бул IBAN коду Google Капчыкка сакталган жок. Анын ордуна ал ушул түзмөктөгү Chrome'до сакталды. Бул IBAN кодун кийинки жолу колдонгонуңузда, Chrome муну кайра сурайт.</translation>
-<translation id="3621401353678567613">Сиз көз салып жаткан товарлардын баалары төмөндөгөндө эскертүүлөрдү алуу үчүн параметрлерден билдирүүлөрдү күйгүзүңүз.</translation>
 <translation id="362276910939193118">Толук таржымалды көрсөтүү</translation>
 <translation id="3623041590998910684">Камераны колдонуу үчүн Chrome'го <ph name="LINK" /> дарегине кирүүгө уруксат бериңиз.</translation>
 <translation id="3624292976554877583">Энбелгилер (жылтырабаган кагаз)</translation>
@@ -2269,6 +2268,7 @@
 <translation id="4775456404799771098">Файл биротоло өчүрүлөт</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Калкыма терезе бөгөттөлгөн}other{# калкыма терезе бөгөттөлгөн}}</translation>
 <translation id="4780366598804516005">1-электрондук каттар кутусу</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> электрондук капчыгыңыздагы жеке маалыматтарыңызды колдонгону жатат.</translation>
 <translation id="4785273477715803444">Таржымалдарды чыпкалоо</translation>
 <translation id="4785376858512657294">Google аккаунтун башкаруу</translation>
 <translation id="4785689107224900852">Бул өтмөккө которулуу</translation>
@@ -2888,7 +2888,6 @@
 <translation id="5787146423283493983">Негизги макулдашуу</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Бул төлөм ыкмасы ушул түзмөктөн өчүрүлөт</translation>
-<translation id="5794065675298686371">Бааларга көз салуу билдирмелерин күйгүзүү</translation>
 <translation id="5794093550048860249">Көз салуу номери</translation>
 <translation id="5796050750059455142">"<ph name="BEGIN_LINK" />Башка Google кызматтарындагы акылдуу функцияларды<ph name="LINK_END" />" күйгүзүңүз</translation>
 <translation id="5797916798049571144">Ал картаңыздын маалыматы менен сакталгандыктан, төлөө учурунда автоматтык түрдө толтурулат</translation>
@@ -4863,6 +4862,7 @@
 <translation id="9155211586651734179">Аудио түзмөктүн көмөкчү жабдыктары тиркелди</translation>
 <translation id="9157595877708044936">Орнотууда…</translation>
 <translation id="9158491153040481956">Жакында өзгөрткөн сырсөзүңүз уурдалды. Маселе келип чыкса, Сырсөздөрдү башкаргыч аккаунтуңузга кирүүгө жардам берет.</translation>
+<translation id="9161172953291434881">Бул сайтка маалыматтарыңызды бересизби?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> файлында купуя контент болушу мүмкүн}other{<ph name="FILE_COUNT" /> файлда купуя контент болушу мүмкүн}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Толук экрандан чыгуу үчүн |<ph name="ACCELERATOR" />| баскычын басыңыз</translation>
 <translation id="9163287596625611517">Slack билдирүүсү</translation>

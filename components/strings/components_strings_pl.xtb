@@ -1560,7 +1560,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby uruchomić kontrolę zabezpieczeń w ustawieniach Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Nie udało się zapisać numeru IBAN w Portfelu Google. Zamiast tego został on zapisany w Chrome na tym urządzeniu. Chrome poprosi Cię o to ponownie, gdy następnym razem użyjesz tego numeru IBAN.</translation>
-<translation id="3621401353678567613">Żeby otrzymywać alerty o obniżkach cen śledzonych produktów, włącz powiadomienia w ustawieniach.</translation>
 <translation id="362276910939193118">Wyświetl całą historię</translation>
 <translation id="3623041590998910684">Aby używać kamery, otwórz <ph name="LINK" /> i zezwól Chrome na dostęp.</translation>
 <translation id="3624292976554877583">Etykiety (matowe)</translation>
@@ -2270,6 +2269,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4775456404799771098">Utracisz plik na stałe</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Zablokowano wyskakujące okienko}few{Zablokowano # wyskakujące okienka}many{Zablokowano # wyskakujących okienek}other{Zablokowano # wyskakującego okienka}}</translation>
 <translation id="4780366598804516005">Zestaw tac odbiorczych 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> chce używać danych osobowych z Twojego cyfrowego portfela.</translation>
 <translation id="4785273477715803444">Filtrowanie dzienników</translation>
 <translation id="4785376858512657294">Zarządzaj kontem Google</translation>
 <translation id="4785689107224900852">Przełącz na tę kartę</translation>
@@ -2889,7 +2889,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5787146423283493983">Uzgadnianie klucza</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Ta forma płatności zostanie usunięta z tego urządzenia</translation>
-<translation id="5794065675298686371">Włącz powiadomienia dotyczące śledzenia cen</translation>
 <translation id="5794093550048860249">Numer śledzenia przesyłki</translation>
 <translation id="5796050750059455142">Włącz „<ph name="BEGIN_LINK" />Inteligentne funkcje w innych usługach Google<ph name="LINK_END" />”</translation>
 <translation id="5797916798049571144">Te informacje zostały zapisane z danymi karty i będą automatycznie uzupełniane podczas płatności</translation>
@@ -4864,6 +4863,7 @@ Dodatkowe informacje:
 <translation id="9155211586651734179">Podłączone urządzenia peryferyjne audio</translation>
 <translation id="9157595877708044936">Konfigurowanie...</translation>
 <translation id="9158491153040481956">Ostatnio zmieniono hasło, które zostało ujawnione w wyniku naruszenia bezpieczeństwa danych. W razie problemów z logowaniem skorzystaj z pomocy Menedżera haseł Google.</translation>
+<translation id="9161172953291434881">Czy ufasz tej witrynie i chcesz powierzyć jej swoje dane?</translation>
 <translation id="9161794544616754735">{0,plural, =1{Plik <ph name="FILE_NAME" /> może zawierać treści poufne}few{<ph name="FILE_COUNT" /> pliki mogą zawierać treści poufne}many{<ph name="FILE_COUNT" /> plików może zawierać treści poufne}other{<ph name="FILE_COUNT" /> pliku może zawierać treści poufne}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – aby zamknąć tryb pełnoekranowy, naciśnij |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Wiadomość na Slacku</translation>

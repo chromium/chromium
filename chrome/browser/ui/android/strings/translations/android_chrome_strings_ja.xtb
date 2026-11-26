@@ -981,7 +981,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4777866634702576038">タブグループを削除しますか？</translation>
 <translation id="4778653490315793244">コンテンツはまだありません</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> が既定の検索エンジンです</translation>
-<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> は、デジタル ウォレットの個人情報の使用を求めています。</translation>
 <translation id="4787736314074622408"><ph name="ITEM_TITLE" />を削除しますか？</translation>
 <translation id="4793679854893018356">Chrome のユーザー保護の仕組みについて</translation>
 <translation id="4794291718671962615">（<ph name="MEGABYTES" />）<ph name="URL" /></translation>
@@ -2167,7 +2166,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="9153056436992761257">表示する位置を選択</translation>
 <translation id="9157212632995922070"><ph name="SITE_ETLD_PLUS_ONE" /> で続行するアカウントを選択してください</translation>
 <translation id="9158770349521403363">コンテンツのみ共有</translation>
-<translation id="9161172953291434881">このサイトを信頼してデータの使用を許可しますか？</translation>
 <translation id="916607977885256133">ピクチャー イン ピクチャー</translation>
 <translation id="9168847423516963845">アドレスバーを下部に移動</translation>
 <translation id="9169507124922466868">ナビゲーション履歴が半分開いています</translation>

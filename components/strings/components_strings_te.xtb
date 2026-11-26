@@ -1555,7 +1555,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో భద్రతా తనిఖీని రన్ చేయడానికి 'Tab'ను నొక్కి ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">ఈ IBANను Google Walletలో సేవ్ చేయడం సాధ్యపడలేదు. బదులుగా, ఈ డివైజ్‌లోని Chromeలో సేవ్ అయింది. తర్వాతిసారి మీరు IBANను ఉపయోగించేటప్పుడు Chrome మళ్లీ మిమ్మల్ని అడుగుతుంది.</translation>
-<translation id="3621401353678567613">మీరు ట్రాక్ చేసే ప్రోడక్ట్‌లకు సంబంధించిన ధర తగ్గుదల అలర్ట్‌లను పొందడానికి, సెట్టింగ్‌లలో నోటిఫికేషన్‌లను ఆన్ చేయండి.</translation>
 <translation id="362276910939193118">పూర్తి హిస్టరీని చూపించు</translation>
 <translation id="3623041590998910684">మీ కెమెరాను ఉపయోగించడానికి, <ph name="LINK" /> లింక్‌లో Chromeకు యాక్సెస్ ఇవ్వండి.</translation>
 <translation id="3624292976554877583">లేబుల్స్ (మాట్)</translation>
@@ -2265,6 +2264,7 @@
 <translation id="4775456404799771098">మీరు ఫైల్‌ను శాశ్వతంగా కోల్పోతారు</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{పాప్-అప్ బ్లాక్ చేయబడింది}other{# పాప్-అప్‌లు బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="4780366598804516005">మెయిల్‌బాక్స్ 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> మీ డిజిటల్ వాలెట్ నుండి వ్యక్తిగత సమాచారాన్ని ఉపయోగించాలనుకుంటోంది.</translation>
 <translation id="4785273477715803444">లాగ్‌లను ఫిల్టర్ చేయండి</translation>
 <translation id="4785376858512657294">Google ఖాతాను మేనేజ్ చేయండి</translation>
 <translation id="4785689107224900852">ఈ ట్యాబ్‌కు మారండి</translation>
@@ -2884,7 +2884,6 @@
 <translation id="5787146423283493983">కీ ఒప్పందాలు</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ఈ పరికరం నుండి ఈ పేమెంట్ ఆప్షన్ తొలగించబడుతుంది</translation>
-<translation id="5794065675298686371">ధర ట్రాకింగ్ నోటిఫికేషన్‌లను ఆన్ చేయండి</translation>
 <translation id="5794093550048860249">ట్రాకింగ్ నంబర్</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />ఇతర Google ప్రోడక్ట్‌లలో స్మార్ట్ ఫీచర్‌లు<ph name="LINK_END" />” అనే ఆప్షన్‌ను ఆన్ చేయండి</translation>
 <translation id="5797916798049571144">ఇది మీ కార్డ్ సమాచారంతో సేవ్ అయింది, కాబట్టి చెక్ అవుట్ సమయంలో ఆటోమేటిక్‌గా ఫిల్ అవుతుంది</translation>
@@ -4860,6 +4859,7 @@
 <translation id="9155211586651734179">ఆడియో పెరిఫెరల్స్ జోడించబడ్డాయి</translation>
 <translation id="9157595877708044936">అమర్చుతోంది...</translation>
 <translation id="9158491153040481956">పబ్లిక్ డేటా ఉల్లంఘనలో బహిర్గతమైన పాస్‌వర్డ్‌ను మీరు ఇటీవల మార్చారు. సమస్యగా ఉంటే, సైన్ ఇన్ చేయడానికి Password Manager మీకు సహాయపడగలదు.</translation>
+<translation id="9161172953291434881">మీ డేటా విషయంలో మీరు ఈ సైట్‌ను విశ్వసిస్తారా?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />‌లో సున్నితమైన కంటెంట్ ఉండవచ్చు}other{<ph name="FILE_COUNT" /> ఫైల్స్‌లో సున్నితమైన కంటెంట్ ఉండవచ్చు}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – ఫుల్ స్క్రీన్ నుండి ఎగ్జిట్ కావడానికి, |<ph name="ACCELERATOR" />| నొక్కండి</translation>
 <translation id="9163287596625611517">Slack మెసేజ్</translation>

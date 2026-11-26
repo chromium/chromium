@@ -4579,15 +4579,6 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
       每个列表条目都包含一个字典，其“extension-id”字段必须包含扩展程序 ID，而其“update-url”字段必须包含更新网址。</translation>
 <translation id="3869180930654347954">对所有受影响客户停用 First-Party Sets 功能</translation>
 <translation id="3869566220234507038">始终加载 <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> 浏览器</translation>
-<translation id="3869959969423392506">此政策用于控制独立式 Web 应用 (IWA) 是否默认能够添加子应用。
-
-如果此政策设为 1，系统会允许 IWA 源添加子应用，并绕过用户手势或用户确认要求。
-
-如果此政策设为 2，系统会禁止 IWA 源添加子应用。
-
-如果此政策设为 3 或未设置，系统会允许 IWA 源在用户确认后添加子应用。
-
-您可通过在 <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> 和 <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" /> 政策中设置特定 IWA 源来覆盖此政策。</translation>
 <translation id="3870035799352372700">禁止 Google 助理在互动过程中访问屏幕中的内容</translation>
 <translation id="3870059789954671543">在登录屏幕上启用“键盘焦点突出显示”无障碍功能。
 

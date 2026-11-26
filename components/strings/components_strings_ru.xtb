@@ -1559,7 +1559,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы запустить проверку безопасности в настройках Chrome.</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />. <ph name="SUBTEXT" />.</translation>
 <translation id="3620865353340165509">Не удалось сохранить код IBAN в Google Кошельке. Он был сохранен в Chrome на этом устройстве. Браузер предложит повторить попытку, когда вы снова воспользуетесь кодом IBAN.</translation>
-<translation id="3621401353678567613">Включите уведомления в настройках, чтобы узнавать о снижении цен на интересующие вас товары.</translation>
 <translation id="362276910939193118">Показать всю историю</translation>
 <translation id="3623041590998910684">Чтобы использовать камеру, предоставьте браузеру Chrome доступ в <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Этикетки (матовые)</translation>
@@ -2269,6 +2268,7 @@
 <translation id="4775456404799771098">Файл будет удален без возможности восстановления.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Всплывающее окно заблокировано}one{Заблокировано # всплывающее окно}few{Заблокировано # всплывающих окна}many{Заблокировано # всплывающих окон}other{Заблокировано # всплывающ. окна}}</translation>
 <translation id="4780366598804516005">Почтовый ящик 1</translation>
+<translation id="4784349455504343791">Сайт <ph name="WEBSITE_ORIGIN" /> запрашивает разрешение на использование вашей личной информации из электронного кошелька.</translation>
 <translation id="4785273477715803444">Введите фильтр</translation>
 <translation id="4785376858512657294">Параметры аккаунта Google</translation>
 <translation id="4785689107224900852">Переключиться на эту вкладку</translation>
@@ -2888,7 +2888,6 @@
 <translation id="5787146423283493983">Согласование ключей</translation>
 <translation id="5789643057113097023">:</translation>
 <translation id="5793317771769868848">Этот способ оплаты будет удален с устройства.</translation>
-<translation id="5794065675298686371">Отслеживайте цены</translation>
 <translation id="5794093550048860249">Номер отслеживания</translation>
 <translation id="5796050750059455142">Включите параметр <ph name="BEGIN_LINK" />Умные функции в других продуктах Google<ph name="LINK_END" />.</translation>
 <translation id="5797916798049571144">Оно сохранено вместе с данными карты и будет автоматически подставляться при оплате.</translation>
@@ -4864,6 +4863,7 @@
 <translation id="9155211586651734179">Какие периферийные аудиоустройства подключены.</translation>
 <translation id="9157595877708044936">Настройка...</translation>
 <translation id="9158491153040481956">Недавно вы изменили пароль, оказавшийся в открытом доступе из-за утечки данных. В случае проблем Менеджер паролей поможет войти в аккаунт.</translation>
+<translation id="9161172953291434881">Вы доверяете этому сайту?</translation>
 <translation id="9161794544616754735">{0,plural, =1{Файл "<ph name="FILE_NAME" />" может содержать конфиденциальные данные.}one{<ph name="FILE_COUNT" /> файл может содержать конфиденциальные данные.}few{<ph name="FILE_COUNT" /> файла могут содержать конфиденциальные данные.}many{<ph name="FILE_COUNT" /> файлов могут содержать конфиденциальные данные.}other{<ph name="FILE_COUNT" /> файла могут содержать конфиденциальные данные.}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" />: чтобы выйти из полноэкранного режима, нажмите |<ph name="ACCELERATOR" />|.</translation>
 <translation id="9163287596625611517">Сообщение в Slack</translation>

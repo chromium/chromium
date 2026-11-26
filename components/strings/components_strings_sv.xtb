@@ -1560,7 +1560,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill köra en säkerhetskontroll i inställningarna för Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Det gick inte att spara IBAN-numret i Google Wallet. Det har sparats i Chrome på den här enheten i stället. Chrome frågar dig igen nästa gång du använder detta IBAN.</translation>
-<translation id="3621401353678567613">Aktivera aviseringar i inställningarna om du vill få aviseringar om prissänkningar för produkter du bevakar.</translation>
 <translation id="362276910939193118">Visa fullständig historik</translation>
 <translation id="3623041590998910684">Ge Chrome åtkomst i <ph name="LINK" /> om du vill använda kameran.</translation>
 <translation id="3624292976554877583">Etiketter (matta)</translation>
@@ -2270,6 +2269,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4775456404799771098">Du förlorar filen permanent</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Popup-fönster har blockerats}other{# popup-fönster har blockerats}}</translation>
 <translation id="4780366598804516005">Postfack 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vill använda personliga uppgifter från din digitala plånbok.</translation>
 <translation id="4785273477715803444">Filterloggar</translation>
 <translation id="4785376858512657294">Hantera Google-kontot</translation>
 <translation id="4785689107224900852">Byt till den här fliken</translation>
@@ -2889,7 +2889,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5787146423283493983">Nyckelavtal</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Den här betalningsmetoden raderas från enheten</translation>
-<translation id="5794065675298686371">Aktivera aviseringar om prisbevakning</translation>
 <translation id="5794093550048860249">Spårningsnummer</translation>
 <translation id="5796050750059455142">Aktivera <ph name="BEGIN_LINK" />Smarta funktioner i andra produkter från Google<ph name="LINK_END" /></translation>
 <translation id="5797916798049571144">Det sparas tillsammans med dina kortuppgifter så att det fylls i automatiskt i kassan</translation>
@@ -4866,6 +4865,7 @@ Mer information:
 <translation id="9155211586651734179">Ansluten kringutrustning för ljud</translation>
 <translation id="9157595877708044936">Konfigurerar...</translation>
 <translation id="9158491153040481956">Du har nyligen ändrat ett lösenord som har hittats i ett offentligt dataintrång. Om du har problem kan Lösenordshantering hjälpa dig att logga in.</translation>
+<translation id="9161172953291434881">Litar du på den här webbplatsen och vill ge den tillgång till din data?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> kan ha känsligt innehåll}other{<ph name="FILE_COUNT" /> filer kan ha känsligt innehåll}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Avsluta helskärmsläget genom att trycka på |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack-meddelande</translation>

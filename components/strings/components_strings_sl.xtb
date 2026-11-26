@@ -1560,7 +1560,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite v nastavitvah Chroma zagnati varnostno preverjanje.</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Te številke IBAN ni bilo mogoče shraniti v Google Denarnici. Namesto tega je shranjena v Chromu v tej napravi. Chrome vas bo ob naslednji uporabi te številke IBAN znova vprašal.</translation>
-<translation id="3621401353678567613">Če želite prejemati opozorila o znižanju cen za izdelke, ki jih spremljate, v nastavitvah vklopite obvestila.</translation>
 <translation id="362276910939193118">Prikaži celotno zgodovino</translation>
 <translation id="3623041590998910684">Če želite uporabljati kamero, omogočite Chromu dostop v <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Labels (Matte)</translation>
@@ -2270,6 +2269,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4775456404799771098">Datoteko boste trajno izgubili</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pojavno okno je blokirano}one{# pojavno okno je blokirano}two{# pojavni okni sta blokirani}few{# pojavna okna so blokirana}other{# pojavnih oken je blokiranih}}</translation>
 <translation id="4780366598804516005">Nabiralnik 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> želi uporabiti osebne podatke iz vaše digitalne denarnice.</translation>
 <translation id="4785273477715803444">Filtriranje dnevnikov</translation>
 <translation id="4785376858512657294">Upravljanje računa Google</translation>
 <translation id="4785689107224900852">Preklop na ta zavihek</translation>
@@ -2889,7 +2889,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5787146423283493983">Pogodba o ključu</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">To plačilno sredstvo bo izbrisano iz te naprave.</translation>
-<translation id="5794065675298686371">Vklop obvestil za spremljanje cen</translation>
 <translation id="5794093550048860249">Številka za sledenje</translation>
 <translation id="5796050750059455142">Vklopite »<ph name="BEGIN_LINK" />Pametne funkcije v drugih Googlovih izdelkih<ph name="LINK_END" />«</translation>
 <translation id="5797916798049571144">Shranjeno je s podatki o kartici, da bo samodejno izpolnjeno ob zaključku nakupa</translation>
@@ -4865,6 +4864,7 @@ Dodatne podrobnosti:
 <translation id="9155211586651734179">Priključena zvočna dodatna oprema</translation>
 <translation id="9157595877708044936">Nastavljanje ...</translation>
 <translation id="9158491153040481956">Nedavno ste spremenili geslo, najdeno v javni podatkovni kršitvi. Če imate težave, vam lahko Upravitelj gesel pomaga pri prijavi.</translation>
+<translation id="9161172953291434881">Ali želite temu spletnemu mestu zaupati svoje podatke?</translation>
 <translation id="9161794544616754735">{0,plural, =1{Datoteka <ph name="FILE_NAME" /> morda vsebuje občutljivo vsebino}one{<ph name="FILE_COUNT" /> datoteka morda vsebuje občutljivo vsebino}two{<ph name="FILE_COUNT" /> datoteki morda vsebujeta občutljivo vsebino}few{<ph name="FILE_COUNT" /> datoteke morda vsebujejo občutljivo vsebino}other{<ph name="FILE_COUNT" /> datotek morda vsebuje občutljivo vsebino}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Če želite zapreti celozaslonski način, pritisnite |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Sporočilo v storitvi Slack</translation>

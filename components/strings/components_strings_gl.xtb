@@ -1560,7 +1560,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Se queres executar unha Comprobación de seguranza na configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Este IBAN non se puido gardar en Google Wallet. En lugar diso, gardouse en Chrome neste dispositivo. Chrome preguntarache de novo a próxima vez que o uses.</translation>
-<translation id="3621401353678567613">Para recibir alertas se baixan os prezos dos produtos dos que fas un seguimento, activa as notificacións na configuración.</translation>
 <translation id="362276910939193118">Mostrar historial completo</translation>
 <translation id="3623041590998910684">Para usar a cámara, concédelle acceso a Chrome en <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Etiquetas (mate)</translation>
@@ -2270,6 +2269,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4775456404799771098">Perderás o ficheiro de forma permanente</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Bloqueouse a ventá emerxente}other{Bloqueáronse # ventás emerxentes}}</translation>
 <translation id="4780366598804516005">Caixa de correo 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> quere usar información persoal do teu moedeiro dixital.</translation>
 <translation id="4785273477715803444">Filtra rexistros</translation>
 <translation id="4785376858512657294">Xestionar Conta de Google</translation>
 <translation id="4785689107224900852">Cambia a esta pestana</translation>
@@ -2889,7 +2889,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5787146423283493983">Acordo de claves</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Este método de pago eliminarase do dispositivo</translation>
-<translation id="5794065675298686371">Activar as notificacións de seguimento de prezos</translation>
 <translation id="5794093550048860249">Número de seguimento</translation>
 <translation id="5796050750059455142">Activa a opción <ph name="BEGIN_LINK" />Funcións intelixentes noutros produtos de Google<ph name="LINK_END" /></translation>
 <translation id="5797916798049571144">Gardouse coa información da túa tarxeta, polo que se completará automaticamente ao tramitar as compras</translation>
@@ -4864,6 +4863,7 @@ Detalles adicionais:
 <translation id="9155211586651734179">Os periféricos de audio conectados</translation>
 <translation id="9157595877708044936">Configurando...</translation>
 <translation id="9158491153040481956">Recentemente cambiaches un contrasinal que se atopou nunha violación da seguranza dos datos pública. Se tes problemas, o xestor de contrasinais pode axudarche a iniciar sesión.</translation>
+<translation id="9161172953291434881">Confías neste sitio para que use os teus datos?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> pode incluír contido delicado}other{<ph name="FILE_COUNT" /> ficheiros poden incluír contido delicado}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Para saír da pantalla completa, preme |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Mensaxe de Slack</translation>

@@ -1560,7 +1560,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის პარამეტრებიდან უსაფრთხოების შემოწმების გასაშვებად დააჭირეთ კლავიშს Tab, შემდეგ Enter-ს</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">ამ IBAN-ის Google საფულეში შენახვა ვერ მოხერხდა. სანაცვლოდ ის შენახულია Chrome-ში, ამ მოწყობილობაზე. Chrome კვლავ გკითხავთ, როცა შემდეგ ჯერზე ამ IBAN-ს გამოიყენებთ.</translation>
-<translation id="3621401353678567613">თქვენ მიერ თვალმიდევნებულ პროდუქტებზე ფასის შემცირების შესახებ გაფრთხილების მისაღებად ჩართეთ შეტყობინებები პარამეტრებიდან.</translation>
 <translation id="362276910939193118">სრული ისტორიის ნახვა</translation>
 <translation id="3623041590998910684">თქვენი კამერა რომ გამოიყენოთ, გახსენით <ph name="LINK" /> და მიანიჭეთ Chrome-ს წვდომა.</translation>
 <translation id="3624292976554877583">ლეიბლები (მქრქალი)</translation>
@@ -2270,6 +2269,7 @@
 <translation id="4775456404799771098">ფაილს სამუდამოდ დაკარგავთ</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ამომხტარი ფანჯარა დაიბლოკა}other{# ამომხტარი ფანჯარა დაიბლოკა}}</translation>
 <translation id="4780366598804516005">საფოსტო ყუთი 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ითხოვს, გამოიყენოს თქვენი პერსონალური ინფორმაცია თქვენი ციფრული საფულიდან.</translation>
 <translation id="4785273477715803444">ჟურნალების გაფილტვრა</translation>
 <translation id="4785376858512657294">Google ანგარიშის მართვა</translation>
 <translation id="4785689107224900852">ამ ჩანართზე გადართვა</translation>
@@ -2889,7 +2889,6 @@
 <translation id="5787146423283493983">ძირითადი შეთანხმება</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">გადახდის ეს მეთოდი წაიშლება ამ მოწყობილობიდან</translation>
-<translation id="5794065675298686371">ფასისთვის თვალის მიდევნების შეტყობინებების ჩართვა</translation>
 <translation id="5794093550048860249">თვალის დევნების ნომერი</translation>
 <translation id="5796050750059455142">ჩართეთ „<ph name="BEGIN_LINK" />გონიერი ფუნქციები Google-ის სხვა პროდუქტებში<ph name="LINK_END" />“</translation>
 <translation id="5797916798049571144">ის შენახულია თქვენი ბარათის ინფორმაციასთან ერთად, ამიტომ ავტომატურად შეივსება შეკვეთის გაფორმებისას</translation>
@@ -4864,6 +4863,7 @@
 <translation id="9155211586651734179">მიერთებული პერიფერიული აუდიომოწყობილობები</translation>
 <translation id="9157595877708044936">დაყენება…</translation>
 <translation id="9158491153040481956">თქვენ მიერ ახლახან შეცვლილი პაროლი აღმოჩნდა მონაცემთა საჯარო დარღვევაში. პრობლემის შემთხვევაში პაროლების მმართველი დაგეხმარებათ სისტემაში შესვლაში.</translation>
+<translation id="9161172953291434881">ანდობთ ამ საიტს თქვენს მონაცემებს?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />, შესაძლოა, შეიცავდეს სენსიტიურ კონტენტს}other{<ph name="FILE_COUNT" /> ფაილი, შესაძლოა, შეიცავდეს სენსიტიურ კონტენტს}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> — სრულეკრანიანი რეჟიმიდან გასასვლელად დააჭირეთ |<ph name="ACCELERATOR" />|-ს</translation>
 <translation id="9163287596625611517">Slack შეტყობინება</translation>

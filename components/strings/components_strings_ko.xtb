@@ -1560,7 +1560,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 안전 확인을 실행하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">이 IBAN은 Google 월렛에 저장할 수 없습니다. 대신 이 기기의 Chrome에 저장됩니다. 다음에 이 IBAN을 사용할 때 Chrome에서 다시 확인합니다.</translation>
-<translation id="3621401353678567613">추적하는 제품의 가격 인하 알림을 받으려면 설정에서 알림을 사용 설정하세요.</translation>
 <translation id="362276910939193118">방문 기록 전체 보기</translation>
 <translation id="3623041590998910684">카메라를 사용하려면 <ph name="LINK" />에서 Chrome에 액세스 권한을 부여하세요.</translation>
 <translation id="3624292976554877583">라벨(무광)</translation>
@@ -2270,6 +2269,7 @@
 <translation id="4775456404799771098">파일이 영구적으로 삭제됩니다.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{팝업 1개 차단됨}other{팝업 #개 차단됨}}</translation>
 <translation id="4780366598804516005">메일박스 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" />에서 디지털 지갑의 개인 정보를 사용하려고 합니다.</translation>
 <translation id="4785273477715803444">필터 로그</translation>
 <translation id="4785376858512657294">Google 계정 관리</translation>
 <translation id="4785689107224900852">이 탭으로 전환</translation>
@@ -2889,7 +2889,6 @@
 <translation id="5787146423283493983">키 계약</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">기기에서 이 결제 수단이 삭제됩니다.</translation>
-<translation id="5794065675298686371">가격 추적 알림 사용 설정</translation>
 <translation id="5794093550048860249">운송장 번호</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />다른 Google 제품의 스마트 기능<ph name="LINK_END" />”을 사용 설정합니다.</translation>
 <translation id="5797916798049571144">카드 정보와 함께 저장되므로 결제 시 자동으로 입력됩니다.</translation>
@@ -4863,6 +4862,7 @@
 <translation id="9155211586651734179">연결된 오디오 주변기기</translation>
 <translation id="9157595877708044936">설정 중...</translation>
 <translation id="9158491153040481956">최근에 공개 정보 유출로 인해 노출된 비밀번호를 변경했습니다. 문제가 발생하면 비밀번호 관리자를 통해 로그인할 수 있습니다.</translation>
+<translation id="9161172953291434881">이 사이트에 내 데이터를 맡길 수 있나요?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />에 민감한 콘텐츠가 포함되어 있을 수 있습니다.}other{파일 <ph name="FILE_COUNT" />개에 민감한 콘텐츠가 포함되어 있을 수 있습니다.}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> - 전체 화면을 종료하려면 |<ph name="ACCELERATOR" />| 키를 누르세요.</translation>
 <translation id="9163287596625611517">Slack 메시지</translation>

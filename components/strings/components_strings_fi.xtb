@@ -1561,7 +1561,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tee turvatarkistus Chromen asetuksissa painamalla sarkainta ja sitten Enter</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">IABN-numeroa ei voitu tallentaa Google Walletiin. Se on sen sijaan tallennettu Chromeen tällä laitteella. Chrome kysyy tätä seuraavan kerran, kun käytät tätä IBAN-numeroa.</translation>
-<translation id="3621401353678567613">Jos haluat hinnanlaskuilmoituksia seuraamistasi tuotteista, laita ilmoitukset päälle asetuksista.</translation>
 <translation id="362276910939193118">Näytä koko selaushistoria</translation>
 <translation id="3623041590998910684">Jos haluat käyttää kameraa, anna Chromelle pääsyoikeus täältä: <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Etiketit (matta)</translation>
@@ -2271,6 +2270,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4775456404799771098">Menetät tiedoston pysyvästi</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Ponnahdusikkuna estetty}other{# ponnahdusikkunaa estetty}}</translation>
 <translation id="4780366598804516005">Postilaatikko 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> haluaa käyttää henkilökohtaisia tietoja digitaalisesta lompakostasi.</translation>
 <translation id="4785273477715803444">Suodata lokit</translation>
 <translation id="4785376858512657294">Ylläpidä Google-tiliä</translation>
 <translation id="4785689107224900852">Siirry tälle välilehdelle</translation>
@@ -2890,7 +2890,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5787146423283493983">Avainsopimus</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Tämä maksutapa poistetaan tältä laitteelta</translation>
-<translation id="5794065675298686371">Hintaseurantailmoitusten laittaminen päälle</translation>
 <translation id="5794093550048860249">Seurantanumero</translation>
 <translation id="5796050750059455142">Laita päälle <ph name="BEGIN_LINK" />Älyominaisuudet muissa Googlen tuotteissa<ph name="LINK_END" /></translation>
 <translation id="5797916798049571144">Se on tallennettu korttitietoihin, joten se täytetään automaattisesti kassalla</translation>
@@ -4867,6 +4866,7 @@ Lisätietoja:
 <translation id="9155211586651734179">Yhdistetyt audiolisälaitteet</translation>
 <translation id="9157595877708044936">Valmistellaan...</translation>
 <translation id="9158491153040481956">Olet äskettäin vaihtanut salasanan, joka löytyi julkisesta tietosuojaloukkauksesta. Jos sinulla on ongelmia, Salasanat-palvelu voi auttaa sinua kirjautumaan sisään.</translation>
+<translation id="9161172953291434881">Luotatko datasi tämän sivuston käsiteltäväksi?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> saattaa sisältää arkaluontoista sisältöä}other{<ph name="FILE_COUNT" /> tiedostossa voi olla arkaluontoista sisältöä}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Poistu koko näytön tilasta painamalla |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack-viesti</translation>

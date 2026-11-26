@@ -982,7 +982,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4777866634702576038">Excluir grupo de guias?</translation>
 <translation id="4778653490315793244">Nada para mostrar no momento</translation>
 <translation id="4782929588435725897">O <ph name="SEARCH_ENGINE" /> é seu mecanismo de pesquisa padrão</translation>
-<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> quer usar informações pessoais da sua carteira digital.</translation>
 <translation id="4787736314074622408">Quer excluir o arquivo <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Saiba como o Chrome protege você</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -2168,7 +2167,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="9153056436992761257">Escolha a posição que preferir</translation>
 <translation id="9157212632995922070">Escolha uma conta para continuar no site <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Compartilhar apenas o conteúdo</translation>
-<translation id="9161172953291434881">Você confia seus dados a este site?</translation>
 <translation id="916607977885256133">Picture-in-picture</translation>
 <translation id="9168847423516963845">Mover a barra de endereço para baixo</translation>
 <translation id="9169507124922466868">Histórico de navegação parcialmente aberto</translation>

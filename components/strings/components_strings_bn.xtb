@@ -1564,7 +1564,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে 'নিরাপত্তা সংক্রান্ত পরীক্ষা' চালাতে প্রথমে Tab আর তারপরে Enter কী প্রেস করুন</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">এই IBAN Google Wallet-এ সেভ করা যায়নি। পরিবর্তে এই ডিভাইসের Chrome-এ সেটি সেভ করা হয়েছে। এই IBAN পরেরবার ব্যবহার করার সময় Chrome আপনাকে আবার জিজ্ঞেস করবে।</translation>
-<translation id="3621401353678567613">আপনার ট্র্যাক করা প্রোডাক্টের দাম কমলে সেই সম্পর্কে বিজ্ঞপ্তি পেতে, সেটিংস থেকে বিজ্ঞপ্তি চালু করুন।</translation>
 <translation id="362276910939193118">সম্পূর্ণ ইতিহাস দেখুন</translation>
 <translation id="3623041590998910684">আপনার ক্যামেরা ব্যবহার করতে, <ph name="LINK" /> লিঙ্কে গিয়ে Chrome-কে অ্যাক্সেস দিন।</translation>
 <translation id="3624292976554877583">লেবেল (ম্যাট)</translation>
@@ -2276,6 +2275,7 @@
 <translation id="4775456404799771098">আপনি ফাইলটি স্থায়ীভাবে হারিয়ে ফেলবেন</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{পপ-আপ ব্লক করা হয়েছে}one{#টি পপ-আপ ব্লক করা হয়েছে}other{#টি পপ-আপ ব্লক করা হয়েছে}}</translation>
 <translation id="4780366598804516005">মেলবক্স ১</translation>
+<translation id="4784349455504343791">আপনার ডিজিটাল ওয়ালেট থেকে <ph name="WEBSITE_ORIGIN" /> ব্যক্তিগত তথ্য ব্যবহার করতে চায়।</translation>
 <translation id="4785273477715803444">লগ ফিল্টার করুন</translation>
 <translation id="4785376858512657294">Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="4785689107224900852">এই ট্যাবে পরিবর্তন করুন</translation>
@@ -2895,7 +2895,6 @@
 <translation id="5787146423283493983">কী চুক্তি</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">এই ডিভাইস থেকে এই পেমেন্ট পদ্ধতি মুছে ফেলা হবে</translation>
-<translation id="5794065675298686371">প্রাইস ট্র্যাকিং বিজ্ঞপ্তি চালু করুন</translation>
 <translation id="5794093550048860249">ট্র্যাকিং নম্বর</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />অন্যান্য Google প্রোডাক্টে স্মার্ট ফিচার<ph name="LINK_END" />” চালু করুন</translation>
 <translation id="5797916798049571144">এটি আপনার কার্ডের তথ্যের সাথে সেভ করা হয়েছে, তাই চেক-আউটের সময় এটি অটোমেটিক পূরণ করা হবে</translation>
@@ -4872,6 +4871,7 @@
 <translation id="9155211586651734179">অডিও পেরিফেরাল অ্যাটাচ করা হয়েছে</translation>
 <translation id="9157595877708044936">সেট-আপ হচ্ছে...</translation>
 <translation id="9158491153040481956">সর্বজনীন ডেটার নিরাপত্তা লঙ্ঘনে পাওয়া গেছে এমন একটি পাসওয়ার্ড আপনি সম্প্রতি পরিবর্তন করেছেন। সমস্যার ক্ষেত্রে, Password Manager আপনাকে সাইন-ইন করার জন্য সাহায্য করতে পারে।</translation>
+<translation id="9161172953291434881">আপনি কি নিজের ডেটার জন্য এই সাইটকে বিশ্বাস করেন?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />-এ সংবেদনশীল কন্টেন্ট থাকতে পারে}one{<ph name="FILE_COUNT" />-এ সংবেদনশীল কন্টেন্ট থাকতে পারে}other{<ph name="FILE_COUNT" />-এ সংবেদনশীল কন্টেন্ট থাকতে পারে}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – ফুল-স্ক্রিন থেকে বেরিয়ে আসতে, |<ph name="ACCELERATOR" />| প্রেস করুন</translation>
 <translation id="9163287596625611517">Slack মেসেজ</translation>

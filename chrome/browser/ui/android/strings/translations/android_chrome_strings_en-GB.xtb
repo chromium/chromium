@@ -981,7 +981,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4777866634702576038">Delete tab group?</translation>
 <translation id="4778653490315793244">Nothing to show yet</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> is your default search engine</translation>
-<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> wants to use personal info from your digital wallet.</translation>
 <translation id="4787736314074622408">Do you want to delete <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Learn how Chrome keeps you safe</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -2167,7 +2166,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9153056436992761257">Choose your preferred position</translation>
 <translation id="9157212632995922070">Choose an account to continue on <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Share content only</translation>
-<translation id="9161172953291434881">Do you trust this site with your data?</translation>
 <translation id="916607977885256133">Picture-in-Picture</translation>
 <translation id="9168847423516963845">Move address bar to the bottom</translation>
 <translation id="9169507124922466868">Navigation history is half-opened</translation>

@@ -1560,7 +1560,6 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai Chrome iestatījumos veiktu drošības pārbaudi, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Šo IBAN nevarēja saglabāt lietotnē Google maks. Taču tā tika saglabāta pārlūkā Chrome šajā ierīcē. Pārlūkā Chrome vēlreiz tiks jautāts, kad nākamreiz izmantosiet šo IBAN.</translation>
-<translation id="3621401353678567613">Lai saņemtu paziņojumus par izsekoto produktu cenu kritumu, iestatījumos ieslēdziet paziņojumus.</translation>
 <translation id="362276910939193118">Rādīt pilnu vēsturi</translation>
 <translation id="3623041590998910684">Lai izmantotu kameru, piešķiriet pārlūkam Chrome piekļuvi <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Etiķešu papīrs (matēts)</translation>
@@ -2268,6 +2267,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4775456404799771098">Jūs neatgriezeniski zaudēsiet failu.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Uznirstošais logs ir bloķēts}zero{# uznirstošie logi ir bloķēti}one{# uznirstošais logs ir bloķēts}other{# uznirstošie logi ir bloķēti}}</translation>
 <translation id="4780366598804516005">1. pastkaste</translation>
+<translation id="4784349455504343791">Vietne <ph name="WEBSITE_ORIGIN" /> vēlas izmantot personas informāciju no jūsu digitālā maka.</translation>
 <translation id="4785273477715803444">Filtrēt žurnālus</translation>
 <translation id="4785376858512657294">Pārvaldīt Google kontu</translation>
 <translation id="4785689107224900852">Pāriet uz šo cilni</translation>
@@ -2887,7 +2887,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5787146423283493983">Atslēgu saskaņošana</translation>
 <translation id="5789643057113097023">:</translation>
 <translation id="5793317771769868848">Šis maksājuma veids tiks dzēsts no šīs ierīces.</translation>
-<translation id="5794065675298686371">Ieslēdziet cenu izsekošanas paziņojumus</translation>
 <translation id="5794093550048860249">Izsekošanas numurs</translation>
 <translation id="5796050750059455142">Ieslēdziet iestatījumu “<ph name="BEGIN_LINK" />Viedās funkcijas citos Google produktos<ph name="LINK_END" />”.</translation>
 <translation id="5797916798049571144">Tas ir saglabāts kopā ar jūsu kartes informāciju, lai norēķināšanās laikā tas tiktu automātiski aizpildīts</translation>
@@ -4863,6 +4862,7 @@ Papildu informācija:
 <translation id="9155211586651734179">Pievienotās perifērās audio ierīces</translation>
 <translation id="9157595877708044936">Notiek uzstādīšana...</translation>
 <translation id="9158491153040481956">Jūs nesen nomainījāt paroli, jo tā tika atklāta publiska datu aizsardzības pārkāpuma dēļ. Ja rodas problēmas, Paroļu pārvaldnieks var palīdzēt jums pierakstīties.</translation>
+<translation id="9161172953291434881">Vai esat pārliecināts, ka varat uzticēt šai vietnei savus datus?</translation>
 <translation id="9161794544616754735">{0,plural, =1{Failā <ph name="FILE_NAME" /> var būt ietverts sensitīvs saturs}zero{<ph name="FILE_COUNT" /> failos var būt ietverts sensitīvs saturs}one{<ph name="FILE_COUNT" /> failā var būt ietverts sensitīvs saturs}other{<ph name="FILE_COUNT" /> failos var būt ietverts sensitīvs saturs}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> — lai izietu no pilnekrāna režīma, nospiediet taustiņu |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack ziņojums</translation>

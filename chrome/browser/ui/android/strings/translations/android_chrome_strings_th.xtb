@@ -981,7 +981,6 @@
 <translation id="4777866634702576038">ลบกลุ่มแท็บใช่ไหม</translation>
 <translation id="4778653490315793244">ยังไม่มีรายการให้แสดง</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> เป็นเครื่องมือค้นหาเริ่มต้นของคุณ</translation>
-<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ต้องการใช้ข้อมูลส่วนบุคคลจากกระเป๋าเงินดิจิทัล</translation>
 <translation id="4787736314074622408">คุณต้องการลบ <ph name="ITEM_TITLE" /> ใช่ไหม</translation>
 <translation id="4793679854893018356">ดูวิธีที่ Chrome ช่วยให้คุณปลอดภัย</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -2167,7 +2166,6 @@
 <translation id="9153056436992761257">เลือกตำแหน่งที่ต้องการ</translation>
 <translation id="9157212632995922070">เลือกบัญชีเพื่อดำเนินการต่อไปยัง <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">แชร์เนื้อหาเท่านั้น</translation>
-<translation id="9161172953291434881">คุณไว้ใจให้เว็บไซต์นี้เข้าถึงข้อมูลของคุณไหม</translation>
 <translation id="916607977885256133">การแสดงภาพซ้อนภาพ</translation>
 <translation id="9168847423516963845">ย้ายแถบที่อยู่ไปไว้ด้านล่าง</translation>
 <translation id="9169507124922466868">ประวัติการนำทางเปิดอยู่ครึ่งเดียว</translation>

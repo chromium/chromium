@@ -1560,7 +1560,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste pokrenuli sigurnosnu provjeru u postavkama Chromea</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Spremanje IBAN-a u Google Wallet nije uspjelo. Spremljen je u Chrome na ovom uređaju. Chrome će vas ponovno pitati sljedeći put kad budete upotrebljavali taj IBAN.</translation>
-<translation id="3621401353678567613">Da biste primali upozorenja o sniženju cijena za proizvode koje pratite, uključite obavijesti u postavkama.</translation>
 <translation id="362276910939193118">Pokaži cijelu povijest</translation>
 <translation id="3623041590998910684">Da biste upotrebljavali kameru, odobrite Chromeu pristup u <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Naljepnice (mat)</translation>
@@ -2269,6 +2268,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4775456404799771098">Trajno ćete izgubiti datoteku</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Skočni prozor blokiran}one{# skočni prozor blokiran}few{# skočna prozora blokirana}other{# skočnih prozora blokirano}}</translation>
 <translation id="4780366598804516005">Izlazni spremnik s odjeljcima 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> želi upotrijebiti osobne podatke iz vašeg digitalnog novčanika.</translation>
 <translation id="4785273477715803444">Filtrirajte zapisnike</translation>
 <translation id="4785376858512657294">Upravljajte Google računom</translation>
 <translation id="4785689107224900852">Prijeđite na ovu karticu</translation>
@@ -2888,7 +2888,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5787146423283493983">Sporazum ključa</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Taj će se način plaćanja izbrisati s ovog uređaja</translation>
-<translation id="5794065675298686371">Uključivanje obavijesti o praćenju cijena</translation>
 <translation id="5794093550048860249">Evidencijski broj</translation>
 <translation id="5796050750059455142">Uključite <ph name="BEGIN_LINK" />Pametne značajke na drugim Googleovim proizvodima<ph name="LINK_END" /></translation>
 <translation id="5797916798049571144">Spremljeno je s podacima o vašoj kartici, pa će se automatski unijeti pri naplati</translation>
@@ -4865,6 +4864,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9155211586651734179">priključene periferne audiouređaje</translation>
 <translation id="9157595877708044936">Postavljanje...</translation>
 <translation id="9158491153040481956">Nedavno ste promijenili zaporku koja je pronađena u javnom neovlaštenom pristupu podacima. Ako imate poteškoća, Upravitelj zaporki može vam pomoći s prijavom.</translation>
+<translation id="9161172953291434881">Smatrate li ovu web-lokaciju dovoljno pouzdanom da biste joj povjerili svoje podatke?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> može sadržavati osjetljivi sadržaj}one{<ph name="FILE_COUNT" /> datoteka može sadržavati osjetljivi sadržaj}few{<ph name="FILE_COUNT" /> datoteke mogu sadržavati osjetljivi sadržaj}other{<ph name="FILE_COUNT" /> datoteka može sadržavati osjetljivi sadržaj}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – da biste zatvorili prikaz na cijelom zaslonu, pritisnite |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack poruka</translation>

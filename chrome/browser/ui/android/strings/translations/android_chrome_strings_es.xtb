@@ -981,7 +981,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4777866634702576038">¿Eliminar grupo de pestañas?</translation>
 <translation id="4778653490315793244">Aún no hay nada que mostrar</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> es tu buscador predeterminado</translation>
-<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> quiere usar información personal de tu cartera digital.</translation>
 <translation id="4787736314074622408">¿Eliminar <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Descubre cómo te protege Chrome</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -2167,7 +2166,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="9153056436992761257">Elige tu posición preferida</translation>
 <translation id="9157212632995922070">Elige una cuenta para continuar en <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Compartir solo contenido</translation>
-<translation id="9161172953291434881">¿Confías en este sitio para que use tus datos?</translation>
 <translation id="916607977885256133">Imagen en imagen</translation>
 <translation id="9168847423516963845">Mover barra de direcciones a la parte inferior</translation>
 <translation id="9169507124922466868">El historial de navegación está medio abierto</translation>

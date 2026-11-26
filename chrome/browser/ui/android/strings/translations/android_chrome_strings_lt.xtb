@@ -981,7 +981,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4777866634702576038">Ištrinti skirtukų grupę?</translation>
 <translation id="4778653490315793244">Dar nėra rodytino turinio</translation>
 <translation id="4782929588435725897">„<ph name="SEARCH_ENGINE" />“ yra numatytasis paieškos variklis</translation>
-<translation id="4784349455504343791">„<ph name="WEBSITE_ORIGIN" />“ nori naudoti asmens informaciją iš skaitmeninės piniginės.</translation>
 <translation id="4787736314074622408">Ar norite ištrinti „<ph name="ITEM_TITLE" />“?</translation>
 <translation id="4793679854893018356">Sužinokite, kaip „Chrome“ užtikrina jūsų saugą</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -2167,7 +2166,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="9153056436992761257">Pasirinkite norimą poziciją</translation>
 <translation id="9157212632995922070">Pasirinkite paskyrą, kad pereitumėte prie „<ph name="SITE_ETLD_PLUS_ONE" />“</translation>
 <translation id="9158770349521403363">Bendrinti tik turinį</translation>
-<translation id="9161172953291434881">Ar pasitikite šia svetaine ir norite jai patikėti savo duomenis?</translation>
 <translation id="916607977885256133">Vaizdas vaizde</translation>
 <translation id="9168847423516963845">Perkelti adreso juostą į apačią</translation>
 <translation id="9169507124922466868">Naršymo istorija atidaryta puse aukščio</translation>

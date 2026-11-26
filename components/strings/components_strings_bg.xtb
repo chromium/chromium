@@ -1560,7 +1560,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да стартирате проверка на безопасността от настройките на Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Този IBAN не бе запазен в Google Wallet. Вместо това е запазен в Chrome на това устройство. Chrome ще ви попита отново следващия път, когато използвате този IBAN номер.</translation>
-<translation id="3621401353678567613">За да получавате сигнали за понижение на цената за продукти, които следите, включете известията от настройките.</translation>
 <translation id="362276910939193118">Цялата история</translation>
 <translation id="3623041590998910684">За да използвате камерата си, дайте достъп на Chrome от <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Етикети (матирани)</translation>
@@ -2270,6 +2269,7 @@
 <translation id="4775456404799771098">Ще загубите файла за постоянно</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Блокиран е изскачащ прозорец}other{Блокирани са # изскач. прозореца}}</translation>
 <translation id="4780366598804516005">Пощенска кутия 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> иска да използва лична информация от дигиталния ви портфейл.</translation>
 <translation id="4785273477715803444">Филтриране на регистрационните файлове</translation>
 <translation id="4785376858512657294">Управление на профила в Google</translation>
 <translation id="4785689107224900852">Превключване към този раздел</translation>
@@ -2889,7 +2889,6 @@
 <translation id="5787146423283493983">Договаряне на ключ</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Този начин на плащане ще бъде изтрит от това устройство</translation>
-<translation id="5794065675298686371">Включване на известията за проследяване на цени</translation>
 <translation id="5794093550048860249">Проследяващ номер</translation>
 <translation id="5796050750059455142">Включете <ph name="BEGIN_LINK" />Интелигентни функции в други продукти на Google<ph name="LINK_END" />.</translation>
 <translation id="5797916798049571144">То е запазено заедно с данните за картата ви, така че ще се попълва автоматично при плащане</translation>
@@ -4865,6 +4864,7 @@
 <translation id="9155211586651734179">свързаните периферни аудиоустройства;</translation>
 <translation id="9157595877708044936">Настройва се...</translation>
 <translation id="9158491153040481956">Наскоро променихте парола, която бе разкрита при публично нарушение на сигурността на данните. В случай на проблеми Мениджър на пароли може да ви помогне да влезете в профила си.</translation>
+<translation id="9161172953291434881">Доверявате ли данните си на този сайт?</translation>
 <translation id="9161794544616754735">{0,plural, =1{Файлът „<ph name="FILE_NAME" />“ може да включва деликатно съдържание}other{<ph name="FILE_COUNT" /> файла може да включват деликатно съдържание}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – За да излезете от режима на цял екран, натиснете |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Съобщение в Slack</translation>

@@ -1558,7 +1558,6 @@
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای اجرای «بررسی ایمنی» در تنظیمات Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3615354126333642335">‫<ph name="TEXT" />،‏ <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">‏این کارت در «کیف پول Google» ذخیره نشد. درعوض، در Chrome این دستگاه ذخیره شد. دفعه بعدی که از این IBAN استفاده کنید، Chrome دوباره این شماره را از شما درخواست خواهد کرد.</translation>
-<translation id="3621401353678567613">برای دریافت هشدار کاهش قیمت برای محصولاتی که ردیابی می‌کنید، اعلان‌ها را در تنظیمات روشن کنید.</translation>
 <translation id="362276910939193118">نمایش کل سابقه</translation>
 <translation id="3623041590998910684">‏برای استفاده از دوربین، در <ph name="LINK" /> به Chrome دسترسی دهید.</translation>
 <translation id="3624292976554877583">برچسب (مات)</translation>
@@ -2268,6 +2267,7 @@
 <translation id="4775456404799771098">فایل را برای همیشه ازدست خواهید داد</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{پنجره بازشو مسدود شد}one{# پنجره بازشو مسدود شد}other{# پنجره بازشو مسدود شد}}</translation>
 <translation id="4780366598804516005">صندوق پست ۱</translation>
+<translation id="4784349455504343791">‫<ph name="WEBSITE_ORIGIN" /> می‌خواهد از اطلاعات شخصی موجود در کیف پول دیجیتال شما استفاده کند.</translation>
 <translation id="4785273477715803444">فیلتر کردن گزارش‌ها</translation>
 <translation id="4785376858512657294">‏مدیریت «حساب Google»</translation>
 <translation id="4785689107224900852">عوض کردن به این زبانه</translation>
@@ -2887,7 +2887,6 @@
 <translation id="5787146423283493983">قرارداد کلید</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">این روش پرداخت از این دستگاه حذف خواهد شد</translation>
-<translation id="5794065675298686371">روشن کردن اعلان‌های پیگیری قیمت</translation>
 <translation id="5794093550048860249">شماره ردگیری</translation>
 <translation id="5796050750059455142">‏روشن کردن «<ph name="BEGIN_LINK" />ویژگی‌های هوشمند در سایر محصولات Google<ph name="LINK_END" />»</translation>
 <translation id="5797916798049571144">این نام با اطلاعات کارتتان ذخیره می‌شود تا هنگام تسویه‌حساب به‌طور خودکار پر شود</translation>
@@ -4862,6 +4861,7 @@
 <translation id="9155211586651734179">لوازم جانبی صوتی متصل شد</translation>
 <translation id="9157595877708044936">در حال راه‌اندازی...</translation>
 <translation id="9158491153040481956">اخیراً گذرواژه‌ای را تغییر داده‌اید که در سرقت عمومی اطلاعات شبکه پیدا شده است. درصورت بروز مشکل، «مدیر گذرواژه» می‌تواند به شما کمک کند به سیستم وارد شوید.</translation>
+<translation id="9161172953291434881">آیا درخصوص داده‌هایتان به این سایت اعتماد دارید؟</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ممکن است حاوی محتوای حساس باشد}one{<ph name="FILE_COUNT" /> فایل ممکن است حاوی محتوای حساس باشد}other{<ph name="FILE_COUNT" /> فایل ممکن است حاوی محتوای حساس باشد}}</translation>
 <translation id="9162097962559874470">‫<ph name="ORIGIN" /> – برای خارج شدن از تمام‌صفحه، |<ph name="ACCELERATOR" />| را فشار دهید</translation>
 <translation id="9163287596625611517">‏پیام Slack</translation>

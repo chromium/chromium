@@ -1554,7 +1554,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per eseguire il controllo di sicurezza nelle impostazioni di Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Impossibile salvare questo IBAN in Google Wallet. È stato invece salvato su Chrome su questo dispositivo. Chrome ti chiederà di nuovo l'autorizzazione la prossima volta che utilizzerai questo IBAN.</translation>
-<translation id="3621401353678567613">Per ricevere avvisi relativi ai cali di prezzo per i prodotti che monitori, attiva le notifiche nelle impostazioni.</translation>
 <translation id="362276910939193118">Mostra cronologia completa</translation>
 <translation id="3623041590998910684">Per usare la fotocamera, consenti l'accesso a Chrome in <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Etichette (opache)</translation>
@@ -2264,6 +2263,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4775456404799771098">Perderai il file definitivamente</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Popup bloccato}other{# popup bloccati}}</translation>
 <translation id="4780366598804516005">Mailbox 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vuole usare le informazioni personali del tuo portafoglio digitale.</translation>
 <translation id="4785273477715803444">Filtra log</translation>
 <translation id="4785376858512657294">Gestisci l'Account Google</translation>
 <translation id="4785689107224900852">Passa a questa scheda</translation>
@@ -2883,7 +2883,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5787146423283493983">Chiave concordata</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Questo metodo di pagamento verrà eliminato dal dispositivo</translation>
-<translation id="5794065675298686371">Attiva le notifiche per il monitoraggio dei prezzi</translation>
 <translation id="5794093550048860249">Numero di tracciamento</translation>
 <translation id="5796050750059455142">Attiva "<ph name="BEGIN_LINK" />Funzionalità intelligenti in altri prodotti Google<ph name="LINK_END" />"</translation>
 <translation id="5797916798049571144">È stato salvato insieme ai dati della tua carta, così verrà inserito automaticamente al momento del checkout</translation>
@@ -4856,6 +4855,7 @@ Ulteriori dettagli:
 <translation id="9155211586651734179">Periferiche audio collegate</translation>
 <translation id="9157595877708044936">Configurazione in corso...</translation>
 <translation id="9158491153040481956">Di recente hai modificato una password compromessa nell'ambito di una violazione dei dati pubblici. In caso di problemi, Gestore delle password può aiutarti ad accedere.</translation>
+<translation id="9161172953291434881">Autorizzi questo sito a usare i tuoi dati?</translation>
 <translation id="9161794544616754735">{0,plural, =1{Il file <ph name="FILE_NAME" /> potrebbe includere contenuti sensibili}other{<ph name="FILE_COUNT" /> file potrebbero includere contenuti sensibili}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> - Per uscire dalla modalità a schermo intero, premi |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Messaggio Slack</translation>

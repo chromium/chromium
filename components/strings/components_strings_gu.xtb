@@ -1560,7 +1560,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome સેટિંગમાં સલામતી માટે તપાસ ચલાવવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">આ IBAN Google Walletમાં સાચવી શકાયો નથી. એના બદલે તે આ ડિવાઇસ પર Chromeમાં સાચવવામાં આવ્યો છે. આગલી વખતે તમે આ IBANનો ઉપયોગ કરશો, ત્યારે Chrome તમને ફરીથી પૂછશે.</translation>
-<translation id="3621401353678567613">તમે ટ્રૅક કરતા હો તેવી પ્રોડક્ટ માટે કિંમતમાં ઘટાડા સંબંધિત અલર્ટ મેળવવા માટે, સેટિંગમાં જઈને નોટિફિકેશન ચાલુ કરો.</translation>
 <translation id="362276910939193118">પૂર્ણ ઇતિહાસ બતાવો</translation>
 <translation id="3623041590998910684">તમારા કૅમેરાનો ઉપયોગ કરવા માટે Chromeને <ph name="LINK" />માં ઍક્સેસ આપો.</translation>
 <translation id="3624292976554877583">લેબલ (મૅટ)</translation>
@@ -2270,6 +2269,7 @@
 <translation id="4775456404799771098">તમે ફાઇલ કાયમ માટે ગુમાવશો</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{પૉપ-અપ બ્લૉક કર્યુંં છે}one{# પૉપ-અપ બ્લૉક કર્યુંં છે}other{# પૉપ-અપ બ્લૉક કર્યુંં છે}}</translation>
 <translation id="4780366598804516005">મેઇલબૉક્સ 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> તમારા ડિજિટલ વૉલેટમાંથી વ્યક્તિગત માહિતીનો ઉપયોગ કરવા માગે છે.</translation>
 <translation id="4785273477715803444">લૉગ ફિલ્ટર કરો</translation>
 <translation id="4785376858512657294">Google એકાઉન્ટ મેનેજ કરો</translation>
 <translation id="4785689107224900852">આ ટૅબ પર સ્વિચ કરો</translation>
@@ -2889,7 +2889,6 @@
 <translation id="5787146423283493983">કી એગ્રીમેન્ટ</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">આ ડિવાઇસમાંથી આ ચુકવણી પદ્ધતિ ડિલીટ કરવામાં આવશે</translation>
-<translation id="5794065675298686371">કિંમતને ટ્રૅક કરવા સંબંધિત નોટિફિકેશન ચાલુ કરો</translation>
 <translation id="5794093550048860249">ટ્રૅકિંગ નંબર</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />અન્ય Google પ્રોડક્ટમાં સ્માર્ટ સુવિધાઓ<ph name="LINK_END" />” ચાલુ કરો</translation>
 <translation id="5797916798049571144">તેને તમારા કાર્ડની માહિતી સાથે સાચવવામાં આવ્યું છે, જેથી ચેકઆઉટ વખતે તે ઑટોમૅટિક રીતે ભરાઈ જશે</translation>
@@ -4865,6 +4864,7 @@
 <translation id="9155211586651734179">ઑડિયો પેરિફેરલ જોડેલા છે</translation>
 <translation id="9157595877708044936">સેટિંગ અપ...</translation>
 <translation id="9158491153040481956">તમે તાજેતરમાં બદલાવેલો પાસવર્ડ કોઈ સાર્વજનિક ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. કોઈ સમસ્યા આવે ત્યારે Password Manager તમને સાઇન ઇન કરવામાં મદદ કરી શકે છે.</translation>
+<translation id="9161172953291434881">શું તમે તમારા ડેટા માટે આ સાઇટ પર વિશ્વાસ કરો છો?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> સંવેદનશીલ કન્ટેન્ટ ધરાવતી હોઈ શકે છે}one{<ph name="FILE_COUNT" /> ફાઇલ સંવેદનશીલ કન્ટેન્ટ ધરાવતી હોઈ શકે છે}other{<ph name="FILE_COUNT" /> ફાઇલ સંવેદનશીલ કન્ટેન્ટ ધરાવતી હોઈ શકે છે}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળવા માટે, |<ph name="ACCELERATOR" />| દબાવો</translation>
 <translation id="9163287596625611517">Slack મેસેજ</translation>

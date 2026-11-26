@@ -1561,7 +1561,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />၊ <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">ဤ အိုင်ဘီအေအန် (IBAN) ကို Google Wallet တွင် သိမ်း၍မရလိုက်ပါ။ ယင်းအစား ဤစက်ပေါ်ရှိ Chrome တွင် ၎င်းကို သိမ်းလိုက်သည်။ ဤအိုင်ဘီအေအန် (IBAN) ကို နောက်တစ်ကြိမ်အသုံးပြုချိန်တွင် Chrome က သင့်ကို ထပ်မေးပါမည်။</translation>
-<translation id="3621401353678567613">သင့်စောင့်ကြည့်သော ကုန်ပစ္စည်းများအတွက် ဈေးကျသည့် သတိပေးချက်များ ရရှိရန် ဆက်တင်များရှိ အကြောင်းကြားချက်များကို ဖွင့်ပါ။</translation>
 <translation id="362276910939193118">မှတ်တမ်း အပြည့် ပြရန်</translation>
 <translation id="3623041590998910684">သင့်ကင်မရာသုံးရန် <ph name="LINK" /> တွင် Chrome သုံးခွင့်ပေးပါ။</translation>
 <translation id="3624292976554877583">လေဘယ်လ် (မှိုင်းပျပျ)</translation>
@@ -2271,6 +2270,7 @@
 <translation id="4775456404799771098">ဖိုင်ကို အပြီးဆုံးရှုံးပါမည်</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ပေါ့ပ်အပ်ကို ပိတ်ထားသည်}other{ပေါ့ပ်အပ်ကို # ခုကို ပိတ်ထားသည်}}</translation>
 <translation id="4780366598804516005">စာတိုက်ပုံး ၁</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> က သင့်ဒစ်ဂျစ်တယ် ပိုက်ဆံအိတ်ရှိ ကိုယ်ရေးအချက်အလက်ကို သုံးလိုသည်။</translation>
 <translation id="4785273477715803444">မှတ်တမ်းများ စစ်ထုတ်ရန်</translation>
 <translation id="4785376858512657294">Google Account စီမံရန်</translation>
 <translation id="4785689107224900852">ဤတဘ်သို့ ပြောင်းရန်</translation>
@@ -2890,7 +2890,6 @@
 <translation id="5787146423283493983">ကီးဘုတ် သဘောတူညီချက်</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ဤငွေပေးချေနည်းလမ်းကို ယခုစက်မှ ဖျက်လိုက်မည်</translation>
-<translation id="5794065675298686371">ဈေးနှုန်းခြေရာခံခြင်း အကြောင်းကြားချက်များ ဖွင့်ပါ</translation>
 <translation id="5794093550048860249">ခြေရာခံနံပါတ်</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />အခြား Google ထုတ်ကုန်များရှိ စမတ်အင်္ဂါရပ်များ<ph name="LINK_END" />” ကို ဖွင့်ပါ</translation>
 <translation id="5797916798049571144">၎င်းကို သင့်ကတ်အချက်အလက်နှင့်အတူ သိမ်းထားသဖြင့် ငွေရှင်းချိန်တွင် အလိုအလျောက်ဖြည့်ပါမည်</translation>
@@ -4866,6 +4865,7 @@
 <translation id="9155211586651734179">တွဲချိတ်ထားသည့် အသံဆိုင်ရာချိတ်ဆက်ပစ္စည်းများ</translation>
 <translation id="9157595877708044936">စဖွင့်သတ်မှတ်နေ...</translation>
 <translation id="9158491153040481956">သင်သည် အများမြင် ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိရသော စကားဝှက်ကို မကြာသေးမီက ပြောင်းထားသည်။ ပြဿနာရှိပါက သင်လက်မှတ်ထိုးဝင်ရာတွင် Password Manager က ကူညီနိုင်ပါသည်။</translation>
+<translation id="9161172953291434881">ဤဝဘ်ဆိုက်ကို သင့်ဒေတာအတွက် ယုံကြည်ပါသလား။</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> တွင် သတိထားရမည့်အကြောင်းအရာ ပါဝင်နိုင်သည်}other{ဖိုင် <ph name="FILE_COUNT" /> ဖိုင်တွင် သတိထားရမည့်အကြောင်းအရာ ပါဝင်နိုင်သည်}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – ဖန်သားပြင်အပြည့်မှ ထွက်ရန် |<ph name="ACCELERATOR" />| နှိပ်ပါ</translation>
 <translation id="9163287596625611517">Slack မက်ဆေ့ဂျ်</translation>

@@ -1560,7 +1560,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में, सुरक्षा जांच करने के लिए पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">इस आईबीएएन को आपके Google Wallet में सेव नहीं किया जा सका. इसके बजाय, इसे इस डिवाइस पर Chrome में सेव किया गया है. अगली बार इस आईबीएएन का इस्तेमाल करने पर, Chrome इसे सेव करने के लिए आपसे दोबारा पूछेगा.</translation>
-<translation id="3621401353678567613">ट्रैक किए जा रहे प्रॉडक्ट की कीमत में गिरावट आने की सूचनाएं पाने के लिए, सेटिंग में जाकर सूचनाएं पाने की सुविधा चालू करें.</translation>
 <translation id="362276910939193118">पूरा इतिहास दिखाएं</translation>
 <translation id="3623041590998910684">कैमरा इस्तेमाल करने के लिए, <ph name="LINK" /> में जाकर Chrome को इसे ऐक्सेस करने की अनुमति दें.</translation>
 <translation id="3624292976554877583">लेबल (मैट)</translation>
@@ -2270,6 +2269,7 @@
 <translation id="4775456404799771098">फ़ाइल हमेशा के लिए मिट जाएगी</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{पॉप-अप ब्लॉक किया गया}one{# पॉप-अप ब्लॉक किए गए हैं}other{# पॉप-अप ब्लॉक किए गए हैं}}</translation>
 <translation id="4780366598804516005">मेलबॉक्स 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> को आपके डिजिटल वॉलेट से निजी जानकारी इस्तेमाल करनी है.</translation>
 <translation id="4785273477715803444">लॉग फ़िल्टर करें</translation>
 <translation id="4785376858512657294">Google खाता मैनेज करें</translation>
 <translation id="4785689107224900852">इस टैब पर जाएं</translation>
@@ -2889,7 +2889,6 @@
 <translation id="5787146423283493983">मुख्य अनुबंध</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">इस डिवाइस से, पेमेंट का यह तरीका मिटा दिया जाएगा</translation>
-<translation id="5794065675298686371">कीमत ट्रैक करने से जुड़ी सूचनाएं पाने की सुविधा चालू करें</translation>
 <translation id="5794093550048860249">ट्रैकिंग नंबर</translation>
 <translation id="5796050750059455142">“<ph name="BEGIN_LINK" />Google के अन्य प्रॉडक्ट में उपलब्ध स्मार्ट सुविधाएं<ph name="LINK_END" />” चालू करें</translation>
 <translation id="5797916798049571144">यह आपके कार्ड की जानकारी के साथ सेव हो गया है, ताकि चेकआउट के समय यह अपने-आप भर जाए</translation>
@@ -4866,6 +4865,7 @@
 <translation id="9155211586651734179">सहायक ऑडियो डिवाइस अटैच किए गए</translation>
 <translation id="9157595877708044936">सेट अप कर रहा है...</translation>
 <translation id="9158491153040481956">आपने हाल ही में उस पासवर्ड को बदला जो सार्वजनिक तौर पर लीक हुआ था. अगर आपको नए पासवर्ड से साइन इन करने में समस्या आती है, तो Password Manager की मदद से साइन इन किया जा सकता है.</translation>
+<translation id="9161172953291434881">क्या आपको भरोसा है कि इस साइट पर आपका डेटा सुरक्षित रहेगा?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> में संवेदनशील कॉन्टेंट हो सकता है}one{<ph name="FILE_COUNT" /> फ़ाइल में संवेदनशील कॉन्टेंट हो सकता है}other{<ph name="FILE_COUNT" /> फ़ाइलों में संवेदनशील कॉन्टेंट हो सकता है}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – फ़ुल स्क्रीन से बाहर निकलने के लिए |<ph name="ACCELERATOR" />| दबाएं</translation>
 <translation id="9163287596625611517">Slack मैसेज</translation>

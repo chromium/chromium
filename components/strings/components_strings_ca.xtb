@@ -1560,7 +1560,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per executar la comprovació de seguretat a la configuració de Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Aquest IBAN no s'ha pogut desar a Google Wallet, però està desat a Chrome en aquest dispositiu. Chrome t'ho tornarà a preguntar la propera vegada que utilitzis aquest IBAN.</translation>
-<translation id="3621401353678567613">Per rebre alertes de baixada de preu dels productes que segueixes, activa les notificacions a la configuració.</translation>
 <translation id="362276910939193118">Mostra l'historial complet</translation>
 <translation id="3623041590998910684">Per poder utilitzar la càmera, dona accés a Chrome a la <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Etiquetes (mats)</translation>
@@ -2270,6 +2269,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4775456404799771098">Perdràs el fitxer permanentment</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Finestra emergent bloquejada}other{# finestres emergents bloquejades}}</translation>
 <translation id="4780366598804516005">Bústia de correu 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> vol utilitzar informació personal de la teva cartera digital.</translation>
 <translation id="4785273477715803444">Filtra els registres</translation>
 <translation id="4785376858512657294">Gestiona el compte de Google</translation>
 <translation id="4785689107224900852">Canvia a aquesta pestanya</translation>
@@ -2889,7 +2889,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5787146423283493983">Acord de clau</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Aquesta forma de pagament se suprimirà del dispositiu</translation>
-<translation id="5794065675298686371">Activa les notificacions de seguiment de preus</translation>
 <translation id="5794093550048860249">Número de seguiment</translation>
 <translation id="5796050750059455142">Activa <ph name="BEGIN_LINK" />Funcions intel·ligents en altres productes de Google<ph name="LINK_END" /></translation>
 <translation id="5797916798049571144">S'ha desat amb la informació de la targeta perquè s'empleni automàticament en tramitar la compra</translation>
@@ -4864,6 +4863,7 @@ Detalls addicionals:
 <translation id="9155211586651734179">Els perifèrics d'àudio enllaçats</translation>
 <translation id="9157595877708044936">S'està configurant...</translation>
 <translation id="9158491153040481956">Fa poc vas canviar una contrasenya que es va fer pública a causa d'una violació de les dades. Si tens problemes, el gestor de contrasenyes et pot ajudar a iniciar la sessió.</translation>
+<translation id="9161172953291434881">Confies en aquest lloc web perquè accedeixi a les teves dades?</translation>
 <translation id="9161794544616754735">{0,plural, =1{És possible que <ph name="FILE_NAME" /> inclogui contingut sensible}other{És possible que <ph name="FILE_COUNT" /> fitxers incloguin contingut sensible}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" />. Per sortir de la pantalla completa, prem |<ph name="ACCELERATOR" />|.</translation>
 <translation id="9163287596625611517">Missatge de Slack</translation>

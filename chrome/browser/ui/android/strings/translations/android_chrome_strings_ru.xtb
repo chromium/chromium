@@ -981,7 +981,6 @@
 <translation id="4777866634702576038">Удалить группу вкладок?</translation>
 <translation id="4778653490315793244">Контент отсутствует</translation>
 <translation id="4782929588435725897">Поисковая система по умолчанию – <ph name="SEARCH_ENGINE" />.</translation>
-<translation id="4784349455504343791">Сайт <ph name="WEBSITE_ORIGIN" /> запрашивает разрешение на использование вашей личной информации из электронного кошелька.</translation>
 <translation id="4787736314074622408">Удалить файл "<ph name="ITEM_TITLE" />"?</translation>
 <translation id="4793679854893018356">Как Chrome обеспечивает безопасность</translation>
 <translation id="4794291718671962615"><ph name="URL" /> (<ph name="MEGABYTES" />)</translation>
@@ -2167,7 +2166,6 @@
 <translation id="9153056436992761257">Выберите расположение.</translation>
 <translation id="9157212632995922070">Выберите аккаунт, который хотите использовать на сайте <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="9158770349521403363">Поделиться без ссылки</translation>
-<translation id="9161172953291434881">Вы доверяете этому сайту?</translation>
 <translation id="916607977885256133">Картинка в картинке</translation>
 <translation id="9168847423516963845">Разместить адресную строку внизу</translation>
 <translation id="9169507124922466868">История переходов открыта наполовину</translation>

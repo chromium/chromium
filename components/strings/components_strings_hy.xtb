@@ -1557,7 +1557,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի կարգավորումներում անվտանգության ստուգում անցնելու համար սեղմեք «Tab», ապա՝ «Enter»։</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Չհաջողվեց IBAN համարը պահել Google Wallet-ում։ Փոխարենը այն պահվել է Chrome-ում՝ այս սարքում։ Chrome-ը կառաջարկի կրկնել փորձը, երբ դուք նորից օգտագործեք այս IBAN համարը։</translation>
-<translation id="3621401353678567613">Կարգավորումներում միացրեք ծանուցումները, որպեսզի ստանաք այն ապրանքների գների իջեցման մասին ծանուցումներ, որոնց հետևում եք։</translation>
 <translation id="362276910939193118">Ցույց տալ ամբողջ պատմությունը</translation>
 <translation id="3623041590998910684">Ձեր տեսախցիկն օգտագործելու համար անցեք <ph name="LINK" /> և Chrome-ին թույլտվություն տրամադրեք։</translation>
 <translation id="3624292976554877583">Պիտակներ (անփայլ)</translation>
@@ -2265,6 +2264,7 @@
 <translation id="4775456404799771098">Դուք ընդմիշտ կկորցնեք ֆայլը</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Ելնող պատուհանն արգելափակված է}one{# ելնող պատուհան արգելափակված է}other{# ելնող պատուհան արգելափակված է}}</translation>
 <translation id="4780366598804516005">Փոստարկղ 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" />-ը ցանկանում է օգտագործել ձեր թվային դրամապանակի անձնական տեղեկությունները։</translation>
 <translation id="4785273477715803444">Զտեք մատյանները</translation>
 <translation id="4785376858512657294">Կառավարել Google հաշիվը</translation>
 <translation id="4785689107224900852">Անցնել այս ներդիրին</translation>
@@ -2885,7 +2885,6 @@
 <translation id="5787146423283493983">Բանալիների համաձայնեցում</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Վճարման այս եղանակը կջնջվի այս սարքից</translation>
-<translation id="5794065675298686371">Միացրեք գների հետագծման ծանուցումները</translation>
 <translation id="5794093550048860249">Բեռնակրման համարը</translation>
 <translation id="5796050750059455142">Միացրեք <ph name="BEGIN_LINK" />Խելացի գործառույթներ Google-ի այլ պրոդուկտներում<ph name="LINK_END" /> կարգավորումը</translation>
 <translation id="5797916798049571144">Այն պահվում է ձեր քարտի տվյալների հետ, որպեսզի ավտոմատ լրացվի վճարման ժամանակ</translation>
@@ -4858,6 +4857,7 @@
 <translation id="9155211586651734179">Կցված աուդիո սարքերը</translation>
 <translation id="9157595877708044936">Տեղակայում…</translation>
 <translation id="9158491153040481956">Վերջերս դուք փոխել եք գաղտնաբառը, որը բացահայտվել էր տվյալների հրապարակային արտահոսքի արդյունքում։ Խնդիրների դեպքում Գաղտնաբառերի կառավարիչը կօգնի ձեզ մուտք գործել հաշիվ։</translation>
+<translation id="9161172953291434881">Վստահո՞ւմ եք այս կայքին ձեր տվյալները։</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> ֆայլը պարունակում է զգայուն բովանդակություն}one{<ph name="FILE_COUNT" /> ֆայլ պարունակում է զգայուն բովանդակություն}other{<ph name="FILE_COUNT" /> ֆայլ պարունակում է զգայուն բովանդակություն}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" />․ լիաէկրան ռեժիմից դուրս գալու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Հաղորդագրություն Slack-ում</translation>

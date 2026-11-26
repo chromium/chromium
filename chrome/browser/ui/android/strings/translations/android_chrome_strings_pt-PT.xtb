@@ -981,7 +981,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4777866634702576038">Eliminar o grupo de separadores?</translation>
 <translation id="4778653490315793244">Nada a apresentar de momento</translation>
 <translation id="4782929588435725897">O <ph name="SEARCH_ENGINE" /> é o seu motor de pesquisa predefinido</translation>
-<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> quer usar informações pessoais da sua carteira digital.</translation>
 <translation id="4787736314074622408">Quer eliminar <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Saiba como o Chrome mantém a sua segurança</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -2167,7 +2166,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="9153056436992761257">Escolha a sua posição preferida</translation>
 <translation id="9157212632995922070">Escolha uma conta para continuar em <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Apenas partilhar conteúdo</translation>
-<translation id="9161172953291434881">Permite que este site use os seus dados?</translation>
 <translation id="916607977885256133">Ecrã no ecrã</translation>
 <translation id="9168847423516963845">Mover barra de endereço para a parte inferior</translation>
 <translation id="9169507124922466868">O histórico de navegação está aberto até meio.</translation>

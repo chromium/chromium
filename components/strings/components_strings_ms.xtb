@@ -1560,7 +1560,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk menjalankan semakan keselamatan dalam tetapan Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">IBAN ini tidak dapat disimpan dalam Google Wallet. IBAN ini telah disimpan pada Chrome pada peranti ini. Chrome akan meminta anda sekali lagi apabila anda menggunakan IBAN ini selepas ini.</translation>
-<translation id="3621401353678567613">Untuk menerima makluman penurunan harga untuk produk yang anda jejaki, hidupkan pemberitahuan dalam tetapan.</translation>
 <translation id="362276910939193118">Paparkan Sejarah Penuh</translation>
 <translation id="3623041590998910684">Untuk menggunakan kamera anda, beri Chrome akses pada <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Label (Kusam)</translation>
@@ -2271,6 +2270,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4775456404799771098">Anda akan kehilangan fail secara kekal</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Tetingkap timbul disekat}other{# tetingkap timbul disekat}}</translation>
 <translation id="4780366598804516005">Peti mel 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> mahu menggunakan maklumat peribadi daripada dompet digital anda.</translation>
 <translation id="4785273477715803444">Tapis log</translation>
 <translation id="4785376858512657294">Urus Google Account</translation>
 <translation id="4785689107224900852">Beralih ke tab ini</translation>
@@ -2890,7 +2890,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5787146423283493983">Perjanjian Penting</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Kaedah pembayaran ini akan dipadamkan daripada peranti ini</translation>
-<translation id="5794065675298686371">Hidupkan pemberitahuan penjejakan harga</translation>
 <translation id="5794093550048860249">Nombor penjejakan</translation>
 <translation id="5796050750059455142">Hidupkan “<ph name="BEGIN_LINK" />Ciri pintar dalam produk Google yang lain<ph name="LINK_END" />”</translation>
 <translation id="5797916798049571144">Nama tersebut disimpan dengan maklumat kad anda untuk nama tersebut diisi secara automatik semasa semak keluar</translation>
@@ -4867,6 +4866,7 @@ Butiran tambahan:
 <translation id="9155211586651734179">Persisian audio dilampirkan</translation>
 <translation id="9157595877708044936">Menyediakan...</translation>
 <translation id="9158491153040481956">Baru-baru ini anda telah menukar kata laluan yang ditemukan dalam pelanggaran data umum. Sekiranya terdapat masalah, Password Manager boleh membantu anda log masuk.</translation>
+<translation id="9161172953291434881">Adakah anda mempercayai laman ini mengendalikan data anda?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> mungkin mengandungi kandungan sensitif}other{<ph name="FILE_COUNT" /> fail mungkin mengandungi kandungan sensitif}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Untuk keluar daripada skrin penuh, tekan |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Mesej Slack</translation>

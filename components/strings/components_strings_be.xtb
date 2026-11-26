@@ -1556,7 +1556,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб выканаць праверку бяспекі ў наладах Chrome, націсніце Tab, затым Enter</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Не ўдалося захаваць IBAN у Google Кашальку. Нумар захаваны ў Chrome на гэтай прыладзе. Chrome зноў спытае вас пры наступным выкарыстанні гэтага нумара IBAN.</translation>
-<translation id="3621401353678567613">Каб атрымліваць абвесткі пра зніжэнне цаны на тавары, якія вы адсочваеце, уключыце апавяшчэнні ў наладах.</translation>
 <translation id="362276910939193118">Паказаць усю гісторыю</translation>
 <translation id="3623041590998910684">Каб выкарыстоўваць камеру, дайце Chrome доступ у <ph name="LINK" />.</translation>
 <translation id="3624292976554877583">Матавы этыкетачны матэрыял</translation>
@@ -2266,6 +2265,7 @@
 <translation id="4775456404799771098">Файл будзе незваротна страчаны</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Усплывальнае акно заблакіравана}one{# усплывальнае акно заблакіравана}few{# выплыўныя акны заблакіравана}many{# выплыўных акон заблакіравана}other{# выплыўнога акна заблакіравана}}</translation>
 <translation id="4780366598804516005">Паштовая скрынка 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> запытвае магчымасць выкарыстоўваць вашу асабістую інфармацыю з лічбавага кашалька.</translation>
 <translation id="4785273477715803444">Фільтраваць журналы</translation>
 <translation id="4785376858512657294">Кіраваць Уліковым запісам Google</translation>
 <translation id="4785689107224900852">Пераключыцца на гэту ўкладку</translation>
@@ -2884,7 +2884,6 @@
 <translation id="5787146423283493983">Узгадненне ключоў</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Гэты спосаб аплаты будзе выдалены з прылады</translation>
-<translation id="5794065675298686371">Уключыце апавяшчэнні для адсочвання цэн</translation>
 <translation id="5794093550048860249">Нумар для адсочвання</translation>
 <translation id="5796050750059455142">Уключыце <ph name="BEGIN_LINK" />разумныя функцыі ў іншых прадуктах Google<ph name="LINK_END" /></translation>
 <translation id="5797916798049571144">Яно захавана разам з данымі карткі і будзе аўтаматычна ўстаўляцца пры аплаце</translation>
@@ -4859,6 +4858,7 @@
 <translation id="9155211586651734179">Якія перыферыйныя прылады падключаны</translation>
 <translation id="9157595877708044936">Ідзе наладжванне...</translation>
 <translation id="9158491153040481956">Вы нядаўна змянілі пароль, які аказаўся сярод агульнадаступных даных у выніку ўцечкі. Калі ўзнікне праблема, вы зможаце выканаць уваход з дапамогай Менеджара пароляў.</translation>
+<translation id="9161172953291434881">Ці давяраеце вы гэтаму сайту свае даныя?</translation>
 <translation id="9161794544616754735">{0,plural, =1{У файле "<ph name="FILE_NAME" />" можа быць канфідэнцыяльнае змесціва}one{У <ph name="FILE_COUNT" /> файле можа быць канфідэнцыяльнае змесціва}few{У <ph name="FILE_COUNT" /> файлах можа быць канфідэнцыяльнае змесціва}many{У <ph name="FILE_COUNT" /> файлах можа быць канфідэнцыяльнае змесціва}other{У <ph name="FILE_COUNT" /> файла можа быць канфідэнцыяльнае змесціва}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Каб выйсці з поўнаэкраннага рэжыму, націсніце |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Паведамленне ў Slack</translation>

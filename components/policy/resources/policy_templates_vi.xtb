@@ -4670,15 +4670,6 @@ Xin lưu ý rằng chính sách này sẽ không có hiệu lực nếu bạn đ
       Mỗi mục nhập trong danh sách chứa một từ điển. Từ điển này phải bao gồm ID tiện ích trong trường 'extension-id' và URL cập nhật trong trường 'update-url'.</translation>
 <translation id="3869180930654347954">Tắt First-Party Sets cho mọi người dùng trong phạm vi tác động</translation>
 <translation id="3869566220234507038">Luôn tải trình duyệt <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /></translation>
-<translation id="3869959969423392506">Chính sách này kiểm soát việc các Ứng dụng web tách biệt (IWA) có thể thêm ứng dụng con theo mặc định hay không.
-
-Nếu bạn đặt chính sách này thành 1 thì các nguồn gốc của IWA được phép thêm ứng dụng con và bỏ qua các yêu cầu về cử chỉ của người dùng hoặc xác nhận của người dùng.
-
-Nếu bạn đặt chính sách này thành 2 thì các nguồn gốc của IWA không được phép thêm ứng dụng con.
-
-Nếu bạn đặt chính sách này thành 3 hoặc không đặt thì các nguồn gốc của Ứng dụng web tách biệt được phép thêm ứng dụng con sau khi người dùng xác nhận lời nhắc.
-
-Bạn có thể ghi đè chính sách này cho các nguồn gốc cụ thể của Ứng dụng web tách biệt bằng các chính sách <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> và <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" />.</translation>
 <translation id="3870035799352372700">Chặn Trợ lý Google truy cập vào bối cảnh trên màn hình trong quá trình tương tác</translation>
 <translation id="3870059789954671543">Bật tính năng hỗ trợ tiếp cận về làm nổi bật tiêu điểm bằng bàn phím trên màn hình đăng nhập.
 

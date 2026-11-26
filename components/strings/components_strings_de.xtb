@@ -1555,7 +1555,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um den Sicherheitscheck in den Chrome-Einstellungen auszuführen</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Diese IBAN konnte nicht in Google Wallet gespeichert werden. Sie wurde stattdessen in Chrome auf diesem Gerät gespeichert. Wenn du diese IBAN das nächste Mal verwendest, fragt Chrome dich noch einmal.</translation>
-<translation id="3621401353678567613">Wenn du Benachrichtigungen zu Preissenkungen für Produkte erhalten möchtest, die du beobachtest, musst du in den Einstellungen Benachrichtigungen aktivieren.</translation>
 <translation id="362276910939193118">Gesamtverlauf anzeigen</translation>
 <translation id="3623041590998910684">Wenn du deine Kamera verwenden möchtest, erlaube Chrome über die <ph name="LINK" /> den Zugriff darauf.</translation>
 <translation id="3624292976554877583">Etiketten (matt)</translation>
@@ -2264,6 +2263,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4775456404799771098">Die Datei geht endgültig verloren</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up blockiert}other{# Pop-ups blockiert}}</translation>
 <translation id="4780366598804516005">Ablage 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> möchte personenbezogene Daten aus deinem digitalen Wallet verwenden.</translation>
 <translation id="4785273477715803444">Protokolle filtern</translation>
 <translation id="4785376858512657294">Google-Konto verwalten</translation>
 <translation id="4785689107224900852">Zu diesem Tab wechseln</translation>
@@ -2883,7 +2883,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5787146423283493983">Schlüsselvereinbarung</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Diese Zahlungsmethode wird von diesem Gerät gelöscht</translation>
-<translation id="5794065675298686371">Benachrichtigungen zum Preis-Tracking aktivieren</translation>
 <translation id="5794093550048860249">Sendungsnummer</translation>
 <translation id="5796050750059455142">Aktiviere „<ph name="BEGIN_LINK" />Smarte Funktionen in anderen Google-Produkten<ph name="LINK_END" />“</translation>
 <translation id="5797916798049571144">Er wird zusammen mit deinen Kartendaten gespeichert, damit er beim Bezahlen automatisch ausgefüllt wird</translation>
@@ -4856,6 +4855,7 @@ Weitere Details:
 <translation id="9155211586651734179">Verbundene Audio-Peripheriegeräte</translation>
 <translation id="9157595877708044936">Einrichtung läuft...</translation>
 <translation id="9158491153040481956">Du hast vor Kurzem ein Passwort geändert, das in einer öffentlichen Datenpanne gefunden wurde. Bei Problemen kann der Google Passwortmanager dir bei der Anmeldung helfen.</translation>
+<translation id="9161172953291434881">Möchtest du dieser Website deine Daten anvertrauen?</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> enthält möglicherweise sensible Inhalte}other{<ph name="FILE_COUNT" /> Dateien enthalten möglicherweise sensible Inhalte}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Zum Beenden des Vollbildmodus |<ph name="ACCELERATOR" />| drücken</translation>
 <translation id="9163287596625611517">Slack-Nachricht</translation>

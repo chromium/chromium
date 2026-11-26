@@ -4503,15 +4503,6 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
       每個清單項目都含有目錄，其中的「extension-id」欄位必須包含擴充功能 ID，且「update-url」欄位必須包含更新網址。</translation>
 <translation id="3869180930654347954">為所有受影響的使用者停用 First-Party Sets 功能</translation>
 <translation id="3869566220234507038">一律載入 <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> 瀏覽器</translation>
-<translation id="3869959969423392506">這項政策可控管隔離網頁應用程式 (IWA) 預設能否新增子應用程式。
-
-如果將這項政策設為 1，IWA 來源就能新增子應用程式，並略過使用者手勢或使用者確認要求。
-
-如果將這項政策設為 2，系統會禁止 IWA 來源新增子應用程式。
-
-如果將這項政策設為 3 或未設定，隔離網頁應用程式來源即可在使用者確認後新增子應用程式。
-
-你可以使用 <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> 和 <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" /> 政策，針對特定隔離網頁應用程式來源覆寫這項政策。</translation>
 <translation id="3870035799352372700">不允許 Google 助理在互動期間存取畫面內容</translation>
 <translation id="3870059789954671543">在登入畫面上啟用鍵盤焦點醒目顯示無障礙功能。
 

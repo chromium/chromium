@@ -1559,7 +1559,6 @@
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อเรียกใช้การตรวจสอบความปลอดภัยในการตั้งค่า Chrome</translation>
 <translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">บันทึก IBAN นี้ใน Google Wallet ไม่ได้ แต่บันทึกลงใน Chrome บนอุปกรณ์นี้แทน Chrome จะถามคุณอีกครั้งในครั้งถัดไปที่คุณใช้ IBAN นี้</translation>
-<translation id="3621401353678567613">หากต้องการรับการแจ้งเตือนเมื่อราคาต่ำลงสำหรับผลิตภัณฑ์ที่คุณติดตาม ให้เปิดการแจ้งเตือนในการตั้งค่า</translation>
 <translation id="362276910939193118">แสดงประวัติการเข้าชมทั้งหมด</translation>
 <translation id="3623041590998910684">หากต้องการใช้กล้อง โปรดให้สิทธิ์เข้าถึงแก่ Chrome ใน<ph name="LINK" /></translation>
 <translation id="3624292976554877583">ป้าย (ด้าน)</translation>
@@ -2269,6 +2268,7 @@
 <translation id="4775456404799771098">คุณจะเสียไฟล์ไปอย่างถาวร</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ป๊อปอัปถูกบล็อก}other{# ป๊อปอัปถูกบล็อก}}</translation>
 <translation id="4780366598804516005">กล่องจดหมาย 1</translation>
+<translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> ต้องการใช้ข้อมูลส่วนบุคคลจากกระเป๋าเงินดิจิทัล</translation>
 <translation id="4785273477715803444">กรองบันทึก</translation>
 <translation id="4785376858512657294">จัดการบัญชี Google</translation>
 <translation id="4785689107224900852">เปลี่ยนเป็นแท็บนี้</translation>
@@ -2888,7 +2888,6 @@
 <translation id="5787146423283493983">ข้อตกลงเกี่ยวกับคีย์</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ระบบจะลบวิธีการชำระเงินนี้ออกจากอุปกรณ์</translation>
-<translation id="5794065675298686371">เปิดการแจ้งเตือนการติดตามราคา</translation>
 <translation id="5794093550048860249">หมายเลขติดตามพัสดุ</translation>
 <translation id="5796050750059455142">เปิด "<ph name="BEGIN_LINK" />ฟีเจอร์อัจฉริยะในผลิตภัณฑ์อื่นๆ ของ Google<ph name="LINK_END" />"</translation>
 <translation id="5797916798049571144">ระบบจะบันทึกชื่อพร้อมกับข้อมูลบัตร เพื่อให้ระบบป้อนข้อมูลโดยอัตโนมัติเมื่อชำระเงิน</translation>
@@ -4864,6 +4863,7 @@
 <translation id="9155211586651734179">อุปกรณ์ต่อพ่วงเสียงที่ต่อเชื่อมไว้</translation>
 <translation id="9157595877708044936">กำลังตั้งค่า...</translation>
 <translation id="9158491153040481956">คุณเพิ่งเปลี่ยนรหัสผ่านที่พบในการละเมิดข้อมูลสาธารณะ ในกรณีที่เกิดปัญหา เครื่องมือจัดการรหัสผ่านจะช่วยให้คุณลงชื่อเข้าใช้ได้</translation>
+<translation id="9161172953291434881">คุณไว้ใจให้เว็บไซต์นี้เข้าถึงข้อมูลของคุณไหม</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> อาจมีเนื้อหาที่ละเอียดอ่อน}other{<ph name="FILE_COUNT" /> ไฟล์อาจมีเนื้อหาที่ละเอียดอ่อน}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – หากต้องการออกจากโหมดเต็มหน้าจอ ให้กด |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">ข้อความ Slack</translation>
