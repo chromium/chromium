@@ -793,18 +793,8 @@ void AutofillManager::ParseFormsAsyncCommon(
         if (!self) {
           return;
         }
-        CHECK_EQ(context.regex_predictions.size(), context.forms.size());
-        self->UpdateFormCache(context.forms, context, preserve_signatures);
-        for (const FormData& form : context.forms) {
-          if (const FormStructure* const form_structure =
-                  self->FindCachedFormById(form.global_id())) {
-            self->LogCurrentFieldTypes(form_structure);
-            self->NotifyObservers(
-                &Observer::OnFieldTypesDetermined, form_structure->global_id(),
-                Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
-                small_forms_were_parsed);
-          }
-        }
+        self->OnFieldTypesDetermined(context, preserve_signatures,
+                                     small_forms_were_parsed);
         if (context.log_manager && self->log_manager()) {
           context.log_manager->Flush(*self->log_manager());
         }
@@ -1052,6 +1042,23 @@ void AutofillManager::LogServerQueryResponseMetrics(
     autofill_metrics::LogQualityMetricsBasedOnAutocomplete(
         *form, client().GetFormInteractionsUkmLogger(),
         driver().GetPageUkmSourceId());
+  }
+}
+
+void AutofillManager::OnFieldTypesDetermined(const AsyncContext& context,
+                                             bool preserve_signatures,
+                                             bool small_forms_were_parsed) {
+  CHECK_EQ(context.regex_predictions.size(), context.forms.size());
+  UpdateFormCache(context.forms, context, preserve_signatures);
+  for (const FormData& form : context.forms) {
+    if (const FormStructure* const form_structure =
+            FindCachedFormById(form.global_id())) {
+      LogCurrentFieldTypes(form_structure);
+      NotifyObservers(&Observer::OnFieldTypesDetermined,
+                      form_structure->global_id(),
+                      Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+                      small_forms_were_parsed);
+    }
   }
 }
 

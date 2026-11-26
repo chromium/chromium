@@ -681,6 +681,12 @@ class AutofillManager
   // `form_structures_`.
   void OnFormsParsed(const std::vector<FormData>& forms);
 
+  // Updates `form_structures_` with the predictions in `context`, logs field
+  // types, and notifies `Observer::OnFieldTypesDetermined`.
+  void OnFieldTypesDetermined(const AsyncContext& context,
+                              bool preserve_signatures,
+                              bool small_forms_were_parsed);
+
   // Updates `form_structures_` with the information in `forms` and `context`,
   // if available. `context` is available when this function is called as a
   // result of a parsing operation, `reason` is an indicator of that.
