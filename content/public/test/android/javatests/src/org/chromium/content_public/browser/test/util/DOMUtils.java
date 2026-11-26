@@ -379,19 +379,67 @@ public class DOMUtils {
     }
 
     /**
-     * Click a DOM node returned by JS code, scrolling it into view first.
+     * Click a DOM node returned by JS code, scrolling it into view first. Fails if the center of
+     * the node is still outside the visual viewport after scrolling.
+     *
      * @param webContents The WebContents in which the node lives.
      * @param jsCode The JS code to find the node.
      */
     public static void clickNodeByJs(final WebContents webContents, String jsCode)
             throws TimeoutException {
-        scrollNodeIntoViewByJs(webContents, jsCode);
-        int[] clickTarget = getClickTargetForNodeByJs(webContents, jsCode);
+        int[] clickTarget = scrollIntoViewAndGetClickTargetByJs(webContents, jsCode);
         TouchCommon.singleClickView(getContainerView(webContents), clickTarget[0], clickTarget[1]);
     }
 
     /**
+     * Long-press a DOM node returned by JS code, scrolling it into view first. Fails if the center
+     * of the node is still outside the visual viewport after scrolling.
+     *
+     * @param webContents The WebContents in which the node lives.
+     * @param jsCode The JS code to find the node.
+     */
+    public static void longPressNodeInViewByJs(final WebContents webContents, String jsCode)
+            throws TimeoutException {
+        int[] target = scrollIntoViewAndGetClickTargetByJs(webContents, jsCode);
+        TouchCommon.longPressView(getContainerView(webContents), target[0], target[1]);
+    }
+
+    private static int[] scrollIntoViewAndGetClickTargetByJs(WebContents webContents, String jsCode)
+            throws TimeoutException {
+        scrollNodeIntoViewByJs(webContents, jsCode);
+        // Use the client rect, which includes CSS transforms, rather than the offset-based bounds.
+        Rect bounds = getNodeClientRectByJsOrNull(webContents, jsCode);
+        Assert.assertNotNull("Failed to retrieve client rect for element: " + jsCode, bounds);
+        Assert.assertFalse(
+                "Client rect for element='" + jsCode + "' is empty: " + bounds.toShortString(),
+                bounds.isEmpty());
+        // The client rect and the visual viewport offsets are in CSS pixels relative to the layout
+        // viewport. The visual viewport size excludes browser controls.
+        ViewportInfo viewport = getViewportInfo(webContents);
+        double centerX = bounds.exactCenterX() - viewport.offsetLeft;
+        double centerY = bounds.exactCenterY() - viewport.offsetTop;
+        Assert.assertTrue(
+                "Center ("
+                        + centerX
+                        + ", "
+                        + centerY
+                        + ") of element='"
+                        + jsCode
+                        + "' is outside the "
+                        + viewport.width
+                        + "x"
+                        + viewport.height
+                        + " visual viewport.",
+                centerX >= 0
+                        && centerX < viewport.width
+                        && centerY >= 0
+                        && centerY < viewport.height);
+        return getClickTargetForBounds(webContents, bounds, viewport);
+    }
+
+    /**
      * Click a given rect in the page. Does not move the rect into view.
+     *
      * @param webContents The WebContents in which the node lives.
      * @param rect The rect to click.
      */
@@ -759,42 +807,60 @@ public class DOMUtils {
      * @return the click target of the node in the form of a [ x, y ] array.
      */
     private static int[] getClickTargetForBounds(WebContents webContents, Rect bounds) {
-        RenderCoordinatesImpl coord = ((WebContentsImpl) webContents).getRenderCoordinates();
-        double[] viewport = getViewportInfo(webContents);
-        double devicePixelRatio = viewport[0];
-        double visualViewportOffsetLeft = viewport[1];
-        double visualViewportOffsetTop = viewport[2];
+        return getClickTargetForBounds(webContents, bounds, getViewportInfo(webContents));
+    }
 
-        double cssToPix = coord.getPageScaleFactor() * devicePixelRatio;
-        int clickX = (int) ((bounds.exactCenterX() - visualViewportOffsetLeft) * cssToPix);
+    private static int[] getClickTargetForBounds(
+            WebContents webContents, Rect bounds, ViewportInfo viewport) {
+        RenderCoordinatesImpl coord = ((WebContentsImpl) webContents).getRenderCoordinates();
+        double cssToPix = coord.getPageScaleFactor() * viewport.devicePixelRatio;
+        int clickX = (int) ((bounds.exactCenterX() - viewport.offsetLeft) * cssToPix);
         int clickY =
-                (int) ((bounds.exactCenterY() - visualViewportOffsetTop) * cssToPix)
+                (int) ((bounds.exactCenterY() - viewport.offsetTop) * cssToPix)
                         + getMaybeTopControlsHeight(webContents);
         return new int[] {clickX, clickY};
     }
 
+    /** {@code window.devicePixelRatio} and the {@code visualViewport} offsets and size. */
+    private static class ViewportInfo {
+        public final double devicePixelRatio;
+        public final double offsetLeft;
+        public final double offsetTop;
+        public final double width;
+        public final double height;
+
+        ViewportInfo(double[] values) {
+            devicePixelRatio = values[0];
+            offsetLeft = values[1];
+            offsetTop = values[2];
+            width = values[3];
+            height = values[4];
+        }
+    }
+
     /**
-     * Returns {@code [devicePixelRatio, visualViewport.offsetLeft, visualViewport.offsetTop]}.
+     * Returns {@code window.devicePixelRatio} and the {@code visualViewport} offsets and size.
      *
-     * <p>Both are read from the renderer because the browser side cannot derive them. {@link
+     * <p>They are read from the renderer because the browser side cannot derive them. {@link
      * RenderCoordinatesImpl#getDeviceScaleFactor()} only knows the display density, so it misses
      * browser zoom -- Desktop Android renders every page at 109% by default, see
      * content::features::kAndroidDesktopZoomScaling. And scrolling a node into view can move the
      * visual viewport rather than the layout viewport, leaving {@code window.scrollY} (the only
      * scroll measured bounds are adjusted by) at 0.
      */
-    private static double[] getViewportInfo(WebContents webContents) {
+    private static ViewportInfo getViewportInfo(WebContents webContents) {
         String json;
         try {
             json =
                     JavaScriptUtils.executeJavaScriptAndWaitForResult(
                             webContents,
                             "[window.devicePixelRatio, visualViewport.offsetLeft,"
-                                    + " visualViewport.offsetTop]");
+                                    + " visualViewport.offsetTop, visualViewport.width,"
+                                    + " visualViewport.height]");
         } catch (TimeoutException e) {
             throw new AssertionError("Failed to read the viewport info.", e);
         }
-        return readJsonDoubleArray(json, 3);
+        return new ViewportInfo(readJsonDoubleArray(json, 5));
     }
 
     private static int getMaybeTopControlsHeight(final WebContents webContents) {

@@ -68,9 +68,10 @@ public class HtmlElement extends Element<Rect> {
                 mWebContentsSupplier, mHtmlElementSpec, mOptions.mInViewport);
     }
 
-    /** Returns a trigger to click the HTML element to trigger a Transition. */
-    // TODO(crbug.com/428032441): After scrolling, check that the element is in the viewport before
-    // clicking or long pressing. On Desktop Android this needs the visual viewport offset.
+    /**
+     * Returns a trigger to click the HTML element to trigger a Transition. It scrolls the element
+     * into view first and fails if its center is still outside the visual viewport.
+     */
     public Transition.Trigger getClickTrigger() {
         return () -> {
             try {
@@ -84,14 +85,16 @@ public class HtmlElement extends Element<Rect> {
         };
     }
 
-    /** Returns a trigger to long press the HTML element to trigger a Transition. */
+    /**
+     * Returns a trigger to long press the HTML element to trigger a Transition. It scrolls the
+     * element into view first and fails if its center is still outside the visual viewport.
+     */
     public Transition.Trigger getLongPressTrigger() {
         return () -> {
             try {
-                WebContents webContents = assumeNonNull(mWebContentsSupplier.get());
-                String selectorJs = mHtmlElementSpec.getSelectorJs();
-                DOMUtils.scrollNodeIntoViewByJs(webContents, selectorJs);
-                DOMUtils.longPressNodeByJs(webContents, selectorJs);
+                DOMUtils.longPressNodeInViewByJs(
+                        assumeNonNull(mWebContentsSupplier.get()),
+                        mHtmlElementSpec.getSelectorJs());
             } catch (TimeoutException e) {
                 throw TravelException.newTravelException(
                         "Timed out trying to long press DOM element", e);
