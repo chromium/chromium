@@ -99,7 +99,7 @@ BASE_FEATURE(kApiDesktopAndroidNativeMessaging,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApiDesktopAndroidNativeMessagingBypassExtensionAllowlist,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApiSidebar, base::FEATURE_DISABLED_BY_DEFAULT);
 
