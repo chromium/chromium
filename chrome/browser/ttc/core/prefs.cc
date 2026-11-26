@@ -10,6 +10,7 @@ namespace ttc {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kTtcFreCompleted, false);
+  registry->RegisterIntegerPref(prefs::kTtcFreAcceptedVersion, 0);
   registry->RegisterBooleanPref(prefs::kTtcCaptionsEnabled, false);
   registry->RegisterBooleanPref(prefs::kTtcMicrophoneChimeEnabled, true);
   registry->RegisterStringPref(prefs::kTtcKeyboardShortcut, "Alt+Shift+K");

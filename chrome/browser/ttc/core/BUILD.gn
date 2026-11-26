@@ -196,6 +196,7 @@ source_set("impl") {
     "//components/optimization_guide/content/browser",
     "//components/page_content_annotations/core",
     "//components/pdf/common:constants",
+    "//components/prefs",
     "//components/sessions:session_id",
     "//components/tabs:public",
     "//components/ttc/app/public",
@@ -226,7 +227,6 @@ source_set("impl") {
     deps += [
       "//chrome/browser/speech",
       "//components/live_caption:constants",
-      "//components/prefs",
       "//components/soda",
       "//components/soda:constants",
       "//components/soda:utils",
@@ -281,6 +281,7 @@ source_set("impl") {
       "//chrome/browser/ui/views/toolbar",
       "//components/prefs",
       "//ui/actions:actions_headers",
+      "//ui/base",
       "//ui/views",
     ]
     if (is_mac) {
@@ -597,6 +598,7 @@ if (!is_android) {
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/interaction",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toolbar/pinned_toolbar",
       "//chrome/browser/ui/views/frame:browser_view_header",
@@ -618,6 +620,7 @@ if (!is_android) {
       "//ui/events",
       "//ui/gfx/geometry",
       "//ui/views",
+      "//url",
     ]
     if (is_chromeos) {
       deps += [

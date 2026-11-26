@@ -16,6 +16,12 @@ namespace prefs {
 // FRE dialog.
 inline constexpr char kTtcFreCompleted[] = "ttc.fre_completed";
 
+// Integer. Highest FRE dialog version accepted by the user on desktop (0 if
+// never accepted). Starting a session shows the FRE while this is below
+// `kCurrentFreVersion`.
+inline constexpr char kTtcFreAcceptedVersion[] = "ttc.fre_accepted_version";
+inline constexpr int kCurrentFreVersion = 1;
+
 // Boolean. Whether TTC shows captions of the conversation during a session.
 inline constexpr char kTtcCaptionsEnabled[] = "ttc.captions_enabled";
 

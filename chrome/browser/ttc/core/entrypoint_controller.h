@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TTC_CORE_ENTRYPOINT_CONTROLLER_H_
 #define CHROME_BROWSER_TTC_CORE_ENTRYPOINT_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ttc/core/states.h"
@@ -14,6 +16,7 @@ class BrowserWindowInterface;
 
 namespace ttc {
 
+class TtcFreDialog;
 class TtcKeyedService;
 
 enum class EntrypointType {
@@ -47,6 +50,11 @@ class EntrypointController {
   void UpdateToolbarButton(ServiceState state);
 
   void ToggleSession();
+  void StartSession();
+  bool NeedsFre() const;
+  void OnFreDialogClosed(bool accepted);
+  void OnFreLearnMoreClicked();
+  void OnBrowserDidClose(BrowserWindowInterface* browser);
 
   const raw_ref<BrowserWindowInterface> browser_;
   // Safe because the service is owned by the profile, which outlives the
@@ -56,6 +64,9 @@ class EntrypointController {
   ui::ScopedUnownedUserData<EntrypointController> scoped_unowned_user_data_;
 
   base::CallbackListSubscription ttc_state_subscription_;
+  base::CallbackListSubscription browser_did_close_subscription_;
+
+  std::unique_ptr<TtcFreDialog> fre_dialog_;
 };
 
 }  // namespace ttc

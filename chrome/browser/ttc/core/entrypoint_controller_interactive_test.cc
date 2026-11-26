@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/check_deref.h"
+#include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/entrypoint_controller.h"
+#include "chrome/browser/ttc/core/prefs.h"
 #include "chrome/browser/ttc/core/ttc_interactive_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -15,13 +19,20 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
+#include "chrome/browser/ui/views/ttc/ttc_fre_dialog.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/views/views_switches.h"
+#include "url/gurl.h"
 
 namespace ttc {
 
@@ -32,6 +43,12 @@ class EntrypointControllerInteractiveTest
  public:
   EntrypointControllerInteractiveTest() = default;
   ~EntrypointControllerInteractiveTest() override = default;
+
+  void SetUpOnMainThread() override {
+    TtcInteractiveBrowserTestBase::SetUpOnMainThread();
+    profile()->GetPrefs()->SetInteger(prefs::kTtcFreAcceptedVersion,
+                                      prefs::kCurrentFreVersion);
+  }
 
  protected:
   StepBuilder SetToolbarButtonPinned(bool pinned) {
@@ -103,6 +120,23 @@ class EntrypointControllerInteractiveTest
                           .root_action_item()))
           .InvokeAction();
     });
+  }
+
+  MultiStep PinAndPressToolbarButton() {
+    MultiStep steps = Steps(SetToolbarButtonPinned(true),
+                            WaitForShow(kPinnedToolbarActionTtcElementId),
+                            PressButton(kPinnedToolbarActionTtcElementId));
+    AddDescriptionPrefix(steps, "PinAndPressToolbarButton()");
+    return steps;
+  }
+
+  int AcceptedFreVersion() {
+    return profile()->GetPrefs()->GetInteger(prefs::kTtcFreAcceptedVersion);
+  }
+
+  StepBuilder CheckFreAcceptedVersion(int expected_version) {
+    return CheckResult([this]() { return AcceptedFreVersion(); },
+                       expected_version, "CheckFreAcceptedVersion()");
   }
 };
 
@@ -330,6 +364,255 @@ IN_PROC_BROWSER_TEST_P(EntrypointControllerAppMenuInteractiveTest,
     CheckAppMenuEntrypointEnabled(second_browser, false)
   );
   // clang-format on
+}
+
+class EntrypointControllerFreInteractiveTest
+    : public EntrypointControllerInteractiveTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EntrypointControllerInteractiveTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
+  }
+
+  void SetUpOnMainThread() override {
+    EntrypointControllerInteractiveTest::SetUpOnMainThread();
+    profile()->GetPrefs()->ClearPref(prefs::kTtcFreAcceptedVersion);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       ShowsFreBeforeStartingSession) {
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+    CheckHasSession(false),
+    CheckFreAcceptedVersion(0),
+    CheckToolbarButtonHighlighted(browser(), false),
+    CheckAppMenuEntrypointEnabled(browser(), true)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       AcceptingFreStartsSession) {
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+    InSameContext(Steps(
+      PressButton(TtcFreDialog::kAllowButtonElementId),
+      WaitForHide(TtcFreDialog::kDialogElementId))),
+
+    CheckHasSession(true),
+    CheckFreAcceptedVersion(prefs::kCurrentFreVersion),
+    CheckToolbarButtonHighlighted(browser(), true)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       DecliningFreDoesNotStartSession) {
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+    InSameContext(Steps(
+      PressButton(TtcFreDialog::kCancelButtonElementId),
+      WaitForHide(TtcFreDialog::kDialogElementId))),
+
+    CheckHasSession(false),
+    CheckFreAcceptedVersion(0),
+    CheckToolbarButtonHighlighted(browser(), false),
+
+    PressButton(kPinnedToolbarActionTtcElementId),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId))
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       CompletedFreDoesNotShowAgain) {
+  profile()->GetPrefs()->SetInteger(prefs::kTtcFreAcceptedVersion,
+                                    prefs::kCurrentFreVersion);
+
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    CheckHasSession(true),
+    InAnyContext(EnsureNotPresent(TtcFreDialog::kDialogElementId))
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       NewerFreVersionDoesNotShowAgain) {
+  profile()->GetPrefs()->SetInteger(prefs::kTtcFreAcceptedVersion,
+                                    prefs::kCurrentFreVersion + 1);
+
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    CheckHasSession(true),
+    InAnyContext(EnsureNotPresent(TtcFreDialog::kDialogElementId)),
+    CheckFreAcceptedVersion(prefs::kCurrentFreVersion + 1)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       OutdatedFreVersionShowsAgain) {
+  profile()->GetPrefs()->SetInteger(prefs::kTtcFreAcceptedVersion,
+                                    prefs::kCurrentFreVersion - 1);
+
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+    InSameContext(Steps(
+      PressButton(TtcFreDialog::kAllowButtonElementId),
+      WaitForHide(TtcFreDialog::kDialogElementId))),
+
+    CheckHasSession(true),
+    CheckFreAcceptedVersion(prefs::kCurrentFreVersion)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       ReinvokingEntrypointsKeepsSingleFre) {
+  constexpr char kInitialFreDialog[] = "InitialFreDialog";
+
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+    InSameContext(NameElementRelative(
+        TtcFreDialog::kDialogElementId, kInitialFreDialog,
+        [](ui::TrackedElement* el) { return el; })),
+
+    Do([this]() {
+      EntrypointController& controller =
+          CHECK_DEREF(EntrypointController::From(browser()));
+      controller.EntrypointHandler(EntrypointType::kToolbarButton);
+      controller.EntrypointHandler(EntrypointType::kAppMenu);
+    }),
+    EnsurePresent(kInitialFreDialog),
+    InAnyContext(WaitForElementCount(TtcFreDialog::kDialogElementId, 1)),
+    CheckHasSession(false)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       AppMenuShowsFreBeforeStartingSession) {
+  // clang-format off
+  RunTestSequence(
+    Do([this]() { chrome::ExecuteCommand(browser(), IDC_SHOW_TTC_MENU); }),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+    CheckHasSession(false),
+    InSameContext(Steps(
+      PressButton(TtcFreDialog::kAllowButtonElementId),
+      WaitForHide(TtcFreDialog::kDialogElementId))),
+
+    CheckHasSession(true),
+    CheckFreAcceptedVersion(prefs::kCurrentFreVersion)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       LearnMoreOpensHelpInNewWindow) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHelpTabId);
+  content::URLLoaderInterceptor interceptor(base::BindRepeating(
+      [](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.host() == "www.google.com") {
+          content::URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\nContent-Type: text/html\n\n", "",
+              params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentNextTab(kHelpTabId, AnyBrowser()),
+    PinAndPressToolbarButton(),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+    InSameContext(DoDefaultAction(TtcFreDialog::kLearnMoreLinkElementId)),
+
+    WaitForWebContentsReady(kHelpTabId, GURL("https://www.google.com/")),
+    CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
+                1, "TabCountUnchanged"),
+    InAnyContext(EnsurePresent(TtcFreDialog::kDialogElementId)),
+    CheckHasSession(false)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       SessionStartingElsewhereClosesFre) {
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+    InSameContext(Steps(
+      Do([this]() { ttc_service().StartSession(); }),
+      WaitForHide(TtcFreDialog::kDialogElementId))),
+
+    CheckHasSession(true),
+    CheckFreAcceptedVersion(0)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       AcceptingFreInOneWindowClosesItInTheOther) {
+  BrowserWindowInterface* const second_browser = CreateBrowser(profile());
+  ASSERT_NE(second_browser, nullptr);
+  constexpr char kSecondWindowFreDialog[] = "SecondWindowFreDialog";
+
+  // clang-format off
+  RunTestSequence(
+    Do([second_browser]() {
+      chrome::ExecuteCommand(second_browser, IDC_SHOW_TTC_MENU);
+    }),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+    InSameContext(NameElementRelative(
+        TtcFreDialog::kDialogElementId, kSecondWindowFreDialog,
+        [](ui::TrackedElement* el) { return el; })),
+    Do([this]() { chrome::ExecuteCommand(browser(), IDC_SHOW_TTC_MENU); }),
+    InAnyContext(WaitForElementCount(TtcFreDialog::kDialogElementId, 2)),
+    EnsurePresent(kSecondWindowFreDialog),
+    InSameContext(Steps(
+      PressButton(TtcFreDialog::kAllowButtonElementId),
+      WaitForHide(TtcFreDialog::kDialogElementId))),
+
+    CheckHasSession(true),
+    InAnyContext(EnsureNotPresent(TtcFreDialog::kDialogElementId)),
+    CheckFreAcceptedVersion(prefs::kCurrentFreVersion)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       ClosingWindowWithFreDoesNotStartSession) {
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId))
+  );
+  // clang-format on
+
+  BrowserWindowInterface* const popup_browser =
+      CreateBrowserForPopup(profile());
+  CloseBrowserSynchronously(browser());
+  SetBrowser(popup_browser);
+
+  EXPECT_FALSE(ttc_service().is_session_active());
+  EXPECT_EQ(AcceptedFreVersion(), 0);
 }
 
 }  // namespace
