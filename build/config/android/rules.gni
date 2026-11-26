@@ -63,11 +63,12 @@ template("create_native_executable_dist") {
   }
 
   generated_file("${target_name}__library_list") {
-    forward_variables_from(invoker, [ "deps" ])
-    if (!defined(deps)) {
-      deps = []
+    # Use walk_deps so collecting shared_libraries metadata does not wait for
+    # native libraries to finish linking.
+    walk_deps = [ ":${_sanitizer_runtimes_target_name}" ]
+    if (defined(invoker.deps)) {
+      walk_deps += invoker.deps
     }
-    deps += [ ":${_sanitizer_runtimes_target_name}" ]
     output_conversion = "json"
     outputs = [ _libraries_list ]
     data_keys = [ "shared_libraries" ]
@@ -640,7 +641,11 @@ if (!is_robolectric && enable_java_templates) {
     _generating_target_name = "${target_name}__template"
 
     python_action(_generating_target_name) {
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      if (defined(invoker.deps)) {
+        # Only depend on non-java targets that may generate template inputs.
+        deps = filter_exclude(invoker.deps, java_target_patterns)
+      }
       inputs = invoker.resources
       python_binary = "//build/android:jinja_template"
 
@@ -3102,10 +3107,19 @@ if (!is_robolectric && enable_java_templates) {
       _optimize_resources_target = "${_template_name}__optimize_resources"
 
       optimize_resources(_optimize_resources_target) {
-        deps = _non_java_deps + [
-                 ":$_compile_resources_target",
-                 _final_dex_target_dep,
-               ]
+        deps = [
+          ":$_compile_resources_target",
+          _final_dex_target_dep,
+        ]
+
+        # Exclude checked-in paths ("../*") so _non_java_deps are only included
+        # when a resources config file is generated under root_build_dir.
+        if (defined(invoker.resources_config_paths) &&
+            filter_exclude(
+                rebase_path(invoker.resources_config_paths, root_build_dir),
+                [ "../*" ]) != []) {
+          deps += _non_java_deps
+        }
         resources_path_map_out_path = _resources_path_map_out_path
         rtxt_path = _compile_resources_rtxt_out
 
@@ -3691,7 +3705,6 @@ if (!is_robolectric && enable_java_templates) {
             "@FileArg($_rebased_build_config:apk_path)",
           ]
         }
-        deps += invoker.additional_apks
       }
     }
 
@@ -4223,8 +4236,8 @@ if (!is_robolectric && enable_java_templates) {
   #       Root directory of .fbs files.
   #
   #   deps (optional)
-  #       Additional dependencies. Passed through to both the action and the
-  #       android_library targets.
+  #       Additional dependencies. Passed through to the android_library
+  #       target, and non-Java deps are passed to the flatc action.
   #
   #   flatc_include_dirs (optional)
   #       A list of extra import directories to be passed to flatc compiler.
@@ -4249,7 +4262,9 @@ if (!is_robolectric && enable_java_templates) {
 
       deps = [ _flatc_dep ]
       if (defined(invoker.deps)) {
-        deps += invoker.deps
+        # Only depend on non-Java targets that may generate .fbs inputs for
+        # flatc.
+        deps += filter_exclude(invoker.deps, java_target_patterns)
       }
       inputs = [ _flatc_bin ]
 

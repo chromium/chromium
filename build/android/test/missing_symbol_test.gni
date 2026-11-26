@@ -12,14 +12,18 @@ template("missing_symbol_test") {
   # Not named "_java" to prevent target from being considered a classpath dep.
   _helper_target_name = string_replace("${target_name}__helper", "java", "")
 
-  group(_helper_target_name) {
-    # Make group() depend on dependencies that |target_name| cannot find so that
-    # the missing symbol resolver can find and suggest the missing GN dep.
+  # Copy Empty.java under target_gen_dir so compile_java/turbine treat this
+  # non-Java dep as generating a compile input and wait for invoker.deps to
+  # build before compiling (needed when a missing dep has only generated
+  # sources and ClassLookupIndex must scan its built .javac.jar).
+  copy(_helper_target_name) {
+    sources = [ "//tools/android/errorprone_plugin/test/src/org/chromium/tools/errorprone/plugin/Empty.java" ]
+    outputs = [ "$target_gen_dir/$_helper_target_name/org/chromium/tools/errorprone/plugin/Empty.java" ]
     deps = invoker.deps
   }
 
   android_library(target_name) {
-    sources = [ "//tools/android/errorprone_plugin/test/src/org/chromium/tools/errorprone/plugin/Empty.java" ]
+    sources = get_target_outputs(":$_helper_target_name")
     not_needed(invoker,
                [
                  "sources",
