@@ -1127,7 +1127,16 @@ class CONTENT_EXPORT NavigationRequest
   TakeDeviceBoundSessionAccessObservers();
 
   // Returns the coop status information relevant to the current navigation.
-  CrossOriginOpenerPolicyStatus& coop_status() { return coop_status_; }
+  CrossOriginOpenerPolicyStatus& coop_status() { return *coop_status_; }
+
+  // Returns whether this is a new renderer-initiated navigation whose initial
+  // URL was supplied by a live document same-origin with `origin` (excluding
+  // history, restore, reload, and browser-initiated navigations, which obtain
+  // their URL from session history or the browser). Best-effort: may return
+  // false for some same-origin navigations (e.g. if the initiator document is
+  // gone), which is safe for reporting. Used by COEP and COOP reporting to
+  // avoid disclosing cross-origin URLs a document did not supply.
+  bool IsNewRendererInitiatedNavigationFromOrigin(const url::Origin& origin);
 
   // Returns true if this is a NavigationRequest represents a WebView
   // loadDataWithBaseUrl navigation.
@@ -3454,8 +3463,10 @@ class CONTENT_EXPORT NavigationRequest
   std::unique_ptr<viz::PeakGpuMemoryTracker> loading_mem_tracker_;
 
   // Structure tracking the effects of the CrossOriginOpenerPolicy on this
-  // navigation.
-  CrossOriginOpenerPolicyStatus coop_status_{this};
+  // navigation. Constructed in the NavigationRequest constructor body once
+  // `initiator_document_token_` and `commit_params_->is_browser_initiated`
+  // have been finalized.
+  std::optional<CrossOriginOpenerPolicyStatus> coop_status_;
 
 #if !BUILDFLAG(IS_ANDROID)
   bool is_safe_to_delete_ = true;

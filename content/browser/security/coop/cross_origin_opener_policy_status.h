@@ -172,9 +172,13 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
   // this navigation before it fails or commits.
   std::vector<base::UnguessableToken> transient_reporting_sources_;
 
-  // Whether the current context tracked by this CrossOriginOpenerPolicy is the
-  // source of the current navigation. This is updated every time we receive a
-  // redirect, as redirects are considered the source of the navigation to the
+  // Whether the current context tracked by this CrossOriginOpenerPolicyStatus
+  // is the source of the current navigation. At the start of a navigation, this
+  // is true only for new renderer-initiated navigations from a live document
+  // same-origin with the current document (matching COEP reporting; history,
+  // restore, reload, and browser-initiated navigations obtain their target URL
+  // from session history or the browser). Updated every time a redirect is
+  // received, as redirects are considered the source of the navigation to the
   // next URL.
   bool is_navigation_source_;
 };

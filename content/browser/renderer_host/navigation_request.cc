@@ -1909,28 +1909,6 @@ NavigationRequest::NavigationRequest(
     }
   }
 
-  // Disclose the full URL in COEP reports only if it was requested by a
-  // document same-origin with the parent, which therefore already knows it.
-  // Only a new renderer-initiated navigation gets its URL from the initiator.
-  // Others (history, reload, restore...) get it from session history.
-  //
-  // Best effort: this may miss some navigations whose URL did come from a
-  // same-origin initiator. That's fine, they only get a less detailed report.
-  // What must not happen is disclosing a URL the parent didn't know.
-  RenderFrameHostImpl* parent = GetParentFrameOrOuterDocument();
-  RenderFrameHostImpl* initiator = GetInitiatorDocumentRenderFrameHost();
-  if (!browser_initiated &&
-      common_params_->navigation_type ==
-          blink::mojom::NavigationType::DIFFERENT_DOCUMENT &&
-      !common_params_->is_history_navigation_in_new_child_frame && parent &&
-      initiator &&
-      initiator->GetLastCommittedOrigin().IsSameOriginWith(
-          parent->GetLastCommittedOrigin())) {
-    coep_report_url_ = original_url_;
-  } else {
-    coep_report_url_ = original_url_.DeprecatedGetOriginAsURL();
-  }
-
   ComputeDownloadPolicy();
 
   // Ensure the blink::RuntimeFeatureStateContext is initialized.
@@ -2114,6 +2092,21 @@ NavigationRequest::NavigationRequest(
     browser_initiated = !is_renderer_initiated;
   }
   commit_params_->is_browser_initiated = browser_initiated;
+
+  // Disclose the full URL in COEP reports only if it was requested by a
+  // document same-origin with the parent, which therefore already knows it.
+  RenderFrameHostImpl* parent = GetParentFrameOrOuterDocument();
+  if (parent && IsNewRendererInitiatedNavigationFromOrigin(
+                    parent->GetLastCommittedOrigin())) {
+    coep_report_url_ = original_url_;
+  } else {
+    coep_report_url_ = original_url_.DeprecatedGetOriginAsURL();
+  }
+
+  // Initialize COOP status after `initiator_document_token_` and
+  // `commit_params_->is_browser_initiated` are finalized so COOP shares the
+  // same navigation-source check as COEP.
+  coop_status_.emplace(this);
 
   // Calculate load flags based on the navigation type. For renderer-initiated
   // navigations, `begin_params_->load_flags` come from the renderer, so can't
@@ -3263,7 +3256,7 @@ void NavigationRequest::BeginNavigationImpl() {
       const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked();
       net::SchemefulSite site = net::SchemefulSite(origin);
 
-      coop_status_.EnforceCOOP(
+      coop_status_->EnforceCOOP(
           policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
           origin,
           net::NetworkAnonymizationKey::CreateSameSite(std::move(site)));
@@ -4072,7 +4065,7 @@ void NavigationRequest::OnRequestRedirected(
 
   const std::optional<network::mojom::BlockedByResponseReason>
       coop_requires_blocking =
-          coop_status_.SanitizeResponse(response_head_.get());
+          coop_status_->SanitizeResponse(response_head_.get());
   if (coop_requires_blocking) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(*coop_requires_blocking),
@@ -4083,7 +4076,7 @@ void NavigationRequest::OnRequestRedirected(
     return;
   }
   const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked();
-  coop_status_.EnforceCOOP(
+  coop_status_->EnforceCOOP(
       response()->parsed_headers->cross_origin_opener_policy, origin,
       network_anonymization_key);
 
@@ -4854,7 +4847,7 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
   // Check the COOP header value. All same-origin values are considered to be
   // an implicit hint for site isolation.
   bool should_header_value_trigger_isolation = false;
-  switch (coop_status_.current_coop().value) {
+  switch (coop_status_->current_coop().value) {
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
@@ -5435,7 +5428,7 @@ void NavigationRequest::OnResponseStarted(
   {
     const std::optional<network::mojom::BlockedByResponseReason>
         coop_requires_blocking =
-            coop_status_.SanitizeResponse(response_head_.get());
+            coop_status_->SanitizeResponse(response_head_.get());
     if (coop_requires_blocking) {
       // TODO(crbug.com/40166503): Investigate what must be done in case
       // of a download.
@@ -5458,7 +5451,7 @@ void NavigationRequest::OnResponseStarted(
   {
     const url::Origin origin = GetOriginForURLLoaderFactoryBeforeResponse(
         policy_container_builder_->FinalPolicies().sandbox_flags);
-    coop_status_.EnforceCOOP(
+    coop_status_->EnforceCOOP(
         policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
         origin, network_anonymization_key);
 
@@ -6213,7 +6206,7 @@ void NavigationRequest::OnRequestFailedInternal(
   const auto origin = url::Origin();
   // Set the COOP origin in the policy container builder before FinalPolicies()
   // is called.
-  coop_status_.EnforceCOOP(
+  coop_status_->EnforceCOOP(
       policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
       origin, net::NetworkAnonymizationKey::CreateTransient());
 
@@ -7586,7 +7579,7 @@ void NavigationRequest::CommitNavigation() {
   ReuseRequestNavigationClientForCommitIfNeeded();
 
   CreateCoepReporter(GetRenderFrameHost()->GetProcess()->GetStoragePartition());
-  coop_status_.UpdateReporterStoragePartition(
+  coop_status_->UpdateReporterStoragePartition(
       GetRenderFrameHost()->GetProcess()->GetStoragePartition());
   CreateDipReporter(GetRenderFrameHost()->GetProcess()->GetStoragePartition());
 
@@ -12194,6 +12187,24 @@ std::vector<
     mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>>
 NavigationRequest::TakeDeviceBoundSessionAccessObservers() {
   return device_bound_session_observers_.TakeReceivers();
+}
+
+bool NavigationRequest::IsNewRendererInitiatedNavigationFromOrigin(
+    const url::Origin& origin) {
+  // Only a new renderer-initiated navigation gets its URL from the initiator.
+  // Others (history, reload, restore, browser-initiated...) get it from
+  // session history or the browser.
+  //
+  // Best effort: this may miss some navigations whose URL did come from a
+  // same-origin initiator. That's fine, they only get a less detailed report.
+  // What must not happen is disclosing a URL the document didn't know.
+  RenderFrameHostImpl* initiator = GetInitiatorDocumentRenderFrameHost();
+  return IsRendererInitiated() &&
+         common_params_->navigation_type ==
+             blink::mojom::NavigationType::DIFFERENT_DOCUMENT &&
+         !common_params_->is_history_navigation_in_new_child_frame &&
+         initiator &&
+         initiator->GetLastCommittedOrigin().IsSameOriginWith(origin);
 }
 
 RenderFrameHostImpl* NavigationRequest::GetInitiatorDocumentRenderFrameHost() {

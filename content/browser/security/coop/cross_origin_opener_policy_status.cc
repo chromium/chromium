@@ -102,17 +102,12 @@ CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
           frame_tree_node_->current_frame_host()->GetLastCommittedOrigin()),
       current_url_(
           frame_tree_node_->current_frame_host()->GetLastCommittedURL()),
-      // Best effort: history (including restore) and reload navigations reuse a
-      // stored URL that may differ from what the current document knows, so
-      // they never count as navigation sources. This may hide
-      // `nextResponseURL` in some cases where it was safe, which is fine.
+      // Disclose a cross-origin `nextResponseURL` only if it was supplied by a
+      // new renderer-initiated navigation from a document same-origin with the
+      // current document, matching COEP reporting.
       is_navigation_source_(
-          !navigation_request->IsHistory() && !navigation_request->IsReload() &&
-          navigation_request->common_params().initiator_origin.has_value() &&
-          navigation_request->common_params()
-              .initiator_origin->IsSameOriginWith(
-                  frame_tree_node_->current_frame_host()
-                      ->GetLastCommittedOrigin())) {
+          navigation_request->IsNewRendererInitiatedNavigationFromOrigin(
+              current_origin_)) {
   // Use the URL of the opener for reporting purposes when doing an initial
   // navigation in a popup.
   // Note: the origin check is there to avoid leaking the URL of an opener that

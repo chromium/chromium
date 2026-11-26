@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -37,6 +38,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/reporting_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/origin.h"
 
 namespace content {
 namespace {
@@ -447,6 +449,37 @@ IN_PROC_BROWSER_TEST_F(CrossOriginOpenerPolicyReportingBrowserTest,
   ASSERT_TRUE(ExecJs(popup, JsReplace("location.href = $1;", normal_next_url)));
   WaitForLoadStop(popup);
   EXPECT_EQ(normal_next_url.spec(), observer.WaitForNextResponseURL());
+}
+
+// Verifies that browser-initiated navigations do not treat the current
+// document as the navigation source even if `initiator_origin` matches it,
+// matching COEP reporting.
+IN_PROC_BROWSER_TEST_F(CrossOriginOpenerPolicyReportingBrowserTest,
+                       BrowserInitiatedNavigationDoesNotLeakNextResponseURL) {
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL(kReportingHost, "/echo")));
+
+  const GURL coop_ro_url =
+      https_server()->GetURL(kReportingHost, "/coop-report-only-reporting");
+  WebContentsAddedObserver popup_observer;
+  ASSERT_TRUE(ExecJs(shell(), "popup = window.open()"));
+  WebContents* popup = popup_observer.GetWebContents();
+  ASSERT_TRUE(
+      ExecJs(shell(), JsReplace("popup.location.href = $1;", coop_ro_url)));
+  WaitForLoadStop(popup);
+
+  TestCoopReportingApiObserver observer(
+      popup->GetPrimaryMainFrame()->GetStoragePartition()->GetNetworkContext());
+
+  const GURL cross_origin_url =
+      https_server()->GetURL(kCrossOriginHost, "/echo?secret=browser_nav");
+  NavigationController::LoadURLParams params(cross_origin_url);
+  params.is_renderer_initiated = false;
+  params.initiator_origin = url::Origin::Create(coop_ro_url);
+  popup->GetController().LoadURLWithParams(params);
+  WaitForLoadStop(popup);
+  EXPECT_EQ(cross_origin_url, popup->GetLastCommittedURL());
+  EXPECT_EQ("", observer.WaitForNextResponseURL());
 }
 
 }  // namespace content
