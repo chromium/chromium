@@ -26,7 +26,9 @@
 
 #include <array>
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/numerics/checked_math.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -43,6 +45,7 @@
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -149,10 +152,29 @@ gfx::RectF Font::TextInkBounds(const TextFragmentPaintInfo& text_info) const {
 
 namespace {  // anonymous namespace
 
+wtf_size_t CountGlyphsForIntercepts(
+    const ShapeResultBloberizer::BlobBuffer& blobs) {
+  base::CheckedNumeric<wtf_size_t> num_glyphs = 0;
+  for (const ShapeResultBloberizer::BlobInfo& blob_info : blobs) {
+    DCHECK(blob_info.blob);
+    if (IsCanvasRotationInVerticalUpright(blob_info.rotation)) {
+      continue;
+    }
+    SkTextBlob::Iter iter(*blob_info.blob);
+    SkTextBlob::Iter::Run run;
+    while (iter.next(&run)) {
+      CHECK_GE(run.fGlyphCount, 0);
+      num_glyphs += static_cast<wtf_size_t>(run.fGlyphCount);
+    }
+  }
+  return num_glyphs.ValueOrDie();
+}
+
 wtf_size_t InterceptsFromBlobs(const ShapeResultBloberizer::BlobBuffer& blobs,
                                const SkPaint& paint,
                                const std::tuple<float, float>& bounds,
-                               base::span<SkScalar> intercepts_buffer) {
+                               base::span<SkScalar> intercepts_buffer,
+                               bool check_bounds) {
   std::array<SkScalar, 2> bounds_array = {std::get<0>(bounds),
                                           std::get<1>(bounds)};
 
@@ -168,13 +190,20 @@ wtf_size_t InterceptsFromBlobs(const ShapeResultBloberizer::BlobBuffer& blobs,
       continue;
 
     SkScalar* offset_intercepts_buffer = nullptr;
+    size_t remaining_size = 0;
     if (!intercepts_buffer.empty()) {
       DCHECK_LE(num_intervals, intercepts_buffer.size());
-      offset_intercepts_buffer =
-          intercepts_buffer.subspan(num_intervals).data();
+      base::span<SkScalar> remaining = intercepts_buffer.subspan(num_intervals);
+      offset_intercepts_buffer = remaining.data();
+      remaining_size = remaining.size();
     }
-    num_intervals += blob_info.blob->getIntercepts(
-        bounds_array.data(), offset_intercepts_buffer, &paint);
+    const int blob_intervals = blob_info.blob->getIntercepts(
+        bounds_array, offset_intercepts_buffer, &paint);
+    if (check_bounds) {
+      CHECK_GE(blob_intervals, 0);
+      CHECK_LE(static_cast<size_t>(blob_intervals), remaining_size);
+    }
+    num_intervals += static_cast<wtf_size_t>(blob_intervals);
   }
   return num_intervals;
 }
@@ -183,17 +212,48 @@ void GetTextInterceptsInternal(const ShapeResultBloberizer::BlobBuffer& blobs,
                                const cc::PaintFlags& flags,
                                const std::tuple<float, float>& bounds,
                                Vector<Font::TextIntercept>& intercepts) {
+  SkPaint paint = flags.ToSkPaint();
+  if (RuntimeEnabledFeatures::FontSinglePassTextInterceptsEnabled()) {
+    // SkTextBlob::getIntercepts() writes at most two scalars (one [begin, end]
+    // interval) per glyph. Pre-allocate for that upper bound and retrieve
+    // intercepts in a single pass instead of a count-then-fill pair of calls,
+    // since strike cache eviction between two calls can rebuild a glyph outline
+    // with a different number of intervals (e.g. under a different subnormal
+    // float mode).
+    const wtf_size_t max_intervals =
+        base::CheckMul(CountGlyphsForIntercepts(blobs), 2u).ValueOrDie();
+    if (!max_intervals) {
+      return;
+    }
+
+    Vector<SkScalar, 128> scalar_buffer(max_intervals);
+    const wtf_size_t num_intervals = InterceptsFromBlobs(
+        blobs, paint, bounds, scalar_buffer, /*check_bounds=*/true);
+    if (!num_intervals) {
+      return;
+    }
+    CHECK_EQ(num_intervals % 2, 0u);
+
+    intercepts.resize(num_intervals / 2u);
+    for (wtf_size_t i = 0; i < num_intervals / 2u; ++i) {
+      intercepts[i] = {scalar_buffer[i * 2], scalar_buffer[i * 2 + 1]};
+    }
+    return;
+  }
+
   // Get the number of intervals, without copying the actual values by
   // specifying nullptr for the buffer, following the Skia allocation model for
   // retrieving text intercepts.
-  SkPaint paint = flags.ToSkPaint();
-  wtf_size_t num_intervals = InterceptsFromBlobs(blobs, paint, bounds, {});
-  if (!num_intervals)
+  wtf_size_t num_intervals =
+      InterceptsFromBlobs(blobs, paint, bounds, {}, /*check_bounds=*/false);
+  if (!num_intervals) {
     return;
+  }
   DCHECK_EQ(num_intervals % 2, 0u);
 
   Vector<SkScalar> scalar_buffer(num_intervals);
-  InterceptsFromBlobs(blobs, paint, bounds, scalar_buffer);
+  InterceptsFromBlobs(blobs, paint, bounds, scalar_buffer,
+                      /*check_bounds=*/false);
 
   intercepts.resize(num_intervals / 2u);
   for (wtf_size_t i = 0; i < num_intervals / 2; ++i) {

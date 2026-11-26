@@ -170,6 +170,9 @@ String FontPlatformData::FontFamilyName() const {
   DCHECK(Typeface());
   SkTypeface::LocalizedStrings* font_family_iterator =
       Typeface()->createFamilyNameIterator();
+  if (!font_family_iterator) {
+    return String();
+  }
   SkTypeface::LocalizedString localized_string;
   while (font_family_iterator->next(&localized_string) &&
          !localized_string.fString.size()) {

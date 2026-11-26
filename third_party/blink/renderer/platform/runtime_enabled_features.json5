@@ -3588,6 +3588,11 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/590484039.
+      name: "FontSinglePassTextIntercepts",
+      status: "stable",
+    },
+    {
       // crbug.com/325826179
       name: "FontUniqueNameTypefaceCache",
       status: "stable",
