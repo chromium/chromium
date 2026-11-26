@@ -203,7 +203,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   virtual bool CanCreateBacking() = 0;
   virtual bool InitializeBacking() = 0;
   bool HasBacking() const;
-  virtual bool IsBackingValid() const;
+  bool IsBackingValid() const;
   bool IsBackingAccelerated() const;
   virtual void ResetBacking();
   bool IsSingleBuffered() const;

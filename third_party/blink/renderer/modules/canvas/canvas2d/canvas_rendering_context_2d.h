@@ -152,7 +152,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool HasBacking() const override {
     return BaseRenderingContext2D::HasBacking();
   }
-  bool IsBackingValid() const override;
+  bool IsBackingValid() const override {
+    return BaseRenderingContext2D::IsBackingValid();
+  }
   bool IsBackingAccelerated() const override {
     return BaseRenderingContext2D::IsBackingAccelerated();
   }

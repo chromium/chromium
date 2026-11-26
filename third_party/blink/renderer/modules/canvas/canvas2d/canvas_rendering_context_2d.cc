@@ -1061,10 +1061,6 @@ base::ByteSize CanvasRenderingContext2D::AllocatedBufferSize() const {
   return BaseRenderingContext2D::AllocatedBufferSize();
 }
 
-bool CanvasRenderingContext2D::IsBackingValid() const {
-  return canvas() && BaseRenderingContext2D::IsBackingValid();
-}
-
 bool CanvasRenderingContext2D::InitializeBacking() {
   HTMLCanvasElement* const element = canvas();
   if (!element) [[unlikely]] {
