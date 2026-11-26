@@ -37,7 +37,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
-#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -269,8 +268,6 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
           /*capturing_icon=*/&kVideoConferenceMicrophoneCapturingIcon,
           /*accessible_name_id=*/
           IDS_VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE));
-  audio_icon_->SetPaintToLayer();
-  audio_icon_->layer()->SetFillsBoundsOpaquely(false);
   audio_icon_->SetVisible(false);
 
   camera_icon_ = tray_container()->AddChildView(
@@ -280,16 +277,12 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
           &kPrivacyIndicatorsCameraIcon, &kVideoConferenceCameraMutedIcon,
           &kVideoConferenceCameraCapturingIcon,
           IDS_VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_CAMERA));
-  camera_icon_->SetPaintToLayer();
-  camera_icon_->layer()->SetFillsBoundsOpaquely(false);
   camera_icon_->SetVisible(false);
 
   toggle_bubble_button_ =
       tray_container()->AddChildView(std::make_unique<ToggleBubbleButton>(
           this, base::BindRepeating(&VideoConferenceTray::ToggleBubble,
                                     weak_ptr_factory_.GetWeakPtr())));
-  toggle_bubble_button_->SetPaintToLayer();
-  toggle_bubble_button_->layer()->SetFillsBoundsOpaquely(false);
 
   VideoConferenceTrayController::Get()->AddObserver(this);
   VideoConferenceTrayController::Get()->GetEffectsManager().AddObserver(this);

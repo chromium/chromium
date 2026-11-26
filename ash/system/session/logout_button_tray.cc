@@ -26,7 +26,6 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -51,8 +50,6 @@ LogoutButtonTray::LogoutButtonTray(Shelf* shelf)
           base::BindRepeating(&LogoutButtonTray::ButtonPressed,
                               base::Unretained(this)),
           std::u16string(), CONTEXT_LAUNCHER_BUTTON));
-  button_->SetPaintToLayer();
-  button_->layer()->SetFillsBoundsOpaquely(false);
   button_->SetStyle(ui::ButtonStyle::kProminent);
   button_->SetBgColorOverride(cros_tokens::kColorAlert);
   button_->SetEnabledTextColors(cros_tokens::kColorPrimaryInverted);
