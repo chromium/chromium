@@ -145,6 +145,18 @@ public class AppIntentMetricsHelperTest {
             {"org.telegram.messenger", AndroidExternalAppIntentCategory.MESSAGING},
             {"jp.naver.line.android", AndroidExternalAppIntentCategory.MESSAGING},
             {"com.Slack", AndroidExternalAppIntentCategory.MESSAGING},
+            {"com.google.android.gm.lite", AndroidExternalAppIntentCategory.EMAIL},
+            {"ru.mail.mailapp", AndroidExternalAppIntentCategory.EMAIL},
+            {"com.readdle.spark", AndroidExternalAppIntentCategory.EMAIL},
+            {"com.aol.mobile.aolapp", AndroidExternalAppIntentCategory.EMAIL},
+            {"ru.yandex.yandexmaps", AndroidExternalAppIntentCategory.NAVIGATION},
+            {"ru.yandex.yandexnavi", AndroidExternalAppIntentCategory.NAVIGATION},
+            {"com.huawei.maps.app", AndroidExternalAppIntentCategory.NAVIGATION},
+            {"com.autonavi.minimap", AndroidExternalAppIntentCategory.NAVIGATION},
+            {"com.baidu.BaiduMap", AndroidExternalAppIntentCategory.NAVIGATION},
+            {"com.zing.zalo", AndroidExternalAppIntentCategory.MESSAGING},
+            {"com.imo.android.imoim", AndroidExternalAppIntentCategory.MESSAGING},
+            {"com.google.android.apps.dynamite", AndroidExternalAppIntentCategory.MESSAGING},
         };
         for (Object[] entry : cases) {
             String pkg = (String) entry[0];
@@ -164,6 +176,9 @@ public class AppIntentMetricsHelperTest {
                 new String[] {
                     "com.example.unrelated",
                     "com.naviapp",
+                    "com.instagram.android",
+                    "com.snapchat.android",
+                    "com.google.android.talk",
                     "com.naver.linewebtoon",
                     "com.navyfederal.android",
                     "com.dailymail.online",

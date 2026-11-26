@@ -70,33 +70,43 @@ public class AppIntentMetricsHelper {
             Map.ofEntries(
                     // Email
                     Map.entry("ch.protonmail.android", AndroidExternalAppIntentCategory.EMAIL),
+                    Map.entry("com.aol.mobile.aolapp", AndroidExternalAppIntentCategory.EMAIL),
                     Map.entry("com.google.android.gm", AndroidExternalAppIntentCategory.EMAIL),
+                    Map.entry("com.google.android.gm.lite", AndroidExternalAppIntentCategory.EMAIL),
                     Map.entry(
                             "com.microsoft.office.outlook", AndroidExternalAppIntentCategory.EMAIL),
+                    Map.entry("com.readdle.spark", AndroidExternalAppIntentCategory.EMAIL),
                     Map.entry(
                             "com.samsung.android.email.provider",
                             AndroidExternalAppIntentCategory.EMAIL),
+                    Map.entry("ru.mail.mailapp", AndroidExternalAppIntentCategory.EMAIL),
                     // Navigation
+                    Map.entry("com.autonavi.minimap", AndroidExternalAppIntentCategory.NAVIGATION),
+                    Map.entry("com.baidu.baidumap", AndroidExternalAppIntentCategory.NAVIGATION),
+                    Map.entry("com.huawei.maps.app", AndroidExternalAppIntentCategory.NAVIGATION),
                     Map.entry("com.nhn.android.nmap", AndroidExternalAppIntentCategory.NAVIGATION),
                     Map.entry("com.sygic.aura", AndroidExternalAppIntentCategory.NAVIGATION),
                     Map.entry("com.waze", AndroidExternalAppIntentCategory.NAVIGATION),
                     Map.entry("net.osmand", AndroidExternalAppIntentCategory.NAVIGATION),
                     Map.entry("net.osmand.plus", AndroidExternalAppIntentCategory.NAVIGATION),
+                    Map.entry("ru.yandex.yandexmaps", AndroidExternalAppIntentCategory.NAVIGATION),
+                    Map.entry("ru.yandex.yandexnavi", AndroidExternalAppIntentCategory.NAVIGATION),
                     // Messaging
                     Map.entry("com.discord", AndroidExternalAppIntentCategory.MESSAGING),
                     Map.entry("com.facebook.orca", AndroidExternalAppIntentCategory.MESSAGING),
                     Map.entry(
-                            "com.google.android.talk", AndroidExternalAppIntentCategory.MESSAGING),
-                    Map.entry("com.instagram.android", AndroidExternalAppIntentCategory.MESSAGING),
+                            "com.google.android.apps.dynamite",
+                            AndroidExternalAppIntentCategory.MESSAGING),
+                    Map.entry("com.imo.android.imoim", AndroidExternalAppIntentCategory.MESSAGING),
                     Map.entry("com.kakao.talk", AndroidExternalAppIntentCategory.MESSAGING),
                     Map.entry("com.microsoft.teams", AndroidExternalAppIntentCategory.MESSAGING),
                     Map.entry("com.slack", AndroidExternalAppIntentCategory.MESSAGING),
-                    Map.entry("com.snapchat.android", AndroidExternalAppIntentCategory.MESSAGING),
                     Map.entry("com.tencent.mm", AndroidExternalAppIntentCategory.MESSAGING),
                     Map.entry("com.tencent.mobileqq", AndroidExternalAppIntentCategory.MESSAGING),
                     Map.entry("com.viber.voip", AndroidExternalAppIntentCategory.MESSAGING),
                     Map.entry("com.whatsapp", AndroidExternalAppIntentCategory.MESSAGING),
                     Map.entry("com.whatsapp.w4b", AndroidExternalAppIntentCategory.MESSAGING),
+                    Map.entry("com.zing.zalo", AndroidExternalAppIntentCategory.MESSAGING),
                     Map.entry("jp.naver.line.android", AndroidExternalAppIntentCategory.MESSAGING),
                     Map.entry(
                             "org.thoughtcrime.securesms",
