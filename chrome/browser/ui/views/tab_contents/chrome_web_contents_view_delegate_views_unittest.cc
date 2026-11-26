@@ -186,6 +186,9 @@ class ChromeWebContentsViewDelegateViewsClipboardTest
  protected:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    // An earlier test in the same batch may have lazily initialized the
+    // thread's clipboard; clear it before installing the test double.
+    ui::Clipboard::DestroyClipboardForCurrentThread();
     ui::Clipboard::SetClipboardForCurrentThread(
         std::make_unique<DelayedClipboard>());
     NavigateAndCommit(GURL("https://example.test/"));
