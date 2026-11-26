@@ -114,6 +114,11 @@ class CrossDeviceSigninPromoManagerTest : public testing::Test {
         syncer::UserSelectableType::kTabs, /*is_type_on=*/enable_sync);
   }
 
+  void SetBookmarksSyncingPreference(bool enable_sync) {
+    sync_service()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kBookmarks, /*is_type_on=*/enable_sync);
+  }
+
   void AddDevice(
       const std::string& guid,
       bool is_local,
@@ -155,13 +160,17 @@ class CrossDeviceSigninPromoManagerEntryPointTest
   void EnableEntryPointDataTypeRequirement() {
     // Disable all data types by default (`syncer::TestSyncService` enables them
     // all upon creation) and only enable the one required by `entry_point()`.
-    SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+    sync_service()->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, {});
     switch (entry_point()) {
       case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
         SetHistoryAndTabsSyncingPreference(/*enable_sync=*/true);
         break;
       case CrossDeviceSigninPromoEntryPoint::kForeignTabs:
         SetTabsSyncingPreference(/*enable_sync=*/true);
+        break;
+      case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
+        SetBookmarksSyncingPreference(/*enable_sync=*/true);
         break;
       case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
       case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
@@ -172,7 +181,7 @@ class CrossDeviceSigninPromoManagerEntryPointTest
 };
 
 static_assert(CrossDeviceSigninPromoEntryPoint::kMaxValue ==
-                  CrossDeviceSigninPromoEntryPoint::kForeignTabs,
+                  CrossDeviceSigninPromoEntryPoint::kBookmarkSave,
               "Add new entry points to the list below.");
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -181,7 +190,8 @@ INSTANTIATE_TEST_SUITE_P(
                     CrossDeviceSigninPromoEntryPoint::kHistoryPage,
                     CrossDeviceSigninPromoEntryPoint::kSendTabToSelf,
                     CrossDeviceSigninPromoEntryPoint::kWhatsNewPage,
-                    CrossDeviceSigninPromoEntryPoint::kForeignTabs),
+                    CrossDeviceSigninPromoEntryPoint::kForeignTabs,
+                    CrossDeviceSigninPromoEntryPoint::kBookmarkSave),
     [](const testing::TestParamInfo<CrossDeviceSigninPromoEntryPoint>& info) {
       return std::string(GetEntryPointHistogramSuffixForTesting(info.param));
     });
@@ -1591,6 +1601,181 @@ TEST_F(CrossDeviceSigninPromoManagerTest,
   EXPECT_EQ(state.dismissed_count, 1);
   histogram_tester.ExpectUniqueSample(
       "Signin.CrossDeviceSigninPromo.DismissedAtShownCount.HistoryPage", 1, 1);
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest,
+       BookmarkSavePromo_EligibilityFlagsCapsAndCampaign) {
+  base::HistogramTester histogram_tester;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user+test@gmail.com", signin::ConsentLevel::kSignin);
+  AddDevice("local_device_guid", /*is_local=*/true);
+
+  // Disabled when bookmarks sync is off.
+  SetBookmarksSyncingPreference(false);
+  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kBookmarkSave, profile()));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.BookmarkSave",
+      CrossDeviceSigninPromoShouldShowResult::kDataTypeNotEnabled, 1);
+
+  // Enabled when bookmarks sync is on.
+  SetBookmarksSyncingPreference(true);
+  EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kBookmarkSave, profile()));
+
+  // Respects followup feature flag and `bookmark_save` feature param, while
+  // still recording `ShouldShowResult` in the control arm.
+  {
+    base::test::ScopedFeatureList control_arm;
+    control_arm.InitAndDisableFeature(
+        switches::kCrossDeviceSigninFromDesktopFollowup);
+    EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+        CrossDeviceSigninPromoEntryPoint::kBookmarkSave, profile()));
+  }
+  {
+    base::test::ScopedFeatureList param_disabled;
+    param_disabled.InitAndEnableFeatureWithParameters(
+        switches::kCrossDeviceSigninFromDesktopFollowup,
+        {{"bookmark_save", "false"}});
+    EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+        CrossDeviceSigninPromoEntryPoint::kBookmarkSave, profile()));
+  }
+  histogram_tester.ExpectBucketCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.BookmarkSave",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 3);
+
+  // Per-surface impression budget is independent from HistoryPage (up to the
+  // 6-impression global cap across all contextual surfaces).
+  for (int i = 0; i < 5; ++i) {
+    OnCrossDeviceSigninPromoShown(
+        CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile());
+  }
+  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
+
+  MockBrowserWindowInterface browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+  MockSigninUiDelegate mock_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_delegate);
+
+  GURL captured_url;
+  base::OnceClosure close_callback;
+  EXPECT_CALL(mock_delegate,
+              ShowCrossDeviceSigninQrBubble(
+                  &browser_window, testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kBookmarkSave, testing::_))
+      .WillOnce(testing::DoAll(testing::SaveArg<1>(&captured_url),
+                               MoveArg<2>(&close_callback)));
+
+  EXPECT_TRUE(MaybeShowCrossDeviceSigninQrPromo(
+      &browser_window, CrossDeviceSigninPromoEntryPoint::kBookmarkSave));
+
+  std::string campaign_val;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(captured_url, "ios-campaign", &campaign_val));
+  EXPECT_EQ(campaign_val, "XDeviceBookmarkSave");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "android-campaign",
+                                         &campaign_val));
+  EXPECT_EQ(campaign_val, "XDeviceBookmarkSave");
+
+  std::move(close_callback).Run();
+  EXPECT_FALSE(MaybeShowCrossDeviceSigninQrPromo(
+      &browser_window, CrossDeviceSigninPromoEntryPoint::kBookmarkSave));
+  histogram_tester.ExpectBucketCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.BookmarkSave",
+      CrossDeviceSigninPromoShouldShowResult::kGlobalShownLimitReached, 1);
+}
+
+TEST_F(
+    CrossDeviceSigninPromoManagerTest,
+    BookmarkSavePromo_TwoExplicitDismissalsCapSurfaceWhilePassiveCloseDoesNot) {
+  base::HistogramTester histogram_tester;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  AddDevice("local_device_guid", /*is_local=*/true);
+  SetBookmarksSyncingPreference(true);
+  SetHistoryAndTabsSyncingPreference(true);
+
+  MockBrowserWindowInterface browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+  MockSigninUiDelegate mock_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_delegate);
+
+  // 1st save + 1st explicit dismissal starts a 7-day global cooldown across
+  // contextual surfaces (`BookmarkSave` and `HistoryPage`).
+  base::OnceClosure close_callback;
+  base::OnceClosure explicit_dismissal_callback;
+  auto capture_callbacks = [&](BrowserWindowInterface*, GURL,
+                               base::OnceClosure on_closed,
+                               CrossDeviceSigninPromoEntryPoint,
+                               base::OnceClosure on_explicit_dismissal) {
+    close_callback = std::move(on_closed);
+    explicit_dismissal_callback = std::move(on_explicit_dismissal);
+  };
+  EXPECT_CALL(mock_delegate,
+              ShowCrossDeviceSigninQrBubble(
+                  &browser_window, testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kBookmarkSave, testing::_))
+      .WillOnce(capture_callbacks);
+  ASSERT_TRUE(MaybeShowCrossDeviceSigninQrPromo(
+      &browser_window, CrossDeviceSigninPromoEntryPoint::kBookmarkSave));
+  ASSERT_TRUE(explicit_dismissal_callback);
+  std::move(explicit_dismissal_callback).Run();
+  std::move(close_callback).Run();
+
+  EXPECT_FALSE(MaybeShowCrossDeviceSigninQrPromo(
+      &browser_window, CrossDeviceSigninPromoEntryPoint::kBookmarkSave));
+  histogram_tester.ExpectBucketCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.BookmarkSave",
+      CrossDeviceSigninPromoShouldShowResult::kCooldownActive, 1);
+  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
+  histogram_tester.ExpectBucketCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.HistoryPage",
+      CrossDeviceSigninPromoShouldShowResult::kCooldownActive, 1);
+
+  // After 7 days, 2nd save closed passively (e.g. tab switch or browser
+  // teardown) counts only as an impression and does NOT cap `BookmarkSave` or
+  // start a cooldown.
+  FastForwardBy(base::Days(7));
+  EXPECT_CALL(mock_delegate,
+              ShowCrossDeviceSigninQrBubble(
+                  &browser_window, testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kBookmarkSave, testing::_))
+      .WillOnce(MoveArg<2>(&close_callback));
+  ASSERT_TRUE(MaybeShowCrossDeviceSigninQrPromo(
+      &browser_window, CrossDeviceSigninPromoEntryPoint::kBookmarkSave));
+  std::move(close_callback).Run();
+
+  EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kBookmarkSave, profile()));
+
+  // 3rd save + 2nd explicit dismissal permanently caps `BookmarkSave`
+  // (`kDismissalLimitReached`), while other surfaces remain eligible after the
+  // 7-day cooldown.
+  EXPECT_CALL(mock_delegate,
+              ShowCrossDeviceSigninQrBubble(
+                  &browser_window, testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kBookmarkSave, testing::_))
+      .WillOnce(capture_callbacks);
+  ASSERT_TRUE(MaybeShowCrossDeviceSigninQrPromo(
+      &browser_window, CrossDeviceSigninPromoEntryPoint::kBookmarkSave));
+  ASSERT_TRUE(explicit_dismissal_callback);
+  std::move(explicit_dismissal_callback).Run();
+  std::move(close_callback).Run();
+
+  FastForwardBy(base::Days(7));
+  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kBookmarkSave, profile()));
+  histogram_tester.ExpectBucketCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.BookmarkSave",
+      CrossDeviceSigninPromoShouldShowResult::kDismissalLimitReached, 1);
+  EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
 }
 
 TEST_F(CrossDeviceSigninPromoManagerTest,

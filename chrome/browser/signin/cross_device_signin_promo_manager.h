@@ -22,7 +22,8 @@ enum class CrossDeviceSigninPromoEntryPoint {
   kSendTabToSelf = 2,
   kWhatsNewPage = 3,
   kForeignTabs = 4,
-  kMaxValue = kForeignTabs,
+  kBookmarkSave = 5,
+  kMaxValue = kBookmarkSave,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:CrossDeviceSigninPromoEntryPoint)
 

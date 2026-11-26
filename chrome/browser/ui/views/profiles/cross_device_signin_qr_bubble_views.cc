@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble_ui.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
@@ -218,8 +217,8 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
   auto dialog_model =
       ui::DialogModel::Builder()
           .SetInternalName("CrossDeviceSigninQrBubbleViews")
-          .SetTitle(
-              l10n_util::GetStringUTF16(IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE))
+          .SetTitle(l10n_util::GetStringUTF16(
+              CrossDeviceSigninQrBubbleUI::GetTitleResourceId(entry_point)))
           .SetDialogDestroyingCallback(std::move(cleanup_closure))
           .OverrideShowCloseButton(true)
           .DisableCloseOnDeactivate()

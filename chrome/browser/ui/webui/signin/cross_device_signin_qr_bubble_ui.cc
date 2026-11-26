@@ -154,6 +154,8 @@ int GetBubbleSubtitleResourceId(CrossDeviceSigninPromoEntryPoint entry_point) {
       return IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE;
     case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
       return IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_BODY_QR;
+    case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
+      return IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE_BOOKMARKS;
   }
 }
 
@@ -175,7 +177,7 @@ CrossDeviceSigninQrBubbleUI::CrossDeviceSigninQrBubbleUI(content::WebUI* web_ui)
       GetEntryPointFromUrl(web_ui->GetWebContents()->GetVisibleURL());
 
   source->UseStringsJs();
-  source->AddLocalizedString("title", IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE);
+  source->AddLocalizedString("title", GetTitleResourceId(entry_point));
   source->AddLocalizedString("subtitle",
                              GetBubbleSubtitleResourceId(entry_point));
   source->AddLocalizedString(
@@ -193,6 +195,21 @@ GURL CrossDeviceSigninQrBubbleUI::GetURLWithEntryPoint(
   return net::AppendQueryParameter(
       GURL(chrome::kChromeUICrossDeviceSigninQrBubbleURL), kEntryPointParamKey,
       base::NumberToString(static_cast<int>(entry_point)));
+}
+
+// static
+int CrossDeviceSigninQrBubbleUI::GetTitleResourceId(
+    CrossDeviceSigninPromoEntryPoint entry_point) {
+  switch (entry_point) {
+    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
+    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
+    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
+    case CrossDeviceSigninPromoEntryPoint::kWhatsNewPage:
+    case CrossDeviceSigninPromoEntryPoint::kForeignTabs:
+      return IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE;
+    case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
+      return IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE_BOOKMARKS;
+  }
 }
 
 void CrossDeviceSigninQrBubbleUI::Initialize(GURL qr_code_url) {

@@ -707,7 +707,6 @@ if (enable_dice_support) {
     deps = [
       ":avatar_toolbar_button",
       "//base",
-      "//chrome/app:branded_strings",
       "//chrome/app:generated_resources",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",

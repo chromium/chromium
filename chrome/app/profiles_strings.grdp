@@ -1355,4 +1355,7 @@
     <message name="IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE" desc="Subtitle of the QR Code bubble showing a code for the user to sign in on their phone.">
       To pick up where you left off, sign in to the same account on both devices
     </message>
+    <message name="IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE_BOOKMARKS" desc="Title of the cross-device sign-in QR Code bubble shown right after saving a bookmark.">
+      Get bookmarks on your phone
+    </message>
 </grit-part>

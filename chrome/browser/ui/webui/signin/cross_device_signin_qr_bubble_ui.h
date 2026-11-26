@@ -39,6 +39,8 @@ class CrossDeviceSigninQrBubbleUI
       delete;
 
   static GURL GetURLWithEntryPoint(CrossDeviceSigninPromoEntryPoint entry_point);
+  // Returns the bubble title message ID for `entry_point`.
+  static int GetTitleResourceId(CrossDeviceSigninPromoEntryPoint entry_point);
 
   void Initialize(GURL qr_code_url);
 

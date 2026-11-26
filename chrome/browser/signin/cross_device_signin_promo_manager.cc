@@ -71,6 +71,8 @@ std::string_view GetEntryPointHistogramSuffix(
       return "ProfileMenu";
     case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
       return "SendTabToSelf";
+    case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
+      return "BookmarkSave";
   }
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:CrossDeviceSigninPromoEntryPointVariant)
 }
@@ -107,6 +109,8 @@ std::optional<CrossDevicePromoSurface> GetPromoSurfaceForEntryPoint(
     case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
     case CrossDeviceSigninPromoEntryPoint::kForeignTabs:
       return std::nullopt;
+    case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
+      return CrossDevicePromoSurface::kBookmarkSave;
   }
 }
 
@@ -234,24 +238,13 @@ bool HasMobileDevice(Profile* profile) {
       });
 }
 
-bool IsHistorySyncEnabled(Profile* profile) {
+bool IsSyncTypeEnabled(Profile* profile, syncer::UserSelectableType type) {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   if (!sync_service) {
     return false;
   }
-  return sync_service->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kHistory);
-}
-
-bool IsTabSyncEnabled(Profile* profile) {
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-  if (!sync_service) {
-    return false;
-  }
-  return sync_service->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kTabs);
+  return sync_service->GetUserSettings()->GetSelectedTypes().Has(type);
 }
 
 std::string_view GetCrossDevicePromoCampaign(
@@ -270,6 +263,10 @@ std::string_view GetCrossDevicePromoCampaign(
     case CrossDeviceSigninPromoEntryPoint::kForeignTabs:
       // TODO(crbug.com/579407047): Update with the final campaign value.
       return "XDeviceForeignTabs";
+    case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
+      // TODO(crbug.com/564793759): Update with the final bookmark save campaign
+      // value once registered.
+      return "XDeviceBookmarkSave";
   }
 }
 
@@ -313,6 +310,9 @@ bool ShouldReplaceExistingBubble(CrossDeviceSigninPromoEntryPoint entry_point) {
     case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
       // Promo cards disable their CTA while a bubble is open, so a click here
       // only races with the state update and must not steal the bubble.
+      return false;
+    case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
+      // Post-save promos must not steal an already open bubble.
       return false;
   }
   NOTREACHED();
@@ -409,6 +409,10 @@ bool IsFeatureEnabledForEntryPoint(
     case CrossDeviceSigninPromoEntryPoint::kForeignTabs:
       return base::FeatureList::IsEnabled(
           switches::kCrossDeviceSigninFromDesktopFollowup);
+    case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
+      return base::FeatureList::IsEnabled(
+                 switches::kCrossDeviceSigninFromDesktopFollowup) &&
+             switches::kCrossDeviceSigninFromDesktopBookmarkSave.Get();
   }
   NOTREACHED();
 }
@@ -420,6 +424,7 @@ bool ShouldCheckForMobileDevice(CrossDeviceSigninPromoEntryPoint entry_point) {
     case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
     case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
     case CrossDeviceSigninPromoEntryPoint::kForeignTabs:
+    case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
       return true;
     case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
       // Send Tab To Self is only triggered when there is no valid target
@@ -432,6 +437,25 @@ bool ShouldCheckForMobileDevice(CrossDeviceSigninPromoEntryPoint entry_point) {
       // so signed-in users get the account-bound one even if they already have
       // a phone (e.g. to set up a new one).
       return false;
+  }
+  NOTREACHED();
+}
+
+// Returns the sync selectable type required for `entry_point`, or std::nullopt
+// for entry points that are not dependent on a specific data type.
+std::optional<syncer::UserSelectableType> GetRequiredSyncTypeForEntryPoint(
+    CrossDeviceSigninPromoEntryPoint entry_point) {
+  switch (entry_point) {
+    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
+      return syncer::UserSelectableType::kHistory;
+    case CrossDeviceSigninPromoEntryPoint::kForeignTabs:
+      return syncer::UserSelectableType::kTabs;
+    case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
+      return syncer::UserSelectableType::kBookmarks;
+    case CrossDeviceSigninPromoEntryPoint::kWhatsNewPage:
+    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
+    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
+      return std::nullopt;
   }
   NOTREACHED();
 }
@@ -457,23 +481,13 @@ CrossDeviceSigninPromoShouldShowResult CheckPromoPrerequisites(
     return CrossDeviceSigninPromoShouldShowResult::kHasMobileDevice;
   }
 
-  // 2. Data-type eligibility check.
-  switch (entry_point) {
-    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
-      if (!IsHistorySyncEnabled(profile)) {
-        return CrossDeviceSigninPromoShouldShowResult::kDataTypeNotEnabled;
-      }
-      break;
-    case CrossDeviceSigninPromoEntryPoint::kForeignTabs:
-      if (!IsTabSyncEnabled(profile)) {
-        return CrossDeviceSigninPromoShouldShowResult::kDataTypeNotEnabled;
-      }
-      break;
-    case CrossDeviceSigninPromoEntryPoint::kWhatsNewPage:
-    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
-    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
-      // Entry points without data-type constraints.
-      break;
+  // 2. Data-type eligibility check. Entry points without a data-type
+  // requirement return `std::nullopt` and are unaffected.
+  if (std::optional<syncer::UserSelectableType> required_sync_type =
+          GetRequiredSyncTypeForEntryPoint(entry_point);
+      required_sync_type.has_value() &&
+      !IsSyncTypeEnabled(profile, *required_sync_type)) {
+    return CrossDeviceSigninPromoShouldShowResult::kDataTypeNotEnabled;
   }
 
   return CrossDeviceSigninPromoShouldShowResult::kCanShow;

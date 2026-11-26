@@ -223,6 +223,10 @@ BASE_DECLARE_FEATURE(kCrossDeviceSigninFromDesktopFollowup);
 // the What's New page.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<bool> kCrossDeviceSigninFromDesktopWhatsNew;
+// Param to control if the cross-device sign-in QR code promo is enabled after
+// saving a bookmark.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<bool> kCrossDeviceSigninFromDesktopBookmarkSave;
 
 // Kill switch for recording the cross-device sign-in promo eligibility
 // (`Signin.CrossDeviceSigninPromo.ShouldShowResult.*`) even when the entry
