@@ -257,6 +257,7 @@ source_set("impl") {
       "//chrome/browser/ui/views/permissions:permission_prompt_observer",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/searchbox",
+      "//chrome/browser/ui/webui/omnibox_popup:dogfood_feedback",
       "//components/policy/core/browser",
       "//components/strings:components_strings",
       "//ui/webui/tracked_element",

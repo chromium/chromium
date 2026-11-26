@@ -19,9 +19,15 @@ class ContextualTasksUiServiceDelegate {
  public:
   virtual ~ContextualTasksUiServiceDelegate() = default;
 
-  // Called to open the feedback page UI.
+  // Called to open the feedback page UI, which files reports to "cobrowse"
+  // (`kFeedbackSourceAI`).
   virtual void OpenFeedbackUi(BrowserWindowInterface* browser,
                               const GURL& page_url) = 0;
+
+  // Called to open the dogfood feedback form, which files reports to
+  // "contextual_tasks_rearch" (`kFeedbackSourceContextualTasks`).
+  virtual void OpenDogfoodFeedbackUi(BrowserWindowInterface* browser,
+                                     const GURL& page_url) = 0;
 
   // Called to show the undo closure snackbar.
   virtual void ShowUndoSnackbar(

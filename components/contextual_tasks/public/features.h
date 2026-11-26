@@ -747,6 +747,11 @@ extern bool IsContextualTasksTabBasedSuggestionsEnabled();
 extern bool IsContextualTasksUnboundedMenuEnabled();
 extern bool IsContextualTasksSingleTabMenuItemEnabled();
 
+// Returns whether the Contextual Tasks side panel toolbar and the tab picker
+// show a button that opens a form to file dogfood feedback. Controlled by the
+// `ContextualTasks_DogfoodFeedback` param of `kContextualTasks`.
+extern bool IsContextualTasksDogfoodFeedbackEnabled();
+
 inline constexpr char kContextualTasksSearchCapabilitiesHeaderName[] =
     "Chrome-Search-Capabilities-Version";
 // The default version for the `Chrome-Search-Capabilities-Version` HTTP header.

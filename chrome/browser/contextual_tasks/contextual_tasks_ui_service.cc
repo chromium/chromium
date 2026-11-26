@@ -3181,6 +3181,16 @@ void ContextualTasksUiService::OpenFeedbackUi(BrowserWindowInterface* browser,
   delegate_->OpenFeedbackUi(browser, page_url);
 }
 
+void ContextualTasksUiService::OpenDogfoodFeedbackUi(
+    BrowserWindowInterface* browser,
+    const GURL& page_url) {
+  // Renderers only hide the dogfood feedback UI, so check the gate here too.
+  if (!browser || !IsContextualTasksDogfoodFeedbackEnabled()) {
+    return;
+  }
+  delegate_->OpenDogfoodFeedbackUi(browser, page_url);
+}
+
 void ContextualTasksUiService::ShowUndoSnackbar(
     BrowserWindowInterface* browser_window_interface) {
   delegate_->ShowUndoSnackbar(browser_window_interface);

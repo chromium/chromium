@@ -23,6 +23,10 @@ class MockContextualTasksUiServiceDelegate
               (BrowserWindowInterface * browser, const GURL& page_url),
               (override));
   MOCK_METHOD(void,
+              OpenDogfoodFeedbackUi,
+              (BrowserWindowInterface * browser, const GURL& page_url),
+              (override));
+  MOCK_METHOD(void,
               ShowUndoSnackbar,
               (BrowserWindowInterface * browser_window_interface),
               (override));

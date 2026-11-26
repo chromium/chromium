@@ -90,6 +90,10 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
               OpenFeedbackUi,
               (BrowserWindowInterface*, const GURL&),
               (override));
+  MOCK_METHOD(void,
+              OpenDogfoodFeedbackUi,
+              (BrowserWindowInterface*, const GURL&),
+              (override));
   MOCK_METHOD(ContextualTasksEligibilityManager*,
               GetEligibilityManager,
               (),
