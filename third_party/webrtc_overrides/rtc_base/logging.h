@@ -26,6 +26,7 @@
 
 #include <cstddef>
 
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/webrtc_overrides/rtc_base/diagnostic_logging.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -39,12 +40,39 @@
 
 namespace webrtc {
 
+// Matches logging::GetVlogLevel(), which turns vlog off in these builds.
+#if defined(OFFICIAL_BUILD) && defined(NDEBUG) && \
+    !defined(DCHECK_ALWAYS_ON) && defined(WEBRTC_ANDROID)
+inline constexpr bool kVerboseVlogDisabled = true;
+#else
+inline constexpr bool kVerboseVlogDisabled = false;
+#endif
+
 // Note that |N| is the size *with* the null terminator.
 bool CheckVlogIsOnHelper(LoggingSeverity severity, const char* file, size_t N);
+RTC_EXPORT int GetVlogLevelHelper(const char* file, size_t N);
 
 template <size_t N>
-bool CheckVlogIsOn(LoggingSeverity severity, const char (&file)[N]) {
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline bool CheckVlogIsOn(LoggingSeverity severity,
+                                                       const char (&file)[N]) {
+  if (kVerboseVlogDisabled && severity > LS_INFO) {
+    return false;
+  }
   return CheckVlogIsOnHelper(severity, file, N);
+}
+
+// LS_INFO and above may go to the delegate; only skip more verbose ones.
+template <size_t N>
+ABSL_ATTRIBUTE_ALWAYS_INLINE inline bool ShouldBuildLogMessage(
+    LoggingSeverity severity,
+    const char (&file)[N]) {
+  if (severity <= LS_INFO) {
+    return true;
+  }
+  if (kVerboseVlogDisabled) {
+    return false;
+  }
+  return (severity == LS_SENSITIVE ? 2 : 1) <= GetVlogLevelHelper(file, N);
 }
 
 }  // namespace webrtc
@@ -52,11 +80,14 @@ bool CheckVlogIsOn(LoggingSeverity severity, const char (&file)[N]) {
 // The LogMessageVoidify() call suppresses -Wunreachable-code diagnostics
 // in certain conditions (see https://crbug.com/1065568)
 // TODO(thakis): Make the warning smarter and then remove this again.
-#define DIAGNOSTIC_LOG(sev, ctx, err, ...)                                   \
-  webrtc::LogMessageVoidify() &                                              \
-      webrtc::DiagnosticLogMessage(__FILE__, __LINE__, sev,                  \
-                                   webrtc::ERRCTX_##ctx, err, ##__VA_ARGS__) \
-          .stream()
+#define DIAGNOSTIC_LOG(sev, ctx, err, ...)                          \
+  !webrtc::ShouldBuildLogMessage(sev, __FILE__)                     \
+      ? (void)0                                                     \
+      : webrtc::LogMessageVoidify() &                               \
+            webrtc::DiagnosticLogMessage(__FILE__, __LINE__, sev,   \
+                                         webrtc::ERRCTX_##ctx, err, \
+                                         ##__VA_ARGS__)             \
+                .stream()
 
 #define RTC_LOG_FILE_LINE(sev, file, line)                                  \
   webrtc::LogMessageVoidify() &                                             \

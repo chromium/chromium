@@ -246,4 +246,8 @@ bool CheckVlogIsOnHelper(LoggingSeverity severity,
          ::logging::GetVlogLevelHelper(file, N);
 }
 
+int GetVlogLevelHelper(const char* file, size_t N) {
+  return ::logging::GetVlogLevelHelper(file, N);
+}
+
 }  // namespace webrtc
