@@ -1,0 +1,10 @@
+Tests that duplicate mock-camera adds preserve a live stream.
+The concurrent duplicate add is rejected: true
+A mock camera is registered: true
+The camera delivers frames before duplicate add: true
+The duplicate add with a live stream is rejected: true
+Duplicate add preserves the page-visible deviceId: true
+The original track remains live: true
+The original stream continues to deliver frames: true
+The camera is removed after session disconnect: true
+

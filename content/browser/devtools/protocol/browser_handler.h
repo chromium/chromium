@@ -67,7 +67,8 @@ class BrowserHandler : public DevToolsDomainHandler,
   Response GetBrowserCommandLine(
       std::unique_ptr<protocol::Array<std::string>>* arguments) override;
 
-  Response AddMockCamera(const std::string& device_id) override;
+  void AddMockCamera(const std::string& device_id,
+                     std::unique_ptr<AddMockCameraCallback> callback) override;
 
   void SetPermission(
       std::unique_ptr<protocol::Browser::PermissionDescriptor> permission,

@@ -5,8 +5,10 @@
 #include "services/video_capture/virtual_device_enabled_device_factory.h"
 
 #include <algorithm>
+#include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
@@ -153,8 +155,19 @@ VirtualDeviceEnabledDeviceFactory::VirtualDeviceEnabledDeviceFactory(
     std::unique_ptr<DeviceFactory> device_factory)
     : device_factory_(std::move(device_factory)) {}
 
-VirtualDeviceEnabledDeviceFactory::~VirtualDeviceEnabledDeviceFactory() =
-    default;
+VirtualDeviceEnabledDeviceFactory::~VirtualDeviceEnabledDeviceFactory() {
+  // Disable discard callbacks before clearing the pending registration map.
+  weak_factory_.InvalidateWeakPtrs();
+
+  // Complete these requests before the wrapped factory discards their
+  // enumeration callbacks. The provider may still have open response pipes.
+  auto pending_registrations =
+      std::exchange(pending_shared_memory_registrations_, {});
+  for (auto& registration : pending_registrations) {
+    std::move(registration.second)
+        .Run(AddVirtualDeviceResult::kErrorDroppedRequest);
+  }
+}
 
 void VirtualDeviceEnabledDeviceFactory::GetDeviceInfos(
     media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
@@ -232,37 +245,80 @@ void VirtualDeviceEnabledDeviceFactory::AddSharedMemoryVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingRemote<mojom::Producer> producer_pending_remote,
     mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
-        virtual_device_receiver) {
+        virtual_device_receiver,
+    AddSharedMemoryVirtualDeviceCallback callback) {
   if (!IsValidVirtualDevice(device_info)) {
+    std::move(callback).Run(AddVirtualDeviceResult::kErrorInvalidDeviceInfo);
     return;
   }
   if (!device_factory_) {
-    CompleteAddSharedMemoryVirtualDevice(device_info,
-                                         std::move(producer_pending_remote),
-                                         std::move(virtual_device_receiver));
+    CompleteAddSharedMemoryVirtualDevice(
+        device_info, std::move(producer_pending_remote),
+        std::move(virtual_device_receiver), std::move(callback));
     return;
   }
+  const uint64_t registration_id = next_shared_memory_registration_id_++;
+  pending_shared_memory_registrations_.emplace(registration_id,
+                                               std::move(callback));
+  // An unexpected enumeration callback drop must discard the response too,
+  // so Mojo can still detect a missing reply while the factory is alive.
+  base::ScopedClosureRunner on_discarded(
+      base::BindOnce(&VirtualDeviceEnabledDeviceFactory::
+                         DiscardPendingSharedMemoryRegistration,
+                     weak_factory_.GetWeakPtr(), registration_id));
   device_factory_->GetDeviceInfos(
       media::GetDefaultVideoEnumerationMode(),
-      base::BindOnce(
-          &VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfosForVirtualDevice,
-          weak_factory_.GetWeakPtr(), device_info.descriptor.device_id,
-          base::BindOnce(&VirtualDeviceEnabledDeviceFactory::
-                             CompleteAddSharedMemoryVirtualDevice,
-                         weak_factory_.GetWeakPtr(), device_info,
-                         std::move(producer_pending_remote),
-                         std::move(virtual_device_receiver))));
+      base::BindOnce(&VirtualDeviceEnabledDeviceFactory::
+                         OnGetDeviceInfosForSharedMemoryVirtualDevice,
+                     weak_factory_.GetWeakPtr(), device_info,
+                     std::move(producer_pending_remote),
+                     std::move(virtual_device_receiver), registration_id,
+                     std::move(on_discarded)));
+}
+
+void VirtualDeviceEnabledDeviceFactory::
+    OnGetDeviceInfosForSharedMemoryVirtualDevice(
+        const media::VideoCaptureDeviceInfo& device_info,
+        mojo::PendingRemote<mojom::Producer> producer_pending_remote,
+        mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
+            virtual_device_receiver,
+        uint64_t registration_id,
+        base::ScopedClosureRunner on_discarded,
+        const std::vector<media::VideoCaptureDeviceInfo>& device_infos) {
+  std::ignore = on_discarded.Release();
+  auto registration =
+      pending_shared_memory_registrations_.extract(registration_id);
+  CHECK(!registration.empty());
+  auto callback = std::move(registration.mapped());
+  if (std::ranges::any_of(device_infos, [&device_info](const auto& info) {
+        return info.descriptor.device_id == device_info.descriptor.device_id;
+      })) {
+    // Reject the registration because the ID matches a hardware camera.
+    std::move(callback).Run(
+        AddVirtualDeviceResult::kErrorHardwareDeviceIdCollision);
+    return;
+  }
+  CompleteAddSharedMemoryVirtualDevice(
+      device_info, std::move(producer_pending_remote),
+      std::move(virtual_device_receiver), std::move(callback));
+}
+
+void VirtualDeviceEnabledDeviceFactory::DiscardPendingSharedMemoryRegistration(
+    uint64_t registration_id) {
+  // Remove the entry before destroying the callback, which may run cleanup.
+  auto registration =
+      pending_shared_memory_registrations_.extract(registration_id);
+  CHECK(!registration.empty());
 }
 
 void VirtualDeviceEnabledDeviceFactory::CompleteAddSharedMemoryVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingRemote<mojom::Producer> producer_pending_remote,
     mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
-        virtual_device_receiver) {
+        virtual_device_receiver,
+    AddSharedMemoryVirtualDeviceCallback callback) {
   auto device_id = device_info.descriptor.device_id;
-  if (!PrepareVirtualDeviceId(device_id)) {
-    return;
-  }
+  PrepareVirtualDeviceId(device_id);
 
   mojo::Remote<mojom::Producer> producer(std::move(producer_pending_remote));
   producer.set_disconnect_handler(
@@ -281,6 +337,7 @@ void VirtualDeviceEnabledDeviceFactory::CompleteAddSharedMemoryVirtualDevice(
   CompleteRegisteringVirtualDevice(
       device_id, VirtualDeviceEntry(device_info, std::move(device),
                                     std::move(producer_receiver)));
+  std::move(callback).Run(AddVirtualDeviceResult::kSuccess);
 }
 
 void VirtualDeviceEnabledDeviceFactory::AddTextureVirtualDevice(
@@ -311,9 +368,7 @@ void VirtualDeviceEnabledDeviceFactory::CompleteAddTextureVirtualDevice(
     mojo::PendingReceiver<mojom::TextureVirtualDevice>
         virtual_device_receiver) {
   auto device_id = device_info.descriptor.device_id;
-  if (!PrepareVirtualDeviceId(device_id)) {
-    return;
-  }
+  PrepareVirtualDeviceId(device_id);
 
   auto device = std::make_unique<TextureVirtualDeviceMojoAdapter>();
   auto producer_receiver =
@@ -356,9 +411,7 @@ void VirtualDeviceEnabledDeviceFactory::CompleteAddGpuMemoryBufferVirtualDevice(
     mojo::PendingReceiver<mojom::GpuMemoryBufferVirtualDevice>
         virtual_device_receiver) {
   auto device_id = device_info.descriptor.device_id;
-  if (!PrepareVirtualDeviceId(device_id)) {
-    return;
-  }
+  PrepareVirtualDeviceId(device_id);
 
   auto device = std::make_unique<GpuMemoryBufferVirtualDeviceMojoAdapter>();
   auto producer_receiver =
@@ -402,7 +455,7 @@ void VirtualDeviceEnabledDeviceFactory::OnGetDeviceInfosForVirtualDevice(
   std::move(registration_closure).Run();
 }
 
-bool VirtualDeviceEnabledDeviceFactory::PrepareVirtualDeviceId(
+void VirtualDeviceEnabledDeviceFactory::PrepareVirtualDeviceId(
     const std::string& device_id) {
   auto virtual_device_iter = virtual_devices_by_id_.find(device_id);
   if (virtual_device_iter != virtual_devices_by_id_.end()) {
@@ -410,7 +463,6 @@ bool VirtualDeviceEnabledDeviceFactory::PrepareVirtualDeviceId(
     // removing it from the list.
     virtual_devices_by_id_.erase(virtual_device_iter);
   }
-  return true;
 }
 
 void VirtualDeviceEnabledDeviceFactory::CompleteRegisteringVirtualDevice(

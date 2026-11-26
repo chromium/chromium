@@ -3,20 +3,29 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <array>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "media/capture/video/video_capture_device_info.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/cpp/mock_producer.h"
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "services/video_capture/shared_memory_virtual_device_mojo_adapter.h"
+#include "services/video_capture/video_capture_service_impl.h"
 #include "services/video_capture/video_source_provider_impl.h"
 #include "services/video_capture/virtual_device_enabled_device_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -217,7 +226,8 @@ class MockDeviceFactory : public DeviceFactory {
               (const media::VideoCaptureDeviceInfo& device_info,
                mojo::PendingRemote<mojom::Producer> producer,
                mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
-                   virtual_device_receiver),
+                   virtual_device_receiver,
+               AddSharedMemoryVirtualDeviceCallback callback),
               (override));
   MOCK_METHOD(void,
               AddTextureVirtualDevice,
@@ -299,7 +309,7 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryWithoutWrappedFactoryTest,
   mojo::Remote<mojom::SharedMemoryVirtualDevice> virtual_device;
   factory_->AddSharedMemoryVirtualDevice(
       device_info, std::move(producer),
-      virtual_device.BindNewPipeAndPassReceiver());
+      virtual_device.BindNewPipeAndPassReceiver(), base::DoNothing());
   virtual_device.FlushForTesting();
   ASSERT_TRUE(virtual_device.is_connected());
 
@@ -347,6 +357,319 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
+       SharedMemoryRegistrationCallbackWaitsForInsertion) {
+  using Result = mojom::VideoSourceProvider::AddVirtualDeviceResult;
+  base::test::TestFuture<const std::vector<media::VideoCaptureDeviceInfo>&>
+      infos;
+  DeviceFactory::GetDeviceInfosCallback pending_device_infos;
+  EXPECT_CALL(*mock_factory_, GetDeviceInfos(_, _))
+      .WillOnce([&](media::mojom::VideoCaptureDeviceEnumerationMode,
+                    DeviceFactory::GetDeviceInfosCallback callback) {
+        pending_device_infos = std::move(callback);
+      })
+      .WillOnce([](media::mojom::VideoCaptureDeviceEnumerationMode,
+                   DeviceFactory::GetDeviceInfosCallback callback) {
+        std::move(callback).Run({});
+      });
+
+  media::VideoCaptureDeviceInfo device_info;
+  device_info.descriptor.device_id = "virtual-chromium-registration-test";
+  mojo::PendingRemote<mojom::Producer> producer;
+  MockProducer mock_producer(producer.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::SharedMemoryVirtualDevice> virtual_device;
+  factory_->AddSharedMemoryVirtualDevice(
+      device_info, std::move(producer),
+      virtual_device.BindNewPipeAndPassReceiver(),
+      base::BindLambdaForTesting([&](Result result) {
+        ASSERT_EQ(Result::kSuccess, result);
+        // Query from the callback, not after AddSharedMemoryVirtualDevice
+        // returns, to catch an acknowledgement sent before insertion.
+        factory_->GetDeviceInfos(
+            media::mojom::VideoCaptureDeviceEnumerationMode::
+                kDevicesWithCapabilities,
+            infos.GetCallback());
+      }));
+
+  ASSERT_FALSE(pending_device_infos.is_null());
+  EXPECT_FALSE(infos.IsReady());
+  std::move(pending_device_infos).Run({});
+
+  ASSERT_TRUE(infos.IsReady());
+  ASSERT_EQ(1u, infos.Get().size());
+  EXPECT_EQ(device_info.descriptor.device_id,
+            infos.Get().front().descriptor.device_id);
+}
+
+TEST_F(VirtualDeviceEnabledDeviceFactoryWithoutWrappedFactoryTest,
+       SharedMemoryRegistrationCallbackRunsAfterInsertion) {
+  using Result = mojom::VideoSourceProvider::AddVirtualDeviceResult;
+  media::VideoCaptureDeviceInfo device_info;
+  device_info.descriptor.device_id = "virtual-chromium-registration-test";
+  mojo::PendingRemote<mojom::Producer> producer;
+  MockProducer mock_producer(producer.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::SharedMemoryVirtualDevice> virtual_device;
+  base::test::TestFuture<const std::vector<media::VideoCaptureDeviceInfo>&>
+      infos;
+  factory_->AddSharedMemoryVirtualDevice(
+      device_info, std::move(producer),
+      virtual_device.BindNewPipeAndPassReceiver(),
+      base::BindLambdaForTesting([&](Result result) {
+        ASSERT_EQ(Result::kSuccess, result);
+        factory_->GetDeviceInfos(
+            media::mojom::VideoCaptureDeviceEnumerationMode::
+                kDevicesWithCapabilities,
+            infos.GetCallback());
+      }));
+
+  ASSERT_TRUE(infos.IsReady());
+  ASSERT_EQ(1u, infos.Get().size());
+  EXPECT_EQ(device_info.descriptor.device_id,
+            infos.Get().front().descriptor.device_id);
+}
+
+TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
+       SharedMemoryRegistrationCallbackReportsInvalidDevice) {
+  using Result = mojom::VideoSourceProvider::AddVirtualDeviceResult;
+  EXPECT_CALL(*mock_factory_, GetDeviceInfos(_, _)).Times(0);
+  media::VideoCaptureDeviceInfo device_info;
+  device_info.descriptor.device_id = "missing-virtual-device-prefix";
+  mojo::PendingRemote<mojom::Producer> producer;
+  MockProducer mock_producer(producer.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::SharedMemoryVirtualDevice> virtual_device;
+  base::test::TestFuture<Result> registered;
+  factory_->AddSharedMemoryVirtualDevice(
+      device_info, std::move(producer),
+      virtual_device.BindNewPipeAndPassReceiver(), registered.GetCallback());
+
+  ASSERT_TRUE(registered.IsReady());
+  EXPECT_EQ(Result::kErrorInvalidDeviceInfo, registered.Get());
+}
+
+TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
+       SharedMemoryRegistrationCallbackReportsHardwareIdCollision) {
+  using Result = mojom::VideoSourceProvider::AddVirtualDeviceResult;
+  base::test::TestFuture<Result> registered;
+  DeviceFactory::GetDeviceInfosCallback pending_device_infos;
+  EXPECT_CALL(*mock_factory_, GetDeviceInfos(_, _))
+      .WillOnce([&](media::mojom::VideoCaptureDeviceEnumerationMode,
+                    DeviceFactory::GetDeviceInfosCallback callback) {
+        pending_device_infos = std::move(callback);
+      })
+      .WillOnce([](media::mojom::VideoCaptureDeviceEnumerationMode,
+                   DeviceFactory::GetDeviceInfosCallback callback) {
+        std::move(callback).Run({});
+      });
+
+  media::VideoCaptureDeviceInfo device_info;
+  device_info.descriptor.device_id = "virtual-chromium-registration-test";
+  mojo::PendingRemote<mojom::Producer> producer;
+  MockProducer mock_producer(producer.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::SharedMemoryVirtualDevice> virtual_device;
+  factory_->AddSharedMemoryVirtualDevice(
+      device_info, std::move(producer),
+      virtual_device.BindNewPipeAndPassReceiver(), registered.GetCallback());
+
+  ASSERT_FALSE(pending_device_infos.is_null());
+  EXPECT_FALSE(registered.IsReady());
+  std::move(pending_device_infos).Run({device_info});
+  ASSERT_TRUE(registered.IsReady());
+  EXPECT_EQ(Result::kErrorHardwareDeviceIdCollision, registered.Get());
+
+  // With the wrapped factory now reporting no devices, a nonempty result would
+  // reveal an incorrectly inserted virtual camera.
+  base::test::TestFuture<const std::vector<media::VideoCaptureDeviceInfo>&>
+      infos;
+  factory_->GetDeviceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      infos.GetCallback());
+  ASSERT_TRUE(infos.IsReady());
+  EXPECT_TRUE(infos.Get().empty());
+}
+
+TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
+       DiscardedEnumerationReleasesRegistrationCallback) {
+  using Result = mojom::VideoSourceProvider::AddVirtualDeviceResult;
+  DeviceFactory::GetDeviceInfosCallback pending_infos;
+  EXPECT_CALL(*mock_factory_, GetDeviceInfos(_, _))
+      .WillOnce([&](media::mojom::VideoCaptureDeviceEnumerationMode,
+                    DeviceFactory::GetDeviceInfosCallback callback) {
+        pending_infos = std::move(callback);
+      });
+
+  base::test::TestFuture<Result> replied;
+  base::test::TestFuture<void> discarded;
+  media::VideoCaptureDeviceInfo info;
+  info.descriptor.device_id = "virtual-chromium-discarded-registration";
+  mojo::PendingRemote<mojom::Producer> producer;
+  MockProducer mock_producer(producer.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::SharedMemoryVirtualDevice> device;
+  factory_->AddSharedMemoryVirtualDevice(
+      info, std::move(producer), device.BindNewPipeAndPassReceiver(),
+      mojo::WrapCallbackWithDropHandler(replied.GetCallback(),
+                                        discarded.GetCallback()));
+
+  EXPECT_FALSE(pending_infos.is_null());
+  EXPECT_FALSE(replied.IsReady());
+  EXPECT_FALSE(discarded.IsReady());
+  // A plain callback lets us observe its destruction without triggering the
+  // Mojo missing-response DCHECK. No response should be synthesized here.
+  pending_infos.Reset();
+  EXPECT_TRUE(discarded.IsReady());
+  EXPECT_FALSE(replied.IsReady());
+  mock_factory_ = nullptr;
+  factory_.reset();
+  EXPECT_FALSE(replied.IsReady());
+}
+
+TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
+       CompletesRegistrationBeforeLateEnumeration) {
+  using Result = mojom::VideoSourceProvider::AddVirtualDeviceResult;
+  std::vector<DeviceFactory::GetDeviceInfosCallback> pending_infos;
+  EXPECT_CALL(*mock_factory_, GetDeviceInfos(_, _))
+      .Times(2)
+      .WillRepeatedly([&](media::mojom::VideoCaptureDeviceEnumerationMode,
+                          DeviceFactory::GetDeviceInfosCallback callback) {
+        pending_infos.push_back(std::move(callback));
+      });
+
+  media::VideoCaptureDeviceInfo info;
+  info.descriptor.device_id = "virtual-chromium-late-enumeration";
+  std::array<base::test::TestFuture<Result>, 2> completed;
+  std::array<mojo::Remote<mojom::SharedMemoryVirtualDevice>, 2> devices;
+  std::vector<std::unique_ptr<MockProducer>> producers;
+  for (size_t i = 0; i < completed.size(); ++i) {
+    mojo::PendingRemote<mojom::Producer> producer;
+    producers.push_back(std::make_unique<MockProducer>(
+        producer.InitWithNewPipeAndPassReceiver()));
+    factory_->AddSharedMemoryVirtualDevice(
+        info, std::move(producer), devices[i].BindNewPipeAndPassReceiver(),
+        completed[i].GetCallback());
+    EXPECT_FALSE(completed[i].IsReady());
+  }
+  ASSERT_EQ(2u, pending_infos.size());
+
+  mock_factory_ = nullptr;
+  factory_.reset();
+  for (auto& reply : completed) {
+    ASSERT_TRUE(reply.IsReady());
+    EXPECT_EQ(Result::kErrorDroppedRequest, reply.Get());
+  }
+
+  // Both invoking and discarding a continuation retained outside the factory
+  // must be harmless after its registration has already been completed.
+  std::move(pending_infos[0]).Run({});
+  pending_infos[1].Reset();
+  for (auto& reply : completed) {
+    EXPECT_EQ(Result::kErrorDroppedRequest, reply.Get());
+  }
+}
+
+// Use the actual service destructor, with enumeration held in its owned
+// factory, to distinguish actual responses from callbacks the client drops.
+class VideoCaptureServiceShutdownTest : public testing::Test {
+ protected:
+  class FactoryWithPendingEnumeration : public MockDeviceFactory {
+   public:
+    std::vector<GetDeviceInfosCallback> pending_infos;
+  };
+
+  void SetUp() override {
+    auto factory = std::make_unique<FactoryWithPendingEnumeration>();
+    pending_factory_ = factory.get();
+    EXPECT_CALL(*pending_factory_, GetDeviceInfos(_, _))
+        .WillRepeatedly([this](media::mojom::VideoCaptureDeviceEnumerationMode,
+                               DeviceFactory::GetDeviceInfosCallback callback) {
+          pending_factory_->pending_infos.push_back(std::move(callback));
+        });
+    service_ = std::make_unique<VideoCaptureServiceImpl>(
+        service_remote_.BindNewPipeAndPassReceiver(),
+        task_environment_.GetMainThreadTaskRunner(),
+        /*create_system_monitor=*/false);
+    // Inject before the provider is created, avoiding the platform backend.
+    service_->device_factory_ =
+        std::make_unique<VirtualDeviceEnabledDeviceFactory>(std::move(factory));
+    service_->ConnectToVideoSourceProvider(
+        provider_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDown() override { DestroyService(); }
+
+  void DestroyService() {
+    pending_factory_ = nullptr;
+    service_.reset();
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  mojo::Remote<mojom::VideoCaptureService> service_remote_;
+  mojo::Remote<mojom::VideoSourceProvider> provider_;
+  std::unique_ptr<VideoCaptureServiceImpl> service_;
+  raw_ptr<FactoryWithPendingEnumeration> pending_factory_ = nullptr;
+};
+
+TEST_F(VideoCaptureServiceShutdownTest,
+       CompletesPendingRequestsDuringShutdown) {
+  using Result = mojom::VideoSourceProvider::AddVirtualDeviceResult;
+  using InfosResult = mojom::VideoSourceProvider::GetSourceInfosResult;
+  media::VideoCaptureDeviceInfo info;
+  info.descriptor.device_id = "virtual-chromium-shutdown-registration";
+  std::array<base::test::TestFuture<bool, Result>, 3> completed;
+  std::array<mojo::Remote<mojom::SharedMemoryVirtualDevice>, 3> devices;
+  std::vector<std::unique_ptr<MockProducer>> producers;
+  base::test::TestFuture<void> disconnected;
+  provider_.set_disconnect_handler(disconnected.GetCallback());
+  for (size_t i = 0; i < completed.size(); ++i) {
+    mojo::PendingRemote<mojom::Producer> producer;
+    producers.push_back(std::make_unique<MockProducer>(
+        producer.InitWithNewPipeAndPassReceiver()));
+    // Keep the ID identical: ownership belongs to each request, not each ID.
+    provider_->AddSharedMemoryVirtualDevice(
+        info, std::move(producer), devices[i].BindNewPipeAndPassReceiver(),
+        mojo::WrapCallbackWithDropHandler(
+            base::BindOnce(completed[i].GetCallback(), true),
+            base::BindOnce(completed[i].GetCallback(), false,
+                           Result::kErrorDroppedRequest)));
+  }
+  base::test::TestFuture<bool, InfosResult,
+                         const std::vector<media::VideoCaptureDeviceInfo>&>
+      infos;
+  provider_->GetSourceInfos(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      mojo::WrapCallbackWithDropHandler(
+          base::BindOnce(infos.GetCallback(), true),
+          base::BindOnce(infos.GetCallback(), false,
+                         InfosResult::kErrorDroppedRequest,
+                         std::vector<media::VideoCaptureDeviceInfo>())));
+  provider_.FlushForTesting();
+  ASSERT_EQ(4u, pending_factory_->pending_infos.size());
+
+  // Complete one registration normally. Shutdown must not complete it again.
+  std::move(pending_factory_->pending_infos[0]).Run({});
+  ASSERT_TRUE(completed[0].Wait());
+  ASSERT_TRUE(completed[0].Get<0>());
+  EXPECT_EQ(Result::kSuccess, completed[0].Get<1>());
+  EXPECT_FALSE(completed[1].IsReady());
+  EXPECT_FALSE(completed[2].IsReady());
+  EXPECT_FALSE(infos.IsReady());
+  ASSERT_FALSE(disconnected.IsReady());
+
+  // With the factory destroyed before the provider, both registration and
+  // ordinary enumeration must receive actual failure responses.
+  DestroyService();
+  for (size_t i = 1; i < completed.size(); ++i) {
+    ASSERT_TRUE(completed[i].Wait());
+    ASSERT_TRUE(completed[i].Get<0>()) << "Registration callback was dropped";
+    EXPECT_EQ(Result::kErrorDroppedRequest, completed[i].Get<1>());
+  }
+  ASSERT_TRUE(infos.Wait());
+  ASSERT_TRUE(infos.Get<0>()) << "GetSourceInfos callback was dropped";
+  EXPECT_EQ(InfosResult::kErrorDroppedRequest, infos.Get<1>());
+  EXPECT_TRUE(infos.Get<2>().empty());
+  ASSERT_TRUE(disconnected.Wait());
+  EXPECT_EQ(Result::kSuccess, completed[0].Get<1>());
+  EXPECT_FALSE(provider_.is_connected());
+}
+
 // Tests that when an underlying device creation succeeds, any old virtual
 // device connection with the same device ID is severed.
 TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
@@ -368,7 +691,7 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
 
   factory_->AddSharedMemoryVirtualDevice(
       device_info, std::move(producer),
-      virtual_device.BindNewPipeAndPassReceiver());
+      virtual_device.BindNewPipeAndPassReceiver(), base::DoNothing());
   virtual_device.FlushForTesting();
 
   // Call CreateDevice, mock the underlying factory to succeed
@@ -421,7 +744,7 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
 
   factory_->AddSharedMemoryVirtualDevice(
       device_info, std::move(producer),
-      virtual_device.BindNewPipeAndPassReceiver());
+      virtual_device.BindNewPipeAndPassReceiver(), base::DoNothing());
   virtual_device.FlushForTesting();
 
   // Call CreateDevice, mock the underlying factory to fail with
@@ -508,7 +831,7 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
 
   factory_->AddSharedMemoryVirtualDevice(
       device_info, std::move(producer),
-      virtual_device.BindNewPipeAndPassReceiver());
+      virtual_device.BindNewPipeAndPassReceiver(), base::DoNothing());
   virtual_device.FlushForTesting();
   ASSERT_TRUE(virtual_device.is_connected());
 
@@ -558,7 +881,7 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
 
   factory_->AddSharedMemoryVirtualDevice(
       device_info, std::move(producer),
-      virtual_device.BindNewPipeAndPassReceiver());
+      virtual_device.BindNewPipeAndPassReceiver(), base::DoNothing());
 
   base::RunLoop disconnect_loop;
   virtual_device.set_disconnect_handler(disconnect_loop.QuitClosure());
@@ -579,7 +902,7 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
 
   factory_->AddSharedMemoryVirtualDevice(
       device_info, std::move(producer),
-      virtual_device.BindNewPipeAndPassReceiver());
+      virtual_device.BindNewPipeAndPassReceiver(), base::DoNothing());
 
   base::RunLoop disconnect_loop;
   virtual_device.set_disconnect_handler(disconnect_loop.QuitClosure());
@@ -600,7 +923,7 @@ TEST_F(VirtualDeviceEnabledDeviceFactoryTest,
 
   factory_->AddSharedMemoryVirtualDevice(
       device_info, std::move(producer),
-      virtual_device.BindNewPipeAndPassReceiver());
+      virtual_device.BindNewPipeAndPassReceiver(), base::DoNothing());
 
   base::RunLoop disconnect_loop;
   virtual_device.set_disconnect_handler(disconnect_loop.QuitClosure());

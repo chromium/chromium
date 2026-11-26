@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MEDIA_EFFECTS_TEST_FAKE_VIDEO_SOURCE_PROVIDER_H_
 #define COMPONENTS_MEDIA_EFFECTS_TEST_FAKE_VIDEO_SOURCE_PROVIDER_H_
 
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
@@ -55,7 +56,8 @@ class FakeVideoSourceProvider
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingRemote<video_capture::mojom::Producer> producer,
       mojo::PendingReceiver<video_capture::mojom::SharedMemoryVirtualDevice>
-          virtual_device_receiver) override {}
+          virtual_device_receiver,
+      AddSharedMemoryVirtualDeviceCallback callback) override;
   void AddTextureVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingReceiver<video_capture::mojom::TextureVirtualDevice>

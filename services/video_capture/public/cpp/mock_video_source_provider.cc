@@ -4,6 +4,8 @@
 
 #include "services/video_capture/public/cpp/mock_video_source_provider.h"
 
+#include <utility>
+
 namespace video_capture {
 
 MockVideoSourceProvider::MockVideoSourceProvider() = default;
@@ -26,9 +28,10 @@ void MockVideoSourceProvider::AddSharedMemoryVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingRemote<video_capture::mojom::Producer> producer,
     mojo::PendingReceiver<video_capture::mojom::SharedMemoryVirtualDevice>
-        virtual_device_receiver) {
+        virtual_device_receiver,
+    AddSharedMemoryVirtualDeviceCallback callback) {
   DoAddVirtualDevice(device_info, std::move(producer),
-                     std::move(virtual_device_receiver));
+                     std::move(virtual_device_receiver), std::move(callback));
 }
 
 void MockVideoSourceProvider::AddTextureVirtualDevice(

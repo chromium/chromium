@@ -5,12 +5,14 @@
 #ifndef CONTENT_BROWSER_WEBRTC_MOCK_CAPTURE_DEVICE_CONTROLLER_H_
 #define CONTENT_BROWSER_WEBRTC_MOCK_CAPTURE_DEVICE_CONTROLLER_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/webrtc/mock_camera_device.h"
@@ -31,6 +33,15 @@ class CONTENT_EXPORT MockCaptureDeviceController {
  public:
   using ConnectToVideoSourceProviderCallback = base::RepeatingCallback<void(
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider>)>;
+  enum class AddMockCameraResult {
+    kSuccess,
+    kAlreadyExists,
+    kInvalidDeviceInfo,
+    kHardwareDeviceIdCollision,
+    kNotSupported,
+    kAborted,
+  };
+  using AddMockCameraCallback = base::OnceCallback<void(AddMockCameraResult)>;
 
   MockCaptureDeviceController(scoped_refptr<base::SequencedTaskRunner>
                                   video_capture_service_task_runner,
@@ -43,12 +54,31 @@ class CONTENT_EXPORT MockCaptureDeviceController {
   MockCaptureDeviceController& operator=(const MockCaptureDeviceController&) =
       delete;
 
-  void AddMockCamera(MockCameraConfig config);
+  // Adds a camera if this controller does not already manage its device ID.
+  // An ID that is registered or being registered is rejected without changing
+  // the existing camera or registration attempt.
+  // If supplied, |callback| is posted to this sequence. It receives kSuccess
+  // after service registration, kAlreadyExists for a duplicate ID, or the
+  // registration failure reason. Disconnection and cancellation report
+  // kAborted. It does not wait for renderer device updates or capture.
+  void AddMockCamera(MockCameraConfig config,
+                     AddMockCameraCallback callback = {});
   void RemoveMockCamera(const std::string& device_id);
   void Reset();
 
  private:
+  struct CameraEntry {
+    std::unique_ptr<MockCameraDevice> camera;
+    uint64_t registration_id = 0;
+    AddMockCameraCallback callback;
+  };
+
   void EnsureConnectedToVideoSourceProvider();
+  void OnCameraRegistered(
+      const std::string& device_id,
+      uint64_t registration_id,
+      video_capture::mojom::VideoSourceProvider::AddVirtualDeviceResult result);
+  void OnVideoSourceProviderDisconnected();
 
   scoped_refptr<base::SequencedTaskRunner> video_capture_service_task_runner_;
   ConnectToVideoSourceProviderCallback
@@ -56,9 +86,11 @@ class CONTENT_EXPORT MockCaptureDeviceController {
 
   mojo::Remote<video_capture::mojom::VideoSourceProvider> source_provider_;
 
-  std::map<std::string, std::unique_ptr<MockCameraDevice>> cameras_;
+  std::map<std::string, CameraEntry> cameras_;
+  uint64_t next_registration_id_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<MockCaptureDeviceController> weak_factory_{this};
 };
 
 }  // namespace content

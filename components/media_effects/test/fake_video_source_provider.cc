@@ -4,6 +4,8 @@
 
 #include "components/media_effects/test/fake_video_source_provider.h"
 
+#include <utility>
+
 #include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 
@@ -65,6 +67,19 @@ void FakeVideoSourceProvider::GetSourceInfos(
       base::BindOnce(std::move(callback), GetSourceInfosResult::kSuccess,
                      devices),
       std::move(reply_callback));
+}
+
+void FakeVideoSourceProvider::AddSharedMemoryVirtualDevice(
+    const media::VideoCaptureDeviceInfo& device_info,
+    mojo::PendingRemote<video_capture::mojom::Producer> producer,
+    mojo::PendingReceiver<video_capture::mojom::SharedMemoryVirtualDevice>
+        virtual_device_receiver,
+    AddSharedMemoryVirtualDeviceCallback callback) {
+  // This fake does not register shared-memory virtual devices.
+  if (callback) {
+    std::move(callback).Run(video_capture::mojom::VideoSourceProvider::
+                                AddVirtualDeviceResult::kErrorNotSupported);
+  }
 }
 
 void FakeVideoSourceProvider::GetVideoSource(

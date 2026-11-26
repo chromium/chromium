@@ -273,7 +273,13 @@ class SharedMemoryDeviceExerciser : public VirtualDeviceExerciser,
     (*video_source)
         ->AddSharedMemoryVirtualDevice(
             info, std::move(producer),
-            virtual_device_.BindNewPipeAndPassReceiver());
+            virtual_device_.BindNewPipeAndPassReceiver(),
+            base::BindOnce([](video_capture::mojom::VideoSourceProvider::
+                                  AddVirtualDeviceResult result) {
+              EXPECT_EQ(video_capture::mojom::VideoSourceProvider::
+                            AddVirtualDeviceResult::kSuccess,
+                        result);
+            }));
   }
   gfx::Size GetVideoSize() override {
     return gfx::Size(kDummyFrameVisibleRect.width(),

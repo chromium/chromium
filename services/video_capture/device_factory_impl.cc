@@ -150,8 +150,10 @@ void DeviceFactoryImpl::AddSharedMemoryVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingRemote<mojom::Producer> producer,
     mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
-        virtual_device_receiver) {
+        virtual_device_receiver,
+    AddSharedMemoryVirtualDeviceCallback callback) {
   NOTIMPLEMENTED();
+  std::move(callback).Run(AddVirtualDeviceResult::kErrorNotSupported);
 }
 
 void DeviceFactoryImpl::AddTextureVirtualDevice(

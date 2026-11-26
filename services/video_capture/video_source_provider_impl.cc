@@ -70,9 +70,11 @@ void VideoSourceProviderImpl::AddSharedMemoryVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingRemote<mojom::Producer> producer,
     mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
-        virtual_device_receiver) {
+        virtual_device_receiver,
+    AddSharedMemoryVirtualDeviceCallback callback) {
   device_factory_->AddSharedMemoryVirtualDevice(
-      device_info, std::move(producer), std::move(virtual_device_receiver));
+      device_info, std::move(producer), std::move(virtual_device_receiver),
+      std::move(callback));
 }
 
 void VideoSourceProviderImpl::AddTextureVirtualDevice(

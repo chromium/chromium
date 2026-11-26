@@ -76,6 +76,8 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
                          GpuChannelHostBinder binder = GpuChannelHostBinder());
 #endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
  private:
+  friend class VideoCaptureServiceShutdownTest;
+
   class GpuDependenciesContext;
 
   void LazyInitializeGpuDependenciesContext();

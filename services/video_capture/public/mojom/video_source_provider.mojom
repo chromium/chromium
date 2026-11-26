@@ -14,6 +14,19 @@ import "services/video_capture/public/mojom/virtual_device.mojom";
 // to virtual devices that are used to simulate video capture devices, eg. for
 // tests.
 interface VideoSourceProvider {
+  // Results of AddSharedMemoryVirtualDevice calls.
+  enum AddVirtualDeviceResult {
+    kSuccess,
+    // The device information does not satisfy the virtual-device requirements.
+    kErrorInvalidDeviceInfo,
+    // A hardware camera already has this internal device ID.
+    kErrorHardwareDeviceIdCollision,
+    // The factory does not support shared-memory virtual devices.
+    kErrorNotSupported,
+    // Pending registration work was discarded before it could complete.
+    kErrorDroppedRequest,
+  };
+
   // Results of GetSourceInfos calls.
   enum GetSourceInfosResult {
     kSuccess,
@@ -45,10 +58,13 @@ interface VideoSourceProvider {
   // |virtual_device| or the given |producer| is closed.
   // The device_id in |device_info| must start with "virtual-chromium-" and
   // the display_name must either be empty or start with "Virtual Chromium ".
+  // Reports kSuccess after registration, or the reason registration failed.
+  // Does not wait for device-change notifications or for capture to start.
   AddSharedMemoryVirtualDevice(
       media.mojom.VideoCaptureDeviceInfo device_info,
       pending_remote<Producer> producer,
-      pending_receiver<SharedMemoryVirtualDevice> virtual_device_receiver);
+      pending_receiver<SharedMemoryVirtualDevice> virtual_device_receiver)
+      => (AddVirtualDeviceResult result);
 
   // Similar to AddSharedMemoryVirtualDevice() but for virtual (non-physical)
   // devices that are fed with textures (via SharedImages) allocated by the

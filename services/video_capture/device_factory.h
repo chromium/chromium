@@ -5,11 +5,13 @@
 #ifndef SERVICES_VIDEO_CAPTURE_DEVICE_FACTORY_H_
 #define SERVICES_VIDEO_CAPTURE_DEVICE_FACTORY_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "services/video_capture/device.h"
 #include "services/video_capture/public/mojom/devices_changed_observer.mojom.h"
 #include "services/video_capture/public/mojom/producer.mojom.h"
+#include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 #include "services/video_capture/public/mojom/virtual_device.mojom.h"
 
 namespace video_capture {
@@ -24,6 +26,11 @@ class DeviceFactory {
   using GetDeviceInfosCallback = base::OnceCallback<void(
       const std::vector<media::VideoCaptureDeviceInfo>&)>;
 
+  using AddVirtualDeviceResult =
+      mojom::VideoSourceProvider::AddVirtualDeviceResult;
+  using AddSharedMemoryVirtualDeviceCallback =
+      base::OnceCallback<void(AddVirtualDeviceResult result)>;
+
   virtual void GetDeviceInfos(
       media::mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
       GetDeviceInfosCallback callback) = 0;
@@ -37,11 +44,18 @@ class DeviceFactory {
   // must start with media::kVirtualDeviceIdPrefix ("virtual-chromium-") and
   // device_info.descriptor.display_name() must either be empty or start with
   // media::kVirtualDeviceDisplayNamePrefix ("Virtual Chromium ").
+  // |callback| reports kSuccess after registration in the factory, or the
+  // specific reason registration was rejected.
+  // It may run synchronously. It does not wait for device-change notifications
+  // to reach clients or for capture to start.
+  // If the factory is destroyed before registration completes, the callback
+  // runs with kErrorDroppedRequest during destruction.
   virtual void AddSharedMemoryVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingRemote<mojom::Producer> producer,
       mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
-          virtual_device_receiver) = 0;
+          virtual_device_receiver,
+      AddSharedMemoryVirtualDeviceCallback callback) = 0;
 
   virtual void AddTextureVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,

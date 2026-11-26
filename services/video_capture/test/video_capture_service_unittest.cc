@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/test_future.h"
 #include "media/capture/capture_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -39,6 +41,64 @@ class VideoCaptureServiceVirtualDevicesOnlyTest
  private:
   base::test::ScopedCommandLine scoped_command_line_;
 };
+
+TEST_F(VideoCaptureServiceVirtualDevicesOnlyTest,
+       SharedMemoryRegistrationReplyFollowsInsertion) {
+  using Result = mojom::VideoSourceProvider::AddVirtualDeviceResult;
+  media::VideoCaptureDeviceInfo info;
+  info.descriptor.device_id = "virtual-chromium-registration-reply";
+  mojo::PendingRemote<mojom::Producer> producer;
+  // Keep the producer endpoint alive without starting capture.
+  auto producer_receiver = producer.InitWithNewPipeAndPassReceiver();
+  mojo::Remote<mojom::SharedMemoryVirtualDevice> device;
+  base::test::TestFuture<Result> registered;
+  video_source_provider_->AddSharedMemoryVirtualDevice(
+      info, std::move(producer), device.BindNewPipeAndPassReceiver(),
+      registered.GetCallback());
+  ASSERT_EQ(Result::kSuccess, registered.Get());
+
+  base::test::TestFuture<GetSourceInfosResult,
+                         const std::vector<media::VideoCaptureDeviceInfo>&>
+      enumerated;
+  video_source_provider_->GetSourceInfos(
+      kDevicesWithCapabilitiesEnumerationMode, enumerated.GetCallback());
+  ASSERT_EQ(GetSourceInfosResult::kSuccess, enumerated.Get<0>());
+  ASSERT_EQ(1u, enumerated.Get<1>().size());
+  EXPECT_EQ(info.descriptor.device_id,
+            enumerated.Get<1>().front().descriptor.device_id);
+}
+
+TEST_F(VideoCaptureServiceVirtualDevicesOnlyTest,
+       SharedMemoryRegistrationReplyReportsRejection) {
+  using Result = mojom::VideoSourceProvider::AddVirtualDeviceResult;
+  media::VideoCaptureDeviceInfo info;
+  info.descriptor.device_id = "invalid-virtual-device-id";
+  mojo::PendingRemote<mojom::Producer> producer;
+  auto producer_receiver = producer.InitWithNewPipeAndPassReceiver();
+  mojo::Remote<mojom::SharedMemoryVirtualDevice> device;
+  // Distinguish an explicit rejection from a dropped reply closing the pipe.
+  base::test::TestFuture<bool, Result> completed;
+  video_source_provider_.set_disconnect_handler(base::BindOnce(
+      completed.GetCallback(), false, Result::kErrorDroppedRequest));
+  video_source_provider_->AddSharedMemoryVirtualDevice(
+      info, std::move(producer), device.BindNewPipeAndPassReceiver(),
+      base::BindOnce(completed.GetCallback(), true));
+  ASSERT_TRUE(completed.Wait());
+  video_source_provider_.set_disconnect_handler({});
+  ASSERT_TRUE(completed.Get<0>())
+      << "The provider disconnected instead of replying";
+  EXPECT_EQ(Result::kErrorInvalidDeviceInfo, completed.Get<1>());
+  video_source_provider_.FlushForTesting();
+  ASSERT_TRUE(video_source_provider_.is_connected());
+
+  base::test::TestFuture<GetSourceInfosResult,
+                         const std::vector<media::VideoCaptureDeviceInfo>&>
+      enumerated;
+  video_source_provider_->GetSourceInfos(
+      kDevicesWithCapabilitiesEnumerationMode, enumerated.GetCallback());
+  ASSERT_EQ(GetSourceInfosResult::kSuccess, enumerated.Get<0>());
+  EXPECT_TRUE(enumerated.Get<1>().empty());
+}
 
 // Tests that an answer arrives from the service when calling
 // GetSourceInfos().

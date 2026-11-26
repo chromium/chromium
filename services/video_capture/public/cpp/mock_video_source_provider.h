@@ -33,7 +33,8 @@ class MockVideoSourceProvider
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingRemote<video_capture::mojom::Producer> producer,
       mojo::PendingReceiver<video_capture::mojom::SharedMemoryVirtualDevice>
-          virtual_device_receiver) override;
+          virtual_device_receiver,
+      AddSharedMemoryVirtualDeviceCallback callback) override;
 
   void AddTextureVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
@@ -73,13 +74,14 @@ class MockVideoSourceProvider
       DoGetVideoSource,
       void(const std::string& device_id,
            mojo::PendingReceiver<video_capture::mojom::VideoSource>* receiver));
-  MOCK_METHOD3(
+  MOCK_METHOD4(
       DoAddVirtualDevice,
       void(
           const media::VideoCaptureDeviceInfo& device_info,
           mojo::PendingRemote<video_capture::mojom::Producer> producer,
           mojo::PendingReceiver<video_capture::mojom::SharedMemoryVirtualDevice>
-              virtual_device_receiver));
+              virtual_device_receiver,
+          AddSharedMemoryVirtualDeviceCallback callback));
   MOCK_METHOD2(
       DoAddTextureVirtualDevice,
       void(const media::VideoCaptureDeviceInfo& device_info,

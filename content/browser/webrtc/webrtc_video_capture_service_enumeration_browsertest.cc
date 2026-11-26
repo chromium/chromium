@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -94,7 +95,13 @@ class WebRtcVideoCaptureServiceEnumerationBrowserTest
             producer.InitWithNewPipeAndPassReceiver());
         video_source_provider_->AddSharedMemoryVirtualDevice(
             info, std::move(producer),
-            virtual_device.InitWithNewPipeAndPassReceiver());
+            virtual_device.InitWithNewPipeAndPassReceiver(),
+            base::BindOnce([](video_capture::mojom::VideoSourceProvider::
+                                  AddVirtualDeviceResult result) {
+              EXPECT_EQ(video_capture::mojom::VideoSourceProvider::
+                            AddVirtualDeviceResult::kSuccess,
+                        result);
+            }));
         shared_memory_devices_by_id_.insert(std::make_pair(
             device_id, std::make_pair(std::move(virtual_device),
                                       std::move(mock_producer))));

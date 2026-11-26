@@ -5,6 +5,7 @@
 #include "services/video_capture/test/video_capture_service_test.h"
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/media_switches.h"
 #include "services/video_capture/public/cpp/mock_producer.h"
@@ -81,7 +82,7 @@ VideoCaptureServiceTest::AddSharedMemoryVirtualDevice(
       producer.InitWithNewPipeAndPassReceiver());
   video_source_provider_->AddSharedMemoryVirtualDevice(
       device_info, std::move(producer),
-      result->device.BindNewPipeAndPassReceiver());
+      result->device.BindNewPipeAndPassReceiver(), base::DoNothing());
   return result;
 }
 

@@ -689,14 +689,19 @@ Response BrowserHandler::GetBrowserCommandLine(
   }
 }
 
-Response BrowserHandler::AddMockCamera(const std::string& device_id) {
+void BrowserHandler::AddMockCamera(
+    const std::string& device_id,
+    std::unique_ptr<AddMockCameraCallback> callback) {
   if (session()->GetAgentHost()->GetType() != DevToolsAgentHost::kTypeBrowser) {
-    return Response::ServerError(
-        "Browser.addMockCamera is only supported on the browser target");
+    callback->sendFailure(Response::ServerError(
+        "Browser.addMockCamera is only supported on the browser target"));
+    return;
   }
 
   if (device_id.empty()) {
-    return Response::InvalidParams("deviceId must not be empty");
+    callback->sendFailure(
+        Response::InvalidParams("deviceId must not be empty"));
+    return;
   }
 
   if (!mock_capture_device_controller_) {
@@ -709,10 +714,41 @@ Response BrowserHandler::AddMockCamera(const std::string& device_id) {
             base::BindRepeating(&ConnectToVideoSourceProvider));
   }
 
-  mock_capture_device_controller_->AddMockCamera(MockCameraConfig{
-      .device_id = base::StrCat({mock_camera_device_id_prefix_, device_id}),
-  });
-  return Response::Success();
+  mock_capture_device_controller_->AddMockCamera(
+      MockCameraConfig{
+          .device_id = base::StrCat({mock_camera_device_id_prefix_, device_id}),
+      },
+      base::BindOnce(
+          [](std::unique_ptr<AddMockCameraCallback> callback,
+             MockCaptureDeviceController::AddMockCameraResult result) {
+            using Result = MockCaptureDeviceController::AddMockCameraResult;
+            switch (result) {
+              case Result::kSuccess:
+                callback->sendSuccess();
+                return;
+              case Result::kAlreadyExists:
+                callback->sendFailure(Response::ServerError(
+                    "A mock camera with this deviceId already exists"));
+                return;
+              case Result::kInvalidDeviceInfo:
+                callback->sendFailure(Response::ServerError(
+                    "Invalid mock camera device information"));
+                return;
+              case Result::kHardwareDeviceIdCollision:
+                callback->sendFailure(Response::ServerError(
+                    "A hardware camera already uses this device ID"));
+                return;
+              case Result::kNotSupported:
+                callback->sendFailure(Response::ServerError(
+                    "Shared-memory virtual devices are not supported"));
+                return;
+              case Result::kAborted:
+                callback->sendFailure(Response::ServerError(
+                    "Mock camera registration was aborted"));
+                return;
+            }
+          },
+          std::move(callback)));
 }
 
 Response BrowserHandler::Crash() {

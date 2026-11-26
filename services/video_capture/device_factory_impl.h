@@ -56,7 +56,8 @@ class DeviceFactoryImpl : public DeviceFactory {
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingRemote<mojom::Producer> producer,
       mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
-          virtual_device_receiver) override;
+          virtual_device_receiver,
+      AddSharedMemoryVirtualDeviceCallback callback) override;
   void AddTextureVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingReceiver<mojom::TextureVirtualDevice>

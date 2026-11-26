@@ -5,10 +5,13 @@
 #ifndef SERVICES_VIDEO_CAPTURE_VIRTUAL_DEVICE_ENABLED_DEVICE_FACTORY_H_
 #define SERVICES_VIDEO_CAPTURE_VIRTUAL_DEVICE_ENABLED_DEVICE_FACTORY_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <utility>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -50,7 +53,8 @@ class VirtualDeviceEnabledDeviceFactory : public DeviceFactory {
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingRemote<mojom::Producer> producer,
       mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
-          virtual_device_receiver) override;
+          virtual_device_receiver,
+      AddSharedMemoryVirtualDeviceCallback callback) override;
   void AddTextureVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingReceiver<mojom::TextureVirtualDevice>
@@ -71,11 +75,21 @@ class VirtualDeviceEnabledDeviceFactory : public DeviceFactory {
   void OnDeviceFactoryDeviceCreated(std::string device_id,
                                     CreateDeviceCallback outer,
                                     DeviceInfo info);
+  void OnGetDeviceInfosForSharedMemoryVirtualDevice(
+      const media::VideoCaptureDeviceInfo& device_info,
+      mojo::PendingRemote<mojom::Producer> producer,
+      mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
+          virtual_device_receiver,
+      uint64_t registration_id,
+      base::ScopedClosureRunner on_discarded,
+      const std::vector<media::VideoCaptureDeviceInfo>& device_infos);
+  void DiscardPendingSharedMemoryRegistration(uint64_t registration_id);
   void CompleteAddSharedMemoryVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingRemote<mojom::Producer> producer,
       mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
-          virtual_device_receiver);
+          virtual_device_receiver,
+      AddSharedMemoryVirtualDeviceCallback callback);
   void CompleteAddTextureVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
       mojo::PendingReceiver<mojom::TextureVirtualDevice>
@@ -89,7 +103,7 @@ class VirtualDeviceEnabledDeviceFactory : public DeviceFactory {
       base::OnceClosure registration_closure,
       const std::vector<media::VideoCaptureDeviceInfo>& device_infos);
 
-  bool PrepareVirtualDeviceId(const std::string& device_id);
+  void PrepareVirtualDeviceId(const std::string& device_id);
   void CompleteRegisteringVirtualDevice(const std::string& device_id,
                                         VirtualDeviceEntry device_entry);
 
@@ -109,6 +123,11 @@ class VirtualDeviceEnabledDeviceFactory : public DeviceFactory {
   const std::unique_ptr<DeviceFactory> device_factory_;
   std::vector<mojo::Remote<mojom::DevicesChangedObserver>>
       devices_changed_observers_;
+
+  // Responses stay here only while hardware enumeration is pending.
+  std::map<uint64_t, AddSharedMemoryVirtualDeviceCallback>
+      pending_shared_memory_registrations_;
+  uint64_t next_shared_memory_registration_id_ = 0;
 
   base::WeakPtrFactory<VirtualDeviceEnabledDeviceFactory> weak_factory_{this};
 };

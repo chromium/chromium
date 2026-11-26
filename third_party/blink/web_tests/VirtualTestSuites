@@ -2298,7 +2298,8 @@
     "bases": [
       "http/tests/inspector-protocol/browser/add-mock-camera-device-list.js",
       "http/tests/inspector-protocol/browser/add-mock-camera-multiple-sessions.js",
-      "http/tests/inspector-protocol/browser/add-mock-camera-open.js"
+      "http/tests/inspector-protocol/browser/add-mock-camera-open.js",
+      "http/tests/inspector-protocol/browser/add-mock-camera-repeated-add.js"
     ],
     "exclusive_tests": "ALL",
     "args": [
