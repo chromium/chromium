@@ -805,6 +805,7 @@ if (!is_android) {
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/custom_handlers",
       "//chrome/browser/devtools",
+      "//chrome/browser/dino",
       "//chrome/browser/extensions",
       "//chrome/browser/favicon",
       "//chrome/browser/feedback",

@@ -40,6 +40,9 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/dino/dino_bookmark_iph_controller.h"
+#endif
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
@@ -2115,6 +2118,16 @@ void Exit() {
 
 void BookmarkCurrentTab(BrowserWindowInterface* browser) {
   base::RecordAction(base::UserMetricsAction("Star"));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (dino::MaybeBookmarkDinoFromIph(browser)) {
+    if (browser->IsActive()) {
+      BrowserWindow::FromBrowser(browser)->ShowBookmarkBubble(
+          GURL(dino::kDinoUrl), /*already_bookmarked=*/false);
+    }
+    RecordBookmarksAdded(browser->GetProfile());
+    return;
+  }
+#endif
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(browser->GetProfile());
   GURL url;
