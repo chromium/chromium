@@ -1031,7 +1031,8 @@ bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task) {
   POINT pt = {screen_point.x(), screen_point.y()};
   HWND hwnd_under_mouse = ::WindowFromPoint(pt);
   DWORD pid = 0;
-  ::GetWindowThreadProcessId(hwnd_under_mouse, &pid);
+  const DWORD thread_id =
+      hwnd_under_mouse ? ::GetWindowThreadProcessId(hwnd_under_mouse, &pid) : 0;
   const bool other_process_window_under_mouse =
       pid != ::GetCurrentProcessId() && hwnd_under_mouse != NULL;
 
@@ -1059,8 +1060,17 @@ bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task) {
   g_last_sent_mouse_location = screen_point;
 
   if (task) {
-    InputDispatcher::CreateForMouseMove(std::move(task),
-                                        {screen_point.x(), screen_point.y()});
+    if (thread_id == ::GetCurrentThreadId() || ::GetCapture()) {
+      InputDispatcher::CreateForMouseMove(std::move(task),
+                                          {screen_point.x(), screen_point.y()});
+    } else {
+      // No window on the current thread is at `pt` (and none holds mouse
+      // capture), e.g. when a test moves the cursor to `(0, 0)` outside any
+      // Chrome HWND. `WH_MOUSE` only observes the current thread and would
+      // never fire, stalling until `InputDispatcher::OnTimeout()` (30s).
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(task));
+    }
   }
   return true;
 }
