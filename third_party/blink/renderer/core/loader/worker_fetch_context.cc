@@ -322,6 +322,7 @@ void WorkerFetchContext::PopulateResourceRequestBeforeCacheAccess(
     const ResourceLoaderOptions& options,
     ResourceRequest& request) {
   ModifyRequestForMixedContentUpgrade(request);
+  SetFirstPartyCookie(request);
   request.SetTopFrameOrigin(GetTopFrameOrigin());
 }
 
@@ -341,7 +342,6 @@ void WorkerFetchContext::UpgradeResourceRequestForLoader(
   if (!GetResourceFetcherProperties().IsDetached()) {
     probe::SetDevToolsIds(Probe(), out_request, options.initiator_info);
   }
-  SetFirstPartyCookie(out_request);
 }
 
 const FeatureContext* WorkerFetchContext::GetFeatureContext() const {

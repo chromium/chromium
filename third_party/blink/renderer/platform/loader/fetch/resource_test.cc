@@ -10,6 +10,7 @@
 
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
+#include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "url/gurl.h"
 
 namespace blink {
 
@@ -865,6 +867,52 @@ TEST_F(ResourceTest, CanReuseSkipServiceWorker) {
     request.SetSkipServiceWorker(true);
     FetchParameters params = FetchParameters::CreateForTest(std::move(request));
     EXPECT_EQ(Resource::MatchStatus::kSkipServiceWorkerDoesNotMatch,
+              resource->CanReuse(params));
+  }
+}
+
+TEST_F(ResourceTest, CanReuseSiteForCookies) {
+  const KURL url("https://example.test/script.js");
+  scoped_refptr<const SecurityOrigin> origin = SecurityOrigin::Create(url);
+  const net::SiteForCookies first_party_site =
+      net::SiteForCookies::FromUrl(GURL("https://example.test/page"));
+
+  ResourceRequest cache_request(url);
+  cache_request.SetRequestorOrigin(origin);
+  cache_request.SetSiteForCookies(first_party_site);
+
+  auto* resource = MakeGarbageCollected<MockResource>(cache_request);
+  resource->FinishForTest();
+
+  // Equivalent site_for_cookies should match.
+  {
+    ResourceRequest request(url);
+    request.SetRequestorOrigin(origin);
+    request.SetSiteForCookies(
+        net::SiteForCookies::FromUrl(GURL("https://sub.example.test/other")));
+    FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+    EXPECT_EQ(Resource::MatchStatus::kOk, resource->CanReuse(params));
+  }
+
+  // Null site_for_cookies (e.g. cross-site subframe) should not match a
+  // first-party cached resource.
+  {
+    ResourceRequest request(url);
+    request.SetRequestorOrigin(origin);
+    request.SetSiteForCookies(net::SiteForCookies());
+    FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+    EXPECT_EQ(Resource::MatchStatus::kSiteForCookiesDoesNotMatch,
+              resource->CanReuse(params));
+  }
+
+  // Different non-null site_for_cookies should not match.
+  {
+    ResourceRequest request(url);
+    request.SetRequestorOrigin(origin);
+    request.SetSiteForCookies(
+        net::SiteForCookies::FromUrl(GURL("https://other.test/page")));
+    FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+    EXPECT_EQ(Resource::MatchStatus::kSiteForCookiesDoesNotMatch,
               resource->CanReuse(params));
   }
 }

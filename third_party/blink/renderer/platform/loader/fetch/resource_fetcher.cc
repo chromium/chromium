@@ -1985,6 +1985,9 @@ void ResourceFetcher::PrintPreloadMismatch(Resource* resource,
     case Resource::MatchStatus::kPreventAllCrossTargetWorldReuse:
       builder.Append("because it is a cross-target-world resource mismatch.");
       break;
+    case Resource::MatchStatus::kSiteForCookiesDoesNotMatch:
+      builder.Append("because the site for cookies does not match.");
+      break;
   }
   console_logger_->AddConsoleMessage(mojom::ConsoleMessageSource::kOther,
                                      mojom::ConsoleMessageLevel::kWarning,

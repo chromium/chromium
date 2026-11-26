@@ -41,6 +41,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -3474,6 +3475,72 @@ TEST_P(ResourceFetcherTest, UpdateImagePrioritiesWithAdditionalRequests) {
   fetcher->UpdateImagePrioritiesAndSpeculativeDecodes();
   EXPECT_EQ(cached_update_count, 1);
   EXPECT_EQ(pending_update_count, 1);
+}
+
+class ResourceFetcherSiteForCookiesTest : public ResourceFetcherTestBase {
+ protected:
+  void SetUp() override {
+    ResourceFetcherTestBase::SetUp();
+    ResourceResponse response(url_);
+    response.SetHttpStatusCode(200);
+    response.SetHttpHeaderField(http_names::kCacheControl,
+                                AtomicString("private, max-age=3600"));
+    platform_->GetURLLoaderMockFactory()->RegisterURL(
+        url_, WrappedResourceResponse(response),
+        test::PlatformTestDataPath(kTestResourceFilename));
+  }
+
+  Resource* FetchAndServe(const net::SiteForCookies& site_for_cookies) {
+    ResourceRequest request(url_);
+    request.SetRequestorOrigin(origin_);
+    request.SetSiteForCookies(site_for_cookies);
+    FetchParameters fetch_params =
+        FetchParameters::CreateForTest(std::move(request));
+    Resource* resource =
+        MockResource::Fetch(fetch_params, CreateFetcher(), nullptr);
+    if (!resource) {
+      return nullptr;
+    }
+    platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+    EXPECT_TRUE(resource->IsLoaded());
+    EXPECT_TRUE(MemoryCache::Get()->Contains(resource));
+    return resource;
+  }
+
+  const KURL url_{"http://127.0.0.1:8000/foo.js"};
+  const scoped_refptr<const SecurityOrigin> origin_ =
+      SecurityOrigin::Create(url_);
+  const net::SiteForCookies first_party_site_ =
+      net::SiteForCookies::FromUrl(GURL(url_));
+};
+
+TEST_F(ResourceFetcherSiteForCookiesTest, MismatchFirstPartyToCrossSite) {
+  // Fetch the resource in a first-party context.
+  Resource* resource_1 = FetchAndServe(first_party_site_);
+  ASSERT_TRUE(resource_1);
+
+  // A subsequent fetch with an equivalent first-party SiteForCookies should
+  // reuse the cached resource.
+  Resource* resource_2 = FetchAndServe(first_party_site_);
+  EXPECT_EQ(resource_1, resource_2);
+
+  // A subsequent fetch from the same origin in a cross-site context (null
+  // SiteForCookies) must not reuse the first-party cached resource.
+  Resource* resource_3 = FetchAndServe(net::SiteForCookies());
+  ASSERT_TRUE(resource_3);
+  EXPECT_NE(resource_1, resource_3);
+}
+
+TEST_F(ResourceFetcherSiteForCookiesTest, MismatchCrossSiteToFirstParty) {
+  // Fetch the resource in a cross-site context (null SiteForCookies).
+  Resource* resource_1 = FetchAndServe(net::SiteForCookies());
+  ASSERT_TRUE(resource_1);
+
+  // A subsequent fetch in a first-party context must not reuse the resource
+  // cached with a null (cross-site) SiteForCookies.
+  Resource* resource_2 = FetchAndServe(first_party_site_);
+  ASSERT_TRUE(resource_2);
+  EXPECT_NE(resource_1, resource_2);
 }
 
 }  // namespace blink

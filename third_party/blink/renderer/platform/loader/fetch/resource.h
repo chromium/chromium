@@ -81,6 +81,8 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE(kPreventAllCrossWorldForCspReuse);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kPreventAllCrossTargetWorldReuse);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(
     kPreventDifferentSkipServiceWorkerResourceReuse);
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(
+    kPreventDifferentSiteForCookiesResourceReuse);
 
 class BackgroundResponseProcessorFactory;
 class BlobDataHandle;
@@ -188,6 +190,9 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
     // Match fails because cross-`TargetWorld()` reuse is prevented.
     kPreventAllCrossTargetWorldReuse,
+
+    // Match fails due to different site-for-cookies values.
+    kSiteForCookiesDoesNotMatch,
   };
 
   Resource(const Resource&) = delete;

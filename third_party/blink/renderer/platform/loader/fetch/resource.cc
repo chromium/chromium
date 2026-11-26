@@ -38,6 +38,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
+#include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheme_registry.h"
@@ -97,6 +98,11 @@ BASE_FEATURE(kPreventAllCrossTargetWorldReuse,
 // Feature that prevents resources from being reused if the Service Worker skip
 // policy differs between the existing and new requests.
 BASE_FEATURE(kPreventDifferentSkipServiceWorkerResourceReuse,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Feature that prevents resources from being reused if the site for cookies
+// differs between the existing and new requests.
+BASE_FEATURE(kPreventDifferentSiteForCookiesResourceReuse,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 String GetAsAttributeFromResourceType(ResourceType type) {
@@ -971,6 +977,16 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
   if (current_request.GetCredentialsMode() !=
       new_request.GetCredentialsMode()) {
     return MatchStatus::kRequestCredentialsModeDoesNotMatch;
+  }
+
+  // Prevent reusing a cached resource when SiteForCookies differs (e.g.,
+  // between a first-party page and a cross-site iframe), since SameSite
+  // cookies sent by the network service may differ.
+  if (base::FeatureList::IsEnabled(
+          kPreventDifferentSiteForCookiesResourceReuse) &&
+      !current_request.SiteForCookies().IsEquivalent(
+          new_request.SiteForCookies())) {
+    return MatchStatus::kSiteForCookiesDoesNotMatch;
   }
 
   // Answers the question "can a separate request with different options be
