@@ -34267,7 +34267,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.ApisDisabled">
-  <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <owner>kartoffel-core@google.com</owner>
@@ -34277,7 +34276,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.ApisEnabled">
-  <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <owner>kartoffel-core@google.com</owner>
@@ -34287,7 +34285,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.Block3PCookies">
-  <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <owner>kartoffel-core@google.com</owner>
@@ -34311,7 +34308,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.OpenedFromSettingsParent">
-  <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <owner>kartoffel-core@google.com</owner>
@@ -34322,7 +34318,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.PrivacySandbox.OpenExplainer">
-  <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <owner>kartoffel-core@google.com</owner>
