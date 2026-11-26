@@ -270,6 +270,17 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
     return;
   }
 
+#if BUILDFLAG(IS_MAC)
+  if (system_media_permissions::CheckSystemScreenCapturePermission() !=
+      system_permission_settings::SystemPermission::kAllowed) {
+    std::move(pending_request->callback)
+        .Run(blink::mojom::StreamDevicesSet(),
+             MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM,
+             /*ui=*/nullptr);
+    return;
+  }
+#endif
+
   if (!request_approved_for_test_) {
     // May spawn a modal dialog synchronously.
     const MediaStreamRequestResult request_result = CheckIfRequestApproved(
@@ -394,15 +405,6 @@ void DesktopCaptureAccessHandler::HandleRequest(
       return;
     }
 #if BUILDFLAG(IS_MAC)
-    if (system_media_permissions::ScreenCaptureNeedsSystemLevelPermissions() &&
-        system_media_permissions::CheckSystemScreenCapturePermission() !=
-            system_permission_settings::SystemPermission::kAllowed) {
-      std::move(pending_request->callback)
-          .Run(blink::mojom::StreamDevicesSet(),
-               MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM,
-               /*ui=*/nullptr);
-      return;
-    }
     if (IsFeedbackRequestWithSckPicker(request.security_origin)) {
       ProcessChangeSourceRequest(web_contents, std::move(pending_request));
       return;
@@ -463,7 +465,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
     return;
   }
 #if BUILDFLAG(IS_MAC)
-  if (media_id.type != content::DesktopMediaID::TYPE_WEB_CONTENTS &&
+  if (system_media_permissions::NeedsSystemScreenCapturePermission(media_id) &&
       system_media_permissions::CheckSystemScreenCapturePermission() !=
           system_permission_settings::SystemPermission::kAllowed) {
     std::move(pending_request->callback)

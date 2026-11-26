@@ -4,7 +4,9 @@
 
 #include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 
+#include <initializer_list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -12,17 +14,20 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/desktop_streams_registry.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -58,12 +63,94 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+#if BUILDFLAG(IS_MAC)
+    system_permission_settings::SetIsScreenCaptureAllowedForTesting(true);
+#endif
     NavigateAndCommit(GURL(kOrigin));
     auto picker_factory = std::make_unique<FakeDesktopMediaPickerFactory>();
     picker_factory_ = picker_factory.get();
     access_handler_ = std::make_unique<DesktopCaptureAccessHandler>(
         std::move(picker_factory));
   }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_MAC)
+    system_permission_settings::SetIsScreenCaptureAllowedForTesting(
+        std::nullopt);
+#endif
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  std::string RegisterStream(const GURL& origin,
+                             const content::DesktopMediaID& media_id) {
+    const content::GlobalRenderFrameHostId rfh_id =
+        web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+    // TODO(crbug.com/379869738): Remove GetUnsafeValue.
+    return content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
+        rfh_id.child_id.GetUnsafeValue(), rfh_id.frame_routing_id,
+        url::Origin::Create(origin), media_id,
+        content::DesktopStreamRegistryType::kRegistryStreamTypeDesktop);
+  }
+
+#if BUILDFLAG(IS_MAC)
+  void ExpectGenerateStreamWithTccDenied(
+      bool enable_sck_picker,
+      std::initializer_list<content::DesktopMediaID> media_ids,
+      blink::mojom::MediaStreamRequestResult expected_result) {
+    system_permission_settings::SetIsScreenCaptureAllowedForTesting(false);
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(media::kUseSCContentSharingPicker,
+                                             enable_sck_picker);
+
+    const GURL origin(kOrigin);
+    for (const auto& media_id : media_ids) {
+      const std::string id = RegisterStream(origin, media_id);
+      blink::mojom::MediaStreamRequestResult result;
+      blink::mojom::StreamDevices devices;
+      ProcessGenerateStreamRequest({id}, origin, /*extension=*/nullptr, &result,
+                                   &devices);
+      EXPECT_EQ(expected_result, result) << "media_id=" << media_id.ToString();
+      EXPECT_EQ(expected_result == blink::mojom::MediaStreamRequestResult::OK,
+                devices.video_device.has_value())
+          << "media_id=" << media_id.ToString();
+    }
+  }
+
+  void ExpectDirectScreenCaptureWithTccDenied(
+      blink::mojom::MediaStreamRequestResult expected_result) {
+    system_permission_settings::SetIsScreenCaptureAllowedForTesting(false);
+    base::test::ScopedFeatureList scoped_feature_list(
+        media::kUseSCContentSharingPicker);
+
+    blink::mojom::MediaStreamRequestResult result;
+    blink::mojom::StreamDevices devices;
+    ProcessGenerateStreamRequest(/*requested_video_device_ids=*/{},
+                                 GURL(kOrigin), /*extension=*/nullptr, &result,
+                                 &devices);
+
+    EXPECT_EQ(expected_result, result);
+    EXPECT_FALSE(devices.video_device.has_value());
+  }
+
+  void ExpectFeedbackRequestDeniedWithTccDenied(bool enable_sck_picker) {
+    system_permission_settings::SetIsScreenCaptureAllowedForTesting(false);
+    NavigateAndCommit(GURL(chrome::kChromeUIFeedbackURL));
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(media::kUseSCContentSharingPicker,
+                                             enable_sck_picker);
+    picker_factory_->SetTestFlags({});
+
+    blink::mojom::MediaStreamRequestResult result;
+    blink::mojom::StreamDevices devices;
+    ProcessGenerateStreamRequest({}, GURL(chrome::kChromeUIFeedbackURL),
+                                 /*extension=*/nullptr, &result, &devices);
+
+    EXPECT_EQ(
+        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM,
+        result);
+    EXPECT_FALSE(devices.video_device.has_value());
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   void ProcessGenerateStreamRequest(
       const std::vector<std::string>& requested_video_device_ids,
@@ -72,9 +159,6 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
       blink::mojom::MediaStreamRequestResult* request_result,
       blink::mojom::StreamDevices* devices_result,
       bool expect_result = true) {
-#if BUILDFLAG(IS_MAC)
-    system_permission_settings::SetIsScreenCaptureAllowedForTesting(true);
-#endif
     content::MediaStreamRequest request(
         web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
         web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
@@ -958,5 +1042,130 @@ TEST_F(DesktopCaptureAccessHandlerTest, FeedbackUIRequestWithPickerDisabled) {
                                     webrtc::kFullDesktopScreenId)
                 .ToString(),
             devices_result.video_device.value().id);
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       GenerateStreamWithTccDeniedSucceedsWithPickerEnabled) {
+  if (base::mac::MacOSVersion() < 26'04'00) {
+    GTEST_SKIP() << "SCContentSharingPicker is only enabled on macOS 26.4+.";
+  }
+  ExpectGenerateStreamWithTccDenied(
+      /*enable_sck_picker=*/true,
+      {content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
+                               content::DesktopMediaID::kFakeId),
+       content::DesktopMediaID(content::DesktopMediaID::TYPE_WINDOW,
+                               content::DesktopMediaID::kFakeId)},
+      blink::mojom::MediaStreamRequestResult::OK);
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       GenerateStreamWithTccDeniedFailsWithPickerDisabled) {
+  ExpectGenerateStreamWithTccDenied(
+      /*enable_sck_picker=*/false,
+      {content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
+                               content::DesktopMediaID::kFakeId),
+       content::DesktopMediaID(content::DesktopMediaID::TYPE_WINDOW,
+                               content::DesktopMediaID::kFakeId)},
+      blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM);
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       GenerateStreamWithTccDeniedFailsOnPreMacOS26_4) {
+  if (base::mac::MacOSVersion() >= 26'04'00) {
+    GTEST_SKIP() << "Test verifies behavior on macOS < 26.4.";
+  }
+  ExpectGenerateStreamWithTccDenied(
+      /*enable_sck_picker=*/true,
+      {content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
+                               content::DesktopMediaID::kFakeId),
+       content::DesktopMediaID(content::DesktopMediaID::TYPE_WINDOW,
+                               content::DesktopMediaID::kFakeId)},
+      blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM);
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       GenerateStreamChromiumWindowWithTccDeniedSucceedsWithPickerDisabled) {
+  content::DesktopMediaID window_id(content::DesktopMediaID::TYPE_WINDOW,
+                                    content::DesktopMediaID::kFakeId);
+  window_id.window_id = content::DesktopMediaID::kFakeId;
+  ExpectGenerateStreamWithTccDenied(
+      /*enable_sck_picker=*/false, {window_id},
+      blink::mojom::MediaStreamRequestResult::OK);
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       GenerateStreamTabWithTccDeniedSucceeds) {
+  const content::GlobalRenderFrameHostId rfh_id =
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
+  content::DesktopMediaID tab_id(
+      content::DesktopMediaID::TYPE_WEB_CONTENTS,
+      content::DesktopMediaID::kNullId,
+      content::WebContentsMediaCaptureId(rfh_id.child_id.GetUnsafeValue(),
+                                         rfh_id.frame_routing_id));
+  ExpectGenerateStreamWithTccDenied(
+      /*enable_sck_picker=*/false, {tab_id},
+      blink::mojom::MediaStreamRequestResult::OK);
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       DirectScreenCaptureWithoutFlagWithTccDeniedReturnsCaptureNotEnabled) {
+  ExpectDirectScreenCaptureWithTccDenied(
+      blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ENABLED);
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       DirectScreenCaptureWithTccDeniedFailsEvenWithPickerEnabled) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kEnableUserMediaScreenCapturing);
+  ExpectDirectScreenCaptureWithTccDenied(
+      blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM);
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       FeedbackUIRequestWithTccDeniedSucceedsWithPickerEnabled) {
+  if (base::mac::MacOSVersion() < 26'04'00) {
+    GTEST_SKIP() << "SCContentSharingPicker is only enabled on macOS 26.4+.";
+  }
+  system_permission_settings::SetIsScreenCaptureAllowedForTesting(false);
+  NavigateAndCommit(GURL(chrome::kChromeUIFeedbackURL));
+  base::test::ScopedFeatureList scoped_feature_list(
+      media::kUseSCContentSharingPicker);
+
+  content::DesktopMediaID fake_screen_id(content::DesktopMediaID::TYPE_SCREEN,
+                                         2);
+  FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
+      {.expect_screens = true,
+       .expect_windows = true,
+       .expect_tabs = true,
+       .expect_audio = false,
+       .picker_result = fake_screen_id}};
+  picker_factory_->SetTestFlags(test_flags);
+
+  blink::mojom::MediaStreamRequestResult request_result;
+  blink::mojom::StreamDevices devices_result;
+
+  ProcessGenerateStreamRequest({}, GURL(chrome::kChromeUIFeedbackURL),
+                               /*extension=*/nullptr, &request_result,
+                               &devices_result);
+
+  EXPECT_TRUE(test_flags[0].picker_created);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, request_result);
+  ASSERT_TRUE(devices_result.video_device.has_value());
+  EXPECT_EQ(fake_screen_id.ToString(), devices_result.video_device.value().id);
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       FeedbackUIRequestWithTccDeniedFailsWithPickerDisabled) {
+  ExpectFeedbackRequestDeniedWithTccDenied(/*enable_sck_picker=*/false);
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       FeedbackUIRequestWithTccDeniedFailsOnPreMacOS26_4) {
+  if (base::mac::MacOSVersion() >= 26'04'00) {
+    GTEST_SKIP() << "Test verifies behavior on macOS < 26.4.";
+  }
+  ExpectFeedbackRequestDeniedWithTccDenied(/*enable_sck_picker=*/true);
 }
 #endif  // BUILDFLAG(IS_MAC)
