@@ -13,14 +13,18 @@ import com.google.errorprone.annotations.CheckReturnValue;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TriStateUtils;
+import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Outcome;
+import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.transit.TripBuilder;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.tabmodel.TabAddedCondition;
@@ -263,6 +267,39 @@ public class BasePageStation<HostActivity extends ChromeActivity>
          */
         public Outcome<PageT> inNewWindow() {
             return Outcome.enter(withEntryPoint().build()).inNewTask();
+        }
+
+        /**
+         * Like {@link #inNewWindow()}, also waiting for the new window's original {@link Profile}
+         * to match {@code expectedProfile}.
+         */
+        public Outcome<PageT> inNewWindow(Profile expectedProfile) {
+            assert expectedProfile != null : "expectedProfile must not be null";
+            return inNewWindow(() -> expectedProfile);
+        }
+
+        /**
+         * Like {@link #inNewWindow()}, also waiting for the new window's original {@link Profile}
+         * to match the profile supplied by {@code expectedProfileSupplier} once non-null.
+         */
+        public Outcome<PageT> inNewWindow(Supplier<@Nullable Profile> expectedProfileSupplier) {
+            PageT dest = withEntryPoint().build();
+            return Outcome.enter(dest)
+                    .inNewTask()
+                    .andWaitFor(
+                            SimpleConditions.uiThreadCondition(
+                                    "Window uses expected profile",
+                                    dest.originalProfileElement,
+                                    actual -> {
+                                        Profile expected = expectedProfileSupplier.get();
+                                        return expected == null
+                                                ? Condition.awaiting("Waiting for expected profile")
+                                                : Condition.whether(
+                                                        expected.equals(actual),
+                                                        "Expected: %s; Actual: %s",
+                                                        expected.getBaseName(),
+                                                        actual.getBaseName());
+                                    }));
         }
     }
 

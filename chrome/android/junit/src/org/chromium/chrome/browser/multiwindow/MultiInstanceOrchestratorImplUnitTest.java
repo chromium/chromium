@@ -66,6 +66,9 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SessionStart
 import org.chromium.chrome.browser.multiwindow.TabbedStartupWindowPolicyDelegate.StartupMode;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileResolver;
+import org.chromium.chrome.browser.profiles.ProfileResolverJni;
+import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
@@ -82,6 +85,8 @@ import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 /** Unit tests for {@link MultiInstanceOrchestratorImpl}. */
@@ -269,6 +274,98 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
         // Verify.
         assertFalse(result);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testCreateNewWindowForTesting_withProfile_attachesProfileToken() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        Profile profile = mock(Profile.class);
+        ProfileResolver.Natives resolverNatives = mock(ProfileResolver.Natives.class);
+        ProfileResolverJni.setInstanceForTesting(resolverNatives);
+        byte[] tokenBytes = "profile-token".getBytes(StandardCharsets.UTF_8);
+        when(resolverNatives.tokenizeProfileToBytes(profile)).thenReturn(tokenBytes);
+
+        assertTrue(
+                mMultiInstanceOrchestrator.createNewWindowForTesting(
+                        mActivity,
+                        profile,
+                        /* additionalIntentExtras= */ null,
+                        /* startActivityOptions= */ null,
+                        NewWindowAppSource.ACCOUNT_MENU));
+        Intent intent = Shadows.shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(intent);
+        assertFalse(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, true));
+        assertTrue(ProfileTokenUtils.hasProfileToken(intent));
+        assertEquals(
+                "profile-token",
+                new String(
+                        Base64.getUrlDecoder().decode(intent.getIdentifier()),
+                        StandardCharsets.UTF_8));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testCreateNewWindowForTesting_withOtrProfile_setsIncognito() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        Profile originalProfile = mock(Profile.class);
+        Profile otrProfile = mock(Profile.class);
+        when(otrProfile.isOffTheRecord()).thenReturn(true);
+        when(otrProfile.isPrimaryOtrProfile()).thenReturn(true);
+        when(otrProfile.getOriginalProfile()).thenReturn(originalProfile);
+        ProfileResolver.Natives resolverNatives = mock(ProfileResolver.Natives.class);
+        ProfileResolverJni.setInstanceForTesting(resolverNatives);
+        byte[] tokenBytes = "profile-token".getBytes(StandardCharsets.UTF_8);
+        when(resolverNatives.tokenizeProfileToBytes(originalProfile)).thenReturn(tokenBytes);
+
+        assertTrue(
+                mMultiInstanceOrchestrator.createNewWindowForTesting(
+                        mActivity,
+                        otrProfile,
+                        /* additionalIntentExtras= */ null,
+                        /* startActivityOptions= */ null,
+                        NewWindowAppSource.ACCOUNT_MENU));
+        Intent intent = Shadows.shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(intent);
+        assertTrue(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
+        assertTrue(ProfileTokenUtils.hasProfileToken(intent));
+        assertEquals(
+                "profile-token",
+                new String(
+                        Base64.getUrlDecoder().decode(intent.getIdentifier()),
+                        StandardCharsets.UTF_8));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testCreateNewWindowForTesting_withProfile_api31Disabled() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        Profile profile = mock(Profile.class);
+
+        assertFalse(
+                mMultiInstanceOrchestrator.createNewWindowForTesting(
+                        mActivity,
+                        profile,
+                        /* additionalIntentExtras= */ null,
+                        /* startActivityOptions= */ null,
+                        NewWindowAppSource.ACCOUNT_MENU));
+        assertNull(Shadows.shadowOf(mActivity).getNextStartedActivity());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testCreateNewWindowForTesting_withProfile_featureDisabled() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        Profile profile = mock(Profile.class);
+
+        assertFalse(
+                mMultiInstanceOrchestrator.createNewWindowForTesting(
+                        mActivity,
+                        profile,
+                        /* additionalIntentExtras= */ null,
+                        /* startActivityOptions= */ null,
+                        NewWindowAppSource.ACCOUNT_MENU));
+        assertNull(Shadows.shadowOf(mActivity).getNextStartedActivity());
     }
 
     @Test

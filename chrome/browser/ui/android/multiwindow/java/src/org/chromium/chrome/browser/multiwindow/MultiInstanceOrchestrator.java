@@ -60,6 +60,20 @@ public interface MultiInstanceOrchestrator {
             @NewWindowAppSource int source);
 
     /**
+     * Like {@link #createNewWindow}, bound to {@code profile} (API 31+ only). Opens an incognito
+     * window when {@code profile} is off-the-record.
+     *
+     * @return true if the window was successfully created, false if multi-instance API 31+ or
+     *     {@code AndroidMultiprofile} is disabled, or window creation failed.
+     */
+    boolean createNewWindowForTesting(
+            Activity sourceActivity,
+            Profile profile,
+            @Nullable Bundle additionalIntentExtras,
+            @Nullable Bundle startActivityOptions,
+            @NewWindowAppSource int source);
+
+    /**
      * Creates a new ChromeTabbedActivity instance from an existing {@link WebContents}.
      *
      * @param sourceActivity The activity used to launch the intent.
@@ -193,7 +207,8 @@ public interface MultiInstanceOrchestrator {
      * @param parentTabId The ID of the parent tab, or {@link Tab#INVALID_TAB_ID}.
      * @param preferNew Whether we should prioritize launching the tab in a new window.
      * @param isIncognito Whether the target window should be an incognito window when supported.
-     * @param openInTabGroup Whether additional URLs should be opened in a tab group with the primary URL.
+     * @param openInTabGroup Whether additional URLs should be opened in a tab group with the
+     *     primary URL.
      * @return {@code true} if the url launch request was successful, {@code false} otherwise.
      */
     boolean openUrlsInOtherWindow(

@@ -26,10 +26,12 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -142,11 +144,54 @@ import java.util.function.Supplier;
             @Nullable Bundle additionalIntentExtras,
             @Nullable Bundle startActivityOptions,
             @NewWindowAppSource int source) {
+        return createNewWindowInternal(
+                sourceActivity,
+                /* profile= */ null,
+                isIncognito,
+                additionalIntentExtras,
+                startActivityOptions,
+                source);
+    }
+
+    @Override
+    public boolean createNewWindowForTesting(
+            Activity sourceActivity,
+            Profile profile,
+            @Nullable Bundle additionalIntentExtras,
+            @Nullable Bundle startActivityOptions,
+            @NewWindowAppSource int source) {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()
+                || !ChromeFeatureList.sAndroidMultiprofile.isEnabled()) {
+            return false;
+        }
+        boolean isIncognito = profile.isOffTheRecord();
+        // Non-primary OTR profiles (e.g. Ephemeral CCT) do not support opening their own windows.
+        assert !isIncognito || profile.isPrimaryOtrProfile();
+        Profile originalProfile = isIncognito ? profile.getOriginalProfile() : profile;
+        return createNewWindowInternal(
+                sourceActivity,
+                originalProfile,
+                isIncognito,
+                additionalIntentExtras,
+                startActivityOptions,
+                source);
+    }
+
+    private boolean createNewWindowInternal(
+            Activity sourceActivity,
+            @Nullable Profile profile,
+            boolean isIncognito,
+            @Nullable Bundle additionalIntentExtras,
+            @Nullable Bundle startActivityOptions,
+            @NewWindowAppSource int source) {
         Intent intent = MultiWindowUtils.createNewWindowIntent(sourceActivity, isIncognito, source);
         if (intent == null) return false;
 
         if (additionalIntentExtras != null) {
             intent.putExtras(additionalIntentExtras);
+        }
+        if (profile != null) {
+            ProfileTokenUtils.addProfileToIntent(profile, intent);
         }
 
         MultiInstanceManager.onMultiInstanceModeStarted();

@@ -1287,6 +1287,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.profiles") {
   resources_package = "org.chromium.chrome"
 
   sources = [
+    "src/org/chromium/chrome/browser/profiles/MultiProfileWindowTest.java",
     "src/org/chromium/chrome/browser/profiles/OtrProfileIdTest.java",
     "src/org/chromium/chrome/browser/profiles/ProfileAttributesStorageIntegrationTest.java",
     "src/org/chromium/chrome/browser/profiles/ProfileResolverTest.java",

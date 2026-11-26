@@ -19,7 +19,9 @@ import android.view.View;
 import com.google.errorprone.annotations.CheckReturnValue;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Outcome;
+import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.build.annotations.Nullable;
@@ -28,7 +30,12 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.UrlBar;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -54,6 +61,7 @@ import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 /**
@@ -233,6 +241,58 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     public IncognitoNewTabPageStation openNewIncognitoWindowFast() {
         return ChromeTriggers.invokeCustomMenuActionTo(R.id.new_incognito_window_menu_id, this)
                 .reach(IncognitoNewTabPageStation.newBuilder().inNewWindow());
+    }
+
+    /**
+     * Creates a new secondary profile and opens a new window bound to it, arriving at its NTP.
+     * Callers must be {@code @DoNotBatch} and enable {@code AndroidMultiprofile} and {@code
+     * AndroidMultiprofileStartupData}.
+     */
+    public RegularNewTabPageStation openNewWindowInNewProfileFast(String profileName) {
+        assert profileName != null && !profileName.isEmpty() : "Expected a non-empty profile name";
+        assert ChromeFeatureList.sAndroidMultiprofile.isEnabled()
+                : "Requires ChromeFeatureList.ANDROID_MULTIPROFILE";
+        assert MultiWindowUtils.isMultiInstanceApi31Enabled() : "Requires multi-instance API 31+";
+        AtomicReference<@Nullable Profile> created = new AtomicReference<>();
+        AtomicReference<@Nullable String> error = new AtomicReference<>();
+        return runOnUiThreadTo(
+                        () -> {
+                            ChromeTabbedActivity activity = getActivity();
+                            ProfileManager.createMultiProfileAsync(
+                                    profileName,
+                                    profile -> {
+                                        if (profile == null) {
+                                            error.set("createMultiProfileAsync returned null");
+                                            return;
+                                        }
+                                        boolean launched =
+                                                MultiInstanceOrchestratorFactory.getInstance()
+                                                        .createNewWindowForTesting(
+                                                                activity,
+                                                                profile,
+                                                                /* additionalIntentExtras= */ null,
+                                                                /* startActivityOptions= */ null,
+                                                                NewWindowAppSource.ACCOUNT_MENU);
+                                        if (!launched) {
+                                            error.set("createNewWindowForTesting returned false");
+                                            return;
+                                        }
+                                        created.set(profile);
+                                    });
+                        })
+                .reach(
+                        RegularNewTabPageStation.newBuilder()
+                                .inNewWindow(created::get)
+                                .andWaitFor(
+                                        SimpleConditions.instrumentationThreadCondition(
+                                                "Secondary profile window launched",
+                                                () -> {
+                                                    String err = error.get();
+                                                    if (err != null) return Condition.error(err);
+                                                    return created.get() == null
+                                                            ? Condition.awaiting("Creating profile")
+                                                            : Condition.fulfilled();
+                                                })));
     }
 
     /**
