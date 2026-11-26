@@ -123,10 +123,53 @@ agentic_review {
     rules: "ios/agents/knowledge_base/rules/chrome/coordinator-teardown-disconnects-mediator-in-stop.md"
   }
   capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "\\bclass\\s+\\w+Mediator[ \\t]*(?:final[ \\t]*)?(?:[:{]|$)"
+    content_patterns: "@interface[ \\t]+\\w+Mediator[ \\t]*(?:[:<]|$)"
+    rules: "ios/agents/knowledge_base/rules/chrome/mediator-class-name-suffix-reserved.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*mediator[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
+    content_patterns: "\\bpublic[ \\t]+[A-Za-z0-9_:]*Observer\\b"
+    rules: "ios/agents/knowledge_base/rules/general/observe-model-via-scoped-observation-bridges.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "\\bNS_ENUM\\s*\\("
+    content_patterns: "\\bNS_CLOSED_ENUM\\s*\\("
+    rules: "ios/agents/knowledge_base/rules/general/prefer-enum-class-over-ns-enum.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "\\bdispatch_async\\b"
+    content_patterns: "\\bdispatch_sync\\b"
+    content_patterns: "\\bdispatch_get_main_queue\\b"
+    content_patterns: "\\bdispatch_get_global_queue\\b"
+    content_patterns: "\\bdispatch_queue_create\\b"
+    content_patterns: "\\bdispatch_after\\b"
+    rules: "ios/agents/knowledge_base/rules/general/use-chromium-task-runner-not-grand-central-dispatch.md"
+  }
+  capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.m"
     path_expression_exclusion: "ios/third_party/.*"
     path_expression_exclusion: "ios/web_view/shell/.*"
     rules: "ios/agents/knowledge_base/rules/general/all-ios-source-files-must-be-objective-cpp.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/chrome/browser/shared/ui/symbols/.*"
+    path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
+    content_patterns: "\\[[ \\t]*UIImage[ \\t]+(?:systemImageNamed|imageNamed)[ \\t]*:"
+    content_patterns: "(?:extern\\s+)?NSString\\s*\\*+\\s*(?:const\\s+)?k[A-Za-z0-9_]*(?:Symbol|Icon|Image)\\b"
+    content_patterns: "\\bconfigurationWithPointSize\\s*:"
+    content_patterns: "\\bUIGraphicsImageRenderer\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/use-centralized-symbol-enum-for-icons.md"
   }
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*_egtest\\.mm"
@@ -237,6 +280,84 @@ agentic_review {
     rules: "ios/agents/knowledge_base/rules/chrome/use-uikit-test-util-for-view-lookup.md"
   }
   capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*mediator[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "-\\s*\\(\\s*void\\s*\\)\\s*disconnect\\b"
+    content_patterns: "\\b_?[a-zA-Z0-9_]*Subscription\\b"
+    content_patterns: "\\b_?[a-zA-Z0-9_]*(?:Bridge|Observation|Registrar|Observer)\\.(?:reset|Reset|RemoveAll)\\s*\\("
+    content_patterns: "\\b_[a-zA-Z0-9_]+\\s*=\\s*nullptr\\s*;"
+    content_patterns: "-\\s*\\(\\s*void\\s*\\)\\s*dealloc\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/mediator-deterministic-cleanup-in-disconnect.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*(?:coordinator|mediator)[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "(?:\\.activeWebState\\s*=|\\bsetActiveWebState:)"
+    content_patterns: "GetWebStateList\\(\\)->GetActiveWebState\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/mediator-observes-web-state-list-for-active-tab.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "(?:-\\s*\\([^)\\n]*\\)\\s*initWith(?:[A-Z][a-z0-9]+[A-Z]\\w*State|[A-Z]\\w*Config):|\\binit\\w*:\\s*\\(\\s*(?:const\\s+)?(?:[A-Z][a-z0-9]+[A-Z]\\w*State|[A-Z]\\w*Config)\\b)"
+    content_patterns: "@property\\s*\\([^)\\n]*\\)\\s*(?:[A-Z][a-z0-9]+[A-Z]\\w*State|[A-Z]\\w*Config)\\s*\\*?\\s*[a-zA-Z0-9_]+\\s*;"
+    content_patterns: "@protocol[ \\t]+[A-Za-z0-9_]+Provider[ \\t]*(?:<|$)"
+    content_patterns: "\\[(?:self\\.consumer|_consumer)(?:[ \\t]+[A-Za-z0-9_]+|[ \\t]*$)"
+    rules: "ios/agents/knowledge_base/rules/chrome/mediator-pushes-state-to-consumer-no-polling.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "\\b(?:auto\\s*\\*?|__auto_type)\\s+\\w+\\s*=\\s*\\[\\[\\w+(?:<[^>\\n]+>)?\\s+alloc\\]"
+    rules: "ios/agents/knowledge_base/rules/general/no-auto-type-deduction-for-basic-objective-c-alloc-init.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "(?:\\[\\s*NSDate\\b|\\bNSDate\\s*\\.\\s*(?:date|now)\\b)"
+    content_patterns: "\\b(?:dateWithTimeInterval\\w*\\s*:|timeIntervalSince(?:Now|1970|Date|ReferenceDate)\\b)"
+    content_patterns: "\\bNSTimeInterval\\b"
+    rules: "ios/agents/knowledge_base/rules/general/prefer-base-time-over-ns-date.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    path_expression_exclusion: "ios/chrome/[^/]*_extension/.*"
+    path_expression_exclusion: "ios/chrome/common/app_group/.*"
+    path_expression_exclusion: "ios/chrome/browser/shared/model/prefs/.*"
+    content_patterns: "(?:\\[\\s*NSUserDefaults|\\bstandardUserDefaults)\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/prefer-pref-service-over-ns-user-defaults.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?(?:BUILD\\.gn|[^/]*\\.(?:cc|h|mm))"
+    path_expression_exclusion: "ios/third_party/.*"
+    path_expression_exclusion: "ios/chrome/common/ui/colors/.*"
+    path_expression_exclusion: "ios/chrome/(?:.*/)?[^/]*test[^/]*\\.(?:cc|h|mm)"
+    content_patterns: "\\bcolorWith(?:Red|White|DisplayP3Red|Hue)\\s*:"
+    content_patterns: "\\bUIColor\\s*(?:\\.|\\s+)(?:(?:secondary|tertiary|quaternary)?[Ss]ystem[A-Z]\\w+|(?:light|dark)?[Gg]ray|red|blue|green|yellow|orange|purple|brown|cyan|magenta|(?:secondary|tertiary|quaternary)?[Ll]abel|placeholderText|(?:light|dark)Text|(?:opaque)?[Ss]eparator|link|groupTableViewBackground)Color\\b"
+    content_patterns: "\\bUIColorFromRGB\\b"
+    content_patterns: "\\.colorset(?:/Contents\\.json)?[\"']"
+    rules: "ios/agents/knowledge_base/rules/chrome/use-semantic-colors-never-hardcoded-hex.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "@property\\b"
+    content_patterns: "[-+]\\s*[(]\\s*instancetype\\s*[)]"
+    content_patterns: "[-+]\\s*\\([^)\\n]*\\)\\s*init(?:[A-Z:]|\\b)"
+    content_patterns: "\\bNS_DESIGNATED_INITIALIZER\\b"
+    rules: "ios/agents/knowledge_base/rules/general/header-declaration-order-properties-methods-inits.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*_egtest\\.mm"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "@interface\\s+\\w+\\s*:\\s*XCTestCase\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/earl-grey-tests-must-subclass-chrome-test-case.md"
+  }
+  capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*commands[^/]*\\.h"
     path_expression: "ios/chrome/browser/shared/public/commands/(?:.*/)?[^/]*\\.h"
     path_expression_exclusion: "ios/third_party/.*"
@@ -288,9 +409,24 @@ agentic_review {
     path_expression: "ios/chrome/(?:.*/)?[^/]*coordinator[^/]*\\.(?:h|mm)"
     path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "(?:\\w*Coordinator\\s+alloc\\]\\s*init\\w*WebState\\s*:|-\\s*\\(\\s*(?:instancetype|id)\\s*\\)\\s*init\\w*WebState\\s*:|\\bwebState\\s*:\\s*\\([^)\\n]*\\bWebState\\b)"
+    content_patterns: "@property\\s*\\([^)\\n]*\\)\\s*(?:web::)?\\bWebState\\b\\s*\\*"
+    content_patterns: "\\b(?:WebStateListObserving|WebStateListObserver(?:Bridge)?|CRWWebStateObserver)\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/coordinators-must-be-browser-scoped-not-tab-scoped.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*coordinator[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "\\[\\s*(?:self|weakSelf)\\s+(?:stop|start|workflowEnded)\\b"
     content_patterns: "\\[\\s*(?:self|weakSelf)\\.baseViewController\\s+dismissViewControllerAnimated:"
     rules: "ios/agents/knowledge_base/rules/chrome/coordinators-do-not-own-lifecycle.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "\\bnamespace\\s+[a-z0-9_]+(?:::[a-z0-9_]+)*\\s*[{]"
+    rules: "ios/agents/knowledge_base/rules/chrome/no-named-cpp-namespaces-in-ios-chrome.md"
   }
   capability_groups {
     path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:h|mm)"
@@ -300,5 +436,15 @@ agentic_review {
     content_patterns: "\\b(?:_|self\\.)[A-Za-z0-9_]*Coordinator\\.[A-Za-z0-9_]*(?:ViewController|Controller|BVC)\\s*="
     content_patterns: "\\b(?:_|self\\.)[A-Za-z0-9_]*Coordinator\\.viewController\\b"
     rules: "ios/agents/knowledge_base/rules/chrome/coordinator-view-controller-property-for-containment-only.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "@protocol\\s+\\w+Commands\\s*(?:<|$)"
+    content_patterns: "\\bHandlerForProtocol\\s*\\("
+    content_patterns: "\\bstartDispatchingToTarget\\s*:"
+    content_patterns: "\\b[A-Za-z0-9_]*Coordinator\\.[A-Za-z0-9_]*Handler\\s*="
+    rules: "ios/agents/knowledge_base/rules/chrome/local-command-protocols-stay-in-feature-ui.md"
   }
 }
