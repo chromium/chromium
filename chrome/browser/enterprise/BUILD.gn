@@ -218,6 +218,7 @@ source_set("enterprise") {
     public += [
       "platform_auth/cloud_ap_provider_win.h",
       "platform_auth/cloud_ap_utils_win.h",
+      "signals/app_bound_encryption_state_win.h",
       "signals/device_info_fetcher_win.h",
     ]
   }
@@ -511,6 +512,7 @@ source_set("impl") {
     "//components/device_event_log",
     "//components/device_signals/core/browser",
     "//components/device_signals/core/common",
+    "//components/device_signals/core/common:features",
     "//components/enterprise",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/client_certificates/core",
@@ -680,9 +682,15 @@ source_set("impl") {
     sources += [
       "platform_auth/cloud_ap_provider_win.cc",
       "platform_auth/cloud_ap_utils_win.cc",
+      "signals/app_bound_encryption_state_win.cc",
       "signals/device_info_fetcher_win.cc",
     ]
-    deps += [ "//components/device_signals/core/browser/win" ]
+    deps += [
+      "//chrome/browser/os_crypt",
+      "//components/device_signals/core/browser/win",
+      "//components/os_crypt/async/browser",
+      "//components/os_crypt/async/common",
+    ]
   }
 
   if (is_mac) {

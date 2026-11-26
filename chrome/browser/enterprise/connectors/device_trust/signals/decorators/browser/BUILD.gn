@@ -17,6 +17,7 @@ source_set("unit_tests") {
     "//components/device_signals/core/browser",
     "//components/device_signals/core/browser:test_support",
     "//components/device_signals/core/common",
+    "//components/device_signals/core/common:features",
     "//components/enterprise:test_support",
     "//components/enterprise/device_trust/core/attestation/proto:attestation_ca_proto",
     "//components/policy/core/common:test_support",

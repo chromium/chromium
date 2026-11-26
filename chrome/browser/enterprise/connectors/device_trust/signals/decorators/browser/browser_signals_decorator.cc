@@ -27,6 +27,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "components/device_signals/core/common/signals_features.h"
 #include "components/device_signals/core/common/win/win_types.h"
 #endif
 
@@ -97,11 +98,20 @@ void BrowserSignalsDecorator::Decorate(base::DictValue& signals,
 
   if (signals_aggregator_) {
     device_signals::SignalsAggregationRequest request;
+    request.trigger = device_signals::Trigger::kBrowserNavigation;
     request.signal_names.emplace(device_signals::SignalName::kAgent);
     request.agent_signal_parameters.emplace(
         device_signals::AgentSignalCollectionType::kCrowdstrikeIdentifiers);
 
     request.signal_names.emplace(device_signals::SignalName::kAntiVirus);
+
+#if BUILDFLAG(IS_WIN)
+    if (enterprise_signals::features::
+            IsDeviceTrustAppBoundEncryptionStateSignalEnabled()) {
+      request.signal_names.emplace(
+          device_signals::SignalName::kBrowserContextSignals);
+    }
+#endif  // BUILDFLAG(IS_WIN)
 
     signals_aggregator_->GetSignals(
         request,
@@ -165,6 +175,17 @@ void BrowserSignalsDecorator::OnAggregatedSignalsReceived(
   }
   signals.Set(device_signals::names::kAntivirusState,
               static_cast<int>(antivirus_state));
+
+  if (enterprise_signals::features::
+          IsDeviceTrustAppBoundEncryptionStateSignalEnabled() &&
+      response.profile_signals_response &&
+      response.profile_signals_response->app_bound_encryption_state
+          .has_value()) {
+    signals.Set(
+        device_signals::names::kAppBoundEncryptionState,
+        static_cast<int>(
+            *response.profile_signals_response->app_bound_encryption_state));
+  }
 #endif
 
   std::move(done_closure).Run();

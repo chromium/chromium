@@ -6,6 +6,7 @@
 #define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_SIGNALS_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 
 namespace enterprise_signals::features {
 
@@ -17,6 +18,9 @@ BASE_DECLARE_FEATURE(kDetectedAgentSignalCollectionEnabled);
 BASE_DECLARE_FEATURE(kPolicyDataCollectionEnabled);
 BASE_DECLARE_FEATURE(kCertificateCollectionEnabled);
 BASE_DECLARE_FEATURE(kContentBindingVersioningEnabled);
+#if BUILDFLAG(IS_WIN)
+BASE_DECLARE_FEATURE(kDeviceTrustAppBoundEncryptionStateSignal);
+#endif  // BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kContentBindingVersioningEnabledIOS);
 BASE_DECLARE_FEATURE(kChromeOsDeviceAttestationEnabled);
 
@@ -32,6 +36,11 @@ bool IsPolicyDataCollectionEnabled();
 bool IsCertificateCollectionEnabled();
 // Returns true if content binding versioning feature has been enabled.
 bool IsContentBindingVersioningEnabled();
+#if BUILDFLAG(IS_WIN)
+// Returns true if including App-Bound Encryption state in Device Trust signals
+// has been enabled.
+bool IsDeviceTrustAppBoundEncryptionStateSignalEnabled();
+#endif  // BUILDFLAG(IS_WIN)
 // Returns true if content binding versioning feature has been enabled on iOS.
 bool IsContentBindingVersioningEnabledIOS();
 // Returns true if hardware-backed device attestation of signals reports has

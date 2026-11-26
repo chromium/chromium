@@ -17,6 +17,7 @@ namespace names {
 extern const char kAgentId[];
 extern const char kAllowScreenLock[];
 extern const char kAntivirusState[];
+extern const char kAppBoundEncryptionState[];
 extern const char kBrowserVersion[];
 extern const char kBuiltInDnsClientEnabled[];
 extern const char kChromeRemoteDesktopAppBlocked[];

@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
@@ -123,6 +124,19 @@ class ProfileSignalsCollectorTest : public PlatformBrowserTest {
     histogram_tester_.ExpectTotalCount(kCollectionFailureHistogram, 0);
   }
 
+  SignalsAggregationResponse CollectSignals(
+      BaseSignalsCollector& collector,
+      UserPermission permission,
+      SignalName signal_name = SignalName::kBrowserContextSignals) {
+    SignalsAggregationRequest empty_request;
+    SignalsAggregationResponse response;
+    base::test::TestFuture<void> done_future;
+    collector.GetSignal(signal_name, permission, empty_request, response,
+                        done_future.GetCallback());
+    EXPECT_TRUE(done_future.Wait());
+    return response;
+  }
+
   Profile* profile() { return chrome_test_utils::GetProfile(this); }
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ProfileSignalsCollector> signal_collector_ = nullptr;
@@ -149,11 +163,8 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest, GetSignal_Success) {
   auto signals_collector = CreateProfileSignalsCollector();
   SetFakePolicyAndPrefData();
 
-  SignalName signal_name = SignalName::kBrowserContextSignals;
-  SignalsAggregationRequest empty_request;
-  SignalsAggregationResponse response;
-  signals_collector->GetSignal(signal_name, UserPermission::kGranted,
-                               empty_request, response, base::DoNothing());
+  SignalsAggregationResponse response =
+      CollectSignals(*signals_collector, UserPermission::kGranted);
 
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_TRUE(response.profile_signals_response);
@@ -168,11 +179,8 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest, GetSignal_MissingConsent) {
   auto signals_collector = CreateProfileSignalsCollector();
   SetFakePolicyAndPrefData();
 
-  SignalsAggregationRequest empty_request;
-  SignalsAggregationResponse response;
-  signals_collector->GetSignal(SignalName::kBrowserContextSignals,
-                               UserPermission::kMissingConsent, empty_request,
-                               response, base::DoNothing());
+  SignalsAggregationResponse response =
+      CollectSignals(*signals_collector, UserPermission::kMissingConsent);
 
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_TRUE(response.profile_signals_response);
@@ -188,14 +196,11 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest,
   auto signals_collector = CreateProfileSignalsCollector();
   g_browser_process->browser_policy_connector()
       ->SetDeviceAffiliatedIdsForTesting({"device-id"});
-  SignalsAggregationRequest empty_request;
 
   ASSERT_FALSE(
       profile()->GetCloudPolicyManager()->core()->store()->has_policy());
-  SignalsAggregationResponse unmanaged_response;
-  signals_collector->GetSignal(SignalName::kBrowserContextSignals,
-                               UserPermission::kGranted, empty_request,
-                               unmanaged_response, base::DoNothing());
+  SignalsAggregationResponse unmanaged_response =
+      CollectSignals(*signals_collector, UserPermission::kGranted);
   ASSERT_TRUE(unmanaged_response.profile_signals_response);
   EXPECT_FALSE(unmanaged_response.profile_signals_response
                    ->profile_enrollment_domain.has_value());
@@ -207,30 +212,24 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest,
   policy_data->add_user_affiliation_ids("id1");
   policy_data->add_user_affiliation_ids("id2");
   SetUserPolicyData(std::move(policy_data));
-  SignalsAggregationResponse managed_response;
-  signals_collector->GetSignal(SignalName::kBrowserContextSignals,
-                               UserPermission::kGranted, empty_request,
-                               managed_response, base::DoNothing());
+  SignalsAggregationResponse managed_response =
+      CollectSignals(*signals_collector, UserPermission::kGranted);
   ASSERT_TRUE(managed_response.profile_signals_response);
   EXPECT_THAT(
       managed_response.profile_signals_response->profile_affiliation_ids,
       testing::ElementsAre("id1", "id2"));
 
   SetUserPolicyData(std::make_unique<enterprise_management::PolicyData>());
-  SignalsAggregationResponse empty_policy_response;
-  signals_collector->GetSignal(SignalName::kBrowserContextSignals,
-                               UserPermission::kGranted, empty_request,
-                               empty_policy_response, base::DoNothing());
+  SignalsAggregationResponse empty_policy_response =
+      CollectSignals(*signals_collector, UserPermission::kGranted);
   ASSERT_TRUE(empty_policy_response.profile_signals_response);
   EXPECT_THAT(
       empty_policy_response.profile_signals_response->profile_affiliation_ids,
       testing::IsEmpty());
 
   SetUserPolicyData(nullptr);
-  SignalsAggregationResponse cleared_response;
-  signals_collector->GetSignal(SignalName::kBrowserContextSignals,
-                               UserPermission::kGranted, empty_request,
-                               cleared_response, base::DoNothing());
+  SignalsAggregationResponse cleared_response =
+      CollectSignals(*signals_collector, UserPermission::kGranted);
   ASSERT_TRUE(cleared_response.profile_signals_response);
   EXPECT_FALSE(cleared_response.profile_signals_response
                    ->profile_enrollment_domain.has_value());
@@ -243,11 +242,8 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest,
 IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest,
                        GetBrowserContextSignal_Unsupported) {
   auto signals_collector = CreateProfileSignalsCollector();
-  SignalName signal_name = SignalName::kAntiVirus;
-  SignalsAggregationRequest empty_request;
-  SignalsAggregationResponse response;
-  signals_collector->GetSignal(signal_name, UserPermission::kGranted,
-                               empty_request, response, base::DoNothing());
+  SignalsAggregationResponse response = CollectSignals(
+      *signals_collector, UserPermission::kGranted, SignalName::kAntiVirus);
 
   ASSERT_TRUE(response.top_level_error.has_value());
   EXPECT_EQ(response.top_level_error.value(),
@@ -258,11 +254,8 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest,
 // Tests that signal collection is halted if permission is not sufficient.
 IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest, GetSignal_MissingUser) {
   auto signals_collector = CreateProfileSignalsCollector();
-  SignalName signal_name = SignalName::kBrowserContextSignals;
-  SignalsAggregationRequest empty_request;
-  SignalsAggregationResponse response;
-  signals_collector->GetSignal(signal_name, UserPermission::kMissingUser,
-                               empty_request, response, base::DoNothing());
+  SignalsAggregationResponse response =
+      CollectSignals(*signals_collector, UserPermission::kMissingUser);
 
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_FALSE(response.profile_signals_response);
@@ -294,8 +287,11 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorIsolatedModeTest,
   SignalName signal_name = SignalName::kBrowserContextSignals;
   SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;
+  base::test::TestFuture<void> done_future;
   signals_collector.GetSignal(signal_name, UserPermission::kGranted,
-                              empty_request, response, base::DoNothing());
+                              empty_request, response,
+                              done_future.GetCallback());
+  EXPECT_TRUE(done_future.Wait());
 
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_TRUE(response.profile_signals_response);

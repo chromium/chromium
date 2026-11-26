@@ -72,6 +72,29 @@ enum class AgentSignalCollectionType {
   kMaxValue = kCrowdstrikeIdentifiers
 };
 
+// Values representing the state of App-Bound Encryption on Windows.
+// Numeric values are part of the wire contract for Device Trust signals and
+// Chrome Enterprise reporting (`AppBoundEncryptionState` in
+// `device_management_backend.proto`), and must not be renumbered.
+enum class AppBoundEncryptionState {
+  // Default/unset state; never emitted by signal collectors.
+  kUnspecified = 0,
+  // The `"v20"` App-Bound Encryption key provider is registered and actively
+  // used for encryption in `OSCryptAsync`.
+  kEnabled = 1,
+  // Disabled via the `ApplicationBoundEncryptionEnabled` enterprise policy.
+  kDisabledByPolicy = 2,
+  // Disabled because the Windows user profile or Chrome profile is roaming.
+  kUnsupportedRoamingProfile = 3,
+  // Unsupported install location or user-data-dir path (e.g. user-level
+  // install, non-local disk, or non-default `--user-data-dir`).
+  kUnsupportedInstallOrPath = 4,
+  // Environment/API check failed or the elevation service failed to initialize
+  // the `"v20"` key despite prerequisites being met.
+  kServiceFailure = 5,
+  kMaxValue = kServiceFailure,
+};
+
 const std::string ErrorToString(SignalCollectionError error);
 
 // Base struct type that each specific signal bundle types should extend. The
@@ -283,6 +306,8 @@ struct ProfileSignalsResponse : BaseSignalResponse {
   bool site_isolation_enabled = false;
   bool is_isolated_mode = false;
   std::optional<std::string> profile_id = std::nullopt;
+  std::optional<AppBoundEncryptionState> app_bound_encryption_state =
+      std::nullopt;
 
   // Enterprise cloud content analysis exclusives
   enterprise_connectors::EnterpriseRealTimeUrlCheckMode

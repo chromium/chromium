@@ -2,27 +2,51 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_win) {
+  source_set("test_support") {
+    testonly = true
+
+    public = [ "app_bound_encryption_test_utils_win.h" ]
+
+    sources = [ "app_bound_encryption_test_utils_win.cc" ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/os_crypt",
+      "//components/os_crypt/async/browser",
+      "//components/os_crypt/async/common",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [
     "certificate_signals_collector_delegate_impl_unittest.cc",
+    "profile_signals_collector_unittest.cc",
     "user_delegate_impl_unittest.cc",
   ]
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//chrome/browser/enterprise",
     "//chrome/browser/enterprise:impl",
     "//chrome/browser/net",
+    "//chrome/common:constants",
     "//chrome/test/base:testing_browser_process",
     "//chrome/test/base:testing_profile",
     "//components/device_signals/core/browser",
+    "//components/device_signals/core/common:features",
+    "//components/enterprise/browser/identifiers",
     "//components/enterprise/device_trust",
     "//components/enterprise/device_trust/core:device_trust_connector_service",
     "//components/enterprise/device_trust/core:test_support",
     "//components/keyed_service/core",
     "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
@@ -46,6 +70,14 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/content_settings:content_settings_factory",
       "//net:test_support",
+    ]
+  }
+
+  if (is_win) {
+    sources += [ "app_bound_encryption_state_win_unittest.cc" ]
+    deps += [
+      ":test_support",
+      "//components/prefs:test_support",
     ]
   }
 }

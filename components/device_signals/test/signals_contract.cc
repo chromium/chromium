@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
+#include "components/device_signals/core/common/signals_features.h"
 
 namespace device_signals::test {
 
@@ -179,6 +180,16 @@ GetSignalsContract() {
       base::BindRepeating(VerifyOptionalString, names::kWindowsUserDomain);
   contract[names::kSecureBootEnabled] =
       base::BindRepeating(VerifyIsSettingInteger, names::kSecureBootEnabled);
+  if (enterprise_signals::features::
+          IsDeviceTrustAppBoundEncryptionStateSignalEnabled()) {
+    contract[names::kAppBoundEncryptionState] = base::BindRepeating(
+        VerifyIsIntegerWithRange, names::kAppBoundEncryptionState,
+        static_cast<int>(AppBoundEncryptionState::kEnabled),
+        static_cast<int>(AppBoundEncryptionState::kMaxValue));
+  } else {
+    contract[names::kAppBoundEncryptionState] =
+        base::BindRepeating(VerifyUnset, names::kAppBoundEncryptionState);
+  }
 
   contract[names::kCrowdStrike] =
       base::BindLambdaForTesting([](const base::DictValue& signals) {
@@ -212,6 +223,8 @@ GetSignalsContract() {
       base::BindRepeating(VerifyUnset, names::kWindowsUserDomain);
   contract[names::kSecureBootEnabled] =
       base::BindRepeating(VerifyUnset, names::kSecureBootEnabled);
+  contract[names::kAppBoundEncryptionState] =
+      base::BindRepeating(VerifyUnset, names::kAppBoundEncryptionState);
   contract[names::kCrowdStrike] =
       base::BindRepeating(VerifyUnset, names::kCrowdStrike);
 #endif

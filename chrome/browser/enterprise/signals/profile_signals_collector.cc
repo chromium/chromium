@@ -4,11 +4,13 @@
 
 #include "chrome/browser/enterprise/signals/profile_signals_collector.h"
 
+#include <functional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
@@ -33,6 +35,11 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/enterprise/signals/app_bound_encryption_state_win.h"
+#include "components/device_signals/core/common/signals_features.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace device_signals {
 
 namespace {
@@ -41,6 +48,14 @@ bool GetBuiltInDnsClientEnabled(PrefService* local_state) {
   CHECK(local_state, base::NotFatalUntil::M161);
   return local_state->GetBoolean(prefs::kBuiltInDnsClientEnabled);
 }
+
+#if BUILDFLAG(IS_WIN)
+bool ShouldCollectAppBoundEncryptionState(Trigger trigger) {
+  return trigger == Trigger::kBrowserNavigation &&
+         enterprise_signals::features::
+             IsDeviceTrustAppBoundEncryptionStateSignalEnabled();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -83,7 +98,8 @@ void ProfileSignalsCollector::GetProfileSignals(
     SignalsAggregationResponse& response,
     base::OnceClosure done_closure) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  ProfileSignalsResponse signal_response;
+  ProfileSignalsResponse& signal_response =
+      response.profile_signals_response.emplace();
   signal_response.built_in_dns_client_enabled =
       GetBuiltInDnsClientEnabled(g_browser_process->local_state());
   signal_response.chrome_remote_desktop_app_blocked =
@@ -124,17 +140,36 @@ void ProfileSignalsCollector::GetProfileSignals(
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 
-  response.profile_signals_response = std::move(signal_response);
+#if BUILDFLAG(IS_WIN)
+  if (ShouldCollectAppBoundEncryptionState(request.trigger)) {
+    GetAppBoundEncryptionState(
+        g_browser_process->os_crypt_async(), g_browser_process->local_state(),
+        base::BindOnce(
+            &ProfileSignalsCollector::OnAppBoundEncryptionStateCollected,
+            weak_factory_.GetWeakPtr(), start_time, std::ref(response),
+            std::move(done_closure)));
+    return;
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   // Profile signals collection has no failure path once the permission check
-  // has passed, so the outcome is always recorded as a success.
+  // has passed, so the outcome is always recorded as a success when finished.
   LogSignalCollectionSucceeded(SignalName::kBrowserContextSignals, start_time,
                                /*signal_collection_size=*/std::nullopt);
-
-  // All signals are fetched synchronously for now, so we can run the closure
-  // immediately. Once async signals are added, `done_closure` should be moved
-  // to be run in the callback.
   std::move(done_closure).Run();
 }
+
+#if BUILDFLAG(IS_WIN)
+void ProfileSignalsCollector::OnAppBoundEncryptionStateCollected(
+    base::TimeTicks start_time,
+    SignalsAggregationResponse& response,
+    base::OnceClosure done_closure,
+    AppBoundEncryptionState state) {
+  response.profile_signals_response->app_bound_encryption_state = state;
+  LogSignalCollectionSucceeded(SignalName::kBrowserContextSignals, start_time,
+                               /*signal_collection_size=*/std::nullopt);
+  std::move(done_closure).Run();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace device_signals

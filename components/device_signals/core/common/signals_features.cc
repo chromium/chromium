@@ -4,6 +4,8 @@
 
 #include "components/device_signals/core/common/signals_features.h"
 
+#include "build/build_config.h"
+
 namespace enterprise_signals::features {
 
 BASE_FEATURE(kAllowClientCertificateReportingForUsers,
@@ -27,6 +29,13 @@ BASE_FEATURE(kCertificateCollectionEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables the versioned content bindings in signal reports.
 BASE_FEATURE(kContentBindingVersioningEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_WIN)
+// Enables including the App-Bound Encryption state in Device Trust signals on
+// Windows.
+BASE_FEATURE(kDeviceTrustAppBoundEncryptionStateSignal,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 
 // Enables the versioned content bindings in signal reports on iOS.
 BASE_FEATURE(kContentBindingVersioningEnabledIOS,
@@ -57,6 +66,13 @@ bool IsCertificateCollectionEnabled() {
 bool IsContentBindingVersioningEnabled() {
   return base::FeatureList::IsEnabled(kContentBindingVersioningEnabled);
 }
+
+#if BUILDFLAG(IS_WIN)
+bool IsDeviceTrustAppBoundEncryptionStateSignalEnabled() {
+  return base::FeatureList::IsEnabled(
+      kDeviceTrustAppBoundEncryptionStateSignal);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 bool IsContentBindingVersioningEnabledIOS() {
   return base::FeatureList::IsEnabled(kContentBindingVersioningEnabledIOS);

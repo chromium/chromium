@@ -7,8 +7,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "components/device_signals/core/browser/base_signals_collector.h"
 #include "components/enterprise/buildflags/buildflags.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/time/time.h"
+#include "components/device_signals/core/browser/signals_types.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 class PrefService;
 class Profile;
@@ -43,6 +49,13 @@ class ProfileSignalsCollector : public BaseSignalsCollector {
                          const SignalsAggregationRequest& request,
                          SignalsAggregationResponse& response,
                          base::OnceClosure done_closure);
+
+#if BUILDFLAG(IS_WIN)
+  void OnAppBoundEncryptionStateCollected(base::TimeTicks start_time,
+                                          SignalsAggregationResponse& response,
+                                          base::OnceClosure done_closure,
+                                          AppBoundEncryptionState state);
+#endif  // BUILDFLAG(IS_WIN)
 
   const bool is_isolated_mode_;
 

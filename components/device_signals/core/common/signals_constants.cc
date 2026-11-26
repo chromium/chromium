@@ -20,6 +20,9 @@ const char kAllowScreenLock[] = "allowScreenLock";
 // device.
 const char kAntivirusState[] = "antivirusState";
 
+// Name of the signal indicating the state of App-Bound Encryption on Windows.
+const char kAppBoundEncryptionState[] = "appBoundEncryptionState";
+
 // Name of the signal for getting information about the browser version.
 const char kBrowserVersion[] = "browserVersion";
 

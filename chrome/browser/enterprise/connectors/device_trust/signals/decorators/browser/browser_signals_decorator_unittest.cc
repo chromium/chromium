@@ -32,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "components/device_signals/core/common/signals_features.h"
 #include "components/device_signals/core/common/win/win_types.h"
 #endif
 
@@ -62,10 +63,18 @@ base::ListValue GetExpectedMacAddresses() {
 
 device_signals::SignalsAggregationRequest CreateExpectedRequest() {
   device_signals::SignalsAggregationRequest request;
+  request.trigger = device_signals::Trigger::kBrowserNavigation;
   request.signal_names.emplace(device_signals::SignalName::kAgent);
   request.agent_signal_parameters.emplace(
       device_signals::AgentSignalCollectionType::kCrowdstrikeIdentifiers);
-    request.signal_names.emplace(device_signals::SignalName::kAntiVirus);
+  request.signal_names.emplace(device_signals::SignalName::kAntiVirus);
+#if BUILDFLAG(IS_WIN)
+  if (enterprise_signals::features::
+          IsDeviceTrustAppBoundEncryptionStateSignalEnabled()) {
+    request.signal_names.emplace(
+        device_signals::SignalName::kBrowserContextSignals);
+  }
+#endif  // BUILDFLAG(IS_WIN)
   return request;
 }
 
@@ -496,6 +505,101 @@ TEST_F(AntiVirusBrowserSignalsDecoratorTest, AvResponse_Disabled) {
   auto value = signals.FindInt(device_signals::names::kAntivirusState);
   ASSERT_TRUE(value);
   EXPECT_EQ(value.value(), 1);
+}
+
+class AppBoundEncryptionBrowserSignalsDecoratorTest
+    : public BrowserSignalsDecoratorTest {
+ protected:
+  explicit AppBoundEncryptionBrowserSignalsDecoratorTest(
+      bool enable_app_bound_signal = true) {
+    scoped_feature_list_.InitWithFeatureState(
+        enterprise_signals::features::kDeviceTrustAppBoundEncryptionStateSignal,
+        enable_app_bound_signal);
+  }
+
+  device_signals::SignalsAggregationResponse CreateFilledResponse() override {
+    auto response = BrowserSignalsDecoratorTest::CreateFilledResponse();
+    response.profile_signals_response = profile_signals_response_;
+    return response;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::optional<device_signals::ProfileSignalsResponse>
+      profile_signals_response_;
+};
+
+class AppBoundEncryptionDisabledBrowserSignalsDecoratorTest
+    : public AppBoundEncryptionBrowserSignalsDecoratorTest {
+ protected:
+  AppBoundEncryptionDisabledBrowserSignalsDecoratorTest()
+      : AppBoundEncryptionBrowserSignalsDecoratorTest(
+            /*enable_app_bound_signal=*/false) {}
+};
+
+TEST_F(AppBoundEncryptionDisabledBrowserSignalsDecoratorTest,
+       FeatureDisabled_OmitsSignal) {
+  device_signals::ProfileSignalsResponse profile_signals;
+  profile_signals.app_bound_encryption_state =
+      device_signals::AppBoundEncryptionState::kEnabled;
+  profile_signals_response_ = std::move(profile_signals);
+  SetUpAggregatorExpectations();
+
+  auto decorator = CreateDecorator();
+  base::RunLoop run_loop;
+  base::DictValue signals;
+  decorator.Decorate(signals, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(
+      signals.contains(device_signals::names::kAppBoundEncryptionState));
+}
+
+TEST_F(AppBoundEncryptionBrowserSignalsDecoratorTest,
+       FeatureEnabled_SetsAppBoundEncryptionState) {
+  device_signals::ProfileSignalsResponse profile_signals;
+  profile_signals.app_bound_encryption_state =
+      device_signals::AppBoundEncryptionState::kDisabledByPolicy;
+  profile_signals_response_ = std::move(profile_signals);
+  SetUpAggregatorExpectations();
+
+  auto decorator = CreateDecorator();
+  base::RunLoop run_loop;
+  base::DictValue signals;
+  decorator.Decorate(signals, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(signals.FindInt(device_signals::names::kAppBoundEncryptionState),
+            static_cast<int>(
+                device_signals::AppBoundEncryptionState::kDisabledByPolicy));
+}
+
+TEST_F(AppBoundEncryptionBrowserSignalsDecoratorTest,
+       FeatureEnabled_OmitsStateWhenProfileSignalsMissing) {
+  SetUpAggregatorExpectations();
+
+  auto decorator = CreateDecorator();
+  base::RunLoop run_loop;
+  base::DictValue signals;
+  decorator.Decorate(signals, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(
+      signals.contains(device_signals::names::kAppBoundEncryptionState));
+}
+
+TEST_F(AppBoundEncryptionBrowserSignalsDecoratorTest,
+       FeatureEnabled_OmitsStateWhenAppBoundStateNullopt) {
+  profile_signals_response_.emplace();
+  SetUpAggregatorExpectations();
+
+  auto decorator = CreateDecorator();
+  base::RunLoop run_loop;
+  base::DictValue signals;
+  decorator.Decorate(signals, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(
+      signals.contains(device_signals::names::kAppBoundEncryptionState));
 }
 
 #endif  // BUILDFLAG(IS_WIN)

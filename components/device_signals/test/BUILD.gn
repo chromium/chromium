@@ -25,5 +25,6 @@ source_set("test_support") {
     "//base/test:test_support",
     "//components/device_signals/core/browser",
     "//components/device_signals/core/common",
+    "//components/device_signals/core/common:features",
   ]
 }

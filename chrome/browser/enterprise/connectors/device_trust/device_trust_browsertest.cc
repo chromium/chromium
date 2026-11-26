@@ -33,10 +33,14 @@
 #include "ui/base/page_transition_types.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/device_trust_test_environment_win.h"
 #include "chrome/browser/enterprise/test/test_constants.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/device_signals/core/common/signals_constants.h"
+#include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #endif  // #if BUILDFLAG(IS_WIN)
 
@@ -231,8 +235,8 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
       content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
 
   // Try to create the device trust navigation throttle.
-  enterprise_connectors::DeviceTrustNavigationThrottle::
-                   MaybeCreateAndAdd(registry);
+  enterprise_connectors::DeviceTrustNavigationThrottle::MaybeCreateAndAdd(
+      registry);
   EXPECT_EQ(registry.throttles().size(), 0u);
 }
 
@@ -322,6 +326,38 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, SignalsContract) {
 }
 
 #if BUILDFLAG(IS_WIN)
+
+class DeviceTrustAppBoundBrowserTest : public DeviceTrustDesktopBrowserTest {
+ protected:
+  DeviceTrustAppBoundBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_signals::features::
+            kDeviceTrustAppBoundEncryptionStateSignal);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DeviceTrustAppBoundBrowserTest, SignalsContract) {
+  DeviceTrustService* device_trust_service =
+      DeviceTrustServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(device_trust_service);
+
+  base::test::TestFuture<base::DictValue> future;
+  device_trust_service->GetSignals(future.GetCallback());
+  ASSERT_TRUE(future.Wait()) << "Timed out while collecting signals.";
+
+  const base::DictValue& signals_dict = future.Get();
+  EXPECT_TRUE(
+      signals_dict.contains(device_signals::names::kAppBoundEncryptionState));
+
+  const base::flat_map<std::string,
+                       base::RepeatingCallback<bool(const base::DictValue&)>>
+      signals_contract_map = device_signals::test::GetSignalsContract();
+  ASSERT_FALSE(signals_contract_map.empty());
+  for (const auto& [signal_name, predicate] : signals_contract_map) {
+    EXPECT_TRUE(predicate.Run(signals_dict))
+        << "Signals contract validation failed for: " << signal_name;
+  }
+}
 
 using KeyRotationResult = DeviceTrustKeyManager::KeyRotationResult;
 
