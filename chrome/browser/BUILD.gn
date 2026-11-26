@@ -5106,6 +5106,7 @@ source_set("core_unit_tests") {
       ":platform_util_internal",
       "//chrome/browser/android",
       "//chrome/browser/android:web_contents_theme_client",
+      "//chrome/browser/android:window_color_provider_delegate",
     ]
 
     if (enable_guest_view && !enable_extensions_core) {

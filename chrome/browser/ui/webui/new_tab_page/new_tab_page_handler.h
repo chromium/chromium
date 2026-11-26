@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_observer.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
@@ -75,14 +76,18 @@ namespace ui {
 class ThemeProvider;
 }  // namespace ui
 
-class NewTabPageHandler
-    : public new_tab_page::mojom::PageHandler,
-      public ui::NativeThemeObserver,
-      public ThemeServiceObserver,
-      public NtpCustomBackgroundServiceObserver,
-      public optimization_guide::SettingsEnabledObserver,
-      public MicrosoftAuthServiceObserver,
-      public new_tab_footer::NewTabFooterControllerObserver {
+class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
+                          public ui::NativeThemeObserver,
+                          public ThemeServiceObserver,
+                          public NtpCustomBackgroundServiceObserver,
+                          public optimization_guide::SettingsEnabledObserver,
+                          public MicrosoftAuthServiceObserver,
+                          public new_tab_footer::NewTabFooterControllerObserver
+#if BUILDFLAG(IS_ANDROID)
+    ,
+                          public content::WebContentsObserver
+#endif  // BUILDFLAG(IS_ANDROID)
+{
  public:
   NewTabPageHandler(mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
                         pending_page_handler,
@@ -168,6 +173,11 @@ class NewTabPageHandler
   void OnContextualSearchIPHEngaged() override;
 
  private:
+#if BUILDFLAG(IS_ANDROID)
+  // content::WebContentsObserver:
+  void OnColorProviderChanged() override;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
@@ -297,6 +307,12 @@ class NewTabPageHandler
   base::CallbackListSubscription browser_window_changed_subscription_;
   // Triggered when the searchbox's contextual menu entrypoint is displayed.
   base::CallbackListSubscription searchbox_shown_subscription_;
+#if BUILDFLAG(IS_ANDROID)
+  // Caches the last Theme sent to `page_` to suppress duplicate `SetTheme()`
+  // IPCs when a theme or OS change triggers both `OnColorProviderChanged()` and
+  // `OnThemeChanged()` / `OnNativeThemeUpdated()`.
+  new_tab_page::mojom::ThemePtr last_theme_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

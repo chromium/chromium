@@ -384,7 +384,6 @@ BASE_DECLARE_FEATURE(kVirtualKeyboardTransientInnerHeightFix);
 BASE_DECLARE_FEATURE(kWebAppNavigationBarThemeColor);
 BASE_DECLARE_FEATURE(kWebAppShortEdgesCutoutMode);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
-BASE_DECLARE_FEATURE(kWebUiAndroidTheming);
 BASE_DECLARE_FEATURE(kXplatSyncedSetupThemes);
 // go/keep-sorted end
 // BASE_DECLARE_FEATURE_END

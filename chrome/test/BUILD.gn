@@ -2643,6 +2643,7 @@ test("unit_tests") {
     "//chrome/browser/supervised_user:unit_tests",
     "//chrome/browser/sync:unit_tests",
     "//chrome/browser/tab_group_sync:unit_tests",
+    "//chrome/browser/themes:unit_tests",
     "//chrome/browser/tips/core:unit_tests",
     "//chrome/browser/tracing:unit_tests",
     "//chrome/browser/translate:unit_tests",
@@ -3115,7 +3116,6 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/profile_internals:unit_tests",
       "//chrome/browser/ui/webui/settings:unit_tests",
       "//chrome/browser/ui/webui/side_panel/bookmarks:unit_tests",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome:unit_tests",
       "//chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar:unit_tests",
       "//chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search:unit_tests",
       "//chrome/browser/ui/webui/side_panel/read_anything:unit_tests",
@@ -3176,7 +3176,6 @@ test("unit_tests") {
       "//chrome/browser/support_tool:unit_tests",
       "//chrome/browser/task_manager:unit_tests",
       "//chrome/browser/text_detection:unit_tests",
-      "//chrome/browser/themes:unit_tests",
       "//chrome/browser/ui/actions:unit_tests",
       "//chrome/browser/ui/color:unit_tests",
       "//chrome/browser/ui/commerce:unit_tests",
@@ -3236,6 +3235,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/new_tab_page:unit_tests",
       "//chrome/browser/ui/webui/new_tab_page/action_chips:unit_tests",
       "//chrome/browser/ui/webui/searchbox:unit_tests",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome:unit_tests",
     ]
     if (!is_android) {
       deps += [ "//chrome/browser/ui/webui/ntp_microsoft_auth:unit_tests" ]

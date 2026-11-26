@@ -758,6 +758,7 @@ test("components_unittests") {
       "//components/supervised_user/core/browser/android:unit_tests",
       "//components/sync_preferences/cross_device_pref_tracker/android:java",
       "//components/tab_groups:tab_groups_java",
+      "//components/thin_webview/internal:unit_tests",
       "//components/translate/content/android:unit_tests",
       "//components/variations:variations_associated_data",
       "//components/variations/android:variations_java",

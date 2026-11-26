@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
@@ -19,6 +20,10 @@
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/public/browser/web_contents_observer.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -29,7 +34,12 @@ class ThemeColorPickerHandler
     : public theme_color_picker::mojom::ThemeColorPickerHandler,
       public ui::NativeThemeObserver,
       public ThemeServiceObserver,
-      public NtpCustomBackgroundServiceObserver {
+      public NtpCustomBackgroundServiceObserver
+#if BUILDFLAG(IS_ANDROID)
+    ,
+      public content::WebContentsObserver
+#endif  // BUILDFLAG(IS_ANDROID)
+{
  public:
   ThemeColorPickerHandler(
       mojo::PendingReceiver<theme_color_picker::mojom::ThemeColorPickerHandler>
@@ -58,7 +68,13 @@ class ThemeColorPickerHandler
   void UpdateTheme() override;
 
  private:
+  void SendTheme();
   void MaybeIncrementSeedColorChangeCount();
+
+#if BUILDFLAG(IS_ANDROID)
+  // content::WebContentsObserver:
+  void OnColorProviderChanged() override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
@@ -81,6 +97,13 @@ class ThemeColorPickerHandler
   base::ScopedObservation<NtpCustomBackgroundService,
                           NtpCustomBackgroundServiceObserver>
       ntp_custom_background_service_observation_{this};
+#if BUILDFLAG(IS_ANDROID)
+  // Caches the last Theme sent to `client_` to suppress duplicate `SetTheme()`
+  // IPCs when a theme or OS change triggers both `OnColorProviderChanged()` and
+  // `OnThemeChanged()` / `OnNativeThemeUpdated()`. Cleared by explicit Mojo
+  // `UpdateTheme()` calls so page-initiated refreshes always send.
+  theme_color_picker::mojom::ThemePtr last_theme_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   mojo::Remote<theme_color_picker::mojom::ThemeColorPickerClient> client_;
   mojo::Receiver<theme_color_picker::mojom::ThemeColorPickerHandler> receiver_;

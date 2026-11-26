@@ -42,6 +42,9 @@ if (!is_android || enable_webui_ntp) {
       "//ui/native_theme",
       "//ui/webui/resources/cr_components/theme_color_picker:mojom",
     ]
+    if (is_android) {
+      public_deps += [ "//content/public/browser" ]
+    }
     deps = [ ":handler_impl" ]
   }
 

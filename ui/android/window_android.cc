@@ -10,10 +10,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -21,12 +19,10 @@
 #include "ui/android/color_utils_android.h"
 #include "ui/android/display_android_manager.h"
 #include "ui/android/modal_dialog_manager_bridge.h"
-#include "ui/android/ui_android_features.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android_compositor.h"
 #include "ui/android/window_android_observer.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/android/color_provider_bridge.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
@@ -455,6 +451,15 @@ void WindowAndroid::SetTestHooks(TestHooks* hooks) {
   }
 }
 
+void WindowAndroid::SetColorProviderKeyDelegate(
+    std::unique_ptr<ColorProviderKeyDelegate> delegate) {
+  if (color_provider_key_delegate_ == delegate) {
+    return;
+  }
+  color_provider_key_delegate_ = std::move(delegate);
+  NotifyColorProviderChanged();
+}
+
 const ui::ColorProvider* WindowAndroid::GetColorProvider() const {
   return ui::ColorProviderManager::Get().GetColorProviderFor(
       GetColorProviderKey());
@@ -473,31 +478,16 @@ ui::RendererColorMap WindowAndroid::GetRendererColorMap(
 }
 
 ui::ColorProviderKey WindowAndroid::GetColorProviderKey() const {
-  return GetColorProviderKeyImpl(ColorProviderBridge::HasInstance());
+  auto key = ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr);
+  if (color_provider_key_delegate_) {
+    key =
+        color_provider_key_delegate_->CustomizeColorProviderKey(std::move(key));
+  }
+  return key;
 }
 
 void WindowAndroid::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   NotifyColorProviderChanged();
-}
-
-ui::ColorProviderKey WindowAndroid::GetColorProviderKeyForTesting(
-    bool has_color_provider_bridge) const {
-  return GetColorProviderKeyImpl(has_color_provider_bridge);
-}
-
-ui::ColorProviderKey WindowAndroid::GetColorProviderKeyImpl(
-    bool has_color_provider_bridge) const {
-  auto key = ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr);
-  // Keying ColorProviders by Context is only useful when Java can actually
-  // resolve per-Context theme colors.
-  if (base::FeatureList::IsEnabled(kAvoidPerContextColorProviders) &&
-      !has_color_provider_bridge) {
-    return key;
-  }
-  key.context_hash = GetContextHash();
-  JNIEnv* env = AttachCurrentThread();
-  key.context = JavaObjectWeakGlobalRef(env, GetContext());
-  return key;
 }
 
 base::android::ScopedJavaLocalRef<jobject> WindowAndroid::GetContext() const {
@@ -506,14 +496,6 @@ base::android::ScopedJavaLocalRef<jobject> WindowAndroid::GetContext() const {
   }
   JNIEnv* env = AttachCurrentThread();
   return Java_WindowAndroid_getContextForNative(env, java_window_);
-}
-
-int64_t WindowAndroid::GetContextHash() const {
-  if (java_window_.is_null()) {
-    return 0;
-  }
-  JNIEnv* env = AttachCurrentThread();
-  return Java_WindowAndroid_getContextHashId(env, java_window_);
 }
 
 // ----------------------------------------------------------------------------

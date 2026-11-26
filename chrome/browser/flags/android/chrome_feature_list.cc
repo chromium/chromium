@@ -581,7 +581,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kWebAppNavigationBarThemeColor,
     &kWebAppShortEdgesCutoutMode,
     &kWebOtpCrossDeviceSimpleString,
-    &kWebUiAndroidTheming,
     &kXplatSyncedSetupThemes,
     &language::kCctAutoTranslate,
     &language::kDetailedLanguageSettings,
@@ -1060,7 +1059,6 @@ BASE_FEATURE(kWebAppShortEdgesCutoutMode, base::FEATURE_DISABLED_BY_DEFAULT);
 // Shows only the remote device name on the Android notification instead of
 // a descriptive text.
 BASE_FEATURE(kWebOtpCrossDeviceSimpleString, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kWebUiAndroidTheming, BUILDFLAG(IS_DESKTOP_ANDROID) ? base::FEATURE_ENABLED_BY_DEFAULT : base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kXplatSyncedSetupThemes, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_RUNTIME_MUTABLE_FEATURE(kAvoidTaskTrampolines, base::FEATURE_ENABLED_BY_DEFAULT);
 // go/keep-sorted end

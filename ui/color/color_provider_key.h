@@ -6,7 +6,6 @@
 #define UI_COLOR_COLOR_PROVIDER_KEY_H_
 
 #include <optional>
-#include <tuple>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
@@ -14,11 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/system_theme.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_weak_ref.h"
-#include "base/android/scoped_java_ref.h"
-#endif
 
 namespace color_utils {
 struct HSL;
@@ -148,13 +142,6 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
       nullptr;  // unowned
   std::optional<SkColor> app_background_color = std::nullopt;
   size_t system_theme_version = 0;
-
-  // TODO(crbug.com/537023567): Populate the hash and context from
-  // WindowAndroid.
-#if BUILDFLAG(IS_ANDROID)
-  int64_t context_hash = 0;
-  JavaObjectWeakGlobalRef context;
-#endif
 
   bool operator==(const ColorProviderKey& other) const;
   bool operator<(const ColorProviderKey& other) const;

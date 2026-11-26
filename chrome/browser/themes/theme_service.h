@@ -375,6 +375,19 @@ class ThemeService : public KeyedService,
   friend class BrowserWidgetColorProviderTest;
   friend class TabViewTest;
   friend class waap::PrewarmHelper;
+#if BUILDFLAG(IS_ANDROID)
+  friend class ChromeWindowColorProviderDelegate;
+#endif
+
+  // Returns a ColorProviderKey configured for Incognito-branded (`is_incognito`
+  // = true) or Enterprise Isolated (`is_incognito` = false) profiles. Kept
+  // static and separate from `GetColorProviderKey()` so Android's
+  // `ChromeWindowColorProviderDelegate` and its singleton
+  // `OtrColorProviderSource` can reuse these rules without holding a
+  // `ThemeService*` or eagerly instantiating an OTR `Profile*`.
+  static ui::ColorProviderKey GetIncognitoOrIsolatedColorProviderKey(
+      ui::ColorProviderKey key,
+      bool is_incognito);
 
   // Returns a ColorProviderKey configured with Profile-scoped state. The
   // `profile` param is necessary as the service itself may be keyed to the

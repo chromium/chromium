@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/android/chrome_window_color_provider_delegate.h"
 #include "chrome/browser/android/compositor/tab_strip_window_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -148,6 +149,8 @@ void TabStripNtbWebUiHost::StartLoad() {
   if (!web_contents_) {
     return;
   }
+  ChromeWindowColorProviderDelegate::InitWebContentsColorProviderSource(
+      web_contents_.get());
   content::NavigationController::LoadURLParams load_params(
       (GURL(chrome::kChromeUITabStripNtbURL)));
   load_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;

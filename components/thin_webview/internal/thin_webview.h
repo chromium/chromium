@@ -49,6 +49,8 @@ class ThinWebView : public content::WebContentsObserver {
   void SizeChanged(JNIEnv* env, int32_t width, int32_t height);
 
  private:
+  friend class ThinWebViewTest;
+
   // content::WebContentsObserver overrides:
   void PrimaryPageChanged(content::Page& page) override;
 
@@ -59,6 +61,7 @@ class ThinWebView : public content::WebContentsObserver {
       bool support_theming,
       bool enable_browser_autofill);
   void ResizeWebContents(const gfx::Size& size);
+  void ResetColorProviderSourceIfStillHosted();
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
   raw_ptr<CompositorView, DanglingUntriaged> compositor_view_;

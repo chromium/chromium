@@ -25,6 +25,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
 #include "chrome/browser/android/background_tab_manager.h"
+#include "chrome/browser/android/chrome_window_color_provider_delegate.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "chrome/browser/android/selection/chrome_selection_dropdown_menu_delegate.h"
 #include "chrome/browser/android/tab_features.h"
@@ -455,6 +456,8 @@ void TabAndroid::InitWebContents(
 
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents_.get(),
                                                        this);
+  ChromeWindowColorProviderDelegate::InitWebContentsColorProviderSource(
+      web_contents_.get());
   web_contents_delegate_ =
       std::make_unique<android::TabWebContentsDelegateAndroid>(
           env, jweb_contents_delegate, web_contents_.get());
@@ -609,6 +612,12 @@ void TabAndroid::UpdateDelegates(
   web_contents()->SetDelegate(web_contents_delegate_.get());
 }
 
+void TabAndroid::UpdateColorProviderSource() {
+  ChromeWindowColorProviderDelegate::UpdateWebContentsColorProviderSource(
+      web_contents_.get(),
+      web_contents_ ? web_contents_->GetTopLevelNativeWindow() : nullptr);
+}
+
 void TabAndroid::SendDidActivateUpdate() {
   // On Android, visibility and activation are currently synonymous.
   did_become_visible_callback_list_.Notify(this);
@@ -724,6 +733,8 @@ std::unique_ptr<content::WebContents> TabAndroid::ReleaseWebContentsInternal(
     released_contents->SetOwnerLocationForDebug(std::nullopt);
     released_contents->RemoveUserData(
         tabs::TabLookupFromWebContents::UserDataKey());
+    ChromeWindowColorProviderDelegate::UpdateWebContentsColorProviderSource(
+        released_contents.get(), /*window=*/nullptr);
   }
 
   if (!keep_session_id) {

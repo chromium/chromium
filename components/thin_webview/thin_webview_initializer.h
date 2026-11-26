@@ -6,9 +6,14 @@
 #define COMPONENTS_THIN_WEBVIEW_THIN_WEBVIEW_INITIALIZER_H_
 
 #include "base/android/scoped_java_ref.h"
+
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace ui {
+class WindowAndroid;
+}  // namespace ui
 
 namespace thin_webview::android {
 
@@ -27,6 +32,11 @@ class ThinWebViewInitializer {
 
   // Sets up theming support for the WebContents.
   virtual void SetUpTheming(content::WebContents* web_contents) = 0;
+
+  // Updates the ColorProviderSource of `web_contents` for `host_window` (or
+  // detaches from the host window when `host_window` is nullptr).
+  virtual void UpdateColorProviderSource(content::WebContents* web_contents,
+                                         ui::WindowAndroid* host_window) = 0;
 
   // Adopts the specified WebContents as a light version of a browser tab,
   // attaching all the associated tab helpers that are needed for the

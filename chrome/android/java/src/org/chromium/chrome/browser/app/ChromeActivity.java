@@ -650,7 +650,15 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 });
 
         super.performPreInflationStartup();
-        mAcceleratorManager = AcceleratorManager.getOrCreate(assertNonNull(getWindowAndroid()));
+        var windowAndroid = assertNonNull(getWindowAndroid());
+        mAcceleratorManager = AcceleratorManager.getOrCreate(windowAndroid);
+        ChromeWindowColorProviderDelegate.attach(
+                getLifecycleDispatcher(),
+                windowAndroid,
+                getProfileProviderSupplier(),
+                getNightModeStateProvider(),
+                shouldApplyBrowserThemeToWindow(),
+                isIncognitoWindow());
 
         // Force a partner customizations refresh if it has yet to be initialized.  This can happen
         // if Chrome is killed and you refocus a previous activity from Android recents, which does
@@ -3796,6 +3804,19 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     public ReadAloudController getReadAloudControllerForTesting() {
         return mRootUiCoordinator.getReadAloudControllerSupplier().asNonNull().get();
+    }
+
+    /**
+     * Returns whether this activity window should apply the profile's Chrome browser theme to its
+     * {@link WindowAndroid}'s {@code ColorProvider}.
+     */
+    protected boolean shouldApplyBrowserThemeToWindow() {
+        return true;
+    }
+
+    /** Returns whether this activity is dedicated to an Incognito-branded window. */
+    public boolean isIncognitoWindow() {
+        return false;
     }
 
     // NightModeStateProvider.Observer implementation.

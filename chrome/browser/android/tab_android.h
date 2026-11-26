@@ -218,6 +218,7 @@ class TabAndroid : public tabs::TabInterface,
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents_delegate,
       const base::android::JavaRef<jobject>& jcontext_menu_populator_factory);
+  void UpdateColorProviderSource();
   void SendDidActivateUpdate();
   void SendWillDeactivateUpdate();
   void SendWillDetachUpdate(int32_t detach_reason);

@@ -23,8 +23,4 @@ test("ui_unittests") {
   if (is_mac) {
     deps += [ "//ui/base:ui_unittests_framework" ]
   }
-
-  if (is_android) {
-    deps += [ "//ui/color:ui_color_android_java" ]
-  }
 }

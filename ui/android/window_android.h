@@ -47,6 +47,19 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid,
                                         public ColorProviderSource,
                                         public NativeThemeObserver {
  public:
+  // Optional delegate allowing embedders (e.g. //chrome) to customize the
+  // ColorProviderKey returned by this window. Owned by this WindowAndroid and
+  // destroyed before ColorProviderSource teardown.
+  class ColorProviderKeyDelegate {
+   public:
+    virtual ~ColorProviderKeyDelegate() = default;
+    virtual ColorProviderKey CustomizeColorProviderKey(
+        ColorProviderKey base_key) const = 0;
+  };
+
+  void SetColorProviderKeyDelegate(
+      std::unique_ptr<ColorProviderKeyDelegate> delegate);
+
   // ui::ColorProviderSource:
   const ColorProvider* GetColorProvider() const override;
   RendererColorMap GetRendererColorMap(
@@ -58,7 +71,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid,
   void OnNativeThemeUpdated(NativeTheme* observed_theme) override;
 
   base::android::ScopedJavaLocalRef<jobject> GetContext() const;
-  int64_t GetContextHash() const;
   // Intended for unittests only.
   class ScopedWindowAndroidForTesting {
    public:
@@ -181,11 +193,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid,
 
   static std::unique_ptr<ScopedWindowAndroidForTesting> CreateForTesting();
 
-  // Allows unit tests to simulate whether a ColorProviderBridge exists without
-  // registering real Java bridge singletons.
-  ColorProviderKey GetColorProviderKeyForTesting(
-      bool has_color_provider_bridge) const;
-
   // This should return the same Display as Screen::GetDisplayNearestWindow
   // except the color space depends on the status of this particular window
   // rather than the display itself.
@@ -234,9 +241,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid,
   // ViewAndroid overrides.
   WindowAndroid* GetWindowAndroid() const override;
 
-  ColorProviderKey GetColorProviderKeyImpl(
-      bool has_color_provider_bridge) const;
-
   // The ID of the display that this window belongs to.
   int display_id() const { return display_id_; }
 
@@ -259,6 +263,8 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid,
   raw_ptr<ViewAndroid> pointer_locking_view_ = nullptr;
 
   AdaptiveRefreshRateInfo adaptive_refresh_rate_info_;
+
+  std::unique_ptr<ColorProviderKeyDelegate> color_provider_key_delegate_;
 
   base::ScopedObservation<NativeTheme, NativeThemeObserver>
       native_theme_observation_{this};

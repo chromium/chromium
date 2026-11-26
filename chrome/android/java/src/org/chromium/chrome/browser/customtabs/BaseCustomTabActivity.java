@@ -1191,6 +1191,20 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     @Override
+    protected boolean shouldApplyBrowserThemeToWindow() {
+        // BaseCustomTabActivity (including popups) uses CustomTabNightModeStateController and
+        // returns false from maybeApplyCustomizedColors(), so keep its WindowAndroid on Activity
+        // night mode rather than Chrome's ThemeService.
+        return false;
+    }
+
+    @Override
+    public boolean isIncognitoWindow() {
+        return mIntentDataProvider != null
+                && mIntentDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO;
+    }
+
+    @Override
     protected boolean maybeApplyCustomizedColors() {
         return false;
     }

@@ -1408,10 +1408,11 @@ public class TabUnitTest {
 
         when(mWindowAndroid.isDestroyed()).thenReturn(true);
 
-        clearInvocations(mWebContents);
+        clearInvocations(mWebContents, mNativeMock);
         tab.stopOffscreenRendering();
         assertFalse(tab.isOffscreenRendering());
         verify(mWebContents).setTopLevelNativeWindow(null);
+        verify(mNativeMock).updateColorProviderSource(1);
     }
 
     @Test
@@ -1434,10 +1435,11 @@ public class TabUnitTest {
 
         when(mWindowAndroid.isDestroyed()).thenReturn(false);
 
-        clearInvocations(mWebContents);
+        clearInvocations(mWebContents, mNativeMock);
         tab.stopOffscreenRendering();
         assertFalse(tab.isOffscreenRendering());
         verify(mWebContents).setTopLevelNativeWindow(mWindowAndroid);
+        verify(mNativeMock).updateColorProviderSource(1);
     }
 
     @Test
@@ -2346,17 +2348,21 @@ public class TabUnitTest {
         clearInvocations(mObserver);
 
         // Detach (as ReparentingTask#detach() does).
+        clearInvocations(mNativeMock);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(null);
         mTab.updateAttachment(/* window= */ null, /* tabDelegateFactory= */ null);
         assertTrue(mTab.isDetachedFromActivity());
         verify(mObserver).onActivityAttachmentChanged(mTab, /* window= */ null);
+        verify(mNativeMock).updateColorProviderSource(1);
 
         // Re-attach to the same window with a null TabDelegateFactory (as
         // ReparentingTask#finishAsNoOp() does when starting the new activity fails).
+        clearInvocations(mNativeMock);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         mTab.updateAttachment(mWindowAndroid, /* tabDelegateFactory= */ null);
         assertFalse(mTab.isDetachedFromActivity());
         verify(mObserver).onActivityAttachmentChanged(mTab, mWindowAndroid);
+        verify(mNativeMock).updateColorProviderSource(1);
     }
 
     @Test

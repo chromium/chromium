@@ -140,9 +140,9 @@ public final class ThinWebViewHost {
             // Note that setTopLevelNativeWindow() does not durably re-parent the WebContents:
             // attachWebContents() below re-parents its ViewAndroid under the ThinWebView's own
             // WindowAndroid, so getTopLevelNativeWindow() will not return `mWindowAndroid`. The
-            // call is made solely for its side effect of pointing the WebContents'
-            // ColorProviderSource at the host activity's window, which (unlike the ThinWebView's
-            // orphaned window) has the real theme state.
+            // call attaches the ViewAndroid to the host activity's window long enough for
+            // attachWebContents() to capture it as the ColorProviderSource before reparenting,
+            // since ThinWebView's own window has no Chrome theme delegate.
             webContents.setTopLevelNativeWindow(mWindowAndroid);
             viewDelegate.setContainerView(contentView);
             ViewEventSink.from(webContents).setAccessDelegate(contentView);

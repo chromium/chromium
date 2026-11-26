@@ -104,15 +104,6 @@ component("color") {
     ]
     frameworks = [ "AppKit.framework" ]
   }
-
-  if (is_android) {
-    sources += [
-      "android/android_color_roles.h",
-      "android/color_provider_bridge.cc",
-      "android/color_provider_bridge.h",
-    ]
-    deps += [ ":ui_color_jni_headers" ]
-  }
 }
 
 source_set("test_support") {
@@ -147,10 +138,6 @@ source_set("unit_tests") {
     "//ui/base:features",
     "//ui/color/dynamic_color",
   ]
-
-  if (is_android) {
-    sources += [ "android/sys_color_mixer_android_unittest.cc" ]
-  }
 }
 
 if (is_win) {
@@ -230,43 +217,6 @@ component("mixers") {
       "win/native_color_mixers_win.h",
     ]
     deps += [ ":accent_color_observer" ]
-  } else if (is_android) {
-    sources += [
-      "android/sys_color_mixer_android.cc",
-      "android/sys_color_mixer_android.h",
-    ]
-  }
-}
-
-if (is_android) {
-  import("//build/config/android/rules.gni")
-  import("//third_party/jni_zero/jni_zero.gni")
-
-  generate_jni("ui_color_jni_headers") {
-    sources = [
-      "android/java/src/org/chromium/ui/color/ColorProviderBridgeFactory.java",
-    ]
-  }
-
-  android_library("ui_color_android_java") {
-    sources = [
-      "android/java/src/org/chromium/ui/color/ColorProviderBridge.java",
-      "android/java/src/org/chromium/ui/color/ColorProviderBridgeFactory.java",
-    ]
-    deps = [
-      "//base:base_java",
-      "//build/android:build_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/jni_zero:jni_zero_java",
-    ]
-    srcjar_deps = [
-      ":ui_color_android_java_enums",
-      ":ui_color_jni_headers",
-    ]
-  }
-
-  java_cpp_enum("ui_color_android_java_enums") {
-    sources = [ "android/android_color_roles.h" ]
   }
 }
 

@@ -382,6 +382,29 @@ if (is_android) {
     ]
   }
 
+  # A leaf target so that it can be used directly without pulling in all of
+  # ":android" (e.g. //chrome/browser/android/thin_webview:initializer and
+  # //chrome/browser/themes:unit_tests).
+  source_set("window_color_provider_delegate") {
+    sources = [ "chrome_window_color_provider_delegate.cc" ]
+    public = [ "chrome_window_color_provider_delegate.h" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/themes",
+      "//ui/android",
+      "//ui/color:color_provider_key",
+    ]
+    deps = [
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/ui/webui/top_chrome",
+      "//content/public/browser",
+      "//ui/color",
+      "//ui/color:mixers",
+      "//ui/native_theme",
+    ]
+  }
+
   source_set("settings_navigation_helper") {
     sources = [ "preferences/autofill/settings_navigation_helper.cc" ]
     public = [ "preferences/autofill/settings_navigation_helper.h" ]
@@ -702,6 +725,7 @@ if (is_android) {
       ":tabs_public",
       ":usage_stats_proto",
       ":web_contents_theme_client",
+      ":window_color_provider_delegate",
       "//cc/slim",
       "//chrome/android:jni_headers",
       "//chrome/app:command_ids",
@@ -1273,6 +1297,7 @@ source_set("unit_tests") {
     ":oom_intervention",
     ":tabs_public",
     ":usage_stats_proto",
+    ":window_color_provider_delegate",
     "//base/test:test_support",
     "//cc/slim",
     "//chrome/android:chrome_jni_headers",
@@ -1302,6 +1327,8 @@ source_set("unit_tests") {
     "//chrome/browser/ui/tabs:page_context_eligibility_helper_unit_tests",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/tabstrip_ntb",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",

@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
+#include "chrome/browser/android/chrome_window_color_provider_delegate.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "content/public/browser/render_frame_host.h"
@@ -52,6 +53,8 @@ void OverlayPanelContent::SetWebContents(
   // is accurate.
   web_contents_.reset(web_contents);
   web_contents_->SetOwnerLocationForDebug(FROM_HERE);
+  ChromeWindowColorProviderDelegate::InitWebContentsColorProviderSource(
+      web_contents_.get());
 
   web_contents_->SetIsOverlayContent(true);
   web_contents_delegate_ = std::make_unique<

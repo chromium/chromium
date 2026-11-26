@@ -820,6 +820,21 @@ bool ThemeService::BrowserUsesDarkColors() const {
               ui::NativeTheme::PreferredColorScheme::kDark);
 }
 
+// static
+ui::ColorProviderKey ThemeService::GetIncognitoOrIsolatedColorProviderKey(
+    ui::ColorProviderKey key,
+    bool is_incognito) {
+  key.color_mode = is_incognito ? ui::ColorProviderKey::ColorMode::kDark
+                                : ui::ColorProviderKey::ColorMode::kLight;
+  key.user_color = std::nullopt;
+  key.user_color_source =
+      is_incognito ? ui::ColorProviderKey::UserColorSource::kGrayscale
+                   : ui::ColorProviderKey::UserColorSource::kBaseline;
+  key.scheme_variant = std::nullopt;
+  key.custom_theme = nullptr;
+  return key;
+}
+
 ui::ColorProviderKey ThemeService::GetColorProviderKey(
     const ui::ColorProviderKey& base_key,
     const Profile* profile) const {
@@ -830,15 +845,7 @@ ui::ColorProviderKey ThemeService::GetColorProviderKey(
   const bool is_incognito = profile->IsIncognitoBranded();
   const bool is_isolated = profile->IsEnterpriseIsolatedModeProfile();
   if (is_incognito || is_isolated) {
-    key.color_mode = is_incognito ? ui::ColorProviderKey::ColorMode::kDark
-                                  : ui::ColorProviderKey::ColorMode::kLight;
-    key.user_color = std::nullopt;
-    key.user_color_source =
-        is_incognito ? ui::ColorProviderKey::UserColorSource::kGrayscale
-                     : ui::ColorProviderKey::UserColorSource::kBaseline;
-    key.scheme_variant = std::nullopt;
-    key.custom_theme = nullptr;
-    return key;
+    return GetIncognitoOrIsolatedColorProviderKey(std::move(key), is_incognito);
   }
 
   const auto browser_color_scheme = GetBrowserColorScheme();

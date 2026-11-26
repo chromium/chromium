@@ -83,3 +83,19 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/thinwebview/internal/ThinWebViewImpl.java",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "thin_webview_unittest.cc" ]
+  deps = [
+    ":internal",
+    "//base",
+    "//cc/slim",
+    "//components/thin_webview",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/android",
+  ]
+}

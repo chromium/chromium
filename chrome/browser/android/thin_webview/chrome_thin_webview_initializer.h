@@ -24,6 +24,9 @@ class ChromeThinWebViewInitializer : public ThinWebViewInitializer {
 
   void SetUpTheming(content::WebContents* web_contents) override;
 
+  void UpdateColorProviderSource(content::WebContents* web_contents,
+                                 ui::WindowAndroid* host_window) override;
+
   void AttachTabHelpers(content::WebContents* web_contents,
                         bool enable_permission_requests,
                         bool enable_browser_autofill) override;

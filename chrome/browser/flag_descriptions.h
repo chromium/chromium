@@ -6788,10 +6788,6 @@ inline constexpr char kWebHidOnDesktopAndroidServiceWorkersDescription[] =
     "Enables WebHID API support for extension service workers on Desktop "
     "Android.";
 
-inline constexpr char kWebUiAndroidThemingName[] = "WebUI Android theming";
-inline constexpr char kWebUiAndroidThemingDescription[] =
-    "When enabled, use Android theming on WebUI pages.";
-
 inline constexpr char kTextClassifierTimeoutName[] = "TextClassifier Timeout";
 inline constexpr char kTextClassifierTimeoutDescription[] =
     "Enable timeout for TextClassifier calls. The timeout is configurable with "

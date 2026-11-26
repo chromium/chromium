@@ -5,26 +5,26 @@
 #include "ui/android/view_android.h"
 
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/android/event_forwarder.h"
 #include "ui/android/test_view_android_delegate.h"
-#include "ui/android/ui_android_features.h"
 #include "ui/android/view_android.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
-#include "ui/color/android/color_provider_bridge.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/events/android/event_handler_android.h"
@@ -654,55 +654,6 @@ TEST(ViewAndroidTest, WindowAndroidDestructionDetachesAllViewAndroid) {
   bottom.RemoveObserver(&bottom_observer);
 }
 
-TEST(ViewAndroidTest, WindowAndroidColorProviderSource) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kAvoidPerContextColorProviders);
-
-  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
-      ui::WindowAndroid::CreateForTesting();
-  ui::WindowAndroid* window_android = window->get();
-
-  // Test that color provider key holds the context from WindowAndroid.
-  ui::ColorProviderKey key = window_android->GetColorProviderKey();
-  EXPECT_NE(key.context_hash, 0);
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobject> context = key.context.get(env);
-  EXPECT_FALSE(context.is_null());
-}
-
-TEST(ViewAndroidTest,
-     WindowAndroidColorProviderKeyIsContextAgnosticWithoutBridge) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kAvoidPerContextColorProviders);
-
-  // No ColorProviderBridge is registered in unit tests, so the key should not
-  // be scoped to the Context.
-  ASSERT_FALSE(ColorProviderBridge::HasInstance());
-
-  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
-      ui::WindowAndroid::CreateForTesting();
-  ui::ColorProviderKey key = window->get()->GetColorProviderKey();
-
-  EXPECT_EQ(key.context_hash, 0);
-  JNIEnv* env = base::android::AttachCurrentThread();
-  EXPECT_TRUE(key.context.get(env).is_null());
-}
-
-TEST(ViewAndroidTest, WindowAndroidColorProviderKeyKeepsContextWithBridge) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kAvoidPerContextColorProviders);
-
-  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
-      ui::WindowAndroid::CreateForTesting();
-  ui::ColorProviderKey key = window->get()->GetColorProviderKeyForTesting(
-      /*has_color_provider_bridge=*/true);
-
-  EXPECT_NE(key.context_hash, 0);
-  JNIEnv* env = base::android::AttachCurrentThread();
-  EXPECT_FALSE(key.context.get(env).is_null());
-}
-
 class TestColorProviderSourceObserver : public ColorProviderSourceObserver {
  public:
   explicit TestColorProviderSourceObserver(ColorProviderSource* source)
@@ -736,6 +687,56 @@ TEST(ViewAndroidTest, WindowAndroidObservesWebNativeTheme) {
   EXPECT_EQ(observer.notified_count(), 0);
   web_theme->NotifyOnNativeThemeUpdated();
   EXPECT_EQ(observer.notified_count(), 1);
+}
+
+TEST(ViewAndroidTest, WindowAndroidColorProviderKeyDelegate) {
+  class TestDelegate : public ui::WindowAndroid::ColorProviderKeyDelegate {
+   public:
+    explicit TestDelegate(bool* destroyed) : destroyed_(destroyed) {}
+    ~TestDelegate() override { *destroyed_ = true; }
+
+    ui::ColorProviderKey CustomizeColorProviderKey(
+        ui::ColorProviderKey base_key) const override {
+      base_key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
+      base_key.user_color = SK_ColorMAGENTA;
+      return base_key;
+    }
+
+   private:
+    raw_ptr<bool> destroyed_;
+  };
+
+  bool destroyed = false;
+  {
+    std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+        ui::WindowAndroid::CreateForTesting();
+    ui::WindowAndroid* window_android = window->get();
+    TestColorProviderSourceObserver observer(window_android);
+
+    window_android->SetColorProviderKeyDelegate(
+        std::make_unique<TestDelegate>(&destroyed));
+    EXPECT_EQ(observer.notified_count(), 1);
+
+    ui::ColorProviderKey key = window_android->GetColorProviderKey();
+    EXPECT_EQ(key.color_mode, ui::ColorProviderKey::ColorMode::kDark);
+    EXPECT_EQ(key.user_color, SK_ColorMAGENTA);
+
+    // Clearing the delegate notifies observers and destroys the delegate.
+    window_android->SetColorProviderKeyDelegate(nullptr);
+    EXPECT_TRUE(destroyed);
+    EXPECT_EQ(observer.notified_count(), 2);
+
+    // Clearing an already-null delegate is a no-op.
+    window_android->SetColorProviderKeyDelegate(nullptr);
+    EXPECT_EQ(observer.notified_count(), 2);
+
+    // Re-install to verify WindowAndroid destruction destroys the delegate.
+    destroyed = false;
+    window_android->SetColorProviderKeyDelegate(
+        std::make_unique<TestDelegate>(&destroyed));
+    EXPECT_FALSE(destroyed);
+  }
+  EXPECT_TRUE(destroyed);
 }
 
 TEST(ViewAndroidTest, OnCursorChangedScalesCustomCursorToDip) {

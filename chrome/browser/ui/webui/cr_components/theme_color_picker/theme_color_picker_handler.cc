@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/fixed_flat_map.h"
+#include "build/build_config.h"
 #include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -84,6 +85,12 @@ ThemeColorPickerHandler::ThemeColorPickerHandler(
 
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
+#if BUILDFLAG(IS_ANDROID)
+  // Observe `OnColorProviderChanged()` so theme colors refresh when the
+  // `WebContents`'s `ColorProvider` updates (e.g. after Activity recreation on
+  // light/dark scheme changes, window reparenting, or OS theme updates).
+  Observe(web_contents_);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ThemeColorPickerHandler::~ThemeColorPickerHandler() = default;
@@ -135,6 +142,13 @@ void ThemeColorPickerHandler::RemoveBackgroundImage() {
 }
 
 void ThemeColorPickerHandler::UpdateTheme() {
+#if BUILDFLAG(IS_ANDROID)
+  last_theme_.reset();
+#endif  // BUILDFLAG(IS_ANDROID)
+  SendTheme();
+}
+
+void ThemeColorPickerHandler::SendTheme() {
   if (ntp_custom_background_service_) {
     ntp_custom_background_service_->RefreshBackgroundIfNeeded();
   }
@@ -208,6 +222,15 @@ void ThemeColorPickerHandler::UpdateTheme() {
   theme->has_third_party_theme = theme_service_->UsingExtensionTheme();
 
   theme->is_dark_mode = theme_service_->BrowserUsesDarkColors();
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, ThemeService / NativeTheme updates trigger both
+  // OnColorProviderChanged() and OnThemeChanged() / OnNativeThemeUpdated().
+  // Skip sending duplicate identical ThemePtr updates for observer callbacks.
+  if (last_theme_ && last_theme_->Equals(*theme)) {
+    return;
+  }
+  last_theme_ = theme.Clone();
+#endif  // BUILDFLAG(IS_ANDROID)
   client_->SetTheme(std::move(theme));
 }
 
@@ -223,15 +246,21 @@ void ThemeColorPickerHandler::MaybeIncrementSeedColorChangeCount() {
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void ThemeColorPickerHandler::OnColorProviderChanged() {
+  SendTheme();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void ThemeColorPickerHandler::OnNativeThemeUpdated(
     ui::NativeTheme* observed_theme) {
-  UpdateTheme();
+  SendTheme();
 }
 
 void ThemeColorPickerHandler::OnThemeChanged() {
-  UpdateTheme();
+  SendTheme();
 }
 
 void ThemeColorPickerHandler::OnCustomBackgroundImageUpdated() {
-  OnThemeChanged();
+  SendTheme();
 }

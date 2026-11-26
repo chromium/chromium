@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "build/build_config.h"
 #include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -224,6 +225,9 @@ enum class ThemeUpdateSource {
   kMojo,
   kThemeService,
   kNativeTheme,
+#if BUILDFLAG(IS_ANDROID)
+  kColorProvider,
+#endif  // BUILDFLAG(IS_ANDROID)
   kCustomBackgroundService,
 };
 
@@ -254,6 +258,12 @@ class ThemeColorPickerHandlerSetThemeTest
       case ThemeUpdateSource::kNativeTheme:
         ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
         break;
+#if BUILDFLAG(IS_ANDROID)
+      case ThemeUpdateSource::kColorProvider:
+        // DefaultColorProviderSource observes NativeTheme::GetInstanceForWeb().
+        ui::NativeTheme::GetInstanceForWeb()->NotifyOnNativeThemeUpdated();
+        break;
+#endif  // BUILDFLAG(IS_ANDROID)
       case ThemeUpdateSource::kCustomBackgroundService:
         ntp_custom_background_service_observer()
             .OnCustomBackgroundImageUpdated();
@@ -271,6 +281,9 @@ class ThemeColorPickerHandlerSetThemeTest
 };
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, SetTheme) {
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
+
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.custom_background_attribution_line_1 = "foo line";
@@ -296,8 +309,6 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetTheme) {
       .WillByDefault(testing::Return(false));
   ON_CALL(mock_theme_service(), GetBrowserColorVariant())
       .WillByDefault(testing::Return(ui::mojom::BrowserColorVariant::kNeutral));
-  os_settings_provider().SetPreferredColorScheme(
-      ui::NativeTheme::PreferredColorScheme::kDark);
 
   theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
   ASSERT_TRUE(theme);
@@ -341,6 +352,9 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, UsingSystemTheme) {
 }
 
 TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeColorSchemeGM3) {
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
+
   // Set mocks needed for UpdateTheme.
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
@@ -368,8 +382,6 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeColorSchemeGM3) {
   ON_CALL(mock_theme_service(), GetBrowserColorScheme())
       .WillByDefault(
           testing::Return(ThemeService::BrowserColorScheme::kSystem));
-  os_settings_provider().SetPreferredColorScheme(
-      ui::NativeTheme::PreferredColorScheme::kDark);
 
   // Theme should be dark to match the system.
   theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
@@ -388,6 +400,7 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThemeColorSchemeGM3) {
 TEST_P(ThemeColorPickerHandlerSetThemeTest, UsingDeviceThemeGM3) {
   static constexpr SkColor kUnusedColor = SK_ColorGREEN;
   static constexpr SkColor kUsedColor = SK_ColorBLUE;
+  os_settings_provider().SetAccentColor(kUsedColor);
 
   // Set mocks needed for UpdateTheme.
   CustomBackground custom_background;
@@ -415,7 +428,6 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, UsingDeviceThemeGM3) {
       .WillByDefault(testing::Return(kUnusedColor));
   ON_CALL(mock_theme_service(), UsingDeviceTheme())
       .WillByDefault(testing::Return(true));
-  os_settings_provider().SetAccentColor(kUsedColor);
 
   theme_color_picker::mojom::ThemePtr theme = UpdateTheme();
   ASSERT_TRUE(theme);
@@ -508,6 +520,9 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(ThemeUpdateSource::kMojo,
                       ThemeUpdateSource::kThemeService,
                       ThemeUpdateSource::kNativeTheme,
+#if BUILDFLAG(IS_ANDROID)
+                      ThemeUpdateSource::kColorProvider,
+#endif  // BUILDFLAG(IS_ANDROID)
                       ThemeUpdateSource::kCustomBackgroundService));
 
 TEST_F(ThemeColorPickerHandlerTest, SetDefaultColor) {
@@ -565,3 +580,25 @@ TEST_F(ThemeColorPickerHandlerTest, RemoveBackgroundImage) {
 
   handler().RemoveBackgroundImage();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ThemeColorPickerHandlerTest, DeduplicatesIdenticalObserverUpdates) {
+  mock_client_.FlushForTesting();
+  EXPECT_CALL(mock_client_, SetTheme).Times(1);
+  ui::NativeTheme::GetInstanceForWeb()->NotifyOnNativeThemeUpdated();
+  mock_client_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&mock_client_);
+
+  // Subsequent observer notifications with identical theme are suppressed.
+  EXPECT_CALL(mock_client_, SetTheme).Times(0);
+  mock_theme_service().NotifyThemeChanged();
+  ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
+  mock_client_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&mock_client_);
+
+  // Explicit Mojo UpdateTheme() always sends even when the theme is unchanged.
+  EXPECT_CALL(mock_client_, SetTheme).Times(1);
+  handler().UpdateTheme();
+  mock_client_.FlushForTesting();
+}
+#endif  // BUILDFLAG(IS_ANDROID)

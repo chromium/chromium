@@ -479,6 +479,12 @@ NewTabPageHandler::NewTabPageHandler(
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
+#if BUILDFLAG(IS_ANDROID)
+  // Observe `OnColorProviderChanged()` so theme colors refresh when the
+  // `WebContents`'s `ColorProvider` updates (e.g. after Activity recreation on
+  // light/dark scheme changes, window reparenting, or OS theme updates).
+  Observe(web_contents_);
+#endif  // BUILDFLAG(IS_ANDROID)
   if (microsoft_auth_service_) {
     microsoft_auth_service_->AddObserver(this);
   }
@@ -1122,14 +1128,30 @@ void NewTabPageHandler::OnContextualSearchIPHEngaged() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void NewTabPageHandler::OnColorProviderChanged() {
+  OnThemeChanged();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void NewTabPageHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   OnThemeChanged();
 }
 
 void NewTabPageHandler::OnThemeChanged() {
-  page_->SetTheme(MakeTheme(web_contents_->GetColorProvider(), theme_provider_,
-                            theme_service_, ntp_custom_background_service_,
-                            web_contents_));
+  auto theme =
+      MakeTheme(web_contents_->GetColorProvider(), theme_provider_,
+                theme_service_, ntp_custom_background_service_, web_contents_);
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, ThemeService / NativeTheme updates trigger both
+  // OnColorProviderChanged() and OnThemeChanged() / OnNativeThemeUpdated().
+  // Skip sending duplicate identical ThemePtr updates.
+  if (last_theme_ && last_theme_->Equals(*theme)) {
+    return;
+  }
+  last_theme_ = theme.Clone();
+#endif  // BUILDFLAG(IS_ANDROID)
+  page_->SetTheme(std::move(theme));
 }
 
 void NewTabPageHandler::OnCustomBackgroundImageUpdated() {

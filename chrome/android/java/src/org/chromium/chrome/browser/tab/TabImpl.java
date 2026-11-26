@@ -526,6 +526,9 @@ class TabImpl implements Tab {
         // Intentionally do NOT call updateWindowAndroid(null): mWindowAndroid is preserved while
         // detached so callers of getWindowAndroid() do not crash with NullPointerException, while
         // callers (e.g. ReparentingTask#detach()) clear webContents.setTopLevelNativeWindow(null).
+        if (mWebContents != null && mNativeTabAndroid != 0) {
+            TabImplJni.get().updateColorProviderSource(mNativeTabAndroid);
+        }
         updateIsDetachedFromActivity(/* window= */ null);
         mTabViewManager.onDetachedFromWindow();
         mNativePageController.onDetachFromWindow(getActivity(mWindowAndroid));
@@ -1884,6 +1887,9 @@ class TabImpl implements Tab {
         if (webContents != null) {
             assert mWindowAndroid != null;
             webContents.setTopLevelNativeWindow(mWindowAndroid);
+            if (mNativeTabAndroid != 0) {
+                TabImplJni.get().updateColorProviderSource(mNativeTabAndroid);
+            }
         }
 
         if (windowAndroid != null) {
@@ -3341,6 +3347,7 @@ class TabImpl implements Tab {
                             ? mWindowAndroid
                             : null;
             mWebContents.setTopLevelNativeWindow(window);
+            TabImplJni.get().updateColorProviderSource(mNativeTabAndroid);
             updateWebContentsVisibility();
         }
     }
@@ -3502,6 +3509,8 @@ class TabImpl implements Tab {
                 long nativeTabAndroid,
                 TabWebContentsDelegateAndroidImpl delegate,
                 ContextMenuPopulatorFactory contextMenuPopulatorFactory);
+
+        void updateColorProviderSource(long nativeTabAndroid);
 
         @JniType("tabs::TabDestroyStatus")
         int destroyWebContents(long nativeTabAndroid);

@@ -133,6 +133,12 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
   ntp_background_service_->AddObserver(this);
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   theme_service_observation_.Observe(theme_service_);
+#if BUILDFLAG(IS_ANDROID)
+  // Observe `OnColorProviderChanged()` so theme colors refresh when the
+  // `WebContents`'s `ColorProvider` updates (e.g. after Activity recreation on
+  // light/dark scheme changes, window reparenting, or OS theme updates).
+  Observe(web_contents_);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   OnBrowserWindowInterfaceChanged();
 
@@ -332,6 +338,13 @@ void CustomizeChromePageHandler::RemoveBackgroundImage() {
 }
 
 void CustomizeChromePageHandler::UpdateTheme() {
+#if BUILDFLAG(IS_ANDROID)
+  last_theme_.reset();
+#endif  // BUILDFLAG(IS_ANDROID)
+  SendTheme();
+}
+
+void CustomizeChromePageHandler::SendTheme() {
   if (ntp_custom_background_service_) {
     ntp_custom_background_service_->RefreshBackgroundIfNeeded();
   }
@@ -400,6 +413,15 @@ void CustomizeChromePageHandler::UpdateTheme() {
     }
   }
 #endif
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, ThemeService / NativeTheme updates trigger both
+  // OnColorProviderChanged() and OnThemeChanged() / OnNativeThemeUpdated().
+  // Skip sending duplicate identical ThemePtr updates for observer callbacks.
+  if (last_theme_ && last_theme_->Equals(*theme)) {
+    return;
+  }
+  last_theme_ = theme.Clone();
+#endif  // BUILDFLAG(IS_ANDROID)
   page_->SetTheme(std::move(theme));
 }
 
@@ -777,17 +799,23 @@ bool CustomizeChromePageHandler::IsEnterpriseShortcutsEmpty() const {
       *profile_->GetPrefs());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void CustomizeChromePageHandler::OnColorProviderChanged() {
+  SendTheme();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void CustomizeChromePageHandler::OnNativeThemeUpdated(
     ui::NativeTheme* observed_theme) {
-  UpdateTheme();
+  SendTheme();
 }
 
 void CustomizeChromePageHandler::OnThemeChanged() {
-  UpdateTheme();
+  SendTheme();
 }
 
 void CustomizeChromePageHandler::OnCustomBackgroundImageUpdated() {
-  OnThemeChanged();
+  SendTheme();
 }
 
 void CustomizeChromePageHandler::OnCollectionInfoAvailable() {

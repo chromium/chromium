@@ -36,6 +36,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller_observer.h"
+#else
+#include "content/public/browser/web_contents_observer.h"
 #endif
 
 namespace content {
@@ -76,6 +78,9 @@ class CustomizeChromePageHandler
 #if !BUILDFLAG(IS_ANDROID)
     ,
       public new_tab_footer::NewTabFooterControllerObserver
+#else
+    ,
+      public content::WebContentsObserver
 #endif
 {
  public:
@@ -172,6 +177,13 @@ class CustomizeChromePageHandler
   // Returns the type of New Tab Page the SidePanel is attached to.
   side_panel::mojom::NewTabPageType GetNewTabPageType(const GURL& url);
 
+  void SendTheme();
+
+#if BUILDFLAG(IS_ANDROID)
+  // content::WebContentsObserver:
+  void OnColorProviderChanged() override;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
@@ -246,6 +258,13 @@ class CustomizeChromePageHandler
 
   // Notifies this when the browser window context changes.
   base::CallbackListSubscription browser_window_changed_subscription_;
+#if BUILDFLAG(IS_ANDROID)
+  // Caches the last Theme sent to `page_` to suppress duplicate `SetTheme()`
+  // IPCs when a theme or OS change triggers both `OnColorProviderChanged()` and
+  // `OnThemeChanged()` / `OnNativeThemeUpdated()`. Cleared by explicit Mojo
+  // `UpdateTheme()` calls so page-initiated refreshes always send.
+  side_panel::mojom::ThemePtr last_theme_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   mojo::Remote<side_panel::mojom::CustomizeChromePage> page_;
   mojo::Receiver<side_panel::mojom::CustomizeChromePageHandler> receiver_;

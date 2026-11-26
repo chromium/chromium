@@ -6355,6 +6355,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     /** Returns whether current activity is an incognito window. */
+    @Override
     public boolean isIncognitoWindow() {
         return mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD;
     }

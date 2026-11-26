@@ -43,7 +43,9 @@ ThinWebView::ThinWebView(JNIEnv* env,
       window_android_(window_android),
       web_contents_(nullptr) {}
 
-ThinWebView::~ThinWebView() = default;
+ThinWebView::~ThinWebView() {
+  ResetColorProviderSourceIfStillHosted();
+}
 
 void ThinWebView::PrimaryPageChanged(content::Page& page) {
   // Disable browser controls when used for thin webview.
@@ -76,10 +78,21 @@ void ThinWebView::SetWebContents(content::WebContents* web_contents,
                                  bool support_theming,
                                  bool enable_browser_autofill) {
   DCHECK(web_contents);
+  ThinWebViewInitializer* initializer = ThinWebViewInitializer::GetInstance();
+  bool is_same_web_contents = (web_contents_.get() == web_contents);
+  if (!is_same_web_contents) {
+    ResetColorProviderSourceIfStillHosted();
+  }
+
   Observe(web_contents);
   web_contents_ = web_contents->GetWeakPtr();
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();
-  if (view_android->parent() != window_android_) {
+  // Capture the host Activity's WindowAndroid (set via setDelegates() /
+  // setTopLevelNativeWindow()) before reparenting `view_android` under
+  // `window_android_` (which may be ThinWebView's own unthemed window).
+  ui::WindowAndroid* host_window = web_contents_->GetTopLevelNativeWindow();
+  bool already_in_this_window = (view_android->parent() == window_android_);
+  if (!already_in_this_window) {
     window_android_->AddChild(view_android);
   }
 
@@ -89,7 +102,17 @@ void ThinWebView::SetWebContents(content::WebContents* web_contents,
   }
 
   if (support_theming) {
-    ThinWebViewInitializer::GetInstance()->SetUpTheming(web_contents);
+    initializer->SetUpTheming(web_contents);
+  }
+
+  // Skip if re-attaching the same WebContents while it is already parented
+  // under `window_android_`, so we do not replace its host Activity's
+  // ColorProviderSource with ThinWebView's internal window.
+  if (!is_same_web_contents || !already_in_this_window) {
+    initializer->UpdateColorProviderSource(web_contents, host_window);
+  }
+
+  if (support_theming) {
     web_contents->OnWebPreferencesChanged();
   }
 
@@ -98,8 +121,21 @@ void ThinWebView::SetWebContents(content::WebContents* web_contents,
     web_contents->SetDelegate(delegate);
   }
 
-  ThinWebViewInitializer::GetInstance()->AttachTabHelpers(
-      web_contents, enable_permission_requests, enable_browser_autofill);
+  initializer->AttachTabHelpers(web_contents, enable_permission_requests,
+                                enable_browser_autofill);
+}
+
+void ThinWebView::ResetColorProviderSourceIfStillHosted() {
+  if (!web_contents_ || web_contents_->IsBeingDestroyed()) {
+    return;
+  }
+  ui::WindowAndroid* current_window = web_contents_->GetTopLevelNativeWindow();
+  if (!current_window || current_window == window_android_) {
+    if (auto* initializer = ThinWebViewInitializer::GetInstance()) {
+      initializer->UpdateColorProviderSource(web_contents_.get(),
+                                             /*host_window=*/nullptr);
+    }
+  }
 }
 
 void ThinWebView::SetContextMenuPopulatorFactory(

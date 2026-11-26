@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/android/chrome_window_color_provider_delegate.h"
 #include "chrome/browser/android/web_contents_theme_client.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -29,6 +30,13 @@ void ChromeThinWebViewInitializer::Initialize() {
 void ChromeThinWebViewInitializer::SetUpTheming(
     content::WebContents* web_contents) {
   night_mode::WebContentsThemeClient::CreateForWebContents(web_contents);
+}
+
+void ChromeThinWebViewInitializer::UpdateColorProviderSource(
+    content::WebContents* web_contents,
+    ui::WindowAndroid* host_window) {
+  ChromeWindowColorProviderDelegate::UpdateWebContentsColorProviderSource(
+      web_contents, host_window);
 }
 
 void ChromeThinWebViewInitializer::AttachTabHelpers(

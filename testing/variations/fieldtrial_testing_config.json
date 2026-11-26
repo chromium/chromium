@@ -896,7 +896,6 @@
                         "TopChromeWebUISharedRenderer",
                         "WebUIBypassMojoConnections",
                         "WebUIToolbarFrameEvictionOptOut",
-                        "WebUiAndroidTheming",
                         "WebiumMetricsMapping"
                     ]
                 }

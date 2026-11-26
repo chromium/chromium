@@ -1996,3 +1996,54 @@ TEST_F(NewTabPageHandlerTest, RealboxContextMenuAnimation) {
         "Omnibox.ContextMenu.AnimationShown.NTP", false, 2);
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(NewTabPageHandlerTest, OnColorProviderChangedUpdatesAndDeduplicates) {
+  new_tab_page::mojom::ThemePtr theme;
+  EXPECT_CALL(mock_page_, SetTheme)
+      .Times(1)
+      .WillOnce([&theme](new_tab_page::mojom::ThemePtr arg) {
+        theme = std::move(arg);
+      });
+  ON_CALL(mock_theme_service_, GetUserColor())
+      .WillByDefault(testing::Return(SkColorSetRGB(0xFF, 0x80, 0x00)));
+  mock_color_provider_source_.SetColor(kColorNewTabPageBackground,
+                                       SkColorSetRGB(0x4F, 0x36, 0x25));
+  mock_color_provider_source_.SetColor(kColorNewTabPageLogo,
+                                       SkColorSetRGB(0xFF, 0xB7, 0x87));
+  mock_color_provider_source_.SetColor(
+      kColorNewTabPageMostVisitedTileBackground,
+      SkColorSetRGB(0x36, 0x21, 0x12));
+
+  // ColorProvider change triggers a SetTheme() IPC with the updated colors.
+  mock_color_provider_source_.NotifyColorProviderChanged();
+  mock_page_.FlushForTesting();
+  ASSERT_TRUE(theme);
+  EXPECT_EQ(SkColorSetRGB(0x4F, 0x36, 0x25), theme->background_color);
+  EXPECT_EQ(SkColorSetRGB(0xFF, 0xB7, 0x87), theme->logo_color);
+  ASSERT_TRUE(theme->most_visited);
+  EXPECT_EQ(SkColorSetRGB(0x36, 0x21, 0x12),
+            theme->most_visited->background_color);
+  testing::Mock::VerifyAndClearExpectations(&mock_page_);
+
+  // A subsequent ThemeService notification with identical colors is suppressed.
+  EXPECT_CALL(mock_page_, SetTheme).Times(0);
+  theme_service_observer_->OnThemeChanged();
+  mock_page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_page_);
+
+  // A further ColorProvider change with different colors sends a new IPC.
+  theme.reset();
+  EXPECT_CALL(mock_page_, SetTheme)
+      .Times(1)
+      .WillOnce([&theme](new_tab_page::mojom::ThemePtr arg) {
+        theme = std::move(arg);
+      });
+  mock_color_provider_source_.SetColor(kColorNewTabPageBackground,
+                                       SkColorSetRGB(0x11, 0x22, 0x33));
+  mock_color_provider_source_.NotifyColorProviderChanged();
+  mock_page_.FlushForTesting();
+  ASSERT_TRUE(theme);
+  EXPECT_EQ(SkColorSetRGB(0x11, 0x22, 0x33), theme->background_color);
+}
+#endif  // BUILDFLAG(IS_ANDROID)

@@ -971,7 +971,6 @@ public abstract class ChromeFeatureList {
     public static final String WEB_APP_NAVIGATION_BAR_THEME_COLOR = "WebAppNavigationBarThemeColor";
     public static final String WEB_APP_SHORT_EDGES_CUTOUT_MODE = "WebAppShortEdgesCutoutMode";
     public static final String WEB_OTP_CROSS_DEVICE_SIMPLE_STRING = "WebOtpCrossDeviceSimpleString";
-    public static final String WEB_UI_ANDROID_THEMING = "WebUiAndroidTheming";
     public static final String WIDE_SCREEN_FEED_FOR_FOLDABLES = "WideScreenFeedForFoldables";
     public static final String XPLAT_SYNCED_SETUP_THEMES = "XplatSyncedSetupThemes";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
@@ -1557,11 +1556,6 @@ public abstract class ChromeFeatureList {
                     WEB_APP_SHORT_EDGES_CUTOUT_MODE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sWebUiAndroidTheming =
-            newCachedFlag(
-                    WEB_UI_ANDROID_THEMING,
-                    /* defaultValue= */ BuildConfig.IS_DESKTOP_ANDROID,
-                    /* defaultValueInTests= */ true);
     // keep-sorted end
 
     public static final List<CachedFlag> sFlagsCachedFullBrowser =
@@ -1768,8 +1762,7 @@ public abstract class ChromeFeatureList {
                     sVirtualKeyboardResizesContentTransientOvershootFix,
                     sVirtualKeyboardTransientInnerHeightFix,
                     sWebApkMinShellApkVersion,
-                    sWebAppShortEdgesCutoutMode,
-                    sWebUiAndroidTheming
+                    sWebAppShortEdgesCutoutMode
                     // keep-sorted end
                     );
 

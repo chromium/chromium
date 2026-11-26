@@ -9643,10 +9643,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseWebUiNtpAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kUseWebUiNtpAndroid)},
 
-    {"webui-android-theming", flag_descriptions::kWebUiAndroidThemingName,
-     flag_descriptions::kWebUiAndroidThemingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kWebUiAndroidTheming)},
-
     {"tab-switcher-group-suggestions-android",
      flag_descriptions::kTabSwitcherGroupSuggestionsAndroidName,
      flag_descriptions::kTabSwitcherGroupSuggestionsAndroidDescription,

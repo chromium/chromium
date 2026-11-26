@@ -4123,8 +4123,21 @@ GetPreferredColorScheme(const WebPreferences& web_prefs,
   preferred_root_scrollbar_color_scheme =
       web_prefs.preferred_root_scrollbar_color_scheme;
 
-  if (auto* theme_client =
-          night_mode::WebContentsThemeClient::FromWebContents(web_contents)) {
+  // WebUI pages use ColorProvider tokens (chrome://theme/colors.css), so
+  // Blink's `prefers-color-scheme` and form controls must match the
+  // WebContents' ColorProvider (`GetColorMode()`). Non-WebUI web pages use the
+  // Activity Context's Android night mode (`IsNightModeEnabled()`) instead: in
+  // Incognito tabs inside a light-mode Activity, the ColorProvider is forced
+  // dark for WebUI while regular websites still see light mode.
+  if (security_principal.IsWebUI()) {
+    preferred_color_scheme =
+        web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark
+            ? blink::mojom::PreferredColorScheme::kDark
+            : blink::mojom::PreferredColorScheme::kLight;
+    preferred_root_scrollbar_color_scheme = preferred_color_scheme;
+  } else if (auto* theme_client =
+                 night_mode::WebContentsThemeClient::FromWebContents(
+                     web_contents)) {
     preferred_color_scheme = theme_client->IsNightModeEnabled()
                                  ? blink::mojom::PreferredColorScheme::kDark
                                  : blink::mojom::PreferredColorScheme::kLight;

@@ -11,13 +11,17 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "cc/slim/layer.h"
+#include "chrome/browser/android/chrome_window_color_provider_delegate.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb_ui.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -31,6 +35,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/window_android.h"
+#include "ui/color/color_provider_key.h"
 
 namespace android {
 namespace {
@@ -399,6 +405,64 @@ TEST_F(TabStripNtbWebUiHostTest, RateLimitsRepeatedRendererCrashes) {
     return web_contents->GetPrimaryMainFrame()->IsRenderFrameLive();
   }));
 }
+
+struct EnableNtbWebUiFeature {
+  base::test::ScopedFeatureList feature_list{
+      chrome::android::kAndroidNewTabButtonTabstripWebUI};
+};
+
+class TabStripNtbWebUiHostColorProviderTest
+    : public base::test::WithFeatureOverride,
+      private EnableNtbWebUiFeature,
+      public TabStripNtbWebUiHostTest {
+ public:
+  TabStripNtbWebUiHostColorProviderTest()
+      : base::test::WithFeatureOverride(
+            features::kTopChromeWebUISharedRenderer) {}
+};
+
+TEST_P(TabStripNtbWebUiHostColorProviderTest,
+       StartLoadUpdatesColorProviderSource) {
+  std::optional<webui::ScopedTopChromeWebUIProfileForTesting>
+      scoped_top_chrome_profile;
+  if (IsParamFeatureEnabled()) {
+    scoped_top_chrome_profile.emplace();
+  }
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      dark_window = ui::WindowAndroid::CreateForTesting();
+  ChromeWindowColorProviderDelegate::AttachToWindow(
+      dark_window->get(), /*profile=*/nullptr, /*is_incognito_window=*/false,
+      /*is_night_mode=*/true);
+
+  TabStripNtbWebUiHost regular_host(profile(), base::TimeTicks(),
+                                    /*java_coordinator=*/nullptr);
+  content::WebContents* regular_contents = regular_host.GetWebContents();
+  ASSERT_NE(nullptr, regular_contents);
+  dark_window->get()->AddChild(regular_contents->GetNativeView());
+  regular_host.StartLoad();
+  EXPECT_EQ(regular_contents->GetColorMode(),
+            ui::ColorProviderKey::ColorMode::kDark);
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      light_window = ui::WindowAndroid::CreateForTesting();
+  ChromeWindowColorProviderDelegate::AttachToWindow(
+      light_window->get(), /*profile=*/nullptr, /*is_incognito_window=*/false,
+      /*is_night_mode=*/false);
+
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  TabStripNtbWebUiHost otr_host(otr_profile, base::TimeTicks(),
+                                /*java_coordinator=*/nullptr);
+  content::WebContents* otr_contents = otr_host.GetWebContents();
+  ASSERT_NE(nullptr, otr_contents);
+  light_window->get()->AddChild(otr_contents->GetNativeView());
+  otr_host.StartLoad();
+  EXPECT_EQ(otr_contents->GetColorMode(),
+            ui::ColorProviderKey::ColorMode::kDark);
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(TabStripNtbWebUiHostColorProviderTest);
 
 }  // namespace
 }  // namespace android

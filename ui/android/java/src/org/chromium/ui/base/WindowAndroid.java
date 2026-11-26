@@ -1448,18 +1448,6 @@ public class WindowAndroid
         return mContextRef.get();
     }
 
-    /**
-     * Returns the System.identityHashCode of the Context. This is used by native code as a unique
-     * identifier for the Context, particularly for caching mechanisms like ColorProvider.
-     *
-     * @return The identity hash code of the Context, or 0 if the Context is null.
-     */
-    @CalledByNative
-    private long getContextHashId() {
-        Context context = mContextRef.get();
-        return context != null ? System.identityHashCode(context) : 0;
-    }
-
     /** Return the decor view, or null. */
     private @Nullable View getDecorView() {
         Window window = getWindow();

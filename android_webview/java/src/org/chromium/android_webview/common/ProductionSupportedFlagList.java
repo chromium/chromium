@@ -433,9 +433,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, parser won't try to match other attributes if any of the negative"
                         + " patterns matched."),
         Flag.baseFeature("AvoidEntryCreationForNoStore"),
-        Flag.baseFeature(
-                UiAndroidFeatures.AVOID_PER_CONTEXT_COLOR_PROVIDERS,
-                "Avoids per-context ColorProviders for contexts without dynamic color support."),
         Flag.baseFeature("AvoidScheduleWorkDuringNativeEventProcessing"),
         Flag.baseFeature(
                 "AwMetricsLogTrimming",

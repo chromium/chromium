@@ -204,9 +204,16 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/android/chrome_window_color_provider_delegate.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/android/web_contents_theme_client.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "ui/android/window_android.h"
+#include "ui/color/color_provider_key.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/android/guest_view/chrome_guest_view_manager_delegate.h"
@@ -2804,7 +2811,59 @@ class ChromeContentBrowserClientPreferredColorSchemeAndroidTest
   bool IsDarkMode() const { return GetParam(); }
 
  protected:
-  void SetUp() override { ChromeRenderViewHostTestHarness::SetUp(); }
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    ResetBrowserColorScheme();
+  }
+
+  void TearDown() override {
+    ResetBrowserColorScheme();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  void ResetBrowserColorScheme() {
+    if (Profile* current_profile = profile()) {
+      if (ThemeService* theme_service =
+              ThemeServiceFactory::GetForProfile(current_profile)) {
+        theme_service->SetBrowserColorScheme(
+            ThemeService::BrowserColorScheme::kSystem);
+        FlushPostedTasks();
+      }
+    }
+  }
+
+  void FlushPostedTasks() {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  std::unique_ptr<content::WebContents> CreateThemedWebContents(
+      Profile* tab_profile,
+      ui::WindowAndroid* window,
+      bool is_dark_mode) {
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContentsTester::CreateTestWebContents(tab_profile, nullptr);
+    night_mode::WebContentsThemeClient::CreateForWebContents(contents.get());
+    night_mode::WebContentsThemeClient::SetIsNightModeEnabledForTesting(
+        contents.get(), is_dark_mode);
+    ChromeWindowColorProviderDelegate::UpdateWebContentsColorProviderSource(
+        contents.get(), window);
+    return contents;
+  }
+
+  void ExpectPreferredColorScheme(
+      content::WebContents* contents,
+      content::SiteInstance& site_instance,
+      blink::mojom::PreferredColorScheme expected,
+      const base::Location& location = base::Location::Current()) {
+    SCOPED_TRACE(location.ToString());
+    blink::web_pref::WebPreferences prefs;
+    client_.OverrideWebPreferences(contents, site_instance, &prefs);
+    EXPECT_EQ(expected, prefs.preferred_color_scheme);
+    EXPECT_EQ(expected, prefs.preferred_root_scrollbar_color_scheme);
+  }
 
   ChromeContentBrowserClient client_;
 };
@@ -2881,6 +2940,119 @@ TEST_P(ChromeContentBrowserClientPreferredColorSchemeAndroidTest,
             web_preferences.preferred_root_scrollbar_color_scheme);
 }
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+TEST_P(ChromeContentBrowserClientPreferredColorSchemeAndroidTest,
+       WebUIFollowsWebContentsColorMode) {
+  bool is_dark_mode = IsDarkMode();
+  auto expected_night_mode_scheme =
+      is_dark_mode ? blink::mojom::PreferredColorScheme::kDark
+                   : blink::mojom::PreferredColorScheme::kLight;
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  ChromeWindowColorProviderDelegate::AttachToWindow(
+      window->get(), profile(), /*is_incognito_window=*/false, is_dark_mode);
+
+  // 1. Incognito (both primary OTR and Incognito CCT) always uses kDark for
+  // WebUI to match its dark ColorProvider, while non-WebUI web pages continue
+  // following Android night mode.
+  for (Profile* otr_profile : {
+           profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+           profile()->GetOffTheRecordProfile(
+               Profile::OTRProfileID::CreateUniqueForIncognitoCct(),
+               /*create_if_needed=*/true),
+       }) {
+    SCOPED_TRACE(otr_profile->GetOTRProfileID());
+    std::unique_ptr<content::WebContents> otr_contents =
+        CreateThemedWebContents(otr_profile, window->get(), is_dark_mode);
+    EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark,
+              otr_contents->GetColorMode());
+
+    scoped_refptr<content::SiteInstance> webui_site_instance =
+        content::SiteInstance::CreateForURL(otr_profile,
+                                            GURL(chrome::kChromeUIVersionURL));
+    ASSERT_TRUE(webui_site_instance->GetSecurityPrincipal().IsWebUI());
+    scoped_refptr<content::SiteInstance> web_site_instance =
+        content::SiteInstance::CreateForURL(otr_profile,
+                                            GURL("https://example.com"));
+    ASSERT_FALSE(web_site_instance->GetSecurityPrincipal().IsWebUI());
+
+    ExpectPreferredColorScheme(otr_contents.get(), *webui_site_instance,
+                               blink::mojom::PreferredColorScheme::kDark);
+    ExpectPreferredColorScheme(otr_contents.get(), *web_site_instance,
+                               expected_night_mode_scheme);
+  }
+
+  // 2. Regular profile WebUI follows BrowserColorScheme overrides on the host
+  // WindowAndroid, while non-WebUI web pages continue following
+  // IsNightModeEnabled().
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateThemedWebContents(profile(), window->get(), is_dark_mode);
+
+  scoped_refptr<content::SiteInstance> webui_site_instance =
+      content::SiteInstance::CreateForURL(profile(),
+                                          GURL(chrome::kChromeUIVersionURL));
+  ASSERT_TRUE(webui_site_instance->GetSecurityPrincipal().IsWebUI());
+  scoped_refptr<content::SiteInstance> web_site_instance =
+      content::SiteInstance::CreateForURL(profile(),
+                                          GURL("https://example.com"));
+  ASSERT_FALSE(web_site_instance->GetSecurityPrincipal().IsWebUI());
+
+  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile());
+  ASSERT_NE(nullptr, theme_service);
+
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kSystem);
+  FlushPostedTasks();
+  ExpectPreferredColorScheme(web_contents.get(), *webui_site_instance,
+                             expected_night_mode_scheme);
+
+  theme_service->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kDark);
+  FlushPostedTasks();
+  ExpectPreferredColorScheme(web_contents.get(), *webui_site_instance,
+                             blink::mojom::PreferredColorScheme::kDark);
+  ExpectPreferredColorScheme(web_contents.get(), *web_site_instance,
+                             expected_night_mode_scheme);
+
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+  FlushPostedTasks();
+  ExpectPreferredColorScheme(web_contents.get(), *webui_site_instance,
+                             blink::mojom::PreferredColorScheme::kLight);
+  ExpectPreferredColorScheme(web_contents.get(), *web_site_instance,
+                             expected_night_mode_scheme);
+
+  // 3. Live-update gating: WebPreferencesNeedUpdateForColorRelatedStateChanges
+  // detects WebUI scheme changes when ColorProvider switches between light and
+  // dark, while ignoring Chrome's BrowserColorScheme for non-WebUI pages.
+  blink::web_pref::WebPreferences synced_prefs =
+      web_contents->GetOrCreateWebPreferences();
+  client_.OverrideWebPreferences(web_contents.get(), *webui_site_instance,
+                                 &synced_prefs);
+  web_contents->SetWebPreferences(synced_prefs);
+  EXPECT_FALSE(client_.WebPreferencesNeedUpdateForColorRelatedStateChanges(
+      *web_contents, *webui_site_instance));
+
+  theme_service->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kDark);
+  FlushPostedTasks();
+  // Re-apply the pre-switch light prefs to verify the gating predicate sees
+  // the mismatch against the now-dark ColorProvider.
+  web_contents->SetWebPreferences(synced_prefs);
+  EXPECT_TRUE(client_.WebPreferencesNeedUpdateForColorRelatedStateChanges(
+      *web_contents, *webui_site_instance));
+
+  client_.OverrideWebPreferences(web_contents.get(), *web_site_instance,
+                                 &synced_prefs);
+  web_contents->SetWebPreferences(synced_prefs);
+  EXPECT_FALSE(client_.WebPreferencesNeedUpdateForColorRelatedStateChanges(
+      *web_contents, *web_site_instance));
+  theme_service->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+  FlushPostedTasks();
+  web_contents->SetWebPreferences(synced_prefs);
+  EXPECT_FALSE(client_.WebPreferencesNeedUpdateForColorRelatedStateChanges(
+      *web_contents, *web_site_instance));
+}
 
 INSTANTIATE_TEST_SUITE_P(
     ,

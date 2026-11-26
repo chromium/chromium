@@ -485,6 +485,7 @@ if (is_android) {
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.app") {
     sources = [
+      "src/org/chromium/chrome/browser/app/ChromeWindowColorProviderDelegateUnitTest.java",
       "src/org/chromium/chrome/browser/app/appmenu/AppMenuItemThemeUnitTest.java",
       "src/org/chromium/chrome/browser/app/appmenu/AppMenuPropertiesDelegateUnitTest.java",
       "src/org/chromium/chrome/browser/app/download/home/DownloadPageUnitTest.java",
@@ -1608,7 +1609,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlockerUnitTest.java",
       "src/org/chromium/chrome/browser/ui/TextAppearanceOverlayFontFeaturesTest.java",
       "src/org/chromium/chrome/browser/ui/activity_recreation/ActivityRecreationControllerUnitTest.java",
-      "src/org/chromium/chrome/browser/ui/color/ColorProviderBridgeImplTest.java",
       "src/org/chromium/chrome/browser/ui/system/StatusBarColorControllerUnitTest.java",
     ]
 
@@ -1617,7 +1617,6 @@ if (is_android) {
       "//components/browser_ui/styles/android:java",
       "//ui/android:ui_java_resources",
       "//ui/android:ui_java_test_support",
-      "//ui/color:ui_color_android_java",
     ]
   }
 
