@@ -982,8 +982,16 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
   EXPECT_EQ(first_line_text1, results3->lines[0]->text_line);
 }
 
+// TODO(crbug.com/590645124): Re-enable this test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PerformOCRMultipleClientsLightMode \
+  DISABLED_PerformOCRMultipleClientsLightMode
+#else
+#define MAYBE_PerformOCRMultipleClientsLightMode \
+  PerformOCRMultipleClientsLightMode
+#endif
 IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
-                       PerformOCRMultipleClientsLightMode) {
+                       MAYBE_PerformOCRMultipleClientsLightMode) {
   base::HistogramTester histograms;
   base::ScopedAllowBlockingForTesting allow_blocking;
 
