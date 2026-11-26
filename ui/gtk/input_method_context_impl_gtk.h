@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/glib/glib_integers.h"
 #include "ui/base/glib/scoped_gsignal.h"
@@ -25,8 +24,7 @@ class GtkUiPlatform;
 
 // An implementation of LinuxInputMethodContext which uses GtkIMContext
 // (gtk-immodule) as a bridge from/to underlying IMEs.
-class COMPONENT_EXPORT(GTK) InputMethodContextImplGtk
-    : public ui::LinuxInputMethodContext {
+class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
  public:
   explicit InputMethodContextImplGtk(
       ui::LinuxInputMethodContextDelegate* delegate,

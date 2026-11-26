@@ -82,7 +82,6 @@ component("gtk") {
     "gtk_ui_factory.h",
     "gtk_ui_platform_stub.h",
     "gtk_util.h",
-    "input_method_context_impl_gtk.h",
     "native_theme_gtk.h",
     "nav_button_provider_gtk.h",
     "os_settings_provider_gtk.h",
@@ -235,16 +234,8 @@ if (use_gtk) {
     ]
 
     if (ozone_platform_x11) {
-      sources += [
-        "input_method_context_impl_gtk_unittest.cc",
-        "x/gtk_ui_platform_x11_unittest.cc",
-      ]
-      deps += [
-        "//ui/base/ime",
-        "//ui/base/ime/linux",
-        "//ui/events:dom_keycode_converter",
-        "//ui/gfx/x",
-      ]
+      sources += [ "x/gtk_ui_platform_x11_unittest.cc" ]
+      deps += [ "//ui/gfx/x" ]
     }
 
     if (ozone_platform_wayland) {
