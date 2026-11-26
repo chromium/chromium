@@ -643,11 +643,11 @@ FieldTypeSet DetermineAvailableFieldTypes(
     const base::i18n::LanguageTag& app_locale) {
   FieldTypeSet types;
   for (const AutofillProfile& profile : profiles) {
-    profile.GetNonEmptyTypes(app_locale.tag_string(), &types);
+    profile.GetNonEmptyTypes(app_locale, &types);
   }
 
   for (const CreditCard& card : credit_cards) {
-    card.GetNonEmptyTypes(app_locale.tag_string(), &types);
+    card.GetNonEmptyTypes(app_locale, &types);
   }
   // As CVC is not stored, treat it separately.
   if (!last_unlocked_credit_card_cvc.empty() ||

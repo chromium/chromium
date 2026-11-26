@@ -222,7 +222,7 @@ class AutofillProfile : public FormGroup {
   FieldTypeSet GetUserVisibleTypes() const;
 
   // Returns true if there are no values (field types) set.
-  bool IsEmpty(std::string_view app_locale) const;
+  bool IsEmpty(const base::i18n::LanguageTag& app_locale) const;
 
   // Comparison for Sync.  Returns 0 if the profile is the same as `this`,
   // or < 0, or > 0 if it is different.  The implied ordering can be used for

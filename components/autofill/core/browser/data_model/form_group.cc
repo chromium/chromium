@@ -48,10 +48,10 @@ void FormGroup::GetMatchingTypes(std::u16string_view text,
   }
 }
 
-void FormGroup::GetNonEmptyTypes(std::string_view app_locale,
+void FormGroup::GetNonEmptyTypes(const base::i18n::LanguageTag& app_locale,
                                  FieldTypeSet* non_empty_types) const {
   for (FieldType type : GetSupportedTypes()) {
-    if (!GetInfo(type, app_locale).empty()) {
+    if (!GetInfo(type, app_locale.tag_string()).empty()) {
       non_empty_types->insert(type);
     }
   }

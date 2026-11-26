@@ -34,7 +34,7 @@ class FormGroup {
 
   // Returns a set of server field types for which this FormGroup has non-empty
   // data. This method is additive on `non_empty_types`.
-  virtual void GetNonEmptyTypes(std::string_view app_locale,
+  virtual void GetNonEmptyTypes(const base::i18n::LanguageTag& app_locale,
                                 FieldTypeSet* non_empty_types) const;
 
   // Returns the string associated with `type`, without canonicalizing the

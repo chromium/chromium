@@ -291,7 +291,7 @@ void AddressDataManager::AddProfile(const AutofillProfile& profile) {
   if (!webdata_service_ || !IsAutofillProfileEnabled()) {
     return;
   }
-  if (profile.IsEmpty(app_locale_.tag_string())) {
+  if (profile.IsEmpty(app_locale_)) {
     // TODO(crbug.com/40100455): This call is only used to notify tests to stop
     // waiting. Since no profile is added, this case shouldn't trigger
     // `OnAddressDataChanged()`.

@@ -447,7 +447,7 @@ FieldTypeSet AutofillProfile::GetUserVisibleTypes() const {
   return visible_types;
 }
 
-bool AutofillProfile::IsEmpty(std::string_view app_locale) const {
+bool AutofillProfile::IsEmpty(const base::i18n::LanguageTag& app_locale) const {
   FieldTypeSet types;
   GetNonEmptyTypes(app_locale, &types);
   return types.empty();

@@ -31,10 +31,11 @@ mojom::PaymentAddressPtr GetPaymentAddressFromAutofillProfile(
     const base::i18n::LanguageTag& app_locale) {
   mojom::PaymentAddressPtr payment_address = mojom::PaymentAddress::New();
 
-  const std::string_view app_locale_str = app_locale.tag_string();
-  if (profile.IsEmpty(app_locale_str)) {
+  if (profile.IsEmpty(app_locale)) {
     return payment_address;
   }
+
+  const std::string_view app_locale_str = app_locale.tag_string();
 
   payment_address->country =
       base::UTF16ToUTF8(profile.GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
