@@ -338,7 +338,7 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     }
     unmask_request_->card.SetExpirationMonthFromString(
         base::UTF8ToUTF16(response_details.expiration_month),
-        /*app_locale=*/std::string());
+        /*app_locale=*/std::nullopt);
     unmask_request_->card.SetExpirationYearFromString(
         base::UTF8ToUTF16(response_details.expiration_year));
 

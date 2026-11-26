@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/i18n/language_tag.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -414,67 +415,80 @@ TEST(AutofillDataModelUtilsTest, IsValidFlightNumberFormat) {
 }
 
 TEST(AutofillDataModelUtils, ParseMonthFromString) {
+  constexpr base::i18n::LanguageTag kEnUs =
+      base::i18n::GetKnownLanguageTag("en-US");
+  constexpr base::i18n::LanguageTag kFrFr =
+      base::i18n::GetKnownLanguageTag("fr-FR");
+
   // Numeric months.
-  EXPECT_EQ(ParseMonthFromString(u"1", ""), 1);
-  EXPECT_EQ(ParseMonthFromString(u"01", "en-US"), 1);
-  EXPECT_EQ(ParseMonthFromString(u"5", "en-US"), 5);
-  EXPECT_EQ(ParseMonthFromString(u"05", "en-US"), 5);
-  EXPECT_EQ(ParseMonthFromString(u"12", "en-US"), 12);
-  EXPECT_EQ(ParseMonthFromString(u" 05 ", "en-US"), 5);
+  EXPECT_EQ(ParseMonthFromString(u"1", std::nullopt), 1);
+  EXPECT_EQ(ParseMonthFromString(u"01", kEnUs), 1);
+  EXPECT_EQ(ParseMonthFromString(u"5", kEnUs), 5);
+  EXPECT_EQ(ParseMonthFromString(u"05", kEnUs), 5);
+  EXPECT_EQ(ParseMonthFromString(u"12", kEnUs), 12);
+  EXPECT_EQ(ParseMonthFromString(u" 05 ", kEnUs), 5);
 
   // Exact and word-bounded full and abbreviated month names
   // (case/accent/period insensitive).
-  EXPECT_EQ(ParseMonthFromString(u"January", "en-US"), 1);
-  EXPECT_EQ(ParseMonthFromString(u"jan", "en-US"), 1);
-  EXPECT_EQ(ParseMonthFromString(u"Jan.", "en-US"), 1);
-  EXPECT_EQ(ParseMonthFromString(u"May", "en-US"), 5);
-  EXPECT_EQ(ParseMonthFromString(u"may", "en-US"), 5);
-  EXPECT_EQ(ParseMonthFromString(u"  May  ", "en-US"), 5);
-  EXPECT_EQ(ParseMonthFromString(u"05 - May", "en-US"), 5);
-  EXPECT_EQ(ParseMonthFromString(u"May (05)", "en-US"), 5);
-  EXPECT_EQ(ParseMonthFromString(u"Feb (2)", "en-US"), 2);
-  EXPECT_EQ(ParseMonthFromString(u"janv", "fr-FR"), 1);
-  EXPECT_EQ(ParseMonthFromString(u"janv.", "fr-FR"), 1);
-  EXPECT_EQ(ParseMonthFromString(u"janvier", "fr-FR"), 1);
-  EXPECT_EQ(ParseMonthFromString(u"FÉVRIER", "fr-FR"), 2);
-  EXPECT_EQ(ParseMonthFromString(u"fevrier", "fr-FR"), 2);
-  EXPECT_EQ(ParseMonthFromString(u"févr.", "fr-FR"), 2);
-  EXPECT_EQ(ParseMonthFromString(u"08 - AOÛT", "fr-FR"), 8);
-  EXPECT_EQ(ParseMonthFromString(u"12 - DECEMBRE", "fr-FR"), 12);
+  EXPECT_EQ(ParseMonthFromString(u"January", kEnUs), 1);
+  EXPECT_EQ(ParseMonthFromString(u"jan", kEnUs), 1);
+  EXPECT_EQ(ParseMonthFromString(u"Jan.", kEnUs), 1);
+  EXPECT_EQ(ParseMonthFromString(u"May", kEnUs), 5);
+  EXPECT_EQ(ParseMonthFromString(u"may", kEnUs), 5);
+  EXPECT_EQ(ParseMonthFromString(u"  May  ", kEnUs), 5);
+  EXPECT_EQ(ParseMonthFromString(u"05 - May", kEnUs), 5);
+  EXPECT_EQ(ParseMonthFromString(u"May (05)", kEnUs), 5);
+  EXPECT_EQ(ParseMonthFromString(u"Feb (2)", kEnUs), 2);
+  EXPECT_EQ(ParseMonthFromString(u"janv", kFrFr), 1);
+  EXPECT_EQ(ParseMonthFromString(u"janv.", kFrFr), 1);
+  EXPECT_EQ(ParseMonthFromString(u"janvier", kFrFr), 1);
+  EXPECT_EQ(ParseMonthFromString(u"FÉVRIER", kFrFr), 2);
+  EXPECT_EQ(ParseMonthFromString(u"fevrier", kFrFr), 2);
+  EXPECT_EQ(ParseMonthFromString(u"févr.", kFrFr), 2);
+  EXPECT_EQ(ParseMonthFromString(u"08 - AOÛT", kFrFr), 8);
+  EXPECT_EQ(ParseMonthFromString(u"12 - DECEMBRE", kFrFr), 12);
 
   // Substring collisions inside words and invalid inputs must not parse as a
   // month.
-  EXPECT_EQ(ParseMonthFromString(u"MayTheForceBeWithYou", "en-US"),
-            std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"SecretMay2026!", "en-US"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"SmartCookie!", "en-US"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"Janice", "en-US"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"Augment", "en-US"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"May2026", "en-US"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"", "en-US"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"   ", "en-US"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u".", "en-US"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"-1", "en-US"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"13", "en-US"), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"MayTheForceBeWithYou", kEnUs), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"SecretMay2026!", kEnUs), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"SmartCookie!", kEnUs), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"Janice", kEnUs), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"Augment", kEnUs), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"May2026", kEnUs), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"", kEnUs), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"   ", kEnUs), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u".", kEnUs), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"-1", kEnUs), std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"13", kEnUs), std::nullopt);
 
   // When the killswitch is disabled, unanchored substring matching is restored.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAutofillParseMonthFromStringByWordBoundary);
-  EXPECT_EQ(ParseMonthFromString(u"MayTheForceBeWithYou", "en-US"), 5);
-  EXPECT_EQ(ParseMonthFromString(u"SecretMay2026!", "en-US"), 5);
+  EXPECT_EQ(ParseMonthFromString(u"MayTheForceBeWithYou", kEnUs), 5);
+  EXPECT_EQ(ParseMonthFromString(u"SecretMay2026!", kEnUs), 5);
 }
 
 TEST(AutofillDataModelUtils, ParseMonthFromString_LocalizedDisabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kAutofillFixParseMonthFromString);
 
-  EXPECT_EQ(ParseMonthFromString(u"05月", "ja"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"2025年11月", "ja"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"Wrzesień", "pl"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"Май", "ru"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"01 - Jan", "ja"), std::nullopt);
-  EXPECT_EQ(ParseMonthFromString(u"January", ""), std::nullopt);
+  EXPECT_EQ(
+      ParseMonthFromString(u"05月", base::i18n::GetKnownLanguageTag("ja")),
+      std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"2025年11月",
+                                 base::i18n::GetKnownLanguageTag("ja")),
+            std::nullopt);
+  EXPECT_EQ(
+      ParseMonthFromString(u"Wrzesień", base::i18n::GetKnownLanguageTag("pl")),
+      std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"Май", base::i18n::GetKnownLanguageTag("ru")),
+            std::nullopt);
+  EXPECT_EQ(
+      ParseMonthFromString(u"01 - Jan", base::i18n::GetKnownLanguageTag("ja")),
+      std::nullopt);
+  EXPECT_EQ(ParseMonthFromString(u"January", std::nullopt), std::nullopt);
 }
 
 TEST(AutofillDataModelUtils, ParseMonthFromString_Localized) {
@@ -483,9 +497,21 @@ TEST(AutofillDataModelUtils, ParseMonthFromString_Localized) {
 
   struct TestCase {
     std::u16string_view input;
-    std::string_view locale;
+    std::optional<base::i18n::LanguageTag> locale;
     std::optional<int> expected;
   };
+  constexpr base::i18n::LanguageTag kEnUs =
+      base::i18n::GetKnownLanguageTag("en-US");
+  constexpr base::i18n::LanguageTag kEnGb =
+      base::i18n::GetKnownLanguageTag("en-GB");
+  constexpr base::i18n::LanguageTag kJa = base::i18n::GetKnownLanguageTag("ja");
+  constexpr base::i18n::LanguageTag kZh = base::i18n::GetKnownLanguageTag("zh");
+  constexpr base::i18n::LanguageTag kKo = base::i18n::GetKnownLanguageTag("ko");
+  constexpr base::i18n::LanguageTag kVi = base::i18n::GetKnownLanguageTag("vi");
+  constexpr base::i18n::LanguageTag kPl = base::i18n::GetKnownLanguageTag("pl");
+  constexpr base::i18n::LanguageTag kRu = base::i18n::GetKnownLanguageTag("ru");
+  constexpr base::i18n::LanguageTag kFr = base::i18n::GetKnownLanguageTag("fr");
+
   // Keep as a table loop with `SCOPED_TRACE` rather than `TEST_P` to avoid
   // re-initializing `ScopedFeatureList` per test case while still reporting
   // each failing `(locale, input)` pair.
@@ -493,116 +519,113 @@ TEST(AutofillDataModelUtils, ParseMonthFromString_Localized) {
       // Bare numeric strings, whitespace, and bounds. "0" returns 0 (matching
       // `GetExpirationMonth(0)`), which is relied upon for 0-indexed `<select>`
       // controls where January is "0".
-      {u"0", "", 0},
-      {u"1", "", 1},
-      {u" 05 ", "", 5},
-      {u"12", "ja", 12},
-      {u"-1", "en-US", std::nullopt},
-      {u"13", "en-US", std::nullopt},
-      {u"", "en-US", std::nullopt},
-      {u"January", "", 1},
-      {u"05 - May", "", 5},
+      {u"0", std::nullopt, 0},
+      {u"1", std::nullopt, 1},
+      {u" 05 ", std::nullopt, 5},
+      {u"12", kJa, 12},
+      {u"-1", kEnUs, std::nullopt},
+      {u"13", kEnUs, std::nullopt},
+      {u"", kEnUs, std::nullopt},
+      {u"January", std::nullopt, 1},
+      {u"05 - May", std::nullopt, 5},
       // Because the whole string is not a single number, the leading "06" is
       // ignored and the month name ("May") matches instead.
-      {u"06 - May", "", 5},
-      {u"MayTheForceBeWithYou", "", std::nullopt},
+      {u"06 - May", std::nullopt, 5},
+      {u"MayTheForceBeWithYou", std::nullopt, std::nullopt},
       // Word-boundary rejections preserved from the legacy path.
-      {u"MayTheForceBeWithYou", "en-US", std::nullopt},
-      {u"SecretMay2026!", "en-US", std::nullopt},
-      {u"SmartCookie!", "en-US", std::nullopt},
-      {u"Janice", "en-US", std::nullopt},
-      {u"Augment", "en-US", std::nullopt},
-      {u"May2026", "en-US", std::nullopt},
+      {u"MayTheForceBeWithYou", kEnUs, std::nullopt},
+      {u"SecretMay2026!", kEnUs, std::nullopt},
+      {u"SmartCookie!", kEnUs, std::nullopt},
+      {u"Janice", kEnUs, std::nullopt},
+      {u"Augment", kEnUs, std::nullopt},
+      {u"May2026", kEnUs, std::nullopt},
       // ICU's en-US abbreviation for September is "Sep" (not "Sept"), so
       // trailing word-boundary checks reject "Sep" inside "Sept."; en-GB
       // defines "Sept" in CLDR.
-      {u"Sept.", "en-US", std::nullopt},
-      {u"Sept.", "en-GB", 9},
+      {u"Sept.", kEnUs, std::nullopt},
+      {u"Sept.", kEnGb, 9},
       // Japanese (`ja`): suffix collisions, zero-padding, and fullwidth digits.
-      {u"1月", "ja", 1},
-      {u"01月", "ja", 1},
-      {u"10月", "ja", 10},
-      {u"11月", "ja", 11},
-      {u"  12月  ", "ja", 12},
-      {u"11 - 11月", "ja", 11},
-      {u"13月 - 3月", "ja", 3},
-      {u"2025年11月", "ja", 11},
-      {u"０１月", "ja", 1},
-      {u"１１月", "ja", 11},
-      {u"00月", "ja", std::nullopt},
-      {u"13月", "ja", std::nullopt},
-      {u"１３月", "ja", std::nullopt},
-      {u"101月", "ja", std::nullopt},
-      {u"010月", "ja", std::nullopt},
-      {u"０１０月", "ja", std::nullopt},
+      {u"1月", kJa, 1},
+      {u"01月", kJa, 1},
+      {u"10月", kJa, 10},
+      {u"11月", kJa, 11},
+      {u"  12月  ", kJa, 12},
+      {u"11 - 11月", kJa, 11},
+      {u"13月 - 3月", kJa, 3},
+      {u"2025年11月", kJa, 11},
+      {u"０１月", kJa, 1},
+      {u"１１月", kJa, 11},
+      {u"00月", kJa, std::nullopt},
+      {u"13月", kJa, std::nullopt},
+      {u"１３月", kJa, std::nullopt},
+      {u"101月", kJa, std::nullopt},
+      {u"010月", kJa, std::nullopt},
+      {u"０１０月", kJa, std::nullopt},
       // Unlike "2025年11月", a numeric date without a localized month marker
       // ("月") must not match as a named month.
-      {u"2028/11", "ja", std::nullopt},
+      {u"2028/11", kJa, std::nullopt},
       // Chinese (`zh`): wide ("十一月"/"十二月") and numeric ("11月"/"12月").
-      {u"一月", "zh", 1},
-      {u"十月", "zh", 10},
-      {u"十一月", "zh", 11},
-      {u"十二月", "zh", 12},
-      {u"11月", "zh", 11},
-      {u"12月", "zh", 12},
-      {u"08月", "zh", 8},
-      {u"十三月", "zh", std::nullopt},
+      {u"一月", kZh, 1},
+      {u"十月", kZh, 10},
+      {u"十一月", kZh, 11},
+      {u"十二月", kZh, 12},
+      {u"11月", kZh, 11},
+      {u"12月", kZh, 12},
+      {u"08月", kZh, 8},
+      {u"十三月", kZh, std::nullopt},
       // Korean (`ko`): suffix collisions ("11월"/"12월" vs "1월"/"2월").
-      {u"1월", "ko", 1},
-      {u"05월", "ko", 5},
-      {u"11월", "ko", 11},
-      {u"12월", "ko", 12},
-      {u"13월", "ko", std::nullopt},
+      {u"1월", kKo, 1},
+      {u"05월", kKo, 5},
+      {u"11월", kKo, 11},
+      {u"12월", kKo, 12},
+      {u"13월", kKo, std::nullopt},
       // Vietnamese (`vi`): prefix collisions ("Tháng 10..12" vs "tháng 1").
-      {u"Tháng 1", "vi", 1},
-      {u"Tháng 10", "vi", 10},
-      {u"Tháng 12", "vi", 12},
-      {u"Tháng １２", "vi", 12},
-      {u"Tháng 13 - Tháng 1", "vi", 1},
-      {u"Thg 1", "vi", 1},
-      {u"Thg 12", "vi", 12},
-      {u"Tháng 13", "vi", std::nullopt},
-      {u"Tháng １３", "vi", std::nullopt},
+      {u"Tháng 1", kVi, 1},
+      {u"Tháng 10", kVi, 10},
+      {u"Tháng 12", kVi, 12},
+      {u"Tháng １２", kVi, 12},
+      {u"Tháng 13 - Tháng 1", kVi, 1},
+      {u"Thg 1", kVi, 1},
+      {u"Thg 12", kVi, 12},
+      {u"Tháng 13", kVi, std::nullopt},
+      {u"Tháng １３", kVi, std::nullopt},
       // Polish (`pl`): mid-word "sie" (Aug=8) vs standalone "Wrzesień" (Sep=9).
-      {u"Sierpień", "pl", 8},
-      {u"Wrzesień", "pl", 9},
-      {u"września", "pl", 9},
-      {u"Grudzień", "pl", 12},
+      {u"Sierpień", kPl, 8},
+      {u"Wrzesień", kPl, 9},
+      {u"września", kPl, 9},
+      {u"Grudzień", kPl, 12},
       // Russian (`ru`): standalone nominative ("Май") and format genitive.
-      {u"Май", "ru", 5},
-      {u"мая", "ru", 5},
-      {u"Декабрь", "ru", 12},
+      {u"Май", kRu, 5},
+      {u"мая", kRu, 5},
+      {u"Декабрь", kRu, 12},
       // Longest-match preference regardless of month order ("January" [7] and
       // "September" [9] both beat "May" [3]).
-      {u"May - January", "en-US", 1},
-      {u"May - September", "en-US", 9},
+      {u"May - January", kEnUs, 1},
+      {u"May - September", kEnUs, 9},
       // French (`fr`) & English (`en-US`): periods, NFD marks, and non-BMP
       // letters (𐐀 = U+10400, Deseret Capital Letter Long I, UTF-16 surrogate
       // pair).
-      {u"févr. - 02", "fr", 2},
-      {u"02 - févr.", "fr", 2},
-      {u"de\u0301marche", "fr", std::nullopt},
-      {u"Sep - 09", "en-US", 9},
-      {u"𐐀May", "en-US", std::nullopt},
-      {u"𐐀May - May", "en-US", 5},
+      {u"févr. - 02", kFr, 2},
+      {u"02 - févr.", kFr, 2},
+      {u"de\u0301marche", kFr, std::nullopt},
+      {u"Sep - 09", kEnUs, 9},
+      {u"𐐀May", kEnUs, std::nullopt},
+      {u"𐐀May - May", kEnUs, 5},
       // English fallback when `app_locale` is non-English.
-      {u"01 - Jan", "ja", 1},
-      {u"11 - Nov", "ru", 11},
-      {u"September", "pl", 9},
-      {u"Sep.", "ko", 9},
-      {u"NotAMonth", "en-US", std::nullopt},
-      {u"NotAMonth", "ja", std::nullopt},
+      {u"01 - Jan", kJa, 1},
+      {u"11 - Nov", kRu, 11},
+      {u"September", kPl, 9},
+      {u"Sep.", kKo, 9},
+      {u"NotAMonth", kEnUs, std::nullopt},
+      {u"NotAMonth", kJa, std::nullopt},
   });
 
   for (const TestCase& tc : kCases) {
-    SCOPED_TRACE(testing::Message() << "locale=" << tc.locale << " input="
-                                    << testing::PrintToString(tc.input));
+    SCOPED_TRACE(testing::Message()
+                 << "locale=" << (tc.locale ? tc.locale->tag_string() : "")
+                 << " input=" << testing::PrintToString(tc.input));
     EXPECT_EQ(ParseMonthFromString(tc.input, tc.locale), tc.expected);
   }
-  // Overlong/bogus locale tags (`icu::Locale::isBogus()`) should fall back to
-  // English rather than matching ICU's "root" ("M01".."M12").
-  EXPECT_EQ(ParseMonthFromString(u"January", std::string(300, 'x')), 1);
-  EXPECT_EQ(ParseMonthFromString(u"M01", std::string(300, 'x')), std::nullopt);
 }
 
 }  // namespace

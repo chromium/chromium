@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -145,7 +146,7 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
       if (record_type == CreditCard::RecordType::kVirtualCard) {
         card_.SetExpirationMonthFromString(
             base::UTF8ToUTF16(response_details.expiration_month),
-            /*app_locale=*/std::string());
+            /*app_locale=*/std::nullopt);
         card_.SetExpirationYearFromString(
             base::UTF8ToUTF16(response_details.expiration_year));
       }

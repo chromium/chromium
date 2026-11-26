@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/payments_window_manager_util.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -114,7 +115,7 @@ CreateVcn3dsAuthenticationResponseFromServerResult(
     card.SetNumber(base::UTF8ToUTF16(response_details.real_pan));
     card.SetExpirationMonthFromString(
         base::UTF8ToUTF16(response_details.expiration_month),
-        /*app_locale=*/std::string());
+        /*app_locale=*/std::nullopt);
     card.SetExpirationYearFromString(
         base::UTF8ToUTF16(response_details.expiration_year));
     card.set_cvc(base::UTF8ToUTF16(response_details.dcvv));

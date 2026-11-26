@@ -348,7 +348,7 @@ void FullCardRequest::OnDidGetRealPan(
         request_->card.set_record_type(CreditCard::RecordType::kVirtualCard);
         request_->card.SetExpirationMonthFromString(
             base::UTF8ToUTF16(response_details.expiration_month),
-            /*app_locale=*/std::string());
+            /*app_locale=*/std::nullopt);
         request_->card.SetExpirationYearFromString(
             base::UTF8ToUTF16(response_details.expiration_year));
         // `request_->card` will already already have a CVC set as it's the card

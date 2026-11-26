@@ -11,6 +11,12 @@
 #include <string>
 #include <string_view>
 
+#include "base/types/optional_ref.h"
+
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill::data_util {
 
 // A date consists of a year, month, and day.
@@ -159,8 +165,9 @@ std::u16string Expiration4DigitYearAsString(int expiration_year);
 // or "2") into a numeric value in [1, 12]. Returns the corresponding `int`
 // value if parsing was successful or `std::nullopt` if a month was not
 // recognized.
-std::optional<int> ParseMonthFromString(std::u16string_view text,
-                                        std::string_view app_locale);
+std::optional<int> ParseMonthFromString(
+    std::u16string_view text,
+    base::optional_ref<const base::i18n::LanguageTag> app_locale);
 
 // Parses the `text` and returns the corresponding `int` value if parsing was
 // successful . This function accepts two digit years as well as four digit

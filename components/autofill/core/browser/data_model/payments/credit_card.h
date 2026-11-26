@@ -17,6 +17,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
@@ -337,8 +338,9 @@ class CreditCard : public FormGroup {
 
   // Sets `expiration_month_` to the integer conversion of `text` and returns
   // whether the operation was successful.
-  bool SetExpirationMonthFromString(std::u16string_view text,
-                                    std::string_view app_locale);
+  bool SetExpirationMonthFromString(
+      std::u16string_view text,
+      base::optional_ref<const base::i18n::LanguageTag> app_locale);
 
   // Sets `expiration_year_` to the integer conversion of `text`. Will handle
   // 4-digit year or 2-digit year (eventually converted to 4-digit year).

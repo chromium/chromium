@@ -29,6 +29,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
@@ -572,7 +573,7 @@ void CreditCard::SetRawInfoWithVerificationStatus(FieldType type,
       break;
 
     case CREDIT_CARD_EXP_MONTH:
-      SetExpirationMonthFromString(value, {});
+      SetExpirationMonthFromString(value, std::nullopt);
       break;
 
     case CREDIT_CARD_EXP_2_DIGIT_YEAR:
@@ -633,7 +634,7 @@ void CreditCard::GetMatchingTypes(std::u16string_view text,
   }
 
   if (std::optional<int> parsed_month =
-          data_util::ParseMonthFromString(text, app_locale.tag_string())) {
+          data_util::ParseMonthFromString(text, app_locale)) {
     if (*parsed_month == expiration_month_) {
       matching_types->insert(CREDIT_CARD_EXP_MONTH);
     }
@@ -945,8 +946,9 @@ bool CreditCard::HasValidExpirationDate() const {
                                          AutofillClock::Now());
 }
 
-bool CreditCard::SetExpirationMonthFromString(std::u16string_view text,
-                                              std::string_view app_locale) {
+bool CreditCard::SetExpirationMonthFromString(
+    std::u16string_view text,
+    base::optional_ref<const base::i18n::LanguageTag> app_locale) {
   if (std::optional<int> parsed_month =
           data_util::ParseMonthFromString(text, app_locale)) {
     expiration_month_ = *parsed_month;
@@ -1209,7 +1211,7 @@ bool CreditCard::SetInfoWithVerificationStatus(
     const base::i18n::LanguageTag& app_locale,
     VerificationStatus status) {
   if (type == CREDIT_CARD_EXP_MONTH) {
-    return SetExpirationMonthFromString(value, app_locale.tag_string());
+    return SetExpirationMonthFromString(value, app_locale);
   }
 
   if (type == CREDIT_CARD_NUMBER) {

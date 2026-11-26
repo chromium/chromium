@@ -21,6 +21,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/i18n/char_iterator.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/string_search.h"
 #include "base/i18n/unicodestring.h"
 #include "base/notreached.h"
@@ -28,6 +29,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
@@ -316,12 +318,13 @@ std::optional<int> ParseNamedMonthForLocale(std::u16string_view trimmed,
   return std::nullopt;
 }
 
-std::optional<int> ParseNamedMonth(std::u16string_view trimmed,
-                                   std::string_view app_locale) {
-  if (app_locale.empty()) {
+std::optional<int> ParseNamedMonth(
+    std::u16string_view trimmed,
+    base::optional_ref<const base::i18n::LanguageTag> app_locale) {
+  if (!app_locale) {
     return ParseNamedMonthForLocale(trimmed, icu::Locale::getEnglish());
   }
-  const icu::Locale locale(std::string(app_locale).c_str());
+  const icu::Locale locale(std::string(app_locale->tag_string()).c_str());
   if (locale.isBogus()) {
     return ParseNamedMonthForLocale(trimmed, icu::Locale::getEnglish());
   }
@@ -530,8 +533,9 @@ std::u16string Expiration4DigitYearAsString(int expiration_year) {
   return FormatDate({.year = expiration_year}, u"YYYY");
 }
 
-std::optional<int> ParseMonthFromString(std::u16string_view text,
-                                        std::string_view app_locale) {
+std::optional<int> ParseMonthFromString(
+    std::u16string_view text,
+    base::optional_ref<const base::i18n::LanguageTag> app_locale) {
   std::u16string_view trimmed = base::TrimWhitespace(text, base::TRIM_ALL);
 
   if (trimmed.empty())
@@ -547,13 +551,14 @@ std::optional<int> ParseMonthFromString(std::u16string_view text,
     return ParseNamedMonth(trimmed, app_locale);
   }
 
-  if (app_locale.empty())
+  if (!app_locale) {
     return std::nullopt;
+  }
 
   // Otherwise, try parsing the `trimmed` as a named month, e.g. "January" or
   // "Jan" in the user's locale.
   UErrorCode status = U_ZERO_ERROR;
-  icu::Locale locale(std::string(app_locale).c_str());
+  icu::Locale locale(std::string(app_locale->tag_string()).c_str());
   icu::DateFormatSymbols date_format_symbols(locale, status);
   DCHECK(status == U_ZERO_ERROR || status == U_USING_FALLBACK_WARNING ||
          status == U_USING_DEFAULT_WARNING);

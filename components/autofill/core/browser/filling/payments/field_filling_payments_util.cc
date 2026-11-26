@@ -113,8 +113,8 @@ std::optional<SelectOption> GetExpirationMonthSelectControlValue(
        std::views::zip(field_options, trimmed_values)) {
     // We use the trimmed value to match with `month`, but the original select
     // value to fill the field (otherwise filling wouldn't work).
-    if (std::optional<int> parsed_month = data_util::ParseMonthFromString(
-            trimmed_value, app_locale.tag_string())) {
+    if (std::optional<int> parsed_month =
+            data_util::ParseMonthFromString(trimmed_value, app_locale)) {
       if (month == *parsed_month) {
         return field_option;
       }
@@ -123,8 +123,8 @@ std::optional<SelectOption> GetExpirationMonthSelectControlValue(
 
   // Attempt to match with each of the options' content.
   for (const SelectOption& option : field_options) {
-    if (std::optional<int> parsed_month = data_util::ParseMonthFromString(
-            option.text, app_locale.tag_string())) {
+    if (std::optional<int> parsed_month =
+            data_util::ParseMonthFromString(option.text, app_locale)) {
       if (month == *parsed_month) {
         return option;
       }

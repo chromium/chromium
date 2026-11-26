@@ -37,8 +37,8 @@ std::u16string CreditCardCloudTokenData::Expiration4DigitYearAsString() const {
 
 void CreditCardCloudTokenData::SetExpirationMonthFromString(
     const std::u16string& month) {
-  if (std::optional<int> parsed_month = data_util::ParseMonthFromString(
-          month, /*app_locale=*/std::string())) {
+  if (std::optional<int> parsed_month =
+          data_util::ParseMonthFromString(month, /*app_locale=*/std::nullopt)) {
     exp_month = *parsed_month;
   }
 }
