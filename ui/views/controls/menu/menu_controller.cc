@@ -1821,7 +1821,9 @@ views::View::DropCallback MenuController::GetDropCallback(
   CHECK(drop_target, base::NotFatalUntil::M163);
 
   MenuItemView* item = state_.item;
-  CHECK(item, base::NotFatalUntil::M163);
+  // TODO(crbug.com/587780720): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(item);
 
   // If over an empty menu item, drop occurs on the parent.
   if (IsViewClass<EmptyMenuMenuItem>(drop_target)) {
