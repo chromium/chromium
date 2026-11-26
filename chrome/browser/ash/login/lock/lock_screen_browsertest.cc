@@ -64,8 +64,7 @@ class LockScreenInputsTest : public LockScreenBaseTest {
   }
 };
 
-// TODO(http://crbug.com/507908230) - Re-enable once the test is fixed.
-IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, DISABLED_CheckIMESwitches) {
+IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
   const auto& users = login_manager_.users();
   LoginUserWithDbusClient(users[0].account_id, LoginManagerTest::kPassword);
   scoped_refptr<input_method::InputMethodManager::State> ime_states[2] = {
