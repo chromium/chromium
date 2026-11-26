@@ -4673,6 +4673,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
 </histogram>
 
+<histogram name="PasswordManager.{Store}TotalAccountsHiRes3.Federated"
+    units="accounts" expires_after="2027-11-25">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    The number of non-blocklisted legacy federated credentials stored in the
+    password manager's {Store} (across all sites). Recorded during browser
+    start-up, at most once per day for regular profiles.
+  </summary>
+  <token key="Store" variants="Store"/>
+</histogram>
+
 <histogram name="PasswordManager.{Store}TotalAccountsHiRes3.WithScheme{Scheme}"
     units="accounts" expires_after="2027-08-24">
   <owner>mamir@chromium.org</owner>

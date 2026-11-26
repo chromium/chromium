@@ -8,8 +8,10 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -1752,6 +1754,61 @@ TEST_F(StoreMetricsReporterTest, ReportReencryptedWithAsyncOSCrypt) {
       "PasswordManager.ProfileStore.ReencryptedWithAsyncOSCrypt", true, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStore.ReencryptedWithAsyncOSCrypt", true, 1);
+}
+
+TEST_F(StoreMetricsReporterTest, ReportFederatedAccountsMetrics) {
+  auto profile_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
+  profile_store->Init();
+
+  StoredCredential password = CreateForm("https://example.com/", "user", "p");
+  profile_store->AddLogin(std::move(password));
+
+  StoredCredential federated1 =
+      CreateForm("federation://example.com/idp1.com", "user1", "");
+  federated1.url = GURL("https://example.com/");
+  federated1.federation_origin = url::SchemeHostPort(GURL("https://idp1.com/"));
+  profile_store->AddLogin(std::move(federated1));
+
+  StoredCredential federated2 =
+      CreateForm("federation://example.com/idp2.com", "user2", "");
+  federated2.url = GURL("https://example.com/");
+  federated2.federation_origin = url::SchemeHostPort(GURL("https://idp2.com/"));
+  profile_store->AddLogin(std::move(federated2));
+
+  StoredCredential blocked_federated =
+      CreateForm("federation://blocked.com/idp1.com", "", "");
+  blocked_federated.url = GURL("https://blocked.com/");
+  blocked_federated.federation_origin =
+      url::SchemeHostPort(GURL("https://idp1.com/"));
+  blocked_federated.blocked_by_user = true;
+  profile_store->AddLogin(std::move(blocked_federated));
+
+  auto account_store =
+      base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
+  account_store->Init();
+  account_store->AddLogin(CreateForm("https://example.com/", "acct_user", "p"));
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> done_callback_future;
+  StoreMetricsReporter reporter(
+      profile_store.get(), account_store.get(), sync_service(), &prefs_,
+      /*password_reuse_manager=*/nullptr, &settings_service(),
+      done_callback_future.GetCallback());
+
+  ASSERT_TRUE(done_callback_future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProfileStore.TotalAccountsHiRes3.Federated", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStore.TotalAccountsHiRes3.Federated", 0, 1);
+
+  account_store->ShutdownOnUIThread();
+  profile_store->ShutdownOnUIThread();
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 }
 }  // namespace
 }  // namespace password_manager

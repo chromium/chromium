@@ -129,9 +129,13 @@ int ReportNumberOfAccountsMetrics(bool is_account_store,
   base::flat_map<std::tuple<std::string, PasswordForm::Type, int>, int>
       accounts_per_site_map;
 
+  int federated_accounts = 0;
   for (const auto& form : results.store_results) {
     accounts_per_site_map[{form.signon_realm, form.type,
                            form.blocked_by_user}]++;
+    if (!form.blocked_by_user && form.IsFederatedCredential()) {
+      ++federated_accounts;
+    }
   }
 
   std::string_view store_suffix = GetMetricsSuffixForStore(is_account_store);
@@ -245,6 +249,9 @@ int ReportNumberOfAccountsMetrics(bool is_account_store,
       base::StrCat({kPasswordManager, store_suffix, ".BlacklistedSitesHiRes3",
                     custom_passphrase_suffix}),
       blocklisted_sites);
+  LogAccountStatHiRes(base::StrCat({kPasswordManager, store_suffix,
+                                    ".TotalAccountsHiRes3.Federated"}),
+                      federated_accounts);
   return total_accounts;
 }
 
