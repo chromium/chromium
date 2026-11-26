@@ -62,7 +62,7 @@ interface OnDetachedEvent : ExtensionEvent {
   static boolean hasListener(OnDetachedListener listener);
 };
 
-// Use the <code>chrome.system.storage</code> API to query storage device
+// Use the <code>browser.system.storage</code> API to query storage device
 // information and be notified when a removable storage device is attached and
 // detached.
 interface Storage {

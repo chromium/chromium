@@ -9,7 +9,7 @@ dictionary MemoryInfo {
   required double availableCapacity;
 };
 
-// The <code>chrome.system.memory</code> API.
+// The <code>browser.system.memory</code> API.
 interface Memory {
   // Get physical memory information.
   // |PromiseValue|: info

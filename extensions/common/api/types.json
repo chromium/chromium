@@ -5,7 +5,7 @@
 [
   {
     "namespace": "types",
-    "description": "The <code>chrome.types</code> API contains type declarations for Chrome.",
+    "description": "The <code>browser.types</code> API contains type declarations for Chrome.",
     "types": [
       {
         "id": "ChromeSettingScope",

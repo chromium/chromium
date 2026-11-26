@@ -153,7 +153,7 @@
       {
         "name": "notifyTestStarted",
         "type": "function",
-        "description": "Notifies the browser process that a specific test case in the test code started running. The chrome.test API uses this internally.",
+        "description": "Notifies the browser process that a specific test case in the test code started running. The browser.test API uses this internally.",
         "parameters": [
           {
             "type": "string",
@@ -164,7 +164,7 @@
       {
         "name": "notifyTestFinished",
         "type": "function",
-        "description": "Notifies the browser process that a specific test case in the test code finished running. The chrome.test API uses this internally.",
+        "description": "Notifies the browser process that a specific test case in the test code finished running. The browser.test API uses this internally.",
         "parameters": [
           {
             "type": "string",

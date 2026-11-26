@@ -5,7 +5,7 @@
 [
   {
     "namespace": "storage",
-    "description": "Use the <code>chrome.storage</code> API to store, retrieve, and track changes to user data.",
+    "description": "Use the <code>browser.storage</code> API to store, retrieve, and track changes to user data.",
     "unprivileged": true,
     "types": [
       {

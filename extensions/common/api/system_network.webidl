@@ -14,7 +14,7 @@ dictionary NetworkInterface {
   required long prefixLength;
 };
 
-// Use the <code>chrome.system.network</code> API.
+// Use the <code>browser.system.network</code> API.
 interface Network {
   // Retrieves information about local adapters on this system.
   // |Returns|: Called when local adapter information is available.
