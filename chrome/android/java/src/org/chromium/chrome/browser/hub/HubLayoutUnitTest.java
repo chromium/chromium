@@ -220,7 +220,7 @@ public class HubLayoutUnitTest {
                             return FAKE_NATIVE_ADDRESS_1;
                         })
                 .when(mStaticTabSceneLayerJni)
-                .init(any());
+                .init(any(), eq(true));
         doAnswer(
                         invocation -> {
                             mColorSceneLayer = (SceneLayer) invocation.getArguments()[0];
@@ -931,6 +931,7 @@ public class HubLayoutUnitTest {
         startAnimationRunnable.run();
 
         assertThat(mHubLayout.getSceneLayer()).isInstanceOf(StaticTabSceneLayer.class);
+        verify(mStaticTabSceneLayerJni).init(any(), eq(true));
         layoutTabs = mHubLayout.getLayoutTabsToRender();
         assertEquals(1, layoutTabs.length);
         assertEquals(tabId, layoutTabs[0].getId());

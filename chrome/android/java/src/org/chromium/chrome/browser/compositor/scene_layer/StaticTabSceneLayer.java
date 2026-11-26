@@ -41,8 +41,20 @@ public class StaticTabSceneLayer extends SceneLayer {
     private long mNativePtr;
 
     /**
+     * Creates a {@link StaticTabSceneLayer}.
+     *
+     * @param canUseThumbnail Whether to allow drawing a cached static thumbnail when the live layer
+     *     is not drawing.
+     */
+    public StaticTabSceneLayer(boolean canUseThumbnail) {
+        mNativePtr = StaticTabSceneLayerJni.get().init(this, canUseThumbnail);
+        assert mNativePtr != 0;
+    }
+
+    /**
      * Update {@link StaticTabSceneLayer} with the given {@link PropertyModel}.
-     * @param model         The {@link PropertyModel} to use.
+     *
+     * @param model The {@link PropertyModel} to use.
      */
     public void update(PropertyModel model) {
         if (model == null) {
@@ -82,10 +94,7 @@ public class StaticTabSceneLayer extends SceneLayer {
 
     @Override
     protected void initializeNative() {
-        if (mNativePtr == 0) {
-            mNativePtr = StaticTabSceneLayerJni.get().init(this);
-        }
-        assert mNativePtr != 0;
+        // Native side is initialized in the constructor to pass canUseThumbnail.
     }
 
     @Override
@@ -97,7 +106,7 @@ public class StaticTabSceneLayer extends SceneLayer {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long init(StaticTabSceneLayer self);
+        long init(StaticTabSceneLayer self, boolean canUseThumbnail);
 
         void updateTabLayer(
                 long nativeStaticTabSceneLayer,

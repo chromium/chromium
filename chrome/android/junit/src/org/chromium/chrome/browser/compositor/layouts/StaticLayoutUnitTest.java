@@ -51,7 +51,10 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
+import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayerJni;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -338,8 +341,7 @@ public class StaticLayoutUnitTest {
 
         assertEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
         assertFalse(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
-        verify(mTabContentManager)
-                .updateVisibleIds(eq(Collections.singletonList(TAB2_ID)), eq(TAB2_ID));
+        verify(mTabContentManager).updateVisibleIds(eq(Collections.emptyList()), eq(TAB2_ID));
     }
 
     @Test
@@ -377,8 +379,7 @@ public class StaticLayoutUnitTest {
         doReturn(new GURL("chrome-native://bookmarks/")).when(mTab1).getUrl();
         mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
         assertFalse(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
-        verify(mTabContentManager)
-                .updateVisibleIds(eq(Collections.singletonList(TAB1_ID)), eq(TAB1_ID));
+        verify(mTabContentManager).updateVisibleIds(eq(Collections.emptyList()), eq(TAB1_ID));
 
         reset(mTabContentManager);
 
@@ -399,8 +400,7 @@ public class StaticLayoutUnitTest {
         doReturn(nativePage).when(mTab1).getNativePage();
         mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
         assertFalse(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
-        verify(mTabContentManager)
-                .updateVisibleIds(eq(Collections.singletonList(TAB1_ID)), eq(TAB1_ID));
+        verify(mTabContentManager).updateVisibleIds(eq(Collections.emptyList()), eq(TAB1_ID));
 
         reset(mTabContentManager);
 
@@ -615,5 +615,45 @@ public class StaticLayoutUnitTest {
         mTabModelObserverCaptor.getAllValues().get(1).tabRemoved(mTab1);
         assertEquals(Tab.INVALID_TAB_ID, mModel.get(LayoutTab.TAB_ID));
         assertEquals(Color.TRANSPARENT, mModel.get(LayoutTab.BACKGROUND_COLOR));
+    }
+
+    @Test
+    public void testConstructor_DisablesStaticLayer() {
+        SceneLayer.Natives sceneLayerJni = mock(SceneLayer.Natives.class);
+        StaticTabSceneLayer.Natives staticTabSceneLayerJni =
+                mock(StaticTabSceneLayer.Natives.class);
+        SceneLayerJni.setInstanceForTesting(sceneLayerJni);
+        StaticTabSceneLayerJni.setInstanceForTesting(staticTabSceneLayerJni);
+        final SceneLayer[] capturedLayer = new SceneLayer[1];
+        doAnswer(
+                        invocation -> {
+                            capturedLayer[0] = (SceneLayer) invocation.getArguments()[0];
+                            capturedLayer[0].setNativePtr(1L);
+                            return 1L;
+                        })
+                .when(staticTabSceneLayerJni)
+                .init(any(), eq(false));
+        doAnswer(
+                        invocation -> {
+                            capturedLayer[0].setNativePtr(0L);
+                            return null;
+                        })
+                .when(sceneLayerJni)
+                .destroy(1L);
+
+        StaticLayout layout =
+                new StaticLayout(
+                        mContext,
+                        mUpdateHost,
+                        mRenderHost,
+                        mFrameRequestSupplier,
+                        CallbackUtils.emptyRunnable(),
+                        mTabModelSelector,
+                        mTabContentManager,
+                        mBrowserControlsStateProvider,
+                        mNeedsOffsetTagsSupplier);
+        verify(staticTabSceneLayerJni).init(any(), eq(false));
+        assertTrue(layout.getSceneLayer() instanceof StaticTabSceneLayer);
+        layout.destroy();
     }
 }

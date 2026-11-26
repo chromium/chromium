@@ -28,7 +28,9 @@ class ContentLayer : public Layer {
   ContentLayer(const ContentLayer&) = delete;
   ContentLayer& operator=(const ContentLayer&) = delete;
 
-  void SetProperties(int id, bool can_use_live_layer);
+  void SetProperties(int id,
+                     bool can_use_live_layer,
+                     bool can_use_thumbnail);
 
   scoped_refptr<cc::slim::Layer> layer() override;
 

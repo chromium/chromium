@@ -834,7 +834,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     @EnsuresNonNull("mTabSceneLayer")
     private void ensureSceneLayersExist() {
         if (mTabSceneLayer == null) {
-            mTabSceneLayer = new StaticTabSceneLayer();
+            mTabSceneLayer = new StaticTabSceneLayer(/* canUseThumbnail= */ true);
             if (mTabContentManager != null) {
                 mTabSceneLayer.setTabContentManager(mTabContentManager);
             }

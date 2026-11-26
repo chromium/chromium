@@ -43,13 +43,14 @@ static bool DoesLayerDrawContent(const cc::slim::Layer* layer) {
   return false;
 }
 
-void ContentLayer::SetProperties(int id, bool can_use_live_layer) {
+void ContentLayer::SetProperties(int id,
+                                 bool can_use_live_layer,
+                                 bool can_use_thumbnail) {
   scoped_refptr<cc::slim::Layer> live_layer =
       tab_content_manager_->GetLiveLayer(id);
   if (live_layer) {
     live_layer->SetHideLayerAndSubtree(!can_use_live_layer);
   }
-  bool live_layer_draws = DoesLayerDrawContent(live_layer.get());
 
   layer_->RemoveAllChildren();
 
@@ -62,7 +63,7 @@ void ContentLayer::SetProperties(int id, bool can_use_live_layer) {
     layer_->AddChild(live_layer);
   }
 
-  if (!live_layer_draws) {
+  if (can_use_thumbnail && !DoesLayerDrawContent(live_layer.get())) {
     ThumbnailLayer* static_layer = tab_content_manager_->GetStaticLayer(id);
     if (static_layer) {
       static_layer->layer()->SetIsDrawable(true);

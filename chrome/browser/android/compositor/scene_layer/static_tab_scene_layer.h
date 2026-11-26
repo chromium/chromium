@@ -21,7 +21,9 @@ class TabContentManager;
 // A SceneLayer to render a static tab.
 class StaticTabSceneLayer : public SceneLayer {
  public:
-  StaticTabSceneLayer(JNIEnv* env, const base::android::JavaRef<jobject>& jobj);
+  StaticTabSceneLayer(JNIEnv* env,
+                      const base::android::JavaRef<jobject>& jobj,
+                      bool can_use_thumbnail);
 
   StaticTabSceneLayer(const StaticTabSceneLayer&) = delete;
   StaticTabSceneLayer& operator=(const StaticTabSceneLayer&) = delete;
@@ -48,6 +50,7 @@ class StaticTabSceneLayer : public SceneLayer {
   scoped_refptr<android::ContentLayer> content_layer_;
 
   raw_ptr<TabContentManager> tab_content_manager_;
+  const bool can_use_thumbnail_;
   int32_t tab_id_ = -1;
   SkColor background_color_ = SK_ColorTRANSPARENT;
 };

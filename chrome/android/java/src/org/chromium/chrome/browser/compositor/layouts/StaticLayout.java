@@ -43,9 +43,8 @@ import java.util.Collections;
 
 // TODO(meiliang): Rename to StaticLayoutMediator.
 /**
- * A {@link Layout} that shows a single tab at full screen. This tab is chosen based on the {@link
- * #tabSelecting(long, int)} call, and is used to show a thumbnail of a {@link Tab} until that
- * {@link Tab} is ready to be shown.
+ * A {@link Layout} that shows a single active {@link Tab} at full screen using its live layer (or
+ * background color when a live layer is not available, such as for native or sad tabs).
  */
 @NullMarked
 public class StaticLayout extends Layout {
@@ -214,7 +213,7 @@ public class StaticLayout extends Layout {
         if (testSceneLayer != null) {
             mSceneLayer = testSceneLayer;
         } else {
-            mSceneLayer = new StaticTabSceneLayer();
+            mSceneLayer = new StaticTabSceneLayer(/* canUseThumbnail= */ false);
         }
         assumeNonNull(mTabContentManager);
         mSceneLayer.setTabContentManager(mTabContentManager);
@@ -253,7 +252,7 @@ public class StaticLayout extends Layout {
                         if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) {
                             setStaticTab(tab);
                         } else {
-                            updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
+                            updateStaticTab(tab);
                         }
                     }
 
@@ -275,7 +274,7 @@ public class StaticLayout extends Layout {
 
                     @Override
                     public void onContentChanged(Tab tab) {
-                        updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
+                        updateStaticTab(tab);
                     }
 
                     @Override
@@ -283,18 +282,18 @@ public class StaticLayout extends Layout {
                         if (mModel.get(LayoutTab.TAB_ID) == tab.getId()
                                 && canUseLiveTexture(tab)
                                         != mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE)) {
-                            updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
+                            updateStaticTab(tab);
                         }
                     }
 
                     @Override
                     public void onBackgroundColorChanged(Tab tab, int color) {
-                        updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
+                        updateStaticTab(tab);
                     }
 
                     @Override
                     public void didBackForwardTransitionAnimationChange(Tab tab) {
-                        updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
+                        updateStaticTab(tab);
                     }
                 };
     }
@@ -333,39 +332,31 @@ public class StaticLayout extends Layout {
         super.doneHiding();
     }
 
-    private void updateVisibleIdsCheckingLiveLayer(int tabId, boolean useLiveTexture) {
+    private void updateVisibleIds(int tabId) {
         // May be called when inactive. Prevent this from updating until the layout is shown.
         if (!isActive()) return;
 
-        // Check if we can use the live texture as frozen or native pages don't support live layer.
-        if (useLiveTexture) {
-            updateCacheVisibleIdsAndPrimary(Collections.emptyList(), tabId);
-        } else {
-            updateCacheVisibleIdsAndPrimary(Collections.singletonList(tabId), tabId);
-        }
+        updateCacheVisibleIdsAndPrimary(Collections.emptyList(), tabId);
     }
 
     private void setStaticTab(Tab tab) {
         assert tab != null;
 
-        updateVisibleIdsCheckingLiveLayer(tab.getId(), canUseLiveTexture(tab));
-        if (mModel.get(LayoutTab.TAB_ID) == tab.getId()) return;
-
-        mModel.set(LayoutTab.TAB_ID, tab.getId());
-
-        updateStaticTab(tab, /* skipUpdateVisibleIds= */ true);
-    }
-
-    private void updateStaticTab(Tab tab, boolean skipUpdateVisibleIds) {
-        if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
-
-        boolean useLiveTexture = canUseLiveTexture(tab);
-        if (!skipUpdateVisibleIds) {
-            updateVisibleIdsCheckingLiveLayer(tab.getId(), useLiveTexture);
+        if (mModel.get(LayoutTab.TAB_ID) == tab.getId()) {
+            updateVisibleIds(tab.getId());
+            return;
         }
 
+        mModel.set(LayoutTab.TAB_ID, tab.getId());
+        updateStaticTab(tab);
+    }
+
+    private void updateStaticTab(Tab tab) {
+        if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
+
+        updateVisibleIds(tab.getId());
         mModel.set(LayoutTab.BACKGROUND_COLOR, ThemeUtils.getBackgroundColor(tab));
-        mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, useLiveTexture);
+        mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, canUseLiveTexture(tab));
     }
 
     private boolean canUseLiveTexture(Tab tab) {

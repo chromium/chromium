@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -194,7 +195,7 @@ public class NewTabAnimationLayoutUnitTest {
                             return FAKE_NATIVE_ADDRESS_1;
                         })
                 .when(mStaticTabSceneLayerJni)
-                .init(any());
+                .init(any(), eq(true));
         doCallback(/* index= */ 0, (Long nativePointer) -> mSceneLayer.setNativePtr(0L))
                 .when(mSceneLayerJni)
                 .destroy(anyLong());
@@ -307,6 +308,7 @@ public class NewTabAnimationLayoutUnitTest {
         assertThat(mNewTabAnimationLayout.getEventFilter())
                 .isInstanceOf(BlackHoleEventFilter.class);
         assertThat(mNewTabAnimationLayout.getSceneLayer()).isInstanceOf(StaticTabSceneLayer.class);
+        verify(mStaticTabSceneLayerJni).init(any(), eq(true));
         assertEquals(LayoutType.SIMPLE_ANIMATION, mNewTabAnimationLayout.getLayoutType());
     }
 

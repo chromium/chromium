@@ -4,8 +4,6 @@
 
 #include "chrome/browser/android/compositor/scene_layer/static_tab_scene_layer.h"
 
-#include <vector>
-
 #include "cc/input/android/offset_tag_android.h"
 #include "cc/slim/filter.h"
 #include "cc/slim/layer.h"
@@ -22,31 +20,13 @@
 using base::android::JavaRef;
 
 namespace android {
-namespace {
-
-static bool LayerDraws(scoped_refptr<cc::slim::Layer> layer) {
-  if (!layer.get() || layer->opacity() == 0.0f ||
-      layer->hide_layer_and_subtree()) {
-    return false;
-  }
-
-  if (layer->draws_content()) {
-    return true;
-  }
-
-  for (const auto& child : layer->children()) {
-    if (LayerDraws(child)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-}  // namespace
 
 StaticTabSceneLayer::StaticTabSceneLayer(JNIEnv* env,
-                                         const JavaRef<jobject>& jobj)
-    : SceneLayer(env, jobj), tab_content_manager_(nullptr) {}
+                                         const JavaRef<jobject>& jobj,
+                                         bool can_use_thumbnail)
+    : SceneLayer(env, jobj),
+      tab_content_manager_(nullptr),
+      can_use_thumbnail_(can_use_thumbnail) {}
 
 StaticTabSceneLayer::~StaticTabSceneLayer() = default;
 
@@ -81,23 +61,13 @@ void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
   }
 
   if (id != -1 && can_use_live_layer) {
-    // StaticLayout may not know that the live layer cannot draw. Ensure it gets
-    // a thumbnail if needed.
     TabAndroid* tab = tab_content_manager_->GetTab(id);
-    bool update_visible_ids = true;
-    if (auto live_layer = tab ? tab->GetContentLayer() : nullptr) {
-      live_layer->SetHideLayerAndSubtree(!can_use_live_layer);
-      update_visible_ids = !LayerDraws(live_layer);
-    }
-    if (update_visible_ids) {
-      tab_content_manager_->UpdateVisibleIds({id}, id);
-    }
     if (tab && tab->web_contents() && tab->web_contents()->GetNativeView()) {
       tab->web_contents()->GetNativeView()->set_content_offset_x(x);
     }
   }
 
-  content_layer_->SetProperties(id, can_use_live_layer);
+  content_layer_->SetProperties(id, can_use_live_layer, can_use_thumbnail_);
 
   content_layer_->layer()->SetPosition(gfx::PointF(x, y));
   content_layer_->layer()->SetIsDrawable(true);
@@ -116,9 +86,11 @@ void StaticTabSceneLayer::SetTabContentManager(
 }
 
 static int64_t JNI_StaticTabSceneLayer_Init(JNIEnv* env,
-                                            const JavaRef<jobject>& jobj) {
+                                            const JavaRef<jobject>& jobj,
+                                            bool can_use_thumbnail) {
   // This will automatically bind to the Java object and pass ownership there.
-  StaticTabSceneLayer* scene_layer = new StaticTabSceneLayer(env, jobj);
+  StaticTabSceneLayer* scene_layer =
+      new StaticTabSceneLayer(env, jobj, can_use_thumbnail);
   return reinterpret_cast<intptr_t>(scene_layer);
 }
 

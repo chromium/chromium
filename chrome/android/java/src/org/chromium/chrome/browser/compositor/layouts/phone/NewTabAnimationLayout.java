@@ -451,7 +451,7 @@ public class NewTabAnimationLayout extends Layout {
     private void ensureSceneLayerExists() {
         if (mSceneLayer != null) return;
 
-        mSceneLayer = new StaticTabSceneLayer();
+        mSceneLayer = new StaticTabSceneLayer(/* canUseThumbnail= */ true);
         if (mTabContentManager == null) return;
 
         mSceneLayer.setTabContentManager(mTabContentManager);

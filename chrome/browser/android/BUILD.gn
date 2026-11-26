@@ -1257,6 +1257,7 @@ source_set("unit_tests") {
   sources = [
     "backup/dict_pref_backup_serializer_unittest.cc",
     "compositor/compositor_view_unittest.cc",
+    "compositor/layer/content_layer_unittest.cc",
     "compositor/retry_strategy_unittest.cc",
     "compositor/tab_content_manager_unittest.cc",
     "compositor/tab_strip_ntb_webui_host_unittest.cc",

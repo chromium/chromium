@@ -65,7 +65,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
       base::WeakPtr<ui::UIResourceProvider> ui_resource_provider);
 
   // Get the live layer from the cache.
-  scoped_refptr<cc::slim::Layer> GetLiveLayer(int tab_id);
+  virtual scoped_refptr<cc::slim::Layer> GetLiveLayer(int tab_id);
 
   TabAndroid* GetTab(int tab_id);
 
@@ -75,7 +75,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   // UpdateVisibleIds is called with all the Tab IDs that are required for
   // before calling GetStaticLayer. ThumbnailLayer's should not be retained as
   // their lifecycle is managed by this class.
-  ThumbnailLayer* GetStaticLayer(int tab_id);
+  virtual ThumbnailLayer* GetStaticLayer(int tab_id);
 
   // JNI methods.
 
