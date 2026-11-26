@@ -1687,6 +1687,12 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   ASSERT_TRUE(initial_nli);
   EXPECT_FALSE(initial_nli->FindBool("enabled").value_or(true));
 
+  const base::DictValue* initial_first_prompt_consent =
+      initial_config.FindDict("devToolsAiAssistanceFirstPromptConsent");
+  ASSERT_TRUE(initial_first_prompt_consent);
+  EXPECT_FALSE(
+      initial_first_prompt_consent->FindBool("enabled").value_or(true));
+
   // Enable features.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -1694,7 +1700,8 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
        ::features::kDevToolsAiV2Architecture,
        ::features::kDevToolsInstrumentationBreakpoints,
        ::features::kDevToolsSourceMapScopesInSourcesPanel,
-       ::features::kDevToolsAiNaturalLanguageInterface},
+       ::features::kDevToolsAiNaturalLanguageInterface,
+       ::features::kDevToolsAiAssistanceFirstPromptConsent},
       {});
 
   // Verify state of features after enabling them.
@@ -1731,6 +1738,11 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
       result.FindDict("devToolsAiNaturalLanguageInterface");
   ASSERT_TRUE(nli);
   EXPECT_TRUE(nli->FindBool("enabled").value_or(false));
+
+  const base::DictValue* first_prompt_consent =
+      result.FindDict("devToolsAiAssistanceFirstPromptConsent");
+  ASSERT_TRUE(first_prompt_consent);
+  EXPECT_TRUE(first_prompt_consent->FindBool("enabled").value_or(false));
 }
 
 TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigGdpProfiles) {

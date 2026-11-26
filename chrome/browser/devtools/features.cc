@@ -274,6 +274,11 @@ BASE_FEATURE(kDevToolsAiNaturalLanguageInterface,
 BASE_FEATURE(kDevToolsExtensionStorageInspectionCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether the inline first-prompt consent dialog for DevTools AI Assistance is
+// enabled.
+BASE_FEATURE(kDevToolsAiAssistanceFirstPromptConsent,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables chrome://inspect and its DevTools target discovery/debugging
 // backends on Android.

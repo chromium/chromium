@@ -2401,6 +2401,12 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
           "enabled", base::FeatureList::IsEnabled(
                          ::features::kDevToolsAiNaturalLanguageInterface)));
 
+  response_dict.Set(
+      "devToolsAiAssistanceFirstPromptConsent",
+      base::DictValue().Set(
+          "enabled", base::FeatureList::IsEnabled(
+                         ::features::kDevToolsAiAssistanceFirstPromptConsent)));
+
   return response_dict;
 }
 

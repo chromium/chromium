@@ -158,6 +158,8 @@ BASE_DECLARE_FEATURE(kDevToolsAiNaturalLanguageInterface);
 
 BASE_DECLARE_FEATURE(kDevToolsExtensionStorageInspectionCheck);
 
+BASE_DECLARE_FEATURE(kDevToolsAiAssistanceFirstPromptConsent);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAndroidDevToolsInspect);
 #endif  // BUILDFLAG(IS_ANDROID)
