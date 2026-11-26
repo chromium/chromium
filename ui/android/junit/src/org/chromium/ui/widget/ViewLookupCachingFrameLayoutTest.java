@@ -32,7 +32,7 @@ public class ViewLookupCachingFrameLayoutTest {
 
     @Before
     public void setUp() {
-        Context context = RuntimeEnvironment.systemContext;
+        Context context = RuntimeEnvironment.getApplication();
         mCachingLayout = new ViewLookupCachingFrameLayout(context, null);
 
         mView1 = new View(context);

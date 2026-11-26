@@ -577,7 +577,7 @@ public class TabListMediatorUnitTest {
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
 
-        mResources = spy(RuntimeEnvironment.application.getResources());
+        mResources = spy(RuntimeEnvironment.getApplication().getResources());
         mContext = ApplicationProvider.getApplicationContext();
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         when(mActivity.getResources()).thenReturn(mResources);

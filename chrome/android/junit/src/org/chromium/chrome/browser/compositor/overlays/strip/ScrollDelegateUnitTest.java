@@ -49,7 +49,7 @@ public class ScrollDelegateUnitTest {
 
     private static final long TIMESTAMP = 0;
 
-    private final Context mContext = RuntimeEnvironment.systemContext;
+    private final Context mContext = RuntimeEnvironment.getApplication();
     private ScrollDelegate mScrollDelegate;
 
     @Mock private StripLayoutGroupTitle mGroupTitle;

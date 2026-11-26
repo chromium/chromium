@@ -1187,10 +1187,11 @@ public class CastWebContentsActivityTest {
         mActivityLifecycle.create().start().resume();
 
         // Drain initial TaskRemovedMonitorService start intent.
-        assertNotNull(Shadows.shadowOf(RuntimeEnvironment.application).getNextStartedService());
+        assertNotNull(
+                Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedService());
 
         Intent castCoreIntent =
-                new Intent(RuntimeEnvironment.application, CastWebContentsActivity.class);
+                new Intent(RuntimeEnvironment.getApplication(), CastWebContentsActivity.class);
         castCoreIntent.putExtra(CastWebContentsIntentUtils.INTENT_EXTRA_FROM_CAST_CORE, true);
         castCoreIntent.putExtra(
                 CastWebContentsIntentUtils.INTENT_EXTRA_SESSION_ID, "placeholder-root-session-id");
@@ -1200,7 +1201,7 @@ public class CastWebContentsActivityTest {
                 () -> mActivityLifecycle.newIntent(castCoreIntent),
                 false);
 
-        assertNull(Shadows.shadowOf(RuntimeEnvironment.application).getNextStartedService());
+        assertNull(Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedService());
         assertEquals(mSessionId, CastWebContentsIntentUtils.getSessionId(mActivity.getIntent()));
         assertTrue(
                 Shadows.shadowOf(mActivity.getWindow())

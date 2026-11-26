@@ -87,7 +87,7 @@ public class SessionDataHolderTest {
 
     private Intent createIntentWithSessionId(int id) {
         PendingIntent pi =
-                PendingIntent.getActivity(RuntimeEnvironment.systemContext, id, new Intent(), 0);
+                PendingIntent.getActivity(RuntimeEnvironment.getApplication(), id, new Intent(), 0);
         return new Intent().putExtra(CustomTabsIntent.EXTRA_SESSION_ID, pi);
     }
 
