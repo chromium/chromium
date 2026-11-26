@@ -1,0 +1,41 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+/* Styles shared by the lists on the Offers and loyalty cards page. */
+
+.cr-row {
+  border-top: none;
+}
+
+.list-frame {
+  margin-block-end: 0;
+  margin-block-start: 0;
+  padding-inline-start: var(--cr-section-padding);
+  padding-inline-end: var(--cr-section-padding);
+}
+
+.list-item {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.logo {
+  display: flex;
+  margin-inline-end: var(--cr-icon-button-margin-start);
+}
+
+.start {
+  overflow: hidden;
+}
+
+.wallet-icon {
+  height: var(--cr-icon-size);
+  vertical-align: middle;
+  width: var(--cr-icon-size);
+}

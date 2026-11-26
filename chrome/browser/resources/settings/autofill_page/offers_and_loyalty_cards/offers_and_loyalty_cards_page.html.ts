@@ -11,6 +11,9 @@ export function getHtml(this: SettingsOffersAndLoyaltyCardsPageElement) {
 <settings-subpage page-title="$i18n{offersAndLoyaltyCardsCardTitle}"
     class="multi-card" route-path="${this.routePath}">
   <div class="card">
+    <settings-offers-list id="offersList"></settings-offers-list>
+  </div>
+  <div class="card">
     <settings-loyalty-cards-list id="loyaltyCardsList">
     </settings-loyalty-cards-list>
   </div>

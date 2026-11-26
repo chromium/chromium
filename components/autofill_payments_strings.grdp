@@ -1353,13 +1353,13 @@
   </if>
 
   <!-- Credit card and promo code offers and rewards-related strings -->
-  <message name="IDS_AUTOFILL_PROMO_CODE_SUGGESTION_CODE_LABEL" desc="Label for the promo code in the autofill suggestions popup.">
+  <message name="IDS_AUTOFILL_PROMO_CODE_SUGGESTION_CODE_LABEL" desc="Label for the promo code in the autofill suggestions popup. Also shown for each offer in the list of the user's Google Wallet offers on the 'Offers and loyalty cards' settings page.">
     Code: <ph name="PROMO_CODE">$1<ex>WELCOME15</ex></ph>
   </message>
   <message name="IDS_AUTOFILL_MANAGE_OFFERS_FOOTER_TEXT" desc="Label for the footer text of the autofill suggestions popup when a user clicks on a promo code field and Wallet Direct Offers are available. It redirects the user to the Chrome settings page to manage their offers.">
     Manage offers
   </message>
-  <message name="IDS_AUTOFILL_OFFERS_EXPIRES_ON" desc="Text shown on the third line of the suggestion dropdown for Wallet Direct Offers indicating when the offer expires.">
+  <message name="IDS_AUTOFILL_OFFERS_EXPIRES_ON" desc="Text shown on the third line of the suggestion dropdown for Wallet Direct Offers indicating when the offer expires. Also shown for each offer in the list of the user's Google Wallet offers on the 'Offers and loyalty cards' settings page.">
     Expires: <ph name="EXPIRATION_DATE">$1<ex>Sept 20, 2026</ex></ph>
   </message>
   <message name="IDS_AUTOFILL_WALLET_DIRECT_OFFERS_IPH_BUBBLE_LABEL" desc="Text shown in the IPH bubble for merchant promo code fields when direct offers from Google Wallet are available.">

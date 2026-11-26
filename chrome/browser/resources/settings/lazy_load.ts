@@ -193,6 +193,7 @@ export type {EntityDataManagerProxy, EntityInstancesChangedListener} from './aut
 export {SettingsIdentityDocsPageElement} from './autofill_page/identity_docs/identity_docs_page.js';
 export {SettingsLoyaltyCardsListElement} from './autofill_page/offers_and_loyalty_cards/loyalty_cards_list.js';
 export {SettingsOffersAndLoyaltyCardsPageElement} from './autofill_page/offers_and_loyalty_cards/offers_and_loyalty_cards_page.js';
+export {SettingsOffersListElement} from './autofill_page/offers_and_loyalty_cards/offers_list.js';
 // <if expr="is_win or is_macosx">
 export {PasskeysBrowserProxyImpl} from './autofill_page/passwords/passkeys_browser_proxy.js';
 export type {Passkey, PasskeysBrowserProxy} from './autofill_page/passwords/passkeys_browser_proxy.js';

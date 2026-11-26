@@ -1784,6 +1784,8 @@ constexpr webui::LocalizedString kAutofillLocalizedStrings[] = {
      IDS_AUTOFILL_OFFERS_AND_LOYALTY_CARDS_TITLE},
     {"offersAndLoyaltyCardsSublabel",
      IDS_SETTINGS_YOUR_SAVED_INFO_OFFERS_AND_LOYALTY_CARDS_SUBLABEL},
+    {"offersExpirationLabel", IDS_AUTOFILL_OFFERS_EXPIRES_ON},
+    {"offersPromoCodeLabel", IDS_AUTOFILL_PROMO_CODE_SUGGESTION_CODE_LABEL},
     {"offersTitle", IDS_AUTOFILL_OFFERS_TITLE},
     {"yourSavedInfoOrdersChip", IDS_AUTOFILL_AI_ORDERS_TITLE},
     {"yourSavedInfoShipmentsChip", IDS_AUTOFILL_AI_SHIPMENTS_TITLE},

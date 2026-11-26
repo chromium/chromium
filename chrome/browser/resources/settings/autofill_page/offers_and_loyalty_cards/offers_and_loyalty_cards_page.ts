@@ -9,6 +9,7 @@
  */
 import '../../settings_page/settings_subpage.js';
 import './loyalty_cards_list.js';
+import './offers_list.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
