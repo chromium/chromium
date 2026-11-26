@@ -732,7 +732,6 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
       EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
       EXPECT_EQ(id, context->components_to_check_for_updates.front());
-      EXPECT_EQ(1u, context->components.count(id));
 
       auto& component = context->components.at(id);
 
@@ -3073,7 +3072,6 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
       EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
       EXPECT_EQ(id, context->components_to_check_for_updates.front());
-      EXPECT_EQ(1u, context->components.count(id));
 
       auto& component = context->components.at(id);
 
@@ -3449,7 +3447,6 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
       EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
       EXPECT_EQ(id, context->components_to_check_for_updates.front());
-      EXPECT_EQ(1u, context->components.count(id));
 
       // Verify that calling Install sets |is_foreground| for the component.
       EXPECT_TRUE(context->components.at(id)->is_foreground());
@@ -5256,7 +5253,6 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
       EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
       EXPECT_EQ(id, context->components_to_check_for_updates.front());
-      EXPECT_EQ(1u, context->components.count(id));
 
       auto& component = context->components.at(id);
 
@@ -5759,7 +5755,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
       EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
       EXPECT_EQ(id, context->components_to_check_for_updates.front());
-      EXPECT_EQ(1u, context->components.count(id));
 
       auto& component = context->components.at(id);
 
@@ -5954,7 +5949,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
       EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
       EXPECT_EQ(id, context->components_to_check_for_updates.front());
-      EXPECT_EQ(1u, context->components.count(id));
 
       auto& component = context->components.at(id);
 
@@ -6080,7 +6074,6 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
       EXPECT_EQ(1u, context->components_to_check_for_updates.size());
       const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
       EXPECT_EQ(id, context->components_to_check_for_updates.front());
-      EXPECT_EQ(1u, context->components.count(id));
 
       auto& component = context->components.at(id);
 

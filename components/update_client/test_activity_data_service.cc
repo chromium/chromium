@@ -73,10 +73,11 @@ void TestActivityDataService::GetAndClearActiveBits(
     base::OnceCallback<void(const std::set<std::string>&)> callback) {
   std::set<std::string> actives;
   for (const auto& id : ids) {
-    if (actives_.count(id) > 0 && actives_.at(id)) {
+    bool& active = actives_[id];
+    if (active) {
       actives.insert(id);
     }
-    actives_[id] = false;
+    active = false;
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), actives));

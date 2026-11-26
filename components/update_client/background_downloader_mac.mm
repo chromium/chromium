@@ -394,9 +394,7 @@ class BackgroundDownloaderSharedSessionImpl {
                               result.download_metrics);
       results_.erase(url);
       downloads_.erase(url);
-      if (last_progress_times_.contains(url)) {
-        last_progress_times_.erase(url);
-      }
+      last_progress_times_.erase(url);
     }
   }
 
