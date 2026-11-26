@@ -227,6 +227,27 @@ TEST_F(AddressOnTypingManagerTest, EmitMetrics) {
               BucketsAre(base::Bucket(false, 0), base::Bucket(true, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
+          "Autofill.AddressSuggestionOnTypingAcceptance.Autocomplete.NotOff"),
+      BucketsAre(base::Bucket(false, 1), base::Bucket(true, 2)));
+  histogram_tester.ExpectTotalCount(
+      "Autofill.AddressSuggestionOnTypingAcceptance.Autocomplete.Off", 0);
+  // Only the first two fields in `form` are classified (`ADDRESS_HOME_LINE1`);
+  // the third field is unclassified and therefore not logged here.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill."
+                                     "AddressSuggestionOnTypingAcceptance."
+                                     "PerClassifiedFieldType"),
+      BucketsAre(
+          base::Bucket(
+              autofill_metrics::GetBucketForAcceptanceMetricsGroupedByFieldType(
+                  ADDRESS_HOME_LINE1, /*suggestion_accepted=*/false),
+              1),
+          base::Bucket(
+              autofill_metrics::GetBucketForAcceptanceMetricsGroupedByFieldType(
+                  ADDRESS_HOME_LINE1, /*suggestion_accepted=*/true),
+              1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
           "Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType"),
       BucketsAre(
           base::Bucket(
@@ -257,6 +278,50 @@ TEST_F(AddressOnTypingManagerTest, EmitMetrics) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.AddressSuggestionOnTypingAccepted.DaysSinceLastUse.Profile",
       kProfileLastUsedInDays, 1);
+}
+
+TEST_F(AddressOnTypingManagerTest, EmitAutocompleteOffAcceptanceMetrics) {
+  base::HistogramTester histogram_tester;
+  FormData form = test::GetFormData(
+      {.fields = {{.should_autocomplete = false},
+                  {.role = EMAIL_ADDRESS, .should_autocomplete = false}}});
+  client().GetPersonalDataManager().test_address_data_manager().AddProfile(
+      CreateTestProfile());
+  client().SetAutofillSuggestions(
+      CreateAutofillOnTypingSuggestions({NAME_FULL}));
+
+  // First `autocomplete="off"` field (unclassified): shown and accepted.
+  AutofillField autofill_field_1(form.fields()[0]);
+  manager().OnDidShowAddressOnTyping(form.fields()[0].global_id(),
+                                     &autofill_field_1);
+  manager().OnDidAcceptAddressOnTyping(form.fields()[0].global_id(),
+                                       u"Jon snow", NAME_FULL,
+                                       kDefaultProfileGuid);
+
+  // Second `autocomplete="off"` field (classified as `EMAIL_ADDRESS`): shown
+  // and ignored.
+  AutofillField autofill_field_2(form.fields()[1]);
+  autofill_field_2.SetTypeTo(AutofillType(EMAIL_ADDRESS),
+                             AutofillPredictionSource::kHeuristics);
+  manager().OnDidShowAddressOnTyping(form.fields()[1].global_id(),
+                                     &autofill_field_2);
+
+  KillAndRecreateManager();
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.AddressSuggestionOnTypingAcceptance.Autocomplete.Off"),
+      BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  histogram_tester.ExpectTotalCount(
+      "Autofill.AddressSuggestionOnTypingAcceptance.Autocomplete.NotOff", 0);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill."
+                                     "AddressSuggestionOnTypingAcceptance."
+                                     "PerClassifiedFieldType"),
+      BucketsAre(base::Bucket(
+          autofill_metrics::GetBucketForAcceptanceMetricsGroupedByFieldType(
+              EMAIL_ADDRESS, /*suggestion_accepted=*/false),
+          1)));
 }
 
 }  // namespace

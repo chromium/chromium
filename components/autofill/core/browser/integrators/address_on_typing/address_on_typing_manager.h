@@ -9,7 +9,6 @@
 #include <optional>
 #include <set>
 #include <string>
-#include <utility>
 
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
@@ -62,6 +61,21 @@ class AddressOnTypingManager {
  private:
   friend class AddressOnTypingManagerTestApi;
 
+  struct FieldInfo {
+    // Field types of the triggering field where suggestions were shown
+    // (excluding `NO_SERVER_DATA`, `UNKNOWN_TYPE`, and `EMPTY_TYPE`). Empty if
+    // the triggering field is unclassified.
+    FieldTypeSet triggering_field_classifications;
+    // Whether the triggering field has `autocomplete="off"`.
+    bool has_autocomplete_off = false;
+    // `FieldType`s from `AutofillProfile`s used to build the shown suggestions.
+    FieldTypeSet field_types_used;
+  };
+
+  static void LogAcceptanceMetrics(
+      const FieldInfo& field_info,
+      std::optional<FieldType> accepted_field_type);
+
   AddressDataManager& address_data_manager() const;
 
   AddressOnTypingSuggestionStrikeDatabase* address_on_typing_strike_database();
@@ -98,12 +112,10 @@ class AddressOnTypingManager {
   // used to build the suggestion is added to the strike database.
   FieldTypeSet unaccepted_field_types_;
 
-  // For fields where `SuggestionType::kAddressEntryOnTyping`
-  // suggestions were shown, stores whether the field is classified and the
-  // `FieldTypeSet` used to build the suggestions, keyed by the field global
-  // identifier.
-  std::map<FieldGlobalId, std::pair<bool, FieldTypeSet>>
-      fields_where_address_on_typing_was_shown_;
+  // For fields where `SuggestionType::kAddressEntryOnTyping` suggestions were
+  // shown, stores information about the triggering field and the suggestions
+  // shown, keyed by the field global identifier.
+  std::map<FieldGlobalId, FieldInfo> fields_where_address_on_typing_was_shown_;
 
   // For profiles that were used to build
   // `SuggestionType::kAddressEntryOnTyping` suggestions, store their last usage

@@ -1631,6 +1631,27 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.AddressSuggestionOnTypingAcceptance.Autocomplete.{AutocompleteState}"
+    enum="BooleanAutofillAddressSuggestionOnTypingAcceptance"
+    expires_after="2027-05-09">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    During navigation, for each field where an autofill address suggestion on
+    typing is displayed, logs whether the user has accepted it or not, split by
+    whether the triggering field had `autocomplete=&quot;off&quot;` or not.
+  </summary>
+  <token key="AutocompleteState">
+    <variant name="NotOff"
+        summary="the triggering field where the suggestion was shown did not
+                 have autocomplete=off"/>
+    <variant name="Off"
+        summary="the triggering field where the suggestion was shown had
+                 autocomplete=off"/>
+  </token>
+</histogram>
+
+<histogram
     name="Autofill.AddressSuggestionOnTypingAcceptance.FieldClassication"
     enum="BooleanFieldClassificationType" expires_after="2027-05-02">
   <owner>brunobraga@google.com</owner>
@@ -1651,6 +1672,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     The number of characters a user typed before accepting an address autofill
     on typing suggestion. Emited every time a user accepts an autofill on typing
     suggestion.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.AddressSuggestionOnTypingAcceptance.PerClassifiedFieldType"
+    enum="FillingAcceptanceByFieldType" expires_after="2027-12-12">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    During navigation, for each classified field where an autofill address
+    suggestion on typing is displayed, logs per classified field type of the
+    triggering field whether the user has accepted a suggestion or not. Not
+    emitted if the triggering field is unclassified.
   </summary>
 </histogram>
 

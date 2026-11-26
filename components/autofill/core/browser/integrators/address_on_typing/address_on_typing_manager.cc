@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/levenshtein_distance.h"
 #include "base/strings/string_number_conversions.h"
@@ -49,32 +50,12 @@ AddressOnTypingManager::~AddressOnTypingManager() {
           field_type_ignored);
     }
   }
-  // Once a `SuggestionType::kAutofillAddressOnTyping` suggestion
-  // is accepted, we remove it from
-  // `fields_where_address_on_typing_was_shown_`. Therefore for
-  // the remaining fields, log that they were not accepted
-  for (const auto& [field_global_id,
-                    triggering_field_classification_and_field_types_used] :
+  // Once a `SuggestionType::kAddressEntryOnTyping` suggestion is accepted, we
+  // remove it from `fields_where_address_on_typing_was_shown_`. Therefore for
+  // the remaining fields, log that they were not accepted.
+  for (const auto& [field_global_id, field_info] :
        fields_where_address_on_typing_was_shown_) {
-    base::UmaHistogramBoolean(
-        "Autofill.AddressSuggestionOnTypingAcceptance.Any", false);
-    const bool triggering_field_classified =
-        triggering_field_classification_and_field_types_used.first;
-    if (triggering_field_classified) {
-      base::UmaHistogramBoolean(
-          "Autofill.AddressSuggestionOnTypingAcceptance.Classified", false);
-    } else {
-      base::UmaHistogramBoolean(
-          "Autofill.AddressSuggestionOnTypingAcceptance.Unclassified", false);
-    }
-    FieldTypeSet field_types_used_in_suggestions_generation =
-        triggering_field_classification_and_field_types_used.second;
-    for (FieldType field_type : field_types_used_in_suggestions_generation) {
-      base::UmaHistogramSparse(
-          "Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType",
-          autofill_metrics::GetBucketForAcceptanceMetricsGroupedByFieldType(
-              field_type, /*suggestion_accepted=*/false));
-    }
+    LogAcceptanceMetrics(field_info, /*accepted_field_type=*/std::nullopt);
   }
 
   // Log information about `SuggestionType::kAutofillAddressOnTyping`
@@ -119,18 +100,21 @@ void AddressOnTypingManager::OnDidShowAddressOnTyping(
     field_types_used.insert(*suggestion.field_by_field_filling_type_used);
   }
 
-  FieldTypeSet triggering_field_types =
-      autofill_field ? autofill_field->Type().GetTypes() : FieldTypeSet{};
   unaccepted_field_types_.insert_all(field_types_used);
-  if (fields_where_address_on_typing_was_shown_.contains(field_global_id)) {
-    fields_where_address_on_typing_was_shown_[field_global_id]
-        .second.insert_all(field_types_used);
+  if (FieldInfo* field_info = base::FindOrNull(
+          fields_where_address_on_typing_was_shown_, field_global_id)) {
+    field_info->field_types_used.insert_all(field_types_used);
   } else {
-    const bool is_triggering_field_classified =
-        !FieldTypeSet{NO_SERVER_DATA, UNKNOWN_TYPE, EMPTY_TYPE}.contains_all(
-            triggering_field_types);
+    FieldTypeSet triggering_field_classifications =
+        autofill_field ? autofill_field->Type().GetTypes() : FieldTypeSet{};
+    triggering_field_classifications.erase_all(
+        {NO_SERVER_DATA, UNKNOWN_TYPE, EMPTY_TYPE});
+    const bool has_autocomplete_off =
+        autofill_field && !autofill_field->should_autocomplete();
     fields_where_address_on_typing_was_shown_[field_global_id] = {
-        is_triggering_field_classified, field_types_used};
+        .triggering_field_classifications = triggering_field_classifications,
+        .has_autocomplete_off = has_autocomplete_off,
+        .field_types_used = field_types_used};
   }
 
   for (auto [guid, last_used_time] : profile_last_used_time_per_guid) {
@@ -151,32 +135,15 @@ void AddressOnTypingManager::OnDidAcceptAddressOnTyping(
   RemoveStrikesToBlockAddressOnTypingSuggestions(
       field_type_used_to_build_suggestion);
 
-  CHECK(fields_where_address_on_typing_was_shown_.contains(field_global_id));
+  const FieldInfo* field_info = base::FindOrNull(
+      fields_where_address_on_typing_was_shown_, field_global_id);
+  CHECK(field_info);
   CHECK(address_on_typing_suggestion_profile_last_used_time_per_guid_.contains(
       profile_used_guid));
-  base::UmaHistogramBoolean("Autofill.AddressSuggestionOnTypingAcceptance.Any",
-                            true);
-  if (fields_where_address_on_typing_was_shown_[field_global_id].first) {
-    base::UmaHistogramBoolean(
-        "Autofill.AddressSuggestionOnTypingAcceptance.Classified", true);
-  } else {
-    base::UmaHistogramBoolean(
-        "Autofill.AddressSuggestionOnTypingAcceptance.Unclassified", true);
-  }
-
-  // Sanity check to avoid later division by zero.
-  if (value.empty()) {
-    return;
-  }
-
-  address_on_typing_value_used_[field_global_id] = value;
-  for (FieldType field_type :
-       fields_where_address_on_typing_was_shown_[field_global_id].second) {
-    base::UmaHistogramSparse(
-        "Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType",
-        autofill_metrics::GetBucketForAcceptanceMetricsGroupedByFieldType(
-            field_type, /*suggestion_accepted=*/field_type ==
-                            field_type_used_to_build_suggestion));
+  LogAcceptanceMetrics(*field_info, field_type_used_to_build_suggestion);
+  if (!value.empty()) {
+    // Sanity check to avoid later division by zero.
+    address_on_typing_value_used_[field_global_id] = value;
   }
   // Stores the accepted profile and log on destruction as a way to avoid
   // logging acceptance multiple times for the same profile.
@@ -227,6 +194,39 @@ void AddressOnTypingManager::LogAddressOnTypingCorrectnessMetrics(
   // metrics were logged.
   for (const FieldGlobalId field : logged_correctness_for_field) {
     address_on_typing_value_used_.erase(field);
+  }
+}
+
+// static
+void AddressOnTypingManager::LogAcceptanceMetrics(
+    const FieldInfo& field_info,
+    std::optional<FieldType> accepted_field_type) {
+  const bool accepted = accepted_field_type.has_value();
+  base::UmaHistogramBoolean("Autofill.AddressSuggestionOnTypingAcceptance.Any",
+                            accepted);
+  base::UmaHistogramBoolean(
+      !field_info.triggering_field_classifications.empty()
+          ? "Autofill.AddressSuggestionOnTypingAcceptance.Classified"
+          : "Autofill.AddressSuggestionOnTypingAcceptance.Unclassified",
+      accepted);
+  base::UmaHistogramBoolean(
+      field_info.has_autocomplete_off
+          ? "Autofill.AddressSuggestionOnTypingAcceptance.Autocomplete.Off"
+          : "Autofill.AddressSuggestionOnTypingAcceptance.Autocomplete.NotOff",
+      accepted);
+  for (FieldType classified_type :
+       field_info.triggering_field_classifications) {
+    base::UmaHistogramSparse(
+        "Autofill.AddressSuggestionOnTypingAcceptance.PerClassifiedFieldType",
+        autofill_metrics::GetBucketForAcceptanceMetricsGroupedByFieldType(
+            classified_type, /*suggestion_accepted=*/accepted));
+  }
+  for (FieldType field_type : field_info.field_types_used) {
+    base::UmaHistogramSparse(
+        "Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType",
+        autofill_metrics::GetBucketForAcceptanceMetricsGroupedByFieldType(
+            field_type,
+            /*suggestion_accepted=*/accepted_field_type == field_type));
   }
 }
 
