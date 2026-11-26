@@ -5,6 +5,8 @@
 package org.chromium.components.browser_ui.widget;
 
 import android.content.Context;
+import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -370,5 +372,27 @@ public class DualControlLayoutTest {
         Button newSecondaryButton = inflatedLayout.findViewById(R.id.button_secondary);
         Assert.assertNotNull(newSecondaryButton);
         Assert.assertEquals("Cancel", newSecondaryButton.getText());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSecondaryFilledButton() {
+        Context themedContext = new ContextThemeWrapper(mContext, R.style.Theme_BrowserUI_DayNight);
+        Button secondaryButton =
+                DualControlLayout.createButtonForLayout(
+                        themedContext, ButtonType.SECONDARY_FILLED, "Cancel", null);
+
+        Assert.assertEquals(R.id.button_secondary, secondaryButton.getId());
+        Assert.assertEquals("Cancel", secondaryButton.getText());
+
+        TypedValue buttonStyle = new TypedValue();
+        Assert.assertTrue(
+                secondaryButton
+                        .getContext()
+                        .getTheme()
+                        .resolveAttribute(
+                                android.R.attr.buttonStyle, buttonStyle, /* resolveRefs= */ true));
+        Assert.assertEquals(R.style.FilledButton, buttonStyle.resourceId);
     }
 }

@@ -73,7 +73,8 @@ public final class DualControlLayout extends ViewGroup {
         ButtonType.PRIMARY_TEXT,
         ButtonType.SECONDARY_TEXT,
         ButtonType.PRIMARY_OUTLINED,
-        ButtonType.SECONDARY_OUTLINED
+        ButtonType.SECONDARY_OUTLINED,
+        ButtonType.SECONDARY_FILLED
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ButtonType {
@@ -94,6 +95,10 @@ public final class DualControlLayout extends ViewGroup {
         // Buttons will have the secondary button ID with an outlined border but without a filled
         // container (same style as PRIMARY_OUTLINED)
         int SECONDARY_OUTLINED = 4;
+
+        // Buttons will have the secondary button ID with a filled container (same style as
+        // PRIMARY_FILLED).
+        int SECONDARY_FILLED = 5;
     }
 
     /**
@@ -128,6 +133,7 @@ public final class DualControlLayout extends ViewGroup {
     private static @StyleRes int getButtonTheme(@ButtonType int buttonType) {
         switch (buttonType) {
             case ButtonType.PRIMARY_FILLED:
+            case ButtonType.SECONDARY_FILLED:
                 return R.style.FilledButtonThemeOverlay;
             case ButtonType.PRIMARY_TEXT:
             case ButtonType.SECONDARY_TEXT:
@@ -146,6 +152,7 @@ public final class DualControlLayout extends ViewGroup {
             case ButtonType.PRIMARY_TEXT:
             case ButtonType.PRIMARY_OUTLINED:
                 return R.id.button_primary;
+            case ButtonType.SECONDARY_FILLED:
             case ButtonType.SECONDARY_TEXT:
             case ButtonType.SECONDARY_OUTLINED:
                 return R.id.button_secondary;
