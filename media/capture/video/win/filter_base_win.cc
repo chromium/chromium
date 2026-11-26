@@ -5,6 +5,8 @@
 
 #include "media/capture/video/win/filter_base_win.h"
 
+#include <algorithm>
+
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -44,6 +46,9 @@ class PinEnumerator final : public IEnumPins,
 
   // Implement IEnumPins.
   IFACEMETHODIMP Next(ULONG count, IPin** pins, ULONG* fetched) override {
+    if (count > 1 && !fetched) {
+      return E_INVALIDARG;
+    }
     ULONG pins_fetched = 0;
     while (pins_fetched < count && filter_->NoOfPins() > index_) {
       IPin* pin = filter_->GetPin(index_++);
@@ -51,18 +56,21 @@ class PinEnumerator final : public IEnumPins,
       UNSAFE_TODO(pins[pins_fetched++]) = pin;
     }
 
-    if (fetched)
+    if (fetched) {
       *fetched = pins_fetched;
+    }
 
     return pins_fetched == count ? S_OK : S_FALSE;
   }
 
   IFACEMETHODIMP Skip(ULONG count) override {
-    if (filter_->NoOfPins() - index_ > count) {
+    const size_t pin_count = filter_->NoOfPins();
+    const size_t remaining = pin_count - std::min(index_, pin_count);
+    if (count <= remaining) {
       index_ += count;
       return S_OK;
     }
-    index_ = 0;
+    index_ = pin_count;
     return S_FALSE;
   }
 

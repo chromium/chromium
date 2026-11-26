@@ -107,6 +107,9 @@ class TypeEnumerator final : public IEnumMediaTypes,
   IFACEMETHODIMP Next(ULONG count,
                       AM_MEDIA_TYPE** types,
                       ULONG* fetched) override {
+    if (count > 1 && !fetched) {
+      return E_INVALIDARG;
+    }
     ULONG types_fetched = 0;
 
     while (types_fetched < count) {
@@ -130,7 +133,8 @@ class TypeEnumerator final : public IEnumMediaTypes,
       }
       type->pbFormat = format;
       // Get the media type from the pin.
-      if (pin_->GetValidMediaType(index_++, type)) {
+      if (pin_->GetValidMediaType(index_, type)) {
+        ++index_;
         UNSAFE_TODO(types[types_fetched++]) = type;
       } else {
         CoTaskMemFree(format);
@@ -139,15 +143,25 @@ class TypeEnumerator final : public IEnumMediaTypes,
       }
     }
 
-    if (fetched)
+    if (fetched) {
       *fetched = types_fetched;
+    }
 
     return types_fetched == count ? S_OK : S_FALSE;
   }
 
   IFACEMETHODIMP Skip(ULONG count) override {
-    index_ += count;
-    return S_OK;
+    // Stop at the end of the list instead of moving past it.
+    AM_MEDIA_TYPE type = {};
+    VIDEOINFOHEADER format = {};
+    type.cbFormat = sizeof(format);
+    type.pbFormat = reinterpret_cast<BYTE*>(&format);
+    ULONG skipped = 0;
+    while (skipped < count && pin_->GetValidMediaType(index_, &type)) {
+      ++index_;
+      ++skipped;
+    }
+    return skipped == count ? S_OK : S_FALSE;
   }
 
   IFACEMETHODIMP Reset() override {

@@ -1297,4 +1297,82 @@ TEST_F(VideoCaptureDeviceWinTest, ConnectionMediaTypeReturnsDeepCopy) {
   EXPECT_EQ(connection_type.pbFormat, nullptr);
 }
 
+TEST_F(VideoCaptureDeviceWinTest, PinEnumeratorFollowsIEnumPinsContract) {
+  CountingSinkObserver observer;
+  auto sink_filter = base::MakeRefCounted<SinkFilter>(&observer);
+  ComPtr<IBaseFilter> filter = sink_filter.get();
+  ComPtr<IEnumPins> enum_pins;
+  ASSERT_EQ(filter->EnumPins(&enum_pins), S_OK);
+
+  IPin* pins[2] = {};
+  ULONG fetched = 0;
+  EXPECT_EQ(enum_pins->Next(2, pins, nullptr), E_INVALIDARG);
+
+  EXPECT_EQ(enum_pins->Skip(1), S_OK);
+  fetched = 1;
+  EXPECT_EQ(enum_pins->Next(1, pins, &fetched), S_FALSE);
+  EXPECT_EQ(fetched, 0u);
+  // A failed Skip() at the end must not rewind.
+  EXPECT_EQ(enum_pins->Skip(1), S_FALSE);
+  fetched = 1;
+  EXPECT_EQ(enum_pins->Next(1, pins, &fetched), S_FALSE);
+  EXPECT_EQ(fetched, 0u);
+
+  EXPECT_EQ(enum_pins->Reset(), S_OK);
+  EXPECT_EQ(enum_pins->Skip(2), S_FALSE);
+  EXPECT_EQ(enum_pins->Next(1, pins, &fetched), S_FALSE);
+
+  EXPECT_EQ(enum_pins->Reset(), S_OK);
+  EXPECT_EQ(enum_pins->Next(2, pins, &fetched), S_FALSE);
+  ASSERT_EQ(fetched, 1u);
+  EXPECT_EQ(pins[0], sink_filter->GetPin(0));
+  pins[0]->Release();
+}
+
+TEST_F(VideoCaptureDeviceWinTest,
+       TypeEnumeratorFollowsIEnumMediaTypesContract) {
+  CountingSinkObserver observer;
+  auto sink_filter = base::MakeRefCounted<SinkFilter>(&observer);
+  BITMAPINFOHEADER bmi = {};
+  bmi.biSize = sizeof(bmi);
+  bmi.biWidth = 64;
+  bmi.biHeight = 48;
+  // I420 offers five media types: I420, YUY2, UYVY, RGB24 and RGB32.
+  sink_filter->SetRequestedMediaFormat(PIXEL_FORMAT_I420, kTestFrameRate, bmi);
+  ComPtr<IEnumMediaTypes> enum_types;
+  ASSERT_EQ(sink_filter->GetPin(0)->EnumMediaTypes(&enum_types), S_OK);
+
+  auto free_type = [](AM_MEDIA_TYPE* type) {
+    CoTaskMemFree(type->pbFormat);
+    CoTaskMemFree(type);
+  };
+  AM_MEDIA_TYPE* types[2] = {};
+  ULONG fetched = 0;
+  EXPECT_EQ(enum_types->Next(2, types, nullptr), E_INVALIDARG);
+
+  EXPECT_EQ(enum_types->Skip(5), S_OK);
+  fetched = 1;
+  EXPECT_EQ(enum_types->Next(1, types, &fetched), S_FALSE);
+  EXPECT_EQ(fetched, 0u);
+
+  // Skipping past the end fails and doesn't rewind.
+  EXPECT_EQ(enum_types->Reset(), S_OK);
+  EXPECT_EQ(enum_types->Skip(6), S_FALSE);
+  EXPECT_EQ(enum_types->Next(1, types, &fetched), S_FALSE);
+
+  // A huge Skip() doesn't wrap the index around.
+  EXPECT_EQ(enum_types->Reset(), S_OK);
+  ASSERT_EQ(enum_types->Next(1, types, &fetched), S_OK);
+  free_type(types[0]);
+  EXPECT_EQ(enum_types->Skip(ULONG_MAX), S_FALSE);
+  EXPECT_EQ(enum_types->Next(1, types, &fetched), S_FALSE);
+
+  EXPECT_EQ(enum_types->Reset(), S_OK);
+  EXPECT_EQ(enum_types->Skip(4), S_OK);
+  EXPECT_EQ(enum_types->Next(2, types, &fetched), S_FALSE);
+  ASSERT_EQ(fetched, 1u);
+  EXPECT_EQ(types[0]->subtype, MEDIASUBTYPE_RGB32);
+  free_type(types[0]);
+}
+
 }  // namespace media
