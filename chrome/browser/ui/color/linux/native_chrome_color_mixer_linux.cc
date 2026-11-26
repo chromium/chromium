@@ -200,6 +200,11 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
       GetToolbarTopSeparatorColorTransform(kColorToolbar, high_contrast);
   mixer[kColorToolbarTopSeparatorFrameInactive] = {
       kColorToolbarTopSeparatorFrameActive};
+  if (high_contrast) {
+    // Restore the toolkit frame colors over the generic high contrast ones.
+    mixer[ui::kColorFrameActive] = {ui::kColorNativeFrameActive};
+    mixer[ui::kColorFrameInactive] = {ui::kColorNativeFrameInactive};
+  }
 
   // App menu surfaces. Keep the upstream (Material) colors when the toolkit
   // palette matches color_mode; otherwise derive them from the toolkit's

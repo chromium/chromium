@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//components/compose/features.gni")
-import("//ui/base/ui_features.gni")
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
@@ -58,7 +57,6 @@ source_set("mixers") {
     "//components/compose:buildflags",
     "//components/omnibox/common",
     "//components/search",
-    "//ui/base:buildflags",
     "//ui/color",
     "//ui/color:color_provider_utils_internal",
     "//ui/color:mixers",

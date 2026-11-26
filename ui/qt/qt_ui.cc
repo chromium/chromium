@@ -800,10 +800,12 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
 
   const bool use_custom_frame =
       key.frame_type == ui::ColorProviderKey::FrameType::kChromium;
-  mixer[ui::kColorFrameActive] = {
+  mixer[ui::kColorNativeFrameActive] = {
       shim_->GetFrameColor(ColorState::kNormal, use_custom_frame)};
-  mixer[ui::kColorFrameInactive] = {
+  mixer[ui::kColorNativeFrameInactive] = {
       shim_->GetFrameColor(ColorState::kInactive, use_custom_frame)};
+  mixer[ui::kColorFrameActive] = {ui::kColorNativeFrameActive};
+  mixer[ui::kColorFrameInactive] = {ui::kColorNativeFrameInactive};
 
   const SkColor button_fg =
       shim_->GetColor(ColorType::kButtonFg, ColorState::kNormal);

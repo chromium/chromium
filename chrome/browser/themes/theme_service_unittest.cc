@@ -759,15 +759,11 @@ TEST_P(ColorProviderTest, OmniboxContrast) {
   for (const ui::ColorId* ids : contrasting_ids) {
     check_sufficient_contrast(ids[0], UNSAFE_TODO(ids[1]));
   }
-#if !BUILDFLAG(USE_GTK)
-  // TODO(crbug.com/40847971): GTK does not have a sufficiently
-  // high-contrast selected row color to pass this test.
   if (GetPreferredContrast() == ui::NativeTheme::PreferredContrast::kMore) {
     check_sufficient_contrast(kColorOmniboxResultsBackgroundSelected,
                               kColorOmniboxResultsBackground,
                               color_utils::kMinimumVisibleContrastRatio);
   }
-#endif
 }
 
 // Regression test for crbug.com/571161438: with a Linux system theme (e.g.

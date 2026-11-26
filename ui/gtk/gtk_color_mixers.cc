@@ -125,7 +125,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorDropdownForegroundSelected] = {GetFgColor(base::StrCat(
       {"combobox window.background.popup ", "menu(gtk-combobox-popup-menu) ",
        GtkCssMenuItem(), ":hover cellview"}))};
-  mixer[ui::kColorFrameActive] = {frame_color};
+  mixer[ui::kColorFrameActive] = {ui::kColorNativeFrameActive};
   mixer[ui::kColorFrameCaptionForegroundActive] = {
       GetFgColor(header_selector + " label.title")};
   mixer[ui::kColorFrameCaptionForegroundInactive] = [&] {
@@ -148,7 +148,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
                                 ui::kColorFrameInactive, 0x80)
                : ui::ColorTransform(fg);
   }();
-  mixer[ui::kColorFrameInactive] = {frame_color_inactive};
+  mixer[ui::kColorFrameInactive] = {ui::kColorNativeFrameInactive};
   mixer[ui::kColorFocusableBorderUnfocused] = {entry_border};
   mixer[ui::kColorHelpIconActive] = {GetFgColor("button.image-button:hover")};
   mixer[ui::kColorIcon] = {GetFgColor("button.flat.scale image")};
@@ -262,6 +262,8 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       GetFgColor(header_selector + " label.title")};
   mixer[ui::kColorNativeTabForegroundInactiveFrameInactive] = {
       GetFgColor(header_selector_inactive + " label.title")};
+  mixer[ui::kColorNativeFrameActive] = {frame_color};
+  mixer[ui::kColorNativeFrameInactive] = {frame_color_inactive};
   mixer[ui::kColorNativeToolbarBackground] = {primary_bg};
   mixer[ui::kColorNativeTextfieldBorderUnfocused] = {entry_border};
   mixer[ui::kColorNativeBoxFrameBorder] = {GetBorderColor("box.frame")};

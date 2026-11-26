@@ -670,6 +670,8 @@
 #elif BUILDFLAG(IS_LINUX)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
   E_CPONLY(kColorNativeBoxFrameBorder)\
+  E_CPONLY(kColorNativeFrameActive) \
+  E_CPONLY(kColorNativeFrameInactive) \
   E_CPONLY(kColorNativeHeaderButtonBorderActive) \
   E_CPONLY(kColorNativeHeaderButtonBorderInactive) \
   E_CPONLY(kColorNativeHeaderSeparatorBorderActive) \
