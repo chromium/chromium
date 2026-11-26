@@ -143,7 +143,17 @@ BASE_FEATURE(kWebViewEarlyTracingInit, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewEnableApiCallUserActions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This enables WebView crashes.
+// This enables WebView crashes. Note: this does NOT work by itself. This
+// feature flag also requires you to pick the type of crash using a commandline
+// switch. You must provide either --webview-force-crash-java or
+// --webview-force-crash-native. It works this way for testing reasons:
+// 1. Make a build where this BASE_FEATURE is hardcoded to enabled-by-default
+//    (temporarily). This is safe because real user devices don't have either
+//    commandline switch enabled.
+// 2. On a test device, enable the commandline switch for either native or Java
+//    crashes.
+// 3. Deploy a kill switch config to disable the BASE_FEATURE and confirm this
+//    stops the test device from crashing.
 BASE_FEATURE(kWebViewEnableCrash, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the resolution of hostnames via platform DNS APIs in WebView.
