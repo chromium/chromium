@@ -2131,47 +2131,29 @@ const CSSValue* BorderShape::CSSValueFromComputedStyleInternal(
   if (!style.HasBorderShape()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
-  const StyleBorderShape& border_shape = *style.BorderShape();
-
-  const CSSValue* outer = nullptr;
-  const CSSValue* inner = nullptr;
-  bool is_single_shape = !border_shape.HasSeparateInnerShape();
-
-  // Outer shape and coord box
-  CSSValue* outer_shape = ValueForBasicShape(style, border_shape.OuterShape());
-  GeometryBox outer_box = border_shape.OuterBox();
-  // For single-shape border-shape, half-border-box is the default and should
-  // be omitted from serialization
-  bool should_omit_outer_box =
-      (is_single_shape && outer_box == GeometryBox::kHalfBorderBox) ||
-      (!is_single_shape && outer_box == GeometryBox::kBorderBox);
-  if (!should_omit_outer_box) {
-    CSSValue* outer_box_value = CSSIdentifierValue::Create(outer_box);
-    outer = MakeGarbageCollected<CSSValuePair>(
-        outer_shape, outer_box_value, CSSValuePair::kKeepIdenticalValues);
-  } else {
-    outer = outer_shape;
-  }
-
-  // Inner shape and coord box
-  if (!is_single_shape) {
-    CSSValue* inner_shape =
-        ValueForBasicShape(style, border_shape.InnerShape());
-    GeometryBox inner_box = border_shape.InnerBox();
-    if (inner_box != GeometryBox::kPaddingBox) {
-      CSSValue* inner_box_value = CSSIdentifierValue::Create(inner_box);
-      inner = MakeGarbageCollected<CSSValuePair>(
-          inner_shape, inner_box_value, CSSValuePair::kKeepIdenticalValues);
-    } else {
-      inner = inner_shape;
+  auto to_css_value = [&style](const BasicShape& shape,
+                               GeometryBox geometry_box,
+                               GeometryBox default_box) -> const CSSValue* {
+    const CSSValue* css_shape = ValueForBasicShape(style, shape);
+    if (geometry_box == default_box) {
+      return css_shape;
     }
-  } else {
-    return outer;
+    return MakeGarbageCollected<CSSValuePair>(
+        css_shape, CSSIdentifierValue::Create(geometry_box),
+        CSSValuePair::kKeepIdenticalValues);
+  };
+
+  const StyleBorderShape& border_shape = *style.BorderShape();
+  if (!border_shape.HasSeparateInnerShape()) {
+    return to_css_value(border_shape.OuterShape(), border_shape.OuterBox(),
+                        GeometryBox::kHalfBorderBox);
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*outer);
-  list->Append(*inner);
+  list->Append(*to_css_value(border_shape.OuterShape(), border_shape.OuterBox(),
+                             GeometryBox::kBorderBox));
+  list->Append(*to_css_value(border_shape.InnerShape(), border_shape.InnerBox(),
+                             GeometryBox::kPaddingBox));
   return list;
 }
 
