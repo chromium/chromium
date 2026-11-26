@@ -11,7 +11,6 @@
 #include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -40,8 +39,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -58,22 +59,15 @@ constexpr size_t kReducedSpaceTextLength = 500;
 
 void EnsurePageActionEnabled(BrowserWindowInterface* browser,
                              actions::ActionId action_id) {
-  if (action_id == kActionShowTranslate) {
-    // Prevent asynchronous language determination (e.g. from the initial
-    // about:blank load) from triggering TabStateChanged() and disabling
-    // kActionShowTranslate mid-test.
-    if (auto* web_contents =
-            browser->GetTabStripModel()->GetActiveWebContents()) {
-      if (auto* translate_client =
-              ChromeTranslateClient::FromWebContents(web_contents)) {
-        translate_client->translate_driver()->RemoveLanguageDetectionObserver(
-            translate_client);
-      }
-    }
-  }
   auto* action = actions::ActionManager::Get().FindAction(
       action_id, BrowserActions::From(browser)->root_action_item());
   CHECK(action);
+  if (action_id == kActionFakePageActionForDebug) {
+    action->SetText(u"Fake Page Action");
+    action->SetTooltipText(u"Fake Page Action for debugging");
+    action->SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kInfoIcon,
+                                                    ui::kColorSysPrimary, 16));
+  }
   action->SetEnabled(true);
   action->SetVisible(true);
 }
@@ -172,11 +166,7 @@ class PageActionUiTestBase {
   }
 
   PageActionTestAccessor GetTestPageAction() const {
-    return GetPageAction(kActionShowTranslate);
-  }
-
-  PageActionTestAccessor GetTranslatePageAction() const {
-    return GetPageAction(kActionShowTranslate);
+    return GetPageAction(kActionFakePageActionForDebug);
   }
 
   PageActionTestAccessor GetMemorySaverPageAction() const {
@@ -230,21 +220,14 @@ class PageActionUiTestBase {
     page_action_controller()->Hide(action_id);
   }
 
-  void ShowTestPageActionIcon() const { ShowPageAction(kActionShowTranslate); }
+  void ShowTestPageActionIcon() const {
+    HideSuggestionChip(kActionFakePageActionForDebug);
+    ShowPageAction(kActionFakePageActionForDebug);
+  }
 
   void ShowTestSuggestionChip() const {
-    ShowPageAction(kActionShowTranslate);
-    ShowSuggestionChip(kActionShowTranslate);
-  }
-
-  void ShowTranslatePageActionIcon() const {
-    HideSuggestionChip(kActionShowTranslate);
-    ShowPageAction(kActionShowTranslate);
-  }
-
-  void ShowTranslateSuggestionChip() const {
-    ShowPageAction(kActionShowTranslate);
-    ShowSuggestionChip(kActionShowTranslate);
+    ShowPageAction(kActionFakePageActionForDebug);
+    ShowSuggestionChip(kActionFakePageActionForDebug);
   }
 
   void ShowMemorySaverPageActionIcon() const {
@@ -461,12 +444,12 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   EXPECT_TRUE(action.ShouldShowSuggestionChip());
   EXPECT_FALSE(action.IsIconVisible());
 
-  HideSuggestionChip(kActionShowTranslate);
+  HideSuggestionChip(kActionFakePageActionForDebug);
   EXPECT_TRUE(action.GetVisible());
   EXPECT_FALSE(action.ShouldShowSuggestionChip());
   EXPECT_TRUE(action.IsIconVisible());
 
-  HidePageAction(kActionShowTranslate);
+  HidePageAction(kActionFakePageActionForDebug);
   EXPECT_FALSE(action.GetVisible());
   EXPECT_FALSE(action.ShouldShowSuggestionChip());
   EXPECT_FALSE(action.IsIconVisible());
@@ -476,41 +459,40 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 // views appropriately.
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        SuggestionChipReordersMultipleActions) {
-  ShowTranslatePageActionIcon();
+  ShowTestPageActionIcon();
   ShowMemorySaverPageActionIcon();
 
   auto memory_saver_action = GetMemorySaverPageAction();
-  auto translate_action = GetTranslatePageAction();
+  auto test_action = GetTestPageAction();
 
   auto initial_memory_saver_index = memory_saver_action.GetIndex();
   ASSERT_TRUE(initial_memory_saver_index.has_value());
-  auto initial_translate_index = translate_action.GetIndex();
-  ASSERT_TRUE(initial_translate_index.has_value());
+  auto initial_test_index = test_action.GetIndex();
+  ASSERT_TRUE(initial_test_index.has_value());
 
-  // For this test, we assume that the translate page action appears before the
-  // memory saver page action initially. This is crucial for the new logic,
+  // For this test, we assume that the memory saver page action appears before
+  // the test page action initially. This is crucial for the new logic,
   // as the initial order determines the relative order of chips.
-  EXPECT_LT(initial_translate_index.value(),
-            initial_memory_saver_index.value());
+  EXPECT_LT(initial_memory_saver_index.value(), initial_test_index.value());
 
-  // Step 1: Activate suggestion chip for the translate action only.
+  // Step 1: Activate suggestion chip for the test action only.
   // This should trigger PageActionContainerView::NormalizePageActionViewOrder.
-  ShowTranslateSuggestionChip();
+  ShowTestSuggestionChip();
 
-  // Expect translate view to move to the front (index 0) as it's the only chip.
+  // Expect test view to move to the front (index 0) as it's the only chip.
   {
-    auto new_translate_index = translate_action.GetIndex();
-    ASSERT_TRUE(new_translate_index.has_value());
-    EXPECT_EQ(new_translate_index.value(), 0u);
+    auto new_test_index = test_action.GetIndex();
+    ASSERT_TRUE(new_test_index.has_value());
+    EXPECT_EQ(new_test_index.value(), 0u);
   }
-  // The memory saver view, now a non-chip, should follow the chip.
-  // Since translate is at index 0, the memory saver should maintain its
-  // relative order among non-chips.
+  // The memory saver view, still a non-chip, should follow the chip.
+  // Since memory saver was initially before the test action, placing the test
+  // action at index 0 shifts memory saver's index by 1.
   {
     auto new_memory_saver_index = memory_saver_action.GetIndex();
     ASSERT_TRUE(new_memory_saver_index.has_value());
     EXPECT_EQ(new_memory_saver_index.value(),
-              initial_memory_saver_index.value());
+              1u + initial_memory_saver_index.value());
   }
 
   // Step 2: Activate suggestion chip for the memory saver page action as well.
@@ -519,41 +501,40 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   ShowMemorySaverSuggestionChip();
 
   // Now both are chips. The new logic sorts chips by their initial insertion
-  // order. Since translate was initially before memory saver, translate should
-  // remain at index 0.
-  {
-    auto new_translate_index = translate_action.GetIndex();
-    ASSERT_TRUE(new_translate_index.has_value());
-    EXPECT_EQ(new_translate_index.value(), 0u);
-  }
-  // And the memory saver view should now be at index 1, immediately after
-  // the translate chip, preserving its relative initial order among chips.
-  {
-    auto new_memory_saver_index = memory_saver_action.GetIndex();
-    ASSERT_TRUE(new_memory_saver_index.has_value());
-    EXPECT_EQ(new_memory_saver_index.value(), 1u);
-  }
-
-  // Step 3: Hide the translate suggestion chip.
-  // This should trigger PageActionContainerView::NormalizePageActionViewOrder.
-  // Only memory saver is a chip now.
-  HideSuggestionChip(kActionShowTranslate);
-
-  // Memory saver should now be the only active chip and move to index 0.
+  // order. Since memory saver was initially before the test action, memory
+  // saver should move to index 0.
   {
     auto new_memory_saver_index = memory_saver_action.GetIndex();
     ASSERT_TRUE(new_memory_saver_index.has_value());
     EXPECT_EQ(new_memory_saver_index.value(), 0u);
   }
-  // Translate is no longer a chip. It should be placed after the memory saver
-  // chip, maintaining its initial relative order among non-chips.
-  // In this case, it will be at index 1 + its initial index (since Memory Saver
-  // is the only chip at index 0, and it was initially after Translate).
+  // And the test view should now be at index 1, immediately after
+  // the memory saver chip, preserving its relative initial order among chips.
   {
-    auto new_translate_index = translate_action.GetIndex();
-    ASSERT_TRUE(new_translate_index.has_value());
-    EXPECT_EQ(new_translate_index.value(),
-              1u + initial_translate_index.value());
+    auto new_test_index = test_action.GetIndex();
+    ASSERT_TRUE(new_test_index.has_value());
+    EXPECT_EQ(new_test_index.value(), 1u);
+  }
+
+  // Step 3: Hide the test suggestion chip.
+  // This should trigger PageActionContainerView::NormalizePageActionViewOrder.
+  // Only memory saver is a chip now.
+  HideSuggestionChip(kActionFakePageActionForDebug);
+
+  // Memory saver should remain the only active chip at index 0.
+  {
+    auto new_memory_saver_index = memory_saver_action.GetIndex();
+    ASSERT_TRUE(new_memory_saver_index.has_value());
+    EXPECT_EQ(new_memory_saver_index.value(), 0u);
+  }
+  // The test action is no longer a chip. It should be placed after the memory
+  // saver chip, maintaining its initial relative order among non-chips. Since
+  // memory saver was initially before it, the test action returns to its
+  // initial index.
+  {
+    auto new_test_index = test_action.GetIndex();
+    ASSERT_TRUE(new_test_index.has_value());
+    EXPECT_EQ(new_test_index.value(), initial_test_index.value());
   }
 
   // Step 4: Hide the memory saver suggestion chip.
@@ -564,9 +545,9 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   // With no active chips, all icons should revert to their original relative
   // order.
   {
-    auto final_translate_index = translate_action.GetIndex();
-    ASSERT_TRUE(final_translate_index.has_value());
-    EXPECT_EQ(final_translate_index.value(), initial_translate_index.value());
+    auto final_test_index = test_action.GetIndex();
+    ASSERT_TRUE(final_test_index.has_value());
+    EXPECT_EQ(final_test_index.value(), initial_test_index.value());
   }
   {
     auto final_memory_saver_index = memory_saver_action.GetIndex();
@@ -585,22 +566,27 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 
   base::HistogramTester histogram_tester;
 
-  // Step 1: Show ephemeral Translate action in our initial context (tab[0]).
+  // Step 1: Show ephemeral test action in our initial context (tab[0]).
   //         This should increment the histogram by 1.
-  ShowPageAction(kActionShowTranslate);
+  ShowPageAction(kActionFakePageActionForDebug);
   histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 1);
-  histogram_tester.ExpectUniqueSample("PageActionController.ActionTypeShown2",
-                                      PageActionIconType::kTranslate, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PageActionController.ActionTypeShown2",
+      PageActionIconType::kFakePageActionForDebug, 1);
 
   // Step 2: Navigate forward to a new URL. This new navigation is a different
   //         page context, so showing the ephemeral action again logs a second
   //         time.
   GURL next_url("chrome://version");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), next_url));
-  ShowPageAction(kActionShowTranslate);
+  // Unlike production page actions, kActionFakePageActionForDebug does not have
+  // a feature controller that hides it on navigation.
+  HidePageAction(kActionFakePageActionForDebug);
+  ShowPageAction(kActionFakePageActionForDebug);
   histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 2);
-  histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 2);
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.ActionTypeShown2",
+      PageActionIconType::kFakePageActionForDebug, 2);
 
   // Step 3: Go back to the previous URL in the same tab. This *reverts* to the
   //         old page context that already had ephemeral actions shown/logged.
@@ -608,18 +594,20 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   //         the histogram again.
   PerformBackNavigation(browser()->GetTabStripModel()->GetActiveWebContents());
 
-  ShowPageAction(kActionShowTranslate);
+  HidePageAction(kActionFakePageActionForDebug);
+  ShowPageAction(kActionFakePageActionForDebug);
 
   // Histogram should increase at 3 total samples; since the url have changed in
   // the same page.
   histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 3);
-  histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 3);
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.ActionTypeShown2",
+      PageActionIconType::kFakePageActionForDebug, 3);
 }
 
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        EphemeralPageActionUmaLoggedOncePerContext) {
-  // This test verifies that ephemeral page actions (like a Translate icon or
+  // This test verifies that ephemeral page actions (like the debug test icon or
   // Memory Saver chip) only log to "PageActionController.ActionTypeShown2" the
   // first time they appear in a given page context. A "page context" is
   // determined by the combination of (tab, navigation). Re-showing the same
@@ -629,57 +617,65 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 
   base::HistogramTester histogram_tester;
 
-  // 1) Show the ephemeral Translate action in the initial tab (tab[0]) for the
+  // 1) Show the ephemeral test action in the initial tab (tab[0]) for the
   //    very first time. This should increment the histogram by 1.
-  ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 1);
+  ShowPageAction(kActionFakePageActionForDebug);
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.ActionTypeShown2",
+      PageActionIconType::kFakePageActionForDebug, 1);
 
-  // 2) Hide and re-show the same Translate icon within the same page context
+  // 2) Hide and re-show the same test icon within the same page context
   //    (same tab, same navigation). Because it's ephemeral and already shown,
   //    the histogram should not increment again.
-  HidePageAction(kActionShowTranslate);
-  ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 1);
+  HidePageAction(kActionFakePageActionForDebug);
+  ShowPageAction(kActionFakePageActionForDebug);
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.ActionTypeShown2",
+      PageActionIconType::kFakePageActionForDebug, 1);
 
   // 3) Navigate to a new URL in the same tab (tab[0]). This is now a new page
-  //    context. Showing the ephemeral Translate action again in this context
+  //    context. Showing the ephemeral test action again in this context
   //    should increment the histogram by 1.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://settings")));
-  ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 2);
+  HidePageAction(kActionFakePageActionForDebug);
+  ShowPageAction(kActionFakePageActionForDebug);
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.ActionTypeShown2",
+      PageActionIconType::kFakePageActionForDebug, 2);
 
   // 4) Open a brand new tab (tab[1]) and activate it. Because each tab
   // maintains its own context, showing ephemeral actions for the first time in
-  // tab[1] should log again. Then, show both the Translate icon and the Memory
+  // tab[1] should log again. Then, show both the test icon and the Memory
   // Saver chip here, which should each increment the histogram for their
   // respective actions.
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL("chrome://version"), ui::PAGE_TRANSITION_LINK));
   browser()->GetTabStripModel()->ActivateTabAt(1);
 
-  // Show ephemeral Translate action in tab[1].
-  ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 3);
+  // Show ephemeral test action in tab[1].
+  ShowPageAction(kActionFakePageActionForDebug);
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.ActionTypeShown2",
+      PageActionIconType::kFakePageActionForDebug, 3);
 
   // Show ephemeral Memory Saver chip in tab[1].
   ShowPageAction(kActionShowMemorySaverChip);
-  histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 3);
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.ActionTypeShown2",
+      PageActionIconType::kFakePageActionForDebug, 3);
   histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
                                      PageActionIconType::kMemorySaver, 1);
 
-  // 5) Switch back to tab[0] (where the Translate action was already shown
+  // 5) Switch back to tab[0] (where the test action was already shown
   // after navigation). Re-showing the ephemeral icon should NOT increment the
   // metric, since it's the same context in tab[0].
   browser()->GetTabStripModel()->ActivateTabAt(0);
-  ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 3);
+  HidePageAction(kActionFakePageActionForDebug);
+  ShowPageAction(kActionFakePageActionForDebug);
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.ActionTypeShown2",
+      PageActionIconType::kFakePageActionForDebug, 3);
 }
 
 // Verifies that "…Icon.CTR2" histograms emit kShown once-per-context.
@@ -688,24 +684,25 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        CTR2HistogramsLoggedOncePerContext) {
   base::HistogramTester histogram_tester;
 
-  constexpr char kTranslateHistogram[] =
-      "PageActionController.Translate.Icon.CTR2";
+  constexpr char kTestPageActionHistogram[] =
+      "PageActionController.FakePageActionForDebug.Icon.CTR2";
 
   // 1. Initial page-context (tab[0], first navigation).
-  ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectUniqueSample(kTranslateHistogram,
+  ShowPageAction(kActionFakePageActionForDebug);
+  histogram_tester.ExpectUniqueSample(kTestPageActionHistogram,
                                       PageActionCTREvent::kShown, 1);
 
   // 2. Hide + re-show in the SAME context → no additional logging.
-  HidePageAction(kActionShowTranslate);
-  ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectTotalCount(kTranslateHistogram, 1);
+  HidePageAction(kActionFakePageActionForDebug);
+  ShowPageAction(kActionFakePageActionForDebug);
+  histogram_tester.ExpectTotalCount(kTestPageActionHistogram, 1);
 
   // 3. New navigation in the SAME tab → new context, logs again.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://settings")));
-  ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount(kTranslateHistogram,
+  HidePageAction(kActionFakePageActionForDebug);
+  ShowPageAction(kActionFakePageActionForDebug);
+  histogram_tester.ExpectBucketCount(kTestPageActionHistogram,
                                      PageActionCTREvent::kShown, 2);
 
   // 4. Open a new tab → brand-new context.
@@ -713,15 +710,16 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
       AddTabAtIndex(1, GURL("chrome://version"), ui::PAGE_TRANSITION_LINK));
   browser()->GetTabStripModel()->ActivateTabAt(1);
 
-  // 4-a) First show of Translate in tab[1] logs again.
-  ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount(kTranslateHistogram,
+  // 4-a) First show of the test action in tab[1] logs again.
+  ShowPageAction(kActionFakePageActionForDebug);
+  histogram_tester.ExpectBucketCount(kTestPageActionHistogram,
                                      PageActionCTREvent::kShown, 3);
 
   // 5. Switch back to tab[0] and show again → no additional logging.
   browser()->GetTabStripModel()->ActivateTabAt(0);
-  ShowPageAction(kActionShowTranslate);
-  histogram_tester.ExpectBucketCount(kTranslateHistogram,
+  HidePageAction(kActionFakePageActionForDebug);
+  ShowPageAction(kActionFakePageActionForDebug);
+  histogram_tester.ExpectBucketCount(kTestPageActionHistogram,
                                      PageActionCTREvent::kShown, 3);
 }
 
@@ -805,10 +803,10 @@ IN_PROC_BROWSER_TEST_F(PageActionMetricsInteractiveUiTest,
                        NumberActionsShown3HistogramLogged) {
   base::HistogramTester histogram_tester;
 
-  // 1) Show the Translate suggestion chip (1 visible ephemeral action).
-  ShowPageAction(kActionShowTranslate);
+  // 1) Show the test page action (1 visible ephemeral action).
+  ShowPageAction(kActionFakePageActionForDebug);
 
-  // 2) Show the Memory Saver suggestion chip (now 2 visible ephemeral actions).
+  // 2) Show the Memory Saver page action (now 2 visible ephemeral actions).
   ShowPageAction(kActionShowMemorySaverChip);
 
   // Expect exactly one sample in bucket “1” and one in bucket “2”.
@@ -829,9 +827,9 @@ IN_PROC_BROWSER_TEST_F(PageActionMetricsInteractiveUiTest,
   GURL test_url("chrome://version");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
-  // Show two ephemeral suggestion chips in sequence.
-  ShowPageAction(kActionShowTranslate);        // logs kActionShown
-  ShowPageAction(kActionShowMemorySaverChip);  // logs kMultipleActionsShown
+  // Show two ephemeral page actions in sequence.
+  ShowPageAction(kActionFakePageActionForDebug);  // logs kActionShown
+  ShowPageAction(kActionShowMemorySaverChip);     // logs kMultipleActionsShown
 
   // Verify each enumeration event was recorded exactly once.
   histogram_tester.ExpectBucketCount(
@@ -859,17 +857,17 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   ASSERT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
 
-  ShowTranslatePageActionIcon();
+  ShowTestPageActionIcon();
   page_action_controller()->ShowSuggestionChip(
-      kActionShowTranslate, {
-                                .should_animate = false,
-                                .should_announce_chip = false,
-                            });
+      kActionFakePageActionForDebug, {
+                                         .should_animate = false,
+                                         .should_announce_chip = false,
+                                     });
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
 
   // Reshow the chip with announcements enabled.
-  HideSuggestionChip(kActionShowTranslate);
-  page_action_controller()->ShowSuggestionChip(kActionShowTranslate,
+  HideSuggestionChip(kActionFakePageActionForDebug);
+  page_action_controller()->ShowSuggestionChip(kActionFakePageActionForDebug,
                                                {
                                                    .should_animate = false,
                                                    .should_announce_chip = true,
@@ -1015,8 +1013,8 @@ class PageActionPixelReorderTest : public PageActionPixelTestBase {
   void ShowUi(const std::string& name) override {
     ShowMemorySaverPageActionIcon();
 
-    // Now, activate the suggestion chip for the translate action.
-    ShowTranslateSuggestionChip();
+    // Now, activate the suggestion chip for the test action.
+    ShowTestSuggestionChip();
 
     // Run any pending layout tasks.
     PageActionPixelTestBase::ShowUi(name);
@@ -1024,17 +1022,17 @@ class PageActionPixelReorderTest : public PageActionPixelTestBase {
 
   bool VerifyUi() override {
     auto memory_saver_action = GetMemorySaverPageAction();
-    auto translate_action = GetTranslatePageAction();
+    auto test_action = GetTestPageAction();
 
     // Get the current indices as optionals.
     auto memory_saver_index = memory_saver_action.GetIndex();
-    auto translate_index = translate_action.GetIndex();
-    if (!memory_saver_index.has_value() || !translate_index.has_value()) {
+    auto test_index = test_action.GetIndex();
+    if (!memory_saver_index.has_value() || !test_index.has_value()) {
       return false;
     }
 
-    // Expect the Translate action (suggestion chip) to be at index 0.
-    EXPECT_EQ(translate_index.value(), 0u);
+    // Expect the test action (suggestion chip) to be at index 0.
+    EXPECT_EQ(test_index.value(), 0u);
     // The memory saver page action should follow the chip.
     EXPECT_GT(memory_saver_index.value(), 0u);
 
@@ -1060,8 +1058,8 @@ class AnchoredMessageInteractiveTestBase : public InteractiveBrowserTest,
       AnchoredMessageActionIconType icon_type,
       std::optional<ui::ImageModel> anchored_message_icon,
       std::unique_ptr<ui::SimpleMenuModel> menu) const {
-    ShowPageAction(kActionShowTranslate);
-    ShowAnchoredMessage(kActionShowTranslate, text, icon_type,
+    ShowPageAction(kActionFakePageActionForDebug);
+    ShowAnchoredMessage(kActionFakePageActionForDebug, text, icon_type,
                         anchored_message_icon, std::move(menu));
   }
 
@@ -1069,14 +1067,14 @@ class AnchoredMessageInteractiveTestBase : public InteractiveBrowserTest,
       std::u16string text,
       std::optional<AnchoredMessageExpandableContent> expandable_content,
       std::unique_ptr<ui::SimpleMenuModel> menu = nullptr) const {
-    ShowPageAction(kActionShowTranslate);
+    ShowPageAction(kActionFakePageActionForDebug);
     page_action_controller()->SetAnchoredMessageExpandableContent(
-        kActionShowTranslate, expandable_content);
+        kActionFakePageActionForDebug, expandable_content);
     const AnchoredMessageActionIconType icon_type =
         menu ? AnchoredMessageActionIconType::kMenu
              : AnchoredMessageActionIconType::kNone;
-    ShowAnchoredMessage(kActionShowTranslate, text, icon_type, std::nullopt,
-                        std::move(menu));
+    ShowAnchoredMessage(kActionFakePageActionForDebug, text, icon_type,
+                        std::nullopt, std::move(menu));
   }
 
   auto WaitForDrawerAnimation() {
@@ -1177,7 +1175,7 @@ IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest, InvokeUi_Menu) {
       WaitForShow(kMenuItemId),
       Screenshot(AnchoredMessageBubbleView::kAnchoredMessageBubbleId,
                  "menu_clicked", "20260324"),
-      Do([this]() { HideAnchoredMessage(kActionShowTranslate); }),
+      Do([this]() { HideAnchoredMessage(kActionFakePageActionForDebug); }),
       WaitForHide(kMenuItemId));
 }
 
@@ -1193,7 +1191,9 @@ IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest, InvokeUi_Text) {
       WaitForShow(AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
       Screenshot(AnchoredMessageBubbleView::kAnchoredMessageBubbleId, "text",
                  "20260324"),
-      Do([this]() -> void { HideAnchoredMessage(kActionShowTranslate); }),
+      Do([this]() -> void {
+        HideAnchoredMessage(kActionFakePageActionForDebug);
+      }),
       WaitForHide(AnchoredMessageBubbleView::kAnchoredMessageBubbleId));
 }
 
@@ -1222,7 +1222,7 @@ IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest,
 IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest,
                        ClickingPageActionIconDowngradesAnchoredMessageToChip) {
   auto* action_item = actions::ActionManager::Get().FindAction(
-      kActionShowTranslate,
+      kActionFakePageActionForDebug,
       BrowserActions::From(browser())->root_action_item());
   ASSERT_TRUE(action_item);
   const int initial_invoke_count = action_item->GetInvokeCount();
@@ -1238,7 +1238,7 @@ IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest,
       CheckResult(
           [this]() { return GetTestPageAction().ShouldShowSuggestionChip(); },
           false),
-      PressButton(kTranslatePageActionElementId),
+      PressButton(kFakePageActionForDebugElementId),
       WaitForHide(AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
       Do([this]() { FastForwardAnimation(GetTestPageAction()); }),
       CheckResult(
