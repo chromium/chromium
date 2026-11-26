@@ -234,18 +234,6 @@ struct VectorTraits<HeapVector<T, 0>> : VectorTraitsBase<HeapVector<T, 0>> {
   static const bool kCanMoveWithMemcpy = true;
 };
 
-#if defined(ANNOTATE_CONTIGUOUS_CONTAINER)
-// Inline capacity is disabled when container annotations are active (see
-// `INLINE_CAPACITY` in vector.h), giving `HeapVector<T, inlineCapacity>`
-// the same representation as `HeapVector<T>`.
-template <typename T, wtf_size_t inlineCapacity>
-  requires(inlineCapacity > 0)
-struct VectorTraits<HeapVector<T, inlineCapacity>>
-    : VectorTraits<HeapVector<T>> {
-  STATIC_ONLY(VectorTraits);
-  using TraitType = HeapVector<T, inlineCapacity>;
-};
-#else   // defined(ANNOTATE_CONTIGUOUS_CONTAINER)
 template <typename T, wtf_size_t inlineCapacity>
   requires(inlineCapacity > 0)
 struct VectorTraits<HeapVector<T, inlineCapacity>>
@@ -260,7 +248,6 @@ struct VectorTraits<HeapVector<T, inlineCapacity>>
       VectorTraits<T>::kCanClearUnusedSlotsWithMemset;
   static const bool kCanMoveWithMemcpy = false;
 };
-#endif  // defined(ANNOTATE_CONTIGUOUS_CONTAINER)
 
 }  // namespace blink
 
