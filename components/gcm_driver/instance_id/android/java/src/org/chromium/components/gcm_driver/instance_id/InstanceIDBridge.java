@@ -31,7 +31,7 @@ import java.io.IOException;
 public class InstanceIDBridge {
     private final String mSubtype;
     private final SequencedTaskRunner mTaskRunner =
-            PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT_MAY_BLOCK);
+            PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE_MAY_BLOCK);
     private long mNativeInstanceIDAndroid;
 
     private static boolean sBlockOnAsyncTasksForTesting;
