@@ -204,7 +204,7 @@ class SharedWorkerHostTest : public testing::Test {
       SharedWorkerHost* host,
       mojo::PendingRemote<blink::mojom::SharedWorkerClient> client) {
     GlobalRenderFrameHostId dummy_render_frame_host_id(
-        mock_render_process_host_->GetDeprecatedID(), 22);
+        mock_render_process_host_->GetID(), 22);
 
     blink::MessagePortDescriptorPair port_pair;
     MessagePortChannel local_port(port_pair.TakePort0());

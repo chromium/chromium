@@ -1283,8 +1283,7 @@ TEST_F(RenderProcessHostUnitTest, HasWarmLockedProcessAvoidPrewarmContention) {
   // 2. Committed site tracker: when
   // kPreferWarmRendererProcessAvoidPrewarmContention is enabled, the process
   // must also be ready (IsReady() == true) and have no loading frames.
-  const GlobalRenderFrameHostId kDummyFrameRoutingId(
-      prerender_host.GetDeprecatedID(), 1);
+  const GlobalRenderFrameHostId kDummyFrameRoutingId(prerender_host.GetID(), 1);
   prerender_host.RegisterRenderFrameHost(kDummyFrameRoutingId,
                                          /*is_outermost_main_frame=*/true);
   RenderProcessHostImpl::AddFrameWithSite(browser_context(), &prerender_host,

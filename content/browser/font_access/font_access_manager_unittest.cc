@@ -25,6 +25,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/permission_result.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_frame_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -83,7 +84,7 @@ class FontAccessManagerTest : public RenderViewHostImplTestHarness {
     RenderViewHostImplTestHarness::SetUp();
     NavigateAndCommit(kTestUrl);
 
-    const int process_id = main_rfh()->GetProcess()->GetDeprecatedID();
+    const ChildProcessId process_id = main_rfh()->GetProcess()->GetID();
     const int routing_id = main_rfh()->GetRoutingID();
     const GlobalRenderFrameHostId main_frame_id(process_id, routing_id);
 
@@ -301,7 +302,7 @@ TEST_F(FontAccessManagerTest, PermissionDeniedForOpaqueOrigin) {
   NavigateAndCommit(GURL("data:text/html,test"));
   ASSERT_TRUE(main_rfh()->GetLastCommittedOrigin().opaque());
 
-  const int process_id = main_rfh()->GetProcess()->GetDeprecatedID();
+  const ChildProcessId process_id = main_rfh()->GetProcess()->GetID();
   const int routing_id = main_rfh()->GetRoutingID();
   const GlobalRenderFrameHostId main_frame_id(process_id, routing_id);
 

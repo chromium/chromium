@@ -617,11 +617,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
@@ -864,11 +860,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context,
@@ -960,11 +952,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context,
@@ -1060,11 +1048,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context,
@@ -1172,11 +1156,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
@@ -1246,11 +1226,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
@@ -1369,11 +1345,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context,
@@ -1471,11 +1443,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context,
@@ -1579,11 +1547,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context,
@@ -1684,11 +1648,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context,
@@ -1794,11 +1754,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
