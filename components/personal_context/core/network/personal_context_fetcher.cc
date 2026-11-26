@@ -97,6 +97,14 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       // TODO(crbug.com/552048073): fill out smart-search traffic annotation
       // details.
       return MISSING_TRAFFIC_ANNOTATION;
+    case proto::CONTEXT_MEMORY_FEATURE_KNOWLEDGE_VAULT:
+      // TODO(crbug.com/586561306): fill out knowledge-vault traffic annotation
+      // details.
+      return MISSING_TRAFFIC_ANNOTATION;
+    case proto::CONTEXT_MEMORY_FEATURE_PROJECT_RESUME:
+      // TODO(crbug.com/586561306): fill out project-resume traffic annotation
+      // details.
+      return MISSING_TRAFFIC_ANNOTATION;
     case proto::CONTEXT_MEMORY_FEATURE_UNSPECIFIED:
     default:
       NOTREACHED();

@@ -24,6 +24,10 @@ std::string_view GetStringNameForContextMemoryFeature(
       return "AutoTodos";
     case proto::CONTEXT_MEMORY_FEATURE_SMART_SEARCH:
       return "SmartSearch";
+    case proto::CONTEXT_MEMORY_FEATURE_KNOWLEDGE_VAULT:
+      return "KnowledgeVault";
+    case proto::CONTEXT_MEMORY_FEATURE_PROJECT_RESUME:
+      return "ProjectResume";
     case proto::ContextMemoryFeature_INT_MIN_SENTINEL_DO_NOT_USE_:
     case proto::ContextMemoryFeature_INT_MAX_SENTINEL_DO_NOT_USE_:
       return "";
