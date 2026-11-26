@@ -311,7 +311,9 @@ void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
 
   CHECK(!params.email.empty(), base::NotFatalUntil::M162);
   CHECK(!params.gaia_id.empty(), base::NotFatalUntil::M162);
-  CHECK(!params.auth_code.empty(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/590263880): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!params.auth_code.empty());
 
   content::WebContents* contents = web_ui()->GetWebContents();
   const GURL& current_url = contents->GetLastCommittedURL();
