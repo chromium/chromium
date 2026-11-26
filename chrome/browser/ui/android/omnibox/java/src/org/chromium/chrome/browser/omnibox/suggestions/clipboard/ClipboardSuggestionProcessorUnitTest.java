@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.annotation.GraphicsMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -62,6 +63,7 @@ import java.util.function.Supplier;
 
 /** Tests for {@link ClipboardSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 public class ClipboardSuggestionProcessorUnitTest {
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
 
@@ -141,6 +143,13 @@ public class ClipboardSuggestionProcessorUnitTest {
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
     }
 
+    private byte[] createPngBytes(int width, int height) {
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos));
+        return baos.toByteArray();
+    }
+
     @Test
     public void clipboardSuggestion_identifyUrlSuggestion() {
         createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_URL, GURL.emptyGURL());
@@ -215,6 +224,50 @@ public class ClipboardSuggestionProcessorUnitTest {
 
         assertEquals(size, ((BitmapDrawable) icon.drawable).getBitmap().getWidth());
         assertEquals(size, ((BitmapDrawable) icon.drawable).getBitmap().getHeight());
+    }
+
+    @Test
+    public void clipboardSuggestion_thumbnailShouldResizeNonPowerOfTwo() {
+        int size =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_decoration_image_size);
+
+        createClipboardSuggestionAndClickReveal(
+                OmniboxSuggestionType.CLIPBOARD_IMAGE,
+                GURL.emptyGURL(),
+                createPngBytes(size * 3, size * 3));
+        OmniboxDrawableState icon = mModel.get(BaseSuggestionViewProperties.ICON);
+
+        Bitmap resultBitmap = ((BitmapDrawable) icon.drawable).getBitmap();
+        assertEquals(size, resultBitmap.getWidth());
+        assertEquals(size, resultBitmap.getHeight());
+    }
+
+    @Test
+    public void clipboardSuggestion_thumbnailShouldResizeNonSquare() {
+        int size =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_decoration_image_size);
+
+        createClipboardSuggestionAndClickReveal(
+                OmniboxSuggestionType.CLIPBOARD_IMAGE,
+                GURL.emptyGURL(),
+                createPngBytes(size * 4, size * 2));
+        OmniboxDrawableState icon = mModel.get(BaseSuggestionViewProperties.ICON);
+
+        Bitmap resultBitmap = ((BitmapDrawable) icon.drawable).getBitmap();
+        assertEquals(size, resultBitmap.getWidth());
+        assertEquals(size / 2, resultBitmap.getHeight());
+    }
+
+    @Test
+    public void clipboardSuggestion_invalidImageDataShowsFallbackIcon() {
+        createClipboardSuggestion(
+                OmniboxSuggestionType.CLIPBOARD_IMAGE, GURL.emptyGURL(), new byte[] {1, 2, 3, 4});
+        OmniboxDrawableState fallbackIcon = mModel.get(BaseSuggestionViewProperties.ICON);
+
+        mProcessor.revealButtonClickHandler(mSuggestion, mModel);
+        assertEquals(fallbackIcon, mModel.get(BaseSuggestionViewProperties.ICON));
     }
 
     @Test

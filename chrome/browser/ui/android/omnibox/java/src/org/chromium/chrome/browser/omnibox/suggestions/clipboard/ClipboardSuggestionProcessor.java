@@ -5,14 +5,16 @@
 package org.chromium.chrome.browser.omnibox.suggestions.clipboard;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Size;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -27,6 +29,8 @@ import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /** A class that handles model and view creation for the clipboard suggestions. */
@@ -129,26 +133,8 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
         if (suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
             byte[] imageData = suggestion.getClipboardImageData();
             if (imageData != null && imageData.length > 0) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
-
+                Bitmap bitmap = decodeThumbnailBitmap(imageData);
                 if (bitmap != null) {
-                    // TODO(crbug.com/40133944): This is short term solution, resize need to be
-                    // handled somewhere else.
-                    if (bitmap.getWidth() > 0
-                            && bitmap.getHeight() > 0
-                            && (bitmap.getWidth() > getDecorationImageSize()
-                                    || bitmap.getHeight() > getDecorationImageSize())) {
-                        float max = Math.max(bitmap.getWidth(), bitmap.getHeight());
-                        float scale = ((float) getDecorationImageSize()) / max;
-                        float width = bitmap.getWidth();
-                        float height = bitmap.getHeight();
-                        bitmap =
-                                Bitmap.createScaledBitmap(
-                                        bitmap,
-                                        (int) Math.round(scale * width),
-                                        (int) Math.round(scale * height),
-                                        true);
-                    }
                     setOmniboxDrawableState(
                             model,
                             OmniboxDrawableState.forImage(
@@ -157,6 +143,33 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
             }
         } else if (!suggestion.isSearchSuggestion()) {
             fetchSuggestionFavicon(model, suggestion.getUrl());
+        }
+    }
+
+    private @Nullable Bitmap decodeThumbnailBitmap(byte[] imageData) {
+        try {
+            return ImageDecoder.decodeBitmap(
+                    ImageDecoder.createSource(ByteBuffer.wrap(imageData)),
+                    (decoder, info, source) -> {
+                        decoder.setAllocator(ImageDecoder.ALLOCATOR_SOFTWARE);
+                        Size size = info.getSize();
+                        int width = size.getWidth();
+                        int height = size.getHeight();
+                        int targetSize = getDecorationImageSize();
+                        // TODO(crbug.com/40133944): This is short term solution, resize need to be
+                        // handled somewhere else.
+                        if (targetSize > 0
+                                && width > 0
+                                && height > 0
+                                && (width > targetSize || height > targetSize)) {
+                            float scale = (float) targetSize / Math.max(width, height);
+                            decoder.setTargetSize(
+                                    Math.max(1, Math.round(scale * width)),
+                                    Math.max(1, Math.round(scale * height)));
+                        }
+                    });
+        } catch (IOException | OutOfMemoryError e) {
+            return null;
         }
     }
 
