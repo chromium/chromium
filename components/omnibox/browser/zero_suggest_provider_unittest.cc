@@ -28,7 +28,6 @@
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
-#include "components/omnibox/browser/suggest_inventory_fallback_utils.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -47,7 +46,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "ui/webui/buildflags.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "components/omnibox/browser/suggest_inventory_fallback_utils.h"
+#endif
 
 using testing::_;
 using CacheEntry = ZeroSuggestCacheService::CacheEntry;
@@ -682,7 +686,7 @@ TEST_F(ZeroSuggestProviderTest, SendRequestForThreadsSuggestionNtpComposebox) {
   EXPECT_EQ(3U, provider_->matches().size());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
 TEST_F(ZeroSuggestProviderTest, FallbackMatchesOnEmptyResponse) {
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
@@ -768,7 +772,7 @@ TEST_F(ZeroSuggestProviderTest, FallbackMatchesOnParseFailure) {
               match.suggestion_group_id);
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 TEST_F(ZeroSuggestProviderTest, SendRequestWithLensInteractionResponse) {
   AutocompleteInput input = ZeroPrefixInputForLens();
@@ -2459,7 +2463,7 @@ TEST_F(ZeroSuggestProviderTest, TestComposeboxPrefetchWithSuggestInventory) {
             prefs->GetString(omnibox::kZeroSuggestCachedResultsComposebox));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
 TEST_F(ZeroSuggestProviderTest,
        FallbackSuggestionsForSuggestInventoryOnFailure) {
   EXPECT_CALL(*client_, IsAuthenticated())
@@ -2490,7 +2494,7 @@ TEST_F(ZeroSuggestProviderTest,
     EXPECT_FALSE(match.contents.empty());
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 TEST_F(ZeroSuggestProviderTest, TestCacheStateWithSRPPrefetchDisabled) {
   EXPECT_CALL(*client_, IsAuthenticated())

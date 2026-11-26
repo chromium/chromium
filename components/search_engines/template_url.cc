@@ -1977,6 +1977,16 @@ std::string TemplateURL::GetSuggestionClient(
             !search_terms_args.current_page_url.empty()) {
           return "chrome-omni";
         } else {
+#if BUILDFLAG(IS_ANDROID)
+          // On Android the composebox uses the mobile client by default (see
+          // `kComposeboxClientOverride`). The WebUI NTP composebox uses the
+          // Desktop client instead, so that the server applies the same
+          // suggest configuration as on Desktop.
+          if (search_terms_args.page_classification ==
+              metrics::OmniboxEventProto::NTP_COMPOSEBOX) {
+            return "chrome-compose";
+          }
+#endif  // BUILDFLAG(IS_ANDROID)
           return omnibox::kComposeboxClientOverride.Get();
         }
       } else {
