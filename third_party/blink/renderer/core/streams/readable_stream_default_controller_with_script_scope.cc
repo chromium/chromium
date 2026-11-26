@@ -52,12 +52,14 @@ double ReadableStreamDefaultControllerWithScriptScope::DesiredSize() const {
   return desired_size.value();
 }
 
+bool ReadableStreamDefaultControllerWithScriptScope::CanCloseOrEnqueue() const {
+  return controller_ &&
+         ReadableStreamDefaultController::CanCloseOrEnqueue(controller_.Get());
+}
+
 void ReadableStreamDefaultControllerWithScriptScope::Enqueue(
     v8::Local<v8::Value> js_chunk) const {
-  if (!controller_)
-    return;
-
-  if (!ReadableStreamDefaultController::CanCloseOrEnqueue(controller_)) {
+  if (!CanCloseOrEnqueue()) {
     return;
   }
 

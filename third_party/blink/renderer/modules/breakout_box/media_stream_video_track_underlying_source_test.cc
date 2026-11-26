@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "media/base/video_frame_metadata.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using testing::_;
 
@@ -166,6 +168,68 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
   EXPECT_TRUE(read_tester.IsFulfilled());
 
   source->Close();
+  track->stopTrack(v8_scope.GetExecutionContext());
+}
+
+TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
+       VideoFrameClosedWhenStreamClosesAfterPop) {
+  const std::string device_id = "window:test-window";
+  auto* media_stream_source = CreateDevicePushableSource(device_id);
+  auto* platform_video_source = static_cast<PushableMediaStreamVideoSource*>(
+      media_stream_source->GetPlatformSource());
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(),
+      MediaStreamVideoTrack::CreateVideoTrack(
+          platform_video_source,
+          MediaStreamVideoSource::ConstraintsOnceCallback(),
+          /*enabled=*/true));
+  auto* source = CreateSource(script_state, track);
+  VideoFrameMonitor& monitor = VideoFrameMonitor::Instance();
+  auto* stream =
+      ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+  NonThrowableExceptionState exception_state;
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, exception_state);
+
+  ScriptPromiseTester read_tester(script_state,
+                                  reader->read(script_state, exception_state));
+  v8_scope.PerformMicrotaskCheckpoint();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return source->NumPendingPullsForTesting() == 1; }));
+
+  auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(10, 10));
+  const media::VideoFrame::ID frame_id = frame->unique_id();
+
+  // Queue the frame. This pushes it into the queue synchronously and posts a
+  // task that pops it, wraps it in a JS object, and posts another task that
+  // enqueues it into the stream.
+  source->QueueFrame(std::move(frame));
+  EXPECT_EQ(monitor.NumFrames(device_id), 1u);
+
+  // Close the source after the frame has been popped from the queue but
+  // before the enqueueing task runs. The frame can no longer be delivered to
+  // the stream, so it must be closed instead of being dropped without
+  // close(), which would keep it open in the monitor until garbage
+  // collection.
+  auto realm_task_runner = v8_scope.GetExecutionContext()->GetTaskRunner(
+      TaskType::kInternalMediaRealTime);
+  realm_task_runner->PostTask(
+      FROM_HERE, BindOnce(
+                     [](MediaStreamVideoTrackUnderlyingSource* source) {
+                       source->Close();
+                     },
+                     WrapPersistent(source)));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return monitor.NumFrames(device_id) == 0u; }));
+  EXPECT_EQ(monitor.NumFrames(device_id), 0u);
+  EXPECT_EQ(monitor.NumRefs(device_id, frame_id), 0);
+
+  read_tester.WaitUntilSettled();
+  EXPECT_TRUE(read_tester.IsFulfilled());
+
   track->stopTrack(v8_scope.GetExecutionContext());
 }
 
