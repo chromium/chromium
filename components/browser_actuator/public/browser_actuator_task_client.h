@@ -34,14 +34,18 @@ class BrowserActuatorTaskClient {
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
+    // Invoked at most once per task when execution starts on the server, before
+    // any `OnWorklogUpdate()` or `OnTaskCompleted()` callback.
     virtual void OnTaskStarted();
 
-    // Invoked when an intermediate step update is reported.
+    // Invoked when an intermediate step update is reported. Runs only after
+    // `OnTaskStarted()` and before `OnTaskCompleted()`.
     // NOTE: `step_description` contains untrusted remote text. Render strictly
     // as plain text; never log to UMA/UKM or DLOG.
     virtual void OnWorklogUpdate(std::string_view step_description);
 
-    // May run without `OnTaskStarted()`.
+    // Invoked at most once as the terminal callback; no further `Observer`
+    // callbacks run after it. May run without `OnTaskStarted()`.
     virtual void OnTaskCompleted(const Result& result) = 0;
 
    protected:
@@ -62,7 +66,10 @@ class BrowserActuatorTaskClient {
   // any `Observer` callback.
   //
   // Not every outcome reaches `observer`: destroying `this` or
-  // `KeyedService::Shutdown()` aborts silently without `OnTaskCompleted()`.
+  // `KeyedService::Shutdown()` during an active task aborts silently without
+  // `OnTaskCompleted()`. Calling `StartTask()` on an unused client after
+  // `KeyedService::Shutdown()` posts `OnTaskCompleted()` asynchronously with
+  // `CompletionStatus::kFailed`.
   //
   // Callbacks always run asynchronously on the UI sequence—never synchronously
   // inside `StartTask()`, `Cancel()`, or `~BrowserActuatorTaskClient()`.
