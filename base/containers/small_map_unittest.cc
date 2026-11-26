@@ -9,7 +9,10 @@
 #include <algorithm>
 #include <functional>
 #include <map>
+#include <memory>
+#include <string>
 #include <unordered_map>
+#include <utility>
 
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -648,6 +651,108 @@ TEST(SmallMap, HeterogenousContains) {
   ASSERT_EQ(ImplicitlyConvertibleFromInt::GetNumCreatedInstances(), 1);
   m.contains(1);
   EXPECT_EQ(ImplicitlyConvertibleFromInt::GetNumCreatedInstances(), 1);
+}
+
+TEST(SmallMap, OperatorBracketSelfAliasingKeyOnTransition) {
+  {
+    small_map<std::map<int, int>, 2> m;
+    m[0] = 99;
+    m[1] = 200;
+    ASSERT_FALSE(m.UsingFullMap());
+
+    // `m[0]` returns a reference into `m`'s inline array, which shares a union
+    // with the fallback `std::map`. Transitioning on `m[m[0]]` must copy the
+    // key before `ConvertToRealMap()` overwrites the inline array.
+    m[m[0]] = 300;
+    EXPECT_TRUE(m.UsingFullMap());
+    EXPECT_EQ(m.size(), 3u);
+    EXPECT_EQ(m[0], 99);
+    EXPECT_EQ(m[1], 200);
+    ASSERT_TRUE(m.contains(99));
+    EXPECT_EQ(m[99], 300);
+  }
+
+  {
+    // Test both SSO and heap-allocated `std::string` keys stored in inline
+    // values across `ConvertToRealMap()`.
+    small_map<std::unordered_map<std::string, std::string>, 2> sm_sso;
+    sm_sso["first"] = "short_key";
+    sm_sso["second"] = "other";
+    ASSERT_FALSE(sm_sso.UsingFullMap());
+
+    sm_sso[sm_sso["first"]] = "third_val";
+    EXPECT_TRUE(sm_sso.UsingFullMap());
+    EXPECT_EQ(sm_sso.size(), 3u);
+    EXPECT_EQ(sm_sso["first"], "short_key");
+    ASSERT_TRUE(sm_sso.contains("short_key"));
+    EXPECT_EQ(sm_sso["short_key"], "third_val");
+
+    const std::string long_key(64, 'k');
+    small_map<std::unordered_map<std::string, std::string>, 2> sm_heap;
+    sm_heap["first"] = long_key;
+    sm_heap["second"] = "other";
+    ASSERT_FALSE(sm_heap.UsingFullMap());
+
+    sm_heap[sm_heap["first"]] = "third_val";
+    EXPECT_TRUE(sm_heap.UsingFullMap());
+    EXPECT_EQ(sm_heap.size(), 3u);
+    EXPECT_EQ(sm_heap["first"], long_key);
+    ASSERT_TRUE(sm_heap.contains(long_key));
+    EXPECT_EQ(sm_heap[long_key], "third_val");
+  }
+}
+
+namespace {
+
+struct ChildOwningNode {
+  using ValuePair = std::pair<const int, ChildOwningNode>;
+
+  int tag = 0;
+  std::unique_ptr<ValuePair> child;
+
+  ChildOwningNode() = default;
+  explicit ChildOwningNode(int tag) : tag(tag) {}
+  // Deliberately omit a move constructor so `ConvertToRealMap()` copies inline
+  // elements and destroys the originals, and do not clone `child` so copying
+  // `m[1]` into the fallback map does not reallocate a replacement `ValuePair`
+  // in the freed heap slot.
+  ChildOwningNode(const ChildOwningNode& other) : tag(other.tag) {}
+  ChildOwningNode& operator=(const ChildOwningNode& other) {
+    if (this != &other) {
+      tag = other.tag;
+      child.reset();
+    }
+    return *this;
+  }
+  ~ChildOwningNode() { tag = -1; }
+};
+
+}  // namespace
+
+TEST(SmallMap, InsertSelfAliasingValueOnTransition) {
+  small_map<std::map<int, ChildOwningNode>, 2> m;
+  m[1] = ChildOwningNode(10);
+  m[1].child =
+      std::make_unique<ChildOwningNode::ValuePair>(99, ChildOwningNode(990));
+  m[2] = ChildOwningNode(20);
+  ASSERT_FALSE(m.UsingFullMap());
+
+  // `*m[1].child` is owned by the inline element at `m[1]`. Because
+  // `ChildOwningNode` has a user-declared copy constructor and destructor (no
+  // move constructor) and copies do not clone `child`, `ConvertToRealMap()`
+  // copies `m[1]` into the fallback map and destroys the original inline
+  // `m[1]`, freeing `*m[1].child`. `insert()` must copy the input pair before
+  // calling `ConvertToRealMap()`.
+  auto [it, inserted] = m.insert(*m[1].child);
+  EXPECT_TRUE(inserted);
+  EXPECT_TRUE(m.UsingFullMap());
+  EXPECT_EQ(m.size(), 3u);
+  EXPECT_EQ(it->first, 99);
+  EXPECT_EQ(it->second.tag, 990);
+  ASSERT_TRUE(m.contains(99));
+  EXPECT_EQ(m[99].tag, 990);
+  EXPECT_EQ(m[1].tag, 10);
+  EXPECT_EQ(m[2].tag, 20);
 }
 
 }  // namespace base

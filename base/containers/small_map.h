@@ -46,7 +46,13 @@ namespace base {
 //
 // IMPORTANT NOTES
 //
-//  - Iterators are invalidated across mutations.
+//  - Iterators, pointers, and references to elements are invalidated across
+//    mutations (unlike std::map and std::unordered_map, where pointers and
+//    references remain valid). In particular, the following line of code has
+//    undefined behavior because inserting a new key may move existing elements
+//    from the inline array into the fallback map before the assignment reads
+//    the right-hand side reference:
+//      map["new_key"] = map["existing_key"];
 //
 // DETAILS
 //
@@ -395,7 +401,7 @@ class small_map {
     return false;
   }
 
-  // Invalidates iterators.
+  // Invalidates iterators, pointers, and references.
   constexpr data_type& operator[](const key_type& key)
     requires(std::is_default_constructible_v<data_type>)
   {
@@ -414,8 +420,12 @@ class small_map {
     }
 
     if (size_ == kArraySize) {
+      // Copy `key` first in case it references an inline element in `array_`,
+      // which `ConvertToRealMap()` destroys when switching active union
+      // members.
+      key_type key_copy(key);
       ConvertToRealMap();
-      return map_[key];
+      return map_[std::move(key_copy)];
     }
 
     ArrayElement& e = array_[size_++];
@@ -423,7 +433,7 @@ class small_map {
     return e.value.second;
   }
 
-  // Invalidates iterators.
+  // Invalidates iterators, pointers, and references.
   constexpr std::pair<iterator, bool> insert(const value_type& x) {
     key_equal compare;
 
@@ -440,8 +450,12 @@ class small_map {
     }
 
     if (size_ == kArraySize) {
-      ConvertToRealMap();  // Invalidates all iterators!
-      auto [map_iter, inserted] = map_.insert(x);
+      // Copy `x` first in case it references an inline element in `array_`,
+      // which `ConvertToRealMap()` destroys when switching active union
+      // members.
+      value_type x_copy(x);
+      ConvertToRealMap();
+      auto [map_iter, inserted] = map_.insert(std::move(x_copy));
       return std::make_pair(iterator(map_iter), inserted);
     }
 
@@ -450,7 +464,7 @@ class small_map {
     return std::make_pair(iterator(sized_array_span().end() - 1u), true);
   }
 
-  // Invalidates iterators.
+  // Invalidates iterators, pointers, and references.
   template <class InputIterator>
     requires(std::input_iterator<InputIterator>)
   constexpr void insert(InputIterator f, InputIterator l) {
@@ -460,7 +474,7 @@ class small_map {
     }
   }
 
-  // Invalidates iterators.
+  // Invalidates iterators, pointers, and references.
   template <typename... Args>
   constexpr std::pair<iterator, bool> emplace(Args&&... args) {
     key_equal compare;
@@ -479,7 +493,7 @@ class small_map {
     }
 
     if (size_ == kArraySize) {
-      ConvertToRealMap();  // Invalidates all iterators!
+      ConvertToRealMap();
       auto [map_iter, inserted] = map_.emplace(std::move(x));
       return std::make_pair(iterator(map_iter), inserted);
     }
@@ -509,6 +523,7 @@ class small_map {
                           : const_iterator(sized_array_span().end());
   }
 
+  // Invalidates iterators, pointers, and references.
   constexpr void clear() {
     if (UsingFullMap()) {
       // Make the array active in the union.
@@ -522,7 +537,8 @@ class small_map {
     size_ = 0u;
   }
 
-  // Invalidates iterators. Returns iterator following the last removed element.
+  // Invalidates iterators, pointers, and references. Returns iterator following
+  // the last removed element.
   constexpr iterator erase(const iterator& position) {
     if (UsingFullMap()) {
       return iterator(map_.erase(position.map_iter_));
@@ -546,6 +562,7 @@ class small_map {
     }
   }
 
+  // Invalidates iterators, pointers, and references.
   constexpr size_t erase(const key_type& key) {
     iterator iter = find(key);
     if (iter == end()) {
