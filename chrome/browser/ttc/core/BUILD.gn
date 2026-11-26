@@ -40,6 +40,14 @@ source_set("prefs") {
   deps = [ "//components/prefs" ]
 }
 
+# Validates the TTC keyboard shortcut prefs, which every platform reads.
+source_set("shortcut") {
+  public = [ "shortcut.h" ]
+  sources = [ "shortcut.cc" ]
+  public_deps = [ "//ui/base" ]
+  deps = [ "//chrome/browser/ui:accelerator_utils_headers" ]
+}
+
 source_set("states") {
   public = [ "states.h" ]
   sources = [ "states.cc" ]
@@ -330,6 +338,7 @@ source_set("unit_tests") {
     "session_end_condition_detector_unittest.cc",
     "session_journal_impl_unittest.cc",
     "session_view_unittest.cc",
+    "shortcut_unittest.cc",
     "transcript_tracker_unittest.cc",
     "ttc_actor_task_delegate_unittest.cc",
     "ttc_keyed_service_unittest.cc",
@@ -340,6 +349,7 @@ source_set("unit_tests") {
   deps = [
     ":core",
     ":impl",
+    ":shortcut",
     ":test_support",
     "//base/test:test_support",
     "//chrome/browser/actor:test_support",
@@ -359,6 +369,8 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/events:event_constants",
+    "//ui/events:events_base",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//url",
