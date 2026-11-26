@@ -44,11 +44,14 @@ namespace {
 //   // Timestamp of the last ignore.
 //   "last_ignored_time": "<base::Time>",
 //   // Timestamp of the last explicit dismissal ("Not now").
-//   "last_explicit_dismissal_time": "<base::Time>"
+//   "last_explicit_dismissal_time": "<base::Time>",
+//   // Timestamp of the last completed switch.
+//   "last_switch_time": "<base::Time>"
 // }
 constexpr char kGlobalIgnoreCountKey[] = "ignore_count";
 constexpr char kLastIgnoredTimeKey[] = "last_ignored_time";
 constexpr char kLastExplicitDismissalTimeKey[] = "last_explicit_dismissal_time";
+constexpr char kLastSwitchTimeKey[] = "last_switch_time";
 
 bool IsCooldownActive(const base::DictValue& state_dict,
                       std::string_view timestamp_key,
@@ -205,8 +208,6 @@ AccountSwitchingManager::GetEligibleAccountForSwitching() const {
     return std::nullopt;
   }
 
-  // TODO(crbug.com/585132231): Confirm with product whether a suppressed
-  // `(A, B)` pair should fall back to a third eligible secondary account `C`.
   std::optional<AccountPreviewDataService::AccountPreviewPreference> candidate =
       account_preview_data_service_->GetPreferredAccountForSwitching();
   if (!candidate.has_value() || candidate->gaia_id.empty()) {
@@ -276,6 +277,12 @@ bool AccountSwitchingManager::CanShowPromoForPair(
     return false;
   }
 
+  // Global 7-day cooldown after completing a switch.
+  if (IsCooldownActive(state_dict, kLastSwitchTimeKey, now,
+                       kPostSwitchCooldown)) {
+    return false;
+  }
+
   // Bi-directional per-pair suppression rules in `SigninPrefs`.
   if (signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
           pair.primary_gaia_id, pair.target_gaia_id)) {
@@ -287,9 +294,6 @@ bool AccountSwitchingManager::CanShowPromoForPair(
     return false;
   }
 
-  // TODO(crbug.com/585132231): Check profile-level post-acceptance
-  // suppression or post-new-profile-creation cooldown here once product
-  // confirms re-prompting rules.
   return true;
 }
 
@@ -336,9 +340,6 @@ bool AccountSwitchingManager::StartSwitching(AccountPair pair) {
 
   active_switch_ = std::move(pair);
 
-  // TODO(crbug.com/585132231): Persist profile-level post-acceptance
-  // suppression or post-new-profile-creation cooldown once product confirms
-  // re-prompting rules.
   // TODO(crbug.com/585131182, crbug.com/585132335): Execute the in-profile
   // primary-account switch (which also starts a fresh 28-day grace period and
   // activates the 7-day switch-back window) or async new-profile creation
@@ -352,13 +353,20 @@ void AccountSwitchingManager::OnSwitchFinished(bool success) {
   AccountPair completed_switch = std::move(*active_switch_);
   active_switch_.reset();
 
-  if (success) {
-    // Record switch-based pair suppression bi-directionally in `SigninPrefs`
-    // so accepting a switch for `A -> B` prevents promoting either direction
-    // while both accounts remain in the profile.
-    SigninPrefs(*prefs_).SetAccountSwitchingPromoSuppressedBySwitch(
-        completed_switch.primary_gaia_id, completed_switch.target_gaia_id);
+  if (!success) {
+    return;
   }
+
+  {
+    ScopedDictPrefUpdate update(*prefs_, prefs::kAccountSwitchingPromoState);
+    update->Set(kLastSwitchTimeKey, base::TimeToValue(base::Time::Now()));
+  }
+
+  // Record switch-based pair suppression bi-directionally in `SigninPrefs`
+  // so accepting a switch for `A -> B` prevents promoting either direction
+  // while both accounts remain in the profile.
+  SigninPrefs(*prefs_).SetAccountSwitchingPromoSuppressedBySwitch(
+      completed_switch.primary_gaia_id, completed_switch.target_gaia_id);
 }
 
 }  // namespace signin

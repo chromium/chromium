@@ -422,8 +422,8 @@ TEST_F(AccountSwitchingManagerTest,
   manager_->CompleteSwitchForTesting(/*success=*/true);
   EXPECT_FALSE(manager_->IsSwitchInProgressForTesting());
 
-  // Once finished, `{A, B}` is suppressed in both directions while other pairs
-  // become eligible again.
+  // Once finished, `{A, B}` is suppressed in both directions and other pairs
+  // wait out the 7-day post-switch cooldown.
   SetCandidate(secondary_account_.GetGaiaId());
   EXPECT_FALSE(manager_->CanShowPromo());
   SwitchPrimaryAccountInProfile(secondary_account_);
@@ -432,6 +432,8 @@ TEST_F(AccountSwitchingManagerTest,
 
   SwitchPrimaryAccountInProfile(primary_account_);
   SetCandidate(third_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+  task_environment_.AdvanceClock(AccountSwitchingManager::kPostSwitchCooldown);
   EXPECT_TRUE(manager_->CanShowPromo());
   ShowAcceptAndCompleteSwitch(/*success=*/true);
   EXPECT_FALSE(manager_->CanShowPromo());
@@ -477,10 +479,18 @@ TEST_F(AccountSwitchingManagerTest, AbortedSwitchDoesNotSuppressPair) {
   EXPECT_FALSE(signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(
       primary_account_.GetGaiaId(), secondary_account_.GetGaiaId()));
   EXPECT_TRUE(manager_->CanShowPromo());
+  SetCandidate(third_account_.GetGaiaId());
+  EXPECT_TRUE(manager_->CanShowPromo());
 }
 
 TEST_F(AccountSwitchingManagerTest,
        PrefObserverStartingNextSwitchOnCompletionIsSafe) {
+  base::test::ScopedFeatureList skip_cooldown_features;
+  skip_cooldown_features.InitAndEnableFeatureWithParameters(
+      switches::kEnableAccountPreviewSwitchingAccount,
+      {{switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
+        "true"}});
+
   bool started_second_switch = false;
   PrefChangeRegistrar registrar;
   registrar.Init(profile_->GetPrefs());
@@ -716,6 +726,8 @@ TEST_F(AccountSwitchingManagerTest,
                 base::TimeToValue(base::Time::Now() + base::Days(30)));
     update->Set("last_explicit_dismissal_time",
                 base::TimeToValue(base::Time::Now() + base::Days(30)));
+    update->Set("last_switch_time",
+                base::TimeToValue(base::Time::Now() + base::Days(30)));
   }
   EXPECT_TRUE(manager_->CanShowPromo());
 
@@ -725,6 +737,7 @@ TEST_F(AccountSwitchingManagerTest,
     update->Set("last_ignored_time", base::TimeToValue(base::Time()));
     update->Set("last_explicit_dismissal_time",
                 base::TimeToValue(base::Time()));
+    update->Set("last_switch_time", base::TimeToValue(base::Time()));
   }
   EXPECT_TRUE(manager_->CanShowPromo());
 }
@@ -802,6 +815,8 @@ TEST_F(AccountSwitchingManagerTest,
   EXPECT_FALSE(manager_->CanShowPromo());
   EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
   manager_->CompleteSwitchForTesting(/*success=*/true);
+  EXPECT_TRUE(manager_->CanShowPromo());
+  SetCandidate(third_account_.GetGaiaId());
   EXPECT_TRUE(manager_->CanShowPromo());
 }
 
@@ -1073,6 +1088,73 @@ TEST_F(AccountSwitchingManagerTest, SigninDisallowedBlocksPromo) {
         "true"}});
   EXPECT_FALSE(manager_->CanShowPromo());
   EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       PostSwitchCooldownBlocksOtherPairsForSevenDays) {
+  // Complete switch `{A, B}` while `A` stays primary in the profile.
+  ShowAcceptAndCompleteSwitch(/*success=*/true);
+
+  // Even if `C` immediately becomes the preferred candidate, offering another
+  // promo is blocked for `kPostSwitchCooldown` (7 days).
+  SetCandidate(third_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+  EXPECT_FALSE(manager_->ShowPromo(&browser_window_));
+
+  task_environment_.AdvanceClock(AccountSwitchingManager::kPostSwitchCooldown -
+                                 base::Seconds(1));
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  // Cooldown persists across manager re-creation.
+  {
+    AccountSwitchingManager recreated_manager(
+        profile_->GetPrefs(),
+        ChromeSigninClientFactory::GetForProfile(profile_),
+        IdentityManagerFactory::GetForProfile(profile_),
+        AccountPreviewDataServiceFactory::GetForProfile(profile_));
+    EXPECT_FALSE(recreated_manager.CanShowPromo());
+  }
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+  EXPECT_TRUE(manager_->CanShowPromo());
+
+  // An in-profile switch (changing the primary account) also enforces the
+  // 7-day cooldown independently of primary-account grace periods.
+  ShowAcceptAndCompleteSwitch(/*success=*/true);
+  SwitchPrimaryAccountInProfile(secondary_account_);
+  SetCandidate(fourth_account_.GetGaiaId());
+  EXPECT_FALSE(manager_->CanShowPromo());
+  task_environment_.AdvanceClock(AccountSwitchingManager::kPostSwitchCooldown);
+  EXPECT_TRUE(manager_->CanShowPromo());
+}
+
+TEST_F(AccountSwitchingManagerTest,
+       SuppressedPairDoesNotFallBackUntilAnotherBecomesPreferred) {
+  // Suppress `{A, B}` via two explicit dismissals while `C` (`third_account_`)
+  // is already an eligible secondary account in the profile.
+  ShowAndResolvePromo(SigninInterceptionResult::kDeclined);
+  task_environment_.AdvanceClock(
+      AccountSwitchingManager::kGlobalExplicitDismissalCooldown);
+  ShowAndResolvePromo(SigninInterceptionResult::kDeclined);
+  task_environment_.AdvanceClock(
+      AccountSwitchingManager::kGlobalExplicitDismissalCooldown);
+
+  // As long as `B` remains the preferred candidate, do not fall back to `C`.
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  // Once `C` becomes the preferred candidate, `{A, C}` is eligible.
+  SetCandidate(third_account_.GetGaiaId());
+  EXPECT_TRUE(manager_->CanShowPromo());
+
+  // Suppress `{A, C}` via completed switch and verify the same rule after
+  // `kPostSwitchCooldown`.
+  ShowAcceptAndCompleteSwitch(/*success=*/true);
+  task_environment_.AdvanceClock(AccountSwitchingManager::kPostSwitchCooldown);
+  EXPECT_FALSE(manager_->CanShowPromo());
+
+  // Make an eligible non-suppressed account (`fourth_account_`) preferred.
+  SetCandidate(fourth_account_.GetGaiaId());
+  EXPECT_TRUE(manager_->CanShowPromo());
 }
 
 TEST(AccountSwitchingManagerStandaloneTest, ReturnsFalseWithoutPreviewService) {

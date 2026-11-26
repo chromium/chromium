@@ -40,6 +40,7 @@ class AccountSwitchingManager : public KeyedService {
   static constexpr base::TimeDelta kGlobalIgnoreCooldown = base::Days(7);
   static constexpr base::TimeDelta kGlobalExplicitDismissalCooldown =
       base::Days(28);
+  static constexpr base::TimeDelta kPostSwitchCooldown = base::Days(7);
   static constexpr int kMaxPairExplicitDismissals = 2;
 
   static bool IsFeatureEnabled();

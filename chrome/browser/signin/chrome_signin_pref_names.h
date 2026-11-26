@@ -51,7 +51,7 @@ inline constexpr char
         "signin.SearchAIModeSignInPromoLastImpressionTimestamp";
 
 // Dictionary pref to store Desktop Smart Account Switching promo global
-// throttling state (ignore/dismissal cooldowns and caps).
+// throttling state (ignore/dismissal/post-switch cooldowns and ignore cap).
 inline constexpr char kAccountSwitchingPromoState[] =
     "signin.account_switching_promo_state";
 
