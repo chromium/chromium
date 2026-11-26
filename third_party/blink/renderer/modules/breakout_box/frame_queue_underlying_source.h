@@ -150,9 +150,14 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // Must be called on |realm_task_runner_|.
   void CloseController();
 
-  // If the internal queue is not empty, pops a frame from it and enqueues it
-  // into the the stream's controller. Must be called on |realm_task_runner|.
+  // Posts a DeliverFrame() task for each pending pull. Must be called on
+  // |realm_task_runner_|.
   void MaybeSendFrameFromQueueToStream();
+
+  // Pops and enqueues one frame if the read that caused its pull is still
+  // waiting; otherwise resets the stale pending pulls and leaves the frame
+  // queued. Must be called on |realm_task_runner_|.
+  void DeliverFrame();
 
   base::Lock& GetMonitorLock();
 
@@ -170,8 +175,6 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // Creates a JS frame (VideoFrame or AudioData) backed by |media_frame|.
   // Must be called on |realm_task_runner_|.
   ScriptWrappable* MakeBlinkFrame(NativeFrameType media_frame);
-
-  void EnqueueBlinkFrame(ScriptWrappable* blink_frame) const;
 
   bool is_closed_ = false;
 

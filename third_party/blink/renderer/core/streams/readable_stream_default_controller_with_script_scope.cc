@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_default_controller.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
@@ -55,6 +56,18 @@ double ReadableStreamDefaultControllerWithScriptScope::DesiredSize() const {
 bool ReadableStreamDefaultControllerWithScriptScope::CanCloseOrEnqueue() const {
   return controller_ &&
          ReadableStreamDefaultController::CanCloseOrEnqueue(controller_.Get());
+}
+
+int ReadableStreamDefaultControllerWithScriptScope::GetNumReadRequests() const {
+  if (!controller_) {
+    return 0;
+  }
+  ReadableStream* stream = controller_->stream();
+  // The stream may not have a reader (e.g., the lock was released after the
+  // last read was rejected), in which case there are no pending reads.
+  return ReadableStream::HasDefaultReader(stream)
+             ? ReadableStream::GetNumReadRequests(stream)
+             : 0;
 }
 
 void ReadableStreamDefaultControllerWithScriptScope::Enqueue(

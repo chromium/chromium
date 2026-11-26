@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_monitor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using testing::_;
 
@@ -672,6 +674,74 @@ TEST_F(MediaStreamTrackProcessorTest,
   transferred->Close();
 
   EXPECT_EQ(VideoFrameMonitor::Instance().NumFrames(kDeviceId), 0u);
+}
+
+// Checks that a frame left in the shared queue when its read is rejected
+// survives a transfer and is delivered to a read on the transferred stream.
+TEST_F(MediaStreamTrackProcessorTest,
+       QueuedFrameAfterReleaseLockSurvivesTransfer) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  const std::string kDeviceId = "release_lock_transfer";
+  auto* host = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
+      script_state, /*queue_size=*/1u, kDeviceId, /*frame_pool_size=*/2u,
+      std::nullopt);
+  VideoFrameMonitor& monitor = VideoFrameMonitor::Instance();
+
+  auto* host_stream =
+      ReadableStream::CreateWithCountQueueingStrategy(script_state, host, 0);
+  auto* reader =
+      host_stream->GetDefaultReaderForTesting(script_state, exception_state);
+
+  // Read once to register a pending pull, and enqueue a frame for it.
+  ScriptPromiseTester read_tester(script_state,
+                                  reader->read(script_state, exception_state));
+  v8_scope.PerformMicrotaskCheckpoint();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return host->NumPendingPullsForTesting() == 1; }));
+
+  auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(10, 10));
+  const media::VideoFrame::ID frame_id = frame->unique_id();
+  host->QueueFrame(std::move(frame));
+  EXPECT_EQ(monitor.NumFrames(kDeviceId), 1u);
+
+  // Release the lock before the delivery task runs: the read is rejected and
+  // the frame stays in the shared queue.
+  auto realm_task_runner = v8_scope.GetExecutionContext()->GetTaskRunner(
+      TaskType::kInternalMediaRealTime);
+  realm_task_runner->PostTask(
+      FROM_HERE,
+      BindOnce(
+          [](ReadableStreamDefaultReader* reader, ScriptState* script_state) {
+            NonThrowableExceptionState exception_state;
+            reader->releaseLock(script_state, exception_state);
+          },
+          WrapPersistent(reader), WrapPersistent(script_state)));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return read_tester.IsFulfilled() || read_tester.IsRejected(); }));
+  EXPECT_TRUE(read_tester.IsRejected());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return host->NumPendingPullsForTesting() == 0; }));
+  EXPECT_EQ(monitor.NumFrames(kDeviceId), 1u);
+  EXPECT_EQ(host->DiscardedFrames(), 0u);
+
+  // The transferred source shares the queue with the host, so the frame
+  // queued above is delivered to its first read.
+  auto* transferred = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
+      script_state, host);
+  host->TransferSource(transferred);
+  auto* transferred_stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, transferred, 0);
+  auto* transferred_reader = transferred_stream->GetDefaultReaderForTesting(
+      script_state, exception_state);
+  VideoFrame* video_frame =
+      ReadObjectFromStream<VideoFrame>(v8_scope, transferred_reader);
+  EXPECT_EQ(video_frame->frame()->unique_id(), frame_id);
+  EXPECT_EQ(monitor.NumFrames(kDeviceId), 1u);
+
+  video_frame->close();
+  EXPECT_EQ(monitor.NumFrames(kDeviceId), 0u);
 }
 
 TEST_F(MediaStreamTrackProcessorTest,

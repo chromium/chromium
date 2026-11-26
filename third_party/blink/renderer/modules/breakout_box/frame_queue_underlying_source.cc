@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
 
-#include <type_traits>
+#include <algorithm>
 
 #include "base/feature_list.h"
 #include "base/task/bind_post_task.h"
@@ -45,19 +45,6 @@ media::VideoFrame::ID GetFrameId(
 
 media::VideoFrame::ID GetFrameId(const scoped_refptr<media::AudioBuffer>&) {
   NOTREACHED();
-}
-
-// Closes a frame created by MakeBlinkFrame().
-template <typename NativeFrameType>
-void CloseBlinkFrame(ScriptWrappable* blink_frame) {
-  if constexpr (std::is_same_v<NativeFrameType,
-                               scoped_refptr<media::VideoFrame>>) {
-    static_cast<VideoFrame*>(blink_frame)->close();
-  } else {
-    static_assert(
-        std::is_same_v<NativeFrameType, scoped_refptr<media::AudioBuffer>>);
-    static_cast<AudioData*>(blink_frame)->close();
-  }
 }
 }  // namespace
 
@@ -418,24 +405,26 @@ void FrameQueueUnderlyingSource<NativeFrameType>::TransferSource(
     bool is_cross_origin_isolated) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   UpdateRealmInfo(time_origin, is_cross_origin_isolated);
-  base::AutoLock locker(lock_);
-  if (!transferred_source_cleared_) {
-    DCHECK(!transferred_source_handle_);
-    transferred_runner_ = std::move(transferred_runner);
-    transferred_source_handle_.emplace(std::move(transferred_source));
-    // |frame_queue_|, including its pending-pull count, is shared with the
-    // transferred source. Any pulls pending at this point were issued by this
-    // source's stream, which CloseController() closes below, so they will
-    // never be fulfilled. Reset the count so they are not attributed to the
-    // transferred source; otherwise it would be sent frames for reads it
-    // never issued, possibly before its stream has started.
-    //
-    // This cannot discard a pull issued by the transferred source: the
-    // destination stream first reads the cross-realm stream piped from this
-    // source's stream, and only starts pulling the transferred source after
-    // that stream closes, which requires the CloseController() call below.
-    if (frame_queue_) {
-      frame_queue_->ResetPendingPulls();
+  {
+    base::AutoLock locker(lock_);
+    if (!transferred_source_cleared_) {
+      DCHECK(!transferred_source_handle_);
+      transferred_runner_ = std::move(transferred_runner);
+      transferred_source_handle_.emplace(std::move(transferred_source));
+      // |frame_queue_|, including its pending-pull count, is shared with the
+      // transferred source. Any pulls pending at this point were issued by
+      // this source's stream, which CloseController() closes below, so they
+      // will never be fulfilled. Reset the count so they are not attributed
+      // to the transferred source; otherwise it would be sent frames for
+      // reads it never issued, possibly before its stream has started.
+      //
+      // This cannot discard a pull issued by the transferred source: the
+      // destination stream first reads the cross-realm stream piped from this
+      // source's stream, and only starts pulling the transferred source after
+      // that stream closes, which requires the CloseController() call below.
+      if (frame_queue_) {
+        frame_queue_->ResetPendingPulls();
+      }
     }
   }
   CloseController();
@@ -488,57 +477,90 @@ void FrameQueueUnderlyingSource<
     return;
   }
 
-  if (!frame_queue->HasPendingPulls()) {
+  if (!frame_queue->HasPendingPulls() || frame_queue->IsEmpty()) {
     return;
   }
 
-  while (true) {
-    std::optional<NativeFrameType> media_frame = frame_queue->Pop();
-    if (!media_frame.has_value())
-      return;
-
-    if (base::FeatureList::IsEnabled(features::kWebRtcUseMediaThreadTypes) &&
-        realm_is_boostable_context_ && !realm_thread_type_lease_.has_value() &&
-        thread_type_.has_value()) {
-      realm_thread_type_lease_.emplace(thread_type_.value());
-    }
-
-    media::VideoFrame::ID frame_id = MustUseMonitor()
-                                         ? GetFrameId(media_frame.value())
-                                         : media::VideoFrame::ID();
-    // It has been observed that if the time between JS read() operations
-    // is longer than the time between new frames, other tasks get delayed
-    // and the page freezes. Enqueuing in a separate task avoids this problem.
-    // See https://crbug.com/1490501
+  // Post one DeliverFrame() task per pending pull, without popping here: a
+  // frame popped for a read that was rejected in the meantime (e.g. by
+  // reader.releaseLock()) would be enqueued with no read waiting, and
+  // cancelling would then drop it from the stream's internal queue without
+  // close(). See DeliverFrame().
+  //
+  // It has been observed that if the time between JS read() operations
+  // is longer than the time between new frames, other tasks get delayed
+  // and the page freezes. Delivering in a separate task avoids this problem.
+  // See https://crbug.com/1490501
+  //
+  // A task delivers at most one frame, so post no more tasks than the number
+  // of queued frames. Under-posting is safe: a task that finds the queue
+  // empty leaves the pending pull in place, and the next QueueFrame() posts
+  // a delivery task for it.
+  const int num_tasks = std::min(frame_queue->NumPendingPulls(),
+                                 static_cast<int>(frame_queue->Size()));
+  for (int i = 0; i < num_tasks; ++i) {
     realm_task_runner_->PostTask(
         FROM_HERE,
         blink::BindOnce(
-            &FrameQueueUnderlyingSource::EnqueueBlinkFrame,
-            WrapPersistent(this),
-            WrapPersistent(MakeBlinkFrame(std::move(media_frame.value())))));
-    // Update the monitor after creating the Blink VideoFrame to avoid
-    // temporarily removing the frame from the monitor.
-    MaybeMonitorPopFrameId(frame_id);
-    if (!frame_queue->DecrementPendingPulls()) {
-      return;
-    }
+            &FrameQueueUnderlyingSource<NativeFrameType>::DeliverFrame,
+            WrapPersistent(this)));
   }
 }
 
 template <typename NativeFrameType>
-void FrameQueueUnderlyingSource<NativeFrameType>::EnqueueBlinkFrame(
-    ScriptWrappable* blink_frame) const {
+void FrameQueueUnderlyingSource<NativeFrameType>::DeliverFrame() {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-  // Enqueue the frame if the stream can still take it. Otherwise, close it
-  // immediately: this task is the only delivery attempt, and the stream cannot
-  // take it before it starts this source or after it is closed or cancelled.
-  if (Controller() && GetExecutionContext() &&
-      !GetExecutionContext()->IsContextDestroyed() &&
-      Controller()->CanCloseOrEnqueue()) {
-    Controller()->Enqueue(blink_frame);
+  scoped_refptr<FrameQueue<NativeFrameType>> frame_queue;
+  {
+    base::AutoLock locker(lock_);
+    // Once this source has been transferred, the pending pulls in the shared
+    // queue belong to the transferred source. A delivery task posted before
+    // the transfer must not consume them, nor pop frames into our closed
+    // controller.
+    if (transferred_source_handle_ || transferred_source_cleared_) {
+      return;
+    }
+    frame_queue = frame_queue_;
+  }
+  if (!frame_queue) {
     return;
   }
-  CloseBlinkFrame<NativeFrameType>(blink_frame);
+
+  // Pop only if the read that caused this pull is still waiting: the stream
+  // has no buffer (HWM 0), so a frame enqueued without a waiting read would
+  // be dropped without close() if the stream is cancelled.
+  if (!Controller() || !GetExecutionContext() ||
+      GetExecutionContext()->IsContextDestroyed() ||
+      !Controller()->CanCloseOrEnqueue() ||
+      Controller()->GetNumReadRequests() == 0) {
+    // The pending pull can never be fulfilled; clear it so wake-ups are not
+    // posted against it.
+    frame_queue->ResetPendingPulls();
+    return;
+  }
+
+  std::optional<NativeFrameType> media_frame = frame_queue->Pop();
+  if (!media_frame.has_value()) {
+    // A read is waiting but the queue is empty. Keep the pending pull so the
+    // next QueueFrame() posts another delivery task.
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kWebRtcUseMediaThreadTypes) &&
+      realm_is_boostable_context_ && !realm_thread_type_lease_.has_value() &&
+      thread_type_.has_value()) {
+    realm_thread_type_lease_.emplace(thread_type_.value());
+  }
+
+  media::VideoFrame::ID frame_id = MustUseMonitor()
+                                       ? GetFrameId(media_frame.value())
+                                       : media::VideoFrame::ID();
+  // Update the monitor after creating the Blink VideoFrame to avoid
+  // temporarily removing the frame from the monitor.
+  ScriptWrappable* blink_frame = MakeBlinkFrame(std::move(media_frame.value()));
+  MaybeMonitorPopFrameId(frame_id);
+  frame_queue->DecrementPendingPulls();
+  Controller()->Enqueue(blink_frame);
 }
 
 template <typename NativeFrameType>

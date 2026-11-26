@@ -61,6 +61,8 @@ class ReadableStreamDefaultController : public ReadableStreamController {
   // https://streams.spec.whatwg.org/#readable-stream-default-controller-get-desired-size
   std::optional<double> GetDesiredSize() const;
 
+  ReadableStream* stream() const { return controlled_readable_stream_.Get(); }
+
   //
   // Used by TransformStream
   //
