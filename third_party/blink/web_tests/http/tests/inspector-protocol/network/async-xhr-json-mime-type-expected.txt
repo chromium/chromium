@@ -1,0 +1,34 @@
+Tests that the content of resources with JSON MIME types can be accessed when loaded by asynchronous XHR requests (Bug 80684) or within iframes/documents.
+
+Running test: test1
+
+request.url: http://127.0.0.1:8000/inspector-protocol/network/resources/json.php?type=application%2Fjson
+request.type: XHR
+request.mimeType: application/json
+request.base64Encoded: false
+request.content: {"number": "42"}
+
+
+request.url: http://127.0.0.1:8000/inspector-protocol/network/resources/json.php?type=application%2Fjson
+request.type: Document
+request.mimeType: application/json
+request.base64Encoded: false
+request.content: {"number": "42"}
+
+
+Running test: test2
+
+request.url: http://127.0.0.1:8000/inspector-protocol/network/resources/json.php?type=application%2Fvnd.document%2Bjson
+request.type: XHR
+request.mimeType: application/vnd.document+json
+request.base64Encoded: false
+request.content: {"number": "42"}
+
+
+request.url: http://127.0.0.1:8000/inspector-protocol/network/resources/json.php?type=application%2Fvnd.document%2Bjson
+request.type: Document
+request.mimeType: application/vnd.document+json
+request.base64Encoded: false
+request.content: {"number": "42"}
+
+
