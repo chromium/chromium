@@ -26,8 +26,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,10 +58,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.espresso.Espresso;
-import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.action.GeneralSwipeAction;
-import androidx.test.espresso.action.Press;
-import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.intent.rule.IntentsRule;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -93,7 +87,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.transit.ViewPresence;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -132,6 +125,7 @@ import org.chromium.components.signin.test.util.SigninMatchers;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.protocol.SyncEnums;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -2076,7 +2070,6 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/580876710")
     public void testExpandedSheet_scrollsAccountListInsteadOfSheet() {
         // Add enough accounts so that the expanded account list doesn't fit in the bottom sheet.
         for (int i = 0; i < 20; i++) {
@@ -2089,14 +2082,17 @@ public class AccountPickerBottomSheetTest {
         }
         buildAndShowCollapsedThenExpandedBottomSheet();
         BottomSheetController controller = getBottomSheetController();
-        View scrollView =
-                mCoordinator
-                        .getBottomSheetViewForTesting()
-                        .findViewById(R.id.account_picker_expanded_scroll_view);
-        // Wait for the sheet to settle at its max position after expanding the account list.
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        View scrollView = bottomSheetView.findViewById(R.id.account_picker_expanded_scroll_view);
+        View accountList = scrollView.findViewById(R.id.account_picker_account_list);
+        // Wait for the expanded account list to lay out as scrollable and for the sheet to settle
+        // at its max position.
         CriteriaHelper.pollUiThread(
                 () ->
                         scrollView.isShown()
+                                && !bottomSheetView.isLayoutRequested()
+                                && (scrollView.canScrollVertically(1)
+                                        || accountList.canScrollVertically(1))
                                 && controller.getSheetState() == SheetState.FULL
                                 && controller.getCurrentOffset() == controller.getMaxOffset());
         BottomSheetContent content =
@@ -2106,31 +2102,21 @@ public class AccountPickerBottomSheetTest {
         int maxOffset = ThreadUtils.runOnUiThreadBlocking(controller::getMaxOffset);
 
         // Scroll the account list down.
-        onView(withId(R.id.account_picker_expanded_scroll_view))
-                .perform(swipeOnAccountList(/* scrollDown= */ true));
-        // Wait for the fling to finish.
-        AtomicInteger offsetAfterScrollingDown = new AtomicInteger();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    int offset = content.getVerticalScrollOffset();
-                    int previousOffset = offsetAfterScrollingDown.getAndSet(offset);
-                    Criteria.checkThat(
-                            "The content should have scrolled down.", offset, greaterThan(0));
-                    Criteria.checkThat(
-                            "The content is still scrolling.", offset, is(previousOffset));
-                });
+        scrollAccountList(/* scrollDown= */ true);
+        int offsetAfterScrollingDown =
+                ThreadUtils.runOnUiThreadBlocking(content::getVerticalScrollOffset);
+        assertThat(offsetAfterScrollingDown).isGreaterThan(0);
         @SheetState int sheetState = ThreadUtils.runOnUiThreadBlocking(controller::getSheetState);
-        Assert.assertEquals(sheetState, SheetState.FULL);
+        Assert.assertEquals(SheetState.FULL, sheetState);
 
         // Scroll the account list back up. The gesture should be consumed by the account list
         // instead of dragging the bottom sheet down.
-        onView(withId(R.id.account_picker_expanded_scroll_view))
-                .perform(swipeOnAccountList(/* scrollDown= */ false));
+        scrollAccountList(/* scrollDown= */ false);
 
-        CriteriaHelper.pollUiThread(
-                () -> content.getVerticalScrollOffset() < offsetAfterScrollingDown.get());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    assertThat(content.getVerticalScrollOffset())
+                            .isLessThan(offsetAfterScrollingDown);
                     assertTrue(controller.isSheetOpen());
                     Assert.assertEquals(SheetState.FULL, controller.getSheetState());
                     Assert.assertEquals(maxOffset, controller.getCurrentOffset());
@@ -2138,28 +2124,29 @@ public class AccountPickerBottomSheetTest {
         verify(mAccountPickerDelegateMock, never()).onSignInCancel();
     }
 
-    private static ViewAction swipeOnAccountList(boolean scrollDown) {
-        return new GeneralSwipeAction(
-                Swipe.FAST,
-                view -> getAccountListSwipeCoordinates(view, /* isStart= */ true, scrollDown),
-                view -> getAccountListSwipeCoordinates(view, /* isStart= */ false, scrollDown),
-                Press.FINGER);
-    }
-
-    private static float[] getAccountListSwipeCoordinates(
-            View scrollView, boolean isStart, boolean scrollDown) {
-        View accountList = scrollView.findViewById(R.id.account_picker_account_list);
+    private void scrollAccountList(boolean scrollDown) {
         Rect visibleRect = new Rect();
-        accountList.getLocalVisibleRect(visibleRect);
-        int[] location = new int[2];
-        accountList.getLocationOnScreen(location);
-        float x = location[0] + visibleRect.exactCenterX();
-        float centerY = location[1] + visibleRect.exactCenterY();
-        if (isStart) {
-            return new float[] {x, centerY};
-        }
+        int[] rootLocation = new int[2];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+                    View accountList =
+                            bottomSheetView.findViewById(R.id.account_picker_account_list);
+                    assertTrue(accountList.getGlobalVisibleRect(visibleRect));
+                    bottomSheetView.getRootView().getLocationOnScreen(rootLocation);
+                });
+        float x = rootLocation[0] + visibleRect.exactCenterX();
+        float centerY = rootLocation[1] + visibleRect.exactCenterY();
         float distance = visibleRect.height() / 3f;
-        return new float[] {x, scrollDown ? centerY - distance : centerY + distance};
+        float endY = scrollDown ? centerY - distance : centerY + distance;
+        TouchCommon.performDragNoFling(
+                mActivityTestRule.getActivity(),
+                /* fromX= */ x,
+                /* toX= */ x,
+                /* fromY= */ centerY,
+                /* toY= */ endY,
+                /* stepCount= */ 10,
+                /* duration= */ 250);
     }
 
     private void clickContinueButton(View bottomSheetView) {
