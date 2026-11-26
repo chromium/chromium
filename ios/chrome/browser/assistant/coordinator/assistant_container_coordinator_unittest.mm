@@ -301,4 +301,45 @@ TEST_F(AssistantContainerCoordinatorTest,
   EXPECT_EQ(second_container, delegate_.lastAppearedContainer);
 }
 
+// Tests that dismissing the container resigns a first responder inside the
+// container's content view before the dismissal animation completes.
+TEST_F(AssistantContainerCoordinatorTest, DismissesKeyboardOnDismissal) {
+  UIViewController* content_view_controller = [[UIViewController alloc] init];
+  UITextField* text_field = [[UITextField alloc] init];
+  [content_view_controller.view addSubview:text_field];
+
+  [coordinator_ showAssistantContainerWithContent:content_view_controller
+                                         delegate:delegate_];
+  ASSERT_TRUE(GetPresentedContainerViewController());
+  ASSERT_TRUE([text_field becomeFirstResponder]);
+  ASSERT_TRUE(text_field.isFirstResponder);
+
+  [coordinator_ dismissAssistantContainerAnimated:YES completion:nil];
+
+  // The container is still animating out, but the keyboard must already be
+  // dismissed.
+  EXPECT_TRUE(GetPresentedContainerViewController());
+  EXPECT_FALSE(text_field.isFirstResponder);
+}
+
+// Tests that dismissing the container does not resign a first responder outside
+// the container's view hierarchy.
+TEST_F(AssistantContainerCoordinatorTest,
+       DoesNotDismissExternalKeyboardOnDismissal) {
+  UITextField* external_text_field = [[UITextField alloc] init];
+  [base_view_controller_.view addSubview:external_text_field];
+
+  UIViewController* content_view_controller = [[UIViewController alloc] init];
+  [coordinator_ showAssistantContainerWithContent:content_view_controller
+                                         delegate:delegate_];
+  ASSERT_TRUE(GetPresentedContainerViewController());
+  ASSERT_TRUE([external_text_field becomeFirstResponder]);
+  ASSERT_TRUE(external_text_field.isFirstResponder);
+
+  [coordinator_ dismissAssistantContainerAnimated:YES completion:nil];
+
+  EXPECT_TRUE(external_text_field.isFirstResponder);
+  [external_text_field resignFirstResponder];
+}
+
 }  // namespace

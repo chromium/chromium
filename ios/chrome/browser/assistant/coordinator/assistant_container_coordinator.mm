@@ -335,6 +335,10 @@ enum class TransitionState {
     _dismissalCompletion = completion;
   }
 
+  // Dismiss any active keyboard within the container before starting the
+  // dismissal animation so it disappears alongside the container.
+  [_containerViewController.view endEditing:YES];
+
   if ([_delegate respondsToSelector:@selector(assistantContainer:
                                            willDisappearAnimated:)]) {
     [_delegate assistantContainer:_containerViewController
