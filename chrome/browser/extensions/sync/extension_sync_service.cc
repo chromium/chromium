@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -134,25 +135,27 @@ base::flat_set<int> GetSyncableDisableReasons(
   static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 28),
                 "Please consider whether your new disable reason should be"
                 " syncable, and if so update the list below accordingly!");
-  const base::flat_set<int> kKnownSyncableDisableReasons = {
-      extensions::disable_reason::DISABLE_USER_ACTION,
-      extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE,
-      extensions::disable_reason::DISABLE_SIDELOAD_WIPEOUT,
-      extensions::disable_reason::DISABLE_GREYLIST,
-      extensions::disable_reason::DISABLE_REMOTE_INSTALL,
-  };
+  static constexpr auto kKnownSyncableDisableReasons =
+      base::MakeFixedFlatSet<int>({
+          extensions::disable_reason::DISABLE_USER_ACTION,
+          extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE,
+          extensions::disable_reason::DISABLE_SIDELOAD_WIPEOUT,
+          extensions::disable_reason::DISABLE_GREYLIST,
+          extensions::disable_reason::DISABLE_REMOTE_INSTALL,
+      });
 
-  base::flat_set<int> syncable_disable_reasons;
+  std::vector<int> syncable_disable_reasons;
   for (const int reason : disable_reasons) {
     // Newer browser versions may send reasons that are unknown to the current
     // version. We treat such reasons as syncable, in addition to the known
     // syncable reasons for the current version.
     if (kKnownSyncableDisableReasons.contains(reason) ||
         !extensions::IsValidDisableReason(reason)) {
-      syncable_disable_reasons.insert(reason);
+      syncable_disable_reasons.push_back(reason);
     }
   }
-  return syncable_disable_reasons;
+  return base::flat_set<int>(base::sorted_unique,
+                             std::move(syncable_disable_reasons));
 }
 
 base::flat_set<int> GetLocalDisableReasons(
