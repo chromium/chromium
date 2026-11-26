@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -49,6 +50,186 @@ MatchParams MatchParamsWithoutAttribute(MatchParams p,
 std::string SequenceToScoreString(const ClassifiedFieldSequence& sequence) {
   return base::NumberToString(sequence.contained_types.size()) + "/" +
          base::NumberToString(sequence.score);
+}
+
+// Returns whether `field_type`'s cross-field ordering prerequisites are
+// satisfied given the already-classified `contained_types` and whether the
+// immediately preceding field was classified as `ADDRESS_HOME_LINE2`.
+bool ArePrerequisitesSatisfied(FieldType field_type,
+                               const FieldTypeSet& contained_types,
+                               bool prev_was_line2) {
+  switch (field_type) {
+    case ADDRESS_HOME_LINE2:
+      // Address line 2 can follow address line 1 - and, in the legacy model,
+      // a street name and house number. For countries explicitly modeled for
+      // the i18n address hierarchy, `incompatible_` suppresses combining street
+      // name/house number with address line 2.
+      return contained_types.contains(ADDRESS_HOME_LINE1) ||
+             contained_types.contains_all(
+                 {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER});
+    case ADDRESS_HOME_LINE3:
+      // An address line 3 can only directly follow an address line 2.
+      return contained_types.contains_all(
+                 {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2}) &&
+             prev_was_line2;
+    case ADDRESS_HOME_BETWEEN_STREETS_2:
+      return contained_types.contains(ADDRESS_HOME_BETWEEN_STREETS_1);
+    case UNKNOWN_TYPE:
+    case ADDRESS_HOME_STREET_ADDRESS:
+    case ADDRESS_HOME_LINE1:
+    case ADDRESS_HOME_APT_NUM:
+    case ADDRESS_HOME_APT:
+    case ADDRESS_HOME_APT_TYPE:
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
+    case ADDRESS_HOME_CITY:
+    case ADDRESS_HOME_STATE:
+    case ADDRESS_HOME_ZIP:
+    case ADDRESS_HOME_ZIP_PREFIX:
+    case ADDRESS_HOME_ZIP_SUFFIX:
+    case ADDRESS_HOME_COUNTRY:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY:
+    case ADDRESS_HOME_STREET_NAME:
+    case ADDRESS_HOME_HOUSE_NUMBER:
+    case ADDRESS_HOME_STREET_LOCATION:
+    case ADDRESS_HOME_LANDMARK:
+    case ADDRESS_HOME_BETWEEN_STREETS:
+    case ADDRESS_HOME_BETWEEN_STREETS_1:
+    case ADDRESS_HOME_ADMIN_LEVEL2:
+    case ADDRESS_HOME_OVERFLOW:
+    case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+    case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+    case COMPANY_NAME:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
+    case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
+    case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+    case ADDRESS_HOME_ZIP_AND_CITY:
+    case DELIVERY_INSTRUCTIONS:
+    case ADDRESS_HOME_SUBPREMISE:
+    case ADDRESS_HOME_OTHER_SUBUNIT:
+    case ADDRESS_HOME_ADDRESS:
+    case ADDRESS_HOME_ADDRESS_WITH_NAME:
+    case ADDRESS_HOME_FLOOR:
+    case ADDRESS_HOME_SORTING_CODE:
+    case NAME_HONORIFIC_PREFIX:
+    case NAME_FIRST:
+    case NAME_MIDDLE:
+    case NAME_LAST:
+    case NAME_LAST_FIRST:
+    case NAME_LAST_CONJUNCTION:
+    case NAME_LAST_SECOND:
+    case NAME_MIDDLE_INITIAL:
+    case NAME_FULL:
+    case NAME_SUFFIX:
+    case ALTERNATIVE_FULL_NAME:
+    case ALTERNATIVE_GIVEN_NAME:
+    case ALTERNATIVE_FAMILY_NAME:
+    case EMAIL_ADDRESS:
+    case USERNAME_AND_EMAIL_ADDRESS:
+    case PHONE_HOME_NUMBER:
+    case PHONE_HOME_NUMBER_PREFIX:
+    case PHONE_HOME_NUMBER_SUFFIX:
+    case PHONE_HOME_CITY_CODE:
+    case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
+    case PHONE_HOME_COUNTRY_CODE:
+    case PHONE_HOME_CITY_AND_NUMBER:
+    case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
+    case PHONE_HOME_WHOLE_NUMBER:
+    case PHONE_HOME_EXTENSION:
+    case CREDIT_CARD_NAME_FULL:
+    case CREDIT_CARD_NAME_FIRST:
+    case CREDIT_CARD_NAME_LAST:
+    case CREDIT_CARD_NUMBER:
+    case CREDIT_CARD_EXP_MONTH:
+    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_4_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+    case CREDIT_CARD_TYPE:
+    case CREDIT_CARD_VERIFICATION_CODE:
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+    case IBAN_VALUE:
+    case MERCHANT_PROMO_CODE:
+    case USERNAME:
+    case PASSWORD:
+    case ACCOUNT_CREATION_PASSWORD:
+    case CONFIRMATION_PASSWORD:
+    case SINGLE_USERNAME:
+    case SINGLE_USERNAME_FORGOT_PASSWORD:
+    case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
+    case NOT_PASSWORD:
+    case NOT_USERNAME:
+    case NOT_ACCOUNT_CREATION_PASSWORD:
+    case NEW_PASSWORD:
+    case PROBABLY_NEW_PASSWORD:
+    case NOT_NEW_PASSWORD:
+    case ONE_TIME_CODE:
+    case NO_SERVER_DATA:
+    case EMPTY_TYPE:
+    case AMBIGUOUS_TYPE:
+    case MERCHANT_EMAIL_SIGNUP:
+    case PRICE:
+    case NUMERIC_QUANTITY:
+    case SEARCH_TERM:
+    case PASSPORT_NUMBER:
+    case PASSPORT_ISSUING_COUNTRY:
+    case PASSPORT_EXPIRATION_DATE:
+    case PASSPORT_ISSUE_DATE:
+    case LOYALTY_MEMBERSHIP_PROGRAM:
+    case LOYALTY_MEMBERSHIP_PROVIDER:
+    case LOYALTY_MEMBERSHIP_ID:
+    case VEHICLE_LICENSE_PLATE:
+    case VEHICLE_VIN:
+    case VEHICLE_MAKE:
+    case VEHICLE_MODEL:
+    case VEHICLE_YEAR:
+    case VEHICLE_PLATE_STATE:
+    case DRIVERS_LICENSE_REGION:
+    case DRIVERS_LICENSE_NUMBER:
+    case DRIVERS_LICENSE_EXPIRATION_DATE:
+    case DRIVERS_LICENSE_ISSUE_DATE:
+    case EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
+    case NATIONAL_ID_CARD_NUMBER:
+    case NATIONAL_ID_CARD_EXPIRATION_DATE:
+    case NATIONAL_ID_CARD_ISSUE_DATE:
+    case NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case REDRESS_NUMBER:
+    case KNOWN_TRAVELER_NUMBER:
+    case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+    case FLIGHT_RESERVATION_FLIGHT_NUMBER:
+    case FLIGHT_RESERVATION_TICKET_NUMBER:
+    case FLIGHT_RESERVATION_CONFIRMATION_CODE:
+    case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
+    case ORDER_ID:
+    case ORDER_DATE:
+    case ORDER_MERCHANT_NAME:
+    case SHIPMENT_TRACKING_NUMBER:
+    case MAX_VALID_FIELD_TYPE:
+      return true;
+  }
+  NOTREACHED();
+}
+
+// Blocks certain combinations of field types that cannot be expressed by the
+// type-incompatibility detection mechanism of `AddressHierarchyConstraints`.
+// E.g. we should not assign `ADDRESS_HOME_HOUSE_NUMBER` to a field unless we
+// have more evidence that the field is part of a structured address form.
+bool IsClassificationPlausible(const FieldTypeSet& contained_types) {
+  // The house number is easy to guess wrong (e.g. to mix up with a CC number).
+  // Therefore, we require extra evidence.
+  if (contained_types.contains(ADDRESS_HOME_HOUSE_NUMBER) &&
+      !contained_types.contains_any(
+          {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_OVERFLOW,
+           ADDRESS_HOME_LANDMARK, ADDRESS_HOME_OVERFLOW_AND_LANDMARK})) {
+    return false;
+  }
+  if (contained_types.contains(ADDRESS_HOME_APT_NUM) &&
+      !contained_types.contains_all(
+          {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER})) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace
@@ -126,7 +307,7 @@ void AddressFieldParserNG::AddClassifications(
 }
 
 std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
-    FieldType field_type) {
+    FieldType field_type) const {
   // Naming convention: In the following code,
   //   auto r =
   // is a short cut for
@@ -201,38 +382,20 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case ADDRESS_HOME_LINE1:
       return Match("ADDRESS_LINE_1", 1.0);
     case ADDRESS_HOME_LINE2:
-      // Address lines 2 can follow address lines 1 - and, in the legacy model,
-      // a street name and house number. For countries explicitly modeled for
-      // the i18n address hierarchy, `incompatible_` will suppress a combination
-      // of street name/house number and address line 2.
-      if (partial_classification_.contained_types.contains(
-              ADDRESS_HOME_LINE1) ||
-          partial_classification_.contained_types.contains_all(
-              {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER})) {
-        // If the country model does not contain support for an apartment
-        // number, we treat a match for the apartment number regex as an
-        // address line 2.
-        if (!constraints_->supported_field_types().contains(
-                ADDRESS_HOME_APT_NUM)) {
-          if (auto r = Match("ADDRESS_HOME_APT_NUM", 1.0)) {
-            return r;
-          }
-        }
-        return Match("ADDRESS_LINE_2", 1.0);
-      }
-      return std::nullopt;
-    case ADDRESS_HOME_LINE3:
-      // An address line 3 can only directly follow an address line 2.
-      if (partial_classification_.contained_types.contains_all(
-              {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2}) &&
-          partial_classification_.assignments[ADDRESS_HOME_LINE2] ==
-              scanner_->Predecessor()) {
-        if (auto r = Match("ADDRESS_LINE_2", 1.0)) {
+      // If the country model does not contain support for an apartment number,
+      // we treat a match for the apartment number regex as an address line 2.
+      if (!constraints_->supported_field_types().contains(
+              ADDRESS_HOME_APT_NUM)) {
+        if (auto r = Match("ADDRESS_HOME_APT_NUM", 1.0)) {
           return r;
         }
-        return Match("ADDRESS_LINE_EXTRA", 1.0);
       }
-      return std::nullopt;
+      return Match("ADDRESS_LINE_2", 1.0);
+    case ADDRESS_HOME_LINE3:
+      if (auto r = Match("ADDRESS_LINE_2", 1.0)) {
+        return r;
+      }
+      return Match("ADDRESS_LINE_EXTRA", 1.0);
     case ADDRESS_HOME_APT_NUM:
       return Match("ADDRESS_HOME_APT_NUM", 1.0);
     case ADDRESS_HOME_APT:
@@ -292,11 +455,7 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
       // regex is more specific than the regex for ADDRESS_HOME_STREET_NAME.
       return Match("BETWEEN_STREETS_LINE_1", 1.2);
     case ADDRESS_HOME_BETWEEN_STREETS_2:
-      if (partial_classification_.contained_types.contains(
-              ADDRESS_HOME_BETWEEN_STREETS_1)) {
-        return Match("BETWEEN_STREETS_LINE_2", 1.2);
-      }
-      return std::nullopt;
+      return Match("BETWEEN_STREETS_LINE_2", 1.2);
     case ADDRESS_HOME_ADMIN_LEVEL2:
       // The score is a bit higher than city for MX because the term
       // "Municipio/Delegación" should take precedence.
@@ -467,18 +626,19 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
   }
 }
 
-void AddressFieldParserNG::ParseRecursively() {
-  auto log_prefix = [&]() { return std::string(scanner_->GetOffset(), ' '); };
+void AddressFieldParserNG::ParseRecursively(bool prev_was_line2) {
+  auto log_prefix = [this] { return std::string(scanner_->GetOffset(), ' '); };
   if (scanner_->IsEnd()) {
     DVLOG(1) << log_prefix() << "END of input";
     DVLOG(1) << log_prefix()
              << "score=" << SequenceToScoreString(partial_classification_)
              << ", best_score_so_far="
-             << SequenceToScoreString(best_classification_)
-             << ", plausible=" << IsClassificationPlausible();
+             << SequenceToScoreString(best_classification_) << ", plausible="
+             << IsClassificationPlausible(
+                    partial_classification_.contained_types);
     // Store classification if it's better.
     if (partial_classification_.BetterThan(best_classification_) &&
-        IsClassificationPlausible()) {
+        IsClassificationPlausible(partial_classification_.contained_types)) {
       DVLOG(1) << log_prefix() << "NEW BEST SOLUTION";
       best_classification_ = partial_classification_;
     }
@@ -492,9 +652,13 @@ void AddressFieldParserNG::ParseRecursively() {
   // Whether any field type could be assigned for the current scanner position.
   bool found_extra_assignment = false;
   for (FieldType field_type : constraints_->supported_field_types()) {
-    // Skip trying field_type if it's incompatible with already assigned types.
+    // Skip trying field_type if it's incompatible with already assigned types
+    // or fails ordering prerequisites.
     if (partial_classification_.contained_types.contains_any(
-            constraints_->incompatible_field_types(field_type))) {
+            constraints_->incompatible_field_types(field_type)) ||
+        !ArePrerequisitesSatisfied(field_type,
+                                   partial_classification_.contained_types,
+                                   prev_was_line2)) {
       DVLOG(1) << log_prefix() << "---- " << FieldTypeToStringView(field_type)
                << " conflict.";
       continue;
@@ -527,7 +691,7 @@ void AddressFieldParserNG::ParseRecursively() {
 
     const AutofillScanner::Position old_position = scanner_->GetPosition();
     scanner_->Advance();
-    ParseRecursively();
+    ParseRecursively(/*prev_was_line2=*/field_type == ADDRESS_HOME_LINE2);
     scanner_->Restore(old_position);
 
     // Revert new assignment.
@@ -551,32 +715,15 @@ void AddressFieldParserNG::ParseRecursively() {
     DVLOG(1) << log_prefix()
              << "score=" << SequenceToScoreString(partial_classification_)
              << ", best_score_so_far="
-             << SequenceToScoreString(best_classification_)
-             << ", plausible=" << IsClassificationPlausible();
+             << SequenceToScoreString(best_classification_) << ", plausible="
+             << IsClassificationPlausible(
+                    partial_classification_.contained_types);
     if (partial_classification_.BetterThan(best_classification_) &&
-        IsClassificationPlausible()) {
+        IsClassificationPlausible(partial_classification_.contained_types)) {
       DVLOG(1) << log_prefix() << "NEW BEST SOLUTION";
       best_classification_ = partial_classification_;
     }
   }
-}
-
-bool AddressFieldParserNG::IsClassificationPlausible() const {
-  // The house number is easy to guess wrong (e.g. to mix up with a CC number).
-  // Therefore, we require extra evidence.
-  const FieldTypeSet& contained_types = partial_classification_.contained_types;
-  if (contained_types.contains(ADDRESS_HOME_HOUSE_NUMBER) &&
-      !contained_types.contains_any(
-          {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_OVERFLOW,
-           ADDRESS_HOME_LANDMARK, ADDRESS_HOME_OVERFLOW_AND_LANDMARK})) {
-    return false;
-  }
-  if (contained_types.contains(ADDRESS_HOME_APT_NUM) &&
-      !contained_types.contains_all(
-          {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER})) {
-    return false;
-  }
-  return true;
 }
 
 }  // namespace autofill
