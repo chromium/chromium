@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/ttc/ttc_fre_dialog.h"
 #include "components/prefs/pref_service.h"
-#include "ui/base/base_window.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -68,18 +68,20 @@ void EntrypointController::StartSession() {
   if (service_->GetState() != ServiceState::kSessionInactive) {
     return;
   }
-  if (fre_dialog_) {
+  tabs::TabInterface* const tab = browser_->GetActiveTabInterface();
+  if (fre_dialog_ && fre_dialog_->tab() == tab) {
     fre_dialog_->Activate();
     return;
   }
   if (NeedsFre()) {
-    fre_dialog_ = std::make_unique<TtcFreDialog>(
-        CHECK_DEREF(browser_->GetWindow()).GetNativeWindow(),
-        base::BindOnce(&EntrypointController::OnFreDialogClosed,
-                       base::Unretained(this)),
-        base::BindRepeating(&EntrypointController::OnFreLearnMoreClicked,
-                            base::Unretained(this)));
-    fre_dialog_->Show();
+    if (tab && tab->CanShowModalUI()) {
+      fre_dialog_ = std::make_unique<TtcFreDialog>(
+          *tab,
+          base::BindOnce(&EntrypointController::OnFreDialogClosed,
+                         base::Unretained(this)),
+          base::BindRepeating(&EntrypointController::OnFreLearnMoreClicked,
+                              base::Unretained(this)));
+    }
     return;
   }
   service_->StartSession();
@@ -103,7 +105,7 @@ void EntrypointController::OnFreDialogClosed(bool accepted) {
 
 void EntrypointController::OnFreLearnMoreClicked() {
   browser_->OpenGURL(GURL(kLearnMoreUrl),
-                     ui::mojom::WindowOpenDisposition::kNewWindow);
+                     ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 void EntrypointController::OnBrowserDidClose(BrowserWindowInterface* browser) {

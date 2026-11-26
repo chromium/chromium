@@ -12,16 +12,18 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/ptr_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -30,7 +32,6 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -40,6 +41,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -47,9 +49,9 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "base/check_deref.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -176,6 +178,13 @@ void AddBanner(views::BubbleDialogModelHost* host) {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+void FocusInitiallyFocusedView(views::Widget& widget) {
+  if (views::View* const view =
+          widget.widget_delegate()->GetInitiallyFocusedView()) {
+    view->RequestFocus();
+  }
+}
+
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TtcFreDialog, kDialogElementId);
@@ -183,11 +192,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TtcFreDialog, kAllowButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TtcFreDialog, kCancelButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TtcFreDialog, kLearnMoreLinkElementId);
 
-TtcFreDialog::TtcFreDialog(gfx::NativeWindow parent,
+TtcFreDialog::TtcFreDialog(tabs::TabInterface& tab,
                            ResultCallback on_closed,
                            base::RepeatingClosure on_learn_more)
-    : on_closed_(std::move(on_closed)) {
-  CHECK(parent);
+    : tab_(&tab), on_closed_(std::move(on_closed)) {
+  CHECK(tab.CanShowModalUI());
   CHECK(on_closed_);
   CHECK(on_learn_more);
 
@@ -214,7 +223,7 @@ TtcFreDialog::TtcFreDialog(gfx::NativeWindow parent,
 
   std::unique_ptr<views::BubbleDialogModelHost> host =
       views::BubbleDialogModelHost::CreateModal(std::move(model),
-                                                ui::mojom::ModalType::kWindow);
+                                                ui::mojom::ModalType::kChild);
   const views::LayoutProvider* const layout_provider =
       views::LayoutProvider::Get();
   host->set_fixed_width(layout_provider->GetDistanceMetric(
@@ -232,28 +241,48 @@ TtcFreDialog::TtcFreDialog(gfx::NativeWindow parent,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   host->SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
-  widget_ = base::WrapUnique(constrained_window::CreateBrowserModalDialogViews(
-      std::move(host), parent));
+  auto params = std::make_unique<tabs::TabDialogManager::Params>();
+  params->close_on_navigate = false;
+  widget_ = CHECK_DEREF(tabs::TabDialogManager::From(&tab))
+                .CreateAndShowDialog(host.release(), std::move(params));
   widget_->MakeCloseSynchronous(
       base::BindOnce(&TtcFreDialog::OnClosed, weak_ptr_factory_.GetWeakPtr()));
+  // Some platforms don't focus a tab-modal dialog when showing it. Only
+  // focus it in an active window, so a background window doesn't steal focus.
+  if (CHECK_DEREF(tab.GetBrowserWindowInterface()).IsActive()) {
+    FocusInitiallyFocusedView(*widget_);
+  }
+
+  tab_activation_subscription_ = tab.RegisterDidActivate(base::BindRepeating(
+      &TtcFreDialog::OnTabActivated, base::Unretained(this)));
 }
 
 TtcFreDialog::~TtcFreDialog() = default;
 
-void TtcFreDialog::Show() {
-  if (widget_) {
-    widget_->Show();
+void TtcFreDialog::Activate() {
+  if (!widget_ || !CHECK_DEREF(tabs::TabDialogManager::From(tab_.get()))
+                       .MaybeActivateDialog()) {
+    return;
+  }
+  // Activating doesn't move focus into the dialog on some platforms. Keep the
+  // focus if it's already in the dialog, e.g. on Cancel.
+  views::FocusManager* const focus_manager = widget_->GetFocusManager();
+  if (focus_manager &&
+      !widget_->GetRootView()->Contains(focus_manager->GetFocusedView())) {
+    FocusInitiallyFocusedView(*widget_);
   }
 }
 
-void TtcFreDialog::Activate() {
-  if (widget_) {
-    widget_->Activate();
+void TtcFreDialog::OnTabActivated(tabs::TabInterface* tab) {
+  if (CHECK_DEREF(tab->GetBrowserWindowInterface()).IsActive()) {
+    Activate();
   }
 }
 
 void TtcFreDialog::OnClosed(views::Widget::ClosedReason reason) {
   widget_.reset();
+  tab_activation_subscription_ = {};
+  tab_ = nullptr;
   // May destroy `this`.
   std::move(on_closed_)
       .Run(reason == views::Widget::ClosedReason::kAcceptButtonClicked);

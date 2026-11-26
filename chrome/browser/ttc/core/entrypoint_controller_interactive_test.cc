@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -25,14 +27,19 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/ttc/ttc_fre_dialog.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/interaction/polling_view_observer.h"
+#include "ui/views/view.h"
 #include "ui/views/views_switches.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace ttc {
 
@@ -523,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
-                       LearnMoreOpensHelpInNewWindow) {
+                       LearnMoreOpensHelpInNewTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHelpTabId);
   content::URLLoaderInterceptor interceptor(base::BindRepeating(
       [](content::URLLoaderInterceptor::RequestParams* params) {
@@ -538,15 +545,18 @@ IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
 
   // clang-format off
   RunTestSequence(
-    InstrumentNextTab(kHelpTabId, AnyBrowser()),
+    InstrumentNextTab(kHelpTabId),
     PinAndPressToolbarButton(),
     InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
     InSameContext(DoDefaultAction(TtcFreDialog::kLearnMoreLinkElementId)),
 
     WaitForWebContentsReady(kHelpTabId, GURL("https://www.google.com/")),
     CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
-                1, "TabCountUnchanged"),
-    InAnyContext(EnsurePresent(TtcFreDialog::kDialogElementId)),
+                2, "TabCount"),
+    InAnyContext(WaitForHide(TtcFreDialog::kDialogElementId)),
+
+    SelectTab(kTabStripElementId, 0),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
     CheckHasSession(false)
   );
   // clang-format on
@@ -613,6 +623,99 @@ IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
 
   EXPECT_FALSE(ttc_service().is_session_active());
   EXPECT_EQ(AcceptedFreVersion(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest, EscDeclinesFre) {
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+    InSameContext(Steps(
+      SendKeyPress(TtcFreDialog::kDialogElementId, ui::VKEY_ESCAPE),
+      WaitForHide(TtcFreDialog::kDialogElementId))),
+
+    CheckHasSession(false),
+    CheckFreAcceptedVersion(0)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       FreMovesToActiveTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabId);
+  DEFINE_LOCAL_POLLING_VIEW_PROPERTY_STATE_IDENTIFIER(views::View, HasFocus,
+                                                      kAllowButtonFocused);
+
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+
+    AddInstrumentedTab(kSecondTabId, GURL(url::kAboutBlankURL)),
+    InAnyContext(WaitForHide(TtcFreDialog::kDialogElementId)),
+    PressButton(kPinnedToolbarActionTtcElementId),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+
+    SelectTab(kTabStripElementId, 0),
+    InAnyContext(EnsureNotPresent(TtcFreDialog::kDialogElementId)),
+
+    SelectTab(kTabStripElementId, 1),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+    InSameContext(Steps(
+      PollViewProperty(kAllowButtonFocused,
+                       TtcFreDialog::kAllowButtonElementId),
+      WaitForState(kAllowButtonFocused, true),
+      PressButton(TtcFreDialog::kAllowButtonElementId),
+      WaitForHide(TtcFreDialog::kDialogElementId))),
+
+    CheckHasSession(true),
+    CheckFreAcceptedVersion(prefs::kCurrentFreVersion)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       OtherTabModalUiBlocksFre) {
+  std::unique_ptr<tabs::ScopedTabModalUI> other_modal_ui =
+      CHECK_DEREF(browser()->GetActiveTabInterface()).ShowModalUI();
+
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    InAnyContext(EnsureNotPresent(TtcFreDialog::kDialogElementId)),
+    CheckHasSession(false),
+
+    Do([&other_modal_ui]() { other_modal_ui.reset(); }),
+    PressButton(kPinnedToolbarActionTtcElementId),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId))
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(EntrypointControllerFreInteractiveTest,
+                       OtherTabModalUiKeepsExistingFre) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabId);
+  std::unique_ptr<tabs::ScopedTabModalUI> other_modal_ui;
+
+  // clang-format off
+  RunTestSequence(
+    PinAndPressToolbarButton(),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+
+    AddInstrumentedTab(kSecondTabId, GURL(url::kAboutBlankURL)),
+    InAnyContext(WaitForHide(TtcFreDialog::kDialogElementId)),
+    Do([this, &other_modal_ui]() {
+      other_modal_ui =
+          CHECK_DEREF(browser()->GetActiveTabInterface()).ShowModalUI();
+    }),
+    PressButton(kPinnedToolbarActionTtcElementId),
+    InAnyContext(EnsureNotPresent(TtcFreDialog::kDialogElementId)),
+
+    SelectTab(kTabStripElementId, 0),
+    InAnyContext(WaitForShow(TtcFreDialog::kDialogElementId)),
+    CheckHasSession(false)
+  );
+  // clang-format on
 }
 
 }  // namespace

@@ -35,9 +35,11 @@ source_set("ttc") {
     "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
     "//chrome/app/vector_icons",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/views:layout_provider",
-    "//components/constrained_window",
     "//components/strings",
+    "//components/tabs:public",
     "//components/vector_icons",
     "//ui/color",
     "//ui/compositor",
@@ -48,18 +50,14 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "pointer_mark_unittest.cc",
-    "ttc_fre_dialog_unittest.cc",
     "ttc_voice_plate_unittest.cc",
   ]
   deps = [
     ":ttc",
     "//base",
-    "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser/ui/views/voice",
     "//chrome/test:test_support",
-    "//components/constrained_window",
-    "//testing/gmock",
     "//testing/gtest",
     "//ui/accessibility",
     "//ui/base",
@@ -68,5 +66,29 @@ source_set("unit_tests") {
     "//ui/gfx",
     "//ui/views",
     "//ui/views:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "ttc_fre_dialog_browsertest.cc" ]
+  deps = [
+    ":ttc",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/test:test_support",
+    "//components/tabs:public",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/base/interaction",
+    "//ui/events",
+    "//ui/views",
+    "//ui/views:test_support",
+    "//url",
   ]
 }

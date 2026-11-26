@@ -1452,6 +1452,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/tabs/hovercard:browser_tests",
       "//chrome/browser/ui/views/tabs/vertical:browser_tests",
       "//chrome/browser/ui/views/toolbar:browser_tests",
+      "//chrome/browser/ui/views/ttc:browser_tests",
       "//chrome/browser/ui/views/user_education:browser_tests",
       "//chrome/browser/ui/views/web_apps:browser_tests",
       "//chrome/browser/ui/views/webauthn:browser_tests",

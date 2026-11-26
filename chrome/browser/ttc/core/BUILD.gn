@@ -620,6 +620,7 @@ if (!is_android) {
       "//chrome/test/interaction",
       "//components/keyed_service/core",
       "//components/prefs",
+      "//components/tabs:public",
       "//components/ttc/app/public",
       "//content/public/browser",
       "//content/test:test_support",
