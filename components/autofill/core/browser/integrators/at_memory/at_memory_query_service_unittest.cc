@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -33,17 +32,13 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/personal_context/core/context_memory_error.h"
-#include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
-#include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/subscription_eligibility/subscription_eligibility_prefs.h"
-#include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -170,21 +165,9 @@ class DelayedMemoryDataProvider : public AutofillDataProvider {
 class AtMemoryQueryServiceTest : public testing::Test,
                                  public WithTestAutofillClientDriverManager<> {
  public:
-  AtMemoryQueryServiceTest() {
-    InitAutofillClient();
-    personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
-    pref_service_.registry()->RegisterIntegerPref(
-        subscription_eligibility::prefs::kAiSubscriptionTier, 0);
-    ON_CALL(mock_eligibility_service_, GetNonEligibilityReason)
-        .WillByDefault(testing::Return(
-            personal_context::PersonalContextNonEligibilityReason::kEligible));
-  }
+  AtMemoryQueryServiceTest() { InitAutofillClient(); }
 
  protected:
-  void FastForwardBy(base::TimeDelta delta) {
-    task_environment_.FastForwardBy(delta);
-  }
-
   void StubFetchContextResponse(AtMemoryQueryResponse response) {
     Any serialized_response;
     serialized_response.set_value(response.SerializeAsString());
@@ -246,10 +229,9 @@ class AtMemoryQueryServiceTest : public testing::Test,
       std::unique_ptr<AutofillDataProvider> data_provider =
           std::make_unique<FakeMemoryDataProvider>(),
       LogRouter* log_router = nullptr) {
-    return std::make_unique<AtMemoryQueryService>(
-        std::move(data_provider), &mock_service_, "en-US",
-        &mock_eligibility_service_, &subscription_eligibility_service_,
-        &pref_service_, log_router);
+    return std::make_unique<AtMemoryQueryService>(std::move(data_provider),
+                                                  &mock_service_, "en-US",
+                                                  &pref_service_, log_router);
   }
 
   std::unique_ptr<AtMemoryQueryService> CreateQueryProviderWithResults(
@@ -310,27 +292,12 @@ class AtMemoryQueryServiceTest : public testing::Test,
     return mock_service_;
   }
 
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
   TestingPrefServiceSimple& pref_service() { return pref_service_; }
-  subscription_eligibility::SubscriptionEligibilityService&
-  subscription_eligibility_service() {
-    return subscription_eligibility_service_;
-  }
-  personal_context::MockPersonalContextEligibilityService&
-  mock_eligibility_service() {
-    return mock_eligibility_service_;
-  }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::SingleThreadTaskEnvironment task_environment_;
   NiceMock<personal_context::MockPersonalContextService> mock_service_;
-  base::HistogramTester histogram_tester_;
   TestingPrefServiceSimple pref_service_;
-  subscription_eligibility::SubscriptionEligibilityService
-      subscription_eligibility_service_{&pref_service_};
-  NiceMock<personal_context::MockPersonalContextEligibilityService>
-      mock_eligibility_service_;
 };
 
 // Tests that the query service returns an internal failure status after
@@ -2237,145 +2204,6 @@ TEST_F(
               SuccessfulSearchResults(SearchResultWithValue(u"XYZ123"),
                                       SearchResultWithValue(u"123 Main St")));
 }
-
-// Tests that `Autofill.AtMemory.PersonalContext.NonEligibilityReason` is logged
-// after a 30-second startup delay.
-TEST_F(AtMemoryQueryServiceTest,
-       LogsAtMemoryNonEligibilityReasonAfterStartupDelay) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kAutofillAtMemory, {{"at_memory_eligible_tiers", "1,2"}}}},
-      {});
-
-  // Before 30 seconds, startup logging should not have occurred.
-  histogram_tester().ExpectTotalCount(
-      "Autofill.AtMemory.PersonalContext.NonEligibilityReason", 0);
-
-  auto service = std::make_unique<AtMemoryQueryService>(
-      std::make_unique<FakeMemoryDataProvider>(), &mock_service(), "en-US",
-      &mock_eligibility_service(), &subscription_eligibility_service(),
-      &pref_service(), /*log_router=*/nullptr);
-
-  // Fast forward by 31 seconds to trigger startup logging.
-  FastForwardBy(base::Seconds(31));
-
-  histogram_tester().ExpectTotalCount(
-      "Autofill.AtMemory.PersonalContext.NonEligibilityReason", 1);
-}
-
-// Tests that `Autofill.AtMemory.PersonalContext.NonEligibilityReason` is logged
-// on subscription tier updates after the startup delay has elapsed.
-TEST_F(AtMemoryQueryServiceTest, LogsAtMemoryNonEligibilityReasonOnTierChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kAutofillAtMemory, {{"at_memory_eligible_tiers", "1,2"}}}},
-      {});
-
-  // Set tier to an eligible tier (1) before startup logging triggers.
-  pref_service().SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
-
-  auto service = std::make_unique<AtMemoryQueryService>(
-      std::make_unique<FakeMemoryDataProvider>(), &mock_service(), "en-US",
-      &mock_eligibility_service(), &subscription_eligibility_service(),
-      &pref_service(), /*log_router=*/nullptr);
-
-  // Fast forward by 31 seconds to complete startup logging (records kEligible).
-  FastForwardBy(base::Seconds(31));
-
-  histogram_tester().ExpectBucketCount(
-      "Autofill.AtMemory.PersonalContext.NonEligibilityReason",
-      personal_context::PersonalContextNonEligibilityReason::kEligible, 1);
-
-  // Then change tier to an ineligible tier (99).
-  pref_service().SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 99);
-  histogram_tester().ExpectBucketCount(
-      "Autofill.AtMemory.PersonalContext.NonEligibilityReason",
-      personal_context::PersonalContextNonEligibilityReason::
-          kNotG1SubscriberOrAndroidPremiumDevice,
-      1);
-}
-
-// Tests that `Autofill.AtMemory.PersonalContext.NonEligibilityReason` is logged
-// on settings toggle updates after the startup delay has elapsed.
-TEST_F(AtMemoryQueryServiceTest,
-       LogsAtMemoryNonEligibilityReasonOnToggleChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kAutofillAtMemory, {{"at_memory_eligible_tiers", "1,2"}}}},
-      {});
-
-  pref_service().SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
-
-  auto service = std::make_unique<AtMemoryQueryService>(
-      std::make_unique<FakeMemoryDataProvider>(), &mock_service(), "en-US",
-      &mock_eligibility_service(), &subscription_eligibility_service(),
-      &pref_service(), /*log_router=*/nullptr);
-
-  FastForwardBy(base::Seconds(31));
-
-  histogram_tester().ExpectBucketCount(
-      "Autofill.AtMemory.PersonalContext.NonEligibilityReason",
-      personal_context::PersonalContextNonEligibilityReason::kEligible, 1);
-
-  pref_service().SetBoolean(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-      false);
-  histogram_tester().ExpectBucketCount(
-      "Autofill.AtMemory.PersonalContext.NonEligibilityReason",
-      personal_context::PersonalContextNonEligibilityReason::
-          kPersonalIntelligencePrefDisabled,
-      1);
-
-  pref_service().SetBoolean(
-      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
-      true);
-  histogram_tester().ExpectBucketCount(
-      "Autofill.AtMemory.PersonalContext.NonEligibilityReason",
-      personal_context::PersonalContextNonEligibilityReason::kEligible, 2);
-}
-
-#if BUILDFLAG(IS_ANDROID)
-// Tests that `Autofill.AtMemory.PersonalContext.NonEligibilityReason` logs
-// `kEligible` when the Android device is supported, even if the user's
-// subscription tier is not in the eligible tiers list.
-TEST_F(AtMemoryQueryServiceTest,
-       LogsAtMemoryEligibilityReasonOnAndroidPremiumDevice) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kAutofillAtMemory,
-        {{"at_memory_eligible_tiers", "1,2"},
-         {"at_memory_enabled_devices", base::SysInfo::HardwareModelName()}}}},
-      {});
-
-  // Set tier to an eligible tier (1) before startup delay.
-  pref_service().SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
-
-  auto service = std::make_unique<AtMemoryQueryService>(
-      std::make_unique<FakeMemoryDataProvider>(), &mock_service(), "en-US",
-      &mock_eligibility_service(), &subscription_eligibility_service(),
-      &pref_service(), /*log_router=*/nullptr);
-
-  // Fast forward by 31 seconds to complete startup logging.
-  FastForwardBy(base::Seconds(31));
-
-  histogram_tester().ExpectBucketCount(
-      "Autofill.AtMemory.PersonalContext.NonEligibilityReason",
-      personal_context::PersonalContextNonEligibilityReason::kEligible, 1);
-
-  // Then change tier to an ineligible tier (99). Since the Android device is
-  // supported, the user remains eligible (`kEligible`), so no duplicate sample
-  // is logged.
-  pref_service().SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 99);
-  histogram_tester().ExpectBucketCount(
-      "Autofill.AtMemory.PersonalContext.NonEligibilityReason",
-      personal_context::PersonalContextNonEligibilityReason::kEligible, 1);
-}
-#endif
 
 class MockLogReceiver : public LogReceiver {
  public:

@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/integrators/at_memory/at_memory_eligibility_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -23,12 +22,7 @@
 class PrefService;
 
 namespace personal_context {
-class PersonalContextEligibilityService;
 class PersonalContextService;
-}
-
-namespace subscription_eligibility {
-class SubscriptionEligibilityService;
 }
 
 namespace autofill {
@@ -45,10 +39,6 @@ class AtMemoryQueryService : public KeyedService {
       std::unique_ptr<AutofillDataProvider> data_provider,
       personal_context::PersonalContextService* personal_context_service,
       const std::string& locale,
-      personal_context::PersonalContextEligibilityService*
-          personal_context_eligibility_service,
-      subscription_eligibility::SubscriptionEligibilityService*
-          subscription_eligibility_service,
       PrefService* pref_service,
       LogRouter* log_router);
   AtMemoryQueryService(const AtMemoryQueryService&) = delete;
@@ -89,7 +79,6 @@ class AtMemoryQueryService : public KeyedService {
   raw_ptr<personal_context::PersonalContextService> personal_context_service_ =
       nullptr;
   std::string locale_;
-  AtMemoryEligibilityMetricsTracker eligibility_metrics_tracker_;
   base::WeakPtrFactory<AtMemoryQueryService> query_weak_ptr_factory_{this};
 };
 
