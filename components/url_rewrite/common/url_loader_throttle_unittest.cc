@@ -57,7 +57,8 @@ class URLLoaderThrottleTest : public testing::Test {
 TEST_F(URLLoaderThrottleTest, WildcardHosts) {
   mojom::UrlRequestRewriteAddHeadersPtr add_headers =
       mojom::UrlRequestRewriteAddHeaders::New();
-  add_headers->headers.push_back(mojom::UrlHeader::New("Header", "Value"));
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New("Accept-Language", "en-US"));
   mojom::UrlRequestActionPtr rewrite =
       mojom::UrlRequestAction::NewAddHeaders(std::move(add_headers));
   std::vector<mojom::UrlRequestActionPtr> actions;
@@ -76,31 +77,40 @@ TEST_F(URLLoaderThrottleTest, WildcardHosts) {
   network::ResourceRequest request1;
   request1.url = GURL("http://test.net");
   throttle.WillStartRequest(&request1, &unused_defer);
-  EXPECT_TRUE(request1.headers.HasHeader("Header"));
+  EXPECT_TRUE(request1.headers.HasHeader("Accept-Language"));
 
   network::ResourceRequest request2;
   request2.url = GURL("http://subdomain.test.net");
   throttle.WillStartRequest(&request2, &unused_defer);
-  EXPECT_TRUE(request2.headers.HasHeader("Header"));
+  EXPECT_TRUE(request2.headers.HasHeader("Accept-Language"));
 
   network::ResourceRequest request3;
   request3.url = GURL("http://domaintest.net");
   throttle.WillStartRequest(&request3, &unused_defer);
-  EXPECT_FALSE(request3.headers.HasHeader("Header"));
+  EXPECT_FALSE(request3.headers.HasHeader("Accept-Language"));
 
   network::ResourceRequest request4;
   request4.url = GURL("http://otherdomain.net");
   throttle.WillStartRequest(&request4, &unused_defer);
-  EXPECT_FALSE(request4.headers.HasHeader("Header"));
+  EXPECT_FALSE(request4.headers.HasHeader("Accept-Language"));
 }
 
-// Verifies that injected headers are correctly exempted from CORS checks if
-// their names are registered as CORS exempt.
+// Verifies that injected headers are placed in cors_exempt_headers when
+// registered as CORS exempt, in headers when CORS-safelisted or User-Agent,
+// and dropped otherwise.
 TEST_F(URLLoaderThrottleTest, CorsAwareHeaders) {
   mojom::UrlRequestRewriteAddHeadersPtr add_headers =
       mojom::UrlRequestRewriteAddHeaders::New();
   add_headers->headers.push_back(
       mojom::UrlHeader::New(kRequiresCorsHeader, "Value"));
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New("Accept-Language", "en-US"));
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New("User-Agent", "CustomUA"));
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New("Content-Type", "application/json"));
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New("Sec-Fetch-Site", "same-origin"));
 
   // Inject the uppercased form for CORS exempt header #1, and the mixed case
   // form of header #2.
@@ -133,18 +143,28 @@ TEST_F(URLLoaderThrottleTest, CorsAwareHeaders) {
   throttle.WillStartRequest(&request, &defer);
   EXPECT_FALSE(defer);
 
-  // Verify that the cors-exempt and cors-required headers were partitioned into
-  // the "cors_exempt_headers" and "headers" arrays, respectively.
+  // Verify that CORS-exempt headers were placed exclusively in
+  // cors_exempt_headers.
   EXPECT_TRUE(
       request.cors_exempt_headers.HasHeader(kUpperCaseCorsExemptHeader));
   EXPECT_TRUE(
       request.cors_exempt_headers.HasHeader(kMixedCaseCorsExemptHeader2));
-  EXPECT_TRUE(request.headers.HasHeader(kRequiresCorsHeader));
-
-  // Verify that the headers were not also placed in the other array.
-  EXPECT_FALSE(request.cors_exempt_headers.HasHeader(kRequiresCorsHeader));
   EXPECT_FALSE(request.headers.HasHeader(kUpperCaseCorsExemptHeader));
   EXPECT_FALSE(request.headers.HasHeader(kMixedCaseCorsExemptHeader2));
+
+  // Verify that CORS-safelisted headers and User-Agent were placed in headers.
+  EXPECT_TRUE(request.headers.HasHeader("Accept-Language"));
+  EXPECT_TRUE(request.headers.HasHeader("User-Agent"));
+  EXPECT_FALSE(request.cors_exempt_headers.HasHeader("Accept-Language"));
+  EXPECT_FALSE(request.cors_exempt_headers.HasHeader("User-Agent"));
+
+  // Verify that unlisted non-safelisted headers were dropped.
+  EXPECT_FALSE(request.headers.HasHeader(kRequiresCorsHeader));
+  EXPECT_FALSE(request.cors_exempt_headers.HasHeader(kRequiresCorsHeader));
+  EXPECT_FALSE(request.headers.HasHeader("Content-Type"));
+  EXPECT_FALSE(request.cors_exempt_headers.HasHeader("Content-Type"));
+  EXPECT_FALSE(request.headers.HasHeader("Sec-Fetch-Site"));
+  EXPECT_FALSE(request.cors_exempt_headers.HasHeader("Sec-Fetch-Site"));
 }
 
 // Tests URL replacement rules that replace to a data URL do not append query or
@@ -360,7 +380,8 @@ TEST_F(URLLoaderThrottleTest, AllowAndDeny) {
 TEST_F(URLLoaderThrottleTest, RedirectsRemoveHeaders) {
   mojom::UrlRequestRewriteAddHeadersPtr add_headers =
       mojom::UrlRequestRewriteAddHeaders::New();
-  add_headers->headers.push_back(mojom::UrlHeader::New("Header", "Value"));
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New("Accept-Language", "en-US"));
   add_headers->headers.push_back(
       mojom::UrlHeader::New("CorsExemptHeader", "Value"));
   mojom::UrlRequestActionPtr rewrite =
@@ -381,7 +402,7 @@ TEST_F(URLLoaderThrottleTest, RedirectsRemoveHeaders) {
   network::ResourceRequest request;
   request.url = GURL("http://test.net");
   throttle.WillStartRequest(&request, &unused_defer);
-  EXPECT_TRUE(request.headers.HasHeader("Header"));
+  EXPECT_TRUE(request.headers.HasHeader("Accept-Language"));
   EXPECT_TRUE(request.cors_exempt_headers.HasHeader("CorsExemptHeader"));
 
   net::RedirectInfo redirect_info;
@@ -403,7 +424,7 @@ TEST_F(URLLoaderThrottleTest, RedirectsRemoveHeaders) {
     throttle.WillRedirectRequest(&redirect_info, response_head, &unused_defer,
                                  &headers_update_params);
     EXPECT_EQ(headers_update_params.removed_headers.size(), 2u);
-    EXPECT_EQ(headers_update_params.removed_headers[0], "Header");
+    EXPECT_EQ(headers_update_params.removed_headers[0], "Accept-Language");
     EXPECT_EQ(headers_update_params.removed_headers[1], "CorsExemptHeader");
   }
 }

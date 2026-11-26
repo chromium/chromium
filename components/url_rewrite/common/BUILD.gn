@@ -12,6 +12,7 @@ source_set("common") {
   sources = [ "url_loader_throttle.cc" ]
   deps = [
     "//net",
+    "//services/network/public/cpp",
     "//url",
   ]
   public_deps = [

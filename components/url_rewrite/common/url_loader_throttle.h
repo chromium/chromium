@@ -30,8 +30,12 @@ namespace url_rewrite {
 // through the |UrlRequestRewriteRules| rules.
 class URLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
-  // A callback that checks if provided header is CORS exempt. The
-  // implementation must be case-insensitive.
+  // A callback that checks if a provided header is CORS exempt. The
+  // implementation must be case-insensitive and safe to call concurrently from
+  // any sequence (since `URLLoaderThrottle` may run on worker or background
+  // sequences). Header names in `rules` that match this callback must already
+  // use their registered canonical casing because downstream CORS-exempt header
+  // validation is case-sensitive.
   using IsHeaderCorsExemptCallback =
       base::RepeatingCallback<bool(std::string_view)>;
 

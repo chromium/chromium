@@ -11,7 +11,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/url_constants.h"
@@ -280,8 +282,12 @@ void URLLoaderThrottle::ApplyRewrite(
 void URLLoaderThrottle::ApplyAddHeaders(
     network::ResourceRequest* request,
     const mojom::UrlRequestRewriteAddHeadersPtr& add_headers) {
-  // Bucket each |header| into the regular/CORS-compliant header list or the
-  // CORS-exempt header list.
+  // Unlisted non-CORS-safelisted headers must not be added to
+  // `request->headers` because they can trigger CORS preflights, fail
+  // `CheckThrottleWillNotCauseCorsPreflight`, and are copied into
+  // `FetchAPIRequest`. `User-Agent` is explicitly allowed because
+  // `network::IsRequestHeaderSafe` permits it while `IsCorsSafelistedHeader`
+  // excludes it.
   for (const auto& header : add_headers->headers) {
     if (request->headers.HasHeader(header->name) ||
         request->cors_exempt_headers.HasHeader(header->name)) {
@@ -290,10 +296,14 @@ void URLLoaderThrottle::ApplyAddHeaders(
     }
     if (is_header_cors_exempt_callback_.Run(header->name)) {
       request->cors_exempt_headers.SetHeader(header->name, header->value);
-    } else {
+      added_headers_.push_back(header->name);
+    } else if (network::cors::IsCorsSafelistedHeader(header->name,
+                                                     header->value) ||
+               base::EqualsCaseInsensitiveASCII(
+                   header->name, net::HttpRequestHeaders::kUserAgent)) {
       request->headers.SetHeader(header->name, header->value);
+      added_headers_.push_back(header->name);
     }
-    added_headers_.push_back(header->name);
   }
 }
 

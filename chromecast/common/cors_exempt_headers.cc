@@ -4,10 +4,12 @@
 
 #include "chromecast/common/cors_exempt_headers.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
+#include "base/strings/string_util.h"
 
 namespace chromecast {
 namespace {
@@ -46,8 +48,18 @@ base::span<const std::string_view> GetLegacyCorsExemptHeaders() {
   return base::span<const std::string_view>(kExemptHeaders);
 }
 
+std::optional<std::string_view> GetCanonicalCorsExemptHeaderName(
+    std::string_view header) {
+  for (std::string_view exempt_header : kExemptHeaders) {
+    if (base::EqualsCaseInsensitiveASCII(header, exempt_header)) {
+      return exempt_header;
+    }
+  }
+  return std::nullopt;
+}
+
 bool IsCorsExemptHeader(std::string_view header) {
-  return kExemptHeaders.contains(header);
+  return GetCanonicalCorsExemptHeaderName(header).has_value();
 }
 
 }  // namespace chromecast

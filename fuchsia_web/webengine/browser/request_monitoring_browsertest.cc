@@ -54,7 +54,8 @@ class RequestMonitoringTest : public FrameImplTestBase {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Needed for UrlRequestRewriteAddHeaders.
-    command_line->AppendSwitchNative(switches::kCorsExemptHeaders, "Test");
+    command_line->AppendSwitchNative(switches::kCorsExemptHeaders,
+                                     "Test,Test1,Test2,Test3,Test4");
   }
 
   std::map<GURL, net::test_server::HttpRequest> accumulated_requests_;

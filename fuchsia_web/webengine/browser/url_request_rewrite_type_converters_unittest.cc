@@ -9,6 +9,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "fuchsia_web/common/test/url_request_rewrite_test_util.h"
+#include "fuchsia_web/webengine/common/cors_exempt_headers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -45,6 +47,43 @@ TEST(UrlRequestRewriteTypeConvertersTest, ConvertAddHeader) {
   ASSERT_EQ(headers.size(), 1u);
   ASSERT_EQ(headers[0]->name, "Test");
   ASSERT_EQ(headers[0]->value, "Value");
+}
+
+// Tests AddHeaders normalizes CORS-exempt header names to their registered
+// casing while leaving non-exempt header names unchanged.
+TEST(UrlRequestRewriteTypeConvertersTest,
+     ConvertAddHeaderNormalizesCorsExemptCasing) {
+  ScopedCorsExemptHeadersForTesting scoped_headers({"X-Custom-Exempt"});
+
+  {
+    url_rewrite::mojom::UrlRequestRewriteRulesPtr rules =
+        ConvertFuchsiaRulesToMojom(
+            CreateRewriteAddHeaders("x-custom-exempt", "Value"));
+    ASSERT_THAT(rules->rules, testing::SizeIs(1));
+    ASSERT_THAT(rules->rules[0]->actions, testing::SizeIs(1));
+    ASSERT_TRUE(rules->rules[0]->actions[0]->is_add_headers());
+
+    const std::vector<url_rewrite::mojom::UrlHeaderPtr>& headers =
+        rules->rules[0]->actions[0]->get_add_headers()->headers;
+    ASSERT_THAT(headers, testing::SizeIs(1));
+    EXPECT_EQ(headers[0]->name, "X-Custom-Exempt");
+    EXPECT_EQ(headers[0]->value, "Value");
+  }
+
+  {
+    url_rewrite::mojom::UrlRequestRewriteRulesPtr rules =
+        ConvertFuchsiaRulesToMojom(
+            CreateRewriteAddHeaders("other-header", "Value"));
+    ASSERT_THAT(rules->rules, testing::SizeIs(1));
+    ASSERT_THAT(rules->rules[0]->actions, testing::SizeIs(1));
+    ASSERT_TRUE(rules->rules[0]->actions[0]->is_add_headers());
+
+    const std::vector<url_rewrite::mojom::UrlHeaderPtr>& headers =
+        rules->rules[0]->actions[0]->get_add_headers()->headers;
+    ASSERT_THAT(headers, testing::SizeIs(1));
+    EXPECT_EQ(headers[0]->name, "other-header");
+    EXPECT_EQ(headers[0]->value, "Value");
+  }
 }
 
 // Tests RemoveHeader rewrites are properly converted to their Mojo equivalent.

@@ -104,6 +104,23 @@ TEST_F(UrlRequestRewriteTypeConvertersTest, ConvertAddHeader) {
   ASSERT_EQ(headers[0]->value, "Value");
 }
 
+// Tests AddHeaders normalizes legacy CORS-exempt header names to their
+// registered casing.
+TEST_F(UrlRequestRewriteTypeConvertersTest,
+       ConvertAddHeaderNormalizesCorsExemptCasing) {
+  EXPECT_TRUE(
+      UpdateRulesFromRewrite(CreateRewriteAddHeaders("authorization", "Val")));
+  ASSERT_THAT(cached_rules_->rules, SizeIs(1));
+  ASSERT_THAT(cached_rules_->rules[0]->actions, SizeIs(1));
+  ASSERT_TRUE(cached_rules_->rules[0]->actions[0]->is_add_headers());
+
+  const std::vector<url_rewrite::mojom::UrlHeaderPtr>& headers =
+      cached_rules_->rules[0]->actions[0]->get_add_headers()->headers;
+  ASSERT_THAT(headers, SizeIs(1));
+  EXPECT_EQ(headers[0]->name, "Authorization");
+  EXPECT_EQ(headers[0]->value, "Val");
+}
+
 // Tests RemoveHeader rewrites are properly converted to their Mojo equivalent.
 TEST_F(UrlRequestRewriteTypeConvertersTest, ConvertRemoveHeader) {
   EXPECT_TRUE(UpdateRulesFromRewrite(

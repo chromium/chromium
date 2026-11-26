@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "fuchsia_web/common/string_util.h"
+#include "fuchsia_web/webengine/common/cors_exempt_headers.h"
 #include "net/base/url_util.h"
 
 namespace {
@@ -30,10 +31,14 @@ struct TypeConverter<url_rewrite::mojom::UrlRequestRewriteAddHeadersPtr,
         url_rewrite::mojom::UrlRequestRewriteAddHeaders::New();
     if (input.has_headers()) {
       for (const auto& header : input.headers()) {
-        std::string_view header_name = BytesAsString(header.name);
+        std::string_view raw_header_name = BytesAsString(header.name);
+        std::optional<std::string> canonical_name =
+            GetCanonicalCorsExemptHeaderName(raw_header_name);
+        std::string header_name = canonical_name ? std::move(*canonical_name)
+                                                 : std::string(raw_header_name);
         std::string_view header_value = BytesAsString(header.value);
         url_rewrite::mojom::UrlHeaderPtr url_header =
-            url_rewrite::mojom::UrlHeader::New(std::string(header_name),
+            url_rewrite::mojom::UrlHeader::New(std::move(header_name),
                                                std::string(header_value));
         add_headers->headers.push_back(std::move(url_header));
       }

@@ -5,6 +5,7 @@
 #ifndef CHROMECAST_COMMON_CORS_EXEMPT_HEADERS_H_
 #define CHROMECAST_COMMON_CORS_EXEMPT_HEADERS_H_
 
+#include <optional>
 #include <string_view>
 
 #include "base/containers/span.h"
@@ -17,7 +18,12 @@ namespace chromecast {
 // preflight requests.
 base::span<const std::string_view> GetLegacyCorsExemptHeaders();
 
-// Returns true if |header| is CORS exempt.
+// Returns the canonical registered header name if `header` matches a legacy
+// CORS-exempt header case-insensitively, or `std::nullopt` otherwise.
+std::optional<std::string_view> GetCanonicalCorsExemptHeaderName(
+    std::string_view header);
+
+// Returns true if `header` is CORS exempt (case-insensitive).
 bool IsCorsExemptHeader(std::string_view header);
 
 }  // namespace chromecast

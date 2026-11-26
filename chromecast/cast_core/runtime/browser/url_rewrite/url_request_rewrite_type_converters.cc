@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "chromecast/common/cors_exempt_headers.h"
 
 namespace {
 
@@ -27,8 +28,12 @@ struct TypeConverter<url_rewrite::mojom::UrlRequestRewriteAddHeadersPtr,
     url_rewrite::mojom::UrlRequestRewriteAddHeadersPtr add_headers =
         url_rewrite::mojom::UrlRequestRewriteAddHeaders::New();
     for (const auto& header : input.headers()) {
+      std::string_view header_name =
+          chromecast::GetCanonicalCorsExemptHeaderName(header.name())
+              .value_or(header.name());
       url_rewrite::mojom::UrlHeaderPtr url_header =
-          url_rewrite::mojom::UrlHeader::New(header.name(), header.value());
+          url_rewrite::mojom::UrlHeader::New(std::string(header_name),
+                                             header.value());
       add_headers->headers.push_back(std::move(url_header));
     }
     return add_headers;
