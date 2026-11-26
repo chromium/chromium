@@ -1488,6 +1488,13 @@
     'gpu_passthrough_cmd_decoder': {
       'filepath': 'gpu/command_buffer/service/.*passthrough',
     },
+    'gpu_shared_image': {
+      'filepath': 'components/viz/common/resources/shared_image_format|'\
+                  'components/viz/service/.*shared_image|'\
+                  'gpu/command_buffer/(client|common|service)/.*shared_image|'\
+                  'gpu/command_buffer/service/shared_image/|'\
+                  'gpu/ipc/(client|common|service)/.*shared_image',
+    },
     'guest_view': {
       'filepath': 'chrome/browser/apps/guest_view|'\
                   'chrome/browser/extensions/api/web_view|'\
@@ -3259,6 +3266,7 @@
            'dpranke@chromium.org'],
     'google_bottom_bar': ['gbb-cct-eng+cls@google.com'],
     'gpu_passthrough_cmd_decoder': ['geofflang+watch@chromium.org'],
+    'gpu_shared_image': ['hitawala+watch@chromium.org'],
     'guest_view': ['mcnee@chromium.org',
                    'wjmaclean@chromium.org'],
     'gwp_asan': ['mpdenton+watch@chromium.org',
