@@ -49,19 +49,19 @@ v8::Local<v8::Value> WorldSafeV8ReferenceInternal::ToWorldSafeValue(
   }
 
   CHECK(source_script_state);
-  if (!HasValidExecutionContext(source_script_state)) {
+  v8::Local<v8::Context> source_context = source_script_state->GetContext();
+  if (source_context.IsEmpty()) {
     return v8::Null(isolate);
   }
 
-  // Serialize in `source_script_state` (including incumbent context) so that
+  // Serialize in `source_context` (including incumbent context) so that
   // property getters, proxy traps, Error stack formatting, and bound native
   // WebIDL callbacks execute strictly in the source realm rather than
-  // `target_script_state`.
+  // `target_script_state`, even if `source_script_state` is already detached.
   scoped_refptr<SerializedScriptValue> serialized;
   {
-    ScriptState::Scope source_context_scope(source_script_state);
-    v8::Context::BackupIncumbentScope backup_incumbent_scope(
-        source_script_state->GetContext());
+    v8::Context::Scope source_context_scope(source_context);
+    v8::Context::BackupIncumbentScope backup_incumbent_scope(source_context);
     serialized =
         SerializedScriptValue::SerializeAndSwallowExceptions(isolate, value);
   }
