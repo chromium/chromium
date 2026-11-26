@@ -572,8 +572,6 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     // smooth.
     case TaskType::kMediaElementEvent:
     case TaskType::kInternalWebCrypto:
-    case TaskType::kInternalMedia:
-    case TaskType::kInternalMediaRealTime:
     case TaskType::kInternalUserInteraction:
     case TaskType::kInternalIntersectionObserver:
     case TaskType::kInternalAutofill:
@@ -581,6 +579,14 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     // is frozen or the frame is paused.
     case TaskType::kWebLocks:
       return PausableTaskQueueTraits();
+    case TaskType::kInternalMedia:
+    case TaskType::kInternalMediaRealTime:
+      if (base::FeatureList::IsEnabled(kHighPriorityInternalMediaTaskType)) {
+        return PausableTaskQueueTraits().SetPrioritisationType(
+            QueueTraits::PrioritisationType::kInternalMedia);
+      } else {
+        return PausableTaskQueueTraits();
+      }
     case TaskType::kBackForwardCachePostedMessage:
       return PausableTaskQueueTraits().SetCanRunInBFCache(true);
     case TaskType::kInternalFindInPage:
@@ -1215,6 +1221,19 @@ TaskPriority FrameSchedulerImpl::ComputePriority(
     return parent_page_scheduler_->IsPageVisible()
                ? TaskPriority::kHighPriority
                : TaskPriority::kNormalPriority;
+  }
+
+  if (task_queue->GetPrioritisationType() ==
+      MainThreadTaskQueue::QueueTraits::PrioritisationType::kInternalMedia) {
+    // 1. Visible non-ad main frame or same-origin subframe: kHighPriority
+    // 2. Visible non-ad cross-origin important subframe: kHighPriority
+    // 3. Unimportant cross-origin subframe or ad frame: kNormalPriority
+    // 4. Background page: kNormalPriority
+    const bool should_boost =
+        (parent_page_scheduler_->IsPageVisible() && !is_ad_frame_) &&
+        (!IsCrossOriginToNearestMainFrame() || IsImportant());
+    return should_boost ? TaskPriority::kHighPriority
+                        : TaskPriority::kNormalPriority;
   }
 
   if (task_queue->GetPrioritisationType() ==

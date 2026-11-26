@@ -21,6 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -353,6 +354,9 @@ class FrameSchedulerImplTest : public testing::Test {
           break;
         case 'D':
           prioritisation_type = PrioritisationType::kExperimentalDatabase;
+          break;
+        case 'M':
+          prioritisation_type = PrioritisationType::kInternalMedia;
           break;
         default:
           EXPECT_FALSE(true);
@@ -1676,6 +1680,85 @@ TEST_F(FrameSchedulerImplDatabaseAccessWithHighPriority,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre("V1", "D1", "R1", "D2", "B1"));
+}
+
+class FrameSchedulerImplInternalMediaWithoutHighPriority
+    : public FrameSchedulerImplTest {
+ public:
+  FrameSchedulerImplInternalMediaWithoutHighPriority()
+      : FrameSchedulerImplTest({}, {kHighPriorityInternalMediaTaskType}) {}
+};
+
+TEST_F(FrameSchedulerImplInternalMediaWithoutHighPriority, QueueTraits) {
+  auto media_queue = GetTaskQueue(TaskType::kInternalMedia);
+  EXPECT_EQ(media_queue->GetQueueTraits().prioritisation_type,
+            MainThreadTaskQueue::QueueTraits::PrioritisationType::kRegular);
+  EXPECT_EQ(media_queue->GetQueuePriority(), TaskPriority::kNormalPriority);
+
+  auto realtime_media_queue = GetTaskQueue(TaskType::kInternalMediaRealTime);
+  EXPECT_EQ(realtime_media_queue->GetQueueTraits().prioritisation_type,
+            MainThreadTaskQueue::QueueTraits::PrioritisationType::kRegular);
+  EXPECT_EQ(realtime_media_queue->GetQueuePriority(),
+            TaskPriority::kNormalPriority);
+}
+
+class FrameSchedulerImplInternalMediaWithHighPriority
+    : public FrameSchedulerImplTest {
+ public:
+  FrameSchedulerImplInternalMediaWithHighPriority()
+      : FrameSchedulerImplTest({kHighPriorityInternalMediaTaskType}, {}) {}
+};
+
+TEST_F(FrameSchedulerImplInternalMediaWithHighPriority, QueueTraits) {
+  auto media_queue = GetTaskQueue(TaskType::kInternalMedia);
+  EXPECT_EQ(
+      media_queue->GetQueueTraits().prioritisation_type,
+      MainThreadTaskQueue::QueueTraits::PrioritisationType::kInternalMedia);
+  EXPECT_EQ(media_queue->GetQueuePriority(), TaskPriority::kHighPriority);
+
+  auto realtime_media_queue = GetTaskQueue(TaskType::kInternalMediaRealTime);
+  EXPECT_EQ(
+      realtime_media_queue->GetQueueTraits().prioritisation_type,
+      MainThreadTaskQueue::QueueTraits::PrioritisationType::kInternalMedia);
+  EXPECT_EQ(realtime_media_queue->GetQueuePriority(),
+            TaskPriority::kHighPriority);
+}
+
+TEST_F(FrameSchedulerImplInternalMediaWithHighPriority, RunOrder) {
+  Vector<String> run_order;
+  PostTestTasksForPrioritisationType(&run_order, "M1 R1 M2 V1 B1");
+
+  ASSERT_TRUE(base::test::RunUntil([&] { return run_order.size() == 5u; }));
+  EXPECT_THAT(run_order, testing::ElementsAre("V1", "M1", "M2", "R1", "B1"));
+}
+
+TEST_F(FrameSchedulerImplInternalMediaWithHighPriority,
+       NormalPriorityInBackground) {
+  page_scheduler_->SetPageVisible(false);
+
+  Vector<String> run_order;
+  PostTestTasksForPrioritisationType(&run_order, "M1 R1 M2 V1 B1");
+
+  ASSERT_TRUE(base::test::RunUntil([&] { return run_order.size() == 5u; }));
+  EXPECT_THAT(run_order, testing::ElementsAre("V1", "M1", "R1", "M2", "B1"));
+}
+
+TEST_F(FrameSchedulerImplInternalMediaWithHighPriority,
+       CrossOriginAndAdSubframePriority) {
+  auto media_queue = GetTaskQueue(TaskType::kInternalMedia);
+  EXPECT_EQ(media_queue->GetQueuePriority(), TaskPriority::kHighPriority);
+
+  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
+  EXPECT_EQ(media_queue->GetQueuePriority(), TaskPriority::kHighPriority);
+
+  frame_scheduler_->SetVisibleAreaLarge(false);
+  EXPECT_EQ(media_queue->GetQueuePriority(), TaskPriority::kNormalPriority);
+
+  frame_scheduler_->SetVisibleAreaLarge(true);
+  EXPECT_EQ(media_queue->GetQueuePriority(), TaskPriority::kHighPriority);
+
+  frame_scheduler_->SetIsAdFrame(true);
+  EXPECT_EQ(media_queue->GetQueuePriority(), TaskPriority::kNormalPriority);
 }
 
 TEST_F(FrameSchedulerImplTest, ContentCaptureHasIdleTaskQueue) {

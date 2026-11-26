@@ -162,8 +162,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       kInternalNavigationCancellation = 11,
       kRenderBlocking = 12,
       kLow = 13,
+      kInternalMedia = 14,
 
-      kMaxValue = kLow
+      kMaxValue = kInternalMedia
     };
 
     // Bit width required for the PrioritisationType enumeration
