@@ -299,6 +299,29 @@ void GenerateResourceOnSynTokenReleased(
            fence_and_value.second, S_OK);
 }
 
+// Whether the encoder takes the frame's texture from the GPU process instead of
+// reading its memory. That is the case for every SharedImage frame without a
+// mappable buffer.
+//
+// A shared memory mappable SharedImage normally takes the memory path, which
+// wraps the frame as planar YUV or converts an RGB frame. What decides is
+// whether that path can consume the pixel format, and packed YUV is not among
+// the formats it can, so those frames have to use the texture. The two formats
+// are listed explicitly only because Y210 and Y410 are the only packed YUV
+// formats with a SharedImageFormat so far. Check the capability of the memory
+// path instead once another one is added.
+bool ShouldResolveSharedImage(const VideoFrame& frame) {
+  if (!frame.HasSharedImage()) {
+    return false;
+  }
+  if (!frame.HasMappableSharedImage()) {
+    return true;
+  }
+  return !frame.HasNativeMappableSharedImage() &&
+         (frame.format() == PIXEL_FORMAT_Y210 ||
+          frame.format() == PIXEL_FORMAT_Y410);
+}
+
 void D3D12GenerateResourceFromSharedImageVideoFrame(
     scoped_refptr<VideoFrame> frame,
     D3D11FenceAndValue fence_and_value,
@@ -1142,7 +1165,7 @@ void D3D12VideoEncodeAccelerator::EncodeTask(
     scoped_refptr<VideoFrame> frame,
     const VideoEncoder::EncodeOptions& options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  if (!frame->HasMappableSharedImage() && frame->HasSharedImage()) {
+  if (ShouldResolveSharedImage(*frame)) {
     InputFrameRef input_frame(frame, options,
                               /*resolving_shared_image=*/true);
     input_frame.shared_image_token = frame->shared_image()->mailbox();
@@ -1184,8 +1207,7 @@ void D3D12VideoEncodeAccelerator::TryEncodeFrames() {
   while (!input_frames_queue_.empty() && !bitstream_buffers_.empty()) {
     auto& next_input = input_frames_queue_.front();
     if (next_input.resolving_shared_image ||
-        (!next_input.frame->HasMappableSharedImage() &&
-         next_input.frame->HasSharedImage() &&
+        (ShouldResolveSharedImage(*next_input.frame) &&
          !next_input.resolved_picture.resource)) {
       // D3D12 VEA encodes frames one-by-one, so we will not try following
       // frames.
@@ -1226,7 +1248,10 @@ bool D3D12VideoEncodeAccelerator::DoEncodeTask(
   // converts the frame into the encoder's YUV input format and reports the
   // color space it ended up in, which for an RGB frame is not the frame's.
   gfx::ColorSpace input_color_space = frame->ColorSpace();
-  if (frame->HasMappableSharedImage()) {
+  if (ShouldResolveSharedImage(*frame)) {
+    picture_buffer = input_frame.resolved_picture;
+    input_visible_rect = frame->visible_rect();
+  } else if (frame->HasMappableSharedImage()) {
     if (frame->HasNativeMappableSharedImage()) {
       picture_buffer = CreateResourceForDXGIHandleBackedVideoFrame(*frame);
       input_visible_rect = frame->visible_rect();
@@ -1246,9 +1271,6 @@ bool D3D12VideoEncodeAccelerator::DoEncodeTask(
     std::tie(picture_buffer, input_color_space) =
         CreateResourceForSharedMemoryVideoFrame(*frame);
     input_visible_rect = gfx::Rect(config_.input_visible_size);
-  } else if (frame->HasSharedImage()) {
-    picture_buffer = input_frame.resolved_picture;
-    input_visible_rect = frame->visible_rect();
   } else {
     NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
                  "Unsupported frame storage type for encoding"});
@@ -1465,8 +1487,7 @@ void D3D12VideoEncodeAccelerator::ResolveQueuedSharedImages() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
   for (auto& input_frame : input_frames_queue_) {
-    if (!input_frame.frame->HasMappableSharedImage() &&
-        input_frame.frame->HasSharedImage() &&
+    if (ShouldResolveSharedImage(*input_frame.frame) &&
         !input_frame.resolve_shared_image_requested) {
       input_frame.resolve_shared_image_requested = true;
       gpu_task_runner_->PostTask(
