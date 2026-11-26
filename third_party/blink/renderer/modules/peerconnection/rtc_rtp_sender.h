@@ -166,7 +166,6 @@ class MODULES_EXPORT RTCRtpSender final
  private:
   // Insertable Streams audio support methods
   RTCInsertableStreams* CreateEncodedAudioStreams(ScriptState*);
-  void UnregisterEncodedAudioStreamCallback();
   void SetAudioUnderlyingSource(
       RTCEncodedAudioUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -175,7 +174,6 @@ class MODULES_EXPORT RTCRtpSender final
 
   // Insertable Streams video support methods
   RTCInsertableStreams* CreateEncodedVideoStreams(ScriptState*);
-  void UnregisterEncodedVideoStreamCallback();
   void SetVideoUnderlyingSource(
       RTCEncodedVideoUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);

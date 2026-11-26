@@ -8,28 +8,39 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transceiver_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_mediastreamtrack_string.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transformer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transceiver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_receiver_platform.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_source.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/webrtc/api/dtls_transport_interface.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 #include "third_party/webrtc/api/make_ref_counted.h"
+#include "third_party/webrtc/api/rtp_parameters.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace blink {
@@ -226,6 +237,106 @@ TEST_P(RTCRtpReceiverTransformTest,
                                               scope.GetExceptionState()));
   EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
             DOMExceptionCode::kInvalidStateError);
+}
+
+namespace {
+
+class ExternalTransformerFakeRTCRtpReceiverPlatform
+    : public RTCRtpReceiverPlatform {
+ public:
+  ExternalTransformerFakeRTCRtpReceiverPlatform(
+      RTCEncodedAudioStreamTransformer* audio_transformer,
+      RTCEncodedVideoStreamTransformer* video_transformer)
+      : audio_transformer_(audio_transformer),
+        video_transformer_(video_transformer) {}
+  ~ExternalTransformerFakeRTCRtpReceiverPlatform() override = default;
+
+  std::unique_ptr<RTCRtpReceiverPlatform> ShallowCopy() const override {
+    return nullptr;
+  }
+  uintptr_t Id() const override { return 1; }
+  webrtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport()
+      override {
+    return nullptr;
+  }
+  webrtc::DtlsTransportInformation DtlsTransportInformation() override {
+    return webrtc::DtlsTransportInformation(webrtc::DtlsTransportState::kNew);
+  }
+  MediaStreamComponent* Track() const override { return nullptr; }
+  Vector<String> StreamIds() const override { return {}; }
+  Vector<std::unique_ptr<RTCRtpSource>> GetSources() override { return {}; }
+  void GetStats(RTCStatsReportCallback) override {}
+  std::unique_ptr<webrtc::RtpParameters> GetParameters() const override {
+    return nullptr;
+  }
+  void SetJitterBufferMinimumDelay(std::optional<double>) override {}
+  RTCEncodedAudioStreamTransformer* GetEncodedAudioStreamTransformer()
+      const override {
+    return audio_transformer_.get();
+  }
+  RTCEncodedVideoStreamTransformer* GetEncodedVideoStreamTransformer()
+      const override {
+    return video_transformer_.get();
+  }
+
+ private:
+  raw_ptr<RTCEncodedAudioStreamTransformer> audio_transformer_;
+  raw_ptr<RTCEncodedVideoStreamTransformer> video_transformer_;
+};
+
+}  // namespace
+
+// Regression test for crbug.com/589815784: destroying the transform's execution
+// context must reset the transformer callback even if the Blink RTCRtpReceiver
+// wrapper has already been garbage collected while the underlying stream
+// transformer is still alive.
+TEST_P(RTCRtpReceiverTransformTest,
+       DisconnectCallbackResetsTransformerAfterReceiverGC) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+  RTCRtpTransceiver* transceiver = pc->addTransceiver(
+      MakeGarbageCollected<V8UnionMediaStreamTrackOrString>(String(GetParam())),
+      RTCRtpTransceiverInit::Create(), scope.GetExceptionState());
+  ASSERT_TRUE(transceiver);
+  MediaStreamTrack* track = transceiver->receiver()->track();
+
+  auto task_runner = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
+  RTCEncodedAudioStreamTransformer audio_transformer(task_runner);
+  RTCEncodedVideoStreamTransformer video_transformer(task_runner,
+                                                     /*metronome=*/nullptr);
+  auto platform =
+      std::make_unique<ExternalTransformerFakeRTCRtpReceiverPlatform>(
+          &audio_transformer, &video_transformer);
+  WeakPersistent<RTCRtpReceiver> weak_receiver;
+  Persistent<RTCRtpScriptTransform> transform =
+      MakeGarbageCollected<RTCRtpScriptTransform>();
+  Persistent<RTCRtpScriptTransformer> script_transformer =
+      MakeGarbageCollected<RTCRtpScriptTransformer>(
+          scope.GetScriptState(), CustomEventMessage(), task_runner,
+          MakeCrossThreadWeakHandle(transform.Get()));
+  transform->SetRtpTransformer(
+      MakeCrossThreadWeakHandle(script_transformer.Get()), task_runner);
+
+  {
+    auto* receiver = MakeGarbageCollected<RTCRtpReceiver>(
+        pc, std::move(platform), track, MediaStreamVector(),
+        /*require_encoded_insertable_streams=*/true, task_runner);
+    weak_receiver = receiver;
+    receiver->setTransform(transform.Get(), scope.GetExceptionState());
+    ASSERT_FALSE(scope.GetExceptionState().HadException());
+  }
+
+  test::RunPendingTasks();
+  EXPECT_TRUE(IsAudio() ? audio_transformer.HasTransformerCallback()
+                        : video_transformer.HasTransformerCallback());
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  ASSERT_FALSE(weak_receiver);
+
+  scope.GetExecutionContext()->NotifyContextDestroyed();
+  EXPECT_FALSE(IsAudio() ? audio_transformer.HasTransformerCallback()
+                         : video_transformer.HasTransformerCallback());
 }
 
 }  // namespace blink

@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
@@ -303,6 +304,11 @@ void RTCRtpScriptTransformer::SetUpAudio(
     scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
         encoded_audio_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ExecutionContext* context =
+      rtc_encoded_underlying_source_->GetExecutionContext();
+  if (!context || context->IsContextDestroyed()) {
+    return;
+  }
   base::UnguessableToken owner_id = base::UnguessableToken::Create();
   rtc_encoded_underlying_source_->CreateAudioUnderlyingSource(
       std::move(disconnect_callback_source), owner_id);
@@ -318,6 +324,11 @@ void RTCRtpScriptTransformer::SetUpVideo(
     scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
         encoded_video_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ExecutionContext* context =
+      rtc_encoded_underlying_source_->GetExecutionContext();
+  if (!context || context->IsContextDestroyed()) {
+    return;
+  }
   base::UnguessableToken owner_id = base::UnguessableToken::Create();
   rtc_encoded_underlying_source_->CreateVideoUnderlyingSource(
       std::move(disconnect_callback_source), owner_id);

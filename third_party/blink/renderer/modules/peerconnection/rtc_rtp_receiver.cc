@@ -395,12 +395,6 @@ RTCRtpReceiveParameters* RTCRtpReceiver::getParameters() {
   return parameters;
 }
 
-void RTCRtpReceiver::UnregisterEncodedAudioStreamCallback() {
-  // Threadsafe as this might be called from the realm to which a stream has
-  // been transferred.
-  encoded_audio_transformer_->ResetTransformerCallback();
-}
-
 void RTCRtpReceiver::SetAudioUnderlyingSource(
     RTCEncodedAudioUnderlyingSource* new_underlying_source,
     scoped_refptr<base::SingleThreadTaskRunner> new_source_task_runner) {
@@ -451,19 +445,19 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedAudioStreams(
     DCHECK(!audio_from_depacketizer_underlying_source_);
 
     // Set up readable.
-    audio_from_depacketizer_underlying_source_ =
-        MakeGarbageCollected<RTCEncodedAudioUnderlyingSource>(
-            script_state,
-            CrossThreadBindOnce(
-                &RTCRtpReceiver::UnregisterEncodedAudioStreamCallback,
-                WrapCrossThreadWeakPersistent(this)));
+    audio_from_depacketizer_underlying_source_ = MakeGarbageCollected<
+        RTCEncodedAudioUnderlyingSource>(
+        script_state,
+        CrossThreadBindOnce(
+            &RTCEncodedAudioStreamTransformer::Broker::ResetTransformerCallback,
+            encoded_audio_transformer_));
 
     auto set_underlying_source =
         CrossThreadBindRepeating(&RTCRtpReceiver::SetAudioUnderlyingSource,
                                  WrapCrossThreadWeakPersistent(this));
     auto disconnect_callback = CrossThreadBindOnce(
-        &RTCRtpReceiver::UnregisterEncodedAudioStreamCallback,
-        WrapCrossThreadWeakPersistent(this));
+        &RTCEncodedAudioStreamTransformer::Broker::ResetTransformerCallback,
+        encoded_audio_transformer_);
     // The high water mark for the readable stream is set to 0 so that frames
     // are removed from the queue right away, without introducing a new buffer.
     ReadableStream* readable_stream =
@@ -540,22 +534,17 @@ void RTCRtpReceiver::setTransform(RTCRtpScriptTransform* transform,
   if (kind() == MediaKind::kAudio) {
     transform_->CreateAudioUnderlyingSourceAndSink(
         CrossThreadBindOnce(
-            &RTCRtpReceiver::UnregisterEncodedAudioStreamCallback,
-            WrapCrossThreadWeakPersistent(this)),
+            &RTCEncodedAudioStreamTransformer::Broker::ResetTransformerCallback,
+            encoded_audio_transformer_),
         encoded_audio_transformer_);
     return;
   }
   CHECK(kind() == MediaKind::kVideo);
   transform_->CreateVideoUnderlyingSourceAndSink(
-      CrossThreadBindOnce(&RTCRtpReceiver::UnregisterEncodedVideoStreamCallback,
-                          WrapCrossThreadWeakPersistent(this)),
+      CrossThreadBindOnce(
+          &RTCEncodedVideoStreamTransformer::Broker::ResetTransformerCallback,
+          encoded_video_transformer_),
       encoded_video_transformer_);
-}
-
-void RTCRtpReceiver::UnregisterEncodedVideoStreamCallback() {
-  // Threadsafe as this might be called from the realm to which a stream has
-  // been transferred.
-  encoded_video_transformer_->ResetTransformerCallback();
 }
 
 void RTCRtpReceiver::SetVideoUnderlyingSource(
@@ -645,19 +634,19 @@ RTCInsertableStreams* RTCRtpReceiver::CreateEncodedVideoStreams(
     DCHECK(!video_from_depacketizer_underlying_source_);
 
     // Set up readable.
-    video_from_depacketizer_underlying_source_ =
-        MakeGarbageCollected<RTCEncodedVideoUnderlyingSource>(
-            script_state,
-            CrossThreadBindOnce(
-                &RTCRtpReceiver::UnregisterEncodedVideoStreamCallback,
-                WrapCrossThreadWeakPersistent(this)));
+    video_from_depacketizer_underlying_source_ = MakeGarbageCollected<
+        RTCEncodedVideoUnderlyingSource>(
+        script_state,
+        CrossThreadBindOnce(
+            &RTCEncodedVideoStreamTransformer::Broker::ResetTransformerCallback,
+            encoded_video_transformer_));
 
     auto set_underlying_source =
         CrossThreadBindRepeating(&RTCRtpReceiver::SetVideoUnderlyingSource,
                                  WrapCrossThreadWeakPersistent(this));
     auto disconnect_callback = CrossThreadBindOnce(
-        &RTCRtpReceiver::UnregisterEncodedVideoStreamCallback,
-        WrapCrossThreadWeakPersistent(this));
+        &RTCEncodedVideoStreamTransformer::Broker::ResetTransformerCallback,
+        encoded_video_transformer_);
     // The high water mark for the readable stream is set to 0 so that frames
     // are removed from the queue right away, without introducing a new buffer.
     ReadableStream* readable_stream =

@@ -7,16 +7,23 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/mock_callback.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
@@ -114,6 +121,51 @@ TEST(RTCRtpScriptTransformerTest,
         ToCoreStringWithUndefinedOrNullCheck(v8_scope.GetIsolate(), name_value),
         "TypeError");
   }
+}
+
+TEST(RTCRtpScriptTransformerTest,
+     SetUpAudioAfterContextDestroyedDoesNotSetTransformerCallback) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope v8_scope;
+  RTCRtpScriptTransformer* transformer =
+      MakeGarbageCollected<RTCRtpScriptTransformer>(
+          v8_scope.GetScriptState(), CustomEventMessage(),
+          /*transform_task_runner=*/nullptr,
+          CrossThreadWeakHandle<RTCRtpScriptTransform>(nullptr));
+
+  v8_scope.GetExecutionContext()->NotifyContextDestroyed();
+
+  RTCEncodedAudioStreamTransformer encoded_audio_transformer(
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+  base::MockOnceClosure disconnect_callback;
+  EXPECT_CALL(disconnect_callback, Run()).Times(0);
+
+  transformer->SetUpAudio(CrossThreadBindOnce(disconnect_callback.Get()),
+                          encoded_audio_transformer.GetBroker());
+  EXPECT_FALSE(encoded_audio_transformer.HasTransformerCallback());
+}
+
+TEST(RTCRtpScriptTransformerTest,
+     SetUpVideoAfterContextDestroyedDoesNotSetTransformerCallback) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope v8_scope;
+  RTCRtpScriptTransformer* transformer =
+      MakeGarbageCollected<RTCRtpScriptTransformer>(
+          v8_scope.GetScriptState(), CustomEventMessage(),
+          /*transform_task_runner=*/nullptr,
+          CrossThreadWeakHandle<RTCRtpScriptTransform>(nullptr));
+
+  v8_scope.GetExecutionContext()->NotifyContextDestroyed();
+
+  RTCEncodedVideoStreamTransformer encoded_video_transformer(
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+      /*metronome=*/nullptr);
+  base::MockOnceClosure disconnect_callback;
+  EXPECT_CALL(disconnect_callback, Run()).Times(0);
+
+  transformer->SetUpVideo(CrossThreadBindOnce(disconnect_callback.Get()),
+                          encoded_video_transformer.GetBroker());
+  EXPECT_FALSE(encoded_video_transformer.HasTransformerCallback());
 }
 
 }  // namespace blink
