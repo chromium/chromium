@@ -18,7 +18,10 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -102,6 +105,42 @@ IN_PROC_BROWSER_TEST_F(RenderViewContextMenuMacBrowserTest,
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_LOOK_UP, 0);
   histogram_tester.ExpectBucketCount("RenderViewContextMenu.Used", /*98*/ 98,
                                      1);
+}
+
+IN_PROC_BROWSER_TEST_F(RenderViewContextMenuMacBrowserTest,
+                       ExecuteLookUpInDictionaryAfterFrameDeleted) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL("about:blank")));
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    new Promise(resolve => {
+      const iframe = document.createElement('iframe');
+      iframe.id = 'target';
+      iframe.onload = () => resolve();
+      iframe.srcdoc = '<p>dictionary</p>';
+      document.body.appendChild(iframe);
+    });
+  )"));
+
+  content::RenderFrameHost* frame = content::ChildFrameAt(web_contents, 0);
+  ASSERT_TRUE(frame);
+  content::ContextMenuParams params;
+  params.selection_text = u"dictionary";
+  RenderViewContextMenuMac menu(*frame, params, /*is_paste_enabled=*/false,
+                                /*is_paste_and_match_style_enabled=*/false);
+  menu.InitToolkitMenu();
+  ASSERT_TRUE(
+      MenuHasItemWithCommand(menu.menu_model(), IDC_CONTENT_CONTEXT_LOOK_UP));
+  ASSERT_EQ(frame, menu.GetRenderFrameHost());
+
+  // The source frame can disappear while its context menu is still open.
+  content::RenderFrameDeletedObserver deleted_observer(frame);
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "document.getElementById('target').remove();"));
+  ASSERT_TRUE(deleted_observer.WaitUntilDeleted());
+  ASSERT_FALSE(menu.GetRenderFrameHost());
+
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_LOOK_UP, 0);
 }
 
 // Verifies that the "Remove from dictionary" option is not shown when a word

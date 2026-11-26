@@ -227,8 +227,13 @@ void RenderViewContextMenuMac::InitToolkitMenu() {
 }
 
 void RenderViewContextMenuMac::LookUpInDictionary() {
-  content::RenderWidgetHostView* view =
-      GetRenderFrameHost()->GetRenderWidgetHost()->GetView();
+  content::RenderFrameHost* rfh = GetRenderFrameHost();
+  // The frame may have been deleted while the context menu was open.
+  if (!rfh) {
+    return;
+  }
+
+  content::RenderWidgetHostView* view = rfh->GetRenderWidgetHost()->GetView();
   if (view) {
     view->ShowDefinitionForSelection();
   }
