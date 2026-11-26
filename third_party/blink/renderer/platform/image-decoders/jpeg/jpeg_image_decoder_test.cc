@@ -266,7 +266,7 @@ void ReadYUV(ImageDecoder* decoder,
   planes[2] = planes_data.last(row_bytes[2] * v_size.height()).data();
 
   decoder->SetImagePlanes(
-      std::make_unique<ImagePlanes>(planes, row_bytes, kGray_8_SkColorType));
+      std::make_unique<ImagePlanes>(planes, row_bytes, kR8_unorm_SkColorType));
 
   decoder->DecodeToYUV();
 
@@ -2041,8 +2041,8 @@ TEST_P(RustJPEGYuvTest, DecodesSegmentedInputWithoutSnapshot) {
       if (!truncate) {
         ASSERT_TRUE(expected_success);
       }
-      decoder->SetImagePlanes(
-          std::make_unique<ImagePlanes>(planes, strides, kGray_8_SkColorType));
+      decoder->SetImagePlanes(std::make_unique<ImagePlanes>(
+          planes, strides, kR8_unorm_SkColorType));
       for (int attempt = 0; attempt < 2; ++attempt) {
         decoder->DecodeToYUV();
         ASSERT_EQ(decoder->Failed(), !expected_success);
@@ -2104,7 +2104,7 @@ TEST_P(RustJPEGYuvTest, MatchesLegacyPlanesWithPadding) {
       planes[plane] = storage[decoder_index][plane].data();
     }
     decoder.SetImagePlanes(std::make_unique<ImagePlanes>(
-        planes, strides[decoder_index], kGray_8_SkColorType));
+        planes, strides[decoder_index], kR8_unorm_SkColorType));
     decoder.DecodeToYUV();
     ASSERT_FALSE(decoder.Failed());
     ASSERT_TRUE(decoder.HasDisplayableYUVData());
@@ -2275,7 +2275,7 @@ TEST(JPEGImageDecoderTest, RustYuvRejectsInvalidStride) {
     planes[plane] = storage[plane].data();
   }
   decoder->SetImagePlanes(
-      std::make_unique<ImagePlanes>(planes, strides, kGray_8_SkColorType));
+      std::make_unique<ImagePlanes>(planes, strides, kR8_unorm_SkColorType));
   decoder->DecodeToYUV();
   EXPECT_TRUE(decoder->Failed());
   EXPECT_FALSE(decoder->CanDecodeToYUV());
@@ -2322,7 +2322,7 @@ TEST(JPEGImageDecoderTest, RustYuvDoesNotPublishUnseenColorComponents) {
     planes[plane] = storage[plane].data();
   }
   decoder->SetImagePlanes(
-      std::make_unique<ImagePlanes>(planes, strides, kGray_8_SkColorType));
+      std::make_unique<ImagePlanes>(planes, strides, kR8_unorm_SkColorType));
   decoder->DecodeToYUV();
   EXPECT_TRUE(decoder->Failed());
   EXPECT_FALSE(decoder->HasDisplayableYUVData());
@@ -2371,8 +2371,8 @@ TEST(JPEGImageDecoderTest, RustYuvPreservesExifOrientation) {
         storage[plane] = Vector<uint8_t>(strides[plane] * size.height(), 0);
         planes[plane] = storage[plane].data();
       }
-      decoder->SetImagePlanes(
-          std::make_unique<ImagePlanes>(planes, strides, kGray_8_SkColorType));
+      decoder->SetImagePlanes(std::make_unique<ImagePlanes>(
+          planes, strides, kR8_unorm_SkColorType));
       decoder->DecodeToYUV();
       ASSERT_FALSE(decoder->Failed());
       ASSERT_TRUE(decoder->HasDisplayableYUVData());

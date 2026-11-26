@@ -17,14 +17,14 @@ namespace cc {
 TransferCacheTestHelper::TransferCacheTestHelper() {
   GrMockOptions options;
   options.fMipmapSupport = true;
-  options.fConfigOptions[static_cast<int>(GrColorType::kGray_8)].fTexturable =
+  options.fConfigOptions[static_cast<int>(GrColorType::kR_8)].fTexturable =
       true;
   options.fConfigOptions[static_cast<int>(GrColorType::kRGBA_F16)].fTexturable =
       true;
-  options.fConfigOptions[static_cast<int>(GrColorType::kAlpha_16)].fTexturable =
+  options.fConfigOptions[static_cast<int>(GrColorType::kR_16)].fTexturable =
       true;
-  options.fConfigOptions[static_cast<int>(GrColorType::kAlpha_F16)]
-      .fTexturable = true;
+  options.fConfigOptions[static_cast<int>(GrColorType::kR_F16)].fTexturable =
+      true;
 
   context_ = GrDirectContext::MakeMock(&options);
 }

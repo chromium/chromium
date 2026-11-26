@@ -429,9 +429,9 @@ class GpuImageDecodeCacheTest
           transfer_cache_helper_.GetEntryAs<ServiceImageTransferCacheEntry>(id);
       original_uploaded_plane = image_entry->GetPlaneImage(i);
       ASSERT_TRUE(original_uploaded_plane);
-      // In test frameworks, Skia is unable to generate mipmaps for A16 formats.
-      if (original_uploaded_plane->colorType() == kA16_unorm_SkColorType ||
-          original_uploaded_plane->colorType() == kA16_float_SkColorType) {
+      // In test frameworks, Skia is unable to generate mipmaps for R16 formats.
+      if (original_uploaded_plane->colorType() == kR16_unorm_SkColorType ||
+          original_uploaded_plane->colorType() == kR16_float_SkColorType) {
         break;
       }
       EXPECT_EQ(original_uploaded_plane->hasMipmaps(), should_have_mips);

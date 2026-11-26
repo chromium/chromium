@@ -737,7 +737,7 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
     shared_image_caps.is_r16f_supported =
         context_state_->feature_info()->gl_version_info().IsAtLeastGLES(3, 0) &&
         context_state_->gr_context()->colorTypeSupportedAsImage(
-            kA16_float_SkColorType);
+            kR16_float_SkColorType);
   }
 
   const bool display_compositor_on_another_thread =

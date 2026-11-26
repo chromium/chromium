@@ -1186,9 +1186,9 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
     caps.context_supports_distance_field_text =
         gr_context()->supportsDistanceFieldText();
     caps.texture_norm16 =
-        gr_context()->colorTypeSupportedAsImage(kA16_unorm_SkColorType);
+        gr_context()->colorTypeSupportedAsImage(kR16_unorm_SkColorType);
     caps.texture_half_float_linear =
-        gr_context()->colorTypeSupportedAsImage(kA16_float_SkColorType);
+        gr_context()->colorTypeSupportedAsImage(kR16_float_SkColorType);
   } else if (graphite_shared_context()) {
     caps.context_supports_distance_field_text = true;
     caps.texture_half_float_linear = true;

@@ -509,12 +509,8 @@ IOSurfaceImageBacking::SkiaGaneshRepresentation::BeginWriteAccess(
   for (int plane_index = 0; plane_index < format().NumberOfPlanes();
        plane_index++) {
     // Use the color type per plane for multiplanar formats.
-    SkColorType sk_color_type =
+    const SkColorType sk_color_type =
         viz::ToClosestSkColorType(format(), plane_index);
-    // Gray is not a renderable single channel format, but alpha is.
-    if (sk_color_type == kGray_8_SkColorType) {
-      sk_color_type = kAlpha_8_SkColorType;
-    }
     auto surface = SkSurfaces::WrapBackendTexture(
         context_state_->gr_context(),
         promise_textures_[plane_index]->backendTexture(), surface_origin(),

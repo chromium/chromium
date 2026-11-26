@@ -76,11 +76,11 @@ class PLATFORM_EXPORT ImagePlanes final {
   ImagePlanes(const ImagePlanes&) = delete;
   ImagePlanes& operator=(const ImagePlanes&) = delete;
 
-  // |color_type| is kGray_8_SkColorType if GetYUVBitDepth() == 8 and either
-  // kA16_float_SkColorType or kA16_unorm_SkColorType if GetYUVBitDepth() > 8.
+  // |color_type| is kR8_unorm_SkColorType if GetYUVBitDepth() == 8 and either
+  // kR16_float_SkColorType or kR16_unorm_SkColorType if GetYUVBitDepth() > 8.
   //
   // If `hbd_output_type` is `kUnscaled`, the decoder will output unscaled
-  // high-bit-depth YUV values into the kA16_unorm_SkColorType planes. E.g.,
+  // high-bit-depth YUV values into the kR16_unorm_SkColorType planes. E.g.,
   // 10-bit content will result in 10-bit range values in each 16-bit field.
   // Otherwise values will be scaled to 16-bit extents.
   //
@@ -299,7 +299,7 @@ class PLATFORM_EXPORT ImageDecoder {
   // Image decoders that support high bit depth YUV decoding can override this.
   //
   // Note: If an implementation advertises a bit depth > 8 it must support both
-  // kA16_unorm_SkColorType and kA16_float_SkColorType ImagePlanes.
+  // kR16_unorm_SkColorType and kR16_float_SkColorType ImagePlanes.
   virtual uint8_t GetYUVBitDepth() const;
 
   // Image decoders that support C2PA manifest embedding can override this.

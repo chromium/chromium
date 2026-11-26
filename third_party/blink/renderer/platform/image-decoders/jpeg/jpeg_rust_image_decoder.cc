@@ -143,7 +143,7 @@ wtf_size_t JpegRustImageDecoder::DecodedYUVWidthBytes(
 void JpegRustImageDecoder::DecodeToYUV() {
   DCHECK(CanDecodeToYUV());
   DCHECK(image_planes_);
-  DCHECK_EQ(image_planes_->color_type(), kGray_8_SkColorType);
+  DCHECK_EQ(image_planes_->color_type(), kR8_unorm_SkColorType);
 
   allow_decode_to_yuv_ = false;
   if (Failed()) {

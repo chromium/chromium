@@ -2882,12 +2882,12 @@ TEST_P(GpuRasterYUVToRGBPixelTest, CopyI420SharedImage) {
 
   SkImageInfo y_info = SkImageInfo::Make(
       options.resource_size.width(), options.resource_size.height(),
-      kGray_8_SkColorType, kPremul_SkAlphaType,
+      kR8_unorm_SkColorType, kPremul_SkAlphaType,
       options.target_color_params.color_space.ToSkColorSpace());
 
   SkImageInfo uv_info = SkImageInfo::Make(
       uv_options.resource_size.width(), uv_options.resource_size.height(),
-      kGray_8_SkColorType, kPremul_SkAlphaType,
+      kR8_unorm_SkColorType, kPremul_SkAlphaType,
       uv_options.target_color_params.color_space.ToSkColorSpace());
 
   // Create Y+U+V image planes for a solid blue image.
@@ -2969,7 +2969,7 @@ TEST_F(GpuRasterPixelTest, CopyNV12SharedImage) {
 
   SkImageInfo y_info = SkImageInfo::Make(
       options.resource_size.width(), options.resource_size.height(),
-      kGray_8_SkColorType, kPremul_SkAlphaType,
+      kR8_unorm_SkColorType, kPremul_SkAlphaType,
       options.target_color_params.color_space.ToSkColorSpace());
 
   SkImageInfo uv_info = SkImageInfo::Make(

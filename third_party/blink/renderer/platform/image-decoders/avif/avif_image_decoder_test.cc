@@ -726,18 +726,18 @@ void ReadYUV(const char* file_name,
     rgb_pixel->fB = reinterpret_cast<uint8_t*>(planes[2])[0];
   }
 
-  if (color_type == kGray_8_SkColorType) {
+  if (color_type == kR8_unorm_SkColorType) {
     const float max_channel = (1 << bit_depth) - 1;
     rgb_pixel->fR /= max_channel;
     rgb_pixel->fG /= max_channel;
     rgb_pixel->fB /= max_channel;
-  } else if (color_type == kA16_unorm_SkColorType) {
+  } else if (color_type == kR16_unorm_SkColorType) {
     constexpr float kR16MaxChannel = 65535.0f;
     rgb_pixel->fR /= kR16MaxChannel;
     rgb_pixel->fG /= kR16MaxChannel;
     rgb_pixel->fB /= kR16MaxChannel;
   } else {
-    DCHECK_EQ(color_type, kA16_float_SkColorType);
+    DCHECK_EQ(color_type, kR16_float_SkColorType);
     rgb_pixel->fR = HalfFloatToUnorm(rgb_pixel->fR);
     rgb_pixel->fG = HalfFloatToUnorm(rgb_pixel->fG);
     rgb_pixel->fB = HalfFloatToUnorm(rgb_pixel->fB);
@@ -765,7 +765,7 @@ void ReadYUV(const char* file_name,
 
 void TestYUVRed(const char* file_name,
                 const gfx::Size& expected_uv_size,
-                SkColorType color_type = kGray_8_SkColorType,
+                SkColorType color_type = kR8_unorm_SkColorType,
                 int bit_depth = 8) {
   SCOPED_TRACE(base::StringPrintf("file_name=%s, color_type=%d", file_name,
                                   int{color_type}));
@@ -785,7 +785,7 @@ void TestYUVRed(const char* file_name,
   //
   // https://en.wikipedia.org/wiki/Half-precision_floating-point_format#Precision_limitations_on_decimal_values_in_[0,_1]
   const double kMinError = 1.0 / ((1 << bit_depth) - 1);
-  const double kError = color_type == kA16_float_SkColorType
+  const double kError = color_type == kR16_float_SkColorType
                             ? kMinError + std::pow(2, -11)
                             : kMinError;
   // TODO(https://crbug.com/40746890): The test images for this suite were
@@ -1276,7 +1276,7 @@ TEST(StaticAVIFTests, YUV) {
   // Full range BT709 color space is uncommon, but should be supported.
   TestYUVRed("red-full-range-bt709-444-8bpc.avif", kUVSize444);
 
-  for (const auto ct : {kA16_unorm_SkColorType, kA16_float_SkColorType}) {
+  for (const auto ct : {kR16_unorm_SkColorType, kR16_float_SkColorType}) {
     // 3x3, YUV 4:2:0, 10bpc
     TestYUVRed("red-limited-range-420-10bpc.avif", kUVSize420, ct, 10);
 

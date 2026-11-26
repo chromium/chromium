@@ -152,6 +152,10 @@ SK_API void SkLog_FileLine(const char* file,
 // Packed 4:2:2 format support
 #define SK_ENABLE_YUVA_PACKED_422
 
+// Use R (instead of Gray or Alpha) color types for the single channel planes
+// of SkYUVAPixmaps.
+#define SK_YUVA_DEFAULT_RED
+
 #define SK_LEGACY_SCISSOR
 
 #define SK_LEGACY_SPECIAL_IMAGE_SAMPLING

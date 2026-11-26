@@ -185,11 +185,8 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
   std::vector<sk_sp<SkSurface>> surfaces;
   surfaces.reserve(format().NumberOfPlanes());
   for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
-    SkColorType sk_color_type = viz::ToClosestSkColorType(format(), plane);
-    // Gray is not a renderable single channel format, but alpha is.
-    if (sk_color_type == kGray_8_SkColorType) {
-      sk_color_type = kAlpha_8_SkColorType;
-    }
+    const SkColorType sk_color_type =
+        viz::ToClosestSkColorType(format(), plane);
     void* release_context =
         scoped_refptr<GraphiteTextureHolder>(graphite_texture_holders[plane])
             .release();

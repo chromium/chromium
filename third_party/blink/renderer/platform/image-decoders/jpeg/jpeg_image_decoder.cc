@@ -978,7 +978,7 @@ void JPEGImageDecoder::DecodeToYUV() {
   DCHECK(CanDecodeToYUV());
 
   // Only 8-bit YUV decode is currently supported.
-  DCHECK_EQ(image_planes_->color_type(), kGray_8_SkColorType);
+  DCHECK_EQ(image_planes_->color_type(), kR8_unorm_SkColorType);
 
   {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "Decode Image",

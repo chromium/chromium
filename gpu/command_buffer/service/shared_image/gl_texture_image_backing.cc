@@ -150,11 +150,8 @@ class SkiaGaneshImageRepresentationImpl : public SkiaGaneshImageRepresentation {
     }
 
     for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
-      SkColorType sk_color_type = viz::ToClosestSkColorType(format(), plane);
-      // Gray is not a renderable single channel format, but alpha is.
-      if (sk_color_type == kGray_8_SkColorType) {
-        sk_color_type = kAlpha_8_SkColorType;
-      }
+      const SkColorType sk_color_type =
+          viz::ToClosestSkColorType(format(), plane);
       auto surface = SkSurfaces::WrapBackendTexture(
           context_state_->gr_context(),
           promise_textures_[plane]->backendTexture(), surface_origin(),

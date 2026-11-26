@@ -169,7 +169,7 @@ SkColorType ToClosestSkColorType(SharedImageFormat format) {
   } else if (format == SinglePlaneFormat::kRG_1616) {
     return kR16G16_unorm_SkColorType;
   } else if (format == SinglePlaneFormat::kR_F16) {
-    return kA16_float_SkColorType;
+    return kR16_float_SkColorType;
   } else if (format == SinglePlaneFormat::kRG_88) {
     return kR8G8_unorm_SkColorType;
   } else if (format == SinglePlaneFormat::kRGBA_F16) {
@@ -198,7 +198,7 @@ SkColorType ToClosestSkColorType(SharedImageFormat format, int plane_index) {
       return num_channels == 1 ? kR16_unorm_SkColorType
                                : kR16G16_unorm_SkColorType;
     case SharedImageFormat::ChannelFormat::k16F:
-      return num_channels == 1 ? kA16_float_SkColorType
+      return num_channels == 1 ? kR16_float_SkColorType
                                : kR16G16_float_SkColorType;
   }
 }
@@ -227,6 +227,7 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
     case kR8G8_unorm_SkColorType:
       return SinglePlaneFormat::kRG_88;
     case kA16_float_SkColorType:
+    case kR16_float_SkColorType:
       return SinglePlaneFormat::kR_F16;
     case kA16_unorm_SkColorType:
     case kR16_unorm_SkColorType:

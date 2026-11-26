@@ -531,7 +531,7 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
       static_cast<wtf_size_t>(yuv_frame_->stride(2))};
 
   const auto color_type =
-      bit_depth > 8 ? kA16_unorm_SkColorType : kGray_8_SkColorType;
+      bit_depth > 8 ? kR16_unorm_SkColorType : kR8_unorm_SkColorType;
 
   auto image_planes = std::make_unique<ImagePlanes>(
       planes, row_bytes, color_type,

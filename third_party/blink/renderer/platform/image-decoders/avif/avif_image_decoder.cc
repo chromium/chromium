@@ -346,7 +346,7 @@ void AVIFImageDecoder::DecodeToYUV() {
 
   // Disable subnormal floats which can occur when converting to half float.
   std::unique_ptr<cc::ScopedSubnormalFloatDisabler> disable_subnormals;
-  const bool is_f16 = image_planes_->color_type() == kA16_float_SkColorType;
+  const bool is_f16 = image_planes_->color_type() == kR16_float_SkColorType;
   if (is_f16) {
     disable_subnormals = std::make_unique<cc::ScopedSubnormalFloatDisabler>();
   }
@@ -365,14 +365,14 @@ void AVIFImageDecoder::DecodeToYUV() {
     const wtf_size_t dst_row_bytes = image_planes_->RowBytes(plane);
 
     if (bit_depth_ == 8) {
-      DCHECK_EQ(image_planes_->color_type(), kGray_8_SkColorType);
+      DCHECK_EQ(image_planes_->color_type(), kR8_unorm_SkColorType);
       const uint8_t* src = UNSAFE_TODO(image->yuvPlanes[plane_index]);
       uint8_t* dst = static_cast<uint8_t*>(image_planes_->Plane(plane));
       libyuv::CopyPlane(src, src_row_bytes, dst, dst_row_bytes, width, height);
     } else if (image_planes_->SupportsUnscaledOutput()) {
       DCHECK_GT(bit_depth_, 8u);
       DCHECK_LE(bit_depth_, 16u);
-      DCHECK_EQ(image_planes_->color_type(), kA16_unorm_SkColorType);
+      DCHECK_EQ(image_planes_->color_type(), kR16_unorm_SkColorType);
       const uint8_t* src = UNSAFE_TODO(image->yuvPlanes[plane_index]);
       uint8_t* dst = static_cast<uint8_t*>(image_planes_->Plane(plane));
       libyuv::CopyPlane(src, src_row_bytes, dst, dst_row_bytes, width * 2,
@@ -383,7 +383,7 @@ void AVIFImageDecoder::DecodeToYUV() {
       const uint16_t* src = reinterpret_cast<uint16_t*>(
           UNSAFE_TODO(image->yuvPlanes[plane_index]));
       uint16_t* dst = static_cast<uint16_t*>(image_planes_->Plane(plane));
-      if (image_planes_->color_type() == kA16_unorm_SkColorType) {
+      if (image_planes_->color_type() == kR16_unorm_SkColorType) {
         const wtf_size_t src_stride = src_row_bytes / 2;
         const wtf_size_t dst_stride = dst_row_bytes / 2;
         for (uint32_t j = 0; j < height; ++j) {
@@ -393,7 +393,7 @@ void AVIFImageDecoder::DecodeToYUV() {
                 0.5f;
           }
         }
-      } else if (image_planes_->color_type() == kA16_float_SkColorType) {
+      } else if (image_planes_->color_type() == kR16_float_SkColorType) {
         // Note: Unlike CopyPlane_16, HalfFloatPlane wants the stride in bytes.
         libyuv::HalfFloatPlane(src, src_row_bytes, dst, dst_row_bytes,
                                kHighBitDepthMultiplier, width, height);

@@ -122,9 +122,9 @@ TEST_F(SharedImageFormatUtilsTest,
       SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV_A,
                                     SharedImageFormat::Subsampling::k420,
                                     SharedImageFormat::ChannelFormat::k16F);
-  std::vector<SkColorType> expected_types = {kA16_float_SkColorType,
+  std::vector<SkColorType> expected_types = {kR16_float_SkColorType,
                                              kR16G16_float_SkColorType,
-                                             kA16_float_SkColorType};
+                                             kR16_float_SkColorType};
   TestToClosestSkColorType(expected_types, format);
 }
 
