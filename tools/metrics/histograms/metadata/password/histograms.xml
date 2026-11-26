@@ -1347,6 +1347,38 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PasswordManager.CredentialManager.FederatedCredentialGet"
+    enum="CredentialManagerFederatedCredentialGet" expires_after="2027-11-25">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records lifecycle events for legacy FederatedCredential requests handled by
+    the browser-side Credential Manager get() implementation, used to track
+    deprecation of legacy FederatedCredential.
+
+    &quot;Requested&quot; is recorded when navigator.credentials.get() is called
+    with non-empty federations and passes early-return checks (no active actor
+    task, no pending request, password store available, filling enabled, not
+    incognito, and auto sign-in allowed for silent mediation) to query the
+    password store, even if the query ultimately returns empty. &quot;Account
+    chooser shown&quot; is recorded when the account chooser is successfully
+    shown with at least one FederatedCredential. &quot;Returned via auto
+    sign-in&quot; and &quot;Returned via account chooser&quot; are recorded when
+    a FederatedCredential is returned to the page via those respective flows
+    (after device reauth succeeds, if required). &quot;Reauth failed&quot; is
+    recorded when the user selects a FederatedCredential in the account chooser
+    and device reauth is requested, but reauth fails or filling becomes disabled
+    before the credential can be returned.
+
+    Because lifecycle stages are logged independently, a single get() call can
+    emit multiple samples: e.g., &quot;Requested&quot; + &quot;Returned via auto
+    sign-in&quot;, or &quot;Requested&quot; + &quot;Account chooser shown&quot;
+    + &quot;Returned via account chooser&quot; / &quot;Reauth failed&quot; (or
+    only &quot;Requested&quot; + &quot;Account chooser shown&quot; if dismissed
+    or a password credential is chosen).
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.APIError"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="2027-09-13">

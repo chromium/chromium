@@ -238,6 +238,11 @@ void CredentialManagerPendingRequestTask::ProcessForms(
     base::RecordAction(base::UserMetricsAction("CredentialManager_Autosignin"));
     LogCredentialManagerGetResult(
         metrics_util::CredentialManagerGetResult::kAutoSignIn, mediation_);
+    if (info.type == CredentialType::CREDENTIAL_TYPE_FEDERATED) {
+      metrics_util::LogCredentialManagerFederatedCredentialGet(
+          metrics_util::CredentialManagerFederatedCredentialGet::
+              kReturnedViaAutoSignIn);
+    }
     delegate_->SendCredential(std::move(send_callback_), info);
     return;
   }
@@ -288,16 +293,26 @@ void CredentialManagerPendingRequestTask::ProcessForms(
     return;
   }
 
-  if (!delegate_->client()->PromptUserToChooseCredentials(
+  const bool has_federated_credential = std::ranges::any_of(
+      results, [](const std::unique_ptr<PasswordForm>& form) {
+        return form->IsFederatedCredential();
+      });
+  if (delegate_->client()->PromptUserToChooseCredentials(
           std::move(results), origin_,
           base::BindOnce(&CredentialManagerPendingRequestTask::SendPasswordForm,
                          weak_ptr_factory_.GetWeakPtr()))) {
-    // Since PromptUserToChooseCredentials() does not invoke the callback when
-    // returning false, `send_callback_` has not been run in this branch yet.
-    LogCredentialManagerGetResult(
-        metrics_util::CredentialManagerGetResult::kNone, mediation_);
-    delegate_->SendCredential(std::move(send_callback_), CredentialInfo());
+    if (has_federated_credential) {
+      metrics_util::LogCredentialManagerFederatedCredentialGet(
+          metrics_util::CredentialManagerFederatedCredentialGet::
+              kAccountChooserShown);
+    }
+    return;
   }
+  // Since `PromptUserToChooseCredentials()` does not invoke the callback when
+  // returning false, `send_callback_` has not been run in this branch yet.
+  LogCredentialManagerGetResult(metrics_util::CredentialManagerGetResult::kNone,
+                                mediation_);
+  delegate_->SendCredential(std::move(send_callback_), CredentialInfo());
 }
 
 void CredentialManagerPendingRequestTask::SendPasswordForm(

@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -40,6 +41,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -194,6 +196,12 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
       const url::Origin& origin,
       CredentialsCallback callback) override {
     EXPECT_FALSE(local_forms.empty());
+    if (!prompt_user_to_choose_credentials_result_) {
+      PromptUserToChooseCredentialsPtr(
+          base::ToVector(local_forms, &std::unique_ptr<PasswordForm>::get),
+          origin, base::DoNothing());
+      return false;
+    }
     if (should_store_callback_) {
       stored_choose_callback_ = std::move(callback);
     } else {
@@ -227,6 +235,15 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   // simulate an open chooser dialog.
   void capture_callback() { should_store_callback_ = true; }
 
+  void RunStoredChooseCallback(const PasswordForm* form) {
+    ASSERT_TRUE(stored_choose_callback_);
+    std::move(stored_choose_callback_).Run(form);
+  }
+
+  void set_prompt_user_to_choose_credentials_result(bool result) {
+    prompt_user_to_choose_credentials_result_ = result;
+  }
+
   void set_zero_click_enabled(bool zero_click_enabled) {
     auto_sign_in_enabled_ = zero_click_enabled;
   }
@@ -248,6 +265,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   GURL last_committed_url_{kTestWebOrigin};
   bool auto_sign_in_enabled_ = true;
   bool should_store_callback_ = false;
+  bool prompt_user_to_choose_credentials_result_ = true;
   CredentialsCallback stored_choose_callback_;
 };
 
@@ -2336,6 +2354,250 @@ TEST_P(CredentialManagerImplTest,
   EXPECT_EQ(form_.username_value, credential2->id);
 }
 
+TEST_P(CredentialManagerImplTest,
+       FederatedCredentialGetNotLoggedWhenActorTaskActive) {
+  ON_CALL(*client_, IsActorTaskActive()).WillByDefault(Return(true));
+  base::HistogramTester histogram_tester;
+
+  ExpectCredentialType(CredentialMediationRequirement::kOptional,
+                       /*include_passwords=*/false,
+                       /*federations=*/{GURL("https://google.com/")},
+                       CredentialType::CREDENTIAL_TYPE_EMPTY);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.CredentialManager.FederatedCredentialGet", 0);
+}
+
+TEST_P(CredentialManagerImplTest,
+       FederatedCredentialGetNotLoggedWhenIncognito) {
+  ON_CALL(*client_, IsOffTheRecord()).WillByDefault(Return(true));
+  base::HistogramTester histogram_tester;
+
+  ExpectCredentialType(CredentialMediationRequirement::kOptional,
+                       /*include_passwords=*/false,
+                       /*federations=*/{GURL("https://google.com/")},
+                       CredentialType::CREDENTIAL_TYPE_EMPTY);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.CredentialManager.FederatedCredentialGet", 0);
+}
+
+TEST_P(CredentialManagerImplTest,
+       FederatedCredentialGetNotLoggedWhenFillingDisabled) {
+  ON_CALL(*client_, IsFillingEnabled).WillByDefault(Return(false));
+  base::HistogramTester histogram_tester;
+
+  ExpectCredentialType(CredentialMediationRequirement::kOptional,
+                       /*include_passwords=*/false,
+                       /*federations=*/{GURL("https://google.com/")},
+                       CredentialType::CREDENTIAL_TYPE_EMPTY);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.CredentialManager.FederatedCredentialGet", 0);
+}
+
+TEST_P(CredentialManagerImplTest,
+       FederatedCredentialGetNotLoggedWhenSilentAndZeroClickDisabled) {
+  client_->set_zero_click_enabled(false);
+  base::HistogramTester histogram_tester;
+
+  ExpectCredentialType(CredentialMediationRequirement::kSilent,
+                       /*include_passwords=*/false,
+                       /*federations=*/{GURL("https://google.com/")},
+                       CredentialType::CREDENTIAL_TYPE_EMPTY);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.CredentialManager.FederatedCredentialGet", 0);
+}
+
+TEST_P(CredentialManagerImplTest,
+       FederatedCredentialGetNotLoggedWhenPendingRequest) {
+  base::HistogramTester histogram_tester;
+  const std::vector<GURL> federations = {GURL("https://google.com/")};
+
+  bool called_1 = false;
+  CredentialManagerError error_1;
+  std::optional<CredentialInfo> credential_1;
+  CallGet(CredentialMediationRequirement::kOptional,
+          /*include_passwords=*/false, federations,
+          base::BindOnce(&GetCredentialCallback, &called_1, &error_1,
+                         &credential_1));
+
+  bool called_2 = false;
+  CredentialManagerError error_2;
+  std::optional<CredentialInfo> credential_2;
+  CallGet(CredentialMediationRequirement::kOptional,
+          /*include_passwords=*/false, federations,
+          base::BindOnce(&GetCredentialCallback, &called_2, &error_2,
+                         &credential_2));
+
+  RunAllPendingTasks();
+
+  EXPECT_TRUE(called_1);
+  EXPECT_EQ(CredentialManagerError::SUCCESS, error_1);
+  EXPECT_TRUE(called_2);
+  EXPECT_EQ(CredentialManagerError::PENDING_REQUEST, error_2);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.CredentialManager.FederatedCredentialGet",
+      metrics_util::CredentialManagerFederatedCredentialGet::kRequested, 1);
+}
+
+TEST_P(CredentialManagerImplTest, FederatedCredentialGetAutoSignInPassword) {
+  client_->set_first_run_seen(true);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+  base::HistogramTester histogram_tester;
+
+  ExpectZeroClickSignInSuccess(CredentialMediationRequirement::kSilent,
+                               /*include_passwords=*/true,
+                               /*federations=*/{},
+                               CredentialType::CREDENTIAL_TYPE_PASSWORD);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.CredentialManager.FederatedCredentialGet", 0);
+}
+
+TEST_P(CredentialManagerImplTest, FederatedCredentialGetAutoSignInFederated) {
+  client_->set_first_run_seen(true);
+  PasswordForm federated_form = form_;
+  federated_form.federation_origin =
+      url::SchemeHostPort(GURL("https://google.com/"));
+  federated_form.password_value = PasswordString();
+  federated_form.signon_realm = "federation://example.com/google.com";
+  store_->AddLogin(password_manager::FromPasswordForm(federated_form));
+  base::HistogramTester histogram_tester;
+
+  ExpectZeroClickSignInSuccess(CredentialMediationRequirement::kSilent,
+                               /*include_passwords=*/false,
+                               /*federations=*/{GURL("https://google.com/")},
+                               CredentialType::CREDENTIAL_TYPE_FEDERATED);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.CredentialManager.FederatedCredentialGet"),
+      base::BucketsAre(
+          base::Bucket(
+              metrics_util::CredentialManagerFederatedCredentialGet::kRequested,
+              1),
+          base::Bucket(metrics_util::CredentialManagerFederatedCredentialGet::
+                           kReturnedViaAutoSignIn,
+                       1)));
+}
+
+TEST_P(CredentialManagerImplTest,
+       FederatedCredentialGetAccountChooserPassword) {
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  ExpectCredentialType(CredentialMediationRequirement::kRequired,
+                       /*include_passwords=*/true,
+                       /*federations=*/{},
+                       CredentialType::CREDENTIAL_TYPE_PASSWORD);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.CredentialManager.FederatedCredentialGet", 0);
+}
+
+TEST_P(CredentialManagerImplTest,
+       FederatedCredentialGetAccountChooserPasswordOnlyWithFederations) {
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  ExpectCredentialType(CredentialMediationRequirement::kRequired,
+                       /*include_passwords=*/true,
+                       /*federations=*/{GURL("https://google.com/")},
+                       CredentialType::CREDENTIAL_TYPE_PASSWORD);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.CredentialManager.FederatedCredentialGet",
+      metrics_util::CredentialManagerFederatedCredentialGet::kRequested, 1);
+}
+
+TEST_P(CredentialManagerImplTest,
+       FederatedCredentialGetAccountChooserFederated) {
+  PasswordForm federated_form = form_;
+  federated_form.federation_origin =
+      url::SchemeHostPort(GURL("https://google.com/"));
+  federated_form.password_value = PasswordString();
+  federated_form.signon_realm = "federation://example.com/google.com";
+  store_->AddLogin(password_manager::FromPasswordForm(federated_form));
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  ExpectCredentialType(CredentialMediationRequirement::kRequired,
+                       /*include_passwords=*/false,
+                       /*federations=*/{GURL("https://google.com/")},
+                       CredentialType::CREDENTIAL_TYPE_FEDERATED);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.CredentialManager.FederatedCredentialGet"),
+      base::BucketsAre(
+          base::Bucket(
+              metrics_util::CredentialManagerFederatedCredentialGet::kRequested,
+              1),
+          base::Bucket(metrics_util::CredentialManagerFederatedCredentialGet::
+                           kAccountChooserShown,
+                       1),
+          base::Bucket(metrics_util::CredentialManagerFederatedCredentialGet::
+                           kReturnedViaAccountChooser,
+                       1)));
+}
+
+TEST_P(CredentialManagerImplTest,
+       FederatedCredentialGetAccountChooserDismissed) {
+  PasswordForm federated_form = form_;
+  federated_form.federation_origin =
+      url::SchemeHostPort(GURL("https://google.com/"));
+  federated_form.password_value = PasswordString();
+  federated_form.signon_realm = "federation://example.com/google.com";
+  store_->AddLogin(password_manager::FromPasswordForm(federated_form));
+  client_->capture_callback();
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kRequired,
+          /*include_passwords=*/false,
+          /*federations=*/{GURL("https://google.com/")},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+  RunAllPendingTasks();
+  EXPECT_FALSE(called);
+
+  client_->RunStoredChooseCallback(nullptr);
+  RunAllPendingTasks();
+
+  ASSERT_TRUE(called);
+  EXPECT_EQ(CredentialManagerError::SUCCESS, error);
+  ASSERT_TRUE(credential.has_value());
+  EXPECT_EQ(CredentialType::CREDENTIAL_TYPE_EMPTY, credential->type);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.CredentialManager.FederatedCredentialGet"),
+      base::BucketsAre(
+          base::Bucket(
+              metrics_util::CredentialManagerFederatedCredentialGet::kRequested,
+              1),
+          base::Bucket(metrics_util::CredentialManagerFederatedCredentialGet::
+                           kAccountChooserShown,
+                       1)));
+}
+
+TEST_P(CredentialManagerImplTest,
+       FederatedCredentialGetAccountChooserNotShownWhenPromptFails) {
+  PasswordForm federated_form = form_;
+  federated_form.federation_origin =
+      url::SchemeHostPort(GURL("https://google.com/"));
+  federated_form.password_value = PasswordString();
+  federated_form.signon_realm = "federation://example.com/google.com";
+  store_->AddLogin(password_manager::FromPasswordForm(federated_form));
+  client_->set_prompt_user_to_choose_credentials_result(false);
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
+  ExpectCredentialType(CredentialMediationRequirement::kRequired,
+                       /*include_passwords=*/false,
+                       /*federations=*/{GURL("https://google.com/")},
+                       CredentialType::CREDENTIAL_TYPE_EMPTY);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.CredentialManager.FederatedCredentialGet",
+      metrics_util::CredentialManagerFederatedCredentialGet::kRequested, 1);
+}
+
 INSTANTIATE_TEST_SUITE_P(All, CredentialManagerImplTest, testing::Bool());
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -2509,6 +2771,7 @@ class CredentialManagerImplReauthTest
 };
 
 TEST_P(CredentialManagerImplReauthTest, ReauthAfterAccountSelection) {
+  base::HistogramTester histogram_tester;
   ON_CALL(*client_, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
   ON_CALL(*client_, IsReauthBeforeFillingRequiredLegacy)
       .WillByDefault(Return(true));
@@ -2568,6 +2831,8 @@ TEST_P(CredentialManagerImplReauthTest, ReauthAfterAccountSelection) {
   EXPECT_TRUE(called);
   EXPECT_EQ(CredentialManagerError::SUCCESS, error);
   EXPECT_EQ(form_.username_value, credential->id);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.CredentialManager.FederatedCredentialGet", 0);
 }
 
 TEST_P(CredentialManagerImplReauthTest, ReauthBeforeSilentCredentialRetrieval) {
@@ -2666,6 +2931,7 @@ TEST_P(CredentialManagerImplReauthTest, DestructionCancelsOngoingReauth) {
 // while device re-authentication is in progress.
 TEST_P(CredentialManagerImplReauthTest,
        GetEmptyWhenFillingDisabledDuringReauth) {
+  base::HistogramTester histogram_tester;
   ON_CALL(*client_, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
   ON_CALL(*client_, IsReauthBeforeFillingRequiredLegacy)
       .WillByDefault(Return(true));
@@ -2702,8 +2968,224 @@ TEST_P(CredentialManagerImplReauthTest,
   ASSERT_TRUE(called);
   EXPECT_EQ(CredentialManagerError::SUCCESS, error);
   EXPECT_EQ(CredentialType::CREDENTIAL_TYPE_EMPTY, credential->type);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.CredentialManager.FederatedCredentialGet", 0);
 }
 
+TEST_P(CredentialManagerImplReauthTest,
+       FederatedCredentialGetAfterReauthSuccess) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(*client_, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(*client_, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(*client_, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 2 : 0);
+  EXPECT_CALL(*client_, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 2);
+
+  form_.federation_origin = url::SchemeHostPort(GURL("https://google.com/"));
+  form_.password_value = PasswordString();
+  form_.signon_realm = "federation://example.com/google.com";
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(1);
+
+  auto mock_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  device_reauth::MockDeviceAuthenticator* raw_authenticator =
+      mock_authenticator.get();
+  int get_authenticator_call_count = 0;
+  EXPECT_CALL(*client_, GetDeviceAuthenticator)
+      .Times(IsRefactorEnabled() ? 1 : 2)
+      .WillRepeatedly(
+          [&mock_authenticator, &get_authenticator_call_count,
+           this]() -> std::unique_ptr<device_reauth::DeviceAuthenticator> {
+            get_authenticator_call_count++;
+            if (IsRefactorEnabled() || get_authenticator_call_count == 2) {
+              return std::move(mock_authenticator);
+            }
+            return nullptr;
+          });
+
+  EXPECT_CALL(*raw_authenticator, AuthenticateWithMessage)
+      .WillOnce([](const std::u16string& message,
+                   device_reauth::MockDeviceAuthenticator::AuthenticateCallback
+                       callback) { std::move(callback).Run(true); });
+
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional,
+          /*include_passwords=*/false,
+          /*federations=*/{GURL("https://google.com/")},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+
+  RunAllPendingTasks();
+
+  ASSERT_TRUE(called);
+  EXPECT_EQ(CredentialManagerError::SUCCESS, error);
+  ASSERT_TRUE(credential.has_value());
+  EXPECT_EQ(CredentialType::CREDENTIAL_TYPE_FEDERATED, credential->type);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.CredentialManager.FederatedCredentialGet"),
+      base::BucketsAre(
+          base::Bucket(
+              metrics_util::CredentialManagerFederatedCredentialGet::kRequested,
+              1),
+          base::Bucket(metrics_util::CredentialManagerFederatedCredentialGet::
+                           kAccountChooserShown,
+                       1),
+          base::Bucket(metrics_util::CredentialManagerFederatedCredentialGet::
+                           kReturnedViaAccountChooser,
+                       1)));
+}
+
+TEST_P(CredentialManagerImplReauthTest,
+       FederatedCredentialGetAfterReauthFailure) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(*client_, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(*client_, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(*client_, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 2 : 0);
+  EXPECT_CALL(*client_, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 2);
+
+  form_.federation_origin = url::SchemeHostPort(GURL("https://google.com/"));
+  form_.password_value = PasswordString();
+  form_.signon_realm = "federation://example.com/google.com";
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(1);
+
+  auto mock_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  device_reauth::MockDeviceAuthenticator* raw_authenticator =
+      mock_authenticator.get();
+  int get_authenticator_call_count = 0;
+  EXPECT_CALL(*client_, GetDeviceAuthenticator)
+      .Times(IsRefactorEnabled() ? 1 : 2)
+      .WillRepeatedly(
+          [&mock_authenticator, &get_authenticator_call_count,
+           this]() -> std::unique_ptr<device_reauth::DeviceAuthenticator> {
+            get_authenticator_call_count++;
+            if (IsRefactorEnabled() || get_authenticator_call_count == 2) {
+              return std::move(mock_authenticator);
+            }
+            return nullptr;
+          });
+
+  EXPECT_CALL(*raw_authenticator, AuthenticateWithMessage)
+      .WillOnce([](const std::u16string& message,
+                   device_reauth::MockDeviceAuthenticator::AuthenticateCallback
+                       callback) { std::move(callback).Run(false); });
+
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional,
+          /*include_passwords=*/false,
+          /*federations=*/{GURL("https://google.com/")},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+
+  RunAllPendingTasks();
+
+  ASSERT_TRUE(called);
+  EXPECT_EQ(CredentialManagerError::SUCCESS, error);
+  ASSERT_TRUE(credential.has_value());
+  EXPECT_EQ(CredentialType::CREDENTIAL_TYPE_EMPTY, credential->type);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.CredentialManager.FederatedCredentialGet"),
+      base::BucketsAre(
+          base::Bucket(
+              metrics_util::CredentialManagerFederatedCredentialGet::kRequested,
+              1),
+          base::Bucket(metrics_util::CredentialManagerFederatedCredentialGet::
+                           kAccountChooserShown,
+                       1),
+          base::Bucket(metrics_util::CredentialManagerFederatedCredentialGet::
+                           kReauthFailed,
+                       1)));
+}
+
+TEST_P(CredentialManagerImplReauthTest,
+       FederatedCredentialGetAfterFillingDisabledDuringReauth) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(*client_, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(*client_, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(*client_, IsReauthBeforeFillingRequired)
+      .Times(IsRefactorEnabled() ? 2 : 0);
+  EXPECT_CALL(*client_, IsReauthBeforeFillingRequiredLegacy)
+      .Times(IsRefactorEnabled() ? 0 : 2);
+
+  form_.federation_origin = url::SchemeHostPort(GURL("https://google.com/"));
+  form_.password_value = PasswordString();
+  form_.signon_realm = "federation://example.com/google.com";
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+
+  bool filling_enabled = true;
+  ON_CALL(*client_, IsFillingEnabled)
+      .WillByDefault(testing::ReturnPointee(&filling_enabled));
+
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(1);
+
+  auto mock_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  device_reauth::MockDeviceAuthenticator* raw_authenticator =
+      mock_authenticator.get();
+  int get_authenticator_call_count = 0;
+  EXPECT_CALL(*client_, GetDeviceAuthenticator)
+      .Times(IsRefactorEnabled() ? 1 : 2)
+      .WillRepeatedly(
+          [&mock_authenticator, &get_authenticator_call_count,
+           this]() -> std::unique_ptr<device_reauth::DeviceAuthenticator> {
+            get_authenticator_call_count++;
+            if (IsRefactorEnabled() || get_authenticator_call_count == 2) {
+              return std::move(mock_authenticator);
+            }
+            return nullptr;
+          });
+
+  EXPECT_CALL(*raw_authenticator, AuthenticateWithMessage)
+      .WillOnce([&filling_enabled](
+                    const std::u16string& message,
+                    device_reauth::MockDeviceAuthenticator::AuthenticateCallback
+                        callback) {
+        filling_enabled = false;
+        std::move(callback).Run(true);
+      });
+
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional,
+          /*include_passwords=*/false,
+          /*federations=*/{GURL("https://google.com/")},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+
+  RunAllPendingTasks();
+
+  ASSERT_TRUE(called);
+  EXPECT_EQ(CredentialManagerError::SUCCESS, error);
+  ASSERT_TRUE(credential.has_value());
+  EXPECT_EQ(CredentialType::CREDENTIAL_TYPE_EMPTY, credential->type);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.CredentialManager.FederatedCredentialGet"),
+      base::BucketsAre(
+          base::Bucket(
+              metrics_util::CredentialManagerFederatedCredentialGet::kRequested,
+              1),
+          base::Bucket(metrics_util::CredentialManagerFederatedCredentialGet::
+                           kAccountChooserShown,
+                       1),
+          base::Bucket(metrics_util::CredentialManagerFederatedCredentialGet::
+                           kReauthFailed,
+                       1)));
+}
 INSTANTIATE_TEST_SUITE_P(,
                          CredentialManagerImplReauthTest,
                          testing::Combine(testing::Bool(), testing::Bool()));

@@ -403,6 +403,18 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Password manager not available"/>
 </enum>
 
+<!-- LINT.IfChange(CredentialManagerFederatedCredentialGet) -->
+
+<enum name="CredentialManagerFederatedCredentialGet">
+  <int value="0" label="Requested"/>
+  <int value="1" label="Account chooser shown"/>
+  <int value="2" label="Returned via auto sign-in"/>
+  <int value="3" label="Returned via account chooser"/>
+  <int value="4" label="Reauth failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/password_manager/core/browser/password_manager_metrics_util.h:CredentialManagerFederatedCredentialGet) -->
+
 <enum name="CredentialManagerGetResult">
   <int value="0" label="Promise rejected"/>
   <int value="1" label="Empty credential, auto sign-in disallowed"/>

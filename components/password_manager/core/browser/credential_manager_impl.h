@@ -85,6 +85,8 @@ class CredentialManagerImpl
   void OnReauthCompleted(SendCredentialCallback send_callback,
                          PasswordForm form,
                          bool auth_succeeded);
+  void SendAccountChooserCredential(SendCredentialCallback send_callback,
+                                    const PasswordForm& form);
 
   // CredentialManagerPendingPreventSilentAccessTaskDelegate:
   PasswordStoreInterface* GetProfilePasswordStore() override;

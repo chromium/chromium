@@ -299,6 +299,12 @@ void LogCredentialManagerGetResult(CredentialManagerGetResult result,
   }
 }
 
+void LogCredentialManagerFederatedCredentialGet(
+    CredentialManagerFederatedCredentialGet event) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.CredentialManager.FederatedCredentialGet", event);
+}
+
 void LogPasswordReuse(int saved_passwords,
                       int number_matches,
                       bool password_field_detected,

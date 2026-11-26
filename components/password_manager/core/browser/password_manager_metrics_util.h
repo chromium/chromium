@@ -224,6 +224,30 @@ enum class CredentialManagerGetResult {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// Metric: "PasswordManager.CredentialManager.FederatedCredentialGet".
+//
+// LINT.IfChange(CredentialManagerFederatedCredentialGet)
+enum class CredentialManagerFederatedCredentialGet {
+  // `navigator.credentials.get()` was called with non-empty `federations` and
+  // passed early-return checks to query the password store.
+  kRequested = 0,
+  // The account chooser was shown with at least one `FederatedCredential`.
+  kAccountChooserShown = 1,
+  // A `FederatedCredential` was returned via auto sign-in.
+  kReturnedViaAutoSignIn = 2,
+  // A `FederatedCredential` was returned via the account chooser (after
+  // device reauth succeeded, if required).
+  kReturnedViaAccountChooser = 3,
+  // The user selected a `FederatedCredential` in the account chooser and
+  // device reauth was requested, but reauth failed or filling became disabled
+  // before the credential could be returned.
+  kReauthFailed = 4,
+  kMaxValue = kReauthFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:CredentialManagerFederatedCredentialGet)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum PasswordReusePasswordFieldDetected {
   NO_PASSWORD_FIELD = 0,
   HAS_PASSWORD_FIELD = 1,
@@ -747,6 +771,10 @@ void LogAutoSigninPromoUserAction(AutoSigninPromoUserAction action);
 // Log the result of navigator.credentials.get.
 void LogCredentialManagerGetResult(CredentialManagerGetResult result,
                                    CredentialMediationRequirement mediation);
+
+// Logs legacy `FederatedCredential` get lifecycle events in Credential Manager.
+void LogCredentialManagerFederatedCredentialGet(
+    CredentialManagerFederatedCredentialGet event);
 
 // Log the password reuse.
 void LogPasswordReuse(int saved_passwords,

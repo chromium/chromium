@@ -28,6 +28,7 @@
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
@@ -203,6 +204,10 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
         metrics_util::CredentialManagerGetResult::kNoneZeroClickOff, mediation);
     return;
   }
+  if (!federations.empty()) {
+    metrics_util::LogCredentialManagerFederatedCredentialGet(
+        metrics_util::CredentialManagerFederatedCredentialGet::kRequested);
+  }
   pending_request_ = std::make_unique<CredentialManagerPendingRequestTask>(
       this, base::BindOnce(&RunGetCallback, std::move(callback)), mediation,
       include_passwords, base::ToVector(federations, &url::Origin::Create),
@@ -248,7 +253,6 @@ void CredentialManagerImpl::SendPasswordForm(
     SendCredentialCallback send_callback,
     CredentialMediationRequirement mediation,
     const PasswordForm* form) {
-  CredentialInfo info;
   if (form && client_->IsFillingEnabled(GetOrigin())) {
     PasswordStoreInterface* store = form->IsUsingAccountStore()
                                         ? GetAccountPasswordStore()
@@ -315,16 +319,17 @@ void CredentialManagerImpl::SendPasswordForm(
       return;
     }
 
-    info = PasswordFormToCredentialInfo(*form);
-  } else {
-    if (!form) {
-      base::RecordAction(base::UserMetricsAction(
-          "CredentialManager_AccountChooser_Dismissed"));
-    }
-    metrics_util::LogCredentialManagerGetResult(
-        metrics_util::CredentialManagerGetResult::kNone, mediation);
+    SendAccountChooserCredential(std::move(send_callback), *form);
+    return;
   }
-  SendCredential(std::move(send_callback), info);
+
+  if (!form) {
+    base::RecordAction(
+        base::UserMetricsAction("CredentialManager_AccountChooser_Dismissed"));
+  }
+  metrics_util::LogCredentialManagerGetResult(
+      metrics_util::CredentialManagerGetResult::kNone, mediation);
+  SendCredential(std::move(send_callback), CredentialInfo());
 }
 
 PasswordManagerClient* CredentialManagerImpl::client() const {
@@ -353,10 +358,26 @@ void CredentialManagerImpl::OnReauthCompleted(
     bool auth_succeeded) {
   authenticator_.reset();
   if (!auth_succeeded || !client_->IsFillingEnabled(GetOrigin())) {
+    if (form.IsFederatedCredential()) {
+      metrics_util::LogCredentialManagerFederatedCredentialGet(
+          metrics_util::CredentialManagerFederatedCredentialGet::kReauthFailed);
+    }
     SendCredential(std::move(send_callback), CredentialInfo());
     return;
   }
-  SendCredential(std::move(send_callback), PasswordFormToCredentialInfo(form));
+  SendAccountChooserCredential(std::move(send_callback), form);
+}
+
+void CredentialManagerImpl::SendAccountChooserCredential(
+    SendCredentialCallback send_callback,
+    const PasswordForm& form) {
+  CredentialInfo info = PasswordFormToCredentialInfo(form);
+  if (info.type == CredentialType::CREDENTIAL_TYPE_FEDERATED) {
+    metrics_util::LogCredentialManagerFederatedCredentialGet(
+        metrics_util::CredentialManagerFederatedCredentialGet::
+            kReturnedViaAccountChooser);
+  }
+  SendCredential(std::move(send_callback), info);
 }
 
 void CredentialManagerImpl::DoneRequiringUserMediation() {
