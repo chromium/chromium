@@ -14,8 +14,10 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_native_view.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/jni_zero/jni_zero.h"
+#include "ui/base/models/image_model.h"
 
 // Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/ui/side_panel/internal/android/dev_jni_headers/SidePanelTabScopedDevFeatureImpl_jni.h"
@@ -46,6 +48,8 @@ SidePanelTabScopedDevFeature::SidePanelTabScopedDevFeature(
         base::BindRepeating(&CreateSidePanelDevView, tab_),
         base::BindRepeating([]() { return 0; }));
     entry->SetProperty(kSidePanelTitleKey, std::u16string(u"Developer Panel"));
+    entry->SetProperty(kSidePanelIconKey,
+                       ui::ImageModel::FromResourceId(IDR_PRODUCT_LOGO_32));
     registry_->Register(std::move(entry));
   }
 }

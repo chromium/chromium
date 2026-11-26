@@ -96,8 +96,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(4)
-                    .setDescription("Side panel header aligned with UX spec")
+                    .setRevision(5)
+                    .setDescription("Dev feature header shows an icon")
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_TOP_CHROME_SIDE_PANEL)
                     .build();
 
@@ -134,7 +134,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         TextView titleView = containerView.findViewById(R.id.side_panel_title);
         assertNotNull(titleView);
         assertEquals("Developer Panel", titleView.getText().toString());
-        assertEquals(View.GONE, containerView.findViewById(R.id.side_panel_icon).getVisibility());
+        assertEquals(
+                View.VISIBLE, containerView.findViewById(R.id.side_panel_icon).getVisibility());
     }
 
     @Test

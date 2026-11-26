@@ -72,6 +72,7 @@ source_set("dev") {
     ":android",
     ":dev_jni_headers",
     "//base",
+    "//chrome/app/theme:theme_resources",
     "//chrome/browser/android:tabs_public",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel",
@@ -79,6 +80,7 @@ source_set("dev") {
     "//chrome/browser/ui/side_panel/android",
     "//components/tabs:public",
     "//third_party/jni_zero",
+    "//ui/base",
   ]
 }
 

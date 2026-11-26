@@ -71,6 +71,9 @@ public final class SidePanelTabScopedDevFeatureImpl implements SidePanelDevFeatu
         View view =
                 LayoutInflater.from(tab.getContext())
                         .inflate(R.layout.side_panel_dev_feature, null);
+        if (tab.isIncognitoBranded()) {
+            view.setBackgroundResource(R.color.side_panel_container_bg_color_incognito);
+        }
         TextView textView = view.findViewById(R.id.tab_title);
         textView.setText("Tab title: " + tab.getTitle());
 
