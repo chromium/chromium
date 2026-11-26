@@ -1362,7 +1362,7 @@
     {
         "name": "extensions-xr",
         "group": "com.android.extensions.xr",
-        "version": "1.5.0-alpha02"
+        "version": "1.5.0"
     },
     {
         "name": "caffeine",
@@ -1992,12 +1992,12 @@
     {
         "name": "kotlin-parcelize-runtime",
         "group": "org.jetbrains.kotlin",
-        "version": "2.5.0-RC"
+        "version": "2.5.0-RC2"
     },
     {
         "name": "kotlin-stdlib",
         "group": "org.jetbrains.kotlin",
-        "version": "2.5.0-RC"
+        "version": "2.5.0-RC2"
     },
     {
         "name": "kotlin-stdlib-jdk7",
