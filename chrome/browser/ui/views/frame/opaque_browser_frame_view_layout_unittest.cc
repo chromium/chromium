@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/tab_icon_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -21,6 +22,9 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/window/caption_button_layout_constants.h"
+#include "ui/views/window/caption_button_types.h"
+#include "ui/views/window/frame_caption_button.h"
 
 namespace {
 
@@ -50,6 +54,10 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
     show_caption_buttons_ = show_caption_buttons;
   }
   void set_maximized(bool maximized) { maximized_ = maximized; }
+  void set_top_area_height(int height) { top_area_height_ = height; }
+  void set_frame_button_style(FrameButtonStyle style) {
+    frame_button_style_ = style;
+  }
 
   // OpaqueBrowserFrameViewLayoutDelegate:
   bool ShouldShowWindowIcon() const override { return !window_title_.empty(); }
@@ -71,10 +79,13 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool IsTabStripVisible() const override { return window_title_.empty(); }
   bool GetUnframedModeEnabled() const override { return false; }
   bool IsToolbarVisible() const override { return true; }
-  int GetTopAreaHeight() const override { return 0; }
+  int GetTopAreaHeight() const override { return top_area_height_; }
   bool UseCustomFrame() const override { return true; }
   bool IsFrameCondensed() const override {
     return !show_caption_buttons_ || maximized_;
+  }
+  FrameButtonStyle GetFrameButtonStyle() const override {
+    return frame_button_style_;
   }
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override {}
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
@@ -87,6 +98,8 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   std::u16string window_title_;
   bool show_caption_buttons_ = true;
   bool maximized_ = false;
+  int top_area_height_ = 0;
+  FrameButtonStyle frame_button_style_ = FrameButtonStyle::kImageButton;
 };
 
 }  // namespace
@@ -413,6 +426,59 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, WindowWithTitleAndIcon) {
   ExpectCaptionButtons(false, GetParam() ? 1 : 0);
   ExpectWindowIcon(false);
   ExpectWindowTitle();
+}
+
+// Tests that MD caption buttons only cover their hover circle, so clicks in
+// the tab strip row below the circle don't hit the button.
+TEST_P(OpaqueBrowserFrameViewLayoutTest, MdButtonsMatchHoverCircle) {
+  delegate_->set_frame_button_style(
+      OpaqueBrowserFrameViewLayoutDelegate::FrameButtonStyle::kMdButton);
+  delegate_->set_top_area_height(40);
+  for (ViewID id : {VIEW_ID_MINIMIZE_BUTTON, VIEW_ID_MAXIMIZE_BUTTON,
+                    VIEW_ID_RESTORE_BUTTON, VIEW_ID_CLOSE_BUTTON}) {
+    root_view_->RemoveChildViewT(root_view_->GetViewByID(id));
+    auto button = std::make_unique<views::FrameCaptionButton>(
+        views::Button::PressedCallback(), views::CAPTION_BUTTON_ICON_CLOSE,
+        HTCLOSE);
+    button->SetID(id);
+    root_view_->AddChildView(std::move(button));
+  }
+
+  const int row_top = OpaqueBrowserFrameViewLayout::kFrameShadowThickness;
+  const int diameter = 2 * views::kCaptionButtonInkDropDefaultCornerRadius;
+  // Also check the opposite state after a transition, so that restoring a
+  // maximized window clears the top inset.
+  for (bool maximized : {GetParam(), !GetParam()}) {
+    SCOPED_TRACE(maximized ? "maximized" : "restored");
+    delegate_->set_maximized(maximized);
+    root_view_->InvalidateLayout();
+    views::test::RunScheduledLayout(root_view_);
+    const int row_bottom = layout_manager_->GetCaptionButtonAreaBottom();
+    const int circle_top = row_top + (row_bottom - row_top - diameter) / 2;
+    ASSERT_GT(circle_top, row_top);
+
+    int visible_buttons = 0;
+    for (ViewID id : {VIEW_ID_MINIMIZE_BUTTON, VIEW_ID_MAXIMIZE_BUTTON,
+                      VIEW_ID_RESTORE_BUTTON, VIEW_ID_CLOSE_BUTTON}) {
+      const views::View* button = root_view_->GetViewByID(id);
+      if (!button->GetVisible()) {
+        continue;
+      }
+      SCOPED_TRACE(id);
+      ++visible_buttons;
+      // A maximized window keeps the buttons extended to the screen top.
+      EXPECT_EQ(maximized ? 0 : circle_top, button->y());
+      EXPECT_EQ(circle_top + diameter, button->bounds().bottom());
+      EXPECT_EQ(circle_top, button->y() + button->GetContentsBounds().y());
+      EXPECT_EQ(diameter, button->GetContentsBounds().height());
+    }
+    EXPECT_EQ(3, visible_buttons);
+    if (maximized) {
+      EXPECT_EQ(
+          kWindowWidth,
+          root_view_->GetViewByID(VIEW_ID_CLOSE_BUTTON)->bounds().right());
+    }
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

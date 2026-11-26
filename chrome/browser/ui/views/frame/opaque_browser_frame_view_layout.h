@@ -95,6 +95,11 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // acts as if the window is restored regardless of the real mode.
   virtual int CaptionButtonY(views::FrameButton button_id, bool restored) const;
 
+  // Returns the y coordinate, in the frame view's coordinate space, of the
+  // bottom edge of the row that kMdButton caption buttons are vertically
+  // centered in. The buttons themselves only cover their hover circle.
+  int GetCaptionButtonAreaBottom() const;
+
   // Returns the insets from the native window edge to the flat portion of the
   // window border.  That is, this function returns the "3D portion" of the
   // border.  If |restored| is true, acts as if the window is restored
@@ -195,6 +200,10 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
 
   // Sets the visibility of all buttons associated with |button_id| to false.
   void HideButton(views::FrameButton button_id);
+
+  // Returns the height of the row that kMdButton caption buttons are centered
+  // in.
+  int GetCaptionButtonRowHeight() const;
 
   // Adds a window caption button to either the leading or trailing side.
   void SetBoundsForButton(views::FrameButton button_id,

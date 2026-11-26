@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
@@ -157,28 +160,39 @@ BrowserLayoutParams BrowserFrameViewLinux::GetBrowserLayoutParams() const {
 
   auto* const provider = views::WindowButtonOrderProvider::GetInstance();
 
-  gfx::Rect leading_bounds;
-  for (auto button : provider->leading_buttons()) {
-    if (auto* const button_view = layout_->GetFrameButton(button);
-        button_view && button_view->GetVisible()) {
-      leading_bounds.Union(button_view->bounds());
-    }
-  }
-  if (!leading_bounds.IsEmpty()) {
+  // Returns the union of the visible buttons' bounds. kMdButton caption buttons
+  // only cover their hover circle, but the whole row they are centered in stays
+  // reserved for them.
+  const auto get_buttons_bounds =
+      [&](const std::vector<views::FrameButton>& buttons) {
+        gfx::Rect bounds;
+        for (auto button : buttons) {
+          if (auto* const button_view = layout_->GetFrameButton(button);
+              button_view && button_view->GetVisible()) {
+            bounds.Union(button_view->bounds());
+          }
+        }
+        if (!bounds.IsEmpty() &&
+            GetFrameButtonStyle() == FrameButtonStyle::kMdButton) {
+          bounds.SetVerticalBounds(
+              bounds.y(),
+              std::max(bounds.bottom(), layout_->GetCaptionButtonAreaBottom()));
+        }
+        return bounds;
+      };
+
+  if (const gfx::Rect leading_bounds =
+          get_buttons_bounds(provider->leading_buttons());
+      !leading_bounds.IsEmpty()) {
     params.leading_exclusion.content =
         gfx::SizeF(leading_bounds.right() - params.visual_client_area.x(),
                    leading_bounds.bottom() - params.visual_client_area.y());
     params.leading_exclusion.horizontal_padding = caption_margin;
   }
 
-  gfx::Rect trailing_bounds;
-  for (auto button : provider->trailing_buttons()) {
-    if (auto* const button_view = layout_->GetFrameButton(button);
-        button_view && button_view->GetVisible()) {
-      trailing_bounds.Union(button_view->bounds());
-    }
-  }
-  if (!trailing_bounds.IsEmpty()) {
+  if (const gfx::Rect trailing_bounds =
+          get_buttons_bounds(provider->trailing_buttons());
+      !trailing_bounds.IsEmpty()) {
     params.trailing_exclusion.content =
         gfx::SizeF(params.visual_client_area.right() - trailing_bounds.x(),
                    trailing_bounds.bottom() - params.visual_client_area.y());

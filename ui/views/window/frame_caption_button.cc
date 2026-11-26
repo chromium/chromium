@@ -53,7 +53,10 @@ class FrameCaptionButton::HighlightPathGenerator
     : public views::HighlightPathGenerator {
  public:
   explicit HighlightPathGenerator(FrameCaptionButton* frame_caption_button)
-      : frame_caption_button_(frame_caption_button) {}
+      : frame_caption_button_(frame_caption_button) {
+    // Center the focus ring and ink drop clip on the icon and hover circle.
+    set_use_contents_bounds(true);
+  }
   HighlightPathGenerator(const HighlightPathGenerator&) = delete;
   HighlightPathGenerator& operator=(const HighlightPathGenerator&) = delete;
   ~HighlightPathGenerator() override = default;
@@ -92,7 +95,8 @@ FrameCaptionButton::FrameCaptionButton(PressedCallback callback,
       [](FrameCaptionButton* host) -> std::unique_ptr<views::InkDropRipple> {
         return std::make_unique<views::FloodFillInkDropRipple>(
             InkDrop::Get(host), host->size(),
-            host->GetInkdropInsets(host->size()),
+            host->GetInsets() +
+                host->GetInkdropInsets(host->GetContentsBounds().size()),
             InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
             InkDrop::Get(host)->GetBaseColor(),
             InkDrop::Get(host)->GetVisibleOpacity());

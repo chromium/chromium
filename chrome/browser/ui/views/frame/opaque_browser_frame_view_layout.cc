@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/caption_button_placeholder_container.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
@@ -433,11 +434,21 @@ void OpaqueBrowserFrameViewLayout::HideButton(views::FrameButton button_id) {
   }
 }
 
+int OpaqueBrowserFrameViewLayout::GetCaptionButtonAreaBottom() const {
+  return CaptionButtonY(views::FrameButton::kClose, false) +
+         GetCaptionButtonRowHeight();
+}
+
+int OpaqueBrowserFrameViewLayout::GetCaptionButtonRowHeight() const {
+  return std::max(0,
+                  delegate_->GetTopAreaHeight() - FrameEdgeInsets(false).top());
+}
+
 void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
     views::FrameButton button_id,
     views::Button* button,
     ButtonAlignment alignment) {
-  const int caption_y = CaptionButtonY(button_id, false);
+  int caption_y = CaptionButtonY(button_id, false);
 
   // There should always be the same number of non-shadow pixels visible to the
   // side of the caption buttons.  In maximized mode we extend buttons to the
@@ -454,15 +465,26 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
              base::NotFatalUntil::M162);
     const int caption_button_center_size =
         button_width - 2 * views::kCaptionButtonInkDropDefaultCornerRadius;
-    const int height =
-        delegate_->GetTopAreaHeight() - FrameEdgeInsets(false).top();
+    const int height = GetCaptionButtonRowHeight();
     const int corner_radius =
         std::clamp((height - caption_button_center_size) / 2, 0,
                    views::kCaptionButtonInkDropDefaultCornerRadius);
-    button_size = gfx::Size(button_width, height);
+    // Only the hover circle is clickable, so the frame around it stays part of
+    // the draggable caption area.
+    const int ink_drop_height = 2 * corner_radius;
+    caption_y += (height - ink_drop_height) / 2;
+    button_size = gfx::Size(button_width, ink_drop_height);
     button->SetPreferredSize(button_size);
-    static_cast<views::FrameCaptionButton*>(button)->SetInkDropCornerRadius(
-        corner_radius);
+    auto* const caption_button =
+        static_cast<views::FrameCaptionButton*>(button);
+    caption_button->SetInkDropCornerRadius(corner_radius);
+    // When maximized, the button extends to the screen top. Inset its contents
+    // so the icon and hover circle stay where they are when restored.
+    const gfx::Insets insets =
+        gfx::Insets::TLBR(is_frame_condensed ? caption_y : 0, 0, 0, 0);
+    if (caption_button->GetInsets() != insets) {
+      caption_button->SetBorder(views::CreateEmptyBorder(insets));
+    }
   } else if (delegate_->GetFrameButtonStyle() ==
              OpaqueBrowserFrameViewLayoutDelegate::FrameButtonStyle::
                  kImageButton) {

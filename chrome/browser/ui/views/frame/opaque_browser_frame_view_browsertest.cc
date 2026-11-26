@@ -39,16 +39,21 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/themes/chrome_linux_ui_getter.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/hit_test.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_factory.h"
 #include "ui/linux/linux_ui_getter.h"
 #include "ui/linux/nav_button_provider.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/window/frame_caption_button.h"
 
 class FakeLinuxUiGetter : public ChromeLinuxUiGetter {
  public:
@@ -727,6 +732,53 @@ IN_PROC_BROWSER_TEST_F(OpaqueBrowserFrameViewLinuxTest, CaptionButtonsTooltip) {
       EXPECT_EQ(root_view->GetTooltipHandlerForPoint(center_in_root), button);
     }
   }
+}
+
+// Tests that MD caption buttons only hit-test inside their hover circle, while
+// the tab strip still excludes the whole caption button row.
+IN_PROC_BROWSER_TEST_F(LinuxNativeBrowserFrameViewTest,
+                       MdCaptionButtonHitArea) {
+  ThemeServiceFactory::GetForProfile(browser()->GetProfile())
+      ->UseDefaultTheme();
+  BrowserWindowInterface* md_browser = CreateBrowser(browser()->GetProfile());
+  BrowserView* view = BrowserView::GetBrowserViewForBrowser(md_browser);
+  BrowserFrameView* frame_view = view->browser_widget()->GetFrameView();
+  views::test::RunScheduledLayout(view->GetWidget()->GetRootView());
+  const views::View* close = frame_view->GetViewByID(VIEW_ID_CLOSE_BUTTON);
+  if (!close || !close->GetVisible()) {
+    GTEST_SKIP() << "No custom frame caption buttons";
+  }
+  ASSERT_TRUE(views::IsViewClass<views::FrameCaptionButton>(close));
+
+  const auto check_hit_test = [&](bool maximized) {
+    SCOPED_TRACE(maximized ? "maximized" : "restored");
+    const gfx::Rect bounds = close->bounds();
+    const gfx::Rect circle =
+        close->GetContentsBounds() + bounds.OffsetFromOrigin();
+    const BrowserLayoutParams params = frame_view->GetBrowserLayoutParams();
+    const int exclusion_bottom =
+        params.visual_client_area.y() +
+        std::max(params.leading_exclusion.content.height(),
+                 params.trailing_exclusion.content.height());
+    // The exclusion keeps the whole row, below the button.
+    ASSERT_GT(exclusion_bottom, bounds.bottom() + 1);
+    EXPECT_EQ(HTCLOSE, frame_view->NonClientHitTest(circle.CenterPoint()));
+    EXPECT_EQ(HTCAPTION, frame_view->NonClientHitTest(gfx::Point(
+                             circle.CenterPoint().x(), bounds.bottom() + 1)));
+    if (maximized) {
+      EXPECT_EQ(HTCLOSE, frame_view->NonClientHitTest(
+                             gfx::Point(circle.CenterPoint().x(), 0)));
+      EXPECT_EQ(HTCLOSE,
+                frame_view->NonClientHitTest(gfx::Point(
+                    frame_view->width() - 1, circle.CenterPoint().y())));
+    }
+  };
+  check_hit_test(/*maximized=*/false);
+  ASSERT_TRUE(ui_test_utils::MaximizeAndWaitUntilUIUpdateDone(*md_browser));
+  views::test::RunScheduledLayout(view->GetWidget()->GetRootView());
+  check_hit_test(/*maximized=*/true);
+
+  CloseBrowserSynchronously(md_browser);
 }
 
 }  // namespace
