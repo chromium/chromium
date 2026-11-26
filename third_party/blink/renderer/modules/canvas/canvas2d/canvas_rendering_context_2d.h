@@ -127,8 +127,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   V8RenderingContext* AsV8RenderingContext() final;
 
-  bool ShouldAntialias() const;
-
   void setFontForTesting(const String& new_font) override;
 
   void drawFocusIfNeeded(Element*);

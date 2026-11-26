@@ -369,10 +369,6 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
   return result;
 }
 
-bool CanvasRenderingContext2D::ShouldAntialias() const {
-  return GetState().ShouldAntialias();
-}
-
 void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
   if (!IsTransformInvertible() || path.IsEmpty()) [[unlikely]] {
     return;
@@ -480,7 +476,7 @@ void CanvasRenderingContext2D::WillDraw(
     const gfx::Rect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
   CHECK(HasBacking());
-  if (ShouldAntialias()) {
+  if (GetState().ShouldAntialias()) {
     gfx::Rect inflated_dirty_rect = dirty_rect;
     inflated_dirty_rect.Outset(1);
     CanvasRenderingContext::DidDraw(inflated_dirty_rect, draw_type);
