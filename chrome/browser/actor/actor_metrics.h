@@ -54,6 +54,9 @@ void RecordToolTimings(
     base::TimeDelta execution_duration,
     std::optional<base::TimeDelta> page_stabilization_duration);
 
+void RecordActionResultCodeAfterSkippedWait(
+    actor::mojom::ActionResultCode action_result_code);
+
 // Records histograms tracking the total visible and non-visible durations of an
 // ActorTask while in an actor-controlled state upon completion or cancellation.
 //

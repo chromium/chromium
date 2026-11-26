@@ -106,6 +106,13 @@ void RecordToolTimings(
   }
 }
 
+void RecordActionResultCodeAfterSkippedWait(
+    actor::mojom::ActionResultCode action_result_code) {
+  base::UmaHistogramSparse(
+      "Actor.ExecutionEngine.Action.ResultCode.AfterSkippedWait",
+      std::to_underlying(action_result_code));
+}
+
 void RecordActorTaskVisibilityDurationHistograms(
     base::TimeDelta visible_duration,
     base::TimeDelta non_visible_duration,

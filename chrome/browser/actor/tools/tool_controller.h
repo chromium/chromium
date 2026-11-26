@@ -71,6 +71,9 @@ class ToolController {
   // Returns true if a previous deferred `Invoke()` left an unsettled
   // observation delayer.
   bool HasPendingObservation() const;
+  // Returns true if a pending observation carries a page-stabilization wait
+  // that an earlier deferred `Invoke()` skipped.
+  bool HasPendingStabilization() const;
 
   // Returns true if the pending observation must be settled before executing
   // `request` (e.g. a main-frame navigation started, or `request` targets a

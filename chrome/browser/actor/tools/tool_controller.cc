@@ -457,6 +457,11 @@ bool ToolController::HasPendingObservation() const {
   return pending_observation_.has_value();
 }
 
+bool ToolController::HasPendingStabilization() const {
+  return pending_observation_ &&
+         pending_observation_->requires_page_stabilization;
+}
+
 bool ToolController::ShouldSettlePendingObservationBefore(
     const ToolRequest& request) const {
   CHECK(pending_observation_);

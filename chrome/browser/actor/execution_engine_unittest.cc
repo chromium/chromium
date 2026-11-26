@@ -2306,6 +2306,8 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
     EXPECT_THAT(observation_delays(),
                 testing::ElementsAre(base::Seconds(1), base::Seconds(2)));
     histograms_.ExpectTotalCount("Actor.Tools.PageStabilization.Click", 2);
+    histograms_.ExpectTotalCount(
+        "Actor.ExecutionEngine.Action.ResultCode.AfterSkippedWait", 0);
   }
 
   ActResultFuture result;
@@ -2323,6 +2325,9 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
   // Click1 and Click2 defer and aren't recorded; Click3 runs the shared wait
   // and is recorded (on top of the 2 samples from the disabled run).
   histograms_.ExpectTotalCount("Actor.Tools.PageStabilization.Click", 3);
+  histograms_.ExpectUniqueSample(
+      "Actor.ExecutionEngine.Action.ResultCode.AfterSkippedWait",
+      std::to_underlying(mojom::ActionResultCode::kOk), 2);
 }
 
 TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
@@ -2495,6 +2500,11 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
   EXPECT_FALSE(toctou_res.Get()[1].tool_result.Ok());
   EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 1);
   EXPECT_THAT(observation_delays(), testing::ElementsAre(base::Seconds(1)));
+  histograms_.ExpectUniqueSample(
+      "Actor.ExecutionEngine.Action.ResultCode.AfterSkippedWait",
+      std::to_underlying(
+          toctou_res.Get()[1].tool_result.deprecated_action_result()->code),
+      1);
 
   fake_chrome_render_frame_.SetNextToolHook(base::BindLambdaForTesting([&]() {
     task_->GetExecutionEngine().FailCurrentTool(
@@ -2523,6 +2533,13 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
   EXPECT_FALSE(task_->GetExecutionEngine().TabsCanOpenNewWebContents());
   task_->Pause(/*from_actor=*/false);
   ExpectErrorResult(pause_res, mojom::ActionResultCode::kTaskPaused);
+  // The second action's own failure is recorded when it is reported, not the
+  // pause that happens later while the bundle's wait is settling.
+  histograms_.ExpectUniqueSample(
+      "Actor.ExecutionEngine.Action.ResultCode.AfterSkippedWait",
+      std::to_underlying(
+          toctou_res.Get()[1].tool_result.deprecated_action_result()->code),
+      2);
 }
 
 TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
@@ -2534,6 +2551,8 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
                res.GetCallback());
     ExpectOkResult(res);
     histograms_.ExpectTotalCount("Actor.Tools.PageStabilization.Click", 1);
+    histograms_.ExpectTotalCount(
+        "Actor.ExecutionEngine.Action.ResultCode.AfterSkippedWait", 0);
   }
 
   // Page actions with skip-observation-delay do not form a coalesced run and
@@ -2548,6 +2567,8 @@ TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
                res.GetCallback());
     ExpectOkResult(res);
     histograms_.ExpectTotalCount("Actor.Tools.PageStabilization.Click", 3);
+    histograms_.ExpectTotalCount(
+        "Actor.ExecutionEngine.Action.ResultCode.AfterSkippedWait", 0);
   }
 
   // Navigation after Click1 triggers an early settle of its deferred wait, and

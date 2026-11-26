@@ -411,6 +411,11 @@ class ExecutionEngine : public ToolDelegate,
   // Starts the next action by calling SafetyChecksForNextAction(). Must only be
   // called if there is a next action.
   void StartExecutingNewRequest();
+  // Records Action.ResultCode.AfterSkippedWait for the in-progress action if it
+  // started while a skipped stabilization wait was pending. Called wherever an
+  // action's result is reported to the dispatcher.
+  void MaybeRecordActionResultCodeAfterSkippedWait(
+      const ToolResult& tool_result);
   void ReportResultAndStartNext(
       ToolResult tool_result,
       std::vector<InterceptedJavaScriptDialog> javascript_dialogs = {});
@@ -562,6 +567,10 @@ class ExecutionEngine : public ToolDelegate,
   // Prevents `TabsCanOpenNewWebContents()` and `FailCurrentTool()` from
   // treating a tool as still in progress.
   bool is_settling_pending_observation_ = false;
+
+  // True if a skipped page-stabilization wait from an earlier action in the
+  // bundle was still pending when the in-progress action started.
+  bool action_started_after_skipped_wait_ = false;
 
   // Manages the registration lifetime of this engine's OriginGatingChecker with
   // the OriginGatingService. Automatically unregisters the checker upon

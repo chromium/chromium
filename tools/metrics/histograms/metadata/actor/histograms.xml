@@ -325,6 +325,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.ExecutionEngine.Action.ResultCode.AfterSkippedWait"
+    enum="ActionResultCode" expires_after="2027-05-01">
+  <owner>ndestin@google.com</owner>
+  <owner>weiguo@google.com</owner>
+  <owner>yuhengh@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Reports the ActionResultCode of each action in ExecutionEngine that started
+    while a preceding bundled action's full page-stabilization wait was still
+    deferred. Only recorded when ActorStabilizeOncePerBundle is enabled. Unlike
+    Actor.ExecutionEngine.Action.ResultCode (which records once per Act()
+    sequence in CompleteActions()), this histogram records once per eligible
+    action when it completes or fails, so the two counts cannot be directly
+    divided as a subset. Includes failures before tool invocation as well as
+    cancellation and pause codes (for example kTaskPaused).
+  </summary>
+</histogram>
+
 <histogram name="Actor.ForegroundService.Duration" units="ms"
     expires_after="2027-03-31">
   <owner>bbetini@google.com</owner>

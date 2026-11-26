@@ -1518,6 +1518,7 @@ void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
 
   ToolResultWithLatencyInfo cancel_result(start, std::max(start, now),
                                           MakeResult(reason));
+  MaybeRecordActionResultCodeAfterSkippedWait(cancel_result.tool_result);
   // We might have already completed the dispatcher but be waiting on a pending
   // observation. ToolController::Cancel above will have reset that observation,
   // so re-call CompleteActCall with the cancel result added.
@@ -1666,6 +1667,10 @@ void ExecutionEngine::StartExecutingNewRequest() {
                        GetActionSequenceWeakPtr()));
     return;
   }
+  // Captured at action start: by the time the action finishes, the pending
+  // wait may have been settled (early termination) or run (bundle end).
+  action_started_after_skipped_wait_ =
+      tool_controller_->HasPendingStabilization();
 
   SetState(State::kStartAction);
   if (!GetNextAction().IsFollowup()) {
@@ -1710,6 +1715,7 @@ void ExecutionEngine::ReportResultAndStartNext(
     std::vector<InterceptedJavaScriptDialog> javascript_dialogs) {
   CHECK(executing_request_);
   CHECK(dispatcher_);
+  MaybeRecordActionResultCodeAfterSkippedWait(tool_result);
 
   // TODO(b/555808355): Should this call tool_controller_->Cancel()?
 
@@ -2050,8 +2056,21 @@ void ExecutionEngine::FinishedUiPostInvoke(
     execute_result.end_time = base::TimeTicks::Now();
   }
 
+  MaybeRecordActionResultCodeAfterSkippedWait(execute_result.tool_result);
   dispatcher_->OnToolCompleted(std::move(execute_result));
   ProcessNextFromDispatcher();
+}
+
+void ExecutionEngine::MaybeRecordActionResultCodeAfterSkippedWait(
+    const ToolResult& tool_result) {
+  if (!std::exchange(action_started_after_skipped_wait_, false) ||
+      !base::FeatureList::IsEnabled(kActorStabilizeOncePerBundle)) {
+    return;
+  }
+  const mojom::ActionResultPtr& action_result =
+      tool_result.deprecated_action_result();
+  RecordActionResultCodeAfterSkippedWait(
+      action_result ? action_result->code : mojom::ActionResultCode::kOk);
 }
 
 void ExecutionEngine::CompleteActCall(
