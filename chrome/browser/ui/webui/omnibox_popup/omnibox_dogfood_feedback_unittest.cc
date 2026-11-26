@@ -27,8 +27,8 @@ BASE_FEATURE(kOmniboxDogfoodFeedbackTestDisabled,
 BASE_FEATURE(kUnrelatedDogfoodFeedbackTestFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Checks that the filter keeps names containing "omnibox" or "webui" in any
-// case, and nothing else.
+// Checks that the filter keeps names containing "omnibox", "webui", or
+// "contextual" in any case, and nothing else.
 TEST(OmniboxDogfoodFeedbackTest, IsRelevantFeature) {
   EXPECT_TRUE(IsRelevantFeature("OmniboxAimDetachWebContentsOnHide"));
   EXPECT_TRUE(IsRelevantFeature("EnergyEffectInOmnibox"));
@@ -44,6 +44,10 @@ TEST(OmniboxDogfoodFeedbackTest, IsRelevantFeature) {
   EXPECT_TRUE(IsRelevantFeature("InitialWebUIWithoutSpellCheckForNtp"));
   EXPECT_TRUE(IsRelevantFeature("SomeWebuiFeature"));
   EXPECT_TRUE(IsRelevantFeature("webui"));
+
+  EXPECT_TRUE(IsRelevantFeature("ContextualTasks"));
+  EXPECT_TRUE(IsRelevantFeature("ContextualSearch"));
+  EXPECT_TRUE(IsRelevantFeature("contextual"));
 
   EXPECT_FALSE(IsRelevantFeature(""));
   EXPECT_FALSE(IsRelevantFeature("Webium"));
@@ -63,8 +67,7 @@ TEST(OmniboxDogfoodFeedbackTest, DiagnosticsListRelevantOverrides) {
 
   const std::string diagnostics = GetDiagnostics();
 
-  EXPECT_TRUE(
-      diagnostics.starts_with("Omnibox dogfood feedback diagnostics:\n"))
+  EXPECT_TRUE(diagnostics.starts_with("Dogfood feedback diagnostics:\n"))
       << diagnostics;
   base::FieldTrial* trial =
       base::FeatureList::GetFieldTrial(kOmniboxDogfoodFeedbackTestEnabled);
@@ -93,8 +96,7 @@ TEST(OmniboxDogfoodFeedbackTest, DiagnosticsListCommandLineOverrides) {
 
   const std::string diagnostics = GetDiagnostics();
 
-  EXPECT_TRUE(
-      diagnostics.starts_with("Omnibox dogfood feedback diagnostics:\n"))
+  EXPECT_TRUE(diagnostics.starts_with("Dogfood feedback diagnostics:\n"))
       << diagnostics;
   EXPECT_THAT(diagnostics,
               HasSubstr("\nOmniboxDogfoodFeedbackTestEnabled: enabled "

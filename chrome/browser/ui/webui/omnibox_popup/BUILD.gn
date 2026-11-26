@@ -3,10 +3,20 @@
 # found in the LICENSE file.
 
 if (!is_android) {
+  source_set("dogfood_feedback") {
+    sources = [ "omnibox_dogfood_feedback.cc" ]
+    public = [ "omnibox_dogfood_feedback.h" ]
+    public_deps = [ "//chrome/browser/feedback:feedback_enum" ]
+    deps = [
+      "//base",
+      "//chrome/browser/feedback",
+      "//chrome/browser/profiles:profile",
+    ]
+  }
+
   source_set("omnibox_popup") {
     sources = [
       "full_webui_omnibox_layout_helper.cc",
-      "omnibox_dogfood_feedback.cc",
       "omnibox_popup_aim_handler.cc",
       "omnibox_popup_handler.cc",
       "omnibox_popup_ui.cc",
@@ -14,13 +24,13 @@ if (!is_android) {
     ]
     public = [
       "full_webui_omnibox_layout_helper.h",
-      "omnibox_dogfood_feedback.h",
       "omnibox_popup_aim_handler.h",
       "omnibox_popup_handler.h",
       "omnibox_popup_ui.h",
       "omnibox_popup_web_contents_helper.h",
     ]
     deps = [
+      ":dogfood_feedback",
       "//base",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
@@ -85,6 +95,7 @@ if (!is_android) {
       "omnibox_popup_ui_unittest.cc",
     ]
     deps = [
+      ":dogfood_feedback",
       ":omnibox_popup",
       "//base/test:test_support",
       "//chrome/browser/contextual_search",
