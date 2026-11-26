@@ -73,6 +73,8 @@ std::string_view GetEntryPointHistogramSuffix(
       return "SendTabToSelf";
     case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
       return "BookmarkSave";
+    case CrossDeviceSigninPromoEntryPoint::kPasswordSave:
+      return "PasswordSave";
   }
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:CrossDeviceSigninPromoEntryPointVariant)
 }
@@ -111,6 +113,8 @@ std::optional<CrossDevicePromoSurface> GetPromoSurfaceForEntryPoint(
       return std::nullopt;
     case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
       return CrossDevicePromoSurface::kBookmarkSave;
+    case CrossDeviceSigninPromoEntryPoint::kPasswordSave:
+      return CrossDevicePromoSurface::kPasswordSave;
   }
 }
 
@@ -267,6 +271,10 @@ std::string_view GetCrossDevicePromoCampaign(
       // TODO(crbug.com/564793759): Update with the final bookmark save campaign
       // value once registered.
       return "XDeviceBookmarkSave";
+    case CrossDeviceSigninPromoEntryPoint::kPasswordSave:
+      // TODO(crbug.com/564793759): Update with the final password save campaign
+      // value once registered.
+      return "XDevicePasswordSave";
   }
 }
 
@@ -312,6 +320,7 @@ bool ShouldReplaceExistingBubble(CrossDeviceSigninPromoEntryPoint entry_point) {
       // only races with the state update and must not steal the bubble.
       return false;
     case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
+    case CrossDeviceSigninPromoEntryPoint::kPasswordSave:
       // Post-save promos must not steal an already open bubble.
       return false;
   }
@@ -391,32 +400,6 @@ class QrBubbleState : public base::SupportsUserData::Data {
   base::WeakPtrFactory<QrBubbleState> active_bubble_weak_factory_{this};
 };
 
-// Returns whether `entry_point` is enabled by its feature flags.
-bool IsFeatureEnabledForEntryPoint(
-    CrossDeviceSigninPromoEntryPoint entry_point) {
-  if (!base::FeatureList::IsEnabled(switches::kCrossDeviceSigninFromDesktop)) {
-    return false;
-  }
-  switch (entry_point) {
-    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
-    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
-      return true;
-    case CrossDeviceSigninPromoEntryPoint::kWhatsNewPage:
-      return base::FeatureList::IsEnabled(
-                 switches::kCrossDeviceSigninFromDesktopFollowup) &&
-             switches::kCrossDeviceSigninFromDesktopWhatsNew.Get();
-    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
-    case CrossDeviceSigninPromoEntryPoint::kForeignTabs:
-      return base::FeatureList::IsEnabled(
-          switches::kCrossDeviceSigninFromDesktopFollowup);
-    case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
-      return base::FeatureList::IsEnabled(
-                 switches::kCrossDeviceSigninFromDesktopFollowup) &&
-             switches::kCrossDeviceSigninFromDesktopBookmarkSave.Get();
-  }
-  NOTREACHED();
-}
-
 // Returns whether the promo at `entry_point` is blocked when the account
 // already has a phone.
 bool ShouldCheckForMobileDevice(CrossDeviceSigninPromoEntryPoint entry_point) {
@@ -425,6 +408,7 @@ bool ShouldCheckForMobileDevice(CrossDeviceSigninPromoEntryPoint entry_point) {
     case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
     case CrossDeviceSigninPromoEntryPoint::kForeignTabs:
     case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
+    case CrossDeviceSigninPromoEntryPoint::kPasswordSave:
       return true;
     case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
       // Send Tab To Self is only triggered when there is no valid target
@@ -452,6 +436,8 @@ std::optional<syncer::UserSelectableType> GetRequiredSyncTypeForEntryPoint(
       return syncer::UserSelectableType::kTabs;
     case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
       return syncer::UserSelectableType::kBookmarks;
+    case CrossDeviceSigninPromoEntryPoint::kPasswordSave:
+      return syncer::UserSelectableType::kPasswords;
     case CrossDeviceSigninPromoEntryPoint::kWhatsNewPage:
     case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
     case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
@@ -491,6 +477,21 @@ CrossDeviceSigninPromoShouldShowResult CheckPromoPrerequisites(
   }
 
   return CrossDeviceSigninPromoShouldShowResult::kCanShow;
+}
+
+CrossDeviceSigninPromoShouldShowResult EvaluateCrossDeviceSigninPromo(
+    CrossDeviceSigninPromoEntryPoint entry_point,
+    Profile* profile) {
+  CrossDeviceSigninPromoShouldShowResult result =
+      CheckPromoPrerequisites(entry_point, profile);
+  if (result == CrossDeviceSigninPromoShouldShowResult::kCanShow) {
+    // Dismissible limit checking - only for dismissible entry points.
+    if (std::optional<CrossDevicePromoSurface> surface =
+            GetPromoSurfaceForEntryPoint(entry_point)) {
+      result = CheckDismissiblePromoLimits(profile, *surface);
+    }
+  }
+  return result;
 }
 
 bool OpenSigninToPhoneQrCodeBubbleInternal(
@@ -542,6 +543,53 @@ bool OpenSigninToPhoneQrCodeBubbleInternal(
 
 }  // namespace
 
+bool IsCrossDeviceSigninPromoEntryPointEnabled(
+    CrossDeviceSigninPromoEntryPoint entry_point) {
+  if (!base::FeatureList::IsEnabled(switches::kCrossDeviceSigninFromDesktop)) {
+    return false;
+  }
+  switch (entry_point) {
+    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
+    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
+      return true;
+    case CrossDeviceSigninPromoEntryPoint::kWhatsNewPage:
+      return base::FeatureList::IsEnabled(
+                 switches::kCrossDeviceSigninFromDesktopFollowup) &&
+             switches::kCrossDeviceSigninFromDesktopWhatsNew.Get();
+    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
+    case CrossDeviceSigninPromoEntryPoint::kForeignTabs:
+      return base::FeatureList::IsEnabled(
+          switches::kCrossDeviceSigninFromDesktopFollowup);
+    case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
+      return base::FeatureList::IsEnabled(
+                 switches::kCrossDeviceSigninFromDesktopFollowup) &&
+             switches::kCrossDeviceSigninFromDesktopBookmarkSave.Get();
+    case CrossDeviceSigninPromoEntryPoint::kPasswordSave:
+      return base::FeatureList::IsEnabled(
+                 switches::kCrossDeviceSigninFromDesktopFollowup) &&
+             switches::kCrossDeviceSigninFromDesktopPasswordSave.Get();
+  }
+  NOTREACHED();
+}
+
+bool CanShowCrossDeviceSigninQrPromo(
+    CrossDeviceSigninPromoEntryPoint entry_point,
+    Profile* profile,
+    bool record_metrics) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(profile);
+  if (IsCrossDeviceSigninPromoBubbleOpen(profile) &&
+      !ShouldReplaceExistingBubble(entry_point)) {
+    return false;
+  }
+  if (record_metrics) {
+    return ShouldStartShowingCrossDeviceSigninPromo(entry_point, profile);
+  }
+  return IsCrossDeviceSigninPromoEntryPointEnabled(entry_point) &&
+         EvaluateCrossDeviceSigninPromo(entry_point, profile) ==
+             CrossDeviceSigninPromoShouldShowResult::kCanShow;
+}
+
 bool ShouldStartShowingCrossDeviceSigninPromo(
     CrossDeviceSigninPromoEntryPoint entry_point,
     Profile* profile) {
@@ -549,7 +597,7 @@ bool ShouldStartShowingCrossDeviceSigninPromo(
   // arms can be compared on the same trigger. Evaluating it has no side
   // effects.
   const bool is_entry_point_enabled =
-      IsFeatureEnabledForEntryPoint(entry_point);
+      IsCrossDeviceSigninPromoEntryPointEnabled(entry_point);
   if (!is_entry_point_enabled &&
       !base::FeatureList::IsEnabled(
           switches::kCrossDeviceSigninPromoEligibilityLogging)) {
@@ -557,14 +605,7 @@ bool ShouldStartShowingCrossDeviceSigninPromo(
   }
 
   CrossDeviceSigninPromoShouldShowResult result =
-      CheckPromoPrerequisites(entry_point, profile);
-  if (result == CrossDeviceSigninPromoShouldShowResult::kCanShow) {
-    // 3. Dismissible limit checking - only for dismissible entry points.
-    if (std::optional<CrossDevicePromoSurface> surface =
-            GetPromoSurfaceForEntryPoint(entry_point)) {
-      result = CheckDismissiblePromoLimits(profile, *surface);
-    }
-  }
+      EvaluateCrossDeviceSigninPromo(entry_point, profile);
 
   RecordShouldShowResult(entry_point, result);
   return is_entry_point_enabled &&
@@ -574,7 +615,7 @@ bool ShouldStartShowingCrossDeviceSigninPromo(
 bool ShouldKeepShowingCrossDeviceSigninPromo(
     CrossDeviceSigninPromoEntryPoint entry_point,
     Profile* profile) {
-  return IsFeatureEnabledForEntryPoint(entry_point) &&
+  return IsCrossDeviceSigninPromoEntryPointEnabled(entry_point) &&
          CheckPromoPrerequisites(entry_point, profile) ==
              CrossDeviceSigninPromoShouldShowResult::kCanShow;
 }
@@ -638,11 +679,7 @@ bool MaybeShowCrossDeviceSigninQrPromo(
   if (!profile) {
     return false;
   }
-  if (IsCrossDeviceSigninPromoBubbleOpen(profile) &&
-      !ShouldReplaceExistingBubble(entry_point)) {
-    return false;
-  }
-  if (!ShouldStartShowingCrossDeviceSigninPromo(entry_point, profile)) {
+  if (!CanShowCrossDeviceSigninQrPromo(entry_point, profile)) {
     return false;
   }
 

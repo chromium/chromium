@@ -571,6 +571,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="WhatsNewPage"/>
   <int value="4" label="ForeignTabs"/>
   <int value="5" label="BookmarkSave"/>
+  <int value="6" label="PasswordSave"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/signin/cross_device_signin_promo_manager.h:CrossDeviceSigninPromoEntryPoint) -->

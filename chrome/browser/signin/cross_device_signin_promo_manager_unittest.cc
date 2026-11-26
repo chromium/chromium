@@ -119,6 +119,12 @@ class CrossDeviceSigninPromoManagerTest : public testing::Test {
         syncer::UserSelectableType::kBookmarks, /*is_type_on=*/enable_sync);
   }
 
+  void SetSyncTypePreference(syncer::UserSelectableType type,
+                             bool enable_sync) {
+    sync_service()->GetUserSettings()->SetSelectedType(
+        type, /*is_type_on=*/enable_sync);
+  }
+
   void AddDevice(
       const std::string& guid,
       bool is_local,
@@ -172,6 +178,10 @@ class CrossDeviceSigninPromoManagerEntryPointTest
       case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
         SetBookmarksSyncingPreference(/*enable_sync=*/true);
         break;
+      case CrossDeviceSigninPromoEntryPoint::kPasswordSave:
+        SetSyncTypePreference(syncer::UserSelectableType::kPasswords,
+                              /*enable_sync=*/true);
+        break;
       case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
       case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
       case CrossDeviceSigninPromoEntryPoint::kWhatsNewPage:
@@ -181,7 +191,7 @@ class CrossDeviceSigninPromoManagerEntryPointTest
 };
 
 static_assert(CrossDeviceSigninPromoEntryPoint::kMaxValue ==
-                  CrossDeviceSigninPromoEntryPoint::kBookmarkSave,
+                  CrossDeviceSigninPromoEntryPoint::kPasswordSave,
               "Add new entry points to the list below.");
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -191,7 +201,8 @@ INSTANTIATE_TEST_SUITE_P(
                     CrossDeviceSigninPromoEntryPoint::kSendTabToSelf,
                     CrossDeviceSigninPromoEntryPoint::kWhatsNewPage,
                     CrossDeviceSigninPromoEntryPoint::kForeignTabs,
-                    CrossDeviceSigninPromoEntryPoint::kBookmarkSave),
+                    CrossDeviceSigninPromoEntryPoint::kBookmarkSave,
+                    CrossDeviceSigninPromoEntryPoint::kPasswordSave),
     [](const testing::TestParamInfo<CrossDeviceSigninPromoEntryPoint>& info) {
       return std::string(GetEntryPointHistogramSuffixForTesting(info.param));
     });
@@ -1776,6 +1787,150 @@ TEST_F(
       CrossDeviceSigninPromoShouldShowResult::kDismissalLimitReached, 1);
   EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
       CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest,
+       PasswordSavePromo_EligibilityFlagsCapsAndCampaign) {
+  base::HistogramTester histogram_tester;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user+test@gmail.com", signin::ConsentLevel::kSignin);
+  AddDevice("local_device_guid", /*is_local=*/true);
+
+  SetSyncTypePreference(syncer::UserSelectableType::kPasswords, false);
+  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kPasswordSave, profile()));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.PasswordSave",
+      CrossDeviceSigninPromoShouldShowResult::kDataTypeNotEnabled, 1);
+
+  SetSyncTypePreference(syncer::UserSelectableType::kPasswords, true);
+  {
+    base::test::ScopedFeatureList param_disabled;
+    param_disabled.InitAndEnableFeatureWithParameters(
+        switches::kCrossDeviceSigninFromDesktopFollowup,
+        {{"password_save", "false"}});
+    EXPECT_FALSE(IsCrossDeviceSigninPromoEntryPointEnabled(
+        CrossDeviceSigninPromoEntryPoint::kPasswordSave));
+    {
+      base::HistogramTester lookahead_histograms;
+      EXPECT_FALSE(CanShowCrossDeviceSigninQrPromo(
+          CrossDeviceSigninPromoEntryPoint::kPasswordSave, profile(),
+          /*record_metrics=*/false));
+      lookahead_histograms.ExpectTotalCount(
+          "Signin.CrossDeviceSigninPromo.ShouldShowResult.PasswordSave", 0);
+    }
+    EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+        CrossDeviceSigninPromoEntryPoint::kPasswordSave, profile()));
+  }
+  EXPECT_TRUE(IsCrossDeviceSigninPromoEntryPointEnabled(
+      CrossDeviceSigninPromoEntryPoint::kPasswordSave));
+
+  // Per-surface impression budget is independent from BookmarkSave (up to the
+  // 6-impression global cap across dismissible surfaces).
+  SetBookmarksSyncingPreference(true);
+  for (int i = 0; i < 5; ++i) {
+    OnCrossDeviceSigninPromoShown(
+        CrossDeviceSigninPromoEntryPoint::kBookmarkSave, profile());
+  }
+  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kBookmarkSave, profile()));
+  {
+    base::HistogramTester lookahead_histograms;
+    EXPECT_TRUE(CanShowCrossDeviceSigninQrPromo(
+        CrossDeviceSigninPromoEntryPoint::kPasswordSave, profile(),
+        /*record_metrics=*/false));
+    lookahead_histograms.ExpectTotalCount(
+        "Signin.CrossDeviceSigninPromo.ShouldShowResult.PasswordSave", 0);
+  }
+
+  MockBrowserWindowInterface browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+  MockSigninUiDelegate mock_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_delegate);
+
+  GURL captured_url;
+  base::OnceClosure close_callback;
+  EXPECT_CALL(mock_delegate,
+              ShowCrossDeviceSigninQrBubble(
+                  &browser_window, testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kPasswordSave, testing::_))
+      .WillOnce(testing::DoAll(testing::SaveArg<1>(&captured_url),
+                               MoveArg<2>(&close_callback)));
+
+  EXPECT_TRUE(MaybeShowCrossDeviceSigninQrPromo(
+      &browser_window, CrossDeviceSigninPromoEntryPoint::kPasswordSave));
+  std::string campaign_val;
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(captured_url, "ios-campaign", &campaign_val));
+  EXPECT_EQ(campaign_val, "XDevicePasswordSave");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "android-campaign",
+                                         &campaign_val));
+  EXPECT_EQ(campaign_val, "XDevicePasswordSave");
+
+  std::move(close_callback).Run();
+  EXPECT_FALSE(CanShowCrossDeviceSigninQrPromo(
+      CrossDeviceSigninPromoEntryPoint::kPasswordSave, profile(),
+      /*record_metrics=*/false));
+  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kPasswordSave, profile()));
+  histogram_tester.ExpectBucketCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.PasswordSave",
+      CrossDeviceSigninPromoShouldShowResult::kGlobalShownLimitReached, 1);
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest,
+       CanShowCrossDeviceSigninQrPromo_RespectsOpenBubbleAndRecordMetrics) {
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  AddDevice("local_device_guid", /*is_local=*/true);
+  SetSyncTypePreference(syncer::UserSelectableType::kPasswords, true);
+
+  MockBrowserWindowInterface browser_window;
+  EXPECT_CALL(browser_window, GetProfile())
+      .WillRepeatedly(testing::Return(profile()));
+  MockSigninUiDelegate mock_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_delegate);
+
+  base::OnceClosure close_callback;
+  EXPECT_CALL(mock_delegate,
+              ShowCrossDeviceSigninQrBubble(
+                  &browser_window, testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kPasswordSave, testing::_))
+      .WillOnce(MoveArg<2>(&close_callback));
+  ASSERT_TRUE(MaybeShowCrossDeviceSigninQrPromo(
+      &browser_window, CrossDeviceSigninPromoEntryPoint::kPasswordSave));
+
+  // With only 1 impression recorded, `kPasswordSave` is blocked strictly by
+  // the open bubble, whereas `kProfileMenu` can replace an open bubble.
+  base::HistogramTester lookahead_histograms;
+  EXPECT_FALSE(CanShowCrossDeviceSigninQrPromo(
+      CrossDeviceSigninPromoEntryPoint::kPasswordSave, profile(),
+      /*record_metrics=*/false));
+  EXPECT_TRUE(CanShowCrossDeviceSigninQrPromo(
+      CrossDeviceSigninPromoEntryPoint::kProfileMenu, profile(),
+      /*record_metrics=*/false));
+  lookahead_histograms.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.PasswordSave", 0);
+  lookahead_histograms.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ProfileMenu", 0);
+
+  // Closing the bubble passively restores eligibility; `record_metrics=false`
+  // emits no metrics while the default `record_metrics=true` records
+  // `kCanShow`.
+  std::move(close_callback).Run();
+  EXPECT_TRUE(CanShowCrossDeviceSigninQrPromo(
+      CrossDeviceSigninPromoEntryPoint::kPasswordSave, profile(),
+      /*record_metrics=*/false));
+  lookahead_histograms.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.PasswordSave", 0);
+  EXPECT_TRUE(CanShowCrossDeviceSigninQrPromo(
+      CrossDeviceSigninPromoEntryPoint::kPasswordSave, profile()));
+  lookahead_histograms.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.PasswordSave",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
 }
 
 TEST_F(CrossDeviceSigninPromoManagerTest,

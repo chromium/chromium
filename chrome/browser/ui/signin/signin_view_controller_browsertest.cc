@@ -1339,6 +1339,10 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
       {CrossDeviceSigninPromoEntryPoint::kBookmarkSave, kActionBookmarkThisTab,
        IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE_BOOKMARKS,
        IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE_BOOKMARKS},
+      {CrossDeviceSigninPromoEntryPoint::kPasswordSave,
+       kActionShowPasswordsBubbleOrPage,
+       IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE_PASSWORDS,
+       IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE_PASSWORDS},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -1430,91 +1434,103 @@ IN_PROC_BROWSER_TEST_F(
     PostSaveQrBubbleClosesPassivelyOnFocusLossTabSwitchAndTabDestruction) {
   static constexpr char kBubbleWidgetName[] = "CrossDeviceSigninQrBubbleViews";
   SetPrimaryAccount();
-  actions::ActionItem* bookmark_action_item =
-      actions::ActionManager::Get().FindAction(
-          kActionBookmarkThisTab,
-          BrowserActions::From(browser())->root_action_item());
-  ASSERT_TRUE(bookmark_action_item);
-  ASSERT_TRUE(
-      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   TabStripModel* tab_strip = browser()->GetTabStripModel();
-  tab_strip->ActivateTabAt(1);
 
-  auto show_post_save_bubble =
-      [&](base::OnceClosure cb, base::OnceClosure explicit_dismissal_cb,
-          std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin>*
-              out_pin) {
-        views::AnyWidgetObserver init_observer(
-            views::test::AnyWidgetTestPasskey{});
-        init_observer.set_initialized_callback(
-            base::BindLambdaForTesting([&](views::Widget* widget) {
-              if (widget->GetName() == kBubbleWidgetName) {
-                *out_pin = widget->widget_delegate()
-                               ->AsBubbleDialogDelegate()
-                               ->PreventCloseOnDeactivate();
-              }
-            }));
-        views::NamedWidgetShownWaiter bubble_waiter(
-            views::test::AnyWidgetTestPasskey{}, kBubbleWidgetName);
-        SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
-            GURL("https://www.google.com/chrome/go-mobile"), std::move(cb),
-            CrossDeviceSigninPromoEntryPoint::kBookmarkSave,
-            std::move(explicit_dismissal_cb));
-        return bubble_waiter.WaitIfNeededAndGet();
-      };
+  struct EntryPointTestCase {
+    CrossDeviceSigninPromoEntryPoint entry_point;
+    actions::ActionId action_id;
+  };
+  static constexpr EntryPointTestCase kEntryPoints[] = {
+      {CrossDeviceSigninPromoEntryPoint::kBookmarkSave, kActionBookmarkThisTab},
+      {CrossDeviceSigninPromoEntryPoint::kPasswordSave,
+       kActionShowPasswordsBubbleOrPage},
+  };
 
-  // 1. Focus loss (`ClosedReason::kLostFocus`) closes the bubble passively.
-  {
-    base::MockCallback<base::OnceClosure> closing_callback;
-    EXPECT_CALL(closing_callback, Run()).Times(1);
-    base::MockCallback<base::OnceClosure> explicit_dismissal_callback;
-    EXPECT_CALL(explicit_dismissal_callback, Run()).Times(0);
-    std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
-    views::Widget* bubble_widget = show_post_save_bubble(
-        closing_callback.Get(), explicit_dismissal_callback.Get(), &pin);
-    ASSERT_TRUE(bubble_widget);
-    EXPECT_TRUE(bookmark_action_item->GetIsShowingBubble());
-    views::test::WidgetDestroyedWaiter waiter(bubble_widget);
-    bubble_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
-    waiter.Wait();
-    EXPECT_FALSE(bookmark_action_item->GetIsShowingBubble());
-  }
+  for (const auto& test_case : kEntryPoints) {
+    SCOPED_TRACE(GetEntryPointHistogramSuffixForTesting(test_case.entry_point));
+    actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+        test_case.action_id,
+        BrowserActions::From(browser())->root_action_item());
+    ASSERT_TRUE(action_item);
+    ASSERT_TRUE(
+        AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+    tab_strip->ActivateTabAt(1);
 
-  // 2. Switching away from the originating tab closes the bubble passively.
-  {
-    base::MockCallback<base::OnceClosure> closing_callback;
-    EXPECT_CALL(closing_callback, Run()).Times(1);
-    base::MockCallback<base::OnceClosure> explicit_dismissal_callback;
-    EXPECT_CALL(explicit_dismissal_callback, Run()).Times(0);
-    std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
-    views::Widget* bubble_widget = show_post_save_bubble(
-        closing_callback.Get(), explicit_dismissal_callback.Get(), &pin);
-    ASSERT_TRUE(bubble_widget);
-    ASSERT_TRUE(pin);
-    EXPECT_TRUE(bookmark_action_item->GetIsShowingBubble());
-    views::test::WidgetDestroyedWaiter waiter(bubble_widget);
-    tab_strip->ActivateTabAt(0);
-    waiter.Wait();
-    EXPECT_FALSE(bookmark_action_item->GetIsShowingBubble());
-  }
+    auto show_post_save_bubble =
+        [&](base::OnceClosure cb, base::OnceClosure explicit_dismissal_cb,
+            std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin>*
+                out_pin) {
+          views::AnyWidgetObserver init_observer(
+              views::test::AnyWidgetTestPasskey{});
+          init_observer.set_initialized_callback(
+              base::BindLambdaForTesting([&](views::Widget* widget) {
+                if (widget->GetName() == kBubbleWidgetName) {
+                  *out_pin = widget->widget_delegate()
+                                 ->AsBubbleDialogDelegate()
+                                 ->PreventCloseOnDeactivate();
+                }
+              }));
+          views::NamedWidgetShownWaiter bubble_waiter(
+              views::test::AnyWidgetTestPasskey{}, kBubbleWidgetName);
+          SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
+              GURL("https://www.google.com/chrome/go-mobile"), std::move(cb),
+              test_case.entry_point, std::move(explicit_dismissal_cb));
+          return bubble_waiter.WaitIfNeededAndGet();
+        };
 
-  // 3. Destroying the originating tab closes the bubble passively.
-  tab_strip->ActivateTabAt(1);
-  {
-    base::MockCallback<base::OnceClosure> closing_callback;
-    EXPECT_CALL(closing_callback, Run()).Times(1);
-    base::MockCallback<base::OnceClosure> explicit_dismissal_callback;
-    EXPECT_CALL(explicit_dismissal_callback, Run()).Times(0);
-    std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
-    views::Widget* bubble_widget = show_post_save_bubble(
-        closing_callback.Get(), explicit_dismissal_callback.Get(), &pin);
-    ASSERT_TRUE(bubble_widget);
-    ASSERT_TRUE(pin);
-    EXPECT_TRUE(bookmark_action_item->GetIsShowingBubble());
-    views::test::WidgetDestroyedWaiter waiter(bubble_widget);
-    tab_strip->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
-    waiter.Wait();
-    EXPECT_FALSE(bookmark_action_item->GetIsShowingBubble());
+    // 1. Focus loss (`ClosedReason::kLostFocus`) closes the bubble passively.
+    {
+      base::MockCallback<base::OnceClosure> closing_callback;
+      EXPECT_CALL(closing_callback, Run()).Times(1);
+      base::MockCallback<base::OnceClosure> explicit_dismissal_callback;
+      EXPECT_CALL(explicit_dismissal_callback, Run()).Times(0);
+      std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
+      views::Widget* bubble_widget = show_post_save_bubble(
+          closing_callback.Get(), explicit_dismissal_callback.Get(), &pin);
+      ASSERT_TRUE(bubble_widget);
+      EXPECT_TRUE(action_item->GetIsShowingBubble());
+      views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+      bubble_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+      waiter.Wait();
+      EXPECT_FALSE(action_item->GetIsShowingBubble());
+    }
+
+    // 2. Switching away from the originating tab closes the bubble passively.
+    {
+      base::MockCallback<base::OnceClosure> closing_callback;
+      EXPECT_CALL(closing_callback, Run()).Times(1);
+      base::MockCallback<base::OnceClosure> explicit_dismissal_callback;
+      EXPECT_CALL(explicit_dismissal_callback, Run()).Times(0);
+      std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
+      views::Widget* bubble_widget = show_post_save_bubble(
+          closing_callback.Get(), explicit_dismissal_callback.Get(), &pin);
+      ASSERT_TRUE(bubble_widget);
+      ASSERT_TRUE(pin);
+      EXPECT_TRUE(action_item->GetIsShowingBubble());
+      views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+      tab_strip->ActivateTabAt(0);
+      waiter.Wait();
+      EXPECT_FALSE(action_item->GetIsShowingBubble());
+      tab_strip->ActivateTabAt(1);
+    }
+
+    // 3. Destroying the originating tab closes the bubble passively.
+    {
+      base::MockCallback<base::OnceClosure> closing_callback;
+      EXPECT_CALL(closing_callback, Run()).Times(1);
+      base::MockCallback<base::OnceClosure> explicit_dismissal_callback;
+      EXPECT_CALL(explicit_dismissal_callback, Run()).Times(0);
+      std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
+      views::Widget* bubble_widget = show_post_save_bubble(
+          closing_callback.Get(), explicit_dismissal_callback.Get(), &pin);
+      ASSERT_TRUE(bubble_widget);
+      ASSERT_TRUE(pin);
+      EXPECT_TRUE(action_item->GetIsShowingBubble());
+      views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+      tab_strip->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
+      waiter.Wait();
+      EXPECT_FALSE(action_item->GetIsShowingBubble());
+    }
   }
 }
 

@@ -1358,4 +1358,7 @@
     <message name="IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE_BOOKMARKS" desc="Title of the cross-device sign-in QR Code bubble shown right after saving a bookmark.">
       Get bookmarks on your phone
     </message>
+    <message name="IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE_PASSWORDS" desc="Title of the cross-device sign-in QR Code bubble shown right after saving a password.">
+      Get passwords on your phone
+    </message>
 </grit-part>

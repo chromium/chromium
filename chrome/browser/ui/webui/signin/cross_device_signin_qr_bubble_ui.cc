@@ -156,6 +156,8 @@ int GetBubbleSubtitleResourceId(CrossDeviceSigninPromoEntryPoint entry_point) {
       return IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_BODY_QR;
     case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
       return IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE_BOOKMARKS;
+    case CrossDeviceSigninPromoEntryPoint::kPasswordSave:
+      return IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE_PASSWORDS;
   }
 }
 
@@ -209,6 +211,8 @@ int CrossDeviceSigninQrBubbleUI::GetTitleResourceId(
       return IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE;
     case CrossDeviceSigninPromoEntryPoint::kBookmarkSave:
       return IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE_BOOKMARKS;
+    case CrossDeviceSigninPromoEntryPoint::kPasswordSave:
+      return IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE_PASSWORDS;
   }
 }
 

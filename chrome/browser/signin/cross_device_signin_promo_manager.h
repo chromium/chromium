@@ -23,7 +23,8 @@ enum class CrossDeviceSigninPromoEntryPoint {
   kWhatsNewPage = 3,
   kForeignTabs = 4,
   kBookmarkSave = 5,
-  kMaxValue = kBookmarkSave,
+  kPasswordSave = 6,
+  kMaxValue = kPasswordSave,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:CrossDeviceSigninPromoEntryPoint)
 
@@ -45,6 +46,27 @@ enum class CrossDeviceSigninPromoShouldShowResult {
   kMaxValue = kGlobalShownLimitReached,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:CrossDeviceSigninPromoShouldShowResult)
+
+// Returns whether `entry_point` is enabled by its feature flags.
+bool IsCrossDeviceSigninPromoEntryPointEnabled(
+    CrossDeviceSigninPromoEntryPoint entry_point);
+
+// Returns whether the cross-device sign-in QR code promo can be shown at
+// `entry_point`: `entry_point` is enabled, the user is eligible, the
+// impression/dismissal frequency caps allow it, and no non-replaceable QR code
+// bubble is already open for `profile` (matching
+// `MaybeShowCrossDeviceSigninQrPromo()`). `profile` must be non-null and this
+// must be called on the UI thread.
+//
+// When `record_metrics` is true (the default), records
+// `Signin.CrossDeviceSigninPromo.ShouldShowResult.*` (unless blocked by an
+// already-open non-replaceable QR code bubble). Pass `record_metrics = false`
+// only when an earlier lookahead needs to check whether a subsequent trigger
+// will show (e.g. to suppress a competing IPH) without double-logging metrics.
+bool CanShowCrossDeviceSigninQrPromo(
+    CrossDeviceSigninPromoEntryPoint entry_point,
+    Profile* profile,
+    bool record_metrics = true);
 
 // Returns whether the cross-device sign-in promo should start being shown at
 // `entry_point`: the entry point is enabled by its feature flags, the user is

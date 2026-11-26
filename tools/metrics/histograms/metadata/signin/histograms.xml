@@ -111,6 +111,7 @@ chromium-metrics-reviews@google.com.
       summary="Bookmark save (star bubble) entry point"/>
   <variant name="ForeignTabs" summary="Foreign tabs entry point"/>
   <variant name="HistoryPage" summary="History Page entry point"/>
+  <variant name="PasswordSave" summary="Password save bubble entry point"/>
   <variant name="ProfileMenu" summary="Profile Menu entry point"/>
   <variant name="SendTabToSelf" summary="Send Tab to Self entry point"/>
   <variant name="WhatsNewPage"

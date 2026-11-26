@@ -217,6 +217,8 @@ const base::FeatureParam<bool> kCrossDeviceSigninFromDesktopWhatsNew{
     &kCrossDeviceSigninFromDesktopFollowup, "whats_new", true};
 const base::FeatureParam<bool> kCrossDeviceSigninFromDesktopBookmarkSave{
     &kCrossDeviceSigninFromDesktopFollowup, "bookmark_save", true};
+const base::FeatureParam<bool> kCrossDeviceSigninFromDesktopPasswordSave{
+    &kCrossDeviceSigninFromDesktopFollowup, "password_save", true};
 
 BASE_FEATURE(kCrossDeviceSigninPromoEligibilityLogging,
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -1625,6 +1625,9 @@ Chromium is unable to recover your settings.
       <message name="IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE_BOOKMARKS" desc="Subtitle of the cross-device sign-in QR Code bubble shown right after saving a bookmark.">
         To always get back to sites you've bookmarked, scan the QR code with your phone's camera to sign in to Chromium.
       </message>
+      <message name="IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE_PASSWORDS" desc="Subtitle of the cross-device sign-in QR Code bubble shown right after saving a password.">
+        To use your saved passwords across devices, scan the QR code with your phone's camera to sign in to Chromium.
+      </message>
 
       <message name="IDS_APP_ALSO_DELETE_APPS_DATA" desc="Checkbox text to ask the user during uninstall; Whether they want to remove associated data for the app being uninstalled. Only used when uninstalling an app associated with a particular website.">
         Remove this app's data from Chromium

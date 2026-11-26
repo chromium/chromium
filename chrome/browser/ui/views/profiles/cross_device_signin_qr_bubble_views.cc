@@ -81,6 +81,10 @@ constexpr std::optional<OmniboxAnchorConfig> GetOmniboxAnchorConfig(
       return OmniboxAnchorConfig{
           .action_id = kActionBookmarkThisTab,
           .highlighted_element = kBookmarkStarViewElementId};
+    case CrossDeviceSigninPromoEntryPoint::kPasswordSave:
+      return OmniboxAnchorConfig{
+          .action_id = kActionShowPasswordsBubbleOrPage,
+          .highlighted_element = kPasswordsOmniboxKeyIconElementId};
   }
 }
 
