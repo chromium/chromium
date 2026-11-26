@@ -236,7 +236,9 @@ float HDRMetadata::GetWaylandReferenceLuminance(
 
   if (color_space.GetTransferID() == ColorSpace::TransferID::PQ ||
       color_space.GetTransferID() == ColorSpace::TransferID::HLG) {
-    auto sk_color_space = color_space.ToSkColorSpace();
+    // Only the transfer function matters. ToSkColorSpace() returns null for
+    // YUV and limited range color spaces, so convert to full range RGB first.
+    auto sk_color_space = color_space.GetAsFullRangeRGB().ToSkColorSpace();
     skcms_TransferFunction transfer_fn;
     sk_color_space->transferFn(&transfer_fn);
     return transfer_fn.a;
