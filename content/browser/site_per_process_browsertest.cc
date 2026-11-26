@@ -105,6 +105,7 @@
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host_priority_client.h"
+#include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -6299,26 +6300,29 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(orig_site_instance, child->current_frame_host()->GetSiteInstance());
 }
 
-// Intercepts calls to PopupWidgetHost's ShowPopup mojo method, and
-// invokes the provided callback. The caller has to guarantee that
-// `render_widget_host` lives at least as long as
-// ShowCreatedPopupWidgetInterceptor.
+// Intercepts a single `ShowPopup()` call on `render_widget_host`, invokes
+// `test_callback`, and restores the receiver implementation once intercepted
+// (or if `render_widget_host` is destroyed first) so the interceptor may safely
+// outlive the popup widget and compose with subsequent interceptors such as
+// `RequestCloseWidgetInterceptor`.
 class ShowCreatedPopupWidgetInterceptor
-    : public blink::mojom::PopupWidgetHostInterceptorForTesting {
+    : public blink::mojom::PopupWidgetHostInterceptorForTesting,
+      public RenderWidgetHostObserver {
  public:
   ShowCreatedPopupWidgetInterceptor(
       RenderWidgetHostImpl* render_widget_host,
       base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback)
-      : render_widget_host_(render_widget_host),
-        test_callback_(std::move(test_callback)),
-        swapped_impl_(
-            render_widget_host_->popup_widget_host_receiver_for_testing(),
-            this) {}
+      : test_callback_(std::move(test_callback)) {
+    swapped_impl_.emplace(
+        render_widget_host->popup_widget_host_receiver_for_testing(), this);
+    widget_observation_.Observe(render_widget_host);
+  }
 
   ~ShowCreatedPopupWidgetInterceptor() override = default;
 
   blink::mojom::PopupWidgetHost* GetForwardingInterface() override {
-    return swapped_impl_.old_impl();
+    CHECK(swapped_impl_);
+    return swapped_impl_->old_impl();
   }
 
   void ShowPopup(const gfx::Rect& initial_rect,
@@ -6326,27 +6330,38 @@ class ShowCreatedPopupWidgetInterceptor
                  ShowPopupCallback callback) override {
     show_callback_ = std::move(callback);
     initial_rect_ = initial_rect;
-    std::move(test_callback_).Run(render_widget_host_->GetRoutingID());
+    int32_t routing_id = widget_observation_.GetSource()->GetRoutingID();
+    swapped_impl_.reset();
+    std::move(test_callback_).Run(routing_id);
   }
 
   void ResumeShowPopupWidget() {
+    RenderWidgetHostImpl* host = widget_observation_.GetSource();
+    CHECK(host);
     // Let anchor have same origin as bounds, but its width and height should be
     // 1,1 as RenderWidgetHostViewAura sets OwnedWindowAnchorPosition as
     // kBottomLeft. Otherwise, the bottom left point of the |initial_rect|'s
     // size is going to be used as the origin of a popup.
     gfx::Rect anchor = initial_rect_;
     anchor.set_size({1, 1});
-    GetForwardingInterface()->ShowPopup(initial_rect_, anchor,
-                                        std::move(show_callback_));
+    host->ShowPopup(initial_rect_, anchor, std::move(show_callback_));
+  }
+
+  // RenderWidgetHostObserver:
+  void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) override {
+    widget_observation_.Reset();
+    swapped_impl_.reset();
   }
 
  private:
-  raw_ptr<RenderWidgetHostImpl> render_widget_host_;
   base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
   ShowPopupCallback show_callback_;
   gfx::Rect initial_rect_;
-  mojo::test::ScopedSwapImplForTesting<blink::mojom::PopupWidgetHost>
+  std::optional<
+      mojo::test::ScopedSwapImplForTesting<blink::mojom::PopupWidgetHost>>
       swapped_impl_;
+  base::ScopedObservation<RenderWidgetHostImpl, RenderWidgetHostObserver>
+      widget_observation_{this};
 };
 
 // Listens for the source RenderFrameHost opening the new popup widget then
