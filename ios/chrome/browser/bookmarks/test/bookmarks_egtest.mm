@@ -19,6 +19,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/scoped_disable_timer_tracking.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 using chrome_test_util::BookmarksHomeDoneButton;
@@ -471,6 +472,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   NSString* newFolderTitle = @"New Folder 1";
   [BookmarkEarlGreyUI createNewBookmarkFolderWithFolderTitle:newFolderTitle
                                                  pressReturn:YES];
+  // On iPad CI bots, after the folder is committed, UIKit's focus system can
+  // keep re-arming a short timer while the new row is just off-screen, which
+  // EarlGrey would otherwise treat as the app never becoming idle.
+  ScopedDisableTimerTracking disabler;
   [BookmarkEarlGreyUI verifyFolderCreatedWithTitle:newFolderTitle];
 }
 
