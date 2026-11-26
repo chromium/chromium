@@ -9,6 +9,7 @@
 #include "base/allocator/partition_alloc_support.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/synchronization/waitable_event.h"
@@ -40,6 +41,46 @@
 #endif
 
 namespace viz {
+
+#if BUILDFLAG(IS_ANDROID)
+namespace {
+
+void MaybePrewarmSharedContextState(CompositorGpuThread* compositor_gpu_thread,
+                                    gpu::GrContextType gr_context_type) {
+  DCHECK(!compositor_gpu_thread->task_runner()->BelongsToCurrentThread());
+  if (gr_context_type == gpu::GrContextType::kNone) {
+    // GrContextType::kNone has no Skia compositor context to initialize, and
+    // SharedContextState::IsUsingGL() treats kNone as GL-backed, so creating a
+    // SharedContextState without a GLContext under kSkipDisabledGLContextOnDrDC
+    // crashes CleanUp() in MakeCurrent(nullptr).
+    return;
+  }
+  // On non-GL backends, GetSharedContextState() creates an unused DrDC
+  // GLContext unless kSkipDisabledGLContextOnDrDC is enabled, which contends
+  // with early startup CPU.
+  if (gr_context_type != gpu::GrContextType::kGL &&
+      !base::FeatureList::IsEnabled(features::kSkipDisabledGLContextOnDrDC)) {
+    return;
+  }
+  // Check the prewarm feature last so ineligible configurations (such as
+  // non-GL backends without kSkipDisabledGLContextOnDrDC) do not enroll in the
+  // trial from CompositorGpuThread creation.
+  if (!base::FeatureList::IsEnabled(
+          features::kAndroidEarlyGpuChannelAndCompositorPrewarm)) {
+    return;
+  }
+  // Safe with base::Unretained: ~CompositorGpuThread() calls
+  // base::Thread::Stop(), joining all queued tasks before destruction and
+  // before GpuServiceImpl resets `gpu_channel_manager_`.
+  compositor_gpu_thread->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&CompositorGpuThread::GetSharedContextState),
+          base::Unretained(compositor_gpu_thread)));
+}
+
+}  // namespace
+#endif
 
 // static
 std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
@@ -103,6 +144,11 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
   if (!compositor_gpu_thread->Initialize()) {
     return nullptr;
   }
+#if BUILDFLAG(IS_ANDROID)
+  MaybePrewarmSharedContextState(
+      compositor_gpu_thread.get(),
+      params.gpu_channel_manager->gpu_preferences().gr_context_type);
+#endif
   return compositor_gpu_thread;
 }
 

@@ -21,6 +21,8 @@ namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidDumpForBadCompositedUiState);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAndroidEarlyGpuChannelAndCompositorPrewarm);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidSurfaceControlHdrOverlays);
 // Controls whether Android window occlusion state is propagated from the
 // browser client compositor to Viz display visibility.

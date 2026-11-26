@@ -19,6 +19,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/viz/common/resources/peak_gpu_memory_tracker_util.h"
 #include "components/viz/service/gl/mock_gpu_service_impl.h"
 #include "components/viz/service/input/peak_gpu_memory_tracker_impl.h"
@@ -30,6 +31,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/viz/common/features.h"
+#include "components/viz/service/display_embedder/compositor_gpu_thread.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
+#endif
 
 namespace viz {
 
@@ -241,5 +250,134 @@ TEST_F(GpuServiceTest, DawnInfoCollectedOncePerMode) {
   EXPECT_EQ(first_info_list, get_dawn_info(/*collect_metrics=*/false));
   histogram.ExpectTotalCount(kInfoCollectionTime, 2);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class GpuServicePrewarmTest : public GpuServiceTest {
+ public:
+  struct PrewarmSnapshot {
+    bool has_shared_context = false;
+    bool has_real_gl_context = false;
+    bool has_gr_context = false;
+  };
+
+  void SetUp() override {
+    GpuServiceTest::SetUp();
+    DestroyService();
+  }
+
+  PrewarmSnapshot RunPrewarmCase(bool enable_prewarm,
+                                 bool skip_disabled_gl,
+                                 gpu::GrContextType gr_context_type) {
+    base::test::ScopedFeatureList feature_list;
+    std::vector<base::test::FeatureRef> enabled;
+    std::vector<base::test::FeatureRef> disabled;
+    (enable_prewarm ? enabled : disabled)
+        .push_back(features::kAndroidEarlyGpuChannelAndCompositorPrewarm);
+    (skip_disabled_gl ? enabled : disabled)
+        .push_back(features::kSkipDisabledGLContextOnDrDC);
+    feature_list.InitWithFeatures(enabled, disabled);
+
+    gpu::GpuPreferences gpu_preferences;
+    gpu_preferences.gr_context_type = gr_context_type;
+    gpu_preferences.use_passthrough_cmd_decoder =
+        gl::UsePassthroughCommandDecoder(
+            base::CommandLine::ForCurrentProcess());
+    gpu::GPUInfo gpu_info;
+    gpu_info.in_process_gpu = false;
+    gpu::GpuFeatureInfo gpu_feature_info;
+    gpu_feature_info.status_values
+        [gpu::GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] =
+        gpu::kGpuFeatureStatusEnabled;
+
+    GpuServiceImpl::InitParams init_params;
+    init_params.io_runner = io_runner();
+    auto service = std::make_unique<testing::NiceMock<MockGpuServiceImpl>>(
+        gpu_preferences, gpu_info, gpu_feature_info, gpu::GPUInfo(),
+        gpu::GpuFeatureInfo(), gfx::GpuExtraInfo(), std::move(init_params));
+
+    mojo::PendingRemote<mojom::GpuHost> gpu_host_proxy;
+    std::ignore = gpu_host_proxy.InitWithNewPipeAndPassReceiver();
+    service->InitializeWithHost(std::move(gpu_host_proxy),
+                                gpu::GpuProcessShmCount(),
+                                gl::init::CreateOffscreenGLSurface(
+                                    gl::GetDefaultDisplay(), gfx::Size()),
+                                mojom::GpuServiceCreationParams::New());
+
+    PrewarmSnapshot snapshot;
+    if (!service->compositor_gpu_thread()) {
+      ADD_FAILURE() << "Expected DrDC CompositorGpuThread to be created";
+      return snapshot;
+    }
+
+    base::WaitableEvent flushed(
+        base::WaitableEvent::ResetPolicy::MANUAL,
+        base::WaitableEvent::InitialState::NOT_SIGNALED);
+    service->compositor_gpu_thread()->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](PrewarmSnapshot* out_snapshot, base::WaitableEvent* done) {
+              gpu::SharedContextState* state =
+                  gpu::SharedContextState::GetForCurrentThread();
+              out_snapshot->has_shared_context = (state != nullptr);
+              out_snapshot->has_real_gl_context =
+                  (state != nullptr && state->real_context() != nullptr);
+              out_snapshot->has_gr_context =
+                  (state != nullptr && state->gr_context() != nullptr);
+              done->Signal();
+            },
+            &snapshot, &flushed));
+    flushed.Wait();
+
+    // Stop CompositorGpuThread and drain pending IO and main-thread tasks
+    // before tearing down ScopedFeatureList.
+    service.reset();
+    base::RunLoop flush_loop;
+    io_runner()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                  flush_loop.QuitClosure());
+    flush_loop.Run();
+    return snapshot;
+  }
+};
+
+// When the feature is disabled, InitializeWithHost leaves CompositorGpuThread's
+// SharedContextState uninitialized until first compositor demand.
+TEST_F(GpuServicePrewarmTest, DisabledByDefault) {
+  PrewarmSnapshot snapshot =
+      RunPrewarmCase(/*enable_prewarm=*/false, /*skip_disabled_gl=*/true,
+                     gpu::GrContextType::kGL);
+  EXPECT_FALSE(snapshot.has_shared_context);
+}
+
+// When GrContextType is kNone, prewarm is skipped because there is no Skia
+// context to initialize and CleanUp() would call MakeCurrent() on a null
+// GLContext under kSkipDisabledGLContextOnDrDC.
+TEST_F(GpuServicePrewarmTest, SkipsGrContextTypeNone) {
+  PrewarmSnapshot snapshot =
+      RunPrewarmCase(/*enable_prewarm=*/true, /*skip_disabled_gl=*/true,
+                     gpu::GrContextType::kNone);
+  EXPECT_FALSE(snapshot.has_shared_context);
+}
+
+// On non-GL backends, prewarm is skipped when kSkipDisabledGLContextOnDrDC is
+// disabled so startup does not allocate an unused DrDC GLContext.
+TEST_F(GpuServicePrewarmTest, SkipsNonGLWithoutSkipDisabledGLContext) {
+  PrewarmSnapshot snapshot =
+      RunPrewarmCase(/*enable_prewarm=*/true, /*skip_disabled_gl=*/false,
+                     gpu::GrContextType::kVulkan);
+  EXPECT_FALSE(snapshot.has_shared_context);
+}
+
+// On an active GL backend, SharedContextState, GLContext, and Ganesh GrContext
+// are initialized asynchronously on CompositorGpuThread during
+// InitializeWithHost and torn down cleanly in CleanUp().
+TEST_F(GpuServicePrewarmTest, PrewarmsGLSharedContext) {
+  PrewarmSnapshot snapshot =
+      RunPrewarmCase(/*enable_prewarm=*/true, /*skip_disabled_gl=*/true,
+                     gpu::GrContextType::kGL);
+  EXPECT_TRUE(snapshot.has_shared_context);
+  EXPECT_TRUE(snapshot.has_real_gl_context);
+  EXPECT_TRUE(snapshot.has_gr_context);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace viz

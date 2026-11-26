@@ -38,6 +38,12 @@ namespace features {
 BASE_FEATURE(kAndroidDumpForBadCompositedUiState,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls early Android GPU/Viz initialization and asynchronous
+// CompositorGpuThread SharedContextState prewarming during startup so first
+// paint does not serialize GPU/Viz setup behind SurfaceView creation.
+BASE_FEATURE(kAndroidEarlyGpuChannelAndCompositorPrewarm,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the use of SurfaceControl underlays/overlays for HDR content on
 // Android. When disabled (default), HDR video is composited directly by
 // SkiaRenderer to prevent tone-mapping mismatches between
