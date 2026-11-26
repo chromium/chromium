@@ -7,16 +7,10 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/accessibility",
-  "+chrome/browser/apps/app_service",
-  "+chrome/browser/ash/app_list",
-  "+chrome/browser/ash/base",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/enrollment",
-  "+chrome/browser/ash/preferences/preferences.h",
-  "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/extensions/api/braille_display_private",
   "+chrome/browser/extensions/component_loader.h",
-  "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/aura/accessibility",
@@ -34,8 +28,14 @@ specific_include_rules = {
 
   # Testing
   ".*_browsertest\\.cc": [
+    "+chrome/browser/apps/app_service",
+    "+chrome/browser/ash/app_list",
+    "+chrome/browser/ash/base",
+    "+chrome/browser/ash/preferences/preferences.h",
+    "+chrome/browser/ash/system_web_apps",
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
+    "+chrome/browser/extensions/extension_apitest.h",
     "+chrome/browser/extensions/error_console",
     "+chrome/browser/global_features.h",
     "+chrome/browser/ui/browser_commands.h",
