@@ -34,7 +34,14 @@ const base::FeatureParam<std::string> kTranslationAPILibraryMinimumVersion{
 
 const base::FeatureParam<base::TimeDelta> kTranslationAPIServiceIdleTimeout{
     &blink::features::kTranslationAPI, "TranslationAPIServiceIdleTimeout",
-    base::Minutes(1)};
+#if BUILDFLAG(IS_ANDROID)
+    // Starting the service again costs a process launch, a library load, and a
+    // model load, which is most of the time of `create()` on Android.
+    base::Seconds(20)
+#else
+    base::TimeDelta()
+#endif  // BUILDFLAG(IS_ANDROID)
+};
 
 const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount{
     &blink::features::kTranslationAPI, "TranslationAPIMaxServiceCount",

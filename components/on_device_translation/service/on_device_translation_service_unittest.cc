@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "components/on_device_translation/features.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "components/on_device_translation/service/test/test_util.h"
@@ -97,6 +96,12 @@ class OnDeviceTranslationServiceTest : public testing::Test {
                               }));
     run_loop.Run();
     return output_out;
+  }
+
+  // Returns whether the service still has its connection to the browser.
+  bool IsServiceConnected() {
+    service_remote_.FlushForTesting();
+    return service_remote_.is_connected();
   }
 
  private:
@@ -198,6 +203,23 @@ TEST_F(OnDeviceTranslationServiceTest, NewConfigKeepsExistingTranslators) {
   ASSERT_TRUE(en_es);
   EXPECT_EQ(Translate(en_es, "test"), "En to Es - test");
   EXPECT_EQ(Translate(en_ja, "test"), "En to Ja - test");
+}
+
+// Tests that the service stays connected after its last translator disconnects
+// (the browser controls shutdown via its idle timeout) and can serve a new
+// translator for the same language pair.
+TEST_F(OnDeviceTranslationServiceTest, KeepsRunningWithoutTranslators) {
+  auto file_operation_proxy =
+      SendConfig({{"en", "ja"}}, {{"0/dict.dat", "En to Ja - "}});
+  mojo::Remote<mojom::OnDeviceTranslator> translator =
+      CreateTranslator("en", "ja");
+  ASSERT_TRUE(translator);
+  translator.reset();
+  ASSERT_TRUE(IsServiceConnected());
+
+  translator = CreateTranslator("en", "ja");
+  ASSERT_TRUE(translator);
+  EXPECT_EQ(Translate(translator, "test"), "En to Ja - test");
 }
 
 }  // namespace

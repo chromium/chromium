@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
@@ -53,9 +54,27 @@ using mojom::OnDeviceTranslationLanguagePackagePtr;
 using mojom::OnDeviceTranslationServiceConfig;
 using mojom::OnDeviceTranslationServiceConfigPtr;
 
+constexpr char kMemoryConsumerName[] = "OnDeviceTranslationServiceController";
+
+constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
+    // A service process holds about 79 to 84 MiB per loaded language pair.
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
+    // Ending an idle service process frees all of its memory.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
+    // An idle service has no translator, so nothing is lost.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    base::MemoryConsumerTraits::InProcess::kNo,
+    // `OnServiceIdle()` and `OnReleaseMemory()` check `memory_limit()` to stop
+    // keeping idle services warm whenever the limit is below default.
+    base::MemoryConsumerTraits::SupportsMemoryLimit::kYes,
+    // The next translator needs a new process.
+    base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive,
+    // Keeps an idle service warm only while `memory_limit()` is at default.
+    base::MemoryConsumerTraits::IsStateful::kYes);
+
 constexpr std::string_view kCreateTranslatorMetricActionName =
     "CreateTranslator";
-constexpr std::string_view kCanTranslateMetricActionName = "CanTranslate";
 constexpr std::string_view kCreateFailedLanguagePairMetricName =
     "Translate.OnDeviceTranslation.CreateFailed.LanguagePair";
 // Time from sending `CreateTranslator()` to the service, including starting
@@ -71,10 +90,6 @@ constexpr std::string_view
     kCreateTranslatorTargetLanguageIsSupportedMetricName =
         "Translate.OnDeviceTranslation.CreateTranslator."
         "IsTargetLanguageSupported";
-constexpr std::string_view kCanTranslateSourceLanguageIsSupportedMetricName =
-    "Translate.OnDeviceTranslation.CanTranslate.IsSourceLanguageSupported";
-constexpr std::string_view kCanTranslateTargetLanguageIsSupportedMetricName =
-    "Translate.OnDeviceTranslation.CanTranslate.IsTargetLanguageSupported";
 
 // Converts on_device_translation::mojom::CreateTranslatorResult to
 // OnDeviceTranslationController::CreateTranslatorError.
@@ -123,24 +138,6 @@ OnDeviceTranslationController::CreateTranslatorError ToCreateTranslatorError(
   }
 }
 
-OnDeviceTranslationController::CanTranslateResult ToCanTranslateResult(
-    InstallError error) {
-  switch (error) {
-    case InstallError::kNotEnoughDiskSpace:
-      return OnDeviceTranslationController::CanTranslateResult::
-          kNoNotEnoughDiskSpace;
-    case InstallError::kDataSaverEnabled:
-      return OnDeviceTranslationController::CanTranslateResult::
-          kNoDataSaverEnabled;
-    case InstallError::kMeteredConnectionBlocked:
-      return OnDeviceTranslationController::CanTranslateResult::
-          kNoMeteredConnectionBlocked;
-    case InstallError::kFailed:
-    case InstallError::kOffline:
-      NOTREACHED();
-  }
-}
-
 }  // namespace
 
 OnDeviceTranslationServiceController::PendingTask::PendingTask(
@@ -168,6 +165,7 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
       installer_(installer) {
   CHECK(installer_);
   installer_->AddObserver(this);
+  UpdateMemoryConsumerRegistration();
 }
 
 OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() {
@@ -176,32 +174,6 @@ OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() {
   // Settle the requests that still wait, so that their promises don't hang.
   RejectPendingTasks([](const PendingTask&) { return true; },
                      CreateTranslatorError::kExceedsServiceCountLimitation);
-}
-
-LanguagePackRequirements
-OnDeviceTranslationServiceController::GetLanguagePackRequirements(
-    const std::string& source_lang,
-    const std::string& target_lang) {
-  LanguagePackRequirements language_pack_requirements;
-
-  // Calculate required language packs.
-  language_pack_requirements.required_packs =
-      CalculateRequiredLanguagePacks(source_lang, target_lang);
-
-  // Calculate required, not installed language packs.
-  const auto installed_packs = installer_->InstalledLanguagePacks();
-  std::ranges::set_difference(
-      language_pack_requirements.required_packs, installed_packs,
-      std::back_inserter(
-          language_pack_requirements.required_not_installed_packs));
-
-  // Calculate to be registered language packs.
-  const auto registered_packs = installer_->RegisteredLanguagePacks();
-  std::ranges::set_difference(
-      language_pack_requirements.required_not_installed_packs, registered_packs,
-      std::back_inserter(language_pack_requirements.to_be_registered_packs));
-
-  return language_pack_requirements;
 }
 
 void OnDeviceTranslationServiceController::CreateTranslator(
@@ -239,7 +211,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
   }
 
   LanguagePackRequirements language_pack_requirements =
-      GetLanguagePackRequirements(*best_fit_source_language,
+      GetLanguagePackRequirements(*installer_, *best_fit_source_language,
                                   *best_fit_target_language);
   if (!language_pack_requirements.to_be_registered_packs.empty()) {
     const int max_packs = kTranslationAPIMaxInstalledLanguagePacks.Get();
@@ -323,6 +295,7 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
   }
   auto callbacks = base::SplitOnceCallback(std::move(callback));
   CHECK(service_remote_);
+  service_idle_timer_.Stop();
   service_remote_->CreateTranslator(
       source_lang, target_lang, std::move(pending_receiver),
       mojo::WrapCallbackWithDropHandler(
@@ -357,83 +330,11 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
 }
 
 void OnDeviceTranslationServiceController::CanTranslate(
-    const std::string& source_lang_arg,
-    const std::string& target_lang_arg,
-    CanTranslateCallback callback) {
-  std::optional<std::string> best_fit_source_language =
-      GetBestFitLanguageCode(source_lang_arg);
-  std::optional<std::string> best_fit_target_language =
-      GetBestFitLanguageCode(target_lang_arg);
-  base::UmaHistogramBoolean(kCanTranslateSourceLanguageIsSupportedMetricName,
-                            best_fit_source_language.has_value());
-  base::UmaHistogramBoolean(kCanTranslateTargetLanguageIsSupportedMetricName,
-                            best_fit_target_language.has_value());
-  if (!best_fit_source_language.has_value() ||
-      !best_fit_target_language.has_value()) {
-    std::move(callback).Run(CanTranslateResult::kNoNotSupportedLanguage);
-    return;
-  }
-
-  RecordOnDeviceTranslationCallForLanguagePair(kCanTranslateMetricActionName,
-                                               *best_fit_source_language,
-                                               *best_fit_target_language);
-  std::string source_lang = std::move(*best_fit_source_language);
-  std::string target_lang = std::move(*best_fit_target_language);
-  CanTranslateImpl(source_lang, target_lang, std::move(callback));
-}
-
-void OnDeviceTranslationServiceController::CanTranslateImpl(
     const std::string& source_lang,
     const std::string& target_lang,
     CanTranslateCallback callback) {
-  // Get information on the registration and install status of the language
-  // packs required for translation.
-  LanguagePackRequirements language_pack_requirements =
-      GetLanguagePackRequirements(source_lang, target_lang);
-
-  if (language_pack_requirements.required_packs.empty()) {
-    // Empty `required_packs` means that the transltion for the specified
-    // language pair is not supported.
-    std::move(callback).Run(CanTranslateResult::kNoNotSupportedLanguage);
-    return;
-  }
-
-  if (!installer_->IsSupported()) {
-    std::move(callback).Run(CanTranslateResult::kNoUnsupportedDevice);
-    return;
-  }
-
-  const bool needs_library = !installer_->IsInit();
-  const bool needs_language_packs =
-      !language_pack_requirements.required_not_installed_packs.empty();
-
-  CanTranslateResult ready_or_download_result;
-  if (!needs_language_packs) {
-    ready_or_download_result =
-        needs_library ? CanTranslateResult::kAfterDownloadLibraryNotReady
-                      : CanTranslateResult::kReadily;
-  } else {
-    ready_or_download_result =
-        needs_library
-            ? CanTranslateResult::kAfterDownloadLibraryAndLanguagePackNotReady
-            : CanTranslateResult::kAfterDownloadLanguagePackNotReady;
-  }
-
-  if (!needs_library && !needs_language_packs) {
-    std::move(callback).Run(ready_or_download_result);
-    return;
-  }
-
-  installer_->CheckDownloadEligibility(
-      needs_library, needs_language_packs,
-      base::BindOnce(
-          [](CanTranslateResult ready_or_download_result,
-             CanTranslateCallback callback, std::optional<InstallError> error) {
-            std::move(callback).Run(error.has_value()
-                                        ? ToCanTranslateResult(*error)
-                                        : ready_or_download_result);
-          },
-          ready_or_download_result, std::move(callback)));
+  CanTranslateWithInstaller(*installer_, source_lang, target_lang,
+                            std::move(callback));
 }
 
 void OnDeviceTranslationServiceController::OnLanguagePackInstalled(
@@ -446,7 +347,7 @@ void OnDeviceTranslationServiceController::OnLanguagePackInstallationChanged(
 }
 
 void OnDeviceTranslationServiceController::OnInstallationChanged() {
-  service_remote_.reset();
+  ResetService();
   MaybeRunPendingTasks();
 }
 
@@ -513,7 +414,7 @@ void OnDeviceTranslationServiceController::UpdateRunningServiceLanguagePack(
     if (path.empty()) {
       // The path of the new language pack isn't known yet. The next request
       // starts a new service with every installed pack.
-      service_remote_.reset();
+      ResetService();
       return;
     }
 
@@ -529,7 +430,7 @@ void OnDeviceTranslationServiceController::UpdateRunningServiceLanguagePack(
   if (!installed && service_has_pack) {
     // The files of the language pack are gone, so translators that use it
     // can't work. The next request starts a new service.
-    service_remote_.reset();
+    ResetService();
   }
 
   // Otherwise, when a language pack that the service has is updated, the
@@ -564,7 +465,10 @@ bool OnDeviceTranslationServiceController::IsServiceRunning() const {
 }
 
 bool OnDeviceTranslationServiceController::IsIdle() const {
-  return pending_tasks_.empty() && !IsServiceRunning();
+  // A service with no live translator only holds memory. It can be running,
+  // for example after `CreateTranslator()` failed in it.
+  return pending_tasks_.empty() &&
+         (!service_remote_ || service_idle_timer_.IsRunning());
 }
 
 bool OnDeviceTranslationServiceController::MaybeStartService() {
@@ -588,18 +492,59 @@ bool OnDeviceTranslationServiceController::MaybeStartService() {
   service_language_packs_ = std::move(language_packs);
 
   service_remote_.Bind(std::move(pending_remote));
-  service_remote_.reset_on_disconnect();
+  service_remote_.set_disconnect_handler(
+      base::BindOnce(&OnDeviceTranslationServiceController::ResetService,
+                     base::Unretained(this)));
+  service_idle_timer_.Stop();
+  // Use a zero Mojo idle timeout so the browser receives the idle edge
+  // immediately for memory-pressure eviction and owns the idle countdown.
   service_remote_.set_idle_handler(
-      service_idle_timeout_,
+      base::TimeDelta(),
       base::BindRepeating(&OnDeviceTranslationServiceController::OnServiceIdle,
                           base::Unretained(this)));
 
   return true;
 }
 
-void OnDeviceTranslationServiceController::OnServiceIdle() {
-  service_remote_.reset();
+void OnDeviceTranslationServiceController::UpdateMemoryConsumerRegistration() {
+  if (!service_idle_timeout_.is_positive()) {
+    memory_consumer_registration_.reset();
+    return;
+  }
+  if (!memory_consumer_registration_) {
+    memory_consumer_registration_.emplace(kMemoryConsumerName,
+                                          kMemoryConsumerTraits, this);
+  }
 }
+
+void OnDeviceTranslationServiceController::OnServiceIdle() {
+  if (!service_idle_timeout_.is_positive() ||
+      memory_limit() < base::MemoryLimit::Default()) {
+    ResetService();
+    return;
+  }
+  if (service_idle_timer_.IsRunning()) {
+    return;
+  }
+  service_idle_timer_.Start(
+      FROM_HERE, service_idle_timeout_,
+      base::BindOnce(&OnDeviceTranslationServiceController::ResetService,
+                     base::Unretained(this)));
+}
+
+void OnDeviceTranslationServiceController::ResetService() {
+  service_remote_.reset();
+  service_idle_timer_.Stop();
+}
+
+void OnDeviceTranslationServiceController::OnReleaseMemory() {
+  if (service_idle_timer_.IsRunning() &&
+      memory_limit() < base::MemoryLimit::Default()) {
+    ResetService();
+  }
+}
+
+void OnDeviceTranslationServiceController::OnUpdateMemoryLimit() {}
 
 void OnDeviceTranslationServiceController::SetServiceIdleTimeoutForTesting(
     base::TimeDelta service_idle_timeout) {
@@ -607,6 +552,7 @@ void OnDeviceTranslationServiceController::SetServiceIdleTimeoutForTesting(
   // service is running.
   CHECK(!IsServiceRunning());
   service_idle_timeout_ = service_idle_timeout;
+  UpdateMemoryConsumerRegistration();
 }
 
 }  // namespace on_device_translation

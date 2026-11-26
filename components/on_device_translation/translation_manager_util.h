@@ -10,7 +10,9 @@
 #include <string_view>
 #include <vector>
 
+#include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/public/language_pack.h"
+#include "components/on_device_translation/service_controller.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -55,6 +57,21 @@ std::optional<std::string> LookupMatchingLocaleByBestFit(
 // that region, such as zh-TW to zh-Hant.
 std::optional<std::string> GetBestFitLanguageCode(
     std::string_view language_code);
+
+// Computes the required, missing, and unregistered language packs for
+// translating between `source_lang` and `target_lang`.
+LanguagePackRequirements GetLanguagePackRequirements(
+    const OnDeviceTranslationInstaller& installer,
+    const std::string& source_lang,
+    const std::string& target_lang);
+
+// Checks whether `installer` can translate from `source_lang` to `target_lang`
+// without requiring an `OnDeviceTranslationServiceController`.
+void CanTranslateWithInstaller(
+    OnDeviceTranslationInstaller& installer,
+    const std::string& source_lang,
+    const std::string& target_lang,
+    OnDeviceTranslationController::CanTranslateCallback callback);
 
 }  // namespace on_device_translation
 

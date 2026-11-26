@@ -77,6 +77,8 @@ class ServiceControllerManager : public KeyedService {
   void SetInstallerForTesting(OnDeviceTranslationInstaller* installer);
 
  private:
+  OnDeviceTranslationInstaller* GetInstaller() const;
+  bool HasRoomFor(const url::Origin& origin) const;
   // It can also return a nullptr in case we cannot add a new controller.
   OnDeviceTranslationController* GetOrCreateController(
       const url::Origin& origin);

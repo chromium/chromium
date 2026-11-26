@@ -15,6 +15,7 @@
 #include "components/on_device_translation/input_budget.h"
 #include "components/on_device_translation/service/service_launcher.h"
 #include "components/on_device_translation/service_controller.h"
+#include "components/on_device_translation/translation_manager_util.h"
 
 namespace on_device_translation {
 
@@ -29,6 +30,19 @@ ServiceControllerManager::ServiceControllerManager(
 
 ServiceControllerManager::~ServiceControllerManager() = default;
 
+OnDeviceTranslationInstaller* ServiceControllerManager::GetInstaller() const {
+  return installer_for_test_ ? installer_for_test_.get()
+                             : OnDeviceTranslationInstaller::GetInstance();
+}
+
+bool ServiceControllerManager::HasRoomFor(const url::Origin& origin) const {
+  return service_controllers_.Peek(origin) != service_controllers_.end() ||
+         service_controllers_.size() < max_service_count_ ||
+         std::ranges::any_of(
+             service_controllers_,
+             [](const auto& entry) { return entry.second->IsIdle(); });
+}
+
 OnDeviceTranslationController* ServiceControllerManager::GetOrCreateController(
     const url::Origin& origin) {
   auto it = service_controllers_.Get(origin);
@@ -36,18 +50,16 @@ OnDeviceTranslationController* ServiceControllerManager::GetOrCreateController(
     return it->second.get();
   }
 
-  OnDeviceTranslationInstaller* installer =
-      installer_for_test_ ? installer_for_test_.get()
-                          : OnDeviceTranslationInstaller::GetInstance();
+  OnDeviceTranslationInstaller* installer = GetInstaller();
   if (installer == nullptr) {
     return nullptr;
   }
 
   // At maximum capacity, make room by removing the least recently used
   // controller that is idle: no request waits in it, and its service isn't
-  // running. If no controller is idle, we cannot add a new service. Checking
-  // only the least recently used controller would refuse a new origin while
-  // another controller sits idle.
+  // running or has no live translator. If no controller is idle, we cannot add
+  // a new service. Checking only the least recently used controller would
+  // refuse a new origin while another controller sits idle.
   CHECK_LE(service_controllers_.size(), max_service_count_);
   if (service_controllers_.size() == max_service_count_) {
     auto idle_it = std::ranges::find_if(
@@ -91,14 +103,18 @@ void ServiceControllerManager::CanTranslate(
     const std::string& source_lang,
     const std::string& target_lang,
     OnDeviceTranslationController::CanTranslateCallback callback) {
-  auto* controller = GetOrCreateController(origin);
-  if (controller == nullptr) {
+  // Answering availability only requires the installer, so avoid allocating a
+  // controller here. At capacity, creating a controller would evict a warm
+  // idle service that another origin may reuse shortly.
+  OnDeviceTranslationInstaller* installer = GetInstaller();
+  if (installer == nullptr || !HasRoomFor(origin)) {
     std::move(callback).Run(OnDeviceTranslationController::CanTranslateResult::
                                 kNoExceedsServiceCountLimitation);
     return;
   }
 
-  controller->CanTranslate(source_lang, target_lang, std::move(callback));
+  CanTranslateWithInstaller(*installer, source_lang, target_lang,
+                            std::move(callback));
 }
 
 bool ServiceControllerManager::IsServiceRunning(

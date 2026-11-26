@@ -75,6 +75,11 @@ class FakeOnDeviceTranslationService
       const std::string& target_lang,
       mojo::PendingReceiver<mojom::OnDeviceTranslator> receiver,
       CreateTranslatorCallback callback) override {
+    // Like the real service, keep translators alive until `ClearTranslators()`
+    // and drop them when creating a translator fails.
+    if (create_translator_result_ == mojom::CreateTranslatorResult::kSuccess) {
+      translator_receivers_.push_back(std::move(receiver));
+    }
     std::move(callback).Run(create_translator_result_);
   }
 
@@ -87,6 +92,7 @@ class FakeOnDeviceTranslationService
   void set_create_translator_result(mojom::CreateTranslatorResult result) {
     create_translator_result_ = result;
   }
+  void ClearTranslators() { translator_receivers_.clear(); }
 
   mojo::PendingRemote<mojom::OnDeviceTranslationService>
   BindNewPipeAndPassRemote() {
@@ -97,6 +103,8 @@ class FakeOnDeviceTranslationService
   mojo::Receiver<mojom::OnDeviceTranslationService> receiver_{this};
   mojom::CreateTranslatorResult create_translator_result_ =
       mojom::CreateTranslatorResult::kSuccess;
+  std::vector<mojo::PendingReceiver<mojom::OnDeviceTranslator>>
+      translator_receivers_;
 };
 
 class OnDeviceTranslationServiceControllerTest : public testing::Test {
@@ -687,12 +695,154 @@ TEST_F(OnDeviceTranslationServiceControllerTest,
   }
 }
 
+// Tests of the service lifetime, with mock time.
+class OnDeviceTranslationServiceControllerLifetimeTest : public testing::Test {
+ protected:
+  void CreateController(base::TimeDelta idle_timeout) {
+    fake_installer_ =
+        std::make_unique<FakeOnDeviceTranslationInstaller>(base::FilePath());
+    fake_installer_->InitNow(base::DoNothing());
+    fake_installer_->InstallLanguagePackNow(LanguagePackKey::kEn_Es);
+    auto launcher = std::make_unique<MockServiceLauncher>();
+    EXPECT_CALL(*launcher, Launch).WillRepeatedly([this]() {
+      ++launch_count_;
+      return fake_service_.BindNewPipeAndPassRemote();
+    });
+    service_controller_ =
+        std::make_unique<OnDeviceTranslationServiceController>(
+            std::move(launcher), "test_suffix", fake_installer_.get());
+    service_controller_->SetServiceIdleTimeoutForTesting(idle_timeout);
+  }
+
+  void CreateTranslator() {
+    base::test::TestFuture<base::expected<
+        mojo::PendingRemote<mojom::OnDeviceTranslator>, CreateTranslatorError>>
+        future;
+    service_controller_->CreateTranslator("en", "es", future.GetCallback());
+    ASSERT_TRUE(future.Get().has_value());
+    ASSERT_TRUE(service_controller_->IsServiceRunning());
+    // Let the service report its idle state.
+    task_environment_.RunUntilIdle();
+  }
+
+  void DisconnectTranslators() {
+    fake_service_.ClearTranslators();
+    task_environment_.RunUntilIdle();
+  }
+
+  static constexpr base::TimeDelta kIdleTimeout = base::Minutes(1);
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::TestMemoryConsumerRegistry memory_consumer_registry_;
+  FakeOnDeviceTranslationService fake_service_;
+  int launch_count_ = 0;
+  std::unique_ptr<FakeOnDeviceTranslationInstaller> fake_installer_;
+  std::unique_ptr<OnDeviceTranslationServiceController> service_controller_;
+};
+
+TEST_F(OnDeviceTranslationServiceControllerLifetimeTest,
+       ZeroTimeoutShutsDownImmediatelyWhenIdle) {
+  CreateController(base::TimeDelta());
+  CreateTranslator();
+  ASSERT_TRUE(service_controller_->IsServiceRunning());
+
+  DisconnectTranslators();
+  EXPECT_FALSE(service_controller_->IsServiceRunning());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerLifetimeTest,
+       IdleServiceShutsDownAfterTimeout) {
+  CreateController(kIdleTimeout);
+  CreateTranslator();
+  DisconnectTranslators();
+
+  task_environment_.FastForwardBy(kIdleTimeout - base::Seconds(1));
+  EXPECT_TRUE(service_controller_->IsServiceRunning());
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_FALSE(service_controller_->IsServiceRunning());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerLifetimeTest,
+       ReuseInsideIdleWindowKeepsServiceAndCancelsTimeout) {
+  CreateController(kIdleTimeout);
+  CreateTranslator();
+  DisconnectTranslators();
+  ASSERT_EQ(launch_count_, 1);
+
+  task_environment_.FastForwardBy(kIdleTimeout - base::Seconds(1));
+  ASSERT_TRUE(service_controller_->IsServiceRunning());
+
+  CreateTranslator();
+  EXPECT_EQ(launch_count_, 1);
+
+  task_environment_.FastForwardBy(kIdleTimeout * 2);
+  EXPECT_TRUE(service_controller_->IsServiceRunning());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerLifetimeTest,
+       BusyServiceStaysRunning) {
+  CreateController(kIdleTimeout);
+  CreateTranslator();
+
+  memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
+      base::MemoryLimit::ModeratePressureThreshold());
+  task_environment_.FastForwardBy(kIdleTimeout * 2);
+  EXPECT_TRUE(service_controller_->IsServiceRunning());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerLifetimeTest,
+       IdleServiceShutsDownOnMemoryPressure) {
+  CreateController(kIdleTimeout);
+  CreateTranslator();
+  DisconnectTranslators();
+  ASSERT_TRUE(service_controller_->IsServiceRunning());
+
+  memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
+      base::MemoryLimit::ModeratePressureThreshold());
+  EXPECT_FALSE(service_controller_->IsServiceRunning());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerLifetimeTest,
+       ShutsDownImmediatelyWhenIdleUnderExistingMemoryPressure) {
+  CreateController(kIdleTimeout);
+  CreateTranslator();
+
+  // Pressure arrives while a translator is still active: keep the service.
+  memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
+      base::MemoryLimit::ModeratePressureThreshold());
+  ASSERT_TRUE(service_controller_->IsServiceRunning());
+
+  // Once the last translator closes under active pressure, shut down
+  // immediately instead of waiting for `kIdleTimeout`.
+  DisconnectTranslators();
+  EXPECT_FALSE(service_controller_->IsServiceRunning());
+}
+
+TEST_F(OnDeviceTranslationServiceControllerLifetimeTest,
+       KeepsIdleServiceAfterMemoryPressureRecovers) {
+  CreateController(kIdleTimeout);
+  CreateTranslator();
+
+  memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
+      base::MemoryLimit::ModeratePressureThreshold());
+  memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::MemoryLimit::NoPressureThreshold());
+
+  DisconnectTranslators();
+  task_environment_.FastForwardBy(kIdleTimeout - base::Seconds(1));
+  EXPECT_TRUE(service_controller_->IsServiceRunning());
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_FALSE(service_controller_->IsServiceRunning());
+}
+
 class ServiceControllerManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kTranslationAPI,
-        {{"TranslationAPIMaxServiceCount", "2"}});
+        {{"TranslationAPIMaxServiceCount", "2"},
+         {"TranslationAPIServiceIdleTimeout", "20s"}});
     fake_installer_ =
         std::make_unique<FakeOnDeviceTranslationInstaller>(base::FilePath());
     fake_installer_->InitNow(base::DoNothing());
@@ -723,6 +873,14 @@ class ServiceControllerManagerTest : public testing::Test {
     return future.Get().has_value();
   }
 
+  OnDeviceTranslationController::CanTranslateResult CanTranslate(
+      const url::Origin& origin) {
+    base::test::TestFuture<OnDeviceTranslationController::CanTranslateResult>
+        future;
+    manager_->CanTranslate(origin, "en", "es", future.GetCallback());
+    return future.Get();
+  }
+
   // Ends the service that was launched `index`-th and waits for `origin` to
   // observe the disconnect.
   void EndService(size_t index, const url::Origin& origin) {
@@ -731,11 +889,15 @@ class ServiceControllerManagerTest : public testing::Test {
         [&] { return !manager_->IsServiceRunning(origin); }));
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::TestMemoryConsumerRegistry memory_consumer_registry_;
   std::unique_ptr<FakeOnDeviceTranslationInstaller> fake_installer_;
   std::vector<std::unique_ptr<FakeOnDeviceTranslationService>> services_;
   std::unique_ptr<ServiceControllerManager> manager_;
+  // The result of `CreateTranslator()` in the services launched next.
+  mojom::CreateTranslatorResult create_translator_result_ =
+      mojom::CreateTranslatorResult::kSuccess;
 
  private:
   std::unique_ptr<OnDeviceTranslationServiceLauncher> CreateLauncher() {
@@ -743,6 +905,7 @@ class ServiceControllerManagerTest : public testing::Test {
     EXPECT_CALL(*launcher, Launch).WillRepeatedly([this]() {
       auto& service = services_.emplace_back(
           std::make_unique<FakeOnDeviceTranslationService>());
+      service->set_create_translator_result(create_translator_result_);
       return service->BindNewPipeAndPassRemote();
     });
     return launcher;
@@ -798,6 +961,63 @@ TEST_F(ServiceControllerManagerTest, ReplacesControllerWithoutService) {
   EXPECT_TRUE(manager_->IsServiceRunning(origin_c));
 }
 
+// Tests that a new origin replaces a controller whose service runs without a
+// translator, for example because `CreateTranslator()` failed in it. Such a
+// service only ends after the idle timeout, and must not hold a slot until
+// then.
+TEST_F(ServiceControllerManagerTest,
+       ReplacesControllerWhoseServiceHasNoTranslator) {
+  const auto origin_a = url::Origin::Create(GURL("https://a.test"));
+  const auto origin_b = url::Origin::Create(GURL("https://b.test"));
+  const auto origin_c = url::Origin::Create(GURL("https://c.test"));
+  EXPECT_TRUE(CreateTranslator(origin_a));
+
+  create_translator_result_ =
+      mojom::CreateTranslatorResult::kErrorFailedToCreateTranslator;
+  EXPECT_FALSE(CreateTranslator(origin_b));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(manager_->IsServiceRunning(origin_b));
+
+  create_translator_result_ = mojom::CreateTranslatorResult::kSuccess;
+  EXPECT_TRUE(CreateTranslator(origin_c));
+  EXPECT_TRUE(manager_->IsServiceRunning(origin_a));
+  EXPECT_FALSE(manager_->IsServiceRunning(origin_b));
+  EXPECT_TRUE(manager_->IsServiceRunning(origin_c));
+}
+
+// Tests that an availability probe from a third origin reports service limits
+// when all controllers are busy and leaves a warm idle service running when a
+// slot is reclaimable.
+TEST_F(ServiceControllerManagerTest, CanTranslateKeepsIdleService) {
+  const auto origin_a = url::Origin::Create(GURL("https://a.test"));
+  const auto origin_b = url::Origin::Create(GURL("https://b.test"));
+  const auto origin_c = url::Origin::Create(GURL("https://c.test"));
+  EXPECT_TRUE(CreateTranslator(origin_a));
+  EXPECT_TRUE(CreateTranslator(origin_b));
+
+  EXPECT_EQ(CanTranslate(origin_c),
+            OnDeviceTranslationController::CanTranslateResult::
+                kNoExceedsServiceCountLimitation);
+
+  // Drop the translator on origin_b so its service becomes idle while staying
+  // warm in memory.
+  services_.at(1)->ClearTranslators();
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(manager_->IsServiceRunning(origin_a));
+  ASSERT_TRUE(manager_->IsServiceRunning(origin_b));
+
+  EXPECT_EQ(CanTranslate(origin_c),
+            OnDeviceTranslationController::CanTranslateResult::kReadily);
+  EXPECT_TRUE(manager_->IsServiceRunning(origin_a));
+  EXPECT_TRUE(manager_->IsServiceRunning(origin_b));
+
+  // A subsequent CreateTranslator call from origin_c still reclaims origin_b.
+  EXPECT_TRUE(CreateTranslator(origin_c));
+  EXPECT_TRUE(manager_->IsServiceRunning(origin_a));
+  EXPECT_FALSE(manager_->IsServiceRunning(origin_b));
+  EXPECT_TRUE(manager_->IsServiceRunning(origin_c));
+}
+
 // Tests that a controller with a request that waits for a download is kept,
 // even when its service isn't running.
 TEST_F(ServiceControllerManagerTest, KeepsControllerWithPendingRequest) {
@@ -832,10 +1052,10 @@ TEST_F(ServiceControllerManagerTest,
   feature_list_.Reset();
   feature_list_.InitWithFeaturesAndParameters(
       {{blink::features::kTranslationAPI,
-        {{"TranslationAPIMaxServiceCount", "2"}}},
+        {{"TranslationAPIMaxServiceCount", "2"},
+         {"TranslationAPIServiceIdleTimeout", "20s"}}},
        {base::kLRUCacheMemoryConsumer, {}}},
       {});
-  base::TestMemoryConsumerRegistry memory_consumer_registry;
   CreateManager();
 
   const auto origin_a = url::Origin::Create(GURL("https://a.test"));
@@ -844,14 +1064,15 @@ TEST_F(ServiceControllerManagerTest,
   EXPECT_TRUE(CreateTranslator(origin_a));
   EXPECT_TRUE(CreateTranslator(origin_b));
 
-  memory_consumer_registry.NotifyUpdateMemoryLimitAndRelease(
+  memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
       base::MemoryLimit::CriticalPressureThreshold());
 
+  EXPECT_EQ(CanTranslate(origin_c),
+            OnDeviceTranslationController::CanTranslateResult::
+                kNoExceedsServiceCountLimitation);
   EXPECT_FALSE(CreateTranslator(origin_c));
   EXPECT_TRUE(manager_->IsServiceRunning(origin_a));
   EXPECT_TRUE(manager_->IsServiceRunning(origin_b));
-
-  manager_.reset();
 }
 
 }  // namespace

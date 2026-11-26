@@ -12,8 +12,10 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "components/on_device_translation/installer.h"
@@ -75,7 +77,7 @@ class OnDeviceTranslationController {
 
   // Returns whether destroying this controller loses nothing: no
   // `CreateTranslator()` request waits for a download, and the service is not
-  // running.
+  // running or has no live translator.
   virtual bool IsIdle() const = 0;
 
   // Creates a translator class that implements `mojom::Translator` for the
@@ -93,12 +95,12 @@ class OnDeviceTranslationController {
 
 // This class is the controller that launches the on-device translation service
 // and delegates the functionalities. It is designed to be shared by multiple
-// `TranslationManagerImpl` instances.  A single instance of this class is
+// `TranslationManagerImpl` instances. A single instance of this class is
 // created for each pair of browser context and origin.
-// TODO(crbug.com/364795294): This class does not support Android yet.
 class OnDeviceTranslationServiceController
     : public OnDeviceTranslationController,
-      public OnDeviceTranslationInstaller::Observer {
+      public OnDeviceTranslationInstaller::Observer,
+      public base::MemoryConsumer {
  public:
   OnDeviceTranslationServiceController(
       std::unique_ptr<OnDeviceTranslationServiceLauncher> launcher,
@@ -138,6 +140,10 @@ class OnDeviceTranslationServiceController
   void OnLanguagePackInstallFailed(LanguagePackKey language_pack,
                                    InstallError error) override;
 
+  // base::MemoryConsumer:
+  void OnReleaseMemory() override;
+  void OnUpdateMemoryLimit() override;
+
  private:
   friend base::RefCounted<OnDeviceTranslationServiceController>;
 
@@ -161,16 +167,6 @@ class OnDeviceTranslationServiceController
     base::OnceCallback<void(CreateTranslatorError)> on_failure;
   };
 
-  // Checks if the translate service can do translation from `source_lang` to
-  // `target_lang`.
-  void CanTranslateImpl(const std::string& source_lang,
-                        const std::string& target_lang,
-                        CanTranslateCallback callback);
-
-  LanguagePackRequirements GetLanguagePackRequirements(
-      const std::string& source_lang,
-      const std::string& target_lang);
-
   // Send the CreateTranslator IPC call to the OnDeviceTranslationService.
   void CreateTranslatorImpl(const std::string& source_lang,
                             const std::string& target_lang,
@@ -189,8 +185,13 @@ class OnDeviceTranslationServiceController
   void RejectPendingTasks(base::FunctionRef<bool(const PendingTask&)> predicate,
                           CreateTranslatorError error);
 
-  // Called when the service is idle and the idle timeout is reached.
+  // Registers or unregisters the memory consumer based on
+  // `service_idle_timeout_`.
+  void UpdateMemoryConsumerRegistration();
+  // Called when the service reports that it has no live translator.
   void OnServiceIdle();
+  // Ends the running service, if any, and stops its idle timer.
+  void ResetService();
 
   base::RepeatingCallback<bool()> can_start_service_check_;
   base::OnceClosure on_deleted_callback_;
@@ -202,6 +203,11 @@ class OnDeviceTranslationServiceController
   // this amount of time, the service will be terminated.
   base::TimeDelta service_idle_timeout_;
   mojo::Remote<mojom::OnDeviceTranslationService> service_remote_;
+  // Runs while the service is bound and has no live translators; shuts down
+  // the service after `service_idle_timeout_`.
+  base::OneShotTimer service_idle_timer_;
+  // Set when idle services shut down under memory pressure.
+  std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
 
   // The language packs that the running service has, in the order it got
   // them.

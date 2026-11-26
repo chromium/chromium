@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "components/on_device_translation/metrics.h"
@@ -67,18 +66,10 @@ OnDeviceTranslationService::CreateForTesting(
       base::PassKey<OnDeviceTranslationService>());
 }
 
-void OnDeviceTranslationService::OnDisconnect() {
-  if (translators_.empty()) {
-    receiver_.reset();
-  }
-}
-
 OnDeviceTranslationService::OnDeviceTranslationService(
     mojo::PendingReceiver<mojom::OnDeviceTranslationService> receiver)
-    : receiver_(this, std::move(receiver)), client_(TranslateKitClient::Get()) {
-  translators_.set_disconnect_handler(base::BindRepeating(
-      &OnDeviceTranslationService::OnDisconnect, base::Unretained(this)));
-}
+    : receiver_(this, std::move(receiver)),
+      client_(TranslateKitClient::Get()) {}
 
 OnDeviceTranslationService::OnDeviceTranslationService(
     mojo::PendingReceiver<mojom::OnDeviceTranslationService> receiver,
@@ -86,10 +77,7 @@ OnDeviceTranslationService::OnDeviceTranslationService(
     base::PassKey<OnDeviceTranslationService>)
     : receiver_(this, std::move(receiver)),
       owning_client_for_testing_(std::move(client)),
-      client_(owning_client_for_testing_.get()) {
-  translators_.set_disconnect_handler(base::BindRepeating(
-      &OnDeviceTranslationService::OnDisconnect, base::Unretained(this)));
-}
+      client_(owning_client_for_testing_.get()) {}
 
 OnDeviceTranslationService::~OnDeviceTranslationService() = default;
 

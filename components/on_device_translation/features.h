@@ -24,8 +24,9 @@ extern const base::FeatureParam<std::string>
 // Any version string longer than this will be truncated.
 inline constexpr size_t kTranslationAPILibraryVersionStringSize = 14;
 
-// The duration that the OnDeviceTranslation service can remain idle before it
-// is terminated.
+// The duration that the OnDeviceTranslation service stays warm after its last
+// translator closes before it is terminated (unless memory pressure ends it
+// earlier). Zero terminates the service immediately once no translators remain.
 extern const base::FeatureParam<base::TimeDelta>
     kTranslationAPIServiceIdleTimeout;
 
