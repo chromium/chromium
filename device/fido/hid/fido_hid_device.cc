@@ -102,7 +102,9 @@ void FidoHidDevice::Cancel(CancelToken token) {
     pending_transactions_.erase(it);
     std::vector<uint8_t> cancel_reply = {
         static_cast<uint8_t>(CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel)};
-    std::move(callback).Run(std::move(cancel_reply));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(cancel_reply)));
     break;
   }
 }
@@ -120,7 +122,10 @@ void FidoHidDevice::Transition(std::optional<State> next_state) {
                              weak_factory_.GetWeakPtr()));
       break;
     case State::kReady: {
-      DCHECK(!pending_transactions_.empty());
+      if (pending_transactions_.empty()) {
+        // Queued transactions may have been canceled while connecting.
+        break;
+      }
 
       // Some devices fail when sent a wink command immediately followed by a
       // CBOR command. Only try to wink if device claims support and it is

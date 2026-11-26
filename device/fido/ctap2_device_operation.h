@@ -115,8 +115,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
   void Cancel() override {
     if (this->token_) {
       FIDO_LOG(DEBUG) << "<- (cancel)";
-      this->device()->Cancel(*this->token_);
-      this->token_.reset();
+      this->device()->Cancel(*std::exchange(this->token_, std::nullopt));
     }
   }
 

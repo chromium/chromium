@@ -80,10 +80,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDevice {
   // Cancel attempts to cancel an enqueued request. If the request is currently
   // active it will be aborted if possible, which is expected to cause it to
   // complete with |kCtap2ErrKeepAliveCancel|. If the request is still enqueued
-  // it will be deleted and the callback called with
-  // |kCtap2ErrKeepAliveCancel| immediately. It is possible that a request to
-  // cancel may be unsuccessful and that the request may complete normally.
-  // It is safe to attempt to cancel an operation that has already completed.
+  // it will be deleted and the callback posted asynchronously with
+  // |kCtap2ErrKeepAliveCancel|. Implementations must not immediately call
+  // (i.e. hairpin) the callback. It is possible that a request to cancel may be
+  // unsuccessful and that the request may complete normally. It is safe to
+  // attempt to cancel an operation that has already completed.
   virtual void Cancel(CancelToken token) = 0;
   // GetId returns a unique string representing this device. This string should
   // be distinct from all other devices concurrently discovered.

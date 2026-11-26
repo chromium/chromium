@@ -25,11 +25,15 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/cbor/values.h"
 #include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/ctap2_device_operation.h"
 #include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/device_response_converter.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_test_data.h"
@@ -1245,6 +1249,44 @@ TEST_F(FidoHidDeviceTest, MessageTooLarge) {
   EXPECT_FALSE(oversized_future.IsReady());
   EXPECT_TRUE(oversized_future.Wait());
   EXPECT_FALSE(oversized_future.Get());
+}
+
+// Canceling a queued operation should invoke its callback asynchronously.
+// Regression test for https://crbug.com/590513444
+TEST_F(FidoHidDeviceTest, CancelQueuedCtap2OperationPostsCallback) {
+  std::unique_ptr<FidoHidDevice> device = GetMockDevice();
+  device->set_supported_protocol(ProtocolVersion::kCtap2);
+
+  using GetAssertionOperation =
+      Ctap2DeviceOperation<CtapGetAssertionRequest,
+                           AuthenticatorGetAssertionResponse>;
+  CtapGetAssertionRequest request(test_data::kRelyingPartyId,
+                                  test_data::kClientDataJson);
+  std::optional<CtapDeviceResponseCode> received_status;
+  base::RunLoop run_loop;
+  std::unique_ptr<GetAssertionOperation> operation;
+  operation = std::make_unique<GetAssertionOperation>(
+      device.get(), std::move(request),
+      base::BindLambdaForTesting(
+          [&](CtapDeviceResponseCode status,
+              std::optional<AuthenticatorGetAssertionResponse>) {
+            received_status = status;
+            operation.reset();
+            run_loop.Quit();
+          }),
+      base::BindOnce(&ReadCTAPGetAssertionResponse, device->DeviceTransport()),
+      /*string_fixup_predicate=*/nullptr,
+      base::BindOnce([](const cbor::Value& v) { return v.Clone(); }));
+
+  operation->Start();
+  operation->Cancel();
+
+  EXPECT_FALSE(received_status.has_value());
+  EXPECT_TRUE(operation);
+
+  run_loop.Run();
+  EXPECT_EQ(CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel, received_status);
+  EXPECT_FALSE(operation);
 }
 
 }  // namespace device
