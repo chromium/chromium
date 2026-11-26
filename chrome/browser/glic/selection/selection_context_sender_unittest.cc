@@ -7,23 +7,25 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/selection/selection_context.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/test_support/fake_glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance_coordinator.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -39,7 +41,8 @@
 namespace glic {
 
 using ::testing::_;
-using ::testing::Field;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -87,8 +90,6 @@ class SelectionContextSenderTest : public ChromeRenderViewHostTestHarness {
     GlicKeyedServiceFactory::GetGlicKeyedService(profile(), /*create=*/true);
 
     ON_CALL(mock_tab_, GetContents()).WillByDefault(Return(web_contents()));
-    ON_CALL(mock_tab_, GetBrowserWindowInterface())
-        .WillByDefault(Return(&mock_bwi_));
     ON_CALL(mock_tab_, GetUnownedUserDataHost())
         .WillByDefault(ReturnRef(user_data_host_));
     ON_CALL(mock_tab_, RegisterWillDiscardContents(_))
@@ -96,7 +97,11 @@ class SelectionContextSenderTest : public ChromeRenderViewHostTestHarness {
             [this](tabs::TabInterface::WillDiscardContentsCallback cb) {
               return discard_callbacks_.Add(std::move(cb));
             });
-
+    ON_CALL(mock_tab_, IsActivated()).WillByDefault(Return(true));
+    ON_CALL(mock_tab_, RegisterDidActivate(_))
+        .WillByDefault([this](tabs::TabInterface::DidActivateCallback cb) {
+          return did_activate_callbacks_.Add(std::move(cb));
+        });
     ON_CALL(mock_service_->mock_coordinator(), AddGlobalShowHideCallback(_))
         .WillByDefault([this](base::RepeatingClosure cb) {
           return global_show_hide_callbacks_.Add(std::move(cb));
@@ -104,11 +109,14 @@ class SelectionContextSenderTest : public ChromeRenderViewHostTestHarness {
 
     eligibility_helper_ =
         std::make_unique<FakePageContextEligibilityHelper>(mock_tab_);
+    side_panel_coordinator_ =
+        std::make_unique<FakeGlicSidePanelCoordinator>(&mock_tab_);
     sender_ = std::make_unique<SelectionContextSender>(mock_tab_);
   }
 
   void TearDown() override {
     sender_.reset();
+    side_panel_coordinator_.reset();
     eligibility_helper_.reset();
     mock_service_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
@@ -129,11 +137,9 @@ class SelectionContextSenderTest : public ChromeRenderViewHostTestHarness {
     return service;
   }
 
-  void SetPanelShowing(GlicInstance* instance, bool showing) {
+  void SetInstance(GlicInstance* instance) {
     ON_CALL(*mock_service_, GetInstanceForTab(&mock_tab_))
         .WillByDefault(Return(instance));
-    ON_CALL(*mock_service_, IsPanelShowingForBrowser(testing::Ref(mock_bwi_)))
-        .WillByDefault(Return(showing));
   }
 
   void NotifyEligibilityChanged(
@@ -151,17 +157,35 @@ class SelectionContextSenderTest : public ChromeRenderViewHostTestHarness {
     return std::string(bytes.begin(), bytes.end());
   }
 
+  // Records the text of every push to `instance`; "" means "none".
+  static void RecordPushes(MockGlicInstance& instance,
+                           std::vector<std::string>& pushes) {
+    ON_CALL(instance, SendAdditionalContext)
+        .WillByDefault([&pushes](mojom::AdditionalContextPtr context) {
+          pushes.push_back(SentText(context));
+        });
+  }
+
+  static void SetFloating(MockGlicInstance& instance, bool floating) {
+    mojom::PanelState state;
+    state.kind = floating ? mojom::PanelStateKind::kDetached
+                          : mojom::PanelStateKind::kHidden;
+    instance.SetPanelState(std::move(state));
+  }
+
   GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass_;
   GlicProfileManager glic_profile_manager_;
   raw_ptr<MockGlicKeyedService> mock_service_ = nullptr;
   tabs::MockTabInterface mock_tab_;
-  NiceMock<MockBrowserWindowInterface> mock_bwi_;
   ui::UnownedUserDataHost user_data_host_;
   base::RepeatingClosureList global_show_hide_callbacks_;
   base::RepeatingCallbackList<
       void(tabs::TabInterface*, content::WebContents*, content::WebContents*)>
       discard_callbacks_;
+  base::RepeatingCallbackList<void(tabs::TabInterface*)>
+      did_activate_callbacks_;
   std::unique_ptr<FakePageContextEligibilityHelper> eligibility_helper_;
+  std::unique_ptr<FakeGlicSidePanelCoordinator> side_panel_coordinator_;
   std::unique_ptr<SelectionContextSender> sender_;
 };
 
@@ -169,7 +193,8 @@ TEST_F(SelectionContextSenderTest, UsesInstanceWhenShowing) {
   NiceMock<MockGlicInstance> instance;
   ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
   ON_CALL(instance, IsLiveMode()).WillByDefault(Return(false));
-  SetPanelShowing(&instance, true);
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
 
   EXPECT_CALL(*mock_service_, Invoke).Times(0);
   mojom::AdditionalContextPtr sent;
@@ -201,25 +226,223 @@ TEST_F(SelectionContextSenderTest, UsesInstanceWhenShowing) {
   EXPECT_FALSE(sender_->has_sent_selection_context());
 }
 
-TEST_F(SelectionContextSenderTest, InvokesWhenInstanceHidden) {
+// Opening and reopening the panel when no selection was ever sent does not
+// push an empty context.
+TEST_F(SelectionContextSenderTest, OpenWithNoSelectionPushesNothing) {
   NiceMock<MockGlicInstance> instance;
-  ON_CALL(instance, IsShowing()).WillByDefault(Return(false));
-  SetPanelShowing(&instance, true);
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
 
   EXPECT_CALL(instance, SendAdditionalContext).Times(0);
-  EXPECT_CALL(*mock_service_, Invoke(Field(&GlicInvokeOptions::target,
-                                           Field(&Target::live_mode_behavior,
-                                                 LiveModeBehavior::kFail))))
-      .Times(1);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kClosed);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+}
 
-  sender_->SetText(u"Sample selected text");
+// Closing the panel, deselecting on the page, and reopening tells "none" so
+// the client clears any stale text chip.
+TEST_F(SelectionContextSenderTest, CloseDeselectReopenTellsNone) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+
+  EXPECT_CALL(instance, SendAdditionalContext).Times(1);
+  sender_->SetText(u"Selected text");
+
+  // Close the panel and deselect on the page: nothing pushed while hidden.
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kClosed);
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  sender_->SetText(u"");
+
+  // Reopen the panel: "none" is pushed so any stale chip is cleared.
+  mojom::AdditionalContextPtr sent;
+  EXPECT_CALL(instance, SendAdditionalContext)
+      .WillOnce([&sent](mojom::AdditionalContextPtr context) {
+        sent = std::move(context);
+      });
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+
+  ASSERT_TRUE(sent);
+  EXPECT_EQ(sent->source, mojom::AdditionalContextSource::kTextSelection);
+  EXPECT_TRUE(sent->parts.empty());
+}
+
+// Reopening resends a kept selection: the panel may have lost it while closed.
+TEST_F(SelectionContextSenderTest, CloseKeepSelectionReopenResends) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+
+  EXPECT_CALL(instance, SendAdditionalContext).Times(1);
+  sender_->SetText(u"Selected text");
+
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kClosed);
+  EXPECT_TRUE(sender_->has_sent_selection_context());
+
+  mojom::AdditionalContextPtr sent;
+  EXPECT_CALL(instance, SendAdditionalContext)
+      .WillOnce([&sent](mojom::AdditionalContextPtr context) {
+        sent = std::move(context);
+      });
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+  EXPECT_EQ(SentText(sent), "Selected text");
+  EXPECT_TRUE(sender_->has_sent_selection_context());
+}
+
+// If the instance is replaced while the panel is closed, reopening pushes the
+// kept selection to the new instance.
+TEST_F(SelectionContextSenderTest, NewInstanceAfterKillPushesKeptSelection) {
+  NiceMock<MockGlicInstance> old_instance;
+  ON_CALL(old_instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&old_instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+
+  EXPECT_CALL(old_instance, SendAdditionalContext).Times(1);
+  sender_->SetText(u"Selected text");
+
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kClosed);
+
+  NiceMock<MockGlicInstance> new_instance;
+  InstanceId new_id = InstanceId::Create(2, 0);
+  ON_CALL(new_instance, id()).WillByDefault(ReturnRef(new_id));
+  ON_CALL(new_instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&new_instance);
+
+  mojom::AdditionalContextPtr sent;
+  EXPECT_CALL(new_instance, SendAdditionalContext)
+      .WillOnce([&sent](mojom::AdditionalContextPtr context) {
+        sent = std::move(context);
+      });
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+
+  ASSERT_TRUE(sent);
+  EXPECT_EQ(sent->parts.size(), 1u);
+  EXPECT_TRUE(sender_->has_sent_selection_context());
+}
+
+// A backgrounded tab's panel is not shown, so nothing is pushed or invoked
+// while away; returning to the tab tells the panel once.
+TEST_F(SelectionContextSenderTest, BackgroundedPanelDoesNotSendOrInvoke) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(false));
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(
+      GlicSidePanelCoordinator::State::kBackgrounded);
+
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  EXPECT_CALL(*mock_service_, Invoke).Times(0);
+  sender_->SetText(u"Selected text");
+
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  EXPECT_CALL(instance, SendAdditionalContext).Times(1);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+}
+
+// Another tab's side panel toggling doesn't push from a tab whose own side
+// panel is backgrounded or closed, even though the shared instance shows.
+TEST_F(SelectionContextSenderTest, OtherTabsPanelToggleDoesNotSend) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  sender_->SetText(u"Selected text");
+
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  side_panel_coordinator_->SetState(
+      GlicSidePanelCoordinator::State::kBackgrounded);
+  global_show_hide_callbacks_.Notify();
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kClosed);
+  global_show_hide_callbacks_.Notify();
+  EXPECT_FALSE(sender_->has_sent_selection_context());
+}
+
+// The instance an invocation creates already has its text; its show resends
+// the same full text, not an elided copy.
+TEST_F(SelectionContextSenderTest, MarkTextSentBeforeInstanceExists) {
+  SetInstance(nullptr);
+  const std::string long_text(200, 'a');
+  sender_->MarkTextSent(base::UTF8ToUTF16(long_text),
+                        SelectionTextLength::kFull);
+
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  std::vector<std::string> pushes;
+  RecordPushes(instance, pushes);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+  EXPECT_THAT(pushes, ElementsAre(long_text));
+  EXPECT_TRUE(sender_->has_sent_selection_context());
+}
+
+// A new instance never got the old selection, so deselecting while closed
+// pushes nothing to it.
+TEST_F(SelectionContextSenderTest, DeselectReplaceInstanceReopenPushesNothing) {
+  NiceMock<MockGlicInstance> old_instance;
+  ON_CALL(old_instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&old_instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+  EXPECT_CALL(old_instance, SendAdditionalContext).Times(1);
+  sender_->SetText(u"Selected text");
+
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kClosed);
+  sender_->SetText(u"");
+
+  NiceMock<MockGlicInstance> new_instance;
+  InstanceId new_id = InstanceId::Create(2, 0);
+  ON_CALL(new_instance, id()).WillByDefault(ReturnRef(new_id));
+  ON_CALL(new_instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&new_instance);
+  EXPECT_CALL(new_instance, SendAdditionalContext).Times(0);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+  EXPECT_FALSE(sender_->has_sent_selection_context());
+}
+
+// The page turning ineligible while the panel is closed clears the chip when
+// the panel reopens.
+TEST_F(SelectionContextSenderTest, IneligibleWhileClosedClearsChipOnReopen) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+  EXPECT_CALL(instance, SendAdditionalContext).Times(1);
+  sender_->SetText(u"Selected text");
+
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kClosed);
+  NotifyEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+
+  mojom::AdditionalContextPtr sent;
+  EXPECT_CALL(instance, SendAdditionalContext)
+      .WillOnce([&sent](mojom::AdditionalContextPtr context) {
+        sent = std::move(context);
+      });
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+  ASSERT_TRUE(sent);
+  EXPECT_TRUE(sent->parts.empty());
+  EXPECT_FALSE(sender_->has_sent_selection_context());
+}
+
+// Marked text isn't sent again while the panel stays open.
+TEST_F(SelectionContextSenderTest, DoesNotResendWhenMarkedAlreadySent) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+
+  sender_->MarkTextSent(u"Selected text", SelectionTextLength::kFull);
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  sender_->SetText(u"Selected text");
+  NotifyEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus::kEligible);
 }
 
 TEST_F(SelectionContextSenderTest, SkipsShowingLiveModeInstance) {
   NiceMock<MockGlicInstance> instance;
   ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
   ON_CALL(instance, IsLiveMode()).WillByDefault(Return(true));
-  SetPanelShowing(&instance, true);
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
 
   EXPECT_CALL(instance, SendAdditionalContext).Times(0);
   EXPECT_CALL(*mock_service_, Invoke).Times(0);
@@ -230,33 +453,43 @@ TEST_F(SelectionContextSenderTest, SkipsShowingLiveModeInstance) {
   sender_->SetText(u"");
 }
 
-TEST_F(SelectionContextSenderTest,
-       DoesNotInvokeWhenClearingWithoutShowingInstance) {
-  sender_->MarkTextSent(u"Sample selected text");
-  EXPECT_TRUE(sender_->has_sent_selection_context());
+// A show during an invocation sends nothing; the next sync after it does.
+TEST_F(SelectionContextSenderTest, SkipsPushWhileInvoking) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  ON_CALL(instance, IsInvoking()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  sender_->SetText(u"Selected text");
 
-  ON_CALL(*mock_service_, GetInstanceForTab(&mock_tab_))
-      .WillByDefault(Return(nullptr));
-  EXPECT_CALL(*mock_service_, Invoke).Times(0);
-
-  sender_->SetText(u"");
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
   EXPECT_FALSE(sender_->has_sent_selection_context());
 
-  sender_->MarkTextSent(u"Sample selected text");
+  ON_CALL(instance, IsInvoking()).WillByDefault(Return(false));
+  EXPECT_CALL(instance, SendAdditionalContext).Times(1);
+  sender_->SetText(u"Selected text");
+  EXPECT_TRUE(sender_->has_sent_selection_context());
+}
+
+TEST_F(SelectionContextSenderTest, SkipsPushWhenInstanceHiddenOrMissing) {
+  SetInstance(nullptr);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+  EXPECT_CALL(*mock_service_, Invoke).Times(0);
+  sender_->SetText(u"Sample selected text");
+
   NiceMock<MockGlicInstance> hidden_instance;
   ON_CALL(hidden_instance, IsShowing()).WillByDefault(Return(false));
-  ON_CALL(*mock_service_, GetInstanceForTab(&mock_tab_))
-      .WillByDefault(Return(&hidden_instance));
+  SetInstance(&hidden_instance);
   EXPECT_CALL(hidden_instance, SendAdditionalContext).Times(0);
-
-  sender_->SetText(u"");
-  EXPECT_FALSE(sender_->has_sent_selection_context());
+  EXPECT_CALL(*mock_service_, Invoke).Times(0);
+  sender_->SetText(u"Other selected text");
 }
 
 TEST_F(SelectionContextSenderTest, IneligiblePageSkipsSend) {
   NiceMock<MockGlicInstance> instance;
   ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
-  SetPanelShowing(&instance, true);
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
   eligibility_helper_->SetStatus(
       optimization_guide::PageContextEligibilityStatus::kNotEligible);
 
@@ -269,30 +502,11 @@ TEST_F(SelectionContextSenderTest, IneligiblePageSkipsSend) {
   sender_->SetText(u"");
 }
 
-TEST_F(SelectionContextSenderTest, GlobalShowHideResendsWhenPanelShows) {
-  NiceMock<MockGlicInstance> instance;
-  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
-  SetPanelShowing(&instance, false);
-
-  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
-  sender_->SetText(u"Selected text");
-  EXPECT_FALSE(sender_->has_sent_selection_context());
-
-  SetPanelShowing(&instance, true);
-  mojom::AdditionalContextPtr sent;
-  EXPECT_CALL(instance, SendAdditionalContext)
-      .WillOnce([&sent](mojom::AdditionalContextPtr context) {
-        sent = std::move(context);
-      });
-  global_show_hide_callbacks_.Notify();
-  EXPECT_EQ(SentText(sent), "Selected text");
-  EXPECT_TRUE(sender_->has_sent_selection_context());
-}
-
 TEST_F(SelectionContextSenderTest, DynamicEligibilityChangeClearsContext) {
   NiceMock<MockGlicInstance> instance;
   ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
-  SetPanelShowing(&instance, true);
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
 
   mojom::AdditionalContextPtr sent;
   EXPECT_CALL(instance, SendAdditionalContext)
@@ -319,7 +533,8 @@ TEST_F(SelectionContextSenderTest,
        EligibilityChangePushesContextWhenPanelShowing) {
   NiceMock<MockGlicInstance> instance;
   ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
-  SetPanelShowing(&instance, true);
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
   eligibility_helper_->SetStatus(
       optimization_guide::PageContextEligibilityStatus::kNotEligible);
 
@@ -342,7 +557,7 @@ TEST_F(SelectionContextSenderTest,
        EligibilityChangeDoesNotPushContextWhenPanelClosed) {
   NiceMock<MockGlicInstance> instance;
   ON_CALL(instance, IsShowing()).WillByDefault(Return(false));
-  SetPanelShowing(&instance, false);
+  SetInstance(&instance);
   eligibility_helper_->SetStatus(
       optimization_guide::PageContextEligibilityStatus::kNotEligible);
 
@@ -354,22 +569,408 @@ TEST_F(SelectionContextSenderTest,
   EXPECT_FALSE(sender_->has_sent_selection_context());
 }
 
-TEST_F(SelectionContextSenderTest, WillDiscardContentsClearsState) {
+// Live mode skips the push without recording it, so the same text is sent
+// once live mode ends.
+TEST_F(SelectionContextSenderTest, ResendsAfterLeavingLiveMode) {
   NiceMock<MockGlicInstance> instance;
   ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
-  SetPanelShowing(&instance, true);
+  ON_CALL(instance, IsLiveMode()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  sender_->SetText(u"Selected text");
+  EXPECT_FALSE(sender_->has_sent_selection_context());
+
+  ON_CALL(instance, IsLiveMode()).WillByDefault(Return(false));
+  EXPECT_CALL(instance, SendAdditionalContext).Times(1);
+  sender_->SetText(u"Selected text");
+  EXPECT_TRUE(sender_->has_sent_selection_context());
+}
+
+// The floating window counts as this tab's panel.
+TEST_F(SelectionContextSenderTest, SendsToFloatingWindow) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetFloating(instance, true);
+  SetInstance(&instance);
 
   EXPECT_CALL(instance, SendAdditionalContext).Times(1);
   sender_->SetText(u"Selected text");
   EXPECT_TRUE(sender_->has_sent_selection_context());
+}
+
+// Showing the floating window tells it the current selection; deselecting
+// while hidden tells "none" when it reopens.
+TEST_F(SelectionContextSenderTest, FloatingWindowShowHide) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(false));
+  SetFloating(instance, false);
+  SetInstance(&instance);
+
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  sender_->SetText(u"Selected text");
+
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetFloating(instance, true);
+  EXPECT_CALL(instance, SendAdditionalContext).Times(1);
+  global_show_hide_callbacks_.Notify();
+  EXPECT_TRUE(sender_->has_sent_selection_context());
+
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(false));
+  SetFloating(instance, false);
+  global_show_hide_callbacks_.Notify();
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  sender_->SetText(u"");
+
+  mojom::AdditionalContextPtr sent;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetFloating(instance, true);
+  EXPECT_CALL(instance, SendAdditionalContext)
+      .WillOnce([&sent](mojom::AdditionalContextPtr context) {
+        sent = std::move(context);
+      });
+  global_show_hide_callbacks_.Notify();
+  ASSERT_TRUE(sent);
+  EXPECT_TRUE(sent->parts.empty());
+  EXPECT_FALSE(sender_->has_sent_selection_context());
+}
+
+// Side panel churn: each show resends the current selection, and the hidden
+// states never send.
+TEST_F(SelectionContextSenderTest, SidePanelChurnResendsCurrentSelection) {
+  using State = GlicSidePanelCoordinator::State;
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  std::vector<std::string> pushes;
+  RecordPushes(instance, pushes);
+
+  side_panel_coordinator_->SetState(State::kShown);
+  sender_->SetText(u"A");
+  for (State state : {State::kClosed, State::kShown, State::kBackgrounded,
+                      State::kShown, State::kClosed, State::kClosed,
+                      State::kPeek, State::kShown, State::kShown}) {
+    side_panel_coordinator_->SetState(state);
+  }
+  EXPECT_THAT(pushes, ElementsAre("A", "A", "A", "A", "A"));
+}
+
+// Only the selection at the time of the show is sent, never one replaced
+// while hidden.
+TEST_F(SelectionContextSenderTest, ChangedWhileHiddenSendsOnlyLatest) {
+  using State = GlicSidePanelCoordinator::State;
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  std::vector<std::string> pushes;
+  RecordPushes(instance, pushes);
+
+  side_panel_coordinator_->SetState(State::kShown);
+  sender_->SetText(u"A");
+  side_panel_coordinator_->SetState(State::kClosed);
+  sender_->SetText(u"B");
+  sender_->SetText(u"");
+  sender_->SetText(u"C");
+  side_panel_coordinator_->SetState(State::kBackgrounded);
+  side_panel_coordinator_->SetState(State::kShown);
+  EXPECT_THAT(pushes, ElementsAre("A", "C"));
+}
+
+// "None" is sent once after a deselect, not on every later show.
+TEST_F(SelectionContextSenderTest, DeselectedWhileHiddenTellsNoneOnce) {
+  using State = GlicSidePanelCoordinator::State;
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  std::vector<std::string> pushes;
+  RecordPushes(instance, pushes);
+
+  side_panel_coordinator_->SetState(State::kShown);
+  sender_->SetText(u"A");
+  side_panel_coordinator_->SetState(State::kClosed);
+  sender_->SetText(u"");
+  side_panel_coordinator_->SetState(State::kShown);
+  side_panel_coordinator_->SetState(State::kBackgrounded);
+  side_panel_coordinator_->SetState(State::kShown);
+  side_panel_coordinator_->SetState(State::kShown);
+  EXPECT_THAT(pushes, ElementsAre("A", ""));
+}
+
+// A side panel shown before its instance shows sends nothing until both are.
+TEST_F(SelectionContextSenderTest, ShowBeforeInstanceShowsWaits) {
+  using State = GlicSidePanelCoordinator::State;
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(false));
+  SetInstance(&instance);
+  std::vector<std::string> pushes;
+  RecordPushes(instance, pushes);
+
+  sender_->SetText(u"A");
+  side_panel_coordinator_->SetState(State::kShown);
+  EXPECT_THAT(pushes, IsEmpty());
+
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  side_panel_coordinator_->SetState(State::kShown);
+  EXPECT_THAT(pushes, ElementsAre("A"));
+}
+
+// Eligibility flips across shows: an ineligible page sends "none" once and
+// never its text; turning eligible again sends the text.
+TEST_F(SelectionContextSenderTest, EligibilityFlipsAcrossShows) {
+  using State = GlicSidePanelCoordinator::State;
+  using Status = optimization_guide::PageContextEligibilityStatus;
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  std::vector<std::string> pushes;
+  RecordPushes(instance, pushes);
+
+  side_panel_coordinator_->SetState(State::kShown);
+  sender_->SetText(u"A");
+  side_panel_coordinator_->SetState(State::kClosed);
+  NotifyEligibilityChanged(Status::kNotEligible);
+  side_panel_coordinator_->SetState(State::kShown);
+  side_panel_coordinator_->SetState(State::kShown);
+  NotifyEligibilityChanged(Status::kEligible);
+  side_panel_coordinator_->SetState(State::kClosed);
+  side_panel_coordinator_->SetState(State::kShown);
+  EXPECT_THAT(pushes, ElementsAre("A", "", "A", "A"));
+}
+
+// Live mode swallows shows; the next show after it ends sends the text.
+TEST_F(SelectionContextSenderTest, LiveModeAcrossShows) {
+  using State = GlicSidePanelCoordinator::State;
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  ON_CALL(instance, IsLiveMode()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  std::vector<std::string> pushes;
+  RecordPushes(instance, pushes);
+
+  sender_->SetText(u"A");
+  side_panel_coordinator_->SetState(State::kShown);
+  side_panel_coordinator_->SetState(State::kShown);
+  EXPECT_THAT(pushes, IsEmpty());
+
+  ON_CALL(instance, IsLiveMode()).WillByDefault(Return(false));
+  side_panel_coordinator_->SetState(State::kClosed);
+  side_panel_coordinator_->SetState(State::kShown);
+  EXPECT_THAT(pushes, ElementsAre("A"));
+}
+
+// Shows resend an invocation's text the way it was sent, in full, never an
+// elided copy over it. A new selection goes back to elided.
+TEST_F(SelectionContextSenderTest, ResendKeepsInvocationTextLength) {
+  using State = GlicSidePanelCoordinator::State;
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  std::vector<std::string> pushes;
+  RecordPushes(instance, pushes);
+
+  const std::string long_text(200, 'a');
+  sender_->MarkTextSent(base::UTF8ToUTF16(long_text),
+                        SelectionTextLength::kFull);
+  side_panel_coordinator_->SetState(State::kShown);
+  side_panel_coordinator_->SetState(State::kClosed);
+  side_panel_coordinator_->SetState(State::kShown);
+  EXPECT_THAT(pushes, ElementsAre(long_text, long_text));
+
+  const std::string other_text(200, 'b');
+  sender_->SetText(base::UTF8ToUTF16(other_text));
+  side_panel_coordinator_->SetState(State::kClosed);
+  side_panel_coordinator_->SetState(State::kShown);
+  ASSERT_EQ(pushes.size(), 4u);
+  EXPECT_LT(pushes[2].size(), other_text.size());
+  EXPECT_EQ(pushes[3], pushes[2]);
+}
+
+// A replaced instance gets the selection on its first show; the old one gets
+// nothing more.
+TEST_F(SelectionContextSenderTest, InstanceReplacedBetweenShows) {
+  using State = GlicSidePanelCoordinator::State;
+  NiceMock<MockGlicInstance> old_instance;
+  ON_CALL(old_instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&old_instance);
+  std::vector<std::string> old_pushes;
+  RecordPushes(old_instance, old_pushes);
+
+  side_panel_coordinator_->SetState(State::kShown);
+  sender_->SetText(u"A");
+  side_panel_coordinator_->SetState(State::kClosed);
+
+  NiceMock<MockGlicInstance> new_instance;
+  InstanceId new_id = InstanceId::Create(2, 0);
+  ON_CALL(new_instance, id()).WillByDefault(ReturnRef(new_id));
+  ON_CALL(new_instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&new_instance);
+  std::vector<std::string> new_pushes;
+  RecordPushes(new_instance, new_pushes);
+
+  side_panel_coordinator_->SetState(State::kShown);
+  EXPECT_THAT(old_pushes, ElementsAre("A"));
+  EXPECT_THAT(new_pushes, ElementsAre("A"));
+}
+
+// A scripted mix of panel states, selections, eligibility and live mode.
+// Whatever the order, every push is the page's selection at that moment (or
+// "none" when it has none or is ineligible), and nothing is sent while the
+// panel is hidden.
+TEST_F(SelectionContextSenderTest, ScriptedChurnNeverSendsStaleSelection) {
+  using State = GlicSidePanelCoordinator::State;
+  using Status = optimization_guide::PageContextEligibilityStatus;
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+
+  std::string selection;
+  bool eligible = true;
+  bool live = false;
+  int pushes = 0;
+  ON_CALL(instance, SendAdditionalContext)
+      .WillByDefault([&](mojom::AdditionalContextPtr context) {
+        ++pushes;
+        EXPECT_TRUE(sender_->IsPanelShowing());
+        EXPECT_FALSE(live);
+        EXPECT_EQ(SentText(context), eligible ? selection : "");
+      });
+
+  auto select = [&](const std::string& text) {
+    selection = text;
+    sender_->SetText(base::UTF8ToUTF16(text));
+  };
+  auto set_eligible = [&](bool value) {
+    eligible = value;
+    NotifyEligibilityChanged(value ? Status::kEligible : Status::kNotEligible);
+  };
+  auto set_live = [&](bool value) {
+    live = value;
+    ON_CALL(instance, IsLiveMode()).WillByDefault(Return(value));
+  };
+  auto set_state = [&](State state) {
+    side_panel_coordinator_->SetState(state);
+  };
+
+  select("A");
+  set_state(State::kShown);
+  select("B");
+  set_state(State::kBackgrounded);
+  select("");
+  select("C");
+  set_eligible(false);
+  set_state(State::kShown);
+  set_live(true);
+  set_eligible(true);
+  select("D");
+  set_state(State::kClosed);
+  set_state(State::kShown);
+  set_live(false);
+  set_state(State::kPeek);
+  set_state(State::kShown);
+  select("");
+  set_state(State::kShown);
+  set_state(State::kClosed);
+  select("E");
+  set_eligible(false);
+  set_eligible(true);
+  set_state(State::kShown);
+  EXPECT_GT(pushes, 0);
+  EXPECT_TRUE(sender_->has_sent_selection_context());
+}
+
+// Several tabs can share one floating window, so only the active tab tells it
+// its selection.
+TEST_F(SelectionContextSenderTest, FloatingWindowOnlyFromActiveTab) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetFloating(instance, true);
+  SetInstance(&instance);
+  ON_CALL(mock_tab_, IsActivated()).WillByDefault(Return(false));
+
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  sender_->SetText(u"Selected text");
+  global_show_hide_callbacks_.Notify();
+  EXPECT_FALSE(sender_->has_sent_selection_context());
+
+  mojom::AdditionalContextPtr sent;
+  EXPECT_CALL(instance, SendAdditionalContext)
+      .WillOnce([&sent](mojom::AdditionalContextPtr context) {
+        sent = std::move(context);
+      });
+  ON_CALL(mock_tab_, IsActivated()).WillByDefault(Return(true));
+  did_activate_callbacks_.Notify(&mock_tab_);
+  EXPECT_EQ(SentText(sent), "Selected text");
+  EXPECT_TRUE(sender_->has_sent_selection_context());
+}
+
+// Another tab may have put its chip in the shared floating window, so
+// returning to a tab tells it this tab's selection, even "none".
+TEST_F(SelectionContextSenderTest, FloatingWindowRetellsOnTabActivation) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetFloating(instance, true);
+  SetInstance(&instance);
+
+  mojom::AdditionalContextPtr sent;
+  EXPECT_CALL(instance, SendAdditionalContext)
+      .WillOnce([&sent](mojom::AdditionalContextPtr context) {
+        sent = std::move(context);
+      });
+  did_activate_callbacks_.Notify(&mock_tab_);
+  ASSERT_TRUE(sent);
+  EXPECT_TRUE(sent->parts.empty());
+
+  EXPECT_CALL(instance, SendAdditionalContext).Times(1);
+  sender_->SetText(u"Selected text");
+
+  // Another tab replaces the chip while this one is away; coming back resends
+  // the same text.
+  EXPECT_CALL(instance, SendAdditionalContext)
+      .WillOnce([&sent](mojom::AdditionalContextPtr context) {
+        sent = std::move(context);
+      });
+  did_activate_callbacks_.Notify(&mock_tab_);
+  EXPECT_EQ(SentText(sent), "Selected text");
+}
+
+// Activating a tab doesn't touch its side panel, which follows its own state.
+TEST_F(SelectionContextSenderTest, TabActivationIgnoresSidePanel) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+  EXPECT_CALL(instance, SendAdditionalContext).Times(1);
+  sender_->SetText(u"Selected text");
+
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  did_activate_callbacks_.Notify(&mock_tab_);
+}
+
+// A discarded tab keeps its instance, so returning to it clears the chip.
+TEST_F(SelectionContextSenderTest, WillDiscardContentsClearsChipOnReturn) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+
+  EXPECT_CALL(instance, SendAdditionalContext).Times(1);
+  sender_->SetText(u"Selected text");
+  side_panel_coordinator_->SetState(
+      GlicSidePanelCoordinator::State::kBackgrounded);
 
   discard_callbacks_.Notify(&mock_tab_, web_contents(), nullptr);
-  EXPECT_FALSE(sender_->has_sent_selection_context());
   EXPECT_TRUE(::selection::PageSelection::From(&mock_tab_)->GetText().empty());
 
-  // No-op on show/hide after discard cleared `text_`.
-  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
-  global_show_hide_callbacks_.Notify();
+  mojom::AdditionalContextPtr sent;
+  EXPECT_CALL(instance, SendAdditionalContext)
+      .WillOnce([&sent](mojom::AdditionalContextPtr context) {
+        sent = std::move(context);
+      });
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+  ASSERT_TRUE(sent);
+  EXPECT_TRUE(sent->parts.empty());
+  EXPECT_FALSE(sender_->has_sent_selection_context());
 }
 
 TEST_F(SelectionContextSenderTest, IsTheTabsPageSelection) {
@@ -380,29 +981,11 @@ TEST_F(SelectionContextSenderTest, IsTheTabsPageSelection) {
             u"Selected text");
 }
 
-TEST_F(SelectionContextSenderTest,
-       EligibilityChangeDoesNotPushContextWhenNoBrowserWindow) {
-  NiceMock<MockGlicInstance> instance;
-  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
-  SetPanelShowing(&instance, true);
-  // E.g. the tab is between windows while being dragged.
-  ON_CALL(mock_tab_, GetBrowserWindowInterface())
-      .WillByDefault(Return(nullptr));
-  eligibility_helper_->SetStatus(
-      optimization_guide::PageContextEligibilityStatus::kNotEligible);
-
-  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
-  EXPECT_CALL(*mock_service_, Invoke).Times(0);
-  sender_->SetText(u"Selected text");
-  NotifyEligibilityChanged(
-      optimization_guide::PageContextEligibilityStatus::kEligible);
-  EXPECT_FALSE(sender_->has_sent_selection_context());
-}
-
 TEST_F(SelectionContextSenderTest, UnknownEligibilityClearsContext) {
   NiceMock<MockGlicInstance> instance;
   ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
-  SetPanelShowing(&instance, true);
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
   // The helper starts out unknown; get to eligible first.
   NotifyEligibilityChanged(
       optimization_guide::PageContextEligibilityStatus::kEligible);
@@ -430,7 +1013,8 @@ TEST_F(SelectionContextSenderTest, NoEligibilityHelperSkipsSend) {
 
   NiceMock<MockGlicInstance> instance;
   ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
-  SetPanelShowing(&instance, true);
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
 
   EXPECT_CALL(instance, SendAdditionalContext).Times(0);
   EXPECT_CALL(*mock_service_, Invoke).Times(0);
@@ -441,8 +1025,7 @@ TEST_F(SelectionContextSenderTest, NoEligibilityHelperSkipsSend) {
 TEST_F(SelectionContextSenderTest, NoInstanceForTabDoesNotSend) {
   ON_CALL(*mock_service_, GetInstanceForTab(&mock_tab_))
       .WillByDefault(Return(nullptr));
-  ON_CALL(*mock_service_, IsPanelShowingForBrowser(testing::Ref(mock_bwi_)))
-      .WillByDefault(Return(true));
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
 
   EXPECT_CALL(*mock_service_, Invoke).Times(0);
   sender_->SetText(u"Selected text");
@@ -464,8 +1047,6 @@ TEST_F(SelectionContextSenderTest, NoGlicServiceDoesNothing) {
   tabs::MockTabInterface other_tab;
   ui::UnownedUserDataHost other_host;
   ON_CALL(other_tab, GetContents()).WillByDefault(Return(other_contents.get()));
-  ON_CALL(other_tab, GetBrowserWindowInterface())
-      .WillByDefault(Return(&mock_bwi_));
   ON_CALL(other_tab, GetUnownedUserDataHost())
       .WillByDefault(ReturnRef(other_host));
   FakePageContextEligibilityHelper other_helper(other_tab);
@@ -473,9 +1054,6 @@ TEST_F(SelectionContextSenderTest, NoGlicServiceDoesNothing) {
   SelectionContextSender sender(other_tab);
   EXPECT_FALSE(sender.IsPanelShowing());
   sender.SetText(u"Selected text");
-  EXPECT_FALSE(sender.has_sent_selection_context());
-  sender.MarkTextSent(u"Selected text");
-  sender.SetText(u"");
   EXPECT_FALSE(sender.has_sent_selection_context());
 }
 

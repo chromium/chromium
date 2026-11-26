@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/selection/quick_answers_tool.h"
+#include "chrome/browser/glic/selection/selection_context.h"
 #include "chrome/browser/glic/selection/selection_context_sender.h"
 #include "chrome/browser/glic/selection/shake_trigger.h"
 #include "chrome/browser/profiles/profile.h"
@@ -406,7 +407,7 @@ void GlicSelectionObserver::UpdateSelectionState(
   auto* sender = GetSelectionContextSender();
   if (source == SelectionSource::kContextMenu) {
     if (sender) {
-      sender->MarkTextSent(selected_text);
+      sender->MarkTextSent(selected_text, SelectionTextLength::kFull);
     }
     return;
   }
@@ -620,7 +621,7 @@ void GlicSelectionObserver::ProcessInputEvent(
 }
 
 void GlicSelectionObserver::EnsureSidePanelStateSubscription() {
-  if (side_panel_state_subscription_ || !shake_trigger_->IsCounting()) {
+  if (side_panel_state_subscription_) {
     return;
   }
   auto* tab_interface =
@@ -640,8 +641,13 @@ void GlicSelectionObserver::OnSidePanelStateChanged(
     GlicSidePanelCoordinator::State state) {
   GlicSidePanelCoordinator::State previous_state = last_side_panel_state_;
   last_side_panel_state_ = state;
+  if (state != GlicSidePanelCoordinator::State::kShown) {
+    return;
+  }
+  // The global show/hide hook fires before this tab's side panel is shown.
+  CloseSelectionAffordance();
   // TODO(b:583899691): Also count region capture while the panel is open.
-  if (state == GlicSidePanelCoordinator::State::kShown &&
+  if (shake_trigger_->IsCounting() &&
       previous_state != GlicSidePanelCoordinator::State::kShown &&
       previous_state != GlicSidePanelCoordinator::State::kBackgrounded) {
     shake_trigger_->OnFollowUpAction();

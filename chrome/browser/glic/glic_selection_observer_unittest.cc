@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/selection/quick_answers_tool.h"
 #include "chrome/browser/glic/selection/selection_context_sender.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/test_support/fake_glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance_coordinator.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
@@ -59,7 +60,6 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/views/view.h"
 
 namespace glic {
 
@@ -227,6 +227,7 @@ class ScopedTestSender {
 
   ~ScopedTestSender() {
     sender_.reset();
+    side_panel_coordinator_.reset();
     eligibility_helper_.reset();
   }
 
@@ -253,11 +254,11 @@ class ScopedTestSender {
         });
     ON_CALL(*service_, GetInstanceForTab(&*tab_))
         .WillByDefault(Return(&instance_));
-    ON_CALL(*service_, IsPanelShowingForBrowser(testing::Ref(*bwi_)))
-        .WillByDefault(Return(panel_showing));
 
     eligibility_helper_ =
         std::make_unique<FakePageContextEligibilityHelper>(*tab_);
+    side_panel_coordinator_ =
+        std::make_unique<FakeGlicSidePanelCoordinator>(&*tab_, panel_showing);
     sender_ = std::make_unique<SelectionContextSender>(*tab_);
   }
 
@@ -270,6 +271,7 @@ class ScopedTestSender {
   raw_ptr<MockGlicKeyedService> service_;
   NiceMock<MockGlicInstance> instance_;
   std::unique_ptr<FakePageContextEligibilityHelper> eligibility_helper_;
+  std::unique_ptr<FakeGlicSidePanelCoordinator> side_panel_coordinator_;
   std::unique_ptr<SelectionContextSender> sender_;
   bool send_called_ = false;
   std::optional<std::u16string> last_sent_text_;
@@ -1132,6 +1134,29 @@ TEST_F(GlicSelectionObserverTest, GlobalShowHideKeepsCueWhenPanelHidden) {
   EXPECT_EQ(observer->close_selection_affordance_count(), 0);
 }
 
+// The global show/hide hook fires before the side panel is shown, so showing
+// this tab's side panel closes the cue too, even when wiggles aren't counted.
+TEST_F(GlicSelectionObserverTest, ShowingThisTabsSidePanelClosesCue) {
+  tabs::MockTabInterface mock_tab;
+  ui::UnownedUserDataHost user_data_host;
+  EXPECT_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillRepeatedly(ReturnRef(user_data_host));
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  FakeGlicSidePanelCoordinator side_panel_coordinator(&mock_tab);
+  RecreateObserver();
+  auto* observer = GetObserver();
+
+  side_panel_coordinator.SetState(GlicSidePanelCoordinator::State::kClosed);
+  EXPECT_EQ(observer->close_selection_affordance_count(), 0);
+
+  side_panel_coordinator.SetState(GlicSidePanelCoordinator::State::kShown);
+  EXPECT_EQ(observer->close_selection_affordance_count(), 1);
+
+  // The observer registers on `user_data_host`, which goes away first.
+  observer_.reset();
+}
+
 TEST_F(GlicSelectionObserverTest, WiggleFollowedUpBySelection) {
   base::test::ScopedFeatureList feature_list;
   EnableWiggleCounting(feature_list);
@@ -1224,38 +1249,6 @@ TEST_F(GlicSelectionObserverTest, NoFollowUpTrackingWithoutWiggleCounting) {
   GetObserver()->OnTextSelectionChanged(nullptr, u"Selected Text");
   EXPECT_FALSE(HasFollowUpSelection());
 }
-
-namespace {
-
-class FakeGlicSidePanelCoordinator : public GlicSidePanelCoordinator {
- public:
-  explicit FakeGlicSidePanelCoordinator(tabs::TabInterface* tab)
-      : GlicSidePanelCoordinator(tab) {}
-
-  void Show(const ShowOptions& options) override {}
-  void Close(const CloseOptions& options) override {}
-  bool IsShowing() const override { return state_ == State::kShown; }
-  State state() override { return state_; }
-  bool SupportsPeek() const override { return false; }
-  base::CallbackListSubscription AddStateCallback(
-      base::RepeatingCallback<void(State state)> callback) override {
-    return state_callbacks_.Add(std::move(callback));
-  }
-  void SetContentsView(std::unique_ptr<views::View> contents_view) override {}
-  int GetPreferredWidth() override { return 0; }
-  bool IsGlicSidePanelActive() override { return state_ != State::kClosed; }
-
-  void SetState(State state) {
-    state_ = state;
-    state_callbacks_.Notify(state_);
-  }
-
- private:
-  State state_ = State::kClosed;
-  base::RepeatingCallbackList<void(State)> state_callbacks_;
-};
-
-}  // namespace
 
 TEST_F(GlicSelectionObserverTest, WiggleFollowedUpByOpeningThisTabsPanel) {
   base::test::ScopedFeatureList feature_list;

@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -28,6 +29,9 @@ class MockGlicInstance : public GlicInstance {
   MOCK_METHOD(bool, IsHibernated, (), (const, override));
   ObservableValueView<mojom::PanelState>& GetPanelState() const override {
     return panel_state_.view();
+  }
+  void SetPanelState(mojom::PanelState state) {
+    panel_state_.Set(std::move(state));
   }
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterWillBeDestroyed,

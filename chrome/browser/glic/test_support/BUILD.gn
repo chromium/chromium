@@ -44,6 +44,8 @@ source_set("test_support") {
   ]
   if (!is_android) {
     sources += [
+      "fake_glic_side_panel_coordinator.cc",
+      "fake_glic_side_panel_coordinator.h",
       "glic_browser_interactive_test.h",
       "glic_functional_browsertest.cc",
       "glic_functional_browsertest.h",
@@ -93,6 +95,7 @@ source_set("test_support") {
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//ui/events:test_support",
+      "//ui/views",
     ]
   } else {
     deps += [

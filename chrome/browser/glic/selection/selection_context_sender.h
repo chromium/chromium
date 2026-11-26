@@ -13,6 +13,9 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/glic/public/glic_instance_id.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/selection/selection_context.h"
 #include "chrome/browser/selection/page_selection.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -51,30 +54,41 @@ class SelectionContextSender : public ::selection::PageSelection {
   // Updates the tab's current selected text. Empty means none.
   void SetText(std::u16string_view text);
 
-  // Records that `text` was already sent to the panel by an entry point that
-  // invoked glic directly (e.g. the context menu).
-  void MarkTextSent(std::u16string_view text);
+  // Records that `text` was already sent to the panel, at `length`, by an
+  // entry point that invoked glic directly (e.g. the context menu).
+  void MarkTextSent(std::u16string_view text, SelectionTextLength length);
 
   // selection::PageSelection:
   const std::u16string& GetText() const override;
 
+  // True if this tab's side panel is shown, or this tab's instance is shown
+  // in the floating window.
   bool IsPanelShowing() const;
 
-  bool has_sent_selection_context() const {
-    return has_sent_selection_context_;
-  }
+  bool has_sent_selection_context() const { return !sent_.text.empty(); }
 
  private:
+  void OnSidePanelStateChanged(GlicSidePanelCoordinator::State state);
   void OnGlobalPanelShowHide();
+  void OnTabActivated(tabs::TabInterface* tab);
   void OnPageContextEligibilityChanged(
       optimization_guide::PageContextEligibilityStatus status);
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
-  // Sends `text_` to the panel if it's showing, or clears what was sent.
-  void Sync();
-  // Returns whether the context was sent (or an invocation started).
-  bool Push(const std::u16string& selected_text);
+  // True if this tab is active and its instance is shown in the floating
+  // window. Several tabs can share one floating window.
+  bool IsFloatingPanelShowing() const;
+  // When to send `text_` again even if the panel was already told it.
+  enum class Resend {
+    kNo,
+    // The panel just showed and may have lost it (aborted open, reload,
+    // hibernation). Skipped for "none".
+    kSelection,
+    // Another tab may have replaced it in the shared floating window.
+    kAlways,
+  };
+  void Sync(Resend resend = Resend::kNo);
   bool IsPageContextEligible() const;
 
   // Safe: owned by `TabFeatures`, which is destroyed before `tab_`.
@@ -83,11 +97,21 @@ class SelectionContextSender : public ::selection::PageSelection {
   raw_ptr<GlicKeyedService> glic_keyed_service_;
 
   std::u16string text_;
-  bool has_sent_selection_context_ = false;
+  // What `sent_instance_id_` was last told. Set and reset as a whole.
+  struct SentSelection {
+    // Empty means none.
+    std::u16string text;
+    // How `text` was sent; a resend sends it the same way.
+    SelectionTextLength length = SelectionTextLength::kElided;
+  };
+  SentSelection sent_;
+  InstanceId sent_instance_id_;
 
-  base::CallbackListSubscription panel_state_subscription_;
+  base::CallbackListSubscription side_panel_state_subscription_;
+  base::CallbackListSubscription global_show_hide_subscription_;
   base::CallbackListSubscription page_context_eligibility_subscription_;
   base::CallbackListSubscription discard_contents_subscription_;
+  base::CallbackListSubscription did_activate_subscription_;
 
   ui::ScopedUnownedUserData<::selection::PageSelection>
       scoped_page_selection_user_data_;

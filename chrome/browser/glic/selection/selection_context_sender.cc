@@ -7,17 +7,15 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_instance.h"
-#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/selection/selection_context.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 
 namespace glic {
@@ -38,8 +36,15 @@ SelectionContextSender::SelectionContextSender(tabs::TabInterface& tab)
       glic_keyed_service_(GlicKeyedService::Get(
           Profile::FromBrowserContext(tab.GetContents()->GetBrowserContext()))),
       scoped_page_selection_user_data_(tab.GetUnownedUserDataHost(), *this) {
+  // Null without a `GlicKeyedService` (e.g. in tests).
+  if (auto* coordinator = GlicSidePanelCoordinator::GetForTab(&*tab_)) {
+    side_panel_state_subscription_ = coordinator->AddStateCallback(
+        base::BindRepeating(&SelectionContextSender::OnSidePanelStateChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+
   if (glic_keyed_service_) {
-    panel_state_subscription_ =
+    global_show_hide_subscription_ =
         glic_keyed_service_->instance_coordinator().AddGlobalShowHideCallback(
             base::BindRepeating(&SelectionContextSender::OnGlobalPanelShowHide,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -55,6 +60,8 @@ SelectionContextSender::SelectionContextSender(tabs::TabInterface& tab)
   discard_contents_subscription_ = tab_->RegisterWillDiscardContents(
       base::BindRepeating(&SelectionContextSender::WillDiscardContents,
                           weak_ptr_factory_.GetWeakPtr()));
+  did_activate_subscription_ = tab_->RegisterDidActivate(base::BindRepeating(
+      &SelectionContextSender::OnTabActivated, weak_ptr_factory_.GetWeakPtr()));
 }
 
 SelectionContextSender::~SelectionContextSender() = default;
@@ -64,102 +71,101 @@ void SelectionContextSender::SetText(std::u16string_view text) {
   Sync();
 }
 
-void SelectionContextSender::Sync() {
-  if (text_.empty()) {
-    if (has_sent_selection_context_) {
-      Push(u"");
-      has_sent_selection_context_ = false;
-    }
-    return;
-  }
-
-  has_sent_selection_context_ = IsPanelShowing() && Push(text_);
-}
-
 const std::u16string& SelectionContextSender::GetText() const {
   return text_;
 }
 
-void SelectionContextSender::MarkTextSent(std::u16string_view text) {
+void SelectionContextSender::MarkTextSent(std::u16string_view text,
+                                          SelectionTextLength length) {
   text_ = text;
-  has_sent_selection_context_ = !text_.empty();
+  sent_ = {.text = text_, .length = length};
+  GlicInstance* instance = glic_keyed_service_
+                               ? glic_keyed_service_->GetInstanceForTab(&*tab_)
+                               : nullptr;
+  sent_instance_id_ = instance ? instance->id() : InstanceId();
 }
 
 bool SelectionContextSender::IsPanelShowing() const {
-  BrowserWindowInterface* bwi = tab_->GetBrowserWindowInterface();
-  if (bwi && glic_keyed_service_ &&
-      glic_keyed_service_->GetInstanceForTab(&*tab_)) {
-    return glic_keyed_service_->IsPanelShowingForBrowser(*bwi);
-  }
-  return false;
+  // Matches `OnSidePanelStateChanged()`, which only syncs on `kShown`.
+  auto* coordinator = GlicSidePanelCoordinator::GetForTab(&*tab_);
+  return (coordinator && coordinator->IsShowing()) || IsFloatingPanelShowing();
 }
 
+bool SelectionContextSender::IsFloatingPanelShowing() const {
+  if (!glic_keyed_service_) {
+    return false;
+  }
+  GlicInstance* instance = glic_keyed_service_->GetInstanceForTab(&*tab_);
+  return tab_->IsActivated() && instance && instance->IsShowing() &&
+         instance->GetPanelState()->kind == mojom::PanelStateKind::kDetached;
+}
+
+void SelectionContextSender::OnSidePanelStateChanged(
+    GlicSidePanelCoordinator::State state) {
+  if (state == GlicSidePanelCoordinator::State::kShown) {
+    Sync(Resend::kSelection);
+  }
+}
+
+// The floating window has no per-tab state callback.
 void SelectionContextSender::OnGlobalPanelShowHide() {
-  if (text_.empty()) {
+  if (!IsFloatingPanelShowing()) {
     return;
   }
-  Sync();
+  Sync(Resend::kSelection);
+}
+
+// Another tab may have changed the floating window's chip, so tell it this
+// tab's selection, even "none".
+void SelectionContextSender::OnTabActivated(tabs::TabInterface* tab) {
+  if (IsFloatingPanelShowing()) {
+    Sync(Resend::kAlways);
+  }
 }
 
 void SelectionContextSender::OnPageContextEligibilityChanged(
     optimization_guide::PageContextEligibilityStatus status) {
-  if (status != optimization_guide::PageContextEligibilityStatus::kEligible &&
-      has_sent_selection_context_) {
-    Push(u"");
-    has_sent_selection_context_ = false;
-  } else if (status ==
-                 optimization_guide::PageContextEligibilityStatus::kEligible &&
-             !text_.empty() && IsPanelShowing()) {
-    has_sent_selection_context_ = Push(text_);
-  }
+  Sync();
 }
 
+// Keeps what the panel was told, so returning to the tab clears its chip.
 void SelectionContextSender::WillDiscardContents(
     tabs::TabInterface* tab,
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
   text_.clear();
-  has_sent_selection_context_ = false;
 }
 
-bool SelectionContextSender::Push(const std::u16string& selected_text) {
-  if (!glic_keyed_service_) {
-    return false;
+void SelectionContextSender::Sync(Resend resend) {
+  if (!IsPanelShowing() || !glic_keyed_service_) {
+    return;
   }
-
-  if (!IsPageContextEligible() && !selected_text.empty()) {
-    return false;
+  GlicInstance* instance = glic_keyed_service_->GetInstanceForTab(&*tab_);
+  // TODO(b:579078690): Sync again when the invocation finishes.
+  if (!instance || !instance->IsShowing() || instance->IsLiveMode() ||
+      instance->IsInvoking()) {
+    return;
   }
-
-  mojom::AdditionalContextPtr context = CreateTextSelectionContext(
-      tab_->GetContents(), selected_text, SelectionTextLength::kElided);
-
-  // Common case: the tab's instance already exists and is showing. Hand the
-  // update straight to the instance instead of starting a full invocation.
-  if (GlicInstance* instance = glic_keyed_service_->GetInstanceForTab(&*tab_)) {
-    if (instance->IsShowing()) {
-      if (instance->IsLiveMode()) {
-        return false;
-      }
-      instance->SendAdditionalContext(std::move(context));
-      return true;
+  if (instance->id() != sent_instance_id_) {
+    // Invalid when `MarkTextSent()` ran before the tab had an instance; the
+    // invocation that creates it already carries the text.
+    if (sent_instance_id_.IsValid()) {
+      sent_ = {};
     }
+    sent_instance_id_ = instance->id();
   }
-
-  // Never start an invocation just to send an empty selection.
-  if (selected_text.empty()) {
-    return false;
+  const std::u16string& target =
+      IsPageContextEligible() ? text_ : base::EmptyString16();
+  bool resend_now = resend == Resend::kAlways ||
+                    (resend == Resend::kSelection && !target.empty());
+  if (target == sent_.text && !resend_now) {
+    return;
   }
-
-  GlicInvokeOptions options(glic::Target(*tab_),
-                            mojom::InvocationSource::kTextSelectionWidget);
-  options.preserve_active_surface = true;
-  options.target.live_mode_behavior = LiveModeBehavior::kFail;
-  options.additional_context = AdditionalTabContext(
-      std::move(context), content::GlobalRenderFrameHostId(),
-      PolicyCheck::kNone);
-  glic_keyed_service_->Invoke(std::move(options));
-  return true;
+  SelectionTextLength length =
+      target == sent_.text ? sent_.length : SelectionTextLength::kElided;
+  instance->SendAdditionalContext(
+      CreateTextSelectionContext(tab_->GetContents(), target, length));
+  sent_ = {.text = target, .length = length};
 }
 
 bool SelectionContextSender::IsPageContextEligible() const {
