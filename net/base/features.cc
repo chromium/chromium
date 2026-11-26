@@ -1269,4 +1269,6 @@ BASE_FEATURE(kAssumeQuicBrokenUntilVerifiedOnCurrentNetwork,
 BASE_FEATURE(kAllowInvalidCertificateSerialNumbers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kQuicDefaultPragueCubic, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "build/build_config.h"
+#include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/schemeful_site.h"
@@ -32,6 +33,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/http/web_transport_http3.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer_wrapper.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_dispatcher_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_session_peer.h"
@@ -853,6 +855,107 @@ TEST_F(DedicatedWebTransportHttp3HeadersTest,
   }
   EXPECT_THAT(custom_value, ::testing::HasSubstr("first"));
   EXPECT_THAT(custom_value, ::testing::HasSubstr("second"));
+}
+
+TEST_F(DedicatedWebTransportHttp3Test, DefaultPragueCubicDisabledByDefault) {
+  StartServer();
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
+
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->connection_for_testing() != nullptr);
+  EXPECT_EQ(client_->connection_for_testing()
+                ->sent_packet_manager()
+                .GetSendAlgorithm()
+                ->GetCongestionControlType(),
+            quic::kCubicBytes);
+}
+
+TEST_F(DedicatedWebTransportHttp3Test, DefaultPragueCubicEnabled) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kQuicDefaultPragueCubic);
+  StartServer();
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
+
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->connection_for_testing() != nullptr);
+  EXPECT_EQ(client_->connection_for_testing()
+                ->sent_packet_manager()
+                .GetSendAlgorithm()
+                ->GetCongestionControlType(),
+            quic::kPragueCubic);
+}
+
+TEST_F(DedicatedWebTransportHttp3Test,
+       DefaultPragueCubicDoesNotOverrideReloadableFlag) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kQuicDefaultPragueCubic);
+  SetQuicReloadableFlag(quic_default_to_bbr, true);
+  StartServer();
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
+
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->connection_for_testing() != nullptr);
+  EXPECT_EQ(client_->connection_for_testing()
+                ->sent_packet_manager()
+                .GetSendAlgorithm()
+                ->GetCongestionControlType(),
+            quic::kBBR);
+}
+
+TEST_F(DedicatedWebTransportHttp3Test,
+       DefaultPragueCubicOverriddenByCongestionControlHint) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kQuicDefaultPragueCubic);
+  StartServer();
+  WebTransportParameters parameters;
+  parameters.congestion_control_hint =
+      WebTransportParameters::CongestionControlHint::kThroughput;
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), parameters);
+
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->connection_for_testing() != nullptr);
+  EXPECT_EQ(client_->connection_for_testing()
+                ->sent_packet_manager()
+                .GetSendAlgorithm()
+                ->GetCongestionControlType(),
+            quic::kBBRv2);
+}
+
+TEST_F(DedicatedWebTransportHttp3Test,
+       DefaultPragueCubicOverriddenByClientConnectionOption) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kQuicDefaultPragueCubic);
+  context_->quic_context()->params()->client_connection_options = {quic::kCQBC};
+  StartServer();
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
+
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->connection_for_testing() != nullptr);
+  EXPECT_EQ(client_->connection_for_testing()
+                ->sent_packet_manager()
+                .GetSendAlgorithm()
+                ->GetCongestionControlType(),
+            quic::kCubicBytes);
 }
 
 }  // namespace

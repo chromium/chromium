@@ -1243,6 +1243,14 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     connection->set_initial_retransmittable_on_wire_timeout(
         retransmittable_on_wire_timeout);
   }
+  if (base::FeatureList::IsEnabled(features::kQuicDefaultPragueCubic) &&
+      connection->sent_packet_manager()
+              .GetSendAlgorithm()
+              ->GetCongestionControlType() == quic::kCubicBytes) {
+    // This occurs before Initialize() and SetFromConfig() so that client
+    // connection options can override it.
+    connection->sent_packet_manager().SetSendAlgorithm(quic::kPragueCubic);
+  }
 }
 
 QuicChromiumClientSession::~QuicChromiumClientSession() {

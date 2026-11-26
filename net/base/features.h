@@ -1240,6 +1240,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAssumeQuicBrokenUntilVerifiedOnCurrentNetwork);
 // numbers has safely shipped to stable.
 NET_EXPORT BASE_DECLARE_FEATURE(kAllowInvalidCertificateSerialNumbers);
 
+// When enabled, QUIC defaults to Prague-Cubic (L4S) congestion control unless a
+// feature flag or connection option configures some other algorithm.
+// TODO(crbug.com/590261527): Remove this flag once it has been verified safe.
+NET_EXPORT BASE_DECLARE_FEATURE(kQuicDefaultPragueCubic);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

@@ -20,6 +20,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/address_list.h"
+#include "net/base/features.h"
 #include "net/base/port_util.h"
 #include "net/base/request_priority.h"
 #include "net/base/url_util.h"
@@ -458,7 +459,13 @@ void AdjustSendAlgorithm(quic::QuicConnection& connection,
   // Otherwise, apply the per-connection hint from the application.
   switch (hint) {
     case WebTransportParameters::CongestionControlHint::kDefault:
-      // Keep the default algorithm (Cubic); no change needed.
+      // Keep the default algorithm (Cubic or Prague-Cubic).
+      if (base::FeatureList::IsEnabled(features::kQuicDefaultPragueCubic) &&
+          connection.sent_packet_manager()
+                  .GetSendAlgorithm()
+                  ->GetCongestionControlType() == quic::kCubicBytes) {
+        connection.sent_packet_manager().SetSendAlgorithm(quic::kPragueCubic);
+      }
       break;
     case WebTransportParameters::CongestionControlHint::kThroughput:
       // BBRv2 provides improved bandwidth estimation and better coexistence

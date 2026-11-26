@@ -87,6 +87,10 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
       base::span<const uint8_t> label,
       base::span<const uint8_t> context);
 
+  const quic::QuicConnection* connection_for_testing() const {
+    return connection_;
+  }
+
   handles::NetworkHandle target_network() const { return target_network_; }
 
   void OnSettingsReceived();

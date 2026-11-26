@@ -5466,5 +5466,73 @@ TEST_P(QuicChromiumClientSessionTest,
       "Net.Quic.Migration.Attempt.V6ToV4Fallback.CanFallback", 0);
 }
 
+TEST_P(QuicChromiumClientSessionTest, DefaultPragueCubicDisabledByDefault) {
+  Initialize();
+  EXPECT_EQ(session_->connection()
+                ->sent_packet_manager()
+                .GetSendAlgorithm()
+                ->GetCongestionControlType(),
+            quic::kCubicBytes);
+  EXPECT_EQ(session_->connection()->ecn_codepoint(), quic::ECN_NOT_ECT);
+}
+
+TEST_P(QuicChromiumClientSessionTest, DefaultPragueCubicEnabled) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kQuicDefaultPragueCubic);
+
+  Initialize();
+  EXPECT_EQ(session_->connection()
+                ->sent_packet_manager()
+                .GetSendAlgorithm()
+                ->GetCongestionControlType(),
+            quic::kPragueCubic);
+  EXPECT_EQ(session_->connection()->ecn_codepoint(), quic::ECN_ECT1);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       DefaultPragueCubicDoesNotOverrideReloadableFlag) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kQuicDefaultPragueCubic);
+  SetQuicReloadableFlag(quic_default_to_bbr, true);
+
+  Initialize();
+  EXPECT_EQ(session_->connection()
+                ->sent_packet_manager()
+                .GetSendAlgorithm()
+                ->GetCongestionControlType(),
+            quic::kBBR);
+  EXPECT_EQ(session_->connection()->ecn_codepoint(), quic::ECN_NOT_ECT);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       DefaultPragueCubicOverriddenByBbrConnectionOption) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kQuicDefaultPragueCubic);
+  config_.SetClientConnectionOptions({quic::kTBBR});
+
+  Initialize();
+  EXPECT_EQ(session_->connection()
+                ->sent_packet_manager()
+                .GetSendAlgorithm()
+                ->GetCongestionControlType(),
+            quic::kBBR);
+  EXPECT_EQ(session_->connection()->ecn_codepoint(), quic::ECN_NOT_ECT);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       DefaultPragueCubicOverriddenByCubicConnectionOption) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kQuicDefaultPragueCubic);
+  config_.SetClientConnectionOptions({quic::kCQBC});
+
+  Initialize();
+  EXPECT_EQ(session_->connection()
+                ->sent_packet_manager()
+                .GetSendAlgorithm()
+                ->GetCongestionControlType(),
+            quic::kCubicBytes);
+  EXPECT_EQ(session_->connection()->ecn_codepoint(), quic::ECN_NOT_ECT);
+}
+
 }  // namespace
 }  // namespace net::test
