@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>External SVG resources fetched by cross-origin no-CORS CSS are excluded from Resource Timing</title>
+<link rel="help" href="https://w3c.github.io/resource-timing/">
+<link rel="help" href="https://drafts.csswg.org/cssom-1/#concept-css-style-sheet-origin-clean-flag">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<body>
+<script>
+const {ORIGIN, REMOTE_ORIGIN} = get_host_info();
+const SAME_ORIGIN_RESOURCES = `${ORIGIN}/resource-timing/resources`;
+const CROSS_ORIGIN_RESOURCES = `${REMOTE_ORIGIN}/resource-timing/resources`;
+
+const ALL_SVG_PROPERTY_SUFFIXES = [
+  "clip",
+  "filter",
+  "backdrop-filter",
+  "fill",
+  "stroke",
+  "marker-start",
+  "marker-mid",
+  "marker-end",
+];
+
+const CORS_ALLOWED_SVG_SUFFIXES = [
+  "clip",
+  "fill",
+  "stroke",
+  "marker-start",
+  "marker-mid",
+  "marker-end",
+];
+
+async function runInIframe(t, linkHtml) {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+
+  const loaded = new Promise(resolve => {
+    iframe.addEventListener("load", resolve, {once: true});
+  });
+  // Place a parser-inserted inline <script> after the target elements: the
+  // <link rel="stylesheet"> in <head> (including any @import chain) blocks
+  // script execution until the sheet has loaded, and forcing layout/computed
+  // style before </body> initiates all load-event-blocking SVG fetches before
+  // parsing completes so the iframe 'load' event waits for every SVG request.
+  iframe.srcdoc = `<!DOCTYPE html>
+    <head>${linkHtml}</head>
+    <body>
+      <div class="svg-effect-target">Some content</div>
+      <div class="svg-cors-blocked-target">Some content</div>
+      <svg width="20" height="20">
+        <path class="svg-shape-target" d="M 0 0 L 5 5 L 10 0"/>
+        <path class="svg-shape-cors-blocked-target" d="M 0 10 L 5 15 L 10 10"/>
+      </svg>
+      <script>
+        document.body.offsetHeight;
+        for (const el of document.querySelectorAll("*")) {
+          getComputedStyle(el).clipPath;
+          getComputedStyle(el).fill;
+        }
+      <\/script>
+    </body>`;
+  document.body.appendChild(iframe);
+
+  await loaded;
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+
+  return iframe.contentWindow.performance.getEntriesByType("resource");
+}
+
+promise_test(async t => {
+  const sheetUrl =
+      `${CROSS_ORIGIN_RESOURCES}/svg-external-resources.sub.css?tag=no-cors`;
+  const entries =
+      await runInIframe(t, `<link rel="stylesheet" href="${sheetUrl}">`);
+
+  assert_greater_than_equal(
+      entries.length, 1, "Expected <link> stylesheet Resource Timing entry");
+  const cssEntries = entries.filter(e => e.initiatorType === "css");
+  assert_equals(
+      cssEntries.length, 0,
+      "Opaque cross-origin stylesheet must not emit initiatorType='css' entries");
+  const svgEntries = entries.filter(e => e.name.includes("svg-resources.svg"));
+  assert_equals(
+      svgEntries.length, 0,
+      "Opaque cross-origin stylesheet must not leak external SVG URLs");
+}, "Cross-origin no-CORS stylesheet suppresses external SVG Resource Timing entries across all SVG CSS properties");
+
+promise_test(async t => {
+  const importedSheet = encodeURIComponent(
+      "svg-external-resources.sub.css?tag=import");
+  const importerUrl =
+      `${CROSS_ORIGIN_RESOURCES}/no-store-importer.sub.css?import=${importedSheet}`;
+  const entries =
+      await runInIframe(t, `<link rel="stylesheet" href="${importerUrl}">`);
+
+  assert_greater_than_equal(
+      entries.length, 1, "Expected <link> stylesheet Resource Timing entry");
+  const cssEntries = entries.filter(e => e.initiatorType === "css");
+  assert_equals(
+      cssEntries.length, 0,
+      "Cross-origin no-CORS @import chain must not emit initiatorType='css' entries");
+  const svgEntries = entries.filter(e => e.name.includes("svg-resources.svg"));
+  assert_equals(
+      svgEntries.length, 0,
+      "Cross-origin no-CORS @import chain must not leak external SVG URLs");
+}, "Cross-origin no-CORS @import chain suppresses external SVG Resource Timing entries");
+
+promise_test(async t => {
+  const sheetUrl =
+      `${SAME_ORIGIN_RESOURCES}/svg-external-resources.sub.css?tag=same-origin`;
+  const entries =
+      await runInIframe(t, `<link rel="stylesheet" href="${sheetUrl}">`);
+
+  for (const suffix of ALL_SVG_PROPERTY_SUFFIXES) {
+    const expectedId = `same-origin-${suffix}`;
+    const matches = entries.filter(
+        e => new URL(e.name, ORIGIN).searchParams.get("id") === expectedId);
+    assert_equals(
+        matches.length, 1,
+        `Expected Resource Timing entry for ${expectedId}`);
+    assert_equals(
+        matches[0].initiatorType, "css",
+        `Expected initiatorType='css' for ${expectedId}`);
+  }
+}, "Same-origin stylesheet emits Resource Timing entries for external SVG resources");
+
+promise_test(async t => {
+  const sheetUrl =
+      `${CROSS_ORIGIN_RESOURCES}/svg-external-resources.sub.css?tag=cors&pipe=header(Access-Control-Allow-Origin,*)`;
+  const entries = await runInIframe(
+      t,
+      `<link rel="stylesheet" crossorigin="anonymous" href="${sheetUrl}">`);
+
+  for (const suffix of CORS_ALLOWED_SVG_SUFFIXES) {
+    const expectedId = `cors-${suffix}`;
+    const matches = entries.filter(
+        e => new URL(e.name, ORIGIN).searchParams.get("id") === expectedId);
+    assert_equals(
+        matches.length, 1,
+        `Expected Resource Timing entry for ${expectedId}`);
+    assert_equals(
+        matches[0].initiatorType, "css",
+        `Expected initiatorType='css' for ${expectedId}`);
+  }
+}, "Cross-origin CORS-enabled stylesheet emits Resource Timing entries for external SVG resources");
+</script>
+</body>

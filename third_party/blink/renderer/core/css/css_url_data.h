@@ -144,7 +144,7 @@ class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
   // The 'local url flag': https://drafts.csswg.org/css-values/#local-urls
   const bool is_local_;
 
-  // Whether the stylesheet that requested this image is origin-clean:
+  // Whether the stylesheet that requested this resource is origin-clean:
   // https://drafts.csswg.org/cssom-1/#concept-css-style-sheet-origin-clean-flag
   const bool is_from_origin_clean_style_sheet_;
 

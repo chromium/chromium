@@ -168,10 +168,10 @@ class ExternalSVGResourceDocumentContent final
     : public SVGResource,
       public SVGResourceDocumentObserver {
  public:
-  explicit ExternalSVGResourceDocumentContent(
-      const KURL&,
-      const CSSUrlRequestModifiers& modifiers,
-      const Referrer& referrer);
+  ExternalSVGResourceDocumentContent(const KURL&,
+                                     const CSSUrlRequestModifiers& modifiers,
+                                     const Referrer& referrer,
+                                     bool is_from_origin_clean_style_sheet);
 
   void Load(Document&, CrossOriginAttributeValue) override;
   void LoadWithoutCSP(Document&) override;
@@ -191,6 +191,9 @@ class ExternalSVGResourceDocumentContent final
   KURL url_;
   CSSUrlRequestModifiers modifiers_;
   Referrer referrer_;
+  // Whether the initiating stylesheet is origin-clean; when false, Load()
+  // suppresses Resource Timing entries for this fetch.
+  const bool is_from_origin_clean_style_sheet_;
 };
 
 // External resource reference (see SVGResource) with an ImageResourceContent

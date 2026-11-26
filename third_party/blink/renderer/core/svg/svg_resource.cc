@@ -419,8 +419,12 @@ void LocalSVGResource::Trace(Visitor* visitor) const {
 ExternalSVGResourceDocumentContent::ExternalSVGResourceDocumentContent(
     const KURL& url,
     const CSSUrlRequestModifiers& modifiers,
-    const Referrer& referrer)
-    : url_(url), modifiers_(modifiers), referrer_(referrer) {}
+    const Referrer& referrer,
+    bool is_from_origin_clean_style_sheet)
+    : url_(url),
+      modifiers_(modifiers),
+      referrer_(referrer),
+      is_from_origin_clean_style_sheet_(is_from_origin_clean_style_sheet) {}
 
 void ExternalSVGResourceDocumentContent::Load(
     Document& document,
@@ -435,6 +439,7 @@ void ExternalSVGResourceDocumentContent::Load(
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kCSS;
   FetchParameters params(ResourceRequest(url_), options);
+  params.SetFromOriginDirtyStyleSheet(!is_from_origin_clean_style_sheet_);
 
   ResourceRequest& resource_request = params.MutableResourceRequest();
   if (modifiers_.referrer_policy) {
@@ -475,6 +480,7 @@ void ExternalSVGResourceDocumentContent::Load(
 }
 
 void ExternalSVGResourceDocumentContent::LoadWithoutCSP(Document& document) {
+  DCHECK(is_from_origin_clean_style_sheet_);
   if (document_content_)
     return;
   // Loading SVG resources should not trigger script, see

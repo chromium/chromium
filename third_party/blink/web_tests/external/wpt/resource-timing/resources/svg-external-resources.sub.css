@@ -1,0 +1,25 @@
+.svg-effect-target {
+  width: 20px;
+  height: 20px;
+  clip-path: url('svg-resources.svg?id={{GET[tag]}}-clip&pipe=header(Access-Control-Allow-Origin,*)#clip');
+  filter: url('svg-resources.svg?id={{GET[tag]}}-filter#filter');
+  backdrop-filter: url('svg-resources.svg?id={{GET[tag]}}-backdrop-filter#filter');
+}
+
+.svg-cors-blocked-target {
+  width: 20px;
+  height: 20px;
+  clip-path: url('svg-resources.svg?id={{GET[tag]}}-clip-no-cors#clip');
+}
+
+.svg-shape-target {
+  fill: url('svg-resources.svg?id={{GET[tag]}}-fill&pipe=header(Access-Control-Allow-Origin,*)#paint');
+  stroke: url('svg-resources.svg?id={{GET[tag]}}-stroke&pipe=header(Access-Control-Allow-Origin,*)#paint');
+  marker-start: url('svg-resources.svg?id={{GET[tag]}}-marker-start&pipe=header(Access-Control-Allow-Origin,*)#marker');
+  marker-mid: url('svg-resources.svg?id={{GET[tag]}}-marker-mid&pipe=header(Access-Control-Allow-Origin,*)#marker');
+  marker-end: url('svg-resources.svg?id={{GET[tag]}}-marker-end&pipe=header(Access-Control-Allow-Origin,*)#marker');
+}
+
+.svg-shape-cors-blocked-target {
+  fill: url('svg-resources.svg?id={{GET[tag]}}-fill-no-cors#paint');
+}

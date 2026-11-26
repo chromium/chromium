@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="clip">
+      <rect width="10" height="10"/>
+    </clipPath>
+    <filter id="filter">
+      <feGaussianBlur stdDeviation="1"/>
+    </filter>
+    <linearGradient id="paint">
+      <stop offset="0%" stop-color="green"/>
+      <stop offset="100%" stop-color="blue"/>
+    </linearGradient>
+    <marker id="marker" markerWidth="4" markerHeight="4">
+      <circle cx="2" cy="2" r="2"/>
+    </marker>
+  </defs>
+</svg>

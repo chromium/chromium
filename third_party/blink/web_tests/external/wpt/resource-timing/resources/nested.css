@@ -8,3 +8,17 @@ ol {
     font-family: remoteFont;
     list-style-image: url('blue.png?id=n1');
 }
+.svg-effect-target {
+    width: 20px;
+    height: 20px;
+    clip-path: url('svg-resources.svg?id=n1-clip&pipe=header(Access-Control-Allow-Origin,*)#clip');
+    filter: url('svg-resources.svg?id=n1-filter#filter');
+    backdrop-filter: url('svg-resources.svg?id=n1-backdrop-filter#filter');
+}
+.svg-shape-target {
+    fill: url('svg-resources.svg?id=n1-fill&pipe=header(Access-Control-Allow-Origin,*)#paint');
+    stroke: url('svg-resources.svg?id=n1-stroke&pipe=header(Access-Control-Allow-Origin,*)#paint');
+    marker-start: url('svg-resources.svg?id=n1-marker-start&pipe=header(Access-Control-Allow-Origin,*)#marker');
+    marker-mid: url('svg-resources.svg?id=n1-marker-mid&pipe=header(Access-Control-Allow-Origin,*)#marker');
+    marker-end: url('svg-resources.svg?id=n1-marker-end&pipe=header(Access-Control-Allow-Origin,*)#marker');
+}

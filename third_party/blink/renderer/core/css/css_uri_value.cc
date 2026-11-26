@@ -20,7 +20,8 @@ CSSURIValue::~CSSURIValue() = default;
 SVGResource* CSSURIValue::EnsureResourceReference() const {
   if (!resource_) {
     resource_ = MakeGarbageCollected<ExternalSVGResourceDocumentContent>(
-        AbsoluteUrl(), UrlData().GetModifiers(), UrlData().GetReferrer());
+        AbsoluteUrl(), UrlData().GetModifiers(), UrlData().GetReferrer(),
+        UrlData().IsFromOriginCleanStyleSheet());
   }
   return resource_.Get();
 }

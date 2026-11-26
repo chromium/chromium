@@ -36,6 +36,11 @@
     promise_test(async t => {
       await addFrame();
       await addLink();
+      // Force style and layout so CSS subresource loads (including cached SVG
+      // resources) are initiated, then allow queued MemoryCache timing tasks
+      // to flush.
+      document.body.offsetHeight;
+      await new Promise(resolve => t.step_timeout(resolve, 100));
       // Assert no resource timing entries are created when the link is attached.
       const url = (new URL(document.getElementById('cross_origin_style').href));
       const prefix = url.protocol + '//' + url.host;
@@ -47,7 +52,18 @@
       assert_equals(performance.getEntriesByName(
         prefix + '/resource-timing/resources/blue.png?id=n1').length, 0,
         'Image should not be in timeline');
+      const resources = performance.getEntriesByType('resource');
+      for (const id of ['n1-clip', 'n1-filter', 'n1-backdrop-filter', 'n1-fill', 'n1-stroke', 'n1-marker-start', 'n1-marker-mid', 'n1-marker-end']) {
+        const matches = resources.filter(
+          e => new URL(e.name).searchParams.get('id') === id);
+        assert_equals(
+          matches.length, 0, `SVG resource (${id}) should not be in timeline`);
+      }
     }, 'Make sure that resources fetched by cross origin CSS are not in the timeline.');
   </script>
   <ol>Some content</ol>
+  <div class="svg-effect-target">Some content</div>
+  <svg width="20" height="20">
+    <path class="svg-shape-target" d="M 0 0 L 5 5 L 10 0"/>
+  </svg>
 </body>
