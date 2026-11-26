@@ -99,6 +99,7 @@ class MockBrowsingHistoryService : public BrowsingHistoryService {
               GetSyncedDevicesForFiltering,
               (),
               (const, override));
+  MOCK_METHOD(void, RetryPendingWebHistoryNow, (), (override));
 };
 
 namespace {
@@ -460,6 +461,11 @@ TEST_F(BrowsingHistoryHandlerTest, IncludeActorVisits) {
 
   MockHistoryServiceCall(query, options);
   RunQueryHistory("test");
+}
+
+TEST_F(BrowsingHistoryHandlerTest, RetryPendingWebHistoryNow) {
+  EXPECT_CALL(*handler()->mock_service(), RetryPendingWebHistoryNow()).Times(1);
+  handler()->RetryPendingWebHistoryNow();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

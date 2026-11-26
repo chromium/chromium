@@ -321,6 +321,13 @@ interface PageHandler {
   // object.
   QueryHistoryContinuation() => (QueryResult results);
 
+  // Called when the user scrolls while a `QueryHistoryContinuation()` is still
+  // pending. If the browser is waiting to retry a failed Web History request,
+  // it retries right away instead of waiting out the backoff delay. Results
+  // arrive through the pending `QueryHistoryContinuation()`. Never called for
+  // automatic loading.
+  RetryPendingWebHistoryNow();
+
   // Removes marked visits.
   RemoveVisits(array<RemovalItem> items) => ();
 

@@ -665,6 +665,10 @@ void BrowsingHistoryHandler::QueryHistoryContinuation(
   }
 }
 
+void BrowsingHistoryHandler::RetryPendingWebHistoryNow() {
+  browsing_history_service_->RetryPendingWebHistoryNow();
+}
+
 void BrowsingHistoryHandler::RemoveVisits(
     const std::vector<history::mojom::RemovalItemPtr> items,
     RemoveVisitsCallback callback) {

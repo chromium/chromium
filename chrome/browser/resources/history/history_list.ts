@@ -898,7 +898,15 @@ export class HistoryListElement extends HistoryListElementBase {
     const lowerScroll = this.scrollTarget.scrollHeight -
         this.scrollTarget.scrollTop - this.scrollTarget.offsetHeight;
     if (lowerScroll < 500) {
-      this.loadMoreHistory_();
+      if (this.queryState.querying && this.queryState.incremental) {
+        // A continuation is still pending, e.g. because the browser is waiting
+        // to retry a failed Web History request. A user scroll asks it to
+        // retry right away. Automatic loading never does this, so automatic
+        // requests still wait out the retry delay.
+        BrowserProxyImpl.getInstance().handler.retryPendingWebHistoryNow();
+      } else {
+        this.loadMoreHistory_();
+      }
     }
     this.fire('scroll-timeout-for-test');
   }

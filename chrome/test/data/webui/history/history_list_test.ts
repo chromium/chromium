@@ -1370,6 +1370,46 @@ suite('HistoryListTest', function() {
     assertEquals(0, testProxy.handler.getCallCount('queryHistoryContinuation'));
   });
 
+  // While a continuation is pending (e.g. the browser is waiting to retry a
+  // failed Web History request), a user scroll asks the browser to retry right
+  // away instead of sending another continuation. The scroll event is
+  // dispatched directly, so that the test doesn't depend on scrolling the page,
+  // which is flaky on Desktop Android (see ScrollingLoadsMore).
+  test('ScrollingWhileContinuationPendingRetriesWebHistory', async () => {
+    // The short list requests the next page by itself, which never completes.
+    testProxy.handler.setResultFor(
+        'queryHistoryContinuation', new PromiseResolver().promise);
+    await finishSetup(TEST_HISTORY_RESULTS, /*finished=*/ false);
+    await testProxy.handler.whenCalled('queryHistoryContinuation');
+    await microtasksFinished();
+    assertEquals(
+        0, testProxy.handler.getCallCount('retryPendingWebHistoryNow'));
+    element.setScrollDebounceForTest(1);
+
+    // The short list ends within 500px of the bottom, so a scroll asks for an
+    // immediate retry instead of another continuation.
+    app.getScrollTargetForTesting().dispatchEvent(new Event('scroll'));
+    await testProxy.handler.whenCalled('retryPendingWebHistoryNow');
+    assertEquals(1, testProxy.handler.getCallCount('queryHistoryContinuation'));
+  });
+
+  // Automatic loading must never skip the retry delay, or a short list would
+  // send requests in a loop while Web History keeps failing.
+  test('AutoLoadWhileContinuationPendingDoesNotRetryWebHistory', async () => {
+    // The short list requests the next page by itself, which never completes.
+    testProxy.handler.setResultFor(
+        'queryHistoryContinuation', new PromiseResolver().promise);
+    await finishSetup(TEST_HISTORY_RESULTS, /*finished=*/ false);
+    await testProxy.handler.whenCalled('queryHistoryContinuation');
+
+    // The list still doesn't fill the viewport, but a continuation is pending.
+    element.$.infiniteList.dispatchEvent(new CustomEvent('viewport-filled'));
+    await microtasksFinished();
+    assertEquals(1, testProxy.handler.getCallCount('queryHistoryContinuation'));
+    assertEquals(
+        0, testProxy.handler.getCallCount('retryPendingWebHistoryNow'));
+  });
+
   test('SharedMenuClosesOnFocusout', async () => {
     await finishSetup(TEST_HISTORY_RESULTS, /*finished=*/ false);
     const target = document.createElement('div');

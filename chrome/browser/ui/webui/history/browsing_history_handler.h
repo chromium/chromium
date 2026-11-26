@@ -80,6 +80,8 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   void QueryHistoryContinuation(
       QueryHistoryContinuationCallback callback) override;
 
+  void RetryPendingWebHistoryNow() override;
+
   void RemoveVisits(const std::vector<history::mojom::RemovalItemPtr> items,
                     RemoveVisitsCallback callback) override;
 

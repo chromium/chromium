@@ -275,6 +275,16 @@ IN_PROC_BROWSER_TEST_F(
   RunTestCase("DoesNotLoadMoreResultsWithoutScrollingWhenListOverflows");
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryListTest,
+                       ScrollingWhileContinuationPendingRetriesWebHistory) {
+  RunTestCase("ScrollingWhileContinuationPendingRetriesWebHistory");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryListTest,
+                       AutoLoadWhileContinuationPendingDoesNotRetryWebHistory) {
+  RunTestCase("AutoLoadWhileContinuationPendingDoesNotRetryWebHistory");
+}
+
 IN_PROC_BROWSER_TEST_F(HistoryListTest, SharedMenuClosesOnFocusout) {
   RunTestCase("SharedMenuClosesOnFocusout");
 }
