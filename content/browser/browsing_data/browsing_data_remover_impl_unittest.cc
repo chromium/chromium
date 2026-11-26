@@ -432,11 +432,12 @@ class BrowsingDataRemoverImplTest : public testing::Test {
       const base::Time& delete_begin,
       const base::Time& delete_end,
       uint64_t remove_mask,
-      std::unique_ptr<BrowsingDataFilterBuilder> filter_builder) {
+      std::unique_ptr<BrowsingDataFilterBuilder> filter_builder,
+      uint64_t origin_type_mask =
+          BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB) {
     BrowsingDataRemoverCompletionObserver completion_observer(remover_);
     remover_->RemoveWithFilterAndReply(
-        delete_begin, delete_end, remove_mask,
-        BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+        delete_begin, delete_end, remove_mask, origin_type_mask,
         std::move(filter_builder), &completion_observer);
     completion_observer.BlockUntilCompletion();
 
@@ -1387,6 +1388,21 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveDeviceBoundSessions) {
   StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
   EXPECT_EQ(removal_data.remove_mask,
             StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS);
+}
+
+TEST_F(BrowsingDataRemoverImplTest,
+       IfProtectedWebOnlyDontDeleteDeviceBoundSessions) {
+  BlockUntilOriginDataRemoved(
+      base::Time(), base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE |
+          BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS,
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kPreserve),
+      BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB);
+
+  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_EQ(removal_data.remove_mask,
+            StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE);
 }
 
 TEST_F(BrowsingDataRemoverImplTest,

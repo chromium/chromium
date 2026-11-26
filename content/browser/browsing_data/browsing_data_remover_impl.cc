@@ -485,7 +485,11 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR;
   }
-  if (remove_mask & DATA_TYPE_DEVICE_BOUND_SESSIONS) {
+  // Like the cookies they protect, device bound sessions are not separated
+  // between UNPROTECTED_WEB and other origin types, so they are only removed if
+  // UNPROTECTED_WEB is set.
+  if (remove_mask & DATA_TYPE_DEVICE_BOUND_SESSIONS &&
+      origin_type_mask_ & ORIGIN_TYPE_UNPROTECTED_WEB) {
     // Device bound sessions are not partitioned, so only trigger their
     // deletion if unpartitioned data is being deleted.
     if (!filter_builder->PartitionedCookiesOnly() &&
