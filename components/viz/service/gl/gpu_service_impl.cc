@@ -1467,7 +1467,8 @@ void GpuServiceImpl::GetDawnInfoOnMain(bool collect_metrics,
   // record, skewing the results.
   {
     SCOPED_UMA_HISTOGRAM_TIMER("GPU.Dawn.InfoCollectionTimeMS");
-    gpu::CollectDawnInfo(gpu_preferences_, collect_metrics, &dawn_info_list);
+    gpu::CollectDawnInfo(gpu_preferences_, gpu_feature_info_, collect_metrics,
+                         &dawn_info_list);
   }
 
   if (watchdog_thread_) {

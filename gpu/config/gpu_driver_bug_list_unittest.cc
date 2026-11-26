@@ -147,6 +147,35 @@ TEST_F(GpuDriverBugListTest, DisableDx12InfoCollection) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_LINUX)
+TEST_F(GpuDriverBugListTest, DisableDawnVulkanAdapterEnumeration) {
+  std::unique_ptr<GpuDriverBugList> list = GpuDriverBugList::Create();
+  GPUInfo gpu_info;
+  gpu_info.gpu.driver_vendor = "Mesa";
+
+  for (const std::string& driver_version : {"20.0.8", "21.2.6", "21.3.9"}) {
+    gpu_info.gpu.driver_version = driver_version;
+    std::set<int> workarounds =
+        list->MakeDecision(GpuControlList::kOsLinux, "", gpu_info, {});
+    EXPECT_EQ(1u, workarounds.count(DISABLE_DAWN_VULKAN_ADAPTER_ENUMERATION));
+  }
+
+  for (const std::string& driver_version : {"22.0", "22.0.1", "23.2.1"}) {
+    gpu_info.gpu.driver_version = driver_version;
+    std::set<int> workarounds =
+        list->MakeDecision(GpuControlList::kOsLinux, "", gpu_info, {});
+    EXPECT_EQ(0u, workarounds.count(DISABLE_DAWN_VULKAN_ADAPTER_ENUMERATION));
+  }
+
+  // Non-Mesa drivers should not match.
+  gpu_info.gpu.driver_vendor = "NVIDIA";
+  gpu_info.gpu.driver_version = "21.0";
+  std::set<int> workarounds =
+      list->MakeDecision(GpuControlList::kOsLinux, "", gpu_info, {});
+  EXPECT_EQ(0u, workarounds.count(DISABLE_DAWN_VULKAN_ADAPTER_ENUMERATION));
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 // Test for invariant "Assume the newly last added entry has the largest ID".
 // See GpuControlList::GpuControlList.
 // It checks gpu_driver_bug_list.json

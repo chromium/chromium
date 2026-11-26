@@ -26,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/webgpu_blocklist_impl.h"
@@ -432,8 +433,24 @@ bool CanProbeDawnOpenGLES() {
 #endif
 }
 
+std::vector<dawn::native::Adapter> EnumerateAdapters(
+    dawn::native::Instance* instance,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
+    const wgpu::RequestAdapterOptions& options) {
+  // BackendType::Undefined probes all backends (including Vulkan, the only Core
+  // backend on Linux/ChromeOS).
+  if ((options.backendType == wgpu::BackendType::Vulkan ||
+       options.backendType == wgpu::BackendType::Undefined) &&
+      gpu_feature_info.IsWorkaroundEnabled(
+          gpu::DISABLE_DAWN_VULKAN_ADAPTER_ENUMERATION)) {
+    return {};
+  }
+  return instance->EnumerateAdapters(&options);
+}
+
 void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
                                 const gpu::GpuPreferences& gpu_preferences,
+                                const gpu::GpuFeatureInfo& gpu_feature_info,
                                 const wgpu::ChainedStruct* chained_toggles) {
   static BASE_FEATURE(kCollectWebGPUSupportMetrics,
                       base::FEATURE_ENABLED_BY_DEFAULT);
@@ -491,7 +508,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
 #endif
   // Check core adapters.
   std::vector<dawn::native::Adapter> core_adapters =
-      instance->EnumerateAdapters(&adapter_options);
+      EnumerateAdapters(instance, gpu_feature_info, adapter_options);
   for (const dawn::native::Adapter& native_adapter : core_adapters) {
     wgpu::Adapter adapter(native_adapter.Get());
     wgpu::AdapterInfo info = {};
@@ -517,7 +534,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
     adapter_options.backendType = wgpu::BackendType::D3D11;
     adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
     for (const dawn::native::Adapter& native_adapter :
-         instance->EnumerateAdapters(&adapter_options)) {
+         EnumerateAdapters(instance, gpu_feature_info, adapter_options)) {
       wgpu::Adapter adapter(native_adapter.Get());
       wgpu::AdapterInfo info = {};
       adapter.GetInfo(&info);
@@ -553,7 +570,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
     adapter_options.nextInChain = &adapter_options_get_gl_proc;
 
     for (const dawn::native::Adapter& native_adapter :
-         instance->EnumerateAdapters(&adapter_options)) {
+         EnumerateAdapters(instance, gpu_feature_info, adapter_options)) {
       wgpu::Adapter adapter(native_adapter.Get());
       wgpu::AdapterInfo info = {};
       adapter.GetInfo(&info);
@@ -1062,6 +1079,7 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
 
 // TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE
 void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
+                     const gpu::GpuFeatureInfo& gpu_feature_info,
                      bool collect_metrics,
                      std::vector<std::string>* dawn_info_list) {
   TRACE_EVENT("gpu,startup", "gpu_info_collector::CollectDawnInfo");
@@ -1148,7 +1166,8 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
 #endif
 
   if (collect_metrics) {
-    ReportWebGPUSupportMetrics(instance.get(), gpu_preferences, &dawn_toggles);
+    ReportWebGPUSupportMetrics(instance.get(), gpu_preferences,
+                               gpu_feature_info, &dawn_toggles);
     return;
   }
 
@@ -1195,8 +1214,8 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   for (const auto& query : queries) {
     adapter_options.featureLevel = query.feature_level;
     adapter_options.backendType = query.backend_type;
-    std::vector<dawn::native::Adapter> adapters = instance->EnumerateAdapters(
-        reinterpret_cast<const WGPURequestAdapterOptions*>(&adapter_options));
+    std::vector<dawn::native::Adapter> adapters =
+        EnumerateAdapters(instance.get(), gpu_feature_info, adapter_options);
     for (dawn::native::Adapter& native_adapter : adapters) {
       wgpu::Adapter adapter(native_adapter.Get());
       wgpu::AdapterInfo info = {};

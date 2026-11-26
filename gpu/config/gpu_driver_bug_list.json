@@ -3419,6 +3419,26 @@
         "disable_accelerated_h264_decode",
         "disable_accelerated_h264_encode"
       ]
+    },
+    {
+      "id": 514,
+      "cr_bugs": [475935650, 589761278],
+      "description": "Mesa < 22.0 crashes in Dawn's VulkanFunctions::LoadInstanceProcs during Vulkan adapter enumeration",
+      "comment": [
+        "On Mesa < 22.0, Mesa's implicit device-select layer dispatches through",
+        "the system libvulkan.so.1, colliding with Chrome's bundled libvulkan.so.1."
+      ],
+      "os": {
+        "type": "linux"
+      },
+      "driver_vendor": "Mesa",
+      "driver_version": {
+        "op": "<",
+        "value": "22.0"
+      },
+      "features": [
+        "disable_dawn_vulkan_adapter_enumeration"
+      ]
     }
   ]
 }

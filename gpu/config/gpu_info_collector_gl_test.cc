@@ -19,15 +19,16 @@ TEST(GPUConfig, CollectGraphicsInfoDawnGLES) {
   base::HistogramTester histograms;
 
   GpuPreferences gpu_preferences;
+  GpuFeatureInfo gpu_feature_info;
   std::vector<std::string> dawn_info_list;
-  CollectDawnInfo(gpu_preferences, true, &dawn_info_list);
+  CollectDawnInfo(gpu_preferences, gpu_feature_info, true, &dawn_info_list);
   EXPECT_EQ(contextBefore, eglGetCurrentContext());
 #if BUILDFLAG(USE_DAWN)
   histograms.ExpectTotalCount("GPU.WebGPU.Support", 1);
   histograms.ExpectTotalCount("GPU.WebGPU.ReachTier", 1);
 #endif
 
-  CollectDawnInfo(gpu_preferences, false, &dawn_info_list);
+  CollectDawnInfo(gpu_preferences, gpu_feature_info, false, &dawn_info_list);
   EGLContext contextAfter = eglGetCurrentContext();
   EXPECT_TRUE(contextBefore == contextAfter);
 }
