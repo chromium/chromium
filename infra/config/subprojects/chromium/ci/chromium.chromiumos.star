@@ -612,6 +612,9 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
         ),
+        # Also enables the check on try/linux-chromeos-rel, which mirrors this
+        # builder.
+        gn_check_generated = True,
     ),
     gn_args = gn_args.config(
         configs = [
