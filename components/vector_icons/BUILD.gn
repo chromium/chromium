@@ -526,6 +526,7 @@ if (current_toolchain == default_toolchain) {
       "warning_old.icon",
       "warning_outline_old.icon",
       "wb_incandescent.icon",
+      "web_asset_spark.icon",
       "work.icon",
       "work_old.icon",
     ]

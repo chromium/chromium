@@ -5453,7 +5453,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
             .SetText(l10n_util::GetStringUTF16(IDS_ON_DEVICE_AI_READY_TITLE))
             .SetTooltipText(
                 l10n_util::GetStringUTF16(IDS_ON_DEVICE_AI_READY_TITLE))
-            .SetImage(ui::ImageModel::FromVectorIcon(kScreensaverAutoIcon))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                vector_icons::kWebAssetSparkIcon))
             .Build());
   }
 #endif
