@@ -1598,6 +1598,64 @@ public class TabCollectionTabModelImplUnitTest {
     }
 
     @Test
+    public void testAddTab_Background_PreservesMultiSelection() {
+        addTabAfterMultiSelect(
+                TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                TabCreationState.LIVE_IN_BACKGROUND,
+                /* willOpenInForeground= */ false);
+        Tab tab1 = mTabModel.getTabById(1);
+
+        assertEquals(tab1, mTabModel.getCurrentTabSupplier().get());
+        assertTrue(mTabModel.isTabMultiSelected(1));
+        assertTrue(mTabModel.isTabMultiSelected(2));
+        assertFalse(mTabModel.isTabMultiSelected(3));
+        assertEquals(2, mTabModel.getMultiSelectedTabsCount());
+        assertEquals(List.of(1, 2), mTabModel.getOrderedMultiSelectedTabIds());
+        verify(mTabModelObserver, never()).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testAddTab_Foreground_ClearsMultiSelectionAndNotifiesOnce() {
+        MockTab foregroundTab =
+                addTabAfterMultiSelect(
+                        TabLaunchType.FROM_CHROME_UI,
+                        TabCreationState.LIVE_IN_FOREGROUND,
+                        /* willOpenInForeground= */ true);
+
+        assertEquals(foregroundTab, mTabModel.getCurrentTabSupplier().get());
+        assertFalse(mTabModel.isTabMultiSelected(1));
+        assertFalse(mTabModel.isTabMultiSelected(2));
+        assertTrue(mTabModel.isTabMultiSelected(3));
+        assertEquals(1, mTabModel.getMultiSelectedTabsCount());
+        assertEquals(List.of(3), mTabModel.getOrderedMultiSelectedTabIds());
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testAddTab_FirstBackgroundTabInInactiveModel_ClearsStaleMultiSelection() {
+        mTabModel.setTabsMultiSelected(Collections.singleton(99), /* isSelected= */ true);
+        reset(mTabModelObserver);
+        MockTab firstTab = createMockTab(1, mProfile);
+        firstTab.setIsInitialized(true);
+        when(mOrderController.willOpenInForeground(
+                        TabLaunchType.FROM_RESTORE, /* isNewTabIncognitoBranded= */ false))
+                .thenReturn(false);
+
+        mTabModel.addTab(
+                firstTab,
+                /* index= */ 0,
+                TabLaunchType.FROM_RESTORE,
+                TabCreationState.FROZEN_ON_RESTORE);
+
+        assertEquals(firstTab, mTabModel.getCurrentTabSupplier().get());
+        assertFalse(mTabModel.isTabMultiSelected(99));
+        assertTrue(mTabModel.isTabMultiSelected(1));
+        assertEquals(1, mTabModel.getMultiSelectedTabsCount());
+        assertEquals(List.of(1), mTabModel.getOrderedMultiSelectedTabIds());
+        verify(mTabModelObserver, never()).onTabsSelectionChanged();
+    }
+
+    @Test
     public void testRestoreClosedTabsForUndo_unrestorableStateNotRestored() {
         // An archived snapshot with INVALID_TAB_RESTORE_ENTRY_ID is not restored.
         UndoClosureSnapshot archivedSnapshot =
@@ -2116,6 +2174,24 @@ public class TabCollectionTabModelImplUnitTest {
         if (isActive) mTabModel.setActive(true);
         mTabModel.setTabsMultiSelected(selectedTabIds, /* isSelected= */ true);
         reset(mTabModelObserver);
+    }
+
+    private MockTab addTabAfterMultiSelect(
+            @TabLaunchType int launchType,
+            @TabCreationState int creationState,
+            boolean willOpenInForeground) {
+        when(mOrderController.determineInsertionIndex(anyInt(), anyInt(), any()))
+                .thenAnswer(invocation -> invocation.getArgument(1));
+        setUpMultiSelectedTabs(
+                /* tabCount= */ 2, /* isActive= */ true, new LinkedHashSet<>(Arrays.asList(1, 2)));
+        MockTab newTab = createMockTab(3, mProfile);
+        newTab.setIsInitialized(true);
+        // Stub after setUpMultiSelectedTabs so addTabsAndResetObserver() keeps tab 1 active.
+        when(mOrderController.willOpenInForeground(
+                        launchType, /* isNewTabIncognitoBranded= */ false))
+                .thenReturn(willOpenInForeground);
+        mTabModel.addTab(newTab, /* index= */ 2, launchType, creationState);
+        return newTab;
     }
 
     private void verifyBatchedAndReset() {

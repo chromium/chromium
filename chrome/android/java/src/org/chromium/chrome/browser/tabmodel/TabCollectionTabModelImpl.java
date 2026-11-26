@@ -1796,8 +1796,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             observers.next().willAddTab(tab, type);
         }
 
-        // Clear the multi-selection set before adding the tab.
-        clearMultiSelection(/* notifyObservers= */ false);
         boolean hasAnyTabs = mCurrentTabSupplier.get() != null;
         boolean selectTab =
                 mOrderController.willOpenInForeground(type, isIncognito())
