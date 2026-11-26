@@ -80,7 +80,6 @@ class ThumbnailCache : ThumbnailDelegate {
   bool CheckAndUpdateThumbnailMetaData(TabId tab_id,
                                        const GURL& url,
                                        bool force_update);
-  bool IsInVisibleIds(TabId tab_id);
   void UpdateVisibleIds(const std::vector<TabId>& priority,
                         TabId primary_tab_id);
   void DecompressEtc1ThumbnailFromFile(
