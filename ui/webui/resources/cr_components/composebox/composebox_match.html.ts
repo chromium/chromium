@@ -18,6 +18,9 @@ export function getHtml(this: ComposeboxMatchElement) {
         style="-webkit-mask-image: url(${
             resolveSchemeRelativeUrl(this.iconPath_())});">
     </div>
+    ${this.getBadgeClass_() ? html`
+      <div id="badge" class="${this.getBadgeClass_()}"></div>
+    ` : ''}
   </div>
   <div id="textContainer" part="match-text-container">
     <span id="primaryText" part="match-primary-text">${
@@ -37,6 +40,9 @@ export function getHtml(this: ComposeboxMatchElement) {
     ?hidden="${!this.match.supportsDeletion}"
     tabindex="2">
   </cr-icon-button>
+  ${this.getActionIconClass_() ? html`
+    <div id="actionIcon" class="${this.getActionIconClass_()}"></div>
+  ` : ''}
 </div>
   <!--_html_template_end_-->`;
   // clang-format on

@@ -11,7 +11,7 @@ import type {ComposeboxMatchElement} from 'chrome://resources/cr_components/comp
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {createAutocompleteMatch} from 'chrome://resources/cr_components/search/autocomplete_match_utils.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SecondaryTextPlacement, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {ActionIconType, BadgeType, SecondaryTextPlacement, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -289,6 +289,44 @@ suite('ComposeboxMatch', () => {
     assertTrue(event.defaultPrevented);
   });
 
+  test('remove button takes the place of the action icon', async () => {
+    matchElement.match = createAutocompleteMatch({supportsDeletion: true});
+    await microtasksFinished();
+    assertFalse(!!matchElement.shadowRoot.querySelector('#actionIcon'));
+
+    matchElement.match = createAutocompleteMatch({
+      supportsDeletion: true,
+      suggestTemplate:
+          createSuggestTemplateInfo({actionIcon: ActionIconType.kBlueDot}),
+    });
+    await microtasksFinished();
+    let dot = matchElement.shadowRoot.querySelector('#actionIcon.blue-dot');
+    assertTrue(!!dot);
+    assertStyle(dot, 'display', 'block');
+    const dotRect = dot.getBoundingClientRect();
+
+    // When the match is selected, the remove button shows up exactly where
+    // the dot was.
+    matchElement.toggleAttribute('selected', true);
+    await microtasksFinished();
+    assertStyle(dot, 'display', 'none');
+    const removeRect = matchElement.$.remove.getBoundingClientRect();
+    assertEquals(dotRect.left, removeRect.left);
+    assertEquals(dotRect.top, removeRect.top);
+    assertEquals(dotRect.width, removeRect.width);
+    assertEquals(dotRect.height, removeRect.height);
+
+    // Matches that can't be removed keep the dot.
+    matchElement.match = createAutocompleteMatch({
+      suggestTemplate:
+          createSuggestTemplateInfo({actionIcon: ActionIconType.kBlueDot}),
+    });
+    await microtasksFinished();
+    dot = matchElement.shadowRoot.querySelector('#actionIcon.blue-dot');
+    assertTrue(!!dot);
+    assertStyle(dot, 'display', 'block');
+  });
+
   test('focusing a match fires `match-focusin` event', async () => {
     matchElement.matchIndex = 2;
     const whenMatchFocusin = eventToPromise<CustomEvent<{index: number}>>(
@@ -326,6 +364,35 @@ suite('ComposeboxMatch', () => {
     await microtasksFinished();
 
     assertStyle(matchElement.$.iconContainer, 'flex-shrink', '0');
+  });
+
+  test('shows a dot badge on the corner of the icon', async () => {
+    matchElement.match = createAutocompleteMatch();
+    await microtasksFinished();
+    assertFalse(!!matchElement.shadowRoot.querySelector('#badge'));
+
+    matchElement.match = createAutocompleteMatch({
+      suggestTemplate:
+          createSuggestTemplateInfo({typeIconBadge: BadgeType.kDot}),
+    });
+    await microtasksFinished();
+    const badge = matchElement.shadowRoot.querySelector('#badge.dot');
+    const icon = matchElement.shadowRoot.querySelector('#icon');
+    assertTrue(!!badge);
+    assertTrue(!!icon);
+
+    // The badge stays in the top-right corner of the icon when an embedder
+    // makes the icon container wider than the icon.
+    matchElement.$.iconContainer.style.width = '32px';
+    const badgeRect = badge.getBoundingClientRect();
+    const iconRect = icon.getBoundingClientRect();
+    // Allow sub-pixel rounding under fractional device scale factors.
+    assertTrue(
+        Math.abs(badgeRect.top - iconRect.top) < 0.5,
+        `top: ${badgeRect.top} vs ${iconRect.top}`);
+    assertTrue(
+        Math.abs(badgeRect.right - iconRect.right) < 0.5,
+        `right: ${badgeRect.right} vs ${iconRect.right}`);
   });
 
   test(
