@@ -85,6 +85,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
@@ -106,7 +109,11 @@ public class ActorNotificationClickIntegrationTest {
     private static final String GLIC_CONVERSATION_ID = "notification-conversation";
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    private final ChromeTabbedActivityTestRule mActivityTestRule =
+            mCtaTestRule.getActivityTestRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -118,6 +125,7 @@ public class ActorNotificationClickIntegrationTest {
     @Mock private GlicKeyedService mGlicKeyedService;
 
     private Context mContext;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
@@ -788,7 +796,7 @@ public class ActorNotificationClickIntegrationTest {
         Tab actingTab = startWithActingTabInBackground();
         MockNotificationManagerProxy notificationManager =
                 postRoutedTaskNotification(taskId, ActorTaskState.ACTING, actingTab);
-        mActivityTestRule.newIncognitoTabFromMenu();
+        mPage.openNewIncognitoTabFast();
 
         getPostedNotification(notificationManager, taskId).contentIntent.send();
 
@@ -818,7 +826,7 @@ public class ActorNotificationClickIntegrationTest {
                                                 .allowUndo(false)
                                                 .build(),
                                         /* allowDialog= */ false));
-        mActivityTestRule.newIncognitoTabFromMenu();
+        mPage.openNewIncognitoTabFast();
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Actor.Notification.FetchTabId.Status",
@@ -857,9 +865,10 @@ public class ActorNotificationClickIntegrationTest {
      * so a tap that changes nothing is caught.
      */
     private Tab startWithActingTabInBackground() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        Tab actingTab = mActivityTestRule.loadUrlInNewTab("about:blank");
-        mActivityTestRule.loadUrlInNewTab("about:blank");
+        WebPageStation actingPage =
+                mCtaTestRule.startOnBlankPage().openFakeLinkToWebPage("about:blank");
+        Tab actingTab = actingPage.getTab();
+        mPage = actingPage.openFakeLinkToWebPage("about:blank");
         return actingTab;
     }
 

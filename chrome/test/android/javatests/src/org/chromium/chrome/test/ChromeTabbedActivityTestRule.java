@@ -20,25 +20,14 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
-
-import java.util.concurrent.TimeoutException;
 
 /** Custom ActivityTestRule for tests using ChromeTabbedActivity */
 public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeTabbedActivity> {
@@ -167,61 +156,6 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
             Assert.assertTrue(waitForDeferredStartup());
             ensureActivityFocused(getActivity());
         }
-    }
-
-    /**
-     * Open an incognito tab by invoking the 'new incognito' menu item. Returns when receiving the
-     * 'PAGE_LOAD_FINISHED' notification.
-     *
-     * @deprecated Prefer public transit APIs when possible.
-     */
-    public Tab newIncognitoTabFromMenu() {
-        final CallbackHelper createdCallback = new CallbackHelper();
-        final CallbackHelper selectedCallback = new CallbackHelper();
-
-        TabModel incognitoTabModel = getActivity().getTabModelSelector().getModel(true);
-        TabModelObserver observer =
-                new TabModelObserver() {
-                    @Override
-                    public void didAddTab(
-                            Tab tab,
-                            @TabLaunchType int type,
-                            @TabCreationState int creationState,
-                            boolean markedForSelection) {
-                        createdCallback.notifyCalled();
-                    }
-
-                    @Override
-                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                        selectedCallback.notifyCalled();
-                    }
-                };
-        ThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.addObserver(observer));
-
-        MenuUtils.invokeCustomMenuActionSync(
-                InstrumentationRegistry.getInstrumentation(),
-                getActivity(),
-                R.id.new_incognito_tab_menu_id);
-
-        try {
-            createdCallback.waitForCallback(0);
-        } catch (TimeoutException ex) {
-            throw new AssertionError("Never received tab created event", ex);
-        }
-        try {
-            selectedCallback.waitForCallback(0);
-        } catch (TimeoutException ex) {
-            throw new AssertionError("Never received tab selected event", ex);
-        }
-        ThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.removeObserver(observer));
-
-        Tab tab = getActivityTab();
-
-        ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
-        ChromeTabUtils.waitForNtpLoaded(tab);
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        Log.d(TAG, "newIncognitoTabFromMenu <<");
-        return tab;
     }
 
     /**

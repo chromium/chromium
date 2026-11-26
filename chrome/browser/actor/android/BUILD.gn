@@ -320,6 +320,7 @@ android_library("javatests") {
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_test_support_common",
+    "//chrome/test/android:chrome_java_transit",
     "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/notifications/android:test_support_java",
     "//components/tab_groups:tab_groups_java",

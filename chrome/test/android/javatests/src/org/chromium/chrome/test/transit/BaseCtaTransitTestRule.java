@@ -173,12 +173,6 @@ public abstract class BaseCtaTransitTestRule implements TestRule {
         return mActivityTestRule.loadUrlInNewTab(url, incognito, launchType);
     }
 
-    // TODO(crbug.com/406324209): Use CtaPageStation#openNewIncognitoTabFast() to replace these
-    // calls.
-    public Tab newIncognitoTabFromMenu() {
-        return mActivityTestRule.newIncognitoTabFromMenu();
-    }
-
     public KeyboardVisibilityDelegate getKeyboardDelegate() {
         return mActivityTestRule.getKeyboardDelegate();
     }
