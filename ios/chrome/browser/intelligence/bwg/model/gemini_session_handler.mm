@@ -173,6 +173,42 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   return self;
 }
 
+#pragma mark - Public
+
+- (void)recordSessionDismissed {
+  // No-op if no session has appeared (e.g. container torn down before
+  // `UIDidAppearWithClientID:serverID:`) or if end-of-session metrics were
+  // already recorded (e.g. via `didRequestDismissal`).
+  if (_sessionStartTime.is_null()) {
+    return;
+  }
+
+  base::TimeDelta session_duration = base::TimeTicks::Now() - _sessionStartTime;
+  _sessionStartTime = base::TimeTicks();
+
+  IOSGeminiSessionType session_type = _hasSubmittedFirstPrompt
+                                          ? IOSGeminiSessionType::kWithPrompt
+                                          : IOSGeminiSessionType::kAbandoned;
+  RecordGeminiSessionLengthByType(session_duration, _isFirstSession,
+                                  session_type);
+  RecordGeminiSessionTime(session_duration);
+
+  // Record prompt counts for the session before resetting session state.
+  RecordSessionPromptCount(_totalPromptsInSession);
+  RecordSessionFirstPrompt(_hasSubmittedFirstPrompt);
+
+  _waitingForResponse = NO;
+  _lastPromptSentTime = base::TimeTicks();
+  _totalPromptsInSession = 0;
+  _hasSubmittedFirstPrompt = NO;
+  _hasReceivedFirstResponse = NO;
+  _lastProcessingStatus = ios::provider::GeminiClientMode::kUnknown;
+
+  if (_tracker && IsIOSDefaultBrowserContextualPromoEnabled()) {
+    LogDefaultBrowserPromoOpportunityForGemini(_tracker);
+  }
+}
+
 #pragma mark - GeminiSessionDelegate
 
 - (void)newSessionCreatedWithClientID:(NSString*)clientID
@@ -618,37 +654,10 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
                                             _prefService);
 }
 
+// Dismisses the Gemini flow and records end-of-session metrics.
 - (void)dismissAndRecordMetrics {
   [_geminiHandler dismissGeminiFlowWithCompletion:nil];
-
-  // Record session duration.
-  if (!_sessionStartTime.is_null()) {
-    base::TimeDelta session_duration =
-        base::TimeTicks::Now() - _sessionStartTime;
-
-    // Determine session type.
-    IOSGeminiSessionType session_type;
-    if (_hasSubmittedFirstPrompt) {
-      session_type = IOSGeminiSessionType::kWithPrompt;
-    } else {
-      session_type = IOSGeminiSessionType::kAbandoned;
-    }
-
-    RecordGeminiSessionLengthByType(session_duration, _isFirstSession,
-                                    session_type);
-    RecordGeminiSessionTime(session_duration);
-    _sessionStartTime = base::TimeTicks();
-  }
-  // Reset latency tracking on session end.
-  _waitingForResponse = NO;
-  _lastPromptSentTime = base::TimeTicks();
-  // Record prompt counts for the session.
-  RecordSessionPromptCount(_totalPromptsInSession);
-  RecordSessionFirstPrompt(_hasSubmittedFirstPrompt);
-
-  if (_tracker && IsIOSDefaultBrowserContextualPromoEnabled()) {
-    LogDefaultBrowserPromoOpportunityForGemini(_tracker);
-  }
+  [self recordSessionDismissed];
 }
 
 // Records the quota reached metric if Nano Banana quota has been exhausted,

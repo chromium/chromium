@@ -1228,3 +1228,36 @@ TEST_F(GeminiSessionHandlerTest, TestDismissSnackbarDismissesLastShownMessage) {
   [session_handler_ dismissSnackbar];
   EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
 }
+
+// Tests that `recordSessionDismissed` is a no-op before
+// `UIDidAppearWithClientID:serverID:` and records end-of-session metrics at
+// most once per appeared session.
+TEST_F(GeminiSessionHandlerTest, TestRecordSessionDismissedRecordsMetricsOnce) {
+  // Calling `recordSessionDismissed` before a session appears is a no-op.
+  [session_handler_ recordSessionDismissed];
+  histogram_tester_.ExpectTotalCount(kGeminiSessionLengthAbandonedHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kGeminiSessionTimeHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kSessionPromptCountHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kSessionFirstPromptHistogram, 0);
+
+  NSString* client_id = GetClientID();
+  [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
+  task_environment_.FastForwardBy(kTestSessionDuration);
+
+  [session_handler_ recordSessionDismissed];
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      kGeminiSessionLengthAbandonedHistogram, kTestSessionDuration, 1);
+  histogram_tester_.ExpectUniqueTimeSample(kGeminiSessionTimeHistogram,
+                                           kTestSessionDuration, 1);
+  histogram_tester_.ExpectUniqueSample(kSessionPromptCountHistogram, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kSessionFirstPromptHistogram, false, 1);
+
+  // A subsequent `recordSessionDismissed` call does not record duplicate
+  // metrics.
+  [session_handler_ recordSessionDismissed];
+  histogram_tester_.ExpectTotalCount(kGeminiSessionLengthAbandonedHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kGeminiSessionTimeHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kSessionPromptCountHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kSessionFirstPromptHistogram, 1);
+}
