@@ -387,8 +387,14 @@ HeapVector<HighlightLayer> HighlightOverlay::ComputeLayers(
     unsigned max_custom_layers =
         std::numeric_limits<uint16_t>::max() -
         static_cast<unsigned>(HighlightLayerType::kSelection);
-    const HashSet<AtomicString>& active_highlights =
-        registry->GetActiveHighlights(*text_node);
+    // Editing can move markers before highlight validation rebuilds the
+    // per-node registry. Use the markers being painted to keep layers and
+    // edges consistent even during synchronous SVG resource painting.
+    HashSet<AtomicString> active_highlights;
+    for (const auto& marker : custom) {
+      active_highlights.insert(
+          To<CustomHighlightMarker>(*marker).GetHighlightName());
+    }
     auto highlight_iter = active_highlights.begin();
     unsigned layer_count = 0;
     while (highlight_iter != active_highlights.end() &&

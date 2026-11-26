@@ -324,12 +324,6 @@ void HighlightRegistry::TrackReplacedElementForHighlight(
   add_result.stored_value->value.insert(highlight_name);
 }
 
-const HashSet<AtomicString>& HighlightRegistry::GetActiveHighlights(
-    const Text& node) const {
-  DCHECK(active_highlights_in_node_.Contains(&node));
-  return active_highlights_in_node_.find(&node)->value;
-}
-
 void HighlightRegistry::ScheduleRepaint() {
   LocalFrame* frame = GetFrame();
   if (!frame) {
