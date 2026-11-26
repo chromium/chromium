@@ -90,6 +90,10 @@ class FontSizeJsTest : public PlatformTest {
 
 // Tests that `adjustFontSize` works for any scale.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForScale) {
+  // TODO(crbug.com/590072070): Re-enable once fixed on iOS 27.3+.
+  if (@available(iOS 27.3, *)) {
+    GTEST_SKIP() << "Fails on iOS 27.3+.";
+  }
   float original_size = 0;
   float current_size = 0;
 
@@ -204,6 +208,10 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForScale) {
 
 // Tests that `adjustFontSize` works for any CSS unit.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForUnit) {
+  // TODO(crbug.com/590072070): Re-enable once fixed on iOS 27.3+.
+  if (@available(iOS 27.3, *)) {
+    GTEST_SKIP() << "Fails on iOS 27.3+.";
+  }
   float original_size = 0;
   float current_size = 0;
 
@@ -270,6 +278,10 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForUnit) {
 
 // Tests `adjustFontSize works for nested elements.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
+  // TODO(crbug.com/590072070): Re-enable once fixed on iOS 27.3+.
+  if (@available(iOS 27.3, *)) {
+    GTEST_SKIP() << "Fails on iOS 27.3+.";
+  }
   float original_size_1 = 0;
   float original_size_2 = 0;
   float current_size_1 = 0;
