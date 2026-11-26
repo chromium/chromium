@@ -2276,19 +2276,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="GPU.{GraphiteDawnOrWebGPU}.MaxStorageBufferBindingSize.{AdapterType}"
-    units="MB" expires_after="2024-11-03">
-  <owner>cduvall@chromium.org</owner>
-  <owner>mdb.webgpu-dev-team@google.com</owner>
-  <summary>
-    Records the maximum storage buffer binding size if {AdapterType} GPU is
-    available. This is recorded during GPU process startup.
-  </summary>
-  <token key="AdapterType" variants="WebGPUAdapterType"/>
-  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
-</histogram>
-
-<histogram
     name="GPU.{GraphiteDawnOrWebGPU}.MaxTextureDimension2D.{AdapterType}"
     units="dimensions" expires_after="2026-01-11">
   <owner>cduvall@chromium.org</owner>

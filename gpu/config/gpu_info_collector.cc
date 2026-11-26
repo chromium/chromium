@@ -411,9 +411,6 @@ void ReportWebGPUAdapterMetrics(
     std::string adapter_string = adapter_type == wgpu::AdapterType::DiscreteGPU
                                      ? "Discrete"
                                      : "Integrated";
-    base::UmaHistogramMemoryLargeMB(
-        "GPU.WebGPU.MaxStorageBufferBindingSize." + adapter_string,
-        max_limits.maxStorageBufferBindingSize / (1024 * 1024));
     base::UmaHistogramCounts100000(
         "GPU.WebGPU.MaxTextureDimension2D." + adapter_string,
         max_limits.maxTextureDimension2D);
