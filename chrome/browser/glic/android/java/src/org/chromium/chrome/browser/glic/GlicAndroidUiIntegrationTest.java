@@ -370,14 +370,18 @@ public class GlicAndroidUiIntegrationTest {
         // 3. Verify take over task button is displayed.
         onView(withId(R.id.take_over_task_button)).check(matches(isDisplayed()));
 
-        // 4. Mock the task lookup for takeOverTask action.
-        when(mActorService.getActiveTaskIdOnTab(mTab.getId())).thenReturn(TEST_TASK_ID);
-        when(mActorService.getTask(TEST_TASK_ID)).thenReturn(mActorTask);
+        // 4. Mock the task lookup for takeOverTask action on the UI thread so Mockito stubbing
+        // does not race with concurrent UI-thread calls to mActorService.getActiveTasks().
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    when(mActorService.getActiveTaskIdOnTab(mTab.getId())).thenReturn(TEST_TASK_ID);
+                    when(mActorService.getTask(TEST_TASK_ID)).thenReturn(mActorTask);
+                });
 
         // 5. Click the Take Over button.
         onView(withId(R.id.take_over_task_button)).perform(click());
 
         // 6. Verify that task.takeOverTask() was called.
-        verify(mActorTask).takeOverTask();
+        ThreadUtils.runOnUiThreadBlocking(() -> verify(mActorTask).takeOverTask());
     }
 }
