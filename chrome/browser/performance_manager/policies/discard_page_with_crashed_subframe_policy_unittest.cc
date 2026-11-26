@@ -11,6 +11,7 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/viewport_intersection.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -92,11 +93,42 @@ TEST_F(DiscardPageWithCrashedSubframePolicyTest, DiscardInvisiblePage) {
   // Setup a page that is not visible, and eligible for discarding.
   page_graph.page_node.get()->SetIsVisible(false);
   page_graph.sub_frame_node.get()->SetIsActive(true);
-  page_graph.sub_frame_node.get()->SetIsRendered(true);
+  page_graph.sub_frame_node.get()->SetViewportIntersection(
+      ViewportIntersection::kIntersecting);
 
   EXPECT_FALSE(web_contents()->WasDiscarded());
   page_graph.sub_frame_node.get()->CrossProcessSubframeRenderProcessGone();
   EXPECT_TRUE(web_contents()->WasDiscarded());
+}
+
+TEST_F(DiscardPageWithCrashedSubframePolicyTest,
+       DiscardForRenderedOutOfViewportSubframe) {
+  feature_list_.InitAndEnableFeature(::features::kWebContentsDiscard);
+  MockPageGraph page_graph = CreatePageNodes();
+
+  page_graph.page_node.get()->SetIsVisible(false);
+  page_graph.sub_frame_node.get()->SetIsActive(true);
+  page_graph.sub_frame_node.get()->SetViewportIntersection(
+      ViewportIntersection::kRenderedOutOfViewport);
+
+  EXPECT_FALSE(web_contents()->WasDiscarded());
+  page_graph.sub_frame_node.get()->CrossProcessSubframeRenderProcessGone();
+  EXPECT_TRUE(web_contents()->WasDiscarded());
+}
+
+TEST_F(DiscardPageWithCrashedSubframePolicyTest,
+       DoNotDiscardForUnknownViewportIntersectionSubframe) {
+  feature_list_.InitAndEnableFeature(::features::kWebContentsDiscard);
+  MockPageGraph page_graph = CreatePageNodes();
+
+  page_graph.page_node.get()->SetIsVisible(false);
+  page_graph.sub_frame_node.get()->SetIsActive(true);
+  ASSERT_EQ(page_graph.sub_frame_node.get()->GetViewportIntersection(),
+            ViewportIntersection::kUnknown);
+
+  EXPECT_FALSE(web_contents()->WasDiscarded());
+  page_graph.sub_frame_node.get()->CrossProcessSubframeRenderProcessGone();
+  EXPECT_FALSE(web_contents()->WasDiscarded());
 }
 
 TEST_F(DiscardPageWithCrashedSubframePolicyTest, DoNotDiscardVisiblePage) {
@@ -105,7 +137,8 @@ TEST_F(DiscardPageWithCrashedSubframePolicyTest, DoNotDiscardVisiblePage) {
 
   page_graph.page_node.get()->SetIsVisible(true);
   page_graph.sub_frame_node.get()->SetIsActive(true);
-  page_graph.sub_frame_node.get()->SetIsRendered(true);
+  page_graph.sub_frame_node.get()->SetViewportIntersection(
+      ViewportIntersection::kIntersecting);
 
   EXPECT_FALSE(web_contents()->WasDiscarded());
   page_graph.sub_frame_node.get()->CrossProcessSubframeRenderProcessGone();
@@ -119,7 +152,8 @@ TEST_F(DiscardPageWithCrashedSubframePolicyTest,
 
   page_graph.page_node.get()->SetIsVisible(false);
   page_graph.sub_frame_node.get()->SetIsActive(true);
-  page_graph.sub_frame_node.get()->SetIsRendered(false);
+  page_graph.sub_frame_node.get()->SetViewportIntersection(
+      ViewportIntersection::kNotRendered);
 
   EXPECT_FALSE(web_contents()->WasDiscarded());
   page_graph.sub_frame_node.get()->CrossProcessSubframeRenderProcessGone();
@@ -133,7 +167,8 @@ TEST_F(DiscardPageWithCrashedSubframePolicyTest,
 
   page_graph.page_node.get()->SetIsVisible(false);
   page_graph.sub_frame_node.get()->SetIsActive(false);
-  page_graph.sub_frame_node.get()->SetIsRendered(true);
+  page_graph.sub_frame_node.get()->SetViewportIntersection(
+      ViewportIntersection::kIntersecting);
 
   EXPECT_FALSE(web_contents()->WasDiscarded());
   page_graph.sub_frame_node.get()->CrossProcessSubframeRenderProcessGone();
@@ -147,7 +182,8 @@ TEST_F(DiscardPageWithCrashedSubframePolicyTest,
 
   page_graph.page_node.get()->SetIsVisible(false);
   page_graph.sub_frame_node.get()->SetIsActive(true);
-  page_graph.sub_frame_node.get()->SetIsRendered(true);
+  page_graph.sub_frame_node.get()->SetViewportIntersection(
+      ViewportIntersection::kIntersecting);
   // Make the page audible, which is not discardable.
   page_graph.page_node.get()->SetIsAudible(true);
 
@@ -163,7 +199,8 @@ TEST_F(DiscardPageWithCrashedSubframePolicyTest,
 
   page_graph.page_node.get()->SetIsVisible(false);
   page_graph.sub_frame_node.get()->SetIsActive(true);
-  page_graph.sub_frame_node.get()->SetIsRendered(true);
+  page_graph.sub_frame_node.get()->SetViewportIntersection(
+      ViewportIntersection::kIntersecting);
 
   EXPECT_FALSE(web_contents()->WasDiscarded());
   page_graph.sub_frame_node.get()->CrossProcessSubframeRenderProcessGone();
@@ -177,7 +214,8 @@ TEST_F(DiscardPageWithCrashedSubframePolicyTest,
 
   page_graph.page_node.get()->SetIsVisible(false);
   page_graph.sub_frame_node.get()->SetIsActive(true);
-  page_graph.sub_frame_node.get()->SetIsRendered(true);
+  page_graph.sub_frame_node.get()->SetViewportIntersection(
+      ViewportIntersection::kIntersecting);
   page_graph.page_node.get()->SetHadFormInteractionForTesting(true);
 
   EXPECT_FALSE(web_contents()->WasDiscarded());
@@ -192,7 +230,8 @@ TEST_F(DiscardPageWithCrashedSubframePolicyTest,
 
   page_graph.page_node.get()->SetIsVisible(false);
   page_graph.sub_frame_node.get()->SetIsActive(true);
-  page_graph.sub_frame_node.get()->SetIsRendered(true);
+  page_graph.sub_frame_node.get()->SetViewportIntersection(
+      ViewportIntersection::kIntersecting);
   page_graph.page_node.get()->OnNotificationPermissionStatusChange(
       blink::mojom::PermissionStatus::GRANTED);
 

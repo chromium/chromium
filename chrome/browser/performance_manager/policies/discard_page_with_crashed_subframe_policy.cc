@@ -13,12 +13,28 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/render_frame_host_proxy.h"
+#include "components/performance_manager/public/viewport_intersection.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace performance_manager::policies {
+
+namespace {
+
+bool IsFrameRendered(const FrameNode* frame_node) {
+  switch (frame_node->GetViewportIntersection()) {
+    case ViewportIntersection::kUnknown:
+    case ViewportIntersection::kNotRendered:
+      return false;
+    case ViewportIntersection::kRenderedOutOfViewport:
+    case ViewportIntersection::kIntersecting:
+      return true;
+  }
+}
+
+}  // namespace
 
 DiscardPageWithCrashedSubframePolicy::DiscardPageWithCrashedSubframePolicy() =
     default;
@@ -34,7 +50,7 @@ void DiscardPageWithCrashedSubframePolicy::
   // Whether the page will be reloaded after the subframe crash by
   // ReloadHiddenTabsWithCrashedSubframes feature.
   bool will_reload = !frame_node->GetPageNode()->IsVisible() &&
-                     frame_node->IsRendered() && frame_node->IsActive();
+                     IsFrameRendered(frame_node) && frame_node->IsActive();
   bool is_eligible = will_reload;
   const PageNode* page_node = frame_node->GetPageNode();
   // We should not discard pages which is immediately perceptible to the users.

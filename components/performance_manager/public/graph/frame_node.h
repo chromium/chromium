@@ -255,8 +255,8 @@ class FrameNode : public TypedNode<FrameNode> {
   virtual bool HasFreezingOriginTrialOptOut() const = 0;
 
   // Returns the ViewportIntersection of this frame. For the outermost main
-  // frame, this always returns kIntersecting. For child frames, this is
-  // initially kUnknown, and is initialized during layout when the viewport
+  // frame, this always returns `kIntersecting`. For child frames, this is
+  // initially `kUnknown`, and is initialized during layout when the viewport
   // intersection is first calculated.
   virtual ViewportIntersection GetViewportIntersection() const = 0;
 
@@ -268,9 +268,10 @@ class FrameNode : public TypedNode<FrameNode> {
   virtual Visibility GetVisibility() const = 0;
 
   // Returns true if this frame is intersecting with a large area of the
-  // viewport. Note that this can not return true if `GetViewportIntersection()`
-  // returns kNotIntersecting. Also, this property is assumed to be true if its
-  // value is unknown.
+  // viewport. This property is assumed to be true if its value is unknown.
+  // However if `GetViewportIntersection()` returns `kNotRendered` or
+  // `kRenderedOutOfViewport`, it returns false because the frame is known to
+  // not be intersecting at all.
   virtual bool IsIntersectingLargeArea() const = 0;
 
   // Returns true if the frame is deemed important. This means that the frame
@@ -279,11 +280,6 @@ class FrameNode : public TypedNode<FrameNode> {
   // containing page. If the page is not visible, the frame should not be
   // considered important, regardless of this value.
   virtual bool IsImportant() const = 0;
-
-  // Returns false if the frame is not rendered, e.g. because it has
-  // `display: none`. A non-rendered frame is not visible, but a visible frame
-  // is not necessarily rendered.
-  virtual bool IsRendered() const = 0;
 
   // Returns a proxy to the RenderFrameHost associated with this node. The
   // proxy may only be dereferenced on the UI thread.

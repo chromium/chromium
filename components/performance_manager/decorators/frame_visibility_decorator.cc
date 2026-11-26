@@ -49,8 +49,10 @@ FrameNode::Visibility GetFrameNodeVisibility(FrameNodeImpl* frame_node,
       // with the viewport. Can't determine the visibility.
       return FrameNode::Visibility::kUnknown;
 
-    case ViewportIntersection::kNotIntersecting:
-      // Does not intersects with the viewport. The frame is not visible.
+    case ViewportIntersection::kNotRendered:
+    case ViewportIntersection::kRenderedOutOfViewport:
+      // Not rendered or does not intersect with the viewport. The frame is not
+      // visible.
       return FrameNode::Visibility::kNotVisible;
 
     case ViewportIntersection::kIntersecting:

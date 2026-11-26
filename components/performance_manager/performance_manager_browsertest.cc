@@ -17,6 +17,7 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/render_frame_host_proxy.h"
+#include "components/performance_manager/public/viewport_intersection.h"
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -262,12 +263,11 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
 
   auto* frame_node_impl = FrameNodeImpl::FromNode(frame_node);
 
-  // This should not crash. We use kNotIntersecting to ensure the round-tripping
+  // This should not crash. We use kNotRendered to ensure the round-tripping
   // behavior is tested and to confirm that the "set" worked for surface embed,
   // as kIntersecting is the default return value.
-  frame_node_impl->SetViewportIntersection(
-      ViewportIntersection::kNotIntersecting);
-  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+  frame_node_impl->SetViewportIntersection(ViewportIntersection::kNotRendered);
+  EXPECT_EQ(ViewportIntersection::kNotRendered,
             frame_node_impl->GetViewportIntersection());
 
   content::SurfaceEmbedConnector::Detach(child_contents);
@@ -332,7 +332,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
       child_contents.get());
   ASSERT_TRUE(child_page_node);
   ASSERT_TRUE(child_page_node->GetEmbedderFrameNode());
-  ASSERT_TRUE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+  ASSERT_EQ(
+      ViewportIntersection::kIntersecting,
+      child_page_node->GetPrimaryMainFrameNode()->GetViewportIntersection());
 
   content::RenderFrameDeletedObserver old_frame_deleted(
       parent_contents->GetPrimaryMainFrame());
@@ -343,9 +345,13 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
   ASSERT_TRUE(child_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
   EXPECT_FALSE(child_page_node->GetEmbedderFrameNode());
   ASSERT_TRUE(child_contents->GetSurfaceEmbedConnector());
-  EXPECT_TRUE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+  EXPECT_EQ(
+      ViewportIntersection::kIntersecting,
+      child_page_node->GetPrimaryMainFrameNode()->GetViewportIntersection());
   content::SurfaceEmbedConnector::Detach(child_contents.get());
-  EXPECT_FALSE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+  EXPECT_EQ(
+      ViewportIntersection::kIntersecting,
+      child_page_node->GetPrimaryMainFrameNode()->GetViewportIntersection());
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
@@ -372,15 +378,21 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
       child_contents.get());
   ASSERT_TRUE(child_page_node);
   ASSERT_TRUE(child_page_node->GetEmbedderFrameNode());
-  ASSERT_TRUE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+  ASSERT_EQ(
+      ViewportIntersection::kIntersecting,
+      child_page_node->GetPrimaryMainFrameNode()->GetViewportIntersection());
 
   content::CrashTab(parent_contents);
   ASSERT_TRUE(child_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
   EXPECT_FALSE(child_page_node->GetEmbedderFrameNode());
   ASSERT_TRUE(child_contents->GetSurfaceEmbedConnector());
-  EXPECT_TRUE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+  EXPECT_EQ(
+      ViewportIntersection::kIntersecting,
+      child_page_node->GetPrimaryMainFrameNode()->GetViewportIntersection());
   content::SurfaceEmbedConnector::Detach(child_contents.get());
-  EXPECT_FALSE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+  EXPECT_EQ(
+      ViewportIntersection::kIntersecting,
+      child_page_node->GetPrimaryMainFrameNode()->GetViewportIntersection());
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
@@ -405,6 +417,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
       child_contents.get());
   ASSERT_TRUE(child_page_node);
   ASSERT_TRUE(child_page_node->GetEmbedderFrameNode());
+  ASSERT_EQ(
+      ViewportIntersection::kUnknown,
+      child_page_node->GetPrimaryMainFrameNode()->GetViewportIntersection());
 
   content::CrashTab(parent_contents);
   ASSERT_TRUE(child_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
@@ -415,10 +430,14 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
   // but the embedder's FrameNode is already gone.
   child_contents->GetSurfaceEmbedConnector()->OnVisibilityChanged(
       blink::mojom::FrameVisibility::kRenderedInViewport);
-  EXPECT_TRUE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+  EXPECT_EQ(
+      ViewportIntersection::kIntersecting,
+      child_page_node->GetPrimaryMainFrameNode()->GetViewportIntersection());
 
   content::SurfaceEmbedConnector::Detach(child_contents.get());
-  EXPECT_FALSE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+  EXPECT_EQ(
+      ViewportIntersection::kIntersecting,
+      child_page_node->GetPrimaryMainFrameNode()->GetViewportIntersection());
 }
 
 }  // namespace performance_manager

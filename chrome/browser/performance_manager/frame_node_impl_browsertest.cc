@@ -119,7 +119,8 @@ IN_PROC_BROWSER_TEST_P(ParameterizedFrameNodeImplBrowserTest,
   testing::Matcher<const FrameNode*> viewport_intersection_matcher =
       expects_intersects_viewport
           ? HasViewportIntersection(ViewportIntersection::kIntersecting)
-          : HasViewportIntersection(ViewportIntersection::kNotIntersecting);
+          : HasViewportIntersection(
+                ViewportIntersection::kRenderedOutOfViewport);
 
   const GURL main_frame_url(
       embedded_test_server()->GetURL("/iframe_out_of_view.html"));
@@ -155,10 +156,9 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, ViewportIntersection_Hidden) {
         // One main frame, intersects with the viewport.
         AllOf(IsMainFrame(),
               HasViewportIntersection(ViewportIntersection::kIntersecting)),
-        // One child frame, does not intersect with the viewport.
-        AllOf(
-            Not(IsMainFrame()),
-            HasViewportIntersection(ViewportIntersection::kNotIntersecting))))(
+        // One child frame, not rendered.
+        AllOf(Not(IsMainFrame()),
+              HasViewportIntersection(ViewportIntersection::kNotRendered))))(
         GetFrameNodesForWebContents(
             browser()->tab_strip_model()->GetActiveWebContents()));
   }));

@@ -41,8 +41,10 @@ bool IsImportant(const FrameNode* frame_node) {
       // important.
       return true;
 
-    case ViewportIntersection::kNotIntersecting:
-      // A frame is not important if it doesn't intersect with the viewport.
+    case ViewportIntersection::kNotRendered:
+    case ViewportIntersection::kRenderedOutOfViewport:
+      // A frame is not important if it is not rendered or doesn't intersect
+      // with the viewport.
       return false;
 
     case ViewportIntersection::kIntersecting:

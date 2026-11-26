@@ -389,17 +389,14 @@ FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
 }
 
 bool FrameNodeImpl::IsIntersectingLargeArea() const {
-  // For consistency's sake, return false if this frame doesn't intersect with
-  // the viewport.
-  if (GetViewportIntersection() == ViewportIntersection::kNotIntersecting) {
+  // For consistency's sake, return false if this frame is not rendered or
+  // doesn't intersect with the viewport.
+  if (GetViewportIntersection() == ViewportIntersection::kNotRendered ||
+      GetViewportIntersection() ==
+          ViewportIntersection::kRenderedOutOfViewport) {
     return false;
   }
   return is_intersecting_large_area_;
-}
-
-bool FrameNodeImpl::IsRendered() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_rendered_;
 }
 
 bool FrameNodeImpl::IsImportant() const {
@@ -589,11 +586,6 @@ void FrameNodeImpl::SetInitialVisibility(Visibility visibility) {
 void FrameNodeImpl::SetVisibility(Visibility visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   visibility_.SetAndMaybeNotify(this, visibility);
-}
-
-void FrameNodeImpl::SetIsRendered(bool is_rendered) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_rendered_ = is_rendered;
 }
 
 void FrameNodeImpl::SetIsIntersectingLargeArea(
@@ -1038,9 +1030,11 @@ void FrameNodeImpl::SetIsIntersectingLargeAreaImpl(
   is_intersecting_large_area_ = is_intersecting_large_area;
 
   // Don't notify observers if this frame's viewport intersection is
-  // kNotIntersecting, as `IsIntersectingLargeArea()` always returns false in
-  // that case.
-  if (GetViewportIntersection() != ViewportIntersection::kNotIntersecting) {
+  // `kNotRendered` or `kRenderedOutOfViewport`, as `IsIntersectingLargeArea()`
+  // always returns false in those cases.
+  if (GetViewportIntersection() != ViewportIntersection::kNotRendered &&
+      GetViewportIntersection() !=
+          ViewportIntersection::kRenderedOutOfViewport) {
     for (auto& observer : GetObservers()) {
       observer.OnIsIntersectingLargeAreaChanged(this);
     }

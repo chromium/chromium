@@ -462,9 +462,6 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
   }
   CHECK(render_frame_host->IsRenderFrameLive());
 
-  frame_node->SetIsRendered(visibility !=
-                            blink::mojom::FrameVisibility::kNotRendered);
-
   // An attached Surface Embed child can outlive its embedder's FrameNode.
   // Its main frame then has no graph parent, so viewport intersection is not
   // tracked even though visibility notifications can still arrive.
@@ -476,14 +473,14 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
   ViewportIntersection viewport_intersection = [&]() {
     switch (visibility) {
       case blink::mojom::FrameVisibility::kNotRendered:
-        return ViewportIntersection::kNotIntersecting;
+        return ViewportIntersection::kNotRendered;
       case blink::mojom::FrameVisibility::kRenderedOutOfViewport:
         if (!features::kRenderedOutOfViewIsNotVisible.Get()) {
           // Old, seemingly incorrect behavior. Treat an out of view frame as
           // intersecting with the viewport.
           return ViewportIntersection::kIntersecting;
         }
-        return ViewportIntersection::kNotIntersecting;
+        return ViewportIntersection::kRenderedOutOfViewport;
       case blink::mojom::FrameVisibility::kRenderedInViewport:
         return ViewportIntersection::kIntersecting;
     }

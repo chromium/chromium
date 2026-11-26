@@ -19,6 +19,7 @@
 #include "components/performance_manager/public/priority/priority.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
+#include "components/performance_manager/public/viewport_intersection.h"
 #include "components/performance_manager/test_support/graph/mock_frame_node_observer.h"
 #include "components/performance_manager/test_support/graph/mock_page_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -837,15 +838,23 @@ TEST_F(FrameNodeImplTest, ViewportIntersection) {
   EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(child_frame_node.get()))
       .Times(AnyNumber());
 
+  EXPECT_EQ(main_frame_node->GetViewportIntersection(),
+            ViewportIntersection::kIntersecting);
+
   // Initially unknown.
   EXPECT_EQ(child_frame_node->GetViewportIntersection(),
             ViewportIntersection::kUnknown);
 
   EXPECT_CALL(obs, OnViewportIntersectionChanged(child_frame_node.get()));
-  child_frame_node->SetViewportIntersection(
-      ViewportIntersection::kNotIntersecting);
+  child_frame_node->SetViewportIntersection(ViewportIntersection::kNotRendered);
   EXPECT_EQ(child_frame_node->GetViewportIntersection(),
-            ViewportIntersection::kNotIntersecting);
+            ViewportIntersection::kNotRendered);
+
+  EXPECT_CALL(obs, OnViewportIntersectionChanged(child_frame_node.get()));
+  child_frame_node->SetViewportIntersection(
+      ViewportIntersection::kRenderedOutOfViewport);
+  EXPECT_EQ(child_frame_node->GetViewportIntersection(),
+            ViewportIntersection::kRenderedOutOfViewport);
 
   EXPECT_CALL(obs, OnViewportIntersectionChanged(child_frame_node.get()));
   child_frame_node->SetViewportIntersection(
@@ -883,20 +892,28 @@ TEST_F(FrameNodeImplTest, IsIntersectingLargeArea) {
   EXPECT_TRUE(local_root->IsIntersectingLargeArea());
 
   // IsIntersectingLargeArea() is false if GetViewportIntersection is
-  // kNotIntersecting.
+  // kNotRendered or kRenderedOutOfViewport.
   EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(local_root.get()));
-  local_root->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
+  local_root->SetViewportIntersection(ViewportIntersection::kNotRendered);
   EXPECT_FALSE(local_root->IsIntersectingLargeArea());
 
   // Toggling IsIntersectingLargeArea() while the viewport intersection is
-  // kNotIntersecting doesn't affect its value.
+  // kNotRendered doesn't affect its value.
   local_root->SetIsIntersectingLargeArea(false);
   EXPECT_FALSE(local_root->IsIntersectingLargeArea());
   local_root->SetIsIntersectingLargeArea(true);
   EXPECT_FALSE(local_root->IsIntersectingLargeArea());
 
-  // Change the viewport intersection to kIntersecting and observe the property
-  // change.
+  local_root->SetViewportIntersection(
+      ViewportIntersection::kRenderedOutOfViewport);
+  EXPECT_FALSE(local_root->IsIntersectingLargeArea());
+  local_root->SetIsIntersectingLargeArea(false);
+  EXPECT_FALSE(local_root->IsIntersectingLargeArea());
+  local_root->SetIsIntersectingLargeArea(true);
+  EXPECT_FALSE(local_root->IsIntersectingLargeArea());
+
+  // Change the viewport intersection to kIntersecting and
+  // observe the property change.
   EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(local_root.get()));
   local_root->SetViewportIntersection(ViewportIntersection::kIntersecting);
   EXPECT_TRUE(local_root->IsIntersectingLargeArea());
@@ -1142,8 +1159,9 @@ TEST_F(FrameNodeImplTest, SetOuterDocumentForInnerFrameRoot) {
             public_inner_root->GetParentOrOuterDocumentOrEmbedder());
   EXPECT_EQ(main_frame.get(), page->primary_main_frame_node());
 
-  inner_root->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
-  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+  inner_root->SetViewportIntersection(
+      ViewportIntersection::kRenderedOutOfViewport);
+  EXPECT_EQ(ViewportIntersection::kRenderedOutOfViewport,
             inner_root->GetViewportIntersection());
 
   MockObserver obs(graph());
@@ -1160,7 +1178,7 @@ TEST_F(FrameNodeImplTest, SetOuterDocumentForInnerFrameRoot) {
   // The viewport intersection is not recalculated when the outer document
   // changes. It keeps its last known value until an update is received for the
   // new outer document.
-  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+  EXPECT_EQ(ViewportIntersection::kRenderedOutOfViewport,
             inner_root->GetViewportIntersection());
   EXPECT_CALL(obs, OnViewportIntersectionChanged(inner_root.get()));
   EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(inner_root.get()));
@@ -1171,9 +1189,10 @@ TEST_F(FrameNodeImplTest, SetOuterDocumentForInnerFrameRoot) {
 
   EXPECT_CALL(obs, OnViewportIntersectionChanged(inner_root.get()));
   EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(inner_root.get()));
-  inner_root->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
+  inner_root->SetViewportIntersection(
+      ViewportIntersection::kRenderedOutOfViewport);
   testing::Mock::VerifyAndClear(&obs);
-  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+  EXPECT_EQ(ViewportIntersection::kRenderedOutOfViewport,
             inner_root->GetViewportIntersection());
 
   // Setting the same outer document again doesn't notify.
@@ -1191,13 +1210,13 @@ TEST_F(FrameNodeImplTest, SetOuterDocumentForInnerFrameRoot) {
   // A detached inner frame root is still not an outermost main frame.
   EXPECT_TRUE(inner_root->is_inner_frame_root());
   EXPECT_EQ(main_frame.get(), page->primary_main_frame_node());
-  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+  EXPECT_EQ(ViewportIntersection::kRenderedOutOfViewport,
             inner_root->GetViewportIntersection());
 
   // Viewport intersection updates are ignored (and not reported as bad
   // messages) while detached.
   inner_root->SetViewportIntersection(ViewportIntersection::kIntersecting);
-  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+  EXPECT_EQ(ViewportIntersection::kRenderedOutOfViewport,
             inner_root->GetViewportIntersection());
   testing::Mock::VerifyAndClear(&obs);
 
@@ -1209,7 +1228,7 @@ TEST_F(FrameNodeImplTest, SetOuterDocumentForInnerFrameRoot) {
 
   // The last known viewport intersection is kept until an update is received,
   // and updates are handled again now that the inner frame root is attached.
-  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+  EXPECT_EQ(ViewportIntersection::kRenderedOutOfViewport,
             inner_root->GetViewportIntersection());
   EXPECT_CALL(obs, OnViewportIntersectionChanged(inner_root.get()));
   EXPECT_CALL(obs, OnIsIntersectingLargeAreaChanged(inner_root.get()));
@@ -1257,7 +1276,8 @@ TEST_F(FrameNodeImplTest, DetachedInnerFrameRootKeepsIntersectingState) {
               inner_root->IsIntersectingLargeArea());
 
     // Viewport intersection updates are ignored while detached.
-    inner_root->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
+    inner_root->SetViewportIntersection(
+        ViewportIntersection::kRenderedOutOfViewport);
     testing::Mock::VerifyAndClear(&obs);
     EXPECT_EQ(ViewportIntersection::kIntersecting,
               inner_root->GetViewportIntersection());

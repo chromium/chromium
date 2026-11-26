@@ -28,8 +28,10 @@ std::string ViewportIntersectionToString(
   switch (viewport_intersection) {
     case ViewportIntersection::kUnknown:
       return "Unknown";
-    case ViewportIntersection::kNotIntersecting:
-      return "Not intersecting";
+    case ViewportIntersection::kNotRendered:
+      return "Not rendered";
+    case ViewportIntersection::kRenderedOutOfViewport:
+      return "Rendered out of viewport";
     case ViewportIntersection::kIntersecting:
       return "Intersecting";
   }

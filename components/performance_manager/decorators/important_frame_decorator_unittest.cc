@@ -65,9 +65,20 @@ TEST_F(ImportantFrameDecoratorTest, ViewportIntersection) {
   frame_node->SetIsIntersectingLargeArea(true);
   EXPECT_TRUE(frame_node->IsImportant());
 
-  // Does not intersect with the viewport. Not important, regardless of the
-  // value of `IsIntersectingLargeArea`.
-  frame_node->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
+  // Not rendered. Not important, regardless of the value of
+  // `IsIntersectingLargeArea`.
+  frame_node->SetViewportIntersection(ViewportIntersection::kNotRendered);
+
+  frame_node->SetIsIntersectingLargeArea(false);
+  EXPECT_FALSE(frame_node->IsImportant());
+
+  frame_node->SetIsIntersectingLargeArea(true);
+  EXPECT_FALSE(frame_node->IsImportant());
+
+  // Rendered outside the viewport. Not important, regardless of the value of
+  // `IsIntersectingLargeArea`.
+  frame_node->SetViewportIntersection(
+      ViewportIntersection::kRenderedOutOfViewport);
 
   frame_node->SetIsIntersectingLargeArea(false);
   EXPECT_FALSE(frame_node->IsImportant());

@@ -125,7 +125,6 @@ class FrameNodeImpl
   ViewportIntersection GetViewportIntersection() const override;
   Visibility GetVisibility() const override;
   bool IsIntersectingLargeArea() const override;
-  bool IsRendered() const override;
   bool IsImportant() const override;
   const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
   base::ByteSize GetResidentSetEstimate() const override;
@@ -164,7 +163,6 @@ class FrameNodeImpl
   void SetViewportIntersection(ViewportIntersection viewport_intersection);
   void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
-  void SetIsRendered(bool is_rendered);
   void SetIsIntersectingLargeArea(bool is_intersecting_large_area);
   void SetIsImportant(bool is_important);
   void SetResidentSetEstimate(base::ByteSize rss_estimate);
@@ -468,8 +466,8 @@ class FrameNodeImpl
 
   // Indicates the intersection between the frame and the viewport.
   //
-  // Note that calling `GetViewportIntersection()` will always returns
-  // ViewportIntersection::kIntersecting for the outermost main frame. This is
+  // Note that calling `GetViewportIntersection()` will always return
+  // `ViewportIntersection::kIntersecting` for the outermost main frame. This is
   // because it always occupies the entirety of the viewport, so there is no
   // point in tracking it.
   ObservedProperty::NotifiesOnlyOnChanges<
@@ -484,9 +482,6 @@ class FrameNodeImpl
       &FrameNodeObserver::OnFrameVisibilityChanged,
       TracedWrapper<Visibility>>
       visibility_;
-
-  // Indicates if this frame is rendered.
-  bool is_rendered_ = false;
 
   // Indicates if this frame intersects with a large area of the viewport.
   // Defaults to true when its value is unknown.

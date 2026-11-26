@@ -126,11 +126,17 @@ TEST_F(FrameVisibilityDecoratorTest, SetPageVisibleWithChildNodes) {
   intersecting_child_frame_node->SetViewportIntersection(
       ViewportIntersection::kIntersecting);
 
-  // Create a child frame node that doesn't intersect with the viewport.
-  auto non_intersecting_child_frame_node = CreateFrameNodeAutoId(
+  // Create a child frame node that is not rendered.
+  auto not_rendered_child_frame_node = CreateFrameNodeAutoId(
       process_node(), page_node.get(), main_frame_node.get());
-  non_intersecting_child_frame_node->SetViewportIntersection(
-      ViewportIntersection::kNotIntersecting);
+  not_rendered_child_frame_node->SetViewportIntersection(
+      ViewportIntersection::kNotRendered);
+
+  // Create a child frame node that is rendered outside the viewport.
+  auto out_of_viewport_child_frame_node = CreateFrameNodeAutoId(
+      process_node(), page_node.get(), main_frame_node.get());
+  out_of_viewport_child_frame_node->SetViewportIntersection(
+      ViewportIntersection::kRenderedOutOfViewport);
 
   // They all starts not visible because the page is not visible.
   EXPECT_EQ(unknown_intersection_child_frame_node->GetVisibility(),
@@ -139,7 +145,9 @@ TEST_F(FrameVisibilityDecoratorTest, SetPageVisibleWithChildNodes) {
             FrameNode::Visibility::kNotVisible);
   EXPECT_EQ(intersecting_child_frame_node->GetVisibility(),
             FrameNode::Visibility::kNotVisible);
-  EXPECT_EQ(non_intersecting_child_frame_node->GetVisibility(),
+  EXPECT_EQ(not_rendered_child_frame_node->GetVisibility(),
+            FrameNode::Visibility::kNotVisible);
+  EXPECT_EQ(out_of_viewport_child_frame_node->GetVisibility(),
             FrameNode::Visibility::kNotVisible);
 
   // Make the page visible.
@@ -151,8 +159,10 @@ TEST_F(FrameVisibilityDecoratorTest, SetPageVisibleWithChildNodes) {
   EXPECT_EQ(main_frame_node->GetVisibility(), FrameNode::Visibility::kVisible);
   EXPECT_EQ(intersecting_child_frame_node->GetVisibility(),
             FrameNode::Visibility::kVisible);
-  // The frame that doesn't intersect with the viewport is still not visible.
-  EXPECT_EQ(non_intersecting_child_frame_node->GetVisibility(),
+  // The frames that don't intersect with the viewport are still not visible.
+  EXPECT_EQ(not_rendered_child_frame_node->GetVisibility(),
+            FrameNode::Visibility::kNotVisible);
+  EXPECT_EQ(out_of_viewport_child_frame_node->GetVisibility(),
             FrameNode::Visibility::kNotVisible);
 
   // Make the page not visible again.
@@ -163,7 +173,9 @@ TEST_F(FrameVisibilityDecoratorTest, SetPageVisibleWithChildNodes) {
             FrameNode::Visibility::kNotVisible);
   EXPECT_EQ(intersecting_child_frame_node->GetVisibility(),
             FrameNode::Visibility::kNotVisible);
-  EXPECT_EQ(non_intersecting_child_frame_node->GetVisibility(),
+  EXPECT_EQ(not_rendered_child_frame_node->GetVisibility(),
+            FrameNode::Visibility::kNotVisible);
+  EXPECT_EQ(out_of_viewport_child_frame_node->GetVisibility(),
             FrameNode::Visibility::kNotVisible);
 }
 
@@ -269,7 +281,7 @@ TEST_P(FrameVisibilityDecoratorParentNotVisibleTest,
   auto main_frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
   auto frame_node = CreateFrameNodeAutoId(process_node(), page_node.get(),
                                           main_frame_node.get());
-  frame_node->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
+  frame_node->SetViewportIntersection(ViewportIntersection::kNotRendered);
   ASSERT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kNotVisible);
 
   // Child frames created under a frame that is not visible.
@@ -307,7 +319,7 @@ TEST_P(FrameVisibilityDecoratorParentNotVisibleTest,
             FrameNode::Visibility::kVisible);
 
   // The parent becomes not visible again.
-  frame_node->SetViewportIntersection(ViewportIntersection::kNotIntersecting);
+  frame_node->SetViewportIntersection(ViewportIntersection::kNotRendered);
   EXPECT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kNotVisible);
   EXPECT_EQ(
       unknown_child_frame_node->GetVisibility(),
