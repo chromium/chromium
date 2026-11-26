@@ -28,6 +28,7 @@ import org.chromium.android_webview.AwDownloadHandler;
 import org.chromium.android_webview.AwWebDownload;
 import org.chromium.android_webview.AwWebDownloadResult;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
+import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.ThreadUtils;
@@ -347,6 +348,76 @@ public class AwDownloadHandlerTest extends AwParameterizedTest {
             Assert.assertEquals(
                     AwWebDownloadResult.ERROR_NETWORK,
                     await(saveTo(download, Uri.fromFile(destination))));
+        }
+    }
+
+    private static List<Pair<String, String>> contentTypeHeaders(String mimeType) {
+        List<Pair<String, String>> headers = new ArrayList<>();
+        headers.add(Pair.create("Content-Type", mimeType));
+        return headers;
+    }
+
+    private static String serveInlinePdf(TestWebServer server) {
+        return server.setResponse("/inline.pdf", CONTENT, contentTypeHeaders("application/pdf"));
+    }
+
+    private static String servePage(TestWebServer server, String path, String html) {
+        return server.setResponse(path, html, contentTypeHeaders("text/html"));
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    public void testIsExplicitDownload() throws Exception {
+        try (TestWebServer server = TestWebServer.start()) {
+            AwWebDownload attachment = startDownload(serveAttachment(server, "file.txt"));
+            Assert.assertTrue(attachment.isExplicitDownload());
+            cancel(attachment);
+
+            AwWebDownload inlinePdf = startDownload(serveInlinePdf(server));
+            Assert.assertFalse(inlinePdf.isExplicitDownload());
+            cancel(inlinePdf);
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    public void testIsForMainFrame() throws Exception {
+        try (TestWebServer server = TestWebServer.start()) {
+            String pdfUrl = serveInlinePdf(server);
+            AwWebDownload mainFrame = startDownload(pdfUrl);
+            Assert.assertTrue(mainFrame.isForMainFrame());
+            cancel(mainFrame);
+
+            String pageUrl =
+                    servePage(server, "/iframe.html", "<iframe src='" + pdfUrl + "'></iframe>");
+            AwWebDownload iframe = startDownload(pageUrl);
+            Assert.assertFalse(iframe.isForMainFrame());
+            cancel(iframe);
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    public void testHasGesture() throws Exception {
+        try (TestWebServer server = TestWebServer.start()) {
+            String fileUrl = serveAttachment(server, "file.txt");
+            String pageUrl =
+                    servePage(server, "/link.html", "<a id='link' href='" + fileUrl + "'>link</a>");
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+            CompletableFuture<AwWebDownload> future = new CompletableFuture<>();
+            setHandler(future::complete);
+            JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
+            AwWebDownload tapped = future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            Assert.assertTrue(tapped.hasGesture());
+            cancel(tapped);
+
+            AwWebDownload loaded = startDownload(fileUrl);
+            Assert.assertFalse(loaded.hasGesture());
+            cancel(loaded);
         }
     }
 }

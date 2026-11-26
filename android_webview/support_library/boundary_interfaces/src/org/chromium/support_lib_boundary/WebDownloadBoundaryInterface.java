@@ -50,6 +50,12 @@ public interface WebDownloadBoundaryInterface {
 
     String getSuggestedFilename();
 
+    boolean isExplicitDownload();
+
+    boolean isForMainFrame();
+
+    boolean hasGesture();
+
     /** Calls exactly one of the callbacks, on {@code executor}. */
     void saveTo(
             Uri destination,

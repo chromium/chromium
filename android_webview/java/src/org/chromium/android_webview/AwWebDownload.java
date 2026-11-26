@@ -60,6 +60,9 @@ public final class AwWebDownload {
     private final String mMimeType;
     private final long mContentLength;
     private final String mSuggestedFilename;
+    private final boolean mIsExplicitDownload;
+    private final boolean mIsForMainFrame;
+    private final boolean mHasGesture;
 
     // Only accessed on the UI thread.
     private @Nullable JniUniquePtr<NativeAwWebDownload> mNativeAwWebDownload;
@@ -74,11 +77,17 @@ public final class AwWebDownload {
             String url,
             String mimeType,
             long contentLength,
-            String suggestedFilename) {
+            String suggestedFilename,
+            boolean isExplicitDownload,
+            boolean isForMainFrame,
+            boolean hasGesture) {
         mUrl = url;
         mMimeType = mimeType;
         mContentLength = contentLength;
         mSuggestedFilename = suggestedFilename;
+        mIsExplicitDownload = isExplicitDownload;
+        mIsForMainFrame = isForMainFrame;
+        mHasGesture = hasGesture;
         mNativeAwWebDownload = nativeAwWebDownload;
         mCleanupReference = new CleanupReference(this, (unused) -> nativeAwWebDownload.destroy());
     }
@@ -101,6 +110,18 @@ public final class AwWebDownload {
     /** Returns the filename WebView would suggest for the download. */
     public String getSuggestedFilename() {
         return mSuggestedFilename;
+    }
+
+    public boolean isExplicitDownload() {
+        return mIsExplicitDownload;
+    }
+
+    public boolean isForMainFrame() {
+        return mIsForMainFrame;
+    }
+
+    public boolean hasGesture() {
+        return mHasGesture;
     }
 
     /**

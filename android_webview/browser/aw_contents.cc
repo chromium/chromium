@@ -1781,7 +1781,10 @@ void AwContents::OnDownloadRequested(std::unique_ptr<AwWebDownload> download,
                                      const GURL& url,
                                      const std::string& mime_type,
                                      int64_t content_length,
-                                     const std::string& suggested_filename) {
+                                     const std::string& suggested_filename,
+                                     bool is_explicit_download,
+                                     bool is_for_main_frame,
+                                     bool has_gesture) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
@@ -1793,7 +1796,8 @@ void AwContents::OnDownloadRequested(std::unique_ptr<AwWebDownload> download,
   // cancels the download if the handler was cleared in the meantime.
   Java_AwContents_onDownloadRequested(
       env, obj, jni_zero::MakeUnique(std::move(download)), url.spec(),
-      mime_type, content_length, suggested_filename);
+      mime_type, content_length, suggested_filename, is_explicit_download,
+      is_for_main_frame, has_gesture);
 }
 
 void AwContents::TrimMemory(JNIEnv* env, int32_t level, bool visible) {

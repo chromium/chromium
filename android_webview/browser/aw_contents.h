@@ -363,7 +363,10 @@ class AwContents : public FindHelper::Listener,
                            const GURL& url,
                            const std::string& mime_type,
                            int64_t content_length,
-                           const std::string& suggested_filename);
+                           const std::string& suggested_filename,
+                           bool is_explicit_download,
+                           bool is_for_main_frame,
+                           bool has_gesture);
 
   void TrimMemory(JNIEnv* env, int32_t level, bool visible);
 

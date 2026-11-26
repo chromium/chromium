@@ -586,6 +586,9 @@ public class Features {
     // WebDownload.getMimeType
     // WebDownload.getContentLength
     // WebDownload.getSuggestedFilename
+    // WebDownload.isExplicitDownload
+    // WebDownload.isForMainFrame
+    // WebDownload.hasGesture
     // WebDownload.saveTo
     // WebDownload.cancel
     public static final String DOWNLOAD_HANDLER = "DOWNLOAD_HANDLER";

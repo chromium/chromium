@@ -4501,10 +4501,20 @@ public class AwContents implements SmartClipProvider {
             @JniType("std::string") String url,
             @JniType("std::string") String mimeType,
             long contentLength,
-            @JniType("std::string") String suggestedFilename) {
+            @JniType("std::string") String suggestedFilename,
+            boolean isExplicitDownload,
+            boolean isForMainFrame,
+            boolean hasGesture) {
         AwWebDownload download =
                 new AwWebDownload(
-                        nativeAwWebDownload, url, mimeType, contentLength, suggestedFilename);
+                        nativeAwWebDownload,
+                        url,
+                        mimeType,
+                        contentLength,
+                        suggestedFilename,
+                        isExplicitDownload,
+                        isForMainFrame,
+                        hasGesture);
         AwDownloadHandler handler = mDownloadHandler;
         if (handler == null) {
             download.cancel();

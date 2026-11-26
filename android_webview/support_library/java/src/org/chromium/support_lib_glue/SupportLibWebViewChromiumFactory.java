@@ -459,6 +459,9 @@ public class SupportLibWebViewChromiumFactory
         ApiCall.WEB_DOWNLOAD_GET_SUGGESTED_FILENAME,
         ApiCall.WEB_DOWNLOAD_SAVE_TO,
         ApiCall.WEB_DOWNLOAD_CANCEL,
+        ApiCall.WEB_DOWNLOAD_IS_EXPLICIT_DOWNLOAD,
+        ApiCall.WEB_DOWNLOAD_IS_FOR_MAIN_FRAME,
+        ApiCall.WEB_DOWNLOAD_HAS_GESTURE,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -725,9 +728,12 @@ public class SupportLibWebViewChromiumFactory
         int WEB_DOWNLOAD_GET_SUGGESTED_FILENAME = 254;
         int WEB_DOWNLOAD_SAVE_TO = 255;
         int WEB_DOWNLOAD_CANCEL = 256;
+        int WEB_DOWNLOAD_IS_EXPLICIT_DOWNLOAD = 257;
+        int WEB_DOWNLOAD_IS_FOR_MAIN_FRAME = 258;
+        int WEB_DOWNLOAD_HAS_GESTURE = 259;
 
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 257;
+        int COUNT = 260;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

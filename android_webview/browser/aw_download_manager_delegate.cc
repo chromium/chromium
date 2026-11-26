@@ -13,14 +13,39 @@
 #include "android_webview/browser/aw_web_download.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_source.h"
 #include "components/download/public/common/download_target_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
+#include "net/http/http_content_disposition.h"
 
 namespace android_webview {
+
+namespace {
+
+// The server asks for a download with Content-Disposition: attachment. The page
+// asks with the download attribute, which makes Blink download the URL instead
+// of navigating to it.
+bool IsExplicitDownload(const download::DownloadItem& item) {
+  return item.GetDownloadSource() != download::DownloadSource::NAVIGATION ||
+         net::HttpContentDisposition(item.GetContentDisposition(),
+                                     /*referrer_charset=*/std::string())
+             .is_attachment();
+}
+
+bool IsForMainFrame(const download::DownloadItem& item) {
+  // A download is attached to the frame that navigated to it, or to the frame
+  // whose page asked for it, e.g. with the download attribute.
+  content::RenderFrameHost* render_frame_host =
+      content::DownloadItemUtils::GetRenderFrameHost(&item);
+  return render_frame_host && render_frame_host->IsInPrimaryMainFrame();
+}
+
+}  // namespace
 
 AwDownloadManagerDelegate::AwDownloadManagerDelegate() = default;
 AwDownloadManagerDelegate::~AwDownloadManagerDelegate() = default;
@@ -95,9 +120,10 @@ bool AwDownloadManagerDelegate::DetermineDownloadTarget(
             item->GetURL(), item->GetContentDisposition(),
             /*referrer_charset=*/std::string(), item->GetSuggestedFilename(),
             item->GetMimeType(), "download"));
-    aw_contents->OnDownloadRequested(std::move(download), item->GetURL(),
-                                     item->GetMimeType(), content_length,
-                                     suggested_filename);
+    aw_contents->OnDownloadRequested(
+        std::move(download), item->GetURL(), item->GetMimeType(),
+        content_length, suggested_filename, IsExplicitDownload(*item),
+        IsForMainFrame(*item), item->HasUserGesture());
   }
   return true;
 }

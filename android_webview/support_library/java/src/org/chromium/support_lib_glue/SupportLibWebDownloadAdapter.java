@@ -66,6 +66,33 @@ class SupportLibWebDownloadAdapter implements WebDownloadBoundaryInterface {
     }
 
     @Override
+    public boolean isExplicitDownload() {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.WEB_DOWNLOAD_IS_EXPLICIT_DOWNLOAD")) {
+            recordApiCall(ApiCall.WEB_DOWNLOAD_IS_EXPLICIT_DOWNLOAD);
+            return mDownload.isExplicitDownload();
+        }
+    }
+
+    @Override
+    public boolean isForMainFrame() {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.WEB_DOWNLOAD_IS_FOR_MAIN_FRAME")) {
+            recordApiCall(ApiCall.WEB_DOWNLOAD_IS_FOR_MAIN_FRAME);
+            return mDownload.isForMainFrame();
+        }
+    }
+
+    @Override
+    public boolean hasGesture() {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.WEB_DOWNLOAD_HAS_GESTURE")) {
+            recordApiCall(ApiCall.WEB_DOWNLOAD_HAS_GESTURE);
+            return mDownload.hasGesture();
+        }
+    }
+
+    @Override
     public void saveTo(
             Uri destination,
             Executor executor,
