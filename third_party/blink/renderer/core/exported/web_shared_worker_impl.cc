@@ -100,7 +100,7 @@ String GetPermissionsPolicyHeader(
   std::optional<std::string> header =
       worker_main_script_load_params.response_head->headers
           ->GetNormalizedHeader(http_names::kPermissionsPolicy.Utf8());
-  return header ? String::FromUtf8(*header) : String();
+  return header ? String(*header) : String();
 }
 
 void ReportPermissionsPolicyMessagesOnWorkerThread(
