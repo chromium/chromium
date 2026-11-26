@@ -446,7 +446,8 @@ class CONTENT_EXPORT WebContentsAccessibilityBase
   // will signal that this change is affecting its underlying subtree.
   virtual void HandleContentChanged(int32_t unique_id,
                                     bool set_subtree_changed);
-  void HandleFocusChanged(int32_t unique_id, bool is_root_or_frame_root);
+  virtual void HandleFocusChanged(int32_t unique_id,
+                                  bool is_root_or_frame_root);
   void HandleCheckStateChanged(int32_t unique_id);
   void HandleClicked(int32_t unique_id);
   void HandleMenuOpened(int32_t unique_id);
@@ -484,7 +485,7 @@ class CONTENT_EXPORT WebContentsAccessibilityBase
   void UpdateMaxNodesInCache();
   void ClearNodeInfoCacheForGivenId(int32_t unique_id);
   void ValidateA11yCacheForExperiment();
-  void HandleEndOfTestSignal();
+  virtual void HandleEndOfTestSignal();
   std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
 
   base::WeakPtr<WebContentsAccessibilityBase> GetWeakPtr();

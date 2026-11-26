@@ -5,11 +5,13 @@
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/android/android_info.h"
 #include "base/check.h"
 #include "base/i18n/char_iterator.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
@@ -396,7 +398,9 @@ void BrowserAccessibilityManagerAndroid::FireSourceEvent(
       wcax->HandleClicked(android_node->GetUniqueId());
       break;
     case ax::mojom::Event::kEndOfTest:
-      wcax->HandleEndOfTestSignal();
+      // Defer the end-of-test sentinel to `FinalizeAccessibilityEvents()` so it
+      // fires after all deferred events (such as `DOCUMENT_SELECTION_CHANGED`).
+      pending_end_of_test_ = true;
       break;
     case ax::mojom::Event::kHover:
       HandleHoverEvent(node);
@@ -518,6 +522,16 @@ bool BrowserAccessibilityManagerAndroid::IsComboBoxWithActiveDescendantChange(
       !active_descendant->CanFireEvents()) {
     return false;
   }
+  if (active_descendant_changed_node_ids_.contains(node->GetId())) {
+    return true;
+  }
+  // Keep the `event_generator()` fallback for Pass 1 calls
+  // (`VALUE_IN_TEXT_FIELD_CHANGED`, and non-deferred root
+  // `DOCUMENT_SELECTION_CHANGED` when the kill-switch is disabled), which can
+  // run before `FireGeneratedEvent(ACTIVE_DESCENDANT_CHANGED)` populates
+  // `active_descendant_changed_node_ids_`. Deferred
+  // `DOCUMENT_SELECTION_CHANGED` runs in `FinalizeAccessibilityEvents()` after
+  // `event_generator().ClearEvents()` and relies on the set above.
   for (const auto& targeted_event : event_generator()) {
     if (targeted_event.node_id == node->GetId() &&
         targeted_event.event_params->event ==
@@ -571,6 +585,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
 
   switch (event_type) {
     case ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED: {
+      active_descendant_changed_node_ids_.insert(node->id());
       wcax->HandleActiveDescendantChanged(android_node->GetUniqueId());
       break;
     }
@@ -619,7 +634,11 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       break;
     }
     case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
-      FireDocumentSelectionChangedEvent(wcax);
+      if (features::IsAccessibilityDeferDocumentSelectionChangedEnabled()) {
+        pending_document_selection_changed_ = true;
+      } else {
+        FireDocumentSelectionChangedEvent(wcax);
+      }
       break;
     }
     case ui::AXEventGenerator::Event::EXPANDED: {
@@ -849,6 +868,38 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
     case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
       break;
+  }
+}
+
+void BrowserAccessibilityManagerAndroid::BeforeAccessibilityEvents() {
+  ui::BrowserAccessibilityManager::BeforeAccessibilityEvents();
+  pending_document_selection_changed_ = false;
+  pending_end_of_test_ = false;
+  active_descendant_changed_node_ids_.clear();
+}
+
+void BrowserAccessibilityManagerAndroid::FinalizeAccessibilityEvents() {
+  ui::BrowserAccessibilityManager::FinalizeAccessibilityEvents();
+
+  base::WeakPtr<ui::AXPlatformTreeManager> weak_this = GetWeakPtr();
+
+  if (std::exchange(pending_document_selection_changed_, false)) {
+    if (WebContentsAccessibilityBase* wcax =
+            GetWebContentsAXFromRootManager()) {
+      FireDocumentSelectionChangedEvent(wcax);
+      if (!weak_this) {
+        return;
+      }
+    }
+  }
+
+  active_descendant_changed_node_ids_.clear();
+
+  if (std::exchange(pending_end_of_test_, false)) {
+    if (WebContentsAccessibilityBase* wcax =
+            GetWebContentsAXFromRootManager()) {
+      wcax->HandleEndOfTestSignal();
+    }
   }
 }
 

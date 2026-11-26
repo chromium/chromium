@@ -283,6 +283,13 @@ bool IsAccessibilitySelectionOffsetTypesEnabled() {
       ::features::kAccessibilitySelectionOffsetTypes);
 }
 
+BASE_FEATURE(kAccessibilityDeferDocumentSelectionChanged,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+bool IsAccessibilityDeferDocumentSelectionChangedEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityDeferDocumentSelectionChanged);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool IsReadAloudNativeEnabled() {
