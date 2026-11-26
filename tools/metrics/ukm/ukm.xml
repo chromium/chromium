@@ -345,7 +345,6 @@ be describing additional metrics about the same event.
 
 <event name="Accessibility.ImageDescriptions">
   <owner>dtseng@chromium.org</owner>
-  <owner>nektar@chromium.org</owner>
   <summary>
     Tracks automatic image descriptions provided to blind users.
   </summary>
@@ -681,7 +680,6 @@ be describing additional metrics about the same event.
 
 <event name="Accessibility.Renderer">
   <owner>lucasradaelli@google.com</owner>
-  <owner>nektar@chromium.org</owner>
   <summary>
     Tracks the amount of time sending accessibility events from web renderers.
   </summary>
@@ -847,7 +845,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="AdFrameLoad">
-  <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
     Records metrics associated with a single ad frame for a page load. An ad
@@ -975,7 +972,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="AdPageLoad" singular="True">
-  <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
     Recorded when a page has loaded non-zero ad bytes, and the page is being
@@ -4319,7 +4315,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="BackForwardCacheDisallowActivationReason">
-  <owner>hajimehoshi@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
     Recorded at a history commit for each reason passed to
@@ -4450,7 +4445,6 @@ be describing additional metrics about the same event.
 
 <event name="Badging">
   <owner>phillis@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
   <summary>
     Metrics that measure the use of Badging API
   </summary>
@@ -4470,7 +4464,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.ContentManagementSystem.Versions" singular="True">
-  <owner>felixarntz@google.com</owner>
   <owner>nrosenthal@chromium.org</owner>
   <summary>
     Metrics stating the detected major+minor version of known content management
@@ -5441,7 +5434,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.JavaScriptFramework.Versions" singular="True">
-  <owner>houssein@chromium.org</owner>
   <owner>nrosenthal@chromium.org</owner>
   <summary>
     Metrics stating the detected major+minor version of known frameworks when
@@ -7845,7 +7837,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ContextMenuAndroid.Selected">
-  <owner>benwgold@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <metric name="Action" enum="ContextMenuOptionAndroid">
     <summary>
@@ -7857,7 +7848,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ContextMenuAndroid.Shown">
-  <owner>benwgold@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <metric name="SearchByImage" enum="Boolean">
     <summary>
@@ -9546,7 +9536,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="FileSystemObserver.Usage">
-  <owner>dslee@chromium.org</owner>
   <owner>memmott@chromium.org</owner>
   <summary>
     Quota usage of FileSystemObserver OS resource, collected when usage changes.
@@ -10249,7 +10238,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="GroupSuggestionPromo.Suggestion">
-  <owner>yuezhanggg@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
     Collects information about member tabs that are in a tab group suggestion.
@@ -10357,7 +10345,6 @@ be describing additional metrics about the same event.
 
 <event name="HistoryNavigation" singular="True">
   <owner>arthursonzogni@chromium.org</owner>
-  <owner>hajimehoshi@chromium.org</owner>
   <summary>
     Metrics recorded each time we commit a history navigation, which are needed
     to estimate benefits of back-forward cache. Except as otherwise noted, the
@@ -11021,7 +11008,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="InstalledRelatedApps">
-  <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Recorded before resolving a call to navigator.getInstalledRelatedApps().
@@ -11098,7 +11084,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="IOS.FullscreenActions">
-  <owner>ajuma@chromium.org</owner>
   <owner>alionadangla@chromium.org</owner>
   <summary>
     Logged when a user exited the fullscreen mode when browsing a web page in
@@ -17804,7 +17789,6 @@ be describing additional metrics about the same event.
 
 <event name="PageLoad.FromGoogleSearch" singular="True">
   <owner>sullivan@chromium.org</owner>
-  <owner>mushan@chromium.org</owner>
   <summary>
     Recorded for page loads that were navigated to via Google Search.
   </summary>
@@ -17849,7 +17833,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PageLoad.ServiceWorkerControlled" singular="True">
-  <owner>wanderview@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
   <summary>
     Recorded for page loads controlled by a service worker.
@@ -20637,7 +20620,6 @@ be describing additional metrics about the same event.
 
 <event name="RenderViewContextMenu.Used">
   <owner>juanmojica@google.com</owner>
-  <owner>benwgold@google.com</owner>
   <summary>
     Metric recorded when a context menu item is selected. This is currently only
     recorded for Lens context menu items.
@@ -22139,7 +22121,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Shopping.MerchantTrust.DataAvailable">
-  <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <summary>
     Recorded when user finishes a navigation while the merchant trust data is
@@ -22160,7 +22141,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Shopping.MerchantTrust.MessageClicked">
-  <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <summary>
     Recorded when a merchant trust message is clicked by the user.
@@ -22180,7 +22160,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Shopping.MerchantTrust.MessageSeen">
-  <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <summary>
     Recorded when a merchant trust message is displayed to the user.
@@ -22200,7 +22179,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Shopping.MerchantTrust.RowClicked">
-  <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <summary>
     Recorded when a store info row in trusted surface is clicked by the user.
@@ -22221,7 +22199,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Shopping.MerchantTrust.RowSeen">
-  <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <summary>
     Recorded when a store info row in trusted surface is displayed to the user.
@@ -22263,7 +22240,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Shopping.PDPStateWithLocalInfo">
-  <owner>yuezhanggg@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
     Records if and how a page has been determined to be a product details page.
@@ -22280,7 +22256,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Shopping.ShoppingAction">
-  <owner>yuezhanggg@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
     Recorded when an user takes action on shopping features in Chrome in the
@@ -22312,7 +22287,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Shopping.ShoppingInformation">
-  <owner>yuezhanggg@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
     Recorded when an user navigates to a shopping-related page and reports
@@ -23186,7 +23160,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SubresourceRedirect.PublicSrcVideoCompression">
-  <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
     Records coverage information for src videos. Recorded once for every src
@@ -23454,7 +23427,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="TouchToFill.SubmissionReadiness">
-  <owner>kolos@chromium.org</owner>
   <owner>friedrichh@chromium.org</owner>
   <summary>
     Recorded when the Touch To Fill sheet is shown to the user.
@@ -23470,7 +23442,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="TouchToFill.TimeToSuccessfulLogin">
-  <owner>kolos@chromium.org</owner>
   <owner>friedrichh@chromium.org</owner>
   <summary>
     Recorded when a successful login is detected after filling by the Touch To
@@ -25712,7 +25683,6 @@ be describing additional metrics about the same event.
 
 <event name="VideoConferencingEvent" singular="True">
   <owner>sanjeetnd@google.com</owner>
-  <owner>charleszhao@google.com</owner>
   <summary>
     Records videoconferencing usage on web apps. Only records for apps which
     have captured camera, microphone, or screen at least once while open.
