@@ -15,7 +15,7 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -496,33 +496,35 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
  protected:
   // Verify the country names are displayed correctly. Regression test for
   // potential country code changes.
-  const base::flat_map<std::string, std::string> kCountryCodeToNameMap = {
-      {"US", "United States"},
-      {"AT", "Austria"},
-      {"AU", "Australia"},
-      {"BE", "Belgium"},
-      {"BR", "Brazil"},
-      {"CA", "Canada"},
-      {"DE", "Germany"},
-      {"DK", "Denmark"},
-      {"ES", "Spain"},
-      {"FI", "Finland"},
-      {"FR", "France"},
-      {"GB", "United Kingdom"},
-      {"IE", "Ireland"},
-      {"IN", "India"},
-      {"IT", "Italy"},
-      {"JP", "Japan"},
-      {"LU", "Luxembourg"},
-      {"MX", "Mexico"},
-      {"N/A", "Please select a country"},
-      {"NL", "Netherlands"},
-      {"NO", "Norway"},
-      {"NZ", "New Zealand"},
-      {"PL", "Poland"},
-      {"PT", "Portugal"},
-      {"SE", "Sweden"},
-      {"ZA", "South Africa"}};
+  static constexpr auto kCountryCodeToNameMap =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>({
+          {"US", "United States"},
+          {"AT", "Austria"},
+          {"AU", "Australia"},
+          {"BE", "Belgium"},
+          {"BR", "Brazil"},
+          {"CA", "Canada"},
+          {"DE", "Germany"},
+          {"DK", "Denmark"},
+          {"ES", "Spain"},
+          {"FI", "Finland"},
+          {"FR", "France"},
+          {"GB", "United Kingdom"},
+          {"IE", "Ireland"},
+          {"IN", "India"},
+          {"IT", "Italy"},
+          {"JP", "Japan"},
+          {"LU", "Luxembourg"},
+          {"MX", "Mexico"},
+          {"N/A", "Please select a country"},
+          {"NL", "Netherlands"},
+          {"NO", "Norway"},
+          {"NZ", "New Zealand"},
+          {"PL", "Poland"},
+          {"PT", "Portugal"},
+          {"SE", "Sweden"},
+          {"ZA", "South Africa"},
+      });
 
   system::ScopedFakeStatisticsProvider statistics_provider_;
 
@@ -681,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   UseOnlineModeOnNetworkScreen();
 
-  for (const std::string country_code : demo_mode::kSupportedCountries) {
+  for (const std::string_view country_code : demo_mode::kSupportedCountries) {
     const auto it = kCountryCodeToNameMap.find(country_code);
     ASSERT_NE(kCountryCodeToNameMap.end(), it);
     const std::string query =
