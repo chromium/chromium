@@ -109,6 +109,32 @@ if (use_v8_context_snapshot) {
         "//v8:external_startup_data",
         ":disable_icf",
       ]
+
+      # This binary only runs at build time to generate the snapshot; skip
+      # debug info emission (including split DWARF .dwo files) and slow
+      # shipping linker optimizations.
+      if (!is_win && !is_apple) {
+        configs -= [ "//build/config/compiler:default_symbols" ]
+        configs += [
+          "//build/config/compiler:no_symbols",
+          "//build/config/compiler:strip_debug",
+        ]
+        if (use_lld || linker_path != "") {
+          ldflags = [
+            "-Wl,-O0",
+            "-Wl,--build-id=none",
+          ]
+        }
+      } else if (is_apple) {
+        configs -= [ "//build/config/apple:strip_all" ]
+        configs += [ "//build/config/apple:no_dsym" ]
+        if (use_lld) {
+          ldflags = [
+            "-Wl,--no-deduplicate-strings",
+            "-Wl,-no-deduplicate-symbol-strings",
+          ]
+        }
+      }
     }
   }
 

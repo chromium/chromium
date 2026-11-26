@@ -186,5 +186,99 @@ class LinkerDriverTocTest(unittest.TestCase):
                 os.chdir(orig_cwd)
 
 
+class LinkerDriverNoDsymTest(unittest.TestCase):
+    def test_nodsym_skips_object_path_lto_and_writes_dsym_stubs(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_bin = os.path.join(tmpdir, 'gen_tool')
+            stale_file = os.path.join(
+                tmpdir, 'gen_tool.dSYM', 'Contents', 'stale.txt'
+            )
+            os.makedirs(os.path.dirname(stale_file), exist_ok=True)
+            with open(stale_file, 'wb') as f:
+                f.write(b'stale')
+
+            driver = linker_driver.LinkerDriver(
+                [
+                    'linker_driver.py',
+                    '-Wcrl,driver,clang++',
+                    '-Wcrl,object_path_lto',
+                    f'-Wcrl,dsym,{tmpdir}',
+                    '-Wcrl,dsymutilpath,/nonexistent/dsymutil',
+                    '-Wcrl,nodsym,aarch64',
+                    'main.o',
+                    '-o',
+                    out_bin,
+                ]
+            )
+            with mock.patch('subprocess.check_call') as mock_check_call:
+                driver.run()
+
+            self.assertEqual(mock_check_call.call_count, 1)
+            link_cmd = mock_check_call.call_args[0][0]
+            self.assertEqual(link_cmd, ['clang++', 'main.o', '-o', out_bin])
+            self.assertIsNone(driver._object_path_lto)
+
+            dsym_dir = os.path.join(tmpdir, 'gen_tool.dSYM')
+            self.assertFalse(os.path.exists(stale_file))
+            self.assertTrue(
+                os.path.isfile(os.path.join(dsym_dir, 'Contents', 'Info.plist'))
+            )
+            self.assertTrue(
+                os.path.isfile(
+                    os.path.join(
+                        dsym_dir, 'Contents', 'Resources', 'DWARF', 'gen_tool'
+                    )
+                )
+            )
+            self.assertTrue(
+                os.path.isfile(
+                    os.path.join(
+                        dsym_dir,
+                        'Contents',
+                        'Resources',
+                        'Relocations',
+                        'aarch64',
+                        'gen_tool.yml',
+                    )
+                )
+            )
+
+    def test_nodsym_without_dsym_flag_creates_no_dsym_dir(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_bin = os.path.join(tmpdir, 'gen_tool')
+            driver = linker_driver.LinkerDriver(
+                [
+                    'linker_driver.py',
+                    '-Wcrl,driver,clang++',
+                    '-Wcrl,nodsym,x86_64',
+                    'main.o',
+                    '-o',
+                    out_bin,
+                ]
+            )
+            with mock.patch('subprocess.check_call') as mock_check_call:
+                driver.run()
+
+            self.assertEqual(mock_check_call.call_count, 1)
+            self.assertFalse(
+                os.path.exists(os.path.join(tmpdir, 'gen_tool.dSYM'))
+            )
+
+    def test_nodsym_requires_arch(self):
+        driver = linker_driver.LinkerDriver(
+            [
+                'linker_driver.py',
+                '-Wcrl,driver,clang++',
+                '-Wcrl,nodsym,',
+                'main.o',
+                '-o',
+                'gen_tool',
+            ]
+        )
+        with mock.patch('subprocess.check_call'):
+            with self.assertRaises(ValueError):
+                driver.run()
+
+
 if __name__ == '__main__':
     unittest.main()

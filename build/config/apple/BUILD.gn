@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/arch.gni")
 import("//build/config/apple/symbols.gni")
 
 # The ldflags referenced below are handled by
@@ -13,5 +14,17 @@ import("//build/config/apple/symbols.gni")
 config("strip_all") {
   if (enable_stripping) {
     ldflags = [ "-Wcrl,strip,-x,-S" ]
+  }
+}
+
+# Skip dSYM generation and intermediate LTO object emission for build-time
+# executables that never need symbolication, writing empty stub files at the
+# toolchain's declared .dSYM output paths instead.
+config("no_dsym") {
+  if (enable_dsyms) {
+    _archs_mapping_os = archs_mapping[current_os]
+    _archs_mapping_os_cpu = _archs_mapping_os[current_cpu]
+    _dsym_arch = _archs_mapping_os_cpu.dsym_arch
+    ldflags = [ "-Wcrl,nodsym,${_dsym_arch}" ]
   }
 }

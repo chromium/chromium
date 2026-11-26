@@ -60,6 +60,11 @@ LINKER_DRIVER_COMPILER_ARG_PREFIX = '-Wcrl,driver,'
 #    Sets the path to the dsymutil to run with -Wcrl,dsym, in which case
 #    `xcrun` is not used to invoke it.
 #
+# -Wcrl,nodsym,<dsym_arch>
+#    Skips -Wcrl,object_path_lto temporary LTO object emission and skips
+#    invoking `dsymutil` for -Wcrl,dsym, writing empty stub files at the
+#    declared .dSYM output paths for |dsym_arch| instead.
+#
 # -Wcrl,unstripped,<unstripped_path_prefix>
 #    After invoking the linker, and before strip, this will save a copy of
 #    the unstripped linker output in the directory unstripped_path_prefix.
@@ -99,6 +104,7 @@ class LinkerDriver(object):
         # The first item in the tuple is the argument's -Wcrl,<sub_argument>
         # and the second is the function to invoke.
         self._pre_actions = [
+            ('nodsym,', self.set_no_dsym),
             ('object_path_lto', self.prepare_object_path_lto),
             ('installnametoolpath,', self.set_install_name_tool_path),
             ('dsymutilpath,', self.set_dsymutil_path),
@@ -132,6 +138,9 @@ class LinkerDriver(object):
 
         # temp directory for lto cache.
         self._object_path_lto = None
+
+        # dSYM architecture when -Wcrl,nodsym,<arch> opts out of dsymutil.
+        self._no_dsym_arch = None
 
     def run(self):
         """Runs the linker driver, separating out the main compiler driver's
@@ -269,11 +278,23 @@ class LinkerDriver(object):
         if not found:
             raise ValueError('Unknown linker driver argument: %s' % (arg,))
 
+    def set_no_dsym(self, dsym_arch):
+        """Linker driver pre-action for -Wcrl,nodsym,<dsym_arch>.
+
+        Skips intermediate LTO object preservation and dsymutil execution,
+        writing empty stub files at the declared .dSYM output paths instead.
+        """
+        if not len(dsym_arch):
+            raise ValueError('Unspecified dSYM arch for -Wcrl,nodsym')
+        self._no_dsym_arch = dsym_arch
+
     def prepare_object_path_lto(self, arg):
         """Linker driver pre-action for -Wcrl,object_path_lto.
 
         Prepare object_path_lto path in temp directory.
         """
+        if self._no_dsym_arch is not None:
+            return
         # TODO(lgrey): Remove if/when we start running `dsymutil`
         # through the clang driver. See https://crbug.com/1324104
         # The temporary directory for intermediate LTO object files. If it
@@ -336,6 +357,25 @@ class LinkerDriver(object):
 
         # Remove old dSYMs before invoking dsymutil.
         _remove_path(dsym_out)
+
+        if self._no_dsym_arch is not None:
+            stub_outputs = [
+                os.path.join(dsym_out, 'Contents', 'Info.plist'),
+                os.path.join(dsym_out, 'Contents', 'Resources', 'DWARF', base),
+                os.path.join(
+                    dsym_out,
+                    'Contents',
+                    'Resources',
+                    'Relocations',
+                    self._no_dsym_arch,
+                    base + '.yml',
+                ),
+            ]
+            for stub_path in stub_outputs:
+                os.makedirs(os.path.dirname(stub_path), exist_ok=True)
+                with open(stub_path, 'wb'):
+                    pass
+            return [dsym_out]
 
         tools_paths = _find_tools_paths(self._args)
         if os.environ.get('PATH'):
