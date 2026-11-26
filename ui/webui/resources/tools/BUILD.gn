@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//testing/test.gni")
-import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
-import("//v8/gni/v8.gni")
 
 script_test("webui_resources_tools_python_unittests") {
   script = "//testing/scripts/run_isolated_script_test.py"
@@ -33,16 +31,7 @@ script_test("webui_resources_tools_python_unittests") {
   ]
   data_deps = [
     "//third_party/lit/v3_0:build_ts",
-    "//tools/v8_context_snapshot:v8_context_snapshot_generator",
+    "//tools/code_cache_generator",
     "//ui/webui/resources/tools/eslint:build_ts",
   ]
-  if (v8_use_external_startup_data) {
-    if (use_v8_context_snapshot) {
-      data_deps += [ "//tools/v8_context_snapshot" ]
-    }
-    if (!use_v8_context_snapshot || include_both_v8_snapshots) {
-      data_deps += [ "//v8:run_mksnapshot_default" ]
-      data += [ "$root_out_dir/snapshot_blob.bin" ]
-    }
-  }
 }

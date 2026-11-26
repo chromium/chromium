@@ -21,8 +21,7 @@ class WebString;
 // given JS module for distribution in Chromium's resource bundle.
 // Generated code cache assumes UTF-8 script encoding, which is true of Chromium
 // bundled JS scripts.
-// This API should be used only by tools/v8_context_snapshot
-// (v8_context_snapshot_generator --generate_code_cache), which runs during
+// This API should be used only by tools/code_cache_generator, which runs during
 // Chromium's build step.
 class BLINK_EXPORT WebBundledCodeCacheGenerator {
  public:

@@ -54,7 +54,6 @@ def main(argv):
   subprocess.run(
     [
       util_path,
-      '--generate_code_cache',
       f'--in_folder={in_folder}',
       '--in_files=' + ','.join(args.in_files),
       f'--out_folder={out_folder}',

@@ -18,11 +18,11 @@ template("generate_code_cache") {
                              "out_manifest",
                            ])
 
-    # The generator runs on the build host. Reuse v8_context_snapshot_generator
-    # in the V8 snapshot toolchain to avoid linking Blink and V8 twice.
-    _generator_target = "//tools/v8_context_snapshot:v8_context_snapshot_generator($v8_snapshot_toolchain)"
+    # The generator runs on the build host. When cross-compiling, it is built
+    # in the V8 snapshot toolchain, like v8_context_snapshot_generator.
+    _generator_target = "//tools/code_cache_generator($v8_snapshot_toolchain)"
     _generator_path = get_label_info(_generator_target, "root_out_dir") +
-                      "/v8_context_snapshot_generator"
+                      "/code_cache_generator"
     deps = [ _generator_target ]
 
     # Without external startup data the snapshot is built into the generator,
