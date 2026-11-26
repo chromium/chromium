@@ -57,7 +57,7 @@ Making a pref syncable requires a few things:
   decouples the pref from sync user toggles. Carefully consider/discuss if this
   is desired. Note that this is only available for priority prefs.
 * In any other cases that are unclear or questionable, reach out to
-  chrome-privacy-core@google.com, or to rainhard@ directly.
+  chrome-privacy-core@google.com.
 
 ## Deprecating syncable preferences
 
