@@ -33,7 +33,8 @@ class TrustedVaultService : public KeyedService {
   std::unique_ptr<TrustedVaultClient> chrome_sync_security_domain_client_;
   // May be null on platforms or configurations where the passkeys security
   // domain is not managed through TrustedVaultService (e.g. iOS, or desktop
-  // when `device::kWebAuthnLocalGpmPasskeys` is disabled).
+  // when `device::kWebAuthnLocalGpmPasskeys` or
+  // `kTrustedVaultSharedRecoveryFactorsAndEncryption` is disabled).
   std::unique_ptr<TrustedVaultClient> passkeys_security_domain_client_;
 };
 

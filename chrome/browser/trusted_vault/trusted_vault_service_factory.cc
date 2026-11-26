@@ -79,7 +79,10 @@ std::unique_ptr<trusted_vault::TrustedVaultService> CreateTrustedVaultService(
           trusted_vault::SecurityDomainId::kChromeSync, frontend);
 
   auto passkeys_client =
-      base::FeatureList::IsEnabled(device::kWebAuthnLocalGpmPasskeys)
+      base::FeatureList::IsEnabled(device::kWebAuthnLocalGpmPasskeys) &&
+              base::FeatureList::IsEnabled(
+                  trusted_vault::
+                      kTrustedVaultSharedRecoveryFactorsAndEncryption)
           ? std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
                 trusted_vault::SecurityDomainId::kPasskeys, frontend)
           : nullptr;
