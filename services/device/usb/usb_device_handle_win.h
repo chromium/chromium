@@ -5,17 +5,21 @@
 #ifndef SERVICES_DEVICE_USB_USB_DEVICE_HANDLE_WIN_H_
 #define SERVICES_DEVICE_USB_USB_DEVICE_HANDLE_WIN_H_
 
+#include <cstdint>
 #include <list>
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/windows_types.h"
 #include "services/device/usb/scoped_winusb_handle.h"
 #include "services/device/usb/usb_device_handle.h"
 
@@ -105,6 +109,53 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
                       const std::wstring& function_path);
 
  private:
+  friend class MockWinUsbDelegate;
+  friend class UsbDeviceHandleWinTest;
+
+  // Abstracts WinUSB and related Win32 handle calls.
+  class WinUsbDelegate {
+   public:
+    WinUsbDelegate();
+
+    WinUsbDelegate(const WinUsbDelegate&) = delete;
+    WinUsbDelegate& operator=(const WinUsbDelegate&) = delete;
+
+    virtual ~WinUsbDelegate();
+
+    virtual base::win::ScopedHandle OpenFunctionHandle(
+        const std::wstring& path) = 0;
+    virtual BOOL Initialize(HANDLE device_handle,
+                            WINUSB_INTERFACE_HANDLE* interface_handle) = 0;
+    virtual void Free(WINUSB_INTERFACE_HANDLE interface_handle) = 0;
+    virtual BOOL CancelIo(HANDLE function_handle) = 0;
+    // `last_error` must be non-null and is overwritten with `GetLastError()`.
+    virtual BOOL ReadPipe(WINUSB_INTERFACE_HANDLE interface_handle,
+                          uint8_t endpoint_address,
+                          base::span<uint8_t> buffer,
+                          OVERLAPPED* overlapped,
+                          DWORD* last_error) = 0;
+    virtual BOOL WritePipe(WINUSB_INTERFACE_HANDLE interface_handle,
+                           uint8_t endpoint_address,
+                           base::span<uint8_t> buffer,
+                           OVERLAPPED* overlapped,
+                           DWORD* last_error) = 0;
+    virtual BOOL ControlTransfer(WINUSB_INTERFACE_HANDLE interface_handle,
+                                 uint8_t request_type,
+                                 uint8_t request,
+                                 uint16_t value,
+                                 uint16_t index,
+                                 base::span<uint8_t> buffer,
+                                 OVERLAPPED* overlapped,
+                                 DWORD* last_error) = 0;
+    // `bytes_transferred` and `last_error` must be non-null and are
+    // overwritten with the transferred byte count and `GetLastError()`.
+    virtual BOOL GetOverlappedResult(WINUSB_INTERFACE_HANDLE interface_handle,
+                                     OVERLAPPED* overlapped,
+                                     DWORD* bytes_transferred,
+                                     DWORD* last_error) = 0;
+  };
+
+  class DefaultWinUsbDelegate;
   struct Interface;
 
   using OpenInterfaceCallback = base::OnceCallback<void(Interface*)>;
@@ -206,15 +257,22 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
       scoped_refptr<base::RefCountedBytes> original_buffer,
       std::pair<DWORD, DWORD> result_and_bytes_transferred);
   void TransferComplete(TransferCallback callback,
-                        scoped_refptr<base::RefCountedBytes> buffer,
                         Request* request_ptr,
                         DWORD win32_result,
+                        scoped_refptr<base::RefCountedBytes> buffer,
                         size_t bytes_transferred);
   void ReportIsochronousError(const std::vector<uint32_t>& packet_lengths,
                               IsochronousTransferCallback callback,
                               mojom::UsbTransferStatus status);
   bool AllFunctionsEnumerated() const;
   void ReleaseInterfaceReference(Interface* interface);
+  static void CloseWinUsbHandle(ScopedWinUsbHandle* handle);
+  static WinUsbDelegate& GetWinUsbDelegate();
+  // Overrides the WinUSB delegate for testing. `delegate` is retained and must
+  // outlive any handle operations, or be cleared by passing `nullptr`.
+  static void SetWinUsbDelegateForTesting(WinUsbDelegate* delegate);
+
+  static WinUsbDelegate* winusb_delegate_for_testing_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
