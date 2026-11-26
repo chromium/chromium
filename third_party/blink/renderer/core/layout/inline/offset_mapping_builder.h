@@ -70,7 +70,7 @@ class CORE_EXPORT OffsetMappingBuilder {
    private:
     OffsetMappingBuilder* const builder_ = nullptr;
     HeapAutoReset<const LayoutObject> layout_object_auto_reset_;
-    base::AutoReset<unsigned> appended_length_auto_reset_;
+    base::AutoReset<DomOffset> appended_length_auto_reset_;
   };
 
   OffsetMappingBuilder();
@@ -81,11 +81,11 @@ class CORE_EXPORT OffsetMappingBuilder {
   }
   OffsetMappingBuilder& operator=(const OffsetMappingBuilder&) = delete;
 
-  void ReserveCapacity(unsigned capacity);
+  void ReserveCapacity(wtf_size_t capacity);
 
   // Append an identity offset mapping of the specified length with null
   // annotation to the builder.
-  void AppendIdentityMapping(unsigned length);
+  void AppendIdentityMapping(wtf_size_t length);
 
   // Cancel the last AppendIdentityMapping(1) call.
   // This works only for kOpenRubyColumn.
@@ -93,18 +93,19 @@ class CORE_EXPORT OffsetMappingBuilder {
 
   // Append a collapsed offset mapping from the specified length with null
   // annotation to the builder.
-  void AppendCollapsedMapping(unsigned length);
+  void AppendCollapsedMapping(DomOffset length);
 
   // Append a variable offset mapping from the specified `dom_length` to the
   // specified `text_content_length`.
   // Either of `dom_length` or `text_content_length` should be 1.
-  void AppendVariableMapping(unsigned dom_length, unsigned text_content_length);
+  void AppendVariableMapping(DomOffset dom_length,
+                             IfcOffset text_content_length);
 
   // TODO(xiaochengh): Add the following API when we start to fix offset mapping
   // for text-transform.
   // Append an expanded offset mapping to the specified length with null
   // annotation to the builder.
-  // void AppendExpandedMapping(unsigned length);
+  // void AppendExpandedMapping(wtf_size_t length);
 
   // This function should only be called by InlineItemsBuilder during
   // whitespace collapsing, and in the case that the target string of the
@@ -113,7 +114,7 @@ class CORE_EXPORT OffsetMappingBuilder {
   // (ii) character at |space_offset| in destination string is a collapsible
   //      whitespace,
   // This function changes the space into collapsed.
-  void CollapseTrailingSpace(unsigned space_offset);
+  void CollapseTrailingSpace(IfcOffset space_offset);
 
   // Concatenate the offset mapping held by another builder to this builder.
   // TODO(xiaochengh): Implement when adding support for 'text-transform'
@@ -126,7 +127,7 @@ class CORE_EXPORT OffsetMappingBuilder {
   // Restore a trailing collapsible space at |offset| of text content. The space
   // is associated with |layout_text|.
   void RestoreTrailingCollapsibleSpace(const LayoutText& layout_text,
-                                       unsigned offset);
+                                       IfcOffset offset);
 
   // Set the destination string of the offset mapping.
   // Returns false if the specified string is inconsistent with
@@ -139,14 +140,14 @@ class CORE_EXPORT OffsetMappingBuilder {
 
  private:
   const LayoutObject* current_layout_object_ = nullptr;
-  unsigned current_offset_ = 0;
+  DomOffset current_offset_ = 0;
   bool has_open_unit_ = false;
 #if DCHECK_IS_ON()
   bool has_nonnull_node_scope_ = false;
 #endif
 
   // Length of the current destination string.
-  unsigned destination_length_ = 0;
+  IfcOffset destination_length_ = 0;
 
   // Mapping units of the current mapping function.
   HeapVector<OffsetMappingUnit> mapping_units_;

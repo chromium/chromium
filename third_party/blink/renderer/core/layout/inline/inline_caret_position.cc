@@ -314,7 +314,7 @@ InlineCaretPosition ComputeInlineCaretPositionAfterInline(
   }
 
   if (cursor.Current().IsText()) {
-    const unsigned offset =
+    const wtf_size_t offset =
         line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
             ? cursor.Current()->EndOffset()
             : cursor.Current()->StartOffset();
@@ -357,7 +357,7 @@ InlineCaretPosition ComputeInlineCaretPositionBeforeInline(
   }
 
   if (cursor.Current().IsText()) {
-    const unsigned offset =
+    const wtf_size_t offset =
         line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
             ? cursor.Current()->StartOffset()
             : cursor.Current()->EndOffset();

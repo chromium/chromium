@@ -455,7 +455,7 @@ class CORE_EXPORT FragmentItem final {
   // Layout-generated text has two offsets; one for its own generated string,
   // and the other for the container. |TextOffset| returns the former, while
   // this function returns the latter.
-  unsigned StartOffsetInContainer(const InlineCursor& container) const;
+  wtf_size_t StartOffsetInContainer(const InlineCursor& container) const;
 
   StringView Text(const FragmentItems& items) const;
   StringView GeneratedText() const {
@@ -467,7 +467,7 @@ class CORE_EXPORT FragmentItem final {
   // Compute the inline position from text offset, in logical coordinate
   // relative to this fragment suitable for |LocalCaretRect|.
   LayoutUnit CaretInlinePositionForOffset(StringView text,
-                                          unsigned offset) const;
+                                          wtf_size_t offset) const;
 
   // Compute line-relative coordinates for given offsets, this is not
   // flow-relative:
@@ -475,15 +475,15 @@ class CORE_EXPORT FragmentItem final {
   // https://drafts.csswg.org/css-writing-modes-3/#line-directions
   std::pair<LayoutUnit, LayoutUnit> LineLeftAndRightForOffsets(
       StringView text,
-      unsigned start_offset,
-      unsigned end_offset) const;
+      wtf_size_t start_offset,
+      wtf_size_t end_offset) const;
 
   // The layout box of text in (start, end) range in local coordinate.
   // Start and end offsets must be between StartOffset() and EndOffset().
   // This returns a scaled PhysicalRect for kSVGText type.
   PhysicalRect LocalRect(StringView text,
-                         unsigned start_offset,
-                         unsigned end_offset) const;
+                         wtf_size_t start_offset,
+                         wtf_size_t end_offset) const;
 
   // The base direction of line. Also known as the paragraph direction. This may
   // be different from the direction of the container box when first-line style
@@ -505,10 +505,10 @@ class CORE_EXPORT FragmentItem final {
   // in DOM tree.
   PositionWithAffinity PositionForPointInText(const PhysicalOffset& point,
                                               const InlineCursor& cursor) const;
-  PositionWithAffinity PositionForPointInText(unsigned text_offset,
+  PositionWithAffinity PositionForPointInText(wtf_size_t text_offset,
                                               const InlineCursor& cursor) const;
-  unsigned TextOffsetForPoint(const PhysicalOffset& point,
-                              const FragmentItems& items) const;
+  wtf_size_t TextOffsetForPoint(const PhysicalOffset& point,
+                                const FragmentItems& items) const;
 
   // True if this item is associated with over/under ruby annotations.
   // These functions are valid only if IsText() is true.

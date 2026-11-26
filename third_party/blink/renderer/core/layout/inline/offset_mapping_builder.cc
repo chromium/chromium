@@ -19,7 +19,7 @@ namespace {
 // ::first-letter, in which case it returns the start offset of the remaining
 // text. When ::first-letter is applied to generated content, e.g. ::before,
 // remaining part contains text for remaining part only instead of all text.
-unsigned GetAssociatedStartOffset(const LayoutObject* layout_object) {
+DomOffset GetAssociatedStartOffset(const LayoutObject* layout_object) {
   const auto* text_fragment = DynamicTo<LayoutTextFragment>(layout_object);
   if (!text_fragment || !text_fragment->AssociatedTextNode())
     return 0;
@@ -55,17 +55,17 @@ OffsetMappingBuilder::SourceNodeScope::~SourceNodeScope() {
 #endif
 }
 
-void OffsetMappingBuilder::ReserveCapacity(unsigned capacity) {
+void OffsetMappingBuilder::ReserveCapacity(wtf_size_t capacity) {
   unit_ranges_.ReserveCapacityForSize(capacity);
   mapping_units_.reserve(capacity * 1.5);
 }
 
-void OffsetMappingBuilder::AppendIdentityMapping(unsigned length) {
+void OffsetMappingBuilder::AppendIdentityMapping(wtf_size_t length) {
   DCHECK_GT(length, 0u);
-  const unsigned dom_start = current_offset_;
-  const unsigned dom_end = dom_start + length;
-  const unsigned text_content_start = destination_length_;
-  const unsigned text_content_end = text_content_start + length;
+  const DomOffset dom_start = current_offset_;
+  const DomOffset dom_end = dom_start + length;
+  const IfcOffset text_content_start = destination_length_;
+  const IfcOffset text_content_end = text_content_start + length;
   current_offset_ += length;
   destination_length_ += length;
 
@@ -93,12 +93,12 @@ void OffsetMappingBuilder::RevertIdentityMapping1() {
   --destination_length_;
 }
 
-void OffsetMappingBuilder::AppendCollapsedMapping(unsigned length) {
+void OffsetMappingBuilder::AppendCollapsedMapping(DomOffset length) {
   DCHECK_GT(length, 0u);
-  const unsigned dom_start = current_offset_;
-  const unsigned dom_end = dom_start + length;
-  const unsigned text_content_start = destination_length_;
-  const unsigned text_content_end = text_content_start;
+  const DomOffset dom_start = current_offset_;
+  const DomOffset dom_end = dom_start + length;
+  const IfcOffset text_content_start = destination_length_;
+  const IfcOffset text_content_end = text_content_start;
   current_offset_ += length;
 
   if (!current_layout_object_)
@@ -117,14 +117,15 @@ void OffsetMappingBuilder::AppendCollapsedMapping(unsigned length) {
   has_open_unit_ = true;
 }
 
-void OffsetMappingBuilder::AppendVariableMapping(unsigned dom_length,
-                                                 unsigned text_content_length) {
+void OffsetMappingBuilder::AppendVariableMapping(
+    DomOffset dom_length,
+    IfcOffset text_content_length) {
   DCHECK_GT(dom_length, 0u);
   DCHECK_GT(text_content_length, 0u);
-  const unsigned dom_start = current_offset_;
-  const unsigned dom_end = dom_start + dom_length;
-  const unsigned text_content_start = destination_length_;
-  const unsigned text_content_end = text_content_start + text_content_length;
+  const DomOffset dom_start = current_offset_;
+  const DomOffset dom_end = dom_start + dom_length;
+  const IfcOffset text_content_start = destination_length_;
+  const IfcOffset text_content_end = text_content_start + text_content_length;
   current_offset_ += dom_length;
   destination_length_ += text_content_length;
 
@@ -140,12 +141,12 @@ void OffsetMappingBuilder::AppendVariableMapping(unsigned dom_length,
   has_open_unit_ = false;
 }
 
-void OffsetMappingBuilder::CollapseTrailingSpace(unsigned space_offset) {
+void OffsetMappingBuilder::CollapseTrailingSpace(IfcOffset space_offset) {
   DCHECK_LT(space_offset, destination_length_);
   --destination_length_;
 
   OffsetMappingUnit* container_unit = nullptr;
-  for (unsigned i = mapping_units_.size(); i;) {
+  for (wtf_size_t i = mapping_units_.size(); i;) {
     OffsetMappingUnit& unit = mapping_units_[--i];
     if (unit.TextContentStart() > space_offset) {
       --unit.text_content_start_;
@@ -164,9 +165,9 @@ void OffsetMappingBuilder::CollapseTrailingSpace(unsigned space_offset) {
   // container_unit->TextContentEnd()
   DCHECK_EQ(OffsetMappingUnitType::kIdentity, container_unit->GetType());
   const LayoutObject& layout_object = container_unit->GetLayoutObject();
-  unsigned dom_offset = container_unit->DOMStart();
-  unsigned text_content_offset = container_unit->TextContentStart();
-  unsigned offset_to_collapse = space_offset - text_content_offset;
+  DomOffset dom_offset = container_unit->DOMStart();
+  IfcOffset text_content_offset = container_unit->TextContentStart();
+  IfcOffset offset_to_collapse = space_offset - text_content_offset;
 
   HeapVector<OffsetMappingUnit, 3> new_units;
   if (offset_to_collapse) {
@@ -207,7 +208,7 @@ void OffsetMappingBuilder::CollapseTrailingSpace(unsigned space_offset) {
 
 void OffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
     const LayoutText& layout_text,
-    unsigned offset) {
+    IfcOffset offset) {
   ++destination_length_;
   for (auto& unit : std::views::reverse(mapping_units_)) {
     if (unit.text_content_end_ < offset) {
@@ -222,7 +223,7 @@ void OffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
       continue;
     }
     DCHECK(unit.IsCollapsed());
-    const unsigned original_dom_end = unit.dom_end_;
+    const DomOffset original_dom_end = unit.dom_end_;
     unit.type_ = OffsetMappingUnitType::kIdentity;
     unit.dom_end_ = unit.dom_start_ + 1;
     unit.text_content_end_ = unit.text_content_start_ + 1;
@@ -258,10 +259,10 @@ OffsetMapping* OffsetMappingBuilder::Build() {
   mapping_units_.shrink_to_fit();
 
   // All mapping units are already built. Scan them to build mapping ranges.
-  for (unsigned range_start = 0; range_start < mapping_units_.size();) {
+  for (wtf_size_t range_start = 0; range_start < mapping_units_.size();) {
     const LayoutObject& layout_object =
         mapping_units_[range_start].GetLayoutObject();
-    unsigned range_end = range_start + 1;
+    wtf_size_t range_end = range_start + 1;
     const Node* node = mapping_units_[range_start].AssociatedNode();
     if (node) {
       while (range_end < mapping_units_.size() &&

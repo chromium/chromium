@@ -519,7 +519,7 @@ HighlightPainter::HighlightPainter(
               fragment_item_->TextShapeResult()) {
         const ShapeResult* shape_result =
             shape_result_view->CreateShapeResult();
-        unsigned start_offset = fragment_item_->StartOffset();
+        wtf_size_t start_offset = fragment_item_->StartOffset();
         edges_info_.push_back(HighlightEdgeInfo{
             parts_[0].range.from,
             shape_result->CaretPositionForOffset(

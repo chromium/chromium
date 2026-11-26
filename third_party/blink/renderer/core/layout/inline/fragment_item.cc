@@ -41,7 +41,7 @@ struct SameSizeAsFragmentItem {
   InkOverflow ink_overflow;
   Member<void*> member;
   wtf_size_t sizes[2];
-  unsigned flags;
+  uint32_t flags;
 };
 
 ASSERT_SIZE(FragmentItem, SameSizeAsFragmentItem);
@@ -621,7 +621,7 @@ TextOffsetRange FragmentItem::TextOffset() const {
   NOTREACHED();
 }
 
-unsigned FragmentItem::StartOffsetInContainer(
+wtf_size_t FragmentItem::StartOffsetInContainer(
     const InlineCursor& container) const {
   DCHECK_EQ(Type(), kGeneratedText);
   DCHECK(!IsEllipsis());
@@ -935,7 +935,7 @@ String FragmentItem::ToString() const {
       const FragmentItems* fragment_items = nullptr;
       if (const LayoutBlockFlow* block_flow =
               layout_object_->FragmentItemsContainer()) {
-        for (unsigned i = 0; i < block_flow->PhysicalFragmentCount(); ++i) {
+        for (wtf_size_t i = 0; i < block_flow->PhysicalFragmentCount(); ++i) {
           const PhysicalBoxFragment* containing_fragment =
               block_flow->GetPhysicalFragment(i);
           fragment_items = containing_fragment->Items();
@@ -1159,7 +1159,7 @@ void FragmentItem::SetDeltaToNextForSameLayoutObject(wtf_size_t delta) const {
 }
 
 LayoutUnit FragmentItem::CaretInlinePositionForOffset(StringView text,
-                                                      unsigned offset) const {
+                                                      wtf_size_t offset) const {
   DCHECK_GE(offset, StartOffset());
   DCHECK_LE(offset, EndOffset());
   DCHECK_EQ(text.length(), TextLength());
@@ -1193,8 +1193,8 @@ LayoutUnit FragmentItem::CaretInlinePositionForOffset(StringView text,
 
 std::pair<LayoutUnit, LayoutUnit> FragmentItem::LineLeftAndRightForOffsets(
     StringView text,
-    unsigned start_offset,
-    unsigned end_offset) const {
+    wtf_size_t start_offset,
+    wtf_size_t end_offset) const {
   DCHECK_LE(start_offset, EndOffset());
   DCHECK_GE(start_offset, StartOffset());
   DCHECK_GE(end_offset, StartOffset());
@@ -1261,8 +1261,8 @@ std::pair<LayoutUnit, LayoutUnit> FragmentItem::LineLeftAndRightForOffsets(
 }
 
 PhysicalRect FragmentItem::LocalRect(StringView text,
-                                     unsigned start_offset,
-                                     unsigned end_offset) const {
+                                     wtf_size_t start_offset,
+                                     wtf_size_t end_offset) const {
   LayoutUnit width = Size().width;
   LayoutUnit height = Size().height;
   if (const TextFragmentRareData* svg_data = GetSvgFragmentData()) {
@@ -1329,7 +1329,7 @@ PositionWithAffinity FragmentItem::PositionForPointInText(
 }
 
 PositionWithAffinity FragmentItem::PositionForPointInText(
-    unsigned text_offset,
+    wtf_size_t text_offset,
     const InlineCursor& cursor) const {
   DCHECK_EQ(Type(), kText);
   DCHECK_EQ(cursor.CurrentItem(), this);
@@ -1345,8 +1345,8 @@ PositionWithAffinity FragmentItem::PositionForPointInText(
       .ToPositionInDOMTreeWithAffinity();
 }
 
-unsigned FragmentItem::TextOffsetForPoint(const PhysicalOffset& point,
-                                          const FragmentItems& items) const {
+wtf_size_t FragmentItem::TextOffsetForPoint(const PhysicalOffset& point,
+                                            const FragmentItems& items) const {
   DCHECK_EQ(Type(), kText);
   WritingModeConverter converter({GetWritingMode(), TextDirection::kLtr},
                                  Size());

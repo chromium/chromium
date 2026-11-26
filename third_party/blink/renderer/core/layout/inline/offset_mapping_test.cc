@@ -44,7 +44,7 @@ bool operator==(const OffsetMappingUnit& unit, const OffsetMappingUnit& other) {
 void PrintTo(const OffsetMappingUnit& unit, std::ostream* ostream) {
   static const std::array<const char*, 3> kTypeNames = {"Identity", "Collapsed",
                                                         "Expanded"};
-  *ostream << "{" << kTypeNames[static_cast<unsigned>(unit.GetType())] << " "
+  *ostream << "{" << kTypeNames[std::to_underlying(unit.GetType())] << " "
            << unit.GetLayoutObject() << " dom=" << unit.DOMStart() << "-"
            << unit.DOMEnd() << " tc=" << unit.TextContentStart() << "-"
            << unit.TextContentEnd() << "}";
@@ -95,31 +95,26 @@ class OffsetMappingTest : public RenderingTest {
       if (!node.IsTextNode())
         continue;
 
-      Vector<unsigned> collapsed_indexes;
+      Vector<DomOffset> collapsed_indexes;
       for (const auto& unit : mapping.GetMappingUnitsForDOMRange(
                EphemeralRange::RangeOfContents(node))) {
         if (!unit.IsCollapsed()) {
           continue;
         }
-        for (unsigned i = unit.DOMStart(); i < unit.DOMEnd(); ++i)
+        for (DomOffset i = unit.DOMStart(); i < unit.DOMEnd(); ++i) {
           collapsed_indexes.push_back(i);
+        }
       }
 
       result.Append('{');
-      bool first = true;
-      for (unsigned index : collapsed_indexes) {
-        if (!first)
-          result.Append(", ");
-        result.AppendNumber(index);
-        first = false;
-      }
+      result.AppendRange(collapsed_indexes, ", ");
       result.Append('}');
     }
     return result.ToString();
   }
 
   HeapVector<OffsetMappingUnit> GetFirstLast(const std::string& caret_text) {
-    const unsigned offset = static_cast<unsigned>(caret_text.find('|'));
+    const wtf_size_t offset = static_cast<wtf_size_t>(caret_text.find('|'));
     return {*GetOffsetMapping().GetFirstMappingUnit(offset),
             *GetOffsetMapping().GetLastMappingUnit(offset)};
   }
@@ -143,11 +138,7 @@ class OffsetMappingTest : public RenderingTest {
   String TestCollapsing(Vector<String> text) {
     StringBuilder html;
     html.Append("<div id=t>");
-    for (unsigned i = 0; i < text.size(); ++i) {
-      if (i)
-        html.Append("<!---->");
-      html.Append(text[i]);
-    }
+    html.AppendRange(text, "<!---->");
     html.Append("</div>");
     SetupHtml("t", html.ToString());
     return GetCollapsedIndexes();
@@ -178,7 +169,8 @@ class OffsetMappingTest : public RenderingTest {
     return GetOffsetMapping().GetMappingUnitForPosition(position);
   }
 
-  std::optional<unsigned> GetTextContentOffset(const Position& position) const {
+  std::optional<IfcOffset> GetTextContentOffset(
+      const Position& position) const {
     return GetOffsetMapping().GetTextContentOffset(position);
   }
 
@@ -198,11 +190,11 @@ class OffsetMappingTest : public RenderingTest {
     return GetOffsetMapping().IsAfterNonCollapsedContent(position);
   }
 
-  Position GetFirstPosition(unsigned offset) const {
+  Position GetFirstPosition(IfcOffset offset) const {
     return GetOffsetMapping().GetFirstPosition(offset);
   }
 
-  Position GetLastPosition(unsigned offset) const {
+  Position GetLastPosition(IfcOffset offset) const {
     return GetOffsetMapping().GetLastPosition(offset);
   }
 

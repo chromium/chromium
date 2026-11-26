@@ -208,7 +208,7 @@ void FragmentItemsBuilder::AddItems(base::span<LogicalLineItem> child_span) {
       continue;
     }
 
-    const unsigned children_count = child.children_count;
+    const wtf_size_t children_count = child.children_count;
     // Children of inline boxes are flattened and added to |items_|, with the
     // count of descendant items to preserve the tree structure.
     //
@@ -390,7 +390,7 @@ void FragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {
     // because they may have different directions from the block. To do
     // this, their offsets are relative to their containing line box.
     if (item->Type() == FragmentItem::kLine) {
-      unsigned descendants_count = item->DescendantsCount();
+      wtf_size_t descendants_count = item->DescendantsCount();
       DCHECK(descendants_count);
       if (descendants_count) {
         const PhysicalRect line_box_bounds = item->RectInContainerFragment();
