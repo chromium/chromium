@@ -9,7 +9,7 @@ desc: |-
 
   Setting the policy to 3 or leaving it unset allows Isolated Web App origins to add Sub Apps upon user confirmation.
 
-  This policy can be overridden for specific Isolated Web App origins using the <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME">SubAppsWithoutPromptsAllowedForOrigins</ph> and <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME">SubAppsWithoutPromptsBlockedorOrigins</ph> policies.
+  This policy can be overridden for specific Isolated Web App origins using the <ph name="SUB_APPS_WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME">SubAppsWithoutPromptsAllowedForOrigins</ph> and <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_ORIGINS_POLICY_NAME">SubAppsWithoutPromptsBlockedForOrigins</ph> policies.
 
 example_value: 3
 features:
