@@ -17,6 +17,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -56,6 +57,8 @@
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -157,6 +160,11 @@ class MockOmniboxEverywhereService : public OmniboxEverywhereService {
   MOCK_METHOD(void, OnDrivePickerClosed, (), (override));
   MOCK_METHOD(void, OnHotkeyDropdownOpened, (), (override));
   MOCK_METHOD(void, OnHotkeyDropdownClosed, (), (override));
+  MOCK_METHOD(void,
+              ShowRegionSelectOverlayForDisplays,
+              (RegionSelectDisplaysParams params,
+               RegionSelectedCallback callback),
+              (override));
 };
 
 class OmniboxEverywhereHandlerPublic : public OmniboxEverywhereHandler {
@@ -1180,6 +1188,66 @@ TEST_F(OmniboxEverywhereHandlerTest,
                                      profile());
   ASSERT_FALSE(template_url_service()->GetDefaultSearchProvider());
   page_.FlushForTesting();
+}
+
+TEST_F(OmniboxEverywhereHandlerTest,
+       ShowRegionSelectOverlayForDisplaysForwardsToService) {
+  MockOmniboxEverywhereService* factory_service = nullptr;
+  OmniboxEverywhereServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(),
+      base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+        auto service = std::make_unique<MockOmniboxEverywhereService>(
+            Profile::FromBrowserContext(context));
+        factory_service = service.get();
+        return service;
+      }));
+  ASSERT_TRUE(factory_service);
+
+  SkBitmap input_bitmap;
+  input_bitmap.allocN32Pixels(20, 20);
+  input_bitmap.eraseColor(SK_ColorRED);
+  SkBitmap result_bitmap;
+  result_bitmap.allocN32Pixels(10, 10);
+  result_bitmap.eraseColor(SK_ColorBLUE);
+
+  EXPECT_CALL(*factory_service,
+              ShowRegionSelectOverlayForDisplays(testing::_, testing::_))
+      .WillOnce([&](OmniboxEverywhereService::RegionSelectDisplaysParams params,
+                    OmniboxEverywhereService::RegionSelectedCallback callback) {
+        ASSERT_EQ(params.screenshots.size(), 1u);
+        ASSERT_TRUE(params.screenshots.contains(7));
+        EXPECT_EQ(params.screenshots.at(7).getColor(0, 0), SK_ColorRED);
+        std::move(callback).Run(result_bitmap);
+      });
+
+  OmniboxEverywhereUI ui(&web_ui_);
+  OmniboxEverywhereUI::RegionSelectDisplaysParams params;
+  params.screenshots.emplace(7, input_bitmap);
+  base::test::TestFuture<const SkBitmap&> future;
+  ui.ShowRegionSelectOverlayForDisplays(std::move(params),
+                                        future.GetCallback());
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get().width(), 10);
+  EXPECT_EQ(future.Get().getColor(0, 0), SK_ColorBLUE);
+}
+
+TEST_F(OmniboxEverywhereHandlerTest,
+       ShowRegionSelectOverlayForDisplaysWithoutServiceCancels) {
+  OmniboxEverywhereServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting(
+          [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+            return nullptr;
+          }));
+
+  OmniboxEverywhereUI ui(&web_ui_);
+  base::test::TestFuture<const SkBitmap&> future;
+  ui.ShowRegionSelectOverlayForDisplays({}, future.GetCallback());
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
 }
 
 }  // namespace

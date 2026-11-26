@@ -50,16 +50,20 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/display/display.h"
+#include "ui/display/display_list.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
@@ -3192,6 +3196,102 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
   EXPECT_FALSE(ui_manager->region_select_overlay_for_testing());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       ShowRegionSelectOverlayForDisplays_CreateAndDismiss) {
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+  test_screen.display_list().AddDisplay(
+      display::Display(1, gfx::Rect(0, 0, 800, 600)),
+      display::DisplayList::Type::PRIMARY);
+  test_screen.display_list().AddDisplay(
+      display::Display(2, gfx::Rect(800, 0, 800, 600)),
+      display::DisplayList::Type::NOT_PRIMARY);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->web_contents());
+
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+  EXPECT_FALSE(ui_manager->IsScreenshareCaptureInProgress());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
+
+  SkBitmap red_bitmap;
+  red_bitmap.allocN32Pixels(800, 600);
+  red_bitmap.eraseColor(SK_ColorRED);
+  SkBitmap blue_bitmap;
+  blue_bitmap.allocN32Pixels(800, 600);
+  blue_bitmap.eraseColor(SK_ColorBLUE);
+
+  OmniboxEverywhereUIManager::RegionSelectDisplaysParams params;
+  params.screenshots.emplace(1, red_bitmap);
+  params.screenshots.emplace(2, blue_bitmap);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  ui_manager->ShowRegionSelectOverlayForDisplays(std::move(params),
+                                                 future.GetCallback());
+
+  OmniboxEverywhereRegionSelectOverlay* overlay =
+      ui_manager->region_select_overlay_for_testing();
+  ASSERT_TRUE(overlay);
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+  EXPECT_TRUE(ui_manager->IsScreenshareCaptureInProgress());
+  EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
+
+  // Each display has a widget that shows the screenshot of that display.
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+  EXPECT_EQ(overlay->GetBitmapForWidgetForTesting(0).getColor(0, 0),
+            SK_ColorRED);
+  EXPECT_EQ(overlay->GetBitmapForWidgetForTesting(1).getColor(0, 0),
+            SK_ColorBLUE);
+
+  // Close an overlay widget (simulating Escape / dismiss).
+  views::Widget* overlay_widget = overlay->GetActiveWidgetForTesting();
+  ASSERT_TRUE(overlay_widget);
+  overlay_widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_FALSE(ui_manager->region_select_overlay_for_testing());
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+  EXPECT_FALSE(ui_manager->IsScreenshareCaptureInProgress());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       ShowRegionSelectOverlayForDisplays_CancelsPreviousOverlay) {
+  using RegionCaptureSource = OmniboxEverywhereUIManager::RegionCaptureSource;
+  auto ui_manager = CreateUIManager();
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);
+
+  base::test::TestFuture<const SkBitmap&> future1;
+  ui_manager->ShowRegionSelectOverlay(
+      bitmap, RegionCaptureSource::AllDisplays(), future1.GetCallback());
+  EXPECT_TRUE(ui_manager->region_select_overlay_for_testing());
+
+  OmniboxEverywhereUIManager::RegionSelectDisplaysParams params;
+  params.screenshots.emplace(display::Screen::Get()->GetPrimaryDisplay().id(),
+                             bitmap);
+  base::test::TestFuture<const SkBitmap&> future2;
+  ui_manager->ShowRegionSelectOverlayForDisplays(std::move(params),
+                                                 future2.GetCallback());
+
+  // The first overlay is cancelled with an empty bitmap.
+  ASSERT_TRUE(future1.IsReady());
+  EXPECT_TRUE(future1.Get().empty());
+  EXPECT_FALSE(future2.IsReady());
+  EXPECT_TRUE(ui_manager->region_select_overlay_for_testing());
+
+  ui_manager->Shutdown();
+  ASSERT_TRUE(future2.IsReady());
+  EXPECT_TRUE(future2.Get().empty());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, HasOpenModalDialog_RegionSelectOverlay) {

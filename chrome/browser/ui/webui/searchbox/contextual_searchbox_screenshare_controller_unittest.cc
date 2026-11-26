@@ -280,6 +280,17 @@ TEST_F(ContextualSearchboxScreenshareControllerTest,
   controller().ShowScreenshotMenu(gfx::Rect(1, 2, 3, 4));
 }
 
+TEST(ContextualSearchboxScreenshareControllerDelegateTest,
+     ShowRegionSelectOverlayForDisplays_CancelsByDefault) {
+  ContextualSearchboxScreenshareController::Delegate delegate;
+
+  base::test::TestFuture<const SkBitmap&> future;
+  delegate.ShowRegionSelectOverlayForDisplays({}, future.GetCallback());
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+}
+
 TEST_F(ContextualSearchboxScreenshareControllerTest, StartScreenshare_Success) {
   SetupScreenshotUploadConfig();
 

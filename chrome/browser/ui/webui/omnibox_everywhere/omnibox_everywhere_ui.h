@@ -217,6 +217,9 @@ class OmniboxEverywhereUI
   void ShowRegionSelectOverlay(const SkBitmap& screenshot,
                                const RegionCaptureSource& source,
                                RegionSelectedCallback callback) override;
+  void ShowRegionSelectOverlayForDisplays(
+      RegionSelectDisplaysParams params,
+      RegionSelectedCallback callback) override;
   void OnScreenshotMenuClosed();
   bool CancelChromeDefaultPicker();
 

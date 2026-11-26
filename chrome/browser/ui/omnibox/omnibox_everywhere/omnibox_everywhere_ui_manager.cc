@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
@@ -55,6 +57,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1470,10 +1473,8 @@ void OmniboxEverywhereUIManager::ShowRegionSelectOverlay(
     const SkBitmap& screenshot,
     const RegionCaptureSource& source,
     RegionSelectedCallback callback) {
-  if (region_select_overlay_) {
-    auto old_overlay = std::move(region_select_overlay_);
-    old_overlay.reset();
-  }
+  CHECK(callback);
+  region_select_overlay_.reset();
   gfx::NativeWindow context =
       widget_ ? widget_->GetNativeWindow() : gfx::NativeWindow();
   region_select_overlay_ = OmniboxEverywhereRegionSelectOverlay::Create(
@@ -1481,6 +1482,23 @@ void OmniboxEverywhereUIManager::ShowRegionSelectOverlay(
       base::BindOnce(&OmniboxEverywhereUIManager::OnRegionSelectOverlayClosed,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
       context);
+  UpdateModalInteractionState();
+}
+
+void OmniboxEverywhereUIManager::ShowRegionSelectOverlayForDisplays(
+    RegionSelectDisplaysParams params,
+    RegionSelectedCallback callback) {
+  CHECK(callback);
+  region_select_overlay_.reset();
+  gfx::NativeWindow context =
+      widget_ ? widget_->GetNativeWindow() : gfx::NativeWindow();
+  region_select_overlay_ =
+      OmniboxEverywhereRegionSelectOverlay::CreateForDisplays(
+          params.screenshots,
+          base::BindOnce(
+              &OmniboxEverywhereUIManager::OnRegionSelectOverlayClosed,
+              weak_factory_.GetWeakPtr(), std::move(callback)),
+          context);
   UpdateModalInteractionState();
 }
 

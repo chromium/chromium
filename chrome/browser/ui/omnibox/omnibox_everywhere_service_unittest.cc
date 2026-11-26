@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 
+#include <utility>
+
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -16,6 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -111,6 +114,26 @@ TEST_F(OmniboxEverywhereServiceTest, OnScreenshotDisclosureAccepted) {
   EXPECT_TRUE(accepted_future.Wait());
   EXPECT_TRUE(
       omnibox_everywhere::prefs::IsScreenshotDisclosureAccepted(&profile));
+}
+
+TEST_F(OmniboxEverywhereServiceTest,
+       RegionSelectOverlayForDisplaysWithoutUIManagerCancels) {
+  TestingProfile profile;
+  OmniboxEverywhereService* service =
+      OmniboxEverywhereServiceFactory::GetForProfile(&profile);
+  ASSERT_TRUE(service);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  OmniboxEverywhereService::RegionSelectDisplaysParams params;
+  params.screenshots.emplace(1, bitmap);
+
+  base::test::TestFuture<const SkBitmap&> future;
+  service->ShowRegionSelectOverlayForDisplays(std::move(params),
+                                              future.GetCallback());
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
 }
 
 TEST_F(OmniboxEverywhereServiceTest, ProfileAccessorReturnsProfile) {

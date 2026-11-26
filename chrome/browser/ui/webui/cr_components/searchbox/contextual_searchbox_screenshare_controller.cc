@@ -8,6 +8,7 @@
 
 #include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/base64.h"
@@ -121,6 +122,12 @@ BASE_FEATURE(kOmniboxEverywhereNativeScreenPicker,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+void ContextualSearchboxScreenshareController::Delegate::
+    ShowRegionSelectOverlayForDisplays(RegionSelectDisplaysParams params,
+                                       RegionSelectedCallback callback) {
+  std::move(callback).Run(SkBitmap());
+}
 
 ContextualSearchboxScreenshareController::
     ContextualSearchboxScreenshareController(

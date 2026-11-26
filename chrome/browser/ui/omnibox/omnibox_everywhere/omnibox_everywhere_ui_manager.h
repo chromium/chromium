@@ -238,8 +238,14 @@ class OmniboxEverywhereUIManager
   void ShowRegionSelectOverlay(const SkBitmap& screenshot,
                                const RegionCaptureSource& source,
                                RegionSelectedCallback callback);
-  void OnRegionSelectOverlayClosed(RegionSelectedCallback callback,
-                                   const SkBitmap& result_bitmap);
+  using RegionSelectDisplaysParams =
+      OmniboxEverywhereService::RegionSelectDisplaysParams;
+  // Like `ShowRegionSelectOverlay()`, but takes one screenshot per display
+  // rather than one screenshot that spans the displays. `callback` must be
+  // non-null and is always invoked once (synchronously or asynchronously) with
+  // either the selected region or an empty `SkBitmap` if cancelled.
+  void ShowRegionSelectOverlayForDisplays(RegionSelectDisplaysParams params,
+                                          RegionSelectedCallback callback);
 
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override {}
@@ -390,6 +396,8 @@ class OmniboxEverywhereUIManager
   void OnScreenshotDisclosureClosed(base::OnceClosure on_accepted,
                                     base::OnceClosure on_cancelled,
                                     views::Widget::ClosedReason reason);
+  void OnRegionSelectOverlayClosed(RegionSelectedCallback callback,
+                                   const SkBitmap& result_bitmap);
   void SetModalOpen(Modal modal, bool open);
   void UpdateModalInteractionState();
 

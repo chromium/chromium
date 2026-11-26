@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
@@ -75,6 +77,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -580,6 +583,18 @@ void OmniboxEverywhereUI::ShowRegionSelectOverlay(
   if (auto* service =
           OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
     service->ShowRegionSelectOverlay(screenshot, source, std::move(callback));
+    return;
+  }
+  std::move(callback).Run(SkBitmap());
+}
+
+void OmniboxEverywhereUI::ShowRegionSelectOverlayForDisplays(
+    RegionSelectDisplaysParams params,
+    RegionSelectedCallback callback) {
+  if (auto* service =
+          OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+    service->ShowRegionSelectOverlayForDisplays(std::move(params),
+                                                std::move(callback));
     return;
   }
   std::move(callback).Run(SkBitmap());

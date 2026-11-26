@@ -71,6 +71,18 @@ class ContextualSearchboxScreenshareController {
     virtual void ShowRegionSelectOverlay(const SkBitmap& screenshot,
                                          const RegionCaptureSource& source,
                                          RegionSelectedCallback callback) {}
+
+    using RegionSelectDisplaysParams =
+        OmniboxEverywhereService::RegionSelectDisplaysParams;
+    // Like `ShowRegionSelectOverlay()`, but takes one screenshot per display
+    // rather than one screenshot that spans the displays. `callback` must be
+    // non-null and is always invoked once (synchronously or asynchronously)
+    // with either the selected region or an empty `SkBitmap` if cancelled or
+    // unavailable. The default implementation cancels synchronously with an
+    // empty `SkBitmap`.
+    virtual void ShowRegionSelectOverlayForDisplays(
+        RegionSelectDisplaysParams params,
+        RegionSelectedCallback callback);
   };
 
   using RegionCaptureSource = Delegate::RegionCaptureSource;

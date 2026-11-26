@@ -9,10 +9,12 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
@@ -22,7 +24,6 @@
 class BrowserWindowInterface;
 class Profile;
 class ScopedProfileKeepAlive;
-class SkBitmap;
 
 namespace user_education {
 class FeaturePromoController;
@@ -52,6 +53,13 @@ class OmniboxEverywhereService : public KeyedService {
     static RegionCaptureSource ForDisplay(int64_t id) {
       return {.type = Type::kSpecificDisplay, .display_id = id};
     }
+  };
+
+  // The parameters of `ShowRegionSelectOverlayForDisplays()`.
+  struct RegionSelectDisplaysParams {
+    // Maps a display's `display::Display::id()` to a screenshot of that
+    // display.
+    base::flat_map<int64_t, SkBitmap> screenshots;
   };
 
   explicit OmniboxEverywhereService(Profile* profile);
@@ -86,6 +94,14 @@ class OmniboxEverywhereService : public KeyedService {
   virtual void ShowRegionSelectOverlay(const SkBitmap& screenshot,
                                        const RegionCaptureSource& source,
                                        RegionSelectedCallback callback);
+  // Like `ShowRegionSelectOverlay()`, but takes one screenshot per display
+  // rather than one screenshot that spans the displays. `callback` must be
+  // non-null and is always invoked once (synchronously or asynchronously) with
+  // either the selected region or an empty `SkBitmap` if cancelled or
+  // unavailable.
+  virtual void ShowRegionSelectOverlayForDisplays(
+      RegionSelectDisplaysParams params,
+      RegionSelectedCallback callback);
   virtual void OnFileChooserOpened();
   virtual void OnFileChooserClosed();
   virtual void OnHotkeyDropdownOpened();

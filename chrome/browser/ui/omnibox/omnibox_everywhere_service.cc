@@ -266,6 +266,17 @@ void OmniboxEverywhereService::ShowRegionSelectOverlay(
   std::move(callback).Run(SkBitmap());
 }
 
+void OmniboxEverywhereService::ShowRegionSelectOverlayForDisplays(
+    RegionSelectDisplaysParams params,
+    RegionSelectedCallback callback) {
+  if (auto* manager = ui_manager()) {
+    manager->ShowRegionSelectOverlayForDisplays(std::move(params),
+                                                std::move(callback));
+    return;
+  }
+  std::move(callback).Run(SkBitmap());
+}
+
 void OmniboxEverywhereService::OnFileChooserOpened() {
   if (ui_manager()) {
     ui_manager()->OnFileChooserOpened();
