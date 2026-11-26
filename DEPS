@@ -1743,7 +1743,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/enterprise_companion/chromium_mac_amd64',
-          'version': '7Y5lHsMeCC5Nx3NRqSNrX9bltKqv0G8IvM_JuQwAVaYC',
+          'version': 'hpexX5SoccX7W2KjXPhtQtiRnphDpEB1YgcDM0dyvwcC',
         },
       ],
   },
