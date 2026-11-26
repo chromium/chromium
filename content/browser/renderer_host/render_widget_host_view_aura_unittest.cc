@@ -683,7 +683,9 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     if (view_) {
       DestroyView(view_.ExtractAsDangling());
     }
-    parent_view_.ExtractAsDangling()->DestroyOrDefer();
+    if (parent_view_) {
+      parent_view_.ExtractAsDangling()->DestroyOrDefer();
+    }
 
     process_host_->Cleanup();
     site_instance_group_.reset();
@@ -735,6 +737,18 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
         ->delegate()
         ->GetTextInputManager();
   }
+
+  RenderWidgetHostViewAura* popup_child_host_view(
+      const RenderWidgetHostViewAura* view) const {
+    return view->popup_child_host_view_;
+  }
+
+  RenderWidgetHostViewAura* popup_parent_host_view(
+      const RenderWidgetHostViewAura* view) const {
+    return view->popup_parent_host_view_;
+  }
+
+  void ShutdownView(RenderWidgetHostViewAura* view) { view->Shutdown(); }
 
 #if BUILDFLAG(IS_WIN)
   LegacyRenderWidgetHostHWND* legacy_render_widget_host_HWND() const {
@@ -1683,6 +1697,126 @@ TEST_F(RenderWidgetHostViewAuraTest, PopupClosedWhileSettingBounds) {
   popup->InitAsPopup(parent_view_, gfx::Rect(10, 10, 100, 100),
                      gfx::Rect(10, 10, 1, 1));
   EXPECT_TRUE(observer->destroyed());
+}
+
+// Verify that a popup view created before InitAsPopup() reports
+// IsHTMLFormPopup() based on its widget type and handles a null `window_`
+// safely in bounds accessors and mutators.
+TEST_F(RenderWidgetHostViewAuraTest, PopupBeforeInitAsPopupHandlesNullWindow) {
+  view_->SetWidgetType(WidgetType::kPopup);
+  EXPECT_EQ(nullptr, view_->GetNativeView());
+  EXPECT_TRUE(view_->IsHTMLFormPopup());
+  EXPECT_EQ(gfx::Rect(), view_->GetViewBounds());
+  EXPECT_EQ(gfx::Rect(), view_->GetViewBoundsWithoutTransform());
+  view_->SetBounds(gfx::Rect(20, 20, 80, 60));
+  view_->SetSize(gfx::Size(80, 60));
+
+  parent_view_->SetBounds(gfx::Rect(10, 10, 400, 400));
+  InitViewForPopup(parent_view_, gfx::Rect(50, 60, 120, 80));
+  EXPECT_TRUE(view_->IsHTMLFormPopup());
+  EXPECT_EQ(gfx::Rect(50, 60, 120, 80), view_->GetViewBounds());
+}
+
+// Verify that Shutdown() on a view whose destruction is already deferred is a
+// safe no-op.
+TEST_F(RenderWidgetHostViewAuraTest, ShutdownIsNoOpWhenDestroyPending) {
+  parent_view_->SetBounds(gfx::Rect(10, 10, 400, 400));
+  parent_view_->Focus();
+  InitViewForPopup(parent_view_, gfx::Rect(10, 10, 100, 100));
+
+  std::optional<input::ScopedInputDispatchPin> pin;
+  pin.emplace(view_);
+
+  FakeRenderWidgetHostViewAura* popup = view_;
+  TestWindowObserver popup_observer(popup->GetNativeView());
+  widget_host_ = nullptr;
+  view_ = nullptr;
+
+  popup->DestroyOrDefer();
+  ASSERT_TRUE(popup->destroy_pending());
+  ASSERT_FALSE(popup_observer.destroyed());
+
+  ShutdownView(popup);
+  EXPECT_TRUE(popup->destroy_pending());
+  EXPECT_FALSE(popup_observer.destroyed());
+
+  pin.reset();
+  EXPECT_TRUE(popup_observer.destroyed());
+}
+
+// Verify that DestroyOrDefer() on a pinned popup immediately unlinks it from
+// its parent so a new popup can attach before the deferred popup finishes
+// teardown.
+TEST_F(RenderWidgetHostViewAuraTest, OnDestroyOrDeferUnlinksPinnedPopupChild) {
+  parent_view_->SetBounds(gfx::Rect(10, 10, 400, 400));
+  parent_view_->Focus();
+
+  InitViewForPopup(parent_view_, gfx::Rect(10, 10, 100, 100));
+  ASSERT_EQ(view_, popup_child_host_view(parent_view_));
+  ASSERT_EQ(parent_view_, popup_parent_host_view(view_));
+
+  std::optional<input::ScopedInputDispatchPin> pin;
+  pin.emplace(view_);
+
+  FakeRenderWidgetHostViewAura* popup1 = view_;
+  TestWindowObserver popup1_observer(popup1->GetNativeView());
+  widget_host_ = nullptr;
+  view_ = nullptr;
+
+  popup1->DestroyOrDefer();
+  EXPECT_TRUE(popup1->destroy_pending());
+  EXPECT_FALSE(popup1_observer.destroyed());
+  EXPECT_EQ(nullptr, popup_child_host_view(parent_view_));
+  EXPECT_EQ(nullptr, popup_parent_host_view(popup1));
+
+  // A new popup can initialize cleanly on `parent_view_` while `popup1` is
+  // still pinned.
+  view_ = CreateView();
+  widget_host_ = static_cast<MockRenderWidgetHostImpl*>(view_->host());
+  InitViewForPopup(parent_view_, gfx::Rect(20, 20, 120, 80));
+  EXPECT_EQ(view_, popup_child_host_view(parent_view_));
+  EXPECT_EQ(parent_view_, popup_parent_host_view(view_));
+  EXPECT_TRUE(view_->IsShowing());
+
+  // Unpinning completes `popup1` teardown without affecting the new popup.
+  pin.reset();
+  EXPECT_TRUE(popup1_observer.destroyed());
+  EXPECT_EQ(view_, popup_child_host_view(parent_view_));
+  EXPECT_TRUE(view_->IsShowing());
+}
+
+// Verify that DestroyOrDefer() on a pinned parent immediately unlinks its child
+// popup so the popup no longer references a dying parent before the pin
+// unwinds.
+TEST_F(RenderWidgetHostViewAuraTest,
+       OnDestroyOrDeferUnlinksPopupFromPinnedParent) {
+  parent_view_->SetBounds(gfx::Rect(10, 10, 400, 400));
+  parent_view_->Focus();
+
+  InitViewForPopup(parent_view_, gfx::Rect(10, 10, 100, 100));
+  ASSERT_EQ(view_, popup_child_host_view(parent_view_));
+  ASSERT_EQ(parent_view_, popup_parent_host_view(view_));
+
+  std::optional<input::ScopedInputDispatchPin> parent_pin;
+  parent_pin.emplace(parent_view_);
+
+  RenderWidgetHostViewAura* parent = parent_view_.ExtractAsDangling();
+  TestWindowObserver parent_observer(parent->GetNativeView());
+  TestWindowObserver popup_observer(view_->GetNativeView());
+
+  parent->DestroyOrDefer();
+  EXPECT_TRUE(parent->destroy_pending());
+  EXPECT_FALSE(parent_observer.destroyed());
+  EXPECT_EQ(nullptr, popup_child_host_view(parent));
+  EXPECT_EQ(nullptr, popup_parent_host_view(view_));
+
+  // Unpinning destroys `parent`'s native window, which also destroys its
+  // transient child popup window.
+  widget_host_ = nullptr;
+  view_ = nullptr;
+  parent_pin.reset();
+  EXPECT_TRUE(parent_observer.destroyed());
+  EXPECT_TRUE(popup_observer.destroyed());
 }
 
 // Checks that IME-composition-event state is maintained correctly.

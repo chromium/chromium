@@ -556,6 +556,10 @@ void RenderWidgetHostViewAura::InitAsPopup(
   if (destroy_pending()) {
     return;
   }
+  if (!popup_parent_host_view_ || !popup_parent_host_view_->window_) {
+    Shutdown();
+    return;
+  }
   if (NeedsMouseCapture()) {
     // The parent has capture if the popup was opened by a mouse press that is
     // still held.
@@ -564,6 +568,13 @@ void RenderWidgetHostViewAura::InitAsPopup(
           aura::Env::GetInstance()->mouse_button_flags();
     }
     window_->SetCapture();
+  }
+  if (destroy_pending()) {
+    return;
+  }
+  if (!popup_parent_host_view_ || !popup_parent_host_view_->window_) {
+    Shutdown();
+    return;
   }
 
   event_observer_for_popup_exit_ =
@@ -603,6 +614,9 @@ void RenderWidgetHostViewAura::Hide() {
 }
 
 void RenderWidgetHostViewAura::SetSize(const gfx::Size& size) {
+  if (!window_) {
+    return;
+  }
   // For a SetSize operation, we don't care what coordinate system the origin
   // of the window is in, it's only important to make sure that the origin
   // remains constant after the operation.
@@ -610,6 +624,9 @@ void RenderWidgetHostViewAura::SetSize(const gfx::Size& size) {
 }
 
 void RenderWidgetHostViewAura::SetBounds(const gfx::Rect& rect) {
+  if (!window_) {
+    return;
+  }
   gfx::Point relative_origin(rect.origin());
 
   // RenderWidgetHostViewAura::SetBounds() takes screen coordinates, but
@@ -942,11 +959,11 @@ bool RenderWidgetHostViewAura::ShouldShowStaleContentOnEviction() {
 }
 
 gfx::Rect RenderWidgetHostViewAura::GetViewBounds() {
-  return window_->GetBoundsInScreen();
+  return window_ ? window_->GetBoundsInScreen() : gfx::Rect();
 }
 
 gfx::Rect RenderWidgetHostViewAura::GetViewBoundsWithoutTransform() {
-  return window_->GetBoundsInScreenWithoutTransform();
+  return window_ ? window_->GetBoundsInScreenWithoutTransform() : gfx::Rect();
 }
 
 void RenderWidgetHostViewAura::UpdateBackgroundColor() {
@@ -1218,6 +1235,18 @@ void RenderWidgetHostViewAura::OnDestroyOrDefer() {
 #if BUILDFLAG(IS_WIN)
   device_posture_observation_.Reset();
 #endif
+  if (popup_parent_host_view_) {
+    CHECK(!popup_parent_host_view_->popup_child_host_view_ ||
+          popup_parent_host_view_->popup_child_host_view_ == this);
+    popup_parent_host_view_->SetPopupChild(nullptr);
+    popup_parent_host_view_ = nullptr;
+  }
+  if (popup_child_host_view_) {
+    CHECK(!popup_child_host_view_->popup_parent_host_view_ ||
+          popup_child_host_view_->popup_parent_host_view_ == this);
+    popup_child_host_view_->popup_parent_host_view_ = nullptr;
+    SetPopupChild(nullptr);
+  }
 }
 
 void RenderWidgetHostViewAura::UpdateTooltipUnderCursor(
@@ -3458,7 +3487,7 @@ RenderWidgetHostViewAura::GetFocusedViewForTextSelection() const {
 }
 
 void RenderWidgetHostViewAura::Shutdown() {
-  if (!in_shutdown_) {
+  if (!in_shutdown_ && !destroy_pending() && host()) {
     in_shutdown_ = true;
     host()->ShutdownAndDestroyWidget(true);
   }
@@ -3508,7 +3537,7 @@ void RenderWidgetHostViewAura::NotifyVirtualKeyboardOverlayRect(
 }
 
 bool RenderWidgetHostViewAura::IsHTMLFormPopup() const {
-  return !!popup_parent_host_view_;
+  return widget_type_ == WidgetType::kPopup;
 }
 
 void RenderWidgetHostViewAura::ResetGestureDetection() {
