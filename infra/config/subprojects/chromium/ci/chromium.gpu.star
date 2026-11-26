@@ -357,6 +357,8 @@ shared_gpu.ci.windows_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
+        # Kept in sync with "ci/Win x64 Builder" for mirroring.
+        gn_check_generated = True,
     ),
     gn_args = gn_args.config(
         configs = [
