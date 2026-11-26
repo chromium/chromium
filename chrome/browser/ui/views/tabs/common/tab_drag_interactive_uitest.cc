@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string>
+#include <tuple>
 
 #include "base/functional/bind.h"
 #include "base/i18n/base_i18n_switches.h"
@@ -164,16 +166,29 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<PinnedURLs>,
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
                                     kScrollOffsetPoller);
 
-class TabDragTest
-    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest>,
-      public testing::WithParamInterface<TabStripOrientation> {
+class TabDragTestBase
+    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
  public:
-  TabDragTest() = default;
-  ~TabDragTest() override = default;
+  TabDragTestBase() = default;
+  ~TabDragTestBase() override = default;
 
-  virtual TabStripOrientation orientation() const { return GetParam(); }
+  virtual TabStripOrientation orientation() const = 0;
+  virtual bool is_rtl() const = 0;
   bool is_horizontal() const {
     return orientation() == TabStripOrientation::kHorizontal;
+  }
+  int LeadingStep() const { return (is_horizontal() && is_rtl()) ? 1 : -1; }
+  int TrailingStep() const { return -LeadingStep(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    VerticalTabsInteractiveTestMixin<InteractiveBrowserTest>::SetUpCommandLine(
+        command_line);
+    if (is_rtl()) {
+      command_line->AppendSwitchASCII(::switches::kForceUIDirection,
+                                      ::switches::kForceDirectionRTL);
+      command_line->AppendSwitchASCII(::switches::kForceTextDirection,
+                                      ::switches::kForceDirectionRTL);
+    }
   }
 
   void SetUp() override {
@@ -385,7 +400,7 @@ class TabDragTest
 
   auto GetScrollOffset() {
     return base::BindRepeating(
-        [](TabDragTest* test) {
+        [](TabDragTestBase* test) {
           auto* scroll_view =
               test->GetTabStripView()->unpinned_tabs_scroll_view();
           const gfx::PointF offset = scroll_view->CurrentOffset();
@@ -583,8 +598,8 @@ class TabDragTest
 
     TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     ASSERT_NE(nullptr, tab_strip_model);
-    const int leading_step = (is_horizontal() && base::i18n::IsRTL()) ? 1 : -1;
-    const int trailing_step = -leading_step;
+    const int leading_step = LeadingStep();
+    const int trailing_step = TrailingStep();
 
     RunTestSequence(
         AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
@@ -663,6 +678,16 @@ class TabDragTest
   gfx::AnimationTestApi::RenderModeResetter disable_animation_ =
       gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+};
+
+class TabDragTest : public TabDragTestBase,
+                    public testing::WithParamInterface<
+                        std::tuple<TabStripOrientation, bool>> {
+ public:
+  TabStripOrientation orientation() const override {
+    return std::get<0>(GetParam());
+  }
+  bool is_rtl() const override { return std::get<1>(GetParam()); }
 };
 
 IN_PROC_BROWSER_TEST_P(TabDragTest, DragWithinUnpinnedContainer) {
@@ -1168,7 +1193,7 @@ IN_PROC_BROWSER_TEST_P(TabDragTest, DragTabBetweenTwoGroups) {
           base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
             return GetUnpinnedContainer();
           }),
-          /*step=*/1),
+          TrailingStep()),
       CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
                   URLs({
                       TabGroupURLs({
@@ -1184,7 +1209,7 @@ IN_PROC_BROWSER_TEST_P(TabDragTest, DragTabBetweenTwoGroups) {
           base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
             return GetTabGroupViewAt(1);
           }),
-          /*step=*/1),
+          TrailingStep()),
       CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
                   URLs({
                       TabGroupURLs({
@@ -1202,7 +1227,7 @@ IN_PROC_BROWSER_TEST_P(TabDragTest, DragTabBetweenTwoGroups) {
           base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
             return GetUnpinnedContainer();
           }),
-          /*step=*/-1),
+          LeadingStep()),
       CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
                   URLs({
                       TabGroupURLs({
@@ -1218,7 +1243,7 @@ IN_PROC_BROWSER_TEST_P(TabDragTest, DragTabBetweenTwoGroups) {
           base::BindLambdaForTesting([this]() -> DraggedTabsContainer* {
             return GetTabGroupViewAt(0);
           }),
-          /*step=*/-1),
+          LeadingStep()),
       CheckResult([&]() { return GetTabOrder(tab_strip_model).Run(); },
                   URLs({
                       TabGroupURLs({
@@ -1563,35 +1588,38 @@ IN_PROC_BROWSER_TEST_P(TabDragTest, DragToScroll) {
       // does not hit the centered close button on the active tab in horizontal
       // mode.
       NameTabViewAt(kTabToDragName, 1), MoveMouseTo(kTabToDragName),
-      DragMouseTo(kScrollViewName,
-                  base::BindOnce(
-                      [](bool is_horizontal, ui::TrackedElement* element) {
-                        const gfx::Rect bounds = element->GetScreenBounds();
-                        return is_horizontal
-                                   ? gfx::Point(bounds.right() - 1,
-                                                bounds.CenterPoint().y())
-                                   : gfx::Point(bounds.CenterPoint().x(),
-                                                bounds.bottom() - 1);
-                      },
-                      is_horizontal()),
-                  /*release=*/false),
+      DragMouseTo(
+          kScrollViewName,
+          base::BindOnce(
+              [](bool is_horizontal, bool is_rtl, ui::TrackedElement* element) {
+                const gfx::Rect bounds = element->GetScreenBounds();
+                if (!is_horizontal) {
+                  return gfx::Point(bounds.CenterPoint().x(),
+                                    bounds.bottom() - 1);
+                }
+                return gfx::Point(is_rtl ? bounds.x() + 1 : bounds.right() - 1,
+                                  bounds.CenterPoint().y());
+              },
+              is_horizontal(), is_rtl()),
+          /*release=*/false),
 
       // Wait for scroll offset to increase.
       WaitForState(kScrollOffsetPoller, testing::Gt(0)),
 
       // Move mouse to the leading edge of the scroll view to trigger scrolling
       // back/up.
-      MoveMouseTo(kScrollViewName,
-                  base::BindOnce(
-                      [](bool is_horizontal, ui::TrackedElement* element) {
-                        const gfx::Rect bounds = element->GetScreenBounds();
-                        return is_horizontal
-                                   ? gfx::Point(bounds.x() + 1,
-                                                bounds.CenterPoint().y())
-                                   : gfx::Point(bounds.CenterPoint().x(),
-                                                bounds.y() + 1);
-                      },
-                      is_horizontal())),
+      MoveMouseTo(
+          kScrollViewName,
+          base::BindOnce(
+              [](bool is_horizontal, bool is_rtl, ui::TrackedElement* element) {
+                const gfx::Rect bounds = element->GetScreenBounds();
+                if (!is_horizontal) {
+                  return gfx::Point(bounds.CenterPoint().x(), bounds.y() + 1);
+                }
+                return gfx::Point(is_rtl ? bounds.right() - 1 : bounds.x() + 1,
+                                  bounds.CenterPoint().y());
+              },
+              is_horizontal(), is_rtl())),
 
       // Wait for scroll offset to decrease back to 0.
       WaitForState(kScrollOffsetPoller, 0),
@@ -1746,7 +1774,7 @@ IN_PROC_BROWSER_TEST_P(TabDragTest, DetachTabPreservesActiveTab) {
       NameTabViewAt("Tab to drag", 2), MoveMouseTo("Tab to drag"),
       ClickMouse(ui_controls::MouseButton::LEFT, /*release=*/false),
       MoveMouseOutOfTabstrip(), WaitForState(kBrowserCountPoller, 2u),
-      WaitForDetachedWindowVisible(), ReleaseMouse(),
+      WaitForDetachedWindowVisible(), ReleaseMouseAsync(),
       WaitForState(kDragStatePoller, false),
       CheckResult(
           [this]() { return browser()->GetTabStripModel()->active_index(); },
@@ -1757,14 +1785,16 @@ IN_PROC_BROWSER_TEST_P(TabDragTest, DetachTabPreservesActiveTab) {
 
 // TODO(crbug.com/490650365): Add regression test once detach tests are working.
 
-class VerticalTabDragTest : public TabDragTest {
+class VerticalTabDragTest : public TabDragTestBase,
+                            public testing::WithParamInterface<bool> {
  public:
   TabStripOrientation orientation() const override {
     return TabStripOrientation::kVertical;
   }
+  bool is_rtl() const override { return GetParam(); }
 };
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragTabMaintainsHorizontalPadding) {
+IN_PROC_BROWSER_TEST_P(VerticalTabDragTest, DragTabMaintainsHorizontalPadding) {
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
       StartDragBetweenTabs(1, 0), PollState(kDragStatePoller, GetDragActive()),
@@ -1780,7 +1810,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragTabMaintainsHorizontalPadding) {
       ReleaseMouse(), WaitForState(kDragStatePoller, false));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
+IN_PROC_BROWSER_TEST_P(VerticalTabDragTest,
                        DragToDetachIntoNewWindowWithVerticalTabsState) {
   const int kInitialWidth = 250;
   RunTestSequence(
@@ -1809,11 +1839,13 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
       }));
 }
 
-class HorizontalTabDragTest : public TabDragTest {
+class HorizontalTabDragTest : public TabDragTestBase,
+                              public testing::WithParamInterface<bool> {
  public:
   TabStripOrientation orientation() const override {
     return TabStripOrientation::kHorizontal;
   }
+  bool is_rtl() const override { return GetParam(); }
 
  protected:
   void DispatchGestureToView(views::View* view,
@@ -1848,8 +1880,8 @@ class HorizontalTabDragTest : public TabDragTest {
 
     TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     ASSERT_NE(nullptr, tab_strip_model);
-    const int leading_step = base::i18n::IsRTL() ? 1 : -1;
-    const int trailing_step = -leading_step;
+    const int leading_step = LeadingStep();
+    const int trailing_step = TrailingStep();
     std::optional<tab_groups::TabGroupId> group_id;
     tabs::TabInterface* tab0 = nullptr;
     tabs::TabInterface* tab1 = nullptr;
@@ -1946,8 +1978,8 @@ class HorizontalTabDragTest : public TabDragTest {
 
     TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     ASSERT_NE(nullptr, tab_strip_model);
-    const int leading_step = base::i18n::IsRTL() ? 1 : -1;
-    const int trailing_step = -leading_step;
+    const int leading_step = LeadingStep();
+    const int trailing_step = TrailingStep();
     std::optional<tab_groups::TabGroupId> group0_id;
     std::optional<tab_groups::TabGroupId> group1_id;
     tabs::TabInterface* tab0 = nullptr;
@@ -2050,7 +2082,7 @@ class HorizontalTabDragTest : public TabDragTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DragMultipleCompressedTabs) {
+IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest, DragMultipleCompressedTabs) {
   int strip_collective_width = 0;
 
   RunTestSequence(
@@ -2077,7 +2109,9 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DragMultipleCompressedTabs) {
         views::View* tab1 = GetTabViewAt(1);
         views::View* tab3 = GetTabViewAt(3);
         ASSERT_TRUE(tab1 && tab3);
-        strip_collective_width = tab3->bounds().right() - tab1->bounds().x();
+        strip_collective_width =
+            std::max(tab1->bounds().right(), tab3->bounds().right()) -
+            std::min(tab1->bounds().x(), tab3->bounds().x());
       }),
       StartDragBetweenTabs(2, 0), PollState(kDragStatePoller, GetDragActive()),
       WaitForState(kDragStatePoller, true),
@@ -2092,7 +2126,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DragMultipleCompressedTabs) {
       ReleaseMouse(), WaitForState(kDragStatePoller, false));
 }
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
+IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest,
                        DetachCompressedTabPreservesBoundsDuringDrag) {
   gfx::Rect initial_tab_bounds;
 
@@ -2112,7 +2146,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
       }),
       PollState(kBrowserCountPoller, GetBrowserCount()),
       PollState(kDragStatePoller, GetDragActive()),
-      StartDragTabByOffset(5, gfx::Vector2d(15, 0)),
+      StartDragTabByOffset(5, gfx::Vector2d(is_rtl() ? -15 : 15, 0)),
       WaitForState(kDragStatePoller, true), MoveMouseOutOfTabstrip(),
       WaitForState(kBrowserCountPoller, 2u), WaitForDetachedWindowVisible(),
       Do([&]() {
@@ -2124,8 +2158,9 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
         // DetachToBrowserTabDragControllerTest.DetachToOwnWindow.
         EXPECT_EQ(detached_tab->bounds().width(), initial_tab_bounds.width());
 
-        // Preserves the horizontal drag offset (+15px from drag start).
-        // Matches legacy TabStripTest.RelayoutAfterDraggedTabBoundsUpdate.
+        // Preserves the horizontal drag offset (+15px leading offset from drag
+        // start). Matches legacy
+        // TabStripTest.RelayoutAfterDraggedTabBoundsUpdate.
         EXPECT_EQ(detached_tab->bounds().x(), initial_tab_bounds.x() + 15);
 
         // The cursor remains anchored directly over the tab.
@@ -2143,7 +2178,8 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
       ReleaseAndVerifyDetachedTabExpands(initial_tab_bounds));
 }
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DetachTabToRightStartsAtZero) {
+IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest,
+                       DetachTabPastTrailingEdgeStartsAtZero) {
 #if BUILDFLAG(IS_OZONE)
   // Wayland clients do not receive global coordinates outside surfaces and
   // exit via a synthesized vertical detach on wl_data_device.leave even when
@@ -2152,7 +2188,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DetachTabToRightStartsAtZero) {
     GTEST_SKIP() << "Wayland cannot track horizontal offsets past window edge";
   }
 #endif
-  // System DnD cannot track horizontal offsets past the right edge of the
+  // System DnD cannot track horizontal offsets past the trailing edge of the
   // window, exiting via a synthesized vertical detach instead. This is
   // consistent with the legacy horizontal tab strip behavior.
   if (!GetBrowserView().GetWidget()->IsMoveLoopSupported()) {
@@ -2176,13 +2212,17 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DetachTabToRightStartsAtZero) {
       }),
       PollState(kBrowserCountPoller, GetBrowserCount()),
       PollState(kDragStatePoller, GetDragActive()),
-      // Move 15px to cross the drag threshold and start dragging.
-      StartDragTabByOffset(0, gfx::Vector2d(15, 0)),
+      // Move 15px toward the trailing edge to cross the drag threshold and
+      // start dragging.
+      StartDragTabByOffset(0, gfx::Vector2d(is_rtl() ? -15 : 15, 0)),
       WaitForState(kDragStatePoller, true),
-      // Drag past the right edge of the browser view to detach horizontally.
+      // Drag past the trailing edge of the browser view to detach
+      // horizontally.
       MoveMouseTo(base::BindLambdaForTesting([this]() {
         const gfx::Rect window_bounds = GetBrowserView().GetBoundsInScreen();
-        return gfx::Point(window_bounds.right() + 50, window_bounds.y() + 20);
+        return gfx::Point(
+            is_rtl() ? window_bounds.x() - 50 : window_bounds.right() + 50,
+            window_bounds.y() + 20);
       })),
       WaitForState(kBrowserCountPoller, 2u), WaitForDetachedWindowVisible(),
       Do([&]() {
@@ -2207,7 +2247,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DetachTabToRightStartsAtZero) {
       ReleaseAndVerifyDetachedTabExpands(initial_tab_bounds));
 }
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
+IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest,
                        GestureScrollEndWithoutDragDoesNotSynthesizeTapOnTab) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -2253,7 +2293,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
   EXPECT_EQ(0, tab_strip_model->active_index());
 }
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
+IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest,
                        GestureEndWithoutDragDoesNotToggleTabGroupHeader) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -2301,7 +2341,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
             tab_strip_model->IsGroupCollapsed(group_id));
 }
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DragPinnedTab) {
+IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest, DragPinnedTab) {
   RunTestSequence(Do([this]() {
                     chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
                                      /*foreground=*/false);
@@ -2311,7 +2351,8 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DragPinnedTab) {
                     browser()->GetTabStripModel()->SetTabPinned(1, true);
                     views::test::RunScheduledLayout(&GetBrowserView());
                   }),
-                  StartDragTabByOffset(0, gfx::Vector2d(15, 0)),
+                  StartDragTabByOffset(0,
+                                       gfx::Vector2d(is_rtl() ? -15 : 15, 0)),
                   PollState(kDragStatePoller, GetDragActive()),
                   WaitForState(kDragStatePoller, true), Do([this]() {
                     auto* region = views::AsViewClass<BaseTabStripRegionView>(
@@ -2332,17 +2373,66 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DragPinnedTab) {
                   ReleaseMouse(), WaitForState(kDragStatePoller, false));
 }
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
+IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest,
                        DragMultipleCompressedTabsOutOfAndIntoGroup) {
   TestDragMultipleCompressedTabsOutOfAndIntoGroup();
 }
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
+IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest,
                        DragMultipleCompressedTabsBetweenTwoGroups) {
   TestDragMultipleCompressedTabsBetweenTwoGroups();
 }
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
+IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest, DragTabReorders) {
+  tabs::TabInterface* original_tab_0 = nullptr;
+  tabs::TabInterface* original_tab_1 = nullptr;
+  tabs::TabInterface* original_tab_2 = nullptr;
+
+  RunTestSequence(
+      Do([this, &original_tab_0, &original_tab_1, &original_tab_2]() {
+        chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                         /*foreground=*/false);
+        chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                         /*foreground=*/false);
+        views::test::RunScheduledLayout(&GetBrowserView());
+        original_tab_0 = browser()->GetTabStripModel()->GetTabAtIndex(0);
+        original_tab_1 = browser()->GetTabStripModel()->GetTabAtIndex(1);
+        original_tab_2 = browser()->GetTabStripModel()->GetTabAtIndex(2);
+      }),
+      StartDragBetweenTabs(0, 1), PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, true), Do([this, &original_tab_0]() {
+        // While dragging Tab 0 over Tab 1, the model should reorder and show
+        // Tab 0 moved to index 1.
+        EXPECT_EQ(browser()->GetTabStripModel()->GetIndexOfTab(original_tab_0),
+                  1);
+      }),
+      ReleaseMouse(), WaitForState(kDragStatePoller, false),
+      StopObservingState(kDragStatePoller),
+      Do([this, &original_tab_0, &original_tab_1, &original_tab_2]() {
+        EXPECT_EQ(browser()->GetTabStripModel()->GetIndexOfTab(original_tab_0),
+                  1);
+        EXPECT_EQ(browser()->GetTabStripModel()->GetIndexOfTab(original_tab_1),
+                  0);
+        EXPECT_EQ(browser()->GetTabStripModel()->GetIndexOfTab(original_tab_2),
+                  2);
+      }),
+      StartDragBetweenTabs(2, 1), PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, true), Do([this, &original_tab_2]() {
+        EXPECT_EQ(browser()->GetTabStripModel()->GetIndexOfTab(original_tab_2),
+                  1);
+      }),
+      ReleaseMouse(), WaitForState(kDragStatePoller, false),
+      Do([this, &original_tab_0, &original_tab_1, &original_tab_2]() {
+        EXPECT_EQ(browser()->GetTabStripModel()->GetIndexOfTab(original_tab_1),
+                  0);
+        EXPECT_EQ(browser()->GetTabStripModel()->GetIndexOfTab(original_tab_2),
+                  1);
+        EXPECT_EQ(browser()->GetTabStripModel()->GetIndexOfTab(original_tab_0),
+                  2);
+      }));
+}
+
+IN_PROC_BROWSER_TEST_P(HorizontalTabDragTest,
                        DetachPinnedTabPreservesBoundsDuringDrag) {
   gfx::Rect initial_tab_bounds;
 
@@ -2389,158 +2479,45 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
       ReleaseMouseAsync(), WaitForState(kDragStatePoller, false));
 }
 
-class HorizontalTabDragRTLTest : public HorizontalTabDragTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    HorizontalTabDragTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(::switches::kForceUIDirection,
-                                    ::switches::kForceDirectionRTL);
-    command_line->AppendSwitchASCII(::switches::kForceTextDirection,
-                                    ::switches::kForceDirectionRTL);
-  }
-};
+namespace {
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragRTLTest, DragMultipleCompressedTabs) {
-  int strip_collective_width = 0;
-
-  RunTestSequence(
-      // Add tabs until they are compressed.
-      Do([this]() {
-        for (int i = 0; i < 11; ++i) {
-          chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
-                           /*foreground=*/false);
-        }
-        views::test::RunScheduledLayout(&GetBrowserView());
-      }),
-      // Select multiple contiguous tabs.
-      Do([this]() {
-        ui::ListSelectionModel selection;
-        selection.SetSelectedIndex(2);
-        selection.AddIndexToSelection(1);
-        selection.AddIndexToSelection(2);
-        selection.AddIndexToSelection(3);
-        browser()->GetTabStripModel()->SetSelectionFromModel(selection);
-        views::test::RunScheduledLayout(&GetBrowserView());
-      }),
-      // Record the collective width of the selected tabs in the tab strip.
-      Do([&]() {
-        views::View* tab1 = GetTabViewAt(1);
-        views::View* tab3 = GetTabViewAt(3);
-        ASSERT_TRUE(tab1 && tab3);
-        strip_collective_width = tab3->bounds().right() - tab1->bounds().x();
-      }),
-      StartDragBetweenTabs(2, 0), PollState(kDragStatePoller, GetDragActive()),
-      WaitForState(kDragStatePoller, true),
-      // Verify the collective width in the drag view matches the tab strip.
-      Do([&]() {
-        auto* unpinned_container = GetUnpinnedContainer();
-        ASSERT_TRUE(unpinned_container);
-        ASSERT_TRUE(unpinned_container->IsHandlingDrag());
-        EXPECT_EQ(unpinned_container->GetDraggingViewsBounds().width(),
-                  strip_collective_width);
-      }),
-      ReleaseMouse(), WaitForState(kDragStatePoller, false));
+std::string TabDragTestParamName(
+    const testing::TestParamInfo<std::tuple<TabStripOrientation, bool>>& info) {
+  const std::string orientation =
+      std::get<0>(info.param) == TabStripOrientation::kVertical ? "Vertical"
+                                                                : "Horizontal";
+  const std::string direction = std::get<1>(info.param) ? "RTL" : "LTR";
+  return orientation + "_" + direction;
 }
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragRTLTest, DragTabReordersInRTL) {
-  tabs::TabInterface* original_tab_0 = nullptr;
-  tabs::TabInterface* original_tab_1 = nullptr;
-
-  RunTestSequence(
-      Do([this, &original_tab_0, &original_tab_1]() {
-        chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
-                         /*foreground=*/false);
-        chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
-                         /*foreground=*/false);
-        views::test::RunScheduledLayout(&GetBrowserView());
-        original_tab_0 = browser()->GetTabStripModel()->GetTabAtIndex(0);
-        original_tab_1 = browser()->GetTabStripModel()->GetTabAtIndex(1);
-      }),
-      StartDragBetweenTabs(0, 1), PollState(kDragStatePoller, GetDragActive()),
-      WaitForState(kDragStatePoller, true), Do([this, &original_tab_0]() {
-        // While dragging Tab 0 over Tab 1 in RTL, the model should reorder
-        // and show Tab 0 moved to index 1.
-        EXPECT_EQ(browser()->GetTabStripModel()->GetIndexOfTab(original_tab_0),
-                  1);
-      }),
-      ReleaseMouse(), WaitForState(kDragStatePoller, false),
-      Do([this, &original_tab_0, &original_tab_1]() {
-        EXPECT_EQ(browser()->GetTabStripModel()->GetIndexOfTab(original_tab_0),
-                  1);
-        EXPECT_EQ(browser()->GetTabStripModel()->GetIndexOfTab(original_tab_1),
-                  0);
-      }));
+std::string DirectionParamName(const testing::TestParamInfo<bool>& info) {
+  return info.param ? "RTL" : "LTR";
 }
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragRTLTest, DragPinnedTab) {
-  RunTestSequence(Do([this]() {
-                    chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
-                                     /*foreground=*/false);
-                    chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
-                                     /*foreground=*/false);
-                    browser()->GetTabStripModel()->SetTabPinned(0, true);
-                    browser()->GetTabStripModel()->SetTabPinned(1, true);
-                    views::test::RunScheduledLayout(&GetBrowserView());
-                  }),
-                  StartDragTabByOffset(0, gfx::Vector2d(-15, 0)),
-                  PollState(kDragStatePoller, GetDragActive()),
-                  WaitForState(kDragStatePoller, true), Do([this]() {
-                    auto* region = views::AsViewClass<BaseTabStripRegionView>(
-                        GetBrowserView().tab_strip_view());
-                    views::View* pinned_container =
-                        region ? region->GetPinnedTabsContainer() : nullptr;
-                    ASSERT_TRUE(pinned_container);
-                    views::View* tab0 = GetTabViewAt(0);
-                    views::View* tab1 = GetTabViewAt(1);
-                    ASSERT_TRUE(tab0 && tab1);
-                    EXPECT_TRUE(tab0->GetVisible());
-                    EXPECT_TRUE(tab1->GetVisible());
-                    EXPECT_TRUE(pinned_container->GetBoundsInScreen().Contains(
-                        tab0->GetBoundsInScreen()));
-                    EXPECT_TRUE(pinned_container->GetBoundsInScreen().Contains(
-                        tab1->GetBoundsInScreen()));
-                  }),
-                  ReleaseMouse(), WaitForState(kDragStatePoller, false));
-}
-
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragRTLTest, DragOutOfAndIntoGroup) {
-  TestDragOutOfAndIntoGroup();
-}
-
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragRTLTest,
-                       DragMultipleCompressedTabsOutOfAndIntoGroup) {
-  TestDragMultipleCompressedTabsOutOfAndIntoGroup();
-}
-
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragRTLTest,
-                       DragMultipleCompressedTabsBetweenTwoGroups) {
-  TestDragMultipleCompressedTabsBetweenTwoGroups();
-}
+}  // namespace
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     TabDragTest,
-    testing::Values(TabStripOrientation::kVertical,
-                    TabStripOrientation::kHorizontal),
-    [](const testing::TestParamInfo<TabStripOrientation>& info) {
-      switch (info.param) {
-        case TabStripOrientation::kVertical:
-          return "Vertical";
-        case TabStripOrientation::kHorizontal:
-          return "Horizontal";
-      }
-    });
+    testing::Combine(testing::Values(TabStripOrientation::kVertical,
+                                     TabStripOrientation::kHorizontal),
+                     testing::Bool()),
+    TabDragTestParamName);
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     TabDragFocusModeTest,
-    testing::Values(TabStripOrientation::kVertical,
-                    TabStripOrientation::kHorizontal),
-    [](const testing::TestParamInfo<TabStripOrientation>& info) {
-      switch (info.param) {
-        case TabStripOrientation::kVertical:
-          return "Vertical";
-        case TabStripOrientation::kHorizontal:
-          return "Horizontal";
-      }
-    });
+    testing::Combine(testing::Values(TabStripOrientation::kVertical,
+                                     TabStripOrientation::kHorizontal),
+                     testing::Bool()),
+    TabDragTestParamName);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         VerticalTabDragTest,
+                         testing::Bool(),
+                         DirectionParamName);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HorizontalTabDragTest,
+                         testing::Bool(),
+                         DirectionParamName);

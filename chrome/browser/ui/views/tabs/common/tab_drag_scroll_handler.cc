@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_drag_scroll_handler.h"
 
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/time/time.h"
 #include "ui/views/controls/scroll_view.h"
 
@@ -30,21 +31,29 @@ void TabDragScrollHandler::OnDraggedTabPositionUpdated(
   // based on the drag offset from the bounds of the scroll view.
   constexpr float kScrollIncrement = 5;
 
-  const auto& visible_bounds = host_view->GetVisibleBounds();
+  const gfx::Rect visible_bounds = scroll_view.GetVisibleRect();
 
   if (IsHorizontalScrollEnabled(scroll_view)) {
+    const bool is_rtl = base::i18n::IsRTL();
+    const bool can_scroll_trailing =
+        visible_bounds.right() < host_view->width();
+    const bool can_scroll_leading = visible_bounds.x() > 0;
     const bool is_dragging_to_right =
-        visible_bounds.right() < host_view->width() &&
         dragged_view_bounds_in_scroll_view.right() >=
-            scroll_bounds_in_scroll_view.right();
+        scroll_bounds_in_scroll_view.right();
+    const bool is_dragging_to_left = dragged_view_bounds_in_scroll_view.x() <=
+                                     scroll_bounds_in_scroll_view.x();
 
-    const bool is_dragging_to_left =
-        visible_bounds.x() > 0 && dragged_view_bounds_in_scroll_view.x() <=
-                                      scroll_bounds_in_scroll_view.x();
+    const bool is_dragging_to_trailing =
+        can_scroll_trailing &&
+        (is_rtl ? is_dragging_to_left : is_dragging_to_right);
+    const bool is_dragging_to_leading =
+        can_scroll_leading &&
+        (is_rtl ? is_dragging_to_right : is_dragging_to_left);
 
-    if (is_dragging_to_right) {
+    if (is_dragging_to_trailing) {
       StartOrContinueScrolling(scroll_view, kScrollIncrement);
-    } else if (is_dragging_to_left) {
+    } else if (is_dragging_to_leading) {
       StartOrContinueScrolling(scroll_view, -1.0f * kScrollIncrement);
     } else {
       StopScrolling(scroll_view);
