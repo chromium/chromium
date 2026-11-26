@@ -67,9 +67,10 @@ class SavedTabGroupUtils {
   static void OpenUrlInNewUngroupedTab(BrowserWindowInterface* browser,
                                        const GURL& url);
 
-  static void OpenOrMoveSavedGroupToNewWindow(
+  static void OpenOrMoveGroupToNewWindow(
       BrowserWindowInterface* browser,
-      const base::Uuid& saved_group_guid);
+      const EitherGroupID& group_id,
+      TabGroupSyncService* tab_group_service = nullptr);
 
   // Pin the saved tab group if it's unpinned, or unpin the saved tab group if
   // it's pinned.

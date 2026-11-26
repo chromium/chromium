@@ -13,6 +13,7 @@
 
 #include "base/uuid.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "ui/base/class_property.h"
 #include "url/gurl.h"
 
@@ -42,15 +43,17 @@ struct TabGroupMenuAction {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupMenuAction)
 
-  TabGroupMenuAction(Type type, std::variant<base::Uuid, GURL> element);
+  using Element = std::variant<EitherGroupID, GURL>;
+
+  TabGroupMenuAction(Type type, Element element);
   TabGroupMenuAction(const TabGroupMenuAction&);
   ~TabGroupMenuAction();
 
   Type type = Type::DEFAULT;
 
-  // The action needs either a UUID (e.g. Open group in new window) or a URL
-  // (e.g. Open tab) to perform.
-  std::variant<base::Uuid, GURL> element;
+  // The action needs a group ID (saved UUID or local group ID for unsaved
+  // groups) or a URL (e.g. Open tab) to perform.
+  Element element;
 };
 
 enum class TabGroupMenuContext {

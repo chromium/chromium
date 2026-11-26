@@ -20,8 +20,7 @@ namespace tab_groups {
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::Uuid, kSavedTabGroupGuidKey)
 
-TabGroupMenuAction::TabGroupMenuAction(Type type,
-                                       std::variant<base::Uuid, GURL> element)
+TabGroupMenuAction::TabGroupMenuAction(Type type, Element element)
     : type(type), element(element) {}
 TabGroupMenuAction::TabGroupMenuAction(const TabGroupMenuAction& action) =
     default;

@@ -17,6 +17,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -56,8 +57,11 @@ class STGTabsMenuModel : public ui::SimpleMenuModel,
   using OnExecuteCommandCallback =
       base::RepeatingCallback<void(const TabGroupMenuAction&)>;
 
+  // Builds the menu for a saved group or an unsaved open local group. When
+  // `group` is a `LocalTabGroupID`, it must currently exist in a browser
+  // window.
   void Build(
-      const SavedTabGroup& saved_group,
+      std::variant<SavedTabGroup, LocalTabGroupID> group,
       base::RepeatingCallback<int()> get_next_command_id,
       OnExecuteCommandCallback on_execute_command_callback = base::DoNothing());
 
@@ -67,11 +71,15 @@ class STGTabsMenuModel : public ui::SimpleMenuModel,
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
 
-  // Returns the sync_id of the group this menu is showing the tabs for.
-  // This will return nullopt until Build() has been called.
-  std::optional<base::Uuid> sync_id() { return sync_id_.value(); }
+  // Returns the sync_id of the group this menu is showing the tabs for, or
+  // nullopt until Build() has been called or when showing an unsaved local
+  // group.
+  std::optional<base::Uuid> sync_id() { return sync_id_; }
 
  private:
+  void AddSavedGroupItems(
+      bool is_pinned,
+      const base::RepeatingCallback<int()>& get_next_command_id);
   void OnFaviconDataAvailable(
       int command_id,
       const favicon_base::FaviconImageResult& image_result);

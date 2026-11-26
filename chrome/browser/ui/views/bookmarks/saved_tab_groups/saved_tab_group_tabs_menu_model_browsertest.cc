@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -11,8 +12,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
@@ -21,15 +24,20 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"  // For IDS_OPEN_GROUP_IN_BROWSER_MENU
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"  // For GetStringUTF16
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace tab_groups {
 
@@ -402,6 +410,120 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
                    "TabGroups_SavedTabGroups_OrganizerPanel_FocusGroup"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "TabGroups_SavedTabGroups_OrganizerPanel_UnfocusGroup"));
+}
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
+                       IncognitoLocalGroupMenuItemsAndActions) {
+  base::UserActionTester user_action_tester;
+  BrowserWindowInterface* const incognito_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(incognito_browser);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(incognito_browser, 1, GURL("about:blank"),
+                                     ui::PAGE_TRANSITION_LINK, true));
+
+  TabStripModel* const tsm = incognito_browser->GetTabStripModel();
+  ASSERT_EQ(2, tsm->count());
+  const TabGroupId local_id = tsm->AddToNewGroup({0});
+
+  auto build_menu = [&](BrowserWindowInterface* target_browser) {
+    auto menu = std::make_unique<STGTabsMenuModel>(
+        target_browser, TabGroupMenuContext::ORGANIZER_PANEL);
+    menu->Build(local_id,
+                base::BindRepeating(
+                    &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+                    base::Unretained(this)));
+    return menu;
+  };
+  auto activate = [&](STGTabsMenuModel* menu, ui::ElementIdentifier id) {
+    std::optional<size_t> index = GetIndexOfElementId(menu, id);
+    ASSERT_TRUE(index.has_value());
+    menu->ActivatedAt(index.value());
+  };
+
+  std::unique_ptr<STGTabsMenuModel> model = build_menu(incognito_browser);
+  EXPECT_FALSE(GetIndexOfElementId(model.get(), STGTabsMenuModel::kOpenGroup)
+                   .has_value());
+  EXPECT_FALSE(
+      GetIndexOfElementId(model.get(), STGTabsMenuModel::kDeleteGroupMenuItem)
+          .has_value());
+  EXPECT_FALSE(
+      GetIndexOfElementId(model.get(), STGTabsMenuModel::kLeaveGroupMenuItem)
+          .has_value());
+
+  activate(model.get(), STGTabsMenuModel::kTab);
+  EXPECT_EQ(3, tsm->count());
+
+  activate(model.get(), STGTabsMenuModel::kToggleGroupFocusStateMenuItem);
+  EXPECT_EQ(tsm->GetFocusedGroup(), local_id);
+
+  std::unique_ptr<STGTabsMenuModel> focused_model =
+      build_menu(incognito_browser);
+  std::optional<size_t> unfocus_index = GetIndexOfElementId(
+      focused_model.get(), STGTabsMenuModel::kToggleGroupFocusStateMenuItem);
+  ASSERT_TRUE(unfocus_index.has_value());
+  EXPECT_EQ(
+      focused_model->GetLabelAt(unfocus_index.value()),
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP));
+  focused_model->ActivatedAt(unfocus_index.value());
+  EXPECT_FALSE(tsm->GetFocusedGroup().has_value());
+
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  activate(focused_model.get(),
+           STGTabsMenuModel::kMoveGroupToNewWindowMenuItem);
+  BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
+  ASSERT_TRUE(new_browser);
+  EXPECT_TRUE(new_browser->GetProfile()->IsIncognitoProfile());
+  EXPECT_TRUE(tsm->group_model()->ListTabGroups().empty());
+  EXPECT_EQ(
+      1u,
+      new_browser->GetTabStripModel()->group_model()->ListTabGroups().size());
+
+  ASSERT_TRUE(AddTabAtIndexToBrowser(new_browser, 1, GURL("about:blank"),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  std::unique_ptr<STGTabsMenuModel> moved_model = build_menu(new_browser);
+  activate(moved_model.get(), STGTabsMenuModel::kCloseGroup);
+  EXPECT_TRUE(
+      new_browser->GetTabStripModel()->group_model()->ListTabGroups().empty());
+
+  // Executing actions on an already-closed local group should safely no-op.
+  activate(focused_model.get(), STGTabsMenuModel::kCloseGroup);
+  activate(focused_model.get(),
+           STGTabsMenuModel::kMoveGroupToNewWindowMenuItem);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_TabGroupSubmenu_Closed"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_MoveGroupToNewWindow"));
+}
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
+                       LocalGroupUsesTabUIHelperOverrides) {
+  TabStripModel* const tsm = browser()->GetTabStripModel();
+  // Create a tab with an initial uncommitted NavigationEntry so WebContents has
+  // an empty visible URL while TabUIHelper resolves it to about:blank.
+  std::unique_ptr<content::WebContents> uncommitted_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  tsm->AppendWebContents(std::move(uncommitted_contents),
+                         /*foreground=*/false);
+  const int uncommitted_index = tsm->count() - 1;
+  const TabGroupId local_id = tsm->AddToNewGroup({uncommitted_index});
+  TabUIHelper::From(tsm->GetTabAtIndex(uncommitted_index))
+      ->SetPendingNavigationState(GURL("https://example.com/"),
+                                  u"Pending Title");
+
+  STGTabsMenuModel model(browser(), TabGroupMenuContext::ORGANIZER_PANEL);
+  model.Build(local_id,
+              base::BindRepeating(
+                  &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+                  base::Unretained(this)));
+
+  std::optional<size_t> tab_index =
+      GetIndexOfElementId(&model, STGTabsMenuModel::kTab);
+  ASSERT_TRUE(tab_index.has_value());
+  EXPECT_EQ(u"Pending Title", model.GetLabelAt(tab_index.value()));
+
+  model.ActivatedAt(tab_index.value());
+  EXPECT_EQ(GURL(url::kAboutBlankURL),
+            tsm->GetActiveWebContents()->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,

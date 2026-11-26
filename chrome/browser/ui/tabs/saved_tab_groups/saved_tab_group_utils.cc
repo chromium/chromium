@@ -6,9 +6,12 @@
 
 #include <numeric>
 #include <optional>
+#include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -165,6 +168,73 @@ void RecordFocusToggleUserAction(const tab_groups::TabGroupMenuContext& context,
   }
 }
 // LINT.ThenChange(:TabGroupMenuContextFocusSurface)
+
+struct ResolvedLocalTabGroup {
+  tab_groups::LocalTabGroupID local_group_id;
+  raw_ptr<BrowserWindowInterface> browser;
+};
+
+// Resolves `group_id` to an open local tab group and its owning browser,
+// returning `std::nullopt` if the group is no longer open in any browser
+// window.
+std::optional<ResolvedLocalTabGroup> ResolveOpenLocalTabGroup(
+    const tab_groups::EitherGroupID& group_id,
+    tab_groups::TabGroupSyncService* tab_group_service) {
+  std::optional<tab_groups::LocalTabGroupID> local_group_id;
+  if (const auto* local_id =
+          std::get_if<tab_groups::LocalTabGroupID>(&group_id)) {
+    local_group_id = *local_id;
+  } else {
+    CHECK(tab_group_service);
+    if (std::optional<tab_groups::SavedTabGroup> saved_group =
+            tab_group_service->GetGroup(std::get<base::Uuid>(group_id))) {
+      local_group_id = saved_group->local_group_id();
+    }
+  }
+  if (!local_group_id.has_value()) {
+    return std::nullopt;
+  }
+  BrowserWindowInterface* const browser =
+      tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(*local_group_id);
+  return browser ? std::make_optional(
+                       ResolvedLocalTabGroup{*local_group_id, browser})
+                 : std::nullopt;
+}
+
+// Resolves `group_id` to an open local tab group and its owning browser,
+// opening a closed saved group in `browser` if needed.
+std::optional<ResolvedLocalTabGroup> ResolveOrOpenLocalTabGroup(
+    const tab_groups::EitherGroupID& group_id,
+    BrowserWindowInterface* browser,
+    tab_groups::TabGroupSyncService* tab_group_service) {
+  if (std::optional<ResolvedLocalTabGroup> resolved =
+          ResolveOpenLocalTabGroup(group_id, tab_group_service)) {
+    return resolved;
+  }
+  const auto* uuid = std::get_if<base::Uuid>(&group_id);
+  if (!uuid) {
+    return std::nullopt;
+  }
+  CHECK(tab_group_service);
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      tab_group_service->GetGroup(*uuid);
+  if (!saved_group.has_value() || saved_group->local_group_id().has_value() ||
+      saved_group->saved_tabs().empty()) {
+    return std::nullopt;
+  }
+  std::optional<tab_groups::LocalTabGroupID> opened_id =
+      tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
+          browser, *uuid, tab_groups::OpeningSource::kOpenedFromRevisitUi,
+          tab_group_service);
+  if (!opened_id.has_value()) {
+    return std::nullopt;
+  }
+  BrowserWindowInterface* const target_browser =
+      tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(*opened_id);
+  return target_browser ? std::make_optional(
+                              ResolvedLocalTabGroup{*opened_id, target_browser})
+                        : std::nullopt;
+}
 
 }  // namespace
 
@@ -457,44 +527,32 @@ void SavedTabGroupUtils::OpenUrlInNewUngroupedTab(
 }
 
 // static
-void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
+void SavedTabGroupUtils::OpenOrMoveGroupToNewWindow(
     BrowserWindowInterface* browser,
-    const base::Uuid& saved_group_guid) {
-  tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser->GetProfile());
-  std::optional<SavedTabGroup> save_group =
-      tab_group_service->GetGroup(saved_group_guid);
-  // In case the group has been deleted or has no tabs.
-  if (!save_group.has_value() || save_group->saved_tabs().empty()) {
+    const EitherGroupID& group_id,
+    TabGroupSyncService* tab_group_service) {
+  if (std::holds_alternative<base::Uuid>(group_id) && !tab_group_service) {
+    if (!browser) {
+      return;
+    }
+    tab_group_service =
+        TabGroupSyncServiceFactory::GetForProfile(browser->GetProfile());
+    if (!tab_group_service) {
+      return;
+    }
+  }
+
+  std::optional<ResolvedLocalTabGroup> resolved =
+      ResolveOrOpenLocalTabGroup(group_id, browser, tab_group_service);
+  if (!resolved) {
     return;
   }
 
-  const auto& local_group_id = save_group->local_group_id();
-  BrowserWindowInterface* const browser_with_local_group_id =
-      local_group_id.has_value()
-          ? SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id.value())
-          : browser;
-
-  if (!local_group_id.has_value()) {
-    // Open the group in the browser the button was pressed.
-    // NOTE: This action could cause `this` to be deleted. Make sure lines
-    // following this have either copied data by value or hold pointers to the
-    // objects it needs.
-    tab_group_service->OpenTabGroup(
-        saved_group_guid,
-        std::make_unique<TabGroupActionContextDesktop>(
-            browser_with_local_group_id, OpeningSource::kOpenedFromRevisitUi));
-  }
-
-  // Ensure that the saved group did open in the browser.
-  save_group = tab_group_service->GetGroup(saved_group_guid);
-  CHECK(save_group->local_group_id().has_value());
-
+  base::RecordAction(
+      base::UserMetricsAction("TabGroups_SavedTabGroups_MoveGroupToNewWindow"));
   // Move the open group to a new browser window.
-  browser_with_local_group_id->GetTabStripModel()
-      ->delegate()
-      ->MoveGroupToNewWindow(save_group->local_group_id().value());
+  resolved->browser->GetTabStripModel()->delegate()->MoveGroupToNewWindow(
+      resolved->local_group_id);
 }
 
 // static
@@ -736,16 +794,6 @@ bool SavedTabGroupUtils::SupportsSharedTabGroups() {
 // static
 bool SavedTabGroupUtils::IsOwnerOfSharedTabGroup(Profile* profile,
                                                  const base::Uuid& sync_id) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-
-  CoreAccountInfo account =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-
-  if (account.IsEmpty()) {
-    return true;
-  }
-
   TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   if (!tab_group_service) {
@@ -761,6 +809,15 @@ bool SavedTabGroupUtils::IsOwnerOfSharedTabGroup(Profile* profile,
   std::optional<syncer::CollaborationId> collaboration_id =
       saved_group->collaboration_id();
   if (!collaboration_id) {
+    return true;
+  }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CHECK(identity_manager);
+  CoreAccountInfo account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (account.IsEmpty()) {
     return true;
   }
 
@@ -885,10 +942,15 @@ void SavedTabGroupUtils::PerformTabGroupMenuAction(
         browser, std::get<GURL>(action.element));
     return;
   }
+  if (type == TabGroupMenuAction::Type::DEFAULT) {
+    return;
+  }
 
-  auto uuid = std::get<base::Uuid>(action.element);
+  const EitherGroupID& group_id = std::get<EitherGroupID>(action.element);
   switch (type) {
     case TabGroupMenuAction::Type::OPEN_IN_BROWSER: {
+      CHECK(tab_group_service);
+      const auto& uuid = std::get<base::Uuid>(group_id);
       base::RecordAction(base::UserMetricsAction(
           "TabGroups_SavedTabGroups_TabGroupSubmenu_Opened"));
 
@@ -914,68 +976,54 @@ void SavedTabGroupUtils::PerformTabGroupMenuAction(
       break;
     }
     case TabGroupMenuAction::Type::CLOSE_GROUP: {
-      std::optional<tab_groups::SavedTabGroup> saved_group =
-          tab_group_service->GetGroup(uuid);
-      if (!saved_group.has_value() ||
-          !saved_group->local_group_id().has_value()) {
+      std::optional<ResolvedLocalTabGroup> resolved =
+          ResolveOpenLocalTabGroup(group_id, tab_group_service);
+      if (!resolved) {
         break;
+      }
+      if (const auto* uuid = std::get_if<base::Uuid>(&group_id)) {
+        std::optional<tab_groups::SavedTabGroup> saved_group =
+            tab_group_service->GetGroup(*uuid);
+        if (saved_group && saved_group->is_shared_tab_group()) {
+          saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
+              saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
+                  kClosed);
+        }
       }
 
       base::RecordAction(base::UserMetricsAction(
           "TabGroups_SavedTabGroups_TabGroupSubmenu_Closed"));
-
-      if (saved_group->is_shared_tab_group()) {
-        saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
-            saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
-                kClosed);
-      }
-
-      SavedTabGroupUtils::RemoveGroupFromTabstrip(
-          /*browser=*/nullptr, saved_group->local_group_id().value());
+      SavedTabGroupUtils::RemoveGroupFromTabstrip(resolved->browser,
+                                                  resolved->local_group_id);
       break;
     }
-    case TabGroupMenuAction::Type::OPEN_OR_MOVE_TO_NEW_WINDOW:
-      base::RecordAction(base::UserMetricsAction(
-          "TabGroups_SavedTabGroups_MoveGroupToNewWindow"));
-      SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(browser, uuid);
+    case TabGroupMenuAction::Type::OPEN_OR_MOVE_TO_NEW_WINDOW: {
+      SavedTabGroupUtils::OpenOrMoveGroupToNewWindow(browser, group_id,
+                                                     tab_group_service);
       break;
+    }
     case TabGroupMenuAction::Type::FOCUS_OR_UNFOCUS_GROUP: {
-      std::optional<tab_groups::SavedTabGroup> saved_group =
-          tab_group_service->GetGroup(uuid);
-      if (!saved_group.has_value()) {
+      std::optional<ResolvedLocalTabGroup> resolved =
+          ResolveOrOpenLocalTabGroup(group_id, browser, tab_group_service);
+      if (!resolved) {
         break;
       }
 
-      std::optional<LocalTabGroupID> local_group_id =
-          saved_group->local_group_id();
-      if (!local_group_id.has_value()) {
-        local_group_id = OpenSavedTabGroup(browser, uuid,
-                                           OpeningSource::kOpenedFromRevisitUi,
-                                           tab_group_service);
-        if (!local_group_id.has_value()) {
-          break;
-        }
-      }
-
-      BrowserWindowInterface* target_browser =
-          SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id.value());
-      if (!target_browser) {
-        break;
-      }
-
-      TabStripModel* const tab_strip_model = target_browser->GetTabStripModel();
-      if (tab_strip_model->GetFocusedGroup() == local_group_id.value()) {
+      TabStripModel* const tab_strip_model =
+          resolved->browser->GetTabStripModel();
+      if (tab_strip_model->GetFocusedGroup() == resolved->local_group_id) {
         RecordFocusToggleUserAction(context, /*is_unfocus=*/true);
         tab_strip_model->ExitFocusMode(GetTabGroupFocusExitReason(context));
       } else {
         RecordFocusToggleUserAction(context, /*is_unfocus=*/false);
-        tab_strip_model->EnterFocusMode(local_group_id.value(),
+        tab_strip_model->EnterFocusMode(resolved->local_group_id,
                                         GetTabGroupFocusEntryPoint(context));
       }
       break;
     }
-    case TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP:
-
+    case TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP: {
+      CHECK(tab_group_service);
+      const auto& uuid = std::get<base::Uuid>(group_id);
       if (std::optional<tab_groups::SavedTabGroup> group =
               tab_group_service->GetGroup(uuid)) {
         if (group->is_pinned()) {
@@ -989,11 +1037,14 @@ void SavedTabGroupUtils::PerformTabGroupMenuAction(
 
       SavedTabGroupUtils::ToggleGroupPinState(browser, uuid);
       break;
+    }
     case TabGroupMenuAction::Type::DELETE_GROUP:
-      SavedTabGroupUtils::DeleteSavedGroup(browser, uuid);
+      SavedTabGroupUtils::DeleteSavedGroup(browser,
+                                           std::get<base::Uuid>(group_id));
       break;
     case TabGroupMenuAction::Type::LEAVE_GROUP:
-      SavedTabGroupUtils::LeaveSharedGroup(browser, uuid);
+      SavedTabGroupUtils::LeaveSharedGroup(browser,
+                                           std::get<base::Uuid>(group_id));
       break;
     case TabGroupMenuAction::Type::OPEN_URL:
     case TabGroupMenuAction::Type::DEFAULT:
