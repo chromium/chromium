@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/autofill/otp_filling_safe_browsing_checker_client.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -20,6 +21,7 @@
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,6 +69,8 @@ class MockSafeBrowsingDatabaseManager
                safe_browsing::CheckBrowseUrlType),
               (override));
 
+  MOCK_METHOD(bool, IsDatabaseReady, (), (const, override));
+
  protected:
   ~MockSafeBrowsingDatabaseManager() override = default;
 };
@@ -76,7 +80,9 @@ class MockSafeBrowsingDatabaseManager
 class ChromeOtpPhishGuardDelegateTest : public ChromeRenderViewHostTestHarness {
  public:
   ChromeOtpPhishGuardDelegateTest()
-      : main_frame_url_("https://main-frame.example.com"),
+      : ChromeRenderViewHostTestHarness(
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME),
+        main_frame_url_("https://main-frame.example.com"),
         frame_to_fill_url_("https://iframe.example.com") {}
 
   void SetUp() override {
@@ -269,6 +275,24 @@ TEST_F(ChromeOtpPhishGuardDelegateTest, MainFrameUnsafe) {
       main_frame_url_,
       safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kPhishing);
+}
+
+// Test that a local Safe Browsing check that times out reports `kCheckFailed`
+// without sending a PhishGuard request.
+TEST_F(ChromeOtpPhishGuardDelegateTest, LocalCheckTimeoutReportsCheckFailed) {
+  ChromeAutofillClient::CreateForWebContents(web_contents());
+  ChromePasswordManagerClient::CreateForWebContents(web_contents());
+  EXPECT_CALL(*database_manager_, CheckBrowseUrl).WillOnce(Return(false));
+  EXPECT_CALL(*database_manager_, CancelCheck);
+  EXPECT_CALL(*database_manager_, IsDatabaseReady).Times(0);
+
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
+  auto delegate = std::make_unique<ChromeOtpPhishGuardDelegate>(web_contents());
+  delegate->StartOtpPhishGuardCheck(main_frame_token(), future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  task_environment()->FastForwardBy(
+      OtpFillingSafeBrowsingCheckerClient::kDefaultCheckDelay);
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kCheckFailed);
 }
 
 // Test that if the frame is not found (e.g. detached), it safely reports

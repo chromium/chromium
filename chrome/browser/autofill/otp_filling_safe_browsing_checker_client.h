@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -29,9 +30,7 @@ namespace autofill {
 // Safe Browsing blocklist for any of the threat types defined by
 // `threat_types_`.
 //
-// Checker is configured to fail close. If the check takes longer than
-// `safe_browsing_check_delay_`, the URL will be reported as malicious/unsafe
-// (`is_malicious` = true in callback).
+// A URL check slower than `safe_browsing_check_delay_` reports `kCheckFailed`.
 //
 // Note: This class is strictly single-use per check. `CreateAndCheck` creates a
 // `std::unique_ptr<OtpFillingSafeBrowsingCheckerClient>` that starts the check
@@ -39,7 +38,8 @@ namespace autofill {
 class OtpFillingSafeBrowsingCheckerClient
     : public safe_browsing::SafeBrowsingDatabaseManager::Client {
  public:
-  using ResultCallback = base::OnceCallback<void(bool is_malicious)>;
+  using ResultCallback =
+      base::OnceCallback<void(OneTimeTokensPhishGuardVerdict)>;
 
   // LINT.IfChange(OtpFillingSafeBrowsingCheckResult)
   // These values are persisted to logs. Entries should not be renumbered and
@@ -101,7 +101,7 @@ class OtpFillingSafeBrowsingCheckerClient
   void OnCheckBlocklistTimeout();
 
   void CheckNextUrl();
-  void RunCallback(bool is_malicious);
+  void RunCallback(OneTimeTokensPhishGuardVerdict verdict);
   void LogCheckResult(CheckResult result);
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
