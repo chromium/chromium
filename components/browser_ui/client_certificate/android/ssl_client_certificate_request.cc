@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -26,6 +27,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/base/host_port_pair.h"
@@ -43,6 +46,11 @@ namespace browser_ui {
 namespace {
 using jni_zero::JavaRef;
 using jni_zero::ScopedJavaLocalRef;
+
+// Killswitch for deferring the Android system client certificate selector while
+// the requesting WebContents is not visible (crbug.com/553249796).
+BASE_FEATURE(kDeferSSLClientCertificateSelectorWhenHidden,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 class SSLClientCertPendingRequests;
 
@@ -127,6 +135,10 @@ class SSLClientCertPendingRequests
     skip_system_selector_for_testing_ = true;
   }
 
+  size_t GetPendingRequestCountForTesting() const {
+    return pending_requests_.size();
+  }
+
   // Remove pending requests when |should_keep| returns false. Calls |on_drop|
   // before dropping a request.
   void FilterPendingRequests(
@@ -137,8 +149,10 @@ class SSLClientCertPendingRequests
     return weak_factory_.GetWeakPtr();
   }
 
+  // content::WebContentsObserver:
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
   class CertificateDialogPolicy {
    public:
@@ -291,6 +305,12 @@ void SSLClientCertPendingRequests::PumpRequests() {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          kDeferSSLClientCertificateSelectorWhenHidden) &&
+      web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
+    return;
+  }
+
   // Check if this page is allowed to show any more client cert dialogs.
   if (dialog_policy_.MaxExceeded()) {
     LOG(WARNING) << "Dropping " << pending_requests_.size()
@@ -331,6 +351,13 @@ void SSLClientCertPendingRequests::ReadyToCommitNavigation(
     auto should_keep = [](auto* req) { return false; };
     FilterPendingRequests(should_keep);
     dialog_policy_.ResetCount();
+  }
+}
+
+void SSLClientCertPendingRequests::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility == content::Visibility::VISIBLE) {
+    PumpRequests();
   }
 }
 
@@ -469,6 +496,14 @@ size_t GetCountOfSSLClientCertificateSelectorForTesting(  // IN-TEST
       SSLClientCertPendingRequests::FromWebContents(contents);
   DCHECK(active_requests);
   return active_requests->GetDialogCount();
+}
+
+size_t GetCountOfPendingSSLClientCertificateRequestsForTesting(  // IN-TEST
+    content::WebContents* contents) {
+  SSLClientCertPendingRequests* active_requests =
+      SSLClientCertPendingRequests::FromWebContents(contents);
+  return active_requests ? active_requests->GetPendingRequestCountForTesting()
+                         : 0;
 }
 
 void SkipSystemSSLClientCertificateSelectorForTesting(  // IN-TEST

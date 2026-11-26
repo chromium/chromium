@@ -33,6 +33,12 @@ base::OnceClosure ShowSSLClientCertificateSelector(
 size_t GetCountOfSSLClientCertificateSelectorForTesting(
     content::WebContents* contents);
 
+// Returns the number of requests for `contents` which are queued and have not
+// yet been handed to the system certificate selector, e.g. because `contents`
+// is not visible.
+size_t GetCountOfPendingSSLClientCertificateRequestsForTesting(
+    content::WebContents* contents);
+
 // Requests for `contents` are not handed to the system certificate selector
 // (Java). Instead, they are owned by native code until they are completed with
 // CompleteActiveSSLClientCertificateRequestForTesting(). Tests which use

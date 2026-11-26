@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
@@ -282,6 +283,125 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertPendingRequestsTest,
   EXPECT_TRUE(destroyed[kMaxDialogs]);
   EXPECT_EQ(kMaxDialogs,
             GetCountOfSSLClientCertificateSelectorForTesting(contents));
+}
+
+// Verifies that a request from a hidden WebContents does not show the system
+// selector (which would be drawn over the foreground tab), and is neither
+// declined nor dropped. Instead it is deferred until the WebContents becomes
+// visible.
+IN_PROC_BROWSER_TEST_F(SSLClientCertPendingRequestsTest,
+                       HiddenWebContentsDefersRequestUntilVisible) {
+  content::WebContents* contents = shell()->web_contents();
+  SkipSystemSSLClientCertificateSelectorForTesting(contents);
+
+  contents->WasHidden();
+  ASSERT_EQ(content::Visibility::HIDDEN, contents->GetVisibility());
+
+  auto info = base::MakeRefCounted<net::SSLCertRequestInfo>();
+  info->host_and_port = net::HostPortPair("a.test", 443);
+  bool destroyed = false;
+  ShowSSLClientCertificateSelector(
+      contents, info.get(),
+      std::make_unique<TestClientCertificateDelegate>(&destroyed));
+
+  // No selector is shown while hidden, but the request is kept.
+  EXPECT_FALSE(destroyed);
+  EXPECT_EQ(0u, GetCountOfSSLClientCertificateSelectorForTesting(contents));
+  EXPECT_EQ(1u,
+            GetCountOfPendingSSLClientCertificateRequestsForTesting(contents));
+
+  // Once the WebContents is visible, the selector is shown.
+  contents->WasShown();
+  EXPECT_FALSE(destroyed);
+  EXPECT_EQ(1u, GetCountOfSSLClientCertificateSelectorForTesting(contents));
+  EXPECT_EQ(0u,
+            GetCountOfPendingSSLClientCertificateRequestsForTesting(contents));
+
+  CompleteActiveSSLClientCertificateRequestForTesting(contents, nullptr,
+                                                      nullptr);
+  EXPECT_TRUE(destroyed);
+}
+
+// Verifies that a request deferred because the WebContents is hidden can still
+// be cancelled, and is not shown once the WebContents becomes visible.
+IN_PROC_BROWSER_TEST_F(SSLClientCertPendingRequestsTest,
+                       DeferredRequestCanBeCancelled) {
+  content::WebContents* contents = shell()->web_contents();
+  SkipSystemSSLClientCertificateSelectorForTesting(contents);
+
+  contents->WasHidden();
+
+  auto info = base::MakeRefCounted<net::SSLCertRequestInfo>();
+  info->host_and_port = net::HostPortPair("a.test", 443);
+  bool destroyed = false;
+  base::OnceClosure cancel = ShowSSLClientCertificateSelector(
+      contents, info.get(),
+      std::make_unique<TestClientCertificateDelegate>(&destroyed));
+  EXPECT_FALSE(destroyed);
+
+  std::move(cancel).Run();
+  EXPECT_TRUE(destroyed);
+  EXPECT_EQ(0u,
+            GetCountOfPendingSSLClientCertificateRequestsForTesting(contents));
+
+  contents->WasShown();
+  EXPECT_EQ(0u, GetCountOfSSLClientCertificateSelectorForTesting(contents));
+}
+
+// Verifies that when the active request completes while the WebContents is
+// hidden, the next queued request is not shown until the WebContents is
+// visible again.
+IN_PROC_BROWSER_TEST_F(SSLClientCertPendingRequestsTest,
+                       QueuedRequestWaitsForVisibilityAfterCompletion) {
+  content::WebContents* contents = shell()->web_contents();
+  SkipSystemSSLClientCertificateSelectorForTesting(contents);
+
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  ASSERT_TRUE(https_server.Start());
+  scoped_refptr<net::X509Certificate> cert = https_server.GetCertificate();
+  ASSERT_TRUE(cert);
+  scoped_refptr<net::SSLPrivateKey> key = net::CreateFailSigningSSLPrivateKey();
+
+  // The first request is shown while the WebContents is visible.
+  auto first_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
+  first_info->host_and_port = net::HostPortPair("a.test", 443);
+  bool first_destroyed = false;
+  ShowSSLClientCertificateSelector(
+      contents, first_info.get(),
+      std::make_unique<TestClientCertificateDelegate>(&first_destroyed));
+  EXPECT_EQ(1u, GetCountOfSSLClientCertificateSelectorForTesting(contents));
+
+  // The WebContents is hidden, and a second request for another host is queued
+  // behind the active one.
+  contents->WasHidden();
+  auto second_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
+  second_info->host_and_port = net::HostPortPair("b.test", 443);
+  bool second_destroyed = false;
+  ShowSSLClientCertificateSelector(
+      contents, second_info.get(),
+      std::make_unique<TestClientCertificateDelegate>(&second_destroyed));
+  EXPECT_EQ(1u,
+            GetCountOfPendingSSLClientCertificateRequestsForTesting(contents));
+
+  // The first request completes while hidden. The second one must stay queued
+  // rather than being shown or dropped.
+  CompleteActiveSSLClientCertificateRequestForTesting(contents, cert, key);
+  EXPECT_TRUE(first_destroyed);
+  EXPECT_FALSE(second_destroyed);
+  EXPECT_EQ(0u, GetCountOfSSLClientCertificateSelectorForTesting(contents));
+  EXPECT_EQ(1u,
+            GetCountOfPendingSSLClientCertificateRequestsForTesting(contents));
+
+  // It is shown once the WebContents is visible again.
+  contents->WasShown();
+  EXPECT_FALSE(second_destroyed);
+  EXPECT_EQ(1u, GetCountOfSSLClientCertificateSelectorForTesting(contents));
+  EXPECT_EQ(0u,
+            GetCountOfPendingSSLClientCertificateRequestsForTesting(contents));
+
+  CompleteActiveSSLClientCertificateRequestForTesting(contents, nullptr,
+                                                      nullptr);
+  EXPECT_TRUE(second_destroyed);
 }
 
 }  // namespace
