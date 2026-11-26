@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -23,6 +24,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics.ImmersiveModeExitReason;
@@ -389,6 +391,50 @@ public class ExclusiveAccessManager
     }
 
     /**
+     * Pre-handles an Android Escape {@link KeyEvent} when no {@link
+     * org.chromium.components.embedder_support.view.ContentView} is focused (e.g. on NTP or native
+     * pages), forwarding Escape press/release events to native {@link
+     * ExclusiveAccessManagerAndroid} so long-pressing Esc still exits immersive mode.
+     *
+     * @param event The Android key event to inspect.
+     * @return {@code true} if the event was consumed.
+     */
+    public boolean preHandleEscapeKeyEvent(KeyEvent event) {
+        if (!ChromeFeatureList.sAndroidZoomImmersive.isEnabled()
+                || mExclusiveAccessManagerAndroidNativePointer == null
+                || event.getKeyCode() != KeyEvent.KEYCODE_ESCAPE) {
+            return false;
+        }
+        int action = event.getAction();
+        // Since this method only handles the Esc key, we only care about key up and down.
+        if (action != KeyEvent.ACTION_DOWN && action != KeyEvent.ACTION_UP) {
+            return false;
+        }
+        boolean isKeyDown = action == KeyEvent.ACTION_DOWN;
+        // Skip key-down when no exclusive access mode is active so non-fullscreen Esc presses
+        // (e.g. on NTP/omnibox) do not cross JNI or start hold timers. Key-up is still forwarded
+        // so any running timer is stopped if exclusive access exited mid-hold.
+        if (isKeyDown && !mExclusiveAccessState.get()) {
+            return false;
+        }
+        // Skip auto-repeat key-down events: native starts the long-press timer on the initial
+        // key-down and stops it on key-up.
+        if (isKeyDown && event.getRepeatCount() > 0) {
+            return false;
+        }
+        boolean handled =
+                ExclusiveAccessManagerJni.get()
+                        .preHandleEscapeKeyEvent(
+                                mExclusiveAccessManagerAndroidNativePointer,
+                                /* isKeyDown= */ isKeyDown,
+                                /* metaState= */ event.getMetaState());
+        if (handled) {
+            mExclusiveAccessState.set(hasExclusiveAccess());
+        }
+        return handled;
+    }
+
+    /**
      * EAM frontend for WebContentsDelegate to request keyboard lock
      *
      * @param webContents the WebContents that requested keyboard load
@@ -556,6 +602,9 @@ public class ExclusiveAccessManager
 
         boolean preHandleKeyboardEvent(
                 JniPtr<NativeExclusiveAccessManagerAndroid> self, long nativeKeyEvent);
+
+        boolean preHandleEscapeKeyEvent(
+                JniPtr<NativeExclusiveAccessManagerAndroid> self, boolean isKeyDown, int metaState);
 
         void requestKeyboardLock(
                 JniPtr<NativeExclusiveAccessManagerAndroid> self,

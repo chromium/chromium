@@ -10,14 +10,17 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 
 import org.jni_zero.JniUniquePtr;
 import org.junit.After;
@@ -31,8 +34,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.tab.Tab;
@@ -62,6 +69,8 @@ public class ExclusiveAccessManagerUnitTest {
     @Mock private RenderFrameHost mMainFrame;
     @Mock private RenderFrameHost mRenderFrameHost;
 
+    private final SettableNonNullObservableSupplier<Boolean> mPersistentModeSupplier =
+            ObservableSuppliers.createNonNull(false);
     private JniUniquePtr<ExclusiveAccessManager.NativeExclusiveAccessManagerAndroid> mNativePtr;
     private ExclusiveAccessManager mManager;
 
@@ -76,7 +85,7 @@ public class ExclusiveAccessManagerUnitTest {
                             return mNativePtr;
                         });
         when(mFullscreenManager.getPersistentFullscreenModeSupplier())
-                .thenReturn(ObservableSuppliers.createNonNull(false));
+                .thenReturn(mPersistentModeSupplier);
         when(mWebContents.getMainFrame()).thenReturn(mMainFrame);
         mManager =
                 new ExclusiveAccessManager(
@@ -270,5 +279,128 @@ public class ExclusiveAccessManagerUnitTest {
         mManager.destroy();
 
         verify(mTabModelSelector, never()).removeObserverFromAllModels(any());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testPreHandleEscapeKeyEvent_featureDisabled_ignored() {
+        initialize();
+
+        KeyEvent escDown = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
+        KeyEvent escUp = new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ESCAPE);
+        assertFalse(mManager.preHandleEscapeKeyEvent(escDown));
+        assertFalse(mManager.preHandleEscapeKeyEvent(escUp));
+
+        // Feature flag is off, so nothing should be forwarded to native.
+        verify(mJni, never()).preHandleEscapeKeyEvent(any(), anyBoolean(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testPreHandleEscapeKeyEvent_nonEscapeKey_ignored() {
+        initialize();
+
+        KeyEvent aDown = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_A);
+        assertFalse(mManager.preHandleEscapeKeyEvent(aDown));
+
+        // Only Esc is handled here; other keys should be ignored.
+        verify(mJni, never()).preHandleEscapeKeyEvent(any(), anyBoolean(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testPreHandleEscapeKeyEvent_notInExclusiveAccess_skipsKeyDownAndForwardsKeyUp() {
+        initialize();
+
+        KeyEvent escDown = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
+        KeyEvent escUp = new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ESCAPE);
+        assertFalse(mManager.preHandleEscapeKeyEvent(escDown));
+        assertFalse(mManager.preHandleEscapeKeyEvent(escUp));
+
+        verify(mJni, never())
+                .preHandleEscapeKeyEvent(mNativePtr, /* isKeyDown= */ true, /* metaState= */ 0);
+        verify(mJni, times(1))
+                .preHandleEscapeKeyEvent(mNativePtr, /* isKeyDown= */ false, /* metaState= */ 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testPreHandleEscapeKeyEvent_escapeDownAndUp_forwardsToNativeAndSkipsRepeats() {
+        initialize();
+        mPersistentModeSupplier.set(true);
+
+        // Simulates long-pressing plain Esc: initial press (repeat=0), an auto-repeat event while
+        // held (repeat=1), and releasing the key (ACTION_UP).
+        KeyEvent escDown =
+                new KeyEvent(
+                        /* downTime= */ 100L,
+                        /* eventTime= */ 100L,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_ESCAPE,
+                        /* repeat= */ 0,
+                        /* metaState= */ 0);
+        KeyEvent escRepeat =
+                new KeyEvent(
+                        /* downTime= */ 100L,
+                        /* eventTime= */ 500L,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_ESCAPE,
+                        /* repeat= */ 1,
+                        /* metaState= */ 0);
+        KeyEvent escUp =
+                new KeyEvent(
+                        /* downTime= */ 100L,
+                        /* eventTime= */ 800L,
+                        KeyEvent.ACTION_UP,
+                        KeyEvent.KEYCODE_ESCAPE,
+                        /* repeat= */ 0,
+                        /* metaState= */ 0);
+
+        assertFalse(mManager.preHandleEscapeKeyEvent(escDown));
+        assertFalse(mManager.preHandleEscapeKeyEvent(escRepeat));
+        assertFalse(mManager.preHandleEscapeKeyEvent(escUp));
+
+        // Initial key-down was forwarded once (auto-repeat was skipped) and key-up was forwarded
+        // once.
+        verify(mJni, times(1))
+                .preHandleEscapeKeyEvent(mNativePtr, /* isKeyDown= */ true, /* metaState= */ 0);
+        verify(mJni, times(1))
+                .preHandleEscapeKeyEvent(mNativePtr, /* isKeyDown= */ false, /* metaState= */ 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testPreHandleEscapeKeyEvent_forwardsMetaState() {
+        initialize();
+        mPersistentModeSupplier.set(true);
+
+        // Modifier keys (e.g. Ctrl+Esc) must be forwarded so native knows not to treat modified Esc
+        // as an unmodified long-press exit.
+        KeyEvent ctrlEscDown =
+                new KeyEvent(
+                        /* downTime= */ 100L,
+                        /* eventTime= */ 100L,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_ESCAPE,
+                        /* repeat= */ 0,
+                        /* metaState= */ KeyEvent.META_CTRL_ON);
+        assertFalse(mManager.preHandleEscapeKeyEvent(ctrlEscDown));
+
+        verify(mJni, times(1))
+                .preHandleEscapeKeyEvent(mNativePtr, /* isKeyDown= */ true, KeyEvent.META_CTRL_ON);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testPreHandleEscapeKeyEvent_nativeConsumesKey_updatesExclusiveAccessState() {
+        initialize();
+        mPersistentModeSupplier.set(true);
+        when(mJni.preHandleEscapeKeyEvent(mNativePtr, /* isKeyDown= */ true, /* metaState= */ 0))
+                .thenReturn(true);
+        when(mJni.hasExclusiveAccess(mNativePtr)).thenReturn(false);
+
+        KeyEvent escDown = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
+        assertTrue(mManager.preHandleEscapeKeyEvent(escDown));
+        assertFalse(mManager.getExclusiveAccessStateSupplier().get());
     }
 }

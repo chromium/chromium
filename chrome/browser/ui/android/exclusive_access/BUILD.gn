@@ -20,8 +20,12 @@ source_set("exclusive_access") {
     "//components/input",
     "//components/url_formatter",
     "//content/public/browser",
+    "//third_party/blink/public:blink_headers",
     "//third_party/jni_zero",
     "//ui/base",
+    "//ui/events",
+    "//ui/events:events_base",
+    "//ui/events/blink",
     "//ui/gfx",
     "//ui/strings",
   ]

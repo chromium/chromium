@@ -51,6 +51,12 @@ class ExclusiveAccessManagerAndroid {
 
   bool PreHandleKeyboardEvent(JNIEnv* env, int64_t nativeKeyEvent);
 
+  // Translates an Android Escape key press/release (with Android `meta_state`
+  // modifier bits) into a cross-platform `input::NativeWebKeyboardEvent` and
+  // forwards it to `ExclusiveAccessManager::HandleUserKeyEvent()`. Used when
+  // no `ContentView` has focus so key events do not reach `WebContents`.
+  bool PreHandleEscapeKeyEvent(JNIEnv* env, bool is_key_down, int meta_state);
+
   void RequestKeyboardLock(JNIEnv* env,
                            const jni_zero::JavaRef<jobject>& jweb_contents,
                            bool escKeyLocked);

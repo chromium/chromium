@@ -2255,6 +2255,19 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         } else if (mAcceleratorManager != null && mAcceleratorManager.processKeyEvent(event)) {
             return true;
         }
+        // When ContentView is not focused (e.g. on NTP or native pages), key events bypass
+        // WebContents's PreHandleKeyboardEvent pipeline. Forward Escape to ExclusiveAccessManager
+        // so long-pressing Esc still exits immersive mode.
+        if (ChromeFeatureList.sAndroidZoomImmersive.isEnabled()
+                && !(getCurrentFocus() instanceof ContentView)
+                && mRootUiCoordinator != null) {
+            ExclusiveAccessManager exclusiveAccessManager =
+                    mRootUiCoordinator.getExclusiveAccessManager();
+            if (exclusiveAccessManager != null
+                    && exclusiveAccessManager.preHandleEscapeKeyEvent(event)) {
+                return true;
+            }
+        }
         return super.dispatchKeyEvent(event);
     }
 

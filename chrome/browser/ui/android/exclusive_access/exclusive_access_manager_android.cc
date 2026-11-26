@@ -7,12 +7,17 @@
 #include <cstddef>
 
 #include "base/auto_reset.h"
+#include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/ExclusiveAccessManager_jni.h"
 #include "chrome/browser/ui/android/exclusive_access/exclusive_access_context_android.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/jni_zero/jni_zero.h"
+#include "ui/events/android/event_flags_android.h"
+#include "ui/events/blink/blink_event_util.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 ExclusiveAccessManagerAndroid::ExclusiveAccessManagerAndroid(
     JNIEnv* env,
@@ -105,6 +110,22 @@ bool ExclusiveAccessManagerAndroid::PreHandleKeyboardEvent(
     int64_t nativeKeyEvent) {
   return eam_.HandleUserKeyEvent(
       *reinterpret_cast<input::NativeWebKeyboardEvent*>(nativeKeyEvent));
+}
+
+bool ExclusiveAccessManagerAndroid::PreHandleEscapeKeyEvent(JNIEnv* env,
+                                                            bool is_key_down,
+                                                            int meta_state) {
+  // Convert Android press/release and modifier bits into the cross-platform
+  // NativeWebKeyboardEvent expected by ExclusiveAccessManager.
+  const blink::WebInputEvent::Type type =
+      is_key_down ? blink::WebInputEvent::Type::kRawKeyDown
+                  : blink::WebInputEvent::Type::kKeyUp;
+  const int modifiers = ui::EventFlagsToWebEventModifiers(
+      ui::EventFlagsFromAndroidMetaState(meta_state));
+  input::NativeWebKeyboardEvent native_event(type, modifiers,
+                                             base::TimeTicks::Now());
+  native_event.windows_key_code = ui::VKEY_ESCAPE;
+  return eam_.HandleUserKeyEvent(native_event);
 }
 
 void ExclusiveAccessManagerAndroid::RequestKeyboardLock(
