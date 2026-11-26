@@ -28,6 +28,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       isAutofillRegionalizedPrivatePassesUxRefineEnabled: false,
+      mustShowEquallyWeightedButtonsForPrivatePasses: false,
     });
 
     entityDataManager = new TestEntityDataManagerProxy();
@@ -898,6 +899,113 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
 
     assertFalse(dialogConfirmedEvent.detail.storedInWallet!);
     assertEquals(undefined, dialogConfirmedEvent.detail.consentStringNames);
+  });
+
+  // Tests that both the cancel and save buttons are styled as tonal for a
+  // private pass when `mustShowEquallyWeightedButtonsForPrivatePasses` is
+  // `true`.
+  test('EquallyWeightedButtonsForPrivatePassWhenEnabled', async function() {
+    loadTimeData.overrideValues({
+      mustShowEquallyWeightedButtonsForPrivatePasses: true,
+    });
+
+    const privatePass = structuredClone(testEntityInstance);
+    privatePass.type.passType =
+        chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
+    dialog.entityInstance = privatePass;
+    document.body.appendChild(dialog);
+
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
+    ]);
+    await microtasksFinished();
+
+    const cancelButton =
+        dialog.shadowRoot.querySelector<CrButtonElement>('.cancel-button');
+    const saveButton =
+        dialog.shadowRoot.querySelector<CrButtonElement>('.action-button');
+    assertTrue(!!cancelButton);
+    assertTrue(!!saveButton);
+    assertTrue(cancelButton.classList.contains('tonal-button'));
+    assertTrue(saveButton.classList.contains('tonal-button'));
+    assertEquals(
+        getComputedStyle(saveButton).backgroundColor,
+        getComputedStyle(cancelButton).backgroundColor);
+    assertEquals(
+        getComputedStyle(saveButton).color,
+        getComputedStyle(cancelButton).color);
+  });
+
+  // Tests that the cancel and save buttons are not styled as tonal for a
+  // private pass when `mustShowEquallyWeightedButtonsForPrivatePasses` is
+  // `false`.
+  test(
+      'EquallyWeightedButtonsNotShownForPrivatePassWhenDisabled',
+      async function() {
+        loadTimeData.overrideValues({
+          mustShowEquallyWeightedButtonsForPrivatePasses: false,
+        });
+
+        const privatePass = structuredClone(testEntityInstance);
+        privatePass.type.passType =
+            chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
+        dialog.entityInstance = privatePass;
+        document.body.appendChild(dialog);
+
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
+        ]);
+        await microtasksFinished();
+
+        const cancelButton =
+            dialog.shadowRoot.querySelector<CrButtonElement>('.cancel-button');
+        const saveButton =
+            dialog.shadowRoot.querySelector<CrButtonElement>('.action-button');
+        assertTrue(!!cancelButton);
+        assertTrue(!!saveButton);
+        assertFalse(cancelButton.classList.contains('tonal-button'));
+        assertFalse(saveButton.classList.contains('tonal-button'));
+        assertNotEquals(
+            getComputedStyle(saveButton).backgroundColor,
+            getComputedStyle(cancelButton).backgroundColor);
+      });
+
+  // Tests that the cancel and save buttons are not styled as tonal for a
+  // public pass even when `mustShowEquallyWeightedButtonsForPrivatePasses`
+  // is `true`.
+  test('EquallyWeightedButtonsNotShownForPublicPass', async function() {
+    loadTimeData.overrideValues({
+      mustShowEquallyWeightedButtonsForPrivatePasses: true,
+    });
+
+    const publicPass = structuredClone(testEntityInstance);
+    publicPass.type.passType =
+        chrome.autofillPrivate.EntityPassType.PUBLIC_PASS;
+    dialog.entityInstance = publicPass;
+    document.body.appendChild(dialog);
+
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
+    ]);
+    await microtasksFinished();
+
+    const cancelButton =
+        dialog.shadowRoot.querySelector<CrButtonElement>('.cancel-button');
+    const saveButton =
+        dialog.shadowRoot.querySelector<CrButtonElement>('.action-button');
+    assertTrue(!!cancelButton);
+    assertTrue(!!saveButton);
+    assertFalse(cancelButton.classList.contains('tonal-button'));
+    assertFalse(saveButton.classList.contains('tonal-button'));
   });
 });
 

@@ -807,6 +807,13 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   }
   // </if>
 
+  protected mustShowEquallyWeightedButtons_(): boolean {
+    return loadTimeData.getBoolean(
+               'mustShowEquallyWeightedButtonsForPrivatePasses') &&
+        this.entityInstance?.type.passType ===
+        chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
+  }
+
   /**
    * Returns true if the value is not empty and it is not made out only of
    * whitespaces.

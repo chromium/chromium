@@ -625,6 +625,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillRegionalizedPrivatePassesUxRefine));
   html_source->AddBoolean(
+      "mustShowEquallyWeightedButtonsForPrivatePasses",
+      autofill::MustShowEquallyWeightedButtonsForPrivatePasses(
+          autofill_client.GetIdentityManager()));
+  html_source->AddBoolean(
       "isWalletServerStorageEnabled",
       base::FeatureList::IsEnabled(syncer::kSyncWalletFlightReservations) ||
           base::FeatureList::IsEnabled(

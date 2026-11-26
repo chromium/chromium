@@ -192,12 +192,16 @@ export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
     </div>
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button" @click="${this.onCancelClick_}"
-        ?disabled="${this.saveInProgress_}">
+    <cr-button
+        class="cancel-button ${
+            this.mustShowEquallyWeightedButtons_() ? 'tonal-button' : ''}"
+        @click="${this.onCancelClick_}" ?disabled="${this.saveInProgress_}">
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button" ?disabled="${!this.canSave_}"
-        @click="${this.onConfirmClick_}">
+    <cr-button
+        class="action-button ${
+            this.mustShowEquallyWeightedButtons_() ? 'tonal-button' : ''}"
+        ?disabled="${!this.canSave_}" @click="${this.onConfirmClick_}">
       <div class="spinner" ?hidden="${!this.shouldShowSpinner_()}"></div>
 
       <span ?hidden="${this.shouldShowSpinner_()}">
