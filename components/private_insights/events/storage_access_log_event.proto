@@ -39,8 +39,12 @@ message StorageAccessLogEvent {
 
   CoarseSystemProfile system_profile = 1;
 
-  // The requesting site (eTLD+1), e.g. "https://example.com". Sent in plain
-  // text inside the encrypted payload; only readable inside the TEE.
+  // The requesting site (eTLD+1), e.g. "example.com". Private
+  // registries are excluded when computing the eTLD+1, so e.g.
+  // "alice.github.io" is logged as "github.io". The event is not logged when
+  // the origin has no known public registry (e.g. "sso.acme.corp", IP
+  // addresses, "intranet", "localhost"). Sent in plain text inside the
+  // encrypted payload; only readable inside the TEE.
   string domain = 2;
 
   Outcome outcome = 3;
