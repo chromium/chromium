@@ -20,14 +20,18 @@ namespace spellcheck {
 
 namespace {
 
+// Fixed-size char arrays keep the table in .rodata without pointer
+// relocations in .data.rel.ro.
 struct LanguageRegion {
-  const char* language;         // The language.
-  const char* language_region;  // language & region, used by dictionaries.
+  char language[15];         // The language (longest: "en-GB-oxendict").
+  char language_region[15];  // language & region, used by dictionaries.
 };
 
+// Fixed-size char arrays keep the table in .rodata without pointer
+// relocations in .data.rel.ro.
 struct LanguageVersion {
-  const char* language;  // The language input.
-  const char* version;   // The corresponding version.
+  char language[15];  // The language input.
+  char version[6];    // The corresponding version, e.g. "-10-2".
 };
 
 static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
