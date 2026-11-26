@@ -68,7 +68,9 @@ FindBar* FindBarController::GetOrCreateFindBar() {
 }
 
 FindBarController::~FindBarController() {
-  CHECK(!web_contents(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/590374019): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(!web_contents());
 }
 
 void FindBarController::Show(bool find_next, bool forward_direction) {
