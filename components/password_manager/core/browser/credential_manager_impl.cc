@@ -178,8 +178,8 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
     return;
   }
 
-  // Return an empty credential if the current page has TLS errors, or if the
-  // page is being prerendered.
+  // Return an empty credential if the current page has TLS errors, ran
+  // untrusted active content, or is being prerendered.
   if (!client_->IsFillingEnabled(GetOrigin())) {
     std::move(callback).Run(CredentialManagerError::SUCCESS, CredentialInfo());
     LogCredentialManagerGetResult(
@@ -249,7 +249,7 @@ void CredentialManagerImpl::SendPasswordForm(
     CredentialMediationRequirement mediation,
     const PasswordForm* form) {
   CredentialInfo info;
-  if (form) {
+  if (form && client_->IsFillingEnabled(GetOrigin())) {
     PasswordStoreInterface* store = form->IsUsingAccountStore()
                                         ? GetAccountPasswordStore()
                                         : GetProfilePasswordStore();
@@ -317,8 +317,10 @@ void CredentialManagerImpl::SendPasswordForm(
 
     info = PasswordFormToCredentialInfo(*form);
   } else {
-    base::RecordAction(
-        base::UserMetricsAction("CredentialManager_AccountChooser_Dismissed"));
+    if (!form) {
+      base::RecordAction(base::UserMetricsAction(
+          "CredentialManager_AccountChooser_Dismissed"));
+    }
     metrics_util::LogCredentialManagerGetResult(
         metrics_util::CredentialManagerGetResult::kNone, mediation);
   }
@@ -350,7 +352,7 @@ void CredentialManagerImpl::OnReauthCompleted(
     PasswordForm form,
     bool auth_succeeded) {
   authenticator_.reset();
-  if (!auth_succeeded) {
+  if (!auth_succeeded || !client_->IsFillingEnabled(GetOrigin())) {
     SendCredential(std::move(send_callback), CredentialInfo());
     return;
   }
@@ -385,8 +387,16 @@ bool CredentialManagerImpl::MatchesLastReturnedCredential(
 void CredentialManagerImpl::OnProvisionalSaveComplete() {
   DCHECK(form_manager_);
   const PasswordForm& form = form_manager_->GetPendingCredentials();
-  DCHECK(client_->IsSavingAndFillingEnabled(GetOrigin(), form.url));
   last_submitted_form_ = std::nullopt;
+  // Saving can become disabled while the async store fetch is in flight (for
+  // example, if the page runs untrusted active content). Note that resetting
+  // `form_manager_` here synchronously destroys the calling
+  // `CredentialManagerPasswordFormManager` and its owned `FormFetcherImpl`
+  // inside `OnFetchCompleted()`.
+  if (!client_->IsSavingAndFillingEnabled(GetOrigin(), form.url)) {
+    form_manager_.reset();
+    return;
+  }
 
   if (form.federation_origin.IsValid()) {
     // If this is a federated credential, check it against the federated matches

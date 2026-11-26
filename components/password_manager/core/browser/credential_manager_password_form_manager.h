@@ -20,7 +20,8 @@ struct PasswordForm;
 // finishes working with password forms.
 class CredentialManagerPasswordFormManagerDelegate {
  public:
-  // Called when a password form has been provisionally saved.
+  // Called when a password form has been provisionally saved. May synchronously
+  // destroy (or take ownership of) the calling manager.
   virtual void OnProvisionalSaveComplete() = 0;
 };
 

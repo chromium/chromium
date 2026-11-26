@@ -126,6 +126,11 @@ BASE_DECLARE_FEATURE(kMarkAllCredentialsAsLeaked);
 // Enables OTP phishing checks.
 BASE_DECLARE_FEATURE(kOtpPhishGuard);
 
+// Blocks filling on pages that ran subresources with certificate errors or
+// user-allowed mixed content. Kill switch. TODO(crbug.com/568445849): Remove in
+// M163.
+BASE_DECLARE_FEATURE(kPasswordBlockInsecureContent);
+
 // PasswordManagerClient::IsFillingEnabled returns `false` for opaque origins.
 // Intended as a kill-switch.
 BASE_DECLARE_FEATURE(kPasswordBlockOpaqueOrigins);

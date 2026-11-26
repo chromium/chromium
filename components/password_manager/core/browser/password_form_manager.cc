@@ -971,11 +971,16 @@ void PasswordFormManager::OnFetchCompleted() {
     return;
   }
 
-  std::vector<PasswordForm> legacy_best =
-      base::ToVector(form_fetcher_->GetBestMatches(),
-                     [](const auto& cred) { return ToPasswordForm(cred); });
-  client_->UpdateCredentialCache(url::Origin::Create(GetURL()), legacy_best,
-                                 form_fetcher_->IsBlocklisted(), error);
+  if (IsHttpAuth() ||
+      client_->IsFillingEnabled(driver_ ? driver_->GetLastCommittedOrigin()
+                                        : url::Origin::Create(GetURL()),
+                                GetURL())) {
+    std::vector<PasswordForm> legacy_best =
+        base::ToVector(form_fetcher_->GetBestMatches(),
+                       [](const auto& cred) { return ToPasswordForm(cred); });
+    client_->UpdateCredentialCache(url::Origin::Create(GetURL()), legacy_best,
+                                   form_fetcher_->IsBlocklisted(), error);
+  }
 
   if (is_submitted_) {
     CreatePendingCredentials();
@@ -1212,6 +1217,10 @@ void PasswordFormManager::FillNow() {
   }
 
   if (form_fetcher_->GetState() == FormFetcher::State::WAITING) {
+    return;
+  }
+
+  if (!client_->IsFillingEnabled(driver_->GetLastCommittedOrigin(), GetURL())) {
     return;
   }
 

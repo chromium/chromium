@@ -688,13 +688,19 @@ void PasswordManager::OnGeneratedPasswordAccepted(
     const FormData& form_data,
     autofill::FieldRendererId generation_element_id,
     const PasswordString& password) {
+  // Saving and filling can become disabled after generation was offered (for
+  // example, if the page ran untrusted active content).
+  if (!driver || !client_->IsSavingAndFillingEnabled(
+                     driver->GetLastCommittedOrigin(), form_data.url())) {
+    return;
+  }
   PasswordFormManager* manager =
       GetMatchedManagerForForm(driver, form_data.renderer_id());
   if (!manager) {
     // Form manager might not be present at the time manual password generation
     // is triggered, but if password generation was possible, so should be the
     // creation of a new form manager.
-    manager = CreateFormManager(CHECK_DEREF(driver), form_data);
+    manager = CreateFormManager(*driver, form_data);
     CHECK(manager);
   }
 
@@ -706,7 +712,12 @@ void PasswordManager::OnPasswordNoLongerGenerated(PasswordManagerDriver* driver,
                                                   const FormData& form_data) {
   url::Origin origin = driver ? driver->GetLastCommittedOrigin()
                               : url::Origin::Create(form_data.url());
-  DCHECK(client_->IsSavingAndFillingEnabled(origin, form_data.url()));
+  // Saving and filling can become disabled after generation was offered (for
+  // example, if the page ran untrusted active content); ignore updates from
+  // untrusted frames.
+  if (!client_->IsSavingAndFillingEnabled(origin, form_data.url())) {
+    return;
+  }
 
   PasswordFormManager* form_manager =
       GetMatchedManagerForForm(driver, form_data.renderer_id());
@@ -721,10 +732,12 @@ void PasswordManager::SetGenerationElementAndTypeForForm(
     FieldRendererId generation_element,
     autofill::password_generation::PasswordGenerationType type) {
   PasswordFormManager* form_manager = GetMatchedManagerForForm(driver, form_id);
-  if (form_manager) {
-    url::Origin origin = driver ? driver->GetLastCommittedOrigin()
-                                : url::Origin::Create(form_manager->GetURL());
-    DCHECK(client_->IsSavingAndFillingEnabled(origin, form_manager->GetURL()));
+  // Saving can become disabled between offering generation and updating the
+  // form manager (for example, if the page ran untrusted active content).
+  if (form_manager && client_->IsSavingAndFillingEnabled(
+                          driver ? driver->GetLastCommittedOrigin()
+                                 : url::Origin::Create(form_manager->GetURL()),
+                          form_manager->GetURL())) {
     form_manager->SetGenerationElement(generation_element);
     form_manager->SetGenerationPopupWasShown(type);
   }

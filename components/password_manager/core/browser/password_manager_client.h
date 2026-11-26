@@ -175,8 +175,8 @@ class PasswordManagerClient {
   bool IsFillingEnabled(const url::Origin& origin) const;
 
   // Checks if filling is enabled on the current page. Filling is disabled in
-  // the presence of SSL errors on a page. `origin` describes the origin to fill
-  // the password for.
+  // the presence of SSL errors or untrusted active content on a page. `origin`
+  // describes the origin to fill the password for.
   //
   // Opaque origins (e.g., sandboxed iframes or data URLs) are blocked from
   // filling for security reasons.

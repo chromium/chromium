@@ -187,7 +187,8 @@ void CredentialManagerPendingRequestTask::OnFetchCompleted() {
 void CredentialManagerPendingRequestTask::ProcessForms(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   using metrics_util::LogCredentialManagerGetResult;
-  if (delegate_->GetOrigin() != origin_) {
+  if (delegate_->GetOrigin() != origin_ ||
+      !delegate_->client()->IsFillingEnabled(origin_)) {
     LogCredentialManagerGetResult(
         metrics_util::CredentialManagerGetResult::kNone, mediation_);
     delegate_->SendCredential(std::move(send_callback_), CredentialInfo());

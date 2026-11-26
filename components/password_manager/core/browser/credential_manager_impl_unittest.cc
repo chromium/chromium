@@ -1168,6 +1168,72 @@ TEST_P(CredentialManagerImplTest,
   EXPECT_TRUE(called);
 }
 
+// Tests that `Store()` aborts without prompting when saving becomes disabled
+// while the password store fetch is in flight.
+TEST_P(CredentialManagerImplTest, StoreAbortedWhenSavingDisabledMidFetch) {
+  bool saving_enabled = true;
+  ON_CALL(*client_, IsSavingAndFillingEnabled)
+      .WillByDefault(testing::ReturnPointee(&saving_enabled));
+  EXPECT_CALL(*client_, NotifyStorePasswordCalled);
+  EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword).Times(0);
+
+  CallStore(PasswordFormToCredentialInfo(form_), base::DoNothing());
+  saving_enabled = false;
+  RunAllPendingTasks();
+}
+
+// Tests that `Get()` returns an empty credential without auto-signing in when
+// filling becomes disabled while the password store fetch is in flight.
+TEST_P(CredentialManagerImplTest, GetEmptyWhenFillingDisabledMidFetch) {
+  store_->AddLogin(FromPasswordForm(form_));
+  bool filling_enabled = true;
+  ON_CALL(*client_, IsFillingEnabled)
+      .WillByDefault(testing::ReturnPointee(&filling_enabled));
+  EXPECT_CALL(*client_, NotifyUserAutoSigninPtr).Times(0);
+
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kSilent, /*include_passwords=*/true,
+          /*federations=*/{},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+  filling_enabled = false;
+  RunAllPendingTasks();
+
+  ASSERT_TRUE(called);
+  EXPECT_EQ(CredentialManagerError::SUCCESS, error);
+  EXPECT_EQ(CredentialType::CREDENTIAL_TYPE_EMPTY, credential->type);
+}
+
+// Tests that `Get()` returns an empty credential and leaves `skip_zero_click`
+// unchanged when filling becomes disabled while the account chooser is open.
+TEST_P(CredentialManagerImplTest, GetEmptyWhenFillingDisabledDuringChooser) {
+  form_.skip_zero_click = true;
+  store_->AddLogin(FromPasswordForm(form_));
+  bool filling_enabled = true;
+  ON_CALL(*client_, IsFillingEnabled)
+      .WillByDefault(testing::ReturnPointee(&filling_enabled));
+  EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).WillOnce([&] {
+    filling_enabled = false;
+    return true;
+  });
+
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
+          /*federations=*/{},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+  RunAllPendingTasks();
+
+  ASSERT_TRUE(called);
+  EXPECT_EQ(CredentialManagerError::SUCCESS, error);
+  EXPECT_EQ(CredentialType::CREDENTIAL_TYPE_EMPTY, credential->type);
+  TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
+  ASSERT_EQ(1U, passwords[form_.signon_realm].size());
+  EXPECT_TRUE(passwords[form_.signon_realm][0].skip_zero_click);
+}
+
 TEST_P(CredentialManagerImplTest, CredentialManagerOnPreventSilentAccess) {
   store_->AddLogin(password_manager::FromPasswordForm(form_));
   store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
@@ -2594,6 +2660,48 @@ TEST_P(CredentialManagerImplReauthTest, DestructionCancelsOngoingReauth) {
   cm_service_impl_.reset();
 
   EXPECT_FALSE(called);
+}
+
+// Tests that `Get()` returns an empty credential when filling becomes disabled
+// while device re-authentication is in progress.
+TEST_P(CredentialManagerImplReauthTest,
+       GetEmptyWhenFillingDisabledDuringReauth) {
+  ON_CALL(*client_, IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  ON_CALL(*client_, IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(true));
+  store_->AddLogin(FromPasswordForm(form_));
+
+  bool filling_enabled = true;
+  ON_CALL(*client_, IsFillingEnabled)
+      .WillByDefault(testing::ReturnPointee(&filling_enabled));
+
+  auto mock_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
+      .WillOnce([&](const std::u16string&,
+                    device_reauth::MockDeviceAuthenticator::AuthenticateCallback
+                        callback) {
+        filling_enabled = false;
+        std::move(callback).Run(true);
+      });
+  int call_count = 0;
+  ON_CALL(*client_, GetDeviceAuthenticator).WillByDefault([&] {
+    return (IsRefactorEnabled() || ++call_count == 2)
+               ? std::move(mock_authenticator)
+               : nullptr;
+  });
+
+  bool called = false;
+  CredentialManagerError error;
+  std::optional<CredentialInfo> credential;
+  CallGet(CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
+          /*federations=*/{},
+          base::BindOnce(&GetCredentialCallback, &called, &error, &credential));
+  RunAllPendingTasks();
+
+  ASSERT_TRUE(called);
+  EXPECT_EQ(CredentialManagerError::SUCCESS, error);
+  EXPECT_EQ(CredentialType::CREDENTIAL_TYPE_EMPTY, credential->type);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

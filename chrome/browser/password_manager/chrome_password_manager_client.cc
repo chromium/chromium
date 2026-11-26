@@ -32,6 +32,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -80,6 +81,9 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
 #include "components/critical_actions/core/browser/features.h"
@@ -142,6 +146,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/visibility.h"
@@ -248,6 +253,60 @@ namespace {
 constexpr char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
 #endif
 
+// Returns true if the last committed primary main-frame page ran active
+// content that makes it unsafe to release credentials: content loaded with
+// certificate errors, or mixed content allowed by a user site setting.
+//
+// Also queries `SSLHostStateDelegate` directly because same-origin `blob:` and
+// `about:blank` documents inherit the HTTPS origin without `SSLManager`
+// copying `RAN_CONTENT_WITH_CERT_ERRORS` onto their `NavigationEntry`.
+bool DidMainFrameRunUnsafeContent(content::WebContents& web_contents,
+                                  Profile& profile) {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordBlockInsecureContent)) {
+    return false;
+  }
+  const url::Origin& origin =
+      web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  if (!GURL::SchemeIsCryptographic(origin.scheme())) {
+    return false;
+  }
+  content::NavigationEntry* entry =
+      web_contents.GetController().GetLastCommittedEntry();
+  const int content_status = entry ? entry->GetSSL().content_status : 0;
+  content::SSLHostStateDelegate* ssl_delegate =
+      profile.GetSSLHostStateDelegate();
+
+  const bool ran_content_with_cert_errors =
+      (content_status & content::SSLStatus::RAN_CONTENT_WITH_CERT_ERRORS) ||
+      (ssl_delegate &&
+       ssl_delegate->DidHostRunInsecureContent(
+           origin.host(), content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
+  if (ran_content_with_cert_errors) {
+    return true;
+  }
+
+  const bool ran_mixed_content =
+      (content_status & content::SSLStatus::RAN_INSECURE_CONTENT) ||
+      (ssl_delegate &&
+       ssl_delegate->DidHostRunInsecureContent(
+           origin.host(), content::SSLHostStateDelegate::MIXED_CONTENT));
+  if (!ran_mixed_content) {
+    return false;
+  }
+
+  // Block mixed content only when allowed by the user's site setting, keeping
+  // administrator policy (InsecureContentAllowedForUrls) and local-network
+  // WebSockets working.
+  content_settings::SettingInfo info;
+  const ContentSetting setting =
+      CHECK_DEREF(HostContentSettingsMapFactory::GetForProfile(&profile))
+          .GetContentSetting(origin.GetURL(), GURL(),
+                             ContentSettingsType::MIXEDSCRIPT, &info);
+  return setting == CONTENT_SETTING_ALLOW &&
+         info.source == content_settings::SettingSource::kUser;
+}
+
 }  // namespace
 
 // static
@@ -311,7 +370,7 @@ bool ChromePasswordManagerClient::IsFillingEnabled(
     return false;
   }
 
-  const Profile* profile =
+  Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   // Guest profiles don't have PasswordStore at all, so filling should be
   // disabled for them.
@@ -325,6 +384,11 @@ bool ChromePasswordManagerClient::IsFillingEnabled(
   }
 
   const bool ssl_errors = net::IsCertStatusError(GetMainFrameCertStatus());
+  // Evaluated before `IsPasswordManagementEnabledForCurrentPage()`, which must
+  // stay last in the `return` expressions below due to its Safe Browsing
+  // delayed-warning observer side effect.
+  const bool ran_unsafe_content =
+      DidMainFrameRunUnsafeContent(*web_contents(), *profile);
   autofill::LogManager* log_manager = GetOrCreateLogManager();
   if (log_manager && log_manager->IsLoggingActive()) {
     password_manager::BrowserSavePasswordProgressLogger logger(log_manager);
@@ -333,9 +397,10 @@ bool ChromePasswordManagerClient::IsFillingEnabled(
 
   if (url && !base::FeatureList::IsEnabled(
                  password_manager::features::kPasswordBlockOpaqueOrigins)) {
-    return !ssl_errors && IsPasswordManagementEnabledForCurrentPage(*url);
+    return !ssl_errors && !ran_unsafe_content &&
+           IsPasswordManagementEnabledForCurrentPage(*url);
   }
-  return !ssl_errors &&
+  return !ssl_errors && !ran_unsafe_content &&
          IsPasswordManagementEnabledForCurrentPage(origin.GetURL());
 }
 

@@ -29,6 +29,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
 #include "chrome/browser/password_manager/factories/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
@@ -58,6 +59,11 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/mock_device_auth_availability_checker.h"
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -87,6 +93,8 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/ssl_host_state_delegate.h"
+#include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -1242,6 +1250,92 @@ TEST_F(ChromePasswordManagerClientTest, OpaqueOriginFillingFeatureGated) {
   EXPECT_TRUE(
       GetClient()->IsFillingEnabled(GetClient()->GetLastCommittedOrigin(),
                                     GetClient()->GetLastCommittedURL()));
+}
+
+// Tests that filling and saving are blocked on HTTPS pages (and same-origin
+// blob: documents) after running content with certificate errors.
+TEST_F(ChromePasswordManagerClientTest,
+       FillingBlockedAfterContentWithCertErrors) {
+  ON_CALL(settings_service(),
+          IsSettingEnabled(PasswordManagerSetting::kOfferToSavePasswords))
+      .WillByDefault(Return(true));
+  const GURL kUrl("https://example.com");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+  NavigateAndCommit(kUrl);
+
+  EXPECT_TRUE(GetClient()->IsFillingEnabled(kOrigin));
+  EXPECT_TRUE(GetClient()->IsSavingAndFillingEnabled(kOrigin));
+
+  controller().GetLastCommittedEntry()->GetSSL().content_status |=
+      content::SSLStatus::RAN_CONTENT_WITH_CERT_ERRORS;
+  EXPECT_FALSE(GetClient()->IsFillingEnabled(kOrigin));
+  EXPECT_FALSE(GetClient()->IsSavingAndFillingEnabled(kOrigin));
+
+  profile()->GetSSLHostStateDelegate()->HostRanInsecureContent(
+      "example.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT);
+  NavigateAndCommit(GURL("blob:https://example.com/123"));
+  ASSERT_EQ(0, controller().GetLastCommittedEntry()->GetSSL().content_status);
+  EXPECT_FALSE(GetClient()->IsFillingEnabled(kOrigin));
+}
+
+// Tests that filling remains enabled after running content with certificate
+// errors when `kPasswordBlockInsecureContent` is disabled.
+TEST_F(ChromePasswordManagerClientTest,
+       FillingAllowedAfterCertErrorsWhenBlockInsecureContentDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kPasswordBlockInsecureContent);
+
+  const GURL kUrl("https://example.com");
+  NavigateAndCommit(kUrl);
+  controller().GetLastCommittedEntry()->GetSSL().content_status |=
+      content::SSLStatus::RAN_CONTENT_WITH_CERT_ERRORS;
+  EXPECT_TRUE(GetClient()->IsFillingEnabled(url::Origin::Create(kUrl)));
+}
+
+// Tests that mixed content blocks filling on HTTPS origins only when allowed by
+// a user site setting (not plain-HTTP pages, policy, or unset mixed content).
+TEST_F(ChromePasswordManagerClientTest,
+       FillingBlockedAfterUserAllowedMixedContent) {
+  const GURL kUrl("https://example.com");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+  NavigateAndCommit(kUrl);
+
+  // Mixed content without a site setting (e.g. local-network WebSockets) keeps
+  // filling enabled.
+  controller().GetLastCommittedEntry()->GetSSL().content_status |=
+      content::SSLStatus::RAN_INSECURE_CONTENT;
+  EXPECT_TRUE(GetClient()->IsFillingEnabled(kOrigin));
+
+  // User site setting allowing insecure content blocks filling on HTTPS.
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingCustomScope(
+          ContentSettingsPattern::FromString("[*.]example.com"),
+          ContentSettingsPattern::Wildcard(), ContentSettingsType::MIXEDSCRIPT,
+          CONTENT_SETTING_ALLOW);
+  EXPECT_FALSE(GetClient()->IsFillingEnabled(kOrigin));
+
+  // `SSLManager` also sets `RAN_INSECURE_CONTENT` on plain-HTTP pages for a
+  // host that previously ran mixed content; plain-HTTP pages remain unaffected.
+  const GURL kHttpUrl("http://example.com");
+  NavigateAndCommit(kHttpUrl);
+  controller().GetLastCommittedEntry()->GetSSL().content_status |=
+      content::SSLStatus::RAN_INSECURE_CONTENT;
+  EXPECT_TRUE(GetClient()->IsFillingEnabled(url::Origin::Create(kHttpUrl)));
+
+  // Enterprise policy overrides the user site setting and keeps filling on.
+  NavigateAndCommit(kUrl);
+  int& content_status =
+      controller().GetLastCommittedEntry()->GetSSL().content_status;
+  content_status |= content::SSLStatus::RAN_INSECURE_CONTENT;
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kManagedInsecureContentAllowedForUrls,
+      base::ListValue().Append(kUrl.spec()));
+  EXPECT_TRUE(GetClient()->IsFillingEnabled(kOrigin));
+
+  // Content with certificate errors is still blocked even under policy.
+  content_status |= content::SSLStatus::RAN_CONTENT_WITH_CERT_ERRORS;
+  EXPECT_FALSE(GetClient()->IsFillingEnabled(kOrigin));
 }
 
 TEST_F(ChromePasswordManagerClientTest, NoFillingOnInvalidUrls) {

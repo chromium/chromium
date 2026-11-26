@@ -3974,6 +3974,7 @@ TEST_P(PasswordManagerTest, GenerationTriggersFormManagerCreation) {
   EXPECT_TRUE(form.fields()[1].IsPasswordInputElement());
   PasswordString generated_password;
 
+  ON_CALL(client_, IsSavingAndFillingEnabled).WillByDefault(Return(true));
   EXPECT_CALL(driver_, GeneratedPasswordAccepted)
       .WillOnce(SaveArg<0>(&generated_password));
   manager()->OnGeneratedPasswordAccepted(&driver_, form,
@@ -3982,6 +3983,50 @@ TEST_P(PasswordManagerTest, GenerationTriggersFormManagerCreation) {
 
   EXPECT_THAT(manager()->form_managers(), SizeIs(1));
   EXPECT_EQ(generated_password, u"generated_password");
+}
+
+// Tests that generation callbacks after `IsSavingAndFillingEnabled` turns false
+// mid-page neither accept a new password nor delete a presaved one.
+TEST_P(PasswordManagerTest, GenerationIgnoredWhenSavingDisabledMidPage) {
+  FormData form(MakeSignUpFormData());
+  manager()->OnPasswordFormsParsed(&driver_, {form});
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return manager()->HaveFormManagersReceivedData(&driver_); }));
+
+  bool saving_enabled = true;
+  ON_CALL(client_, IsSavingAndFillingEnabled)
+      .WillByDefault(testing::ReturnPointee(&saving_enabled));
+  manager()->OnPresaveGeneratedPassword(&driver_, form,
+                                        form.fields()[1].value());
+  ASSERT_FALSE(GetAllLoginsSync(store_.get()).empty());
+
+  saving_enabled = false;
+  EXPECT_CALL(driver_, GeneratedPasswordAccepted).Times(0);
+  manager()->SetGenerationElementAndTypeForForm(
+      &driver_, form.renderer_id(), form.fields()[1].renderer_id(),
+      autofill::password_generation::PasswordGenerationType::kAutomatic);
+  manager()->OnGeneratedPasswordAccepted(&driver_, form,
+                                         form.fields()[1].renderer_id(),
+                                         PasswordString(u"generated_password"));
+  manager()->OnPasswordNoLongerGenerated(&driver_, form);
+  EXPECT_FALSE(GetAllLoginsSync(store_.get()).empty());
+}
+
+// Tests that an existing `PasswordFormManager` stops sending fill data when
+// `IsFillingEnabled` turns false during the store fetch or before a refill.
+TEST_P(PasswordManagerTest, FillingBlockedWhenFillingDisabledAfterFormParsed) {
+  store_->AddLogin(FromPasswordForm(MakeSavedForm()));
+  const FormData form(MakeSimpleFormData());
+  bool filling_enabled = true;
+  ON_CALL(client_, IsFillingEnabled)
+      .WillByDefault(testing::ReturnPointee(&filling_enabled));
+
+  EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion).Times(0);
+  manager()->OnPasswordFormsParsed(&driver_, {form});
+  filling_enabled = false;
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return manager()->HaveFormManagersReceivedData(&driver_); }));
+  manager()->OnPasswordFormsParsed(&driver_, {form});
 }
 
 TEST_P(PasswordManagerTest, UpdateFormManagers) {
