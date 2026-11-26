@@ -1014,13 +1014,6 @@ agentic_review {
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "class\\s+\\w+Mediator\\s*:\\s*public\\s+KeyedService"
-    content_patterns: "class\\s+\\w+Mediator\\s*:\\s*public\\s+BrowserAgent"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/mediator-class-name-suffix-reserved.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "(?:extern\\s+)?NSString\\s*\\*+\\s*(?:const\\s+)?k\\w*(?:Identifier|A11yID|Id)\\b"
     content_patterns: "(?:inline\\s+|static\\s+)?(?:constexpr|const)\\s+(?:char\\s*(?:\\*|\\[\\])|(?:std::|base::)?(?:string|cstring)_view)\\s+k\\w*"
     content_patterns: "=\\s*@?\"[A-Za-z0-9_]*(?:Identifier|A11yID|Id|Detent)\""
@@ -1087,16 +1080,6 @@ agentic_review {
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\bclass\\s+[A-Za-z0-9_]*ObserverBridge\\b"
-    content_patterns: "@protocol\\s+[A-Za-z0-9_]*(?:Observer|Observing|Delegate)\\b"
-    content_patterns: "\\b(?:base::)?ScopedObservation<[A-Za-z0-9_:]+,\\s*[A-Za-z0-9_:]*Observer"
-    content_patterns: ":\\s*public\\s+[A-Za-z0-9_:]*Observer\\b"
-    content_patterns: "<[A-Za-z0-9_]*(?:ObserverDelegate|Observing)>"
-    rules: "ios/chrome/browser/intelligence/kb/general/observe-model-via-scoped-observation-bridges.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "\\[\\s*super\\s+(?:init(?:With\\w+)?|start|stop|viewDidLoad|view(?:Will|Did)(?:Appear|Disappear)|setUp|tearDown(?:Helper)?|test[A-Z]\\w*)\\b"
     content_patterns: "\\bappConfigurationForTestCase\\b"
     content_patterns: "-\\s*\\(instancetype\\)init\\s+NS_DESIGNATED_INITIALIZER\\b"
@@ -1148,16 +1131,6 @@ agentic_review {
     content_patterns: "\\s*/[/]\\s*(?:Check|Set|Update|Open|Dismiss|Show|Verify|Create|Configure)\\s+(?:the|a|an|if|whether|that|all)\\b"
     content_patterns: "\\s*/[/]\\s*(?:Checks|Sets|Updates|Opens|Dismisses|Shows|Verifies|Creates|Configures)\\s+(?:the|a|an|if|whether|that|all)\\b"
     rules: "ios/chrome/browser/intelligence/kb/general/phrase-declaration-comments-in-third-person-indicative.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\bNS_ENUM\\s*\\("
-    content_patterns: "\\bNS_CLOSED_ENUM\\s*\\("
-    content_patterns: "\\bNS_OPTIONS\\s*\\("
-    content_patterns: "\\benum\\s+class\\s+[A-Za-z0-9_]+"
-    content_patterns: "\\s*@interface\\s+[A-Za-z0-9_]+"
-    rules: "ios/chrome/browser/intelligence/kb/general/prefer-enum-class-over-ns-enum.md"
   }
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
@@ -1397,32 +1370,12 @@ agentic_review {
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "//\\s*TO[D]O\\s*:"
-    content_patterns: "(?i)//\\s*todo\\b"
-    content_patterns: "//\\s*TO[D]O\\s+[A-Za-z]"
-    content_patterns: "//\\s*TO[D]O\\s+[(]"
-    content_patterns: "/[/]\\s*TO[D]O\\s*[(]\\s*(?:b/|https?:/[/]|FB|radar|[a-zA-Z0-9_-]+\\s*[)])"
-    rules: "ios/chrome/browser/intelligence/kb/general/todo-comments-must-include-crbug-and-ios-label.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "\\b(?:Add|Remove)(?:Observer|Listener|Observation)\\s*\\("
     content_patterns: "\\b(?:base::)?Scoped(?:MultiSource)?Observation<"
     content_patterns: "\\b_?[a-zA-Z0-9_]*(?:observation_|Bridge)\\.(?:Observe|Reset|reset|RemoveObservation)\\s*\\("
     content_patterns: "\\b[A-Za-z0-9_:]*(?:BeingDeleted|BeingDestroyed|SourceDestroyed|ShuttingDown|On[A-Za-z0-9_]*Destroyed|OnIdentityManagerShutdown|DidShutdown|didShutdown)\\b"
     content_patterns: "\\bvoid\\s+[A-Za-z0-9_:]*(?:Shutdown|TearDown|CleanUp|Stop)\\s*\\("
     rules: "ios/chrome/browser/intelligence/kb/general/unregister-observers-or-use-scoped-observation.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\bdispatch_async\\b"
-    content_patterns: "\\bdispatch_sync\\b"
-    content_patterns: "\\bdispatch_get_main_queue\\b"
-    content_patterns: "\\bdispatch_get_global_queue\\b"
-    content_patterns: "\\bdispatch_queue_create\\b"
-    rules: "ios/chrome/browser/intelligence/kb/general/use-chromium-task-runner-not-grand-central-dispatch.md"
   }
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
@@ -1651,17 +1604,6 @@ agentic_review {
     content_patterns: "\\s*(?:source_set|static_library|shared_library|component|executable|test|group)\\s*[(]"
     content_patterns: "\\s*import\\s*[(][\"']//"
     rules: "ios/chrome/browser/intelligence/kb/general/set-copyright-year-to-creation-year.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/chrome/browser/shared/ui/symbols/symbol_info\\.mm"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\[\\s*UIImage\\s+systemImageNamed\\s*:"
-    content_patterns: "(?:extern\\s+)?NSString\\s*\\*+\\s*(?:const\\s+)?k[A-Za-z0-9_]*(?:Symbol|Icon|Image)\\b"
-    content_patterns: "\\bSymbol(?:With(?:PointSize|Configuration|Palette)|TemplateWithPointSize)\\s*[(]"
-    content_patterns: "\\b(?:Default|Custom)SymbolWith(?:PointSize|Configuration)\\s*[(]"
-    content_patterns: "\\bSymbol[A-Z][a-zA-Z0-9]+\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/use-centralized-symbol-enum-for-icons.md"
   }
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
@@ -1910,41 +1852,6 @@ agentic_review {
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "-\\s*\\(\\s*void\\s*\\)\\s*(?:disconnect|stop)\\b"
-    content_patterns: "\\[[a-zA-Z0-9_.]*(?:Mediator|Coordinator)\\s+(?:disconnect|stop)\\]"
-    content_patterns: "\\b(?:CallbackListSubscription|_?[a-zA-Z0-9_]*Subscription)\\b"
-    content_patterns: "\\b_?[a-zA-Z0-9_]*(?:Bridge|Observation|Registrar|Observer)\\.(?:reset|Reset|RemoveAll)\\s*\\("
-    content_patterns: "\\b_?[a-zA-Z0-9_]*(?:Service|Manager|Model)\\s*=\\s*(?:nullptr|nil);"
-    content_patterns: "\\s*-\\s*\\(void\\)dealloc\\b"
-    content_patterns: "\\s*-\\s*\\(void\\)(?:reset|disconnect|shutdown|shutDown|tearDown|detach|stopObserving)[A-Za-z0-9_]*\\b"
-    content_patterns: "\\b(?:CHECK|DCHECK)\\s*\\(\\s*!_[a-zA-Z0-9_]+"
-    content_patterns: "@(?:interface|implementation)\\s+[A-Za-z0-9_]*(?:ObserverBridge|Bridge)\\b"
-    content_patterns: "\\b_[a-zA-Z0-9_]+\\s*=\\s*nullptr\\s*;"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/mediator-deterministic-cleanup-in-disconnect.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\binitWithWebStateList:\\s*"
-    content_patterns: "\\b(?:activeWebState\\s*=|setActiveWebState:)"
-    content_patterns: "->GetActiveWebState\\b"
-    content_patterns: "\\b_mediator\\s*=\\s*\\[\\[[A-Za-z0-9_]*Mediator\\s+alloc\\]"
-    content_patterns: "\\bWebStateListObserver(?:Bridge)?\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/mediator-observes-web-state-list-for-active-tab.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "-\\s*\\([^)]*\\)\\s*initWith[A-Z]\\w*(?:State|Config|Model):"
-    content_patterns: "@property\\s*\\([^)]*\\)\\s*[A-Za-z0-9_]*(?:State|Config|Model)\\s*\\*\\s*[a-zA-Z0-9_]+;"
-    content_patterns: "@property\\s*\\([^)]*\\)\\s*id<[A-Za-z0-9_]*(?:Provider|DataSource)>"
-    content_patterns: "\\[(?:_|self\\.)[a-zA-Z0-9_]*mediator\\s+\\w*(?:State|Status|Mode|Limit|Capacity)\\b"
-    content_patterns: "@protocol\\s+[A-Za-z0-9_]+(?:Consumer|Provider)\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/mediator-pushes-state-to-consumer-no-polling.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "\\b(?:NSLayoutConstraint\\s*\\*|NSLayoutConstraint\\b)"
     content_patterns: "\\.constant\\s*="
     content_patterns: "\\bconstraint(?:EqualTo|GreaterThanOrEqualTo|LessThanOrEqualTo)Anchor:"
@@ -1965,12 +1872,6 @@ agentic_review {
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\bauto\\s+\\w+\\s*=\\s*\\[\\[\\w+\\s+alloc\\]\\s+init"
-    rules: "ios/chrome/browser/intelligence/kb/general/no-auto-type-deduction-for-basic-objective-c-alloc-init.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "@interface\\s+[A-Za-z0-9_]+\\s*\\(\\s*\\)"
     content_patterns: "@interface\\s+[A-Za-z0-9_]+\\s*\\([^)]*\\)"
     content_patterns: "@implementation\\s+[A-Za-z0-9_]+\\s*\\{\\s*\\}"
@@ -1987,23 +1888,6 @@ agentic_review {
     content_patterns: "-\\s*\\(\\s*(?:instancetype|id)\\s*\\)\\s*init\\s+NS_UNAVAILABLE\\b"
     content_patterns: "@interface\\s+\\w+\\s*:\\s*[A-Z]\\w*\\b"
     rules: "ios/chrome/browser/intelligence/kb/general/omit-redundant-unavailable-initializers.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\[\\s*NSDate\\s+(?:date|now)\\s*\\]"
-    content_patterns: "\\[\\w+\\s+timeIntervalSinceNow\\s*\\]"
-    rules: "ios/chrome/browser/intelligence/kb/general/prefer-base-time-over-ns-date.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\[\\s*NSUserDefaults\\s+standardUserDefaults\\s*\\]"
-    content_patterns: "\\b(?:profile_prefs|local_state|prefs)->(?:Get|Set)(?:Boolean|Integer|String|Dict|List)\\b"
-    content_patterns: "\\bMigrateObsolete(?:Profile|LocalState)?Prefs\\b"
-    content_patterns: "\\bMigrateObsoleteUserDefault\\b"
-    content_patterns: "\\bkSyncDisabledAlertShownKey\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/prefer-pref-service-over-ns-user-defaults.md"
   }
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
@@ -2044,16 +1928,6 @@ agentic_review {
     content_patterns: "[-+]\\s*\\([a-zA-Z0-9_ *]+\\)\\s*set[A-Z]\\w*(?:Presenter|Coordinator|Mediator|Delegate|Consumer):"
     content_patterns: "[-+]\\s*\\(\\s*void\\s*\\)\\s*update[A-Z]\\w*:"
     rules: "ios/chrome/browser/intelligence/kb/general/reserve-set-prefix-for-property-accessors.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\[\\s*UIImage\\s+systemImageNamed\\s*:"
-    content_patterns: "\\bUIGraphicsImageRenderer\\b"
-    content_patterns: "\\[\\s*UIImageSymbolConfiguration\\s+configurationWith"
-    content_patterns: "\\bUIImageSymbolScale(?:Small|Medium|Large)\\b"
-    content_patterns: "\\b(?:Default|Custom)?SymbolWith(?:PointSize|Configuration)\\s*[(]"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/size-symbols-with-point-size-helpers.md"
   }
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
@@ -2116,23 +1990,6 @@ agentic_review {
     rules: "ios/chrome/browser/intelligence/kb/general/use-objc-cast-strict-for-objective-c-downcasting.md"
   }
   capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression: "ios/chrome/(?:.*/)?BUILD\\.gn"
-    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\bcolorWith(?:Red|White|DisplayP3R|Hue|DynamicProvider)\\s*:"
-    content_patterns: "\\bUIColor\\s*(?:\\.|\\s+)(?:lightGray|white|black|gray|darkGray|clear)Color\\b"
-    content_patterns: "\\b(?:titleTextAttributesTransformer|imageColorTransformer|baseForegroundColor)\\b"
-    content_patterns: "\\b(?:CreateDynamicProvider(?:FromRGB)?|UIColorFromRGB)\\b"
-    content_patterns: "\\bUIUserInterfaceStyle(?:Dark|Light)\\b"
-    content_patterns: "\\.colorset(?:/Contents\\.json)?[\"']"
-    content_patterns: "\\bcolorset\\s*\\("
-    content_patterns: "\\bbundle_data_xcassets\\s*\\("
-    content_patterns: "\"Assets\\.xcassets/[^\"]*color[^\"]*\""
-    content_patterns: "\"//ios/chrome/common/ui/colors"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/use-semantic-colors-never-hardcoded-hex.md"
-  }
-  capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:js|ts)"
     path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "\\baddEventListener\\s*[(]\\s*['\\\"](?:pointermove|mousemove|touchmove|scroll|wheel|pointerrawupdate)['\\\"]"
@@ -2182,16 +2039,6 @@ agentic_review {
     content_patterns: "\\bIBOutlet\\b"
     content_patterns: "(?i)/[/]\\s*(?:(?:the\\s+)?[a-z0-9_]+\\s+is\\s+used\\s+to|enables?\\s+(?:the\\s+)?(?:caller|client|user)\\s+to|returns?\\s+(?:the\\s+)?|used to get|the model for)\\b"
     rules: "ios/chrome/browser/intelligence/kb/general/document-member-variable-lifecycle-and-invariants.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.h"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "@property\\b"
-    content_patterns: "[-+]\\s*[(]\\s*instancetype\\s*[)]"
-    content_patterns: "[-+]\\s*[(][^)]*[)]\\s*init"
-    content_patterns: "\\bNS_DESIGNATED_INITIALIZER\\b"
-    content_patterns: "@interface\\s+\\w+"
-    rules: "ios/chrome/browser/intelligence/kb/general/header-declaration-order-properties-methods-inits.md"
   }
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.h"
@@ -2336,12 +2183,6 @@ agentic_review {
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*_egtest\\.mm"
     path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "@interface\\s+\\w+TestCase\\s*:\\s*XCTestCase"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/earl-grey-tests-must-subclass-chrome-test-case.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*_egtest\\.mm"
-    path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "\\bXCTSkip(?:If|Unless)?\\b"
     content_patterns: "\\bEARL_GREY_TEST_(?:DISABLED|SKIPPED)\\b"
     content_patterns: "\\b(?:isIPadIdiom|isIPhoneIdiom|areMultipleWindowsSupported|isCompactWidth)\\b"
@@ -2454,24 +2295,6 @@ agentic_review {
     rules: "ios/chrome/browser/intelligence/kb/chrome/append-new-flags-to-end-of-about-flags.md"
   }
   capability_groups {
-    path_expression: "ios/(?:.*/)?coordinator/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\binit\\w*WebState\\s*:"
-    content_patterns: "\\binit\\w*:[^;]*\\bwebState\\s*:"
-    content_patterns: "\\bwebState\\s*:\\s*\\(?(?:web::)?\\bWebState\\b\\s*\\*"
-    content_patterns: "@property\\s*\\([^)]*\\)\\s*(?:web::)?\\bWebState\\b\\s*\\*"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/coordinators-must-be-browser-scoped-not-tab-scoped.md"
-  }
-  capability_groups {
-    path_expression: "ios/(?:.*/)?coordinator/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\bstartDispatchingToTarget\\s*:"
-    content_patterns: "\\bstopDispatchingToTarget\\s*:"
-    content_patterns: "\\bstopDispatchingForProtocol\\s*:"
-    content_patterns: "\\bforProtocol\\s*:\\s*@protocol\\b"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/unregister-command-dispatch-in-stop.md"
-  }
-  capability_groups {
     path_expression: "ios/.*"
     path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "(?i)\\bkeep-sorted\\s+(?:start|begin|end)\\b"
@@ -2496,16 +2319,6 @@ agentic_review {
     content_patterns: "\\bAddSameConstraints(?:WithInsets?|ToSides(?:WithInsets)?)?\\b"
     content_patterns: "\\b(?:PinToSafeArea|AddSameCenter(?:X|Y)?Constraints?)\\b"
     rules: "ios/chrome/browser/intelligence/kb/chrome/prefer-add-same-constraints.md"
-  }
-  capability_groups {
-    path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\s*namespace\\s+(?:ios|chrome)\\b"
-    content_patterns: "\\s*namespace\\s+[a-z0-9_]+\\s*[{]"
-    content_patterns: "\\s*namespace\\s+[a-z0-9_]+_feature\\b"
-    content_patterns: "\\s*namespace\\s+(?:password_manager|autofill|bookmarks|sync|history|signin|commerce|feed|plus_addresses)\\b"
-    content_patterns: "\\bBASE_DECLARE_FEATURE\\s*[(]"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/no-named-cpp-namespaces-in-ios-chrome.md"
   }
   capability_groups {
     path_expression: "ios/chrome/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
@@ -2728,16 +2541,6 @@ agentic_review {
     content_patterns: "\\bfinishDismissal\\b"
     content_patterns: "\\bOverlayRequestCoordinatorDelegate\\b"
     rules: "ios/chrome/browser/intelligence/kb/chrome/dispatch-and-cleanup-before-overlay-ui-did-finish-dismissal.md"
-  }
-  capability_groups {
-    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:h|mm)"
-    path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "@protocol\\s+\\w+Commands\\b"
-    content_patterns: "HandlerForProtocol\\s*\\([^,)]+,\\s*\\w+Commands\\)"
-    content_patterns: "startDispatchingToTarget\\s*:[^;]+forProtocol\\s*:"
-    content_patterns: "@property[^;]*id<\\w+Commands>\\s+\\w+Handler\\b"
-    content_patterns: "stopDispatchingToTarget\\s*:[^;]+forProtocol\\s*:"
-    rules: "ios/chrome/browser/intelligence/kb/chrome/local-command-protocols-stay-in-feature-ui.md"
   }
   capability_groups {
     path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:h|mm)"
