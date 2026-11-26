@@ -304,7 +304,6 @@
   flex-direction: row;
   gap: 6px;
   max-width: 100%;
-  position: relative;
 }
 
 .searchbox-pill {
@@ -317,27 +316,11 @@
   display: flex;
   height: 44px;
   max-width: 100%;
-  overflow: hidden;
   padding: 0;
   padding-inline-end: 6px;
   padding-inline-start: 12px;
-  position: relative;
   transition: box-shadow 200ms ease;
   width: 320px;
-  z-index: 2;
-}
-
-.searchbox-pill-ghost {
-  margin: 0;
-  pointer-events: none;
-  position: absolute;
-  transition: none;
-  z-index: 1;
-}
-
-.searchbox-pill-spacer {
-  flex-shrink: 0;
-  pointer-events: none;
 }
 
 .endpoint-icon {
@@ -351,10 +334,17 @@
   width: 28px;
 }
 
+.endpoint-icon[interactive] {
+  cursor: pointer;
+}
+
+.endpoint-icon[interactive]:hover {
+  background-color: var(--cr-hover-on-subtle-background-color);
+}
+
 .endpoint-icon-image {
-  flex-shrink: 0;
-  height: 20px;
-  width: 20px;
+  height: 100%;
+  width: 100%;
 }
 
 .endpoint-icon-image.gemini {
@@ -383,7 +373,7 @@
   width: 1px;
 }
 
-.prompt-input {
+#promptInput {
   background: transparent;
   border: none;
   color: var(--cr-primary-text-color);
@@ -391,16 +381,15 @@
   font-family: inherit;
   font-size: 14px;
   line-height: 20px;
-  min-width: 0;
   outline: none;
   padding: 0;
 }
 
-.prompt-input::placeholder {
+#promptInput::placeholder {
   color: var(--cr-fallback-color-outline);
 }
 
-.submit-prompt-button {
+#submitPromptButton {
   --cr-icon-button-fill-color: #000;
   --cr-icon-button-hover-background-color: #A8C7FA;
   --cr-icon-button-icon-size: 18px;
@@ -411,13 +400,13 @@
   background-color: #9dd2ff;
 }
 
-.submit-prompt-button[hidden] {
+#submitPromptButton[hidden] {
   display: none;
 }
 
 /* cr-icon-button turns off pointer events when disabled, which would hide
    the tooltip. */
-.submit-prompt-button[disabled] {
+#submitPromptButton[disabled] {
   pointer-events: auto;
 }
 
@@ -435,9 +424,7 @@
   align-items: flex-start;
   flex-direction: column;
   gap: 6px;
-  position: relative;
   width: 320px;
-  z-index: 3;
 }
 
 #floatingPromptContainer[above-selection] .searchbox-row + .action-chips-row {
@@ -446,8 +433,7 @@
 
 .action-chip,
 .settings-button,
-.dogfood-feedback-button,
-.endpoint-switcher-button {
+.dogfood-feedback-button {
   --cr-button-background-color: var(--cr-fallback-color-surface);
   --cr-button-border: none;
   --cr-button-height: 30px;
@@ -459,18 +445,6 @@
   padding-block: 5px;
   padding-inline: 10px;
   white-space: nowrap;
-}
-
-.endpoint-switcher-button {
-  --cr-button-height: 44px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  height: 44px;
-  min-width: 44px;
-  padding: 0;
-  position: relative;
-  width: 44px;
-  z-index: 0;
 }
 
 .searchbox-row + .action-chips-row > .action-chip {
@@ -507,8 +481,7 @@
 /* The hover background is a capsule inset from the edge of the button. */
 .action-chip::part(hoverBackground),
 .settings-button::part(hoverBackground),
-.dogfood-feedback-button::part(hoverBackground),
-.endpoint-switcher-button::part(hoverBackground) {
+.dogfood-feedback-button::part(hoverBackground) {
   background: var(--cr-hover-on-subtle-background-color);
   border-radius: inherit;
   inset: 2px;
@@ -727,8 +700,7 @@
   .action-chip,
   .searchbox-pill,
   .settings-button,
-  .dogfood-feedback-button,
-  .endpoint-switcher-button {
+  .dogfood-feedback-button {
     border: 1px solid ButtonBorder;
   }
 }

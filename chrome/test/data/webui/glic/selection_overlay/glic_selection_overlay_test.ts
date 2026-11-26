@@ -211,19 +211,6 @@ suite('GlicSelectionOverlay', () => {
     await overlay.updateComplete;
   }
 
-  // Give the overlay a real selection so `floatingPromptResizeObserver_`
-  // keeps `showFloatingPrompt` true across async frames when endpoints change
-  // the prompt row width.
-  async function selectRegionForPrompt() {
-    page.setPostRegionSelections([{
-      id: REGION_ID,
-      shape: {rect: {x: 0.5, y: 0.5, width: 0.2, height: 0.2}},
-    }]);
-    await page.$.flushForTesting();
-    await waitAfterNextRender(overlay);
-    assertTrue(overlay.showFloatingPrompt);
-  }
-
   test('SetPromptEndpointsRespectsLastUsedDefault', async () => {
     const input =
         overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
@@ -231,16 +218,11 @@ suite('GlicSelectionOverlay', () => {
         overlay.shadowRoot.querySelector<HTMLElement>('#endpointIcon')!;
     const endpointIconImage =
         endpointIcon.querySelector<HTMLElement>('.endpoint-icon-image')!;
-    assertEquals('true', endpointIcon.getAttribute('aria-hidden'));
-    assertFalse(endpointIcon.hasAttribute('role'));
+    assertFalse(endpointIcon.hasAttribute('interactive'));
     assertFalse(endpointIcon.hasAttribute('title'));
     assertFalse(endpointIcon.hasAttribute('aria-label'));
     assertFalse(input.hasAttribute('aria-description'));
     assertTrue(endpointIconImage.classList.contains('gemini'));
-    assertEquals(
-        0,
-        overlay.shadowRoot.querySelectorAll('.endpoint-switcher-button')
-            .length);
 
     await setEndpoints(twoEndpoints(), PromptEndpointId.kGoogleSearch);
 
@@ -248,21 +230,11 @@ suite('GlicSelectionOverlay', () => {
     assertEquals('Ask Google', input.placeholder);
     assertEquals('Ask Google', input.getAttribute('aria-label'));
     assertEquals(tooltip, input.getAttribute('aria-description'));
-    assertEquals('true', endpointIcon.getAttribute('aria-hidden'));
-    assertFalse(endpointIcon.hasAttribute('role'));
-    assertFalse(endpointIcon.hasAttribute('title'));
-    assertFalse(endpointIcon.hasAttribute('aria-label'));
+    assertTrue(endpointIcon.hasAttribute('interactive'));
+    assertEquals(tooltip, endpointIcon.getAttribute('title'));
+    assertEquals(tooltip, endpointIcon.getAttribute('aria-label'));
     assertTrue(endpointIconImage.classList.contains('google-search'));
     assertFalse(endpointIconImage.classList.contains('gemini'));
-
-    const switcherButtons = overlay.shadowRoot.querySelectorAll<HTMLElement>(
-        '.endpoint-switcher-button');
-    assertEquals(1, switcherButtons.length);
-    assertEquals('Gemini', switcherButtons[0]!.getAttribute('title'));
-    assertEquals('Gemini', switcherButtons[0]!.getAttribute('aria-label'));
-    assertTrue(
-        switcherButtons[0]!.querySelector<HTMLElement>('.endpoint-icon-image')!
-            .classList.contains('gemini'));
   });
 
   test('TabAndShiftTabCycleEndpointsRequerySuggestionsAndSubmit', async () => {
@@ -358,436 +330,36 @@ suite('GlicSelectionOverlay', () => {
     assertEquals('What is this?', handler.getArgs('submitPrompt')[0]);
   });
 
-  test('ClickingEndpointIconDoesNotSwitchEndpoints', async () => {
-    await selectRegionForPrompt();
+  test('ClickingEndpointIconCyclesEndpointsAndFocusesInput', async () => {
     await setEndpoints(twoEndpoints(), PromptEndpointId.kGemini);
     const endpointIcon =
         overlay.shadowRoot.querySelector<HTMLElement>('#endpointIcon')!;
     const input =
         overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
-    input.blur();
-    assertNotEquals(input, overlay.shadowRoot.activeElement);
+    let focusCalls = 0;
+    const origFocus = input.focus.bind(input);
+    input.focus = (options?: FocusOptions) => {
+      focusCalls++;
+      origFocus(options);
+    };
 
     endpointIcon.click();
     await overlay.updateComplete;
-
-    assertEquals('Ask Gemini', input.placeholder);
-    assertEquals(0, handler.getCallCount('setActivePromptEndpoint'));
-    assertEquals(input, overlay.shadowRoot.activeElement);
-  });
-
-  async function withReducedMotion(
-      reducedMotion: boolean, fn: () => Promise<void>) {
-    const origMatchMedia = window.matchMedia.bind(window);
-    window.matchMedia = (query: string) => {
-      if (query === '(prefers-reduced-motion: reduce)') {
-        return {matches: reducedMotion} as MediaQueryList;
-      }
-      return origMatchMedia(query);
-    };
-    try {
-      await fn();
-    } finally {
-      window.matchMedia = origMatchMedia;
-    }
-  }
-
-  async function finishAllOverlayAnimations() {
-    const animations = overlay.shadowRoot.getAnimations();
-    animations.forEach(a => a.finish());
-    await Promise.all(animations.map(a => a.finished));
-    await waitAfterNextRender(overlay);
-  }
-
-  test('ClickingEndpointSwitcherButtonSwitchesAndFocusesInput', async () => {
-    await selectRegionForPrompt();
-    await setEndpoints(twoEndpoints(), PromptEndpointId.kGemini);
-    const input =
-        overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
-    input.value = 'Keep this text';
-
-    let switcherButton = overlay.shadowRoot.querySelector<HTMLElement>(
-        '.endpoint-switcher-button')!;
-    assertTrue(!!switcherButton);
-    assertEquals('Google Search', switcherButton.getAttribute('aria-label'));
-
-    const mousedownEvent =
-        new MouseEvent('mousedown', {bubbles: true, cancelable: true});
-    switcherButton.dispatchEvent(mousedownEvent);
-    assertTrue(mousedownEvent.defaultPrevented);
-
-    // Move focus away from the input before clicking to verify observable
-    // focus restoration back to `#promptInput`.
-    switcherButton.focus();
-    assertEquals(switcherButton, overlay.shadowRoot.activeElement);
-
-    const initialSuggestionCalls = handler.getCallCount('getSuggestedActions');
-    switcherButton.click();
-    await overlay.updateComplete;
-
     assertEquals('Ask Google', input.placeholder);
-    assertEquals('Keep this text', input.value);
-    assertEquals(
-        'Google Search',
-        overlay.shadowRoot.querySelector('#endpointLiveRegion')
-            ?.textContent?.trim());
     assertEquals(1, handler.getCallCount('setActivePromptEndpoint'));
     assertEquals(
         PromptEndpointId.kGoogleSearch,
         handler.getArgs('setActivePromptEndpoint')[0]);
-    assertEquals(
-        initialSuggestionCalls + 1,
-        handler.getCallCount('getSuggestedActions'));
-    assertEquals(input, overlay.shadowRoot.activeElement);
+    assertEquals(1, focusCalls);
 
-    // The circle button now represents Gemini; clicking switches back and
-    // restores focus.
-    switcherButton = overlay.shadowRoot.querySelector<HTMLElement>(
-        '.endpoint-switcher-button')!;
-    assertEquals('Gemini', switcherButton.getAttribute('aria-label'));
-    switcherButton.focus();
-    assertEquals(switcherButton, overlay.shadowRoot.activeElement);
-
-    switcherButton.click();
+    endpointIcon.click();
     await overlay.updateComplete;
-
     assertEquals('Ask Gemini', input.placeholder);
     assertEquals(2, handler.getCallCount('setActivePromptEndpoint'));
     assertEquals(
         PromptEndpointId.kGemini,
         handler.getArgs('setActivePromptEndpoint')[1]);
-    assertEquals(input, overlay.shadowRoot.activeElement);
-  });
-
-  test('ClickingNonAdjacentEndpointSwitcherButtonJumpsDirectly', async () => {
-    await selectRegionForPrompt();
-    const threeEndpoints: PromptEndpointInfo[] = [
-      ...twoEndpoints(),
-      {
-        id: PromptEndpointId.kGemini,
-        name: 'Third Endpoint',
-        placeholder: 'Ask Third',
-      },
-    ];
-    await setEndpoints(threeEndpoints, PromptEndpointId.kGemini);
-    const input =
-        overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
-
-    let buttons = Array.from(overlay.shadowRoot.querySelectorAll<HTMLElement>(
-        '.endpoint-switcher-button'));
-    assertEquals(
-        'Google Search,Third Endpoint',
-        buttons.map(b => b.getAttribute('aria-label')).join());
-
-    buttons[1]!.click();
-    await overlay.updateComplete;
-
-    assertEquals('Ask Third', input.placeholder);
-    buttons = Array.from(overlay.shadowRoot.querySelectorAll<HTMLElement>(
-        '.endpoint-switcher-button'));
-    assertEquals(
-        'Gemini,Google Search',
-        buttons.map(b => b.getAttribute('aria-label')).join());
-  });
-
-  test('EscapeOnEndpointSwitcherButtonDismissesOverlay', async () => {
-    await selectRegionForPrompt();
-    await setEndpoints(twoEndpoints(), PromptEndpointId.kGemini);
-    const switcherButton = overlay.shadowRoot.querySelector<HTMLElement>(
-        '.endpoint-switcher-button')!;
-    assertTrue(!!switcherButton);
-
-    switcherButton.dispatchEvent(new KeyboardEvent(
-        'keydown', {key: 'Escape', bubbles: true, cancelable: true}));
-    assertEquals(1, handler.getCallCount('dismissOverlay'));
-  });
-
-  test('EndpointSwitchAnimatesSlideInAndCleansUp', async () => {
-    await selectRegionForPrompt();
-    await setEndpoints(twoEndpoints(), PromptEndpointId.kGemini);
-    const pill =
-        overlay.shadowRoot.querySelector<HTMLElement>('.searchbox-pill')!;
-    const switcherButton = overlay.shadowRoot.querySelector<HTMLElement>(
-        '.endpoint-switcher-button')!;
-    const initialPillRect = pill.getBoundingClientRect();
-    const initialButtonRect = switcherButton.getBoundingClientRect();
-    assertTrue(initialPillRect.width > 0);
-    assertTrue(initialButtonRect.left >= initialPillRect.right);
-
-    await withReducedMotion(false, async () => {
-      switcherButton.click();
-      await overlay.updateComplete;
-      await Promise.resolve();
-
-      const pillAnimations = pill.getAnimations();
-      assertEquals(1, pillAnimations.length);
-      const capAnim = pillAnimations[0]!;
-      capAnim.pause();
-
-      assertTrue(!!overlay.shadowRoot.querySelector('.searchbox-pill-ghost'));
-      assertTrue(!!overlay.shadowRoot.querySelector('.searchbox-pill-spacer'));
-      // Ghost must never duplicate element IDs.
-      assertEquals(
-          1, overlay.shadowRoot.querySelectorAll('#promptInput').length);
-      assertEquals(
-          1, overlay.shadowRoot.querySelectorAll('#endpointLiveRegion').length);
-
-      // At t=0 the pill starts at the circle button's position on the right.
-      capAnim.currentTime = 0;
-      const startRect = pill.getBoundingClientRect();
-      assertTrue(Math.abs(startRect.left - initialButtonRect.left) <= 2);
-      assertTrue(Math.abs(startRect.width - initialButtonRect.width) <= 2);
-
-      // Mid-animation the pill has slid partway left and expanded.
-      capAnim.currentTime = 100;
-      const midRect = pill.getBoundingClientRect();
-      assertTrue(midRect.left < startRect.left);
-      assertTrue(midRect.left > initialPillRect.left);
-      assertTrue(midRect.width > startRect.width);
-      assertTrue(midRect.width < initialPillRect.width);
-
-      await finishAllOverlayAnimations();
-
-      assertEquals(
-          null, overlay.shadowRoot.querySelector('.searchbox-pill-ghost'));
-      assertEquals(
-          null, overlay.shadowRoot.querySelector('.searchbox-pill-spacer'));
-      assertEquals('', pill.style.position);
-    });
-  });
-
-  test('EndpointSwitchAnimatesSlideInFromLeftInRtl', async () => {
-    overlay.dir = 'rtl';
-    await selectRegionForPrompt();
-    await setEndpoints(twoEndpoints(), PromptEndpointId.kGemini);
-    const pill =
-        overlay.shadowRoot.querySelector<HTMLElement>('.searchbox-pill')!;
-    const switcherButton = overlay.shadowRoot.querySelector<HTMLElement>(
-        '.endpoint-switcher-button')!;
-    const initialPillRect = pill.getBoundingClientRect();
-    const initialButtonRect = switcherButton.getBoundingClientRect();
-    assertTrue(initialButtonRect.right <= initialPillRect.left);
-
-    await withReducedMotion(false, async () => {
-      switcherButton.click();
-      await overlay.updateComplete;
-      await Promise.resolve();
-
-      const pillAnimations = pill.getAnimations();
-      assertEquals(1, pillAnimations.length);
-      const capAnim = pillAnimations[0]!;
-      capAnim.pause();
-
-      // At t=0 the pill starts at the circle button on the left in RTL.
-      capAnim.currentTime = 0;
-      const startRect = pill.getBoundingClientRect();
-      assertTrue(Math.abs(startRect.right - initialButtonRect.right) <= 2);
-      assertTrue(Math.abs(startRect.width - initialButtonRect.width) <= 2);
-
-      // Mid-animation the pill expands rightward toward its resting right edge.
-      capAnim.currentTime = 100;
-      const midRect = pill.getBoundingClientRect();
-      assertTrue(midRect.right > startRect.right);
-      assertTrue(midRect.right < initialPillRect.right);
-      assertTrue(midRect.width > startRect.width);
-      assertTrue(midRect.width < initialPillRect.width);
-
-      await finishAllOverlayAnimations();
-
-      assertEquals(
-          null, overlay.shadowRoot.querySelector('.searchbox-pill-ghost'));
-      assertEquals(
-          null, overlay.shadowRoot.querySelector('.searchbox-pill-spacer'));
-      assertEquals('', pill.style.position);
-    });
-  });
-
-  test('EndpointSwitchAnimatesCircleButtonsWithThreeEndpoints', async () => {
-    await selectRegionForPrompt();
-    const threeEndpoints: PromptEndpointInfo[] = [
-      ...twoEndpoints(),
-      {
-        id: PromptEndpointId.kGemini,
-        name: 'Third Endpoint',
-        placeholder: 'Ask Third',
-      },
-    ];
-    await setEndpoints(threeEndpoints, PromptEndpointId.kGemini);
-
-    await withReducedMotion(false, async () => {
-      const buttonsBefore = overlay.shadowRoot.querySelectorAll<HTMLElement>(
-          '.endpoint-switcher-button');
-      assertEquals(2, buttonsBefore.length);
-      // Click Google Search: Third Endpoint FLIP-slides toward the start edge
-      // with no delay, while Gemini enters from the far end with a delay.
-      buttonsBefore[0]!.click();
-      await overlay.updateComplete;
-      await Promise.resolve();
-
-      const buttonsAfter =
-          Array.from(overlay.shadowRoot.querySelectorAll<HTMLElement>(
-              '.endpoint-switcher-button'));
-      assertEquals(
-          'Third Endpoint,Gemini',
-          buttonsAfter.map(b => b.getAttribute('aria-label')).join());
-
-      const flipAnims = buttonsAfter[0]!.getAnimations();
-      const enterAnims = buttonsAfter[1]!.getAnimations();
-      assertEquals(1, flipAnims.length);
-      assertEquals(1, enterAnims.length);
-      assertEquals(0, flipAnims[0]!.effect!.getTiming().delay);
-      assertTrue(Number(enterAnims[0]!.effect!.getTiming().delay) > 0);
-
-      await finishAllOverlayAnimations();
-
-      assertEquals(
-          0,
-          overlay.shadowRoot.querySelectorAll('.searchbox-pill-ghost').length);
-      assertEquals(
-          0,
-          overlay.shadowRoot.querySelectorAll('.searchbox-pill-spacer').length);
-    });
-  });
-
-  test(
-      'RapidEndpointSwitchCancelsInFlightAnimationWithoutLeaking', async () => {
-        await selectRegionForPrompt();
-        await setEndpoints(twoEndpoints(), PromptEndpointId.kGemini);
-        const pill =
-            overlay.shadowRoot.querySelector<HTMLElement>('.searchbox-pill')!;
-        const input =
-            overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
-
-        await withReducedMotion(false, async () => {
-          input.dispatchEvent(new KeyboardEvent(
-              'keydown', {key: 'Tab', bubbles: true, cancelable: true}));
-          await overlay.updateComplete;
-          await Promise.resolve();
-          assertEquals(
-              1,
-              overlay.shadowRoot.querySelectorAll('.searchbox-pill-ghost')
-                  .length);
-          assertEquals(
-              1,
-              overlay.shadowRoot.querySelectorAll('.searchbox-pill-spacer')
-                  .length);
-
-          // Interrupt the in-flight animation with a second Tab switch.
-          input.dispatchEvent(new KeyboardEvent(
-              'keydown', {key: 'Tab', bubbles: true, cancelable: true}));
-          await overlay.updateComplete;
-          await Promise.resolve();
-          assertEquals(
-              1,
-              overlay.shadowRoot.querySelectorAll('.searchbox-pill-ghost')
-                  .length);
-          assertEquals(
-              1,
-              overlay.shadowRoot.querySelectorAll('.searchbox-pill-spacer')
-                  .length);
-
-          await finishAllOverlayAnimations();
-
-          assertEquals('Ask Gemini', input.placeholder);
-          assertEquals(
-              0,
-              overlay.shadowRoot.querySelectorAll('.searchbox-pill-ghost')
-                  .length);
-          assertEquals(
-              0,
-              overlay.shadowRoot.querySelectorAll('.searchbox-pill-spacer')
-                  .length);
-          assertEquals('', pill.style.position);
-        });
-      });
-
-  test('EndpointSwitchSkipsAnimationWithReducedMotion', async () => {
-    await selectRegionForPrompt();
-    await setEndpoints(twoEndpoints(), PromptEndpointId.kGemini);
-    const pill =
-        overlay.shadowRoot.querySelector<HTMLElement>('.searchbox-pill')!;
-    const input =
-        overlay.shadowRoot.querySelector<HTMLInputElement>('#promptInput')!;
-
-    await withReducedMotion(true, async () => {
-      input.dispatchEvent(new KeyboardEvent(
-          'keydown', {key: 'Tab', bubbles: true, cancelable: true}));
-      await overlay.updateComplete;
-      await Promise.resolve();
-
-      assertEquals('Ask Google', input.placeholder);
-      assertEquals(
-          0,
-          overlay.shadowRoot.querySelectorAll('.searchbox-pill-ghost').length);
-      assertEquals(
-          0,
-          overlay.shadowRoot.querySelectorAll('.searchbox-pill-spacer').length);
-      assertEquals(0, pill.getAnimations().length);
-    });
-  });
-
-  test('EndpointSwitchAnimationCleansUpOnTeardown', async () => {
-    await withReducedMotion(false, async () => {
-      async function startInFlightSwitch() {
-        await selectRegionForPrompt();
-        await setEndpoints(twoEndpoints(), PromptEndpointId.kGemini);
-        const switcherButton = overlay.shadowRoot.querySelector<HTMLElement>(
-            '.endpoint-switcher-button')!;
-        switcherButton.click();
-        await overlay.updateComplete;
-        await Promise.resolve();
-        assertEquals(
-            1,
-            overlay.shadowRoot.querySelectorAll('.searchbox-pill-ghost')
-                .length);
-        assertEquals(
-            1,
-            overlay.shadowRoot.querySelectorAll('.searchbox-pill-spacer')
-                .length);
-      }
-
-      const assertCleanedUp = () => {
-        assertEquals(
-            0,
-            overlay.shadowRoot.querySelectorAll('.searchbox-pill-ghost')
-                .length);
-        assertEquals(
-            0,
-            overlay.shadowRoot.querySelectorAll('.searchbox-pill-spacer')
-                .length);
-        const pill =
-            overlay.shadowRoot.querySelector<HTMLElement>('.searchbox-pill');
-        if (pill) {
-          assertEquals('', pill.style.position);
-        }
-      };
-
-      // 1. Endpoint list update from browser cancels in-flight animation.
-      await startInFlightSwitch();
-      await setEndpoints(twoEndpoints(), PromptEndpointId.kGemini);
-      assertCleanedUp();
-
-      // 2. Hiding the floating prompt cancels in-flight animation.
-      await startInFlightSwitch();
-      overlay.showFloatingPrompt = false;
-      await overlay.updateComplete;
-      assertCleanedUp();
-      overlay.showFloatingPrompt = true;
-      await overlay.updateComplete;
-
-      // 3. Disabling the prompt box cancels in-flight animation.
-      await startInFlightSwitch();
-      overlay.enableSelectionOverlayPromptBox = false;
-      await overlay.updateComplete;
-      assertCleanedUp();
-      overlay.enableSelectionOverlayPromptBox = true;
-      await overlay.updateComplete;
-
-      // 4. Disconnecting the overlay element cancels in-flight animation.
-      await startInFlightSwitch();
-      overlay.remove();
-      assertCleanedUp();
-    });
+    assertEquals(2, focusCalls);
   });
 
   test('TabAndShiftTabCycleDirectionWithThreeEndpoints', async () => {
@@ -1015,10 +587,6 @@ suite('GlicSelectionOverlay', () => {
     assertFalse(endpointIcon.hasAttribute('title'));
     assertFalse(input.hasAttribute('aria-description'));
     assertFalse(input.hasAttribute('aria-keyshortcuts'));
-    assertEquals(
-        0,
-        overlay.shadowRoot.querySelectorAll('.endpoint-switcher-button')
-            .length);
 
     input.focus();
     const tabEvent = new KeyboardEvent(
@@ -1027,12 +595,8 @@ suite('GlicSelectionOverlay', () => {
     assertFalse(tabEvent.defaultPrevented);
 
     await setEndpoints(twoEndpoints(), PromptEndpointId.kGoogleSearch);
-    assertEquals('true', endpointIcon.getAttribute('aria-hidden'));
-    assertFalse(endpointIcon.hasAttribute('role'));
-    assertEquals(
-        1,
-        overlay.shadowRoot.querySelectorAll('.endpoint-switcher-button')
-            .length);
+    assertEquals('button', endpointIcon.getAttribute('role'));
+    assertFalse(endpointIcon.hasAttribute('aria-hidden'));
     assertEquals('Tab Shift+Tab', input.getAttribute('aria-keyshortcuts'));
   });
 
@@ -1847,83 +1411,6 @@ suite('GlicSelectionOverlayLayout', () => {
           (pillRect.top + pillRect.bottom) / 2,
           (buttonRect.top + buttonRect.bottom) / 2, 'center y');
       assertTrue(buttonRect.left >= pillRect.right);
-    });
-
-    test('EndpointSwitcherButtonsBesidePillLtrAndRtl', async () => {
-      await showOverlay({promptBox: true});
-      page.setPromptEndpoints(
-          [
-            {
-              id: PromptEndpointId.kGemini,
-              name: 'Gemini',
-              placeholder: 'Ask Gemini',
-            },
-            {
-              id: PromptEndpointId.kGoogleSearch,
-              name: 'Google Search',
-              placeholder: 'Ask Google',
-            },
-          ],
-          PromptEndpointId.kGemini);
-      await page.$.flushForTesting();
-      await select(
-          {x: 0.3, y: 0.3, width: 0.1, height: 0.1}, [chip('Explain')]);
-
-      let pillRect = query('.searchbox-pill').getBoundingClientRect();
-      let switcherRect =
-          query('.endpoint-switcher-button').getBoundingClientRect();
-      assertNear(44, switcherRect.width, 'circle width');
-      assertNear(44, switcherRect.height, 'circle height');
-      assertNear(
-          (pillRect.top + pillRect.bottom) / 2,
-          (switcherRect.top + switcherRect.bottom) / 2, 'center y');
-      assertTrue(switcherRect.left >= pillRect.right);
-      assertNear(
-          pillRect.left, chips()[0]!.getBoundingClientRect().left,
-          'ltr chip aligned with pill');
-
-      overlay.dir = 'rtl';
-      await select(
-          {x: 0.7, y: 0.3, width: 0.1, height: 0.1}, [chip('Explain')]);
-      pillRect = query('.searchbox-pill').getBoundingClientRect();
-      switcherRect = query('.endpoint-switcher-button').getBoundingClientRect();
-      assertTrue(switcherRect.right <= pillRect.left);
-      assertNear(
-          pillRect.right, chips()[0]!.getBoundingClientRect().right,
-          'rtl chip aligned with pill');
-    });
-
-    test('PromptBoxExtraRowWidthTriggersRightAlignmentFallback', async () => {
-      await showOverlay({promptBox: true});
-      // Leave 340px from selection.left to the right viewport margin: wide
-      // enough for the 320px pill alone, but not wide enough once an inactive
-      // endpoint switcher circle button (+50px) is beside it.
-      const region =
-          regionFromPx(window.innerWidth - MARGIN - 340, 100, 80, 60);
-      const selection = toViewport(region);
-
-      await select(region);
-      assertNear(selection.left, promptRect().left, 'single endpoint left');
-
-      page.setPromptEndpoints(
-          [
-            {
-              id: PromptEndpointId.kGemini,
-              name: 'Gemini',
-              placeholder: 'Ask Gemini',
-            },
-            {
-              id: PromptEndpointId.kGoogleSearch,
-              name: 'Google Search',
-              placeholder: 'Ask Google',
-            },
-          ],
-          PromptEndpointId.kGemini);
-      await page.$.flushForTesting();
-      await select(region);
-      assertNear(
-          selection.right, promptRect().right,
-          'two endpoints right-aligned fallback');
     });
   });
 
