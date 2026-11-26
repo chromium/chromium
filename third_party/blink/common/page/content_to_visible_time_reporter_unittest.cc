@@ -16,8 +16,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/tracing/test_trace_processor.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 
@@ -27,9 +30,20 @@ constexpr char kBfcacheRestoreHistogram[] =
     "BackForwardCache.Restore.NavigationToFirstPaint";
 constexpr char kBothReasonsHistogram[] =
     "Browser.Tabs.TabShowReason.BothTabSwitchingAndBfcache";
+constexpr char kBrowserMainThreadPhaseHistogram[] =
+    "Browser.Tabs.NoSavedFramesLoaded.SwitchPhaseDuration.BrowserMainThread";
+constexpr char kBrowserToRendererMainThreadPhaseHistogram[] =
+    "Browser.Tabs.NoSavedFramesLoaded.SwitchPhaseDuration."
+    "BrowserToRendererMainThread";
+constexpr char kRendererMainThreadToPresentationPhaseHistogram[] =
+    "Browser.Tabs.NoSavedFramesLoaded.SwitchPhaseDuration."
+    "RendererMainThreadToPresentation";
 
 constexpr base::TimeDelta kDuration = base::Milliseconds(42);
 constexpr base::TimeDelta kOtherDuration = base::Milliseconds(4242);
+constexpr base::TimeDelta kBrowserMainThreadDuration = base::Milliseconds(5);
+constexpr base::TimeDelta kBrowserToRendererMainThreadDuration =
+    base::Milliseconds(12);
 
 // Combinations of tab states relevant to histogram recording.
 struct TabStateParams {
@@ -37,6 +51,7 @@ struct TabStateParams {
   bool destination_is_loaded;
   bool destination_is_frozen;
   std::array<const char*, 2> histogram_suffixes;
+  bool expects_phase_durations;
 };
 
 constexpr TabStateParams kTabStatesToTest[] = {
@@ -47,6 +62,7 @@ constexpr TabStateParams kTabStatesToTest[] = {
         .destination_is_frozen = false,
         .histogram_suffixes = {"WithSavedFrames",
                                "FrozenState.Loaded_Unfrozen"},
+        .expects_phase_durations = false,
     },
     // Loaded and frozen, with saved frames.
     {
@@ -54,6 +70,7 @@ constexpr TabStateParams kTabStatesToTest[] = {
         .destination_is_loaded = true,
         .destination_is_frozen = true,
         .histogram_suffixes = {"WithSavedFrames", "FrozenState.Loaded_Frozen"},
+        .expects_phase_durations = false,
     },
     // NoSavedFrames_Loaded
     {
@@ -62,6 +79,7 @@ constexpr TabStateParams kTabStatesToTest[] = {
         .destination_is_frozen = false,
         .histogram_suffixes = {"NoSavedFrames_Loaded",
                                "FrozenState.Loaded_Unfrozen"},
+        .expects_phase_durations = true,
     },
     // Loaded and frozen, without saved frames.
     {
@@ -70,6 +88,7 @@ constexpr TabStateParams kTabStatesToTest[] = {
         .destination_is_frozen = true,
         .histogram_suffixes = {"NoSavedFrames_Loaded",
                                "FrozenState.Loaded_Frozen"},
+        .expects_phase_durations = true,
     },
     // NoSavedFrames_NotLoaded
     {
@@ -78,6 +97,7 @@ constexpr TabStateParams kTabStatesToTest[] = {
         .destination_is_frozen = false,
         .histogram_suffixes = {"NoSavedFrames_NotLoaded",
                                "FrozenState.NotLoaded"},
+        .expects_phase_durations = false,
     },
 };
 
@@ -146,6 +166,9 @@ class ContentToVisibleTimeReporterTest
         "Browser.Tabs.TabSwitchResult3.FrozenState.Loaded_Frozen",
         "Browser.Tabs.TabSwitchResult3.FrozenState.Loaded_Unfrozen",
         "Browser.Tabs.TabSwitchResult3.FrozenState.NotLoaded",
+        kBrowserMainThreadPhaseHistogram,
+        kBrowserToRendererMainThreadPhaseHistogram,
+        kRendererMainThreadToPresentationPhaseHistogram,
         // Non-tab switch.
         kBfcacheRestoreHistogram};
     std::vector<std::string> unexpected_histograms;
@@ -532,6 +555,124 @@ TEST_P(ContentToVisibleTimeReporterTest, BothReasonsMetric) {
         RecordContentToVisibleTimeRequest({}));
     tester.ExpectUniqueSample(kBothReasonsHistogram, false, 1);
   }
+}
+
+namespace {
+
+// Returns a RecordContentToVisibleTimeRequest containing `event`, with
+// `browser_dispatch_time` set as content::RenderWidgetHostImpl sets it when
+// sending the WasShown IPC.
+RecordContentToVisibleTimeRequest CreateRendererRequest(
+    const VisibleTimeEvent& event) {
+  return RecordContentToVisibleTimeRequest{
+      .events = {event},
+      .browser_dispatch_time =
+          event.event_start_time + kBrowserMainThreadDuration};
+}
+
+// Returns when the renderer main thread starts handling the WasShown IPC that
+// carries a request created by CreateRendererRequest() for a tab switch
+// starting at `start_time`.
+base::TimeTicks GetRendererMainThreadStartTime(base::TimeTicks start_time) {
+  return start_time + kBrowserMainThreadDuration +
+         kBrowserToRendererMainThreadDuration;
+}
+
+}  // namespace
+
+TEST_P(ContentToVisibleTimeReporterTest,
+       PhaseDurationsRecordedOnlyOnSuccessfulNoSavedFramesLoadedPresentation) {
+  const std::vector<std::string> phase_histograms = {
+      kBrowserMainThreadPhaseHistogram,
+      kBrowserToRendererMainThreadPhaseHistogram,
+      kRendererMainThreadToPresentationPhaseHistogram};
+
+  // 1. Incomplete tab switch (hidden before presentation) does not emit phase
+  // durations.
+  const auto start1 = base::TimeTicks::Now();
+  auto callback1 = tab_switch_time_recorder_.TabWasShown(
+      CreateRendererRequest(CreateTabSwitchEvent(start1)),
+      GetRendererMainThreadStartTime(start1));
+  task_environment_.FastForwardBy(kDuration);
+  tab_switch_time_recorder_.TabWasHidden();
+
+  std::vector<std::string> expected_histograms;
+  base::Extend(expected_histograms, result_histograms_);
+  base::Extend(expected_histograms, incomplete_duration_histograms_);
+  ExpectHistogramsEmptyExcept(expected_histograms);
+
+  // 2. Missed tab hide (second `TabWasShown` before presentation) does not emit
+  // phase durations.
+  const auto start2 = base::TimeTicks::Now();
+  auto callback2 = tab_switch_time_recorder_.TabWasShown(
+      CreateRendererRequest(CreateTabSwitchEvent(start2)),
+      GetRendererMainThreadStartTime(start2));
+  task_environment_.FastForwardBy(kDuration);
+
+  const auto start3 = base::TimeTicks::Now();
+  auto callback3 = tab_switch_time_recorder_.TabWasShown(
+      CreateRendererRequest(CreateTabSwitchEvent(start3)),
+      GetRendererMainThreadStartTime(start3));
+  ExpectHistogramsEmptyExcept(expected_histograms);
+
+  // Running invalidated callbacks from aborted switches is a no-op.
+  viz::FrameTimingDetails details;
+  details.presentation_feedback.timestamp = start3 + kOtherDuration;
+  std::move(callback1).Run(details);
+  std::move(callback2).Run(details);
+  ExpectHistogramsEmptyExcept(expected_histograms);
+
+  // 3. Successful presentation emits phase durations iff the tab is loaded and
+  // had no saved frames at start. The phases add up to the total duration.
+  std::move(callback3).Run(details);
+  base::Extend(expected_histograms, duration_histograms_);
+  const bool expects_phases = tab_state_.expects_phase_durations;
+  if (expects_phases) {
+    base::Extend(expected_histograms, phase_histograms);
+  }
+  ExpectHistogramsEmptyExcept(expected_histograms);
+  if (expects_phases) {
+    ExpectTotalSamples(phase_histograms, 1);
+    ExpectTimeBucketCounts({kBrowserMainThreadPhaseHistogram},
+                           kBrowserMainThreadDuration, 1);
+    ExpectTimeBucketCounts({kBrowserToRendererMainThreadPhaseHistogram},
+                           kBrowserToRendererMainThreadDuration, 1);
+    ExpectTimeBucketCounts({kRendererMainThreadToPresentationPhaseHistogram},
+                           kOtherDuration - kBrowserMainThreadDuration -
+                               kBrowserToRendererMainThreadDuration,
+                           1);
+  }
+}
+
+// The tab switch trace event has a duration of 0 when the presentation
+// timestamp precedes the tab switch start time, since they come from different
+// processes.
+TEST(ContentToVisibleTimeReporterTracingTest,
+     PresentationBeforeStartHasZeroDuration) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::TracingEnvironment tracing_environment;
+  base::test::TestTraceProcessor test_trace_processor;
+  test_trace_processor.StartTrace("latency");
+
+  ContentToVisibleTimeReporter reporter;
+  const auto start = base::TimeTicks::Now();
+  auto callback = reporter.TabWasShown(RecordContentToVisibleTimeRequest(
+      {VisibleTimeEvent{.event_start_time = start,
+                        .reason = VisibleTimeEvent::TabSwitchReason{
+                            .destination_is_loaded = true}}}));
+  viz::FrameTimingDetails details;
+  details.presentation_feedback.timestamp = start - base::Milliseconds(10);
+  std::move(callback).Run(details);
+
+  const absl::Status status = test_trace_processor.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  auto result = test_trace_processor.RunQuery(
+      "SELECT dur FROM slice WHERE name = 'TabSwitching::Latency'");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"dur"},
+                                     std::vector<std::string>{"0"}));
 }
 
 }  // namespace blink

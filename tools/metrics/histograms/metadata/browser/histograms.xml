@@ -1230,6 +1230,59 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.Tabs.NoSavedFramesLoaded.SwitchPhaseDuration.{Phase}"
+    units="ms" expires_after="2027-05-02">
+  <owner>fdoray@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Duration of one phase of a tab switch to a loaded tab without a saved frame
+    at switch start: {Phase}
+
+    Recorded upon frame presentation alongside
+    Browser.Tabs.TotalSwitchDuration3.NoSavedFrames_Loaded when the renderer
+    presents the frame. For each tab switch, the three phases add up to the
+    Browser.Tabs.TotalSwitchDuration3.NoSavedFrames_Loaded sample (unless a
+    phase is clamped to 0 because of a timestamp inconsistency across
+    processes). Not recorded when base::TimeTicks::IsConsistentAcrossProcesses()
+    is false, since the phases compare timestamps from the browser and renderer
+    processes.
+
+    The phases are delimited by: the tab-switch start time (taken on the browser
+    main thread when the tab is activated), the time when
+    content::RenderWidgetHostImpl sends the WasShown IPC to the renderer (or the
+    RequestSuccessfulPresentationTimeForNextFrame IPC when the widget is already
+    painting in the background), the time when the renderer main thread starts
+    handling that IPC (in blink::WidgetBase::WasShown or
+    blink::WidgetBase::RequestSuccessfulPresentationTimeForNextFrame) and the
+    frame presentation time.
+
+    On Mac, if a saved frame becomes available between the start of the tab
+    switch and when the tab is shown, the browser compositor presents that frame
+    and records Browser.Tabs.TotalSwitchDuration3.NoSavedFrames_Loaded without
+    this histogram, since the renderer main thread is not on the critical path.
+    On Mac, this histogram can therefore have fewer samples than
+    Browser.Tabs.TotalSwitchDuration3.NoSavedFrames_Loaded.
+  </summary>
+  <token key="Phase">
+    <variant name="BrowserMainThread"
+        summary="From the tab-switch start time to when the browser sends the
+                 WasShown IPC to the renderer. Includes work on the browser
+                 main thread and, for windows created by the renderer,
+                 waiting for content::RenderWidgetHostImpl::Init."/>
+    <variant name="BrowserToRendererMainThread"
+        summary="From when the browser sends the WasShown IPC to when the
+                 renderer main thread starts handling it. Includes IPC
+                 transit and queueing on the renderer main thread."/>
+    <variant name="RendererMainThreadToPresentation"
+        summary="From when the renderer main thread starts handling the
+                 WasShown IPC to frame presentation. Includes frame
+                 production on the renderer main and compositor threads, and
+                 display compositing and presentation."/>
+  </token>
+</histogram>
+
 <histogram name="Browser.Tabs.TabShowReason.BothTabSwitchingAndBfcache"
     enum="Boolean" expires_after="2027-04-02">
   <owner>joenotcharles@google.com</owner>

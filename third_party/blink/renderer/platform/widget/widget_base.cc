@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -14,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/common/task_annotator.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
@@ -642,6 +644,12 @@ void WidgetBase::WasShown(
   TRACE_EVENT("renderer", "WidgetBase::WasShown",
               perfetto::TerminatingFlow::FromPointer(this));
 
+  // Capture before `SetHidden(false)` to exclude its execution time.
+  std::optional<base::TimeTicks> was_shown_start_time;
+  if (record_tab_switch_time_request) {
+    was_shown_start_time = base::TimeTicks::Now();
+  }
+
   SetHidden(false);
 
   if (record_tab_switch_time_request) {
@@ -649,7 +657,8 @@ void WidgetBase::WasShown(
     CHECK(!record_tab_switch_time_request
                ->AllEventsAreTabSwitchesWithSavedFrame());
     LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
-        tab_switch_time_recorder_.TabWasShown(*record_tab_switch_time_request));
+        tab_switch_time_recorder_.TabWasShown(*record_tab_switch_time_request,
+                                              was_shown_start_time));
   }
 
   client_->WasShown(was_evicted);
@@ -669,7 +678,9 @@ void WidgetBase::RequestSuccessfulPresentationTimeForNextFrame(
   // Tab was shown while widget was already painting, eg. due to being
   // captured.
   LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
-      tab_switch_time_recorder_.TabWasShown(visible_time_request));
+      tab_switch_time_recorder_.TabWasShown(
+          visible_time_request,
+          /*renderer_main_thread_start_time=*/base::TimeTicks::Now()));
 }
 
 void WidgetBase::CancelSuccessfulPresentationTimeRequest() {

@@ -5,10 +5,12 @@
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <variant>
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
@@ -92,7 +94,8 @@ void RecordTabSwitchTraceEvent(
   }
 
   using TabSwitchMeasurement = perfetto::protos::pbzero::TabSwitchMeasurement;
-  DCHECK_GE(end_time, start_time);
+  // Clamp because `start_time` and `end_time` come from different processes.
+  end_time = std::max(end_time, start_time);
   const auto track =
       perfetto::Track::Global(base::trace_event::GetNextGlobalTraceId());
   const auto flow = perfetto::Flow::Global(flow_id);
@@ -128,11 +131,47 @@ void RecordTabSwitchTraceEvent(
   TRACE_EVENT_END("latency", track, end_time, flow);
 }
 
+// Intermediate timestamps of a tab switch presented by the renderer.
+struct RendererTabSwitchTimestamps {
+  // RecordContentToVisibleTimeRequest::browser_dispatch_time: when
+  // content::RenderWidgetHostImpl sent the WasShown or
+  // RequestSuccessfulPresentationTimeForNextFrame IPC to the renderer.
+  base::TimeTicks browser_dispatch_time;
+  // When the renderer main thread started handling that IPC.
+  base::TimeTicks renderer_main_thread_start_time;
+};
+
+// Records the duration of each phase of a tab switch to a loaded tab without a
+// saved frame. The phases add up to
+// Browser.Tabs.TotalSwitchDuration3.NoSavedFrames_Loaded.
+void RecordNoSavedFramesLoadedPhaseDurations(
+    base::TimeTicks start_time,
+    const RendererTabSwitchTimestamps& renderer_timestamps,
+    base::TimeTicks presentation_timestamp) {
+  const auto record_phase = [](std::string_view phase, base::TimeTicks begin,
+                               base::TimeTicks end) {
+    // Clamp because timestamps come from different processes.
+    base::UmaHistogramMediumTimes(
+        base::StrCat(
+            {"Browser.Tabs.NoSavedFramesLoaded.SwitchPhaseDuration.", phase}),
+        std::max(base::TimeDelta(), end - begin));
+  };
+  record_phase("BrowserMainThread", start_time,
+               renderer_timestamps.browser_dispatch_time);
+  record_phase("BrowserToRendererMainThread",
+               renderer_timestamps.browser_dispatch_time,
+               renderer_timestamps.renderer_main_thread_start_time);
+  record_phase("RendererMainThreadToPresentation",
+               renderer_timestamps.renderer_main_thread_start_time,
+               presentation_timestamp);
+}
+
 void RecordTabSwitchHistogramsAndTraceEvent(
     TabSwitchResult tab_switch_result,
     base::TimeTicks start_time,
     base::TimeTicks presentation_timestamp,
-    const VisibleTimeEvent::TabSwitchReason& start_state) {
+    const VisibleTimeEvent::TabSwitchReason& start_state,
+    const std::optional<RendererTabSwitchTimestamps>& renderer_timestamps) {
   uint64_t event_id = base::trace_event::GetNextGlobalTraceId();
   RecordTabSwitchTraceEvent(start_time, presentation_timestamp,
                             tab_switch_result, start_state, event_id);
@@ -157,6 +196,11 @@ void RecordTabSwitchHistogramsAndTraceEvent(
     case TabSwitchResult::kSuccess:
       RecordTabSwitchHistogramVariants("Browser.Tabs.TotalSwitchDuration3",
                                        start_state, record_duration_histogram);
+      if (renderer_timestamps && start_state.destination_is_loaded &&
+          !start_state.had_saved_frame_at_start) {
+        RecordNoSavedFramesLoadedPhaseDurations(
+            start_time, *renderer_timestamps, presentation_timestamp);
+      }
       break;
     case TabSwitchResult::kMissedTabHide:
     case TabSwitchResult::kIncomplete:
@@ -175,12 +219,18 @@ ContentToVisibleTimeReporter::~ContentToVisibleTimeReporter() = default;
 
 ContentToVisibleTimeReporter::SuccessfulPresentationTimeCallback
 ContentToVisibleTimeReporter::TabWasShown(
-    RecordContentToVisibleTimeRequest start_state) {
+    RecordContentToVisibleTimeRequest start_state,
+    std::optional<base::TimeTicks> renderer_main_thread_start_time) {
 #if DCHECK_IS_ON()
   for (const auto& event : start_state.events) {
     DCHECK(!event.event_start_time.is_null());
   }
 #endif
+  // Requests sent to the renderer by content::RenderWidgetHostImpl have a
+  // `browser_dispatch_time`, and blink::WidgetBase provides
+  // `renderer_main_thread_start_time` for them. Other requests have neither.
+  CHECK_EQ(start_state.browser_dispatch_time.has_value(),
+           renderer_main_thread_start_time.has_value());
 
   const bool has_tab_switch = std::ranges::any_of(
       start_state.events, [](const VisibleTimeEvent& event) {
@@ -215,7 +265,8 @@ ContentToVisibleTimeReporter::TabWasShown(
         RecordTabSwitchHistogramsAndTraceEvent(
             TabSwitchResult::kMissedTabHide, event.event_start_time,
             base::TimeTicks::Now(),
-            std::get<VisibleTimeEvent::TabSwitchReason>(event.reason));
+            std::get<VisibleTimeEvent::TabSwitchReason>(event.reason),
+            /*renderer_timestamps=*/std::nullopt);
       }
     }
   }
@@ -225,7 +276,8 @@ ContentToVisibleTimeReporter::TabWasShown(
   // between (which is supposed to be impossible).
   // DCHECK(tab_switch_start_state_.empty());
 
-  OverwriteTabSwitchStartState(std::move(start_state));
+  OverwriteTabSwitchStartState(std::move(start_state),
+                               renderer_main_thread_start_time);
 
   // |tab_switch_start_state_| is only reset by ResetTabSwitchStartState once
   // the metrics have been emitted.
@@ -242,7 +294,8 @@ void ContentToVisibleTimeReporter::TabWasHidden() {
         RecordTabSwitchHistogramsAndTraceEvent(
             TabSwitchResult::kIncomplete, event.event_start_time,
             base::TimeTicks::Now(),
-            std::get<VisibleTimeEvent::TabSwitchReason>(event.reason));
+            std::get<VisibleTimeEvent::TabSwitchReason>(event.reason),
+            /*renderer_timestamps=*/std::nullopt);
       }
     }
   }
@@ -260,12 +313,24 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
   DCHECK(tab_switch_start_state_);
   // If the DCHECK fail, make sure RenderWidgetHostImpl::WasShown was triggered
   // for recording the event.
+
+  // Phase durations compare timestamps from the browser and renderer
+  // processes, which is only meaningful if they use a consistent clock.
+  std::optional<RendererTabSwitchTimestamps> renderer_timestamps;
+  if (renderer_main_thread_start_time_ &&
+      base::TimeTicks::IsConsistentAcrossProcesses()) {
+    renderer_timestamps = RendererTabSwitchTimestamps{
+        .browser_dispatch_time =
+            *tab_switch_start_state_->browser_dispatch_time,
+        .renderer_main_thread_start_time = *renderer_main_thread_start_time_};
+  }
   for (const VisibleTimeEvent& event : tab_switch_start_state_->events) {
     std::visit(absl::Overload{
                    [&](const VisibleTimeEvent::TabSwitchReason& tab_switch) {
                      RecordTabSwitchHistogramsAndTraceEvent(
                          tab_switch_result, event.event_start_time,
-                         presentation_timestamp, tab_switch);
+                         presentation_timestamp, tab_switch,
+                         renderer_timestamps);
                    },
                    [&](const VisibleTimeEvent::BFCacheRestoreReason&) {
                      RecordBackForwardCacheRestoreMetric(
@@ -279,7 +344,8 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
 }
 
 void ContentToVisibleTimeReporter::OverwriteTabSwitchStartState(
-    std::optional<RecordContentToVisibleTimeRequest> state) {
+    std::optional<RecordContentToVisibleTimeRequest> state,
+    std::optional<base::TimeTicks> renderer_main_thread_start_time) {
   if (tab_switch_start_state_) {
     // Invalidate previously issued callbacks, to avoid accessing
     // `tab_switch_start_state_` which is about to be deleted.
@@ -290,6 +356,7 @@ void ContentToVisibleTimeReporter::OverwriteTabSwitchStartState(
     weak_ptr_factory_.InvalidateWeakPtrs();
   }
   tab_switch_start_state_ = std::move(state);
+  renderer_main_thread_start_time_ = renderer_main_thread_start_time;
 }
 
 }  // namespace blink

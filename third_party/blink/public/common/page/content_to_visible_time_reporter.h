@@ -46,9 +46,14 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
       const viz::FrameTimingDetails& frame_timing_details)>;
 
   // Invoked when the tab associated with this recorder is shown. Returns a
-  // callback to invoke the next time a frame is presented for this tab.
+  // callback to invoke the next time a frame is presented for this tab. When
+  // called from blink::WidgetBase, `renderer_main_thread_start_time` is when
+  // the renderer main thread started handling the WasShown or
+  // RequestSuccessfulPresentationTimeForNextFrame IPC.
   SuccessfulPresentationTimeCallback TabWasShown(
-      RecordContentToVisibleTimeRequest start_state);
+      RecordContentToVisibleTimeRequest start_state,
+      std::optional<base::TimeTicks> renderer_main_thread_start_time =
+          std::nullopt);
 
   // Indicates that the tab associated with this recorder was hidden. If no
   // frame was presented since the last tab switch, failure is reported to UMA.
@@ -60,20 +65,24 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
       TabSwitchResult tab_switch_result,
       const viz::FrameTimingDetails& frame_timing_details);
 
-  // Saves the given `state` and `has_saved_frames`, and invalidates all
-  // existing callbacks that might reference the old state.
+  // Called when starting a new tab switch or clearing the current one.
+  // Replaces the tracked tab-switch state and cancels any pending presentation
+  // callbacks from a prior `TabWasShown()` call so they become no-ops.
   void OverwriteTabSwitchStartState(
-      std::optional<RecordContentToVisibleTimeRequest> state);
+      std::optional<RecordContentToVisibleTimeRequest> state,
+      std::optional<base::TimeTicks> renderer_main_thread_start_time);
 
-  // Clears state and invalidates all existing callbacks that might reference
-  // the old state.
+  // Called after recording metrics on presentation or when the tab is hidden.
+  // Ends tracking of the current tab switch and cancels any pending
+  // presentation callbacks.
   void ResetTabSwitchStartState() {
-    OverwriteTabSwitchStartState(std::nullopt);
+    OverwriteTabSwitchStartState(std::nullopt, std::nullopt);
   }
 
   // The information about the last tab switch request, or nullopt if there is
   // no incomplete tab switch.
   std::optional<RecordContentToVisibleTimeRequest> tab_switch_start_state_;
+  std::optional<base::TimeTicks> renderer_main_thread_start_time_;
 
   base::WeakPtrFactory<ContentToVisibleTimeReporter> weak_ptr_factory_{this};
 };
