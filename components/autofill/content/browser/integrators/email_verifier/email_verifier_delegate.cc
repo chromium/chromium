@@ -61,10 +61,65 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace autofill {
 
 namespace {
+
+constexpr size_t kMaxIssuerLogoUrlLength = 2048;
+
+// Validates and normalizes an issuer's logo URL before persisting it to prefs:
+// requires HTTPS without userinfo, strips any `#fragment`, and caps length so
+// untrusted `.well-known` data cannot bloat the pref.
+std::optional<std::string> SanitizeIssuerLogoUrl(const GURL& url) {
+  if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme) ||
+      url.has_username() || url.has_password()) {
+    return std::nullopt;
+  }
+  GURL sanitized = url.GetWithoutRef();
+  if (sanitized.spec().size() > kMaxIssuerLogoUrlLength) {
+    return std::nullopt;
+  }
+  return sanitized.spec();
+}
+
+// Backfills or refreshes the stored issuer logo URL for an already-allowed
+// email when the issuer matches the stored `issuer_site` and advertises a valid
+// logo URL that differs from what is stored. Leaves the existing entry
+// untouched when no valid logo URL is present so transient logo download
+// failures do not clear it.
+void MaybeUpdateStoredIssuerLogoUrl(PrefService* prefs,
+                                    const std::string& normalized_email,
+                                    const url::Origin& issuer_origin,
+                                    const GURL& brand_icon_url) {
+  if (!prefs) {
+    return;
+  }
+  std::optional<std::string> logo_url = SanitizeIssuerLogoUrl(brand_icon_url);
+  if (!logo_url) {
+    return;
+  }
+  const base::DictValue* existing =
+      prefs->GetDict(prefs::kAutofillEmailVerificationState)
+          .FindDict(normalized_email);
+  if (!existing) {
+    return;
+  }
+  const std::string* issuer_site = existing->FindString("issuer_site");
+  if (!issuer_site ||
+      *issuer_site != net::SchemefulSite(issuer_origin).Serialize()) {
+    return;
+  }
+  const std::string* stored_logo_url = existing->FindString("issuer_logo_url");
+  if (stored_logo_url && *stored_logo_url == *logo_url) {
+    return;
+  }
+  ScopedDictPrefUpdate update(prefs, prefs::kAutofillEmailVerificationState);
+  if (base::DictValue* email_dict = update->FindDict(normalized_email)) {
+    email_dict->Set("issuer_logo_url", std::move(*logo_url));
+  }
+}
 
 std::optional<url::Origin> GetOriginFromEmail(std::string_view email) {
   auto parts = base::RSplitStringOnce(email, "@");
@@ -326,6 +381,14 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
         email_dict.Set("allowed", true);
         email_dict.Set("issuer_site",
                        net::SchemefulSite(result.issuer_origin).Serialize());
+        // Remember the issuer's logo so that settings can show it next to the
+        // email. Drop any logo stored for a previous issuer.
+        if (std::optional<std::string> logo_url =
+                SanitizeIssuerLogoUrl(result.brand_icon_url)) {
+          email_dict.Set("issuer_logo_url", std::move(*logo_url));
+        } else {
+          email_dict.Remove("issuer_logo_url");
+        }
         email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
         update->Set(normalized_email, std::move(email_dict));
       }
@@ -426,6 +489,9 @@ void EmailVerifierDelegate::OnIsVerifiable(
   if (IsEmailVerificationAllowedForIssuer(manager->client().GetPrefs(),
                                           normalized_email,
                                           result->issuer_origin)) {
+    MaybeUpdateStoredIssuerLogoUrl(manager->client().GetPrefs(),
+                                   normalized_email, result->issuer_origin,
+                                   result->brand_icon_url);
     if (EmailVerificationNotSignedInStrikeDatabase* not_signed_in_strike_db =
             GetEmailVerificationNotSignedInStrikeDatabase()) {
       // Clear past not-signed-in strikes since the email is already permitted

@@ -213,7 +213,10 @@ export function getHtml(this: SettingsContactInfoPageElement) {
           ?hidden="${this.emailVerificationAddresses_.length === 0}">
         ${this.emailVerificationAddresses_.map((item, index) => html`
           <div class="list-item">
-            <site-favicon url="${this.getIssuerSite_(item)}"></site-favicon>
+            <settings-email-issuer-icon
+                .logoUrl="${this.getIssuerLogoUrl_(item)}"
+                .issuerSite="${this.getIssuerSite_(item)}">
+            </settings-email-issuer-icon>
             <div class="start">${item}</div>
             <cr-icon-button class="icon-more-vert email-menu"
                 data-index="${index}" @click="${this.onEmailMenuClick_}">

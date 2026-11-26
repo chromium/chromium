@@ -21,9 +21,9 @@ import '../../controls/settings_toggle_button.js';
 import '../../icons.html.js';
 import '../../settings_page/settings_subpage.js';
 import '../../simple_confirmation_dialog.js';
-import '../../site_favicon.js';
 import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
+import './email_issuer_icon.js';
 import './gmail_otp_disclaimer_dialog.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -105,6 +105,14 @@ function getBlockedTurnOnOutcome(
   return commsAppsEnabled ?
       GmailOtpSettingsChangeOutcome.TURNED_ON_BLOCKED_BY_GOOGLE_APPS_CONSENT :
       GmailOtpSettingsChangeOutcome.TURNED_ON_BLOCKED_BY_COMMS_APPS_CONSENT;
+}
+
+// Subset of fields from an `autofill.email_verification_state` entry used by
+// this page. See `kAutofillEmailVerificationState` in
+// components/autofill/core/common/autofill_prefs.h for the full schema.
+interface EmailVerificationStateEntry {
+  issuer_site?: string;
+  issuer_logo_url?: string;
 }
 
 const PROFILE_ENABLED_SYNTHETIC_PREF_KEY =
@@ -192,9 +200,8 @@ export class SettingsContactInfoPageElement extends
   private accessor activeEmailIssuer_: string = '';
   protected readonly isEmailVerificationProtocolEnabled_: boolean =
       loadTimeData.getBoolean('emailVerificationProtocolEnabled');
-  private accessor emailVerificationStatePref_:
-      chrome.settingsPrivate.PrefObject<Record<string, {issuer_site?: string}>>|
-      undefined;
+  private accessor emailVerificationStatePref_: chrome.settingsPrivate
+      .PrefObject<Record<string, EmailVerificationStateEntry>>|undefined;
   protected accessor emailVerificationAddresses_: string[] = [];
   protected accessor emailVerificationExpanded_: boolean = false;
   private accessor showGmailOtpFillingToggle_: boolean = false;
@@ -444,8 +451,8 @@ export class SettingsContactInfoPageElement extends
   /**
    * Listens for the save-address event, and calls the private API.
    */
-  private saveAddress_(event:
-                           CustomEvent<chrome.autofillPrivate.AddressEntry>) {
+  private saveAddress_(
+      event: CustomEvent<chrome.autofillPrivate.AddressEntry>) {
     this.autofillManager_.saveAddress(event.detail);
   }
 
@@ -517,10 +524,7 @@ export class SettingsContactInfoPageElement extends
   protected onMenuRemoveEmailClick_() {
     this.$.emailSharedMenu.close();
     const email = this.emailSharedMenuModel_;
-    const pref = PrefService.getInstance()
-                     .getPref<Record<string, {issuer_site?: string}>>(
-                         'autofill.email_verification_state');
-    const emailData = pref.value[email];
+    const emailData = this.getEmailVerificationStateEntry_(email);
     assert(emailData);
     const issuerSite = emailData.issuer_site;
     assert(issuerSite);
@@ -548,11 +552,16 @@ export class SettingsContactInfoPageElement extends
   }
 
   protected getIssuerSite_(email: string): string {
-    const state = PrefService.getInstance()
-                      .getPref<Record<string, {issuer_site?: string}>>(
-                          'autofill.email_verification_state')
-                      .value;
-    return state[email]?.issuer_site || '';
+    return this.getEmailVerificationStateEntry_(email)?.issuer_site || '';
+  }
+
+  protected getIssuerLogoUrl_(email: string): string {
+    return this.getEmailVerificationStateEntry_(email)?.issuer_logo_url || '';
+  }
+
+  private getEmailVerificationStateEntry_(email: string):
+      EmailVerificationStateEntry|undefined {
+    return this.emailVerificationStatePref_?.value?.[email];
   }
 
   private isCloudOffVisible_(address: chrome.autofillPrivate.AddressEntry):

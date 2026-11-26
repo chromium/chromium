@@ -115,6 +115,8 @@ inline constexpr char kAutofillEmailVerificationEnabled[] =
 // The value is a dictionary mapping email addresses to a dictionary containing:
 // - `allowed`: boolean indicating if the user allowed it.
 // - `issuer_site`: string indicating the site that issued the token.
+// - `issuer_logo_url`: optional string with the URL of the issuer's logo, from
+//   its `.well-known/email-verification` file.
 // - `timestamp`: timestamp when the decision was made.
 inline constexpr char kAutofillEmailVerificationState[] =
     "autofill.email_verification_state";

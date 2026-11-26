@@ -60,7 +60,7 @@
   align-items: center;
 }
 
-site-favicon {
+settings-email-issuer-icon {
   margin-inline-start: 20px;
   margin-inline-end: 16px;
 }
@@ -113,7 +113,7 @@ site-favicon {
     padding-inline-end: 0;
   }
 
-  #emailList site-favicon {
+  #emailList settings-email-issuer-icon {
     margin-inline-start: 0;
   }
 }

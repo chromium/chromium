@@ -10,6 +10,7 @@ import type {
   CrInputElement,
   CrTextareaElement,
   SettingsContactInfoPageElement,
+  SettingsEmailIssuerIconElement,
   SettingsGmailOtpDisclaimerDialogElement,
   SettingsSimpleConfirmationDialogElement,
 } from 'chrome://settings/lazy_load.js';
@@ -382,8 +383,17 @@ suite('ContactInfoPageUiTest', function() {
     loadTimeData.overrideValues({emailVerificationProtocolEnabled: true});
 
     const emailState = {
-      'test1@example.com': {allowed: true, issuer_site: 'https://google.com'},
+      'test1@example.com': {
+        allowed: true,
+        issuer_site: 'https://google.com',
+        issuer_logo_url: 'https://google.com/logo\'(1).png',
+      },
       'test2@example.com': {allowed: false, issuer_site: 'https://yahoo.com'},
+      'test3@example.com': {
+        allowed: true,
+        issuer_site: 'http://localhost',
+        issuer_logo_url: 'http://localhost/logo.png',
+      },
     };
 
     const page = await createContactInfoPage([], {
@@ -397,29 +407,77 @@ suite('ContactInfoPageUiTest', function() {
 
     const menuButtons =
         page.shadowRoot.querySelectorAll<HTMLElement>('.email-menu');
-    assertEquals(2, menuButtons.length);
+    assertEquals(3, menuButtons.length);
 
     const button0 = menuButtons[0]!;
     const button1 = menuButtons[1]!;
+    const button2 = menuButtons[2]!;
 
     const item0 = button0.parentElement;
     const item1 = button1.parentElement;
+    const item2 = button2.parentElement;
     assertTrue(!!item0);
     assertTrue(!!item1);
+    assertTrue(!!item2);
 
     const start0 = item0.querySelector('.start');
     assertTrue(!!start0);
     assertEquals('test1@example.com', start0.textContent.trim());
-    const favicon0 = item0.querySelector('site-favicon');
+    const icon0 = item0.querySelector<SettingsEmailIssuerIconElement>(
+        'settings-email-issuer-icon');
+    assertTrue(!!icon0);
+    const img0 = icon0.$.logo;
+    const favicon0 = icon0.shadowRoot.querySelector('site-favicon');
     assertTrue(!!favicon0);
     assertEquals('https://google.com', favicon0.url);
+    assertEquals('https://google.com/logo\'(1).png', img0.autoSrc);
+    assertEquals(
+        'chrome://image/?url=https%3A%2F%2Fgoogle.com%2Flogo%27(1).png' +
+            '&staticEncode=true',
+        img0.src);
+    // Until the issuer logo finishes loading, the fallback favicon stays shown.
+    assertFalse(isVisible(img0));
+    assertTrue(isVisible(favicon0));
+
+    img0.dispatchEvent(new Event('load'));
+    await icon0.updateComplete;
+    assertTrue(isVisible(img0));
+    assertFalse(isVisible(favicon0));
+
+    // A failed logo fetch falls back to showing the issuer site's favicon.
+    img0.dispatchEvent(new Event('error'));
+    await icon0.updateComplete;
+    assertFalse(isVisible(img0));
+    assertTrue(isVisible(favicon0));
 
     const start1 = item1.querySelector('.start');
     assertTrue(!!start1);
     assertEquals('test2@example.com', start1.textContent.trim());
-    const favicon1 = item1.querySelector('site-favicon');
+    const icon1 = item1.querySelector<SettingsEmailIssuerIconElement>(
+        'settings-email-issuer-icon');
+    assertTrue(!!icon1);
+    const img1 = icon1.$.logo;
+    const favicon1 = icon1.shadowRoot.querySelector('site-favicon');
     assertTrue(!!favicon1);
+    assertEquals('', img1.getAttribute('src') || '');
     assertEquals('https://yahoo.com', favicon1.url);
+    assertFalse(isVisible(img1));
+    assertTrue(isVisible(favicon1));
+
+    // Non-HTTPS URLs (such as http://localhost) are skipped so chrome://image
+    // is not requested and the site favicon is shown instead.
+    const start2 = item2.querySelector('.start');
+    assertTrue(!!start2);
+    assertEquals('test3@example.com', start2.textContent.trim());
+    const icon2 = item2.querySelector<SettingsEmailIssuerIconElement>(
+        'settings-email-issuer-icon');
+    assertTrue(!!icon2);
+    const img2 = icon2.$.logo;
+    const favicon2 = icon2.shadowRoot.querySelector('site-favicon');
+    assertTrue(!!favicon2);
+    assertEquals('', img2.getAttribute('src') || '');
+    assertFalse(isVisible(img2));
+    assertTrue(isVisible(favicon2));
 
     // Click menu on first item.
     button0.click();
@@ -450,13 +508,61 @@ suite('ContactInfoPageUiTest', function() {
 
     // Verify UI updated.
     const newMenuButtons = page.shadowRoot.querySelectorAll('.email-menu');
-    assertEquals(1, newMenuButtons.length);
+    assertEquals(2, newMenuButtons.length);
     const newButton0 = newMenuButtons[0]!;
     const newItem0 = newButton0.parentElement!;
     assertTrue(!!newItem0);
     const newStart0 = newItem0.querySelector('.start');
     assertTrue(!!newStart0);
     assertEquals('test2@example.com', newStart0.textContent.trim());
+  });
+
+  test('EmailIssuerIconLogoChange', async function() {
+    const icon = document.createElement('settings-email-issuer-icon');
+    icon.issuerSite = 'https://google.com';
+    icon.logoUrl = 'https://google.com/logo1.png';
+    document.body.appendChild(icon);
+    await icon.updateComplete;
+
+    const img = icon.$.logo;
+    const favicon = icon.shadowRoot.querySelector('site-favicon');
+    assertTrue(!!favicon);
+    assertFalse(isVisible(img));
+    assertTrue(isVisible(favicon));
+
+    img.dispatchEvent(new Event('load'));
+    await icon.updateComplete;
+    assertTrue(isVisible(img));
+    assertFalse(isVisible(favicon));
+
+    // Changing to a new HTTPS logo URL strips any fragment and falls back to
+    // the favicon until the new logo finishes loading.
+    icon.logoUrl = 'https://google.com/logo2.png#frag';
+    await icon.updateComplete;
+    assertEquals('https://google.com/logo2.png', img.autoSrc);
+    assertFalse(isVisible(img));
+    assertTrue(isVisible(favicon));
+
+    img.dispatchEvent(new Event('load'));
+    await icon.updateComplete;
+    assertTrue(isVisible(img));
+    assertFalse(isVisible(favicon));
+
+    // URLs containing userinfo are rejected and fall back to the favicon.
+    icon.logoUrl = 'https://user:pass@google.com/logo3.png';
+    await icon.updateComplete;
+    assertEquals('', img.getAttribute('src') || '');
+    assertFalse(isVisible(img));
+    assertTrue(isVisible(favicon));
+
+    // Clearing the logo URL clears the image src and shows the favicon again.
+    icon.logoUrl = '';
+    await icon.updateComplete;
+    assertEquals('', img.getAttribute('src') || '');
+    assertFalse(isVisible(img));
+    assertTrue(isVisible(favicon));
+
+    icon.remove();
   });
 
   test('verifyAddressDeleteRecordTypeNotice', async () => {

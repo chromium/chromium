@@ -300,19 +300,36 @@ class EmailVerifierDelegateTestBase
     content::webid::EmailVerifier::Result result;
     result.email = email;
     result.issuer_origin = url::Origin::Create(GURL("https://example.com"));
+    if (!verifiable_result_logo_url_.is_empty()) {
+      result.brand_icon = gfx::test::CreateImage(20, 20);
+      result.brand_icon_url = verifiable_result_logo_url_;
+    }
     return result;
   }
 
+  const base::DictValue* GetEmailVerificationEntry(const std::string& email) {
+    return client()
+        .GetPrefs()
+        ->GetDict(prefs::kAutofillEmailVerificationState)
+        .FindDict(email);
+  }
+
   // Stores a prior permission decision in prefs, as if the user had accepted
-  // the permission prompt for `email` with `issuer_site` as the issuer.
-  void SetEmailVerificationAllowed(const std::string& email,
-                                   std::optional<std::string> issuer_site) {
+  // the permission prompt for `email` with `issuer_site` as the issuer and
+  // optional `issuer_logo_url`.
+  void SetEmailVerificationAllowed(
+      const std::string& email,
+      std::optional<std::string> issuer_site,
+      std::optional<std::string> issuer_logo_url = std::nullopt) {
     ScopedDictPrefUpdate update(client().GetPrefs(),
                                 prefs::kAutofillEmailVerificationState);
     base::DictValue email_dict;
     email_dict.Set("allowed", true);
     if (issuer_site) {
       email_dict.Set("issuer_site", *issuer_site);
+    }
+    if (issuer_logo_url) {
+      email_dict.Set("issuer_logo_url", *issuer_logo_url);
     }
     email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
     update->Set(email, std::move(email_dict));
@@ -384,6 +401,8 @@ class EmailVerifierDelegateTestBase
 
  protected:
   base::RunLoop popup_shown_run_loop_;
+  // The issuer logo URL returned by `CreateVerifiableResult()`.
+  GURL verifiable_result_logo_url_;
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -1722,7 +1741,6 @@ TEST_F(EmailVerifierDelegateTest, PageNavigatedDuringDnsLookup) {
         saved_is_verifiable_callback = std::move(callback);
       });
 
-
   TriggerDefaultFormFill(*form);
 
   ASSERT_TRUE(saved_dns_callback);
@@ -2564,6 +2582,192 @@ TEST_F(EmailVerifierDelegateTest,
   const std::string* issuer_site = email_data->FindString("issuer_site");
   ASSERT_TRUE(issuer_site);
   EXPECT_EQ(*issuer_site, "https://example.com");
+}
+
+// Verifies that accepting the permission prompt stores the issuer's logo URL
+// (with any fragment stripped) so that settings can show it next to the email.
+TEST_F(EmailVerifierDelegateTest, AcceptingPromptStoresIssuerLogoUrl) {
+  FormStructure* form = SetUpValidForm();
+  const std::string email = "johndoe@hades.com";
+  verifiable_result_logo_url_ = GURL("https://example.com/logo.png#frag");
+
+  SetUpVerificationExpectations(*form, email);
+  TriggerDefaultFormFill(*form);
+  popup_shown_run_loop_.Run();
+
+  const base::DictValue* email_data = GetEmailVerificationEntry(email);
+  ASSERT_TRUE(email_data);
+  const std::string* logo_url = email_data->FindString("issuer_logo_url");
+  ASSERT_TRUE(logo_url);
+  EXPECT_EQ(*logo_url, "https://example.com/logo.png");
+}
+
+struct InvalidIssuerLogoUrlTestCase {
+  std::string test_name;
+  std::string logo_url;
+};
+
+class EmailVerifierDelegateInvalidLogoUrlTest
+    : public EmailVerifierDelegateTest,
+      public ::testing::WithParamInterface<InvalidIssuerLogoUrlTestCase> {};
+
+// Verifies that invalid issuer logo URLs are not persisted and clear any
+// previously stored logo.
+TEST_P(EmailVerifierDelegateInvalidLogoUrlTest,
+       AcceptingPromptRejectsInvalidLogoUrl) {
+  FormStructure* form = SetUpValidForm();
+  const std::string email = "johndoe@hades.com";
+  SetEmailVerificationAllowed(email, "https://other.com",
+                              "https://other.com/logo.png");
+  verifiable_result_logo_url_ = GURL(GetParam().logo_url);
+
+  SetUpVerificationExpectations(*form, email);
+  TriggerDefaultFormFill(*form);
+  popup_shown_run_loop_.Run();
+
+  const base::DictValue* email_data = GetEmailVerificationEntry(email);
+  ASSERT_TRUE(email_data);
+  EXPECT_FALSE(email_data->FindString("issuer_logo_url"));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EmailVerifierDelegateInvalidLogoUrlTest,
+    ::testing::Values(InvalidIssuerLogoUrlTestCase{"NonHttps",
+                                                   "http://localhost/logo.png"},
+                      InvalidIssuerLogoUrlTestCase{
+                          "Userinfo", "https://user:pass@example.com/logo.png"},
+                      InvalidIssuerLogoUrlTestCase{
+                          "Oversized", "https://example.com/" +
+                                           std::string(2048, 'a') + ".png"}),
+    [](const ::testing::TestParamInfo<InvalidIssuerLogoUrlTestCase>& info) {
+      return info.param.test_name;
+    });
+
+// Verifies that accepting the permission prompt for an issuer without a logo
+// drops the logo stored for a previous issuer.
+TEST_F(EmailVerifierDelegateTest, AcceptingPromptWithoutLogoClearsStoredLogo) {
+  FormStructure* form = SetUpValidForm();
+  const std::string email = "johndoe@hades.com";
+  SetEmailVerificationAllowed(email, "https://other.com",
+                              "https://other.com/logo.png");
+
+  SetUpVerificationExpectations(*form, email);
+  TriggerDefaultFormFill(*form);
+  popup_shown_run_loop_.Run();
+
+  const base::DictValue* email_data = GetEmailVerificationEntry(email);
+  ASSERT_TRUE(email_data);
+  EXPECT_FALSE(email_data->FindString("issuer_logo_url"));
+}
+
+// Verifies that a subsequent run for an already-allowed email backfills a
+// missing `issuer_logo_url` without altering the stored decision timestamp.
+TEST_F(EmailVerifierDelegateTest, SubsequentRunBackfillsIssuerLogoUrl) {
+  FormStructure* form = SetUpValidForm();
+  const std::string email = "johndoe@hades.com";
+  SetEmailVerificationAllowed(email, "https://example.com");
+  const base::DictValue* initial_entry = GetEmailVerificationEntry(email);
+  ASSERT_TRUE(initial_entry);
+  const base::Value initial_timestamp =
+      initial_entry->Find("timestamp")->Clone();
+  verifiable_result_logo_url_ = GURL("https://example.com/logo.png#frag");
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
+      .WillOnce([this](const std::string& email_arg,
+                       base::OnceClosure on_dns_resolved,
+                       EmailVerifier::IsVerifiableCallback callback) {
+        std::move(on_dns_resolved).Run();
+        std::move(callback).Run(
+            CreateVerifiableResult(email_arg),
+            blink::mojom::EmailVerificationRequestResult::kSuccess,
+            base::Milliseconds(100));
+      });
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(
+          std::optional<std::string>("test_token"),
+          blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(200)));
+
+  TriggerDefaultFormFill(*form);
+
+  const base::DictValue* email_data = GetEmailVerificationEntry(email);
+  ASSERT_TRUE(email_data);
+  const std::string* logo_url = email_data->FindString("issuer_logo_url");
+  ASSERT_TRUE(logo_url);
+  EXPECT_EQ(*logo_url, "https://example.com/logo.png");
+  EXPECT_EQ(*email_data->Find("timestamp"), initial_timestamp);
+}
+
+// Verifies that a subsequent run updates a stored `issuer_logo_url` when the
+// issuer advertises a new valid logo URL.
+TEST_F(EmailVerifierDelegateTest, SubsequentRunUpdatesChangedIssuerLogoUrl) {
+  FormStructure* form = SetUpValidForm();
+  const std::string email = "johndoe@hades.com";
+  SetEmailVerificationAllowed(email, "https://example.com",
+                              "https://example.com/old-logo.png");
+  verifiable_result_logo_url_ = GURL("https://example.com/new-logo.png");
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
+      .WillOnce([this](const std::string& email_arg,
+                       base::OnceClosure on_dns_resolved,
+                       EmailVerifier::IsVerifiableCallback callback) {
+        std::move(on_dns_resolved).Run();
+        std::move(callback).Run(
+            CreateVerifiableResult(email_arg),
+            blink::mojom::EmailVerificationRequestResult::kSuccess,
+            base::Milliseconds(100));
+      });
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(
+          std::optional<std::string>("test_token"),
+          blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(200)));
+
+  TriggerDefaultFormFill(*form);
+
+  const base::DictValue* email_data = GetEmailVerificationEntry(email);
+  ASSERT_TRUE(email_data);
+  const std::string* logo_url = email_data->FindString("issuer_logo_url");
+  ASSERT_TRUE(logo_url);
+  EXPECT_EQ(*logo_url, "https://example.com/new-logo.png");
+}
+
+// Verifies that a subsequent run preserves a previously stored
+// `issuer_logo_url` when no valid logo URL is returned (e.g. on transient
+// image download failure).
+TEST_F(EmailVerifierDelegateTest, SubsequentRunPreservesStoredLogoWhenAbsent) {
+  FormStructure* form = SetUpValidForm();
+  const std::string email = "johndoe@hades.com";
+  SetEmailVerificationAllowed(email, "https://example.com",
+                              "https://example.com/logo.png");
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
+      .WillOnce([this](const std::string& email_arg,
+                       base::OnceClosure on_dns_resolved,
+                       EmailVerifier::IsVerifiableCallback callback) {
+        std::move(on_dns_resolved).Run();
+        std::move(callback).Run(
+            CreateVerifiableResult(email_arg),
+            blink::mojom::EmailVerificationRequestResult::kSuccess,
+            base::Milliseconds(100));
+      });
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+  EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(
+          std::optional<std::string>("test_token"),
+          blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(200)));
+
+  TriggerDefaultFormFill(*form);
+
+  const base::DictValue* email_data = GetEmailVerificationEntry(email);
+  ASSERT_TRUE(email_data);
+  const std::string* logo_url = email_data->FindString("issuer_logo_url");
+  ASSERT_TRUE(logo_url);
+  EXPECT_EQ(*logo_url, "https://example.com/logo.png");
 }
 
 // Verifies that the permission is bound to the issuer's site rather than its
