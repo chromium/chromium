@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_TTC_CORE_SESSION_CONTROLLER_IMPL_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/check_deref.h"
@@ -22,7 +21,6 @@
 #include "chrome/browser/ttc/app/public/audio_envelope.h"
 #include "chrome/browser/ttc/core/actor_task_holder.h"
 #include "chrome/browser/ttc/core/buildflags.h"
-#include "chrome/browser/ttc/core/output_volume_monitor.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_end_condition_detector.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
@@ -50,6 +48,7 @@ class PointerInputObserver;
 class PointerTracker;
 class SessionInactivityDetector;
 class SessionView;
+class SpeakerVolumeWarningDetector;
 class TtcDebugSession;
 class TtcKeyedService;
 class TtcToolCallTracer;
@@ -145,9 +144,6 @@ class SessionControllerImpl : public SessionController,
   void OnInactivityTimeout();
   void OnSessionEndConditionDetected(
       SessionEndConditionDetector::Reason reason);
-  // Called with the system output volume when the session starts, if known,
-  // and by `output_volume_monitor_` on every change.
-  void OnOutputVolumeChanged(const OutputVolumeState& state);
 
   // Notifies observers of the tool call completion and returns the response to
   // forward it to the chained callback.
@@ -201,10 +197,6 @@ class SessionControllerImpl : public SessionController,
   // unmuted.
   bool app_mic_muted_ = false;
 
-  // The last system output volume reported by `output_volume_monitor_`, if
-  // any.
-  std::optional<OutputVolumeState> output_volume_;
-
   base::ObserverList<SessionController::Observer> observers_;
 
   // The transcripts of the current exchange.
@@ -215,10 +207,10 @@ class SessionControllerImpl : public SessionController,
   std::unique_ptr<TtcPageContextMonitor> page_context_monitor_;
   std::unique_ptr<SessionInactivityDetector> inactivity_detector_;
   std::unique_ptr<SessionEndConditionDetector> session_end_condition_detector_;
-  // Null unless kTtcSpeakerVolumeWarning is enabled on a platform that can
-  // read the output volume. Its callback uses `output_volume_` and the
-  // journal.
-  std::unique_ptr<OutputVolumeMonitor> output_volume_monitor_;
+  // Created when the session goes live if kTtcSpeakerVolumeWarning is enabled
+  // on a platform that can read the output volume, and reset when it finishes.
+  std::unique_ptr<SpeakerVolumeWarningDetector>
+      speaker_volume_warning_detector_;
 
   base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
 };

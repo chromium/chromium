@@ -984,16 +984,28 @@ TEST_F(TtcSessionControllerImplSpeakerVolumeTest, NoMonitorWithoutFeature) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kTtcSpeakerVolumeWarning);
   SessionControllerImpl controller(*service_);
+  controller.SetSessionLifecycle(SessionLifecycle::kLive);
   EXPECT_EQ(monitors_created_, 0);
 }
 
-// The session follows the volume for as long as it lives.
-TEST_F(TtcSessionControllerImplSpeakerVolumeTest, SessionOwnsMonitor) {
-  {
-    SessionControllerImpl controller(*service_);
-    EXPECT_EQ(monitors_created_, 1);
-    ASSERT_TRUE(monitor_);
-  }
+// The session follows the volume while live and stops once finished.
+TEST_F(TtcSessionControllerImplSpeakerVolumeTest, SessionOwnsMonitorWhileLive) {
+  SessionControllerImpl controller(*service_);
+  EXPECT_EQ(monitors_created_, 0);
+  EXPECT_FALSE(monitor_);
+
+  controller.SetSessionLifecycle(SessionLifecycle::kLive);
+  EXPECT_EQ(monitors_created_, 1);
+  ASSERT_TRUE(monitor_);
+
+  controller.SetSessionLifecycle(SessionLifecycle::kFinished);
+  EXPECT_FALSE(monitor_);
+}
+
+TEST_F(TtcSessionControllerImplSpeakerVolumeTest, FailedStartCreatesNoMonitor) {
+  SessionControllerImpl controller(*service_);
+  controller.SetSessionLifecycle(SessionLifecycle::kFinished);
+  EXPECT_EQ(monitors_created_, 0);
   EXPECT_FALSE(monitor_);
 }
 
@@ -1001,12 +1013,13 @@ TEST_F(TtcSessionControllerImplSpeakerVolumeTest, LogsVolumeToJournal) {
   actor::ActorJournalRecorder recorder(
       actor::ActorKeyedService::Get(&profile_)->GetJournal());
   SessionControllerImpl controller(*service_);
+  controller.SetSessionLifecycle(SessionLifecycle::kLive);
   SetVolume({.muted = true, .level = std::nullopt});
 
   const std::vector<actor::ActorJournalRecorder::Entry> entries =
       recorder.GetEntries("TtcSystemSpeakerVolume");
   ASSERT_EQ(entries.size(), 2u);
-  // The state read when the session starts.
+  // The state read when the session goes live.
   EXPECT_THAT(entries[0].details,
               testing::Contains(testing::Pair("muted", "false")));
   EXPECT_THAT(entries[0].details,
@@ -1019,21 +1032,10 @@ TEST_F(TtcSessionControllerImplSpeakerVolumeTest, LogsVolumeToJournal) {
 }
 
 TEST_F(TtcSessionControllerImplSpeakerVolumeTest,
-       UnknownInitialVolumeIsNotLogged) {
-  initial_state_ = std::nullopt;
-  actor::ActorJournalRecorder recorder(
-      actor::ActorKeyedService::Get(&profile_)->GetJournal());
-  SessionControllerImpl controller(*service_);
-  EXPECT_TRUE(recorder.GetEntries("TtcSystemSpeakerVolume").empty());
-
-  SetVolume(kAudible);
-  EXPECT_EQ(recorder.GetEntries("TtcSystemSpeakerVolume").size(), 1u);
-}
-
-TEST_F(TtcSessionControllerImplSpeakerVolumeTest,
        UnsupportedPlatformHasNoMonitor) {
   platform_supported_ = false;
   SessionControllerImpl controller(*service_);
+  controller.SetSessionLifecycle(SessionLifecycle::kLive);
   EXPECT_EQ(monitors_created_, 1);
   EXPECT_FALSE(monitor_);
 }

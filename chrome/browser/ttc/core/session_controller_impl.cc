@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -26,13 +25,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/core/features.h"
-#include "chrome/browser/ttc/core/output_volume_monitor.h"
 #include "chrome/browser/ttc/core/pointer_input_observer.h"
 #include "chrome/browser/ttc/core/pointer_tracker.h"
 #include "chrome/browser/ttc/core/session_end_condition_detector.h"
 #include "chrome/browser/ttc/core/session_inactivity_detector.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/session_view.h"
+#include "chrome/browser/ttc/core/speaker_volume_warning_detector.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
 #include "chrome/browser/ttc/core/voice_focused_contents_tracker.h"
@@ -162,19 +161,6 @@ SessionControllerImpl::SessionControllerImpl(
       std::make_unique<SessionEndConditionDetector>(base::BindRepeating(
           &SessionControllerImpl::OnSessionEndConditionDetected,
           weak_ptr_factory_.GetWeakPtr()));
-
-  if (base::FeatureList::IsEnabled(kTtcSpeakerVolumeWarning)) {
-    // Unretained is safe: `this` owns the monitor, which only runs the
-    // callback while it's alive.
-    output_volume_monitor_ = OutputVolumeMonitor::Create(base::BindRepeating(
-        &SessionControllerImpl::OnOutputVolumeChanged, base::Unretained(this)));
-    if (output_volume_monitor_) {
-      if (std::optional<OutputVolumeState> state =
-              output_volume_monitor_->GetState()) {
-        OnOutputVolumeChanged(*state);
-      }
-    }
-  }
 }
 
 SessionControllerImpl::~SessionControllerImpl() {
@@ -247,6 +233,14 @@ void SessionControllerImpl::SetSessionLifecycle(SessionLifecycle lifecycle) {
   }
   for (SessionController::Observer& observer : observers_) {
     observer.OnSessionLifecycleChanged(lifecycle);
+  }
+  if (session_lifecycle_ == SessionLifecycle::kLive) {
+    if (base::FeatureList::IsEnabled(kTtcSpeakerVolumeWarning)) {
+      speaker_volume_warning_detector_ =
+          SpeakerVolumeWarningDetector::MaybeCreate(journal_);
+    }
+  } else if (session_lifecycle_ == SessionLifecycle::kFinished) {
+    speaker_volume_warning_detector_.reset();
   }
 }
 
@@ -579,18 +573,6 @@ void SessionControllerImpl::OnSessionEndConditionDetected(
                        .Add("reason", SessionEndReasonToString(reason))
                        .Build());
   EndSessionAsync();
-}
-
-void SessionControllerImpl::OnOutputVolumeChanged(
-    const OutputVolumeState& state) {
-  actor::JournalDetailsBuilder details;
-  details.Add("muted", state.muted);
-  if (state.level) {
-    details.Add("level", *state.level);
-  }
-  GetJournal().Log("TtcSystemSpeakerVolume", std::move(details).Build());
-
-  output_volume_ = state;
 }
 
 }  // namespace ttc
