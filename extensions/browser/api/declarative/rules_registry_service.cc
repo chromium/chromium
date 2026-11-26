@@ -118,7 +118,9 @@ scoped_refptr<RulesRegistry> RulesRegistryService::GetRulesRegistry(
   }
 
   // Only web request rules registries are created for webviews.
-  DCHECK_EQ(declarative_webrequest_constants::kOnRequest, event_name);
+  if (event_name != declarative_webrequest_constants::kOnRequest) {
+    return nullptr;
+  }
 
   scoped_refptr<RulesRegistry> registry = RegisterWebRequestRulesRegistry(
       rules_registry_id, RulesCacheDelegate::Type::kEphemeral);
