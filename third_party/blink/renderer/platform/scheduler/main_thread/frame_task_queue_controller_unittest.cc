@@ -296,8 +296,7 @@ INSTANTIATE_TEST_SUITE_P(
         QueueTraits::PrioritisationType::kFindInPage,
         QueueTraits::PrioritisationType::kExperimentalDatabase,
         QueueTraits::PrioritisationType::kHighPriorityLocalFrame,
-        QueueTraits::PrioritisationType::kInput,
-        QueueTraits::PrioritisationType::kInternalMedia));
+        QueueTraits::PrioritisationType::kInput));
 
 TEST_P(TaskQueueCreationFromQueueTraitsTest,
         AddAndRetrieveAllTaskQueues) {

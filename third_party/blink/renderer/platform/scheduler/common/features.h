@@ -21,10 +21,6 @@ BASE_FEATURE(kDedicatedWorkerThrottling,
 BASE_FEATURE(kHighPriorityDatabaseTaskType,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables high priority for TaskType::kInternalMedia and
-// TaskType::kInternalMediaRealTime when the page is visible.
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kHighPriorityInternalMediaTaskType);
-
 // When features::kIntensiveWakeUpThrottling is enabled, wake ups from timers
 // with a high nesting level are limited to 1 per minute on a page that has been
 // backgrounded for GetIntensiveWakeUpThrottlingGracePeriod().
