@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -46,6 +45,7 @@
 
 class AccountInfo;
 class BrowserWindowInterface;
+class CrossDeviceSigninQrBubbleAnchor;
 class Profile;
 class SigninUIError;
 class TabStripModel;
@@ -178,11 +178,13 @@ class SigninViewController {
       const std::string& email,
       SigninEmailConfirmationDialog::Callback callback);
 
-  // Shows the cross-device sign-in QR code bubble. The bubble is anchored to
-  // the profile menu button if available, or centered on the browser window
-  // otherwise. `closing_callback` runs when the bubble closes for any reason
-  // (including failing to show). `explicit_dismissal_callback` runs only if the
-  // user explicitly dismisses the bubble (close button or Escape key).
+  // Shows the cross-device sign-in QR code bubble. Post-save entry points
+  // anchor to the corresponding omnibox page action; other entry points anchor
+  // to the AvatarButton if available, or float centered on the browser window
+  // otherwise (e.g. in popup windows without a toolbar). `closing_callback`
+  // runs when the bubble closes for any reason (including failing to show).
+  // `explicit_dismissal_callback` runs only if the user explicitly dismisses
+  // the bubble (close button or Escape key).
   void ShowCrossDeviceSigninQrBubble(
       GURL qr_code_url,
       base::OnceClosure closing_callback,
@@ -251,6 +253,9 @@ class SigninViewController {
   // SigninViewController, if one exists. Does nothing otherwise.
   void CloseBubbleSignin();
 
+  // Returns whether `widget` is the currently open sign-in bubble widget.
+  bool IsShowingBubbleWidget(const views::Widget* widget) const;
+
   // Sets the height of the modal signin dialog.
   void SetModalSigninHeight(int height);
 
@@ -316,9 +321,7 @@ class SigninViewController {
       GURL qr_code_url,
       CrossDeviceSigninPromoEntryPoint entry_point,
       const CoreAccountId& expected_account_id,
-      base::OnceClosure explicit_dismissal_callback,
-      views::BubbleAnchor anchor,
-      base::ScopedClosureRunner keep_visible);
+      base::OnceClosure explicit_dismissal_callback);
 
   // Resolves the avatar button anchor and shows the Dice web sign-in
   // interception bubble once the button is visible. `CloseInterceptBubble()`
@@ -367,11 +370,9 @@ class SigninViewController {
 
   std::unique_ptr<NewTabWebContentsObserver> new_tab_web_contents_observer_;
 
-  // Pending state while waiting for the avatar anchor of the QR bubble.
+  // Pending state while waiting for the QR bubble anchor to resolve.
   base::OnceClosure pending_qr_bubble_closing_callback_;
-  base::CancelableOnceCallback<void(views::BubbleAnchor,
-                                    base::ScopedClosureRunner)>
-      qr_bubble_anchor_callback_;
+  std::unique_ptr<CrossDeviceSigninQrBubbleAnchor> pending_qr_bubble_anchor_;
 
   // State for the active or pending Dice web sign-in interception bubble.
   std::unique_ptr<PendingInterceptBubble> pending_intercept_bubble_;

@@ -26,6 +26,7 @@ source_set("signin") {
     "//components/sync/base",
     "//ui/base/interaction",
     "//ui/base/unowned_user_data",
+    "//ui/views",
     "//url",
   ]
 
@@ -244,6 +245,8 @@ if (!is_android) {
         "signin_view_controller_browsertest.cc",
       ]
       deps += [
+        "//chrome/browser/ui:browser_actions",
+        "//chrome/browser/ui/actions:actions_headers",
         "//chrome/browser/ui/toasts/api:toasts",
         "//chrome/browser/ui/webui/signin/signout_confirmation",
         "//chrome/browser/ui/webui/signin/signout_confirmation:test_support",
@@ -251,6 +254,8 @@ if (!is_android) {
         "//chrome/test:test_support",
         "//components/signin/core/browser:test_support",
         "//components/sync:test_support",
+        "//ui/actions",
+        "//ui/gfx/geometry",
       ]
     }
 

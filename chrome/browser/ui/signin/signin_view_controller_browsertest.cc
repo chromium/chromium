@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -26,6 +27,8 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -77,9 +80,11 @@
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/actions/actions.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -1302,6 +1307,315 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
         explicit_dismissal_callback.Get());
     views::Widget* bubble_widget = widget_future.Get();
     ASSERT_TRUE(bubble_widget);
+
+    views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+    bubble_widget->CloseWithReason(close_reason);
+    waiter.Wait();
+  }
+}
+
+// Verifies that showing the cross-device sign-in QR bubble for each post-save
+// entry point anchors to the omnibox with `ShouldCloseOnDeactivate()` enabled
+// (without expanding the avatar pill), displays the data-type-specific title
+// and subtitle.
+IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
+                       ShowCrossDeviceSigninQrBubble_PostSaveEntryPoints) {
+  SetPrimaryAccount();
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  AvatarToolbarButtonInterface* avatar_button =
+      browser_view->toolbar_button_provider()
+          ->GetAvatarToolbarButtonInterface();
+  ASSERT_TRUE(avatar_button);
+
+  static constexpr char kBubbleWidgetName[] = "CrossDeviceSigninQrBubbleViews";
+  struct TestCase {
+    CrossDeviceSigninPromoEntryPoint entry_point;
+    actions::ActionId action_id;
+    int title_id;
+    int subtitle_id;
+  };
+  static constexpr TestCase kTestCases[] = {
+      {CrossDeviceSigninPromoEntryPoint::kBookmarkSave, kActionBookmarkThisTab,
+       IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE_BOOKMARKS,
+       IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE_BOOKMARKS},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+        test_case.action_id,
+        BrowserActions::From(browser())->root_action_item());
+    ASSERT_TRUE(action_item);
+    EXPECT_FALSE(action_item->GetIsShowingBubble());
+
+    std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin>
+        close_on_deactivate_pin;
+    views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+    base::test::TestFuture<views::Widget*> widget_future;
+    observer.set_initialized_callback(
+        base::BindLambdaForTesting([&](views::Widget* widget) {
+          if (widget->GetName() == kBubbleWidgetName) {
+            auto* bubble_delegate =
+                widget->widget_delegate()->AsBubbleDialogDelegate();
+            ASSERT_TRUE(bubble_delegate);
+            EXPECT_TRUE(bubble_delegate->ShouldCloseOnDeactivate());
+            // Pin deactivation before `Show()` runs so another window stealing
+            // native focus in parallel browser_tests shards cannot close the
+            // bubble while inspecting WebUI content.
+            close_on_deactivate_pin =
+                bubble_delegate->PreventCloseOnDeactivate();
+          }
+        }));
+    observer.set_shown_callback(widget_future.GetRepeatingCallback());
+
+    base::MockCallback<base::OnceClosure> closing_callback;
+    EXPECT_CALL(closing_callback, Run()).Times(1);
+
+    SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
+        GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
+        test_case.entry_point);
+
+    views::Widget* bubble_widget = widget_future.Get();
+    ASSERT_TRUE(bubble_widget);
+    ASSERT_TRUE(close_on_deactivate_pin);
+    EXPECT_TRUE(action_item->GetIsShowingBubble());
+
+    views::WidgetDelegate* delegate = bubble_widget->widget_delegate();
+    ASSERT_TRUE(delegate);
+    EXPECT_EQ(delegate->GetWindowTitle(),
+              l10n_util::GetStringUTF16(test_case.title_id));
+    EXPECT_FALSE(avatar_button->HasExplicitButtonState());
+
+    auto* bubble_delegate = delegate->AsBubbleDialogDelegate();
+    ASSERT_TRUE(bubble_delegate);
+    EXPECT_EQ(bubble_delegate->GetAnchorView(),
+              browser_view->toolbar_button_provider()
+                  ->GetBubbleAnchor(test_case.action_id)
+                  .GetIfView());
+
+    views::WebView* web_view = views::AsViewClass<views::WebView>(
+        views::ElementTrackerViews::GetInstance()->GetUniqueView(
+            kCrossDeviceSigninQrBubbleWebViewElementId,
+            views::ElementTrackerViews::GetContextForWidget(bubble_widget)));
+    ASSERT_TRUE(web_view);
+
+    content::WebContents* web_contents = web_view->GetWebContents();
+    ASSERT_TRUE(web_contents);
+    if (web_contents->IsLoading()) {
+      content::WaitForLoadStop(web_contents);
+    }
+
+    EXPECT_EQ(
+        content::EvalJs(web_contents,
+                        "(async () => {"
+                        "  await customElements.whenDefined("
+                        "      'cross-device-signin-qr-bubble-app');"
+                        "  const app = document.querySelector("
+                        "      'cross-device-signin-qr-bubble-app');"
+                        "  await app.updateComplete;"
+                        "  return app.shadowRoot.querySelector('#subtitle')"
+                        "      .textContent.trim();"
+                        "})()"),
+        l10n_util::GetStringUTF8(test_case.subtitle_id));
+
+    views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+    SigninViewController::From(browser())->CloseBubbleSignin();
+    waiter.Wait();
+    EXPECT_FALSE(action_item->GetIsShowingBubble());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SigninViewControllerCrossDeviceSigninBrowserTest,
+    PostSaveQrBubbleClosesPassivelyOnFocusLossTabSwitchAndTabDestruction) {
+  static constexpr char kBubbleWidgetName[] = "CrossDeviceSigninQrBubbleViews";
+  SetPrimaryAccount();
+  actions::ActionItem* bookmark_action_item =
+      actions::ActionManager::Get().FindAction(
+          kActionBookmarkThisTab,
+          BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(bookmark_action_item);
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
+  tab_strip->ActivateTabAt(1);
+
+  auto show_post_save_bubble =
+      [&](base::OnceClosure cb, base::OnceClosure explicit_dismissal_cb,
+          std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin>*
+              out_pin) {
+        views::AnyWidgetObserver init_observer(
+            views::test::AnyWidgetTestPasskey{});
+        init_observer.set_initialized_callback(
+            base::BindLambdaForTesting([&](views::Widget* widget) {
+              if (widget->GetName() == kBubbleWidgetName) {
+                *out_pin = widget->widget_delegate()
+                               ->AsBubbleDialogDelegate()
+                               ->PreventCloseOnDeactivate();
+              }
+            }));
+        views::NamedWidgetShownWaiter bubble_waiter(
+            views::test::AnyWidgetTestPasskey{}, kBubbleWidgetName);
+        SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
+            GURL("https://www.google.com/chrome/go-mobile"), std::move(cb),
+            CrossDeviceSigninPromoEntryPoint::kBookmarkSave,
+            std::move(explicit_dismissal_cb));
+        return bubble_waiter.WaitIfNeededAndGet();
+      };
+
+  // 1. Focus loss (`ClosedReason::kLostFocus`) closes the bubble passively.
+  {
+    base::MockCallback<base::OnceClosure> closing_callback;
+    EXPECT_CALL(closing_callback, Run()).Times(1);
+    base::MockCallback<base::OnceClosure> explicit_dismissal_callback;
+    EXPECT_CALL(explicit_dismissal_callback, Run()).Times(0);
+    std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
+    views::Widget* bubble_widget = show_post_save_bubble(
+        closing_callback.Get(), explicit_dismissal_callback.Get(), &pin);
+    ASSERT_TRUE(bubble_widget);
+    EXPECT_TRUE(bookmark_action_item->GetIsShowingBubble());
+    views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+    bubble_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+    waiter.Wait();
+    EXPECT_FALSE(bookmark_action_item->GetIsShowingBubble());
+  }
+
+  // 2. Switching away from the originating tab closes the bubble passively.
+  {
+    base::MockCallback<base::OnceClosure> closing_callback;
+    EXPECT_CALL(closing_callback, Run()).Times(1);
+    base::MockCallback<base::OnceClosure> explicit_dismissal_callback;
+    EXPECT_CALL(explicit_dismissal_callback, Run()).Times(0);
+    std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
+    views::Widget* bubble_widget = show_post_save_bubble(
+        closing_callback.Get(), explicit_dismissal_callback.Get(), &pin);
+    ASSERT_TRUE(bubble_widget);
+    ASSERT_TRUE(pin);
+    EXPECT_TRUE(bookmark_action_item->GetIsShowingBubble());
+    views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+    tab_strip->ActivateTabAt(0);
+    waiter.Wait();
+    EXPECT_FALSE(bookmark_action_item->GetIsShowingBubble());
+  }
+
+  // 3. Destroying the originating tab closes the bubble passively.
+  tab_strip->ActivateTabAt(1);
+  {
+    base::MockCallback<base::OnceClosure> closing_callback;
+    EXPECT_CALL(closing_callback, Run()).Times(1);
+    base::MockCallback<base::OnceClosure> explicit_dismissal_callback;
+    EXPECT_CALL(explicit_dismissal_callback, Run()).Times(0);
+    std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
+    views::Widget* bubble_widget = show_post_save_bubble(
+        closing_callback.Get(), explicit_dismissal_callback.Get(), &pin);
+    ASSERT_TRUE(bubble_widget);
+    ASSERT_TRUE(pin);
+    EXPECT_TRUE(bookmark_action_item->GetIsShowingBubble());
+    views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+    tab_strip->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
+    waiter.Wait();
+    EXPECT_FALSE(bookmark_action_item->GetIsShowingBubble());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
+                       PostSaveQrBubbleClosedBeforeLoadCompletesDoesNotShow) {
+  static constexpr char kBubbleWidgetName[] = "CrossDeviceSigninQrBubbleViews";
+  SetPrimaryAccount();
+  actions::ActionItem* bookmark_action_item =
+      actions::ActionManager::Get().FindAction(
+          kActionBookmarkThisTab,
+          BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(bookmark_action_item);
+  ASSERT_FALSE(bookmark_action_item->GetIsShowingBubble());
+
+  views::Widget* bubble_widget = nullptr;
+  bool widget_shown = false;
+  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  observer.set_initialized_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        if (widget->GetName() == kBubbleWidgetName) {
+          bubble_widget = widget;
+        }
+      }));
+  observer.set_shown_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        if (widget->GetName() == kBubbleWidgetName) {
+          widget_shown = true;
+        }
+      }));
+
+  base::MockCallback<base::OnceClosure> closing_callback;
+  EXPECT_CALL(closing_callback, Run()).Times(1);
+
+  SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
+      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
+      CrossDeviceSigninPromoEntryPoint::kBookmarkSave);
+  ASSERT_TRUE(bubble_widget);
+  EXPECT_FALSE(bubble_widget->IsVisible());
+  EXPECT_FALSE(bookmark_action_item->GetIsShowingBubble());
+
+  views::WebView* web_view =
+      views::ElementTrackerViews::GetInstance()
+          ->GetFirstMatchingViewAs<views::WebView>(
+              kCrossDeviceSigninQrBubbleWebViewElementId,
+              views::ElementTrackerViews::GetContextForWidget(bubble_widget),
+              /*require_visible=*/false);
+  ASSERT_TRUE(web_view);
+  content::WebContents* web_contents = web_view->GetWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // Close immediately while the WebUI is still loading, before `DeleteSoon()`
+  // destroys the widget, and simulate a late auto-resize arriving in between.
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  SigninViewController::From(browser())->CloseBubbleSignin();
+  web_contents->GetDelegate()->ResizeDueToAutoResize(web_contents,
+                                                     gfx::Size(330, 250));
+  EXPECT_FALSE(widget_shown);
+  EXPECT_FALSE(bookmark_action_item->GetIsShowingBubble());
+
+  destroyed_waiter.Wait();
+  EXPECT_FALSE(widget_shown);
+  EXPECT_FALSE(bookmark_action_item->GetIsShowingBubble());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SigninViewControllerCrossDeviceSigninBrowserTest,
+    PostSaveQrBubbleCloseButtonAndEscReportExplicitDismissal) {
+  static constexpr char kBubbleWidgetName[] = "CrossDeviceSigninQrBubbleViews";
+  SetPrimaryAccount();
+
+  for (views::Widget::ClosedReason close_reason :
+       {views::Widget::ClosedReason::kCloseButtonClicked,
+        views::Widget::ClosedReason::kEscKeyPressed}) {
+    std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin> pin;
+    views::AnyWidgetObserver init_observer(views::test::AnyWidgetTestPasskey{});
+    init_observer.set_initialized_callback(
+        base::BindLambdaForTesting([&](views::Widget* widget) {
+          if (widget->GetName() == kBubbleWidgetName) {
+            pin = widget->widget_delegate()
+                      ->AsBubbleDialogDelegate()
+                      ->PreventCloseOnDeactivate();
+          }
+        }));
+    views::NamedWidgetShownWaiter bubble_waiter(
+        views::test::AnyWidgetTestPasskey{}, kBubbleWidgetName);
+
+    base::MockCallback<base::OnceClosure> closing_callback;
+    base::MockCallback<base::OnceClosure> explicit_dismissal_callback;
+    {
+      testing::InSequence seq;
+      EXPECT_CALL(explicit_dismissal_callback, Run()).Times(1);
+      EXPECT_CALL(closing_callback, Run()).Times(1);
+    }
+
+    SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
+        GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
+        CrossDeviceSigninPromoEntryPoint::kBookmarkSave,
+        explicit_dismissal_callback.Get());
+    views::Widget* bubble_widget = bubble_waiter.WaitIfNeededAndGet();
+    ASSERT_TRUE(bubble_widget);
+    ASSERT_TRUE(pin);
 
     views::test::WidgetDestroyedWaiter waiter(bubble_widget);
     bubble_widget->CloseWithReason(close_reason);
