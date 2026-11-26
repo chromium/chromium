@@ -1,0 +1,62 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/webui_features.gni")
+
+assert(!is_android)
+
+group("webui") {
+  public_deps = [ ":header" ]
+  deps = [ ":impl" ]
+}
+
+source_set("header") {
+  public = [ "webui_bundled_code_cache_map.h" ]
+}
+
+source_set("impl") {
+  # Keep `public = []` so `code_cache_resources` build steps do not become
+  # order-only dependencies of all compilation units in `//chrome/renderer`.
+  public = []
+  sources = [ "webui_bundled_code_cache_map.cc" ]
+  deps = [
+    ":header",
+    "//base",
+    "//chrome/common",
+    "//components/search",
+    "//content/public/common",
+    "//ui/base:webui_resource_path",
+    "//ui/webui:buildflags",
+    "//url",
+  ]
+
+  if (enable_webui_generate_code_cache) {
+    deps += [
+      "//chrome/browser/resources:code_cache_resources",
+      "//ui/webui/resources:code_cache_resources",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  public = []
+  sources = [ "webui_bundled_code_cache_map_unittest.cc" ]
+  deps = [
+    ":webui",
+    "//base/test:test_support",
+    "//chrome/common",
+    "//components/search",
+    "//testing/gtest",
+    "//ui/webui:buildflags",
+    "//url",
+  ]
+
+  if (enable_webui_generate_code_cache) {
+    deps += [
+      "//chrome/browser/resources:code_cache_resources",
+      "//ui/webui/resources:code_cache_resources",
+    ]
+  }
+}
