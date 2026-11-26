@@ -338,6 +338,10 @@ class Surface final : public ui::PropertyHandler {
   // Returns true if surface has been assigned a surface delegate.
   bool HasSurfaceDelegate() const;
 
+  // Returns false if the surface delegate does not allow `parent` as the
+  // parent of this surface.
+  bool CanSetParent(Surface* parent) const;
+
   // Returns a pointer to the SurfaceDelegate for this surface, used by tests.
   SurfaceDelegate* GetDelegateForTesting();
 

@@ -604,6 +604,113 @@ TEST_F(RestrictedAuraShellServerTest, SetSystemModalDenied) {
   EXPECT_FALSE(xdg_surface->shell_surface->GetWidget()->IsModal());
 }
 
+struct MenuPopupObjects {
+  std::unique_ptr<wl_surface> wl_surface_obj;
+  std::unique_ptr<xdg_surface> xdg_surface_obj;
+  std::unique_ptr<xdg_positioner, decltype(&xdg_positioner_destroy)> positioner{
+      nullptr, xdg_positioner_destroy};
+  std::unique_ptr<xdg_popup, decltype(&xdg_popup_destroy)> popup{
+      nullptr, xdg_popup_destroy};
+  std::unique_ptr<zaura_popup, decltype(&zaura_popup_destroy)> aura_popup{
+      nullptr, zaura_popup_destroy};
+  std::unique_ptr<test::TestBuffer> buffer;
+};
+
+MenuPopupObjects CreateMappedMenuPopup(test::TestClient* client,
+                                       xdg_surface* parent_xdg_surface) {
+  MenuPopupObjects objects;
+  objects.wl_surface_obj.reset(
+      wl_compositor_create_surface(client->globals().compositor.get()));
+  objects.xdg_surface_obj.reset(xdg_wm_base_get_xdg_surface(
+      client->globals().xdg_wm_base.get(), objects.wl_surface_obj.get()));
+  objects.positioner.reset(
+      xdg_wm_base_create_positioner(client->globals().xdg_wm_base.get()));
+  xdg_positioner_set_size(objects.positioner.get(), 100, 100);
+  xdg_positioner_set_anchor_rect(objects.positioner.get(), 0, 0, 10, 10);
+  objects.popup.reset(xdg_surface_get_popup(objects.xdg_surface_obj.get(),
+                                            parent_xdg_surface,
+                                            objects.positioner.get()));
+  objects.aura_popup.reset(zaura_shell_get_aura_popup_for_xdg_popup(
+      client->globals().aura_shell.get(), objects.popup.get()));
+  zaura_popup_set_menu(objects.aura_popup.get());
+  wl_surface_commit(objects.wl_surface_obj.get());
+  wl_display_roundtrip(client->display());
+  EXPECT_EQ(0, wl_display_get_error(client->display()));
+
+  objects.buffer = client->shm_buffer_factory()->CreateBuffer(0, 100, 100);
+  wl_surface_attach(objects.wl_surface_obj.get(), objects.buffer->resource(), 0,
+                    0);
+  wl_surface_commit(objects.wl_surface_obj.get());
+  wl_display_roundtrip(client->display());
+  EXPECT_EQ(0, wl_display_get_error(client->display()));
+  return objects;
+}
+
+TEST_F(WaylandAuraShellServerTest, SetMenuParentOnToplevelPostsError) {
+  auto keys = SetupClientSurfaces();
+  AttachBufferToSurfaces();
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    auto* data = client->GetDataAs<ClientData>();
+    auto& parent_toplevel = data->test_surfaces_list[0];
+    auto menu_popup =
+        CreateMappedMenuPopup(client, parent_toplevel.xdg_surface.get());
+
+    std::unique_ptr<wl_surface> toplevel_wl_surface(
+        wl_compositor_create_surface(client->globals().compositor.get()));
+    std::unique_ptr<xdg_surface> toplevel_xdg_surface(
+        xdg_wm_base_get_xdg_surface(client->globals().xdg_wm_base.get(),
+                                    toplevel_wl_surface.get()));
+    std::unique_ptr<xdg_toplevel> toplevel(
+        xdg_surface_get_toplevel(toplevel_xdg_surface.get()));
+    std::unique_ptr<zaura_surface> toplevel_aura_surface(
+        zaura_shell_get_aura_surface(client->globals().aura_shell.get(),
+                                     toplevel_wl_surface.get()));
+
+    // A toplevel can have another toplevel as its parent.
+    std::unique_ptr<zaura_surface> parent_aura_surface(
+        zaura_shell_get_aura_surface(client->globals().aura_shell.get(),
+                                     parent_toplevel.surface.get()));
+    zaura_surface_set_parent(toplevel_aura_surface.get(),
+                             parent_aura_surface.get(), 0, 0);
+    wl_display_roundtrip(client->display());
+    EXPECT_EQ(0, wl_display_get_error(client->display()));
+
+    std::unique_ptr<zaura_surface> menu_aura_surface(
+        zaura_shell_get_aura_surface(client->globals().aura_shell.get(),
+                                     menu_popup.wl_surface_obj.get()));
+
+    // A surface without an application id, such as an X11 tooltip, can have a
+    // menu as its parent.
+    std::unique_ptr<wl_surface> tooltip_wl_surface(
+        wl_compositor_create_surface(client->globals().compositor.get()));
+    std::unique_ptr<xdg_surface> tooltip_xdg_surface(
+        xdg_wm_base_get_xdg_surface(client->globals().xdg_wm_base.get(),
+                                    tooltip_wl_surface.get()));
+    std::unique_ptr<xdg_toplevel> tooltip(
+        xdg_surface_get_toplevel(tooltip_xdg_surface.get()));
+    std::unique_ptr<zaura_surface> tooltip_aura_surface(
+        zaura_shell_get_aura_surface(client->globals().aura_shell.get(),
+                                     tooltip_wl_surface.get()));
+    zaura_surface_set_parent(tooltip_aura_surface.get(),
+                             menu_aura_surface.get(), 0, 0);
+    wl_display_roundtrip(client->display());
+    EXPECT_EQ(0, wl_display_get_error(client->display()));
+
+    // A toplevel with an application id cannot have a menu as its parent.
+    xdg_toplevel_set_app_id(toplevel.get(), "toplevel");
+    zaura_surface_set_parent(toplevel_aura_surface.get(),
+                             menu_aura_surface.get(), 0, 0);
+    wl_display_roundtrip(client->display());
+    EXPECT_NE(0, wl_display_get_error(client->display()));
+    const wl_interface* error_interface = nullptr;
+    uint32_t error_id = 0;
+    EXPECT_EQ(static_cast<uint32_t>(WL_DISPLAY_ERROR_INVALID_METHOD),
+              wl_display_get_protocol_error(client->display(), &error_interface,
+                                            &error_id));
+  });
+}
+
 class WaylandAuraOutputServerTest : public test::WaylandServerTest {
  public:
   struct AuraOutputObserver {

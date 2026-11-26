@@ -153,6 +153,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // Overridden from SurfaceDelegate:
   void OnSetFrame(SurfaceFrameType type) override;
   void OnSetParent(Surface* parent, const gfx::Point& position) override;
+  bool CanSetParent(Surface* parent) const override;
 
   // Overridden from SurfaceTreeHost:
   void MaybeActivateSurface() override;
@@ -262,6 +263,10 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   // Set the parent window of this surface.
   void SetParentWindow(aura::Window* parent);
+
+  // Returns false if `new_parent` is in MenuContainer and this surface is a
+  // toplevel with an application id.
+  bool CanSetParentWindow(const aura::Window* new_parent) const;
 
   // Sets up a transient window manager for this window if it can (i.e. if the
   // surface has a widget with a parent).

@@ -111,6 +111,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void OnSetFrameColors(SkColor active_color, SkColor inactive_color) override {
   }
   void OnSetParent(Surface* parent, const gfx::Point& position) override {}
+  bool CanSetParent(Surface* parent) const override;
   void OnSetStartupId(const char* startup_id) override {}
   void OnSetApplicationId(const char* application_id) override {}
   void SetUseImmersiveForFullscreen(bool value) override {}

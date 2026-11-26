@@ -1354,6 +1354,10 @@ bool Surface::HasSurfaceDelegate() const {
   return !!delegate_;
 }
 
+bool Surface::CanSetParent(Surface* parent) const {
+  return !delegate_ || delegate_->CanSetParent(parent);
+}
+
 SurfaceDelegate* Surface::GetDelegateForTesting() {
   return delegate_;
 }

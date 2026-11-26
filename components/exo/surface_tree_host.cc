@@ -263,6 +263,10 @@ bool SurfaceTreeHost::IsInputEnabled(Surface*) const {
   return true;
 }
 
+bool SurfaceTreeHost::CanSetParent(Surface* parent) const {
+  return true;
+}
+
 void SurfaceTreeHost::OnNewOutputAdded() {
   UpdateDisplayOnTree();
 }

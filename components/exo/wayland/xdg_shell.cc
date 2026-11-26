@@ -698,9 +698,11 @@ void xdg_surface_get_popup(wl_client* client,
   shell_surface_data->shell_surface->DisableMovement();
   shell_surface_data->shell_surface->SetActivatable(false);
   shell_surface_data->shell_surface->SetCanMinimize(false);
+  // SetPopup() must be called before SetParent(), which allows a menu as the
+  // parent only for popups and menus.
+  shell_surface_data->shell_surface->SetPopup();
   shell_surface_data->shell_surface->SetParent(
       parent_data->shell_surface.get());
-  shell_surface_data->shell_surface->SetPopup();
   shell_surface_data->shell_surface->SetEnabled(true);
 
   wl_resource* xdg_popup_resource = wl_resource_create(

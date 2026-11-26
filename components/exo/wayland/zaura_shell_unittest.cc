@@ -154,6 +154,7 @@ class MockSurfaceDelegate : public SurfaceDelegate {
   MOCK_METHOD(void, Pin, (bool trusted), (override));
   MOCK_METHOD(void, Unpin, (), (override));
   MOCK_METHOD(void, SetSystemModal, (bool modal), (override));
+  MOCK_METHOD(bool, CanSetParent, (Surface*), (const, override));
   MOCK_METHOD(void, SetTopInset, (int height), (override));
   MOCK_METHOD(SecurityDelegate*, GetSecurityDelegate, (), (override));
 };

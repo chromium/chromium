@@ -557,6 +557,10 @@ void ShellSurfaceBase::SetSystemModal(bool system_modal) {
     return;
 
   if (system_modal) {
+    if (is_menu_) {
+      LOG(ERROR) << "Cannot set system modal on a menu surface";
+      return;
+    }
     SecurityDelegate* security = GetSecurityDelegate();
     if (!security || !security->CanSetSystemModal()) {
       return;
@@ -1023,6 +1027,10 @@ void ShellSurfaceBase::SetPersistable(bool persistable) {
 }
 
 void ShellSurfaceBase::SetMenu() {
+  if (system_modal_) {
+    LOG(ERROR) << "Cannot set menu on a system modal surface";
+    return;
+  }
   is_menu_ = true;
 }
 

@@ -12,8 +12,10 @@
 #include "ash/frame/frame_view_ash.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/frame_throttler/mock_frame_throttling_observer.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -4424,6 +4426,134 @@ TEST_F(ShellSurfaceTest, SetSystemModalNotAllowed) {
 
   EXPECT_NE(ui::mojom::ModalType::kSystem, shell_surface->GetModalType());
   EXPECT_FALSE(ash::Shell::IsSystemModalWindowOpen());
+}
+
+// A toplevel surface cannot have a menu as its parent.
+TEST_F(ShellSurfaceTest, ToplevelWithMenuParentDisallowed) {
+  std::unique_ptr<ShellSurface> parent_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  std::unique_ptr<ShellSurface> menu_surface =
+      test::ShellSurfaceBuilder({100, 100})
+          .SetAsMenu()
+          .SetParent(parent_surface.get())
+          .BuildShellSurface();
+  ASSERT_EQ(ash::kShellWindowId_MenuContainer,
+            menu_surface->GetWidget()->GetNativeWindow()->parent()->GetId());
+
+  // The application id keeps a surface with a parent from being treated as an
+  // X11 override-redirect window.
+  std::unique_ptr<ShellSurface> toplevel =
+      test::ShellSurfaceBuilder({256, 256}).SetNoCommit().BuildShellSurface();
+  toplevel->SetApplicationId("toplevel");
+  toplevel->SetParent(menu_surface.get());
+  toplevel->root_surface()->Commit();
+  aura::Window* window = toplevel->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(nullptr, wm::GetTransientParent(window));
+  EXPECT_NE(ash::kShellWindowId_MenuContainer, window->parent()->GetId());
+
+  // A toplevel surface can still have another toplevel as its parent.
+  toplevel->SetParent(parent_surface.get());
+  EXPECT_EQ(parent_surface->GetWidget()->GetNativeWindow(),
+            wm::GetTransientParent(window));
+}
+
+// The menu parent is also dropped if the application id is set after it.
+TEST_F(ShellSurfaceTest, MenuParentDroppedWhenApplicationIdSetLater) {
+  std::unique_ptr<ShellSurface> parent_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  std::unique_ptr<ShellSurface> menu_surface =
+      test::ShellSurfaceBuilder({100, 100})
+          .SetAsMenu()
+          .SetParent(parent_surface.get())
+          .BuildShellSurface();
+
+  std::unique_ptr<ShellSurface> toplevel =
+      test::ShellSurfaceBuilder({256, 256}).SetNoCommit().BuildShellSurface();
+  toplevel->SetParent(menu_surface.get());
+  toplevel->SetApplicationId("toplevel");
+  toplevel->root_surface()->Commit();
+  aura::Window* window = toplevel->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(nullptr, wm::GetTransientParent(window));
+  EXPECT_NE(ash::kShellWindowId_MenuContainer, window->parent()->GetId());
+}
+
+// A surface without an application id, such as an X11 tooltip, can still have
+// a menu as its parent, as it becomes an override-redirect window.
+TEST_F(ShellSurfaceTest, OverrideRedirectWithMenuParentAllowed) {
+  std::unique_ptr<ShellSurface> parent_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  std::unique_ptr<ShellSurface> menu_surface =
+      test::ShellSurfaceBuilder({100, 100})
+          .SetAsMenu()
+          .SetParent(parent_surface.get())
+          .BuildShellSurface();
+
+  auto buffer = test::ExoTestHelper::CreateBuffer(gfx::Size(64, 64));
+  auto tooltip_surface = std::make_unique<Surface>();
+  auto tooltip = std::make_unique<ShellSurface>(tooltip_surface.get());
+  tooltip_surface->SetParent(menu_surface->root_surface(), gfx::Point());
+  tooltip_surface->Attach(buffer.get());
+  tooltip_surface->Commit();
+  aura::Window* window = tooltip->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(ash::kShellWindowId_ShelfBubbleContainer,
+            window->parent()->GetId());
+  EXPECT_EQ(menu_surface->GetWidget()->GetNativeWindow(),
+            wm::GetTransientParent(window));
+}
+
+// A system modal surface cannot be placed above the lock screen by using a
+// menu as its parent.
+TEST_F(ShellSurfaceTest, SystemModalWithMenuParentNotAboveLockScreen) {
+  std::unique_ptr<ShellSurface> parent_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  std::unique_ptr<ShellSurface> menu_surface =
+      test::ShellSurfaceBuilder({100, 100})
+          .SetAsMenu()
+          .SetParent(parent_surface.get())
+          .BuildShellSurface();
+
+  // While the session is blocked, Ash places a system modal window whose
+  // transient parent is in MenuContainer into LockSystemModalContainer.
+  GetSessionControllerClient()->LockScreen();
+  ASSERT_TRUE(menu_surface->GetWidget());
+  ASSERT_EQ(ash::kShellWindowId_MenuContainer,
+            menu_surface->GetWidget()->GetNativeWindow()->parent()->GetId());
+
+  // The application id keeps a surface with a parent from being treated as an
+  // X11 override-redirect window.
+  std::unique_ptr<ShellSurface> modal_surface =
+      test::ShellSurfaceBuilder({256, 256}).SetNoCommit().BuildShellSurface();
+  modal_surface->SetApplicationId("modal");
+  modal_surface->SetSystemModal(true);
+  modal_surface->SetParent(menu_surface.get());
+  modal_surface->root_surface()->Commit();
+  aura::Window* modal_window = modal_surface->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(ui::mojom::ModalType::kSystem, modal_surface->GetModalType());
+  EXPECT_EQ(nullptr, wm::GetTransientParent(modal_window));
+  EXPECT_EQ(ash::kShellWindowId_SystemModalContainer,
+            modal_window->parent()->GetId());
+}
+
+TEST_F(ShellSurfaceTest, SetSystemModalAndSetMenuMutuallyExclusive) {
+  std::unique_ptr<ShellSurface> menu_surface =
+      test::ShellSurfaceBuilder({100, 100}).SetNoCommit().BuildShellSurface();
+  menu_surface->SetPopup();
+  menu_surface->SetMenu();
+  menu_surface->SetSystemModal(true);
+  menu_surface->root_surface()->Commit();
+  EXPECT_NE(ui::mojom::ModalType::kSystem, menu_surface->GetModalType());
+
+  std::unique_ptr<ShellSurface> modal_surface =
+      test::ShellSurfaceBuilder({100, 100})
+          .SetUseSystemModalContainer()
+          .SetNoCommit()
+          .BuildShellSurface();
+  modal_surface->SetSystemModal(true);
+  modal_surface->SetMenu();
+  modal_surface->root_surface()->Commit();
+  EXPECT_EQ(ui::mojom::ModalType::kSystem, modal_surface->GetModalType());
+  EXPECT_NE(aura::client::WINDOW_TYPE_MENU,
+            modal_surface->GetWidget()->GetNativeWindow()->GetType());
 }
 
 TEST_F(ShellSurfaceTest, PipInitialPosition) {

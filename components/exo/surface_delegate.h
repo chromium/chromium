@@ -49,6 +49,9 @@ class SurfaceDelegate {
   // is the initial position of surface relative to origin of parent.
   virtual void OnSetParent(Surface* parent, const gfx::Point& position) = 0;
 
+  // Returns false if `parent` is not allowed as the "parent" of this surface.
+  virtual bool CanSetParent(Surface* parent) const = 0;
+
   // Called when surface was requested to set a specific startup ID label.
   virtual void OnSetStartupId(const char* startup_id) = 0;
 

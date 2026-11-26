@@ -394,6 +394,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
  protected:
   bool has_frame_colors() const { return has_frame_colors_; }
+  const std::optional<std::string>& application_id() const {
+    return application_id_;
+  }
 
   // Creates the |widget_| for |surface_|. |show_state| is the initial state
   // of the widget (e.g. maximized).
@@ -456,7 +459,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void StartCapture();
 
   const gfx::Rect& geometry() const { return geometry_; }
-  aura::Window* parent() const { return parent_; }
+  aura::Window* parent() { return parent_; }
 
   // Install custom window targeter. Used to restore window targeter.
   void InstallCustomWindowTargeter();

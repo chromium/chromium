@@ -341,12 +341,15 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
                                             std::move(holder));
 
   // Set the properties specific to ShellSurface.
-  if (parent_shell_surface_)
-    shell_surface->SetParent(parent_shell_surface_);
+  // The role must be set before the parent, as a menu is allowed as the parent
+  // only for popups and menus.
   if (popup_)
     shell_surface->SetPopup();
   if (menu_)
     shell_surface->SetMenu();
+  if (parent_shell_surface_) {
+    shell_surface->SetParent(parent_shell_surface_);
+  }
   if (grab_) {
     shell_surface->Grab();
   }

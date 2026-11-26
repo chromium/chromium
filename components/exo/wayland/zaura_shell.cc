@@ -385,8 +385,18 @@ void AuraSurface::SetFrameColors(SkColor active_frame_color,
 }
 
 void AuraSurface::SetParent(AuraSurface* parent, const gfx::Point& position) {
-  if (surface_)
-    surface_->SetParent(parent ? parent->surface_.get() : nullptr, position);
+  if (surface_) {
+    Surface* parent_surface = parent ? parent->surface_.get() : nullptr;
+    // A toplevel surface must not have a menu as its parent. See
+    // ShellSurface::CanSetParentWindow() (b/503776022).
+    if (!surface_->CanSetParent(parent_surface)) {
+      wl_resource_post_error(
+          resource_, WL_DISPLAY_ERROR_INVALID_METHOD,
+          "Cannot set a menu as the parent of a toplevel surface");
+      return;
+    }
+    surface_->SetParent(parent_surface, position);
+  }
 }
 
 void AuraSurface::SetStartupId(const char* startup_id) {

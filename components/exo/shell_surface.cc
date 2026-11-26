@@ -71,6 +71,14 @@ bool IsMoveComponent(int resize_component) {
   return resize_component == HTCAPTION || resize_component == HTCLIENT;
 }
 
+// Returns true if `window` is in MenuContainer, which hosts menus and their
+// popups. X11 override-redirect windows also have the menu window type, but
+// are placed in a different container and are not matched.
+bool IsInMenuContainer(const aura::Window* window) {
+  return window->parent() &&
+         window->parent()->GetId() == ash::kShellWindowId_MenuContainer;
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -448,6 +456,13 @@ void ShellSurface::OnSetParent(Surface* parent, const gfx::Point& position) {
   } else {
     SetParentWindow(nullptr);
   }
+}
+
+bool ShellSurface::CanSetParent(Surface* parent) const {
+  views::Widget* parent_widget =
+      parent ? views::Widget::GetTopLevelWidgetForNativeView(parent->window())
+             : nullptr;
+  return !parent_widget || CanSetParentWindow(parent_widget->GetNativeWindow());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -900,6 +915,13 @@ bool ShellSurface::OnPreWidgetCommit() {
       }
     }
 
+    // The application id may have been set after the parent. See
+    // CanSetParentWindow().
+    if (parent() && !CanSetParentWindow(parent())) {
+      LOG(ERROR) << "Cannot set a menu as the parent of a toplevel surface";
+      SetParentWindow(nullptr);
+    }
+
     CreateShellSurfaceWidget(initial_show_state_);
   }
 
@@ -965,6 +987,11 @@ void ShellSurface::OnLayerRecreated(ui::Layer* old_layer) {
 // ShellSurface, private:
 
 void ShellSurface::SetParentWindow(aura::Window* new_parent) {
+  if (new_parent && !CanSetParentWindow(new_parent)) {
+    LOG(ERROR) << "Cannot set a menu as the parent of a toplevel surface";
+    return;
+  }
+
   if (new_parent && widget_) {
     const aura::Window* window = widget_->GetNativeWindow();
     const aura::Window* ancestor = new_parent;
@@ -1002,6 +1029,18 @@ void ShellSurface::SetParentWindow(aura::Window* new_parent) {
     parent()->AddObserver(this);
     MaybeMakeTransient();
   }
+}
+
+bool ShellSurface::CanSetParentWindow(const aura::Window* new_parent) const {
+  // Only popups and menus may be parented to a window in MenuContainer. A
+  // toplevel would be placed in MenuContainer too, which does not support
+  // toplevel windows, or, if it is system modal while the session is blocked,
+  // in LockSystemModalContainer above the lock screen (b/503776022). A surface
+  // without an application id is allowed, as it becomes an X11
+  // override-redirect window (e.g. a tooltip) in ShelfBubbleContainer.
+  // OnPreWidgetCommit() checks again in case the application id is set later.
+  return is_popup_ || is_menu_ || !application_id().has_value() ||
+         !IsInMenuContainer(new_parent);
 }
 
 void ShellSurface::MaybeMakeTransient() {
