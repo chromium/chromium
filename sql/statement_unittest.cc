@@ -445,5 +445,19 @@ TEST_F(StatementTest, RunReportsPerformanceMetrics) {
   histogram_tester.ExpectTotalCount("Sql.Statement.Test.VMSteps", 1);
 }
 
+// Tests that EscapeForLike() escapes '%', '_', and '\\' for both string and
+// UTF-16 inputs.
+TEST_F(StatementTest, EscapeForLike) {
+  EXPECT_EQ(EscapeForLike(""), "");
+  EXPECT_EQ(EscapeForLike("normal_string"), "normal\\_string");
+  EXPECT_EQ(EscapeForLike("100%"), "100\\%");
+  EXPECT_EQ(EscapeForLike("a\\b_c%d"), "a\\\\b\\_c\\%d");
+
+  EXPECT_EQ(EscapeForLike(u""), u"");
+  EXPECT_EQ(EscapeForLike(u"normal_string"), u"normal\\_string");
+  EXPECT_EQ(EscapeForLike(u"100%"), u"100\\%");
+  EXPECT_EQ(EscapeForLike(u"a\\b_c%d"), u"a\\\\b\\_c\\%d");
+}
+
 }  // namespace
 }  // namespace sql

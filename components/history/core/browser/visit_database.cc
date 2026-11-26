@@ -35,20 +35,6 @@ namespace history {
 
 namespace {
 
-// Escapes SQL `LIKE` wildcards (`%` and `_`) and the escape character (`\`) in
-// `str` so user-supplied hostname suffixes are matched literally by `LIKE`.
-std::string EscapeForLike(std::string_view str) {
-  std::string escaped;
-  escaped.reserve(str.size());
-  for (char c : str) {
-    if (c == '%' || c == '_' || c == '\\') {
-      escaped.push_back('\\');
-    }
-    escaped.push_back(c);
-  }
-  return escaped;
-}
-
 // Returns [lower, upper) bounds for matching a URL against `origin`.
 std::pair<std::string, std::string> GetOriginSearchBounds(const GURL& origin) {
   // We need to search for URLs with a matching origin. One way to query
@@ -744,7 +730,8 @@ bool VisitDatabase::PrepareVisibleVisitsQuery(
     // hostname), which will be filtered out during C++ post-processing in
     // FillVisitVectorWithOptions().
     out_statement.BindString(
-        bind_index++, "%://%" + EscapeForLike(options.hostname_suffix) + "%");
+        bind_index++,
+        "%://%" + sql::EscapeForLike(options.hostname_suffix) + "%");
   }
 
   CHECK_EQ(static_cast<size_t>(bind_index),

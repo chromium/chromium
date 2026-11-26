@@ -13,6 +13,7 @@
 #import "base/i18n/string_search.h"
 #import "base/notreached.h"
 #import "base/strings/cstring_view.h"
+#import "base/strings/strcat.h"
 #import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
@@ -446,17 +447,7 @@ std::string FilterClauseForType(
 // ('%', '_', '\\') with a leading '\\'. The corresponding SQL must use
 // `ESCAPE '\\'`. `query` must already be `NormalizeFileName`-ed.
 std::string BuildLikePattern(std::string_view query) {
-  std::string escaped;
-  escaped.reserve(query.size() + 2);
-  escaped.push_back('%');
-  for (char c : query) {
-    if (c == '%' || c == '_' || c == '\\') {
-      escaped.push_back('\\');
-    }
-    escaped.push_back(c);
-  }
-  escaped.push_back('%');
-  return escaped;
+  return base::StrCat({"%", sql::EscapeForLike(query), "%"});
 }
 
 }  // namespace

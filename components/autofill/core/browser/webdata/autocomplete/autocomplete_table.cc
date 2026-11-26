@@ -22,7 +22,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/autofill_table_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -134,8 +133,7 @@ bool AutocompleteTable::GetFormValuesForElementName(
                            "WHERE name = ? AND value_lower LIKE ? ESCAPE '\\' "
                            "ORDER BY count DESC LIMIT ?");
   s.BindString16(0, name);
-  s.BindString16(1,
-                 EscapeLikePattern(base::i18n::ToLower(prefix), u'\\') + u"%");
+  s.BindString16(1, sql::EscapeForLike(base::i18n::ToLower(prefix)) + u"%");
   s.BindInt(2, limit);
 
   entries.clear();

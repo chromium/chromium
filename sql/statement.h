@@ -39,6 +39,12 @@ enum class ColumnType {
   kNull = 5,
 };
 
+// Escapes all wildcards ('%', '_') and '\\' recognized by the SQL LIKE
+// operator in `str`. The corresponding SQL query must specify `ESCAPE '\\'`
+// (e.g. `LIKE ? ESCAPE '\\'`).
+COMPONENT_EXPORT(SQL) std::string EscapeForLike(std::string_view str);
+COMPONENT_EXPORT(SQL) std::u16string EscapeForLike(std::u16string_view str);
+
 // Compiles and executes SQL statements.
 //
 // This class is not thread-safe. An instance must be accessed from a single

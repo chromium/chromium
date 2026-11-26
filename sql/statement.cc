@@ -39,6 +39,32 @@
 
 namespace sql {
 
+namespace {
+
+template <typename CharT>
+std::basic_string<CharT> EscapeForLikeInternal(
+    std::basic_string_view<CharT> str) {
+  std::basic_string<CharT> escaped;
+  escaped.reserve(str.size());
+  for (CharT c : str) {
+    if (c == CharT{'\\'} || c == CharT{'%'} || c == CharT{'_'}) {
+      escaped.push_back(CharT{'\\'});
+    }
+    escaped.push_back(c);
+  }
+  return escaped;
+}
+
+}  // namespace
+
+std::string EscapeForLike(std::string_view str) {
+  return EscapeForLikeInternal(str);
+}
+
+std::u16string EscapeForLike(std::u16string_view str) {
+  return EscapeForLikeInternal(str);
+}
+
 // static
 int64_t Statement::TimeToSqlValue(base::Time time) {
   return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
