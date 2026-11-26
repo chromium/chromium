@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -140,11 +139,10 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
 
   // infobars::InfoBarManager::Observer:
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
-  void OnInfoBarReplaced(infobars::InfoBar* old_infobar,
-                         infobars::InfoBar* new_infobar) override;
   void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
  private:
+  class TabInfoBarTracker;
   struct GlobalInfoBarContext;
   using SharedInfoBarSpec = base::RefCountedData<InfoBarSpec>;
 
@@ -172,12 +170,6 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   // are intentionally not auto-closed mid-session on dynamic policy updates to
   // avoid dismissing prompts the user may actively be reading.
   bool IsBlockedByPolicy(const InfoBarSpec& spec) const;
-  bool IsTrackedGlobalInstance(infobars::InfoBar* infobar) const;
-
-  // Records a tab-scoped `infobar` that was just added, so that
-  // Hide(identifier) can reach it, and observes its InfoBarManager to known
-  // when it goes away.
-  void TrackTabInstance(infobars::InfoBar* infobar);
 
   const raw_ptr<PrefService> local_state_;
   ui::ScopedUnownedUserData<BrowserInfoBarManager> scoped_unowned_user_data_;
@@ -195,10 +187,7 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   std::vector<infobars::InfoBarDelegate::InfoBarIdentifier>
       active_global_order_;
 
-  // Tab-scoped instances added by Show() or Replace() that are still in their
-  // InfoBarManager. An instance leaves when it is removed or replaced, before
-  // it can be destroyed.
-  std::set<raw_ptr<infobars::InfoBar>> active_tab_infobars_;
+  const std::unique_ptr<TabInfoBarTracker> tab_infobars_;
 
   // Track the last active tab's InfoBarManager for each browser.
   std::map<BrowserWindowInterface*, infobars::InfoBarManager*>

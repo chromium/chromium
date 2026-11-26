@@ -5,6 +5,7 @@
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 
 #include <algorithm>
+#include <functional>
 #include <map>
 #include <memory>
 #include <utility>
@@ -13,9 +14,11 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/infobars/infobar_outcome_tracker.h"
@@ -57,6 +60,77 @@ BrowserWindowInterface* BrowserForInfoBar(infobars::InfoBar* infobar) {
 
 }  // namespace
 
+// Tracks live `kTab` instances so `Hide()` can distinguish them from global
+// and legacy/untracked instances, unobserving each `InfoBarManager` once its
+// last instance leaves.
+class BrowserInfoBarManager::TabInfoBarTracker final
+    : public InfoBarManager::Observer {
+ public:
+  TabInfoBarTracker() = default;
+  TabInfoBarTracker(const TabInfoBarTracker&) = delete;
+  TabInfoBarTracker& operator=(const TabInfoBarTracker&) = delete;
+  ~TabInfoBarTracker() override = default;
+
+  void Track(InfoBar* infobar) {
+    CHECK(infobar);
+    InfoBarManager* manager = infobar->owner();
+    CHECK(manager);
+    instances_.emplace(infobar, manager);
+    if (!observations_.IsObservingSource(manager)) {
+      observations_.AddObservation(manager);
+    }
+  }
+
+  bool Contains(const InfoBar* infobar) const {
+    return instances_.contains(infobar);
+  }
+
+  std::vector<InfoBar*> Snapshot() const {
+    std::vector<InfoBar*> snapshot;
+    snapshot.reserve(instances_.size());
+    for (const auto& [infobar, manager] : instances_) {
+      snapshot.push_back(infobar);
+    }
+    return snapshot;
+  }
+
+  // InfoBarManager::Observer:
+  void OnInfoBarRemoved(InfoBar* infobar, bool animate) override {
+    Untrack(infobar);
+  }
+
+  void OnInfoBarReplaced(InfoBar* old_infobar, InfoBar* new_infobar) override {
+    Untrack(old_infobar);
+  }
+
+  void OnManagerWillBeDestroyed(InfoBarManager* manager) override {
+    observations_.RemoveObservation(manager);
+    std::erase_if(instances_, [manager](const auto& entry) {
+      return entry.second == manager;
+    });
+  }
+
+ private:
+  void Untrack(InfoBar* infobar) {
+    auto it = instances_.find(infobar);
+    if (it == instances_.end()) {
+      return;
+    }
+    InfoBarManager* manager = it->second;
+    instances_.erase(it);
+    if (observations_.IsObservingSource(manager) &&
+        std::ranges::none_of(instances_, [manager](const auto& entry) {
+          return entry.second == manager;
+        })) {
+      observations_.RemoveObservation(manager);
+    }
+  }
+
+  std::map<raw_ptr<InfoBar>, raw_ptr<InfoBarManager>, std::less<>> instances_;
+  base::ScopedMultiSourceObservation<InfoBarManager, InfoBarManager::Observer>
+      observations_{this};
+};
+
 struct BrowserInfoBarManager::GlobalInfoBarContext {
   scoped_refptr<const SharedInfoBarSpec> spec;
   InfoBarShowParams params;
@@ -70,7 +144,8 @@ DEFINE_USER_DATA(BrowserInfoBarManager);
 BrowserInfoBarManager::BrowserInfoBarManager(BrowserProcess* browser_process)
     : local_state_(browser_process->local_state()),
       scoped_unowned_user_data_(browser_process->GetUnownedUserDataHost(),
-                                *this) {}
+                                *this),
+      tab_infobars_(std::make_unique<TabInfoBarTracker>()) {}
 
 BrowserInfoBarManager::~BrowserInfoBarManager() = default;
 
@@ -155,11 +230,13 @@ infobars::InfoBar* BrowserInfoBarManager::ShowInternal(
   auto outcome = base::MakeRefCounted<InfoBarOutcomeTracker>(
       identifier,
       params.result_callback ? params.result_callback : spec.result_callback());
-  if (auto* added_infobar = manager->AddInfoBar(CreateRegistryInfoBar(
-          ConfirmInfoBarCreationAllowlist::GetPassKey(), shared_spec,
-          web_contents, std::move(params), outcome))) {
+  auto* added_infobar = manager->AddInfoBar(CreateRegistryInfoBar(
+      ConfirmInfoBarCreationAllowlist::GetPassKey(), shared_spec, web_contents,
+      std::move(params), outcome));
+  if (added_infobar &&
+      std::ranges::contains(manager->infobars(), added_infobar)) {
     outcome->Arm();
-    TrackTabInstance(added_infobar);
+    tab_infobars_->Track(added_infobar);
     base::UmaHistogramSparse("InfoBar.Centralized.Show", identifier);
     return added_infobar;
   }
@@ -200,13 +277,14 @@ infobars::InfoBar* BrowserInfoBarManager::Replace(
   auto outcome = base::MakeRefCounted<InfoBarOutcomeTracker>(
       identifier,
       params.result_callback ? params.result_callback : spec.result_callback());
-  if (auto* replaced_infobar = manager->ReplaceInfoBar(
-          old_infobar,
-          CreateRegistryInfoBar(ConfirmInfoBarCreationAllowlist::GetPassKey(),
-                                shared_spec, contents, std::move(params),
-                                outcome))) {
+  auto* replaced_infobar = manager->ReplaceInfoBar(
+      old_infobar,
+      CreateRegistryInfoBar(ConfirmInfoBarCreationAllowlist::GetPassKey(),
+                            shared_spec, contents, std::move(params), outcome));
+  if (replaced_infobar &&
+      std::ranges::contains(manager->infobars(), replaced_infobar)) {
     outcome->Arm();
-    TrackTabInstance(replaced_infobar);
+    tab_infobars_->Track(replaced_infobar);
     return replaced_infobar;
   }
   return nullptr;
@@ -350,12 +428,11 @@ void BrowserInfoBarManager::Hide(
   }
 
   for (infobars::InfoBar* infobar : manager->infobars()) {
-    if (infobar->delegate()->GetIdentifier() != identifier ||
-        IsTrackedGlobalInstance(infobar)) {
-      continue;
+    if (infobar->delegate()->GetIdentifier() == identifier &&
+        tab_infobars_->Contains(infobar)) {
+      RemoveRegistryInfoBar(manager, infobar, /*suppress_outcome=*/true);
+      break;
     }
-    RemoveRegistryInfoBar(manager, infobar, /*suppress_outcome=*/true);
-    break;
   }
 }
 
@@ -377,13 +454,10 @@ void BrowserInfoBarManager::Hide(
   }
 
   if (it->second->data.scope() == InfoBarScope::kTab) {
-    // Removal drops instances from `active_tab_infobars_`, so iterate a copy.
-    const std::vector<infobars::InfoBar*> instances(
-        active_tab_infobars_.begin(), active_tab_infobars_.end());
-    for (infobars::InfoBar* infobar : instances) {
-      // A removal can take other instances with it, so check the set, which
-      // removals keep current, before touching one.
-      if (!active_tab_infobars_.contains(infobar) ||
+    for (infobars::InfoBar* infobar : tab_infobars_->Snapshot()) {
+      // A removal can take other instances with it, so check membership before
+      // touching one.
+      if (!tab_infobars_->Contains(infobar) ||
           infobar->delegate()->GetIdentifier() != identifier) {
         continue;
       }
@@ -456,8 +530,6 @@ void BrowserInfoBarManager::OnBrowserClosed(BrowserWindowInterface* browser) {
 
 void BrowserInfoBarManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
                                              bool animate) {
-  active_tab_infobars_.erase(infobar);
-
   // Only tracked instances matter here. Everything in
   // `active_global_infobars_` was put there by ShowGlobally(), which only
   // accepts global specs, so membership is the scope check.
@@ -517,11 +589,6 @@ void BrowserInfoBarManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
       outcome->ReportPending(web_contents);
     }
   }
-}
-
-void BrowserInfoBarManager::OnInfoBarReplaced(infobars::InfoBar* old_infobar,
-                                              infobars::InfoBar* new_infobar) {
-  active_tab_infobars_.erase(old_infobar);
 }
 
 void BrowserInfoBarManager::OnManagerWillBeDestroyed(
@@ -682,32 +749,9 @@ void BrowserInfoBarManager::StopObservingBrowsersIfIdle() {
   last_active_managers_.clear();
 }
 
-void BrowserInfoBarManager::TrackTabInstance(infobars::InfoBar* infobar) {
-  active_tab_infobars_.insert(infobar);
-  infobars::InfoBarManager* manager = infobar->owner();
-
-  if (!infobar_manager_observations_.IsObservingSource(manager)) {
-    infobar_manager_observations_.AddObservation(manager);
-  }
-}
-
 bool BrowserInfoBarManager::IsBlockedByPolicy(const InfoBarSpec& spec) const {
   return spec.is_promotional() && local_state_ &&
          !local_state_->GetBoolean(prefs::kPromotionsEnabled);
-}
-
-bool BrowserInfoBarManager::IsTrackedGlobalInstance(
-    infobars::InfoBar* infobar) const {
-  auto it = active_global_infobars_.find(infobar->delegate()->GetIdentifier());
-  if (it == active_global_infobars_.end()) {
-    return false;
-  }
-  for (const auto& [manager, tracked] : it->second->active_instances) {
-    if (tracked == infobar) {
-      return true;
-    }
-  }
-  return false;
 }
 
 }  // namespace infobars

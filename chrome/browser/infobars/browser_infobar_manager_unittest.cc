@@ -1450,4 +1450,71 @@ TEST_F(BrowserInfoBarManagerUnitTest,
   EXPECT_EQ(InfoBarResult::kLinkClicked, calls[1].second);
 }
 
+TEST_F(BrowserInfoBarManagerUnitTest,
+       HideForWebContentsIgnoresNonRegistryInfoBar) {
+  constexpr auto id = InfoBarDelegate::TEST_INFOBAR;
+  manager()->Register(InfoBarSpec::Builder(id)
+                          .SetMessageText(u"Registry InfoBar")
+                          .SetAllowDuplicates(true)
+                          .Build());
+
+  auto browser = CreateBrowserWindow();
+  content::WebContents* contents = browser->AddTab(/*foreground=*/true);
+  auto* content_manager = ContentInfoBarManager::FromWebContents(contents);
+
+  infobars::InfoBar* legacy_infobar =
+      content_manager->AddInfoBar(CreateConfirmInfoBar(
+          ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+          std::make_unique<DummyConfirmDelegate>()));
+  ASSERT_NE(nullptr, legacy_infobar);
+
+  // Hiding by WebContents and identifier leaves untracked legacy infobars
+  // untouched.
+  manager()->Hide(contents, id);
+  ASSERT_EQ(1u, content_manager->infobars().size());
+  EXPECT_EQ(legacy_infobar, content_manager->infobars()[0]);
+
+  // When a tracked registry infobar shares the same identifier, only the
+  // tracked registry infobar is removed.
+  infobars::InfoBar* registry_infobar = manager()->Show(contents, id);
+  ASSERT_NE(nullptr, registry_infobar);
+  ASSERT_EQ(2u, content_manager->infobars().size());
+
+  manager()->Hide(contents, id);
+  ASSERT_EQ(1u, content_manager->infobars().size());
+  EXPECT_EQ(legacy_infobar, content_manager->infobars()[0]);
+}
+
+TEST_F(BrowserInfoBarManagerUnitTest,
+       MultipleTabInfoBarsOnSameTabKeepObservingUntilLastRemoved) {
+  constexpr auto first_id = InfoBarDelegate::TEST_INFOBAR;
+  constexpr auto second_id = InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE;
+
+  manager()->Register(
+      InfoBarSpec::Builder(first_id).SetMessageText(u"First").Build());
+  manager()->Register(
+      InfoBarSpec::Builder(second_id).SetMessageText(u"Second").Build());
+
+  auto browser = CreateBrowserWindow();
+  content::WebContents* contents = browser->AddTab(/*foreground=*/true);
+  auto* content_manager = ContentInfoBarManager::FromWebContents(contents);
+
+  infobars::InfoBar* first = manager()->Show(contents, first_id);
+  infobars::InfoBar* second = manager()->Show(contents, second_id);
+  ASSERT_NE(nullptr, first);
+  ASSERT_NE(nullptr, second);
+  ASSERT_EQ(2u, content_manager->infobars().size());
+
+  // Removing the first infobar must keep observing the manager so external
+  // removal of the second infobar is also observed and untracked.
+  content_manager->RemoveInfoBar(first);
+  ASSERT_EQ(1u, content_manager->infobars().size());
+  content_manager->RemoveInfoBar(second);
+  ASSERT_EQ(0u, content_manager->infobars().size());
+
+  // If the manager had stopped observing after `first` left, `second` would
+  // still be tracked as a dangling pointer and Hide(second_id) would UAF.
+  manager()->Hide(second_id);
+}
+
 }  // namespace infobars
