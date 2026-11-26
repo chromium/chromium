@@ -53,7 +53,7 @@ class MdTextButton;
 // | Title                                             [X] |
 // |-------------------------------------------------------|
 // | [Icon]  Username                      [ Sign in ] [v] |
-// |         Provider (optional)                           |
+// |         Origin / Provider (optional)                  |
 // |-------------------------------------------------------|
 //
 // Clicking the expand button [v] replaces the summary with a scrollable list of
@@ -62,7 +62,7 @@ class MdTextButton;
 // | Title                                             [X] |
 // |-------------------------------------------------------|
 // | [Icon]  Display name / Username                       |
-// |         Username (optional)                           |
+// |         Username / Origin (optional)                  |
 // |         Provider                                      |
 // | [Icon]  Display name / Username                       |
 // |         Provider                                      |

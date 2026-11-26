@@ -1571,4 +1571,177 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
   EXPECT_FALSE(title_label->IsDisplayTextTruncated());
 }
 
+TEST_F(AmbientLoginPermissionBubbleViewTest,
+       PasswordWithOriginShownInCollapsedAndExpandedViews) {
+  std::vector<ambient_signin::PasskeyOrPasswordCredential> creds = {
+      {/*username=*/u"affiliated@example.com",
+       /*provider_name=*/u"Google Password Manager",
+       /*type=*/ambient_signin::CredentialType::kPassword,
+       /*display_name=*/u"",
+       /*provider_icon=*/nullptr,
+       /*origin=*/u"affiliated.example.com"},
+      {/*username=*/u"exact@example.com",
+       /*provider_name=*/u"Google Password Manager",
+       /*type=*/ambient_signin::CredentialType::kPassword},
+      {/*username=*/u"noprovider@example.com",
+       /*provider_name=*/u"",
+       /*type=*/ambient_signin::CredentialType::kPassword,
+       /*display_name=*/u"",
+       /*provider_icon=*/nullptr,
+       /*origin=*/u"other.example.com"}};
+
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.push_back(
+      std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+          GURL("https://example.com"), std::move(creds), base::DoNothing(),
+          ambient_signin::AmbientLoginPermissionRequest::Options{}));
+
+  MockAmbientDelegate delegate(GURL("https://example.com"));
+  delegate.set_requests(std::move(requests));
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  // Collapsed view keeps the 2-line layout, showing the affiliated origin in
+  // place of the provider name.
+  ASSERT_EQ(bubble->children().size(), 4u);
+  views::View* text_container = bubble->children()[1];
+  ASSERT_EQ(text_container->children().size(), 2u);
+  auto* username_label =
+      views::AsViewClass<views::Label>(text_container->children()[0]);
+  auto* origin_label =
+      views::AsViewClass<views::Label>(text_container->children()[1]);
+  ASSERT_NE(username_label, nullptr);
+  ASSERT_NE(origin_label, nullptr);
+  EXPECT_EQ(username_label->GetText(), u"affiliated@example.com");
+  EXPECT_EQ(origin_label->GetText(), u"affiliated.example.com");
+  EXPECT_EQ(origin_label->GetTextStyle(), views::style::STYLE_BODY_4);
+  EXPECT_EQ(origin_label->GetRequestedEnabledColor(),
+            ui::ColorVariant(ui::kColorLabelForegroundSecondary));
+
+  // Sign-in button accessible description includes the origin.
+  views::View* sign_in_button = bubble->children()[2];
+  EXPECT_EQ(sign_in_button->GetViewAccessibility().GetCachedDescription(),
+            u"affiliated@example.com affiliated.example.com");
+
+  // Expand the bubble and verify all 3 password rows.
+  views::ImageButton* expand_button =
+      views::AsViewClass<views::ImageButton>(bubble->children()[3]);
+  ASSERT_NE(expand_button, nullptr);
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(expand_button).NotifyClick(click_event);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  ASSERT_EQ(bubble->children().size(), 1u);
+  views::ScrollView* scroll_view =
+      views::AsViewClass<views::ScrollView>(bubble->children()[0]);
+  ASSERT_NE(scroll_view, nullptr);
+  views::View* list_view = scroll_view->contents();
+  ASSERT_NE(list_view, nullptr);
+  ASSERT_EQ(list_view->children().size(), 3u);
+
+  // Row 0: Password with origin and provider -> 3 text lines.
+  HoverButton* row0 = views::AsViewClass<HoverButton>(list_view->children()[0]);
+  ASSERT_NE(row0, nullptr);
+  views::View* row0_labels = row0->title()->parent();
+  ASSERT_EQ(row0_labels->children().size(), 3u);
+  EXPECT_EQ(
+      views::AsViewClass<views::Label>(row0_labels->children()[0])->GetText(),
+      u"affiliated@example.com");
+  EXPECT_EQ(
+      views::AsViewClass<views::Label>(row0_labels->children()[1])->GetText(),
+      u"affiliated.example.com");
+  EXPECT_EQ(
+      views::AsViewClass<views::Label>(row0_labels->children()[2])->GetText(),
+      u"Google Password Manager");
+
+  // Row 1: Exact-match password (no origin) -> 2 text lines.
+  HoverButton* row1 = views::AsViewClass<HoverButton>(list_view->children()[1]);
+  ASSERT_NE(row1, nullptr);
+  views::View* row1_labels = row1->title()->parent();
+  ASSERT_EQ(row1_labels->children().size(), 2u);
+  EXPECT_EQ(
+      views::AsViewClass<views::Label>(row1_labels->children()[0])->GetText(),
+      u"exact@example.com");
+  EXPECT_EQ(
+      views::AsViewClass<views::Label>(row1_labels->children()[1])->GetText(),
+      u"Google Password Manager");
+
+  // Row 2: Password with origin and empty provider -> 2 text lines.
+  HoverButton* row2 = views::AsViewClass<HoverButton>(list_view->children()[2]);
+  ASSERT_NE(row2, nullptr);
+  views::View* row2_labels = row2->title()->parent();
+  ASSERT_EQ(row2_labels->children().size(), 2u);
+  EXPECT_EQ(
+      views::AsViewClass<views::Label>(row2_labels->children()[0])->GetText(),
+      u"noprovider@example.com");
+  EXPECT_EQ(
+      views::AsViewClass<views::Label>(row2_labels->children()[1])->GetText(),
+      u"other.example.com");
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest,
+       LongPasswordOriginIsElidedAtStart) {
+  const std::u16string long_origin =
+      std::u16string(200, u'a') + u".example.com";
+  std::vector<ambient_signin::PasskeyOrPasswordCredential> creds = {
+      {/*username=*/u"bob@example.com",
+       /*provider_name=*/u"Google Password Manager",
+       /*type=*/ambient_signin::CredentialType::kPassword,
+       /*display_name=*/u"",
+       /*provider_icon=*/nullptr,
+       /*origin=*/long_origin}};
+
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.push_back(
+      std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
+          GURL("https://example.com"), std::move(creds), base::DoNothing(),
+          ambient_signin::AmbientLoginPermissionRequest::Options{}));
+
+  MockAmbientDelegate delegate(GURL("https://example.com"));
+  delegate.set_requests(std::move(requests));
+  AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  // Collapsed bubble: origin is shown on line 2 and elided at the start.
+  ASSERT_EQ(bubble->children().size(), 4u);
+  views::View* text_container = bubble->children()[1];
+  ASSERT_EQ(text_container->children().size(), 2u);
+  auto* origin_label =
+      views::AsViewClass<views::Label>(text_container->children()[1]);
+  ASSERT_NE(origin_label, nullptr);
+  EXPECT_TRUE(IsElidedAtStart(*origin_label));
+
+  // Expanded bubble: origin is elided at the start, provider at the end.
+  views::ImageButton* expand_button =
+      views::AsViewClass<views::ImageButton>(bubble->children()[3]);
+  ASSERT_NE(expand_button, nullptr);
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  views::test::ButtonTestApi(expand_button).NotifyClick(click_event);
+  views::test::RunScheduledLayout(bubble->GetWidget());
+
+  ASSERT_EQ(bubble->children().size(), 1u);
+  views::ScrollView* scroll_view =
+      views::AsViewClass<views::ScrollView>(bubble->children()[0]);
+  ASSERT_NE(scroll_view, nullptr);
+  HoverButton* row =
+      views::AsViewClass<HoverButton>(scroll_view->contents()->children()[0]);
+  ASSERT_NE(row, nullptr);
+  views::View* row_labels = row->title()->parent();
+  ASSERT_EQ(row_labels->children().size(), 3u);
+  auto* row_origin_label =
+      views::AsViewClass<views::Label>(row_labels->children()[1]);
+  auto* row_provider_label =
+      views::AsViewClass<views::Label>(row_labels->children()[2]);
+  ASSERT_NE(row_origin_label, nullptr);
+  ASSERT_NE(row_provider_label, nullptr);
+  EXPECT_TRUE(IsElidedAtStart(*row_origin_label));
+  EXPECT_EQ(row_provider_label->GetElideBehavior(), gfx::ELIDE_TAIL);
+}
+
 }  // namespace

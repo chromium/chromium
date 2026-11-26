@@ -37,6 +37,11 @@ struct PasskeyOrPasswordCredential {
   // Manager. The prompt shows it as a badge on the credential's monogram. If
   // null, the prompt uses the generic passkey or password icon instead.
   raw_ptr<const gfx::VectorIcon> provider_icon = nullptr;
+  // For a password credential that does not match the current site exactly
+  // (e.g. an affiliated or PSL match), the origin formatted for display, e.g.
+  // "sub.example.com". Empty for exact-match passwords and passkeys. The prompt
+  // elides it at the start, so that the end of the domain stays visible.
+  std::u16string origin;
 };
 
 // The size of account pictures in the prompt, in DIPs. Callers should crop

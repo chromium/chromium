@@ -2918,10 +2918,16 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 
 #endif  // BUILDFLAG(IS_MAC)
 
-TEST_F(AuthenticatorRequestDialogControllerTest, PopulatePasswordsWithOrigin) {
+class AuthenticatorRequestDialogControllerPopulatePasswordsTest
+    : public AuthenticatorRequestDialogControllerTest,
+      public testing::WithParamInterface<UIPresentation> {};
+
+TEST_P(AuthenticatorRequestDialogControllerPopulatePasswordsTest,
+       PopulatePasswordsWithOrigin) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   AuthenticatorRequestDialogController controller(model.get(), main_rfh());
+  controller.SetUIPresentation(GetParam());
 
   // Setup TransportAvailabilityInfo
   device::FidoRequestHandlerBase::TransportAvailabilityInfo tai;
@@ -2947,13 +2953,21 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PopulatePasswordsWithOrigin) {
   psl_match->match_type = affiliations::MatchType::kPSL;
   passwords.push_back(std::move(psl_match));
 
+  // 3. Affiliated Match
+  auto affiliated_match = std::make_unique<password_manager::PasswordForm>();
+  affiliated_match->username_value = u"user_affiliated";
+  affiliated_match->url = GURL("https://affiliated.example.org/login");
+  affiliated_match->signon_realm = "https://affiliated.example.org/";
+  affiliated_match->match_type = affiliations::MatchType::kAffiliated;
+  passwords.push_back(std::move(affiliated_match));
+
   // Start Flow
   model->relying_party_id = "example.com";
   UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
   controller.StartFlow(std::move(tai), std::move(passwords));
 
   // Verify Mechanisms
-  ASSERT_EQ(model->mechanisms.size(), 2u);
+  ASSERT_EQ(model->mechanisms.size(), 3u);
 
   // Helper to find mechanism by username
   auto find_mechanism = [&](const std::u16string& username)
@@ -2981,13 +2995,41 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PopulatePasswordsWithOrigin) {
   ASSERT_TRUE(mech_exact);
   EXPECT_FALSE(get_origin(mech_exact).has_value());
 
-  // 2. PSL Match: Origin should be "https://sub.example.com/"
+  // 2. PSL Match: Origin should be "sub.example.com"
   const auto* mech_psl = find_mechanism(u"user_psl");
   ASSERT_TRUE(mech_psl);
   auto origin_psl = get_origin(mech_psl);
   EXPECT_TRUE(origin_psl.has_value());
   EXPECT_EQ(origin_psl.value(), u"sub.example.com");
+
+  // 3. Affiliated Match: Origin should be "affiliated.example.org"
+  const auto* mech_affiliated = find_mechanism(u"user_affiliated");
+  ASSERT_TRUE(mech_affiliated);
+  auto origin_affiliated = get_origin(mech_affiliated);
+  EXPECT_TRUE(origin_affiliated.has_value());
+  EXPECT_EQ(origin_affiliated.value(), u"affiliated.example.org");
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AuthenticatorRequestDialogControllerPopulatePasswordsTest,
+    testing::Values(UIPresentation::kModal,
+                    UIPresentation::kModalImmediate,
+                    UIPresentation::kAmbient),
+    [](const testing::TestParamInfo<UIPresentation>& info) {
+      switch (info.param) {
+        case UIPresentation::kModal:
+          return "Modal";
+        case UIPresentation::kModalImmediate:
+          return "ModalImmediate";
+        case UIPresentation::kAmbient:
+          return "Ambient";
+        case UIPresentation::kAutofill:
+        case UIPresentation::kPasskeyUpgrade:
+        case UIPresentation::kDisabled:
+          NOTREACHED();
+      }
+    });
 
 TEST_F(AuthenticatorRequestDialogControllerTest, PopulatePasswordsDescription) {
   struct TestCase {

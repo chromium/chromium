@@ -202,6 +202,9 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
     const auto* passkey =
         std::get_if<AuthenticatorRequestDialogModel::Mechanism::Credential>(
             &mechanism.type);
+    const auto* password =
+        std::get_if<AuthenticatorRequestDialogModel::Mechanism::Password>(
+            &mechanism.type);
     credentials.push_back({
         /*username=*/mechanism.name,
         /*provider_name=*/mechanism.description,
@@ -212,6 +215,9 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
         /*provider_icon=*/
         passkey ? webauthn_ui_helpers::GetProviderIcon(passkey->value())
                 : &GooglePasswordManagerVectorIcon(),
+        /*origin=*/
+        password ? password->value().origin.value_or(std::u16string())
+                 : std::u16string(),
     });
   }
 

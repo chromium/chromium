@@ -250,6 +250,39 @@ TEST_F(AmbientSigninControllerTest, ShowMultipleCredentials) {
   run_loop.Run();
 }
 
+TEST_F(AmbientSigninControllerTest, PlumbsPasswordOrigin) {
+  auto model = CreatePasskeyModel(main_rfh());
+  model->mechanisms.emplace_back(
+      AuthenticatorRequestDialogModel::Mechanism::Password(
+          AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
+              std::nullopt)),
+      u"exact@example.com",
+      ::features::IsRoundedIconsEnabled() ? kPasswordIcon
+                                          : kPasswordFieldOldIcon,
+      base::DoNothing());
+  model->mechanisms.emplace_back(
+      AuthenticatorRequestDialogModel::Mechanism::Password(
+          AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
+              std::nullopt, u"affiliated.example.com")),
+      u"affiliated@example.com",
+      ::features::IsRoundedIconsEnabled() ? kPasswordIcon
+                                          : kPasswordFieldOldIcon,
+      base::DoNothing());
+
+  controller()->Show(model.get());
+  prompt_factory_->WaitForPermissionBubble();
+
+  AmbientLoginPermissionRequest* ambient_request = current_ambient_request();
+  ASSERT_NE(ambient_request, nullptr);
+  ASSERT_EQ(ambient_request->credentials().size(), 3u);
+  EXPECT_TRUE(ambient_request->credentials()[0].origin.empty());
+  EXPECT_TRUE(ambient_request->credentials()[1].origin.empty());
+  EXPECT_EQ(ambient_request->credentials()[2].origin,
+            u"affiliated.example.com");
+
+  CompleteRequestAndWait(model.get());
+}
+
 TEST_F(AmbientSigninControllerTest, DismissPromptClosesUIWithoutSigningIn) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());

@@ -82,10 +82,11 @@ constexpr int kCredentialVerticalPadding = 10;
 // The padding below the credentials, in addition to their own padding.
 constexpr int kBottomPadding = 4;
 
-// The IdP name of a federated credential is a domain, e.g. "idp.example".
+// The IdP name of a federated credential and the origin of a non-exact-match
+// password credential are domains, e.g. "idp.example" or "sub.example.com".
 // Domains are elided at the start, since their end is the most significant
 // part.
-constexpr gfx::ElideBehavior kIdpNameElideBehavior = gfx::ELIDE_HEAD;
+constexpr gfx::ElideBehavior kDomainElideBehavior = gfx::ELIDE_HEAD;
 
 // A badge is a circle near the bottom right corner of a picture, with the
 // badge's image (`kBadgeImageSize` DIPs) in the middle, e.g. the identity
@@ -280,7 +281,13 @@ class CredentialRow : public HoverButton {
   METADATA_HEADER(CredentialRow, HoverButton)
 
  public:
-  CredentialRow(PressedCallback callback, Params params)
+  // Which secondary label, if any, displays a domain (e.g. an IdP name or a
+  // password's affiliated origin) and should be elided at the start.
+  enum class DomainLabel { kNone, kSubtitle, kFooter };
+
+  CredentialRow(PressedCallback callback,
+                Params params,
+                DomainLabel domain_label = DomainLabel::kNone)
       : HoverButton(std::move(callback),
                     WithIconTextSpacing(std::move(params))) {
     // HoverButton adds half of DISTANCE_CONTROL_LIST_VERTICAL above and below
@@ -300,6 +307,20 @@ class CredentialRow : public HoverButton {
         label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
       }
     }
+    views::Label* domain_label_view = nullptr;
+    switch (domain_label) {
+      case DomainLabel::kNone:
+        break;
+      case DomainLabel::kSubtitle:
+        domain_label_view = subtitle();
+        break;
+      case DomainLabel::kFooter:
+        domain_label_view = footer();
+        break;
+    }
+    if (domain_label_view) {
+      domain_label_view->SetElideBehavior(kDomainElideBehavior);
+    }
   }
 
  private:
@@ -313,27 +334,6 @@ class CredentialRow : public HoverButton {
 };
 
 BEGIN_METADATA(CredentialRow)
-END_METADATA
-
-// A row for a federated credential in the expanded bubble.
-class FederatedCredentialRow : public CredentialRow {
-  METADATA_HEADER(FederatedCredentialRow, CredentialRow)
-
- public:
-  // `idp_name_in_footer` is whether the IdP name is `params.footer` rather
-  // than `params.subtitle`.
-  FederatedCredentialRow(PressedCallback callback,
-                         Params params,
-                         bool idp_name_in_footer)
-      : CredentialRow(std::move(callback), std::move(params)) {
-    // There is no label for the IdP name if it is empty.
-    if (views::Label* idp_label = idp_name_in_footer ? footer() : subtitle()) {
-      idp_label->SetElideBehavior(kIdpNameElideBehavior);
-    }
-  }
-};
-
-BEGIN_METADATA(FederatedCredentialRow)
 END_METADATA
 
 }  // namespace
@@ -371,15 +371,21 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
   }
 
   std::u16string username;
-  std::u16string provider;
-  gfx::ElideBehavior provider_elide_behavior = gfx::ELIDE_TAIL;
+  std::u16string secondary_text;
+  gfx::ElideBehavior secondary_elide_behavior = gfx::ELIDE_TAIL;
   ui::ImageModel credential_icon = GetDefaultCredentialIcon();
   ui::ImageModel credential_badge;
   if (!ambient_request->credentials().empty()) {
     const ambient_signin::PasskeyOrPasswordCredential& cred =
         ambient_request->credentials().front();
     username = cred.username;
-    provider = cred.provider_name;
+    if (cred.type == ambient_signin::CredentialType::kPassword &&
+        !cred.origin.empty()) {
+      secondary_text = cred.origin;
+      secondary_elide_behavior = kDomainElideBehavior;
+    } else {
+      secondary_text = cred.provider_name;
+    }
     credential_icon =
         ambient_login_credential_icon::CreateCredentialIcon(cred, site_color_);
     credential_badge = ambient_login_credential_icon::GetCredentialBadge(cred);
@@ -388,8 +394,8 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
         ambient_request->federated_credentials().front();
     username =
         !fed_cred.account_name.empty() ? fed_cred.account_name : fed_cred.email;
-    provider = fed_cred.idp_name;
-    provider_elide_behavior = kIdpNameElideBehavior;
+    secondary_text = fed_cred.idp_name;
+    secondary_elide_behavior = kDomainElideBehavior;
     credential_icon = GetFederatedCredentialIcon(fed_cred);
     credential_badge = fed_cred.badge;
   }
@@ -421,13 +427,14 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
   username_label->SetElideBehavior(gfx::ELIDE_TAIL);
   text_container->AddChildView(std::move(username_label));
 
-  if (!provider.empty()) {
-    auto provider_label = std::make_unique<views::Label>(
-        provider, views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4);
-    provider_label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
-    provider_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    provider_label->SetElideBehavior(provider_elide_behavior);
-    text_container->AddChildView(std::move(provider_label));
+  if (!secondary_text.empty()) {
+    auto secondary_label = std::make_unique<views::Label>(
+        secondary_text, views::style::CONTEXT_LABEL,
+        views::style::STYLE_BODY_4);
+    secondary_label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
+    secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    secondary_label->SetElideBehavior(secondary_elide_behavior);
+    text_container->AddChildView(std::move(secondary_label));
   }
 
   // The bubble has a fixed width (see PermissionPromptBubbleBaseView), so the
@@ -453,7 +460,8 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
                         views::LayoutProvider::Get()->GetDistanceMetric(
                             views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
   std::u16string button_description =
-      provider.empty() ? username : base::StrCat({username, u" ", provider});
+      secondary_text.empty() ? username
+                             : base::StrCat({username, u" ", secondary_text});
   sign_in_button->GetViewAccessibility().SetDescription(button_description);
   sign_in_button_ = AddChildView(std::move(sign_in_button));
 
@@ -690,11 +698,18 @@ AmbientLoginPermissionBubbleView::CreateCredentialRow(
       ambient_login_credential_icon::CreateCredentialIcon(credential,
                                                           site_color_),
       ambient_login_credential_icon::GetCredentialBadge(credential));
+  CredentialRow::DomainLabel domain_label = CredentialRow::DomainLabel::kNone;
   if (credential.type == ambient_signin::CredentialType::kPasskey &&
       !credential.display_name.empty() && credential.display_name != username) {
     params.title = credential.display_name;
     params.subtitle = username;
     params.footer = credential.provider_name;
+  } else if (credential.type == ambient_signin::CredentialType::kPassword &&
+             !credential.origin.empty()) {
+    params.title = username;
+    params.subtitle = credential.origin;
+    params.footer = credential.provider_name;
+    domain_label = CredentialRow::DomainLabel::kSubtitle;
   } else {
     params.title = username;
     params.subtitle = credential.provider_name;
@@ -704,7 +719,7 @@ AmbientLoginPermissionBubbleView::CreateCredentialRow(
       base::BindRepeating(
           &AmbientLoginPermissionBubbleView::OnCredentialClicked,
           base::Unretained(this), index),
-      std::move(params));
+      std::move(params), domain_label);
 }
 
 std::unique_ptr<HoverButton>
@@ -731,11 +746,13 @@ AmbientLoginPermissionBubbleView::CreateFederatedCredentialRow(
     params.subtitle = credential.idp_name;
   }
 
-  return std::make_unique<FederatedCredentialRow>(
+  return std::make_unique<CredentialRow>(
       base::BindRepeating(
           &AmbientLoginPermissionBubbleView::OnFederatedCredentialClicked,
           base::Unretained(this), index),
-      std::move(params), /*idp_name_in_footer=*/has_name_and_email);
+      std::move(params),
+      has_name_and_email ? CredentialRow::DomainLabel::kFooter
+                         : CredentialRow::DomainLabel::kSubtitle);
 }
 
 BEGIN_METADATA(AmbientLoginPermissionBubbleView)
