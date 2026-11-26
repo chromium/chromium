@@ -167,9 +167,7 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
     case AutofillErrorDialogType::kCreditCardUploadError:
 #if BUILDFLAG(IS_IOS)
       return l10n_util::GetStringUTF16(
-          base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
-              ? IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_FAILURE_DESCRIPTION_TEXT
-              : IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT);
+          IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_FAILURE_DESCRIPTION_TEXT);
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(IS_IOS)

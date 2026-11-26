@@ -61,27 +61,7 @@ class AutofillErrorDialogControllerImplTest : public testing::Test {
 };
 
 #if BUILDFLAG(IS_IOS)
-TEST_F(AutofillErrorDialogControllerImplTest,
-       CreditCardUploadError_WalletBrandingDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
-  AutofillErrorDialogContext context;
-  context.type = AutofillErrorDialogType::kCreditCardUploadError;
-
-  ShowPrompt(context);
-
-  EXPECT_EQ(controller()->GetTitle(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT));
-  EXPECT_EQ(controller()->GetDescription(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
-  EXPECT_EQ(controller()->GetButtonLabel(), l10n_util::GetStringUTF16(IDS_OK));
-}
-
 TEST_F(AutofillErrorDialogControllerImplTest, CreditCardUploadError) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableWalletBranding);
   AutofillErrorDialogContext context;
   context.type = AutofillErrorDialogType::kCreditCardUploadError;
 

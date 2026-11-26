@@ -272,7 +272,6 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
 
 struct VirtualCardEnrollBubbleViewsInteractiveUiTestParams {
   VirtualCardEnrollmentSource enrollment_source;
-  bool is_wallet_branding_enabled;
 };
 
 class VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized
@@ -280,42 +279,21 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized
       public testing::WithParamInterface<
           VirtualCardEnrollBubbleViewsInteractiveUiTestParams> {
  public:
-  VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-
-    if (GetParam().is_wallet_branding_enabled) {
-      enabled_features.push_back({features::kAutofillEnableWalletBranding, {}});
-    } else {
-      disabled_features.emplace_back(features::kAutofillEnableWalletBranding);
-    }
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
-  }
-
+  VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized() = default;
   ~VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized() override =
       default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
-    ::testing::ConvertGenerator(
-        ::testing::Combine(
-            testing::Values(VirtualCardEnrollmentSource::kUpstream,
-                            VirtualCardEnrollmentSource::kDownstream,
-                            VirtualCardEnrollmentSource::kSettingsPage),
-            testing::Bool()),
-        [](std::tuple<VirtualCardEnrollmentSource, bool> t) {
-          return VirtualCardEnrollBubbleViewsInteractiveUiTestParams{
-              .enrollment_source = std::get<0>(t),
-              .is_wallet_branding_enabled = std::get<1>(t),
-          };
-        }),
+    testing::Values(
+        VirtualCardEnrollBubbleViewsInteractiveUiTestParams{
+            .enrollment_source = VirtualCardEnrollmentSource::kUpstream},
+        VirtualCardEnrollBubbleViewsInteractiveUiTestParams{
+            .enrollment_source = VirtualCardEnrollmentSource::kDownstream},
+        VirtualCardEnrollBubbleViewsInteractiveUiTestParams{
+            .enrollment_source = VirtualCardEnrollmentSource::kSettingsPage}),
     [](const ::testing::TestParamInfo<
         VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized::ParamType>&
            info) {
@@ -334,10 +312,6 @@ INSTANTIATE_TEST_SUITE_P(
         default:
           NOTREACHED();
       }
-
-      test_name.emplace_back(info.param.is_wallet_branding_enabled
-                                 ? "_WalletBrandingEnabled"
-                                 : "_WalletBrandingDisabled");
 
       return base::StrCat(test_name);
     });
@@ -365,15 +339,9 @@ IN_PROC_BROWSER_TEST_P(
       base::DoNothing());
 
   EXPECT_TRUE(GetBubbleViews());
-  if (GetParam().is_wallet_branding_enabled) {
-    EXPECT_EQ(GetBubbleViews()->GetBubbleFrameView()->title()->GetViewByID(
-                  DialogViewId::BUBBLE_TITLE_ICON),
-              nullptr);
-  } else {
-    EXPECT_NE(GetBubbleViews()->GetBubbleFrameView()->title()->GetViewByID(
-                  DialogViewId::BUBBLE_TITLE_ICON),
-              nullptr);
-  }
+  EXPECT_EQ(GetBubbleViews()->GetBubbleFrameView()->title()->GetViewByID(
+                DialogViewId::BUBBLE_TITLE_ICON),
+            nullptr);
 }
 
 IN_PROC_BROWSER_TEST_P(

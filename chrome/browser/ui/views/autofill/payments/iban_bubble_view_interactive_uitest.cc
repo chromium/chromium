@@ -88,19 +88,13 @@ constexpr char kResponsePaymentsFailure[] =
 
 class IbanBubbleViewFullFormBrowserTest
     : public SyncTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>>,
+      public testing::WithParamInterface<bool>,
       public IbanSaveManager::ObserverForTest,
       public IbanBubbleControllerImpl::ObserverForTest {
  protected:
   IbanBubbleViewFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
-
-    if (IsWalletBrandingEnabled()) {
-      enabled_features.push_back({features::kAutofillEnableWalletBranding, {}});
-    } else {
-      disabled_features.emplace_back(features::kAutofillEnableWalletBranding);
-    }
 
     if (IsWalletBrandingV2Enabled()) {
       enabled_features.push_back(
@@ -454,9 +448,7 @@ class IbanBubbleViewFullFormBrowserTest
         FindViewInBubbleById(DialogViewId::NICKNAME_TEXTFIELD));
   }
 
-  bool IsWalletBrandingEnabled() { return std::get<0>(GetParam()); }
-
-  bool IsWalletBrandingV2Enabled() { return std::get<1>(GetParam()); }
+  bool IsWalletBrandingV2Enabled() { return GetParam(); }
 
   [[nodiscard]] testing::AssertionResult WaitForObservedEvent() {
     return event_waiter_->Wait();
@@ -908,20 +900,10 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewSyncTransportFullFormBrowserTest,
   EXPECT_TRUE(GetSaveIbanBubbleView());
   ASSERT_TRUE(WaitForObservedEvent());
 
-  // When Google Wallet branding is enabled, the GPay icon should be removed
-  // from the local save fallback bubble.
-  if (IsWalletBrandingEnabled()) {
-    EXPECT_EQ(
-        GetSaveIbanBubbleView()->GetBubbleFrameView()->title()->GetViewByID(
-            DialogViewId::BUBBLE_TITLE_ICON),
-        nullptr);
-  } else {
-    // If Google Wallet branding is disabled, we continue to show the GPay icon.
-    EXPECT_NE(
-        GetSaveIbanBubbleView()->GetBubbleFrameView()->title()->GetViewByID(
-            DialogViewId::BUBBLE_TITLE_ICON),
-        nullptr);
-  }
+  // The GPay icon should not be shown on the local save fallback bubble.
+  EXPECT_EQ(GetSaveIbanBubbleView()->GetBubbleFrameView()->title()->GetViewByID(
+                DialogViewId::BUBBLE_TITLE_ICON),
+            nullptr);
 }
 
 // Tests the upload save bubble. Ensures that clicking the 'No thanks' button
@@ -991,27 +973,21 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewSyncTransportFullFormBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     IbanBubbleViewFullFormBrowserTest,
-    testing::Combine(testing::Bool(), testing::Bool()),
+    testing::Bool(),
     [](const ::testing::TestParamInfo<
         IbanBubbleViewFullFormBrowserTest::ParamType>& info) {
-      return base::StrCat({std::get<0>(info.param) ? "WalletBrandingEnabled_"
-                                                   : "WalletBrandingDisabled_",
-                           std::get<1>(info.param)
-                               ? "WalletBrandingEnabledV2_"
-                               : "WalletBrandingDisabledV2_"});
+      return info.param ? "WalletBrandingEnabledV2"
+                        : "WalletBrandingDisabledV2";
     });
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     IbanBubbleViewSyncTransportFullFormBrowserTest,
-    testing::Combine(testing::Bool(), testing::Bool()),
+    testing::Bool(),
     [](const ::testing::TestParamInfo<
         IbanBubbleViewSyncTransportFullFormBrowserTest::ParamType>& info) {
-      return base::StrCat({std::get<0>(info.param) ? "WalletBrandingEnabled_"
-                                                   : "WalletBrandingDisabled_",
-                           std::get<1>(info.param)
-                               ? "WalletBrandingEnabledV2_"
-                               : "WalletBrandingDisabledV2_"});
+      return info.param ? "WalletBrandingEnabledV2"
+                        : "WalletBrandingDisabledV2";
     });
 
 }  // namespace

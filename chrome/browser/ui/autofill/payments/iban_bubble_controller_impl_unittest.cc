@@ -390,22 +390,10 @@ TEST_F(IbanBubbleControllerImplTest, OnConfirmationPromptAutoClosed_Fail) {
 }
 
 TEST_F(IbanBubbleControllerImplTest, ReturnsApplicableExplanatoryMessage) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableWalletBranding};
   ShowUploadSaveBubble(test::GetServerIban());
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_UPLOAD_IBAN_TO_WALLET_PROMPT_EXPLANATION));
-}
-
-TEST_F(IbanBubbleControllerImplTest,
-       ReturnsApplicableExplanatoryMessage_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
-  ShowUploadSaveBubble(test::GetServerIban());
-  EXPECT_EQ(
-      controller()->GetExplanatoryMessage(),
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION));
 }
 
 TEST_F(IbanBubbleControllerImplTest, ReturnsApplicableWindowTitle) {

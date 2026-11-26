@@ -1612,20 +1612,7 @@ TEST_F(SaveCardBubbleControllerImplTest, LocalCvcOnlySaveDialogContent) {
             u"faster checkout");
 }
 
-class SaveCvcBubbleControllerImplTestWithWalletBranding
-    : public SaveCardBubbleControllerImplTest {
- public:
-  SaveCvcBubbleControllerImplTestWithWalletBranding() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableWalletBranding);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(SaveCvcBubbleControllerImplTestWithWalletBranding,
-       UploadCvcOnlySaveDialogContent) {
+TEST_F(SaveCardBubbleControllerImplTest, UploadCvcOnlySaveDialogContent) {
   // Show the server CVC save bubble.
   ShowUploadBubble(
       /*options=*/SaveCreditCardOptions()
@@ -1639,36 +1626,6 @@ TEST_F(SaveCvcBubbleControllerImplTestWithWalletBranding,
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD));
-  EXPECT_TRUE(controller()->GetLegalMessageLines().empty());
-}
-
-class SaveCvcBubbleControllerImplTestWithoutWalletBranding
-    : public SaveCardBubbleControllerImplTest {
- public:
-  SaveCvcBubbleControllerImplTestWithoutWalletBranding() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kAutofillEnableWalletBranding);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(SaveCvcBubbleControllerImplTestWithoutWalletBranding,
-       UploadCvcOnlySaveDialogContent) {
-  // Show the server CVC save bubble.
-  ShowUploadBubble(
-      /*options=*/SaveCreditCardOptions()
-          .with_card_save_type(CardSaveType::kCvcSaveOnly)
-          .with_show_prompt(true));
-
-  ASSERT_EQ(PaymentsBubbleType::kUploadCvcSave,
-            controller()->GetPaymentsBubbleType());
-  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
-  EXPECT_EQ(controller()->GetWindowTitle(), u"Save security code?");
-  EXPECT_EQ(controller()->GetExplanatoryMessage(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD));
   EXPECT_TRUE(controller()->GetLegalMessageLines().empty());
 }
 
@@ -2186,11 +2143,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
 
 TEST_F(SaveCardBubbleControllerImplTest, ReturnsApplicableWindowTitle) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillEnableWalletBranding,
-       features::kAutofillEnableWalletBrandingV2},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(features::kAutofillEnableWalletBrandingV2);
 
   ShowUploadBubble();
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -2201,9 +2154,7 @@ TEST_F(SaveCardBubbleControllerImplTest, ReturnsApplicableWindowTitle) {
 TEST_F(SaveCardBubbleControllerImplTest,
        ReturnsApplicableWindowTitle_WalletBrandingV2Disabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableWalletBranding},
-      /*disabled_features=*/{features::kAutofillEnableWalletBrandingV2});
+  feature_list.InitAndDisableFeature(features::kAutofillEnableWalletBrandingV2);
 
   ShowUploadBubble();
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -2213,11 +2164,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
 
 TEST_F(SaveCardBubbleControllerImplTest, ReturnsApplicableExplanatoryMessage) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillEnableWalletBranding,
-       features::kAutofillEnableWalletBrandingV2},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(features::kAutofillEnableWalletBrandingV2);
 
   ShowUploadBubble();
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -2228,29 +2175,13 @@ TEST_F(SaveCardBubbleControllerImplTest, ReturnsApplicableExplanatoryMessage) {
 TEST_F(SaveCardBubbleControllerImplTest,
        ReturnsApplicableExplanatoryMessage_WalletBrandingV2Disabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableWalletBranding},
-      /*disabled_features=*/{features::kAutofillEnableWalletBrandingV2});
+  feature_list.InitAndDisableFeature(features::kAutofillEnableWalletBrandingV2);
 
   ShowUploadBubble();
   EXPECT_EQ(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION_SECURITY),
       controller()->GetExplanatoryMessage());
-}
-
-TEST_F(SaveCardBubbleControllerImplTest,
-       ReturnsApplicableExplanatoryMessage_WalletBrandingDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAutofillEnableWalletBranding,
-                             features::kAutofillEnableWalletBrandingV2});
-
-  ShowUploadBubble();
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY),
-            controller()->GetExplanatoryMessage());
 }
 
 class SaveCardBubbleControllerImplTestWithCvCStorageAndFilling

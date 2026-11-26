@@ -370,9 +370,7 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
 
   if (current_bubble_type_ == PaymentsBubbleType::kUploadCvcSave) {
     return l10n_util::GetStringUTF16(
-        base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
-            ? IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD
-            : IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD);
+        IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD);
   }
 
   if (current_bubble_type_ == PaymentsBubbleType::kUploadCardholderNameUpdate ||
@@ -390,12 +388,9 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
   }
 
   return l10n_util::GetStringUTF16(
-      base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
-          ? (base::FeatureList::IsEnabled(
-                 features::kAutofillEnableWalletBrandingV2)
-                 ? IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_V2_EXPLANATION
-                 : IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION_SECURITY)
-          : IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY);
+      base::FeatureList::IsEnabled(features::kAutofillEnableWalletBrandingV2)
+          ? IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_V2_EXPLANATION
+          : IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION_SECURITY);
 }
 
 std::u16string SaveCardBubbleControllerImpl::GetAcceptButtonText() const {

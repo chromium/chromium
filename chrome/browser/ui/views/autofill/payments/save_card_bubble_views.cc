@@ -96,8 +96,7 @@ void SaveCardBubbleViews::AddedToWidget() {
 
   bool is_upload_cvc_only_save = controller()->GetPaymentsBubbleType() ==
                                  PaymentsBubbleType::kUploadCvcSave;
-  if ((is_upload_cvc_only_save &&
-       base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)) ||
+  if (is_upload_cvc_only_save ||
       base::FeatureList::IsEnabled(features::kAutofillEnableWalletBrandingV2)) {
     // CVC-only saves should not show a Google Wallet logo. When
     // `kAutofillEnableWalletBrandingV2` is enabled the Google Wallet logo
@@ -111,10 +110,7 @@ void SaveCardBubbleViews::AddedToWidget() {
     GetBubbleFrameView()->SetTitleView(
         std::make_unique<TitleWithIconAfterLabelView>(
             GetWindowTitle(),
-            base::FeatureList::IsEnabled(
-                features::kAutofillEnableWalletBranding)
-                ? TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET
-                : TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+            TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET));
   }
 }
 

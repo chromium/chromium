@@ -938,44 +938,18 @@ TEST_F(ChromePaymentsAutofillClientTest,
 }
 
 #if BUILDFLAG(IS_ANDROID)
-class ChromePaymentsAutofillClientWalletBrandingTest
-    : public ChromePaymentsAutofillClientTest,
-      public testing::WithParamInterface<bool> {
- public:
-  ChromePaymentsAutofillClientWalletBrandingTest() {
-    if (IsWalletBrandingEnabled()) {
-      feature_list_.InitAndEnableFeature(
-          features::kAutofillEnableWalletBranding);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kAutofillEnableWalletBranding);
-    }
-  }
-
-  bool IsWalletBrandingEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         ChromePaymentsAutofillClientWalletBrandingTest,
-                         testing::Bool());
-
 // Verify that the prompt to upload save a user's card without CVC is shown in a
 // bottom sheet.
-TEST_P(ChromePaymentsAutofillClientWalletBrandingTest,
+TEST_F(ChromePaymentsAutofillClientTest,
        ShowSaveCreditCardToCloud_CardSaveTypeIsOnlyCard_RequestsBottomSheet) {
   MockAutofillSaveCardBottomSheetBridge* bottom_sheet_bridge =
       InjectMockAutofillSaveCardBottomSheetBridge();
 
   std::u16string expected_description;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  expected_description = IsWalletBrandingEnabled()
-                             ? u"To pay faster next time, save your card and "
-                               u"billing address in Google Wallet"
-                             : u"To pay faster next time, save your card and "
-                               u"billing address in your Google Account";
+  expected_description =
+      u"To pay faster next time, save your card and billing address in Google "
+      u"Wallet";
 #endif
 
   // Verify that `AutofillSaveCardUiInfo` has the correct attributes
@@ -998,18 +972,16 @@ TEST_P(ChromePaymentsAutofillClientWalletBrandingTest,
 
 // Verify that the prompt to upload save a user's card with CVC is shown in a
 // bottom sheet.
-TEST_P(ChromePaymentsAutofillClientWalletBrandingTest,
+TEST_F(ChromePaymentsAutofillClientTest,
        ShowSaveCreditCardToCloud_CardSaveTypeIsWithCvc_RequestsBottomSheet) {
   MockAutofillSaveCardBottomSheetBridge* bottom_sheet_bridge =
       InjectMockAutofillSaveCardBottomSheetBridge();
 
   std::u16string expected_description;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  expected_description = IsWalletBrandingEnabled()
-                             ? u"Pay faster when your card is saved. Card "
-                               u"details are encrypted in Google Wallet."
-                             : u"Pay faster when your card is saved. Card "
-                               u"details are encrypted in your Google Account.";
+  expected_description =
+      u"Pay faster when your card is saved. Card details are encrypted in "
+      u"Google Wallet.";
 #endif
 
   // Verify that `AutofillSaveCardUiInfo` has the correct attributes

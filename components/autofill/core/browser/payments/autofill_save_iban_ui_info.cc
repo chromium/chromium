@@ -66,17 +66,13 @@ AutofillSaveIbanUiInfo AutofillSaveIbanUiInfo::CreateForUploadSave(
       base::FeatureList::IsEnabled(features::kAutofillEnableWalletBrandingV2);
 
   int logo_icon_id;
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)) {
-    if (is_wallet_branding_v2_enabled) {
-      logo_icon_id = base::FeatureList::IsEnabled(
-                         features::kAutofillEnableGradientGoogleLogos)
-                         ? IDR_AUTOFILL_GOOGLE_WALLET_ICON_WITH_GRADIENT
-                         : IDR_AUTOFILL_GOOGLE_WALLET_ICON;
-    } else {
-      logo_icon_id = IDR_AUTOFILL_GOOGLE_WALLET;
-    }
+  if (is_wallet_branding_v2_enabled) {
+    logo_icon_id = base::FeatureList::IsEnabled(
+                       features::kAutofillEnableGradientGoogleLogos)
+                       ? IDR_AUTOFILL_GOOGLE_WALLET_ICON_WITH_GRADIENT
+                       : IDR_AUTOFILL_GOOGLE_WALLET_ICON;
   } else {
-    logo_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
+    logo_icon_id = IDR_AUTOFILL_GOOGLE_WALLET;
   }
 
   return CreateAutofillSaveIbanUiInfo(
@@ -86,9 +82,7 @@ AutofillSaveIbanUiInfo AutofillSaveIbanUiInfo::CreateForUploadSave(
               ? IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_PROMPT_TITLE
               : IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER),
       l10n_util::GetStringUTF16(
-          base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
-              ? IDS_AUTOFILL_UPLOAD_IBAN_TO_WALLET_PROMPT_EXPLANATION
-              : IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION),
+          IDS_AUTOFILL_UPLOAD_IBAN_TO_WALLET_PROMPT_EXPLANATION),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_ACCEPT),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_MOBILE_NO_THANKS),
       legal_message_lines);

@@ -100,13 +100,9 @@ void SaveIbanBubbleView::AddedToWidget() {
       GetBubbleFrameView()->SetTitleView(
           std::make_unique<TitleWithIconAfterLabelView>(
               GetWindowTitle(),
-              base::FeatureList::IsEnabled(
-                  features::kAutofillEnableWalletBranding)
-                  ? TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET
-                  : TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+              TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET));
     }
-  } else if (base::FeatureList::IsEnabled(
-                 features::kAutofillEnableWalletBranding)) {
+  } else {
     // Failed server saves should not show a Google Wallet logo, as the card did
     // not successfully save there.
     auto title_view = std::make_unique<views::Label>(

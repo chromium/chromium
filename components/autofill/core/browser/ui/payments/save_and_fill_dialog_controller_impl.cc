@@ -96,9 +96,7 @@ std::u16string SaveAndFillDialogControllerImpl::GetExplanatoryMessage() const {
   switch (dialog_state_) {
     case SaveAndFillDialogState::kUploadDialog:
       return l10n_util::GetStringUTF16(
-          base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
-              ? IDS_AUTOFILL_SAVE_AND_FILL_TO_WALLET_DIALOG_EXPLANATION_UPLOAD
-              : IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD);
+          IDS_AUTOFILL_SAVE_AND_FILL_TO_WALLET_DIALOG_EXPLANATION_UPLOAD);
     case SaveAndFillDialogState::kLocalDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_LOCAL);

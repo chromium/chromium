@@ -5480,10 +5480,7 @@ TEST_F(CreditCardSaveManagerTest,
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_VerifyCvcStorageIsPresentInClientBehaviorSignals) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableWalletBranding,
-                            features::kAutofillEnableWalletBrandingV2},
-      /*disabled_features=*/{});
+  features.InitAndEnableFeature(features::kAutofillEnableWalletBrandingV2);
 
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.

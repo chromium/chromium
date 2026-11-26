@@ -195,24 +195,11 @@ TEST_F(BnplTosControllerImplTest, GetTitle_ExternallyLinkedIssuer) {
 }
 
 TEST_F(BnplTosControllerImplTest, GetReviewText) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnableWalletBranding);
-
   ShowBnplTos();
 
   EXPECT_EQ(controller_->GetReviewText(),
             GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT_WALLET_BRANDING,
                             IssuerName()));
-}
-
-TEST_F(BnplTosControllerImplTest, GetReviewText_WalletBrandingDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
-
-  ShowBnplTos();
-
-  EXPECT_EQ(controller_->GetReviewText(),
-            GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT, IssuerName()));
 }
 
 TEST_F(BnplTosControllerImplTest, GetApproveText) {
