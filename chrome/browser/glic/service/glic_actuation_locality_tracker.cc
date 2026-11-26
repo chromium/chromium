@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/actor/core/task_id.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -176,12 +177,6 @@ void GlicActuationLocalityTracker::OnInstanceConversationRegistered(
   Refresh();
 }
 
-void GlicActuationLocalityTracker::OnInstanceTabAddedToTask(
-    const GlicInstance& instance,
-    actor::TaskId task_id) {
-  Refresh();
-}
-
 tabs::TabInterface* GlicActuationLocalityTracker::ResolveActiveTab() const {
   if (conversation_id_.empty()) {
     return nullptr;
@@ -217,17 +212,13 @@ void GlicActuationLocalityTracker::EnsureActorSubscriptions() {
       task_state_changed_subscription_) {
     return;
   }
-  // TODO(crbug.com/587942594): Subscribe to an `ActorKeyedService` callback for
-  // controlled-surface and source-ID updates so cross-instance background tab
-  // additions/removals and late `SetSourceId()` backfills refresh without
-  // waiting for a task state or visibility toggle.
   if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
     task_state_changed_subscription_ =
         actor_service->AddTaskStateChangedCallback(base::BindRepeating(
             &GlicActuationLocalityTracker::OnActorTaskChanged,
             base::Unretained(this)));
-    task_visibility_changed_subscription_ =
-        actor_service->AddTaskVisibilityChangedCallback(base::BindRepeating(
+    task_surfaces_changed_subscription_ =
+        actor_service->AddTaskSurfacesChangedCallback(base::BindRepeating(
             &GlicActuationLocalityTracker::OnActorTaskChanged,
             base::Unretained(this)));
   }
@@ -236,7 +227,7 @@ void GlicActuationLocalityTracker::EnsureActorSubscriptions() {
 void GlicActuationLocalityTracker::StopTracking() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   task_state_changed_subscription_ = {};
-  task_visibility_changed_subscription_ = {};
+  task_surfaces_changed_subscription_ = {};
   tab_will_detach_subscription_ = {};
   tab_did_insert_subscription_ = {};
   observed_tab_handle_ = tabs::TabHandle::Null();

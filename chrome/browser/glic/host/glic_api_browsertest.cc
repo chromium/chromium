@@ -6224,9 +6224,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiActorTest, testGetActuationLocalityState) {
   ActivateTab(tab_b);
   ContinueJsTest();
 
-  // Step 3: Start a newer non-completed `ActorTask` for the same conversation
-  // on background `tab_b` while `task1` is still paused on `tab_a`; locality
-  // updates to `tab_b`.
+  // Step 3: Start a newer unpaused `ActorTask` for the same conversation on
+  // background `tab_b` while `task1` is still paused on `tab_a`; locality
+  // updates to `tab_b` via `AddTaskSurfacesChangedCallback()` without needing
+  // `Pause()`.
   actor::TaskId task2_id = actor_service->CreateTask(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
                             "conv-locality"),
@@ -6234,13 +6235,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiActorTest, testGetActuationLocalityState) {
   actor::ActorTask* task2 = actor_service->GetTask(task2_id);
   ASSERT_TRUE(task2);
   actor::AddTabToTask(*tab_b, *task2);
-  task2->Pause(/*from_actor=*/true);
   ContinueJsTest();
 
-  // Step 4: Stop `task1` and close `tab_b`; locality emits `NOT_LOCAL` with no
-  // `actuationTabId`.
+  // Step 4: Stop `task1`, pause `task2` so closing `tab_b` does not trigger
+  // the tab-close confirmation dialog, and close `tab_b`; locality emits
+  // `NOT_LOCAL` with no `actuationTabId`.
   actor_service->StopTask(task1_id,
                           actor::ActorTask::StoppedReason::kTaskComplete);
+  task2->Pause(/*from_actor=*/true);
   GetTabListInterface()->CloseTab(tab_b->GetHandle());
   ContinueJsTest();
   actor_service->StopTask(task2_id,

@@ -17,7 +17,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/glic/common/glic_instance_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "components/actor/core/task_id.h"
 #include "components/tabs/public/tab_interface.h"
 
 class Profile;
@@ -73,11 +72,10 @@ class GlicActuationLocalityTracker : public GlicInstanceObserver {
   // GlicInstanceObserver:
   void OnInstanceVisibilityChanged(const GlicInstance& instance) override;
   void OnInstanceConversationRegistered(const GlicInstance& instance) override;
-  void OnInstanceTabAddedToTask(const GlicInstance& instance,
-                                actor::TaskId task_id) override;
 
   bool IsTrackingForTesting() const {
-    return static_cast<bool>(task_state_changed_subscription_);
+    return static_cast<bool>(task_state_changed_subscription_) &&
+           static_cast<bool>(task_surfaces_changed_subscription_);
   }
 
  private:
@@ -110,7 +108,7 @@ class GlicActuationLocalityTracker : public GlicInstanceObserver {
   base::ScopedObservation<GlicInstanceImpl, GlicInstanceObserver>
       instance_observation_{this};
   base::CallbackListSubscription task_state_changed_subscription_;
-  base::CallbackListSubscription task_visibility_changed_subscription_;
+  base::CallbackListSubscription task_surfaces_changed_subscription_;
 
   base::WeakPtrFactory<GlicActuationLocalityTracker> weak_ptr_factory_{this};
 };

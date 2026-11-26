@@ -17,10 +17,12 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -35,10 +37,13 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/actor/core/task_id.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -236,7 +241,6 @@ class GlicActuationLocalityTrackerTest : public testing::Test {
   };
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kGlicActor);
     ASSERT_TRUE(profile_manager_.SetUp());
     TestingProfile::TestingFactories testing_factories;
     testing_factories.emplace_back(
@@ -306,7 +310,16 @@ class GlicActuationLocalityTrackerTest : public testing::Test {
     instance_->RegisterConversation(std::move(info), base::DoNothing());
   }
 
-  base::test::ScopedFeatureList feature_list_;
+  struct ScopedFeatureInit {
+    ScopedFeatureInit() {
+      feature_list.InitWithFeatures(
+          {features::kGlicActor, features::kGlicActorPolicyControlExemption},
+          {});
+    }
+    base::test::ScopedFeatureList feature_list;
+  };
+
+  ScopedFeatureInit feature_init_;
   content::BrowserTaskEnvironment task_environment_;
   GlicEnabling::ScopedBypassEnablementChecksForTesting bypass_enablement_;
   GlicProfileManager glic_profile_manager_;
@@ -583,6 +596,127 @@ TEST_F(GlicActuationLocalityTrackerTest,
       task_id, actor::ActorTask::StoppedReason::kTaskComplete);
   ASSERT_EQ(updates.size(), 4u);
   EXPECT_TRUE(updates[3]->is_not_local());
+}
+
+TEST_F(GlicActuationLocalityTrackerTest,
+       RefreshesOnTaskSurfaceChangesWithoutStateToggle) {
+  TrackerTestTab* tab_a = CreateTab();
+  TrackerTestTab* tab_b = CreateTab();
+  RegisterConversation("conv-hook");
+
+  std::vector<mojom::ActuationLocalityStatePtr> updates;
+  auto sub = instance_->actuation_locality_tracker().AddLocalityChangedCallback(
+      base::BindRepeating(
+          [](std::vector<mojom::ActuationLocalityStatePtr>* out,
+             const mojom::ActuationLocalityState& state) {
+            out->push_back(state.Clone());
+          },
+          &updates));
+  EXPECT_TRUE(instance_->actuation_locality_tracker()
+                  .GetCurrentState()
+                  ->is_not_local());
+
+  // Creating a task with no tabs stays `not_local`; adding `tab_a` immediately
+  // transitions to `local_tab` via `AddTaskSurfacesChangedCallback()` without
+  // pausing or toggling visibility.
+  actor::TaskId task_id = actor_service_->CreateTaskForTesting(
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic, "conv-hook"));
+  actor::ActorTask* task = actor_service_->GetTask(task_id);
+  ASSERT_TRUE(task);
+  EXPECT_TRUE(updates.empty());
+
+  AddTabToTask(*tab_a, *task);
+  ASSERT_EQ(updates.size(), 1u);
+  ASSERT_TRUE(updates[0]->is_local_tab());
+  EXPECT_FALSE(updates[0]->get_local_tab()->is_adjacent);
+  EXPECT_EQ(updates[0]->get_local_tab()->tab_id,
+            tab_a->tab_state.tab.GetHandle().raw_value());
+
+  // Adding a second tab `tab_b` without any state change updates tab ID.
+  AddTabToTask(*tab_b, *task);
+  ASSERT_EQ(updates.size(), 2u);
+  ASSERT_TRUE(updates[1]->is_local_tab());
+  EXPECT_EQ(updates[1]->get_local_tab()->tab_id,
+            tab_b->tab_state.tab.GetHandle().raw_value());
+
+  // Re-adding already-controlled `tab_a` updates `last_actuated_tab_` ->
+  // `tab_a`.
+  AddTabToTask(*tab_a, *task);
+  ASSERT_EQ(updates.size(), 3u);
+  ASSERT_TRUE(updates[2]->is_local_tab());
+  EXPECT_EQ(updates[2]->get_local_tab()->tab_id,
+            tab_a->tab_state.tab.GetHandle().raw_value());
+
+  // Removing `tab_a` falls back to `tab_b` without waiting for state change.
+  task->RemoveTab(tab_a->tab_state.tab.GetHandle());
+  ASSERT_EQ(updates.size(), 4u);
+  ASSERT_TRUE(updates[3]->is_local_tab());
+  EXPECT_EQ(updates[3]->get_local_tab()->tab_id,
+            tab_b->tab_state.tab.GetHandle().raw_value());
+
+  // Removing the final tab transitions to `not_local`.
+  task->RemoveTab(tab_b->tab_state.tab.GetHandle());
+  ASSERT_EQ(updates.size(), 5u);
+  EXPECT_TRUE(updates[4]->is_not_local());
+}
+
+TEST_F(GlicActuationLocalityTrackerTest,
+       RefreshesWhenRegisterConversationBackfillsPendingTaskSourceId) {
+  TrackerTestTab* tab_a = CreateTab();
+  std::vector<mojom::ActuationLocalityStatePtr> updates;
+  auto sub = instance_->actuation_locality_tracker().AddLocalityChangedCallback(
+      base::BindRepeating(
+          [](std::vector<mojom::ActuationLocalityStatePtr>* out,
+             const mojom::ActuationLocalityState& state) {
+            out->push_back(state.Clone());
+          },
+          &updates));
+  EXPECT_TRUE(instance_->actuation_locality_tracker()
+                  .GetCurrentState()
+                  ->is_not_local());
+
+  // Create a task through `GlicActorTaskManager` before registering a
+  // conversation so the task starts without a `source_info().id` and is queued
+  // for backfill.
+  ASSERT_TRUE(instance_->GetActorTaskManager());
+  mojo::Remote<mojom::ActorHandler> actor_handler;
+  mojo::PendingReceiver<mojom::ActorClient> actor_client_receiver;
+  instance_->GetActorTaskManager()->Bind(
+      actor_handler.BindNewPipeAndPassReceiver(),
+      actor_client_receiver.InitWithNewPipeAndPassRemote());
+  base::ScopedClosureRunner unbind_session(
+      base::BindOnce(&GlicActorTaskManager::UnbindSession,
+                     base::Unretained(instance_->GetActorTaskManager())));
+
+  base::test::TestFuture<base::expected<int32_t, mojom::CreateTaskErrorReason>>
+      create_future;
+  actor_handler->CreateTask(/*task_options=*/nullptr,
+                            create_future.GetCallback());
+  ASSERT_TRUE(create_future.Get().has_value());
+  actor::ActorTask* task =
+      actor_service_->GetTask(actor::TaskId(create_future.Get().value()));
+  ASSERT_TRUE(task);
+  EXPECT_FALSE(task->source_info().id.has_value());
+
+  // Do not pump the run loop after `AddTab()`: the real
+  // `GlicActorClientSession` delegate posts
+  // `GlicInstanceImpl::OnTabAddedToTask`, which expects a full tab helper
+  // (`GlicInstanceHelper`) not attached to `MockTabInterface`.
+  task->AddTab(tab_a->tab_state.tab.GetHandle(), /*stop_task_on_detach=*/false,
+               base::DoNothing());
+  ASSERT_TRUE(task->HasTab(tab_a->tab_state.tab.GetHandle()));
+  EXPECT_TRUE(updates.empty());
+
+  // `GlicInstanceImpl::RegisterConversation()` backfills `task->SetSourceId()`
+  // before notifying `OnInstanceConversationRegistered()`, so the tracker
+  // immediately picks up `tab_a` without a separate `SetSourceId` hook.
+  RegisterConversation("conv-backfill");
+  EXPECT_EQ(task->source_info().id, "conv-backfill");
+  ASSERT_EQ(updates.size(), 1u);
+  ASSERT_TRUE(updates[0]->is_local_tab());
+  EXPECT_FALSE(updates[0]->get_local_tab()->is_adjacent);
+  EXPECT_EQ(updates[0]->get_local_tab()->tab_id,
+            tab_a->tab_state.tab.GetHandle().raw_value());
 }
 
 }  // namespace
