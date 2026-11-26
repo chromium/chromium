@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/rgbkbd/fake_rgbkbd_client.h"
 #include "dbus/bus.h"
+#include "dbus/dbus_result.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h"
@@ -36,7 +37,9 @@ class RgbkbdClientImpl : public RgbkbdClient {
                                  rgbkbd::kGetRgbKeyboardCapabilities);
     dbus::MessageWriter writer(&method_call);
     CHECK(rgbkbd_proxy_);
-    rgbkbd_proxy_->CallMethod(
+    // Unlike CallMethod(), this doesn't log errors, so the callback can treat
+    // a missing rgbkbd service as "no RGB keyboard" instead of an error.
+    rgbkbd_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&RgbkbdClientImpl::GetRgbKeyboardCapabilitiesCallback,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -113,10 +116,20 @@ class RgbkbdClientImpl : public RgbkbdClient {
  private:
   void GetRgbKeyboardCapabilitiesCallback(
       GetRgbKeyboardCapabilitiesCallback callback,
-      dbus::Response* response) {
+      dbus::Response* response,
+      dbus::ErrorResponse* error_response) {
     if (!response) {
-      VLOG(1)
-          << "rgbkbd: No Dbus response received for GetRgbKeyboardCapabilities";
+      // ServiceUnknown means rgbkbd isn't installed (no D-Bus service file),
+      // e.g. on ChromeOS Flex, so there is no RGB keyboard.
+      if (dbus::GetResult(error_response) ==
+          dbus::DBusResult::kErrorServiceUnknown) {
+        VLOG(1) << "rgbkbd: Service not available, assuming no RGB keyboard";
+        std::move(callback).Run(rgbkbd::RgbKeyboardCapabilities::kNone);
+        return;
+      }
+      LOG(ERROR) << "rgbkbd: GetRgbKeyboardCapabilities failed: "
+                 << (error_response ? error_response->GetErrorName()
+                                    : "no response");
       std::move(callback).Run(std::nullopt);
       return;
     }

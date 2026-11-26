@@ -20,3 +20,19 @@ component("rgbkbd") {
     "rgbkbd_client.h",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  deps = [
+    ":rgbkbd",
+    "//base",
+    "//base/test:test_support",
+    "//dbus",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [ "rgbkbd_client_unittest.cc" ]
+}
