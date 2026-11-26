@@ -1571,6 +1571,9 @@ const ComputedStyle* StyleResolver::ResolveStyle(
     PropagateStyleBuilderFlags(state);
     style->AddCachedPseudoElementStyle(state.TakeStyle(),
                                        kPseudoIdPrecomputedHover, g_null_atom);
+    // The element is known here, but not when the applied text decorations
+    // are built.
+    style->CachePrecomputedHoverTextDecoration(*element);
   }
   return style;
 }

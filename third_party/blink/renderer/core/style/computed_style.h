@@ -342,6 +342,13 @@ class ComputedStyle final : public ComputedStyleBase {
   bool PrecomputedHoverChangesTextDecoration(
       const ComputedStyle& hover_style) const;
 
+  // If the precomputed :hover style changes the text decoration, builds and
+  // caches the decoration this box adds, with its precomputed :hover state,
+  // whose source is `element`, the element with this style. It's built when
+  // the style is resolved, as the element isn't known when the applied text
+  // decorations are built.
+  void CachePrecomputedHoverTextDecoration(Element& element) const;
+
  private:
   // TODO(sashab): Move these private members to the bottom of ComputedStyle.
   ALWAYS_INLINE ComputedStyle();

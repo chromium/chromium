@@ -52,6 +52,8 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -2250,6 +2252,36 @@ bool ComputedStyle::PrecomputedHoverChangesTextDecoration(
          hover_style.VisitedDependentColor(color);
 }
 
+void ComputedStyle::CachePrecomputedHoverTextDecoration(
+    Element& element) const {
+  const ComputedStyle* hover_style =
+      GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
+  CHECK(hover_style);
+  if (!PrecomputedHoverChangesTextDecoration(*hover_style)) {
+    return;
+  }
+  const bool is_current_visible =
+      IsVisibleTextDecoration(GetTextDecorationLine(), TextDecorationColor());
+  // If only the precomputed style shows the decoration (see
+  // `StyleResolver::ValidPrecomputedHoverDiff()`), the decoration is that of
+  // the precomputed style, transparent until it applies.
+  const bool use_precomputed_decoration =
+      !is_current_visible &&
+      IsVisibleTextDecoration(hover_style->GetTextDecorationLine(),
+                              hover_style->TextDecorationColor());
+  AppliedTextDecoration decoration =
+      TextDecorationOf(use_precomputed_decoration ? *hover_style : *this);
+  if (use_precomputed_decoration) {
+    decoration.SetColor(Color::kTransparent);
+  }
+  decoration.SetPrecomputedHoverState(
+      {.is_current_visible = is_current_visible,
+       .source_id = DOMNodeIds::IdForNode(&element)});
+  EnsureCachedData().precomputed_hover_text_decoration_ =
+      std::make_unique<StyleCachedData::PrecomputedHoverTextDecoration>(
+          decoration);
+}
+
 AppliedTextDecorationVector* ComputedStyle::EnsureAppliedTextDecorationsCache()
     const {
   DCHECK(IsDecoratingBoxIncludingPrecomputedHover());
@@ -2263,28 +2295,17 @@ AppliedTextDecorationVector* ComputedStyle::EnsureAppliedTextDecorationsCache()
       decorations->ReserveInitialCapacity(base_decorations->size() + 1u);
       *decorations = *base_decorations;
     }
-    const ComputedStyle* hover_style =
-        GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover);
-    const bool is_current_visible =
-        IsVisibleTextDecoration(GetTextDecorationLine(), TextDecorationColor());
-    // If only the precomputed style shows the decoration (see
-    // `StyleResolver::ValidPrecomputedHoverDiff()`), the decoration is that of
-    // the precomputed style, transparent until it applies.
-    const bool use_precomputed_decoration =
-        !is_current_visible && hover_style &&
-        IsVisibleTextDecoration(hover_style->GetTextDecorationLine(),
-                                hover_style->TextDecorationColor());
-    AppliedTextDecoration decoration =
-        TextDecorationOf(use_precomputed_decoration ? *hover_style : *this);
-    if (use_precomputed_decoration) {
-      decoration.SetColor(Color::kTransparent);
-    }
-    if (hover_style && PrecomputedHoverChangesTextDecoration(*hover_style)) {
-      decoration.SetPrecomputedHoverState(
-          {.is_current_visible = is_current_visible});
-    }
-    decorations->push_back(decoration);
+    // A decoration that the precomputed :hover style changes is built when the
+    // style is resolved, as only then is its source known (see
+    // CachePrecomputedHoverTextDecoration()).
+    const StyleCachedData::PrecomputedHoverTextDecoration* hover_decoration =
+        cached_data_ ? cached_data_->precomputed_hover_text_decoration_.get()
+                     : nullptr;
+    decorations->push_back(hover_decoration ? hover_decoration->decoration
+                                            : TextDecorationOf(*this));
     EnsureCachedData().applied_text_decorations_ = decorations;
+    // The list is only built once, so the decoration is no longer needed.
+    cached_data_->precomputed_hover_text_decoration_.reset();
   }
 
   return cached_data_->applied_text_decorations_.Get();

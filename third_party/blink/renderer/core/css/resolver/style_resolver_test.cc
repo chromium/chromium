@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css/style_scope_data.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -5493,13 +5494,18 @@ TEST_F(StyleResolverTest, PrecomputeHoverTextDecorationState) {
   const ComputedStyle& t5_style = *GetElementById("t5")->GetComputedStyle();
 
   // The current style shows the decoration.
-  EXPECT_TRUE(t1.GetPrecomputedHoverState());
+  ASSERT_TRUE(t1.GetPrecomputedHoverState());
+  EXPECT_EQ(t1.GetPrecomputedHoverState()->source_id,
+            DOMNodeIds::IdForNode(GetElementById("t1")));
   EXPECT_TRUE(t1.IsInEffect());
   EXPECT_EQ(t1.GetColor(), Color::FromRGB(255, 0, 0));
 
   // Only the :hover style shows the decoration, as the current one is
   // transparent. The decoration is that of the :hover style (an overline, not
   // the current underline), transparent until it applies.
+  ASSERT_TRUE(t2.GetPrecomputedHoverState());
+  EXPECT_EQ(t2.GetPrecomputedHoverState()->source_id,
+            DOMNodeIds::IdForNode(GetElementById("t2")));
   EXPECT_FALSE(t2.IsInEffect());
   EXPECT_EQ(t2.Lines(), TextDecorationLine::kOverline);
   EXPECT_EQ(t2.GetColor(), Color::kTransparent);
@@ -5512,6 +5518,9 @@ TEST_F(StyleResolverTest, PrecomputeHoverTextDecorationState) {
   // The :hover style doesn't change the decoration.
   ASSERT_TRUE(t4_style.GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover));
   EXPECT_FALSE(t4_style.AppliedTextDecorations()[0].GetPrecomputedHoverState());
+  // So the element isn't given a DOMNodeId for it.
+  EXPECT_EQ(DOMNodeIds::ExistingIdForNode(GetElementById("t4")),
+            kInvalidDOMNodeId);
 
   // Only the :hover style has a decoration, which is invisible.
   ASSERT_TRUE(t5_style.GetCachedPseudoElementStyle(kPseudoIdPrecomputedHover));
@@ -5607,11 +5616,14 @@ TEST_F(StyleResolverTest, PrecomputeHoverTextDecorationStateInvalidation) {
 
   // Only the precomputed :hover style of the link changes, but the state of
   // the decoration still needs to propagate to the descendants.
-  GetElementById("link")->classList().Add(AtomicString("green"));
+  Element* link = GetElementById("link");
+  link->classList().Add(AtomicString("green"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(span->GetComputedStyle()
-                  ->AppliedTextDecorations()[0]
-                  .GetPrecomputedHoverState());
+  const AppliedTextDecoration& decoration =
+      span->GetComputedStyle()->AppliedTextDecorations()[0];
+  ASSERT_TRUE(decoration.GetPrecomputedHoverState());
+  EXPECT_EQ(decoration.GetPrecomputedHoverState()->source_id,
+            DOMNodeIds::IdForNode(link));
 }
 
 }  // namespace blink

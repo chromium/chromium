@@ -99,6 +99,17 @@ class CORE_EXPORT StyleCachedData final
   // end of the Vector).
   Member<AppliedTextDecorationVector> applied_text_decorations_;
 
+  // If this style has a precomputed :hover style (see
+  // kPseudoIdPrecomputedHover) that changes its text decoration, stores the
+  // decoration this box adds, with its precomputed :hover state, until the
+  // applied text decorations are built. It's wrapped as AppliedTextDecoration
+  // can't be allocated on its own (DISALLOW_NEW).
+  struct PrecomputedHoverTextDecoration {
+    AppliedTextDecoration decoration;
+  };
+  std::unique_ptr<PrecomputedHoverTextDecoration>
+      precomputed_hover_text_decoration_;
+
   // Stores the names of all custom properties on a given ComputedStyle.
   std::unique_ptr<Vector<AtomicString>> variable_names_;
 };
