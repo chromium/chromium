@@ -6,10 +6,10 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -61,10 +61,8 @@ base::OnceClosure SpaceCheckOperation(
       base::BindOnce(
           [](base::RepeatingCallback<int64_t(const base::FilePath&)>
                  get_available_space) {
-            base::ScopedTempDir temp_dir;
-            return CreateScopedTempDirectory(temp_dir)
-                       ? get_available_space.Run(temp_dir.GetPath())
-                       : int64_t{0};
+            std::optional<base::FilePath> temp_dir = GetTempDirectory();
+            return temp_dir ? get_available_space.Run(*temp_dir) : int64_t{0};
           },
           get_available_space),
       base::BindOnce(

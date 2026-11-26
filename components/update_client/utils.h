@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
 #include "base/time/time.h"
@@ -109,14 +108,15 @@ bool RetryFileOperation(
     size_t tries = 5,
     base::TimeDelta time_between_tries = base::Seconds(1));
 
+// Returns the parent directory where `CreateTempDirectory()` allocates
+// temporary directories, without creating anything on disk. Returns
+// `std::nullopt` if the directory cannot be determined.
+std::optional<base::FilePath> GetTempDirectory();
+
 // Creates a temporary directory, with platform specific overrides
 // for ChromeOS where `/tmp` can have insufficient space.
 bool CreateTempDirectory(const base::FilePath::StringType& prefix,
                          base::FilePath* new_temp_path);
-
-// Creates a temporary directory with a ScopedTempDir, with platform specific
-// overrides for ChromeOS where `/tmp` can have insufficient space.
-bool CreateScopedTempDirectory(base::ScopedTempDir& dir);
 
 // UTF8 conversions between `std::string` and the `StringType` type found in
 // the `base::FilePath` and `base::CommandLine` classes.

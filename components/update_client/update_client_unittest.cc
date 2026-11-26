@@ -6683,11 +6683,9 @@ class UpdateClientCleanupTest : public UpdateClientTest {
   base::FilePath temp_dir_;
 
   void SetUp() override {
-#if BUILDFLAG(IS_WIN)
-    ASSERT_TRUE(base::GetSecureTempDirectory(&temp_dir_));
-#else   // BUILDFLAG(IS_WIN)
-    ASSERT_TRUE(base::GetTempDir(&temp_dir_));
-#endif  // BUILDFLAG(IS_WIN)
+    std::optional<base::FilePath> temp_dir = GetTempDirectory();
+    ASSERT_TRUE(temp_dir.has_value());
+    temp_dir_ = *temp_dir;
 
     config()->SetProdId(
         base::Uuid::GenerateRandomV4().AsLowercaseString().substr(0, 8));
@@ -7013,15 +7011,11 @@ TEST_F(UpdateClientTest,
 
 // Tests cancellation of an active download when `UpdateClient::Stop` is called.
 TEST_F(UpdateClientTest, Install_StopCancelsActiveDownload) {
-  base::FilePath temp_dir;
-#if BUILDFLAG(IS_WIN)
-  ASSERT_TRUE(base::GetSecureTempDirectory(&temp_dir));
-#else   // BUILDFLAG(IS_WIN)
-  ASSERT_TRUE(base::GetTempDir(&temp_dir));
-#endif  // BUILDFLAG(IS_WIN)
+  std::optional<base::FilePath> temp_dir = GetTempDirectory();
+  ASSERT_TRUE(temp_dir.has_value());
 
   base::FileEnumerator(
-      temp_dir, /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
+      *temp_dir, /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
       base::StrCat({UTF8ToStringType(config()->GetProdId()),
                     FILE_PATH_LITERAL("_chrome_url_fetcher_")}))
       .ForEach([](const base::FilePath& path) {
@@ -7169,7 +7163,7 @@ TEST_F(UpdateClientTest, Install_StopCancelsActiveDownload) {
   EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[4].id);
 
   base::FileEnumerator(
-      temp_dir, /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
+      *temp_dir, /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
       base::StrCat({UTF8ToStringType(config()->GetProdId()),
                     FILE_PATH_LITERAL("_chrome_url_fetcher_")}))
       .ForEach([](const base::FilePath& path) {

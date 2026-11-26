@@ -5,6 +5,7 @@
 #include "components/update_client/update_client.h"
 
 #include <algorithm>
+#include <optional>
 #include <queue>
 #include <set>
 #include <string>
@@ -13,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -26,7 +26,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/update_client/cancellation.h"
 #include "components/update_client/configurator.h"
@@ -305,19 +304,13 @@ void UpdateClientImpl::CleanupStaleDownloads(base::Time older_than,
       FROM_HERE, kTaskTraits,
       base::BindOnce(
           [](const base::FilePath::StringType& prod_id, base::Time older_than) {
-            base::FilePath temp_dir;
-#if BUILDFLAG(IS_WIN)
-            if (!base::GetSecureTempDirectory(&temp_dir)) {
+            std::optional<base::FilePath> temp_dir = GetTempDirectory();
+            if (!temp_dir) {
               return;
             }
-#else   // BUILDFLAG(IS_WIN)
-            if (!base::GetTempDir(&temp_dir)) {
-              return;
-            }
-#endif  // BUILDFLAG(IS_WIN)
 
             CleanupDirectoriesOlderThan(
-                temp_dir,
+                *temp_dir,
                 base::StrCat(
                     {prod_id, FILE_PATH_LITERAL("_chrome_url_fetcher_*")}),
                 base::Time::Now() - older_than);

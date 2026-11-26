@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -304,6 +304,17 @@ TEST(UpdateClientUtils, RetainsRecentDownloads) {
   EXPECT_TRUE(base::DirectoryExists(download_dir_path));
   ASSERT_TRUE(
       RetryFileOperation(&base::DeletePathRecursively, download_dir_path));
+}
+
+TEST(UpdateClientUtils, GetTempDirectory) {
+  std::optional<base::FilePath> temp_dir = GetTempDirectory();
+  ASSERT_TRUE(temp_dir.has_value());
+  EXPECT_TRUE(base::DirectoryExists(*temp_dir));
+
+  base::FilePath created_dir;
+  ASSERT_TRUE(CreateTempDirectory(kTestDirPrefix, &created_dir));
+  EXPECT_EQ(created_dir.DirName(), *temp_dir);
+  ASSERT_TRUE(RetryFileOperation(&base::DeletePathRecursively, created_dir));
 }
 
 struct UpdateClientUtilsUTF8StringTypeTestCase {

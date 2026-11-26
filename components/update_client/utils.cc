@@ -59,6 +59,14 @@ namespace update_client {
 // scratch space with access to the full stateful partition to
 // handle these larger downloads.
 constexpr char kTempDir[] = "/var/lib/odml/chrome_component_updater";
+
+std::optional<base::FilePath> GetChromeOSLargeTempDir() {
+  const base::FilePath larger_tmp_dir(kTempDir);
+  if (base::DirectoryExists(larger_tmp_dir)) {
+    return larger_tmp_dir;
+  }
+  return std::nullopt;
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsHttpServerError(int status_code) {
@@ -208,25 +216,36 @@ bool RetryFileOperation(
   return tries;
 }
 
+std::optional<base::FilePath> GetTempDirectory() {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (std::optional<base::FilePath> larger_tmp_dir =
+          GetChromeOSLargeTempDir()) {
+    return larger_tmp_dir;
+  }
+#endif
+  base::FilePath temp_dir;
+#if BUILDFLAG(IS_WIN)
+  if (base::GetSecureTempDirectory(&temp_dir)) {
+    return temp_dir.StripTrailingSeparators();
+  }
+#else
+  if (base::GetTempDir(&temp_dir)) {
+    return temp_dir.StripTrailingSeparators();
+  }
+#endif
+  return std::nullopt;
+}
+
 bool CreateTempDirectory(const base::FilePath::StringType& prefix,
                          base::FilePath* new_temp_path) {
 #if BUILDFLAG(IS_CHROMEOS)
-  const base::FilePath largerTmpDir(kTempDir);
-  if (base::DirectoryExists(largerTmpDir)) {
-    return base::CreateTemporaryDirInDir(largerTmpDir, prefix, new_temp_path);
+  if (std::optional<base::FilePath> larger_tmp_dir =
+          GetChromeOSLargeTempDir()) {
+    return base::CreateTemporaryDirInDir(*larger_tmp_dir, prefix,
+                                         new_temp_path);
   }
 #endif
   return base::CreateNewTempDirectory(prefix, new_temp_path);
-}
-
-bool CreateScopedTempDirectory(base::ScopedTempDir& dir) {
-#if BUILDFLAG(IS_CHROMEOS)
-  const base::FilePath largerTmpDir(kTempDir);
-  if (base::DirectoryExists(largerTmpDir)) {
-    return dir.CreateUniqueTempDirUnderPath(largerTmpDir);
-  }
-#endif
-  return dir.CreateUniqueTempDir();
 }
 
 #if BUILDFLAG(IS_WIN)
