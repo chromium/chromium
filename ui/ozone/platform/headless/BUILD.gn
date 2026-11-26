@@ -42,10 +42,21 @@ source_set("headless") {
     "//ui/events/ozone/layout",
     "//ui/events/platform",
     "//ui/gfx/geometry",
+    "//ui/gl",
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
     "//ui/platform_window",
   ]
+
+  if (is_linux) {
+    deps += [
+      "//build/config/linux/libdrm",
+      "//third_party/minigbm",
+      "//ui/gfx:memory_buffer",
+      "//ui/gfx/linux:drm",
+      "//ui/gfx/linux:gbm",
+    ]
+  }
 
   if (is_fuchsia) {
     deps += [ "//ui/base/ime/fuchsia" ]
