@@ -2785,6 +2785,7 @@ StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
       ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleApplyMixin);
       return nullptr;
     }
+    stream.ConsumeWhitespace();
   }
 
   stream.EnsureLookAhead();

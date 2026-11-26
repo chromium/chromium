@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>CSS @private: mixins</title>
   <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/14243">
+  <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/12631">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <style>
@@ -182,6 +183,35 @@
     .x {
       @apply --tagged(20px);
     }
+
+    @mixin --style-child(--argument) {
+      padding-left: var(--argument);
+      & > span { --a: green; }
+      & > span {
+        @private { --a: 20px; }
+        padding-left: var(--a);
+        @contents;
+      }
+    }
+
+    #contents-host {
+      --a: 10px;
+      color: red;
+      @apply --style-child(var(--a)) { color: var(--a); }
+    }
+
+    @mixin --style-element(--argument) {
+      @private { --a: 20px; }
+      padding-left: var(--a);
+      background-color: var(--argument);
+      @contents;
+    }
+
+    #same-element-contents {
+      --a: green;
+      color: red;
+      @apply --style-element(var(--a)) { color: var(--a); }
+    }
   </style>
 </head>
 <body>
@@ -203,6 +233,10 @@
     <div id="n" class="n"></div>
     <div id="m" class="m"></div>
   </div>
+  <div id="contents-host">
+    <span id="contents-child"></span>
+  </div>
+  <div id="same-element-contents"></div>
   <script>
     function style(id) {
       return getComputedStyle(document.getElementById(id));
@@ -272,6 +306,19 @@
     test(() => {
       assert_equals(style('m').width, '5px');
     }, 'A rule nested in a mixin sees the mixin\'s private variables');
+
+    test(() => {
+      assert_equals(style('contents-host').paddingLeft, '10px', 'The @apply argument uses --a from the parent element');
+      assert_equals(style('contents-child').paddingLeft, '20px', 'The mixin body uses --a declared in @private');
+      assert_equals(style('contents-child').color, 'rgb(0, 128, 0)', 'The @apply block uses --a from the child element');
+    }, 'An @apply block uses custom properties on the styled element, not the mixin\'s @private variables');
+
+    test(() => {
+      const computed = style('same-element-contents');
+      assert_equals(computed.paddingLeft, '20px', 'The mixin body uses --a declared in @private');
+      assert_equals(computed.backgroundColor, 'rgb(0, 128, 0)', 'The @apply argument uses the element\'s custom property --a');
+      assert_equals(computed.color, 'rgb(0, 128, 0)', 'The @apply block uses the element\'s custom property --a');
+    }, 'An @apply argument and block use the applying element\'s custom property, not the mixin\'s @private variable');
   </script>
 </body>
 </html>
