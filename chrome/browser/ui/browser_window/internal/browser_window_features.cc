@@ -34,6 +34,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/selection/selection_toolbar_controller.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_service_factory.h"
@@ -596,6 +597,13 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
         glic_iph_controller_ =
             GetUserDataFactory().CreateInstance<glic::GlicIphController>(
                 *browser, browser, *glic_service);
+        if (glic::SelectionToolbarController::IsToolbarActionRegistered(
+                *browser)) {
+          glic_selection_toolbar_controller_ =
+              GetUserDataFactory()
+                  .CreateInstance<glic::SelectionToolbarController>(
+                      *browser, *browser, *glic_service);
+        }
         glic_split_button_controller_ =
             std::make_unique<glic::GlicSplitButtonController>(browser,
                                                               glic_service);
@@ -1313,8 +1321,9 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 
   // TYPE_NORMAL members.
   split_view_cuj_controller_.reset();
-  glic_iph_controller_.reset();
   glic_split_button_controller_.reset();
+  glic_selection_toolbar_controller_.reset();
+  glic_iph_controller_.reset();
   initial_web_ui_manager_.reset();
   ai_overlay_dialog_controller_.reset();
 

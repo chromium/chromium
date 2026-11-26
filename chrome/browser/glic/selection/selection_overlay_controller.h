@@ -124,6 +124,9 @@ class SelectionOverlayController
   // applying to every entry point.
   bool CanStartSession();
 
+  // Returns whether `tab`'s page is eligible and no actor task acts on it.
+  static bool IsTabEligibleForSession(tabs::TabInterface& tab);
+
   void Show(mojom::TabContextOptionsPtr options,
             ::selection::EntryPoint entry_point);
   // Shows the overlay with a region pre-selected around `selection_bounds`,
@@ -192,7 +195,6 @@ class SelectionOverlayController
   // This is the same event that drives `OnFocusedTabChanged()`, but it also
   // fires when no Glic instance is active.
   void OnActiveTabChanged(BrowserWindowInterface* window);
-  void UpdateToolbarButtonHighlight(bool is_showing);
   void UpdateForTabVisibility();
   void ObserveActiveTabChanges();
   // Subscribes to the Glic side panel state for `tab_` for the length of the
@@ -284,7 +286,6 @@ class SelectionOverlayController
       base::expected<glic::mojom::GetContextResultPtr,
                      page_content_annotations::FetchPageContextErrorDetails>
           fetch_result);
-  bool IsPageContextEligible() const;
   void OnPageContextEligibilityChanged(
       optimization_guide::PageContextEligibilityStatus status);
 

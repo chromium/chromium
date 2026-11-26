@@ -30,6 +30,8 @@ source_set("selection") {
     "selection_suggestion.h",
     "selection_suggestion_tool.cc",
     "selection_suggestion_tool.h",
+    "selection_toolbar_controller.cc",
+    "selection_toolbar_controller.h",
     "shake_trigger.cc",
   ]
 
@@ -40,6 +42,7 @@ source_set("selection") {
     "//chrome/browser/glic:selection_context",
     "//chrome/browser/selection",
     "//chrome/browser/ui/lens",
+    "//ui/base/unowned_user_data",
   ]
 
   deps = [
@@ -186,6 +189,8 @@ source_set("browser_tests") {
   deps = [
     ":selection",
     "//base",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/download",

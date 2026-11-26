@@ -80,6 +80,7 @@ source_set("internal") {
       "//chrome/browser/glic",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/browser_ui/activity_list_bubble:controller",
+      "//chrome/browser/glic/selection",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/metrics/critical_user_journeys",

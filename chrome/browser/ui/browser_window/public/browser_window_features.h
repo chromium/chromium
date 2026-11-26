@@ -197,6 +197,7 @@ class ExtensionSidePanelManager;
 namespace glic {
 class GlicIphController;
 class GlicSplitButtonController;
+class SelectionToolbarController;
 }  // namespace glic
 
 namespace lens {
@@ -404,6 +405,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<FindBarOwner> find_bar_owner_;
   std::unique_ptr<BrowserWindowFullscreenController> fullscreen_controller_;
   std::unique_ptr<glic::GlicIphController> glic_iph_controller_;
+  std::unique_ptr<glic::SelectionToolbarController>
+      glic_selection_toolbar_controller_;
   std::unique_ptr<glic::GlicSplitButtonController>
       glic_split_button_controller_;
   std::unique_ptr<HistoryClustersSidePanelCoordinator>

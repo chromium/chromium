@@ -2599,8 +2599,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
             features::kGlicSelectionOverlayPromptBox) &&
         glic::GetGlicProviderSpec(bwi->GetProfile())
             .SupportsFeature(glic::GlicFeature::kCaptureRegion)) {
-      auto* identity_manager =
-          IdentityManagerFactory::GetForProfileIfExists(bwi->GetProfile());
       root_action_item_->AddChild(
           ChromeMenuAction(
               base::BindRepeating(
@@ -2625,9 +2623,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               IDS_GLIC_TOOLBAR_ASK_ABOUT_THIS_LABEL,
               IDS_GLIC_TOOLBAR_ASK_ABOUT_THIS_LABEL,
               vector_icons::kCropAutoIcon)
-              .SetVisible(identity_manager &&
-                          identity_manager->HasPrimaryAccount(
-                              signin::ConsentLevel::kSignin))
+              .SetEnabled(false)
+              .SetVisible(false)
               .Build());
     }
   }

@@ -23,6 +23,9 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -525,6 +528,176 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayEligibilityBrowserTest,
   EXPECT_TRUE(base::test::RunUntil([controller]() {
     return controller->state() == SelectionOverlayController::State::kOff;
   }));
+}
+
+class SelectionToolbarBrowserTest
+    : public SelectionOverlayEligibilityBrowserTest {
+ public:
+  SelectionToolbarBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kGlicSelectionOverlayPromptBox,
+         ::features::kGlicSmartSelectionToolbarButton},
+        {});
+  }
+
+ protected:
+  actions::ActionItem* GetToolbarAction(tabs::TabInterface* tab) {
+    return actions::ActionManager::Get().FindAction(
+        kActionGlicSmartSelectionToolbar,
+        BrowserActions::From(tab->GetBrowserWindowInterface())
+            ->root_action_item());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// The toolbar button is enabled only while the active page is eligible and not
+// under actor control, and greys out when the page turns ineligible.
+IN_PROC_BROWSER_TEST_F(SelectionToolbarBrowserTest, TabAndActorEligibility) {
+  tabs::TabInterface* eligible_tab = CreateTabWithEligibility(
+      GetSimpleTestUrl(),
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+  actions::ActionItem* const action = GetToolbarAction(eligible_tab);
+  ASSERT_TRUE(action);
+  EXPECT_TRUE(action->GetVisible());
+  EXPECT_TRUE(action->GetEnabled());
+
+  CreateTabWithEligibility(
+      embedded_test_server()->GetURL("ineligible.example.com", "/title1.html"),
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+  EXPECT_TRUE(action->GetVisible());
+  EXPECT_FALSE(action->GetEnabled());
+
+  GetTabListInterface()->ActivateTab(eligible_tab->GetHandle());
+  EXPECT_TRUE(action->GetEnabled());
+
+  // An actor task acting on the tab greys the button until it stops.
+  auto* actor_service = actor::ActorKeyedService::Get(GetProfile());
+  ASSERT_TRUE(actor_service);
+  const actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+  actor::ActorTask* const task = actor_service->GetTask(task_id);
+  ASSERT_TRUE(task);
+  actor::AddTabToTask(*eligible_tab, *task);
+  task->SetState(actor::ActorTask::State::kActing);
+  EXPECT_FALSE(action->GetEnabled());
+  actor_service->StopTask(task_id,
+                          actor::ActorTask::StoppedReason::kTaskComplete);
+  EXPECT_TRUE(action->GetEnabled());
+
+  // The overlay closes when the page turns ineligible, and the button greys.
+  auto* controller = SelectionOverlayController::FromTabWebContents(
+      eligible_tab->GetContents());
+  ASSERT_TRUE(controller);
+  action->InvokeAction();
+  ASSERT_TRUE(base::test::RunUntil([controller]() {
+    return controller->state() == SelectionOverlayController::State::kOverlay;
+  }));
+  MakePageIneligible(eligible_tab);
+  ASSERT_TRUE(base::test::RunUntil([controller]() {
+    return controller->state() == SelectionOverlayController::State::kOff;
+  }));
+  EXPECT_FALSE(action->GetEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionToolbarBrowserTest,
+                       SwitchesFromLensAndClosesWhilePaused) {
+  tabs::TabInterface* eligible_tab = CreateTabWithEligibility(
+      GetSimpleTestUrl(),
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+  tabs::TabInterface* ineligible_tab = CreateTabWithEligibility(
+      embedded_test_server()->GetURL("ineligible.example.com", "/title1.html"),
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+  GetTabListInterface()->ActivateTab(eligible_tab->GetHandle());
+
+  actions::ActionItem* const action = GetToolbarAction(eligible_tab);
+  ASSERT_TRUE(action);
+
+  // Opening Lens Overlay keeps the button clickable so clicking it switches
+  // from Lens to Smart Selection, and a second click closes Smart Selection.
+  auto* lens_search_controller = LensSearchController::From(eligible_tab);
+  ASSERT_TRUE(lens_search_controller);
+  lens_search_controller->OpenLensOverlay(
+      lens::LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil([lens_search_controller]() {
+    return lens_search_controller->lens_overlay_controller()->state() ==
+           LensOverlayController::State::kOverlay;
+  }));
+  EXPECT_TRUE(action->GetEnabled());
+
+  auto* controller = SelectionOverlayController::FromTabWebContents(
+      eligible_tab->GetContents());
+  ASSERT_TRUE(controller);
+  action->InvokeAction();
+  EXPECT_TRUE(lens_search_controller->IsOff());
+  ASSERT_TRUE(base::test::RunUntil([controller]() {
+    return controller->state() == SelectionOverlayController::State::kOverlay;
+  }));
+  action->InvokeAction();
+  ASSERT_TRUE(base::test::RunUntil([controller]() {
+    return controller->state() == SelectionOverlayController::State::kOff;
+  }));
+
+  // Paused sign-in (`!IsReadyForProfile()`) keeps the button visible but
+  // disabled; until b/586483147 blocks `CanStartSession()` on paused sign-in,
+  // opening the overlay while disabled makes the button clickable so a click
+  // can close it, even after switching tabs away and back.
+  InvalidateAccount(GetProfile());
+  EXPECT_TRUE(action->GetVisible());
+  ASSERT_FALSE(action->GetEnabled());
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kContextMenuPage);
+  ASSERT_TRUE(base::test::RunUntil([controller]() {
+    return controller->state() == SelectionOverlayController::State::kOverlay;
+  }));
+  EXPECT_TRUE(action->GetEnabled());
+  GetTabListInterface()->ActivateTab(ineligible_tab->GetHandle());
+  EXPECT_FALSE(action->GetEnabled());
+  GetTabListInterface()->ActivateTab(eligible_tab->GetHandle());
+  EXPECT_TRUE(action->GetEnabled());
+  action->InvokeAction();
+  ASSERT_TRUE(base::test::RunUntil([controller]() {
+    return controller->state() == SelectionOverlayController::State::kOff;
+  }));
+  EXPECT_FALSE(action->GetEnabled());
+  ReauthAccount(GetProfile());
+  EXPECT_TRUE(action->GetEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionToolbarBrowserTest,
+                       ProfileAndPolicyTransitions) {
+  tabs::TabInterface* eligible_tab = CreateTabWithEligibility(
+      GetSimpleTestUrl(),
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+  actions::ActionItem* const action = GetToolbarAction(eligible_tab);
+  ASSERT_TRUE(action);
+  EXPECT_TRUE(action->GetVisible());
+  EXPECT_TRUE(action->GetEnabled());
+
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kIncomplete);
+  EXPECT_TRUE(action->GetVisible());
+  EXPECT_TRUE(action->GetEnabled());
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kCompleted);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Signing out hides the button; signing back in restores visibility and
+  // enabled state on the eligible tab.
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(GetProfile()));
+  EXPECT_FALSE(action->GetVisible());
+  EXPECT_FALSE(action->GetEnabled());
+  ForceSigninAndGlicCapability(GetProfile());
+  EXPECT_TRUE(action->GetVisible());
+  EXPECT_TRUE(action->GetEnabled());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  GetProfile()->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kGeminiSettings,
+      std::to_underlying(
+          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
+  EXPECT_FALSE(action->GetVisible());
+  EXPECT_FALSE(action->GetEnabled());
 }
 
 }  // namespace
