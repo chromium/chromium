@@ -127,9 +127,7 @@
 #include "chrome/browser/actor/actor_task_options.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider.h"
@@ -772,26 +770,6 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
       AutofillClient::IphFeature::kWalletDirectOffers);
 }
 
-// Tests that `OpenGeminiInSidebar` invokes Glic with the correct options and
-// prompt.
-TEST_F(ChromeAutofillClientTestWithMockWindow, OpenGeminiInSidebar) {
-  glic::MockGlicKeyedService* mock_glic_service = SetUpMockGlicKeyedService();
-  ASSERT_TRUE(mock_glic_service);
-
-  // We expect that the glic service is invoked with kAutofill as the invocation
-  // source and containing the correct prompt.
-  EXPECT_CALL(
-      *mock_glic_service,
-      Invoke(AllOf(
-          Property(&glic::GlicInvokeOptions::GetInvocationSource,
-                   glic::mojom::InvocationSource::kAutofill),
-          Field(&glic::GlicInvokeOptions::prompts, ElementsAre("test prompt")),
-          Field(&glic::GlicInvokeOptions::focus_on_show, true))))
-      .WillOnce(testing::Return(base::WeakPtr<glic::GlicInstance>()));
-
-  client()->OpenGeminiInSidebar(u"test prompt");
-}
-
 // Like `ChromeAutofillClientTestWithMockWindow`, but the profile is latched to
 // Gemini Enterprise.
 class ChromeAutofillClientGeminiEnterpriseTest
@@ -801,7 +779,7 @@ class ChromeAutofillClientGeminiEnterpriseTest
       glic::GlicProvider::kGeminiEnterprise};
 };
 
-// Autofill doesn't open Gemini Enterprise.
+// Autofill doesn't report Gemini Enterprise as Glic enabled.
 TEST_F(ChromeAutofillClientGeminiEnterpriseTest, GlicEntryPointsDisabled) {
   glic::MockGlicKeyedService* mock_glic_service = SetUpMockGlicKeyedService();
   ASSERT_TRUE(mock_glic_service);
@@ -810,8 +788,6 @@ TEST_F(ChromeAutofillClientGeminiEnterpriseTest, GlicEntryPointsDisabled) {
             glic::kGeminiEnterpriseSettingsSectionId);
 
   EXPECT_FALSE(client()->IsGlicEnabled());
-  EXPECT_CALL(*mock_glic_service, Invoke).Times(0);
-  client()->OpenGeminiInSidebar(u"test prompt");
 }
 
 // Gemini Enterprise consent isn't reported to Autofill as Gemini in Chrome

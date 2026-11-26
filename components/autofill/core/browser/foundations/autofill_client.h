@@ -700,9 +700,6 @@ class AutofillClient {
   // Opens Gmail for the OTP retrieval flow.
   virtual void OpenGmailForOtps();
 
-  // Opens Gemini in the sidebar with the given prompt pre-filled.
-  virtual void OpenGeminiInSidebar(const std::u16string& prompt);
-
   // Returns true if the Glic sidebar is enabled and can be opened.
   virtual bool IsGlicEnabled() const;
 

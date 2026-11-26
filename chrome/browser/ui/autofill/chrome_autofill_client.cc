@@ -23,7 +23,6 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -59,9 +58,6 @@
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_feature.h"
-#include "chrome/browser/glic/public/glic_invoke_options.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -1943,26 +1939,6 @@ void ChromeAutofillClient::OpenGmailForOtps() {
           GURL(kGmailUrl), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
-}
-
-void ChromeAutofillClient::OpenGeminiInSidebar(const std::u16string& prompt) {
-  if (!IsGlicEnabled()) {
-    return;
-  }
-  glic::GlicKeyedService* glic_keyed_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile());
-  if (!glic_keyed_service) {
-    return;
-  }
-  tabs::TabInterface* tab = GetTabInterface();
-  if (!tab) {
-    return;
-  }
-  glic::Target target(*tab);
-  glic::GlicInvokeOptions options(std::move(target),
-                                  glic::mojom::InvocationSource::kAutofill);
-  options.prompts.push_back(base::UTF16ToUTF8(prompt));
-  glic_keyed_service->Invoke(std::move(options));
 }
 
 bool ChromeAutofillClient::IsGlicEnabled() const {

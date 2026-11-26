@@ -216,7 +216,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
   void HideSuggestions(SuggestionHidingReason reason,
                        std::optional<FillingProduct> product) final;
   void OpenGmailForOtps() final;
-  void OpenGeminiInSidebar(const std::u16string& prompt) final;
   bool IsGlicEnabled() const final;
   bool IsGlicConsented() const final;
   void TriggerDeclinedSaveAddressReasonSurvey() final;

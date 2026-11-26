@@ -560,11 +560,6 @@ OtpPhishGuardDelegate* AutofillClient::GetOtpPhishGuardDelegate() {
 
 void AutofillClient::OpenGmailForOtps() {}
 
-void AutofillClient::OpenGeminiInSidebar(const std::u16string& prompt) {
-  // TODO(crbug.com/493824736): Implement opening Gemini in the sidebar.
-  NOTIMPLEMENTED();
-}
-
 bool AutofillClient::IsGlicEnabled() const {
   return false;
 }
