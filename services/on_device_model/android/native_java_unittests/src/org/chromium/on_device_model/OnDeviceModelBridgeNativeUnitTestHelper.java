@@ -4,6 +4,7 @@
 package org.chromium.on_device_model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.jni_zero.CalledByNative;
 
@@ -278,20 +279,28 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
             return mSessionBackends.get(mSessionBackends.size() - 1);
         }
 
-        /** Returns the first model downloader backend. */
+        /** Returns the first active model downloader backend. */
         public MockAiCoreModelDownloaderBackend getModelDownloaderBackend() {
+            return getModelDownloaderBackend(null);
+        }
+
+        /** Returns the first active downloader for the feature, or any if it is null. */
+        public MockAiCoreModelDownloaderBackend getModelDownloaderBackend(
+                ModelExecutionFeature feature) {
             for (MockAiCoreModelDownloaderBackend b : mDownloaderBackends) {
-                if (b.mIsModelDownloader) {
+                if (b.mIsModelDownloader
+                        && !b.mNativeDestroyed
+                        && (feature == null || b.mFeature == feature)) {
                     return b;
                 }
             }
             return null;
         }
 
-        /** Returns the first status checker backend. */
+        /** Returns the first active status checker backend. */
         public MockAiCoreModelDownloaderBackend getStatusCheckerBackend() {
             for (MockAiCoreModelDownloaderBackend b : mDownloaderBackends) {
-                if (b.mIsStatusChecker) {
+                if (b.mIsStatusChecker && !b.mNativeDestroyed) {
                     return b;
                 }
             }
@@ -413,14 +422,21 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     @CalledByNative
     public void verifyDownloaderParams(int feature, boolean requirePersistentMode) {
         ModelExecutionFeature modelExecutionFeatureId = ModelExecutionFeature.forNumber(feature);
+        assertNotNull(
+                "verifyDownloaderParams: unknown model execution feature " + feature,
+                modelExecutionFeatureId);
         MockAiCoreModelDownloaderBackend downloaderBackend =
-                mMockAiCoreFactory.getModelDownloaderBackend();
+                mMockAiCoreFactory.getModelDownloaderBackend(modelExecutionFeatureId);
+        assertNotNull(
+                "verifyDownloaderParams: no active downloader for feature"
+                        + modelExecutionFeatureId,
+                downloaderBackend);
         assertEquals(modelExecutionFeatureId, downloaderBackend.mFeature);
         assertEquals(requirePersistentMode, downloaderBackend.mParams.requirePersistentMode);
     }
 
     /**
-     * Sets a default AiCoreFactory that uses upstream (dummy) implementations. This factory returns
+     * Sets a default AiCoreFactory that uses upstream implementations. This factory returns
      * AiCoreSessionBackendUpstreamImpl and AiCoreModelDownloaderBackendUpstreamImpl which report
      * API_NOT_AVAILABLE. Use this for tests that need to verify behavior when MLKit is not
      * available.
@@ -462,8 +478,9 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
 
     @CalledByNative
     public void triggerDownloaderOnAvailable(String name, String version) {
-        if (mMockAiCoreFactory.getModelDownloaderBackend() != null) {
-            mMockAiCoreFactory.getModelDownloaderBackend().onAvailable(name, version);
+        MockAiCoreModelDownloaderBackend backend = mMockAiCoreFactory.getModelDownloaderBackend();
+        if (backend != null) {
+            backend.onAvailable(name, version);
         } else {
             // cache the model info in settings so that when startDownload is called, the backend
             // can respond with this info.
@@ -472,20 +489,36 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     }
 
     @CalledByNative
+    public void triggerDestroyedDownloaderOnAvailable() {
+        for (MockAiCoreModelDownloaderBackend backend : mMockAiCoreFactory.mDownloaderBackends) {
+            if (backend.mIsModelDownloader && backend.mNativeDestroyed) {
+                // Simulate the backend invoking its responder after native destruction.
+                backend.mResponder.onAvailable("test_model", "123");
+                return;
+            }
+        }
+        throw new AssertionError("No destroyed model downloader");
+    }
+
+    @CalledByNative
     public void triggerDownloaderOnUnavailable(int reason) {
-        mMockAiCoreFactory.getModelDownloaderBackend().onUnavailable(reason);
+        MockAiCoreModelDownloaderBackend backend = mMockAiCoreFactory.getModelDownloaderBackend();
+        assertNotNull("triggerDownloaderOnUnavailable: no active model downloader", backend);
+        backend.onUnavailable(reason);
     }
 
     @CalledByNative
     public void triggerDownloaderOnDownloadProgress(long downloadedBytes, long totalBytes) {
-        mMockAiCoreFactory
-                .getModelDownloaderBackend()
-                .onDownloadProgress(downloadedBytes, totalBytes);
+        MockAiCoreModelDownloaderBackend backend = mMockAiCoreFactory.getModelDownloaderBackend();
+        assertNotNull("triggerDownloaderOnDownloadProgress: no active model downloader", backend);
+        backend.onDownloadProgress(downloadedBytes, totalBytes);
     }
 
     @CalledByNative
     public void triggerDownloaderOnStatusCheckResult(int modelStatus) {
-        mMockAiCoreFactory.getStatusCheckerBackend().onStatusCheckResult(modelStatus);
+        MockAiCoreModelDownloaderBackend backend = mMockAiCoreFactory.getStatusCheckerBackend();
+        assertNotNull("triggerDownloaderOnStatusCheckResult: no active status checker", backend);
+        backend.onStatusCheckResult(modelStatus);
     }
 
     @CalledByNative

@@ -73,6 +73,7 @@ class OnDeviceModelBridgeNativeUnitTestHelper {
       ModelDownloaderAndroid::DownloadFailureReason reason);
   void TriggerDownloaderOnAvailable(const std::string& name,
                                     const std::string& version);
+  void TriggerDestroyedDownloaderOnAvailable();
   void TriggerDownloaderOnDownloadProgress(int64_t downloaded_bytes,
                                            int64_t total_bytes);
   void TriggerDownloaderOnStatusCheckResult(

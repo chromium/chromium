@@ -166,7 +166,7 @@ TEST_F(ModelDownloaderAndroidTest, NativeDownloaderDeletionIsSafe) {
   // Delete the native session manually and ensure async completion doesn't
   // cause a crash.
   downloader.reset();
-  java_helper_.TriggerDownloaderOnAvailable("test_model", "123");
+  java_helper_.TriggerDestroyedDownloaderOnAvailable();
 }
 
 TEST_F(ModelDownloaderAndroidTest, DownloadProgress) {
@@ -273,6 +273,70 @@ TEST_F(ModelDownloaderAndroidTest, CheckStatusDoesNotAffectStartDownload) {
   ASSERT_TRUE(download_result.has_value());
   EXPECT_EQ(download_result->name, "download_model");
   EXPECT_EQ(download_result->version, "456");
+}
+
+TEST_F(ModelDownloaderAndroidTest, MockFactoryReturnsActiveDownloader) {
+  java_helper_.SetMockAiCoreFactory();
+
+  auto downloader = std::make_unique<ModelDownloaderAndroid>(
+      kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
+  downloader->StartDownload(base::DoNothing(), base::DoNothing());
+  // The helper retains this backend after its native downloader is destroyed.
+  downloader.reset();
+
+  base::test::TestFuture<base::expected<AICoreModelSpec, DownloadFailureReason>>
+      future;
+  downloader = std::make_unique<ModelDownloaderAndroid>(
+      kFeature, MakeDownloaderParams(/*require_persistent_mode=*/true));
+  downloader->StartDownload(future.GetCallback(), base::DoNothing());
+  // Parameter checks and the availability callback must use the active backend.
+  java_helper_.VerifyDownloaderParams(kFeature,
+                                      /*require_persistent_mode=*/true);
+  java_helper_.TriggerDownloaderOnAvailable("test_model", "123");
+
+  ASSERT_TRUE(future.IsReady());
+  const auto& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->name, "test_model");
+  EXPECT_EQ(result->version, "123");
+}
+
+TEST_F(ModelDownloaderAndroidTest, MockFactoryReturnsActiveStatusChecker) {
+  java_helper_.SetMockAiCoreFactory();
+
+  auto downloader = std::make_unique<ModelDownloaderAndroid>(
+      kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
+  downloader->CheckStatus(base::DoNothing());
+  // The helper retains this backend after its native downloader is destroyed.
+  downloader.reset();
+
+  base::test::TestFuture<ModelStatus> future;
+  downloader = std::make_unique<ModelDownloaderAndroid>(
+      kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
+  downloader->CheckStatus(future.GetCallback());
+  // The status result must reach the active checker.
+  java_helper_.TriggerDownloaderOnStatusCheckResult(ModelStatus::kAvailable);
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), ModelStatus::kAvailable);
+}
+
+TEST_F(ModelDownloaderAndroidTest, MockFactoryFindsDownloaderForFeature) {
+  java_helper_.SetMockAiCoreFactory();
+  auto scam_detection_downloader = std::make_unique<ModelDownloaderAndroid>(
+      kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
+  auto test_downloader = std::make_unique<ModelDownloaderAndroid>(
+      optimization_guide::proto::MODEL_EXECUTION_FEATURE_TEST,
+      MakeDownloaderParams(/*require_persistent_mode=*/true));
+  scam_detection_downloader->StartDownload(base::DoNothing(),
+                                           base::DoNothing());
+  test_downloader->StartDownload(base::DoNothing(), base::DoNothing());
+
+  java_helper_.VerifyDownloaderParams(kFeature,
+                                      /*require_persistent_mode=*/false);
+  java_helper_.VerifyDownloaderParams(
+      optimization_guide::proto::MODEL_EXECUTION_FEATURE_TEST,
+      /*require_persistent_mode=*/true);
 }
 
 }  // namespace
