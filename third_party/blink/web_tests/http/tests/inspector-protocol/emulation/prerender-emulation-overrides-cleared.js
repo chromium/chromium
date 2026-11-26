@@ -36,28 +36,36 @@
     mobile: false,
   });
 
-  await session1.evaluate(`
-    window.__touchReceived = false;
-    window.addEventListener('touchstart', () => window.__touchReceived = true);
-  `);
   await dp1.Emulation.setEmitTouchEventsForMouse({
     enabled: true,
     configuration: 'mobile',
   });
-  await dp1.Input.emulateTouchFromMouseEvent({
-    type: 'mousePressed',
-    button: 'left',
-    clickCount: 1,
-    x: 100,
-    y: 100,
-  });
-  await dp1.Input.emulateTouchFromMouseEvent({
-    type: 'mouseReleased',
-    button: 'left',
-    clickCount: 1,
-    x: 100,
-    y: 100,
-  });
+
+  async function checkTouchEmulation(activeSession, dp) {
+    await activeSession.evaluate(`
+      window.__touchEventPromise = new Promise(resolve => {
+        let touchReceived = false;
+        window.addEventListener('touchstart', () => touchReceived = true, {once: true});
+        window.addEventListener('touchend', () => resolve(touchReceived), {once: true});
+        window.addEventListener('mouseup', () => resolve(touchReceived), {once: true});
+      });
+    `);
+    await dp.Input.emulateTouchFromMouseEvent({
+      type: 'mousePressed',
+      button: 'left',
+      clickCount: 1,
+      x: 100,
+      y: 100,
+    });
+    await dp.Input.emulateTouchFromMouseEvent({
+      type: 'mouseReleased',
+      button: 'left',
+      clickCount: 1,
+      x: 100,
+      y: 100,
+    });
+    return await activeSession.evaluateAsync('window.__touchEventPromise');
+  }
 
   async function logGeolocationData(activeSession, label) {
     const result = await activeSession.evaluateAsync(`
@@ -73,7 +81,7 @@
   testRunner.log('\nGet emulation state on primary page with override');
   await logGeolocationData(session1, 'Geolocation data');
   testRunner.log('Dimensions: ' + await session1.evaluate('window.innerWidth + "x" + window.innerHeight'));
-  testRunner.log('Touch event received: ' + await session1.evaluate('window.__touchReceived'));
+  testRunner.log('Touch event received: ' + await checkTouchEmulation(session1, dp1));
 
   async function waitForPrerenderStatusUpdated(dp, expectedStatus) {
     return dp.Preload.oncePrerenderStatusUpdated(
@@ -113,25 +121,7 @@
   await logGeolocationData(session2, 'Geolocation data');
   testRunner.log('Dimensions: ' + await session2.evaluate('window.innerWidth + "x" + window.innerHeight'));
 
-  await session2.evaluate(`
-    window.__touchReceived = false;
-    window.addEventListener('touchstart', () => window.__touchReceived = true);
-  `);
-  await dp2.Input.emulateTouchFromMouseEvent({
-    type: 'mousePressed',
-    button: 'left',
-    clickCount: 1,
-    x: 100,
-    y: 100,
-  });
-  await dp2.Input.emulateTouchFromMouseEvent({
-    type: 'mouseReleased',
-    button: 'left',
-    clickCount: 1,
-    x: 100,
-    y: 100,
-  });
-  testRunner.log('Touch event received: ' + await session2.evaluate('window.__touchReceived'));
+  testRunner.log('Touch event received: ' + await checkTouchEmulation(session2, dp2));
 
   testRunner.completeTest();
 });
