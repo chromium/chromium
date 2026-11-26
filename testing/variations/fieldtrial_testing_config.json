@@ -15096,8 +15096,6 @@
     "OptimizeVariationsIpcStudy": [
         {
             "platforms": [
-                "android",
-                "android_desktop",
                 "ios"
             ],
             "experiments": [
@@ -19321,6 +19319,23 @@
                     "name": "Enabled",
                     "enable_features": [
                         "StartSurfaceUserSetting"
+                    ]
+                }
+            ]
+        }
+    ],
+    "StartupOptimizationsStudy": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_160_20261111",
+                    "enable_features": [
+                        "OptimizeVariationsIpc",
+                        "PrioritizeWebUINavigationURLLoader"
                     ]
                 }
             ]
