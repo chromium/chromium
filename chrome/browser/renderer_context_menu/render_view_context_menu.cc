@@ -3770,8 +3770,9 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_OPENAVNEWTAB:
       // Currently, a media element can be opened in a new tab iff it can
       // be saved. So rather than duplicating the MediaCanSave flag, we rely
-      // on that here.
-      return navigation_allowed &&
+      // on that here. `src_url` may be empty, e.g. for a data: URL too long to
+      // be sent over Mojo.
+      return navigation_allowed && params_.src_url.is_valid() &&
              !!(params_.media_flags & ContextMenuData::kMediaCanSave);
 
     case IDC_SAVE_PAGE:

@@ -921,6 +921,21 @@ TEST_F(RenderViewContextMenuPrefsTest, LoadBrokenImage) {
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LOAD_IMAGE));
 }
 
+// "Open video in new tab" must be disabled when the media URL is invalid, e.g.
+// a data: URL too long to be sent over Mojo.
+TEST_F(RenderViewContextMenuPrefsTest, OpenVideoInNewTabInvalidSrcUrl) {
+  content::ContextMenuParams params = CreateParams(MenuItem::VIDEO);
+  params.media_flags |= blink::ContextMenuData::kMediaCanSave;
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENAVNEWTAB));
+
+  params.src_url = GURL();
+  menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENAVNEWTAB));
+}
+
 TEST_F(RenderViewContextMenuPrefsTest,
        ContextMenuMenuSimplificationVideoOrderDisabled) {
   base::test::ScopedFeatureList features;
