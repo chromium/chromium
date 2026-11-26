@@ -1829,7 +1829,7 @@ TEST_F(GeminiContainerMediatorTest,
         return value != nil;
       }]]);
 
-  [mediator_ fetchZeroStateSuggestions:startup_state_];
+  [mediator_ fetchZeroStateSuggestions];
   EXPECT_OCMOCK_VERIFY(mock_zero_state_consumer);
   EXPECT_EQ(std::optional<NSInteger>(kReducedHeight),
             fake_container_handler.mediumDetentHeight);
@@ -1872,8 +1872,8 @@ TEST_F(GeminiContainerMediatorTest,
           feature_engagement::events::kIOSGeminiWhatCanGeminiDoTriggered))
       .Times(0);
   [mediator_ didPresentContainer];
-  [mediator_ fetchZeroStateSuggestions:startup_state_];
-  [mediator_ fetchZeroStateSuggestions:startup_state_];
+  [mediator_ fetchZeroStateSuggestions];
+  [mediator_ fetchZeroStateSuggestions];
   testing::Mock::VerifyAndClearExpectations(mock_tracker);
 
   EXPECT_CALL(
@@ -1929,7 +1929,7 @@ TEST_F(GeminiContainerMediatorTest,
           feature_engagement::events::kIOSGeminiWhatCanGeminiDoTriggered))
       .Times(0);
   [mediator_ didPresentContainer];
-  [mediator_ fetchZeroStateSuggestions:startup_state_];
+  [mediator_ fetchZeroStateSuggestions];
   [mediator_ onFloatyDismiss];
 }
 
@@ -2646,6 +2646,106 @@ TEST_F(GeminiContainerMediatorZeroStateTest,
 
   profile_->GetPrefs()->SetBoolean(prefs::kIOSBWGPageContentSetting, false);
   EXPECT_TRUE(zero_state_consumer_.hidden);
+}
+
+// Tests that `AppSwitcherAISummarization` suppresses zero-state suggestion
+// chips across page-context updates and personalization banner dismissal until
+// `didTapNewChatButton`, while still respecting tab-level suppression (Google
+// Search URLs) and re-applying suppression on `updateWithStartupState:`.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidTapNewChatButtonRestoresZeroStateSuggestionsAfterAppSwitcher) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration,
+       kZeroStateSuggestions, kZeroStateSuggestionsCentralization,
+       kAppSwitcherAISummarization, kPageActionMenu},
+      {});
+
+  FakeGeminiZeroStateConsumer* zero_state_consumer =
+      [[FakeGeminiZeroStateConsumer alloc] init];
+  mediator_.zeroStateConsumer = zero_state_consumer;
+  FakeGeminiContainerConsumer* container_consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = container_consumer;
+
+  GeminiStartupState* app_switcher_state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::AppSwitcherAISummarization];
+  mediator_.startupState = app_switcher_state;
+
+  web::FakeWebState* web_state = AppendActiveWebState();
+  web_state->SetCurrentURL(GURL("https://example.com"));
+  web_state->SetVisibleURL(GURL("https://example.com"));
+  web_state->WasShown();
+  web_state->SetLoading(true);
+
+  // Present while the page hasn't committed HTML yet (ineligible page context).
+  [mediator_ didPresentContainer];
+  ASSERT_TRUE(zero_state_consumer.hidden);
+
+  // Committing HTML and propagating an eligible page context keeps chips hidden
+  // for `AppSwitcherAISummarization`.
+  web_state->SetContentsMimeType("text/html");
+  GeminiPageContext* eligible_context = [[GeminiPageContext alloc] init];
+  eligible_context.geminiPageContextComputationState =
+      ios::provider::GeminiPageContextComputationState::kSuccess;
+  [mediator_ propagatePageContext:eligible_context];
+  EXPECT_TRUE(zero_state_consumer.hidden);
+
+  // Dismissing the personalization notice does not clear entry-point
+  // suppression.
+  [mediator_ didPresentDiscoveryBannerWithType:
+                 ios::provider::GeminiDiscoveryBannerType::kPersonalization
+                                conversationID:kTestConversationID];
+  [mediator_ didDismissDiscoveryBannerWithType:
+                 ios::provider::GeminiDiscoveryBannerType::kPersonalization
+                                conversationID:kTestConversationID];
+  EXPECT_TRUE(zero_state_consumer.hidden);
+
+  // Tapping New Chat restores zero-state suggestions.
+  [mediator_ didTapNewChatButton];
+  EXPECT_FALSE(zero_state_consumer.hidden);
+
+  // Subsequent zero-state refetches keep suggestions visible after New Chat.
+  NSString* active_tab_id = base::SysUTF8ToNSString(
+      GeminiTabHelper::FromWebState(web_state)->GetClientId());
+  [mediator_ didDetachTabWithID:active_tab_id];
+  ASSERT_TRUE(zero_state_consumer.hidden);
+  [mediator_ didAttachTabWithID:active_tab_id];
+  EXPECT_FALSE(zero_state_consumer.hidden);
+
+  // Tab-level suppression (e.g. Google Search URLs) still applies.
+  web_state->SetCurrentURL(GURL("https://www.google.com/search?q=test"));
+  web_state->SetVisibleURL(GURL("https://www.google.com/search?q=test"));
+  [mediator_ didTapNewChatButton];
+  EXPECT_TRUE(zero_state_consumer.hidden);
+
+  // Re-invoking `AppSwitcherAISummarization` in zero state suppresses chips
+  // again, and re-invoking a non-suppressing entry point restores them.
+  web_state->SetCurrentURL(GURL("https://example.com"));
+  web_state->SetVisibleURL(GURL("https://example.com"));
+  [mediator_ didTapNewChatButton];
+  ASSERT_FALSE(zero_state_consumer.hidden);
+
+  [mediator_ updateWithStartupState:app_switcher_state];
+  EXPECT_TRUE(zero_state_consumer.hidden);
+
+  [mediator_ updateWithStartupState:startup_state_];
+  EXPECT_FALSE(zero_state_consumer.hidden);
+
+  // Starting a new chat while both entry-point suppression and the
+  // personalization notice are active keeps chips hidden until the notice is
+  // dismissed.
+  [mediator_ updateWithStartupState:app_switcher_state];
+  ASSERT_TRUE(zero_state_consumer.hidden);
+  [mediator_ didPresentDiscoveryBannerWithType:
+                 ios::provider::GeminiDiscoveryBannerType::kPersonalization
+                                conversationID:kTestConversationID];
+  [mediator_ didTapNewChatButton];
+  EXPECT_TRUE(zero_state_consumer.hidden);
+  [mediator_ didDismissDiscoveryBannerWithType:
+                 ios::provider::GeminiDiscoveryBannerType::kPersonalization
+                                conversationID:kTestConversationID];
+  EXPECT_FALSE(zero_state_consumer.hidden);
 }
 
 // Tests that transitioning from thinking (minimized) to responding (auto-expand

@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -93,6 +94,25 @@ GeminiContainerUIState::WorklogDisplayMode() const {
 @implementation GeminiContainerUIStateManager {
   // Start time of the thinking state.
   base::TimeTicks _thinkingStartTime;
+  // Whether the personalization notice is currently shown, suppressing
+  // zero-state suggestion chips until dismissed.
+  BOOL _personalizationNoticeVisible;
+  // Entry points such as `AppSwitcherAISummarization` and `AtMemorySearch`
+  // require suppressing zero-state suggestion chips on invocation while
+  // restoring them once the user starts a new chat. Cached here until
+  // `handleNewChat`, a new invocation, or `reset` so intermediate refetches
+  // (e.g. when a loading page's context becomes eligible, when the
+  // personalization notice is dismissed, or on tab/attachment changes) keep
+  // chips suppressed, while tapping New Chat can clear suppression without
+  // mutating the session's initial entry point.
+  BOOL _entryPointSuppressesSuggestionChips;
+}
+
++ (BOOL)shouldSuppressSuggestionChipsForEntryPoint:
+    (gemini::EntryPoint)entryPoint {
+  return entryPoint == gemini::EntryPoint::AtMemorySearch ||
+         (entryPoint == gemini::EntryPoint::AppSwitcherAISummarization &&
+          IsAppSwitcherAISummarizationEnabled());
 }
 
 - (instancetype)init {
@@ -103,6 +123,10 @@ GeminiContainerUIState::WorklogDisplayMode() const {
     _lastProcessingStatusUpdateViewMode = GeminiViewMode::kUnknown;
   }
   return self;
+}
+
+- (BOOL)zeroStateSuggestionChipsSuppressed {
+  return _personalizationNoticeVisible || _entryPointSuppressesSuggestionChips;
 }
 
 - (void)setupInitialUIStateWithConversation:(BOOL)hasConversation {
@@ -222,6 +246,7 @@ GeminiContainerUIState::WorklogDisplayMode() const {
 }
 
 - (void)handleNewChat {
+  _entryPointSuppressesSuggestionChips = NO;
   [self resetToZeroStateWithDetent:_currentUIState.detent];
 }
 
@@ -236,7 +261,13 @@ GeminiContainerUIState::WorklogDisplayMode() const {
 }
 
 - (void)handlePersonalizationNoticeVisibilityChanged:(BOOL)visible {
-  _zeroStateSuggestionChipsSuppressed = visible;
+  _personalizationNoticeVisible = visible;
+}
+
+- (void)updateSuggestionChipsSuppressionForEntryPoint:
+    (gemini::EntryPoint)entryPoint {
+  _entryPointSuppressesSuggestionChips = [GeminiContainerUIStateManager
+      shouldSuppressSuggestionChipsForEntryPoint:entryPoint];
 }
 
 - (void)didFinishLoadingConversationWithID:(NSString*)conversationID
@@ -270,7 +301,8 @@ GeminiContainerUIState::WorklogDisplayMode() const {
   _viewMode = GeminiViewMode::kUnknown;
   _processingStatus = GeminiClientMode::kUnknown;
   _lastProcessingStatusUpdateViewMode = GeminiViewMode::kUnknown;
-  _zeroStateSuggestionChipsSuppressed = NO;
+  _personalizationNoticeVisible = NO;
+  _entryPointSuppressesSuggestionChips = NO;
   _currentUIState = {};
 }
 

@@ -330,25 +330,18 @@ class GeminiContainerMediatorTabHelperObserver
 
 - (BOOL)shouldShowSuggestionChipsForEntryPoint:
     (gemini::EntryPoint)entryPoint {
-  if (entryPoint == gemini::EntryPoint::AtMemorySearch) {
+  if ([GeminiContainerUIStateManager
+          shouldSuppressSuggestionChipsForEntryPoint:entryPoint]) {
     return NO;
   }
 
   GeminiTabHelper* geminiTabHelper = [self activeTabHelper];
-  if (!geminiTabHelper) {
-    return NO;
-  }
-
-  bool shouldShow = geminiTabHelper->ShouldShowSuggestionChips();
-  if (IsAppSwitcherAISummarizationEnabled() &&
-      entryPoint == gemini::EntryPoint::AppSwitcherAISummarization) {
-    shouldShow = false;
-  }
-  return shouldShow;
+  return geminiTabHelper && geminiTabHelper->ShouldShowSuggestionChips();
 }
 
-- (void)fetchZeroStateSuggestions:(GeminiStartupState*)startupState {
-  if (!self.zeroStateConsumer || !startupState) {
+- (void)fetchZeroStateSuggestions {
+  if (!self.zeroStateConsumer ||
+      !_stateManager.currentUIState.zeroStateVisible) {
     return;
   }
 
@@ -359,7 +352,7 @@ class GeminiContainerMediatorTabHelperObserver
   if (_stateManager.zeroStateSuggestionChipsSuppressed || !geminiTabHelper ||
       pageContextDetached || _activePageContextIneligible ||
       ![self isPageContextEligibleForTabHelper:geminiTabHelper] ||
-      ![self shouldShowSuggestionChipsForEntryPoint:startupState.entryPoint]) {
+      !geminiTabHelper->ShouldShowSuggestionChips()) {
     [self setZeroStateSuggestions:@[]];
     return;
   }
@@ -519,6 +512,12 @@ class GeminiContainerMediatorTabHelperObserver
   }
   _startupState = startupState;
   gemini::EntryPoint entryPoint = startupState.entryPoint;
+
+  // TODO(crbug.com/590866607): Revisit updating entry-point suggestion chip
+  // suppression on `_stateManager` right before fetching zero-state
+  // suggestions.
+  [_stateManager updateSuggestionChipsSuppressionForEntryPoint:entryPoint];
+  [self fetchZeroStateSuggestions];
 
   [self updateSharedTabsForActiveWebState];
 
@@ -772,8 +771,10 @@ class GeminiContainerMediatorTabHelperObserver
     return;
   }
 
-  [self fetchZeroStateSuggestions:_startupState];
+  // Update `_stateManager` before fetching so zero state is visible and
+  // entry-point suggestion chip suppression is cleared first.
   [_stateManager handleNewChat];
+  [self fetchZeroStateSuggestions];
 }
 
 - (void)responseCancelledWithReason:(GeminiCancelType)reason {
@@ -795,6 +796,11 @@ class GeminiContainerMediatorTabHelperObserver
 - (void)didFinishLoadingConversationWithID:(NSString*)conversationID
                                      error:(NSError*)error {
   [_stateManager didFinishLoadingConversationWithID:conversationID error:error];
+  // Loading failures fall back to zero state in `_stateManager`, so fetch
+  // suggestions that were skipped while loading the previous conversation.
+  if (error) {
+    [self fetchZeroStateSuggestions];
+  }
 }
 
 - (void)inputPlateDidChangePageContextAttachment:(BOOL)isAttached {
@@ -825,11 +831,7 @@ class GeminiContainerMediatorTabHelperObserver
     return;
   }
   [_stateManager handlePersonalizationNoticeVisibilityChanged:NO];
-  // Outside of the zero state (e.g. when the notice is dismissed on query
-  // submission), suggestions are fetched again on the next zero state.
-  if (_stateManager.currentUIState.zeroStateVisible) {
-    [self fetchZeroStateSuggestions:_startupState];
-  }
+  [self fetchZeroStateSuggestions];
 }
 
 - (void)didRequestToDetachTabWithID:(NSString*)tabID {
@@ -844,7 +846,7 @@ class GeminiContainerMediatorTabHelperObserver
         tabID, ios::provider::GeminiPageContextAttachmentState::kAttached);
   }
   if ([self isActiveTabID:tabID]) {
-    [self fetchZeroStateSuggestions:_startupState];
+    [self fetchZeroStateSuggestions];
   }
 }
 
@@ -1203,8 +1205,9 @@ class GeminiContainerMediatorTabHelperObserver
 
 // Sets up the initial UI state for the container.
 - (void)setupInitialUIState {
+  GeminiStartupState* startupState = self.startupState;
   GeminiConfiguration* config =
-      [self createGeminiConfigurationForActiveWebState:_startupState
+      [self createGeminiConfigurationForActiveWebState:startupState
                                            pageContext:_initialPageContext];
   if (!config) {
     return;
@@ -1214,12 +1217,15 @@ class GeminiContainerMediatorTabHelperObserver
       ios::provider::GetFloatyViewControllerWithConfiguration(config);
   [self.consumer setGeminiViewController:geminiViewController];
 
-  [self fetchZeroStateSuggestions:_startupState];
+  if (startupState) {
+    [_stateManager
+        updateSuggestionChipsSuppressionForEntryPoint:startupState.entryPoint];
+  }
 
   [self.containerHandler setAssistantContainerLargestUndimmedDetent:
                              AssistantContainerDetent::kMinimized];
   if (IsIOSGeminiBottomSheetMigrationEnabled()) {
-    BOOL isAutoSubmit = IsAutoSubmitStartupState(self.startupState);
+    BOOL isAutoSubmit = IsAutoSubmitStartupState(startupState);
     [_sessionMetricsManager
         setInitialDetent:isAutoSubmit ? kMinimized : kMedium];
     if (isAutoSubmit) {
@@ -1232,6 +1238,8 @@ class GeminiContainerMediatorTabHelperObserver
     [_stateManager
         setupInitialUIStateWithConversation:config.serverID.length > 0];
   }
+
+  [self fetchZeroStateSuggestions];
 
   // In initial zero state the view shouldn't be focused for input.
   [self.consumer dismissKeyboard];
@@ -1320,8 +1328,8 @@ class GeminiContainerMediatorTabHelperObserver
       pageContext.geminiPageContextComputationState);
   if (_activePageContextIneligible) {
     [self setZeroStateSuggestions:@[]];
-  } else if (wasIneligible && _stateManager.currentUIState.zeroStateVisible) {
-    [self fetchZeroStateSuggestions:_startupState];
+  } else if (wasIneligible) {
+    [self fetchZeroStateSuggestions];
   }
 }
 
@@ -1372,9 +1380,7 @@ class GeminiContainerMediatorTabHelperObserver
       newTabHelper->AddObserver(_tabHelperObserver.get());
       [self onPageContextUpdated:newActive];
     }
-    if (_stateManager.currentUIState.zeroStateVisible) {
-      [self fetchZeroStateSuggestions:_startupState];
-    }
+    [self fetchZeroStateSuggestions];
   }
 }
 
@@ -1413,9 +1419,7 @@ class GeminiContainerMediatorTabHelperObserver
   }
 
   [self updateFloatyWithPartialPageContext];
-  if (_stateManager.currentUIState.zeroStateVisible) {
-    [self fetchZeroStateSuggestions:_startupState];
-  }
+  [self fetchZeroStateSuggestions];
 }
 
 - (void)onWebStateListDestroyed {

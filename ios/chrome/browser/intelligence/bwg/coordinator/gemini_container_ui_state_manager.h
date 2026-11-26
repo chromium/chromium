@@ -14,6 +14,10 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
+namespace gemini {
+enum class EntryPoint;
+}  // namespace gemini
+
 // Declarative description of the container UI state.
 struct GeminiContainerUIState {
   // Returns a zero-state configuration with the specified detent (defaults to
@@ -70,9 +74,17 @@ struct GeminiContainerUIState {
 @property(nonatomic, readonly)
     ios::provider::GeminiViewMode lastProcessingStatusUpdateViewMode;
 
-// Whether the zero-state suggestion chips are suppressed because Gemini shows
-// the personalization notice in their place. Restored to NO by `reset`.
+// Whether the zero-state suggestion chips are suppressed (e.g. while the
+// personalization notice is shown or for an entry point that suppresses chips
+// until a new chat is started). Restored to NO by `reset`.
 @property(nonatomic, readonly) BOOL zeroStateSuggestionChipsSuppressed;
+
+// TODO(crbug.com/535579970): Remove or move to private after the bottom sheet
+// migration is complete.
+// Returns whether `entryPoint` suppresses zero-state suggestion chips on
+// invocation.
++ (BOOL)shouldSuppressSuggestionChipsForEntryPoint:
+    (gemini::EntryPoint)entryPoint;
 
 // Resets and applies the initial container UI state. `hasConversation`
 // indicates whether the container is starting with an existing conversation.
@@ -93,8 +105,9 @@ struct GeminiContainerUIState {
             (ios::provider::GeminiClientMode)processingStatus
                                error:(NSError*)error;
 
-// Handles user tapping the new chat button and notifies the delegate with the
-// new zero-state state preserving the current detent.
+// Handles user tapping the new chat button, clearing entry-point suggestion
+// chip suppression and notifying the delegate with the new zero-state state
+// preserving the current detent.
 - (void)handleNewChat;
 
 // Handles response cancellation and notifies the delegate with the expanded
@@ -104,6 +117,12 @@ struct GeminiContainerUIState {
 // Handles the personalization notice being shown or hidden, which suppresses or
 // restores the zero-state suggestion chips.
 - (void)handlePersonalizationNoticeVisibilityChanged:(BOOL)visible;
+
+// Updates entry-point suppression of zero-state suggestion chips for
+// `entryPoint`. Suppression lasts until a new chat is started or `reset` is
+// called.
+- (void)updateSuggestionChipsSuppressionForEntryPoint:
+    (gemini::EntryPoint)entryPoint;
 
 // Handles completion of loading a previous conversation.
 - (void)didFinishLoadingConversationWithID:(NSString*)conversationID

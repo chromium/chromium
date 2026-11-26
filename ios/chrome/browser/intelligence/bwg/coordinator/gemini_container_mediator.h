@@ -147,9 +147,10 @@ class GeminiSharedTabsManager;
 - (void)onFloatyInvoked;
 - (void)onFloatyDismiss;
 
-// Fetches zero-state suggestions for the active web state, or hides them when
-// its page context is detached or not eligible to be attached.
-- (void)fetchZeroStateSuggestions:(GeminiStartupState*)startupState;
+// Fetches zero-state suggestions for the active web state when zero state is
+// visible, or hides them when suppressed or when its page context is detached
+// or not eligible to be attached.
+- (void)fetchZeroStateSuggestions;
 
 // Prepares the mediator for presenting the container (e.g. generating full page
 // context when `startupState.shouldAutoSubmit` is set) and notifies `delegate`

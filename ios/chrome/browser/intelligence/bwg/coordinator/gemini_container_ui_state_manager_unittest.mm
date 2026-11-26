@@ -829,3 +829,75 @@ TEST_F(GeminiContainerUIStateManagerTest,
   [state_manager_ handleNewChat];
   EXPECT_TRUE([state_manager_ shouldBeDismissed]);
 }
+
+// Tests that entry-point and personalization-notice suggestion chip suppression
+// are independent and cleared by `handleNewChat` and `reset`.
+TEST_F(GeminiContainerUIStateManagerTest,
+       TestZeroStateSuggestionChipsSuppressionClearedByNewChatAndReset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAppSwitcherAISummarization, kPageActionMenu}, {});
+
+  ASSERT_FALSE(state_manager_.zeroStateSuggestionChipsSuppressed);
+
+  // Non-suppressing entry points do not suppress chips.
+  [state_manager_ updateSuggestionChipsSuppressionForEntryPoint:
+                      gemini::EntryPoint::OverflowMenu];
+  EXPECT_FALSE(state_manager_.zeroStateSuggestionChipsSuppressed);
+
+  // Entry-point suppression is cleared by `handleNewChat`.
+  [state_manager_ updateSuggestionChipsSuppressionForEntryPoint:
+                      gemini::EntryPoint::AppSwitcherAISummarization];
+  EXPECT_TRUE(state_manager_.zeroStateSuggestionChipsSuppressed);
+  [state_manager_ handleNewChat];
+  EXPECT_FALSE(state_manager_.zeroStateSuggestionChipsSuppressed);
+
+  // `AtMemorySearch` also suppresses chips until `handleNewChat` or a
+  // non-suppressing entry point update.
+  [state_manager_ updateSuggestionChipsSuppressionForEntryPoint:
+                      gemini::EntryPoint::AtMemorySearch];
+  EXPECT_TRUE(state_manager_.zeroStateSuggestionChipsSuppressed);
+  [state_manager_ updateSuggestionChipsSuppressionForEntryPoint:
+                      gemini::EntryPoint::OverflowMenu];
+  EXPECT_FALSE(state_manager_.zeroStateSuggestionChipsSuppressed);
+
+  // Dismissing the personalization notice does not clear entry-point
+  // suppression.
+  [state_manager_ updateSuggestionChipsSuppressionForEntryPoint:
+                      gemini::EntryPoint::AppSwitcherAISummarization];
+  [state_manager_ handlePersonalizationNoticeVisibilityChanged:YES];
+  EXPECT_TRUE(state_manager_.zeroStateSuggestionChipsSuppressed);
+  [state_manager_ handlePersonalizationNoticeVisibilityChanged:NO];
+  EXPECT_TRUE(state_manager_.zeroStateSuggestionChipsSuppressed);
+  [state_manager_ handleNewChat];
+  EXPECT_FALSE(state_manager_.zeroStateSuggestionChipsSuppressed);
+
+  // Starting a new chat does not clear personalization-notice suppression.
+  [state_manager_ updateSuggestionChipsSuppressionForEntryPoint:
+                      gemini::EntryPoint::AppSwitcherAISummarization];
+  [state_manager_ handlePersonalizationNoticeVisibilityChanged:YES];
+  [state_manager_ handleNewChat];
+  EXPECT_TRUE(state_manager_.zeroStateSuggestionChipsSuppressed);
+  [state_manager_ handlePersonalizationNoticeVisibilityChanged:NO];
+  EXPECT_FALSE(state_manager_.zeroStateSuggestionChipsSuppressed);
+
+  // `reset` clears entry-point suppression as well.
+  [state_manager_ updateSuggestionChipsSuppressionForEntryPoint:
+                      gemini::EntryPoint::AppSwitcherAISummarization];
+  EXPECT_TRUE(state_manager_.zeroStateSuggestionChipsSuppressed);
+  [state_manager_ reset];
+  EXPECT_FALSE(state_manager_.zeroStateSuggestionChipsSuppressed);
+}
+
+// Tests that `AppSwitcherAISummarization` does not suppress zero-state
+// suggestion chips when `kAppSwitcherAISummarization` is disabled.
+TEST_F(GeminiContainerUIStateManagerTest,
+       TestAppSwitcherDoesNotSuppressSuggestionChipsWhenDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kPageActionMenu},
+                                       {kAppSwitcherAISummarization});
+
+  [state_manager_ updateSuggestionChipsSuppressionForEntryPoint:
+                      gemini::EntryPoint::AppSwitcherAISummarization];
+  EXPECT_FALSE(state_manager_.zeroStateSuggestionChipsSuppressed);
+}
