@@ -2938,7 +2938,6 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/aidl.pydeps',
     'build/android/gyp/apkbuilder.pydeps',
     'build/android/gyp/assert_static_initializers.pydeps',
-    'build/android/gyp/binary_baseline_profile.pydeps',
     'build/android/gyp/bytecode_rewriter.pydeps',
     'build/android/gyp/check_flag_expectations.pydeps',
     'build/android/gyp/check_for_missing_direct_deps.pydeps',
