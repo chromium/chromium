@@ -219,6 +219,12 @@ inline constexpr char kAutofillAiReauthRequiredName[] =
 inline constexpr char kAutofillAiReauthRequiredDescription[] =
     "Enables Autofill AI Reauth Required.";
 
+inline constexpr char kAutofillAiSpiiVerificationName[] =
+    "Autofill AI SPII Verification";
+inline constexpr char kAutofillAiSpiiVerificationDescription[] =
+    "Enables in-context source verification when filling sensitive personal "
+    "context entities.";
+
 inline constexpr char kAutofillAiValuablesIPHName[] =
     "IPH Autofill AI Valuables";
 inline constexpr char kAutofillAiValuablesIPHDescription[] =

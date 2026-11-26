@@ -3230,6 +3230,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAssistantAimLargeStateName,
      flag_descriptions::kAssistantAimLargeStateDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAssistantAimLargeState)},
+    {"autofill-ai-spii-verification",
+     flag_descriptions::kAutofillAiSpiiVerificationName,
+     flag_descriptions::kAutofillAiSpiiVerificationDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAiSpiiVerification)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
