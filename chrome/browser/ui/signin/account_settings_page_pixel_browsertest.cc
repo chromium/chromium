@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,7 +15,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
-#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/image/image.h"
@@ -35,12 +33,6 @@ constexpr char kScreenshotBaselineCL[] = "7146804";
 
 class AccountSettingsPagePixelBrowserTest : public InteractiveBrowserTest {
  public:
-  AccountSettingsPagePixelBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kUnoPhase2FollowUp},
-        /*disabled_features=*/{});
-  }
-
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
@@ -144,7 +136,6 @@ class AccountSettingsPagePixelBrowserTest : public InteractiveBrowserTest {
     return steps;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   BatchUploadServiceTestHelper batch_upload_test_helper_;
 };
 
