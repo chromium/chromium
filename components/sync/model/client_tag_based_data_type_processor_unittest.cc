@@ -46,6 +46,7 @@
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync/test/fake_data_type_sync_bridge.h"
 #include "components/sync/test/mock_data_type_worker.h"
@@ -824,9 +825,9 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   ModelReadyToSync();
   OnSyncStarting();
 
-  sync_pb::EntitySpecifics specififcs = GeneratePrefSpecifics(kKey1, kValue1);
-  *specififcs.mutable_preference()->mutable_unknown_fields() = kValue2;
-  worker()->UpdateFromServer(GetPrefHash(kKey1), specififcs);
+  sync_pb::EntitySpecifics specifics = GeneratePrefSpecifics(kKey1, kValue1);
+  *specifics.mutable_preference()->mutable_unknown_fields() = kValue2;
+  worker()->UpdateFromServer(GetPrefHash(kKey1), specifics);
 
   sync_pb::PreferenceSpecifics cached_preference =
       type_processor()->GetPossiblyTrimmedRemoteSpecifics(kKey1).preference();
@@ -2144,7 +2145,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}, {GetPrefHash(kKey1)}});
 
   bridge()->SetConflictResolution(ConflictResolution::kUseLocal);
-  // Unencrypted update needs to be re-commited with key k1.
+  // Unencrypted update needs to be re-committed with key k1.
   worker()->UpdateFromServer(GetPrefHash(kKey1),
                              GeneratePrefSpecifics(kKey1, kValue3), 1, "");
 
@@ -2162,7 +2163,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   WritePrefItem(bridge(), kKey1, kValue1);
 
   bridge()->SetConflictResolution(ConflictResolution::kUseRemote);
-  // Unencrypted update needs to be re-commited with key k1.
+  // Unencrypted update needs to be re-committed with key k1.
   EntitySpecifics specifics = GeneratePrefSpecifics(kKey1, kValue2);
   worker()->UpdateFromServer(GetPrefHash(kKey1), specifics, 1, "");
 
@@ -2181,7 +2182,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   worker()->UpdateWithEncryptionKey("k1");
   EXPECT_EQ(1U, worker()->GetNumPendingCommits());
 
-  // Unencrypted update needs to be re-commited with key k1.
+  // Unencrypted update needs to be re-committed with key k1.
   EntitySpecifics specifics = GeneratePrefSpecifics(kKey1, kValue2);
   worker()->UpdateFromServer(GetPrefHash(kKey1), specifics, 1, "");
 
@@ -3098,7 +3099,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 // This tests the case when the bridge deletes an item, and before it's
 // committed to the server, it created again with a different storage key.
 TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldDeleteItemAndRecreaeItWithDifferentStorageKey) {
+       ShouldDeleteItemAndRecreateItWithDifferentStorageKey) {
   const std::string kStorageKey1 = "StorageKey1";
   const std::string kStorageKey2 = "StorageKey2";
 

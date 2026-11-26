@@ -1148,10 +1148,10 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 }
 
 // This tests the case when a local creation is successfully committed to the
-// server but the commit respone isn't received for some reason. Further updates
-// to that entity should update the sync id in the tracker.
+// server but the commit response isn't received for some reason. Further
+// updates to that entity should update the sync id in the tracker.
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
-       ShouldUpdateSyncIdWhenRecevingUpdateForNewlyCreatedLocalNode) {
+       ShouldUpdateSyncIdWhenReceivingUpdateForNewlyCreatedLocalNode) {
   const base::Uuid kBookmarkGuid = base::Uuid::GenerateRandomV4();
   const std::string kOriginatorClientItemId = kBookmarkGuid.AsLowercaseString();
   const std::string kSyncId = "server_id";
@@ -1221,7 +1221,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 // Same as above for bookmarks created with client tags.
 TEST_F(
     BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
-    ShouldUpdateSyncIdWhenRecevingUpdateForNewlyCreatedLocalNodeWithClientTag) {
+    ShouldUpdateSyncIdWhenReceivingUpdateForNewlyCreatedLocalNodeWithClientTag) {
   const base::Uuid kBookmarkGuid = base::Uuid::GenerateRandomV4();
   const std::string kSyncId = "server_id";
   const int64_t kServerVersion = 1000;
@@ -1386,7 +1386,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 
 TEST_F(
     BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
-    ShouldNotRecommitWhenEncryptionKeyNameMistmatchWithConflictWithDeletions) {
+    ShouldNotRecommitWhenEncryptionKeyNameMismatchWithConflictWithDeletions) {
   sync_pb::DataTypeState data_type_state;
   data_type_state.set_encryption_key_name("encryption_key_name");
   tracker()->set_data_type_state(data_type_state);

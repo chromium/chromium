@@ -26,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/backoff_delay_provider.h"
@@ -98,7 +99,7 @@ ACTION_P(SimulatePollIntervalUpdate, new_poll) {
   cycle->delegate()->OnReceivedPollIntervalUpdate(new_poll);
 }
 
-void SimulateGetEncryptionKeyFailed(DataTypeSet requsted_types,
+void SimulateGetEncryptionKeyFailed(DataTypeSet requested_types,
                                     sync_pb::SyncEnums::GetUpdatesOrigin origin,
                                     SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_get_key_failed(true);
@@ -106,7 +107,7 @@ void SimulateGetEncryptionKeyFailed(DataTypeSet requsted_types,
       SyncerError::Success());
 }
 
-void SimulateConfigureSuccess(DataTypeSet requsted_types,
+void SimulateConfigureSuccess(DataTypeSet requested_types,
                               sync_pb::SyncEnums::GetUpdatesOrigin origin,
                               SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_get_key_failed(false);
@@ -114,7 +115,7 @@ void SimulateConfigureSuccess(DataTypeSet requsted_types,
       SyncerError::Success());
 }
 
-void SimulateConfigureFailed(DataTypeSet requsted_types,
+void SimulateConfigureFailed(DataTypeSet requested_types,
                              sync_pb::SyncEnums::GetUpdatesOrigin origin,
                              SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_get_key_failed(false);
@@ -123,7 +124,7 @@ void SimulateConfigureFailed(DataTypeSet requsted_types,
 }
 
 void SimulateConfigureConnectionFailure(
-    DataTypeSet requsted_types,
+    DataTypeSet requested_types,
     sync_pb::SyncEnums::GetUpdatesOrigin origin,
     SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_get_key_failed(false);

@@ -193,7 +193,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleKeyRotations) {
 // kTrustedVaultKey2.
 // Server-side key chain is: kTrustedVaultKey1 -> kTrustedVaultKey2.
 TEST_F(DownloadKeysResponseHandlerTest,
-       ShouldHandleAbsenseOfKnownKeyWhenKeyChainIsRecoverable) {
+       ShouldHandleAbsenceOfKnownKeyWhenKeyChainIsRecoverable) {
   const DownloadKeysResponseHandler::ProcessedResponse processed_response =
       handler().ProcessResponse(
           /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
@@ -222,7 +222,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 // kTrustedVaultKey2 -> kTrustedVaultKey3.
 // Server side key chain is: kTrustedVaultKey2 -> kTrustedVaultKey3.
 TEST_F(DownloadKeysResponseHandlerTest,
-       ShouldHandleAbsenseOfKnownKeyWhenKeyChainIsNotRecoverable) {
+       ShouldHandleAbsenceOfKnownKeyWhenKeyChainIsNotRecoverable) {
   const DownloadKeysResponseHandler::ProcessedResponse processed_response =
       handler().ProcessResponse(
           /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
@@ -310,7 +310,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 }
 
 // In this scenario client already has most recent trusted vault key.
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfNewKeys) {
+TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenceOfNewKeys) {
   const DownloadKeysResponseHandler::ProcessedResponse processed_response =
       handler().ProcessResponse(
           /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
@@ -339,7 +339,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleCorruptedResponseProto) {
 
 // Client expects that the sync security domain membership exists, but the
 // response indicates it doesn't by having no memberships.
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfMemberships) {
+TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenceOfMemberships) {
   EXPECT_THAT(handler()
                   .ProcessResponse(
                       /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
@@ -350,7 +350,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfMemberships) {
 }
 
 // Same as above, but there is a different security domain membership.
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfSyncMembership) {
+TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenceOfSyncMembership) {
   trusted_vault_pb::SecurityDomainMember member;
   AddSecurityDomainMembership(
       "other_domain", MakeTestKeyPair()->public_key(),

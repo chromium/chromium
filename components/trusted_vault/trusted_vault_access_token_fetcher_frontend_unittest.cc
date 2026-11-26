@@ -176,7 +176,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest, ShouldAllowMultipleFetches) {
 
 // Regression test for crbug.com/427316421.
 TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
-       ShouldHandleDestructionWhenFullfillingPendingRequests) {
+       ShouldHandleDestructionWhenFulfillingPendingRequests) {
   std::unique_ptr<TrustedVaultAccessTokenFetcherFrontend> frontend =
       std::make_unique<TrustedVaultAccessTokenFetcherFrontend>(
           identity_env()->identity_manager());

@@ -104,7 +104,7 @@ TEST(ProtoEnumConversionsTest, GetIssuerString) {
   TestEnumStringsNonEmpty(sync_pb::CardIssuer::Issuer);
 }
 
-TEST(ProtoEnumConversionsTest, GetPowerBookmakrPowerTypeString) {
+TEST(ProtoEnumConversionsTest, GetPowerBookmarkPowerTypeString) {
   TestEnumStringsNonEmpty(sync_pb::PowerBookmarkSpecifics::PowerType);
 }
 

@@ -846,7 +846,7 @@ class ClientTagBasedRemoteUpdateHandlerForNonIncrementalTest
 };
 
 TEST_F(ClientTagBasedRemoteUpdateHandlerForNonIncrementalTest,
-       ShouldNotReuploadEntitesOnReencryption) {
+       ShouldNotReuploadEntitiesOnReencryption) {
   sync_pb::DataTypeState data_type_state = GenerateDataTypeState();
   data_type_state.set_encryption_key_name("encryption_key_name");
 

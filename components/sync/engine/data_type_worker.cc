@@ -10,6 +10,7 @@
 #include <map>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -37,6 +38,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/engine/bookmark_update_preprocessing.h"
 #include "components/sync/engine/cancelation_signal.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_contribution.h"
 #include "components/sync/engine/commit_contribution_impl.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
@@ -460,8 +462,8 @@ void DataTypeWorker::OnCryptographerChange() {
   // Always try to decrypt, regardless of `encryption_enabled_`. This might
   // add some elements to `pending_updates_`.
   DecryptStoredEntities();
-  bool had_oudated_key_name = UpdateTypeEncryptionKeyName();
-  if (had_oudated_key_name || !pending_updates_.empty()) {
+  bool had_outdated_key_name = UpdateTypeEncryptionKeyName();
+  if (had_outdated_key_name || !pending_updates_.empty()) {
     // Push the newly decrypted updates and/or the new key name to the
     // processor.
     SendPendingUpdatesToProcessorIfReady();

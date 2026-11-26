@@ -1004,7 +1004,7 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldTransitToCustomPassphrase) {
 // determined by the size of encryption_keybag). It's a requirement because
 // receiving unknown passphrase type might mean that some newer client switched
 // to the new passphrase type.
-TEST_F(NigoriSyncBridgeImplTest, ShouldFailOnUnknownPassprase) {
+TEST_F(NigoriSyncBridgeImplTest, ShouldFailOnUnknownPassphrase) {
   EntityData entity_data;
   *entity_data.specifics.mutable_nigori() =
       sync_pb::NigoriSpecifics::default_instance();
@@ -1407,8 +1407,8 @@ TEST_F(NigoriSyncBridgeImplTest,
   // Prepare local data with keystore keys, but without initialized specifics.
   const KeyParamsForTesting kKeystoreKeyParams =
       KeystoreKeyParamsForTesting(kRawKeystoreKey);
-  NigoriState unitialized_state_with_keystore_keys;
-  unitialized_state_with_keystore_keys.keystore_keys_cryptographer =
+  NigoriState uninitialized_state_with_keystore_keys;
+  uninitialized_state_with_keystore_keys.keystore_keys_cryptographer =
       KeystoreKeysCryptographer::FromKeystoreKeys(
           {kKeystoreKeyParams.password});
 
@@ -1416,7 +1416,7 @@ TEST_F(NigoriSyncBridgeImplTest,
   nigori_local_data.mutable_data_type_state()->set_initial_sync_state(
       sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   *nigori_local_data.mutable_nigori_model() =
-      unitialized_state_with_keystore_keys.ToLocalProto();
+      uninitialized_state_with_keystore_keys.ToLocalProto();
 
   // Upon startup bridge should attempt to commit keystore nigori again.
   EXPECT_CALL(*processor(), Put(HasKeystoreNigori()));

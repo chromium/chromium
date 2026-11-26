@@ -302,7 +302,7 @@ TEST_F(UserEventSyncBridgeTest, HandleGlobalIdChange) {
   EXPECT_THAT(GetAllDataForDebugging(), IsEmpty());
 }
 
-TEST_F(UserEventSyncBridgeTest, MulipleEventsChanging) {
+TEST_F(UserEventSyncBridgeTest, MultipleEventsChanging) {
   WaitUntilModelReadyToSync();
 
   constexpr int64_t first_id = 11;
