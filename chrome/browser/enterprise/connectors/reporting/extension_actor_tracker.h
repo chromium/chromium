@@ -51,7 +51,9 @@ class ExtensionActorTracker
   // `browser_context`.
   static bool IsEnabled(content::BrowserContext* browser_context);
 
-  // Marks `web_contents` as acted on by `extension_id` via `command`.
+  // Marks `web_contents` as acted on by `extension_id` via `command`. Does
+  // nothing for the built-in PDF Viewer: it navigates the links a user clicks,
+  // so the user is the actor.
   static void SetActiveActor(content::WebContents* web_contents,
                              const extensions::ExtensionId& extension_id,
                              std::string_view command);

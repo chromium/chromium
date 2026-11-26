@@ -29,8 +29,20 @@ namespace enterprise_connectors {
 
 namespace {
 
-bool IsExtensionOrigin(const std::optional<url::Origin>& origin) {
-  return origin.has_value() && origin->scheme() == extensions::kExtensionScheme;
+// Returns true if `extension_id` is the built-in PDF Viewer. It navigates the
+// links a user clicks in a PDF with `chrome.tabs.update()` and
+// `chrome.tabs.create()`, so the user is the actor, not the PDF Viewer.
+// TODO(crbug.com/570065942): Other extensions that navigate for the user (e.g.
+// other built-in extensions, third-party document viewers) are still recorded
+// as the actor. Track these false positives and exclude them if needed.
+bool IsPdfViewer(std::string_view extension_id) {
+  return extension_id == extension_misc::kPdfExtensionId;
+}
+
+// Returns true if `origin` is the origin of an extension that can be the actor.
+bool IsActorExtensionOrigin(const url::Origin& origin) {
+  return origin.scheme() == extensions::kExtensionScheme &&
+         !IsPdfViewer(origin.host());
 }
 
 // Returns true if `transition` is a reload or a back/forward navigation.
@@ -109,7 +121,7 @@ void ExtensionActorTracker::SetActiveActor(
     content::WebContents* web_contents,
     const extensions::ExtensionId& extension_id,
     std::string_view command) {
-  if (!web_contents || !IsTracked(command)) {
+  if (!web_contents || !IsTracked(command) || IsPdfViewer(extension_id)) {
     return;
   }
   // Skip about:blank, which `tabs.create` commits first, except for history.
@@ -167,9 +179,12 @@ void ExtensionActorTracker::DidFinishNavigation(
 
   // A reload or back/forward keeps the original initiator, even when the user
   // starts it (e.g. by bypassing an interstitial).
-  if (IsExtensionOrigin(navigation_handle->GetInitiatorOrigin()) &&
+  const std::optional<url::Origin>& initiator_origin =
+      navigation_handle->GetInitiatorOrigin();
+  if (initiator_origin.has_value() &&
+      IsActorExtensionOrigin(*initiator_origin) &&
       !IsReloadOrHistoryTransition(navigation_handle->GetPageTransition())) {
-    active_actor_id_ = navigation_handle->GetInitiatorOrigin()->host();
+    active_actor_id_ = initiator_origin->host();
     return;
   }
 

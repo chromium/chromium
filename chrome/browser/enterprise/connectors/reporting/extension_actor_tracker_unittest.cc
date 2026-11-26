@@ -24,6 +24,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -120,6 +122,41 @@ TEST_F(ExtensionActorTrackerTest, ScriptInjectionSetsActor) {
   ExtensionActorTracker::SetActiveActor(web_contents(), "extension_alpha",
                                         "scripting.executeScript");
   EXPECT_EQ("extension_alpha",
+            ExtensionActorTracker::GetActiveActor(web_contents()));
+}
+
+// The built-in PDF Viewer navigates the links a user clicks in a PDF, so
+// neither its commands nor its navigations make it the actor.
+TEST_F(ExtensionActorTrackerTest, PdfViewerIsNotAnActor) {
+  ExtensionActorTracker::SetActiveActor(
+      web_contents(), extension_misc::kPdfExtensionId, "tabs.update");
+  EXPECT_EQ(std::nullopt,
+            ExtensionActorTracker::GetActiveActor(web_contents()));
+
+  // `chrome.tabs.update()` makes the calling extension the initiator of the
+  // navigation.
+  NiceMock<content::MockNavigationHandle> pdf_link_nav(web_contents());
+  pdf_link_nav.set_url(GURL("https://example.com/target"));
+  pdf_link_nav.set_has_committed(true);
+  pdf_link_nav.set_is_in_primary_main_frame(true);
+  pdf_link_nav.set_initiator_origin(
+      extensions::Extension::CreateOriginFromExtensionId(
+          extension_misc::kPdfExtensionId));
+  tracker()->DidFinishNavigation(&pdf_link_nav);
+  EXPECT_EQ(std::nullopt,
+            ExtensionActorTracker::GetActiveActor(web_contents()));
+
+  // The PDF Viewer does not replace another extension's actor, and its
+  // navigation clears that actor like any navigation not started by an
+  // extension.
+  ExtensionActorTracker::SetActiveActor(web_contents(), "extension_alpha",
+                                        "Runtime.evaluate");
+  ExtensionActorTracker::SetActiveActor(
+      web_contents(), extension_misc::kPdfExtensionId, "tabs.update");
+  EXPECT_EQ("extension_alpha",
+            ExtensionActorTracker::GetActiveActor(web_contents()));
+  tracker()->DidFinishNavigation(&pdf_link_nav);
+  EXPECT_EQ(std::nullopt,
             ExtensionActorTracker::GetActiveActor(web_contents()));
 }
 

@@ -423,6 +423,23 @@ TEST_F(EventInitiatorUtilsTest, TabActorIsRecordedWithoutFrameId) {
       ExtensionDownloadAttributionSignal::kTabActor, 1);
 }
 
+// The built-in PDF Viewer is never the tab's actor, so a download from a tab
+// where only it acted has no extension signal.
+TEST_F(EventInitiatorUtilsTest, PdfViewerIsNotATabActorSignal) {
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  ExtensionActorTracker::SetActiveActor(
+      web_contents, extension_misc::kPdfExtensionId, "tabs.update");
+
+  base::HistogramTester histogram_tester;
+  auto item = CreateDownload(url::Origin::Create(GURL("https://example.com")),
+                             web_contents);
+  EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupDownloadResultHistogram,
+      ExtensionDownloadAttributionSignal::kNone, 1);
+}
+
 TEST_F(EventInitiatorUtilsTest, TabWithoutActorIsNotAnExtensionSignal) {
   content::WebContents* web_contents =
       web_contents_factory_.CreateWebContents(&profile_);
