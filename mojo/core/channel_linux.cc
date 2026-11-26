@@ -971,4 +971,14 @@ void ChannelLinux::SetSharedMemParameters(bool enabled, uint32_t num_pages) {
   g_shared_mem_pages.store(num_pages);
 }
 
+bool ChannelLinux::IsSharedMemWriterForTesting() {
+  base::AutoLock lock(memfd_write_lock_);
+  return shared_mem_writer_;
+}
+
+bool ChannelLinux::HasSharedMemReaderForTesting() const {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  return shared_read_buffer_ && read_notifier_;
+}
+
 }  // namespace mojo::core

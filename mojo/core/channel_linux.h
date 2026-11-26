@@ -60,6 +60,12 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
   void StartOnIOThread() override;
   void ShutDownOnIOThread() override;
 
+  // Can be called from any thread.
+  bool IsSharedMemWriterForTesting();
+
+  // Must be called from the IO thread.
+  bool HasSharedMemReaderForTesting() const;
+
  private:
   ~ChannelLinux() override;
 

@@ -58,6 +58,18 @@
 #include "base/mac/process_requirement.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/numerics/byte_conversions.h"
+#include "base/rand_util.h"
+#include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
+#include "mojo/core/channel_linux.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#endif
+
 namespace mojo::core {
 
 class TestChannel : public Channel {
@@ -1979,5 +1991,310 @@ TEST(ChannelTest, NoUpgradeOfferWithoutMultipleNotifiers) {
   receiver->ShutDown();
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+namespace {
+
+// Every message sent by the upgrade tests starts with a uint32_t index. The
+// delegate verifies that indices arrive strictly in order without gaps or
+// duplicates, regardless of whether a message came via the socket or via the
+// shared memory buffer.
+class OrderCheckingIpczChannelDelegate : public Channel::Delegate {
+ public:
+  OrderCheckingIpczChannelDelegate() = default;
+
+  OrderCheckingIpczChannelDelegate(const OrderCheckingIpczChannelDelegate&) =
+      delete;
+  OrderCheckingIpczChannelDelegate& operator=(
+      const OrderCheckingIpczChannelDelegate&) = delete;
+
+  bool IsIpczTransport() const override { return true; }
+
+  void OnChannelMessage(
+      const void* payload,
+      size_t payload_size,
+      std::vector<PlatformHandle> handles,
+      scoped_refptr<ipcz_driver::Envelope> envelope) override {
+    base::AutoLock lock(lock_);
+    uint32_t index = 0;
+    if (payload_size < sizeof(index)) {
+      has_error_ = true;
+      event_.Signal();
+      return;
+    }
+    // SAFETY: The Channel::Delegate contract guarantees that `payload` points
+    // to `payload_size` valid bytes.
+    const auto payload_bytes = UNSAFE_BUFFERS(
+        base::span(static_cast<const uint8_t*>(payload), payload_size));
+    index = base::U32FromNativeEndian(payload_bytes.first<sizeof(index)>());
+    EXPECT_EQ(index, num_received_);
+    ++num_received_;
+    if (target_ > 0 && num_received_ >= target_) {
+      event_.Signal();
+    }
+  }
+
+  void OnChannelError(Channel::Error error) override {
+    base::AutoLock lock(lock_);
+    has_error_ = true;
+    event_.Signal();
+  }
+
+  // Waits until messages with indices [0, `count`) have been received.
+  // Returns false on timeout or channel error.
+  [[nodiscard]] bool WaitForMessages(uint32_t count) {
+    const base::TimeTicks deadline =
+        base::TimeTicks::Now() + TestTimeouts::action_max_timeout();
+    while (true) {
+      {
+        base::AutoLock lock(lock_);
+        if (has_error_) {
+          return false;
+        }
+        if (num_received_ >= count) {
+          return true;
+        }
+        target_ = count;
+      }
+      const base::TimeDelta remaining = deadline - base::TimeTicks::Now();
+      if (!remaining.is_positive() || !event_.TimedWait(remaining)) {
+        return false;
+      }
+    }
+  }
+
+  bool has_error() {
+    base::AutoLock lock(lock_);
+    return has_error_;
+  }
+
+ private:
+  base::Lock lock_;
+  base::WaitableEvent event_{base::WaitableEvent::ResetPolicy::AUTOMATIC};
+  uint32_t num_received_ GUARDED_BY(lock_) = 0;
+  uint32_t target_ GUARDED_BY(lock_) = 0;
+  bool has_error_ GUARDED_BY(lock_) = false;
+};
+
+// Writes messages with consecutive indices to a channel. Must be used from a
+// single thread at a time so that the order of indices matches the order of
+// channel sequence numbers.
+class IndexedWriter {
+ public:
+  explicit IndexedWriter(scoped_refptr<Channel> channel)
+      : channel_(std::move(channel)) {}
+
+  // Writes `count` messages.
+  void Write(uint32_t count) {
+    for (uint32_t i = 0; i < count; ++i) {
+      const uint32_t index = next_index_++;
+      std::vector<uint8_t> data(32 + (index % 7) * 16,
+                                static_cast<uint8_t>(index));
+      base::span(data).first<sizeof(index)>().copy_from(
+          base::U32ToNativeEndian(index));
+      channel_->WriteNextIpczMessage(data, {});
+    }
+  }
+
+  uint32_t num_written() const { return next_index_; }
+
+  void ReleaseChannel() { channel_.reset(); }
+
+ private:
+  scoped_refptr<Channel> channel_;
+  uint32_t next_index_ = 0;
+};
+
+// How the two sides of a channel offer the upgrade.
+enum class OfferMode {
+  // Both sides offer at the same time from separate threads.
+  kBothSimultaneously,
+  // Side A offers. Side B offers a bit later from another thread, racing with
+  // side B's IO thread making the reciprocal offer upon receiving A's offer.
+  kSecondSideRacesWithReciprocal,
+  // Only side A offers, side B only makes the reciprocal offer, like on
+  // Broker -> NonBroker channels.
+  kOneSideOnly,
+};
+
+class ChannelUpgradeTest : public testing::TestWithParam<OfferMode> {
+ protected:
+  void SetUp() override {
+    if (!Channel::SupportsMultipleNotifiers() ||
+        !ChannelLinux::KernelSupportsUpgradeRequirements()) {
+      GTEST_SKIP() << "Channel upgrades are not supported.";
+    }
+    feature_list_.InitAndEnableFeature(kMojoUseEventFd);
+    ChannelLinux::SetSharedMemParameters(/*enabled=*/true, /*num_pages=*/4);
+    ASSERT_TRUE(Channel::SupportsChannelUpgrade());
+  }
+
+  void RunOnce(OfferMode mode);
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+bool IsSharedMemWriter(const scoped_refptr<Channel>& channel) {
+  return static_cast<ChannelLinux*>(channel.get())
+      ->IsSharedMemWriterForTesting();
+}
+
+void ChannelUpgradeTest::RunOnce(OfferMode mode) {
+  constexpr uint32_t kBatch = 50;
+  constexpr int kMaxRounds = 8;
+
+  // Delegates must outlive the channels, which are destroyed on the IO threads.
+  OrderCheckingIpczChannelDelegate delegate_a;
+  OrderCheckingIpczChannelDelegate delegate_b;
+
+  // Accessed by tasks on the offer threads below, so it must outlive them.
+  base::WaitableEvent go;
+
+  base::Thread io_a("io_a");
+  base::Thread io_b("io_b");
+  ASSERT_TRUE(io_a.StartWithOptions(
+      base::Thread::Options(base::MessagePumpType::IO, 0)));
+  ASSERT_TRUE(io_b.StartWithOptions(
+      base::Thread::Options(base::MessagePumpType::IO, 0)));
+  base::Thread offer_a("offer_a");
+  base::Thread offer_b("offer_b");
+  ASSERT_TRUE(offer_a.Start());
+  ASSERT_TRUE(offer_b.Start());
+
+  PlatformChannel platform_channel;
+  scoped_refptr<Channel> channel_a = Channel::Create(
+      &delegate_a, ConnectionParams(platform_channel.TakeLocalEndpoint()),
+      Channel::HandlePolicy::kAcceptHandles, io_a.task_runner());
+  scoped_refptr<Channel> channel_b = Channel::Create(
+      &delegate_b, ConnectionParams(platform_channel.TakeRemoteEndpoint()),
+      Channel::HandlePolicy::kAcceptHandles, io_b.task_runner());
+  channel_a->Start();
+  channel_b->Start();
+
+  IndexedWriter writer_a(channel_a);
+  IndexedWriter writer_b(channel_b);
+
+  // Tears everything down, also when an ASSERT returns early.
+  absl::Cleanup teardown = [&] {
+    // Unblock and finish the offer tasks, which use `go` and hold channel
+    // references.
+    go.Signal();
+    offer_a.Stop();
+    offer_b.Stop();
+    writer_a.ReleaseChannel();
+    writer_b.ReleaseChannel();
+    // Hand the last references over to the IO threads, so that the channels
+    // are shut down and destroyed there.
+    auto shut_down = [](scoped_refptr<Channel> channel) {
+      channel->ShutDown();
+    };
+    io_a.task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(shut_down, std::move(channel_a)));
+    io_b.task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(shut_down, std::move(channel_b)));
+    io_a.Stop();
+    io_b.Stop();
+  };
+  ASSERT_TRUE(channel_a->is_for_ipcz());
+
+  // Prepare threads (`offer_a` and `offer_b`) for sending offers when `go` is
+  // fired.
+  offer_a.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WaitableEvent* go, scoped_refptr<Channel> c) {
+                       go->Wait();
+                       c->OfferChannelUpgrade();
+                     },
+                     &go, channel_a));
+  switch (mode) {
+    case OfferMode::kBothSimultaneously:
+      offer_b.task_runner()->PostTask(
+          FROM_HERE, base::BindOnce(
+                         [](base::WaitableEvent* go, scoped_refptr<Channel> c) {
+                           go->Wait();
+                           c->OfferChannelUpgrade();
+                         },
+                         &go, channel_b));
+      break;
+    case OfferMode::kSecondSideRacesWithReciprocal:
+      offer_b.task_runner()->PostTask(
+          FROM_HERE, base::BindOnce(
+                         [](base::WaitableEvent* go, scoped_refptr<Channel> c) {
+                           go->Wait();
+                           base::PlatformThread::Sleep(base::Microseconds(
+                               base::RandIntInclusive(0, 2000)));
+                           c->OfferChannelUpgrade();
+                         },
+                         &go, channel_b));
+      break;
+    case OfferMode::kOneSideOnly:
+      break;
+  }
+  go.Signal();
+  writer_a.Write(kBatch);
+  writer_b.Write(kBatch);
+  ASSERT_TRUE(delegate_b.WaitForMessages(writer_a.num_written()));
+  ASSERT_TRUE(delegate_a.WaitForMessages(writer_b.num_written()));
+  offer_a.FlushForTesting();
+  offer_b.FlushForTesting();
+
+  // Ping-pong to guarantee both directions are upgraded. Usually they would
+  // happen by this point. Here, each side waits for the previous to finish all
+  // sending. This way UPGRADE_ACCEPT messages are not queued behind, unless
+  // they are lost.
+  for (int round = 0; round < kMaxRounds; ++round) {
+    writer_a.Write(kBatch);
+    ASSERT_TRUE(delegate_b.WaitForMessages(writer_a.num_written()));
+    writer_b.Write(kBatch);
+    ASSERT_TRUE(delegate_a.WaitForMessages(writer_b.num_written()));
+    if (IsSharedMemWriter(channel_a) && IsSharedMemWriter(channel_b)) {
+      break;
+    }
+  }
+  EXPECT_TRUE(IsSharedMemWriter(channel_a));
+  EXPECT_TRUE(IsSharedMemWriter(channel_b));
+
+  EXPECT_FALSE(delegate_a.has_error());
+  EXPECT_FALSE(delegate_b.has_error());
+
+  // Each side has a reader installed.
+  auto expect_reader = [](scoped_refptr<Channel> channel) {
+    EXPECT_TRUE(static_cast<ChannelLinux*>(channel.get())
+                    ->HasSharedMemReaderForTesting());
+  };
+  io_a.task_runner()->PostTask(FROM_HERE,
+                               base::BindOnce(expect_reader, channel_a));
+  io_b.task_runner()->PostTask(FROM_HERE,
+                               base::BindOnce(expect_reader, channel_b));
+  io_a.FlushForTesting();
+  io_b.FlushForTesting();
+}
+
+}  // namespace
+
+// Verifies that upgrade offers issued by both sides of a channel at the same
+// time, or racing with the reciprocal offer, are neither lost nor leave the
+// channel in an inconsistent state, and that message order is preserved
+// throughout. Repeated to explore different interleavings.
+TEST_P(ChannelUpgradeTest, ConcurrentOffers) {
+  constexpr int kIterations = 20;
+  for (int i = 0; i < kIterations; ++i) {
+    SCOPED_TRACE(i);
+    RunOnce(GetParam());
+    if (HasFatalFailure()) {
+      return;
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChannelUpgradeTest,
+    testing::Values(OfferMode::kBothSimultaneously,
+                    OfferMode::kSecondSideRacesWithReciprocal,
+                    OfferMode::kOneSideOnly));
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace mojo::core
