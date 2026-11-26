@@ -2728,6 +2728,16 @@ Response NetworkHandler::EmulateNetworkConditions(
     std::optional<double> packet_loss,
     std::optional<int> packet_queue_length,
     std::optional<bool> packet_reordering) {
+  // The renderer doesn't support this command for dedicated workers, as it
+  // overrides the network state of the whole process. Reject it before it
+  // applies the conditions to the requests of the worker, so that it has no
+  // effect when it fails. Network.emulateNetworkConditionsByRule is the
+  // command that dedicated workers support.
+  if (scoped_refptr<DevToolsAgentHostImpl> host =
+          DevToolsAgentHostImpl::GetForId(host_id_);
+      host && host->GetType() == DevToolsAgentHost::kTypeDedicatedWorker) {
+    return Response::ServerError("Not supported");
+  }
   std::vector<network::mojom::MatchedNetworkConditionsPtr> network_conditions;
   bool throttling_enabled = offline || latency > 0 || download_throughput > 0 ||
                             upload_throughput > 0;
@@ -4028,6 +4038,52 @@ void NetworkHandler::SetNetworkConditions(
   background_sync_restorer_.reset(
       offline ? new BackgroundSyncRestorer(host_id_, storage_partition_)
               : nullptr);
+}
+
+base::OnceClosure NetworkHandler::TakeNetworkConditionsCleanup() {
+  std::vector<base::OnceClosure> cleanups;
+  if (network_conditions_configured_ && storage_partition_ &&
+      !devtools_token_.is_empty()) {
+    network_conditions_configured_ = false;
+    cleanups.push_back(base::BindOnce(
+        [](base::WeakPtr<StoragePartitionImpl> storage_partition,
+           const base::UnguessableToken& token,
+           const base::UnguessableToken& client_id) {
+          if (storage_partition) {
+            storage_partition->GetNetworkContext()->SetNetworkConditions(
+                token, client_id, {});
+          }
+        },
+        storage_partition_, devtools_token_, throttling_client_id_));
+  }
+  if (socket_layer_storage_partition_) {
+    cleanups.push_back(base::BindOnce(
+        [](base::WeakPtr<StoragePartitionImpl> storage_partition,
+           const base::UnguessableToken& token,
+           const base::UnguessableToken& client_id) {
+          if (storage_partition) {
+            storage_partition->GetNetworkContext()
+                ->ClearSocketLayerNetworkConditions(token, client_id);
+          }
+        },
+        socket_layer_storage_partition_, socket_layer_throttling_token_,
+        throttling_client_id_));
+    // ClearSocketLayerNetworkConditions() then has nothing to clear.
+    socket_layer_storage_partition_ = nullptr;
+    socket_layer_throttling_token_ = base::UnguessableToken();
+    socket_layer_conditions_.reset();
+    network_conditions_order_.reset();
+  }
+  if (cleanups.empty()) {
+    return base::OnceClosure();
+  }
+  return base::BindOnce(
+      [](std::vector<base::OnceClosure> cleanups) {
+        for (base::OnceClosure& cleanup : cleanups) {
+          std::move(cleanup).Run();
+        }
+      },
+      std::move(cleanups));
 }
 
 // The sockets of the session's requests apply the conditions of its first rule

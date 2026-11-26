@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_RENDERER_CHANNEL_H_
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_RENDERER_CHANNEL_H_
 
+#include <string>
+
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -60,6 +62,12 @@ class DevToolsRendererChannel : public blink::mojom::DevToolsAgentHost {
   void InspectElement(const gfx::Point& point);
   using GetUniqueFormCallback = base::OnceCallback<void(uint64_t)>;
   void ForceDetachWorkerSessions();
+  // Clears the network conditions that outlived the sessions of the workers
+  // whose owning frame matches `parent_frame_id`. Use this when workers that
+  // were not destroyed run again without a session (e.g. when their page is
+  // restored from the back/forward cache).
+  void ClearPreservedWorkerNetworkConditions(
+      const std::string& parent_frame_id);
 
   using ChildTargetCreatedCallback =
       base::RepeatingCallback<void(DevToolsAgentHostImpl*,

@@ -1,0 +1,10 @@
+Verify that preserved network conditions on a dedicated worker are cleared when the root DevTools session of the client that set them is disposed.
+emulateNetworkConditionsByRule succeeded
+Matching requests failed before navigation: true
+Matching requests succeeded before navigation: false
+Worker session detached
+Matching requests failed after the detach: true
+Matching requests succeeded after the detach: false
+Root session detached
+Matching request succeeded after root session disposed: true
+

@@ -1,7 +1,7 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startURL(
       '/',
-      `Verifies that Network.emulateNetworkConditions stops requests when offline is enabled for dedicated workers.`);
+      `Verifies that Network.emulateNetworkConditionsByRule on the worker session stops requests when offline is enabled for dedicated workers.`);
 
   await dp.Target.setAutoAttach(
       {autoAttach: true, waitForDebuggerOnStart: false, flatten: true});
@@ -25,9 +25,21 @@
 
   await dwdp.Network.enable();
 
-  // Calling Network.emulateNetworkConditions on the main target should affect
-  // the requests that the dedicated worker makes. Workers don't support
-  // emulateNetworkConditions.
+  // The network conditions of the worker session apply to the requests that
+  // the dedicated worker makes. The conditions of the main target don't.
+  await dwdp.Network.emulateNetworkConditionsByRule({
+    matchedNetworkConditions: [{
+      urlPattern: '',
+      offline: true,
+      latency: 0,
+      downloadThroughput: -1,
+      uploadThroughput: -1,
+    }],
+  });
+
+  // Workers don't support emulateNetworkConditions, which overrides
+  // navigator.onLine. Calling it on the main target overrides navigator.onLine
+  // in the dedicated worker too.
   await dp.Network.emulateNetworkConditions({
     downloadThroughput: -1,
     latency: 0,

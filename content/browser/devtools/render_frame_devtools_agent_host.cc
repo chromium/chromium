@@ -580,7 +580,25 @@ void RenderFrameDevToolsAgentHost::ReadyToCommitNavigation(
 
   // Child workers will eventually disconnect, but timing depends on the
   // renderer process. To ensure consistent view over protocol, disconnect them
-  // right now.
+  // right now. Also handle workers of descendant local roots (e.g. OOPIFs)
+  // before UpdateFrameHost() detaches their sessions.
+  if (frame_host_) {
+    std::vector<scoped_refptr<RenderFrameDevToolsAgentHost>> descendant_hosts;
+    frame_host_->ForEachRenderFrameHostImplWithAction(
+        [this, &descendant_hosts](RenderFrameHostImpl* rfh) {
+          if (rfh == frame_host_ || !rfh->is_local_root()) {
+            return RenderFrameHost::FrameIterationAction::kContinue;
+          }
+          if (RenderFrameDevToolsAgentHost* child_host =
+                  FindAgentHost(rfh->frame_tree_node())) {
+            descendant_hosts.push_back(child_host);
+          }
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        });
+    for (const auto& child_host : descendant_hosts) {
+      child_host->GetRendererChannel()->ForceDetachWorkerSessions();
+    }
+  }
   GetRendererChannel()->ForceDetachWorkerSessions();
   UpdateFrameHost(request->GetRenderFrameHost());
   // UpdateFrameHost may destruct |this|.
@@ -704,6 +722,25 @@ void RenderFrameDevToolsAgentHost::RenderFrameHostChanged(
     return;
   UpdateFrameHost(new_host_impl);
   // UpdateFrameHost may destruct |this|.
+}
+
+void RenderFrameDevToolsAgentHost::RenderFrameHostStateChanged(
+    RenderFrameHost* render_frame_host,
+    RenderFrameHost::LifecycleState old_state,
+    RenderFrameHost::LifecycleState new_state) {
+  // ReadyToCommitNavigation() keeps the network conditions of the workers of
+  // the old document until the workers are destroyed. In the back/forward
+  // cache, the workers are frozen and not destroyed. Clear the conditions when
+  // the page is restored, as no session then owns them. Don't clear them when
+  // the page enters the cache: the workers continue to run until the renderer
+  // freezes the page.
+  if (old_state == RenderFrameHost::LifecycleState::kInBackForwardCache &&
+      new_state == RenderFrameHost::LifecycleState::kActive) {
+    GetRendererChannel()->ClearPreservedWorkerNetworkConditions(
+        static_cast<RenderFrameHostImpl*>(render_frame_host)
+            ->GetDevToolsFrameToken()
+            .ToString());
+  }
 }
 
 void RenderFrameDevToolsAgentHost::FrameDeleted(

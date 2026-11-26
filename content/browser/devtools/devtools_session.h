@@ -10,6 +10,7 @@
 #include <string>
 #include <type_traits>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -94,6 +95,11 @@ class DevToolsSession : public protocol::FrontendChannel,
   void SetRuntimeResumeCallback(base::OnceClosure runtime_resume);
   bool IsWaitingForDebuggerOnStart() const;
   void Dispose();
+
+  // Runs `callback` when this session is disposed (e.g. when its client
+  // disconnects), unless the returned subscription is destroyed before that.
+  base::CallbackListSubscription RegisterDisposeCallback(
+      base::OnceClosure callback);
 
   // content::DevToolsAgentHostClientChannel implementation.
   content::DevToolsAgentHost* GetAgentHost() override;
@@ -307,6 +313,7 @@ class DevToolsSession : public protocol::FrontendChannel,
       durable_message_collector_;
   base::RepeatingCallback<void(base::span<const uint8_t>)>
       handle_command_callback_;
+  base::OnceClosureList dispose_callbacks_;
 
   base::WeakPtrFactory<DevToolsSession> weak_factory_{this};
 };

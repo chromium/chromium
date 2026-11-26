@@ -546,14 +546,20 @@ URLLoader::URLLoader(
   }
   SetUpUrlRequestCallbacks(shared_dictionary_manager);
 
+  // The throttling profile of the factory, which the browser sets, takes
+  // precedence over the one of the request, which the renderer sets.
+  const std::optional<base::UnguessableToken>& throttling_profile_id =
+      factory_params_->devtools_throttling_profile_id
+          ? factory_params_->devtools_throttling_profile_id
+          : request.throttling_profile_id;
   throttling_token_ = network::ScopedThrottlingToken::MaybeCreate(
-      url_request_->net_log().source().id, request.throttling_profile_id);
+      url_request_->net_log().source().id, throttling_profile_id);
 
   // Route through isolated session's delayed sockets if one exists for
   // this request's throttling profile and URL.
-  if (auto handle = request.throttling_profile_id
+  if (auto handle = throttling_profile_id
                         ? context.GetIsolatedTransactionFactory(
-                              *request.throttling_profile_id, request.url)
+                              *throttling_profile_id, request.url)
                         : nullptr) {
     net::HttpTransactionFactoryOverride::Set(url_request_.get(),
                                              std::move(handle));

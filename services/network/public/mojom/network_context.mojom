@@ -1034,6 +1034,14 @@ struct URLLoaderFactoryParams {
   // context). When false, requests with a non-kNone `storage_access_api_status`
   // are rejected and Storage Access Headers are disabled.
   bool is_storage_access_potentially_allowed = true;
+
+  // If set, the DevTools network conditions of this throttling profile apply
+  // to all requests of this factory, and
+  // `ResourceRequest::throttling_profile_id` is ignored. The browser sets this
+  // for contexts whose DevTools target owns the network conditions of their
+  // requests (e.g. dedicated workers), so that the conditions don't depend on
+  // a token that the renderer sets.
+  mojo_base.mojom.UnguessableToken? devtools_throttling_profile_id;
 };
 
 struct IdAndAllowlistedPatterns {

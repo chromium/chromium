@@ -5,6 +5,11 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_WORKER_OR_WORKLET_DEVTOOLS_AGENT_HOST_H_
 #define CONTENT_BROWSER_DEVTOOLS_WORKER_OR_WORKLET_DEVTOOLS_AGENT_HOST_H_
 
+#include <map>
+
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
@@ -53,6 +58,20 @@ class CONTENT_EXPORT WorkerOrWorkletDevToolsAgentHost
     return devtools_worker_token_;
   }
 
+  // Keeps the network conditions that the attached sessions emulate after the
+  // sessions detach. Call this before a forced detach of the sessions of a
+  // worker that continues to run. The conditions are cleared when the worker
+  // disconnects, when a new session attaches, or when the client that set them
+  // disconnects. Only dedicated workers have sessions with network conditions
+  // (see DedicatedWorkerDevToolsAgentHost::AttachSession()), so this does
+  // nothing for worklets.
+  void PreserveNetworkConditions();
+  // Clears the network conditions that PreserveNetworkConditions() kept.
+  void ClearPreservedNetworkConditions();
+  // Clears the preserved network conditions that belong to `root_session`.
+  void ClearPreservedNetworkConditionsForRootSession(
+      DevToolsSession* root_session);
+
  protected:
   WorkerOrWorkletDevToolsAgentHost(
       int process_id,
@@ -80,6 +99,20 @@ class CONTENT_EXPORT WorkerOrWorkletDevToolsAgentHost
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       process_observation_{this};
   scoped_refptr<WorkerOrWorkletDevToolsAgentHost> self_keepalive_;
+
+  // Network conditions that outlive the session that set them.
+  struct PreservedNetworkConditions {
+    // The root session of the client that set the conditions.
+    raw_ptr<DevToolsSession> root_session;
+    // Clears the conditions.
+    base::OnceClosure cleanup;
+    // Clears the conditions when the client that set them disconnects.
+    base::CallbackListSubscription client_subscription;
+  };
+  void ClearPreservedNetworkConditionsOfClient(int id);
+
+  std::map<int, PreservedNetworkConditions> preserved_network_conditions_;
+  int next_preserved_network_conditions_id_ = 0;
 };
 
 }  // namespace content

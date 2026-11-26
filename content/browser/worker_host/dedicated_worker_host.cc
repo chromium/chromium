@@ -842,6 +842,9 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
   // Worker subresources are not outermost-main-frame requests even when their
   // creator frame is outermost.
   factory_params->is_outermost_main_frame = false;
+  // The DevTools target of this worker owns the network conditions that
+  // DevTools emulates for the worker's requests.
+  factory_params->devtools_throttling_profile_id = GetToken().value();
   if (is_opaque_worker) {
     factory_params->require_cross_site_request_for_cookies = true;
     if (policy_container_host_ &&

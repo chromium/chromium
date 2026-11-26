@@ -1,0 +1,7 @@
+Verify that preserved network conditions on a dedicated worker are cleared when the page is restored from the back/forward cache without a DevTools session reattaching to the worker.
+emulateNetworkConditionsByRule succeeded
+Before navigation: fetch failed
+Worker session detached
+Navigation type: BackForwardCacheRestore
+After BFCache restore: fetch succeeded with status 200
+

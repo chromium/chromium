@@ -335,6 +335,13 @@ class NetworkHandler : public DevToolsDomainHandler,
 
   void OnPolicyContainerHostUpdated();
   bool enabled() const { return enabled_; }
+  // Gives up the network conditions that this session set, without clearing
+  // them: Disable() then leaves them in place. Returns a closure that clears
+  // them, or a null closure if the session set none. This lets the conditions
+  // outlive a session that is detached before its target is destroyed.
+  base::OnceClosure TakeNetworkConditionsCleanup();
+  // The root session of the client that owns this handler's session.
+  DevToolsSession& root_session() const { return *root_session_; }
   // Returns whether this session's client may influence a request to `url`
   // (extra headers, Referer override, cache / service worker bypass). Mirrors
   // the attach policy enforced by ForceDetachRestrictedSessions().

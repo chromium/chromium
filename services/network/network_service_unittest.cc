@@ -1860,6 +1860,71 @@ TEST_F(NetworkServiceTestWithService, SetNetworkConditions) {
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
 }
 
+// The throttling profile of the factory takes precedence over the throttling
+// profile of the request.
+TEST_F(NetworkServiceTestWithService,
+       FactoryDevToolsThrottlingProfileTakesPrecedence) {
+  const base::UnguessableToken offline_profile_id =
+      base::UnguessableToken::Create();
+  const base::UnguessableToken online_profile_id =
+      base::UnguessableToken::Create();
+  const base::UnguessableToken client_id = base::UnguessableToken::Create();
+  CreateNetworkContext();
+  {
+    std::vector<mojom::MatchedNetworkConditionsPtr> network_conditions;
+    network_conditions.emplace_back(mojom::MatchedNetworkConditions::New());
+    network_conditions.back()->conditions = mojom::NetworkConditions::New();
+    network_conditions.back()->conditions->offline = true;
+    context()->SetNetworkConditions(offline_profile_id, client_id,
+                                    std::move(network_conditions));
+  }
+
+  ResourceRequest request;
+  request.url = test_server()->GetURL("/nocache.html");
+  request.request_initiator =
+      url::Origin::Create(GURL("https://initiator.example.com"));
+  request.method = "GET";
+
+  // Loads `request` with a factory that has `factory_profile_id` as its
+  // throttling profile, and returns the net error.
+  auto load = [&](const base::UnguessableToken& factory_profile_id) {
+    client_ = std::make_unique<TestURLLoaderClient>();
+    mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+    mojom::URLLoaderFactoryParamsPtr params =
+        mojom::URLLoaderFactoryParams::New();
+    params->process_id = OriginatingProcessId::browser();
+    params->request_initiator_origin_lock =
+        url::Origin::Create(GURL("https://initiator.example.com"));
+    params->is_orb_enabled = false;
+    params->devtools_throttling_profile_id = factory_profile_id;
+    network_context_->CreateURLLoaderFactory(
+        loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+    loader_.reset();
+    loader_factory->CreateLoaderAndStart(
+        loader_.BindNewPipeAndPassReceiver(), 1, mojom::kURLLoadOptionNone,
+        request, client_->CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+    client_->RunUntilComplete();
+    return client_->completion_status().error_code;
+  };
+
+  // The request has no profile: the profile of the factory applies.
+  EXPECT_EQ(net::ERR_INTERNET_DISCONNECTED, load(offline_profile_id));
+
+  // The request has a profile without conditions: the profile of the factory
+  // applies.
+  request.throttling_profile_id = online_profile_id;
+  EXPECT_EQ(net::ERR_INTERNET_DISCONNECTED, load(offline_profile_id));
+
+  // The request has the offline profile: the profile of the factory, which has
+  // no conditions, applies.
+  request.throttling_profile_id = offline_profile_id;
+  EXPECT_EQ(net::OK, load(online_profile_id));
+
+  context()->SetNetworkConditions(offline_profile_id, client_id, {});
+}
+
 // Integration test confirming that the SetTrustTokenKeyCommitments IPC is wired
 // up correctly by verifying that it's possible to read a value previously
 // passed to the setter.

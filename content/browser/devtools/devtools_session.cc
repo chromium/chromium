@@ -318,6 +318,7 @@ DevToolsSession::~DevToolsSession() {
   if (dispatcher_) {
     Dispose();
   }
+  dispose_callbacks_.Notify();
 }
 
 void DevToolsSession::SetAgentHost(DevToolsAgentHostImpl* agent_host) {
@@ -345,6 +346,15 @@ void DevToolsSession::Dispose() {
   while (!handlers_.empty()) {
     handlers_.erase(std::prev(handlers_.end()));
   }
+  // Notify after disabling and destroying `handlers_` so no callback can be
+  // registered during handler teardown and left with a dangling pointer to
+  // `this`.
+  dispose_callbacks_.Notify();
+}
+
+base::CallbackListSubscription DevToolsSession::RegisterDisposeCallback(
+    base::OnceClosure callback) {
+  return dispose_callbacks_.Add(std::move(callback));
 }
 
 DevToolsSession* DevToolsSession::GetRootSession() {

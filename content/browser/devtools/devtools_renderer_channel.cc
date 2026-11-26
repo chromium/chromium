@@ -77,7 +77,27 @@ void DevToolsRendererChannel::CleanupConnection() {
 
 void DevToolsRendererChannel::ForceDetachWorkerSessions() {
   for (WorkerOrWorkletDevToolsAgentHost* host : child_targets_) {
+    // Recurse first so nested workers preserve their network conditions before
+    // ForceDetachAllSessions() disables the parent worker's TargetHandler.
+    host->GetRendererChannel()->ForceDetachWorkerSessions();
+    // The workers continue to run until the renderer terminates them, so the
+    // network conditions of their sessions must continue to apply.
+    host->PreserveNetworkConditions();
     host->ForceDetachAllSessions();
+  }
+}
+
+void DevToolsRendererChannel::ClearPreservedWorkerNetworkConditions(
+    const std::string& parent_frame_id) {
+  if (parent_frame_id.empty()) {
+    return;
+  }
+  for (WorkerOrWorkletDevToolsAgentHost* host : child_targets_) {
+    host->GetRendererChannel()->ClearPreservedWorkerNetworkConditions(
+        parent_frame_id);
+    if (host->GetParentFrameId() == parent_frame_id) {
+      host->ClearPreservedNetworkConditions();
+    }
   }
 }
 

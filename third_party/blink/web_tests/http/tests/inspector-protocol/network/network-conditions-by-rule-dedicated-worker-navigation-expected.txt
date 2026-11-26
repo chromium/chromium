@@ -1,0 +1,8 @@
+Verify that Network.emulateNetworkConditionsByRule applies to the requests of a dedicated worker until the worker is terminated, when the page that owns the worker navigates.
+emulateNetworkConditionsByRule succeeded
+Matching requests failed before navigation: true
+Matching requests succeeded before navigation: false
+Worker session detached
+Matching requests failed after the detach: true
+Matching requests succeeded after the detach: false
+

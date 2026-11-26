@@ -7,6 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/safety_checks.h"
+#include "content/browser/devtools/devtools_session.h"
+#include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -45,7 +47,64 @@ WorkerOrWorkletDevToolsAgentHost::WorkerOrWorkletDevToolsAgentHost(
   }
 }
 
-WorkerOrWorkletDevToolsAgentHost::~WorkerOrWorkletDevToolsAgentHost() = default;
+WorkerOrWorkletDevToolsAgentHost::~WorkerOrWorkletDevToolsAgentHost() {
+  ClearPreservedNetworkConditions();
+}
+
+void WorkerOrWorkletDevToolsAgentHost::PreserveNetworkConditions() {
+  for (protocol::NetworkHandler* handler :
+       protocol::NetworkHandler::ForAgentHost(this)) {
+    base::OnceClosure cleanup = handler->TakeNetworkConditionsCleanup();
+    if (!cleanup) {
+      continue;
+    }
+    const int id = next_preserved_network_conditions_id_++;
+    // `this` owns the subscription, so the callback can't outlive `this`.
+    // The subscription removes this entry when `root_session` is disposed, so
+    // `root_session` doesn't dangle.
+    preserved_network_conditions_.emplace(
+        id, PreservedNetworkConditions{
+                &handler->root_session(), std::move(cleanup),
+                handler->root_session().RegisterDisposeCallback(
+                    base::BindOnce(&WorkerOrWorkletDevToolsAgentHost::
+                                       ClearPreservedNetworkConditionsOfClient,
+                                   base::Unretained(this), id))});
+  }
+}
+
+void WorkerOrWorkletDevToolsAgentHost::ClearPreservedNetworkConditions() {
+  std::map<int, PreservedNetworkConditions> preserved;
+  preserved.swap(preserved_network_conditions_);
+  for (auto& [id, conditions] : preserved) {
+    std::move(conditions.cleanup).Run();
+  }
+}
+
+void WorkerOrWorkletDevToolsAgentHost::
+    ClearPreservedNetworkConditionsForRootSession(
+        DevToolsSession* root_session) {
+  std::vector<base::OnceClosure> cleanups;
+  for (auto it = preserved_network_conditions_.begin();
+       it != preserved_network_conditions_.end();) {
+    if (it->second.root_session == root_session) {
+      cleanups.push_back(std::move(it->second.cleanup));
+      it = preserved_network_conditions_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+  for (base::OnceClosure& cleanup : cleanups) {
+    std::move(cleanup).Run();
+  }
+}
+
+void WorkerOrWorkletDevToolsAgentHost::ClearPreservedNetworkConditionsOfClient(
+    int id) {
+  auto node = preserved_network_conditions_.extract(id);
+  if (node) {
+    std::move(node.mapped().cleanup).Run();
+  }
+}
 
 void WorkerOrWorkletDevToolsAgentHost::SetRenderer(
     int process_id,
@@ -78,6 +137,9 @@ void WorkerOrWorkletDevToolsAgentHost::Disconnected() {
   base::ScopedSafetyChecksExclusion scoped_unsafe;
 
   auto retain_this = ForceDetachAllSessionsImpl();
+  // The worker is gone, so the conditions that outlived its sessions have no
+  // more requests to apply to.
+  ClearPreservedNetworkConditions();
   GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
                                     ChildProcessHost::kInvalidUniqueID);
 

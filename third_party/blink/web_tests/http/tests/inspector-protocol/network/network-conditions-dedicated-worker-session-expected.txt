@@ -1,0 +1,7 @@
+Verify that the network conditions of the worker session, and not those of the page session, apply to the requests of a dedicated worker.
+Page request, rule on the page session: failed
+Worker request, rule on the page session: succeeded
+emulateNetworkConditions on the worker session: Not supported
+Worker request, after emulateNetworkConditions: succeeded
+Worker request, rule on the worker session: failed
+

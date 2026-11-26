@@ -74,6 +74,10 @@ DedicatedWorkerDevToolsAgentHost::GetDedicatedWorkerHost() {
 }
 
 bool DedicatedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
+  // A new session of the same client replaces its preserved network conditions
+  // (e.g. after the page of the worker is restored from the back/forward
+  // cache), without clearing conditions preserved for other clients.
+  ClearPreservedNetworkConditionsForRootSession(session->GetRootSession());
   session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
   session->CreateAndAddHandler<protocol::StorageHandler>(this,
                                                          session->GetClient());
