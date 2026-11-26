@@ -174,7 +174,9 @@ TEST_F(KeyedServiceFactoryDisabledByDefaultTest, FaultyFactory) {
 #if BUILDFLAG(KEYED_SERVICE_HAS_REENTRANT_GET_SERVICE_FOR_CONTEXT_CALLS)
   EXPECT_TRUE(factory.GetForContext(&context));
 #else
-  EXPECT_CHECK_DEATH(factory.GetForContext(&context));
+  EXPECT_CHECK_DEATH(
+      factory.GetForContext(&context), base::NotFatalUntil::M165,
+      UNTIL_THEN({ EXPECT_TRUE(factory.GetForContext(&context)); }));
 #endif
 
   DestroyContext(&context);
@@ -204,7 +206,9 @@ TEST_F(KeyedServiceFactoryDisabledByDefaultTest, FaultyTestingFactory) {
 #if BUILDFLAG(KEYED_SERVICE_HAS_REENTRANT_GET_SERVICE_FOR_CONTEXT_CALLS)
   EXPECT_TRUE(factory.GetForContext(&context));
 #else
-  EXPECT_CHECK_DEATH(factory.GetForContext(&context));
+  EXPECT_CHECK_DEATH(
+      factory.GetForContext(&context), base::NotFatalUntil::M165,
+      UNTIL_THEN({ EXPECT_TRUE(factory.GetForContext(&context)); }));
 #endif
 
   DestroyContext(&context);
