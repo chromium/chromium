@@ -256,7 +256,9 @@ void TriggerPostOpeningAction(id<TabOpening> tab_opener,
       base::SysUTF8ToNSString(app_group::kGaiaIDQueryItemName);
   for (NSURLQueryItem* item in queryItems) {
     if ([item.name isEqualToString:gaiaIDKey]) {
-      self.gaiaID = item.value;
+      if (item.value.length > 0) {
+        self.gaiaID = item.value;
+      }
       break;
     }
   }

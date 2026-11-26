@@ -748,6 +748,22 @@ TEST_F(TaskRequestForURLContextTest, TestWidgetURLSetsGaiaID) {
   EXPECT_NSEQ(kTestGaiaID, request.gaiaID);
 }
 
+// Tests that widget URLs with an empty `gaia_id` query item leave `gaiaID`
+// nil.
+TEST_F(TaskRequestForURLContextTest, TestWidgetURLWithEmptyGaiaIDIgnored) {
+  NSString* url_string =
+      [NSString stringWithFormat:@"chromewidgetkit://search-widget/search?%s=",
+                                 app_group::kGaiaIDQueryItemName];
+  TaskRequestForURLContext* request = [TaskRequestForURLContext
+      taskRequestWithURLContext:CreateMockURLContext(
+                                    [NSURL URLWithString:url_string])
+                     sceneState:scene_state_
+                    isColdStart:YES];
+
+  EXPECT_FALSE(request.isFromShareExtension);
+  EXPECT_NSEQ(nil, request.gaiaID);
+}
+
 // Tests that standard URLs don't allow an account switch.
 TEST_F(TaskRequestForURLContextTest, TestStandardURLIgnoresGaiaID) {
   TaskRequestForURLContext* request =
