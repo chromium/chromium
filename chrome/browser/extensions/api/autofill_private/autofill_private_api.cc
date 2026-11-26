@@ -18,7 +18,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
-#include "base/i18n/tag_converters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
@@ -90,7 +89,6 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_registry.h"
-#include "extensions/browser/extensions_browser_client.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
@@ -495,9 +493,7 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
 
   autofill::GetAddressComponents(
       parameters->country_code,
-      base::i18n::GetLanguageTagFromString(
-          ExtensionsBrowserClient::Get()->GetApplicationLocale())
-          .value_or(base::i18n::GetKnownLanguageTag("und")),
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag(),
       /*include_literals=*/false, &lines, &language_code);
   // Convert std::vector<std::vector<::i18n::addressinput::AddressUiComponent>>
   // to AddressComponents

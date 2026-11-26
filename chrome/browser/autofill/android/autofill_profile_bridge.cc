@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/android/autofill_profile_bridge.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/android/jni_string.h"
@@ -106,7 +107,10 @@ JNI_AutofillProfileBridge_GetAddressEditorUiInfo(
 
   std::string language_code_new = language_code;
   if (language_code_new.empty()) {
-    language_code_new = g_browser_process->GetApplicationLocale();
+    language_code_new = std::string(g_browser_process->GetFeatures()
+                                        ->application_locale_storage()
+                                        ->GetTag()
+                                        .tag_string());
   }
 
   AutofillCountry country(country_code);

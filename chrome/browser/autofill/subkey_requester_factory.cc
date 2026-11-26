@@ -7,11 +7,13 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/i18n/legacy_language_tag_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/validation_rules_storage_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
@@ -37,8 +39,10 @@ SubKeyRequesterFactory::SubKeyRequesterFactory()
                             g_browser_process->system_network_context_manager()
                                 ->GetSharedURLLoaderFactory()),
                         ValidationRulesStorageFactory::CreateStorage(),
-                        base::i18n::GetLanguageSubtagUsingLanguageTag(
-                            g_browser_process->GetApplicationLocale())) {}
+                        g_browser_process->GetFeatures()
+                            ->application_locale_storage()
+                            ->GetTag()
+                            .language_subtag()) {}
 
 SubKeyRequesterFactory::~SubKeyRequesterFactory() = default;
 
