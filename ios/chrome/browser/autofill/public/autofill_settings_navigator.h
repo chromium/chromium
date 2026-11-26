@@ -7,11 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import <optional>
-
 namespace autofill {
 enum class EntityTypeName;
-struct Suggestion;
 }  // namespace autofill
 
 // Pages in the Settings UI that can be navigated to from Autofill surfaces.
@@ -30,14 +27,6 @@ enum class AutofillSettingsPage {
 // Returns the `AutofillSettingsPage` corresponding to `entity_type_name`.
 AutofillSettingsPage AutofillSettingsPageForEntityTypeName(
     autofill::EntityTypeName entity_type_name);
-
-// Returns the `AutofillSettingsPage` corresponding to the AtMemory
-// `suggestion`, or `std::nullopt` if no settings page hosts it. Suggestions
-// sourced from personal context map to
-// `AutofillSettingsPage::kSuggestionsFromGemini`; all others are routed by
-// their memory data type.
-std::optional<AutofillSettingsPage> AutofillSettingsPageForAtMemorySuggestion(
-    const autofill::Suggestion& suggestion);
 
 // Delegate protocol for handling navigation to settings pages.
 @protocol AutofillSettingsNavigator <NSObject>
