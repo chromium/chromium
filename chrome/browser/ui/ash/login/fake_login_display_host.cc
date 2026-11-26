@@ -106,6 +106,9 @@ void FakeLoginDisplayHost::StartWizard(OobeScreenId first_screen) {
             ->device_restriction_schedule_controller(),
         multi_user_sign_in_policy_controller_.get(),
         TestingBrowserProcess::GetGlobal()->platform_part()->GetSystemClock(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->GetTimezoneResolverManager(),
         wizard_context_.get());
 
     fake_screen_ = std::make_unique<FakeBaseScreen>(first_screen);

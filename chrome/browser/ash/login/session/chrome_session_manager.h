@@ -51,6 +51,7 @@ namespace ash {
 
 namespace system {
 class SystemClock;
+class TimeZoneResolverManager;
 }  // namespace system
 
 class SessionLengthLimiter;
@@ -80,8 +81,9 @@ class ChromeSessionManager : public session_manager::SessionManagerObserver {
   //   - Starts a stub login session for dev or test;
   // `metrics_service`, `application_locale_storage`,
   // `device_restriction_schedule_controller`,
-  // `multi_user_sign_in_policy_controller` and `system_clock` must not be
-  // nullptr, and must be valid while main RunLoop is running.
+  // `multi_user_sign_in_policy_controller`, `system_clock` and
+  // `timezone_resolver_manager` must not be nullptr, and must be valid while
+  // main RunLoop is running.
   // `shared_url_loader_factory` and `component_manager_ash` must not be
   // nullptr.
   void Initialize(
@@ -95,6 +97,7 @@ class ChromeSessionManager : public session_manager::SessionManagerObserver {
       const user_manager::MultiUserSignInPolicyController*
           multi_user_sign_in_policy_controller,
       system::SystemClock* system_clock,
+      system::TimeZoneResolverManager* timezone_resolver_manager,
       const base::CommandLine& parsed_command_line,
       Profile* profile,
       bool is_running_test);

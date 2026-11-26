@@ -65,6 +65,8 @@ void UserAddingScreen::Start() {
               ->multi_user_sign_in_policy_controller();
   system::SystemClock* system_clock =
       g_browser_process->platform_part()->GetSystemClock();
+  system::TimeZoneResolverManager* timezone_resolver_manager =
+      g_browser_process->platform_part()->GetTimezoneResolverManager();
 
   CHECK(!IsRunning());
   display_host_ = new LoginDisplayHostMojo(
@@ -72,7 +74,7 @@ void UserAddingScreen::Start() {
       shared_url_loader_factory, browser_policy_connector_ash,
       component_manager_ash, device_restriction_schedule_controller,
       multi_user_sign_in_policy_controller, system_clock,
-      DisplayedScreen::USER_ADDING_SCREEN,
+      timezone_resolver_manager, DisplayedScreen::USER_ADDING_SCREEN,
       /*update_geolocation_usage_allowed=*/false);
 
   // The screen adds a user to an existing session, but it is also reachable

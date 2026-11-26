@@ -160,6 +160,7 @@ class NetworkErrorScreenTest : public InProcessBrowserTest {
         g_browser_process->platform_part()
             ->multi_user_sign_in_policy_controller(),
         g_browser_process->platform_part()->GetSystemClock(),
+        g_browser_process->platform_part()->GetTimezoneResolverManager(),
         WelcomeView::kScreenId);
     test::WaitForWelcomeScreen();
   }

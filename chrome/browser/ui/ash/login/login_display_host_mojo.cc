@@ -196,6 +196,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
     const user_manager::MultiUserSignInPolicyController*
         multi_user_sign_in_policy_controller,
     system::SystemClock* system_clock,
+    system::TimeZoneResolverManager* timezone_resolver_manager,
     DisplayedScreen displayed_screen,
     bool update_geolocation_usage_allowed)
     : LoginDisplayHostCommon(local_state,
@@ -207,6 +208,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
                              device_restriction_schedule_controller,
                              multi_user_sign_in_policy_controller,
                              system_clock,
+                             timezone_resolver_manager,
                              update_geolocation_usage_allowed),
       user_selection_screen_(std::make_unique<UserSelectionScreen>(
           local_state,
@@ -942,7 +944,7 @@ void LoginDisplayHostMojo::EnsureOobeDialogLoaded() {
       &browser_policy_connector_ash_.get(), component_manager_ash_,
       &device_restriction_schedule_controller_.get(),
       &multi_user_sign_in_policy_controller_.get(), &system_clock_.get(),
-      GetWizardContext());
+      &timezone_resolver_manager_.get(), GetWizardContext());
 
   GetLoginScreenCertProviderService()->pin_dialog_manager()->AddPinDialogHost(
       &security_token_pin_dialog_host_login_impl_);

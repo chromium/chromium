@@ -239,6 +239,7 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
     const user_manager::MultiUserSignInPolicyController*
         multi_user_sign_in_policy_controller,
     system::SystemClock* system_clock,
+    system::TimeZoneResolverManager* timezone_resolver_manager,
     bool update_geolocation_usage_allowed)
     : local_state_(CHECK_DEREF(local_state)),
       metrics_service_(CHECK_DEREF(metrics_service)),
@@ -251,6 +252,7 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
       multi_user_sign_in_policy_controller_(
           CHECK_DEREF(multi_user_sign_in_policy_controller)),
       system_clock_(CHECK_DEREF(system_clock)),
+      timezone_resolver_manager_(CHECK_DEREF(timezone_resolver_manager)),
       keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
                   KeepAliveRestartOption::DISABLED),
       kiosk_app_menu_controller_(local_state),

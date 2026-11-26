@@ -1419,6 +1419,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         g_browser_process->platform_part()
             ->multi_user_sign_in_policy_controller(),
         g_browser_process->platform_part()->GetSystemClock(),
+        g_browser_process->platform_part()->GetTimezoneResolverManager(),
         *base::CommandLine::ForCurrentProcess(), profile,
         is_integration_test());
 

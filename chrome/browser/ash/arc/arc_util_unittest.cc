@@ -34,6 +34,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/geolocation/live_location_provider.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
@@ -694,12 +697,27 @@ class ArcOobeTest : public ChromeArcUtilTest,
         std::make_unique<user_manager::MultiUserSignInPolicyController>(
             TestingBrowserProcess::GetGlobal()->local_state(),
             user_manager::UserManager::Get());
+
+    // SystemLocationProvider is required by TimeZoneResolverManager.
+    ash::SystemLocationProvider::Initialize(
+        std::make_unique<ash::LiveLocationProvider>(
+            std::make_unique<ash::LocationFetcher>(
+                TestingBrowserProcess::GetGlobal()
+                    ->shared_url_loader_factory())));
+
+    // TimeZoneResolverManager is required by FakeLoginDisplayHost when
+    // StartWizard() is used.
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->InitializeTimezoneResolverManager();
   }
 
   void TearDown() override {
     // Fake display host have to be shut down first, as it may access
     // configuration.
     fake_login_display_host_.reset();
+    TestingBrowserProcess::GetGlobal()->platform_part()->StartTearDown();
+    ash::SystemLocationProvider::DestroyForTesting();
     multi_user_sign_in_policy_controller_.reset();
 
     ChromeArcUtilTest::TearDown();

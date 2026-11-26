@@ -69,6 +69,9 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/geolocation/live_location_provider.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
@@ -109,6 +112,8 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
 
@@ -2194,6 +2199,21 @@ class ArcSessionOobeOptInNegotiatorTest
     TestingBrowserProcess::GetGlobal()
         ->platform_part()
         ->InitializeComponentManager();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+
+    // SystemLocationProvider is required by TimeZoneResolverManager.
+    ash::SystemLocationProvider::Initialize(
+        std::make_unique<ash::LiveLocationProvider>(
+            std::make_unique<ash::LocationFetcher>(
+                TestingBrowserProcess::GetGlobal()
+                    ->shared_url_loader_factory())));
+
+    // TimeZoneResolverManager is required by FakeLoginDisplayHost when
+    // StartWizard() is used.
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->InitializeTimezoneResolverManager();
 
     ArcSessionManager::SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(
         true);
@@ -2250,6 +2270,9 @@ class ArcSessionOobeOptInNegotiatorTest
     ArcSessionManager::SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(
         false);
 
+    TestingBrowserProcess::GetGlobal()->platform_part()->StartTearDown();
+    ash::SystemLocationProvider::DestroyForTesting();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     TestingBrowserProcess::GetGlobal()
         ->platform_part()
         ->ShutdownComponentManager();
@@ -2298,6 +2321,7 @@ class ArcSessionOobeOptInNegotiatorTest
   std::unique_ptr<user_manager::MultiUserSignInPolicyController>
       multi_user_sign_in_policy_controller_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

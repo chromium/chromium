@@ -900,6 +900,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionBeforeLoginHost, DeadlineReached) {
       g_browser_process->platform_part()
           ->multi_user_sign_in_policy_controller(),
       g_browser_process->platform_part()->GetSystemClock(),
+      g_browser_process->platform_part()->GetTimezoneResolverManager(),
       ash::OOBE_SCREEN_UNKNOWN);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);

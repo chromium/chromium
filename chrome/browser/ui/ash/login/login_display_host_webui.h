@@ -64,6 +64,7 @@ namespace ash {
 
 namespace system {
 class SystemClock;
+class TimeZoneResolverManager;
 }  // namespace system
 
 class FocusRingController;
@@ -90,8 +91,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
  public:
   // `local_state`, `metrics_service`, `application_locale_storage`,
   // `browser_policy_connector_ash`, `device_restriction_schedule_controller`,
-  // `multi_user_sign_in_policy_controller` and `system_clock` must be non-null
-  // and must outlive `this`.
+  // `multi_user_sign_in_policy_controller`, `system_clock` and
+  // `timezone_resolver_manager` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
   LoginDisplayHostWebUI(
       PrefService* local_state,
@@ -105,7 +106,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
           device_restriction_schedule_controller,
       const user_manager::MultiUserSignInPolicyController*
           multi_user_sign_in_policy_controller,
-      system::SystemClock* system_clock);
+      system::SystemClock* system_clock,
+      system::TimeZoneResolverManager* timezone_resolver_manager);
 
   LoginDisplayHostWebUI(const LoginDisplayHostWebUI&) = delete;
   LoginDisplayHostWebUI& operator=(const LoginDisplayHostWebUI&) = delete;

@@ -473,6 +473,7 @@ WizardController::WizardController(
     const user_manager::MultiUserSignInPolicyController*
         multi_user_sign_in_policy_controller,
     system::SystemClock* system_clock,
+    system::TimeZoneResolverManager* timezone_resolver_manager,
     WizardContext* wizard_context)
     : local_state_(CHECK_DEREF(local_state)),
       metrics_service_(metrics_service),
@@ -485,6 +486,7 @@ WizardController::WizardController(
       multi_user_sign_in_policy_controller_(
           CHECK_DEREF(multi_user_sign_in_policy_controller)),
       system_clock_(CHECK_DEREF(system_clock)),
+      timezone_resolver_manager_(CHECK_DEREF(timezone_resolver_manager)),
       quickstart_controller_(
           std::make_unique<quick_start::QuickStartController>(
               &local_state_.get())),
@@ -2513,7 +2515,8 @@ void WizardController::OnEnrollmentDone() {
         &application_locale_storage_.get(), shared_url_loader_factory_,
         &browser_policy_connector_ash_.get(), component_manager_ash_,
         device_restriction_schedule_controller_.get(),
-        &multi_user_sign_in_policy_controller_.get(), &system_clock_.get());
+        &multi_user_sign_in_policy_controller_.get(), &system_clock_.get(),
+        &timezone_resolver_manager_.get());
   } else {
     ShowLoginScreen();
   }
@@ -2570,7 +2573,8 @@ void WizardController::OnDemoSetupScreenExit(DemoSetupScreen::Result result) {
           &application_locale_storage_.get(), shared_url_loader_factory_,
           &browser_policy_connector_ash_.get(), component_manager_ash_,
           device_restriction_schedule_controller_.get(),
-          &multi_user_sign_in_policy_controller_.get(), &system_clock_.get());
+          &multi_user_sign_in_policy_controller_.get(), &system_clock_.get(),
+          &timezone_resolver_manager_.get());
       break;
     case DemoSetupScreen::Result::kCanceled:
       ShowWelcomeScreen();
@@ -3425,9 +3429,7 @@ void WizardController::StartNetworkTimezoneResolve() {
 // Resolving the timezone consists of first determining the location,
 // and then determining the timezone.
 void WizardController::StartTimezoneResolve() {
-  if (!g_browser_process->platform_part()
-           ->GetTimezoneResolverManager()
-           ->TimeZoneResolverShouldBeRunning()) {
+  if (!timezone_resolver_manager_->TimeZoneResolverShouldBeRunning()) {
     return;
   }
 
@@ -4002,9 +4004,7 @@ void WizardController::OnLocationResolved(const Geoposition& position,
     return;
   }
 
-  if (!g_browser_process->platform_part()
-           ->GetTimezoneResolverManager()
-           ->TimeZoneResolverShouldBeRunning()) {
+  if (!timezone_resolver_manager_->TimeZoneResolverShouldBeRunning()) {
     return;
   }
 

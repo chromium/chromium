@@ -64,6 +64,7 @@ namespace ash {
 
 namespace system {
 class SystemClock;
+class TimeZoneResolverManager;
 }  // namespace system
 
 class ExistingUserController;
@@ -82,8 +83,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
  public:
   // `local_state`, `metrics_service`, `application_locale_storage`,
   // `browser_policy_connector_ash`, `device_restriction_schedule_controller`,
-  // `multi_user_sign_in_policy_controller` and `system_clock` must be non-null
-  // and must outlive `this`.
+  // `multi_user_sign_in_policy_controller`, `system_clock` and
+  // `timezone_resolver_manager` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
   LoginDisplayHostMojo(
       PrefService* local_state,
@@ -98,6 +99,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
       const user_manager::MultiUserSignInPolicyController*
           multi_user_sign_in_policy_controller,
       system::SystemClock* system_clock,
+      system::TimeZoneResolverManager* timezone_resolver_manager,
       DisplayedScreen displayed_screen,
       bool update_geolocation_usage_allowed);
 

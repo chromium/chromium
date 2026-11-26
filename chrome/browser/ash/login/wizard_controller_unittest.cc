@@ -554,6 +554,9 @@ class WizardControllerTest : public WizardControllerTestBase {
             ->device_restriction_schedule_controller(),
         multi_user_sign_in_policy_controller_.get(),
         TestingBrowserProcess::GetGlobal()->platform_part()->GetSystemClock(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->GetTimezoneResolverManager(),
         fake_login_display_host_->GetWizardContext());
     wizard_controller_ = wizard_controller.get();
     fake_login_display_host_->SetWizardController(std::move(wizard_controller));

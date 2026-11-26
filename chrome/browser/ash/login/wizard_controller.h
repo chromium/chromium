@@ -115,6 +115,7 @@ namespace ash {
 
 namespace system {
 class SystemClock;
+class TimeZoneResolverManager;
 }  // namespace system
 
 class BaseScreen;
@@ -147,8 +148,8 @@ class WizardController : public OobeUI::Observer {
   // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
   // `device_restriction_schedule_controller` may be null in unit tests, but
   // must outlive `this` if it's non-null.
-  // `multi_user_sign_in_policy_controller` and `system_clock` must be non-null
-  // and must outlive `this`.
+  // `multi_user_sign_in_policy_controller`, `system_clock`, and
+  // `timezone_resolver_manager` must be non-null and must outlive `this`.
   WizardController(
       PrefService* local_state,
       ::metrics::MetricsService* metrics_service,
@@ -162,6 +163,7 @@ class WizardController : public OobeUI::Observer {
       const user_manager::MultiUserSignInPolicyController*
           multi_user_sign_in_policy_controller,
       system::SystemClock* system_clock,
+      system::TimeZoneResolverManager* timezone_resolver_manager,
       WizardContext* wizard_context);
 
   WizardController(const WizardController&) = delete;
@@ -680,6 +682,7 @@ class WizardController : public OobeUI::Observer {
   const raw_ref<const user_manager::MultiUserSignInPolicyController>
       multi_user_sign_in_policy_controller_;
   const raw_ref<system::SystemClock> system_clock_;
+  const raw_ref<system::TimeZoneResolverManager> timezone_resolver_manager_;
 
   std::unique_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ChoobeFlowController> choobe_flow_controller_;
