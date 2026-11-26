@@ -142,6 +142,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -2489,13 +2490,19 @@ void OmniboxViewViews::HandleCutOrCopyAdjustments(
           controller()->edit_model()->GetPageClassification());
     }
 
-    if (clipboard_buffer != ui::ClipboardBuffer::kSelection &&
-        location_bar_view_) {
-      auto* web_contents = location_bar_view_->GetWebContents();
-      if (web_contents) {
-        if (auto* clusters_helper =
-                HistoryClustersTabHelper::FromWebContents(web_contents)) {
-          clusters_helper->OnOmniboxUrlCopied();
+    if (clipboard_buffer != ui::ClipboardBuffer::kSelection) {
+      if (write_url && url.is_valid()) {
+        views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+            kOmniboxUrlCopiedEventId, this);
+      }
+
+      if (location_bar_view_) {
+        auto* web_contents = location_bar_view_->GetWebContents();
+        if (web_contents) {
+          if (auto* clusters_helper =
+                  HistoryClustersTabHelper::FromWebContents(web_contents)) {
+            clusters_helper->OnOmniboxUrlCopied();
+          }
         }
       }
     }

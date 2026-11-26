@@ -31,6 +31,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -55,6 +56,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_edit_commands.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/geometry/rect.h"
@@ -139,6 +141,7 @@ class TestingOmniboxView : public OmniboxViewViews {
 
   using OmniboxViewViews::SetTextAndSelectedRange;
   using OmniboxViewViews::SkipDefaultKeyEventProcessing;
+  using OmniboxViewViews::UpdateSelectionClipboard;
 
  protected:
   // OmniboxViewViews:
@@ -1400,6 +1403,83 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutUserText) {
   std::string read_from_clipboard = ui::clipboard_test_util::ReadAsciiText(
       clipboard, clipboard_buffer, /* data_dst = */ nullptr);
   EXPECT_EQ("user text", read_from_clipboard);
+}
+
+TEST_P(OmniboxViewViewsClipboardTest,
+       EmitsOmniboxUrlCopiedEventOnFullUrlCopyOrCut) {
+  int event_count = 0;
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()
+          ->AddCustomEventInAnyContextCallback(
+              kOmniboxUrlCopiedEventId,
+              base::BindRepeating(
+                  [](int* count, ui::TrackedElement*) { ++(*count); },
+                  &event_count));
+
+  omnibox_view()->SelectAll(false);
+  ASSERT_TRUE(omnibox_view()->IsSelectAll());
+
+  GetTextfieldTestApi().ExecuteTextEditCommand(GetParam());
+  EXPECT_EQ(event_count, 1);
+}
+
+TEST_P(OmniboxViewViewsClipboardTest,
+       DoesNotEmitOmniboxUrlCopiedEventOnSearchQuery) {
+  int event_count = 0;
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()
+          ->AddCustomEventInAnyContextCallback(
+              kOmniboxUrlCopiedEventId,
+              base::BindRepeating(
+                  [](int* count, ui::TrackedElement*) { ++(*count); },
+                  &event_count));
+
+  omnibox_view()->SetUserText(u"chrome search query");
+  omnibox_view()->SelectAll(false);
+  ASSERT_TRUE(omnibox_view()->IsSelectAll());
+
+  GetTextfieldTestApi().ExecuteTextEditCommand(GetParam());
+  EXPECT_EQ(event_count, 0);
+}
+
+TEST_P(OmniboxViewViewsClipboardTest,
+       DoesNotEmitOmniboxUrlCopiedEventOnPartialSelection) {
+  int event_count = 0;
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()
+          ->AddCustomEventInAnyContextCallback(
+              kOmniboxUrlCopiedEventId,
+              base::BindRepeating(
+                  [](int* count, ui::TrackedElement*) { ++(*count); },
+                  &event_count));
+
+  omnibox_view()->SetSelectedRange(gfx::Range(0, 5));
+  ASSERT_FALSE(omnibox_view()->IsSelectAll());
+
+  GetTextfieldTestApi().ExecuteTextEditCommand(GetParam());
+  EXPECT_EQ(event_count, 0);
+}
+
+TEST_F(OmniboxViewViewsTest,
+       DoesNotEmitOmniboxUrlCopiedEventOnSelectionClipboard) {
+  location_bar_model()->set_url(GURL("https://test.com/"));
+  omnibox_controller()->edit_model()->ResetDisplayTexts();
+  omnibox_view()->RevertAll();
+
+  int event_count = 0;
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()
+          ->AddCustomEventInAnyContextCallback(
+              kOmniboxUrlCopiedEventId,
+              base::BindRepeating(
+                  [](int* count, ui::TrackedElement*) { ++(*count); },
+                  &event_count));
+
+  omnibox_view()->SelectAll(false);
+  ASSERT_TRUE(omnibox_view()->IsSelectAll());
+  omnibox_view()->UpdateSelectionClipboard();
+
+  EXPECT_EQ(event_count, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(OmniboxViewViewsClipboardTest,
