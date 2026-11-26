@@ -15,12 +15,14 @@
 <translation id="48558539577516920">Configureu el tallafoc o l'antivirus per permetre que Chromium accedeixi
           a la xarxa.</translation>
 <translation id="4949828774841497663">Ves a Aplicacions &gt; Configuració del sistema &gt; Xarxa, selecciona la xarxa activa, fes clic al botó Detalls... i desselecciona els servidors intermediaris que s'hagin seleccionat.</translation>
+<translation id="5228339820845278804">Recordatori: les millors funcions de seguretat de Chromium a la butxaca</translation>
 <translation id="6480456350195404966">Ves al menú de Chromium &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; Xarxa i Internet &gt; Servidor intermediari i, tot seguit, desselecciona Detecta la configuració automàticament.</translation>
 <translation id="648062525172759633">Aquestes pàgines estan pensades per a desenvolupadors de Chromium i és possible que no es mantinguin ni es provin activament. Per activar-les, navega fins a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fes clic al botó per activar les pàgines de depuració i, a continuació, torna a aquesta pàgina.</translation>
 <translation id="6549378540556750549">Chromium també és possible gràcies a un altre <ph name="BEGIN_LINK_OSS" />programari lliure<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Els canvis s'aplicaran la propera vegada que reinicieu Chromium.</translation>
 <translation id="691026815377248078">Chromium necessita accedir al Bluetooth per continuar 
  amb la vinculació. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7641677656706511803">Utilitza l'aplicació Chromium per gaudir de la seguretat de Chromium siguis on siguis</translation>
 <translation id="7681937895330411637">Chromium és possible gràcies al projecte de codi obert de <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Aneu al
         menú de Chromium &gt;

@@ -945,6 +945,11 @@ De minimum drempelwaarde is 1 minuut.
       Als je het beleid instelt op False, kunnen gebruikers geen eigen printers toevoegen, configureren en ermee afdrukken. In dat geval kunnen ze ook niet afdrukken met eerder geconfigureerde printers.
       </translation>
 <translation id="1613327425322354195">Beveiligingsstatus van apparaat rapporteren</translation>
+<translation id="1613552398317518165">Dit beleid is beëindigd en heeft geen effect meer. Standaard zoekopdrachten worden altijd gestuurd met de GET-methode, dus de parameters die door dit beleid worden aangegeven, worden nooit toegepast. Gebruik <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> om de zoek-URL in te stellen, inclusief de tijdelijke aanduiding <ph name="SEARCH_TERM_MARKER" />.
+
+POST-parameters worden alleen ondersteund voor afbeeldingszoekopdrachten, via <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aanstond, was het voorheen de bedoeling dat je <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> instelde om de parameters aan te geven als je een URL zocht met POST, als door komma's gescheiden naam/waarde-paren.</translation>
 <translation id="1615221548356595305">Toestaan dat HTTP/2-verbindingen voor deze hosts kunnen worden samengevoegd, zelfs als client certificates worden gebruikt</translation>
 <translation id="1616280227447957376">Doorgaan vanaf de SSL-waarschuwingspagina toestaan voor specifieke herkomsten</translation>
 <translation id="1617235075406854669">Verwijdering van browser- en downloadgeschiedenis aanzetten</translation>
@@ -5984,6 +5989,11 @@ Dit beleid heeft geen effect als het beleid <ph name="DEVICE_SCREENSAVER_LOGIN_S
 <translation id="4725801978265372736">Vereisen dat de naam van de lokale gebruiker en de eigenaar van de host voor externe toegang met elkaar overeenkomen</translation>
 <translation id="4726228171190098009">Niet toestaan dat het apparaat een Powerwash aanvraagt</translation>
 <translation id="4726895359147376813">Toewijzing van permanente ID's naar VM-configuraties</translation>
+<translation id="473189306848333308">Dit beleid is beëindigd en heeft geen effect meer. Suggestieverzoeken worden altijd gestuurd met de GET-methode, dus de parameters die door dit beleid worden aangegeven, worden nooit toegepast. Gebruik in plaats daarvan <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> om de suggestie-URL in te stellen, inclusief de tijdelijke aanduiding <ph name="SEARCH_TERM_MARKER" />.
+
+POST-parameters worden alleen ondersteund voor afbeeldingszoekopdrachten, via <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aanstond, was het voorheen de bedoeling dat je <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> instelde om de parameters aan te geven tijdens voorgestelde zoekopdrachten met POST, als door komma's gescheiden naam/waarde-paren.</translation>
 <translation id="4732069502693984686">Hiermee zet je automatische schermopname van meerdere schermen aan</translation>
 <translation id="4733471537137819387">Beleid met betrekking tot geïntegreerde HTTP-authenticatie.</translation>
 <translation id="4737832614429402441">Standaardwaarde gebruiken voor post-quantum sleutelovereenkomst voor TLS</translation>
@@ -8121,6 +8131,15 @@ Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</tra
 <translation id="6075316301208933536">Als <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> is ingesteld op <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, stel je met <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> in wanneer de batterij stopt met opladen, op basis van het percentage van de batterijlading. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> moet ten minste 5 procentpunten lager zijn dan <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Als je het beleid niet instelt, is de <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> batterijoplaadmodus van toepassing.</translation>
+<translation id="6077759101739558312">Als je dit beleid toepast, vertrouwt Safe Browsing de domeinen die je aangeeft. De functie checkt deze niet op gevaarlijke bronnen zoals phishing, malware of ongewenste software. De service voor downloadbeveiliging van Safe Browsing (niet ondersteund op iOS) checkt downloads die worden gehost op deze domeinen niet. De service voor wachtwoordbeveiliging checkt niet of wachtwoorden opnieuw worden gebruikt.
+
+Als je het beleid niet instelt, wordt de standaardbescherming van Safe Browsing toegepast op alle bronnen.
+
+Dit beleid ondersteunt geen reguliere expressies. Subdomeinen van een bepaald domein worden wel op de toelatingslijst gezet. Volledig gekwalificeerde domeinnamen (FQDN's) zijn niet vereist.
+
+In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6082161804984853051">Als je het beleid instelt, kan <ph name="PRODUCT_NAME" /> de door jou opgegeven directory gebruiken voor de opslag van gecachte bestanden op de schrijf, ongeacht of gebruikers de optie '--disk-cache-dir' hebben opgegeven.
 
       Als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de standaard cachedirectory. Gebruikers kunnen die instelling echter wijzigen met behulp van de opdrachtregel '--disk-cache-dir'.

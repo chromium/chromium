@@ -439,7 +439,6 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="5906655207909574370">Atjaunināšana ir gandrīz pabeigta. Restartējiet ierīci, lai pabeigtu atjaunināšanu.</translation>
 <translation id="5924017743176219022">Notiek savienojuma izveide ar internetu...</translation>
 <translation id="5941711191222866238">Minimizēt</translation>
-<translation id="5949225980829865667">Lai varētu izmantot šo grāmatzīmi un citus datus visās savās ierīcēs, pierakstieties pārlūkā Chromium.</translation>
 <translation id="5953657885167112863">Chromium personalizēšana</translation>
 <translation id="5960071705175224773">Jūsu iestatījumus mainīja nezināma lietotne</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Jūsu organizācija automātiski aizver pārlūku Chromium, ja tas nav izmantots vienu minūti.}zero{Jūsu organizācija automātiski aizver pārlūku Chromium, ja tas nav izmantots # minūtes.}one{Jūsu organizācija automātiski aizver pārlūku Chromium, ja tas nav izmantots # minūti.}other{Jūsu organizācija automātiski aizver pārlūku Chromium, ja tas nav izmantots # minūtes.}}</translation>
@@ -517,6 +516,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="6598877126913850652">Pāriet uz Chromium paziņojumu iestatījumiem</translation>
 <translation id="6600016381025017075">Meklēt informāciju par jebkuru šīs lapas satura daļu</translation>
 <translation id="6613594504749178791">Izmaiņas stāsies spēkā, kad restartēsiet Chromium.</translation>
+<translation id="6637855549677695722">Kad nākamreiz savā ierīcē (<ph name="DEVICE_TYPE" />) atvērsiet pārlūku Chromium, tiks parādīts aicinājums iegūt Chromium labākās drošības funkcijas.</translation>
 <translation id="6637908313088374648">Tagad pārlūks Chromium tiek palaists, kad tiek palaista operētājsistēma Windows, lai jūs varētu uzreiz sākt pārlūkošanu. Šo funkciju var izslēgt iestatījumos.</translation>
 <translation id="6644846457769259194">Notiek ierīces atjaunināšana (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Pārlūkam Chromium ir nepieciešama atļauja izmantot kameru, lai varētu izveidot jūsu apkārtnes 3D karti.</translation>

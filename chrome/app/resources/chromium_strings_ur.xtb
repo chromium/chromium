@@ -71,6 +71,7 @@
 <translation id="1792680680989393197">‏آپ انہیں کسی بھی وقت ہٹا سکتے ہیں۔ جب کسی سائٹ یا خصوصیت کو ان کی ضرورت ہو تو Chromium انہیں خودکار طور پر دوبارہ ڈاؤن لوڈ کر سکتا ہے۔</translation>
 <translation id="1793486931176048546">‏فوری رسائی کے لیے Chromium کو اپنے ٹاسک بار میں پن کرنے کی خاطر ونڈو اطلاع میں <ph name="BEGIN_BOLD" />ہاں<ph name="END_BOLD" /> پر کلک کریں۔</translation>
 <translation id="1808667845054772817">‏Chromium کو دوبارہ انسٹال کریں</translation>
+<translation id="1814482312667514397">‏اپنے فون پر Chromium ایپ کے ساتھ چلتے پھرتے Chromium کی بہترین حفاظتی خصوصیات حاصل کریں</translation>
 <translation id="1820835682567584003">‏Chromium <ph name="AUTHENTICATION_PURPOSE" /> کی کوشش کر رہا ہے</translation>
 <translation id="1828328511398219809">‏‫<ph name="EXISTING_USER" /> پہلے سے ہی سائن ان ہے۔ اپنی براؤزنگ کو الگ رکھنے کے لیے، اپنی پروفائل میں Chromium میں بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان کریں۔ آپ کو <ph name="DEVICE" /> سے اپنی ایکسٹینشنز اور مزید چیزیں بھی مل جائیں گی۔</translation>
 <translation id="183031085822326697">‏اگلی بار جب آپ اپنے <ph name="DEVICE_TYPE" /> پر Chromium کھولیں گے تو آپ کو Google پاس ورڈ مینیجر استعمال کرنے کے لیے ایک پرامپٹ نظر آئے گا۔</translation>
@@ -134,6 +135,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{‏1 HID آلہ تک ایک یا ایک سے زیادہ Chromium ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی تھی}=1{‏1 HID آلہ تک ایک یا ایک سے زیادہ Chromium ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی ہے}other{‏# HID آلات تک ایک یا ایک سے زیادہ Chromium ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی ہے}}</translation>
 <translation id="2401032172288869980">‏Chromium کو اس سائٹ کے لیے کیمرے اور مائیکروفون کی اجازتیں درکار ہیں</translation>
 <translation id="2403703063067034158">اسٹارٹ اپ کی خرابی: سیٹ اپ کی ایک اور مثال فی الحال چل رہی ہے، براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
+<translation id="241044568699443215">‏اپنے <ph name="DEVICE_TYPE" /> پر Chromium ایپ کے ساتھ چلتے پھرتے Chromium کی حفاظت کا فائدہ اٹھائیں</translation>
 <translation id="2418322681019544463">‏کسی بھی ایپ سے Chromium میں لنکس کھولیں اور براؤزر کو اپنے ٹاسک بار پر قابل رسائی رکھیں</translation>
 <translation id="2425157128016763890">‏فوری جائزہ حاصل کرنے کے لیے اس دستاویز کا اشتراک Chromium میں Gemini کے ساتھ کرنے کے لیے خلاصہ کریں بٹن پر کلک کریں اور فالو اپ سوالات پوچھیں</translation>
 <translation id="2440750600860946460">‏<ph name="BEGIN_LINK" />Chromium کے ٹولز<ph name="END_LINK" /> کے ذریعے آپ محفوظ طریقے سے براؤز کر سکتے ہیں اور چیزوں پر کنٹرول رکھ سکتے ہیں</translation>
@@ -441,7 +443,6 @@
 <translation id="5906655207909574370">تقریباً اپ ٹو ڈیٹ! اپ ڈیٹ کرنے کو مکمل کرنے کیلئے اپنا آلہ دوبارہ شروع کریں۔</translation>
 <translation id="5924017743176219022">انٹرنیٹ سے منسلک کیا جا رہا ہے…</translation>
 <translation id="5941711191222866238">چھوٹا کریں</translation>
-<translation id="5949225980829865667">‏اپنے سبھی آلات پر یہ بُک مارک اور مزید حاصل کرنے کے لیے، Chromium میں سائن ان کریں</translation>
 <translation id="5953657885167112863">‏‫Chromium کو اپنا بنائیں</translation>
 <translation id="5960071705175224773">آپ کی ترتیبات کو ایک نامعلوم ایپ نے تبدیل کر دیا</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{‏1 منٹ تک Chromium کا استعمال نہ ہونے پر آپ کی تنظیم خودکار طور پر اسے بند کر دیتی ہے۔}other{‏# منٹ تک Chromium کا استعمال نہ ہونے پر آپ کی تنظیم خودکار طور پر اسے بند کر دیتی ہے۔}}</translation>
@@ -752,6 +753,7 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="8907580949721785412">‏Chromium پاس ورڈز دکھانے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کیلئے اپنا Windows کا پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="8910309838319708610">‏کامیابی! اب آپ تلاش AI وضع کے ساتھ براؤز کرتے وقت آسانی سے سوالات پوچھ سکتے ہیں</translation>
 <translation id="8932992523185907506">‏‫Chromium اب آپ کا ڈیفالٹ براؤزر نہیں ہے۔ ‫Chromium کو ڈیفالٹ براؤزر بنائیں؟</translation>
+<translation id="8940844567350264767">‏‫Chromium کے ساتھ چلتے پھرتے Chromium کی بہترین حفاظتی خصوصیات حاصل کریں</translation>
 <translation id="8941642502866065432">‏Chromium اپ ڈیٹ نہیں ہو سکتا</translation>
 <translation id="8944232836376404813">اس کارروائی سے مندرجہ ذیل ہوگا:
           <ph name="LINE_BREAKS" />

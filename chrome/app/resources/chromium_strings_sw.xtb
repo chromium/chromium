@@ -72,6 +72,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1792680680989393197">Unaweza kuiondoa wakati wowote. Huenda Chromium ikaipakua tena kiotomatiki wakati tovuti au kipengele kinaihitaji.</translation>
 <translation id="1793486931176048546">Bofya <ph name="BEGIN_BOLD" />Ndiyo<ph name="END_BOLD" /> kwenye arifa ya Windows ili ubandike Chromium kwenye upauzana wako ili uifikie kwa haraka.</translation>
 <translation id="1808667845054772817">Sakinisha Chromium Upya</translation>
+<translation id="1814482312667514397">Pata vipengele bora vya usalama vya Chromium popote ulipo, ukitumia programu ya Chromium kwenye simu yako</translation>
 <translation id="1820835682567584003">Chromium inajaribu <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809">Tayari umeingia katika akaunti ya <ph name="EXISTING_USER" />. Ili utenganishe shughuli zako za kuvinjari, ingia katika akaunti kwenye Chromium katika wasifu wako binafsi ukitumia <ph name="USER_EMAIL_ADDRESS" />. Pia utapata viendelezi vyako na zaidi kwenye <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Utakapofungua Chromium tena kwenye <ph name="DEVICE_TYPE" /> yako, utaona kidokezo cha kutumia Kidhibiti cha Manenosiri cha Google.</translation>
@@ -135,6 +136,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Kiendelezi kimoja au zaidi cha Chromium kilikuwa kinafikia kifaa 1 cha HID}=1{Kiendelezi kimoja au zaidi cha Chromium kinafikia kifaa 1 cha HID}other{Kiendelezi kimoja au zaidi cha Chromium kinafikia vifaa # vya HID}}</translation>
 <translation id="2401032172288869980">Chromium inahitaji ruhusa ya kufikia kamera na maikrofoni kwa ajili ya tovuti hii</translation>
 <translation id="2403703063067034158">Hitilafu ya kuwasha: tukio jingine la uwekaji mipangilio linaendelea kwa sasa, tafadhali jaribu tena baadaye.</translation>
+<translation id="241044568699443215">Pata usalama wa Chromium popote ulipo ukitumia programu ya Chromium kwenye <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Fungua viungo katika Chromium kwenye programu yoyote na ufanye kivinjari kiweze kufikiwa kwenye upauzana wako</translation>
 <translation id="2425157128016763890">Ruhusu Gemini kwenye Chromium ifikie hati hii kwa kubofya kitufe cha Andaa muhtasari ili upate muhtasari wa haraka na uulize maswali ya nyongeza</translation>
 <translation id="2440750600860946460">Kwa kutumia <ph name="BEGIN_LINK" />zana kutoka Chromium<ph name="END_LINK" />, unaweza kuvinjari kwa usalama na kuwa na udhibiti</translation>
@@ -442,7 +444,6 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="5906655207909574370">Inakaribia kukamilisha kusasishwa! Zima na uwashe kifaa chako ili ukamilishe kusasisha.</translation>
 <translation id="5924017743176219022">Inaunganisha kwenye Intaneti...</translation>
 <translation id="5941711191222866238">Punguza</translation>
-<translation id="5949225980829865667">Ili utumie alamisho hii na zaidi kwenye vifaa vyako vyote, ingia katika Chromium</translation>
 <translation id="5953657885167112863">Fanya Chromium Ikufae</translation>
 <translation id="5960071705175224773">Mipangilio yako ilibadilishwa na programu isiyojulikana</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Shirika lako hufunga Chromium kiotomatiki isipotumika kwa dakika 1.}other{Shirika lako hufunga Chromium kiotomatiki isipotumika kwa dakika #.}}</translation>
@@ -753,6 +754,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8907580949721785412">Chromium inajaribu kuonyesha manenosiri. Chapa nenosiri lako la Windows ili uruhusu hili.</translation>
 <translation id="8910309838319708610">Umemaliza! Sasa unaweza kuuliza maswali kwa urahisi unapovinjari ukitumia Modi ya AI katika huduma ya Tafuta</translation>
 <translation id="8932992523185907506">Chromium haitumiki tena kama kivinjari chako chaguomsingi. Ungependa kuifanya Chromium kuwa kivinjari chaguomsingi?</translation>
+<translation id="8940844567350264767">Pata vipengele bora zaidi vya usalama vya Chromium popote ulipo ukitumia Chromium</translation>
 <translation id="8941642502866065432">Imeshindwa kusasisha Chromium</translation>
 <translation id="8944232836376404813">Kitendo hiki:
           <ph name="LINE_BREAKS" />

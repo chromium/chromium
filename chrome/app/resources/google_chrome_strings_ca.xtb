@@ -99,6 +99,7 @@
 <translation id="1896602904211344018">Obtén l'aplicació Chrome</translation>
 <translation id="1919130412786645364">Permet l'inici de sessió a Chrome</translation>
 <translation id="1925069572871307609">Per obtenir actualitzacions de Google Chrome en el futur, necessitaràs Windows 10 (versió 1809) o una versió posterior. Aquest ordinador utilitza una versió anterior de Windows 10.</translation>
+<translation id="1975069140856174874">La propera vegada que obris Chrome al teu <ph name="DEVICE_TYPE" />, veuràs una indicació per obtenir les millors funcions de seguretat de Google.</translation>
 <translation id="1975400514743766362">Mentre et desplaces, gaudeix de la seguretat de Google amb l'aplicació Chrome al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Protegeix-te més siguis on siguis amb la funció Navegació segura millorada a Chrome per a iOS</translation>
 <translation id="2001586581944147178">Dificulta que les persones amb accés al teu trànsit d'Internet vegin els llocs web que visites. Chrome utilitza una connexió segura per cercar l'adreça IP d'un lloc web al sistema de noms de domini (DNS).</translation>
@@ -451,6 +452,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="568656514202614970">Fet! Ara pots fer preguntes fàcilment mentre navegues amb el tauler lateral de la Cerca de Google.</translation>
 <translation id="5686916850681061684">Personalitza i controla Google Chrome. Cal la teva intervenció. Fes clic per obtenir més informació.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Obtén les millors funcions de seguretat de Google siguis on siguis amb Chrome</translation>
 <translation id="569897634095159764">No es pot connectar a Internet. El servidor intermediari necessita autenticació.</translation>
 <translation id="5709557627224531708">Defineix Chrome com a navegador predeterminat</translation>
 <translation id="5715427327524421317">Chrome baixa i actualitza aquests models d'IA automàticament</translation>
@@ -616,6 +618,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7099479769133613710">Reinicia per actualitzar &amp;Chrome OS</translation>
 <translation id="7106741999175697885">Gestor de tasques - Google Chrome</translation>
 <translation id="7121179479711575744">Inicia la sessió a Chrome</translation>
+<translation id="7137056136322108339">Obtén les millors funcions de seguretat de Google siguis on siguis amb l'aplicació Chrome al telèfon</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Hi ha una actualització nova de Chrome disponible i s'aplicarà tan aviat com el reiniciïs.}=1{Hi ha una actualització nova de Chrome disponible i s'aplicarà tan aviat com el reiniciïs. La finestra d'incògnit no es tornarà a obrir.}other{Hi ha una actualització nova de Chrome disponible i s'aplicarà tan aviat com el reiniciïs. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>
 <translation id="7161904924553537242">Us donem la benvinguda a Google Chrome.</translation>
 <translation id="7193885263065350793">La teva organització tanca Chrome quan no s'utilitza durant <ph name="TIMEOUT_DURATION" />.</translation>
@@ -650,7 +653,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7514258452813684157">Servei de l'actualitzador de Google</translation>
 <translation id="7515191208480168435">Pots fixar Google Lens per accedir-hi fàcilment</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7543146567111253230">Per obtenir aquesta adreça d'interès i més en tots els dispositius, inicia la sessió a Chrome</translation>
 <translation id="756134248912568991">La propera vegada que obris Chrome al teu <ph name="DEVICE_TYPE" />, veuràs una indicació per utilitzar grups de pestanyes.</translation>
 <translation id="756809126120519699">S'han esborrat les dades de Chrome</translation>
 <translation id="7572537927358445944">Desactivat • Chrome no pot verificar d'on prové aquesta extensió</translation>

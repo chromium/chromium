@@ -101,6 +101,7 @@
 <translation id="1896602904211344018">Iegūt lietotni Chrome</translation>
 <translation id="1919130412786645364">Atļaut pierakstīties pārlūkā Chrome</translation>
 <translation id="1925069572871307609">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 versija 1809 vai jaunāka versija. Šajā datorā tiek izmantota vecāka Windows 10 versija.</translation>
+<translation id="1975069140856174874">Kad nākamreiz savā ierīcē (<ph name="DEVICE_TYPE" />) atvērsiet pārlūku Chrome, tiks parādīts aicinājums izmantot Google labākās drošības funkcijas.</translation>
 <translation id="1975400514743766362">Izmantojiet lietotni Chrome savā ierīcē (<ph name="DEVICE_TYPE" />), lai piekļūstu Google drošības iespējām, atrodoties ceļā</translation>
 <translation id="1979600810166324878">Saņemiet labāku aizsardzību, atrodoties ceļā, ar funkciju “Droša pārlūkošana ar papildu aizsardzību” pārlūkā Chrome operētājsistēmai iOS.</translation>
 <translation id="2001586581944147178">Neļaujiet personām, kurām ir piekļuve jūsu interneta datplūsmai, viegli skatīt jūsu apmeklētās vietnes. Chrome izmanto drošu savienojumu, lai meklētu vietnes IP adresi sistēmā DNS (domēnu nosaukumu sistēmā).</translation>
@@ -653,7 +654,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7514258452813684157">Google atjauninātāja pakalpojums</translation>
 <translation id="7515191208480168435">Varat piespraust funkciju Google Lens, lai ērti tai piekļūtu.</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7543146567111253230">Lai varētu izmantot šo grāmatzīmi un citus datus visās savās ierīcēs, pierakstieties pārlūkā Chrome.</translation>
 <translation id="756134248912568991">Kad nākamreiz savā ierīcē (<ph name="DEVICE_TYPE" />) atvērsiet pārlūku Chrome, tiks parādīts aicinājums izmantot ciļņu grupas.</translation>
 <translation id="756809126120519699">Chrome dati tika notīrīti</translation>
 <translation id="7572537927358445944">Izslēgts • Chrome nevar pārbaudīt šī paplašinājuma izcelsmi</translation>

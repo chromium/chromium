@@ -1307,6 +1307,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="244071666433939959">Aplikasi terbuka di jendela</translation>
 <translation id="2442916515643169563">Bayangan teks</translation>
 <translation id="2443487764245141020">Situs mungkin juga perlu mengenali perangkat Anda menggunakan ID</translation>
+<translation id="2444282212665587861">update, upgrade, versi, build, info, periksa update</translation>
 <translation id="244475495405467108">Tutup Tab di Sisi Kiri</translation>
 <translation id="2444874983932528148">Lanjutkan pekerjaan Anda dengan mudah</translation>
 <translation id="2445081178310039857">Diperlukan direktori akar ekstensi.</translation>
@@ -2144,6 +2145,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="3321512411079201586">&amp;Terisolasi</translation>
 <translation id="3323288183237359315">Instal untuk Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Untuk melindungi privasi Anda, izin telah dihapus dari situs}other{Untuk melindungi privasi Anda, izin telah dihapus dari beberapa situs}}</translation>
+<translation id="3325561120400598624">Percakapan ditinjau dan digunakan untuk melatih model AI generatif. Gemini adalah AI dan dapat membuat kesalahan. Beberapa konten mungkin tidak sesuai untuk sebagian orang. Anda dapat <ph name="BEGIN_LINK_MANAGE_HISTORY" />mengelola histori Anda<ph name="END_LINK_MANAGE_HISTORY" />, termasuk <ph name="BEGIN_LINK_LOCATION_INFO" />info tentang lokasi Anda<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut pilihan Anda<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Gaya</translation>
 <translation id="3331974543021145906">Info aplikasi</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video diputar dalam mode picture-in-picture</translation>
@@ -2269,6 +2271,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Upload 1 file .pdf untuk digunakan dengan pertanyaan Anda}other{Upload hingga # file .pdf untuk digunakan dengan pertanyaan Anda}}</translation>
 <translation id="3456750372063895499">Buka Link di J&amp;endela Terisolasi</translation>
 <translation id="345693547134384690">Buka gambar d&amp;i tab baru</translation>
+<translation id="3456949031754827166">Atur ulang</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Simpan Grup}other{Simpan Grup}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 bookmark dihapus}other{# bookmark dihapus}}</translation>
 <translation id="3471687177769494956">Edit pintasan navigasi</translation>
@@ -3322,6 +3325,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="4602776638371779614">Tab ini memindai perangkat Bluetooth secara aktif</translation>
 <translation id="4605026046465576953">Aplikasi ini tidak dapat dibuka karena Anda tidak memiliki izin untuk menjalankan aplikasi web terisolasi</translation>
 <translation id="4606551464649945562">Jangan izinkan situs membuat peta 3D untuk area di sekeliling Anda atau melacak posisi kamera</translation>
+<translation id="4606965546067937011">kecepatan, RAM, lag, macet, error, resource, penggunaan, baterai, pengoptimal, lambat, memori, penghemat memori</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Hapus grup tab?}other{Hapus grup tab?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Upload 1 file untuk digunakan dengan pertanyaan Anda}other{Upload hingga # file untuk digunakan dengan pertanyaan Anda}}</translation>
 <translation id="4608500690299898628">&amp;Temukan...</translation>
@@ -4154,6 +4158,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="5535769176698670170">Tukar dengan tampilan atas</translation>
 <translation id="5536642445914063887">Ganti Profil</translation>
 <translation id="5537725057119320332">Transmisikan</translation>
+<translation id="553876896781261711">hapus, hilangkan, keamanan, privasi, pembersihan, penyimpanan, reset, cache, cookie, lambat, kecepatan, histori</translation>
 <translation id="5541091577812545428">Sandi tidak diubah</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5543983818738093899">Memeriksa status...</translation>
@@ -4745,6 +4750,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="6214157047210274853">Edit di Google Wallet</translation>
 <translation id="621470880408090483">Jangan izinkan situs terhubung ke perangkat Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Untuk menjaga keamanan sandi Anda, <ph name="BRAND" /> akan terkunci setelah tidak aktif selama 1 menit}other{Untuk menjaga keamanan sandi Anda, <ph name="BRAND" /> akan terkunci setelah tidak aktif selama # menit}}</translation>
+<translation id="6215427500141060726">Percakapan ditinjau dan digunakan untuk melatih model AI generatif. Gemini adalah AI dan dapat membuat kesalahan. Anda dapat <ph name="BEGIN_LINK_MANAGE_HISTORY" />mengelola histori Anda<ph name="END_LINK_MANAGE_HISTORY" />, termasuk <ph name="BEGIN_LINK_LOCATION_INFO" />info tentang lokasi Anda<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut pilihan Anda<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Situs dan aplikasi yang ditolak</translation>
 <translation id="6216696360484424239">Login secara otomatis</translation>
 <translation id="6218961554829577610">Tidak suka suaranya</translation>
@@ -4896,6 +4902,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="639880411171387127">Pilihan Google Lens Anda. Tekan enter atau backspace untuk menghapus pilihan Google Lens</translation>
 <translation id="6400360390396538896">Selalu di <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Batalkan fokus grup tab</translation>
+<translation id="6401522392962817913">Dengan melanjutkan, Anda menyetujui Persyaratan Layanan Google Payments. Pemberitahuan Privasi menjelaskan cara penanganan data Anda. Kartu Anda disimpan ke Akun Google Anda, <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Untuk mengetahui alasannya, hubungi developer aplikasi</translation>
 <translation id="6402921224457714577">Situs dapat meminta untuk mengontrol dan memprogram ulang perangkat MIDI Anda</translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
@@ -4984,6 +4991,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="6499143127267478107">Mencari host di skrip proxy...</translation>
 <translation id="6503077044568424649">Sering dibuka</translation>
 <translation id="6504601948739128893">Tidak diizinkan menggunakan font yang diinstal di perangkat Anda</translation>
+<translation id="6505525633061207363">kredensial, login, kunci sandi, kunci, vault, kunci, login, login, login</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" ingin menginstal aplikasi berikut di perangkat ini:}other{"<ph name="APP_NAME" />" ingin menginstal aplikasi berikut di perangkat ini:}}</translation>
 <translation id="6508248480704296122">Berkaitan dengan <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikasi: <ph name="APP_NAME" /></translation>

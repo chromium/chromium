@@ -442,7 +442,6 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="5906655207909574370">Uppfærslan er næstum tilbúin! Endurræstu tækið til að ljúka uppfærslunni.</translation>
 <translation id="5924017743176219022">Tengist internetinu…</translation>
 <translation id="5941711191222866238">Minnka</translation>
-<translation id="5949225980829865667">Skráðu þig inn í Chromium til að fá þetta bókamerki og fleiri í öllum tækjunum þínum</translation>
 <translation id="5953657885167112863">Gerðu Chromium-vafrann að þínum</translation>
 <translation id="5960071705175224773">Óþekkt forrit breytti stillingunum þínum</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Fyrirtækið lokar Chromium sjálfkrafa eftir aðgerðaleysi í 1 mínútu.}one{Fyrirtækið lokar Chromium sjálfkrafa eftir aðgerðaleysi í # mínútu.}other{Fyrirtækið lokar Chromium sjálfkrafa eftir aðgerðaleysi í # mínútur.}}</translation>
@@ -520,6 +519,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="6598877126913850652">Fara í tilkynningastillingar Chromium</translation>
 <translation id="6600016381025017075">Leitaðu að hverju sem er á síðunni</translation>
 <translation id="6613594504749178791">Breytingar þínar munu taka gildi næst þegar þú endurræsir Chromium.</translation>
+<translation id="6637855549677695722">Næst þegar þú opnar Chromium í <ph name="DEVICE_TYPE" /> muntu sjá ábendingu um að fá bestu öryggiseiginleika Chromium.</translation>
 <translation id="6637908313088374648">Chromium ræsist nú þegar Windows ræsist, svo að þú getur byrjað að vafra samstundis. Þú getur slökkt á þessu í stillingunum.</translation>
 <translation id="6644846457769259194">Uppfærir tækið (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium verður að fá leyfi fyrir myndavél til að búa til þrívíddarkort af umhverfi þínu</translation>

@@ -440,7 +440,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="5906655207909574370">Atualização quase concluída. Reinicie o dispositivo para concluí-la.</translation>
 <translation id="5924017743176219022">Conectando-se à Internet...</translation>
 <translation id="5941711191222866238">Minimizar</translation>
-<translation id="5949225980829865667">Faça login no Chromium para acessar este favorito e muito mais em todos os seus dispositivos</translation>
 <translation id="5953657885167112863">Deixe o Chromium do seu jeito</translation>
 <translation id="5960071705175224773">Suas configurações foram alteradas por um app desconhecido</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{A organização vai fechar o Chromium automaticamente se ele não for usado por 1 minuto.}one{A organização vai fechar o Chromium automaticamente se ele não for usado por # minuto.}other{A organização vai fechar o Chromium automaticamente se ele não for usado por # minutos.}}</translation>

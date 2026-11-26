@@ -440,7 +440,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="5906655207909574370">Aproape actualizat! Repornește dispozitivul pentru a finaliza actualizarea.</translation>
 <translation id="5924017743176219022">Se conectează la internet…</translation>
 <translation id="5941711191222866238">Minimizează</translation>
-<translation id="5949225980829865667">Pentru a accesa acest marcaj și altele pe toate dispozitivele, conectează-te la Chromium</translation>
 <translation id="5953657885167112863">Personalizează Chromium</translation>
 <translation id="5960071705175224773">Setările au fost modificate de o aplicație necunoscută</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organizația ta închide automat Chromium dacă nu este folosit timp de un minut.}few{Organizația ta închide automat Chromium dacă nu este folosit timp de # minute.}other{Organizația ta închide automat Chromium dacă nu este folosit timp de # de minute.}}</translation>

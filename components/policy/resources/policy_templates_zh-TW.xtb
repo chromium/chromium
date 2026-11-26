@@ -932,6 +932,11 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
       如果將這項政策設為 False，使用者就無法新增和設定自己的印表機，也無法使用任何先前設定過的印表機進行列印。
       </translation>
 <translation id="1613327425322354195">回報裝置安全性狀態</translation>
+<translation id="1613552398317518165">這項政策已淘汰且不具任何效力。預設搜尋要求一律會使用 get 方法傳送，因此系統不會套用這項政策指定的參數。請改用 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 設定搜尋網址，包括 <ph name="SEARCH_TERM_MARKER" /> 預留位置。
+
+POST 參數僅支援透過 <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> 進行圖片搜尋。
+
+先前若已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />，設定 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> 的目的是指定透過 POST 方式搜尋網址時的參數，並以半形逗號分隔多組名稱與值。</translation>
 <translation id="1615221548356595305">即使在用戶端憑證已有人使用的情況下，仍允許這些主機合併 HTTP/2 連線</translation>
 <translation id="1616280227447957376">允許忽略特定來源的 SSL 警告網頁繼續瀏覽</translation>
 <translation id="1617235075406854669">啟用刪除瀏覽器和下載記錄</translation>
@@ -5861,6 +5866,11 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 <translation id="4725801978265372736">要求比對本機使用者和遠端存取主機擁有者的名稱</translation>
 <translation id="4726228171190098009">不允許裝置要求恢復原廠設定</translation>
 <translation id="4726895359147376813">從永久 ID 對應至 VM 設定</translation>
+<translation id="473189306848333308">這項政策已淘汰且不具任何效力。建議要求一律會使用 get 方法傳送，因此系統不會套用這項政策指定的參數。請改用 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> 設定建議網址，包括 <ph name="SEARCH_TERM_MARKER" /> 預留位置。
+
+POST 參數僅支援透過 <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> 進行圖片搜尋。
+
+先前若已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />，設定 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> 的目的是指定透過 POST 方式搜尋建議時的參數，並以半形逗號分隔多組名稱與值。</translation>
 <translation id="4732069502693984686">啟用自動擷取多個螢幕畫面的功能</translation>
 <translation id="4733471537137819387">與整合 HTTP 驗證相關的政策。</translation>
 <translation id="4737832614429402441">使用符合傳輸層安全標準 (TLS) 的後量子金鑰協議預設值</translation>

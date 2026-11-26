@@ -77,6 +77,7 @@
 <translation id="112840717907525620">নীতি ক্যাশেটি ঠিক আছে</translation>
 <translation id="1131264053432022307">আপনার কপি করা ছবি</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ফুল-স্ক্রিন থেকে বেরিয়ে আসতে উপর থেকে টেনে আনুন এবং ফিরে যাওয়ার বোতাম টাচ করুন</translation>
+<translation id="1136582904187541177"><ph name="ITEM_LABEL" />, টিকচিহ্ন দেওয়া, মেনু আইটেম। শেয়ারিং বন্ধ করতে বেছে নিন</translation>
 <translation id="11370190534773372">কার্ডের বিবরণ পূরণ করা হয়েছে</translation>
 <translation id="1138458427267715730">ওয়েব জুড়ে কোনও সাইটের দাম কমে গেলে সতর্কতা পান</translation>
 <translation id="1142713751288681188">পেপারের ধরন</translation>
@@ -927,6 +928,7 @@
 <translation id="2526062290525841862">এই অ্যাপ চালাতে, আইসোলেটেড ওয়েব অ্যাপ ডেভেলপার মোড আবার চালু করুন</translation>
 <translation id="2526280916094749336">Google প্রোডাক্ট জুড়ে সেভ করা ঠিকানা আপনি ব্যবহার করতে পারবেন। আপনার Google অ্যাকাউন্ট <ph name="ACCOUNT" />-এ এই ঠিকানা সেভ করা হবে।</translation>
 <translation id="2527451058878391043">আপনার CVC কার্ডের সামনে আছে। এটি ৪ সংখ্যার একটি কোড যা ডানদিকে আপনার কার্ড নম্বরের উপরের রয়েছে।</translation>
+<translation id="2527614414460013324"><ph name="ITEM_LABEL" />, টিকচিহ্ন দেওয়া হয়েছে</translation>
 <translation id="2529899080962247600">এই ফিল্ডে <ph name="MAX_ITEMS_LIMIT" />টির বেশি এন্ট্রি লেখা যাবে না। অন্য সব এন্ট্রি বাতিল করা হবে।</translation>
 <translation id="2530042584066815841">মাউস লক ও ব্যবহার</translation>
 <translation id="2535585790302968248">গোপনে ব্রাউজ করতে ছদ্মবেশী ট্যাব খুলুন</translation>
@@ -1011,6 +1013,7 @@
 <translation id="2666092431469916601">শীর্ষ</translation>
 <translation id="2666117266261740852">অন্যান্য ট্যাব বা অ্যাপ্লিকেশানগুলি বন্ধ করুন</translation>
 <translation id="266935134738038806">সাইট দেখুন</translation>
+<translation id="2670682833829583790"><ph name="ITEM_LABEL" />, মেনু আইটেম। শেয়ারিং চালু করতে বেছে নিন</translation>
 <translation id="2672201172023654893">আপনার ব্রাউজার কেউ ম্যানেজ করছে না।</translation>
 <translation id="2674170444375937751">আপনি কি আপনার ইতিহাস থেকে এই পৃষ্ঠাগুলি মোছার বিষয়ে নিশ্চিত?</translation>
 <translation id="2675716371350192683">আপনার কন্টেন্ট AI উন্নত করতে ব্যবহার করা হবে না। আপনার সংস্থা এইসব সেটিংস যেকোনও সময় পরিবর্তন করতে পারবে।</translation>
@@ -1992,6 +1995,7 @@
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> পৃষ্ঠার থাম্বনেল</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> আপডেট করা হয়েছে</translation>
 <translation id="4298148761711700950">QR আপলোড না করেই ঝটপট পেমেন্ট করুন</translation>
+<translation id="4298297436255194165"><ph name="WEEKDAY" /> • <ph name="DATE" /></translation>
 <translation id="4298925811540301889">আপনার ChromeOS ডিভাইস জুড়ে এই সাইটের কুকি সিঙ্ক করা হয়েছে। আপনি কী সিঙ্ক করবেন, তা ম্যানেজ করার জন্য <ph name="SYNC_SETTINGS" />-এ যান।</translation>
 <translation id="4299360487321267760"><ph name="APP_NAME" /> সোর্স <ph name="SOURCE_INDEX" /></translation>
 <translation id="4299919199185766032">শর্টকাটের নাম <ph name="MAX_LENGTH" />টি সংখ্যার অনুমোদিত দৈর্ঘ্যের সর্বাধিক সীমা ছাড়িয়ে গেছে।</translation>
@@ -2201,6 +2205,7 @@
 <translation id="4682496302933121474">পৃষ্ঠাটি অনুবাদ করবেন?</translation>
 <translation id="468314109939257734">আপনার ভার্চুয়াল কার্ড নম্বর দেখুন</translation>
 <translation id="4686942373615810936">এইমাত্র তৈরি করা হয়েছে</translation>
+<translation id="468826602575103388">শেয়ারিং বন্ধ করতে বেছে নিন</translation>
 <translation id="4690205240253392065">এমন কোনও পরিষেবা প্রদানকারী বেছে নিন যা পরে পেমেন্ট করার সুবিধা দেয়</translation>
 <translation id="469028408546145398">ছদ্মবেশী উইন্ডো বন্ধ করুন বোতাম, বর্তমানে খোলা থাকা সব ছদ্মবেশী উইন্ডো বন্ধ করতে এটি চালু করুন</translation>
 <translation id="4692623383562244444">সার্চ ইঞ্জিনসমূহ</translation>
@@ -4173,6 +4178,7 @@
 <translation id="7942349550061667556">লাল</translation>
 <translation id="7943397946612013052">ব্লক করা ডাউনলোড</translation>
 <translation id="7943893128817522649">একাধিক ফাইল অটোমেটিক ডাউনলোড করতে অনুমতি চাইতে পারে</translation>
+<translation id="7947144323420971076">শেয়ারিং চালু করতে বেছে নিন</translation>
 <translation id="7947285636476623132">আপনার মেয়াদ শেষের বছর পরীক্ষা করে আবার চেষ্টা করুন</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-এর ফিচার সম্পর্কে জানতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="7947964969544524438">নোন ট্রাভেলার নম্বর নিরাপদে সেভ করুন</translation>
@@ -4300,6 +4306,7 @@
 <translation id="8172809706700703589">আমার ট্রিপের জন্য প্যাকিং লিস্ট তৈরি করো</translation>
 <translation id="8174047975335711832">ডিভাইস সংক্রান্ত তথ্য</translation>
 <translation id="8175053171643471349">লয়ালটি কার্ড ম্যানেজ করুন</translation>
+<translation id="817536628389054635">পরিচিতির তথ্য পূরণ করা হয়েছে: <ph name="FILLED_TYPES" /></translation>
 <translation id="8175796834047840627">আপনি সাইন-ইন করে রয়েছেন বলে, Chrome আপনার কার্ডগুলি আপনার Google অ্যাকাউন্টে সেভ করার অফার করছে। সেটিংসে গিয়ে এই আচরণটি পরিবর্তন করতে পারেন।</translation>
 <translation id="8176440868214972690">এই ডিভাইসের অ্যাডমিনিস্ট্রেটর নিম্নলিখিত ওয়েবসাইটগুলিকে সেটিংস বা নীতির মতো কিছু তথ্য পাঠিয়েছে।</translation>
 <translation id="818254048113802060">{0,plural, =1{কন্টেন্টের কারণে <ph name="FILE_NAME" /> ব্লক করা হয়েছে}one{কন্টেন্টের কারণে <ph name="FILE_COUNT" />টি ফাইল ব্লক করা হয়েছে}other{কন্টেন্টের কারণে <ph name="FILE_COUNT" />টি ফাইল ব্লক করা হয়েছে}}</translation>

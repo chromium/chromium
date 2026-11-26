@@ -13,11 +13,13 @@
 <translation id="1807863182207623884">Ruby</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> সেকেন্ড ফাস্ট ফরওয়ার্ড করুন</translation>
 <translation id="1984328900355667246">প্লেব্যাক উপলভ্য নেই</translation>
+<translation id="2009730553732772041">আপনি যে পৃষ্ঠায় আছেন তার কন্টেন্ট ও URL, অডিও তৈরি করার জন্য Google-এর সাথে শেয়ার করা হবে। আপনি যেকোনও সময় সেটিংসে গিয়ে এই পছন্দ আপডেট করতে পারবেন।</translation>
 <translation id="2019727681730021602">স্ট্যান্ডার্ড প্লেব্যাক</translation>
 <translation id="2224347680315897176">স্থির</translation>
 <translation id="2575502321843437554">যথেষ্ট এনগেজমেন্ট নেই</translation>
 <translation id="2611765907167846862">শান্ত</translation>
 <translation id="3023502830214299618">এই সময়ে, এই পৃষ্ঠার জন্য প্লেব্যাক উপলভ্য নেই। পরে আবার চেষ্টা করে দেখুন।</translation>
+<translation id="3431227249425330101">চালিয়ে যেতে, Chrome-কে 'এই পৃষ্ঠা শুনুন' ফিচারের জন্য পৃষ্ঠার কন্টেন্ট ব্যবহার করার অনুমতি দেবেন?</translation>
 <translation id="3493899379487634969">কী সমস্যা হয়েছে?</translation>
 <translation id="3730775656877876887">AI প্লেব্যাক তৈরি করা হচ্ছে</translation>
 <translation id="3778044272390020426">খারাপ মতামত দেওয়ার বিকল্পের মেনু</translation>
@@ -55,6 +57,7 @@
 <translation id="6889157801232138307">“এই পৃষ্ঠার কন্টেন্ট শুনুন” প্লেয়ার</translation>
 <translation id="7051308646573997571">প্রবাল রঙ</translation>
 <translation id="7138678301420049075">অন্যান্য</translation>
+<translation id="7161867604252594316">"এই পৃষ্ঠা শুনুন" বন্ধ আছে</translation>
 <translation id="7221920857098237570">মৃদু</translation>
 <translation id="7237590978482584900">মৃদুমন্দ</translation>
 <translation id="7282547042039404307">মসৃণ</translation>

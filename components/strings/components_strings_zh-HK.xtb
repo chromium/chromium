@@ -77,6 +77,7 @@
 <translation id="112840717907525620">政策快取正確</translation>
 <translation id="1131264053432022307">您複製的圖片</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />：如要離開全螢幕，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
+<translation id="1132789342529761192">不建議上載</translation>
 <translation id="11370190534773372">已填入信用卡詳情</translation>
 <translation id="1138458427267715730">如果產品在網絡上的任何網站降價，系統將通知你</translation>
 <translation id="1142713751288681188">紙張類型</translation>
@@ -603,6 +604,7 @@
 <translation id="2025891858974379949">不安全的內容</translation>
 <translation id="2027465737841872819">塑膠</translation>
 <translation id="2027707238798802149">無法使用付款卡</translation>
+<translation id="2028329426302356196">不建議下載</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />檢查 Proxy和防火牆<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">此 Chrome 執行例項正在使用手動設定的指令列標記。請注意，指令列標記可能隨時變更，且不受支援。</translation>
 <translation id="2033900728810589426">快速指令不得與 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 定義的預設搜尋引擎關鍵字相同：<ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@
 <translation id="3443504041532578451">光碟 (光滑)</translation>
 <translation id="3447661539832366887">此裝置的擁有者已停用恐龍遊戲。</translation>
 <translation id="3447884698081792621">顯示憑證 (核發者：<ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">不建議列印</translation>
 <translation id="3450323514459570273">網站可要求控制 MIDI 裝置及將其重新編程</translation>
 <translation id="3452404311384756672">擷取間隔：</translation>
 <translation id="345268527248907593">無法連線至此網站</translation>
@@ -2915,6 +2918,7 @@
 <translation id="5851548754964597211">分頁清單</translation>
 <translation id="5851868085455377790">發行者</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">不建議複製</translation>
 <translation id="5860491529813859533">開啟</translation>
 <translation id="5862579898803147654">堆疊器 8</translation>
 <translation id="5863515189965725638">編輯 IBAN</translation>

@@ -440,7 +440,6 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="5906655207909574370">Már majdnem naprakész! Indítsa újra az eszközt a frissítés befejezéséhez.</translation>
 <translation id="5924017743176219022">Kapcsolódás az internethez…</translation>
 <translation id="5941711191222866238">Kis méret</translation>
-<translation id="5949225980829865667">Ha az összes eszközén szeretne hozzáférni ehhez a könyvjelzőhöz és egyebekhez, jelentkezzen be a Chromiumba</translation>
 <translation id="5953657885167112863">Tegye személyessé a Chromiumot</translation>
 <translation id="5960071705175224773">A beállításokat egy ismeretlen alkalmazás módosította</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Szervezete automatikusan bezárja a Chromiumot, ha 1 percig nincs használatban.}other{Szervezete automatikusan bezárja a Chromiumot, ha # percig nincs használatban.}}</translation>

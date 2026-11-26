@@ -949,6 +949,11 @@ Las APIs del sistema operativo definen qué es una "entrada del usuario" (por ej
       Si se le asigna el valor False, los usuarios no podrán añadir ni configurar sus propias impresoras. Tampoco podrán imprimir con las impresoras que hayan configurado previamente.
       </translation>
 <translation id="1613327425322354195">Enviar información sobre el estado de seguridad del dispositivo</translation>
+<translation id="1613552398317518165">Esta política está obsoleta y no tiene ningún efecto. Las solicitudes de búsqueda predeterminadas siempre se envían mediante el método GET, por lo que los parámetros que especifica esta política nunca se aplican. Usa <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> para configurar la URL de búsqueda, incluido el marcador de posición <ph name="SEARCH_TERM_MARKER" />.
+
+Los parámetros POST solo se admiten para la búsqueda de imágenes, a través de <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Anteriormente, si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estaba activada, la configuración de <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> permitía especificar los parámetros que se usarían para buscar una URL con POST como pares de nombre-valor separados por comas.</translation>
 <translation id="1615221548356595305">Permitir la fusión de conexiones HTTP/2 para estos hosts aunque se utilicen certificados de cliente</translation>
 <translation id="1616280227447957376">Permitir seguir navegando desde la página de advertencia de SSL en orígenes concretos</translation>
 <translation id="1617235075406854669">Habilitar eliminación de historial de navegación y de descargas</translation>
@@ -6036,6 +6041,11 @@ Esta política no tendrá ningún efecto si se asigna el valor false a la polít
 <translation id="4725801978265372736">Requerir que el nombre del usuario local y el propietario del host de acceso remoto coincidan</translation>
 <translation id="4726228171190098009">No permitir que el dispositivo solicite usar la función Powerwash</translation>
 <translation id="4726895359147376813">Asignación desde IDs persistentes a configuraciones de VM</translation>
+<translation id="473189306848333308">Esta política está obsoleta y no tiene ningún efecto. Las solicitudes de sugerencias siempre se envían mediante el método GET, por lo que los parámetros que especifica esta política nunca se aplican. Usa <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> para configurar la URL de sugerencias, incluido el marcador de posición <ph name="SEARCH_TERM_MARKER" />.
+
+Los parámetros POST solo se admiten para la búsqueda de imágenes, a través de <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Anteriormente, si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estaba activada, la configuración de <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> permitía especificar los parámetros que se usarían para buscar sugerencias con POST como pares nombre-valor separados por comas.</translation>
 <translation id="4732069502693984686">Habilitar la captura automática de varias pantallas</translation>
 <translation id="4733471537137819387">Políticas relacionadas con la autenticación HTTP integrada</translation>
 <translation id="4737832614429402441">Usar valor predeterminado del acuerdo de claves poscuántico para TLS</translation>
@@ -8213,6 +8223,15 @@ Si se le asigna el valor false, no podrán acceder a la función.</translation>
 <translation id="6075316301208933536">Si a <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> se le asigna el valor <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, al asignar un valor a <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> se definirá cuándo deberá dejar de cargarse la batería, en función del porcentaje de carga de la batería. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> debe tener un valor al menos 5 puntos porcentuales inferior al de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Si no se asigna ningún valor a esta política, se aplicará el modo <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> de carga de la batería.</translation>
+<translation id="6077759101739558312">Si se habilita esta política, Navegación segura confiará en los dominios que indiques. No comprobará si contienen recursos peligrosos, como phishing, malware o software no deseado. El servicio de protección de descargas de Navegación segura (no compatible con iOS) no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se reutilizan contraseñas.
+
+Si no se define la política, se aplicará la protección predeterminada de Navegación segura a todos los recursos.
+
+Esta política no admite expresiones regulares, pero los subdominios de un dominio determinado se añaden a la lista de permitidos. No es obligatorio indicar los nombres de dominios completos.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6082161804984853051">Si se le asigna un valor a la política, <ph name="PRODUCT_NAME" /> utilizará el directorio proporcionado para guardar archivos almacenados en caché en el disco independientemente de si los usuarios han especificado el indicador "--disk-cache-dir" o no.
 
       Si no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> usa el directorio de caché predeterminado, pero lo usuarios podrán cambiar el ajuste con el indicador de línea de comandos "--disk-cache-dir".

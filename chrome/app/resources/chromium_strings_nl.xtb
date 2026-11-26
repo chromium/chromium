@@ -71,6 +71,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1792680680989393197">Je kunt ze altijd verwijderen. Chromium kan ze automatisch opnieuw downloaden als een site of functie ze nodig heeft.</translation>
 <translation id="1793486931176048546">Klik op <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> in de Windows-melding om Chromium vast te zetten op je taakbalk voor snelle toegang.</translation>
 <translation id="1808667845054772817">Chromium opnieuw installeren</translation>
+<translation id="1814482312667514397">Gebruik de beste beveiligingsfuncties van Chromium onderweg met de Chromium-app op je telefoon</translation>
 <translation id="1820835682567584003">Chromium probeert het volgende te doen: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> is al ingelogd. Als je je browsegegevens gescheiden wilt houden, log je in Chromium in op je eigen profiel bij als <ph name="USER_EMAIL_ADDRESS" />. Je krijgt ook onder andere je extensies van <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">De volgende keer dat je Chromium op je <ph name="DEVICE_TYPE" /> opent, zie je een prompt om Google Wachtwoordmanager te gebruiken.</translation>
@@ -134,6 +135,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Een of meer Chromium-extensies hebben toegang gekregen tot 1 HID-apparaat}=1{Een of meer Chromium-extensies hebben toegang tot 1 HID-apparaat}other{Een of meer Chromium-extensies hebben toegang tot # HID-apparaten}}</translation>
 <translation id="2401032172288869980">Chromium heeft camera- en microfoonrechten nodig voor deze site</translation>
 <translation id="2403703063067034158">Opstartfout: Er wordt op dit moment een andere instantie van het instelproces uitgevoerd. Probeer het later opnieuw.</translation>
+<translation id="241044568699443215">Neem de beveiliging van Chromium overal mee naartoe met de Chromium-app op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Open links in Chromium vanuit elke app en houd de browser toegankelijk op je taakbalk</translation>
 <translation id="2425157128016763890">Klik op de knop Samenvatten om dit document te delen met Gemini in Chromium voor een snel overzicht en om follow-upvragen te stellen</translation>
 <translation id="2440750600860946460">Met <ph name="BEGIN_LINK" />tools van Chromium<ph name="END_LINK" /> kun je beveiligd browsen en de controle behouden</translation>
@@ -441,7 +443,6 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="5906655207909574370">Updaten bijna voltooid. Start je apparaat opnieuw op om de update te voltooien.</translation>
 <translation id="5924017743176219022">Verbinding maken met internet...</translation>
 <translation id="5941711191222866238">Minimaliseren</translation>
-<translation id="5949225980829865667">Log in bij Chromium om onder andere deze bookmark te gebruiken op al je apparaten</translation>
 <translation id="5953657885167112863">Chromium personaliseren</translation>
 <translation id="5960071705175224773">Je instellingen zijn gewijzigd door een onbekende app</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Je organisatie sluit Chromium automatisch als deze 1 minuut niet wordt gebruikt.}other{Je organisatie sluit Chromium automatisch als deze # minuten niet wordt gebruikt.}}</translation>
@@ -752,6 +753,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8907580949721785412">Chromium probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="8910309838319708610">Je kunt nu makkelijk vragen stellen terwijl je browst met de AI-modus van Zoeken</translation>
 <translation id="8932992523185907506">Chromium is niet meer je standaardbrowser. Chromium als standaardbrowser instellen?</translation>
+<translation id="8940844567350264767">Gebruik de beste beveiligingsfuncties van Chromium onderweg met Chromium</translation>
 <translation id="8941642502866065432">Kan Chromium niet updaten</translation>
 <translation id="8944232836376404813">Door deze actie gebeurt het volgende:
           <ph name="LINE_BREAKS" />

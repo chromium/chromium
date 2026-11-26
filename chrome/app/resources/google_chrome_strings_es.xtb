@@ -103,6 +103,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1896602904211344018">Descarga la aplicación Chrome</translation>
 <translation id="1919130412786645364">Permitir el inicio de sesión en Chrome</translation>
 <translation id="1925069572871307609">Para recibir futuras actualizaciones de Google Chrome, deberás tener la versión 1809 de Windows 10 o una posterior. Este ordenador tiene una versión antigua de Windows 10.</translation>
+<translation id="1975069140856174874">La próxima vez que abras Chrome en tu <ph name="DEVICE_TYPE" />, verás una petición para obtener las mejores funciones de seguridad de Google.</translation>
 <translation id="1975400514743766362">Llévate la seguridad de Google a cualquier lugar con la aplicación Chrome en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1979600810166324878">Aumenta tu seguridad estés donde estés con Navegación segura mejorada en Chrome para iOS</translation>
 <translation id="2001586581944147178">Haz que a las personas con acceso a tu tráfico de Internet les resulte más complicado ver los sitios que visitas. Chrome usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>
@@ -459,6 +460,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="568656514202614970">¡Listo! Ahora puedes hacer preguntas fácilmente mientras navegas con el panel lateral de la Búsqueda de Google</translation>
 <translation id="5686916850681061684">Personaliza y controla Google Chrome. Se requiere tu intervención. Haz clic aquí para obtener más información.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Disfruta de las mejores funciones de seguridad de Google en cualquier lugar con Chrome</translation>
 <translation id="569897634095159764">No se puede conectar a Internet. El servidor proxy requiere autenticación.</translation>
 <translation id="5709557627224531708">Establece Chrome como navegador predeterminado</translation>
 <translation id="5715427327524421317">Chrome descarga y actualiza estos modelos de IA automáticamente</translation>
@@ -624,6 +626,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7099479769133613710">Reiniciar para actualizar &amp;ChromeOS</translation>
 <translation id="7106741999175697885">Administrador de tareas de Google Chrome</translation>
 <translation id="7121179479711575744">Iniciar sesión en Chrome</translation>
+<translation id="7137056136322108339">Disfruta de las mejores funciones de seguridad de Google estés donde estés con la aplicación Chrome en tu teléfono</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Hay una nueva actualización de Chrome disponible que se aplicará cuando reinicies el navegador.}=1{Hay una nueva actualización de Chrome disponible que se aplicará cuando reinicies el navegador. La ventana de Incógnito no se volverá a abrir.}other{Hay una nueva actualización de Chrome disponible que se aplicará cuando reinicies el navegador. Las # ventanas de Incógnito no se volverán a abrir.}}</translation>
 <translation id="7161904924553537242">Te damos la bienvenida a Google Chrome</translation>
 <translation id="7193885263065350793">Tu organización cierra Chrome cuando lleva <ph name="TIMEOUT_DURATION" /> sin usarse.</translation>
@@ -658,7 +661,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7514258452813684157">Servicio de herramienta de actualización de Google</translation>
 <translation id="7515191208480168435">Puedes fijar Google Lens para acceder fácilmente</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7543146567111253230">Para acceder a este marcador y más en todos tus dispositivos, inicia sesión en Chrome</translation>
 <translation id="756134248912568991">La próxima vez que abras Chrome en tu <ph name="DEVICE_TYPE" />, verás una petición para usar grupos de pestañas.</translation>
 <translation id="756809126120519699">Datos de Chrome borrados</translation>
 <translation id="7572537927358445944">Desactivado • Chrome no puede verificar el origen de esta extensión</translation>

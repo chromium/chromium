@@ -72,6 +72,7 @@
 <translation id="1792680680989393197">በማንኛውም ጊዜ ሊያስወግዷቸው ይችላሉ። Chromium አንድ ጣቢያ ወይም ባህሪ ሲያስፈልጋቸው በራስ-ሰር እንደገና ሊያወርዳቸው ይችላል።</translation>
 <translation id="1793486931176048546">ለፈጣን መዳረሻ Chromiumን በተግባር አሞሌዎ ላይ ለመሰካት በWindows ማሳወቂያ ውስጥ <ph name="BEGIN_BOLD" />አዎ<ph name="END_BOLD" /> ላይ ጠቅ ያድርጉ</translation>
 <translation id="1808667845054772817">Chromiumን ዳግም ጫን</translation>
+<translation id="1814482312667514397">በመሄድ ላይ ሳሉ በስልክዎ ላይ በChromium መተግበሪያ የChromiumን ምርጥ የደኅንነት ባህሪያት ያግኙ</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> በመሞከር ላይ ነው</translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> አስቀድመው ገብተዋል። አሰሳዎን ለያይተው ለማቆየት በራስዎ መገለጫ ውስጥ እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ወደ Chromium ይግቡ። እንዲሁም ከ<ph name="DEVICE" /> ቅጥያዎችዎን እና ሌሎችንም ያገኛሉ።</translation>
 <translation id="183031085822326697">በሚቀጥለው ጊዜ Chromiumን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ሲከፍቱ Google የይለፍ ቃል አስተዳዳሪን ለመጠቀም ጥያቄ ያያሉ።</translation>
@@ -135,6 +136,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰበት ነበር}=1{1 የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰበት ነው}one{# የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰበት ነው}other{# የኤችአይዲ መሣሪያዎች በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰባቸው ነው}}</translation>
 <translation id="2401032172288869980">Chromium ለዚህ ጣቢያ የካሜራ እና የማይክሮፎን ፈቃዶች ያስፈልጉታል</translation>
 <translation id="2403703063067034158">የማስነሻ ስህተት፦ ሌላ የማዋቀር አብነት አሁን እያሄደ ነው፣ እባክዎ በኋላ እንደገና ይሞክሩ።</translation>
+<translation id="241044568699443215">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ባለው የChromium መተግበሪያ የChromiumን ደህንነት በመሄድ ላይ ይውሰዱ</translation>
 <translation id="2418322681019544463">ከማንኛውም መተግበሪያ ላይ አገናኞችን በChromium ውስጥ ይክፈቱ እና አሳሹን በተግባር አሞሌዎ ላይ ተደራሽ አድርገው ያቆዩት</translation>
 <translation id="2425157128016763890">ፈጣን አጠቃላይ ዕይታ ለማግኘት እና የክትትል ጥያቄዎችን ለመጠየቅ ይህን ሰነድ ለGemini በChromium ውስጥ ለማጋራት አጠቃላይ አድርግ የሚለውን አዝራር ጠቅ ያድርጉ</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />ከChromium በመጡ መሣሪያዎች <ph name="END_LINK" /> ደህንነቱ በተጠበቀ መንገድ ማሰስ እና በቁጥጥር ውስጥ ሆነው መቆየት ይችላሉ</translation>
@@ -442,7 +444,6 @@
 <translation id="5906655207909574370">የተዘመነ ለመሆን ጥቂት ብቻ ቀርቷል! ዝማኔውን ለማጠናቀቅ መሣሪያዎን ዳግም ያስጀምሩት።</translation>
 <translation id="5924017743176219022">ከበይነመረቡ ጋር በመገናኘት ላይ...</translation>
 <translation id="5941711191222866238">አሳንስ</translation>
-<translation id="5949225980829865667">ይህን ዕልባት እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት ወደ Chromium ይግቡ</translation>
 <translation id="5953657885167112863">Chromiumን የእርስዎ ያድርጉ</translation>
 <translation id="5960071705175224773">ቅንብሮችዎ ባልታወቀ መተግበሪያ ተለውጠዋል</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{ድርጅትዎ Chromium ለ1 ደቂቃ ጥቅም ላይ ሳይውል ሲቀር በራስ ሰር ይዘጋዋል።}one{ድርጅትዎ Chromium ለ# ደቂቃ ጥቅም ላይ ሳይውል ሲቀር በራስ ሰር ይዘጋዋል።}other{ድርጅትዎ Chromium ለ# ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር በራስ ሰር ይዘጋዋል።}}</translation>
@@ -520,6 +521,7 @@
 <translation id="6598877126913850652">ወደ የChromium ማሳወቂያ ቅንብሮች ይሂዱ</translation>
 <translation id="6600016381025017075">በዚህ ገጽ ላይ ማንኛውንም ነገር ይፈልጉ</translation>
 <translation id="6613594504749178791">ለውጦችዎ Chromium በሚያስጀምሩበት ቀጣዩ ጊዜ ላይ ይተገበራሉ።</translation>
+<translation id="6637855549677695722">በሚቀጥለው ጊዜ Chromiumን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ሲከፍቱ፣ የChromiumን ምርጥ የደኅንነት ባህሪያት ለማግኘት ጥያቄ ያያሉ።</translation>
 <translation id="6637908313088374648">አሁን ላይ Windows ሲጀምር Chromium ይጀመራል ስለዚህ እርስዎ በቅጽበት ማሰስ መጀመር ይችላሉ። ይህን በቅንብሮች ውስጥ ማጥፋት ይችላሉ።</translation>
 <translation id="6644846457769259194">የእርስዎን መሣሪያ በማዘመን ላይ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium የዙሪያዎን የ3ል ካርታ ለመፍጠር የካሜራ ፈቃድ ያስፈልገዋል</translation>
@@ -753,6 +755,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8907580949721785412">Chromium የይለፍ ቃሎችን ለማሳየት እየሞከረ ነው። ይህንን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="8910309838319708610">ተሳክቷል! አሁን በፍለጋ ሰው ሠራሽ አስተውሎት ሁነታ እያሰሱ ሳለ ጥያቄዎችን በቀላሉ መጠየቅ ይችላሉ</translation>
 <translation id="8932992523185907506">Chromium ከእንግዲህ የእርስዎ ነባሪ አሳሽ አይደለም። Chromium ነባሪውን አሳሽ ያድርጉት?</translation>
+<translation id="8940844567350264767">በChromium በመሄድ ላይ ሳሉ የChromium ምርጥ የደኅንነት ባህሪያትን ያግኙ</translation>
 <translation id="8941642502866065432">Chromiumን ማዘመን አልተቻለም</translation>
 <translation id="8944232836376404813">ይህ እርምጃ የሚከተሉትን ያደርጋል፦
           <ph name="LINE_BREAKS" />

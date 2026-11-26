@@ -71,6 +71,7 @@
 <translation id="1792680680989393197">ଆପଣ ଯେ କୌଣସି ସମୟରେ ସେଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇପାରିବେ। ଏକ ସାଇଟ କିମ୍ବା ଫିଚର ସେଗୁଡ଼ିକୁ ଆବଶ୍ୟକ କଲେ Chromium ସେଗୁଡ଼ିକୁ ପୁଣି ସ୍ୱତଃ ଡାଉନଲୋଡ କରିପାରେ।</translation>
 <translation id="1793486931176048546">କ୍ୱିକ ଆକ୍ସେସ ପାଇଁ ଆପଣଙ୍କ ଟାସ୍କବାରରେ Chromiumକୁ ପିନ କରିବାକୁ Windows ବିଜ୍ଞପ୍ତିରେ <ph name="BEGIN_BOLD" />ହଁ<ph name="END_BOLD" />ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="1808667845054772817">Chromiumକୁ ପୁଣି ଇନ୍‍ଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
+<translation id="1814482312667514397">ଆପଣଙ୍କ ଫୋନରେ Chromium ଆପ ସହ ଅନ ଦି ଗୋ'ରେ Chromiumର ସର୍ବୋତ୍ତମ ସୁରକ୍ଷା ଫିଚରଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> କରିବାକୁ ଚେଷ୍ଟା କରୁଛି</translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> ପୂର୍ବରୁ ସାଇନ ଇନ କରିଛନ୍ତି। ଆପଣଙ୍କ ବ୍ରାଉଜିଂକୁ ଅଲଗା ରଖିବା ପାଇଁ <ph name="USER_EMAIL_ADDRESS" /> ଭାବେ ଆପଣଙ୍କ ନିଜ ପ୍ରୋଫାଇଲରେ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ। ଆପଣ <ph name="DEVICE" />ରୁ ଆପଣଙ୍କ ଏକ୍ସଟେନସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି ମଧ୍ୟ ପାଇବେ।</translation>
 <translation id="183031085822326697">ଆଗାମୀ ଥର ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣ Chromium ଖୋଲିଲେ, Google Password Manager ବ୍ୟବହାର କରିବାକୁ ଆପଣ ଏକ ପ୍ରମ୍ପ୍ଟ ଦେଖିବେ।</translation>
@@ -134,6 +135,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chromium ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଥିଲା}=1{1ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chromium ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଛି}other{#ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chromium ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଛି}}</translation>
 <translation id="2401032172288869980">ଏହି ସାଇଟ୍ ପାଇଁ Chromium କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="2403703063067034158">ଷ୍ଟାର୍ଟଅପ ତ୍ରୁଟି: ସେଟଅପର ଅନ୍ୟ ଏକ ଇନଷ୍ଟାନ୍ସ ବର୍ତ୍ତମାନ ଚାଲିଛି, ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="241044568699443215">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ Chromium ଆପ ସହ ଅନ ଦି ଗୋ'ରେ Chromiumର ସୁରକ୍ଷା ପାଆନ୍ତୁ</translation>
 <translation id="2418322681019544463">ଯେ କୌଣସି ଆପରୁ Chromiumରେ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଟାସ୍କବାରରେ ବ୍ରାଉଜରକୁ ଆକ୍ସେସଯୋଗ୍ୟ ରଖନ୍ତୁ</translation>
 <translation id="2425157128016763890">ଏକ କ୍ଵିକ ଓଭରଭ୍ୟୁ ପାଇବା ଏବଂ ଫଲୋ-ଅପ ପ୍ରଶ୍ନଗୁଡ଼ିକ ପଚାରିବା ପାଇଁ Chromiumରେ Gemini ସହ ଏହି ଡକ୍ୟୁମେଣ୍ଟ ସେୟାର କରିବାକୁ ସାରାଂଶ ବଟନରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromiumରୁ ଟୁଲଗୁଡ଼ିକ<ph name="END_LINK" /> ମାଧ୍ୟମରେ ଆପଣ ସୁରକ୍ଷିତ ଭାବେ ବ୍ରାଉଜ କରିପାରିବେ ଏବଂ ନିୟନ୍ତ୍ରଣରେ ରହିପାରିବେ</translation>
@@ -441,7 +443,6 @@
 <translation id="5906655207909574370">ପ୍ରାୟ ଅପ୍-ଟୁ-ଡେଟ୍! ଅପଡେଟିଂ ସମାପ୍ତ କରିବା ପାଇଁ ନିଜ ଡିଭାଇସ୍‌କୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="5924017743176219022">ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ କରୁଛି...</translation>
 <translation id="5941711191222866238">ସର୍ବନିମ୍ନ କରନ୍ତୁ</translation>
-<translation id="5949225980829865667">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଏହି ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ, Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="5953657885167112863">Chromiumକୁ ନିଜର କରନ୍ତୁ</translation>
 <translation id="5960071705175224773">ଏକ ଅଜଣା ଆପ ଆପଣଙ୍କ ସେଟିଂସକୁ ପରିବର୍ତ୍ତନ କରିଛି</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{1 ମିନିଟ ପାଇଁ Chromiumକୁ ବ୍ୟବହାର କରାନଗଲେ ଆପଣଙ୍କ ସଂସ୍ଥା ସ୍ୱତଃ ଏହାକୁ ବନ୍ଦ କରିଦିଏ।}other{# ମିନିଟ ପାଇଁ Chromiumକୁ ବ୍ୟବହାର କରାନଗଲେ ଆପଣଙ୍କ ସଂସ୍ଥା ସ୍ୱତଃ ଏହାକୁ ବନ୍ଦ କରିଦିଏ।}}</translation>
@@ -753,6 +754,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8907580949721785412">Chromium, ପାସ୍‌ୱର୍ଡ ଦେଖାଇବାକୁ ଚେଷ୍ଟା କରୁଛି। ଏହାକୁ ଅନୁମତି ଦେବାପାଇଁ ନିଜର Windows ପାସ୍‌ୱର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="8910309838319708610">ସଫଳ! ଆପଣ ବର୍ତ୍ତମାନ Search AI ମୋଡ ସହ ବ୍ରାଉଜ କରିବା ସମୟରେ ସହଜରେ ପ୍ରଶ୍ନ ପଚାରିପାରିବେ</translation>
 <translation id="8932992523185907506">Chromium ଆଉ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ନୁହେଁ। Chromiumକୁ ଏକ ଡିଫଲ୍ଟ ବ୍ରାଉଜର କରିବେ?</translation>
+<translation id="8940844567350264767">Chromium ସହ ଅନ ଦି ଗୋ'ରେ Chromiumର ସର୍ବୋତ୍ତମ ସୁରକ୍ଷା ଫିଚରଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="8941642502866065432">Chromium ଅପ୍‌ଡେଟ୍‌ କରିପାରିବ ନାହିଁ</translation>
 <translation id="8944232836376404813">ଏହି କାର୍ଯ୍ୟ:
           <ph name="LINE_BREAKS" />

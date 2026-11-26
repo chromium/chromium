@@ -444,7 +444,6 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="5906655207909574370">Ažuriranje je skoro gotovo! Ponovo pokrenite uređaj da biste dovršili ažuriranje.</translation>
 <translation id="5924017743176219022">Povezujete se sa internetom…</translation>
 <translation id="5941711191222866238">Umanji</translation>
-<translation id="5949225980829865667">Da bi vam ovaj obeleživač i drugi sadržaj bili dostupni na svim uređajima, prijavite se u Chromium</translation>
 <translation id="5953657885167112863">Prilagodite Chromium sebi</translation>
 <translation id="5960071705175224773">Nepoznata aplikacija je promenila podešavanja</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organizacija automatski zatvara Chromium kada se ne koristi 1 minut.}one{Organizacija automatski zatvara Chromium kada se ne koristi # minut.}few{Organizacija automatski zatvara Chromium kada se ne koristi # minuta.}other{Organizacija automatski zatvara Chromium kada se ne koristi # minuta.}}</translation>

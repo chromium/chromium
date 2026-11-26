@@ -24,6 +24,7 @@
 <translation id="4949828774841497663">Төмөнкүгө өтүңүз Колдонмолор &gt; Тутумдун параметрлери &gt; Тармак, 
           жигердүү тармакты тандап, Чоо-жайы... баскычын чыкылдатып, колдонулган проксилерди
           тандоодон чыгарыңыз.</translation>
+<translation id="5228339820845278804">Эстеткич: Chromium'дун мыкты коопсуздук функциялары ар дайым кол алдыңызда</translation>
 <translation id="6480456350195404966">Төмөнкүгө өтүңүз:
           Chromium менюсу &gt;
           <ph name="SETTINGS_TITLE" />
@@ -39,6 +40,7 @@
 <translation id="6613594504749178791">Өзгөртүүлөрүңүз Chromium кийинки жолу кайра ишке киргизилгенде күчүнө кирет.</translation>
 <translation id="691026815377248078">Жупташтырууну улантуу үчүн Chromium Bluetooth'ду 
  пайдаланууга уруксат алышы керек. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7641677656706511803">Chromium колдонмосунда Chromium'дун коопсуздук функцияларын мобилдик түзмөктөрдө колдонуңуз</translation>
 <translation id="7681937895330411637">Chromium <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ачык ресурс долбоору аркылуу түзүлдү.</translation>
 <translation id="7861509383340276692">Chromium меню &gt;
         <ph name="SETTINGS_TITLE" />

@@ -77,6 +77,7 @@
 <translation id="112840717907525620">La memòria cau de la política està en bon estat</translation>
 <translation id="1131264053432022307">Imatge que has copiat</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />. Per sortir de la pantalla completa, arrossega des de la part superior i toca el botó Enrere.</translation>
+<translation id="1132789342529761192">No es recomana penjar-ho</translation>
 <translation id="11370190534773372">S'han emplenat els detalls de la targeta</translation>
 <translation id="1138458427267715730">Rep alertes quan el preu baixi en qualsevol lloc web d'Internet</translation>
 <translation id="1142713751288681188">Tipus de paper</translation>
@@ -603,6 +604,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2025891858974379949">Contingut no segur</translation>
 <translation id="2027465737841872819">Plàstic</translation>
 <translation id="2027707238798802149">Targeta no disponible</translation>
+<translation id="2028329426302356196">No es recomana baixar-ho</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Comproveu el servidor intermediari i el tallafoc<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Aquesta instància de Chrome s'està executant amb marques de línia d'ordres definides manualment. Tingues en compte que les marques de línia d'ordres poden canviar en qualsevol moment i no tenen assistència tècnica.</translation>
 <translation id="2033900728810589426">La drecera no pot ser igual que la paraula clau del proveïdor de cerca predeterminat definida per <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3443504041532578451">Disc òptic (setinat)</translation>
 <translation id="3447661539832366887">El propietari d'aquest dispositiu ha desactivat el joc de dinosaures.</translation>
 <translation id="3447884698081792621">Mostra el certificat (emès per <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">No es recomana imprimir-ho</translation>
 <translation id="3450323514459570273">Pot demanar permís per controlar i reprogramar els dispositius MIDI</translation>
 <translation id="3452404311384756672">Obtén l'interval:</translation>
 <translation id="345268527248907593">No es pot accedir a aquest lloc web</translation>
@@ -2916,6 +2919,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5851548754964597211">Llista de pestanyes</translation>
 <translation id="5851868085455377790">Emissor</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">No es recomana copiar-ho</translation>
 <translation id="5860491529813859533">Activa</translation>
 <translation id="5862579898803147654">Apiladora 8</translation>
 <translation id="5863515189965725638">Edita l'IBAN</translation>

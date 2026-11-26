@@ -442,7 +442,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5906655207909574370">Hampir selesai diperbarui! Mulai ulang perangkat untuk menyelesaikan pembaruan.</translation>
 <translation id="5924017743176219022">Menghubungkan ke internet...</translation>
 <translation id="5941711191222866238">Perkecil</translation>
-<translation id="5949225980829865667">Untuk mendapatkan bookmark ini dan lainnya di semua perangkat Anda, login ke Chromium</translation>
 <translation id="5953657885167112863">Personalisasi Chromium Anda</translation>
 <translation id="5960071705175224773">Setelan Anda diubah oleh aplikasi yang tidak dikenal</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama 1 menit.}other{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama # menit.}}</translation>
@@ -520,6 +519,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6598877126913850652">Buka setelan notifikasi Chromium</translation>
 <translation id="6600016381025017075">Telusuri apa saja di halaman ini</translation>
 <translation id="6613594504749178791">Perubahan Anda akan berlaku saat berikutnya Anda membuka Chromium.</translation>
+<translation id="6637855549677695722">Saat berikutnya Anda membuka Chromium di <ph name="DEVICE_TYPE" />, Anda akan melihat perintah untuk mendapatkan fitur keamanan terbaik Chromium.</translation>
 <translation id="6637908313088374648">Chromium kini diluncurkan saat Windows dimulai sehingga Anda dapat langsung menjelajahi internet. Anda dapat menonaktifkannya di setelan.</translation>
 <translation id="6644846457769259194">Memperbarui perangkat (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium memerlukan izin kamera untuk membuat peta 3D area sekitar Anda</translation>

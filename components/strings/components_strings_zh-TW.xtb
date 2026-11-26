@@ -77,6 +77,7 @@
 <translation id="112840717907525620">政策快取正確</translation>
 <translation id="1131264053432022307">你複製的圖片</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> - 如要退出全螢幕模式，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
+<translation id="1132789342529761192">不建議上傳</translation>
 <translation id="11370190534773372">已填入卡片資料</translation>
 <translation id="1138458427267715730">如果產品在任何網站上降價，透過快訊取得通知</translation>
 <translation id="1142713751288681188">紙張類型</translation>
@@ -602,6 +603,7 @@
 <translation id="2025891858974379949">不安全的內容</translation>
 <translation id="2027465737841872819">塑膠</translation>
 <translation id="2027707238798802149">無法使用卡片</translation>
+<translation id="2028329426302356196">不建議下載</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />檢查 Proxy 和防火牆<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">這個 Chrome 執行個體正在使用手動設定的指令列旗標。請注意，指令列旗標可能隨時變更，且不屬於正式支援範圍。</translation>
 <translation id="2033900728810589426">搜尋捷徑不得與 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 定義的預設搜尋引擎關鍵字相同：<ph name="SHORTCUT_NAME" /></translation>
@@ -1454,6 +1456,7 @@
 <translation id="3443504041532578451">光碟 (光滑)</translation>
 <translation id="3447661539832366887">這個裝置的擁有者已關閉恐龍遊戲。</translation>
 <translation id="3447884698081792621">顯示憑證 (核發者：<ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">不建議列印</translation>
 <translation id="3450323514459570273">可以要求控制 MIDI 裝置並重設程式</translation>
 <translation id="3452404311384756672">擷取間隔：</translation>
 <translation id="345268527248907593">無法連上這個網站</translation>
@@ -2914,6 +2917,7 @@
 <translation id="5851548754964597211">分頁清單</translation>
 <translation id="5851868085455377790">發行者</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">不建議複製</translation>
 <translation id="5860491529813859533">開啟</translation>
 <translation id="5862579898803147654">堆疊出紙器 8</translation>
 <translation id="5863515189965725638">編輯 IBAN</translation>

@@ -103,6 +103,7 @@
 <translation id="1896602904211344018">የChrome መተግበሪያን አግኝ</translation>
 <translation id="1919130412786645364">የChrome በመለያ መግባትን ይፍቀዱ</translation>
 <translation id="1925069572871307609">የወደፊት የGoogle Chrome ዝማኔዎችን ለማግኘት Windows 10 ሥሪት 1809 ወይም ከዚያ በላይ ያስፈልግዎታል። ይህ ኮምፒውተር የቆየ የWindows 10 ሥሪት እየተጠቀመ ነው።</translation>
+<translation id="1975069140856174874">በሚቀጥለው ጊዜ Chromeን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ሲከፍቱ የGoogle ምርጥ የደኅንነት ባህሪያትን ለማግኘት ጥያቄ ያያሉ።</translation>
 <translation id="1975400514743766362">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ባለው የChrome መተግበሪያ አማካኝነት የGoogle ደኅንነትን በመሄድ ላይ ይውሰዱ</translation>
 <translation id="1979600810166324878">Chrome ለiOS ላይ በተሻሻለ የደህንነት አሰሳ በመሄድ ላይ ደህንነትሽ እንደተጠበቀ ቆዪ</translation>
 <translation id="2001586581944147178">የበይነመረብ ትራፊክዎ መዳረሻ ላላቸው ሰዎች እርስዎ የትኞቹን ጣቢያዎች እንደሚጎበኙ ማየት ያክብዱባቸው። Chrome የጣቢያውን አይ ፒ አድራሻ በዲኤንኤስ (የጎራ ስም ሥርዓት) ውስጥ ለመፈለግ የተመሰጠረ ግንኙነትን ይጠቀማል።</translation>
@@ -459,6 +460,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="568656514202614970">ተሳክቷል! አሁን በGoogle ፍለጋ የጎን ፓነል እያሰሱ ሳለ ጥያቄዎችን በቀላሉ መጠየቅ ይችላሉ</translation>
 <translation id="5686916850681061684">Google Chromeን ያብጁ እና ይቆጣጠሩ። የሆነ ነገር ትኩረትዎ ያስፈልገዋል - ለዝርዝሮች ጠቅ ያድርጉ።</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">በመሄድ ላይ ሳሉ የGoogleን ምርጥ የደኅንነት ባህሪያት በChrome ያግኙ</translation>
 <translation id="569897634095159764">ከበይነመረብ ጋር መገናኘት አልተቻለም። ተኪ አገልጋይ ማረጋገጥ ያስፈልገዋል።</translation>
 <translation id="5709557627224531708">Chromeን እንደ ነባሪ አሳሽዎ አድርገው ያቀናብሩት</translation>
 <translation id="5715427327524421317">Chrome እነዚህን ሰው ሠራሽ አስተውሎት ሞዴሎች በራስ-ሰር ያወርዳል እና ያዘምናል</translation>
@@ -624,6 +626,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="7099479769133613710">&amp;ChromeOSን ለማዘመን ዳግም ያስነሱት</translation>
 <translation id="7106741999175697885">ተግባር መሪ - Google Chrome</translation>
 <translation id="7121179479711575744">Chrome ውስጥ ይግቡ</translation>
+<translation id="7137056136322108339">በስልክዎ ላይ ባለው የChrome መተግበሪያ አማካኝነት በጉዞ ላይ የGoogleን ምርጥ የደኅንነት ባህሪያት ያግኙ</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{ለChrome አዲስ ዝማኔ የሚገኝ ሲሆን ልክ ዳግም ሲያስጀምሩት ይተገበራል።}=1{ለChrome አዲስ ዝማኔ የሚገኝ ሲሆን ልክ ዳግም ሲያስጀምሩት ይተገበራል። የእርስዎ ማንነት የማያሳውቅ መስኮት ዳግም አይከፈትም}one{ለChrome አዲስ ዝማኔ የሚገኝ ሲሆን ልክ ዳግም ሲያስጀምሩት ይተገበራል። የእርስዎ # ማንነት የማያሳውቁ መስኮቶች ዳግም አይከፈቱም}other{ለChrome አዲስ ዝማኔ የሚገኝ ሲሆን ልክ ዳግም ሲያስጀምሩት ይተገበራል። የእርስዎ # ማንነት የማያሳውቁ መስኮቶች ዳግም አይከፈቱም}}</translation>
 <translation id="7161904924553537242">ወደ Google Chrome እንኳን ደህና መጡ</translation>
 <translation id="7193885263065350793">ድርጅትዎ Chrome ለ<ph name="TIMEOUT_DURATION" /> ያህል ሥራ ላይ ሳይውል ይዘጋዋል።</translation>
@@ -658,7 +661,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="7514258452813684157">የGoogle ማዘመኛ አገልግሎት</translation>
 <translation id="7515191208480168435">በቀላሉ ለማግኘት Google ሌንስን ፒን ማድረግ ይችላሉ</translation>
 <translation id="7535429826459677826">Google Chrome ገንቢ</translation>
-<translation id="7543146567111253230">ይህን ዕልባት እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት ወደ Chrome ይግቡ</translation>
 <translation id="756134248912568991">በሚቀጥለው ጊዜ Chromeን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ሲከፍቱ፣ የትር ቡድኖችን ለመጠቀም ጥያቄ ያያሉ።</translation>
 <translation id="756809126120519699">የChrome ውሂብ ጸድቷል</translation>
 <translation id="7572537927358445944">ጠፍቷል • Chrome ይህ ቅጥያ ከየት እንደመጣ ማረጋገጥ አይችልም</translation>

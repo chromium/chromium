@@ -8146,6 +8146,15 @@ https://chromeenterprise.google/policies/url-patterns รองรับไว�
 <translation id="6075316301208933536">หากตั้งค่า <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> เป็น <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" /> การตั้งค่า <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> จะปรับแต่งเวลาที่แบตเตอรี่หยุดชาร์จ โดยอิงตามเปอร์เซ็นต์ของการชาร์จแบตเตอรี่ <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> ต้องอยู่ที่จุดต่ำกว่า <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> อย่างน้อย 5%
 
       การไม่ตั้งค่านโยบายจะทำให้มีการใช้โหมดการชาร์จแบตเตอรี่แบบ <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /></translation>
+<translation id="6077759101739558312">การตั้งค่านโยบายเป็น "เปิดใช้" หมายความว่า Google Safe Browsing จะเชื่อถือโดเมนที่คุณระบุ และจะไม่ตรวจหาทรัพยากรที่เป็นอันตราย เช่น ฟิชชิง มัลแวร์ หรือซอฟต์แวร์ไม่พึงประสงค์ บริการปกป้องการดาวน์โหลดของ Google Safe Browsing (ไม่รองรับใน iOS) จะไม่ตรวจสอบการดาวน์โหลดที่โฮสต์ในโดเมนเหล่านี้ และบริการปกป้องรหัสผ่านก็จะไม่ตรวจสอบการใช้รหัสผ่านซ้ำ
+
+การไม่ตั้งค่านโยบายจะทำให้การปกป้องด้วย Google Safe Browsing ตามค่าเริ่มต้นมีผลกับทรัพยากรทั้งหมด
+
+นโยบายนี้ไม่รองรับนิพจน์ทั่วไป แต่ระบบจะเพิ่มโดเมนย่อยของโดเมนที่กำหนดในรายการที่อนุญาต ไม่จําเป็นต้องใช้ชื่อโดเมนที่สมบูรณ์ในตัวเอง (FQDN)
+
+ใน <ph name="MS_WIN_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่เข้าร่วมโดเมน <ph name="MS_AD_NAME" />, เข้าร่วม <ph name="MS_AAD_NAME" /> หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" />
+
+ใน <ph name="MAC_OS_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่จัดการผ่าน MDM, เข้าร่วมโดเมนผ่าน MCX หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" /></translation>
 <translation id="6082161804984853051">การตั้งค่านโยบายทำให้ <ph name="PRODUCT_NAME" /> ใช้ไดเรกทอรีที่คุณให้ไว้สำหรับจัดเก็บไฟล์ที่แคชไว้ในดิสก์ ไม่ว่าจะระบุการตั้งค่าสถานะ --disk-cache-dir หรือไม่ก็ตาม
 
       หากไม่ได้ตั้งค่า <ph name="PRODUCT_NAME" /> จะใช้ไดเรกทอรีแคชเริ่มต้น แต่ผู้ใช้จะเปลี่ยนการตั้งค่านั้นได้ด้วยการตั้งค่าสถานะบรรทัดคำสั่ง --disk-cache-dir

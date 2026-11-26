@@ -72,6 +72,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1792680680989393197">Puedes eliminarlos en cualquier momento. Chromium puede volver a descargarlos automáticamente cuando un sitio o una función los necesite.</translation>
 <translation id="1793486931176048546">Haz clic en <ph name="BEGIN_BOLD" />Sí<ph name="END_BOLD" /> en la notificación de Windows para fijar Chromium a la barra de tareas y que puedas acceder rápidamente.</translation>
 <translation id="1808667845054772817">Reinstalar Chromium</translation>
+<translation id="1814482312667514397">Disfruta de las mejores funciones de seguridad de Chromium estés donde estés con la aplicación Chromium en tu teléfono</translation>
 <translation id="1820835682567584003">Chromium está intentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809">Ya has iniciado sesión con <ph name="EXISTING_USER" />. Para mantener tu información de navegación aparte, inicia sesión en Chromium con tu perfil de <ph name="USER_EMAIL_ADDRESS" />. También tendrás tus extensiones y otra información de <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">La próxima vez que abras Chromium en tu <ph name="DEVICE_TYPE" />, verás una petición para usar el Gestor de contraseñas de Google.</translation>
@@ -135,6 +136,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o varias extensiones de Chromium estaban accediendo a 1 dispositivo HID}=1{Una o varias extensiones de Chromium están accediendo a 1 dispositivo HID}other{Una o varias extensiones de Chromium están accediendo a # dispositivos HID}}</translation>
 <translation id="2401032172288869980">Chromium necesita los permisos del micrófono y de la cámara para este sitio</translation>
 <translation id="2403703063067034158">Error de arranque: se está ejecutando otra instancia de la configuración. Inténtalo de nuevo más tarde.</translation>
+<translation id="241044568699443215">Llévate la seguridad de Chromium a cualquier lugar con la aplicación Chromium en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Abre enlaces en Chromium desde cualquier aplicación y accede fácilmente al navegador desde la barra de tareas</translation>
 <translation id="2425157128016763890">Haz clic en el botón Resumir para compartir este documento con Gemini en Chromium, obtener un resumen rápido y hacer preguntas de seguimiento</translation>
 <translation id="2440750600860946460">Las <ph name="BEGIN_LINK" />herramientas de Chromium<ph name="END_LINK" /> te permiten navegar de forma segura y mantener el control</translation>
@@ -442,7 +444,6 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="5906655207909574370">El dispositivo está casi actualizado. Reinícialo para completar la actualización.</translation>
 <translation id="5924017743176219022">Conectando a Internet...</translation>
 <translation id="5941711191222866238">Minimizar</translation>
-<translation id="5949225980829865667">Para obtener este marcador y más en todos tus dispositivos, inicia sesión en Chromium</translation>
 <translation id="5953657885167112863">Personaliza Chromium a tu gusto</translation>
 <translation id="5960071705175224773">Una aplicación desconocida ha cambiado tu configuración</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Tu organización cerrará Chromium automáticamente cuando lleve 1 minuto sin usarse.}other{Tu organización cerrará Chromium automáticamente cuando lleve # minutos sin usarse.}}</translation>
@@ -520,6 +521,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="6598877126913850652">Ir a los ajustes de notificaciones de Chromium</translation>
 <translation id="6600016381025017075">Busca cualquier elemento de esta página</translation>
 <translation id="6613594504749178791">Los cambios se aplicarán la próxima vez que reinicies Chromium.</translation>
+<translation id="6637855549677695722">La próxima vez que abras Chromium en tu <ph name="DEVICE_TYPE" />, verás una petición para obtener las mejores funciones de seguridad de Chromium.</translation>
 <translation id="6637908313088374648">Ahora Chromium se inicia cuando se inicia Windows para que puedas empezar a navegar al instante. Puedes desactivar esta opción en la configuración.</translation>
 <translation id="6644846457769259194">Actualizando el dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium necesita el permiso de la cámara para crear un mapa 3D de tu entorno</translation>
@@ -753,6 +755,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8907580949721785412">Chromium está intentando mostrar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="8910309838319708610">¡Listo! Ahora puedes hacer preguntas fácilmente mientras navegas con el Modo IA de la Búsqueda.</translation>
 <translation id="8932992523185907506">Chromium ya no es tu navegador predeterminado. ¿Establecer Chromium como navegador predeterminado?</translation>
+<translation id="8940844567350264767">Disfruta de las mejores funciones de seguridad de Chromium en cualquier lugar con Chromium</translation>
 <translation id="8941642502866065432">No se puede actualizar Chromium</translation>
 <translation id="8944232836376404813">Con esta acción:
           <ph name="LINE_BREAKS" />

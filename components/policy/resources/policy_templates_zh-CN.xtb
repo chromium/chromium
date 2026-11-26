@@ -944,6 +944,11 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
       如果此政策设为 False，用户将无法添加和配置自己的打印机，也无法使用先前配置的任何打印机进行打印。
       </translation>
 <translation id="1613327425322354195">报告设备安全状态</translation>
+<translation id="1613552398317518165">此政策已弃用，不会产生任何效力。默认搜索请求始终使用 GET 方法发送，因此此政策指定的参数永远不会应用。请改用 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 配置搜索网址，包括 <ph name="SEARCH_TERM_MARKER" /> 占位符。
+
+只有通过 <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> 进行图片搜索时，才支持 POST 参数。
+
+之前，如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，设置 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> 旨在指定在使用 POST 搜索网址时所用的参数，格式为以逗号分隔的名称-值对。</translation>
 <translation id="1615221548356595305">允许为这些主机聚合 HTTP/2 连接（即使是在使用客户端证书时）</translation>
 <translation id="1616280227447957376">允许从特定来源上的 SSL 警告页面继续操作</translation>
 <translation id="1617235075406854669">允许删除浏览器历史记录和下载记录</translation>
@@ -5943,6 +5948,11 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="4725801978265372736">要求本地用户的名称和远程访问主机所有者的名称必须一致</translation>
 <translation id="4726228171190098009">不允许设备请求执行 Powerwash 操作</translation>
 <translation id="4726895359147376813">从永久性 ID 映射到虚拟机配置</translation>
+<translation id="473189306848333308">此政策已弃用，不会产生任何效力。建议请求始终使用 GET 方法发送，因此此政策指定的参数永远不会应用。请改用 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> 配置建议网址，包括 <ph name="SEARCH_TERM_MARKER" /> 占位符。
+
+只有通过 <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> 进行图片搜索时，才支持 POST 参数。
+
+之前，如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> 旨在指定通过 POST 获取搜索建议时所用的参数，格式为以逗号分隔的名称-值对。</translation>
 <translation id="4732069502693984686">允许自动截取多个界面</translation>
 <translation id="4733471537137819387">与集成 HTTP 身份验证相关的政策。</translation>
 <translation id="4737832614429402441">对 TLS 使用后量子密钥协议的默认值</translation>
@@ -8076,6 +8086,15 @@ IP 地址空间覆盖有两种形式：
 <translation id="6075316301208933536">如果 <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> 设为<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />，您便可通过设置 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> 根据电池充电百分比自定义电池停止充电的时间。<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> 必须比 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> 低至少 5 个百分点。
 
       如果您未设置此政策，系统会采用<ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />电池充电模式。</translation>
+<translation id="6077759101739558312">如果此政策已启用，“安全浏览”功能将会信任您指定的网域。此功能将不会检查这类网域是否含有危险资源（例如钓鱼式攻击、恶意软件或垃圾软件）。“安全浏览”功能的下载保护服务（iOS 上不支持）将不会检查托管在这类网域上的下载内容。此功能的密码保护服务将不会检查密码重用情况。
+
+如果未设置此政策，系统便会将默认开启的“安全浏览”保护功能应用于所有资源。
+
+此政策不支持正则表达式，但会将指定网域的子网域列入许可名单。完全限定域名 (FQDN) 不是必需项。
+
+在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例或已在 <ph name="CHROME_ENTERPRISE_CORE_NAME" />中注册的实例。
+
+在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例或已在 <ph name="CHROME_ENTERPRISE_CORE_NAME" />中注册的实例。</translation>
 <translation id="6082161804984853051">如果您设置了此政策，那么无论用户是否指定了 --disk-cache-dir 标记，<ph name="PRODUCT_NAME" /> 都会使用您所提供的目录在磁盘上存储缓存文件。
 
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 会使用默认的缓存目录，但用户可以使用 --disk-cache-dir 命令行标记更改此设置。

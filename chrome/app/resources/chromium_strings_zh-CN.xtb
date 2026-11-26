@@ -440,7 +440,6 @@
 <translation id="5906655207909574370">即将更新到最新版本！重新启动您的设备即可完成更新。</translation>
 <translation id="5924017743176219022">正在连接到互联网…</translation>
 <translation id="5941711191222866238">最小化</translation>
-<translation id="5949225980829865667">如需在您的所有设备上获取此书签等内容，请登录 Chromium</translation>
 <translation id="5953657885167112863">打造您的专属 Chromium</translation>
 <translation id="5960071705175224773">未知应用更改了您的设置</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{您的组织会在 Chromium 闲置 1 分钟后自动关闭它。}other{您的组织会在 Chromium 闲置 # 分钟后自动关闭它。}}</translation>

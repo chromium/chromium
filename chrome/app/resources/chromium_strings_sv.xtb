@@ -444,7 +444,6 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="5906655207909574370">Uppdateringen är nästan klar! Slutför den genom att starta om enheten.</translation>
 <translation id="5924017743176219022">Ansluter till internet …</translation>
 <translation id="5941711191222866238">Minimera</translation>
-<translation id="5949225980829865667">Logga in i Chromium för att få tillgång till detta bokmärke med mera på alla dina enheter</translation>
 <translation id="5953657885167112863">Gör Chromium till din egen</translation>
 <translation id="5960071705175224773">Dina inställningar har ändrats av en okänd app</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organisationen avslutar Chromium automatiskt när det inte har använts på 1 minut.}other{Organisationen avslutar Chromium automatiskt när det inte har använts på # minuter.}}</translation>

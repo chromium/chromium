@@ -8158,6 +8158,15 @@ Si la règle est définie sur "False", les enseignants ne peuvent pas accéder �
 <translation id="6075316301208933536">La règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />" permet de personnaliser le pourcentage à partir duquel la recharge de la batterie doit s'arrêter (si la règle "<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />" est définie sur "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />"). La valeur de la règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />" doit être inférieure d'au moins cinq points par rapport à celle de la règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />".
 
       Si cette règle n'est pas configurée, le mode <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> de recharge de la batterie est alors appliqué.</translation>
+<translation id="6077759101739558312">Si cette règle est activée, la fonctionnalité de navigation sécurisée juge fiables les domaines que vous avez spécifiés. Autrement dit, elle ne vérifie pas si des ressources présentent un danger (hameçonnage, logiciels malveillants ou indésirables, par exemple). La protection des téléchargements de la navigation sécurisée (non compatible avec iOS) ne vérifie pas les téléchargements hébergés sur ces domaines. De même, le service de protection par mot de passe ne vérifie pas si un mot de passe est réutilisé.
+
+Si cette règle n'est pas configurée, la navigation sécurisée applique sa protection par défaut à toutes les ressources.
+
+Cette règle n'accepte pas les expressions régulières, mais elle autorise les sous-domaines d'un domaine donné. Les noms de domaine complets ne sont pas obligatoires.
+
+Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de la <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de la <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6082161804984853051">Si cette règle est configurée, <ph name="PRODUCT_NAME" /> utilise le répertoire que vous indiquez pour stocker les fichiers mis en cache sur le disque, que l'utilisateur spécifie ou non le flag "--disk-cache-dir".
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise le répertoire de cache par défaut. Toutefois, l'utilisateur peut modifier ce paramètre avec le flag de ligne de commande "--disk-cache-dir".

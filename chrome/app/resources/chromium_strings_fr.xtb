@@ -440,7 +440,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="5906655207909574370">Mise à jour presque terminée. Pour la finaliser, veuillez redémarrer votre appareil.</translation>
 <translation id="5924017743176219022">Connexion à Internet…</translation>
 <translation id="5941711191222866238">Réduire</translation>
-<translation id="5949225980829865667">Pour accéder à ce favori et plus encore sur tous vos appareils, connectez-vous à Chromium</translation>
 <translation id="5953657885167112863">Personnalisez Chromium</translation>
 <translation id="5960071705175224773">Vos paramètres ont été modifiés par une appli inconnue</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant 1 minute.}one{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant # minute.}other{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant # minutes.}}</translation>

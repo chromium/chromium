@@ -103,6 +103,7 @@
 <translation id="1896602904211344018">Chrome යෙදුම ලබා ගන්න</translation>
 <translation id="1919130412786645364">Chrome පුරනයට ඉඩ දෙන්න</translation>
 <translation id="1925069572871307609">අනාගත Google Chrome යාවත්කාලීන ලබා ගැනීමට, ඔබට Windows 10 අනුවාදය 1809 හෝ ඊට පසු අනුවාද අවශ්‍ය වෙයි. මෙම පරිගණකය Windows 10 හි පැරණි අනුවාදයක් භාවිතා කරයි.</translation>
+<translation id="1975069140856174874">මීළඟ වතාවේ ඔබ ඔබේ <ph name="DEVICE_TYPE" /> මත Chrome විවෘත කරන විට, Google හි හොඳම ආරක්ෂක විශේෂාංග ලබා ගැනීමට ප්‍රේරකයක් ඔබට පෙනෙනු ඇත.</translation>
 <translation id="1975400514743766362">ඔබේ <ph name="DEVICE_TYPE" /> මත Chrome යෙදුම සමග ගමනේ දී Google හි ආරක්ෂාව ලබා ගන්න</translation>
 <translation id="1979600810166324878">iOS සඳහා Chrome හි ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම සමග ගමනේ දී ආරක්ෂිතව සිටින්න</translation>
 <translation id="2001586581944147178">ඔබේ අන්තර්ජාල ගමනාගමනයට ප්‍රවේශය ඇති පුද්ගලයින්ට ඔබ පිවිසෙන්නේ කුමන අඩවි දැයි බැලීම අසීරු කරන්න. Chrome DNS (වසම් නාම පද්ධතිය) තුළ වෙබ් අඩවියක IP ලිපිනය සෙවීමට ආරක්ෂිත සම්බන්ධතාවයක් භාවිතා කරයි.</translation>
@@ -657,7 +658,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7514258452813684157">Google යාවත්කාලීන සේවාව</translation>
 <translation id="7515191208480168435">ඔබට පහසු ප්‍රවේශය සඳහා Google Lens ඇමිණිය හැක</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7543146567111253230">මෙම පිටු සලකුණ සහ තවත් දේ ඔබේ සියලු උපාංගවල ලබා ගැනීමට, Chrome වෙත පුරන්න</translation>
 <translation id="756134248912568991">මීළඟ වතාවේ ඔබ ඔබේ <ph name="DEVICE_TYPE" /> මත Chrome විවෘත කරන විට, පටිති සමූහ භාවිත කිරීමට ප්‍රේරකයක් ඔබට පෙනෙනු ඇත.</translation>
 <translation id="756809126120519699">Chrome දත්ත හිස් කෙරිණි</translation>
 <translation id="7572537927358445944">අක්‍රිය • Chrome හට මෙම දිගුව එන තැන සත්‍යාපන කළ නොහැක</translation>

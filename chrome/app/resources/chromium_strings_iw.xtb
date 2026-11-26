@@ -438,7 +438,6 @@
 <translation id="5906655207909574370">העדכון כמעט הושלם! צריך להפעיל מחדש את המכשיר כדי לסיים את העדכון.</translation>
 <translation id="5924017743176219022">מתבצעת התחברות לאינטרנט…</translation>
 <translation id="5941711191222866238">מזעור</translation>
-<translation id="5949225980829865667">‏כדי לקבל גישה לסימניה הזו ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס ל-Chromium</translation>
 <translation id="5953657885167112863">‏התאמה אישית של Chromium</translation>
 <translation id="5960071705175224773">ההגדרות שלך שונו על ידי אפליקציה לא ידועה</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{‏לפי הגדרת הארגון, Chromium נסגר אוטומטית כשלא משתמשים בו במשך דקה.}one{‏לפי הגדרת הארגון, Chromium נסגר אוטומטית כשלא משתמשים בו במשך # דקות.}two{‏לפי הגדרת הארגון, Chromium נסגר אוטומטית כשלא משתמשים בו במשך # דקות.}other{‏לפי הגדרת הארגון, Chromium נסגר אוטומטית כשלא משתמשים בו במשך # דקות.}}</translation>
@@ -516,6 +515,7 @@
 <translation id="6598877126913850652">‏מעבר אל הגדרות ההודעות של Chromium</translation>
 <translation id="6600016381025017075">אפשר לחפש משהו בדף הזה</translation>
 <translation id="6613594504749178791">‏השינויים שביצעת ייכנסו לתוקף בפעם הבאה שתפעיל מחדש את Chromium‏.</translation>
+<translation id="6637855549677695722">‏בפעם הבאה ש-Chromium ייפתח ב<ph name="DEVICE_TYPE" /> שלך, תופיע הנחיה להפעיל את תכונות הבטיחות הכי טובות של Chromium.</translation>
 <translation id="6637908313088374648">‏‫Chromium מופעל עכשיו יחד עם Windows, כך שאפשר להתחיל לגלוש מיד. ניתן להשבית זאת בהגדרות.</translation>
 <translation id="6644846457769259194">עדכון המכשיר שלך מתבצע (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">‏נדרשת הרשאת גישה למצלמה ב-Chromium כדי ליצור מפה תלת-ממדית של הסביבה שלך</translation>

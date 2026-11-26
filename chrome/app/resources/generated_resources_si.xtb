@@ -1298,6 +1298,7 @@
 <translation id="244071666433939959">යෙදුම් කවුළුවක් තුළ විවෘත වේ</translation>
 <translation id="2442916515643169563">පාඨ ඡායාව</translation>
 <translation id="2443487764245141020">හැඳුනුම්කාරකයක් භාවිත කරමින් අඩවිවලට ඔබගේ උපාංගය හඳුනා ගැනීමට අවශ්‍ය විය හැකිය</translation>
+<translation id="2444282212665587861">යාවත්කාලීන කිරීම, යාවත්කාලීන කිරීම්, උත්ශ්‍රේණි කිරීම, අනුවාදය, ගොඩනැගුම, තොරතුරු, යාවත්කාලීන කිරීම් සඳහා පරීක්ෂා කරන්න</translation>
 <translation id="244475495405467108">වමට ඇති ටැබ වසන්න</translation>
 <translation id="2444874983932528148">ඔබ නතර කළ තැනින් පහසුවෙන් ගන්න</translation>
 <translation id="2445081178310039857">දිගු මූල නාමාවලියක් අවශ්‍යයි</translation>
@@ -2133,6 +2134,7 @@
 <translation id="3321512411079201586">&amp;හුදකලා</translation>
 <translation id="3323288183237359315">Edge සඳහා ස්ථාපනය කරන්න</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{ඔබේ පෞද්ගලිකත්වය ආරක්‍ෂා කිරීමට, අඩවියකින් අවසර ඉවත් කරන ලදි}one{ඔබේ පෞද්ගලිකත්වය ආරක්ෂා කිරීමට, අඩවිවලින් අවසර ඉවත් කරන ලදි}other{ඔබේ පෞද්ගලිකත්වය ආරක්ෂා කිරීමට, අඩවිවලින් අවසර ඉවත් කරන ලදි}}</translation>
+<translation id="3325561120400598624">කතාබස් සමාලෝචනය කර ජනන AI ආකෘතිය පුහුණු කිරීමට භාවිතා කරයි. Gemini යනු AI තාක්ෂණයක් වන බැවින් වැරදි සිදු වීමට ඉඩ ඇත. ඇතැම් අන්තර්ගතයන් සැමටම සුදුසු නොවිය හැක. ඔබට <ph name="BEGIN_LINK_LOCATION_INFO" />ඔබේ ස්ථානය පිළිබඳ තතු<ph name="END_LINK_LOCATION_INFO" /> ඇතුළුව <ph name="BEGIN_LINK_MANAGE_HISTORY" />ඔබේ ඉතිහාසය කළමනාකරණය කළ<ph name="END_LINK_MANAGE_HISTORY" /> හැක. <ph name="BEGIN_LINK_LEARN_MORE" />ඔබේ තේරීම් පිළිබඳව තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">විලාසය</translation>
 <translation id="3331974543021145906">යෙදුම් තතු</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - පින්තූරය-තුළ-පින්තූරය ආකාරයෙහි ඇති වීඩියෝව</translation>
@@ -2258,6 +2260,7 @@
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{ඔබේ ප්‍රශ්නය සමග භාවිත කිරීමට 1 .pdf ගොනුවක් උඩුගත කරන්න}one{ඔබේ ප්‍රශ්නය සමග භාවිත කිරීමට .pdf ගොනු #ක් දක්වා උඩුගත කරන්න}other{ඔබේ ප්‍රශ්නය සමග භාවිත කිරීමට .pdf ගොනු #ක් දක්වා උඩුගත කරන්න}}</translation>
 <translation id="3456750372063895499">හුදකලා කවුළුවක සබැඳිය විවෘත කරන්න</translation>
 <translation id="345693547134384690">නව ටැබ් එකක විවෘත කර රූපය පෙන්වන්න</translation>
+<translation id="3456949031754827166">නැවත පිළිවෙල කරන්න</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{සමූහය තබා ගන්න}one{සමූහ තබා ගන්න}other{සමූහ තබා ගන්න}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{පිටුසන් 1ක් මකන ලදි}one{පිටුසන් #ක් මකන ලදි}other{පිටුසන් #ක් මකන ලදි}}</translation>
 <translation id="3471687177769494956">සංචාලන කෙටිමඟ සංස්කරණය කරන්න</translation>
@@ -3311,6 +3314,7 @@
 <translation id="4602776638371779614">මෙම පටිත්ත බ්ලූටූත් උපාංග සඳහා සක්‍රියව ස්කෑන් කරයි</translation>
 <translation id="4605026046465576953">ඔබට හුදකලා වෙබ් යෙදුම් ධාවනය කිරීමට අවසර නොමැති නිසා මෙම යෙදුම විවෘත කළ නොහැක</translation>
 <translation id="4606551464649945562">වෙබ් අඩවිවලට ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමට හෝ කැමරා ස්ථානය හඹා යෑමට ඉඩ නොදෙන්න</translation>
+<translation id="4606965546067937011">වේගය, RAM, ප්‍රමාදය, නිශ්චල වීම, බිඳ වැටීම, සම්පත්, භාවිතය, බැටරිය, ප්‍රශස්තකරණය, මන්දගාමී වීම, මතකය, මතක සුරැකුම</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{පටිති සමූහය මකන්න ද?}one{පටිති සමූහ මකන්න ද?}other{පටිති සමූහ මකන්න ද?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{ඔබේ ප්‍රශ්නය සමග භාවිත කිරීමට 1 ගොනුවක් උඩුගත කරන්න}one{ඔබේ ප්‍රශ්නය සමග භාවිත කිරීමට ගොනු #ක් දක්වා උඩුගත කරන්න}other{ඔබේ ප්‍රශ්නය සමග භාවිත කිරීමට ගොනු #ක් දක්වා උඩුගත කරන්න}}</translation>
 <translation id="4608500690299898628">සොයන්න... (&amp;F)</translation>
@@ -4142,6 +4146,7 @@
 <translation id="5535769176698670170">ඉහළ දසුන සමඟ හුවමාරු කරන්න</translation>
 <translation id="5536642445914063887">පැතිකඩ මාරු කරන්න</translation>
 <translation id="5537725057119320332">විකාශය</translation>
+<translation id="553876896781261711">මකන්න, ඉවත් කරන්න, ආරක්ෂාව, පෞද්ගලිකත්වය, පිරිසිදු කිරීම, ගබඩාව, යළි සැකසීම, හැඹිලිය, කුකීස්, මන්දගාමී, වේගය, ඉතිහාසය</translation>
 <translation id="5541091577812545428">මුරපදය වෙනස් කර නැත</translation>
 <translation id="5542132724887566711">පැතිකඩ</translation>
 <translation id="5543983818738093899">තත්වය සඳහා පරීක්ෂා කරමින්...</translation>
@@ -4734,6 +4739,7 @@
 <translation id="6214157047210274853">Google Wallet හි සංස්කරණය කරන්න</translation>
 <translation id="621470880408090483">බ්ලූටූත් උපාංගවලට සම්බන්ධ වීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="6215039389782910006">{1,plural, =1{ඔබේ මුරපද ආරක්ෂිතව තබා ගැනීමට, <ph name="BRAND" /> 1 මිනිත්තුවක නිෂ්ක්‍රිය වීමකින් පසු අගුලු දැමෙයි}one{ඔබේ මුරපද ආරක්ෂිතව තබා ගැනීමට, <ph name="BRAND" /> මිනිත්තු #ක නිෂ්ක්‍රිය වීමකින් පසු අගුලු දැමෙයි}other{ඔබේ මුරපද ආරක්ෂිතව තබා ගැනීමට, <ph name="BRAND" /> මිනිත්තු #ක නිෂ්ක්‍රිය වීමකින් පසු අගුලු දැමෙයි}}</translation>
+<translation id="6215427500141060726">කතාබස් සමාලෝචනය කර ජනන AI ආකෘතිය පුහුණු කිරීමට භාවිතා කරයි. Gemini යනු AI තාක්ෂණයක් වන බැවින් වැරදි සිදු වීමට ඉඩ ඇත. ඔබට <ph name="BEGIN_LINK_LOCATION_INFO" />ඔබේ ස්ථානය පිළිබඳ තතු<ph name="END_LINK_LOCATION_INFO" /> ඇතුළුව <ph name="BEGIN_LINK_MANAGE_HISTORY" />ඔබේ ඉතිහාසය කළමනාකරණය කළ<ph name="END_LINK_MANAGE_HISTORY" /> හැක. <ph name="BEGIN_LINK_LEARN_MORE" />ඔබේ තේරීම් පිළිබඳව තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">ප්‍රතික්ෂේප කරන ලද අඩවි සහ යෙදුම්</translation>
 <translation id="6216696360484424239">ස්වයංක්‍රීයව පුරනන්න</translation>
 <translation id="6218961554829577610">කටහඬට කැමති වුණේ නැහැ</translation>
@@ -4885,6 +4891,7 @@
 <translation id="639880411171387127">ඔබේ Google Lens තේරීම. ඔබේ Google Lens තේරීම මැකීමට ඇතුළත් කරන්න හෝ බැක්ස්පේස් ඔබන්න</translation>
 <translation id="6400360390396538896">සැම විට ක්‍රියාත්මකයි <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">පටිති සමූහය නාභිගත නොකරන්න</translation>
+<translation id="6401522392962817913">ඉදිරියට යාමෙන්, ඔබ Google Payments සේවා නියමවලට එකඟ වේ. රහස්‍යතා නිවේදනය ඔබේ දත්ත හසුරුවන ආකාරය විස්තර කරයි. ඔබේ කාඩ්පත ඔබේ Google ගිණුමට, <ph name="ACCOUNT" /> සුරැකෙයි.</translation>
 <translation id="6402042774506839496">ඇයි දැයි දැන ගැනීමට, යෙදුම් සංවර්ධකයා සම්බන්ධ කර ගන්න</translation>
 <translation id="6402921224457714577">ඔබේ MIDI උපාංග පාලන කිරීමට සහ නැවත ක්‍රමලේඛන කිරීමට වෙබ් අඩවිවලට ඉල්ලා සිටිය හැක</translation>
 <translation id="6404511346730675251">පිටු සලකුණ සංස්කරණය කරන්න</translation>
@@ -4973,6 +4980,7 @@
 <translation id="6499143127267478107">ප්‍රොක්සි ස්ක්‍රිප්ට තුළ සත්කාරක විසඳමින්...</translation>
 <translation id="6503077044568424649">වැඩියෙන්ම පිවිසි</translation>
 <translation id="6504601948739128893">ඔබගේ උපාංගයේ ස්ථාපනය කර ඇති ෆොන්ට භාවිත කිරීමට ඉඩ නොදේ</translation>
+<translation id="6505525633061207363">අක්තපත්‍ර, පුරනය වීම, මුරයතුර, අගුල, සුරක්ෂිතාගාරය, යතුරු, පුරනය වීම, පුරනය වීම, පුරන්න</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" මෙම උපාංගයෙහි පහත යෙදුම ස්ථාපනය කිරීමට කැමතියි:}one{"<ph name="APP_NAME" />" මෙම උපාංගයෙහි පහත යෙදුම් ස්ථාපනය කිරීමට කැමතියි:}other{"<ph name="APP_NAME" />" මෙම උපාංගයෙහි පහත යෙදුම් ස්ථාපනය කිරීමට කැමතියි:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> වෙත අදාළ</translation>
 <translation id="6508261954199872201">යෙදුම්: <ph name="APP_NAME" /></translation>

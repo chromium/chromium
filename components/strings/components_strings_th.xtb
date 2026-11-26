@@ -77,6 +77,7 @@
 <translation id="112840717907525620">แคชนโยบายใช้ได้</translation>
 <translation id="1131264053432022307">รูปภาพที่คุณคัดลอก</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – หากต้องการออกจากโหมดเต็มหน้าจอ ให้ลากจากด้านบนแล้วแตะปุ่มย้อนกลับ</translation>
+<translation id="1132789342529761192">ไม่แนะนำให้อัปโหลด</translation>
 <translation id="11370190534773372">กรอกรายละเอียดบัตรแล้ว</translation>
 <translation id="1138458427267715730">รับการแจ้งเตือนเมื่อราคาต่ำลงในเว็บไซต์ใดก็ตามทั่วทั้งอินเทอร์เน็ต</translation>
 <translation id="1142713751288681188">ประเภทกระดาษ</translation>
@@ -603,6 +604,7 @@
 <translation id="2025891858974379949">เนื้อหาที่ไม่ปลอดภัย</translation>
 <translation id="2027465737841872819">พลาสติก</translation>
 <translation id="2027707238798802149">บัตรใช้งานไม่ได้</translation>
+<translation id="2028329426302356196">ไม่แนะนำให้ดาวน์โหลด</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ตรวจสอบพร็อกซีและไฟร์วอลล์<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">อินสแตนซ์ของ Chrome นี้กำลังทำงานโดยมีการตั้งค่า Flag บรรทัดคำสั่งด้วยตนเอง โปรดทราบว่า Flag บรรทัดคำสั่งอาจเปลี่ยนแปลงได้ทุกเมื่อและไม่ได้รับการรองรับ</translation>
 <translation id="2033900728810589426">ทางลัดต้องไม่เหมือนกับคีย์เวิร์ดของผู้ให้บริการการค้นหาเริ่มต้นที่กำหนดโดย <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1456,6 +1458,7 @@
 <translation id="3443504041532578451">แผ่นออปติคัลดิสก์ (ซาติน)</translation>
 <translation id="3447661539832366887">เจ้าของอุปกรณ์นี้ปิดเกมไดโนเสาร์</translation>
 <translation id="3447884698081792621">แสดงใบรับรอง (ออกโดย <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">ไม่แนะนำให้พิมพ์</translation>
 <translation id="3450323514459570273">ขอควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ได้</translation>
 <translation id="3452404311384756672">ช่วงการดึงข้อมูล:</translation>
 <translation id="345268527248907593">เข้าถึงเว็บไซต์นี้ไม่ได้</translation>
@@ -2915,6 +2918,7 @@
 <translation id="5851548754964597211">รายการแท็บ</translation>
 <translation id="5851868085455377790">ผู้ออกใบรับรอง</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">ไม่แนะนำให้คัดลอก</translation>
 <translation id="5860491529813859533">เปิด</translation>
 <translation id="5862579898803147654">สแต็กเกอร์ 8</translation>
 <translation id="5863515189965725638">แก้ไข IBAN</translation>

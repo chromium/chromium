@@ -1295,6 +1295,7 @@
 <translation id="244071666433939959">แอปเปิดในหน้าต่าง</translation>
 <translation id="2442916515643169563">เงาของข้อความ</translation>
 <translation id="2443487764245141020">เว็บไซต์อาจต้องจดจำอุปกรณ์ของคุณโดยใช้ตัวระบุด้วย</translation>
+<translation id="2444282212665587861">อัปเดต, การอัปเดต, อัปเกรด, เวอร์ชัน, บิลด์, ข้อมูล, ตรวจหาการอัปเดต</translation>
 <translation id="244475495405467108">ปิดแท็บทางด้านซ้าย</translation>
 <translation id="2444874983932528148">ทำสิ่งที่ค้างไว้ต่อจากคราวที่แล้วได้อย่างง่ายดาย</translation>
 <translation id="2445081178310039857">จำเป็นต้องระบุไดเรกทอรีหลักของส่วนขยาย</translation>
@@ -2130,6 +2131,7 @@
 <translation id="3321512411079201586">&amp;แยกต่างหาก</translation>
 <translation id="3323288183237359315">ติดตั้งสำหรับ Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{ระบบได้นำสิทธิ์ออกจาก 1 เว็บไซต์เพื่อปกป้องความเป็นส่วนตัวของคุณ}other{ระบบได้นำสิทธิ์ออกจากบางเว็บไซต์เพื่อปกป้องความเป็นส่วนตัวของคุณ}}</translation>
+<translation id="3325561120400598624">แชทจะได้รับการตรวจสอบและนำไปใช้เพื่อฝึกโมเดล Generative AI Gemini เป็น AI และอาจทำผิดพลาดได้ เนื้อหาบางรายการอาจไม่เหมาะสำหรับทุกคน คุณสามารถ<ph name="BEGIN_LINK_MANAGE_HISTORY" />จัดการประวัติการใช้งาน<ph name="END_LINK_MANAGE_HISTORY" /> รวมถึง<ph name="BEGIN_LINK_LOCATION_INFO" />ข้อมูลเกี่ยวกับตำแหน่งของคุณ<ph name="END_LINK_LOCATION_INFO" />ได้ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติมเกี่ยวกับตัวเลือกของคุณ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">รูปแบบ</translation>
 <translation id="3331974543021145906">ข้อมูลแอป</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - วิดีโอกำลังเล่นในโหมดการแสดงภาพซ้อนภาพ</translation>
@@ -2255,6 +2257,7 @@
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{อัปโหลดไฟล์ .pdf 1 รายการเพื่อใช้กับคำถาม}other{อัปโหลดไฟล์ .pdf สูงสุด # รายการเพื่อใช้กับคำถาม}}</translation>
 <translation id="3456750372063895499">เปิดลิงก์ในหน้าต่างที่แยกต่างหาก</translation>
 <translation id="345693547134384690">เปิด&amp;รูปภาพในแท็บใหม่</translation>
+<translation id="3456949031754827166">จัดเรียงใหม่</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{เก็บกลุ่มไว้}other{เก็บกลุ่มไว้}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{ลบบุ๊กมาร์ก 1 รายการแล้ว}other{ลบบุ๊กมาร์ก # รายการแล้ว}}</translation>
 <translation id="3471687177769494956">แก้ไขทางลัดการนำทาง</translation>
@@ -3308,6 +3311,7 @@
 <translation id="4602776638371779614">แท็บนี้กำลังสแกนหาอุปกรณ์บลูทูธ</translation>
 <translation id="4605026046465576953">เปิดแอปนี้ไม่ได้เนื่องจากคุณไม่มีสิทธิ์เรียกใช้ Isolated Web App</translation>
 <translation id="4606551464649945562">ไม่อนุญาตให้เว็บไซต์สร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณหรือติดตามตำแหน่งของกล้อง</translation>
+<translation id="4606965546067937011">ความเร็ว, RAM, แล็ก, ค้าง, ขัดข้อง, ทรัพยากร, การใช้งาน, แบตเตอรี่, เครื่องมือเพิ่มประสิทธิภาพ, ช้า, หน่วยความจำ, การประหยัดหน่วยความจำ</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{ลบกลุ่มแท็บใช่ไหม}other{ลบกลุ่มแท็บใช่ไหม}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{อัปโหลดไฟล์ 1 ไฟล์เพื่อใช้กับคำถาม}other{อัปโหลดไฟล์สูงสุด # ไฟล์เพื่อใช้กับคำถาม}}</translation>
 <translation id="4608500690299898628">&amp;ค้นหา...</translation>
@@ -4138,6 +4142,7 @@
 <translation id="5535769176698670170">สลับกับมุมมองด้านบน</translation>
 <translation id="5536642445914063887">สลับโปรไฟล์</translation>
 <translation id="5537725057119320332">แคสต์</translation>
+<translation id="553876896781261711">ลบ, นำออก, ความปลอดภัย, ความเป็นส่วนตัว, ล้างข้อมูล, พื้นที่เก็บข้อมูล, รีเซ็ต, แคช, คุกกี้, ช้า, ความเร็ว, ประวัติ</translation>
 <translation id="5541091577812545428">ไม่ได้เปลี่ยนรหัสผ่าน</translation>
 <translation id="5542132724887566711">โปรไฟล์</translation>
 <translation id="5543983818738093899">กำลังตรวจสอบสถานะ...</translation>
@@ -4726,6 +4731,7 @@
 <translation id="6214157047210274853">แก้ไขใน Google Wallet</translation>
 <translation id="621470880408090483">ไม่อนุญาตให้เว็บไซต์เชื่อมต่ออุปกรณ์บลูทูธ</translation>
 <translation id="6215039389782910006">{1,plural, =1{<ph name="BRAND" /> จะล็อกหลังจากที่ไม่มีการใช้งานเป็นเวลา 1 นาทีเพื่อรักษารหัสผ่านของคุณให้ปลอดภัย}other{<ph name="BRAND" /> จะล็อกหลังจากที่ไม่มีการใช้งานเป็นเวลา # นาทีเพื่อรักษารหัสผ่านของคุณให้ปลอดภัย}}</translation>
+<translation id="6215427500141060726">แชทจะได้รับการตรวจสอบและนำไปใช้เพื่อฝึกโมเดล Generative AI Gemini เป็น AI และอาจทำผิดพลาดได้ คุณสามารถ<ph name="BEGIN_LINK_MANAGE_HISTORY" />จัดการประวัติการใช้งาน<ph name="END_LINK_MANAGE_HISTORY" /> รวมถึง<ph name="BEGIN_LINK_LOCATION_INFO" />ข้อมูลเกี่ยวกับตำแหน่งของคุณ<ph name="END_LINK_LOCATION_INFO" />ได้ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติมเกี่ยวกับตัวเลือกของคุณ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">เว็บไซต์และแอปที่ถูกปฏิเสธ</translation>
 <translation id="6216696360484424239">ลงชื่อเข้าใช้โดยอัตโนมัติ</translation>
 <translation id="6218961554829577610">ไม่ชอบเสียง</translation>
@@ -4877,6 +4883,7 @@
 <translation id="639880411171387127">ภาพที่คุณเลือกสำหรับ Google Lens กด Enter หรือ Backspace เพื่อลบภาพที่เลือกใน Google Lens</translation>
 <translation id="6400360390396538896">ตลอดเวลาใน <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">เลิกโฟกัสกลุ่มแท็บ</translation>
+<translation id="6401522392962817913">การดำเนินการต่อแสดงว่าคุณยอมรับข้อกำหนดในการให้บริการของ Google Payments อ่านวิธีที่เราจัดการข้อมูลของคุณได้ที่ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัว ระบบจะบันทึกบัตรของคุณลงในบัญชี Google <ph name="ACCOUNT" /></translation>
 <translation id="6402042774506839496">หากต้องการทราบเหตุผล โปรดติดต่อนักพัฒนาแอป</translation>
 <translation id="6402921224457714577">เว็บไซต์ขอควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ได้</translation>
 <translation id="6404511346730675251">แก้ไขบุ๊กมาร์ก</translation>
@@ -4965,6 +4972,7 @@
 <translation id="6499143127267478107">กำลังแก้ไขปัญหาโฮสต์ในสคริปต์พร็อกซี...</translation>
 <translation id="6503077044568424649">เข้าชมบ่อยสุด</translation>
 <translation id="6504601948739128893">ไม่อนุญาตให้ใช้แบบอักษรที่ติดตั้งอยู่ในอุปกรณ์</translation>
+<translation id="6505525633061207363">ข้อมูลเข้าสู่ระบบ, ลงชื่อเข้าใช้, พาสคีย์, ล็อก, ห้องนิรภัย, คีย์, เข้าสู่ระบบ</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" ต้องการติดตั้งแอปต่อไปนี้บนอุปกรณ์}other{"<ph name="APP_NAME" />" ต้องการติดตั้งแอปต่อไปนี้บนอุปกรณ์}}</translation>
 <translation id="6508248480704296122">เกี่ยวกับ <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">แอปพลิเคชัน: <ph name="APP_NAME" /></translation>

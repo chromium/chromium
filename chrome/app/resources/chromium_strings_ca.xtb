@@ -70,6 +70,7 @@
 <translation id="1792680680989393197">Pots suprimir-los en qualsevol moment. És possible que Chromium els torni a baixar automàticament quan un lloc web o una funció els necessitin.</translation>
 <translation id="1793486931176048546">Fes clic a <ph name="BEGIN_BOLD" />Sí<ph name="END_BOLD" /> a la notificació de Windows per fixar Chromium a la barra de tasques i accedir-hi ràpidament.</translation>
 <translation id="1808667845054772817">Torna a instal·lar Chromium</translation>
+<translation id="1814482312667514397">Obtén les millors funcions de seguretat de Chromium siguis on siguis amb l'aplicació Chromium al telèfon</translation>
 <translation id="1820835682567584003">Chromium està intentant <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> ja ha iniciat la sessió. Per mantenir la navegació per separat, inicia la sessió a Chromium amb el teu perfil com a <ph name="USER_EMAIL_ADDRESS" />. També obtindràs les extensions i altres dades de <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">La propera vegada que obris Chromium al teu <ph name="DEVICE_TYPE" />, veuràs una indicació per utilitzar el gestor de contrasenyes de Google.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o més extensions de Chromium estaven accedint a 1 dispositiu d'interfície humana}=1{Una o més extensions de Chromium estan accedint a 1 dispositiu d'interfície humana}other{Una o més extensions de Chromium estan accedint a # dispositius d'interfície humana}}</translation>
 <translation id="2401032172288869980">Chromium necessita permís d'accés a la càmera i al micròfon per a aquest lloc web</translation>
 <translation id="2403703063067034158">Error d'inici: s'està executant una altra instància de la configuració. Torna-ho a provar més tard.</translation>
+<translation id="241044568699443215">Gaudeix de la seguretat de Chromium siguis on siguis amb l'aplicació Chromium al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Obre enllaços a Chromium des de qualsevol aplicació i mantén el navegador accessible a la barra de tasques</translation>
 <translation id="2425157128016763890">Fes clic al botó Resumeix per compartir aquest document amb Gemini a Chromium a fi d'obtenir una visió general ràpida i fer preguntes de seguiment</translation>
 <translation id="2440750600860946460">Amb les <ph name="BEGIN_LINK" />eines de Chromium<ph name="END_LINK" />, pots navegar de manera segura i mantenir el control</translation>
@@ -440,7 +442,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5906655207909574370">Gairebé has acabat amb l'actualització. Reinicia el dispositiu per completar-la.</translation>
 <translation id="5924017743176219022">S'està connectant a Internet...</translation>
 <translation id="5941711191222866238">Minimitza</translation>
-<translation id="5949225980829865667">Per obtenir aquesta adreça d'interès i més en tots els dispositius, inicia la sessió a Chromium</translation>
 <translation id="5953657885167112863">Personalitza Chromium al teu gust</translation>
 <translation id="5960071705175224773">Una aplicació desconeguda ha canviat la configuració</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{La teva organització tanca Chromium automàticament quan no s'utilitza durant 1 minut.}other{La teva organització tanca Chromium automàticament quan no s'utilitza durant # minuts.}}</translation>
@@ -518,6 +519,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6598877126913850652">Ves a la configuració de notificacions de Chromium</translation>
 <translation id="6600016381025017075">Cerca qualsevol cosa en aquesta pàgina</translation>
 <translation id="6613594504749178791">Els canvis s'aplicaran la propera vegada que reinicieu Chromium.</translation>
+<translation id="6637855549677695722">La propera vegada que obris Chromium al teu <ph name="DEVICE_TYPE" />, veuràs una indicació per obtenir les millors funcions de seguretat de Chromium.</translation>
 <translation id="6637908313088374648">Ara Chromium s'obre quan s'inicia Windows perquè puguis començar a navegar a l'instant. Pots desactivar aquesta opció a la configuració.</translation>
 <translation id="6644846457769259194">S'està actualitzant el dispositiu (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium necessita permís d'accés a la càmera per poder crear un mapa en 3D del teu entorn</translation>
@@ -751,6 +753,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8907580949721785412">Chromium està provant de mostrar contrasenyes. Escriviu la vostra contrasenya de Windows per permetre-ho.</translation>
 <translation id="8910309838319708610">Fet! Ara pots fer preguntes fàcilment mentre navegues amb el mode IA de la Cerca</translation>
 <translation id="8932992523185907506">Chromium ja no és el teu navegador predeterminat. Vols establir Chromium com a navegador predeterminat?</translation>
+<translation id="8940844567350264767">Obtén les millors funcions de seguretat de Chromium siguis on siguis amb Chromium</translation>
 <translation id="8941642502866065432">Chromium no es pot actualitzar</translation>
 <translation id="8944232836376404813">Amb aquesta acció:
           <ph name="LINE_BREAKS" />

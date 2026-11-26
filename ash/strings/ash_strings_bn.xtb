@@ -126,6 +126,7 @@
 <translation id="1276975447697633661">ফাইল বেছে নিন, তারপর <ph name="KEY" /> প্রেস করুন</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{ফাইল খোলা যাচ্ছে না}one{ফাইল খোলা যাচ্ছে না}other{ফাইল খোলা যাচ্ছে না}}</translation>
+<translation id="1282910319809323663">{NUM_LINKS,plural, =1{আরও ১টি}one{আরও #টি}other{আরও #টি}}</translation>
 <translation id="1283126956823499975">এই ডিভাইস সেট-আপ করার সময় কিছু সমস্যা হয়েছে</translation>
 <translation id="1285992161347843613">ফোনের লোকেশন খুঁজে পাওয়ার সুবিধা</translation>
 <translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> নামের সেভ করা একটি ডেস্ক আগে থেকেই রয়েছে</translation>
@@ -2191,6 +2192,7 @@
 <translation id="6249795363855770621">'সম্পূর্ণ হয়েছে' হিসেবে মার্ক করা যায়নি। অনলাইন থাকাকালীন আবার চেষ্টা করে দেখুন।</translation>
 <translation id="625369703868467034">নেটওয়ার্ক হেল্থ</translation>
 <translation id="6254629735336163724">স্ক্রিনটি ল্যান্ডস্কেপ মোডে লক করা আছে</translation>
+<translation id="6259567134396197679">{NUM_LINKS,plural, =1{আরও ১টি লিঙ্ক}one{আরও #টি লিঙ্ক}other{আরও #টি লিঙ্ক}}</translation>
 <translation id="6259776178973198997">ওয়াই ফাই ডাইরেক্ট মালিক সংক্রান্ত তথ্য রিফ্রেশ করুন</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />। <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: সক্রিয় করা হচ্ছে...</translation>

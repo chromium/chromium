@@ -441,7 +441,6 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="5906655207909574370">Aktualizace je téměř hotova! Dokončíte ji restartováním zařízení.</translation>
 <translation id="5924017743176219022">Připojování k internetu…</translation>
 <translation id="5941711191222866238">Minimalizovat</translation>
-<translation id="5949225980829865667">Pokud tuhle záložku a další položky chcete mít na všech svých zařízeních, přihlaste se do prohlížeče Chromium</translation>
 <translation id="5953657885167112863">Přizpůsobte si Chromium</translation>
 <translation id="5960071705175224773">Neznámá aplikace vám změnila nastavení</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Vaše organizace prohlížeč Chromium po 1 minutě nečinnosti automaticky zavře.}few{Vaše organizace prohlížeč Chromium po # minutách nečinnosti automaticky zavře.}many{Vaše organizace prohlížeč Chromium po # minuty nečinnosti automaticky zavře.}other{Vaše organizace prohlížeč Chromium po # minutách nečinnosti automaticky zavře.}}</translation>

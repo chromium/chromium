@@ -1295,6 +1295,7 @@
 <translation id="244071666433939959">應用程式會在視窗中開啟</translation>
 <translation id="2442916515643169563">文字陰影</translation>
 <translation id="2443487764245141020">網站可能也需要使用 ID 來辨識你的裝置</translation>
+<translation id="2444282212665587861">更新, 升級, 版本, 版本號碼, 資訊, 檢查更新</translation>
 <translation id="244475495405467108">關閉左側的分頁</translation>
 <translation id="2444874983932528148">輕鬆接續瀏覽進度</translation>
 <translation id="2445081178310039857">請指定擴充功能根目錄。</translation>
@@ -2130,6 +2131,7 @@
 <translation id="3321512411079201586">隔離模式(&amp;I)</translation>
 <translation id="3323288183237359315">安裝 Edge 擴充功能</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{為保護你的隱私，系統已移除ㄧ個網站的權限}other{為保護你的隱私，系統已移除某些網站的權限}}</translation>
+<translation id="3325561120400598624">對話內容會經過審查，並用於訓練生成式 AI 模型。Gemini 是 AI，有時可能會出錯。部分內容可能不適合所有人。你可以<ph name="BEGIN_LINK_MANAGE_HISTORY" />管理記錄<ph name="END_LINK_MANAGE_HISTORY" />，包括<ph name="BEGIN_LINK_LOCATION_INFO" />位置資訊<ph name="END_LINK_LOCATION_INFO" />。<ph name="BEGIN_LINK_LEARN_MORE" />進一步瞭解可用選項<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">風格</translation>
 <translation id="3331974543021145906">應用程式資訊</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - 正在使用子母畫面模式播放影片</translation>
@@ -2255,6 +2257,7 @@
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{提問時上傳 1 個 PDF 檔案}other{提問時最多只能上傳 # 個 PDF 檔案}}</translation>
 <translation id="3456750372063895499">在隔離視窗中開啟連結(&amp;S)</translation>
 <translation id="345693547134384690">在新分頁中開啟圖片(&amp;I)</translation>
+<translation id="3456949031754827166">重新排列</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{保留群組}other{保留群組}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{已刪除 1 個書籤}other{已刪除 # 個書籤}}</translation>
 <translation id="3471687177769494956">編輯導覽快速鍵</translation>
@@ -3304,6 +3307,7 @@
 <translation id="4602776638371779614">這個分頁正在主動掃描藍牙裝置</translation>
 <translation id="4605026046465576953">你的權限不足，無法執行隔離網頁應用程式，因此這個應用程式無法開啟</translation>
 <translation id="4606551464649945562">不允許網站根據你的周遭環境建立 3D 地圖或追蹤攝影機位置</translation>
+<translation id="4606965546067937011">速度, RAM, 延遲, 畫面凍結, 當機, 資源, 用量, 電池, 最佳化工具, 緩慢, 記憶體, 記憶體節省模式</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{要刪除分頁群組嗎？}other{要刪除分頁群組嗎？}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{提問時最多只能上傳 1 個檔案}other{提問時最多只能上傳 # 個檔案}}</translation>
 <translation id="4608500690299898628">尋找(&amp;F)...</translation>
@@ -4134,6 +4138,7 @@
 <translation id="5535769176698670170">與上方畫面交換</translation>
 <translation id="5536642445914063887">切換設定檔</translation>
 <translation id="5537725057119320332">投放</translation>
+<translation id="553876896781261711">刪除, 移除, 安全性, 隱私權, 清理, 儲存空間, 重設, 快取, Cookie, 緩慢, 速度, 歷史記錄</translation>
 <translation id="5541091577812545428">密碼未變更</translation>
 <translation id="5542132724887566711">設定檔</translation>
 <translation id="5543983818738093899">正在檢查狀態...</translation>
@@ -4722,6 +4727,7 @@
 <translation id="6214157047210274853">在 Google 錢包中編輯</translation>
 <translation id="621470880408090483">禁止網站連線至藍牙裝置</translation>
 <translation id="6215039389782910006">{1,plural, =1{為保護密碼安全，<ph name="BRAND" />會在閒置 1 分鐘後鎖定}other{為保護密碼安全，<ph name="BRAND" />會在閒置 # 分鐘後鎖定}}</translation>
+<translation id="6215427500141060726">對話內容會經過審查，並用於訓練生成式 AI 模型。Gemini 是 AI，有時可能會出錯。你可以<ph name="BEGIN_LINK_MANAGE_HISTORY" />管理記錄<ph name="END_LINK_MANAGE_HISTORY" />，包括<ph name="BEGIN_LINK_LOCATION_INFO" />位置資訊<ph name="END_LINK_LOCATION_INFO" />。<ph name="BEGIN_LINK_LEARN_MORE" />進一步瞭解可用選項<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">已拒絕的網站和應用程式</translation>
 <translation id="6216696360484424239">自動登入</translation>
 <translation id="6218961554829577610">不喜歡這個聲音</translation>
@@ -4873,6 +4879,7 @@
 <translation id="639880411171387127">你的 Google 智慧鏡頭選取項目。按下 Enter 或 Backspace 鍵即可刪除 Google 智慧鏡頭選取項目</translation>
 <translation id="6400360390396538896">一律在 <ph name="ORIGIN" /> 上執行</translation>
 <translation id="6400714103322134861">將焦點移出分頁群組</translation>
+<translation id="6401522392962817913">選擇繼續即表示同意《Google Payments 服務條款》。請參閱《隱私權聲明》，瞭解我們如何處理你的資料。你的卡片會儲存至 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
 <translation id="6402042774506839496">如要瞭解原因，請與應用程式開發人員聯絡</translation>
 <translation id="6402921224457714577">網站可以要求控制 MIDI 裝置及重設程式</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
@@ -4961,6 +4968,7 @@
 <translation id="6499143127267478107">正在解析 Proxy 指令碼主機...</translation>
 <translation id="6503077044568424649">最常造訪</translation>
 <translation id="6504601948739128893">不得使用裝置上安裝的字型</translation>
+<translation id="6505525633061207363">憑證, 登入, 密碼金鑰, 鎖定, 保管箱, 金鑰, 登入</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」要求在這部裝置上安裝以下應用程式：}other{「<ph name="APP_NAME" />」要求在這部裝置上安裝以下多個應用程式：}}</translation>
 <translation id="6508248480704296122">與「<ph name="NAME_PH" />」相關</translation>
 <translation id="6508261954199872201">應用程式：<ph name="APP_NAME" /></translation>

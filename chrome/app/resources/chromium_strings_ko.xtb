@@ -443,7 +443,6 @@
 <translation id="5906655207909574370">업데이트가 거의 완료되었습니다. 업데이트를 완료하려면 기기를 다시 시작하세요.</translation>
 <translation id="5924017743176219022">인터넷에 연결 중...</translation>
 <translation id="5941711191222866238">최소화</translation>
-<translation id="5949225980829865667">모든 기기에서 이 북마크 등을 사용하려면 Chromium에 로그인하세요.</translation>
 <translation id="5953657885167112863">나만의 Chromium 만들기</translation>
 <translation id="5960071705175224773">알 수 없는 앱에서 설정을 변경했습니다</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 자동으로 종료합니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 자동으로 종료합니다.}}</translation>

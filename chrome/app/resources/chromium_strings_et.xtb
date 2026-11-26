@@ -442,7 +442,6 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="5906655207909574370">Seade on peaaegu ajakohane. Värskenduse lõpuleviimiseks taaskäivitage seade.</translation>
 <translation id="5924017743176219022">Internetiga ühenduse loomine …</translation>
 <translation id="5941711191222866238">Minimeeri</translation>
-<translation id="5949225980829865667">Selle järjehoidja ja muu saamiseks kõikidesse oma seadmetesse logige Chromiumi sisse</translation>
 <translation id="5953657885167112863">Muutke Chromium enda omaks</translation>
 <translation id="5960071705175224773">Tundmatu rakendus muutis teie seadeid</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Teie organisatsioon sulgeb Chromiumi automaatselt, kui seda ei kasutata 1 minuti jooksul.}other{Teie organisatsioon sulgeb Chromiumi automaatselt, kui seda ei kasutata # minuti jooksul.}}</translation>

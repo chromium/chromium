@@ -439,7 +439,6 @@
 <translation id="5906655207909574370">デバイスを再起動して更新を完了してください。</translation>
 <translation id="5924017743176219022">インターネットに接続しています…</translation>
 <translation id="5941711191222866238">最小化</translation>
-<translation id="5949225980829865667">すべてのデバイスでこのブックマークなどを使用するには、Chromium にログインしてください</translation>
 <translation id="5953657885167112863">Chromium を自分好みに</translation>
 <translation id="5960071705175224773">不明なアプリによって設定が変更されました</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium を自動的に終了します。}other{# 分間使用しなかった場合、組織は Chromium を自動的に終了します。}}</translation>

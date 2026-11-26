@@ -1307,6 +1307,7 @@
 <translation id="244071666433939959">האפליקציות נפתחות בחלון</translation>
 <translation id="2442916515643169563">צללית טקסט</translation>
 <translation id="2443487764245141020">ייתכן שגם באתרים יהיה צורך לזהות את המכשיר שלך באמצעות מזהה</translation>
+<translation id="2444282212665587861">‏עדכון, עדכונים, שדרוג, לשדרג, גרסה, גירסה, גרסת build, גירסת build, חיפוש עדכונים</translation>
 <translation id="244475495405467108">סגירת הכרטיסיות משמאל</translation>
 <translation id="2444874983932528148">קל להמשיך מהנקודה שבה הפסקת</translation>
 <translation id="2445081178310039857">ספריית הבסיס של ההרחבה נחוצה.</translation>
@@ -2144,6 +2145,7 @@
 <translation id="3321512411079201586">&amp;מבודד</translation>
 <translation id="3323288183237359315">‏התקנה ב-Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{כדי להגן על הפרטיות שלך, הוסרו הרשאות מאתר אחד}one{כדי להגן על הפרטיות שלך, הוסרו הרשאות מכמה אתרים}two{כדי להגן על הפרטיות שלך, הוסרו הרשאות מכמה אתרים}other{כדי להגן על הפרטיות שלך, הוסרו הרשאות מכמה אתרים}}</translation>
+<translation id="3325561120400598624">‏השיחות נבדקות ומשמשות לאימון מודלים של AI גנרטיבי. ‫Gemini מבוסס על AI ויכול לטעות. יכול להיות שחלק מהתוכן לא מתאים לכולם. יש לך אפשרות <ph name="BEGIN_LINK_MANAGE_HISTORY" />לנהל את היסטוריית הפעילות שלך<ph name="END_LINK_MANAGE_HISTORY" />, כולל <ph name="BEGIN_LINK_LOCATION_INFO" />פרטים לגבי המיקום<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף על האפשרויות<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">סגנון</translation>
 <translation id="3331974543021145906">פרטי האפליקציה</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - הסרטון פועל במצב תמונה בתוך תמונה</translation>
@@ -2269,6 +2271,7 @@
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{‏אפשר לצרף לשאלה קובץ pdf‎. אחד}one{‏אפשר לצרף לשאלה עד # קובצי pdf‎.}two{‏אפשר לצרף לשאלה עד # קובצי pdf‎.}other{‏אפשר לצרף לשאלה עד # קובצי pdf‎.}}</translation>
 <translation id="3456750372063895499">פתיחת הקישור בחלון &amp;נפרד</translation>
 <translation id="345693547134384690">פתיחת &amp;תמונה בכרטיסייה חדשה</translation>
+<translation id="3456949031754827166">שינוי הסדר</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{שמירת הקבוצה}one{שמירת הקבוצות}two{שמירת הקבוצות}other{שמירת הקבוצות}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{סימנייה אחת נמחקה}one{# סימניות נמחקו}two{# סימניות נמחקו}other{# סימניות נמחקו}}</translation>
 <translation id="3471687177769494956">עריכת מקשי הקיצור לניווט</translation>
@@ -3323,6 +3326,7 @@
 <translation id="4602776638371779614">‏בכרטיסייה הזו מבצעת סריקה באופן פעיל כדי לאתר מכשירי Bluetooth</translation>
 <translation id="4605026046465576953">‏לא ניתן לפתוח את האפליקציה הזו כי אין לך הרשאה להפעיל אפליקציות אינטרנט מבודדות (IWA)</translation>
 <translation id="4606551464649945562">אתרים לא יוכלו ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה</translation>
+<translation id="4606965546067937011">‏מהירות, RAM, השהיה, נתקע, קריסה, קריסת המחשב, משאבים, שימוש, סוללה, ייעול, אופטימיזציה, איטי, זיכרון, חיסכון בזיכרון, מצב חיסכון בזיכרון</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{למחוק את קבוצת הכרטיסיות?}one{למחוק את קבוצות הכרטיסיות?}two{למחוק את קבוצות הכרטיסיות?}other{למחוק את קבוצות הכרטיסיות?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{כדי לתת עוד הקשר לשאלה, אפשר להעלות קובץ אחד}one{כדי לתת עוד הקשר לשאלה, אפשר להעלות עד # קבצים}two{כדי לתת עוד הקשר לשאלה, אפשר להעלות עד # קבצים}other{כדי לתת עוד הקשר לשאלה, אפשר להעלות עד # קבצים}}</translation>
 <translation id="4608500690299898628">&amp;חיפוש...</translation>
@@ -4155,6 +4159,7 @@
 <translation id="5535769176698670170">החלפה עם התצוגה העליונה</translation>
 <translation id="5536642445914063887">מעבר לפרופיל אחר</translation>
 <translation id="5537725057119320332">‏הפעלת Cast</translation>
+<translation id="553876896781261711">‏מחיקה, למחוק, הסרה, להסיר, אבטחה, פרטיות, לנקות, ניקוי נתונים, אחסון, נפח אחסון, שטח אחסון, איפוס, מטמון, קובצי Cookie, עוגיות, קובצי קוקי, איטי, מהירות, היסטוריה</translation>
 <translation id="5541091577812545428">הסיסמה לא השתנתה</translation>
 <translation id="5542132724887566711">פרופיל</translation>
 <translation id="5543983818738093899">הסטטוס בבדיקה...</translation>
@@ -4746,6 +4751,7 @@
 <translation id="6214157047210274853">‏עריכה ב-Google Wallet</translation>
 <translation id="621470880408090483">‏לא לאפשר לאתרים להתחבר למכשירי Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{כדי להגן על הסיסמאות, <ph name="BRAND" /> ננעל לאחר דקה אחת של חוסר פעילות}one{כדי להגן על הסיסמאות, <ph name="BRAND" /> ננעל לאחר # דקות של חוסר פעילות}two{כדי להגן על הסיסמאות, <ph name="BRAND" /> ננעל לאחר # דקות של חוסר פעילות}other{כדי להגן על הסיסמאות, <ph name="BRAND" /> ננעל לאחר # דקות של חוסר פעילות}}</translation>
+<translation id="6215427500141060726">‏השיחות נבדקות ומשמשות לאימון מודלים של AI גנרטיבי. ‫Gemini מבוסס על AI ויכול לטעות. יש לך אפשרות <ph name="BEGIN_LINK_MANAGE_HISTORY" />לנהל את היסטוריית הפעילות שלך<ph name="END_LINK_MANAGE_HISTORY" />, כולל <ph name="BEGIN_LINK_LOCATION_INFO" />פרטים לגבי המיקום<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף על האפשרויות<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">אתרים ואפליקציות שנדחו</translation>
 <translation id="6216696360484424239">כניסה אוטומטית</translation>
 <translation id="6218961554829577610">הקול לא מצא חן בעיניי</translation>
@@ -4897,6 +4903,7 @@
 <translation id="639880411171387127">‏התמונה שנבחרה ב-Google Lens. כדי למחוק את החלק שנבחר ב-Google Lens צריך להקיש על Enter או על מקש Backspace.</translation>
 <translation id="6400360390396538896">תמיד ב-<ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">ביטול ההתמקדות בקבוצת הכרטיסיות</translation>
+<translation id="6401522392962817913">‏המשך הפעולה מבטא את ההסכמה שלך לתנאים ולהגבלות של Google Payments. בהודעת הפרטיות מוסבר איך אנחנו מטפלים בנתונים שלך. הכרטיס יישמר בחשבון שלך ב-Google: ‏<ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">כדי לברר למה, צריך לפנות למפתח האפליקציה</translation>
 <translation id="6402921224457714577">‏אתרים יכולים לבקש הרשאה לשלוט במכשירי ה-MIDI ולתכנת אותם מחדש</translation>
 <translation id="6404511346730675251">עריכת סימנייה</translation>
@@ -4985,6 +4992,7 @@
 <translation id="6499143127267478107">‏הבירור של כתובת של שרת מארח בסקריפט של שרת Proxy מתבצע...</translation>
 <translation id="6503077044568424649">הכי פופולריים</translation>
 <translation id="6504601948739128893">אין הרשאה להשתמש בגופנים שמותקנים במכשיר</translation>
+<translation id="6505525633061207363">סיסמה, פרטי כניסה, כניסה, מפתח גישה, נעילה, כספת, מפתחות, התחברות, כניסה לחשבון, להתחבר, להיכנס</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{התקבלה בקשה מהאפליקציה י<ph name="APP_NAME" />י להתקין את האפליקציה הבאה במכשיר הזה:}one{התקבלה בקשה מהאפליקציה י<ph name="APP_NAME" />י להתקין את האפליקציות הבאות במכשיר הזה:}two{התקבלה בקשה מהאפליקציה י<ph name="APP_NAME" />י להתקין את האפליקציות הבאות במכשיר הזה:}other{התקבלה בקשה מהאפליקציה י<ph name="APP_NAME" />י להתקין את האפליקציות הבאות במכשיר הזה:}}</translation>
 <translation id="6508248480704296122">קשור אל <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">יישום: <ph name="APP_NAME" /></translation>

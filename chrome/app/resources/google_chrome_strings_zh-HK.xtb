@@ -103,6 +103,7 @@
 <translation id="1896602904211344018">取得 Chrome 應用程式</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="1925069572871307609">如要取得日後的 Google Chrome 更新，你需要 Windows 10 1809 或以上版本。此電腦目前使用較舊版本的 Windows 10。</translation>
+<translation id="1975069140856174874">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chrome 時，系統會提示你獲取 Google 最強大的安全功能。</translation>
 <translation id="1975400514743766362">在 <ph name="DEVICE_TYPE" /> 透過 Chrome 應用程式隨時隨地享受 Google 的安全保障</translation>
 <translation id="1979600810166324878">在 iOS 版 Chrome 啟用「強化安全瀏覽」，隨時隨地加強網上安全</translation>
 <translation id="2001586581944147178">讓可存取你互聯網流量的使用者難以查看你瀏覽的網站。Chrome 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
@@ -458,6 +459,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="568656514202614970">大功告成！你現可透過「Google 搜尋」側面板，在瀏覽時輕鬆提問</translation>
 <translation id="5686916850681061684">自訂及控制 Google Chrome。重要注意事項 - 按這裡瞭解詳情。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">透過 Chrome，你可隨時隨地享用 Google 最強大的安全功能</translation>
 <translation id="569897634095159764">無法連線至互聯網。Proxy 伺服器需要驗證。</translation>
 <translation id="5709557627224531708">將 Chrome 設為預設瀏覽器</translation>
 <translation id="5715427327524421317">Chrome 會自動下載並更新這些 AI 模型</translation>
@@ -623,6 +625,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7099479769133613710">重新啟動以更新 &amp;Chrome OS</translation>
 <translation id="7106741999175697885">工作管理員 - Google Chrome</translation>
 <translation id="7121179479711575744">登入 Chrome</translation>
+<translation id="7137056136322108339">有手機版 Chrome 應用程式，Google 最強大的安全功能隨時護你左右</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome 有可用的更新，重新啟動後即可套用。}=1{Chrome 有可用的更新，重新啟動後即可套用。您的無痕式視窗不會重新開啟。}other{Chrome 有可用的更新，重新啟動後即可套用。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="7161904924553537242">歡迎使用 Google Chrome</translation>
 <translation id="7193885263065350793">您的機構會在 Chrome 閒置 <ph name="TIMEOUT_DURATION" />後將其關閉。</translation>
@@ -657,7 +660,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7514258452813684157">Google 更新程式服務</translation>
 <translation id="7515191208480168435">你可以固定「Google 智能鏡頭」方便存取</translation>
 <translation id="7535429826459677826">Google Chrome 開發人員版</translation>
-<translation id="7543146567111253230">如要在所有裝置上使用此書籤和其他資料，請登入 Chrome</translation>
 <translation id="756134248912568991">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chrome 時，系統會提示你使用分頁群組。</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="7572537927358445944">已關閉 • Chrome 無法驗證此擴充程式的來源</translation>
