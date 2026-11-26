@@ -647,7 +647,9 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   }
 
   void OnLongPress(const MotionEvent& e) override {
-    CHECK(!IsDoubleTapInProgress(), base::NotFatalUntil::M163);
+    // TODO(crbug.com/586871828): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(!IsDoubleTapInProgress());
     SetIgnoreSingleTap(true);
     GestureEventDetails long_press_details =
         CreateTouchGestureDetails(EventType::kGestureLongPress);
