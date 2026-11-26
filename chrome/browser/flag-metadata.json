@@ -1406,6 +1406,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "autofill-regionalized-private-passes-ux-refine",
+    "owners": [ "taminob@google.com", "yungyichen@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "autofill-reject-form-submissions-without-user-gesture",
     "owners": [
       "sugoi@chromium.org",

@@ -14102,6 +14102,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCustomizeChromeRefreshDescription, kOsAll,
      FEATURE_VALUE_TYPE(ntp_features::kCustomizeChromeRefresh)},
 
+    {"autofill-regionalized-private-passes-ux-refine",
+     flag_descriptions::kAutofillRegionalizedPrivatePassesUxRefineName,
+     flag_descriptions::kAutofillRegionalizedPrivatePassesUxRefineDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillRegionalizedPrivatePassesUxRefine)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

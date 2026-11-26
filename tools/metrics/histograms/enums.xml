@@ -13185,6 +13185,8 @@ from previous Chrome versions.
   <int value="-547179727" label="AutofillEnableFIDOProgressDialog:enabled"/>
   <int value="-546825817" label="EnableShortcutCustomizationLogging:disabled"/>
   <int value="-546737535" label="DiskCacheBackendExperiment:disabled"/>
+  <int value="-546373354"
+      label="AutofillRegionalizedPrivatePassesUxRefine:disabled"/>
   <int value="-546217920" label="HttpsFirstModeIncognito:enabled"/>
   <int value="-546188357" label="InitialNavigationEntry:enabled"/>
   <int value="-545624357"
@@ -20219,6 +20221,8 @@ from previous Chrome versions.
   <int value="1526718531"
       label="DarkenWebsitesCheckboxInThemesSetting:enabled"/>
   <int value="1526745520" label="UnicornChromeActivityReporting:disabled"/>
+  <int value="1527003545"
+      label="AutofillRegionalizedPrivatePassesUxRefine:enabled"/>
   <int value="1527072723" label="PdfUseSkiaRenderer:enabled"/>
   <int value="1527172748" label="disable-http2-grease-settings"/>
   <int value="1527292264" label="DisplayChangeModal:enabled"/>

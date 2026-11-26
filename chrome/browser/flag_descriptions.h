@@ -1270,6 +1270,13 @@ inline constexpr char kAutofillPreferBuyNowPayLaterBlocklistsDescription[] =
     "corresponding issuer's blocklist instead of allowlist to check for "
     "website eligibility.";
 
+inline constexpr char kAutofillRegionalizedPrivatePassesUxRefineName[] =
+    "Autofill AI regionalized private passes UX refinements";
+inline constexpr char kAutofillRegionalizedPrivatePassesUxRefineDescription[] =
+    "When enabled, applies regionalized UX refinements to Autofill AI "
+    "private pass save and update prompts, including updated Google Wallet "
+    "storage notices and equally-weighted action buttons where required.";
+
 inline constexpr char kAutofillUpstreamEnforceStrikeDelayName[] =
     "Require a week between offers to save credit cards";
 inline constexpr char kAutofillUpstreamEnforceStrikeDelayDescription[] =

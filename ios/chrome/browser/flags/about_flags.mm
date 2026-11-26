@@ -3235,6 +3235,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAutofillAiSpiiVerificationDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAiSpiiVerification)},
+    {"autofill-regionalized-private-passes-ux-refine",
+     flag_descriptions::kAutofillRegionalizedPrivatePassesUxRefineName,
+     flag_descriptions::kAutofillRegionalizedPrivatePassesUxRefineDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillRegionalizedPrivatePassesUxRefine)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
