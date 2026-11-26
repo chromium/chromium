@@ -1082,6 +1082,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   base::MockCallback<base::OnceClosure> closing_callback;
   EXPECT_CALL(closing_callback, Run()).Times(1);
+  base::MockCallback<base::OnceClosure> explicit_dismissal_callback;
+  EXPECT_CALL(explicit_dismissal_callback, Run()).Times(0);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   AvatarToolbarButtonInterface* avatar_button =
       browser_view->toolbar_button_provider()
@@ -1092,7 +1094,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
       GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
-      CrossDeviceSigninPromoEntryPoint::kProfileMenu);
+      CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+      explicit_dismissal_callback.Get());
 
   views::Widget* bubble_widget = widget_future.Get();
   ASSERT_TRUE(bubble_widget);
@@ -1211,6 +1214,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   observer.set_shown_callback(widget_future.GetRepeatingCallback());
 
   base::MockCallback<base::OnceClosure> closing_callback;
+  EXPECT_CALL(closing_callback, Run()).Times(1);
   SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
       GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
       CrossDeviceSigninPromoEntryPoint::kProfileMenu);
@@ -1233,6 +1237,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   observer.set_shown_callback(widget_future.GetRepeatingCallback());
 
   base::MockCallback<base::OnceClosure> closing_callback;
+  EXPECT_CALL(closing_callback, Run()).Times(1);
   SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
       GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
       CrossDeviceSigninPromoEntryPoint::kProfileMenu);
@@ -1255,6 +1260,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   observer.set_shown_callback(widget_future.GetRepeatingCallback());
 
   base::MockCallback<base::OnceClosure> closing_callback;
+  EXPECT_CALL(closing_callback, Run()).Times(1);
   SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
       GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
       CrossDeviceSigninPromoEntryPoint::kProfileMenu);
@@ -1269,6 +1275,38 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   waiter.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
+                       CloseButtonAndEscReportExplicitDismissal) {
+  SetPrimaryAccount();
+
+  for (views::Widget::ClosedReason close_reason :
+       {views::Widget::ClosedReason::kCloseButtonClicked,
+        views::Widget::ClosedReason::kEscKeyPressed}) {
+    views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+    base::test::TestFuture<views::Widget*> widget_future;
+    observer.set_shown_callback(widget_future.GetRepeatingCallback());
+
+    base::MockCallback<base::OnceClosure> closing_callback;
+    base::MockCallback<base::OnceClosure> explicit_dismissal_callback;
+    {
+      testing::InSequence seq;
+      EXPECT_CALL(explicit_dismissal_callback, Run()).Times(1);
+      EXPECT_CALL(closing_callback, Run()).Times(1);
+    }
+
+    SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
+        GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
+        CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+        explicit_dismissal_callback.Get());
+    views::Widget* bubble_widget = widget_future.Get();
+    ASSERT_TRUE(bubble_widget);
+
+    views::test::WidgetDestroyedWaiter waiter(bubble_widget);
+    bubble_widget->CloseWithReason(close_reason);
+    waiter.Wait();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
@@ -1800,10 +1838,13 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
   // WebUI avatar button finishes popping out.
   base::MockCallback<base::OnceClosure> cancelled_closing_callback;
   EXPECT_CALL(cancelled_closing_callback, Run()).Times(1);
+  base::MockCallback<base::OnceClosure> cancelled_explicit_dismissal_callback;
+  EXPECT_CALL(cancelled_explicit_dismissal_callback, Run()).Times(0);
   SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
       GURL("https://www.google.com/chrome/go-mobile"),
       cancelled_closing_callback.Get(),
-      CrossDeviceSigninPromoEntryPoint::kProfileMenu);
+      CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+      cancelled_explicit_dismissal_callback.Get());
   SigninViewController::From(browser())->CloseBubbleSignin();
   testing::Mock::VerifyAndClearExpectations(&cancelled_closing_callback);
   ASSERT_NO_FATAL_FAILURE(DrainPendingAvatarPopOutAndExpectNoBubble(

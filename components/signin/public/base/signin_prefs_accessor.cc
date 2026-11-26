@@ -5,6 +5,7 @@
 #include "components/signin/public/base/signin_prefs_accessor.h"
 
 #include <cstddef>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -285,6 +286,44 @@ void PruneMultipleAccountsPrefs(
   });
 }
 
+// Replaces the deprecated `shown_after_dismissal` flag of the cross-device
+// history promo with an explicit `dismissed_count`, so that the promo stays
+// capped (after 2 dismissals) for users who already reached the previous limit
+// (shown once after a dismissal), and the past dismissal counts for users who
+// dismissed it once.
+void MigrateCrossDeviceHistoryPromoShownAfterDismissal(
+    base::DictValue& account_dict) {
+  base::DictValue* promo_dict =
+      account_dict.FindDict(signin::internal::kCrossDevicePromoPrefs);
+  base::DictValue* history_dict =
+      promo_dict ? promo_dict->FindDict(
+                       signin::internal::kCrossDevicePromoHistoryDictKey)
+                 : nullptr;
+  if (!history_dict) {
+    return;
+  }
+  std::optional<base::Value> shown_after_dismissal = history_dict->Extract(
+      signin::internal::kDeprecatedCrossDevicePromoShownAfterDismissalKey);
+  if (!shown_after_dismissal.has_value()) {
+    return;
+  }
+  int migrated_dismissed_count = 0;
+  if (shown_after_dismissal->GetIfBool().value_or(false)) {
+    migrated_dismissed_count = 2;
+  } else if (history_dict->contains(
+                 signin::internal::kCrossDevicePromoLastDismissedTimeKey)) {
+    migrated_dismissed_count = 1;
+  }
+  const int dismissed_count =
+      history_dict
+          ->FindInt(signin::internal::kCrossDevicePromoDismissedCountKey)
+          .value_or(0);
+  if (migrated_dismissed_count > dismissed_count) {
+    history_dict->Set(signin::internal::kCrossDevicePromoDismissedCountKey,
+                      migrated_dismissed_count);
+  }
+}
+
 }  // namespace
 
 SigninPrefsAccessor::SigninPrefsAccessor(PrefService& pref_service, PassKey)
@@ -322,6 +361,7 @@ void SigninPrefsAccessor::MigrateObsoleteAccountPrefs() {
          signin::internal::kDeprecatedSigninPrefs) {
       account_dict->Remove(deprecated_pref);
     }
+    MigrateCrossDeviceHistoryPromoShownAfterDismissal(*account_dict);
   }
   for (std::string_view corrupted_account_key : corrupted_account_keys) {
     scoped_update->Remove(corrupted_account_key);

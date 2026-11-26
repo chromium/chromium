@@ -726,7 +726,8 @@ void SigninViewController::ShowModalSigninEmailConfirmationDialog(
 void SigninViewController::ShowCrossDeviceSigninQrBubble(
     GURL qr_code_url,
     base::OnceClosure closing_callback,
-    CrossDeviceSigninPromoEntryPoint entry_point) {
+    CrossDeviceSigninPromoEntryPoint entry_point,
+    base::OnceClosure explicit_dismissal_callback) {
   CloseBubbleSignin();
   pending_qr_bubble_closing_callback_ = std::move(closing_callback);
   signin::IdentityManager* identity_manager =
@@ -745,19 +746,21 @@ void SigninViewController::ShowCrossDeviceSigninQrBubble(
     qr_bubble_anchor_callback_.Reset(base::BindOnce(
         &SigninViewController::OnCrossDeviceSigninQrBubbleAnchorResolved,
         weak_ptr_factory_.GetWeakPtr(), std::move(qr_code_url), entry_point,
-        expected_account_id));
+        expected_account_id, std::move(explicit_dismissal_callback)));
     avatar_button->RunWhenVisible(qr_bubble_anchor_callback_.callback());
     return;
   }
   OnCrossDeviceSigninQrBubbleAnchorResolved(
       std::move(qr_code_url), entry_point, expected_account_id,
-      views::BubbleAnchor(), base::ScopedClosureRunner());
+      std::move(explicit_dismissal_callback), views::BubbleAnchor(),
+      base::ScopedClosureRunner());
 }
 
 void SigninViewController::OnCrossDeviceSigninQrBubbleAnchorResolved(
     GURL qr_code_url,
     CrossDeviceSigninPromoEntryPoint entry_point,
     const CoreAccountId& expected_account_id,
+    base::OnceClosure explicit_dismissal_callback,
     views::BubbleAnchor anchor,
     base::ScopedClosureRunner keep_visible) {
   // `RunWhenVisible()` can resolve asynchronously while an overflowed avatar
@@ -788,7 +791,20 @@ void SigninViewController::OnCrossDeviceSigninQrBubbleAnchorResolved(
       std::move(pending_qr_bubble_closing_callback_), entry_point);
   bubble_widget_ = views::BubbleDialogDelegate::CreateBubble(
       delegate.release(),
-      base::BindOnce(&SigninViewController::OnBubbleClosed, AsWeakPtr()));
+      base::BindOnce(
+          [](base::WeakPtr<SigninViewController> controller,
+             base::OnceClosure explicit_dismissal_callback,
+             views::Widget::ClosedReason reason) {
+            if (explicit_dismissal_callback &&
+                (reason == views::Widget::ClosedReason::kCloseButtonClicked ||
+                 reason == views::Widget::ClosedReason::kEscKeyPressed)) {
+              std::move(explicit_dismissal_callback).Run();
+            }
+            if (controller) {
+              controller->OnBubbleClosed(reason);
+            }
+          },
+          AsWeakPtr(), std::move(explicit_dismissal_callback)));
 }
 
 std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>

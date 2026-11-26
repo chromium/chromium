@@ -27,7 +27,8 @@ class SigninUiDelegateImplDice : public SigninUiDelegate {
       BrowserWindowInterface* browser,
       GURL qr_code_url,
       base::OnceClosure closing_callback,
-      CrossDeviceSigninPromoEntryPoint entry_point) override;
+      CrossDeviceSigninPromoEntryPoint entry_point,
+      base::OnceClosure explicit_dismissal_callback) override;
 };
 
 }  // namespace signin_ui_util

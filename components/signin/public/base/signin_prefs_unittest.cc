@@ -511,31 +511,147 @@ TEST_F(SigninPrefsTest, AvatarButtonPromoCounts) {
   EXPECT_EQ(signin_prefs().GetAvatarButtonSigninPromoUsedCount(gaia_id), 1);
 }
 
-TEST_F(SigninPrefsTest, CrossDeviceHistoryPromo) {
+TEST_F(SigninPrefsTest, CrossDevicePromoState) {
+  using Surface = SigninPrefs::CrossDevicePromoSurface;
+  using State = SigninPrefs::CrossDevicePromoState;
   const GaiaId gaia_id("gaia_id_1");
-
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 0);
-  EXPECT_FALSE(
-      signin_prefs().GetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id));
-  EXPECT_FALSE(signin_prefs()
-                   .GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id)
-                   .has_value());
-
   const base::Time now = base::Time::Now();
-  signin_prefs().SetCrossDeviceHistoryPromoShownCount(gaia_id, 3);
-  signin_prefs().SetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id, true);
-  signin_prefs().SetCrossDeviceHistoryPromoLastDismissedTime(gaia_id, now);
 
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 3);
-  EXPECT_TRUE(
-      signin_prefs().GetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id));
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id),
-            now);
+  // Each surface is stored independently under its own sub-dictionary.
+  const struct {
+    Surface surface;
+    std::string_view dict_key;
+    State state;
+  } kTestCases[] = {
+      {Surface::kHistory, "history", {.shown_count = 1}},
+      {Surface::kBookmarkSave,
+       "bookmark_save",
+       {.shown_count = 2, .dismissed_count = 1, .last_dismissed_time = now}},
+      {Surface::kPasswordSave, "password_save", {.shown_count = 3}},
+      {Surface::kAddressSave, "address_save", {.dismissed_count = 2}},
+      {Surface::kPaymentSave,
+       "payment_save",
+       {.shown_count = 5, .last_dismissed_time = now}},
+  };
+  static_assert(Surface::kMaxValue == Surface::kPaymentSave,
+                "Add new surfaces to the list above.");
 
-  signin_prefs().ClearCrossDeviceHistoryPromoLastDismissedTime(gaia_id);
-  EXPECT_FALSE(signin_prefs()
-                   .GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id)
-                   .has_value());
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(
+        signin_prefs().GetCrossDevicePromoState(gaia_id, test_case.surface),
+        State());
+  }
+  for (const auto& test_case : kTestCases) {
+    signin_prefs().SetCrossDevicePromoState(gaia_id, test_case.surface,
+                                            test_case.state);
+  }
+
+  const base::DictValue* raw_cross_device_dict =
+      pref_service()
+          .GetDict(kSigninAccountPrefs)
+          .FindDict(gaia_id.ToString())
+          ->FindDict("CrossDevicePromoPrefs");
+  ASSERT_TRUE(raw_cross_device_dict);
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.dict_key);
+    EXPECT_EQ(
+        signin_prefs().GetCrossDevicePromoState(gaia_id, test_case.surface),
+        test_case.state);
+
+    base::DictValue expected_dict;
+    expected_dict.Set("shown_count", test_case.state.shown_count);
+    expected_dict.Set("dismissed_count", test_case.state.dismissed_count);
+    if (test_case.state.last_dismissed_time) {
+      expected_dict.Set(
+          "last_dismissed_time",
+          base::TimeToValue(*test_case.state.last_dismissed_time));
+    }
+    const base::DictValue* raw_dict =
+        raw_cross_device_dict->FindDict(test_case.dict_key);
+    ASSERT_TRUE(raw_dict);
+    EXPECT_EQ(*raw_dict, expected_dict);
+  }
+
+  // Writing a state without `last_dismissed_time` clears it.
+  signin_prefs().SetCrossDevicePromoState(gaia_id, Surface::kBookmarkSave,
+                                          {.shown_count = 2});
+  EXPECT_EQ(
+      signin_prefs().GetCrossDevicePromoState(gaia_id, Surface::kBookmarkSave),
+      State({.shown_count = 2}));
+}
+
+// `CrossDevicePromoPrefs.history.shown_after_dismissal` was replaced by
+// `dismissed_count`: users who reached the previous limit (shown once after a
+// dismissal) stay capped, and a past dismissal still counts.
+TEST_F(SigninPrefsTest, MigrateCrossDeviceHistoryPromoShownAfterDismissal) {
+  const GaiaId capped_gaia_id("capped_gaia_id");
+  const GaiaId dismissed_gaia_id("dismissed_gaia_id");
+  const GaiaId shown_gaia_id("shown_gaia_id");
+  const GaiaId migrated_gaia_id("migrated_gaia_id");
+  const base::Time time = base::Time::FromSecondsSinceUnixEpoch(1700000000);
+  {
+    ScopedDictPrefUpdate update(&pref_service(), kSigninAccountPrefs);
+    base::DictValue* capped_history =
+        update->EnsureDict(capped_gaia_id.ToString())
+            ->EnsureDict("CrossDevicePromoPrefs")
+            ->EnsureDict("history");
+    capped_history->Set("shown_count", 2);
+    capped_history->Set("last_dismissed_time", base::TimeToValue(time));
+    capped_history->Set("shown_after_dismissal", true);
+
+    base::DictValue* dismissed_history =
+        update->EnsureDict(dismissed_gaia_id.ToString())
+            ->EnsureDict("CrossDevicePromoPrefs")
+            ->EnsureDict("history");
+    dismissed_history->Set("shown_count", 1);
+    dismissed_history->Set("last_dismissed_time", base::TimeToValue(time));
+    dismissed_history->Set("shown_after_dismissal", false);
+
+    base::DictValue* shown_history =
+        update->EnsureDict(shown_gaia_id.ToString())
+            ->EnsureDict("CrossDevicePromoPrefs")
+            ->EnsureDict("history");
+    shown_history->Set("shown_count", 3);
+    shown_history->Set("shown_after_dismissal", false);
+
+    // Already migrated data with a higher count is left as is.
+    base::DictValue* migrated_history =
+        update->EnsureDict(migrated_gaia_id.ToString())
+            ->EnsureDict("CrossDevicePromoPrefs")
+            ->EnsureDict("history");
+    migrated_history->Set("dismissed_count", 3);
+    migrated_history->Set("shown_after_dismissal", true);
+  }
+
+  signin_prefs().MigrateObsoleteSigninPrefs();
+
+  using State = SigninPrefs::CrossDevicePromoState;
+  constexpr auto kHistory = SigninPrefs::CrossDevicePromoSurface::kHistory;
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(capped_gaia_id, kHistory),
+            State({.shown_count = 2,
+                   .dismissed_count = 2,
+                   .last_dismissed_time = time}));
+  EXPECT_EQ(
+      signin_prefs().GetCrossDevicePromoState(dismissed_gaia_id, kHistory),
+      State({.shown_count = 1,
+             .dismissed_count = 1,
+             .last_dismissed_time = time}));
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(shown_gaia_id, kHistory),
+            State({.shown_count = 3}));
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(migrated_gaia_id, kHistory),
+            State({.dismissed_count = 3}));
+
+  // The deprecated key is removed from all accounts.
+  for (const GaiaId& gaia_id :
+       {capped_gaia_id, dismissed_gaia_id, shown_gaia_id, migrated_gaia_id}) {
+    const base::DictValue* raw_history = pref_service()
+                                             .GetDict(kSigninAccountPrefs)
+                                             .FindDict(gaia_id.ToString())
+                                             ->FindDict("CrossDevicePromoPrefs")
+                                             ->FindDict("history");
+    ASSERT_TRUE(raw_history);
+    EXPECT_FALSE(raw_history->contains("shown_after_dismissal"));
+  }
 }
 
 TEST_F(SigninPrefsTest, PromoPrefsUseExpectedOnDiskPaths) {
@@ -563,7 +679,7 @@ TEST_F(SigninPrefsTest, PromoPrefsUseExpectedOnDiskPaths) {
 
   base::DictValue cross_device_history_dict;
   cross_device_history_dict.Set("shown_count", 11);
-  cross_device_history_dict.Set("shown_after_dismissal", true);
+  cross_device_history_dict.Set("dismissed_count", 1);
   cross_device_history_dict.Set("last_dismissed_time",
                                 base::TimeToValue(test_time));
   cross_device_history_dict.Set("unknown_future_sibling_key", "preserved");
@@ -610,18 +726,20 @@ TEST_F(SigninPrefsTest, PromoPrefsUseExpectedOnDiskPaths) {
   EXPECT_EQ(signin_prefs().GetAvatarButtonSigninPromoLastShownTime(gaia_id),
             test_time);
 
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 11);
-  EXPECT_TRUE(
-      signin_prefs().GetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id));
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id),
-            test_time);
+  EXPECT_EQ(
+      signin_prefs().GetCrossDevicePromoState(
+          gaia_id, SigninPrefs::CrossDevicePromoSurface::kHistory),
+      SigninPrefs::CrossDevicePromoState({.shown_count = 11,
+                                          .dismissed_count = 1,
+                                          .last_dismissed_time = test_time}));
 
   // Now verify the reverse: mutating through typed accessors updates only the
   // targeted leaf keys at the exact expected paths while preserving all sibling
   // keys (including unknown keys under `history`).
   signin_prefs().IncrementAvatarButtonHistorySyncPromoShownCount(gaia_id);
-  signin_prefs().SetCrossDeviceHistoryPromoShownCount(gaia_id, 12);
-  signin_prefs().ClearCrossDeviceHistoryPromoLastDismissedTime(gaia_id);
+  signin_prefs().SetCrossDevicePromoState(
+      gaia_id, SigninPrefs::CrossDevicePromoSurface::kHistory,
+      {.shown_count = 12, .dismissed_count = 1});
 
   expected_account.FindDict("AvatarButtonPromoCountDictionary")
       ->Set("AvatarButtonHistorySyncPromoShownCount", 3);
@@ -642,21 +760,17 @@ TEST_F(SigninPrefsTest, PromoPrefReadsHaveNoSideEffects) {
   SigninPrefs::ObserveSigninPrefsChanges(pref_change_registrar(),
                                          mock_observer.Get());
 
-  // Reading or clearing nested promo prefs for a non-existent account must not
-  // create an account dictionary entry or notify pref observers.
+  // Reading nested promo prefs for a non-existent account must not create an
+  // account dictionary entry or notify pref observers.
   EXPECT_CALL(mock_observer, Run()).Times(0);
   EXPECT_EQ(signin_prefs().GetAvatarButtonHistorySyncPromoShownCount(gaia_id),
             0);
   EXPECT_FALSE(signin_prefs()
                    .GetAvatarButtonSigninPromoLastShownTime(gaia_id)
                    .has_value());
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 0);
-  EXPECT_FALSE(
-      signin_prefs().GetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id));
-  EXPECT_FALSE(signin_prefs()
-                   .GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id)
-                   .has_value());
-  signin_prefs().ClearCrossDeviceHistoryPromoLastDismissedTime(gaia_id);
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(
+                gaia_id, SigninPrefs::CrossDevicePromoSurface::kHistory),
+            SigninPrefs::CrossDevicePromoState());
   EXPECT_FALSE(HasAccountPrefs(gaia_id));
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -667,13 +781,13 @@ TEST_F(SigninPrefsTest, PromoPrefReadsHaveNoSideEffects) {
   EXPECT_TRUE(HasAccountPrefs(gaia_id));
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
-  // Subsequent reads or no-op clears on an existing account still do not
-  // notify.
+  // Subsequent reads on an existing account still do not notify.
   EXPECT_CALL(mock_observer, Run()).Times(0);
   EXPECT_EQ(signin_prefs().GetAvatarButtonHistorySyncPromoShownCount(gaia_id),
             1);
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 0);
-  signin_prefs().ClearCrossDeviceHistoryPromoLastDismissedTime(gaia_id);
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(
+                gaia_id, SigninPrefs::CrossDevicePromoSurface::kHistory),
+            SigninPrefs::CrossDevicePromoState());
 }
 
 TEST_F(SigninPrefsTest, PromoCountIncrementSaturatesAtIntMax) {
@@ -704,12 +818,21 @@ TEST_F(SigninPrefsTest, ClearPrefIgnoresValuesOutsideUserStore) {
       ->Set("last_dismissed_time", base::TimeToValue(time));
   pref_service().SetRecommendedPref(kSigninAccountPrefs,
                                     base::Value(std::move(accounts)));
-  ASSERT_EQ(signin_prefs().GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id),
+  constexpr auto kHistory = SigninPrefs::CrossDevicePromoSurface::kHistory;
+  ASSERT_EQ(signin_prefs()
+                .GetCrossDevicePromoState(gaia_id, kHistory)
+                .last_dismissed_time,
             time);
 
-  signin_prefs().ClearCrossDeviceHistoryPromoLastDismissedTime(gaia_id);
+  SigninPrefsAccessor accessor(pref_service(),
+                               SigninPrefsAccessor::CreatePassKeyForTesting());
+  EXPECT_FALSE(accessor.ClearPref(
+      gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+      signin::internal::kCrossDeviceHistoryPromoParents));
 
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id),
+  EXPECT_EQ(signin_prefs()
+                .GetCrossDevicePromoState(gaia_id, kHistory)
+                .last_dismissed_time,
             time);
   EXPECT_FALSE(pref_service().GetUserPrefValue(kSigninAccountPrefs));
 }
@@ -720,7 +843,11 @@ TEST_F(SigninPrefsTest, ClearPrefIgnoresNonDictAccountsPref) {
   const GaiaId gaia_id("gaia_id_corrupted");
   pref_service().SetUserPref(kSigninAccountPrefs, base::Value(42));
 
-  signin_prefs().ClearCrossDeviceHistoryPromoLastDismissedTime(gaia_id);
+  SigninPrefsAccessor accessor(pref_service(),
+                               SigninPrefsAccessor::CreatePassKeyForTesting());
+  EXPECT_FALSE(accessor.ClearPref(
+      gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+      signin::internal::kCrossDeviceHistoryPromoParents));
   signin_prefs().ClearChromeSigninBubbleRepromptCount(gaia_id);
 
   EXPECT_EQ(signin_prefs().GetChromeSigninBubbleRepromptCount(gaia_id), 0);
@@ -737,19 +864,15 @@ TEST_F(SigninPrefsTest, PromoPrefsMalformedIntermediateDicts) {
     account_dict->Set("CrossDevicePromoPrefs", 42);
   }
 
-  // Reads and clears should return default values / no-op without crashing.
+  // Reads should return default values without crashing.
+  constexpr auto kHistory = SigninPrefs::CrossDevicePromoSurface::kHistory;
   EXPECT_EQ(signin_prefs().GetAvatarButtonHistorySyncPromoShownCount(gaia_id),
             0);
   EXPECT_FALSE(signin_prefs()
                    .GetAvatarButtonSigninPromoLastShownTime(gaia_id)
                    .has_value());
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 0);
-  EXPECT_FALSE(
-      signin_prefs().GetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id));
-  EXPECT_FALSE(signin_prefs()
-                   .GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id)
-                   .has_value());
-  signin_prefs().ClearCrossDeviceHistoryPromoLastDismissedTime(gaia_id);
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(gaia_id, kHistory),
+            SigninPrefs::CrossDevicePromoState());
 
   // Also test depth-2 malformed intermediate: "CrossDevicePromoPrefs" is a
   // valid dict, but "history" is a non-dict.
@@ -760,20 +883,17 @@ TEST_F(SigninPrefsTest, PromoPrefsMalformedIntermediateDicts) {
         account_dict->EnsureDict("CrossDevicePromoPrefs");
     cross_device_dict->Set("history", "not_a_dict");
   }
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 0);
-  EXPECT_FALSE(
-      signin_prefs().GetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id));
-  EXPECT_FALSE(signin_prefs()
-                   .GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id)
-                   .has_value());
-  signin_prefs().ClearCrossDeviceHistoryPromoLastDismissedTime(gaia_id);
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(gaia_id, kHistory),
+            SigninPrefs::CrossDevicePromoState());
 
   // Writes should overwrite malformed intermediates with dictionaries.
   signin_prefs().IncrementAvatarButtonHistorySyncPromoShownCount(gaia_id);
-  signin_prefs().SetCrossDeviceHistoryPromoShownCount(gaia_id, 5);
+  signin_prefs().SetCrossDevicePromoState(gaia_id, kHistory,
+                                          {.shown_count = 5});
   EXPECT_EQ(signin_prefs().GetAvatarButtonHistorySyncPromoShownCount(gaia_id),
             1);
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 5);
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(gaia_id, kHistory),
+            SigninPrefs::CrossDevicePromoState({.shown_count = 5}));
 }
 
 // Corrupted on-disk data, level 1: the accounts pref itself is not a dict.
@@ -788,22 +908,19 @@ TEST_F(SigninPrefsTest,
   ASSERT_EQ(*pref_service().GetUserPref(kSigninAccountPrefs), base::Value(42));
 
   // Reads are ignored: every value kind falls back to its default.
+  constexpr auto kHistory = SigninPrefs::CrossDevicePromoSurface::kHistory;
   EXPECT_FALSE(HasAccountPrefs(gaia_id));
   EXPECT_EQ(signin_prefs().GetChromeSigninBubbleRepromptCount(gaia_id), 0);
   EXPECT_EQ(signin_prefs().GetAvatarButtonHistorySyncPromoShownCount(gaia_id),
             0);
   EXPECT_FALSE(signin_prefs().GetExtensionsExplicitBrowserSignin(gaia_id));
-  EXPECT_FALSE(
-      signin_prefs().GetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id));
-  EXPECT_FALSE(signin_prefs()
-                   .GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id)
-                   .has_value());
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(gaia_id, kHistory),
+            SigninPrefs::CrossDevicePromoState());
   EXPECT_EQ(signin_prefs().GetChromeSigninInterceptionUserChoice(gaia_id),
             ChromeSigninUserChoice::kNoChoice);
 
   // Clears are a no-op and leave the corrupted value untouched.
   signin_prefs().ClearChromeSigninBubbleRepromptCount(gaia_id);
-  signin_prefs().ClearCrossDeviceHistoryPromoLastDismissedTime(gaia_id);
   EXPECT_EQ(*pref_service().GetUserPref(kSigninAccountPrefs), base::Value(42));
 
   // A top-level write replaces the corrupted value with a dict that contains
@@ -824,16 +941,20 @@ TEST_F(SigninPrefsTest,
 
   // Nested writes then build on the now valid dict.
   signin_prefs().IncrementAvatarButtonHistorySyncPromoShownCount(gaia_id);
-  signin_prefs().SetCrossDeviceHistoryPromoLastDismissedTime(gaia_id, time);
+  signin_prefs().SetCrossDevicePromoState(gaia_id, kHistory,
+                                          {.last_dismissed_time = time});
   EXPECT_EQ(signin_prefs().GetAvatarButtonHistorySyncPromoShownCount(gaia_id),
             1);
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id),
-            time);
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(gaia_id, kHistory),
+            SigninPrefs::CrossDevicePromoState({.last_dismissed_time = time}));
   expected_account->EnsureDict("AvatarButtonPromoCountDictionary")
       ->Set("AvatarButtonHistorySyncPromoShownCount", 1);
-  expected_account->EnsureDict("CrossDevicePromoPrefs")
-      ->EnsureDict("history")
-      ->Set("last_dismissed_time", base::TimeToValue(time));
+  base::DictValue* expected_history =
+      expected_account->EnsureDict("CrossDevicePromoPrefs")
+          ->EnsureDict("history");
+  expected_history->Set("shown_count", 0);
+  expected_history->Set("dismissed_count", 0);
+  expected_history->Set("last_dismissed_time", base::TimeToValue(time));
   EXPECT_EQ(pref_service().GetDict(kSigninAccountPrefs), expected_accounts);
 }
 
@@ -858,21 +979,18 @@ TEST_F(SigninPrefsTest,
             7);
 
   // Reads are ignored: every value kind falls back to its default.
+  constexpr auto kHistory = SigninPrefs::CrossDevicePromoSurface::kHistory;
   EXPECT_EQ(signin_prefs().GetChromeSigninBubbleRepromptCount(gaia_id), 0);
   EXPECT_EQ(signin_prefs().GetAvatarButtonHistorySyncPromoShownCount(gaia_id),
             0);
   EXPECT_FALSE(signin_prefs().GetExtensionsExplicitBrowserSignin(gaia_id));
-  EXPECT_FALSE(
-      signin_prefs().GetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id));
-  EXPECT_FALSE(signin_prefs()
-                   .GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id)
-                   .has_value());
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(gaia_id, kHistory),
+            SigninPrefs::CrossDevicePromoState());
   EXPECT_EQ(signin_prefs().GetChromeSigninInterceptionUserChoice(gaia_id),
             ChromeSigninUserChoice::kNoChoice);
 
   // Clears are a no-op and leave the corrupted entry untouched.
   signin_prefs().ClearChromeSigninBubbleRepromptCount(gaia_id);
-  signin_prefs().ClearCrossDeviceHistoryPromoLastDismissedTime(gaia_id);
   EXPECT_EQ(pref_service().GetDict(kSigninAccountPrefs), expected_accounts);
 
   // A nested write replaces the corrupted entry with a dict that contains only
@@ -891,16 +1009,20 @@ TEST_F(SigninPrefsTest,
   // Further writes at other depths build on the now valid entry.
   signin_prefs().SetChromeSigninInterceptionUserChoice(
       gaia_id, ChromeSigninUserChoice::kSignin);
-  signin_prefs().SetCrossDeviceHistoryPromoLastDismissedTime(gaia_id, time);
+  signin_prefs().SetCrossDevicePromoState(gaia_id, kHistory,
+                                          {.last_dismissed_time = time});
   EXPECT_EQ(signin_prefs().GetChromeSigninInterceptionUserChoice(gaia_id),
             ChromeSigninUserChoice::kSignin);
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id),
-            time);
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(gaia_id, kHistory),
+            SigninPrefs::CrossDevicePromoState({.last_dismissed_time = time}));
   expected_account->Set("ChromeSigninInterceptionUserChoice",
                         static_cast<int>(ChromeSigninUserChoice::kSignin));
-  expected_account->EnsureDict("CrossDevicePromoPrefs")
-      ->EnsureDict("history")
-      ->Set("last_dismissed_time", base::TimeToValue(time));
+  base::DictValue* expected_history =
+      expected_account->EnsureDict("CrossDevicePromoPrefs")
+          ->EnsureDict("history");
+  expected_history->Set("shown_count", 0);
+  expected_history->Set("dismissed_count", 0);
+  expected_history->Set("last_dismissed_time", base::TimeToValue(time));
   EXPECT_EQ(pref_service().GetDict(kSigninAccountPrefs), expected_accounts);
 }
 
@@ -926,32 +1048,30 @@ TEST_F(SigninPrefsTest,
 
   // Reads below the corrupted intermediates are ignored and fall back to their
   // defaults, while the valid sibling key is still readable.
+  constexpr auto kHistory = SigninPrefs::CrossDevicePromoSurface::kHistory;
   EXPECT_EQ(signin_prefs().GetAvatarButtonHistorySyncPromoShownCount(gaia_id),
             0);
   EXPECT_FALSE(signin_prefs()
                    .GetAvatarButtonSigninPromoLastShownTime(gaia_id)
                    .has_value());
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 0);
-  EXPECT_FALSE(
-      signin_prefs().GetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id));
-  EXPECT_FALSE(signin_prefs()
-                   .GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id)
-                   .has_value());
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(gaia_id, kHistory),
+            SigninPrefs::CrossDevicePromoState());
   EXPECT_EQ(signin_prefs().GetChromeSigninInterceptionUserChoice(gaia_id),
             ChromeSigninUserChoice::kSignin);
-
-  // Clears are a no-op and leave the corrupted intermediates untouched.
-  signin_prefs().ClearCrossDeviceHistoryPromoLastDismissedTime(gaia_id);
   EXPECT_EQ(pref_service().GetDict(kSigninAccountPrefs), expected_accounts);
 
   // A write under `CrossDevicePromoPrefs` replaces only that intermediate with
   // a dict. The other corrupted intermediate and the sibling key are untouched.
-  signin_prefs().SetCrossDeviceHistoryPromoShownCount(gaia_id, 5);
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 5);
+  signin_prefs().SetCrossDevicePromoState(gaia_id, kHistory,
+                                          {.shown_count = 5});
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(gaia_id, kHistory),
+            SigninPrefs::CrossDevicePromoState({.shown_count = 5}));
   expected_account->Remove("CrossDevicePromoPrefs");
-  expected_account->EnsureDict("CrossDevicePromoPrefs")
-      ->EnsureDict("history")
-      ->Set("shown_count", 5);
+  base::DictValue* expected_history =
+      expected_account->EnsureDict("CrossDevicePromoPrefs")
+          ->EnsureDict("history");
+  expected_history->Set("shown_count", 5);
+  expected_history->Set("dismissed_count", 0);
   EXPECT_EQ(pref_service().GetDict(kSigninAccountPrefs), expected_accounts);
 
   // Likewise for `AvatarButtonPromoCountDictionary`.
@@ -965,22 +1085,23 @@ TEST_F(SigninPrefsTest,
 
   // Depth-2 corruption: `CrossDevicePromoPrefs` is a valid dict but `history`
   // is not. Reads are ignored, and a write replaces `history` with a dict that
-  // contains only the written key.
+  // contains only the written keys.
   {
     ScopedDictPrefUpdate update(&pref_service(), kSigninAccountPrefs);
     update->FindDict(gaia_id.ToString())
         ->FindDict("CrossDevicePromoPrefs")
         ->Set("history", "not_a_dict");
   }
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 0);
-  signin_prefs().SetCrossDeviceHistoryPromoLastDismissedTime(gaia_id, time);
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id),
-            time);
-  base::DictValue* expected_cross_device =
-      expected_account->FindDict("CrossDevicePromoPrefs");
-  expected_cross_device->Remove("history");
-  expected_cross_device->EnsureDict("history")->Set("last_dismissed_time",
-                                                    base::TimeToValue(time));
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(gaia_id, kHistory),
+            SigninPrefs::CrossDevicePromoState());
+  signin_prefs().SetCrossDevicePromoState(gaia_id, kHistory,
+                                          {.last_dismissed_time = time});
+  EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(gaia_id, kHistory),
+            SigninPrefs::CrossDevicePromoState({.last_dismissed_time = time}));
+  expected_history =
+      expected_account->FindDict("CrossDevicePromoPrefs")->FindDict("history");
+  expected_history->Set("shown_count", 0);
+  expected_history->Set("last_dismissed_time", base::TimeToValue(time));
   EXPECT_EQ(pref_service().GetDict(kSigninAccountPrefs), expected_accounts);
 }
 
@@ -1223,10 +1344,26 @@ TEST_F(SigninPrefsTest, AllWrittenPrefsAreRegisteredWithMatchingType) {
   signin_prefs().SetAccountSwitchingPromoSuppressedBySwitch(gaia_id,
                                                             second_gaia_id);
 
-  // CrossDevicePromoPrefs.history prefs via typed SigninPrefs accessors.
-  signin_prefs().SetCrossDeviceHistoryPromoShownCount(gaia_id, 2);
-  signin_prefs().SetCrossDeviceHistoryPromoLastDismissedTime(gaia_id, now);
-  signin_prefs().SetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id, true);
+  // CrossDevicePromoPrefs prefs via typed SigninPrefs accessors, for every
+  // surface.
+  constexpr auto kAllCrossDevicePromoSurfaces =
+      std::to_array<SigninPrefs::CrossDevicePromoSurface>({
+          SigninPrefs::CrossDevicePromoSurface::kHistory,
+          SigninPrefs::CrossDevicePromoSurface::kBookmarkSave,
+          SigninPrefs::CrossDevicePromoSurface::kPasswordSave,
+          SigninPrefs::CrossDevicePromoSurface::kAddressSave,
+          SigninPrefs::CrossDevicePromoSurface::kPaymentSave,
+      });
+  static_assert(SigninPrefs::CrossDevicePromoSurface::kMaxValue ==
+                    SigninPrefs::CrossDevicePromoSurface::kPaymentSave,
+                "Add new surfaces to the list above.");
+  const SigninPrefs::CrossDevicePromoState cross_device_promo_state = {
+      .shown_count = 2, .dismissed_count = 1, .last_dismissed_time = now};
+  for (SigninPrefs::CrossDevicePromoSurface surface :
+       kAllCrossDevicePromoSurfaces) {
+    signin_prefs().SetCrossDevicePromoState(gaia_id, surface,
+                                            cross_device_promo_state);
+  }
 
   // Verify all typed getters return the expected values and succeed.
   EXPECT_EQ(signin_prefs().GetChromeSigninInterceptionUserChoice(gaia_id),
@@ -1315,11 +1452,11 @@ TEST_F(SigninPrefsTest, AllWrittenPrefsAreRegisteredWithMatchingType) {
   EXPECT_TRUE(signin_prefs().IsAccountSwitchingPromoSuppressedBySwitch(
       second_gaia_id, gaia_id));
 
-  EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 2);
-  EXPECT_EQ(
-      signin_prefs().GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id), now);
-  EXPECT_TRUE(
-      signin_prefs().GetCrossDeviceHistoryPromoShownAfterDismissal(gaia_id));
+  for (SigninPrefs::CrossDevicePromoSurface surface :
+       kAllCrossDevicePromoSurfaces) {
+    EXPECT_EQ(signin_prefs().GetCrossDevicePromoState(gaia_id, surface),
+              cross_device_promo_state);
+  }
 
   SigninPrefsAccessor accessor(pref_service(),
                                SigninPrefsAccessor::CreatePassKeyForTesting());
@@ -1753,9 +1890,10 @@ TEST_F(SigninPrefsTest,
                 gaia_id, signin::internal::kCrossDevicePromoShownCountKey,
                 signin::internal::kCrossDeviceHistoryPromoParents),
             0);
-  EXPECT_FALSE(accessor.GetBooleanPref(
-      gaia_id, signin::internal::kCrossDevicePromoShownAfterDismissalKey,
-      signin::internal::kCrossDeviceHistoryPromoParents));
+  EXPECT_EQ(accessor.GetIntPref(
+                gaia_id, signin::internal::kCrossDevicePromoDismissedCountKey,
+                signin::internal::kCrossDeviceHistoryPromoParents),
+            0);
   EXPECT_EQ(
       accessor.GetTimePref(
           gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,

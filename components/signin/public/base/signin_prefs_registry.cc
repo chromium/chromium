@@ -59,15 +59,83 @@ constexpr PrefDescriptor kRegisteredSigninPrefs[] = {
      .parent_keys_storage =
          ToParentStorage(signin::internal::kCrossDeviceHistoryPromoParents),
      .type = base::Value::Type::INTEGER},
+    {.key = signin::internal::kCrossDevicePromoDismissedCountKey,
+     .parent_keys_storage =
+         ToParentStorage(signin::internal::kCrossDeviceHistoryPromoParents),
+     .type = base::Value::Type::INTEGER},
     {.key = signin::internal::kCrossDevicePromoLastDismissedTimeKey,
      .parent_keys_storage =
          ToParentStorage(signin::internal::kCrossDeviceHistoryPromoParents),
      .type = base::Value::Type::STRING,
      .is_timestamp = true},
-    {.key = signin::internal::kCrossDevicePromoShownAfterDismissalKey,
+    {.key = signin::internal::kCrossDevicePromoBookmarkSaveDictKey,
      .parent_keys_storage =
-         ToParentStorage(signin::internal::kCrossDeviceHistoryPromoParents),
-     .type = base::Value::Type::BOOLEAN},
+         ToParentStorage(signin::internal::kCrossDevicePromoRootParents),
+     .type = base::Value::Type::DICT},
+    {.key = signin::internal::kCrossDevicePromoShownCountKey,
+     .parent_keys_storage = ToParentStorage(
+         signin::internal::kCrossDeviceBookmarkSavePromoParents),
+     .type = base::Value::Type::INTEGER},
+    {.key = signin::internal::kCrossDevicePromoDismissedCountKey,
+     .parent_keys_storage = ToParentStorage(
+         signin::internal::kCrossDeviceBookmarkSavePromoParents),
+     .type = base::Value::Type::INTEGER},
+    {.key = signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+     .parent_keys_storage = ToParentStorage(
+         signin::internal::kCrossDeviceBookmarkSavePromoParents),
+     .type = base::Value::Type::STRING,
+     .is_timestamp = true},
+    {.key = signin::internal::kCrossDevicePromoPasswordSaveDictKey,
+     .parent_keys_storage =
+         ToParentStorage(signin::internal::kCrossDevicePromoRootParents),
+     .type = base::Value::Type::DICT},
+    {.key = signin::internal::kCrossDevicePromoShownCountKey,
+     .parent_keys_storage = ToParentStorage(
+         signin::internal::kCrossDevicePasswordSavePromoParents),
+     .type = base::Value::Type::INTEGER},
+    {.key = signin::internal::kCrossDevicePromoDismissedCountKey,
+     .parent_keys_storage = ToParentStorage(
+         signin::internal::kCrossDevicePasswordSavePromoParents),
+     .type = base::Value::Type::INTEGER},
+    {.key = signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+     .parent_keys_storage = ToParentStorage(
+         signin::internal::kCrossDevicePasswordSavePromoParents),
+     .type = base::Value::Type::STRING,
+     .is_timestamp = true},
+    {.key = signin::internal::kCrossDevicePromoAddressSaveDictKey,
+     .parent_keys_storage =
+         ToParentStorage(signin::internal::kCrossDevicePromoRootParents),
+     .type = base::Value::Type::DICT},
+    {.key = signin::internal::kCrossDevicePromoShownCountKey,
+     .parent_keys_storage =
+         ToParentStorage(signin::internal::kCrossDeviceAddressSavePromoParents),
+     .type = base::Value::Type::INTEGER},
+    {.key = signin::internal::kCrossDevicePromoDismissedCountKey,
+     .parent_keys_storage =
+         ToParentStorage(signin::internal::kCrossDeviceAddressSavePromoParents),
+     .type = base::Value::Type::INTEGER},
+    {.key = signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+     .parent_keys_storage =
+         ToParentStorage(signin::internal::kCrossDeviceAddressSavePromoParents),
+     .type = base::Value::Type::STRING,
+     .is_timestamp = true},
+    {.key = signin::internal::kCrossDevicePromoPaymentSaveDictKey,
+     .parent_keys_storage =
+         ToParentStorage(signin::internal::kCrossDevicePromoRootParents),
+     .type = base::Value::Type::DICT},
+    {.key = signin::internal::kCrossDevicePromoShownCountKey,
+     .parent_keys_storage =
+         ToParentStorage(signin::internal::kCrossDevicePaymentSavePromoParents),
+     .type = base::Value::Type::INTEGER},
+    {.key = signin::internal::kCrossDevicePromoDismissedCountKey,
+     .parent_keys_storage =
+         ToParentStorage(signin::internal::kCrossDevicePaymentSavePromoParents),
+     .type = base::Value::Type::INTEGER},
+    {.key = signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+     .parent_keys_storage =
+         ToParentStorage(signin::internal::kCrossDevicePaymentSavePromoParents),
+     .type = base::Value::Type::STRING,
+     .is_timestamp = true},
     {.key = signin::internal::kPasswordSignInPromoShownCount,
      .type = base::Value::Type::INTEGER},
     {.key = signin::internal::kAddressSignInPromoShownCount,
@@ -180,19 +248,15 @@ constexpr PrefDescriptor kRegisteredMultipleAccountsSigninPrefs[] = {
 };
 // LINT.ThenChange(//components/signin/public/base/signin_prefs_keys.h:MultipleAccountsSigninPrefsKeys)
 
-constexpr bool SamePath(base::span<const std::string_view> parents_a,
-                        std::string_view key_a,
-                        base::span<const std::string_view> parents_b,
-                        std::string_view key_b) {
-  return key_a == key_b && std::ranges::equal(parents_a, parents_b);
-}
-
+// Note: keys are compared before parents everywhere below, as building the
+// parent spans is comparatively expensive and these checks run at compile time
+// within Clang's `-fconstexpr-steps` limit.
 constexpr const PrefDescriptor* FindPrefDescriptor(
     base::span<const PrefDescriptor> prefs,
     base::span<const std::string_view> parents,
     std::string_view key) {
   for (const auto& pref : prefs) {
-    if (SamePath(pref.parent_keys(), pref.key, parents, key)) {
+    if (pref.key == key && std::ranges::equal(pref.parent_keys(), parents)) {
       return &pref;
     }
   }
@@ -205,8 +269,8 @@ constexpr bool HasNonEmptyUniqueKeys(base::span<const PrefDescriptor> prefs) {
       return false;
     }
     for (size_t j = i + 1; j < prefs.size(); ++j) {
-      if (SamePath(prefs[i].parent_keys(), prefs[i].key, prefs[j].parent_keys(),
-                   prefs[j].key)) {
+      if (prefs[i].key == prefs[j].key &&
+          std::ranges::equal(prefs[i].parent_keys(), prefs[j].parent_keys())) {
         return false;
       }
     }

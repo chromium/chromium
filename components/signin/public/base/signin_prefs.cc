@@ -20,6 +20,22 @@ namespace {
 constexpr char kAccountMetricsNextUnassignedId[] =
     "signin.account_metrics_next_unassigned_id";
 
+base::span<const std::string_view> GetCrossDevicePromoSurfaceParents(
+    SigninPrefs::CrossDevicePromoSurface surface) {
+  switch (surface) {
+    case SigninPrefs::CrossDevicePromoSurface::kHistory:
+      return signin::internal::kCrossDeviceHistoryPromoParents;
+    case SigninPrefs::CrossDevicePromoSurface::kBookmarkSave:
+      return signin::internal::kCrossDeviceBookmarkSavePromoParents;
+    case SigninPrefs::CrossDevicePromoSurface::kPasswordSave:
+      return signin::internal::kCrossDevicePasswordSavePromoParents;
+    case SigninPrefs::CrossDevicePromoSurface::kAddressSave:
+      return signin::internal::kCrossDeviceAddressSavePromoParents;
+    case SigninPrefs::CrossDevicePromoSurface::kPaymentSave:
+      return signin::internal::kCrossDevicePaymentSavePromoParents;
+  }
+}
+
 }  // namespace
 
 SigninPrefs::SigninPrefs(PrefService& pref_service)
@@ -609,56 +625,43 @@ std::optional<base::Time> SigninPrefs::GetAvatarButtonSigninPromoLastShownTime(
       signin::internal::kAvatarButtonPromoParents);
 }
 
-void SigninPrefs::SetCrossDeviceHistoryPromoShownCount(const GaiaId& gaia_id,
-                                                       int count) {
+SigninPrefs::CrossDevicePromoState SigninPrefs::GetCrossDevicePromoState(
+    const GaiaId& gaia_id,
+    CrossDevicePromoSurface surface) const {
+  base::span<const std::string_view> parents =
+      GetCrossDevicePromoSurfaceParents(surface);
+  return {
+      .shown_count = accessor_.GetIntPref(
+          gaia_id, signin::internal::kCrossDevicePromoShownCountKey, parents),
+      .dismissed_count = accessor_.GetIntPref(
+          gaia_id, signin::internal::kCrossDevicePromoDismissedCountKey,
+          parents),
+      .last_dismissed_time = accessor_.GetTimePref(
+          gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+          parents),
+  };
+}
+
+void SigninPrefs::SetCrossDevicePromoState(const GaiaId& gaia_id,
+                                           CrossDevicePromoSurface surface,
+                                           const CrossDevicePromoState& state) {
+  base::span<const std::string_view> parents =
+      GetCrossDevicePromoSurfaceParents(surface);
   accessor_.SetIntPref(gaia_id,
-                        signin::internal::kCrossDevicePromoShownCountKey, count,
-                        signin::internal::kCrossDeviceHistoryPromoParents);
-}
-
-int SigninPrefs::GetCrossDeviceHistoryPromoShownCount(
-    const GaiaId& gaia_id) const {
-  return accessor_.GetIntPref(
-      gaia_id, signin::internal::kCrossDevicePromoShownCountKey,
-      signin::internal::kCrossDeviceHistoryPromoParents);
-}
-
-void SigninPrefs::SetCrossDeviceHistoryPromoShownAfterDismissal(
-    const GaiaId& gaia_id,
-    bool shown_after_dismissal) {
-  accessor_.SetBooleanPref(
-      gaia_id, signin::internal::kCrossDevicePromoShownAfterDismissalKey,
-      shown_after_dismissal, signin::internal::kCrossDeviceHistoryPromoParents);
-}
-
-bool SigninPrefs::GetCrossDeviceHistoryPromoShownAfterDismissal(
-    const GaiaId& gaia_id) const {
-  return accessor_.GetBooleanPref(
-      gaia_id, signin::internal::kCrossDevicePromoShownAfterDismissalKey,
-      signin::internal::kCrossDeviceHistoryPromoParents);
-}
-
-void SigninPrefs::SetCrossDeviceHistoryPromoLastDismissedTime(
-    const GaiaId& gaia_id,
-    base::Time last_dismissed_time) {
-  accessor_.SetTimePref(
-      gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
-      last_dismissed_time, signin::internal::kCrossDeviceHistoryPromoParents);
-}
-
-void SigninPrefs::ClearCrossDeviceHistoryPromoLastDismissedTime(
-    const GaiaId& gaia_id) {
-  accessor_.ClearPref(gaia_id,
-                       signin::internal::kCrossDevicePromoLastDismissedTimeKey,
-                       signin::internal::kCrossDeviceHistoryPromoParents);
-}
-
-std::optional<base::Time>
-SigninPrefs::GetCrossDeviceHistoryPromoLastDismissedTime(
-    const GaiaId& gaia_id) const {
-  return accessor_.GetTimePref(
-      gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
-      signin::internal::kCrossDeviceHistoryPromoParents);
+                       signin::internal::kCrossDevicePromoShownCountKey,
+                       state.shown_count, parents);
+  accessor_.SetIntPref(gaia_id,
+                       signin::internal::kCrossDevicePromoDismissedCountKey,
+                       state.dismissed_count, parents);
+  if (state.last_dismissed_time.has_value()) {
+    accessor_.SetTimePref(
+        gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+        *state.last_dismissed_time, parents);
+  } else {
+    accessor_.ClearPref(gaia_id,
+                        signin::internal::kCrossDevicePromoLastDismissedTimeKey,
+                        parents);
+  }
 }
 
 int SigninPrefs::IncrementAccountSwitchingPromoExplicitDismissalCount(

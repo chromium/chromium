@@ -36,9 +36,12 @@ enum class CrossDeviceSigninPromoShouldShowResult {
   kDataTypeNotEnabled = 3,
   kShownLimitReached = 4,
   kCooldownActive = 5,
-  kAlreadyShownAfterDismissalLimitReached = 6,
+  // Deprecated: kAlreadyShownAfterDismissalLimitReached = 6,
   kProfileTypeNotEligible = 7,
-  kMaxValue = kProfileTypeNotEligible,
+  kGlobalDismissalLimitReached = 8,
+  kDismissalLimitReached = 9,
+  kGlobalShownLimitReached = 10,
+  kMaxValue = kGlobalShownLimitReached,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:CrossDeviceSigninPromoShouldShowResult)
 
@@ -75,6 +78,27 @@ void OnCrossDeviceSigninPromoShown(CrossDeviceSigninPromoEntryPoint entry_point,
 void OnCrossDeviceSigninPromoDismissed(
     CrossDeviceSigninPromoEntryPoint entry_point,
     Profile* profile);
+
+// Evaluates whether the cross-device sign-in QR code promo should be shown at
+// `entry_point` (recording `ShouldShowResult` metrics, including in the control
+// arm when disabled), and if so runs `promo_will_show_callback` (if non-null),
+// records the impression, opens the QR code bubble in `browser_window`, and
+// records a dismissal if the user explicitly dismisses the bubble while still
+// eligible. Returns true if the QR code bubble was opened. Must be called on
+// the UI thread for a dismissible entry point.
+//
+// If this returns true, `promo_closed_callback` (if non-null) is run once when
+// this QR code bubble closes for any reason: closed by the user or passively,
+// replaced by a bubble opened from a permanent entry point (possibly in another
+// window), or never created (e.g. the account changed before the bubble could
+// be anchored). It may run synchronously, before this function returns or
+// while another bubble replaces this one. If this returns false, neither
+// callback is run.
+bool MaybeShowCrossDeviceSigninQrPromo(
+    BrowserWindowInterface* browser_window,
+    CrossDeviceSigninPromoEntryPoint entry_point,
+    base::OnceClosure promo_will_show_callback = base::OnceClosure(),
+    base::OnceClosure promo_closed_callback = base::OnceClosure());
 
 // Opens the "Sign in to phone" QR code bubble associated with the specified
 // `browser_window`. `closing_callback` is run when the bubble closes.

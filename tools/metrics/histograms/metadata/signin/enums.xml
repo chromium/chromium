@@ -583,8 +583,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="DataTypeNotEnabled"/>
   <int value="4" label="ShownLimitReached"/>
   <int value="5" label="CooldownActive"/>
-  <int value="6" label="AlreadyShownAfterDismissalLimitReached"/>
+  <int value="6" label="(Obsolete) AlreadyShownAfterDismissalLimitReached"/>
   <int value="7" label="ProfileTypeNotEligible"/>
+  <int value="8" label="GlobalDismissalLimitReached"/>
+  <int value="9" label="DismissalLimitReached"/>
+  <int value="10" label="GlobalShownLimitReached"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/signin/cross_device_signin_promo_manager.h:CrossDeviceSigninPromoShouldShowResult) -->

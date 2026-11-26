@@ -54,7 +54,8 @@ class MockSigninUiDelegate : public SigninUiDelegate {
               (BrowserWindowInterface*,
                GURL,
                base::OnceClosure,
-               CrossDeviceSigninPromoEntryPoint),
+               CrossDeviceSigninPromoEntryPoint,
+               base::OnceClosure),
               (override));
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 };

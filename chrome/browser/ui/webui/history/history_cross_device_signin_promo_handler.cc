@@ -32,17 +32,32 @@ void HistoryCrossDeviceSigninPromoHandler::ShouldShowPromoCard(
 }
 
 void HistoryCrossDeviceSigninPromoHandler::OnPromoCardShown() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  // The user may have become ineligible (e.g. signed out) since
+  // `ShouldShowPromoCard()`, and a misbehaving renderer may report the card
+  // without asking first. Recording the impression requires a primary account.
+  if (!ShouldKeepShowingCrossDeviceSigninPromo(
+          CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile)) {
+    return;
+  }
   is_promo_card_shown_ = true;
-  OnCrossDeviceSigninPromoShown(
-      CrossDeviceSigninPromoEntryPoint::kHistoryPage,
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  OnCrossDeviceSigninPromoShown(CrossDeviceSigninPromoEntryPoint::kHistoryPage,
+                                profile);
 }
 
 void HistoryCrossDeviceSigninPromoHandler::OnPromoCardDismissed() {
+  if (!is_promo_card_shown_) {
+    return;
+  }
   is_promo_card_shown_ = false;
-  OnCrossDeviceSigninPromoDismissed(
-      CrossDeviceSigninPromoEntryPoint::kHistoryPage,
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  if (ShouldKeepShowingCrossDeviceSigninPromo(
+          CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile)) {
+    OnCrossDeviceSigninPromoDismissed(
+        CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile);
+  }
 }
 
 void HistoryCrossDeviceSigninPromoHandler::OnPromoCardActionClicked(

@@ -12,12 +12,9 @@
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_prefs_accessor.h"
-
-namespace base {
-class Time;
-}
 
 class GaiaId;
 class PrefService;
@@ -239,21 +236,33 @@ class SigninPrefs {
   std::optional<base::Time> GetAvatarButtonSigninPromoLastShownTime(
       const GaiaId& gaia_id) const;
 
-  // Cross-device history page signin promo (nested under
-  // `CrossDevicePromoPrefs` -> `history`).
-  void SetCrossDeviceHistoryPromoShownCount(const GaiaId& gaia_id, int count);
-  int GetCrossDeviceHistoryPromoShownCount(const GaiaId& gaia_id) const;
-  void SetCrossDeviceHistoryPromoShownAfterDismissal(
+  // Surfaces that maintain independent per-account cross-device sign-in promo
+  // impression and dismissal state under `CrossDevicePromoPrefs`.
+  enum class CrossDevicePromoSurface {
+    kHistory,
+    kBookmarkSave,
+    kPasswordSave,
+    kAddressSave,
+    kPaymentSave,
+    kMaxValue = kPaymentSave,
+  };
+
+  // Per-account cross-device sign-in promo state of a single surface (nested
+  // under `CrossDevicePromoPrefs` -> `<surface>`).
+  struct CrossDevicePromoState {
+    friend bool operator==(const CrossDevicePromoState&,
+                           const CrossDevicePromoState&) = default;
+
+    int shown_count = 0;
+    int dismissed_count = 0;
+    std::optional<base::Time> last_dismissed_time;
+  };
+  CrossDevicePromoState GetCrossDevicePromoState(
       const GaiaId& gaia_id,
-      bool shown_after_dismissal);
-  bool GetCrossDeviceHistoryPromoShownAfterDismissal(
-      const GaiaId& gaia_id) const;
-  void SetCrossDeviceHistoryPromoLastDismissedTime(
-      const GaiaId& gaia_id,
-      base::Time last_dismissed_time);
-  void ClearCrossDeviceHistoryPromoLastDismissedTime(const GaiaId& gaia_id);
-  std::optional<base::Time> GetCrossDeviceHistoryPromoLastDismissedTime(
-      const GaiaId& gaia_id) const;
+      CrossDevicePromoSurface surface) const;
+  void SetCrossDevicePromoState(const GaiaId& gaia_id,
+                                CrossDevicePromoSurface surface,
+                                const CrossDevicePromoState& state);
 
   // Updates the dismiss count of the promo and last time it was dismissed.
   void IncrementBookmarkBatchUploadPromoDismissCountWithLastTime(

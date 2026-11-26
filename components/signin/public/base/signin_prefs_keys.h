@@ -181,23 +181,43 @@ inline constexpr std::string_view kCrossDevicePromoPrefs =
     "CrossDevicePromoPrefs";
 // Dictionary keys for data type specific promo data.
 inline constexpr std::string_view kCrossDevicePromoHistoryDictKey = "history";
+inline constexpr std::string_view kCrossDevicePromoBookmarkSaveDictKey =
+    "bookmark_save";
+inline constexpr std::string_view kCrossDevicePromoPasswordSaveDictKey =
+    "password_save";
+inline constexpr std::string_view kCrossDevicePromoAddressSaveDictKey =
+    "address_save";
+inline constexpr std::string_view kCrossDevicePromoPaymentSaveDictKey =
+    "payment_save";
 // Sub-dictionary serialization keys to be used per data type.
 inline constexpr std::string_view kCrossDevicePromoShownCountKey =
     "shown_count";
+inline constexpr std::string_view kCrossDevicePromoDismissedCountKey =
+    "dismissed_count";
 inline constexpr std::string_view kCrossDevicePromoLastDismissedTimeKey =
     "last_dismissed_time";
-inline constexpr std::string_view kCrossDevicePromoShownAfterDismissalKey =
-    "shown_after_dismissal";
 
 // Parent path for data-type sub-dictionaries under `kCrossDevicePromoPrefs`.
 inline constexpr auto kCrossDevicePromoRootParents =
     std::to_array<std::string_view>({kCrossDevicePromoPrefs});
 
-// Common parent path for cross-device history promo prefs within an account
-// dictionary.
+// Common parent paths for each data type's cross-device promo prefs within an
+// account dictionary.
 inline constexpr auto kCrossDeviceHistoryPromoParents =
     std::to_array<std::string_view>(
         {kCrossDevicePromoPrefs, kCrossDevicePromoHistoryDictKey});
+inline constexpr auto kCrossDeviceBookmarkSavePromoParents =
+    std::to_array<std::string_view>(
+        {kCrossDevicePromoPrefs, kCrossDevicePromoBookmarkSaveDictKey});
+inline constexpr auto kCrossDevicePasswordSavePromoParents =
+    std::to_array<std::string_view>(
+        {kCrossDevicePromoPrefs, kCrossDevicePromoPasswordSaveDictKey});
+inline constexpr auto kCrossDeviceAddressSavePromoParents =
+    std::to_array<std::string_view>(
+        {kCrossDevicePromoPrefs, kCrossDevicePromoAddressSaveDictKey});
+inline constexpr auto kCrossDevicePaymentSavePromoParents =
+    std::to_array<std::string_view>(
+        {kCrossDevicePromoPrefs, kCrossDevicePromoPaymentSaveDictKey});
 
 // Dictionary pref that contains all the values related to the avatar button
 // promo counts.
@@ -291,6 +311,13 @@ inline constexpr std::string_view kDeprecatedBookmarkSignInPromoDismissCount =
     "BookmarkSignInPromoDismissCount";
 inline constexpr std::string_view kDeprecatedPasswordSignInPromoDismissCount =
     "PasswordSignInPromoDismissCount";
+
+// DEPRECATED(11/2026):
+// Whether the cross-device history promo was shown after being dismissed,
+// stored under `kCrossDeviceHistoryPromoParents`. Replaced by
+// `kCrossDevicePromoDismissedCountKey`.
+inline constexpr std::string_view
+    kDeprecatedCrossDevicePromoShownAfterDismissalKey = "shown_after_dismissal";
 
 // All deprecated account-dict pref keys removed in
 // `SigninPrefs::MigrateObsoleteSigninPrefs()`.

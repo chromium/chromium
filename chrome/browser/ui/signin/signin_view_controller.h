@@ -180,11 +180,14 @@ class SigninViewController {
 
   // Shows the cross-device sign-in QR code bubble. The bubble is anchored to
   // the profile menu button if available, or centered on the browser window
-  // otherwise.
+  // otherwise. `closing_callback` runs when the bubble closes for any reason
+  // (including failing to show). `explicit_dismissal_callback` runs only if the
+  // user explicitly dismisses the bubble (close button or Escape key).
   void ShowCrossDeviceSigninQrBubble(
       GURL qr_code_url,
       base::OnceClosure closing_callback,
-      CrossDeviceSigninPromoEntryPoint entry_point);
+      CrossDeviceSigninPromoEntryPoint entry_point,
+      base::OnceClosure explicit_dismissal_callback = base::NullCallback());
 
   // Shows the Dice web sign-in interception bubble and returns a handle that
   // closes the bubble when destroyed. Replaces any existing interception
@@ -313,6 +316,7 @@ class SigninViewController {
       GURL qr_code_url,
       CrossDeviceSigninPromoEntryPoint entry_point,
       const CoreAccountId& expected_account_id,
+      base::OnceClosure explicit_dismissal_callback,
       views::BubbleAnchor anchor,
       base::ScopedClosureRunner keep_visible);
 

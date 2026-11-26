@@ -168,10 +168,11 @@ void ShowCrossDeviceSigninQrBubble(
     BrowserWindowInterface* browser,
     GURL qr_code_url,
     base::OnceClosure closing_callback,
-    CrossDeviceSigninPromoEntryPoint entry_point) {
+    CrossDeviceSigninPromoEntryPoint entry_point,
+    base::OnceClosure explicit_dismissal_callback) {
   GetSigninUiDelegate()->ShowCrossDeviceSigninQrBubble(
-      browser, std::move(qr_code_url), std::move(closing_callback),
-      entry_point);
+      browser, std::move(qr_code_url), std::move(closing_callback), entry_point,
+      std::move(explicit_dismissal_callback));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

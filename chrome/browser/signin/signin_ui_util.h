@@ -34,12 +34,15 @@ namespace signin_ui_util {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Shows a bubble containing a QR code to transfer credentials to a mobile
-// device.
+// device. `closing_callback` runs when the bubble closes for any reason;
+// `explicit_dismissal_callback` runs only if the user explicitly dismisses it
+// (close button or Escape key).
 void ShowCrossDeviceSigninQrBubble(
     BrowserWindowInterface* browser_window_interface,
     GURL qr_code_url,
     base::OnceClosure closing_callback,
-    CrossDeviceSigninPromoEntryPoint entry_point);
+    CrossDeviceSigninPromoEntryPoint entry_point,
+    base::OnceClosure explicit_dismissal_callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Enables history sync for the primary account.

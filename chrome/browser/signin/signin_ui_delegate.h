@@ -56,11 +56,16 @@ class SigninUiDelegate {
                                       const CoreAccountId& account_id,
                                       signin_metrics::AccessPoint access_point);
 
+  // Shows the cross-device sign-in QR code bubble. `closing_callback` runs when
+  // the bubble closes for any reason (including failing to show).
+  // `explicit_dismissal_callback` runs only if the user explicitly dismisses
+  // the bubble (close button or Escape key).
   virtual void ShowCrossDeviceSigninQrBubble(
       BrowserWindowInterface* browser,
       GURL qr_code_url,
       base::OnceClosure closing_callback,
-      CrossDeviceSigninPromoEntryPoint entry_point) = 0;
+      CrossDeviceSigninPromoEntryPoint entry_point,
+      base::OnceClosure explicit_dismissal_callback) = 0;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 };
 

@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -26,6 +27,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -65,7 +67,8 @@ class FakeSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
       BrowserWindowInterface* browser,
       GURL qr_code_url,
       base::OnceClosure closing_callback,
-      CrossDeviceSigninPromoEntryPoint entry_point) override {
+      CrossDeviceSigninPromoEntryPoint entry_point,
+      base::OnceClosure explicit_dismissal_callback) override {
     closing_callback_ = std::move(closing_callback);
   }
 
@@ -374,6 +377,68 @@ TEST_F(HistoryCrossDeviceSigninPromoHandlerTest,
             "OnPromoCardActionClicked called while "
             "kCrossDeviceSigninFromDesktop is disabled.");
   EXPECT_TRUE(action_completed.Wait());
+}
+
+TEST_F(HistoryCrossDeviceSigninPromoHandlerTest,
+       RepeatedOrConcurrentDismissalsCountOnce) {
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  SetHistorySyncEnabled(true);
+  SigninPrefs signin_prefs(*profile()->GetPrefs());
+  auto get_dismissed_count = [&] {
+    return signin_prefs
+        .GetCrossDevicePromoState(
+            account_info.GetGaiaId(),
+            SigninPrefs::CrossDevicePromoSurface::kHistory)
+        .dismissed_count;
+  };
+
+  // Dismissing before the card was shown is ignored.
+  handler().OnPromoCardDismissed();
+  EXPECT_EQ(get_dismissed_count(), 0);
+
+  // Two open history tabs both show the card, then both dismiss it: only one
+  // logical dismissal is counted.
+  mojo::Remote<promo_mojom::HistoryCrossDeviceSigninPromoHandler> second_remote;
+  HistoryCrossDeviceSigninPromoHandler second_handler(
+      second_remote.BindNewPipeAndPassReceiver(), web_contents());
+
+  handler().OnPromoCardShown();
+  second_handler.OnPromoCardShown();
+
+  handler().OnPromoCardDismissed();
+  handler().OnPromoCardDismissed();
+  second_handler.OnPromoCardDismissed();
+
+  EXPECT_EQ(get_dismissed_count(), 1);
+}
+
+// The user may sign out between `ShouldShowPromoCard()` and
+// `OnPromoCardShown()`, and a misbehaving renderer may report the card without
+// asking first. Neither must crash nor record an impression, and a later
+// dismissal must not count either.
+TEST_F(HistoryCrossDeviceSigninPromoHandlerTest,
+       CardShownWhileIneligibleRecordsNothing) {
+  base::HistogramTester histogram_tester;
+
+  handler().OnPromoCardShown();
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShownCount.HistoryPage", 0);
+
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  SetHistorySyncEnabled(true);
+  handler().OnPromoCardDismissed();
+
+  const SigninPrefs::CrossDevicePromoState state =
+      SigninPrefs(*profile()->GetPrefs())
+          .GetCrossDevicePromoState(
+              account_info.GetGaiaId(),
+              SigninPrefs::CrossDevicePromoSurface::kHistory);
+  EXPECT_EQ(state.shown_count, 0);
+  EXPECT_EQ(state.dismissed_count, 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.DismissedAtShownCount.HistoryPage", 0);
 }
 
 }  // namespace
