@@ -2889,7 +2889,9 @@ void MenuController::Accept(MenuItemView* item, int event_flags) {
 }
 
 void MenuController::ReallyAccept() {
-  CHECK(!for_drop_, base::NotFatalUntil::M163);
+  // TODO(crbug.com/590274428): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!for_drop_);
 #if BUILDFLAG(IS_MAC)
   // Reset the closure animation since it's now finished - this also unblocks
   // input events for the menu.
