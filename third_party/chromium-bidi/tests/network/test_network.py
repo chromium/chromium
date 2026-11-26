@@ -1129,3 +1129,38 @@ async def test_network_duplicate_response_headers(
         ]
         assert set_cookies == ["a=b", "c=d"]
         assert custom == ["v1", "v2"]
+
+
+@pytest.mark.asyncio
+async def test_network_before_request_sent_includes_wire_headers(
+    websocket, context_id, url_echo
+):
+    await subscribe(
+        websocket,
+        ["network.beforeRequestSent", "network.authRequired"],
+        [context_id],
+    )
+    await execute_command(
+        websocket,
+        {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["authRequired"],
+                "urlPatterns": [{"type": "string", "pattern": url_echo}],
+            },
+        },
+    )
+
+    await send_JSON_command(
+        websocket,
+        {
+            "method": "browsingContext.navigate",
+            "params": {"url": url_echo, "wait": "complete", "context": context_id},
+        },
+    )
+
+    event = await wait_for_event(websocket, "network.beforeRequestSent")
+    header_names = [h["name"].lower() for h in event["params"]["request"]["headers"]]
+    assert len(header_names) == len(set(header_names))
+    for required in ("host", "connection", "accept", "accept-encoding"):
+        assert required in header_names

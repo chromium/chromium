@@ -1238,6 +1238,8 @@ export class BrowsingContextImpl {
       throw new InvalidArgumentException(`Invalid URL: ${url}`);
     }
 
+    await this.targetUnblockedOrThrow();
+
     const navigationState =
       this.#navigationTracker.createPendingNavigation(url);
 

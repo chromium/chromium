@@ -612,3 +612,81 @@ describe('NetworkRequest duplicate response headers and ExtraInfo', () => {
     ]);
   });
 });
+
+describe('NetworkRequest beforeRequestSent wire headers', () => {
+  it('waits for requestWillBeSentExtraInfo even with an authRequired intercept and merges headers case-insensitively', async () => {
+    const eventManager = sinon.createStubInstance(EventManager);
+    const networkStorage = sinon.createStubInstance(NetworkStorage);
+    networkStorage.getInterceptsForPhase.callsFake((_req, phase) =>
+      phase === Network.InterceptPhase.AuthRequired
+        ? new Set(['auth-intercept'])
+        : new Set(),
+    );
+    const cdpTarget = sinon.createStubInstance(CdpTarget);
+    Object.defineProperty(cdpTarget, 'cdpClient', {
+      value: {sendCommand: sinon.stub().resolves({})},
+    });
+    cdpTarget.isSubscribedTo.returns(true);
+
+    const request = new NetworkRequest(
+      REQUEST_ID,
+      eventManager,
+      networkStorage,
+      cdpTarget,
+      0,
+    );
+
+    request.onRequestWillBeSentEvent({
+      requestId: REQUEST_ID,
+      loaderId: 'loader-1',
+      documentURL: REQUEST_URL,
+      request: {
+        url: REQUEST_URL,
+        method: 'GET',
+        headers: {'user-agent': 'UA'},
+        initialPriority: 'High',
+        referrerPolicy: 'no-referrer',
+      },
+      timestamp: 1,
+      wallTime: 1,
+      initiator: {type: 'other'},
+      redirectHasExtraInfo: false,
+      frameId: 'frame',
+    });
+
+    assert.isFalse(
+      eventManager.registerPromiseEvent
+        .getCalls()
+        .some((call) => call.args[2] === 'network.beforeRequestSent'),
+    );
+
+    request.onRequestWillBeSentExtraInfoEvent({
+      requestId: REQUEST_ID,
+      associatedCookies: [],
+      headers: {
+        Host: '127.0.0.1:8080',
+        Accept: 'text/html',
+        'User-Agent': 'UA',
+      },
+      connectTiming: {requestTime: 1},
+    });
+
+    const beforeCall = eventManager.registerPromiseEvent
+      .getCalls()
+      .find((call) => call.args[2] === 'network.beforeRequestSent');
+    assert.isDefined(beforeCall);
+    const entry = beforeCall!.args[0];
+    const resolved = await (typeof entry === 'function' ? entry() : entry);
+    if (resolved.kind !== 'success') {
+      assert.fail('Expected success event result');
+    }
+    const headers = (
+      resolved.value.params as {request: {headers: Network.Header[]}}
+    ).request.headers;
+    assert.deepEqual(headers, [
+      {name: 'Host', value: {type: 'string', value: '127.0.0.1:8080'}},
+      {name: 'Accept', value: {type: 'string', value: 'text/html'}},
+      {name: 'User-Agent', value: {type: 'string', value: 'UA'}},
+    ]);
+  });
+});

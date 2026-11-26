@@ -620,10 +620,12 @@ export class NetworkRequest {
         this.#request.auth?.request.headers ??
         this.#request.paused?.request.headers ??
         this.#request.info?.request.headers;
-      headers = bidiNetworkHeadersFromCdpNetworkHeaders({
-        ...requestHeaders,
-        ...this.#request.extraInfo?.headers,
-      });
+      headers = bidiNetworkHeadersFromCdpNetworkHeaders(
+        mergeCdpNetworkHeaders(
+          requestHeaders,
+          this.#request.extraInfo?.headers,
+        ),
+      );
     }
 
     return headers;
@@ -790,9 +792,10 @@ export class NetworkRequest {
       Boolean(this.#request.extraInfo) ||
       // The next hop finished, but this redirected hop has no ExtraInfo.
       this.#extraInfoWaitCanceled ||
-      // If the request is intercepted during the `authRequired` phase, there
-      // will be no `Network.requestWillBeSentExtraInfo` CDP events.
-      this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired) ||
+      // If the request is already paused in `Fetch.authRequired`, there will
+      // be no `Network.requestWillBeSentExtraInfo` CDP event.
+      (Boolean(this.#request.auth) &&
+        this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired)) ||
       // Requests from cache don't have extra info
       this.#servedFromCache ||
       // Sometimes there is no extra info and the response
