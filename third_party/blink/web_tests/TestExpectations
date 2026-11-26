@@ -8821,3 +8821,6 @@ crbug.com/585965057 [ Mac ] http/tests/inspector-protocol/emulation/prerender-em
 
 # Gardener 2026-11-25
 crbug.com/590394906 [ Linux ] external/wpt/svg/animations/set-target-inserted-after-animation.html [ Failure Pass ]
+
+# Gardener 2026-11-26
+crbug.com/590639898 [ Debug Linux ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/window-stop-cross-origin-pipe-near-stack-limit.sub.html [ Crash ]
