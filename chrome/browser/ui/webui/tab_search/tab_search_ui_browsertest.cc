@@ -294,6 +294,17 @@ IN_PROC_BROWSER_TEST_P(TabSearchUIBundledCodeCacheBrowserTest,
       "Blink.ResourceRequest.WebUIBundledCachedMetadataHandler.ConsumeCache",
       true);
 
+  // Load a non-Top-Chrome WebUI and verify bundled code cache resources are not
+  // fetched for it.
+  content::WaitForLoadStop(chrome::AddAndReturnTabAt(
+      browser(), GURL(chrome::kChromeUIBookmarksURL), -1, /*foreground=*/true));
+  FetchAndMergeHistograms();
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher."
+                "DidReceiveCachedCode",
+                true),
+            initial_received_success_count);
+
   // Load tab search and collect all renderer metrics.
   content::WaitForLoadStop(chrome::AddAndReturnTabAt(
       browser(), GURL(chrome::kChromeUITabSearchURL), -1, /*foreground=*/true));

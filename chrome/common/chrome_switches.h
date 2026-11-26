@@ -345,6 +345,11 @@ inline constexpr char kEnableNetBenchmarking[] = "enable-net-benchmarking";
 inline constexpr char kEnablePotentiallyAnnoyingSecurityFeatures[] =
     "enable-potentially-annoying-security-features";
 
+// Enables using build-time generated bundled V8 code caches for WebUI scripts
+// in this renderer process.
+inline constexpr char kEnableWebUIBundledCodeCache[] =
+    "enable-webui-bundled-code-cache";
+
 // Enables test mode for the AI overlay dialog, which automatically opens
 // the dialog on browser startup and exposes programmatic test APIs to WebUI.
 inline constexpr char kAiOverlayDialogTestMode[] =

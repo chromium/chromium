@@ -205,6 +205,7 @@
 #include "chrome/renderer/indigo/indigo_agent.h"
 #include "chrome/renderer/indigo/onboarding_agent.h"
 #include "chrome/renderer/password_manager/remote_actor_credential_sharing_extension.h"
+#include "chrome/renderer/webui/webui_bundled_code_cache_map.h"
 #include "components/record_replay/content/renderer/record_replay_agent.h"
 #include "components/record_replay/core/common/record_replay_features.h"
 #endif
@@ -1493,6 +1494,19 @@ bool ChromeContentRendererClient::ShouldUseCodeCacheWithHashing(
     return ShouldUseCodeCacheForWebUIUrl(GURL(request_url));
   }
   return true;
+}
+
+std::optional<int>
+ChromeContentRendererClient::GetWebUIBundledCodeCacheResourceId(
+    [[maybe_unused]] const GURL& webui_resource_url) const {
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache) &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableWebUIBundledCodeCache)) {
+    return webui::GetWebUIBundledCodeCacheResourceId(webui_resource_url);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  return std::nullopt;
 }
 
 std::unique_ptr<media::KeySystemSupportRegistration>

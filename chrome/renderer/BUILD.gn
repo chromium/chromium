@@ -391,6 +391,7 @@ static_library("renderer") {
 
     deps += [
       "//chrome/common/read_anything:mojo_bindings",
+      "//chrome/renderer/webui",
       "//chrome/renderer/webui_browser",
       "//components/password_manager/core/common/remote_actor",
       "//components/record_replay/content/renderer",
@@ -652,10 +653,13 @@ source_set("unit_tests") {
     "//components/sync/base:features",
     "//components/sync_tab_context:constants",
     "//components/translate/core/common",
+    "//content/public/common",
     "//extensions/buildflags",
     "//gin",
     "//gin:gin_test",
     "//testing/gtest",
+    "//ui/webui:buildflags",
+    "//url",
   ]
   if (enable_extensions_core) {
     deps += [ "//extensions/common" ]

@@ -294,10 +294,10 @@ void RendererBlinkPlatformImpl::SetThreadType(base::PlatformThreadId thread_id,
 std::optional<int>
 RendererBlinkPlatformImpl::GetWebUIBundledCodeCacheResourceId(
     const GURL& webui_resource_url) {
-  auto it = webui_resource_to_code_cache_id_map_.find(webui_resource_url);
-  return it == webui_resource_to_code_cache_id_map_.end()
-             ? std::nullopt
-             : std::optional<int>(it->second);
+  if (ContentRendererClient* renderer = GetContentClient()->renderer()) {
+    return renderer->GetWebUIBundledCodeCacheResourceId(webui_resource_url);
+  }
+  return std::nullopt;
 }
 
 blink::WebSandboxSupport* RendererBlinkPlatformImpl::GetSandboxSupport() {

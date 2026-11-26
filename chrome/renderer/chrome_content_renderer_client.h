@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -169,6 +170,8 @@ class ChromeContentRendererClient
   CreateWebSocketHandshakeThrottleProvider() override;
   bool ShouldUseCodeCacheWithHashing(
       const blink::WebURL& request_url) const override;
+  std::optional<int> GetWebUIBundledCodeCacheResourceId(
+      const GURL& webui_resource_url) const override;
   bool ShouldReportDetailedMessageForSource(
       const std::u16string& source) override;
   std::unique_ptr<blink::WebContentSettingsClient>

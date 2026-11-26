@@ -4,6 +4,7 @@
 
 #include "content/public/renderer/content_renderer_client.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/command_line.h"
@@ -113,6 +114,11 @@ ContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
 bool ContentRendererClient::ShouldUseCodeCacheWithHashing(
     const blink::WebURL& request_url) const {
   return true;
+}
+
+std::optional<int> ContentRendererClient::GetWebUIBundledCodeCacheResourceId(
+    const GURL& webui_resource_url) const {
+  return std::nullopt;
 }
 
 void ContentRendererClient::PostIOThreadCreated(

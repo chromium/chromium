@@ -210,6 +210,13 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual bool ShouldUseCodeCacheWithHashing(
       const blink::WebURL& request_url) const;
 
+  // Returns the resource ID of the bundled bytecode cache for
+  // `webui_resource_url`, or `std::nullopt` if none is available. Can be
+  // called from any thread (e.g. the background resource loader), so
+  // overrides must be thread-safe.
+  virtual std::optional<int> GetWebUIBundledCodeCacheResourceId(
+      const GURL& webui_resource_url) const;
+
   // Returns true if windows with the given origin should allocate isolated
   // WindowAgents per BrowsingInstance rather than sharing a process-global
   // agent.

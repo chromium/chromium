@@ -3250,6 +3250,11 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       if (process->GetUserData(search::kIsNTPProcessKey)) {
         command_line->AppendSwitch(switches::kNtpProcess);
       }
+
+      if (base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache) &&
+          process->DisallowV8FeatureFlagOverrides()) {
+        command_line->AppendSwitch(switches::kEnableWebUIBundledCodeCache);
+      }
     }
 
     MaybeAppendBlinkSettingsSwitchForFieldTrial(browser_command_line,
