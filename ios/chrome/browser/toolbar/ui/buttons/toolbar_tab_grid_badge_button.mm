@@ -153,11 +153,6 @@ constexpr CGFloat kButtonImageSize = 23;
   }
 }
 
-- (UIBezierPath*)visiblePath {
-  return [UIBezierPath bezierPathWithRoundedRect:self.bounds
-                                    cornerRadius:self.bounds.size.width / 2];
-}
-
 #pragma mark - Private
 
 - (void)updateTabGridButtonAppearance {

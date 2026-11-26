@@ -8,3 +8,9 @@ include_rules = [
   "+ios/chrome/browser/ntp/model",
   # keep-sorted end
 ]
+
+specific_include_rules = {
+  "toolbar_button_actions\\.mm": [
+    "+ios/chrome/browser/intents/model/intents_donation_helper.h",
+  ],
+}

@@ -18,6 +18,7 @@ class ProfileIOS;
 class TabBasedIPHBrowserAgent;
 @protocol ToolbarButtonsConsumer;
 @class ToolbarButtonsMediator;
+@protocol ToolbarTabGridMenuConsumer;
 class WebNavigationBrowserAgent;
 namespace web {
 class WebState;
@@ -54,6 +55,9 @@ class WebStateList;
 
 // Base view controller for presenting UI sheets.
 @property(nonatomic, weak) UIViewController* baseViewController;
+
+// Receives the tab grid menu, shared by all the consumers' tab grid buttons.
+@property(nonatomic, weak) id<ToolbarTabGridMenuConsumer> tabGridMenuConsumer;
 
 // TODO(crbug.com/588026569): Remove the `ProfileIOS` dependency by injecting a
 // Gemini availability provider.

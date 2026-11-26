@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
@@ -32,10 +33,31 @@
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_menu_factory_delegate.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_buttons_consumer.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_tab_grid_menu_consumer.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+
+namespace {
+
+// Records the user actions of a tap on the tools menu button, with the active
+// `web_state`.
+void RecordUserActionsForToolsMenuTapped(web::WebState* web_state) {
+  if (!web_state) {
+    return;
+  }
+  if (IsUrlNtp(web_state->GetVisibleURL())) {
+    base::RecordAction(base::UserMetricsAction("MobileToolbarShowMenuOnNTP"));
+  }
+  base::RecordAction(base::UserMetricsAction("MobileToolbarShowMenu"));
+  if (IsReaderModeActiveInWebState(web_state)) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileToolbarShowMenuFromReaderMode"));
+  }
+}
+
+}  // namespace
 
 @interface ToolbarButtonsMediator () <CRWWebStateObserver,
                                       GeminiBrowserAgentObserving,
@@ -215,23 +237,66 @@
                                 completion:nil];
 }
 
-- (void)recordUserActionsForToolsMenuTapped {
-  if (!_webStateList) {
-    return;
+- (void)recordUserActionsForButtonTapped:(ToolbarButtonType)type {
+  web::WebState* webState =
+      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+  BOOL isNTP = webState && IsVisibleURLNewTabPage(webState);
+  switch (type) {
+    case ToolbarButtonTypeBack:
+      if (isNTP) {
+        base::RecordAction(base::UserMetricsAction("MobileToolbarBackOnNTP"));
+      }
+      base::RecordAction(base::UserMetricsAction("MobileToolbarBack"));
+      return;
+    case ToolbarButtonTypeForward:
+      if (isNTP) {
+        base::RecordAction(
+            base::UserMetricsAction("MobileToolbarForwardOnNTP"));
+      }
+      base::RecordAction(base::UserMetricsAction("MobileToolbarForward"));
+      return;
+    case ToolbarButtonTypeReload:
+      if (isNTP) {
+        base::RecordAction(base::UserMetricsAction("MobileToolbarReloadOnNTP"));
+      }
+      base::RecordAction(base::UserMetricsAction("MobileToolbarReload"));
+      return;
+    case ToolbarButtonTypeStop:
+      if (isNTP) {
+        base::RecordAction(base::UserMetricsAction("MobileToolbarStopOnNTP"));
+      }
+      base::RecordAction(base::UserMetricsAction("MobileToolbarStop"));
+      return;
+    case ToolbarButtonTypeShare:
+      if (isNTP) {
+        base::RecordAction(
+            base::UserMetricsAction("MobileToolbarShareMenuOnNTP"));
+      }
+      base::RecordAction(base::UserMetricsAction("MobileToolbarShareMenu"));
+      return;
+    case ToolbarButtonTypeAssistant:
+      if (isNTP) {
+        base::RecordAction(
+            base::UserMetricsAction("MobileToolbarShowAssistantOnNTP"));
+      }
+      base::RecordAction(base::UserMetricsAction("MobileToolbarShowAssistant"));
+      return;
+    case ToolbarButtonTypeTabGrid:
+      if (isNTP) {
+        base::RecordAction(
+            base::UserMetricsAction("MobileToolbarShowStackViewOnNTP"));
+        NewTabPageTabHelper* NTPHelper =
+            NewTabPageTabHelper::FromWebState(webState);
+        RecordHomeAction(IOSHomeActionType::kTabSwitcher,
+                         NTPHelper && NTPHelper->ShouldShowStartSurface());
+      }
+      base::RecordAction(base::UserMetricsAction("MobileToolbarShowStackView"));
+      return;
+    case ToolbarButtonTypeTools:
+      RecordUserActionsForToolsMenuTapped(webState);
+      return;
   }
-  web::WebState* webState = _webStateList->GetActiveWebState();
-  if (!webState) {
-    return;
-  }
-
-  if (IsUrlNtp(webState->GetVisibleURL())) {
-    base::RecordAction(base::UserMetricsAction("MobileToolbarShowMenuOnNTP"));
-  }
-  base::RecordAction(base::UserMetricsAction("MobileToolbarShowMenu"));
-  if (IsReaderModeActiveInWebState(webState)) {
-    base::RecordAction(
-        base::UserMetricsAction("MobileToolbarShowMenuFromReaderMode"));
-  }
+  NOTREACHED();
 }
 
 #pragma mark - ToolbarButtonMenuFactoryDelegate
@@ -360,6 +425,7 @@
   [self updateConsumers:_activeConsumers.allObjects
            withWebState:webState
                animated:animated];
+  [self updateTabGridMenu];
 }
 
 // Subscribes to actor control state changes on `webState`, which enable or
@@ -384,6 +450,7 @@
   }
   if (web::WebState* activeWebState = _webStateList->GetActiveWebState()) {
     [self updateConsumers:consumers withWebState:activeWebState animated:NO];
+    [self updateTabGridMenu];
   } else {
     for (id<ToolbarButtonsConsumer> consumer in consumers) {
       [consumer setActorControlled:NO];
@@ -409,12 +476,6 @@
                       self.navigationBrowserAgent->CanGoForward(webState);
   BOOL shareEnabled = IsUrlShareable(webState);
   BOOL isNtp = IsVisibleURLNewTabPage(webState);
-  BOOL isStartSurface = NO;
-  if (isNtp) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(webState);
-    isStartSurface = NTPHelper && NTPHelper->ShouldShowStartSurface();
-  }
   BOOL isLoading = webState->IsLoading();
   double loadingProgress = webState->GetLoadingProgress();
   web::NavigationManager* navigationManager = webState->GetNavigationManager();
@@ -423,7 +484,6 @@
   UIMenu* forwardMenu = [_buttonMenuFactory
       menuForNavigationButton:navigationManager->GetForwardItems()];
   UIMenu* assistantMenu = [_buttonMenuFactory menuForAssistantButton];
-  UIMenu* tabGridMenu = [_buttonMenuFactory menuForTabGridButton];
 
   for (id<ToolbarButtonsConsumer> consumer in consumers) {
     [consumer setActorControlled:actorControlled];
@@ -431,16 +491,24 @@
     [consumer setCanGoForward:canGoForward animated:animated];
     [consumer setShareEnabled:shareEnabled];
     [consumer setNTPVisible:isNtp
-             isStartSurface:isStartSurface
                   isLoading:isLoading
             loadingProgress:loadingProgress];
     [consumer setMenu:backMenu forButtonType:ToolbarButtonTypeBack];
     [consumer setMenu:forwardMenu forButtonType:ToolbarButtonTypeForward];
     [consumer setMenu:assistantMenu forButtonType:ToolbarButtonTypeAssistant];
-    [consumer setMenu:tabGridMenu forButtonType:ToolbarButtonTypeTabGrid];
   }
   [self updateConsumersTabCountAndGroupState:consumers];
   [self updateConsumersAssistantButton:consumers];
+}
+
+// Gives the tab grid menu to `tabGridMenuConsumer`. It doesn't depend on the
+// WebState, so only the active consumers' updates build it, not snapshots.
+- (void)updateTabGridMenu {
+  if (_activeConsumers.count == 0) {
+    return;
+  }
+  [self.tabGridMenuConsumer
+      setTabGridMenu:[_buttonMenuFactory menuForTabGridButton]];
 }
 
 // Updates the tab count and tab group state of `consumers`.

@@ -6,6 +6,7 @@
 
 #import "base/i18n/language_tag.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/application_locale_storage/application_locale_storage.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/menu/public/menu_histograms.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -45,6 +47,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_buttons_consumer.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_tab_grid_menu_consumer.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -82,6 +85,28 @@ class RecordingNavigationManager : public web::FakeNavigationManager {
 
  private:
   int last_navigated_index_ = -1;
+};
+
+// The user actions of a tap on a button, off and on the NTP.
+struct ButtonUserActions {
+  ToolbarButtonType type;
+  const char* action;
+  const char* action_on_ntp;
+};
+
+constexpr ButtonUserActions kButtonUserActions[] = {
+    {ToolbarButtonTypeBack, "MobileToolbarBack", "MobileToolbarBackOnNTP"},
+    {ToolbarButtonTypeForward, "MobileToolbarForward",
+     "MobileToolbarForwardOnNTP"},
+    {ToolbarButtonTypeReload, "MobileToolbarReload",
+     "MobileToolbarReloadOnNTP"},
+    {ToolbarButtonTypeStop, "MobileToolbarStop", "MobileToolbarStopOnNTP"},
+    {ToolbarButtonTypeShare, "MobileToolbarShareMenu",
+     "MobileToolbarShareMenuOnNTP"},
+    {ToolbarButtonTypeAssistant, "MobileToolbarShowAssistant",
+     "MobileToolbarShowAssistantOnNTP"},
+    {ToolbarButtonTypeTabGrid, "MobileToolbarShowStackView",
+     "MobileToolbarShowStackViewOnNTP"},
 };
 
 }  // namespace
@@ -226,19 +251,34 @@ class ToolbarButtonsMediatorTest : public PlatformTest {
                           : base::i18n::GetKnownLanguageTag("fr-FR"));
   }
 
-  // Returns the tab grid menu that `mediator` gives a new consumer when it is
-  // added.
+  // Returns the tab grid menu that `mediator` gives its tab grid menu
+  // consumer when a consumer is added.
   UIMenu* TabGridMenuOnActivation(ToolbarButtonsMediator* mediator) {
-    id consumer = OCMProtocolMock(@protocol(ToolbarButtonsConsumer));
+    id tab_grid_menu_consumer =
+        OCMProtocolMock(@protocol(ToolbarTabGridMenuConsumer));
+    mediator.tabGridMenuConsumer = tab_grid_menu_consumer;
     __block UIMenu* captured_menu = nil;
-    OCMExpect([consumer setMenu:[OCMArg checkWithBlock:^BOOL(id obj) {
-                          captured_menu = obj;
-                          return YES;
-                        }]
-                  forButtonType:ToolbarButtonTypeTabGrid]);
-    [mediator addConsumer:consumer];
-    EXPECT_OCMOCK_VERIFY(consumer);
+    OCMExpect([tab_grid_menu_consumer
+        setTabGridMenu:[OCMArg checkWithBlock:^BOOL(id obj) {
+          captured_menu = obj;
+          return YES;
+        }]]);
+    [mediator addConsumer:OCMProtocolMock(@protocol(ToolbarButtonsConsumer))];
+    EXPECT_OCMOCK_VERIFY(tab_grid_menu_consumer);
     return captured_menu;
+  }
+
+  // Inserts and activates a new web state showing the NTP, with the Start
+  // Surface if `start_surface`.
+  void InsertActiveNTPWebState(bool start_surface) {
+    std::unique_ptr<web::FakeWebState> web_state = CreateWebState();
+    web_state->SetVisibleURL(GURL("chrome://newtab"));
+    NewTabPageTabHelper::CreateForWebState(web_state.get());
+    NewTabPageTabHelper::FromWebState(web_state.get())
+        ->SetShowStartSurface(start_surface);
+    browser_->GetWebStateList()->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::AtIndex(0).Activate());
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -308,10 +348,7 @@ TEST_F(ToolbarButtonsMediatorTest, TestWebStateSelectionUpdatesConsumer) {
   OCMExpect([consumer_ setCanGoBack:YES]);
   OCMExpect([consumer_ setCanGoForward:NO animated:NO]);
   OCMExpect([consumer_ setShareEnabled:YES]);
-  OCMExpect([consumer_ setNTPVisible:NO
-                      isStartSurface:NO
-                           isLoading:NO
-                     loadingProgress:0.0]);
+  OCMExpect([consumer_ setNTPVisible:NO isLoading:NO loadingProgress:0.0]);
   InsertActiveWebState();
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -336,35 +373,15 @@ TEST_F(ToolbarButtonsMediatorTest, TestShareEnabledForChromeURLs) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
-// Tests that selecting a NTP web state updates the consumer with NTP visible
-// and isStartSurface status.
+// Tests that selecting a NTP web state updates the consumer with NTP visible.
 TEST_F(ToolbarButtonsMediatorTest, TestWebStateSelectionNTPUpdatesConsumer) {
   std::unique_ptr<web::FakeWebState> web_state = CreateWebState();
   web_state->SetVisibleURL(GURL("chrome://newtab"));
   NewTabPageTabHelper::CreateForWebState(web_state.get());
-  NewTabPageTabHelper::FromWebState(web_state.get())
-      ->SetShowStartSurface(false);
-  OCMExpect([consumer_ setNTPVisible:YES
-                      isStartSurface:NO
-                           isLoading:NO
-                     loadingProgress:0.0]);
+  OCMExpect([consumer_ setNTPVisible:YES isLoading:NO loadingProgress:0.0]);
   browser_->GetWebStateList()->InsertWebState(
       std::move(web_state),
       WebStateList::InsertionParams::AtIndex(0).Activate());
-  EXPECT_OCMOCK_VERIFY(consumer_);
-
-  std::unique_ptr<web::FakeWebState> start_web_state = CreateWebState();
-  start_web_state->SetVisibleURL(GURL("chrome://newtab"));
-  NewTabPageTabHelper::CreateForWebState(start_web_state.get());
-  NewTabPageTabHelper::FromWebState(start_web_state.get())
-      ->SetShowStartSurface(true);
-  OCMExpect([consumer_ setNTPVisible:YES
-                      isStartSurface:YES
-                           isLoading:NO
-                     loadingProgress:0.0]);
-  browser_->GetWebStateList()->InsertWebState(
-      std::move(start_web_state),
-      WebStateList::InsertionParams::AtIndex(1).Activate());
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
@@ -376,17 +393,11 @@ TEST_F(ToolbarButtonsMediatorTest, TestWebStateUpdates) {
       std::move(web_state),
       WebStateList::InsertionParams::AtIndex(0).Activate());
 
-  OCMExpect([consumer_ setNTPVisible:NO
-                      isStartSurface:NO
-                           isLoading:YES
-                     loadingProgress:0.0]);
+  OCMExpect([consumer_ setNTPVisible:NO isLoading:YES loadingProgress:0.0]);
   fake_web_state->SetLoading(true);
   EXPECT_OCMOCK_VERIFY(consumer_);
 
-  OCMExpect([consumer_ setNTPVisible:NO
-                      isStartSurface:NO
-                           isLoading:NO
-                     loadingProgress:0.0]);
+  OCMExpect([consumer_ setNTPVisible:NO isLoading:NO loadingProgress:0.0]);
   fake_web_state->SetLoading(false);
   EXPECT_OCMOCK_VERIFY(consumer_);
 
@@ -422,7 +433,7 @@ TEST_F(ToolbarButtonsMediatorTest, TestDeactivatedConsumerGetsNoUpdates) {
   OCMReject([consumer_ setCanGoBack:OCMOCK_ANY]);
   OCMReject([consumer_ setShareEnabled:OCMOCK_ANY]);
   OCMReject([consumer_ setMenu:[OCMArg any]
-                 forButtonType:ToolbarButtonTypeTabGrid]);
+                 forButtonType:ToolbarButtonTypeBack]);
   InsertActiveWebState();
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -436,12 +447,9 @@ TEST_F(ToolbarButtonsMediatorTest, TestActivationSyncsConsumer) {
   OCMExpect([consumer setCanGoBack:YES]);
   OCMExpect([consumer setCanGoForward:NO animated:NO]);
   OCMExpect([consumer setShareEnabled:YES]);
-  OCMExpect([consumer setNTPVisible:NO
-                     isStartSurface:NO
-                          isLoading:NO
-                    loadingProgress:0.0]);
+  OCMExpect([consumer setNTPVisible:NO isLoading:NO loadingProgress:0.0]);
   OCMExpect([consumer setMenu:[OCMArg any]
-                forButtonType:ToolbarButtonTypeTabGrid]);
+                forButtonType:ToolbarButtonTypeBack]);
   OCMExpect([consumer updateTabCount:1]);
   OCMExpect([consumer setInTabGroup:NO]);
   [mediator_ addConsumer:consumer];
@@ -465,18 +473,22 @@ TEST_F(ToolbarButtonsMediatorTest, TestRemoveAndAddBackConsumer) {
   [mediator_ removeConsumer:consumer_];
   OCMExpect([consumer_ setCanGoBack:YES]);
   OCMExpect([consumer_ setMenu:[OCMArg any]
-                 forButtonType:ToolbarButtonTypeTabGrid]);
+                 forButtonType:ToolbarButtonTypeBack]);
   [mediator_ addConsumer:consumer_];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
 // Tests that `-updateConsumer:withWebState:animated:` only updates the given
 // consumer, so that snapshotting a toolbar with another WebState doesn't update
-// the other active consumers.
+// the other active consumers or the tab grid menu.
 TEST_F(ToolbarButtonsMediatorTest, TestUpdateConsumerOnlyUpdatesThatConsumer) {
   InsertActiveWebState();
   id other_consumer = OCMProtocolMock(@protocol(ToolbarButtonsConsumer));
   [mediator_ addConsumer:other_consumer];
+  id tab_grid_menu_consumer =
+      OCMProtocolMock(@protocol(ToolbarTabGridMenuConsumer));
+  mediator_.tabGridMenuConsumer = tab_grid_menu_consumer;
+  OCMReject([tab_grid_menu_consumer setTabGridMenu:[OCMArg any]]);
 
   auto snapshot_web_state = std::make_unique<web::FakeWebState>();
   snapshot_web_state->SetVisibleURL(GURL("chrome://version"));
@@ -487,16 +499,17 @@ TEST_F(ToolbarButtonsMediatorTest, TestUpdateConsumerOnlyUpdatesThatConsumer) {
   OCMExpect([consumer_ setCanGoBack:NO]);
   OCMExpect([consumer_ setShareEnabled:NO]);
   OCMExpect([consumer_ setMenu:[OCMArg any]
-                 forButtonType:ToolbarButtonTypeTabGrid]);
+                 forButtonType:ToolbarButtonTypeBack]);
   OCMReject([other_consumer setCanGoBack:OCMOCK_ANY]);
   OCMReject([other_consumer setShareEnabled:OCMOCK_ANY]);
   OCMReject([other_consumer setMenu:[OCMArg any]
-                      forButtonType:ToolbarButtonTypeTabGrid]);
+                      forButtonType:ToolbarButtonTypeBack]);
   [mediator_ updateConsumer:consumer_
                withWebState:snapshot_web_state.get()
                    animated:NO];
   EXPECT_OCMOCK_VERIFY(consumer_);
   EXPECT_OCMOCK_VERIFY(other_consumer);
+  EXPECT_OCMOCK_VERIFY(tab_grid_menu_consumer);
 }
 
 // Tests that `-updateConsumer:withWebState:animated:` does nothing for a
@@ -508,7 +521,7 @@ TEST_F(ToolbarButtonsMediatorTest, TestUpdateConsumerIgnoresInactiveConsumer) {
   OCMReject([consumer_ setCanGoBack:OCMOCK_ANY]);
   OCMReject([consumer_ setShareEnabled:OCMOCK_ANY]);
   OCMReject([consumer_ setMenu:[OCMArg any]
-                 forButtonType:ToolbarButtonTypeTabGrid]);
+                 forButtonType:ToolbarButtonTypeBack]);
   [mediator_ updateConsumer:consumer_
                withWebState:browser_->GetWebStateList()->GetActiveWebState()
                    animated:NO];
@@ -526,12 +539,12 @@ TEST_F(ToolbarButtonsMediatorTest, TestMenusBuiltOnceForAllConsumers) {
                          menu = obj;
                          return YES;
                        }]
-                 forButtonType:ToolbarButtonTypeTabGrid]);
+                 forButtonType:ToolbarButtonTypeBack]);
   OCMExpect([other_consumer setMenu:[OCMArg checkWithBlock:^BOOL(id obj) {
                               other_menu = obj;
                               return YES;
                             }]
-                      forButtonType:ToolbarButtonTypeTabGrid]);
+                      forButtonType:ToolbarButtonTypeBack]);
   InsertActiveWebState();
   EXPECT_OCMOCK_VERIFY(consumer_);
   EXPECT_OCMOCK_VERIFY(other_consumer);
@@ -725,16 +738,102 @@ TEST_F(ToolbarButtonsMediatorTest, TestRecordUserActionsForToolsMenuTapped) {
       std::move(web_state),
       WebStateList::InsertionParams::AtIndex(0).Activate());
 
-  [mediator_ recordUserActionsForToolsMenuTapped];
+  [mediator_ recordUserActionsForButtonTapped:ToolbarButtonTypeTools];
   EXPECT_EQ(1, user_action_tester.GetActionCount("MobileToolbarShowMenu"));
   EXPECT_EQ(0, user_action_tester.GetActionCount("MobileToolbarShowMenuOnNTP"));
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "MobileToolbarShowMenuFromReaderMode"));
 
   fake_web_state->SetVisibleURL(GURL("chrome://newtab"));
-  [mediator_ recordUserActionsForToolsMenuTapped];
+  [mediator_ recordUserActionsForButtonTapped:ToolbarButtonTypeTools];
   EXPECT_EQ(2, user_action_tester.GetActionCount("MobileToolbarShowMenu"));
   EXPECT_EQ(1, user_action_tester.GetActionCount("MobileToolbarShowMenuOnNTP"));
+}
+
+// Tests that the tab grid menu goes to the tab grid menu consumer, and not to
+// the consumers.
+TEST_F(ToolbarButtonsMediatorTest, TestTabGridMenuGivenToTabGridMenuConsumer) {
+  id tab_grid_menu_consumer =
+      OCMProtocolMock(@protocol(ToolbarTabGridMenuConsumer));
+  mediator_.tabGridMenuConsumer = tab_grid_menu_consumer;
+  id other_consumer = OCMProtocolMock(@protocol(ToolbarButtonsConsumer));
+  [mediator_ addConsumer:other_consumer];
+
+  OCMExpect([tab_grid_menu_consumer setTabGridMenu:[OCMArg isNotNil]]);
+  OCMReject([consumer_ setMenu:[OCMArg any]
+                 forButtonType:ToolbarButtonTypeTabGrid]);
+  OCMReject([other_consumer setMenu:[OCMArg any]
+                      forButtonType:ToolbarButtonTypeTabGrid]);
+  InsertActiveWebState();
+  EXPECT_OCMOCK_VERIFY(tab_grid_menu_consumer);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_OCMOCK_VERIFY(other_consumer);
+}
+
+// Tests that the tab grid menu isn't built without active consumers.
+TEST_F(ToolbarButtonsMediatorTest, TestNoTabGridMenuWithoutActiveConsumers) {
+  id tab_grid_menu_consumer =
+      OCMProtocolMock(@protocol(ToolbarTabGridMenuConsumer));
+  mediator_.tabGridMenuConsumer = tab_grid_menu_consumer;
+  [mediator_ removeConsumer:consumer_];
+
+  OCMReject([tab_grid_menu_consumer setTabGridMenu:[OCMArg any]]);
+  InsertActiveWebState();
+  EXPECT_OCMOCK_VERIFY(tab_grid_menu_consumer);
+}
+
+// Tests that the button taps record their user actions, without the NTP
+// variants off the NTP.
+TEST_F(ToolbarButtonsMediatorTest, TestRecordUserActionsForButtonTapped) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+  InsertActiveWebState();
+
+  for (const auto& button : kButtonUserActions) {
+    [mediator_ recordUserActionsForButtonTapped:button.type];
+    EXPECT_EQ(1, user_action_tester.GetActionCount(button.action))
+        << button.action;
+    EXPECT_EQ(0, user_action_tester.GetActionCount(button.action_on_ntp))
+        << button.action_on_ntp;
+  }
+  histogram_tester.ExpectTotalCount("IOS.Home.Click", 0);
+}
+
+// Tests that the button taps record their NTP variants on the NTP, and that the
+// tab grid button records the home action, on the NTP and the Start Surface.
+TEST_F(ToolbarButtonsMediatorTest, TestRecordUserActionsForButtonTappedOnNTP) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+  InsertActiveNTPWebState(/*start_surface=*/false);
+
+  for (const auto& button : kButtonUserActions) {
+    [mediator_ recordUserActionsForButtonTapped:button.type];
+    EXPECT_EQ(1, user_action_tester.GetActionCount(button.action))
+        << button.action;
+    EXPECT_EQ(1, user_action_tester.GetActionCount(button.action_on_ntp))
+        << button.action_on_ntp;
+  }
+  histogram_tester.ExpectUniqueSample("IOS.NTP.Click",
+                                      IOSHomeActionType::kTabSwitcher, 1);
+  histogram_tester.ExpectTotalCount("IOS.Start.Click", 0);
+
+  InsertActiveNTPWebState(/*start_surface=*/true);
+  [mediator_ recordUserActionsForButtonTapped:ToolbarButtonTypeTabGrid];
+  histogram_tester.ExpectUniqueSample("IOS.Start.Click",
+                                      IOSHomeActionType::kTabSwitcher, 1);
+  histogram_tester.ExpectUniqueSample("IOS.Home.Click",
+                                      IOSHomeActionType::kTabSwitcher, 2);
+}
+
+// Tests that the button taps record their user actions without an active
+// WebState, except the tools menu's.
+TEST_F(ToolbarButtonsMediatorTest,
+       TestRecordUserActionsForButtonTappedWithoutWebState) {
+  base::UserActionTester user_action_tester;
+  [mediator_ recordUserActionsForButtonTapped:ToolbarButtonTypeBack];
+  [mediator_ recordUserActionsForButtonTapped:ToolbarButtonTypeTools];
+  EXPECT_EQ(1, user_action_tester.GetActionCount("MobileToolbarBack"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount("MobileToolbarShowMenu"));
 }
 
 // Tests that assistantButtonTapped: calls geminiHandler to start entry flow.

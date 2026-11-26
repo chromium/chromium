@@ -9,28 +9,19 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/cancelable_callback.h"
-#import "base/metrics/user_metrics.h"
-#import "base/metrics/user_metrics_action.h"
 #import "base/notimplemented.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/intents/model/intents_donation_helper.h"
-#import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
-#import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
-#import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
-#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/util/disabled_buttons_tap_gesture_recognizer.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -42,13 +33,13 @@
 #import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_constants.h"
 #import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_view.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_actions.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_constants.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_visibility.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_element_with_background.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_tab_grid_badge_button.h"
-#import "ios/chrome/browser/toolbar/ui/toolbar_buttons_mutator.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_height_delegate.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_mutator.h"
@@ -197,8 +188,7 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
 }  // namespace
 
 @interface ToolbarViewController () <TabGroupIndicatorViewDelegate,
-                                     ToolbarViewDelegate,
-                                     UIContextMenuInteractionDelegate>
+                                     ToolbarViewDelegate>
 @end
 
 @implementation ToolbarViewController {
@@ -213,7 +203,6 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   ToolbarButton* _assistantButton;
   UIMenu* _assistantButtonMenu;
   ToolbarTabGridBadgeButton* _tabGridButton;
-  UIMenu* _tabGridButtonMenu;
   ToolbarButton* _toolsMenuButton;
 
   // Button taking the full size of the toolbar. Exits fullscreen mode to expand
@@ -255,7 +244,7 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   // Whether the active tab is currently controlled by the actor.
   BOOL _actorControlled;
   // Tap recognizer for disabled back/forward buttons while actor-controlled.
-  DisabledButtonsTapGestureRecognizer* _disabledNavigationTapRecognizer;
+  UIGestureRecognizer* _disabledNavigationTapRecognizer;
   // The container for the location bar, which is transparent.
   UIView* _locationBarContainer;
   // The background for the location bar, which is a pill-shaped view.
@@ -336,9 +325,6 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
 
   // Whether the visible page is the NTP.
   BOOL _NTPVisible;
-
-  // Whether the NTP is showing the Start Surface.
-  BOOL _isStartSurface;
 
   // Whether the visible page is loading.
   BOOL _isLoading;
@@ -759,11 +745,8 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
 }
 
 - (void)setNTPVisible:(BOOL)NTPVisible
-       isStartSurface:(BOOL)isStartSurface
             isLoading:(BOOL)isLoading
       loadingProgress:(double)progress {
-  _isStartSurface = isStartSurface;
-
   BOOL ntpVisibilityChanged = (NTPVisible != _NTPVisible);
   BOOL loadingStateChanged = (isLoading != _isLoading);
 
@@ -818,8 +801,7 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
       _assistantButton.menu = menu;
       return;
     case ToolbarButtonTypeTabGrid:
-      _tabGridButtonMenu = menu;
-      return;
+      NOTREACHED() << "The tab grid menu is given to ToolbarButtonActions";
     case ToolbarButtonTypeReload:
     case ToolbarButtonTypeStop:
     case ToolbarButtonTypeShare:
@@ -1386,46 +1368,6 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   [self.mutator tabGroupIndicatorVisibilityUpdated:visible];
 }
 
-#pragma mark - UIContextMenuInteractionDelegate
-
-- (UIContextMenuConfiguration*)contextMenuInteraction:
-                                   (UIContextMenuInteraction*)interaction
-                       configurationForMenuAtLocation:(CGPoint)location {
-  if (interaction.view == _tabGridButton) {
-    UIMenu* menu = _tabGridButtonMenu;
-    if (!menu) {
-      return nil;
-    }
-    return [UIContextMenuConfiguration
-        configurationWithIdentifier:nil
-                    previewProvider:nil
-                     actionProvider:^UIMenu*(
-                         NSArray<UIMenuElement*>* suggestedActions) {
-                       base::RecordAction(base::UserMetricsAction(
-                           "MobileMenuToolbarMenuTriggered"));
-                       return menu;
-                     }];
-  }
-  return nil;
-}
-
-- (UITargetedPreview*)contextMenuInteraction:
-                          (UIContextMenuInteraction*)interaction
-                               configuration:
-                                   (UIContextMenuConfiguration*)configuration
-       highlightPreviewForItemWithIdentifier:(id<NSCopying>)identifier {
-  UIView* view = interaction.view;
-  if ([view isKindOfClass:[ToolbarTabGridBadgeButton class]]) {
-    ToolbarTabGridBadgeButton* tabGridButton = (ToolbarTabGridBadgeButton*)view;
-    UIPreviewParameters* parameters = [[UIPreviewParameters alloc] init];
-    parameters.visiblePath = [tabGridButton visiblePath];
-    parameters.backgroundColor = self.view.backgroundColor;
-
-    return [[UITargetedPreview alloc] initWithView:view parameters:parameters];
-  }
-  return nil;
-}
-
 #pragma mark - Private
 
 // Updates the background colors of the toolbar view and location bar.
@@ -1782,7 +1724,8 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
 // Creates the views.
 - (void)createView {
   CHECK(self.buttonFactory);
-  CHECK(self.buttonsMutator);
+  ToolbarButtonActions* actions = self.buttonActions;
+  CHECK(actions);
   _locationBarBackground = [self createLocationBarBackground];
   _locationBarContainer =
       [self createLocationBarContainerWithBackground:_locationBarBackground];
@@ -1799,69 +1742,34 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
 
   _backButton = [self.buttonFactory makeBackButton];
   _backButton.menu = _backButtonMenu;
-  [_backButton addTarget:self
-                  action:@selector(backButtonTapped)
-        forControlEvents:UIControlEventTouchUpInside];
-  [_backButton addAction:[UIAction actionWithHandler:^(UIAction*) {
-                 base::RecordAction(
-                     base::UserMetricsAction("MobileMenuToolbarMenuTriggered"));
-                 TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleHeavy);
-               }]
-        forControlEvents:UIControlEventMenuActionTriggered];
+  [actions configureButton:_backButton ofType:ToolbarButtonTypeBack];
   _forwardButton = [self.buttonFactory makeForwardButton];
   _forwardButton.menu = _forwardButtonMenu;
-  [_forwardButton addTarget:self
-                     action:@selector(forwardButtonTapped)
-           forControlEvents:UIControlEventTouchUpInside];
-  [_forwardButton addAction:[UIAction actionWithHandler:^(UIAction*) {
-                    base::RecordAction(base::UserMetricsAction(
-                        "MobileMenuToolbarMenuTriggered"));
-                    TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleHeavy);
-                  }]
-           forControlEvents:UIControlEventMenuActionTriggered];
+  [actions configureButton:_forwardButton ofType:ToolbarButtonTypeForward];
   if (!IsNextOldDesignEnabled()) {
     _navigationButtonsContainer =
         [self.buttonFactory makeConjoinedBackButton:_backButton
                                       forwardButton:_forwardButton];
   }
   _reloadButton = [self.buttonFactory makeReloadButton];
-  [_reloadButton addTarget:self
-                    action:@selector(reloadButtonTapped)
-          forControlEvents:UIControlEventTouchUpInside];
+  [actions configureButton:_reloadButton ofType:ToolbarButtonTypeReload];
   _stopButton = [self.buttonFactory makeStopButton];
-  [_stopButton addTarget:self
-                  action:@selector(stopButtonTapped)
-        forControlEvents:UIControlEventTouchUpInside];
+  [actions configureButton:_stopButton ofType:ToolbarButtonTypeStop];
   if (IsFiveButtonAppBarLayoutEnabled()) {
     _leadingShareButton = [self.buttonFactory makeShareButton];
     _leadingShareButton.visibilityMask = ToolbarButtonVisibility::kCompactWidth;
     _leadingShareButton.enabled = _shareEnabled;
-    [_leadingShareButton addTarget:self
-                            action:@selector(shareButtonTapped:)
-                  forControlEvents:UIControlEventTouchUpInside];
+    [actions configureButton:_leadingShareButton ofType:ToolbarButtonTypeShare];
   }
   _trailingShareButton = [self.buttonFactory makeShareButton];
   _trailingShareButton.enabled = _shareEnabled;
-  [_trailingShareButton addTarget:self
-                           action:@selector(shareButtonTapped:)
-                 forControlEvents:UIControlEventTouchUpInside];
+  [actions configureButton:_trailingShareButton ofType:ToolbarButtonTypeShare];
   _assistantButton = [self.buttonFactory makeAssistantButton];
-  [_assistantButton addTarget:self
-                       action:@selector(assistantButtonTapped)
-             forControlEvents:UIControlEventTouchUpInside];
+  [actions configureButton:_assistantButton ofType:ToolbarButtonTypeAssistant];
   _tabGridButton = [self.buttonFactory makeTabGridButton];
-  [_tabGridButton addTarget:self
-                     action:@selector(tabGridTouchDown)
-           forControlEvents:UIControlEventTouchDown];
-  [_tabGridButton addTarget:self
-                     action:@selector(tabGridTouchUp)
-           forControlEvents:UIControlEventTouchUpInside];
-  [_tabGridButton
-      addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
+  [actions configureButton:_tabGridButton ofType:ToolbarButtonTypeTabGrid];
   _toolsMenuButton = [self.buttonFactory makeToolsMenuButton];
-  [_toolsMenuButton addTarget:self
-                       action:@selector(toolsMenuButtonTapped)
-             forControlEvents:UIControlEventTouchUpInside];
+  [actions configureButton:_toolsMenuButton ofType:ToolbarButtonTypeTools];
 }
 
 // Sets up the banner promo view and its constraints if not already done.
@@ -2036,10 +1944,9 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   }
   if (IsActorEnabled()) {
     _disabledNavigationTapRecognizer =
-        [[DisabledButtonsTapGestureRecognizer alloc]
-            initWithTarget:self
-                    action:@selector(disabledNavigationButtonTapped)
-                   buttons:@[ _backButton, _forwardButton ]];
+        [self.buttonActions disabledNavigationTapRecognizerForButtons:@[
+          _backButton, _forwardButton
+        ]];
     _disabledNavigationTapRecognizer.enabled = _actorControlled;
     [_leadingStackView addGestureRecognizer:_disabledNavigationTapRecognizer];
   }
@@ -2315,95 +2222,6 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
               action:@selector(showComposebox)];
   [fakeOmniboxTarget addGestureRecognizer:tapRecognizer];
   return fakeOmniboxTarget;
-}
-
-// Handles back button tap.
-- (void)backButtonTapped {
-  if (_NTPVisible) {
-    base::RecordAction(base::UserMetricsAction("MobileToolbarBackOnNTP"));
-  }
-  base::RecordAction(base::UserMetricsAction("MobileToolbarBack"));
-
-  [self.buttonsMutator goBack];
-}
-
-// Handles forward button tap.
-- (void)forwardButtonTapped {
-  if (_NTPVisible) {
-    base::RecordAction(base::UserMetricsAction("MobileToolbarForwardOnNTP"));
-  }
-  base::RecordAction(base::UserMetricsAction("MobileToolbarForward"));
-
-  [self.buttonsMutator goForward];
-}
-
-// Handles taps on disabled back or forward navigation buttons.
-- (void)disabledNavigationButtonTapped {
-  if (!_actorControlled) {
-    return;
-  }
-  [self.actorOverlayHandler showActorInteractionLimitedSnackbar];
-}
-
-// Handles reload button tap.
-- (void)reloadButtonTapped {
-  if (_NTPVisible) {
-    base::RecordAction(base::UserMetricsAction("MobileToolbarReloadOnNTP"));
-  }
-  base::RecordAction(base::UserMetricsAction("MobileToolbarReload"));
-  [self.buttonsMutator reload];
-}
-
-// Handles stop button tap.
-- (void)stopButtonTapped {
-  if (_NTPVisible) {
-    base::RecordAction(base::UserMetricsAction("MobileToolbarStopOnNTP"));
-  }
-  base::RecordAction(base::UserMetricsAction("MobileToolbarStop"));
-  [self.buttonsMutator stop];
-}
-
-// Handles share button tap.
-- (void)shareButtonTapped:(UIView*)sender {
-  if (_NTPVisible) {
-    base::RecordAction(base::UserMetricsAction("MobileToolbarShareMenuOnNTP"));
-  }
-  base::RecordAction(base::UserMetricsAction("MobileToolbarShareMenu"));
-  [self.activityServiceHandler showShareSheetFromShareButton:sender];
-}
-
-// Handles assistant button tap.
-- (void)assistantButtonTapped {
-  if (_NTPVisible) {
-    base::RecordAction(
-        base::UserMetricsAction("MobileToolbarShowAssistantOnNTP"));
-  }
-  base::RecordAction(base::UserMetricsAction("MobileToolbarShowAssistant"));
-  [self.buttonsMutator assistantButtonTapped];
-}
-
-// Handles tools menu button tap.
-- (void)toolsMenuButtonTapped {
-  [self.buttonsMutator recordUserActionsForToolsMenuTapped];
-  [self.popupMenuHandler showToolsMenuPopup];
-}
-
-// Handles tab grid button touch down.
-- (void)tabGridTouchDown {
-  [IntentDonationHelper donateIntent:IntentType::kOpenTabGrid];
-  [self.sceneHandler prepareTabSwitcher];
-}
-
-// Handles tab grid button touch up.
-- (void)tabGridTouchUp {
-  if (_NTPVisible) {
-    base::RecordAction(
-        base::UserMetricsAction("MobileToolbarShowStackViewOnNTP"));
-    RecordHomeAction(IOSHomeActionType::kTabSwitcher, _isStartSurface);
-  }
-  base::RecordAction(base::UserMetricsAction("MobileToolbarShowStackView"));
-
-  [self.sceneHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
 }
 
 // Returns whether the toolbar should be hidden. The toolbar is typically hidden

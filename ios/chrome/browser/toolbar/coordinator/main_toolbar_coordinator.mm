@@ -77,6 +77,7 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/toolbar_coordinatee.h"
 #import "ios/chrome/browser/toolbar/tab_group/coordinator/tab_group_indicator_coordinator.h"
 #import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_constants.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_actions.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_utils.h"
@@ -231,6 +232,8 @@ inline LayoutStateToolbarPassKey PassKey() {
   /// Mediator for the state of the toolbars' control buttons, shared by the
   /// toolbars.
   ToolbarButtonsMediator* _toolbarButtonsMediator;
+  /// Actions of the toolbars' control buttons, shared by the toolbars.
+  ToolbarButtonActions* _toolbarButtonActions;
   /// Top toolbar mediator.
   ToolbarMediator* _topToolbarMediator;
   /// Top toolbar view controller.
@@ -311,7 +314,7 @@ inline LayoutStateToolbarPassKey PassKey() {
   BOOL isToolbarAtBottom = [self isToolbarPositionBottom];
 
   if (IsChromeNextIaEnabled()) {
-    [self createToolbarButtonsMediator];
+    [self createToolbarButtonsMediatorAndActions];
     _topLocationBarCoordinator =
         [self createLocationBarCoordinatorActive:!isToolbarAtBottom
                                      topPosition:YES
@@ -451,6 +454,7 @@ inline LayoutStateToolbarPassKey PassKey() {
   if (IsChromeNextIaEnabled()) {
     [_toolbarButtonsMediator disconnect];
     _toolbarButtonsMediator = nil;
+    _toolbarButtonActions = nil;
     [_topToolbarMediator disconnect];
     _topToolbarMediator = nil;
     [_topLocationBarCoordinator stop];
@@ -829,7 +833,6 @@ inline LayoutStateToolbarPassKey PassKey() {
 - (UIResponder<UITextInput>*)fakeboxScribbleForwardingTarget {
   return self.locationBarCoordinator.omniboxScribbleForwardingTarget;
 }
-
 
 #pragma mark - OmniboxStateProvider
 
@@ -1454,20 +1457,10 @@ inline LayoutStateToolbarPassKey PassKey() {
         HandlerForProtocol(browser->GetCommandDispatcher(), GeminiCommands);
   }
   toolbarViewController.buttonFactory = toolbarButtonFactory;
-  toolbarViewController.buttonsMutator = _toolbarButtonsMediator;
+  toolbarViewController.buttonActions = _toolbarButtonActions;
   toolbarViewController.mutator = mediator;
   toolbarViewController.browserCoordinatorHandler =
       HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
-  toolbarViewController.popupMenuHandler =
-      HandlerForProtocol(dispatcher, PopupMenuCommands);
-  toolbarViewController.activityServiceHandler =
-      HandlerForProtocol(dispatcher, ActivityServiceCommands);
-  toolbarViewController.sceneHandler =
-      HandlerForProtocol(dispatcher, SceneCommands);
-  if (!incognito && IsActorEnabled()) {
-    toolbarViewController.actorOverlayHandler =
-        HandlerForProtocol(dispatcher, ActorOverlayCommands);
-  }
   toolbarViewController.toolbarHeightDelegate = self.toolbarHeightDelegate;
   [toolbarViewController
       setLocationBarViewController:locationBar.locationBarViewController
@@ -1508,9 +1501,9 @@ inline LayoutStateToolbarPassKey PassKey() {
   return coordinator;
 }
 
-// Creates the mediator of the control buttons, shared by the surfaces showing
-// them.
-- (void)createToolbarButtonsMediator {
+// Creates the mediator and the actions of the control buttons, shared by the
+// surfaces showing them.
+- (void)createToolbarButtonsMediatorAndActions {
   Browser* browser = self.browser;
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
@@ -1535,6 +1528,20 @@ inline LayoutStateToolbarPassKey PassKey() {
       HandlerForProtocol(dispatcher, GeminiCommands);
   _toolbarButtonsMediator.baseViewController = self.baseViewController;
   _toolbarButtonsMediator.delegate = self;
+
+  _toolbarButtonActions = [[ToolbarButtonActions alloc] init];
+  _toolbarButtonActions.mutator = _toolbarButtonsMediator;
+  _toolbarButtonActions.popupMenuHandler =
+      HandlerForProtocol(dispatcher, PopupMenuCommands);
+  _toolbarButtonActions.activityServiceHandler =
+      HandlerForProtocol(dispatcher, ActivityServiceCommands);
+  _toolbarButtonActions.sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
+  if (!self.profile->IsOffTheRecord() && IsActorEnabled()) {
+    _toolbarButtonActions.actorOverlayHandler =
+        HandlerForProtocol(dispatcher, ActorOverlayCommands);
+  }
+  _toolbarButtonsMediator.tabGridMenuConsumer = _toolbarButtonActions;
 }
 
 // Creates a new toolbar mediator.

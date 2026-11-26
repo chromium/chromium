@@ -314,19 +314,17 @@ TEST_P(ToolbarMediatorTest, TestInactiveToolbarSkipsConsumerUpdates) {
   // visibility.
   if (top_position) {
     OCMExpect([consumer_ setNTPVisible:NO
-                        isStartSurface:NO
                              isLoading:NO
                        loadingProgress:0]);
   } else {
     OCMReject([consumer_ setNTPVisible:OCMOCK_ANY
-                        isStartSurface:OCMOCK_ANY
                              isLoading:OCMOCK_ANY
                        loadingProgress:0]);
   }
   OCMReject([consumer_ setCanGoBack:OCMOCK_ANY]);
   OCMReject([consumer_ setShareEnabled:OCMOCK_ANY]);
   OCMReject([consumer_ setMenu:[OCMArg any]
-                 forButtonType:ToolbarButtonTypeTabGrid]);
+                 forButtonType:ToolbarButtonTypeBack]);
   browser_->GetWebStateList()->InsertWebState(
       CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());
   EXPECT_OCMOCK_VERIFY(consumer_);
@@ -359,7 +357,7 @@ TEST_P(ToolbarMediatorTest,
   OCMExpect([consumer_ setCanGoBack:YES]);
   OCMExpect([consumer_ setShareEnabled:YES]);
   OCMExpect([consumer_ setMenu:[OCMArg any]
-                 forButtonType:ToolbarButtonTypeTabGrid]);
+                 forButtonType:ToolbarButtonTypeBack]);
   [layout_state setToolbarPosition:active_position
                            passKey:layout_state::LayoutStateTestPassKeyFactory::
                                        CreateToolbarKey()];

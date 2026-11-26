@@ -12,17 +12,13 @@
 #import "ios/chrome/browser/popup_menu/public/popup_menu_ui_updating.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_consumer.h"
 
-@protocol ActivityServiceCommands;
-@protocol ActorOverlayCommands;
 @protocol BannerPromoViewDelegate;
 @protocol BrowserCoordinatorCommands;
 @class LayoutGuideCenter;
-@protocol PopupMenuCommands;
 @class SceneLayoutState;
-@protocol SceneCommands;
 @class TabGroupIndicatorView;
+@class ToolbarButtonActions;
 @class ToolbarButtonFactory;
-@protocol ToolbarButtonsMutator;
 @protocol ToolbarHeightDelegate;
 @protocol ToolbarMutator;
 
@@ -37,28 +33,15 @@
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorHandler;
 
-// Handler for the popup menu commands.
-@property(nonatomic, weak) id<PopupMenuCommands> popupMenuHandler;
-
-// Handler for the activity service commands.
-@property(nonatomic, weak) id<ActivityServiceCommands> activityServiceHandler;
-
-// Handler for the scene commands.
-@property(nonatomic, weak) id<SceneCommands> sceneHandler;
-
-// Handler for the Actor Overlay commands.
-@property(nonatomic, weak) id<ActorOverlayCommands> actorOverlayHandler;
-
 // Mutator to handle toolbar actions.
 @property(nonatomic, weak) id<ToolbarMutator> mutator;
 
-// Mutator to handle the control buttons' actions.
-// TODO(crbug.com/585252907): Remove once the button actions move out of this
-// view controller.
-@property(nonatomic, weak) id<ToolbarButtonsMutator> buttonsMutator;
-
 // Factory used to create the buttons.
 @property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;
+
+// Actions of the buttons, shared with the other surfaces showing them. Must be
+// set before the view loads.
+@property(nonatomic, strong) ToolbarButtonActions* buttonActions;
 
 // The height delegate.
 @property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;

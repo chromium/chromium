@@ -70,6 +70,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/toolbar/ui:height_delegate",
     "//ios/chrome/browser/toolbar/ui:utils",
     "//ios/chrome/browser/toolbar/ui/buttons",
+    "//ios/chrome/browser/toolbar/ui/buttons:actions",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/common/ui/util",
     "//ios/components/webui:url_constants",

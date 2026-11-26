@@ -7,17 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-// The types of the toolbar's control buttons.
-typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
-  ToolbarButtonTypeBack,
-  ToolbarButtonTypeForward,
-  ToolbarButtonTypeReload,
-  ToolbarButtonTypeStop,
-  ToolbarButtonTypeShare,
-  ToolbarButtonTypeAssistant,
-  ToolbarButtonTypeTabGrid,
-  ToolbarButtonTypeTools,
-};
+#import "ios/chrome/browser/toolbar/ui/toolbar_button_type.h"
 
 // Receives the state of the toolbar's control buttons. Implemented by every
 // surface showing them, so that they all show the same state.
@@ -32,15 +22,14 @@ typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
 // Sets whether the share button is enabled.
 - (void)setShareEnabled:(BOOL)enabled;
 
-// Sets whether the current page is the NTP, if it is the Start Surface, whether
-// the page is loading, and the `progress` between 0.0 and 1.0 for the loading
-// progress bar.
+// Sets whether the current page is the NTP, whether the page is loading, and
+// the `progress` between 0.0 and 1.0 for the loading progress bar.
 - (void)setNTPVisible:(BOOL)ntpVisible
-       isStartSurface:(BOOL)isStartSurface
             isLoading:(BOOL)isLoading
       loadingProgress:(double)progress;
 
-// Sets the context menu for the button with `buttonType`.
+// Sets the context menu for the button with `buttonType`. The tab grid
+// button's menu goes to the `ToolbarTabGridMenuConsumer` instead.
 - (void)setMenu:(UIMenu*)menu forButtonType:(ToolbarButtonType)buttonType;
 
 // Sets the tab count to display.

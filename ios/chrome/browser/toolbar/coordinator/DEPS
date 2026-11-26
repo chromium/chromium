@@ -14,6 +14,7 @@ include_rules = [
   "+ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h",
   "+ios/chrome/browser/menu/ui_bundled/browser_action_factory.h",
   "+ios/chrome/browser/ntp/model",
+  "+ios/chrome/browser/ntp/shared/metrics",
   "+ios/chrome/browser/omnibox/model/omnibox_focus",
   "+ios/chrome/browser/orchestrator/ui_bundled",
   "+ios/chrome/browser/overlays/model/public/overlay_presentation_context.h",

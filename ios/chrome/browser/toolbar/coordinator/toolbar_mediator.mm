@@ -106,7 +106,6 @@
     return;
   }
   [self.consumer setNTPVisible:IsVisibleURLNewTabPage(webState)
-                isStartSurface:NO
                      isLoading:NO
                loadingProgress:0];
 }

@@ -42,6 +42,22 @@ source_set("buttons") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("actions") {
+  sources = [
+    "toolbar_button_actions.h",
+    "toolbar_button_actions.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/toolbar/ui:buttons_consumer" ]
+  deps = [
+    ":buttons",
+    "//base",
+    "//ios/chrome/browser/intents/model:model_donation_helper",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("menus") {
   sources = [
     "toolbar_button_menu_factory.h",
@@ -70,4 +86,19 @@ source_set("menus") {
     "//ui/gfx",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "toolbar_button_actions_unittest.mm" ]
+  deps = [
+    ":actions",
+    ":buttons",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/toolbar/ui:buttons_consumer",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
 }
