@@ -1720,8 +1720,14 @@ public class LocationBarMediator
         assertNonNull(mToolbarParent)
                 .addView(mLocationBarLayout, mIndexInToolbar, marginLayoutParams);
         if (mLocationBarLayout.isInLayout()) {
-            PostTask.postDelayedTask(
-                    TaskTraits.UI_USER_VISIBLE, () -> mLocationBarLayout.removeView(mDropdown), 0);
+            LocationBarLayout locationBarLayout = mLocationBarLayout;
+            View dropdown = mDropdown;
+            if (dropdown != null) {
+                PostTask.postDelayedTask(
+                        TaskTraits.UI_USER_VISIBLE,
+                        () -> locationBarLayout.removeView(dropdown),
+                        0);
+            }
         } else {
             mLocationBarLayout.removeView(mDropdown);
         }

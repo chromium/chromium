@@ -4112,6 +4112,43 @@ public class LocationBarMediatorUnitTest {
         verify(mUrlCoordinator).finishReparenting(true);
     }
 
+    private void reparentToSuggestionsContainerInLayout() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        setUpReparentingToSuggestionsContainer();
+
+        mSessionState.getAutocompleteInput().setDisplayState(DisplayState.SUGGESTIONS);
+        mMediator.handleUrlFocusAnimation(/* hasFocus= */ true);
+        assertTrue(mMediator.isParentedToSuggestionsContainer());
+        doReturn(true).when(mLocationBarLayout).isInLayout();
+    }
+
+    @Test
+    public void testReparentToToolbar_inLayout_delayedDropdownRemovalRunsAfterDestroy() {
+        reparentToSuggestionsContainerInLayout();
+
+        mMediator.endInput();
+        assertFalse(mMediator.isParentedToSuggestionsContainer());
+        verify(mLocationBarLayout, never()).removeView(mDropdown);
+
+        mMediator.destroy();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mLocationBarLayout).removeView(mDropdown);
+    }
+
+    @Test
+    public void testDestroy_whileReparentedInLayout_runsDelayedDropdownRemoval() {
+        reparentToSuggestionsContainerInLayout();
+
+        mMediator.destroy();
+        assertFalse(mMediator.isParentedToSuggestionsContainer());
+        verify(mLocationBarLayout, never()).removeView(mDropdown);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mLocationBarLayout).removeView(mDropdown);
+    }
+
     private AutocompleteInput setupDesktopSuggestionsSession() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mMediator.onFinishNativeInitialization();
