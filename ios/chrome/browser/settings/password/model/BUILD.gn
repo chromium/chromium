@@ -17,3 +17,32 @@ source_set("account_storage_utils") {
     "//ios/chrome/browser/settings/ui_bundled/password/*",
   ]
 }
+
+source_set("password_list_sorting_filtering") {
+  sources = [
+    "password_list_sorting_filtering.cc",
+    "password_list_sorting_filtering.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//components/password_manager/core/browser/ui",
+    "//url",
+  ]
+  visibility = [
+    "//ios/chrome/browser/settings/password/*",
+    "//ios/chrome/browser/settings/ui_bundled/password/*",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "password_list_sorting_filtering_unittest.cc" ]
+  deps = [
+    ":password_list_sorting_filtering",
+    "//base",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/password_manager/core/browser/ui",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

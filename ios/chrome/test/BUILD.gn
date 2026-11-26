@@ -621,6 +621,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/settings/manage_accounts/ui:unit_tests",
     "//ios/chrome/browser/settings/manage_sync/coordinator:unit_tests",
     "//ios/chrome/browser/settings/model/sync/utils:unit_tests",
+    "//ios/chrome/browser/settings/password/model:unit_tests",
     "//ios/chrome/browser/settings/personalize_google_services/ui:unit_tests",
     "//ios/chrome/browser/settings/site_settings/coordinator:unit_tests",
     "//ios/chrome/browser/settings/site_settings/ui:unit_tests",
