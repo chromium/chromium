@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <memory>
 #include <optional>
@@ -57,12 +58,12 @@ class RandomNameGenerator {
       base::RandBytes(base::as_writable_byte_span(cache_));
       cache_index_ = 0;
     }
-    return UNSAFE_TODO(cache_[cache_index_++]);
+    return cache_[cache_index_++];
   }
 
  private:
   base::Lock lock_;
-  PortName cache_[kRandomNameCacheSize];
+  std::array<PortName, kRandomNameCacheSize> cache_;
   size_t cache_index_ = kRandomNameCacheSize;
 };
 

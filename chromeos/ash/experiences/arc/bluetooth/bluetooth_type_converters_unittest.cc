@@ -5,11 +5,14 @@
 #include "chromeos/ash/experiences/arc/bluetooth/bluetooth_type_converters.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/values.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h"
@@ -20,7 +23,8 @@ namespace {
 
 constexpr char kAddressStr[] = "1A:2B:3C:4D:5E:6F";
 constexpr char kInvalidAddressStr[] = "00:00:00:00:00:00";
-constexpr uint8_t kAddressArray[] = {0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f};
+constexpr auto kAddressArray =
+    std::to_array<uint8_t>({0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f});
 constexpr size_t kAddressSize = 6;
 constexpr uint8_t kFillerByte = 0x79;
 
@@ -87,19 +91,15 @@ namespace mojo {
 TEST(BluetoothTypeConverterTest, ConvertMojoBluetoothAddressFromString) {
   arc::mojom::BluetoothAddressPtr address_mojo =
       arc::mojom::BluetoothAddress::From(std::string(kAddressStr));
-  EXPECT_EQ(kAddressSize, address_mojo->address.size());
-  for (size_t i = 0; i < kAddressSize; i++) {
-    UNSAFE_TODO(EXPECT_EQ(kAddressArray[i], address_mojo->address[i]));
-  }
+  EXPECT_EQ(base::span(kAddressArray), base::span(address_mojo->address));
 }
 
 TEST(BluetoothTypeConverterTest, ConvertMojoBluetoothAddressToString) {
   arc::mojom::BluetoothAddressPtr address_mojo =
       arc::mojom::BluetoothAddress::New();
   // Test address is shorter than expected (invalid address).
-  for (size_t i = 0; i < kAddressSize - 1; i++) {
-    address_mojo->address.push_back(UNSAFE_TODO(kAddressArray[i]));
-  }
+  address_mojo->address =
+      base::ToVector(base::span(kAddressArray).first(kAddressSize - 1));
   EXPECT_EQ(kInvalidAddressStr, address_mojo->To<std::string>());
 
   // Test success case.

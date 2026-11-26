@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/recording/octree_color_quantizer.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -23,7 +24,7 @@ namespace {
 // is the index into this array.
 // Level 0 corresponds to the most significant bit in an R, G, or B color
 // component, whereas level 7 corresponds to the least significant bit.
-constexpr uint8_t kLevelMasks[kNumBitsPerColorChannel] = {
+constexpr std::array<uint8_t, kNumBitsPerColorChannel> kLevelMasks = {
     0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
 
 // Forms and returns an index by combining 3 bits, one from each color component
@@ -31,7 +32,7 @@ constexpr uint8_t kLevelMasks[kNumBitsPerColorChannel] = {
 // given `level`. See comment above.
 ColorIndex GetColorIndexAtLevel(const RgbColor& color, int level) {
   ColorIndex index = 0;
-  const auto mask = UNSAFE_TODO(kLevelMasks[level]);
+  const auto mask = kLevelMasks[level];
 
   if (color.r & mask) {
     //         RGB.

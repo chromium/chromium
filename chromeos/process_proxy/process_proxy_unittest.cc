@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -113,18 +114,19 @@ class RegistryTestRunner : public TestRunner {
 
  private:
   bool ProcessReceivedCharacter(char received, size_t stream) {
-    if (stream >= std::size(left_to_check_index_))
+    if (stream >= left_to_check_index_.size()) {
       return false;
-    bool success =
-        UNSAFE_TODO(left_to_check_index_[stream]) < expected_line_.length() &&
-        expected_line_[UNSAFE_TODO(left_to_check_index_[stream])] == received;
-    if (success)
-      UNSAFE_TODO(left_to_check_index_[stream])++;
-    if (UNSAFE_TODO(left_to_check_index_[stream]) == expected_line_.length() &&
+    }
+    bool success = left_to_check_index_[stream] < expected_line_.length() &&
+                   expected_line_[left_to_check_index_[stream]] == received;
+    if (success) {
+      left_to_check_index_[stream]++;
+    }
+    if (left_to_check_index_[stream] == expected_line_.length() &&
         lines_left_ > 0) {
       // Take another line to test for this stream, if there are any lines left.
       // If not, this stream is done.
-      UNSAFE_TODO(left_to_check_index_[stream]) = 0;
+      left_to_check_index_[stream] = 0;
       lines_left_--;
     }
     return success;
@@ -136,7 +138,7 @@ class RegistryTestRunner : public TestRunner {
         lines_left_ == 0;
   }
 
-  size_t left_to_check_index_[2];
+  std::array<size_t, 2> left_to_check_index_ = {};
   size_t lines_left_;
   std::string expected_line_;
 };

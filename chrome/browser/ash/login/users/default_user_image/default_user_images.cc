@@ -169,7 +169,7 @@ constexpr auto kDefaultImageInfo = std::to_array<DefaultImageInfo>({
 // in the personalization settings page. This list should contain all the
 // indexes of egligible default images listed above.
 // clang-format off
-constexpr int kCurrentImageIndexes[] = {
+constexpr auto kCurrentImageIndexes = std::to_array<int>({
     // Material design avatars.
     83,
     84,
@@ -217,7 +217,7 @@ constexpr int kCurrentImageIndexes[] = {
     80,
     81,
     82,
-};
+});
 // clang-format on
 
 // Compile time check that make sure the current default images are the set of
@@ -382,8 +382,8 @@ const gfx::ImageSkia& GetStubDefaultImage() {
 }
 
 int GetRandomDefaultImageIndex() {
-  return UNSAFE_TODO(kCurrentImageIndexes)[base::RandIntInclusive(
-      0, std::size(kCurrentImageIndexes) - 1)];
+  return kCurrentImageIndexes[base::RandIntInclusive(
+      0, kCurrentImageIndexes.size() - 1)];
 }
 
 bool IsValidIndex(int index) {

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_METRICS_ARC_DAILY_METRICS_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_METRICS_ARC_DAILY_METRICS_H_
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -75,9 +76,9 @@ class ArcDailyMetrics {
 
   // Members for tracking Android App kill counts.
   std::unordered_set<vm_tools::concierge::VmInfo_VmType> kills_prev_vms_;
-  std::unique_ptr<KillCounts> kills_[kKillCountNum];
-  static const vm_tools::concierge::VmInfo_VmType
-      kKillCountTypeVm[kKillCountNum];
+  std::array<std::unique_ptr<KillCounts>, kKillCountNum> kills_;
+  static const std::array<vm_tools::concierge::VmInfo_VmType, kKillCountNum>
+      kKillCountTypeVm;
 };
 
 }  // namespace arc

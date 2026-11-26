@@ -7,6 +7,7 @@
 #include <sys/sysinfo.h>
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <utility>
 
@@ -177,11 +178,19 @@ struct LoadAverageHistogram {
   const char* name;
   base::TimeDelta duration;
 };
-constexpr LoadAverageHistogram kLoadAverageHistograms[] = {
-    {"Arc.LoadAverageX100PerProcessor1MinuteAfterArcStart", base::Minutes(1)},
-    {"Arc.LoadAverageX100PerProcessor5MinutesAfterArcStart", base::Minutes(5)},
-    {"Arc.LoadAverageX100PerProcessor15MinutesAfterArcStart",
-     base::Minutes(15)},
+constexpr std::array kLoadAverageHistograms = {
+    LoadAverageHistogram{
+        "Arc.LoadAverageX100PerProcessor1MinuteAfterArcStart",
+        base::Minutes(1),
+    },
+    LoadAverageHistogram{
+        "Arc.LoadAverageX100PerProcessor5MinutesAfterArcStart",
+        base::Minutes(5),
+    },
+    LoadAverageHistogram{
+        "Arc.LoadAverageX100PerProcessor15MinutesAfterArcStart",
+        base::Minutes(15),
+    },
 };
 
 const char* ArcKeyMintLoggedOperationToString(
@@ -980,12 +989,12 @@ void ArcMetricsService::OnArcStarted() {
   metrics_anr_ = std::make_unique<ArcMetricsAnr>(prefs_);
 
   // Post tasks to record load average.
-  for (size_t index = 0; index < std::size(kLoadAverageHistograms); ++index) {
+  for (size_t index = 0; index < kLoadAverageHistograms.size(); ++index) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ArcMetricsService::MeasureLoadAverage,
                        weak_ptr_factory_.GetWeakPtr(), index),
-        UNSAFE_TODO(kLoadAverageHistograms[index]).duration);
+        kLoadAverageHistograms[index].duration);
   }
 }
 
@@ -1066,9 +1075,9 @@ void ArcMetricsService::ReportArcNetworkError(mojom::ArcNetworkError error) {
 void ArcMetricsService::MeasureLoadAverage(size_t index) {
   struct sysinfo info = {};
   if (sysinfo(&info) < 0) {
-    DCHECK_LT(index, std::size(kLoadAverageHistograms));
+    DCHECK_LT(index, kLoadAverageHistograms.size());
     PLOG(ERROR) << "sysinfo() failed when trying to record "
-                << UNSAFE_TODO(kLoadAverageHistograms[index]).name;
+                << kLoadAverageHistograms[index].name;
     return;
   }
   DCHECK_LT(index, std::size(info.loads));
@@ -1093,10 +1102,9 @@ void ArcMetricsService::MaybeRecordLoadAveragePerProcessor() {
   for (const auto& value : load_averages_after_arc_start_) {
     const size_t index = value.first;
     const int loadx100_per_processor = value.second;
-    DCHECK_LT(index, std::size(kLoadAverageHistograms));
+    DCHECK_LT(index, kLoadAverageHistograms.size());
     base::UmaHistogramCustomCounts(
-        UNSAFE_TODO(kLoadAverageHistograms[index]).name +
-            BootTypeToString(boot_type_),
+        kLoadAverageHistograms[index].name + BootTypeToString(boot_type_),
         loadx100_per_processor, 0, 5000, 50);
   }
   // Erase the values to avoid recording them again.

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/string_matching/term_break_iterator.h"
 
+#include <array>
 #include <ostream>
 
 #include "base/check.h"
@@ -29,18 +30,19 @@ bool TermBreakIterator::Advance() {
   // 2D matrix that defines term boundaries. Each row represents current state.
   // Each col represents new state from input char. Cells with true value
   // represents a term boundary.
-  const bool kBoundary[][STATE_LAST] = {
-      // START  NUMBER UPPER  LOWER  CHAR
-      {false, false, false, false, false},  // START
-      {false, false, true, true, true},     // NUMBER
-      {false, true, false, false, true},    // UPPER
-      {false, true, true, false, true},     // LOWER
-      {false, true, true, true, false},     // CHAR
-  };
+  static constexpr std::array<std::array<bool, STATE_LAST>, STATE_LAST>
+      kBoundary = {{
+          // START  NUMBER UPPER  LOWER  CHAR
+          {false, false, false, false, false},  // START
+          {false, false, true, true, true},     // NUMBER
+          {false, true, false, false, true},    // UPPER
+          {false, true, true, false, true},     // LOWER
+          {false, true, true, true, false},     // CHAR
+      }};
 
   while (iter_->Advance()) {
     const State new_state = GetNewState((*word_)[iter_->array_pos()]);
-    const bool is_boundary = UNSAFE_TODO(kBoundary[state_][new_state]);
+    const bool is_boundary = kBoundary[state_][new_state];
     state_ = new_state;
     if (is_boundary)
       break;

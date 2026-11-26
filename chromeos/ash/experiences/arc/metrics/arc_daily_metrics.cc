@@ -124,8 +124,9 @@ void KillCounts::UpdateUmaDaily() {
 
 }  // namespace
 
-const vm_tools::concierge::VmInfo_VmType
-    ArcDailyMetrics::kKillCountTypeVm[ArcDailyMetrics::kKillCountNum] = {
+const std::array<vm_tools::concierge::VmInfo_VmType,
+                 ArcDailyMetrics::kKillCountNum>
+    ArcDailyMetrics::kKillCountTypeVm = {
         vm_tools::concierge::VmInfo_VmType_UNKNOWN,    // kKillCountAll not used
         vm_tools::concierge::VmInfo_VmType_UNKNOWN,    // kKillCountOnlyArc not
                                                        // used
@@ -214,8 +215,8 @@ void ArcDailyMetrics::OnLowMemoryKillCounts(
 
   // All background VM counters don't care what other VMs are running.
   for (int i = kKillCountFirstBackgroundVm; i < kKillCountNum; i++) {
-    if (vms.count(UNSAFE_TODO(kKillCountTypeVm[i])) != 0) {
-      UNSAFE_TODO(kills_[i])->Increment(oom, foreground, perceptible, cached);
+    if (vms.count(kKillCountTypeVm[i]) != 0) {
+      kills_[i]->Increment(oom, foreground, perceptible, cached);
     }
   }
 

@@ -4,20 +4,22 @@
 
 #include "chromeos/ash/experiences/arc/bluetooth/bluetooth_mojom_traits.h"
 
+#include <array>
 #include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 constexpr char kUuidStr[] = "12345678-1234-5678-9abc-def123456789";
-constexpr uint8_t kUuidArray[] = {0x12, 0x34, 0x56, 0x78, 0x12, 0x34,
-                                  0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf1,
-                                  0x23, 0x45, 0x67, 0x89};
-constexpr size_t kUuidSize = 16;
+constexpr auto kUuidArray =
+    std::to_array<uint8_t>({0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78,
+                            0x9a, 0xbc, 0xde, 0xf1, 0x23, 0x45, 0x67, 0x89});
 
 constexpr char kUuid16Str[] = "1234";
 constexpr uint16_t kUuid16 = 0x1234;
@@ -46,19 +48,12 @@ TEST(BluetoothStructTraitsTest, SerializeBluetoothUUID) {
   device::BluetoothUUID uuid_device(kUuidStr);
   arc::mojom::BluetoothUUIDPtr uuid_mojo =
       ConvertToMojo<arc::mojom::BluetoothUUID>(&uuid_device);
-  EXPECT_EQ(kUuidSize, uuid_mojo->uuid.size());
-  for (size_t i = 0; i < kUuidSize; i++) {
-    UNSAFE_TODO(EXPECT_EQ(kUuidArray[i], uuid_mojo->uuid[i]));
-  }
+  EXPECT_EQ(base::span(kUuidArray), base::span(uuid_mojo->uuid));
 }
 
 TEST(BluetoothStructTraitsTest, DeserializeBluetoothUUID) {
   arc::mojom::BluetoothUUIDPtr uuid_mojo = arc::mojom::BluetoothUUID::New();
-  for (size_t i = 0; i < kUuidSize; i++) {
-    uuid_mojo->uuid.push_back(UNSAFE_TODO(kUuidArray[i]));
-  }
-  uuid_mojo->uuid =
-      std::vector<uint8_t>(std::begin(kUuidArray), std::end(kUuidArray));
+  uuid_mojo->uuid = base::ToVector(kUuidArray);
   device::BluetoothUUID uuid_device;
   EXPECT_TRUE(ConvertFromMojo(std::move(uuid_mojo), &uuid_device));
   EXPECT_EQ(std::string(kUuidStr), uuid_device.canonical_value());
