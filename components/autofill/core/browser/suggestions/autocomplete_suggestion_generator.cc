@@ -29,8 +29,10 @@
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
 
@@ -41,6 +43,25 @@ namespace {
 // Limit on the number of suggestions to appear in the pop-up menu under an
 // text input element in a form.
 constexpr int kMaxAutocompleteMenuItems = 6;
+
+// Returns whether `trigger_field` is eligible for Autocomplete suggestions
+// based on its HTML `autocomplete` state and OTP classification.
+bool ShouldAutocomplete(const FormFieldData& trigger_field,
+                        const AutofillField* trigger_autofill_field) {
+  if (!trigger_field.should_autocomplete()) {
+    return false;
+  }
+  if (trigger_autofill_field &&
+      trigger_autofill_field->Type().GetTypes().contains(ONE_TIME_CODE)) {
+    return false;
+  }
+  if (trigger_field.parsed_autocomplete() &&
+      trigger_field.parsed_autocomplete()->field_type ==
+          HtmlFieldType::kOneTimeCode) {
+    return false;
+  }
+  return true;
+}
 
 }  // namespace
 
@@ -76,7 +97,7 @@ void AutocompleteSuggestionGenerator::GenerateSuggestions(
     const AutofillField* trigger_autofill_field,
     AutofillClient& client,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
-  if (!trigger_field.should_autocomplete()) {
+  if (!ShouldAutocomplete(trigger_field, trigger_autofill_field)) {
     std::move(callback).Run({SuggestionDataSource::kAutocomplete, {}});
     return;
   }

@@ -124,7 +124,8 @@ function getLowerCaseAttribute(
  * @param element An element to check if it can be autocompleted.
  * @return true if element can be autocompleted.
  */
-function autoComplete(element: fillConstants.FormControlElement|null): boolean {
+export function shouldAutocomplete(
+    element: fillConstants.FormControlElement|null): boolean {
   if (!element) {
     return false;
   }
@@ -132,27 +133,6 @@ function autoComplete(element: fillConstants.FormControlElement|null): boolean {
     return false;
   }
   if (getLowerCaseAttribute(element.form, 'autocomplete') === 'off') {
-    return false;
-  }
-  return true;
-}
-
-/**
- * Returns true if an element should suggest autocomplete dropdown.
- *
- * @param element An element to check if it can be autocompleted.
- * @return true if autocomplete dropdown should be suggested.
- */
-export function shouldAutocomplete(
-    element: fillConstants.FormControlElement|null): boolean {
-  if (!autoComplete(element)) {
-    return false;
-  }
-  if (getLowerCaseAttribute(element!, 'autocomplete') === 'one-time-code') {
-    return false;
-  }
-  if (getLowerCaseAttribute(
-    element!.form, 'autocomplete') === 'one-time-code') {
     return false;
   }
   return true;

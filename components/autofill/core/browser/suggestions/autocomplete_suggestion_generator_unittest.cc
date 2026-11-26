@@ -175,6 +175,55 @@ TEST_F(AutocompleteSuggestionGeneratorTest,
                                   suggestions_generated_callback.Get());
 }
 
+// Tests that `AutocompleteSuggestionGenerator` does not generate suggestions
+// for fields with `autocomplete="one-time-code"`.
+TEST_F(AutocompleteSuggestionGeneratorTest,
+       OneTimeCodeAutocompleteAttribute_NoSuggestions) {
+  FormData form =
+      test::GetFormData({.fields = {{.name = u"Some Field Name",
+                                     .value = u"123",
+                                     .autocomplete_attribute = "one-time-code",
+                                     .should_autocomplete = true}}});
+
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  EXPECT_CALL(*web_data_service(), GetFormValuesForElementName).Times(0);
+  EXPECT_CALL(suggestions_generated_callback,
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                       IsEmpty())));
+  generator().GenerateSuggestions(form, form.fields()[0],
+                                  /*form_structure=*/nullptr,
+                                  /*trigger_autofill_field=*/nullptr, client(),
+                                  suggestions_generated_callback.Get());
+}
+
+// Tests that `AutocompleteSuggestionGenerator` does not generate suggestions
+// for fields classified as `ONE_TIME_CODE`.
+TEST_F(AutocompleteSuggestionGeneratorTest,
+       OneTimeCodeClassifiedField_NoSuggestions) {
+  FormData form =
+      test::GetFormData({.fields = {{.name = u"Some Field Name",
+                                     .value = u"123",
+                                     .should_autocomplete = true}}});
+  FormStructure form_structure(form);
+  form_structure.field(0)->SetTypeTo(AutofillType(ONE_TIME_CODE),
+                                     /*source=*/std::nullopt);
+
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  EXPECT_CALL(*web_data_service(), GetFormValuesForElementName).Times(0);
+  EXPECT_CALL(suggestions_generated_callback,
+              Run(Pair(SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                       IsEmpty())));
+  generator().GenerateSuggestions(form, form.fields()[0], &form_structure,
+                                  form_structure.field(0), client(),
+                                  suggestions_generated_callback.Get());
+}
+
 }  // namespace
 
 class AutocompleteSuggestionGeneratorLabelSensitiveTest

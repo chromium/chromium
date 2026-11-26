@@ -167,15 +167,15 @@ TEST_F(FillJsTest, GetAriaLabel) {
   EXPECT_NSEQ(result, expected_result);
 }
 
-// Tests if shouldAutocomplete returns valid result for
-// autocomplete='one-time-code'.
+// Tests that `shouldAutocomplete` returns true for
+// `autocomplete='one-time-code'`.
 TEST_F(FillJsTest, ShouldAutocompleteOneTimeCode) {
   LoadHtml(@"<input id='input' type='text' autocomplete='one-time-code'/>");
 
   id result = ExecuteJavaScript(
       @"__gCrWeb.getRegisteredApi('fill_test_api')."
       @"getFunction('shouldAutocomplete')(document.getElementById('input'));");
-  EXPECT_NSEQ(result, @NO);
+  EXPECT_NSEQ(result, @YES);
 }
 
 // Tests that aria-labelledby works. Simple case: only one id referenced.

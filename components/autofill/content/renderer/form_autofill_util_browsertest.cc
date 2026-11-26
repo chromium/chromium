@@ -5424,10 +5424,9 @@ TEST_F(FormDataConversionTest,
                   test::FormFieldDescriptionEq({.should_autocomplete = true})));
 }
 
-// `should_autocomplete` must be set to false for the field with
-// autocomplete='one-time-code' attribute set in HTML.
-TEST_F(FormDataConversionTest,
-       WebFormElementToFormData_AutocompleteOff_OneTimeCode) {
+// Tests that `should_autocomplete` remains true for a field with
+// `autocomplete='one-time-code'`, matching Blink's `AutoComplete()`.
+TEST_F(FormDataConversionTest, WebFormElementToFormData_OneTimeCode) {
   LoadHTML(
       R"(<form name=TestForm id=form action='http://cnn.com'>
            <input value=123 autocomplete='one-time-code'>
@@ -5440,8 +5439,9 @@ TEST_F(FormDataConversionTest,
   std::optional<FormData> form = ExtractFormData(web_form);
   ASSERT_TRUE(form);
 
-  EXPECT_THAT(form->fields(), ElementsAre(test::FormFieldDescriptionEq(
-                                  {.should_autocomplete = false})));
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(test::FormFieldDescriptionEq({.should_autocomplete = true})));
 }
 
 // Tests CSS classes are set.
