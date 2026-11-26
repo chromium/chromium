@@ -4078,6 +4078,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Android Desktop Account Menu -->
+      <!-- TODO(crbug.com/546299633): Make translateable once the multi-profile UI is finalized. -->
+      <message name="IDS_ACCOUNT_MENU_ADD_PROFILE" desc="Title of the account menu item that creates a new profile." translateable="false">
+        **Add**
+      </message>
       <message name="IDS_ACCOUNT_MENU_PROMO_CARD_DESCRIPTION" desc="Subtitle of the promo card in the account menu when signed out.">
         Sign in to get your bookmarks, passwords, and more on all your devices
       </message>

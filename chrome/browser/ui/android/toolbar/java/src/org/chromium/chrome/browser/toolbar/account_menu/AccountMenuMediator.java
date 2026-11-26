@@ -15,14 +15,17 @@ import android.view.View.OnClickListener;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -235,6 +238,10 @@ public class AccountMenuMediator
             }
             mModelList.add(
                     createIncognitoItem(/* isSectionTop= */ true, /* isSectionBottom= */ true));
+        }
+
+        if (ChromeFeatureList.sAndroidMultiprofile.isEnabled()) {
+            mModelList.add(createAddProfileItem());
         }
     }
 
@@ -536,5 +543,30 @@ public class AccountMenuMediator
     /** Records an account menu event: the menu being shown, or an item being selected in it. */
     private static void recordEvent(@Event int event) {
         RecordHistogram.recordEnumeratedHistogram("Signin.AccountMenu.Event", event, Event.COUNT);
+    }
+
+    /** Returns the "Add" item that creates a new profile. */
+    private ListItem createAddProfileItem() {
+        return new ListItem(
+                ItemType.MENU_ITEM,
+                MenuItemProperties.createModel(
+                        R.string.account_menu_add_profile,
+                        R.drawable.ic_add_24dp,
+                        v -> {
+                            // TODO(crbug.com/581216152): Record metrics for the "Add" item.
+                            mDismissCallback.run();
+                            // TODO(crbug.com/589720782): Use ChooseNameForNewProfile() once it is
+                            // exposed to Java.
+                            createAndOpenNewProfile(
+                                    "Profile " + ProfileManager.getLoadedProfiles().size());
+                        },
+                        /* isSectionTop= */ true,
+                        /* isSectionBottom= */ true));
+    }
+
+    private void createAndOpenNewProfile(String name) {
+        // TODO(crbug.com/546299633): Open the created profile in a new window once
+        // MultiInstanceOrchestrator supports opening a specific profile.
+        ProfileManager.createMultiProfileAsync(name, CallbackUtils.emptyCallback());
     }
 }

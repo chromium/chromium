@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View.OnClickListener;
 
+import androidx.annotation.StringRes;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -46,11 +47,14 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileManagerJni;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -89,6 +93,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 /** Unit tests for {@link AccountMenuMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -122,6 +127,7 @@ public class AccountMenuMediatorTest {
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
     @Mock private SigninMetricsUtils.Natives mSigninMetricsUtilsNativeMock;
     @Mock private ManagedBrowserUtils.Natives mManagedBrowserUtilsNatives;
+    @Mock private ProfileManager.Natives mProfileManagerNatives;
     @Captor private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
 
     private Activity mActivity;
@@ -153,6 +159,7 @@ public class AccountMenuMediatorTest {
         IncognitoUtils.setEnabledForTesting(true);
 
         SigninMetricsUtilsJni.setInstanceForTesting(mSigninMetricsUtilsNativeMock);
+        ProfileManagerJni.setInstanceForTesting(mProfileManagerNatives);
 
         mModelList = new ModelList();
         mMediator =
@@ -173,6 +180,7 @@ public class AccountMenuMediatorTest {
         IdentityServicesProvider.setInstanceForTests(null);
         SyncServiceFactory.setInstanceForTesting(null);
         ManagedBrowserUtilsJni.setInstanceForTesting(null);
+        ProfileManagerJni.setInstanceForTesting(null);
     }
 
     @Test
@@ -661,6 +669,18 @@ public class AccountMenuMediatorTest {
         clickListener.onClick(null);
     }
 
+    /** Returns the index of the menu item with the given title, failing if there isn't one. */
+    private int findMenuItemIndex(@StringRes int titleId) {
+        for (int i = 0; i < mModelList.size(); i++) {
+            ListItem item = mModelList.get(i);
+            if (item.type == ItemType.MENU_ITEM
+                    && item.model.get(MenuItemProperties.TITLE_ID) == titleId) {
+                return i;
+            }
+        }
+        throw new AssertionError("No menu item with title " + titleId);
+    }
+
     private void setAccountManaged(AccountInfo account, boolean isManaged) {
         doCallback(1, (Callback<Boolean> callback) -> callback.onResult(isManaged))
                 .when(mSigninManager)
@@ -737,5 +757,19 @@ public class AccountMenuMediatorTest {
                 R.string.profile_menu_account_settings_button,
                 accountSettingsItem.model.get(MenuItemProperties.TITLE_ID));
         assertFalse(accountSettingsItem.model.get(MenuItemProperties.SHOW_ICON_BADGE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testAddProfileItem_flagEnabled_createsProfileOnClick() {
+        // TODO(crbug.com/565217896): Use TestProfiles instead of mocking ProfileManager natives
+        // once they exist.
+        doReturn(List.of(mProfile)).when(mProfileManagerNatives).getLoadedProfiles();
+
+        int addProfileIndex = findMenuItemIndex(R.string.account_menu_add_profile);
+        clickMenuItem(addProfileIndex);
+
+        verify(mDismissCallback).run();
+        verify(mProfileManagerNatives).createMultiProfileAsync(eq("Profile 1"), any());
     }
 }
