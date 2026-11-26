@@ -76,6 +76,7 @@
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/variations/fake_crash.h"
+#include "components/viz/common/features.h"
 #include "components/viz/host/compositing_mode_reporter_impl.h"
 #include "components/viz/host/gpu_host_impl.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -202,6 +203,7 @@
 #include "content/browser/android/tracing_controller_android.h"
 #include "content/browser/font_unique_name_lookup/font_unique_name_lookup_android.h"
 #include "content/browser/memory_pressure/user_level_memory_pressure_signal_generator.h"
+#include "content/browser/renderer_host/compositor_dependencies_android.h"
 #include "content/browser/screen_orientation/screen_orientation_delegate_android.h"
 #include "media/base/android/media_drm_bridge_client.h"
 #include "ui/android/screen_android.h"
@@ -1493,10 +1495,26 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   bool always_uses_gpu = true;
   bool establish_gpu_channel = false;
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/40396955): This should be set to |true|.
-  establish_gpu_channel = false;
   always_uses_gpu = ShouldStartGpuProcessOnBrowserStartup();
+  // Pre-establish the browser GPU channel and Viz FrameSinkManager connection
+  // during PostCreateThreadsImpl so cold-startup compositing does not serialize
+  // GPU/Viz setup behind SurfaceView creation. Require `always_uses_gpu` (false
+  // on WebView and background startups that defer GPU initialization) and honor
+  // --disable-gpu / --disable-gpu-early-init before querying the feature flag
+  // so ineligible startups do not enroll in the trial.
+  // TODO(crbug.com/587590886): Remove the feature gate once
+  // kAndroidEarlyGpuChannelAndCompositorPrewarm launches.
+  const bool prewarm_gpu_and_viz =
+      always_uses_gpu &&
+      !parsed_command_line_->HasSwitch(switches::kDisableGpu) &&
+      !parsed_command_line_->HasSwitch(switches::kDisableGpuEarlyInit) &&
+      base::FeatureList::IsEnabled(
+          ::features::kAndroidEarlyGpuChannelAndCompositorPrewarm);
+  establish_gpu_channel = prewarm_gpu_and_viz;
   BrowserGpuChannelHostFactory::Initialize(establish_gpu_channel);
+  if (prewarm_gpu_and_viz) {
+    CompositorDependenciesAndroid::Get().TryEstablishVizConnectionIfNeeded();
+  }
 #else
   establish_gpu_channel = true;
   if (parsed_command_line_->HasSwitch(switches::kDisableGpu) ||
