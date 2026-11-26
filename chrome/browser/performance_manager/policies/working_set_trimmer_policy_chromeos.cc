@@ -89,7 +89,6 @@ bool IsPagePerceptible(const PageNode* page_node) {
 }  // namespace
 
 WorkingSetTrimmerPolicyChromeOS::WorkingSetTrimmerPolicyChromeOS() {
-  trim_on_freeze_ = base::FeatureList::IsEnabled(features::kTrimOnFreeze);
   trim_arc_on_memory_pressure_ =
       base::FeatureList::IsEnabled(features::kTrimArcOnMemoryPressure);
   trim_arcvm_on_memory_pressure_ =
@@ -485,13 +484,6 @@ void WorkingSetTrimmerPolicyChromeOS::OnArcVmTrimEnded(
 void WorkingSetTrimmerPolicyChromeOS::OnTakenFromGraph(Graph* graph) {
   memory_consumer_registration_.reset();
   WorkingSetTrimmerPolicy::OnTakenFromGraph(graph);
-}
-
-void WorkingSetTrimmerPolicyChromeOS::OnAllFramesInProcessFrozen(
-    const ProcessNode* process_node) {
-  if (trim_on_freeze_) {
-    WorkingSetTrimmerPolicy::OnAllFramesInProcessFrozen(process_node);
-  }
 }
 
 void WorkingSetTrimmerPolicyChromeOS::SuspendImminent(

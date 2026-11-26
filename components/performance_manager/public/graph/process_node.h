@@ -218,11 +218,6 @@ class ProcessNodeObserver : public base::CheckedObserver {
   // Invoked when the process priority changes.
   virtual void OnPriorityChanged(const ProcessNode* process_node,
                                  base::Process::Priority previous_value) {}
-
-  // Events with no property changes.
-
-  // Fired when all frames in a process have transitioned to being frozen.
-  virtual void OnAllFramesInProcessFrozen(const ProcessNode* process_node) {}
 };
 
 }  // namespace performance_manager

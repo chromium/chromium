@@ -36,10 +36,6 @@ BASE_DECLARE_FEATURE(kTrimArcVmOnMemoryPressure);
 // TODO(crbug.com/505599086): Remove after the flag is enabled.
 BASE_DECLARE_FEATURE(kTrimImperceptibleProcess);
 
-// The trim on freeze feature will trim the working set of a process when all
-// frames are frozen.
-BASE_DECLARE_FEATURE(kTrimOnFreeze);
-
 // If enabled, this disables trimming process nodes and ARC++ processes and
 // ARCVM under memory pressure while the system is suspended. The system can run
 // while the device is suspended if dark resume feature is enabled.

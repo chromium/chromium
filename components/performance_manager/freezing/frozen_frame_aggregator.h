@@ -9,21 +9,18 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/graph/process_node.h"
 
 namespace performance_manager {
 
 class FrameNodeImpl;
 
 // The FrozenFrameAggregator is responsible for tracking frame frozen states,
-// and aggregating this property to the page and process nodes. As a GraphOwned
-// object it takes care of registering itself as an observer when added to the
-// graph.
+// and aggregating this property to page nodes. As a GraphOwned object it takes
+// care of registering itself as an observer when added to the graph.
 class FrozenFrameAggregator : public FrameNodeObserver,
                               public GraphOwnedDefaultImpl,
                               public NodeDataDescriberDefaultImpl,
-                              public PageNodeObserver,
-                              public ProcessNodeObserver {
+                              public PageNodeObserver {
  public:
   // TODO(chrisha): Check that the graph is empty when this observer is added!
   // https://www.crbug.com/952891
@@ -47,13 +44,8 @@ class FrozenFrameAggregator : public FrameNodeObserver,
   // PageNodeObserver implementation:
   void OnPageNodeAdded(const PageNode* page_node) override;
 
-  // ProcessNodeObserver implementation:
-  void OnProcessNodeAdded(const ProcessNode* process_node) override;
-
   // NodeDataDescriber implementation:
   base::DictValue DescribePageNodeData(const PageNode* node) const override;
-  base::DictValue DescribeProcessNodeData(
-      const ProcessNode* node) const override;
 
  protected:
   friend class FrozenFrameAggregatorTest;
@@ -69,8 +61,7 @@ class FrozenFrameAggregator : public FrameNodeObserver,
   void AddOrRemoveFrame(FrameNodeImpl* frame_node, int32_t delta);
 
   // Updates the frame counts associated with the given |frame_node|. Takes
-  // care of updating page and process state, as well as firing any needed
-  // notifications.
+  // care of updating page state, as well as firing any needed notifications.
   void UpdateFrameCounts(FrameNodeImpl* frame_node,
                          int32_t active_frame_delta,
                          int32_t frozen_frame_delta);

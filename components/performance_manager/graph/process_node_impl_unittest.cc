@@ -200,11 +200,6 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
   EXPECT_CALL(obs, OnPriorityChanged(_, base::Process::Priority::kMaxValue));
   process_node->set_priority(base::Process::Priority::kMinValue);
 
-  EXPECT_CALL(obs, OnAllFramesInProcessFrozen(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedProcessNode));
-  process_node->OnAllFramesInProcessFrozenForTesting();
-  EXPECT_EQ(raw_process_node, obs.TakeNotifiedProcessNode());
-
   // Re-entrant iteration should work.
   EXPECT_CALL(obs, OnMainThreadTaskLoadIsLow(raw_process_node)).WillOnce([&] {
     process_node->set_priority(base::Process::Priority::kUserBlocking);

@@ -8,24 +8,10 @@
 
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
 namespace policies {
-
-class MockWorkingSetTrimmerPolicy : public WorkingSetTrimmerPolicy {
- public:
-  MockWorkingSetTrimmerPolicy() = default;
-
-  MockWorkingSetTrimmerPolicy(const MockWorkingSetTrimmerPolicy&) = delete;
-  MockWorkingSetTrimmerPolicy& operator=(const MockWorkingSetTrimmerPolicy&) =
-      delete;
-
-  ~MockWorkingSetTrimmerPolicy() override = default;
-
-  MOCK_METHOD1(TrimWorkingSet, void(const ProcessNode*));
-};
 
 class WorkingSetTrimmerPolicyTest : public GraphTestHarness {
  public:
@@ -64,20 +50,6 @@ TEST_F(WorkingSetTrimmerPolicyTest, SetTrimTimeOnNode) {
   auto now_ticks = base::TimeTicks::Now();
   SetLastTrimTime(process_node.get(), now_ticks);
   ASSERT_EQ(GetLastTrimTime(process_node.get()), now_ticks);
-}
-
-// Validate that when all frames in a ProcessNode are frozen we attempt to trim
-// the working set.
-TEST_F(WorkingSetTrimmerPolicyTest, TrimOnFrozen) {
-  std::unique_ptr<MockWorkingSetTrimmerPolicy> mock_policy(
-      new MockWorkingSetTrimmerPolicy);
-  auto process_node = CreateNode<ProcessNodeImpl>();
-  ASSERT_NE(process_node.get(), nullptr);
-
-  EXPECT_CALL(*mock_policy, TrimWorkingSet(process_node.get())).Times(1);
-  graph()->PassToGraph(std::move(mock_policy));
-
-  process_node->OnAllFramesInProcessFrozenForTesting();
 }
 
 }  // namespace policies

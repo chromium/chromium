@@ -42,27 +42,12 @@ WorkingSetTrimmerPolicy::WorkingSetTrimmerPolicy() = default;
 WorkingSetTrimmerPolicy::~WorkingSetTrimmerPolicy() = default;
 
 void WorkingSetTrimmerPolicy::OnPassedToGraph(Graph* graph) {
-  RegisterObservers(graph);
-}
-
-void WorkingSetTrimmerPolicy::OnTakenFromGraph(Graph* graph) {
-  UnregisterObservers(graph);
-}
-
-void WorkingSetTrimmerPolicy::OnAllFramesInProcessFrozen(
-    const ProcessNode* process_node) {
-  TrimWorkingSet(process_node);
-}
-
-void WorkingSetTrimmerPolicy::RegisterObservers(Graph* graph) {
-  graph->AddProcessNodeObserver(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
 }
 
-void WorkingSetTrimmerPolicy::UnregisterObservers(Graph* graph) {
+void WorkingSetTrimmerPolicy::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
-  graph->RemoveProcessNodeObserver(this);
 }
 
 base::TimeTicks WorkingSetTrimmerPolicy::GetLastTrimTime(

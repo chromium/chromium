@@ -7,32 +7,18 @@
 
 #include "base/time/time.h"
 #include "components/performance_manager/public/graph/graph.h"
-#include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
-#include "components/performance_manager/public/graph/process_node.h"
 
 namespace performance_manager {
+
+class ProcessNode;
+
 namespace policies {
 
-// Empties the working set of processes in which all frames are frozen.
-//
-// Objective #1: Track working set growth rate.
-//   Swap thrashing occurs when a lot of pages are accessed in a short period of
-//   time. Swap thrashing can be reduced by reducing the number of pages
-//   accessed by processes in which all frames are frozen. To track efforts
-//   towards this goal, we empty the working set of processes when all their
-//   frames become frozen and record the size of their working set after x
-//   minutes.
-//   TODO(fdoray): Record the working set size x minutes after emptying it.
-//   https://crbug.com/40594220
-//
-// Objective #2: Improve performance.
-//   We hypothesize that emptying the working set of a process causes its pages
-//   to be compressed and/or written to disk preemptively, which makes more
-//   memory available quickly for foreground processes and improves global
-//   browser performance.
+// Base class for platform-specific working set trimmer policies. Tracks the
+// last trim time of each ProcessNode and provides a helper to trim a process's
+// working set.
 class WorkingSetTrimmerPolicy : public GraphOwned,
-                                public ProcessNodeObserver,
                                 public NodeDataDescriberDefaultImpl {
  public:
   WorkingSetTrimmerPolicy();
@@ -55,16 +41,7 @@ class WorkingSetTrimmerPolicy : public GraphOwned,
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
-  // ProcessNodeObserver implementation:
-  void OnAllFramesInProcessFrozen(const ProcessNode* process_node) override;
-
  protected:
-  // (Un)registers the various node observer flavors of this object with the
-  // graph. These are invoked by OnPassedToGraph and OnTakenFromGraph, but
-  // hoisted to their own functions for testing.
-  void RegisterObservers(Graph* graph);
-  void UnregisterObservers(Graph* graph);
-
   // Returns the time in which this process was last trimmed.
   base::TimeTicks GetLastTrimTime(const ProcessNode* process_node);
 

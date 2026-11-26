@@ -31,10 +31,6 @@ class LenientMockProcessNodeObserver : public ProcessNodeObserver {
               OnPriorityChanged,
               (const ProcessNode*, base::Process::Priority),
               (override));
-  MOCK_METHOD(void,
-              OnAllFramesInProcessFrozen,
-              (const ProcessNode*),
-              (override));
 };
 
 using MockProcessNodeObserver =

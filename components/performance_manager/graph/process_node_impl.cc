@@ -450,14 +450,6 @@ ProcessNode::NodeSetView<const WorkerNode*> ProcessNodeImpl::GetWorkerNodes()
   return NodeSetView<const WorkerNode*>(worker_nodes_);
 }
 
-void ProcessNodeImpl::OnAllFramesInProcessFrozen() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  for (auto& observer : GetObservers()) {
-    observer.OnAllFramesInProcessFrozen(this);
-  }
-}
-
 // static
 perfetto::Track ProcessNodeImpl::GetTracingTrack(
     content::ProcessType process_type,

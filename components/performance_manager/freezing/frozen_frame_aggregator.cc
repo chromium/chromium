@@ -8,7 +8,6 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
-#include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 
 namespace performance_manager {
@@ -72,20 +71,9 @@ void FrozenFrameAggregator::OnPageNodeAdded(const PageNode* page_node) {
   FrozenData::Create(PageNodeImpl::FromNode(page_node));
 }
 
-void FrozenFrameAggregator::OnProcessNodeAdded(
-    const ProcessNode* process_node) {
-  FrozenData::Create(ProcessNodeImpl::FromNode(process_node));
-}
-
 base::DictValue FrozenFrameAggregator::DescribePageNodeData(
     const PageNode* node) const {
   FrozenData& data = FrozenData::Get(PageNodeImpl::FromNode(node));
-  return data.Describe();
-}
-
-base::DictValue FrozenFrameAggregator::DescribeProcessNodeData(
-    const ProcessNode* node) const {
-  FrozenData& data = FrozenData::Get(ProcessNodeImpl::FromNode(node));
   return data.Describe();
 }
 
@@ -96,13 +84,11 @@ void FrozenFrameAggregator::RegisterObservers(Graph* graph) {
   DCHECK(graph->HasOnlySystemNode());
   graph->AddFrameNodeObserver(this);
   graph->AddPageNodeObserver(this);
-  graph->AddProcessNodeObserver(this);
 }
 
 void FrozenFrameAggregator::UnregisterObservers(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
   graph->RemovePageNodeObserver(this);
-  graph->RemoveProcessNodeObserver(this);
 }
 
 void FrozenFrameAggregator::AddOrRemoveFrame(FrameNodeImpl* frame_node,
@@ -129,25 +115,12 @@ void FrozenFrameAggregator::UpdateFrameCounts(FrameNodeImpl* frame_node,
   }
 
   auto* page_node = frame_node->page_node();
-  auto* process_node = frame_node->process_node();
   FrozenData& page_data = FrozenData::Get(page_node);
-  FrozenData& process_data = FrozenData::Get(process_node);
-
-  // We should only have frames attached to renderer processes.
-  DCHECK_EQ(content::PROCESS_TYPE_RENDERER, process_node->GetProcessType());
 
   // Set the page lifecycle state based on the state of the frame tree.
   if (page_data.ChangeFrameCounts(active_frame_delta, frozen_frame_delta)) {
     page_node->SetLifecycleState(base::PassKey<FrozenFrameAggregator>(),
                                  page_data.AsLifecycleState());
-  }
-
-  // Update the process state, and notify when all frames in the tree are
-  // frozen.
-  if (process_data.ChangeFrameCounts(active_frame_delta, frozen_frame_delta) &&
-      process_data.IsFrozen()) {
-    process_node->OnAllFramesInProcessFrozen(
-        base::PassKey<FrozenFrameAggregator>());
   }
 }
 

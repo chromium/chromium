@@ -11,9 +11,7 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/test_support/graph/mock_process_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
@@ -44,23 +42,11 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
     page_node_ = CreateNode<PageNodeImpl>();
   }
 
-  template <typename NodeType>
-  void ExpectData(NodeType* node,
-                  uint32_t active_frame_count,
-                  uint32_t frozen_frame_count) {
-    FrozenData& data = FrozenData::Get(node);
-    EXPECT_EQ(active_frame_count, data.active_frame_count());
-    EXPECT_EQ(frozen_frame_count, data.frozen_frame_count());
-  }
-
   void ExpectPageData(uint32_t active_frame_count,
                       uint32_t frozen_frame_count) {
-    ExpectData(page_node_.get(), active_frame_count, frozen_frame_count);
-  }
-
-  void ExpectProcessData(uint32_t active_frame_count,
-                         uint32_t frozen_frame_count) {
-    ExpectData(process_node_.get(), active_frame_count, frozen_frame_count);
+    FrozenData& data = FrozenData::Get(page_node_.get());
+    EXPECT_EQ(active_frame_count, data.active_frame_count());
+    EXPECT_EQ(frozen_frame_count, data.frozen_frame_count());
   }
 
   void ExpectRunning() {
@@ -87,95 +73,22 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
 };
 
 TEST_F(FrozenFrameAggregatorTest, NotActive) {
-  ExpectProcessData(0, 0);
+  ExpectPageData(0, 0);
 
   // Add a non-active main frame.
   auto f0 = CreateFrame(nullptr, /*is_active=*/false);
-  ExpectProcessData(0, 0);
+  ExpectPageData(0, 0);
 
   // Make it active. The frame starts being counted.
   f0->SetIsActive(true);
-  ExpectProcessData(1, 0);
+  ExpectPageData(1, 0);
 
   f0->SetLifecycleState(LifecycleState::kFrozen);
-  ExpectProcessData(1, 1);
+  ExpectPageData(1, 1);
 
   // Make no longer active. Stops being counted.
   f0->SetIsActive(false);
-  ExpectProcessData(0, 0);
-}
-
-TEST_F(FrozenFrameAggregatorTest, ProcessAggregation) {
-  LenientMockProcessNodeObserver obs;
-  graph()->AddProcessNodeObserver(&obs);
-
-  ExpectProcessData(0, 0);
-
-  // Add a main frame.
-  auto f0 = CreateFrame(nullptr);
-  ExpectProcessData(1, 0);
-
-  // Make the frame frozen and expect a notification.
-  EXPECT_CALL(obs, OnAllFramesInProcessFrozen(process_node_.get()));
-  f0->SetLifecycleState(LifecycleState::kFrozen);
-  testing::Mock::VerifyAndClear(&obs);
-  ExpectProcessData(1, 1);
-
-  // Create another process and another page.
-  auto proc2 = CreateNode<ProcessNodeImpl>();
-  auto page2 = CreateNode<PageNodeImpl>();
-  ExpectProcessData(1, 1);
-
-  // Create a child frame for the first page hosted in the second process.
-  auto f1 = CreateFrameNodeAutoId(proc2.get(), page_node_.get(), f0.get());
-  ExpectProcessData(1, 1);
-
-  // Freeze the child frame and expect |proc2| to receive an event, but not
-  // |process_node_|.
-  EXPECT_CALL(obs, OnAllFramesInProcessFrozen(proc2.get()));
-  f1->SetLifecycleState(LifecycleState::kFrozen);
-  ExpectProcessData(1, 1);
-
-  // Unfreeze both frames.
-  f0->SetLifecycleState(LifecycleState::kRunning);
-  ExpectProcessData(1, 0);
-  f1->SetLifecycleState(LifecycleState::kRunning);
-  ExpectProcessData(1, 0);
-
-  // Create a main frame in the second page, but that's in the first process.
-  auto f2 = CreateFrameNodeAutoId(process_node_.get(), page2.get(), nullptr);
-  ExpectProcessData(2, 0);
-
-  // Freeze the main frame in the second page.
-  f2->SetLifecycleState(LifecycleState::kFrozen);
-  ExpectProcessData(2, 1);
-
-  // Freeze the child frame of the first page, hosted in the other process.
-  EXPECT_CALL(obs, OnAllFramesInProcessFrozen(proc2.get()));
-  f1->SetLifecycleState(LifecycleState::kFrozen);
-  ExpectProcessData(2, 1);
-
-  // Freeze the main frame of the first page.
-  EXPECT_CALL(obs, OnAllFramesInProcessFrozen(process_node_.get()));
-  f0->SetLifecycleState(LifecycleState::kFrozen);
-  testing::Mock::VerifyAndClear(&obs);
-  ExpectProcessData(2, 2);
-
-  // Destroy the child frame in the other process, and then kill that process.
-  f1.reset();
-  ExpectProcessData(2, 2);
-  proc2.reset();
-  ExpectProcessData(2, 2);
-
-  // Kill the main frame of the second page.
-  f2.reset();
-  ExpectProcessData(1, 1);
-
-  // Kill the main frame of the first page.
-  f0.reset();
-  ExpectProcessData(0, 0);
-
-  graph()->RemoveProcessNodeObserver(&obs);
+  ExpectPageData(0, 0);
 }
 
 TEST_F(FrozenFrameAggregatorTest, PageAggregation) {

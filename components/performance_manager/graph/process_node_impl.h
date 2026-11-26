@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/decorators/process_priority_aggregator_data.h"
-#include "components/performance_manager/freezing/frozen_data.h"
 #include "components/performance_manager/graph/node_attached_data_storage.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/node_inline_data.h"
@@ -38,7 +37,6 @@
 namespace performance_manager {
 
 class FrameNodeImpl;
-class FrozenFrameAggregator;
 class ProcessNodeImpl;
 class WorkerNodeImpl;
 
@@ -62,7 +60,6 @@ class ProcessNodeImpl
       public mojom::ChildProcessCoordinationUnit,
       public SupportsNodeInlineData<
           ProcessPriorityAggregatorData,
-          FrozenData,
           PerformanceScenarioData,
           resource_attribution::CPUMeasurementData,
           resource_attribution::SharedCPUTimeResultData,
@@ -175,12 +172,6 @@ class ProcessNodeImpl
   // Adds a new type of hosted content to the |hosted_content_types| bit field.
   void add_hosted_content_type(ContentType content_type);
 
-  void OnAllFramesInProcessFrozen(base::PassKey<FrozenFrameAggregator>) {
-    OnAllFramesInProcessFrozen();
-  }
-
-  void OnAllFramesInProcessFrozenForTesting() { OnAllFramesInProcessFrozen(); }
-
   base::WeakPtr<ProcessNodeImpl> GetWeakPtr();
 
   static PassKey CreatePassKeyForTesting() { return PassKey(); }
@@ -208,8 +199,6 @@ class ProcessNodeImpl
   // impl use the private getters rather than the public interface.
   NodeSetView<const FrameNode*> GetFrameNodes() const override;
   NodeSetView<const WorkerNode*> GetWorkerNodes() const override;
-
-  void OnAllFramesInProcessFrozen();
 
   // NodeBase:
   void OnInitializingProperties() override;

@@ -33,9 +33,8 @@ namespace policies {
 
 class WorkingSetTrimmerPolicyChromeOSTest;
 
-// ChromeOS specific WorkingSetTrimmerPolicy which uses the default policy on
-// all frames frozen, additionally it will add working set trim under memory
-// pressure.
+// ChromeOS specific WorkingSetTrimmerPolicy which trims working sets under
+// memory pressure.
 class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
                                         chromeos::PowerManagerClient::Observer,
                                         public base::MemoryConsumer {
@@ -79,9 +78,6 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
   void OnTakenFromGraph(Graph* graph) override;
   void OnPassedToGraph(Graph* graph) override;
 
-  // ProcessNodeObserver implementation:
-  void OnAllFramesInProcessFrozen(const ProcessNode* process_node) override;
-
   // PowerManagerClient::Observer implementations:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void SuspendDone(base::TimeDelta duration) override;
@@ -91,7 +87,6 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
   base::TimeDelta GetTimeSinceLastArcProcessTrim(base::ProcessId pid) const;
   void SetArcProcessLastTrimTime(base::ProcessId pid, base::TimeTicks time);
 
-  bool trim_on_freeze() const { return trim_on_freeze_; }
   bool trim_arc_on_memory_pressure() const {
     return trim_arc_on_memory_pressure_;
   }
@@ -108,8 +103,6 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
   void OnReleaseMemory() override;
   void OnUpdateMemoryLimit() override;
   virtual mechanism::WorkingSetTrimmerChromeOS* GetTrimmer();
-
-  void set_trim_on_freeze(bool enabled) { trim_on_freeze_ = enabled; }
 
   void set_trim_arc_on_memory_pressure(bool enabled) {
     trim_arc_on_memory_pressure_ = enabled;
@@ -158,7 +151,6 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
   std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
 
  private:
-  bool trim_on_freeze_ = false;
   bool trim_arc_on_memory_pressure_ = false;
   bool trim_arcvm_on_memory_pressure_ = false;
   bool trim_imperceptible_process_ = false;

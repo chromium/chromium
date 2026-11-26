@@ -126,7 +126,6 @@ class MockWorkingSetTrimmerPolicyChromeOS
  public:
   MockWorkingSetTrimmerPolicyChromeOS() : WorkingSetTrimmerPolicyChromeOS() {
     // Setup our default configuration
-    set_trim_on_freeze(true);
     set_trim_arc_on_memory_pressure(false);
     set_trim_arcvm_on_memory_pressure(false);
 
