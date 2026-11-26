@@ -75,6 +75,7 @@ public class TabMultiSelectHelperUnitTest {
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabModel.getTabAt(1)).thenReturn(mTab2);
         when(mTabModel.getTabAt(2)).thenReturn(mTab3);
+        when(mTabModel.isTabMultiSelected(TAB1_ID)).thenReturn(true);
 
         mHelper = new TabMultiSelectHelper(() -> mTabModel, mSelectTabCallback);
     }
@@ -181,6 +182,7 @@ public class TabMultiSelectHelperUnitTest {
     @Test
     public void testHandleShiftClick_NonDestructive_ActiveTabOutsideRange_IncludesCurrentTab() {
         when(mTabModel.index()).thenReturn(0);
+        when(mTabModel.isTabMultiSelected(TAB2_ID)).thenReturn(true);
         mHelper.setAnchorTabIdForTesting(TAB2_ID);
         mHelper.handleTabClick(TAB3_ID, KeyEvent.META_SHIFT_ON | KeyEvent.META_CTRL_ON);
 
@@ -189,6 +191,38 @@ public class TabMultiSelectHelperUnitTest {
         inOrder.verify(mSelectTabCallback).onResult(TAB3_ID);
         verify(mTabModel, never()).clearMultiSelection(anyBoolean());
         assertEquals(List.of(TAB2_ID, TAB3_ID, TAB1_ID), new ArrayList<>(mTabIdsCaptor.getValue()));
+    }
+
+    @Test
+    public void testHandleShiftClick_Destructive_UnselectedAnchor_ReanchorsToCurrentTab() {
+        when(mTabModel.index()).thenReturn(2);
+        when(mTabModel.isTabMultiSelected(TAB1_ID)).thenReturn(false);
+        mHelper.setAnchorTabIdForTesting(TAB1_ID);
+
+        mHelper.handleTabClick(TAB2_ID, KeyEvent.META_SHIFT_ON);
+
+        assertEquals(TAB3_ID, mHelper.getAnchorTabIdForTesting());
+        InOrder inOrder = inOrder(mTabModel, mSelectTabCallback);
+        inOrder.verify(mTabModel).clearMultiSelection(/* notifyObservers= */ false);
+        inOrder.verify(mSelectTabCallback).onResult(TAB2_ID);
+        inOrder.verify(mTabModel)
+                .setTabsMultiSelected(Set.of(TAB2_ID, TAB3_ID), /* isSelected= */ true);
+    }
+
+    @Test
+    public void testHandleShiftClick_NonDestructive_UnselectedAnchor_ReanchorsToCurrentTab() {
+        when(mTabModel.index()).thenReturn(2);
+        when(mTabModel.isTabMultiSelected(TAB1_ID)).thenReturn(false);
+        mHelper.setAnchorTabIdForTesting(TAB1_ID);
+
+        mHelper.handleTabClick(TAB2_ID, KeyEvent.META_SHIFT_ON | KeyEvent.META_CTRL_ON);
+
+        assertEquals(TAB3_ID, mHelper.getAnchorTabIdForTesting());
+        InOrder inOrder = inOrder(mTabModel, mSelectTabCallback);
+        inOrder.verify(mTabModel).setTabsMultiSelected(mTabIdsCaptor.capture(), eq(true));
+        inOrder.verify(mSelectTabCallback).onResult(TAB2_ID);
+        verify(mTabModel, never()).clearMultiSelection(anyBoolean());
+        assertEquals(List.of(TAB2_ID, TAB3_ID), new ArrayList<>(mTabIdsCaptor.getValue()));
     }
 
     @Test
@@ -207,12 +241,15 @@ public class TabMultiSelectHelperUnitTest {
 
     @Test
     public void testHandleShiftClick_BackwardRange() {
+        when(mTabModel.isTabMultiSelected(TAB3_ID)).thenReturn(true);
         mHelper.setAnchorTabIdForTesting(TAB3_ID);
         mHelper.handleTabClick(TAB1_ID, KeyEvent.META_SHIFT_ON);
 
-        verify(mSelectTabCallback).onResult(TAB1_ID);
-        verify(mTabModel).clearMultiSelection(/* notifyObservers= */ false);
-        verify(mTabModel)
+        InOrder inOrder = inOrder(mTabModel, mSelectTabCallback);
+        inOrder.verify(mTabModel).isTabMultiSelected(TAB3_ID);
+        inOrder.verify(mTabModel).clearMultiSelection(/* notifyObservers= */ false);
+        inOrder.verify(mSelectTabCallback).onResult(TAB1_ID);
+        inOrder.verify(mTabModel)
                 .setTabsMultiSelected(Set.of(TAB1_ID, TAB2_ID, TAB3_ID), /* isSelected= */ true);
     }
 

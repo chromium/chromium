@@ -122,16 +122,21 @@ public class TabMultiSelectHelper {
             return;
         }
 
-        if (isDestructive) {
-            clearMultiSelection(/* clearAnchor= */ false, /* notifyObservers= */ false);
-        }
+        // Validate mAnchorTabId before clearing multi-selection on destructive Shift+Click. If an
+        // external activation cleared the previous selection or the anchor tab was closed, the old
+        // anchor is no longer selected and should re-anchor to the currently active tab.
         @Nullable Tab anchorTab =
-                mAnchorTabId == Tab.INVALID_TAB_ID ? null : tabModel.getTabById(mAnchorTabId);
+                mAnchorTabId == Tab.INVALID_TAB_ID || !tabModel.isTabMultiSelected(mAnchorTabId)
+                        ? null
+                        : tabModel.getTabById(mAnchorTabId);
         if (anchorTab == null) {
-            // If there's no valid anchor, treat the previously selected tab as anchor.
             mAnchorTabId = TabModelUtils.getCurrentTabId(tabModel);
             anchorTab =
                     mAnchorTabId == Tab.INVALID_TAB_ID ? null : tabModel.getTabById(mAnchorTabId);
+        }
+
+        if (isDestructive) {
+            clearMultiSelection(/* clearAnchor= */ false, /* notifyObservers= */ false);
         }
 
         int anchorIndex =

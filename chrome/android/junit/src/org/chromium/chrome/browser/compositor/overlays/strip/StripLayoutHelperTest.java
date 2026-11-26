@@ -6704,6 +6704,44 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testMultiSelect_ShiftClick_AfterExternalTabSwitch_ReanchorsToCurrentTab() {
+        initializeTest(/* tabIndex= */ 0);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutView[] stripViews = mStripLayoutHelper.getStripLayoutViewsForTesting();
+
+        // Shift+Click tab 1 to select {0, 1} with anchor at tab 0.
+        mStripLayoutHelper.click(
+                TIMESTAMP,
+                getClickCoordinateForTabAtIndex(stripViews, 1),
+                0,
+                MotionEvent.BUTTON_PRIMARY,
+                KeyEvent.META_SHIFT_ON);
+        assertEquals(2, mModel.getMultiSelectedTabsCount());
+        assertEquals(tabs[0].getTabId(), mStripLayoutHelper.getAnchorTabIdForTesting());
+
+        // External activation of tab 4 clears the multi-selection outside TabMultiSelectHelper.
+        mModel.setIndex(4, TabSelectionType.FROM_USER);
+        assertEquals(1, mModel.getMultiSelectedTabsCount());
+
+        // A subsequent Shift+Click on tab 3 should re-anchor to tab 4 and select {3, 4}.
+        mStripLayoutHelper.click(
+                TIMESTAMP,
+                getClickCoordinateForTabAtIndex(stripViews, 3),
+                0,
+                MotionEvent.BUTTON_PRIMARY,
+                KeyEvent.META_SHIFT_ON);
+
+        assertEquals(tabs[4].getTabId(), mStripLayoutHelper.getAnchorTabIdForTesting());
+        assertEquals(2, mModel.getMultiSelectedTabsCount());
+        assertFalse(mModel.isTabMultiSelected(tabs[0].getTabId()));
+        assertFalse(mModel.isTabMultiSelected(tabs[1].getTabId()));
+        assertFalse(mModel.isTabMultiSelected(tabs[2].getTabId()));
+        assertTrue(mModel.isTabMultiSelected(tabs[3].getTabId()));
+        assertTrue(mModel.isTabMultiSelected(tabs[4].getTabId()));
+    }
+
+    @Test
     public void testMultiSelect_StandardClick_ClearsSelection() {
         initializeTest(/* tabIndex= */ 0);
         // Update layout to set view draw properties
