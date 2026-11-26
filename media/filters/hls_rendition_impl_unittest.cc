@@ -10,6 +10,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "crypto/random.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/test_helpers.h"
@@ -1567,6 +1568,143 @@ TEST_F(HlsRenditionImplUnittest, FailedManifestUpdateQuitsRendition) {
 
   rendition->CheckState(base::Seconds(0), 0.0, BindCheckStateNoExpect());
   quit_loop.Run();
+}
+
+TEST_F(HlsRenditionImplUnittest,
+       PlaylistSwitchResetsParserAndRequiresInitSegment) {
+  constexpr char kLowVariantPlaylist[] =
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:3\n"
+      "#EXT-X-TARGETDURATION:2\n"
+      "#EXT-X-MEDIA-SEQUENCE:0\n"
+      "#EXT-X-MAP:URI=\"shared_init.mp4\"\n"
+      "#EXTINF:2.00000,\n"
+      "low_0.m4s\n"
+      "#EXTINF:2.00000,\n"
+      "low_1.m4s\n"
+      "#EXT-X-ENDLIST\n";
+
+  constexpr char kHighVariantPlaylist[] =
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:3\n"
+      "#EXT-X-TARGETDURATION:2\n"
+      "#EXT-X-MEDIA-SEQUENCE:0\n"
+      "#EXT-X-MAP:URI=\"/shared_init.mp4\"\n"
+      "#EXTINF:2.00000,\n"
+      "hi_0.m4s\n"
+      "#EXTINF:2.00000,\n"
+      "hi_1.m4s\n"
+      "#EXT-X-ENDLIST\n";
+
+  auto rendition = MakeVodRendition(kLowVariantPlaylist);
+  ASSERT_NE(rendition, nullptr);
+
+  // Append segment 0 from the initial playlist; `include_init` is true on the
+  // first segment, then cleared once parsed.
+  const std::string seg0 = "low_seg0_bytes";
+  EXPECT_CALL(*mock_hrh_, UpdateNetworkSpeed(_));
+  EXPECT_CALL(
+      *mock_hrh_,
+      ReadMediaSegment(MediaSegmentHasUrl("https://example.com/low_0.m4s"),
+                       /*read_chunked=*/false,
+                       /*include_init_segment=*/true, _))
+      .WillOnce([&seg0](const hls::MediaSegment&, bool, bool,
+                        HlsDataSourceProvider::ReadCb cb) {
+        std::move(cb).Run(StringHlsDataSourceStreamFactory::CreateStream(
+            seg0,
+            hls::SecurityMetadata::CreateForTesting("https://example.com")));
+      });
+  RequireAppend(base::as_byte_span(seg0));
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                        base::Seconds(2));
+
+  base::test::TestFuture<base::TimeDelta> first_check;
+  rendition->CheckState(base::Seconds(0), 1.0, first_check.GetCallback());
+  EXPECT_EQ(first_check.Get(), base::Seconds(0));
+
+  // Switch to a different variant playlist URI whose init segment resolves to
+  // the exact same URL (`https://example.com/shared_init.mp4`). Even though the
+  // discontinuity sequence did not change and the init URL is identical, the
+  // next segment append must re-request the init segment and reset parser state
+  // so no partial box state carries across playlists.
+  GURL hi_uri("https://example.com/hi/manifest.m3u8");
+  auto parsed_hi = hls::MediaPlaylist::Parse(
+      kHighVariantPlaylist, hi_uri, url::Origin::Create(hi_uri), 3, nullptr);
+  ASSERT_TRUE(parsed_hi.has_value());
+  rendition->UpdatePlaylistURI(hi_uri);
+  rendition->UpdatePlaylist(std::move(parsed_hi).value());
+
+  const std::string seg1 = "hi_seg1_bytes";
+  EXPECT_CALL(*mock_hrh_, UpdateNetworkSpeed(_));
+  EXPECT_CALL(*mock_hrh_,
+              ReadMediaSegment(
+                  MediaSegmentHasUrl("https://example.com/hi/hi_1.m4s"),
+                  /*read_chunked=*/false, /*include_init_segment=*/true, _))
+      .WillOnce([&seg1](const hls::MediaSegment&, bool, bool,
+                        HlsDataSourceProvider::ReadCb cb) {
+        std::move(cb).Run(StringHlsDataSourceStreamFactory::CreateStream(
+            seg1,
+            hls::SecurityMetadata::CreateForTesting("https://example.com")));
+      });
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(*mock_mdeh_, ResetParserState("test", kInfiniteDuration, _));
+    EXPECT_CALL(*mock_mdeh_,
+                AppendAndParseData("test", _, _, base::as_byte_span(seg1)))
+        .WillOnce(Return(true));
+  }
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(2), base::Seconds(0),
+                        base::Seconds(4));
+
+  base::test::TestFuture<base::TimeDelta> second_check;
+  rendition->CheckState(base::Seconds(1), 1.0, second_check.GetCallback());
+  EXPECT_EQ(second_check.Get(), base::Seconds(0));
+}
+
+TEST_F(HlsRenditionImplUnittest,
+       LivePlaylistSwitchAroundSeekStillResetsParser) {
+  auto low_uri = GURL("http://example.com/low/live.m3u8");
+  auto rendition = MakeLiveRendition(low_uri, kInitialFetchPlaylist);
+  ASSERT_NE(rendition, nullptr);
+
+  const std::string seg0 = "live_low_seg";
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                        base::Seconds(2));
+  RespondToUrl("http://example.com/low/playlist_4500Kb_14551255.ts", seg0);
+  RequireAppend(base::as_byte_span(seg0));
+
+  base::test::TestFuture<base::TimeDelta> first_check;
+  rendition->CheckState(base::Seconds(0), 1.0, first_check.GetCallback());
+  EXPECT_EQ(first_check.Get(), base::Seconds(0));
+
+  // A live seek outside the buffered range clears
+  // `last_discontinuity_sequence_num_` without calling `RemoveAndReset()`.
+  RespondWithRange(base::Seconds(0), base::Seconds(2));
+  EXPECT_EQ(rendition->Seek(base::Seconds(5)),
+            ManifestDemuxer::SeekState::kNeedsData);
+
+  auto hi_uri = GURL("http://example.com/hi/live.m3u8");
+  auto parsed_hi = hls::MediaPlaylist::Parse(
+      kInitialFetchPlaylist, hi_uri, url::Origin::Create(hi_uri), 3, nullptr);
+  ASSERT_TRUE(parsed_hi.has_value());
+  rendition->UpdatePlaylistURI(hi_uri);
+  rendition->UpdatePlaylist(std::move(parsed_hi).value());
+
+  const std::string seg1 = "live_hi_seg";
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(2), base::Seconds(0),
+                        base::Seconds(6));
+  RespondToUrl("http://example.com/hi/playlist_4500Kb_14551256.ts", seg1);
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(*mock_mdeh_, ResetParserState("test", kInfiniteDuration, _));
+    EXPECT_CALL(*mock_mdeh_,
+                AppendAndParseData("test", _, _, base::as_byte_span(seg1)))
+        .WillOnce(Return(true));
+  }
+
+  base::test::TestFuture<base::TimeDelta> second_check;
+  rendition->CheckState(base::Seconds(5), 1.0, second_check.GetCallback());
+  EXPECT_EQ(second_check.Get(), base::Seconds(0));
 }
 
 }  // namespace media

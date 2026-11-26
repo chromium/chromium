@@ -131,6 +131,7 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
   bool is_stopped_for_shutdown_ = false;
   bool has_ever_played_ = false;
   bool requires_init_segment_ = true;
+  bool requires_parser_reset_ = false;
 
   std::optional<hls::types::DecimalInteger> last_discontinuity_sequence_num_;
 

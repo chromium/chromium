@@ -359,6 +359,7 @@ ManifestDemuxer::SeekResponse HlsRenditionImpl::Seek(
   // If this stream uses initialization segments, we're going to need once now,
   // since chunk demuxer is empty.
   requires_init_segment_ = true;
+  requires_parser_reset_ = false;
 
   return ManifestDemuxer::SeekState::kNeedsData;
 }
@@ -435,7 +436,11 @@ void HlsRenditionImpl::UpdatePlaylist(
 }
 
 void HlsRenditionImpl::UpdatePlaylistURI(const GURL& playlist_uri) {
-  media_playlist_uri_ = playlist_uri;
+  if (media_playlist_uri_ != playlist_uri) {
+    media_playlist_uri_ = playlist_uri;
+    requires_init_segment_ = true;
+    requires_parser_reset_ = true;
+  }
 }
 
 const GURL& HlsRenditionImpl::MediaPlaylistUri() const {
@@ -541,11 +546,14 @@ void HlsRenditionImpl::OnSegmentData(
     return;
   }
 
-  if (last_discontinuity_sequence_num_.value_or(
+  const bool discontinuity_changed =
+      last_discontinuity_sequence_num_.value_or(
           segment->GetDiscontinuitySequenceNumber()) !=
-      segment->GetDiscontinuitySequenceNumber()) {
+      segment->GetDiscontinuitySequenceNumber();
+  if (discontinuity_changed || requires_parser_reset_) {
     engine_host_->ResetParserState(role_, kInfiniteDuration, &parse_offset_);
   }
+  requires_parser_reset_ = false;
 
   if (!engine_host_->AppendAndParseData(role_, kInfiniteDuration,
                                         &parse_offset_, stream_data)) {
