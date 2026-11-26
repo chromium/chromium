@@ -53,12 +53,10 @@
 #include "chrome/browser/platform_util_internal.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/extensions/api/downloads.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
@@ -537,17 +535,9 @@ class DownloadExtensionTest : public ExtensionApiTest {
   // incognito profiles on Android.
   void GoOffTheRecord() {
     if (!incognito_browser_) {
-      incognito_profile_ =
-          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-      BrowserWindowCreateParams params(*incognito_profile_,
-                                       /*from_user_gesture=*/false);
-      // NOTE: CreateBrowserWindow() is async and takes a callback, so use a
-      // future to retrieve the value.
-      base::test::TestFuture<BrowserWindowInterface*> future;
-      chrome_test_utils::CreateBrowserWindowForTesting(std::move(params),
-                                                       future.GetCallback());
-      incognito_browser_ = future.Get();
+      incognito_browser_ = CreateIncognitoBrowserWindow();
       CHECK(incognito_browser_);
+      incognito_profile_ = incognito_browser_->GetProfile();
       // Disable file chooser for incognito profile.
       DownloadTestFileActivityObserver observer(incognito_profile_);
       observer.EnableFileChooser(false);

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
-#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_api.h"
@@ -12,10 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/common/extensions/api/tab_groups.h"
-#include "chrome/test/base/chrome_test_utils.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -127,15 +124,9 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, MoveToWindow) {
 // especially between on-the-record and off-the-record browsers.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupEventsAcrossProfiles) {
   // Create an incognito window.
-  auto type = BrowserWindowInterface::Type::TYPE_NORMAL;
-  Profile* incognito_profile =
-      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
-      type, *incognito_profile, /*from_user_gesture=*/false);
-  base::test::TestFuture<BrowserWindowInterface*> future;
-  chrome_test_utils::CreateBrowserWindowForTesting(std::move(create_params),
-                                                   future.GetCallback());
-  BrowserWindowInterface* incognito_browser = future.Get();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowserWindow();
+  ASSERT_TRUE(incognito_browser);
+  Profile* incognito_profile = incognito_browser->GetProfile();
 
   // Get the tab list for the incognito window.
   TabListInterface* incognito_tab_list =
