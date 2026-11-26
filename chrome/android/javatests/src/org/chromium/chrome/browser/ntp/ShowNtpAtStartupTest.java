@@ -50,7 +50,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -76,7 +75,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;
@@ -574,8 +572,6 @@ public class ShowNtpAtStartupTest {
     @Feature({"StartSurface", "RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE})
-    // TODO(crbug.com/475816843): Remove this and update goldens once migration is complete.
-    @DisableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
     public void testToolbar_defaultBackground() throws IOException {
         mActivityTestRule.startFromLauncherAtNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
