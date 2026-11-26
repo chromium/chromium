@@ -2299,6 +2299,7 @@ crbug.com/480103606 [ Android ] external/wpt/visual-viewport/viewport-unscaled-s
 crbug.com/589928697 [ Android ] external/wpt/visual-viewport/viewport-no-scroll-event-on-layout-viewport-scroll.html [ Failure Pass ]
 
 # ====== Test expectations added to unblock wpt-importer ======
+crbug.com/590522646 external/wpt/fetch/fetch-later/iframe.https.window.html [ Failure Pass ]
 crbug.com/559305227 [ Mac ] external/wpt/css/css-contain/content-visibility#content-visibility-with-popover-top-layer-005.html [ Failure Pass ]
 crbug.com/590433373 [ Debug Mac26 ] external/wpt/media-source/mediasource-mpeg-audio-metadata.html [ Failure ]
 crbug.com/566472941 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-root-both-edges.html [ Failure Pass ]
