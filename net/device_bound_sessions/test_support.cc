@@ -455,10 +455,11 @@ bool VerifyEs256Jwt(std::string_view jwt) {
 ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithSuccess(
     std::string_view session_id,
     std::string_view refresh_url_string,
-    std::string_view origin_string) {
+    std::string_view origin_string,
+    bool include_site) {
   return ScopedTestRegistrationFetcher(base::BindRepeating(
       [](const std::string& session_id, const std::string& refresh_url_string,
-         const std::string& origin_string,
+         const std::string& origin_string, bool include_site,
          RegistrationFetcher::RegistrationCompleteCallback callback) {
         std::move(callback).Run(
             nullptr,
@@ -466,7 +467,8 @@ ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithSuccess(
                 .session_id = session_id,
                 .fetcher_url = GURL(refresh_url_string),
                 .refresh_url = refresh_url_string,
-                .scope = {.include_site = true, .origin = origin_string},
+                .scope = {.include_site = include_site,
+                          .origin = origin_string},
                 .credentials = {{
                     .name = "test_cookie",
                     .attributes = "secure",
@@ -475,7 +477,7 @@ ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithSuccess(
             })));
       },
       std::string(session_id), std::string(refresh_url_string),
-      std::string(origin_string)));
+      std::string(origin_string), include_site));
 }
 
 // static

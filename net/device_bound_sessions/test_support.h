@@ -42,11 +42,12 @@ class ScopedTestRegistrationFetcher {
  public:
   // Creates a `ScopedTestRegistrationFetcher` that always succeeds at
   // registering a session with the given `session_id`,
-  // `refresh_url_string`, and `origin_string`.
+  // `refresh_url_string`, `origin_string`, and `include_site`.
   static ScopedTestRegistrationFetcher CreateWithSuccess(
       std::string_view session_id,
       std::string_view refresh_url_string,
-      std::string_view origin_string);
+      std::string_view origin_string,
+      bool include_site = true);
 
   // Creates a `ScopedTestRegistrationFetcher` that always fails to register
   static ScopedTestRegistrationFetcher CreateWithFailure(

@@ -155,6 +155,36 @@ constexpr char kRelyingPartyOrigin[] = "https://rp.test";
 constexpr char kIdentityProviderOrigin[] = "https://provider.test";
 constexpr char kProviderKey[] = "key_digest_123";
 
+constexpr char kSubdomainUrl[] = "https://sub.example.com";
+constexpr char kSubdomainRefreshUrl[] = "https://sub.example.com/refresh";
+constexpr char kApexWellKnownUrl[] =
+    "https://example.com/.well-known/device-bound-sessions";
+
+constexpr char kOriginScopedConfigJson[] = R"json({
+  "session_identifier": "SessionId",
+  "scope": {
+    "include_site": false
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "test_cookie",
+    "attributes": "Secure"
+  }]
+})json";
+
+constexpr char kSiteWideningRefreshConfigJson[] = R"json({
+  "session_identifier": "SessionId",
+  "scope": {
+    "origin": "https://example.com",
+    "include_site": true
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "test_cookie",
+    "attributes": "Domain=example.com; Secure"
+  }]
+})json";
+
 proto::Session CreateSessionProto(std::string_view session_id,
                                   std::string_view url_string) {
   base::Time expiry_time = base::Time::Now() + base::Days(1);
@@ -468,13 +498,18 @@ class SessionServiceImplTest : public ::testing::Test,
     return &unexportable_key_service_;
   }
 
-  // Take list of <session_id, site_url> to add sessions for testing.
-  void AddSessionsForTesting(
-      std::vector<std::tuple<std::string, std::string, std::string>>
-          id_url_origin_list) {
-    for (const auto& [id, url_str, origin] : id_url_origin_list) {
+  struct TestSessionParams {
+    std::string id;
+    std::string url_str;
+    std::string origin;
+    bool include_site = true;
+  };
+
+  void AddSessionsForTesting(std::vector<TestSessionParams> sessions) {
+    for (const auto& [id, url_str, origin, include_site] : sessions) {
       auto scoped_test_fetcher =
-          ScopedTestRegistrationFetcher::CreateWithSuccess(id, url_str, origin);
+          ScopedTestRegistrationFetcher::CreateWithSuccess(id, url_str, origin,
+                                                           include_site);
       auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
           GURL(url_str), {crypto::sign::ECDSA_SHA256}, "challenge",
           /*authorization=*/std::nullopt);
@@ -7378,64 +7413,206 @@ TEST_F(SessionServiceImplTest,
   EXPECT_EQ(future2_retry.Take(), RefreshResult::kRefreshed);
 }
 
-TEST_F(SessionServiceImplTest, CrossSiteRefreshSessionConfigTerminatesSession) {
+class SessionServiceImplSubdomainRefreshTest : public SessionServiceImplTest {
+ public:
+  void AddOriginScopedSubdomainSession() {
+    AddSessionsForTesting({{kSessionId, kSubdomainRefreshUrl, kSubdomainUrl,
+                            /*include_site=*/false}});
+  }
+
+  std::optional<SessionService::DeferralParams> ShouldDeferUrl(
+      const GURL& url) {
+    net::TestDelegate delegate;
+    std::unique_ptr<URLRequest> request = CreateRequestWithContext(
+        context(), url, url::Origin::Create(url), &delegate);
+    DbscRequest dbsc_request(request.get());
+    HttpRequestHeaders extra_headers;
+    return service().ShouldDefer(dbsc_request, &extra_headers);
+  }
+
+  // Defers a request to `kSubdomainUrl` for refresh, or returns `std::nullopt`
+  // if the request was not deferred.
+  std::optional<RefreshResult> DeferSubdomainRequestForRefresh() {
+    const GURL url(kSubdomainUrl);
+    net::TestDelegate delegate;
+    std::unique_ptr<URLRequest> request = CreateRequestWithContext(
+        context(), url, url::Origin::Create(url), &delegate);
+    DbscRequest dbsc_request(request.get());
+    HttpRequestHeaders extra_headers;
+    std::optional<SessionService::DeferralParams> deferral =
+        service().ShouldDefer(dbsc_request, &extra_headers);
+    if (!deferral.has_value()) {
+      return std::nullopt;
+    }
+
+    base::test::TestFuture<RefreshResult> future;
+    service().DeferRequestForRefresh(dbsc_request, *deferral,
+                                     future.GetCallback());
+    return future.Take();
+  }
+};
+
+TEST_F(SessionServiceImplSubdomainRefreshTest,
+       ScopeWideningAuthorizedByWellKnownWidensSession) {
+  AddOriginScopedSubdomainSession();
+  EXPECT_FALSE(ShouldDeferUrl(kTestUrl).has_value());
+
+  AddHttpResponse(GURL(kSubdomainRefreshUrl),
+                  {.body = kSiteWideningRefreshConfigJson});
+  AddHttpResponse(
+      GURL(kApexWellKnownUrl),
+      {.body = absl::StrFormat(R"json({"registering_origins": ["%s"]})json",
+                               kSubdomainUrl)});
+
+  EXPECT_EQ(DeferSubdomainRequestForRefresh(), RefreshResult::kRefreshed);
+  EXPECT_TRUE(ShouldDeferUrl(kTestUrl).has_value());
+}
+
+struct UrlAndResponse {
+  std::string_view url;
+  TestHttpResponse response;
+};
+
+struct FatalRefreshTestCase {
+  std::string_view test_name;
+  std::vector<UrlAndResponse> responses;
+  SessionError::ErrorType expected_error;
+  DeletionReason expected_deletion_reason;
+};
+
+class SessionServiceImplFatalRefreshErrorTest
+    : public SessionServiceImplSubdomainRefreshTest,
+      public ::testing::WithParamInterface<FatalRefreshTestCase> {};
+
+TEST_P(SessionServiceImplFatalRefreshErrorTest, TerminatesSession) {
+  AddOriginScopedSubdomainSession();
+  for (const auto& [url, response] : GetParam().responses) {
+    AddHttpResponse(GURL(url), response);
+  }
+
   base::HistogramTester histograms;
-  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
-  SessionKey session_key{SchemefulSite(kTestUrl), Session::Id(kSessionId)};
-  ASSERT_NE(service().GetSession(session_key), nullptr);
+  std::optional<SessionError::ErrorType> observed_error;
+  base::CallbackListSubscription subscription = service().AddEventObserver(
+      base::BindLambdaForTesting([&](const SessionEvent& event) {
+        if (const auto* details =
+                std::get_if<RefreshEventDetails>(&event.event_type_details)) {
+          observed_error = details->fetch_error;
+        }
+      }));
 
-  auto scoped_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
-      SessionError::kCrossSiteRefreshSessionConfig, kRefreshUrlString);
-  net::TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
-                               net::handles::kInvalidNetworkHandle);
-  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-  DbscRequest dbsc_request(request.get());
-
-  base::test::TestFuture<RefreshResult> future;
-  service().DeferRequestForRefresh(
-      dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
-      future.GetCallback());
-
-  EXPECT_EQ(future.Take(), RefreshResult::kFatalError);
-  EXPECT_EQ(service().GetSession(session_key), nullptr);
+  EXPECT_EQ(DeferSubdomainRequestForRefresh(), RefreshResult::kFatalError);
+  EXPECT_EQ(observed_error, GetParam().expected_error);
+  EXPECT_FALSE(ShouldDeferUrl(GURL(kSubdomainUrl)).has_value());
+  EXPECT_EQ(
+      service().GetSession({SchemefulSite(kTestUrl), Session::Id(kSessionId)}),
+      nullptr);
   histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RefreshResult",
-                                SessionError::kCrossSiteRefreshSessionConfig,
-                                1);
+                                GetParam().expected_error, 1);
   histograms.ExpectUniqueSample("Net.DeviceBoundSessions.DeletionReason",
-                                DeletionReason::kRefreshFatalError, 1);
+                                GetParam().expected_deletion_reason, 1);
 }
 
-TEST_F(SessionServiceImplTest,
-       CrossOriginRegistrationSiteNotIncludedTerminatesSession) {
-  base::HistogramTester histograms;
-  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
-  SessionKey session_key{SchemefulSite(kTestUrl), Session::Id(kSessionId)};
-  ASSERT_NE(service().GetSession(session_key), nullptr);
-
-  auto scoped_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
-      SessionError::kCrossOriginRegistrationSiteNotIncluded, kRefreshUrlString);
-  net::TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
-                               net::handles::kInvalidNetworkHandle);
-  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-  DbscRequest dbsc_request(request.get());
-
-  base::test::TestFuture<RefreshResult> future;
-  service().DeferRequestForRefresh(
-      dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
-      future.GetCallback());
-
-  EXPECT_EQ(future.Take(), RefreshResult::kFatalError);
-  EXPECT_EQ(service().GetSession(session_key), nullptr);
-  histograms.ExpectUniqueSample(
-      "Net.DeviceBoundSessions.RefreshResult",
-      SessionError::kCrossOriginRegistrationSiteNotIncluded, 1);
-  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.DeletionReason",
-                                DeletionReason::kInvalidSessionParams, 1);
-}
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SessionServiceImplFatalRefreshErrorTest,
+    ::testing::Values(
+        FatalRefreshTestCase{
+            .test_name = "CrossSiteRedirectRefreshConfig",
+            .responses =
+                {
+                    {
+                        .url = kSubdomainRefreshUrl,
+                        .response = {.headers =
+                                         "HTTP/1.1 302 Found\nLocation: "
+                                         "https://example2.com/refresh\n\n"},
+                    },
+                    {
+                        .url = kRefreshUrlString2,
+                        .response = {.body = kOriginScopedConfigJson},
+                    },
+                },
+            .expected_error = SessionError::kCrossSiteRefreshSessionConfig,
+            .expected_deletion_reason = DeletionReason::kRefreshFatalError,
+        },
+        FatalRefreshTestCase{
+            .test_name = "ScopeWideningWellKnownUnavailable",
+            .responses =
+                {
+                    {
+                        .url = kSubdomainRefreshUrl,
+                        .response = {.body = kSiteWideningRefreshConfigJson},
+                    },
+                    {
+                        .url = kApexWellKnownUrl,
+                        .response = {.headers = "HTTP/1.1 500 Internal Server "
+                                                "Error\n\n"},
+                    },
+                },
+            .expected_error =
+                SessionError::kSubdomainRegistrationWellKnownUnavailable,
+            .expected_deletion_reason = DeletionReason::kRefreshFatalError,
+        },
+        FatalRefreshTestCase{
+            .test_name = "ScopeWideningWellKnownUnauthorized",
+            .responses =
+                {
+                    {
+                        .url = kSubdomainRefreshUrl,
+                        .response = {.body = kSiteWideningRefreshConfigJson},
+                    },
+                    {
+                        .url = kApexWellKnownUrl,
+                        .response =
+                            {.body = R"json({"registering_origins": []})json"},
+                    },
+                },
+            .expected_error = SessionError::kSubdomainRegistrationUnauthorized,
+            .expected_deletion_reason = DeletionReason::kRefreshFatalError,
+        },
+        FatalRefreshTestCase{
+            .test_name = "ScopeWideningWellKnownMalformed",
+            .responses =
+                {
+                    {
+                        .url = kSubdomainRefreshUrl,
+                        .response = {.body = kSiteWideningRefreshConfigJson},
+                    },
+                    {
+                        .url = kApexWellKnownUrl,
+                        .response = {.body = "not valid json"},
+                    },
+                },
+            .expected_error =
+                SessionError::kSubdomainRegistrationWellKnownMalformed,
+            .expected_deletion_reason = DeletionReason::kRefreshFatalError,
+        },
+        FatalRefreshTestCase{
+            .test_name = "CrossOriginScopeWithoutIncludeSite",
+            .responses =
+                {
+                    {
+                        .url = kSubdomainRefreshUrl,
+                        .response = {.body = R"json({
+                              "session_identifier": "SessionId",
+                              "scope": {
+                                "origin": "https://example.com",
+                                "include_site": false
+                              },
+                              "credentials": [{
+                                "type": "cookie",
+                                "name": "test_cookie",
+                                "attributes": "Domain=example.com; Secure"
+                              }]
+                            })json"},
+                    },
+                },
+            .expected_error =
+                SessionError::kCrossOriginRegistrationSiteNotIncluded,
+            .expected_deletion_reason = DeletionReason::kInvalidSessionParams,
+        }),
+    [](const ::testing::TestParamInfo<FatalRefreshTestCase>& info) {
+      return std::string(info.param.test_name);
+    });
 
 TEST_F(SessionServiceImplPreProvisionedKeyTest,
        HandleGenerateKeyHeader_FeatureDisabled) {
