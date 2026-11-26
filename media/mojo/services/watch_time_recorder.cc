@@ -354,7 +354,9 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
 
     bool recorded_all_metric = false;
     for (auto& kv : ukm_record.aggregate_watch_time_info) {
-      CHECK_GE(kv.second, base::TimeDelta(), base::NotFatalUntil::M163);
+      // TODO(crbug.com/589015321): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK_GE(kv.second, base::TimeDelta());
 
       if (kv.first == WatchTimeKey::kAudioAll ||
           kv.first == WatchTimeKey::kAudioBackgroundAll ||
