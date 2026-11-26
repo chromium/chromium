@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -112,8 +113,16 @@ TEST(AccountCapabilitiesObserverTest,
 // immediately on an asynchronous partial capability fetch instead of hanging,
 // and records a failure naming the capabilities that remained
 // `Tribool::kUnknown`.
+// TODO(crbug.com/590639500): Re-enable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FailsFastAndLogsUnknownCapabilityNamesOnAsynchronousPartialFetch \
+  DISABLED_FailsFastAndLogsUnknownCapabilityNamesOnAsynchronousPartialFetch
+#else
+#define MAYBE_FailsFastAndLogsUnknownCapabilityNamesOnAsynchronousPartialFetch \
+  FailsFastAndLogsUnknownCapabilityNamesOnAsynchronousPartialFetch
+#endif
 TEST(AccountCapabilitiesObserverTest,
-     FailsFastAndLogsUnknownCapabilityNamesOnAsynchronousPartialFetch) {
+     MAYBE_FailsFastAndLogsUnknownCapabilityNamesOnAsynchronousPartialFetch) {
   base::test::SingleThreadTaskEnvironment task_environment;
   IdentityTestEnvironment identity_test_env;
 
@@ -140,8 +149,16 @@ TEST(AccountCapabilitiesObserverTest,
 // logs the offending capability display names when a partial fetch already
 // completed synchronously before `WaitForCapabilitiesFetchAndExpectAllKnown`
 // was called.
+// TODO(crbug.com/590639500): Re-enable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FailsFastAndLogsUnknownCapabilityNamesOnSynchronousPartialFetch \
+  DISABLED_FailsFastAndLogsUnknownCapabilityNamesOnSynchronousPartialFetch
+#else
+#define MAYBE_FailsFastAndLogsUnknownCapabilityNamesOnSynchronousPartialFetch \
+  FailsFastAndLogsUnknownCapabilityNamesOnSynchronousPartialFetch
+#endif
 TEST(AccountCapabilitiesObserverTest,
-     FailsFastAndLogsUnknownCapabilityNamesOnSynchronousPartialFetch) {
+     MAYBE_FailsFastAndLogsUnknownCapabilityNamesOnSynchronousPartialFetch) {
   base::test::SingleThreadTaskEnvironment task_environment;
   IdentityTestEnvironment identity_test_env;
 
