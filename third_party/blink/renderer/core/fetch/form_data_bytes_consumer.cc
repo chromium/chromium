@@ -4,13 +4,16 @@
 
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
 
+#include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/blob_bytes_consumer.h"
 #include "third_party/blink/renderer/core/fileapi/file_backed_blob_factory_dispatcher.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
@@ -504,6 +507,21 @@ class UniversalBytesConsumer final : public BytesConsumer {
   Member<BytesConsumer> bytes_consumer_;
 };
 
+scoped_refptr<EncodedFormData> CreateEncodedFormData(DOMArrayBufferView* view) {
+  if (!view->IsShared()) {
+    return EncodedFormData::Create(view->ByteSpan());
+  }
+  base::span<const uint8_t> shared_bytes = view->ByteSpanMaybeShared();
+  Vector<char> copied_bytes(
+      base::checked_cast<wtf_size_t>(shared_bytes.size()));
+  RelaxedAtomicReadMemcpy(base::as_writable_byte_span(copied_bytes),
+                          shared_bytes);
+  scoped_refptr<EncodedFormData> form_data = EncodedFormData::Create();
+  form_data->MutableElements().push_back(
+      FormDataElement(std::move(copied_bytes)));
+  return form_data;
+}
+
 }  // namespace
 
 FormDataBytesConsumer::FormDataBytesConsumer(const String& string)
@@ -514,7 +532,8 @@ FormDataBytesConsumer::FormDataBytesConsumer(DOMArrayBuffer* buffer)
     : FormDataBytesConsumer(buffer->ByteSpan()) {}
 
 FormDataBytesConsumer::FormDataBytesConsumer(DOMArrayBufferView* view)
-    : FormDataBytesConsumer(view->ByteSpan()) {}
+    : impl_(MakeGarbageCollected<DataOnlyBytesConsumer>(
+          CreateEncodedFormData(view))) {}
 
 FormDataBytesConsumer::FormDataBytesConsumer(SegmentedBuffer&& buffer)
     : impl_(MakeGarbageCollected<DataOnlyBytesConsumer>(

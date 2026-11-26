@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/read_request.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -31,17 +32,33 @@ class ReadableStreamBytesConsumer::BytesConsumerReadRequest final
 
   void ChunkSteps(ScriptState* script_state,
                   v8::Local<v8::Value> chunk,
-                  ExceptionState& exception_state) const override {
+                  ExceptionState&) const override {
     if (!chunk->IsUint8Array()) {
       consumer_->OnRejected();
       return;
     }
     ScriptState::Scope scope(script_state);
-    consumer_->OnRead(
+    DOMUint8Array* buffer =
         NativeValueTraits<MaybeShared<DOMUint8Array>>::NativeValue(
-            script_state->GetIsolate(), chunk, exception_state)
-            .Get());
-    DCHECK(!exception_state.HadException());
+            script_state->GetIsolate(), chunk, IGNORE_EXCEPTION)
+            .Get();
+    if (!buffer) {
+      consumer_->OnRejected();
+      return;
+    }
+    // BytesConsumer::BeginRead() requires an unshared buffer whose contents
+    // cannot be mutated concurrently while clients inspect or decode the span.
+    if (buffer->IsShared()) {
+      DOMUint8Array* copy =
+          DOMUint8Array::CreateUninitializedOrNull(buffer->length());
+      if (!copy) {
+        consumer_->OnRejected();
+        return;
+      }
+      RelaxedAtomicReadMemcpy(copy->ByteSpan(), buffer->ByteSpanMaybeShared());
+      buffer = copy;
+    }
+    consumer_->OnRead(buffer);
   }
 
   void CloseSteps(ScriptState* script_state) const override {
@@ -92,6 +109,7 @@ BytesConsumer::Result ReadableStreamBytesConsumer::BeginRead(
       return Result::kError;
     }
 
+    CHECK(!pending_buffer_->IsShared());
     DCHECK_LE(pending_offset_, pending_buffer_->length());
     buffer =
         base::as_chars(pending_buffer_->ByteSpan().subspan(pending_offset_));

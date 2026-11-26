@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
 
+#include <algorithm>
+
 #include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -30,6 +32,8 @@
 #include "third_party/blink/renderer/core/testing/file_backed_blob_factory_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_shared_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
@@ -311,6 +315,62 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromArrayBufferView) {
 
   EXPECT_EQ(Result::kDone, result.first);
   EXPECT_EQ(expected, result.second);
+}
+
+TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromSharedArrayBufferView) {
+  constexpr uint8_t kData[] = {0x21, 0xfe, 0x00, 0x00, 0xff, 0xa3,
+                               0x42, 0x30, 0x42, 0x99, 0x88};
+  constexpr size_t kOffset = 1, kSize = 5;
+  DOMSharedArrayBuffer* shared_buffer = DOMSharedArrayBuffer::Create(kData);
+  auto* consumer = MakeGarbageCollected<FormDataBytesConsumer>(
+      DOMUint8Array::Create(shared_buffer, kOffset, kSize));
+
+  // Mutate the SharedArrayBuffer after constructing FormDataBytesConsumer to
+  // verify the consumer captured an independent copy.
+  std::ranges::fill(shared_buffer->ByteSpanMaybeShared(), uint8_t{0x7f});
+
+  auto result =
+      (MakeGarbageCollected<BytesConsumerTestReader>(consumer))->Run();
+  Vector<char> expected;
+  expected.append_range(base::span(kData).subspan(kOffset, kSize));
+
+  EXPECT_EQ(Result::kDone, result.first);
+  EXPECT_EQ(expected, result.second);
+
+  // Verify multi-byte element shared typed arrays copy `byteLength()` bytes
+  // (not `length()` elements) and unaligned `DOMDataView` offsets work too.
+  DOMSharedArrayBuffer* u16_shared = DOMSharedArrayBuffer::Create(kData);
+  auto* u16_consumer = MakeGarbageCollected<FormDataBytesConsumer>(
+      DOMUint16Array::Create(u16_shared, /*byte_offset=*/2u, /*length=*/3u));
+  std::ranges::fill(u16_shared->ByteSpanMaybeShared(), uint8_t{0x55});
+  auto u16_result =
+      (MakeGarbageCollected<BytesConsumerTestReader>(u16_consumer))->Run();
+  Vector<char> u16_expected;
+  u16_expected.append_range(base::span(kData).subspan(2u, 6u));
+  EXPECT_EQ(Result::kDone, u16_result.first);
+  EXPECT_EQ(u16_expected, u16_result.second);
+
+  DOMSharedArrayBuffer* dv_shared = DOMSharedArrayBuffer::Create(kData);
+  auto* dv_consumer = MakeGarbageCollected<FormDataBytesConsumer>(
+      DOMDataView::Create(dv_shared, /*byte_offset=*/3u, /*byte_length=*/5u));
+  std::ranges::fill(dv_shared->ByteSpanMaybeShared(), uint8_t{0x44});
+  auto dv_result =
+      (MakeGarbageCollected<BytesConsumerTestReader>(dv_consumer))->Run();
+  Vector<char> dv_expected;
+  dv_expected.append_range(base::span(kData).subspan(3u, 5u));
+  EXPECT_EQ(Result::kDone, dv_result.first);
+  EXPECT_EQ(dv_expected, dv_result.second);
+
+  // Verify 0-length shared views preserve EncodedFormData's single empty kData
+  // element invariant.
+  DOMSharedArrayBuffer* empty_shared = DOMSharedArrayBuffer::Create(0u, 1u);
+  auto* empty_consumer = MakeGarbageCollected<FormDataBytesConsumer>(
+      DOMUint8Array::Create(empty_shared, 0u, 0u));
+  scoped_refptr<EncodedFormData> drained = empty_consumer->DrainAsFormData();
+  ASSERT_TRUE(drained);
+  ASSERT_EQ(1u, drained->Elements().size());
+  EXPECT_EQ(FormDataElement::kData, drained->Elements()[0].type_);
+  EXPECT_TRUE(drained->Elements()[0].data_.empty());
 }
 
 TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromSimpleFormData) {

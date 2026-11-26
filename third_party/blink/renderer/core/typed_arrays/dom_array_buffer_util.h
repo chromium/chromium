@@ -95,6 +95,19 @@ TransferArrayBufferView(v8::Isolate* isolate,
                         DOMArrayBufferView* view,
                         ExceptionState& exception_state);
 
+// Copies non-overlapping spans of the same size from `src` into `dst`, reading
+// `src` with `std::memory_order_relaxed` atomics. `dst` must be exclusively
+// owned by the caller.
+//
+// Plain `memcpy` / `span::copy_from` cannot be used on a `SharedArrayBuffer`
+// backing store because concurrent writes from another thread (e.g. a Worker)
+// would cause C++ data-race UB (and TSan failures). The copy as a whole is not
+// an atomic snapshot (bytes may reflect torn concurrent writes), which is fine
+// once copied into private memory. Unlike `WTF::AtomicReadMemcpy`, this
+// supports arbitrary byte alignment for unaligned JS TypedArray/DataView views.
+CORE_EXPORT void RelaxedAtomicReadMemcpy(base::span<uint8_t> dst,
+                                         base::span<const uint8_t> src);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_ARRAY_BUFFER_UTIL_H_

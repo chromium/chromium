@@ -4,8 +4,16 @@
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 
+#include <algorithm>
 #include <array>
+#include <atomic>
+#include <cstdint>
 
+#include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
 #include "gin/array_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -23,6 +31,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_shared_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
@@ -529,6 +538,78 @@ TEST(DOMArrayBufferTest, TransferViewOfDetachedBufferThrows) {
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_FALSE(contents.IsValid());
   EXPECT_TRUE(span.empty());
+}
+
+TEST(DOMArrayBufferTest, RelaxedAtomicReadMemcpy) {
+  test::TaskEnvironment task_environment;
+  std::array<uint8_t, 64> source_pattern;
+  for (size_t i = 0; i < source_pattern.size(); ++i) {
+    source_pattern[i] = static_cast<uint8_t>((i * 37u + 11u) & 0xFFu);
+  }
+  Persistent<DOMSharedArrayBuffer> shared_buffer =
+      DOMSharedArrayBuffer::Create(source_pattern);
+  base::span<const uint8_t> shared_span = shared_buffer->ByteSpanMaybeShared();
+
+  for (size_t src_offset = 0; src_offset < 16; ++src_offset) {
+    for (size_t dst_offset = 0; dst_offset < 8; ++dst_offset) {
+      for (size_t len = 0; len <= 33; ++len) {
+        alignas(16) std::array<uint8_t, 48> dst_storage;
+        dst_storage.fill(0xCCu);
+        base::span<uint8_t> dst =
+            base::span(dst_storage).subspan(dst_offset, len);
+        base::span<const uint8_t> src = shared_span.subspan(src_offset, len);
+
+        RelaxedAtomicReadMemcpy(dst, src);
+
+        EXPECT_EQ(dst, base::span(source_pattern).subspan(src_offset, len));
+        EXPECT_TRUE(
+            std::ranges::all_of(base::span(dst_storage).first(dst_offset),
+                                [](uint8_t b) { return b == 0xCCu; }));
+        EXPECT_TRUE(std::ranges::all_of(
+            base::span(dst_storage).subspan(dst_offset + len),
+            [](uint8_t b) { return b == 0xCCu; }));
+      }
+    }
+  }
+
+  // Exercise concurrent relaxed atomic stores on a background worker while
+  // copying an unaligned subspan.
+  base::span<uint8_t> mutable_shared = shared_buffer->ByteSpanMaybeShared();
+  std::atomic<bool> stop_writer{false};
+  base::WaitableEvent writer_started;
+  base::WaitableEvent writer_finished;
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::span<uint8_t> target, std::atomic<bool>* stop,
+             base::WaitableEvent* started, base::WaitableEvent* finished) {
+            started->Signal();
+            uint8_t value = 0x11u;
+            while (!stop->load(std::memory_order_relaxed)) {
+              value ^= 0x33u;
+              for (uint8_t& byte : target) {
+                std::atomic_ref<uint8_t>(byte).store(value,
+                                                     std::memory_order_relaxed);
+              }
+            }
+            finished->Signal();
+          },
+          mutable_shared, base::Unretained(&stop_writer),
+          base::Unretained(&writer_started),
+          base::Unretained(&writer_finished)));
+  writer_started.Wait();
+
+  std::array<uint8_t, 29> snapshot;
+  for (int i = 0; i < 64; ++i) {
+    RelaxedAtomicReadMemcpy(snapshot, mutable_shared.subspan(3u, 29u));
+    for (size_t j = 0; j < snapshot.size(); ++j) {
+      const uint8_t b = snapshot[j];
+      EXPECT_TRUE(b == 0x11u || b == 0x22u || b == source_pattern[3u + j]);
+    }
+  }
+
+  stop_writer.store(true, std::memory_order_relaxed);
+  writer_finished.Wait();
 }
 
 }  // namespace blink
