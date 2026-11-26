@@ -1376,6 +1376,11 @@ TEST_P(AudioAndroidInputTest, StartInputStreamCallbacks) {
 // select a 10ms buffer size instead of the default size.
 // Flaky, see crbug.com/683408.
 TEST_P(AudioAndroidInputTest, StartInputStreamCallbacksNonDefaultParameters) {
+  // TODO(crbug.com/590494574): The callback timing checks fail on x86
+  // emulators for OpenSLES.
+  if (GetParam() == AudioApi::OpenSLES) {
+    GTEST_SKIP() << "Flaky timing on Android CI, see crbug.com/590494574.";
+  }
   AudioParameters params = GetDefaultInputStreamParametersOnAudioThread();
   params.set_frames_per_buffer(params.sample_rate() / 100);
   StartInputStreamCallbacks(params);
