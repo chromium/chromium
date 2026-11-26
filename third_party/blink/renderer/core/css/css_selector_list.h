@@ -75,8 +75,27 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   // the object it points to.
   static CSSSelectorList* Empty();
 
-  // Do not call; for Empty() and AdoptSelectorVector() only.
-  explicit CSSSelectorList(base::PassKey<CSSSelectorList>) {}
+  // Do not call; for Empty() only.
+  explicit CSSSelectorList(base::PassKey<CSSSelectorList>) {
+    first_selector_[0].SetMatch(CSSSelector::kInvalidList);
+  }
+
+  // Do not call; for AdoptSelectorVector() and Copy() only. These populate
+  // the trailing selector array inside the constructor: concurrent marking
+  // may only trace an object once it is flagged as fully constructed, and
+  // that flag is what orders the writes below before a marker's Trace().
+  CSSSelectorList(base::PassKey<CSSSelectorList>,
+                  base::span<CSSSelector> selector_vector) {
+    AdoptSelectorVector(selector_vector, first_selector_);
+  }
+  CSSSelectorList(base::PassKey<CSSSelectorList>,
+                  const CSSSelectorList& other,
+                  unsigned length) {
+    for (unsigned i = 0; i < length; ++i) {
+      UNSAFE_BUFFERS(new (&first_selector_[i])
+                         CSSSelector(other.first_selector_[i]));
+    }
+  }
 
   CSSSelectorList(CSSSelectorList&& o) {
     UNSAFE_BUFFERS(
