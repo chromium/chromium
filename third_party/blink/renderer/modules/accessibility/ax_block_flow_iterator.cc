@@ -62,11 +62,15 @@ bool IncludeTrailingWhitespace(const String& text,
     return false;
   }
 
+  const LayoutObject* layout_object = item.GetLayoutObject();
+  if (!layout_object) {
+    return false;
+  }
+
   if (item.Style().ShouldPreserveWhiteSpaces()) {
     return false;
   }
 
-  const LayoutObject* layout_object = item.GetLayoutObject();
   const OffsetMapping* mapping = OffsetMapping::GetFor(layout_object);
   if (!mapping) {
     return false;
@@ -91,13 +95,16 @@ T MoveIndexToNeighbor(const bool forward, const T& index) {
 LayoutText* AXBlockFlowData::GetFirstLetterPseudoLayoutText(
     FragmentIndex index) const {
   const FragmentItem* item = ItemAt(index);
-  const auto it = layout_fragment_map_.find(item->GetLayoutObject());
+  const LayoutObject* layout_object = item->GetLayoutObject();
+  if (!layout_object) {
+    return nullptr;
+  }
+  const auto it = layout_fragment_map_.find(layout_object);
   if (it == layout_fragment_map_.end() || it->value != index) {
     return nullptr;
   }
 
-  const LayoutText* layout_text =
-      DynamicTo<LayoutText>(item->GetLayoutObject());
+  const LayoutText* layout_text = DynamicTo<LayoutText>(layout_object);
   if (!layout_text) {
     return nullptr;
   }
@@ -185,17 +192,24 @@ AXBlockFlowData::Neighbor AXBlockFlowData::ComputeNeighborOnLine(
             index = MoveIndexToNeighbor(forward, index)) {
     switch (it->Type()) {
       case FragmentItem::kText:
-      case FragmentItem::kGeneratedText:
-        if (!it->GetLayoutObject()) [[unlikely]] {
+      case FragmentItem::kGeneratedText: {
+        const LayoutObject* layout_object = it->GetLayoutObject();
+        if (!layout_object) {
           // A generated text fragment item may not have a backing LayoutObject.
-          // For regular text, we expect them to always have one.
-          CHECK_EQ(it->Type(), FragmentItem::kGeneratedText);
-        } else if (it->GetLayoutObject()->IsText()) {
+          // A regular text fragment item can also have its LayoutObject nulled
+          // when destroyed or moved before relayout (e.g. inside a
+          // display-locked subtree).
+          CHECK(it->Type() == FragmentItem::kGeneratedText ||
+                block_flow_container_->NeedsLayout());
+          break;
+        }
+        if (layout_object->IsText()) {
           // TODO(accessibility): Investigate when an item can be text, but its
           // LayoutObject is not marked as such.
-          return std::make_pair(it->GetLayoutObject(), index);
+          return std::make_pair(layout_object, index);
         }
         break;
+      }
 
       case FragmentItem::kLine:
         return FailureReason::kAtLineBoundary;
@@ -287,9 +301,9 @@ void AXBlockFlowData::ProcessBoxFragment(const PhysicalBoxFragment* fragment,
   std::optional<wtf_size_t> current_outermost_line_index;
   for (auto it = items->Items().begin(); it != items->Items().end();
        it++, fragment_index++) {
-    const LayoutObject* layout_object = it->GetLayoutObject();
-    auto range_it = layout_fragment_map_.find(layout_object);
-    if (range_it == layout_fragment_map_.end()) {
+    if (const LayoutObject* layout_object = it->GetLayoutObject()) {
+      // HashMap::insert() does not overwrite existing entries, so this records
+      // only the first fragment index for `layout_object`.
       layout_fragment_map_.insert(layout_object, fragment_index);
     }
 
@@ -332,6 +346,9 @@ bool AXBlockFlowData::OnLine(const Line& line, wtf_size_t index) const {
 
 const std::optional<wtf_size_t> AXBlockFlowData::FindFirstFragment(
     const LayoutObject* layout_object) const {
+  if (!layout_object) {
+    return std::nullopt;
+  }
   auto it = layout_fragment_map_.find(layout_object);
   if (it != layout_fragment_map_.end()) {
     return it->value;

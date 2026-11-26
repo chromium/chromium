@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 
+#include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -14,7 +17,9 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
@@ -955,6 +960,135 @@ TEST_F(AXInlineTextBoxTest, InlineBoxFragmentDoesNotJoinWrappedLines) {
   EXPECT_EQ(nullptr, first_box->NextOnLine());
   EXPECT_EQ(nullptr, second_box->PreviousOnLine());
   EXPECT_EQ(" plus others here.", second_box->NextOnLine()->ComputedName());
+}
+
+TEST_F(AXInlineTextBoxTest, DisplayLockAfterLayoutWithInlineMutation) {
+  ax_context_ = std::make_unique<AXContext>(GetDocument(), ui::kAXModeComplete);
+  SetBodyInnerHTML(R"HTML(
+    <div id="spacer" style="height: 0px;"></div>
+    <div id="turn" style="content-visibility: auto; contain-intrinsic-size: 1px 100px;">
+      <p id="para">Hello <span id="chip">citation</span> world</p>
+    </div>
+  )HTML");
+  // Run an extra lifecycle update so IntersectionObserver unlocks #turn.
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* turn = GetElementById("turn");
+  ASSERT_NE(nullptr, turn);
+  ASSERT_NE(nullptr, turn->GetDisplayLockContext());
+  ASSERT_FALSE(turn->GetDisplayLockContext()->IsLocked());
+
+  AXObject* ax_para = GetAXObjectByElementId("para");
+  ASSERT_NE(nullptr, ax_para);
+  ax_para->LoadInlineTextBoxes();
+  ASSERT_GE(ax_para->FirstChildIncludingIgnored()->ChildCountIncludingIgnored(),
+            1);
+
+  // Push #turn offscreen so content-visibility: auto locks it. The first
+  // lifecycle update lays out the new spacer height and computes #turn's
+  // viewport intersection. That observation is only delivered afterwards, so a
+  // second update is needed for the lock to take effect.
+  GetElementById("spacer")->setAttribute(html_names::kStyleAttr,
+                                         AtomicString("height: 30000px;"));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(turn->GetDisplayLockContext()->IsLocked());
+
+  // Remove an inline span inside the now-locked paragraph, nulling its
+  // FragmentItem's LayoutObject without re-laying out the paragraph.
+  GetElementById("chip")->remove();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  // Serializing surviving AXInlineTextBoxes in the display-locked block must
+  // skip the destroyed fragment item instead of crashing in AXBlockFlowData.
+  AXObject* locked_para = GetAXObjectByElementId("para");
+  ASSERT_NE(nullptr, locked_para);
+  int serialized_itb_count = 0;
+  {
+    ScopedFreezeAXCache freeze(locked_para->AXObjectCache());
+    for (AXObject* text_child : locked_para->ChildrenIncludingIgnored()) {
+      for (AXObject* itb : text_child->ChildrenIncludingIgnored()) {
+        ui::AXNodeData node_data;
+        itb->Serialize(&node_data, ui::kAXModeComplete);
+        ++serialized_itb_count;
+      }
+    }
+  }
+  EXPECT_GE(serialized_itb_count, 2);
+
+  // Scrolling back into view unlocks #turn and rebuilds clean inline text boxes
+  // reflecting the removed #chip span. As above, two lifecycle updates are
+  // needed: one to compute the new viewport intersection and one for the
+  // unlock to take effect.
+  GetElementById("spacer")->setAttribute(html_names::kStyleAttr,
+                                         AtomicString("height: 0px;"));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(turn->GetDisplayLockContext()->IsLocked());
+
+  AXObject* ax_para_unlocked = GetAXObjectByElementId("para");
+  ASSERT_NE(nullptr, ax_para_unlocked);
+  ax_para_unlocked->LoadInlineTextBoxes();
+  ASSERT_EQ(2, ax_para_unlocked->ChildCountIncludingIgnored());
+  EXPECT_EQ("Hello ",
+            ax_para_unlocked->ChildAtIncludingIgnored(0)->ComputedName());
+  EXPECT_EQ("world",
+            ax_para_unlocked->ChildAtIncludingIgnored(1)->ComputedName());
+}
+
+TEST_F(AXInlineTextBoxTest,
+       BlockFlowDataSkipsFragmentItemWithNullLayoutObject) {
+  SetBodyInnerHTML(R"HTML(
+    <p id="para">Hello <span id="chip">citation</span> world</p>
+  )HTML");
+
+  Element* para = GetElementById("para");
+  Element* chip = GetElementById("chip");
+  ASSERT_NE(nullptr, para);
+  ASSERT_NE(nullptr, chip);
+  auto* block_flow = DynamicTo<LayoutBlockFlow>(para->GetLayoutObject());
+  ASSERT_NE(nullptr, block_flow);
+  const LayoutObject* first_text = para->firstChild()->GetLayoutObject();
+  const LayoutObject* chip_text = chip->firstChild()->GetLayoutObject();
+  const LayoutObject* last_text = para->lastChild()->GetLayoutObject();
+  ASSERT_NE(nullptr, first_text);
+  ASSERT_NE(nullptr, chip_text);
+  ASSERT_NE(nullptr, last_text);
+
+  std::optional<wtf_size_t> chip_index =
+      MakeGarbageCollected<AXBlockFlowData>(block_flow)
+          ->FindFirstFragment(chip_text);
+  ASSERT_TRUE(chip_index.has_value());
+
+  // Removing #chip destroys its LayoutText (nulling its kText FragmentItem's
+  // LayoutObject) before the enclosing block flow is laid out again.
+  chip->remove();
+  ASSERT_TRUE(block_flow->NeedsLayout());
+
+  auto* data = MakeGarbageCollected<AXBlockFlowData>(block_flow);
+  EXPECT_EQ(std::nullopt, data->FindFirstFragment(nullptr));
+  std::optional<wtf_size_t> first_index = data->FindFirstFragment(first_text);
+  std::optional<wtf_size_t> last_index = data->FindFirstFragment(last_text);
+  ASSERT_TRUE(first_index.has_value());
+  ASSERT_TRUE(last_index.has_value());
+
+  AXBlockFlowData::Neighbor next =
+      data->ComputeNeighborOnLine(*first_index, /*forward=*/true);
+  auto* next_key = std::get_if<AXBlockFlowData::TextFragmentKey>(&next);
+  ASSERT_NE(nullptr, next_key);
+  EXPECT_EQ(last_text, next_key->first);
+  EXPECT_EQ(*last_index, next_key->second);
+
+  AXBlockFlowData::Neighbor prev =
+      data->ComputeNeighborOnLine(*last_index, /*forward=*/false);
+  auto* prev_key = std::get_if<AXBlockFlowData::TextFragmentKey>(&prev);
+  ASSERT_NE(nullptr, prev_key);
+  EXPECT_EQ(first_text, prev_key->first);
+  EXPECT_EQ(*first_index, prev_key->second);
+
+  // Reading text for a fragment item whose LayoutObject was nulled must not
+  // crash in IncludeTrailingWhitespace() or GetFirstLetterPseudoLayoutText().
+  EXPECT_EQ("citation", data->GetText(*chip_index));
 }
 
 }  // namespace test
