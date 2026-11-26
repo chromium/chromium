@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_STRUCTURED_STORAGE_MANAGER_IMPL_H_
 #define CHROME_BROWSER_METRICS_STRUCTURED_STORAGE_MANAGER_IMPL_H_
 
+#include "base/byte_size.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/metrics/structured/arena_event_buffer.h"
 #include "components/metrics/structured/flushed_map.h"
@@ -15,10 +16,10 @@ namespace metrics::structured {
 
 // Configuration data needed to create a Storage Manager.
 struct StorageManagerConfig {
-  // The maximum number of bytes the in-memory events can consume.
-  int64_t buffer_max_bytes;
-  // The maximum number of bytes the disk events can consume.
-  int64_t disk_max_bytes;
+  // The maximum size the in-memory events can consume.
+  base::ByteSize buffer_max_size;
+  // The maximum size the disk events can consume.
+  base::ByteSize disk_max_size;
 };
 
 // Provides a storage of events for Structured Metrics that tries to maintain a

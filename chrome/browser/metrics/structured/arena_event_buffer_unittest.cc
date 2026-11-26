@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -68,7 +69,8 @@ class ArenaEventBufferTest : public testing::Test {
   }
 
   std::unique_ptr<ArenaEventBuffer> CreateTestBuffer(uint64_t max_size) {
-    return std::make_unique<ArenaEventBuffer>(GetPath(), kWriteDelay, max_size);
+    return std::make_unique<ArenaEventBuffer>(GetPath(), kWriteDelay,
+                                              base::ByteSize(max_size));
   }
 
   void Wait() { task_environment_.RunUntilIdle(); }

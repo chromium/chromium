@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -151,8 +152,8 @@ class StorageManagerTest : public testing::Test {
 };
 
 TEST_F(StorageManagerTest, StoreAndProvideEventsInMemory) {
-  auto manager =
-      CreateManager({.buffer_max_bytes = 1024, .disk_max_bytes = 1024});
+  auto manager = CreateManager({.buffer_max_size = base::ByteSize(1024),
+                                .disk_max_size = base::ByteSize(1024)});
 
   // Add event.
   manager->AddEvent(BuildTestEvent(1, {1, 2, 3}));
@@ -174,8 +175,8 @@ TEST_F(StorageManagerTest, StoreAndProvideEventsInMemory) {
 }
 
 TEST_F(StorageManagerTest, FlushEvents) {
-  auto manager =
-      CreateManager({.buffer_max_bytes = 512, .disk_max_bytes = 1024});
+  auto manager = CreateManager({.buffer_max_size = base::ByteSize(512),
+                                .disk_max_size = base::ByteSize(1024)});
 
   storage_delegate_->SetFlushedCallback(base::BindLambdaForTesting(
       [&](const FlushedKey& key) { EXPECT_TRUE(base::PathExists(key.path)); }));
@@ -198,8 +199,8 @@ TEST_F(StorageManagerTest, FlushEvents) {
 }
 
 TEST_F(StorageManagerTest, FullBuffer) {
-  auto manager =
-      CreateManager({.buffer_max_bytes = 512, .disk_max_bytes = 1024});
+  auto manager = CreateManager({.buffer_max_size = base::ByteSize(512),
+                                .disk_max_size = base::ByteSize(1024)});
 
   storage_delegate_->SetFlushedCallback(base::BindLambdaForTesting(
       [&](const FlushedKey& key) { EXPECT_TRUE(base::PathExists(key.path)); }));
@@ -226,8 +227,8 @@ TEST_F(StorageManagerTest, ProvideFlushedEvents) {
   WriteEventsProto(GetFlushDir(), "events3",
                    BuildTestEventsProto(/*num=*/3, /*start_id=*/6));
 
-  auto manager =
-      CreateManager({.buffer_max_bytes = 512, .disk_max_bytes = 1024});
+  auto manager = CreateManager({.buffer_max_size = base::ByteSize(512),
+                                .disk_max_size = base::ByteSize(1024)});
   // Returns the number of on-disk files if there are no events in memory.
   ASSERT_EQ(manager->RecordedEventsCount(), 3);
 
@@ -267,8 +268,8 @@ TEST_F(StorageManagerTest, ProvideFlushedAndInMemoryEvents) {
   WriteEventsProto(GetFlushDir(), "events3",
                    BuildTestEventsProto(/*num=*/3, /*start_id=*/6));
 
-  auto manager =
-      CreateManager({.buffer_max_bytes = 1024, .disk_max_bytes = 1024});
+  auto manager = CreateManager({.buffer_max_size = base::ByteSize(1024),
+                                .disk_max_size = base::ByteSize(1024)});
   manager->AddEvent(BuildTestEvent(9, {9}));
   manager->AddEvent(BuildTestEvent(10, {10}));
   manager->AddEvent(BuildTestEvent(11, {11}));
@@ -311,8 +312,8 @@ TEST_F(StorageManagerTest, Purge) {
   WriteEventsProto(GetFlushDir(), "events3",
                    BuildTestEventsProto(/*num=*/3, /*start_id=*/6));
 
-  auto manager =
-      CreateManager({.buffer_max_bytes = 1024, .disk_max_bytes = 1024});
+  auto manager = CreateManager({.buffer_max_size = base::ByteSize(1024),
+                                .disk_max_size = base::ByteSize(1024)});
   manager->AddEvent(BuildTestEvent(9, {9}));
   manager->AddEvent(BuildTestEvent(10, {10}));
   manager->AddEvent(BuildTestEvent(11, {11}));
@@ -343,7 +344,8 @@ TEST_F(StorageManagerTest, PurgeUninitialized) {
 
   // Create manager but don't Wait() for it to initialize FlushedMap yet.
   auto manager = std::make_unique<StorageManagerImpl>(
-      StorageManagerConfig{.buffer_max_bytes = 1024, .disk_max_bytes = 1024},
+      StorageManagerConfig{.buffer_max_size = base::ByteSize(1024),
+                           .disk_max_size = base::ByteSize(1024)},
       GetArenaPath(), GetFlushDir());
   manager->set_delegate(storage_delegate_.get());
 
@@ -362,7 +364,8 @@ TEST_F(StorageManagerTest, PurgeUninitialized) {
 }
 
 TEST_F(StorageManagerTest, FlushedQuotaExceeded) {
-  auto manager = CreateManager({.buffer_max_bytes = 512, .disk_max_bytes = 64});
+  auto manager = CreateManager({.buffer_max_size = base::ByteSize(512),
+                                .disk_max_size = base::ByteSize(64)});
 
   storage_delegate_->SetFlushedCallback(base::BindLambdaForTesting(
       [&](const FlushedKey& key) { EXPECT_TRUE(base::PathExists(key.path)); }));
@@ -400,8 +403,8 @@ TEST_F(StorageManagerTest, ProvideEventsRaceCondition) {
   ASSERT_TRUE(base::CreateDirectory(GetFlushDir()));
   WriteEventsProto(GetFlushDir(), "events1", BuildTestEventsProto(/*num=*/1));
 
-  auto manager =
-      CreateManager({.buffer_max_bytes = 512, .disk_max_bytes = 1024});
+  auto manager = CreateManager({.buffer_max_size = base::ByteSize(512),
+                                .disk_max_size = base::ByteSize(1024)});
 
   // 1 on-disk file.
   ASSERT_EQ(manager->RecordedEventsCount(), 1);

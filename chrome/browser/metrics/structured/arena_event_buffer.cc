@@ -6,9 +6,11 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/system/sys_info.h"
@@ -26,15 +28,18 @@ namespace metrics::structured {
 namespace {
 using google::protobuf::RepeatedPtrField;
 
-uint64_t GetFreeDiskSpace(const base::FilePath& path) {
-  return static_cast<uint64_t>(
-      base::SysInfo::AmountOfFreeDiskSpace(path).value_or(0));
+base::ByteSize GetFreeDiskSpace(const base::FilePath& path) {
+  return base::SysInfo::AmountOfDiskSpace(path)
+      .transform([](const base::SysInfo::DiskSpaceInfo& disk_space) {
+        return disk_space.available;
+      })
+      .value_or(base::ByteSize());
 }
 
 base::expected<FlushedKey, FlushError> WriteEvents(const base::FilePath& path,
                                                    std::string content) {
   if (!base::WriteFile(path, content)) {
-    if (GetFreeDiskSpace(path) < content.size()) {
+    if (GetFreeDiskSpace(path) < base::ByteSize(content.size())) {
       return base::unexpected(kDiskFull);
     }
     // Leaving proto content intact to let the caller handle cleanup.
@@ -57,8 +62,8 @@ base::expected<FlushedKey, FlushError> WriteEvents(const base::FilePath& path,
 
 ArenaEventBuffer::ArenaEventBuffer(const base::FilePath& path,
                                    base::TimeDelta write_delay,
-                                   uint64_t max_size_bytes)
-    : EventBuffer(ResourceInfo(max_size_bytes)),
+                                   base::ByteSize max_size)
+    : EventBuffer(ResourceInfo(max_size.InBytes())),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {

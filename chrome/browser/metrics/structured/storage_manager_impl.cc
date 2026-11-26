@@ -4,9 +4,13 @@
 
 #include "chrome/browser/metrics/structured/storage_manager_impl.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/byte_size.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -46,8 +50,15 @@ constexpr char kRootPartitionPath[] = "/var/lib/metrics/structured/";
 
 // These minimum values are just guesses on what would be decent for low end
 // devices.
-constexpr int64_t kMinBufferSize = 10 * 1024;  // 10 kb
-constexpr int64_t kMinDiskSize = 50 * 1024;    // 50 kb
+constexpr base::ByteSize kMinBufferSize = base::KiB(10);
+constexpr base::ByteSize kMinDiskSize = base::KiB(50);
+
+// Returns `size` scaled by `ratio`. Negative results are clamped to zero.
+base::ByteSize ScaleByRatio(base::ByteSize size, double ratio) {
+  const int64_t scaled = base::saturated_cast<int64_t>(size.InBytesF() * ratio);
+  return scaled <= 0 ? base::ByteSize()
+                     : base::ByteSize(base::checked_cast<uint64_t>(scaled));
+}
 
 }  // namespace
 
@@ -62,10 +73,11 @@ StorageManagerImpl::StorageManagerImpl(const StorageManagerConfig& config,
     : config_(config),
       event_buffer_(events_path,
                     /*write_delay=*/base::Minutes(0),
-                    config_.buffer_max_bytes),
-      flushed_map_(flush_dir, config_.disk_max_bytes) {
-  LogMaxMemorySizeKb(config_.buffer_max_bytes / 1024);
-  LogMaxDiskSizeKb(config_.disk_max_bytes / 1024);
+                    config_.buffer_max_size),
+      flushed_map_(flush_dir, config_.disk_max_size.InBytes()) {
+  LogMaxMemorySizeKb(
+      base::saturated_cast<int>(config_.buffer_max_size.InKiB()));
+  LogMaxDiskSizeKb(base::saturated_cast<int>(config_.disk_max_size.InKiB()));
 }
 
 StorageManagerImpl::~StorageManagerImpl() = default;
@@ -155,19 +167,21 @@ void StorageManagerImpl::AddBatchEvents(
 
 // static
 StorageManagerConfig StorageManagerImpl::GetStorageManagerConfig() {
-  int64_t free_disk_space =
-      base::SysInfo::AmountOfFreeDiskSpace(base::FilePath(kRootPartitionPath))
-          .value_or(0);
-
-  free_disk_space = GetMaxDiskSizeRatio() * free_disk_space;
-
-  int64_t buffer_max_size =
-      base::SysInfo::AmountOfTotalPhysicalMemory().InBytes() *
-      GetMaxBufferSizeRatio();
+  const base::ByteSize available_disk_space =
+      base::SysInfo::AmountOfDiskSpace(base::FilePath(kRootPartitionPath))
+          .transform([](const base::SysInfo::DiskSpaceInfo& disk_space) {
+            return disk_space.available;
+          })
+          .value_or(base::ByteSize());
 
   return StorageManagerConfig{
-      .buffer_max_bytes = std::max(buffer_max_size, kMinBufferSize),
-      .disk_max_bytes = std::max(free_disk_space, kMinDiskSize),
+      .buffer_max_size =
+          std::max(ScaleByRatio(base::SysInfo::AmountOfTotalPhysicalMemory(),
+                                GetMaxBufferSizeRatio()),
+                   kMinBufferSize),
+      .disk_max_size =
+          std::max(ScaleByRatio(available_disk_space, GetMaxDiskSizeRatio()),
+                   kMinDiskSize),
   };
 }
 

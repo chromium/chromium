@@ -20,6 +20,7 @@
 #include "third_party/metrics_proto/structured_data.pb.h"
 
 namespace base {
+class ByteSize;
 class FilePath;
 }
 
@@ -45,7 +46,7 @@ class ArenaEventBuffer : public EventBuffer<StructuredEventProto>,
  public:
   ArenaEventBuffer(const base::FilePath& path,
                    base::TimeDelta write_delay,
-                   uint64_t max_size_bytes);
+                   base::ByteSize max_size);
 
   ~ArenaEventBuffer() override;
 
