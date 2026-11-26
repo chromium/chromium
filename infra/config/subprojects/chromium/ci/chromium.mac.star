@@ -1303,6 +1303,9 @@ ios_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
+        # Also enables the check on try/ios-simulator, which mirrors this
+        # builder.
+        gn_check_generated = True,
     ),
     gn_args = gn_args.config(
         configs = [
