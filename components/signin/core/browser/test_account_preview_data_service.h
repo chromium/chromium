@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -34,6 +35,10 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
       const GaiaId& gaia_id,
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) override;
+  void GetPreviewDataForAccount(
+      const GaiaId& gaia_id,
+      base::OnceCallback<void(std::optional<AccountPreviewData>)> callback)
+      override;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   void GetPreferredAccountForSigninAsync(
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
@@ -71,6 +76,20 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
     return std::move(pending_callback_);
   }
 
+  // If `set_defer_preview_data_callbacks(true)` is set,
+  // `GetPreviewDataForAccount()` stores callbacks per `gaia_id` instead of
+  // immediately invoking them with the configured preview data.
+  void set_defer_preview_data_callbacks(bool defer) {
+    defer_preview_data_callbacks_ = defer;
+  }
+
+  void SetPreviewDataForAccount(const GaiaId& gaia_id,
+                                std::optional<AccountPreviewData> data);
+
+  void TriggerPreviewDataCallbacks(const GaiaId& gaia_id,
+                                   std::optional<AccountPreviewData> data);
+  bool HasPendingPreviewDataCallbacks(const GaiaId& gaia_id) const;
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // If `set_defer_preferred_account_requests(true)` is set,
   // `GetPreferredAccountForSigninAsync()` stores the callbacks instead of
@@ -101,6 +120,12 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
   std::optional<AccountPreviewPreference> preferred_account_for_switching_;
   base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
       pending_callback_;
+  bool defer_preview_data_callbacks_ = false;
+  base::flat_map<GaiaId, AccountPreviewData> preview_data_;
+  base::flat_map<
+      GaiaId,
+      std::vector<base::OnceCallback<void(std::optional<AccountPreviewData>)>>>
+      pending_preview_data_callbacks_;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   bool defer_preferred_account_requests_ = false;
   std::optional<base::TimeDelta> last_preferred_account_request_timeout_;

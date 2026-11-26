@@ -102,6 +102,10 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
       const GaiaId& gaia_id,
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) override;
+  void GetPreviewDataForAccount(
+      const GaiaId& gaia_id,
+      base::OnceCallback<void(std::optional<AccountPreviewData>)> callback)
+      override;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   void GetPreferredAccountForSigninAsync(
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
@@ -230,11 +234,11 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
                       GaiaId::Hash>
       active_fetchers_;
   // Used to track single account requests - originating from
-  // `GetPreviewPreferenceForAccount()`.
-  absl::flat_hash_map<GaiaId,
-                      std::vector<base::OnceCallback<void(
-                          std::optional<AccountPreviewPreference>)>>,
-                      GaiaId::Hash>
+  // `GetPreviewDataForAccount()` or `GetPreviewPreferenceForAccount()`.
+  absl::flat_hash_map<
+      GaiaId,
+      std::vector<base::OnceCallback<void(std::optional<AccountPreviewData>)>>,
+      GaiaId::Hash>
       single_pending_requests_;
   // Used to track batch requests - originating from any source that requires
   // to compute the overall preferred account.

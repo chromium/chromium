@@ -95,14 +95,27 @@ class AccountPreviewDataService : public KeyedService {
   GetPreferredAccountForSwitching() const = 0;
 
   // Computes the preview preference for a single account specified by
-  // `gaia_id`. If data is already cached or the account is invalid/tokens
-  // unloaded, `callback` is invoked synchronously with the result. Otherwise, a
-  // network fetch is started and `callback` is invoked asynchronously upon
-  // completion.
+  // `gaia_id`. If data is already cached or sign-in is disallowed/the feature
+  // is disabled/the account is invalid/tokens are unloaded/rate-limited,
+  // `callback` is invoked synchronously with the result. Otherwise, attaches to
+  // an ongoing fetch if one exists or starts a new network fetch (without
+  // computing preferred/switching accounts), and invokes `callback`
+  // asynchronously upon completion.
   virtual void GetPreviewPreferenceForAccount(
       const GaiaId& gaia_id,
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback) = 0;
+
+  // Retrieves the preview data (including exact counts per data type and device
+  // previews) for a single account specified by `gaia_id`. If data is already
+  // cached or sign-in is disallowed/the account is invalid/tokens are
+  // unloaded/rate-limited, `callback` is invoked synchronously with the result.
+  // Otherwise, attaches to an ongoing fetch if one exists or starts a new
+  // network fetch (without computing preferred/switching accounts), and invokes
+  // `callback` asynchronously upon completion.
+  virtual void GetPreviewDataForAccount(
+      const GaiaId& gaia_id,
+      base::OnceCallback<void(std::optional<AccountPreviewData>)> callback) = 0;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Asynchronous version of `GetPreferredAccountForSignin()`, which returns the

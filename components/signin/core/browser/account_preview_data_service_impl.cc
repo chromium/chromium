@@ -329,14 +329,46 @@ void AccountPreviewDataServiceImpl::GetPreviewPreferenceForAccount(
     return;
   }
 
+  GetPreviewDataForAccount(
+      gaia_id,
+      base::BindOnce(
+          [](const GaiaId& gaia_id, std::optional<AccountPreviewData> data)
+              -> std::optional<AccountPreviewPreference> {
+            if (!data.has_value()) {
+              return std::nullopt;
+            }
+            return ComputeAccountPreviewPreference(gaia_id, *data);
+          },
+          gaia_id)
+          .Then(std::move(callback)));
+}
+
+void AccountPreviewDataServiceImpl::GetPreviewDataForAccount(
+    const GaiaId& gaia_id,
+    base::OnceCallback<void(std::optional<AccountPreviewData>)> callback) {
+  if (!profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   auto it = cached_data_.find(gaia_id);
   if (it != cached_data_.end()) {
-    std::move(callback).Run(
-        ComputeAccountPreviewPreference(gaia_id, it->second));
+    std::move(callback).Run(it->second);
     return;
   }
 
   if (!identity_manager_ || !identity_manager_->AreRefreshTokensLoaded()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id);
+  if (account_info.IsEmpty() ||
+      !identity_manager_->HasAccountWithRefreshToken(
+          account_info.GetAccountId()) ||
+      identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.GetAccountId())) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -348,6 +380,7 @@ void AccountPreviewDataServiceImpl::GetPreviewPreferenceForAccount(
     return;
   }
 
+  account_id_to_gaia_id_[account_info.GetAccountId()] = gaia_id;
   single_pending_requests_[gaia_id].push_back(std::move(callback));
 
   if (!active_fetchers_.contains(gaia_id)) {
@@ -1123,26 +1156,26 @@ void AccountPreviewDataServiceImpl::MaybeNotifySinglePendingRequests(
     return;
   }
 
-  std::optional<AccountPreviewPreference> preference;
+  std::optional<AccountPreviewData> data;
   auto cache_it = cached_data_.find(gaia_id);
   if (cache_it != cached_data_.end()) {
-    preference = ComputeAccountPreviewPreference(gaia_id, cache_it->second);
+    data = cache_it->second;
   }
 
   auto callbacks = std::move(it->second);
   single_pending_requests_.erase(it);
   for (auto& cb : callbacks) {
-    std::move(cb).Run(preference);
+    std::move(cb).Run(data);
   }
 }
 
 void AccountPreviewDataServiceImpl::ClearAllSinglePendingRequests() {
-  for (auto& [gaia_id, callbacks] : single_pending_requests_) {
+  auto pending_requests = std::exchange(single_pending_requests_, {});
+  for (auto& [gaia_id, callbacks] : pending_requests) {
     for (auto& cb : callbacks) {
       std::move(cb).Run(std::nullopt);
     }
   }
-  single_pending_requests_.clear();
 }
 
 void AccountPreviewDataServiceImpl::ProcessAccountRemoval(

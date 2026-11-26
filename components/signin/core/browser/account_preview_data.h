@@ -40,6 +40,8 @@ struct AccountPreviewData {
   AccountPreviewData& operator=(AccountPreviewData&&) noexcept;
   ~AccountPreviewData();
 
+  bool operator==(const AccountPreviewData&) const = default;
+
   absl::flat_hash_map<syncer::DataType, size_t> counts;
 
   std::vector<DevicePreview> devices;

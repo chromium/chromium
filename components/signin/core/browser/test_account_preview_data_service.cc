@@ -36,6 +36,21 @@ void TestAccountPreviewDataService::GetPreviewPreferenceForAccount(
   std::move(callback).Run(preference_);
 }
 
+void TestAccountPreviewDataService::GetPreviewDataForAccount(
+    const GaiaId& gaia_id,
+    base::OnceCallback<void(std::optional<AccountPreviewData>)> callback) {
+  if (defer_preview_data_callbacks_) {
+    pending_preview_data_callbacks_[gaia_id].push_back(std::move(callback));
+    return;
+  }
+  auto it = preview_data_.find(gaia_id);
+  if (it != preview_data_.end()) {
+    std::move(callback).Run(it->second);
+    return;
+  }
+  std::move(callback).Run(std::nullopt);
+}
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void TestAccountPreviewDataService::GetPreferredAccountForSigninAsync(
     base::OnceCallback<void(std::optional<AccountPreviewPreference>)> callback,
@@ -61,6 +76,36 @@ void TestAccountPreviewDataService::TriggerCallback(
   if (pending_callback_) {
     std::move(pending_callback_).Run(std::move(pref));
   }
+}
+
+void TestAccountPreviewDataService::SetPreviewDataForAccount(
+    const GaiaId& gaia_id,
+    std::optional<AccountPreviewData> data) {
+  if (data.has_value()) {
+    preview_data_.insert_or_assign(gaia_id, std::move(*data));
+  } else {
+    preview_data_.erase(gaia_id);
+  }
+}
+
+void TestAccountPreviewDataService::TriggerPreviewDataCallbacks(
+    const GaiaId& gaia_id,
+    std::optional<AccountPreviewData> data) {
+  auto it = pending_preview_data_callbacks_.find(gaia_id);
+  if (it == pending_preview_data_callbacks_.end()) {
+    return;
+  }
+  auto callbacks = std::move(it->second);
+  pending_preview_data_callbacks_.erase(it);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(data);
+  }
+}
+
+bool TestAccountPreviewDataService::HasPendingPreviewDataCallbacks(
+    const GaiaId& gaia_id) const {
+  auto it = pending_preview_data_callbacks_.find(gaia_id);
+  return it != pending_preview_data_callbacks_.end() && !it->second.empty();
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

@@ -3980,4 +3980,423 @@ TEST_F(AccountPreviewDataServiceTest,
                   &AccountPreviewPreference::gaia_id, sec2.GetGaiaId())));
 }
 
+TEST_F(AccountPreviewDataServiceTest, GetPreviewDataForAccountCachedData) {
+  const std::vector<DevicePreview> devices = {DevicePreview{
+      .cache_guid = "device_1",
+      .last_updated = base::Time::Now(),
+      .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE,
+      .interested_data_types = {syncer::BOOKMARKS, syncer::PASSWORDS},
+  }};
+  MockSuccessfulFetch(
+      &test_url_loader_factory_,
+      {.bookmark_count = 12, .password_count = 34, .history_count = 56},
+      devices);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  run_loop.Run();
+
+  test_url_loader_factory_.ClearResponses();
+  const int pending_requests_before = test_url_loader_factory_.NumPending();
+
+  base::test::TestFuture<std::optional<AccountPreviewData>> future;
+  service_->GetPreviewDataForAccount(account.GetGaiaId(), future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+
+  std::optional<AccountPreviewData> data = future.Take();
+  ASSERT_TRUE(data.has_value());
+  EXPECT_EQ(data->counts[syncer::BOOKMARKS], 12u);
+  EXPECT_EQ(data->counts[syncer::PASSWORDS], 34u);
+  EXPECT_EQ(data->counts[syncer::HISTORY], 56u);
+  EXPECT_EQ(data->devices, devices);
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), pending_requests_before);
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(GetTestStatsUrl()));
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(GetTestPreviewsUrl()));
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewDataForAccountTriggersNewFetchWithoutComputingPreferences) {
+  // Verify `GetPreviewDataForAccount()` works even when preferred account
+  // selection is disabled (e.g. only switching account is enabled).
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{switches::kEnableAccountPreviewSwitchingAccount},
+      /*disabled_features=*/{
+          switches::kEnableAccountPreviewPreferredAccount,
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+          switches::kEnableAccountPreviewPreferredAccountFRE,
+#endif
+      });
+
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  const std::vector<DevicePreview> other_devices = {DevicePreview{
+      .cache_guid = "other_device",
+      .last_updated = base::Time::Now(),
+      .os_type = sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      .form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE,
+      .interested_data_types = {syncer::PASSWORDS},
+  }};
+
+  // Perform an initial batch fetch so the switching preference and last-fetch
+  // account list are persisted in prefs.
+  AccountInfo primary;
+  AccountInfo secondary;
+  {
+    AllDataAvailableWaiter initial_waiter(service_.get());
+    primary = MakeRegularPrimaryAccountAvailable("primary@gmail.com",
+                                                 ConsentLevel::kSignin);
+    secondary = MakeRegularAccountAvailable("secondary@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    identity_test_env_.SetCookieAccounts(
+        {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+         {std::string(secondary.GetEmail()), secondary.GetGaiaId()}});
+#endif
+    SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 0});
+    SimulateSuccessfulFetch(&test_url_loader_factory_, {.password_count = 100},
+                            other_devices);
+    initial_waiter.Wait();
+  }
+
+  std::optional<AccountPreviewPreference> stored_switching_pref =
+      service_->GetPreferredAccountForSwitching();
+  ASSERT_THAT(stored_switching_pref,
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, secondary.GetGaiaId())));
+  ASSERT_EQ(service_->GetPreferredAccountForSignin(), std::nullopt);
+
+  // Simulate a browser restart where prefs are preserved (and periodic timer
+  // is not due yet), so switching preference is available but in-memory exact
+  // counts are empty for both primary and secondary accounts.
+  base::Time last_update_time = base::Time::Now();
+  prefs_.SetTime(prefs::kAccountPreviewDataLastUpdatePref, last_update_time);
+  network_delay_helper_ = nullptr;
+  service_.reset();
+
+  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
+  network_delay_helper_ = helper.get();
+  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
+      identity_test_env_.signin_client(), identity_test_env_.identity_manager(),
+      &sync_service_, &local_state_, &prefs_,
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      version_info::Channel::UNKNOWN, &profile_metrics_service_);
+
+  ASSERT_EQ(service_->GetPreferredAccountForSwitching(), stored_switching_pref);
+  ASSERT_FALSE(
+      service_->GetAccountPreviewData(primary.GetGaiaId()).has_value());
+  ASSERT_FALSE(
+      service_->GetAccountPreviewData(secondary.GetGaiaId()).has_value());
+  ASSERT_FALSE(service_->HasActiveFetcherForTesting(primary.GetGaiaId()));
+  ASSERT_FALSE(service_->HasActiveFetcherForTesting(secondary.GetGaiaId()));
+
+  AllDataAvailableWaiter batch_waiter(service_.get());
+
+  // Request exact counts for both primary and secondary accounts.
+  base::test::TestFuture<std::optional<AccountPreviewData>> primary_future;
+  service_->GetPreviewDataForAccount(primary.GetGaiaId(),
+                                     primary_future.GetCallback());
+  base::test::TestFuture<std::optional<AccountPreviewData>> secondary_future;
+  service_->GetPreviewDataForAccount(secondary.GetGaiaId(),
+                                     secondary_future.GetCallback());
+
+  EXPECT_FALSE(primary_future.IsReady());
+  EXPECT_FALSE(secondary_future.IsReady());
+  EXPECT_TRUE(service_->HasActiveFetcherForTesting(primary.GetGaiaId()));
+  EXPECT_TRUE(service_->HasActiveFetcherForTesting(secondary.GetGaiaId()));
+
+  // Return data that would disqualify switching if heuristics were recomputed
+  // (primary now has more data than secondary).
+  SimulateSuccessfulFetch(
+      &test_url_loader_factory_,
+      {.bookmark_count = 50, .password_count = 200, .history_count = 10},
+      other_devices);
+  SimulateSuccessfulFetch(
+      &test_url_loader_factory_,
+      {.bookmark_count = 3, .password_count = 7, .history_count = 1});
+
+  std::optional<AccountPreviewData> primary_data = primary_future.Take();
+  ASSERT_TRUE(primary_data.has_value());
+  EXPECT_EQ(primary_data->counts[syncer::BOOKMARKS], 50u);
+  EXPECT_EQ(primary_data->counts[syncer::PASSWORDS], 200u);
+  EXPECT_EQ(primary_data->counts[syncer::HISTORY], 10u);
+  EXPECT_EQ(primary_data->devices, other_devices);
+
+  std::optional<AccountPreviewData> secondary_data = secondary_future.Take();
+  ASSERT_TRUE(secondary_data.has_value());
+  EXPECT_EQ(secondary_data->counts[syncer::BOOKMARKS], 3u);
+  EXPECT_EQ(secondary_data->counts[syncer::PASSWORDS], 7u);
+  EXPECT_EQ(secondary_data->counts[syncer::HISTORY], 1u);
+  EXPECT_TRUE(secondary_data->devices.empty());
+
+  // Neither preferred nor switching preference should be recomputed, and the
+  // periodic timer / batch completion should not be triggered.
+  EXPECT_FALSE(batch_waiter.is_all_data_available());
+  EXPECT_EQ(service_->GetPreferredAccountForSignin(), std::nullopt);
+  EXPECT_EQ(service_->GetPreferredAccountForSwitching(), stored_switching_pref);
+  EXPECT_EQ(prefs_.GetTime(prefs::kAccountPreviewDataLastUpdatePref),
+            last_update_time);
+
+  // Subsequent calls should now be served synchronously from in-memory cache.
+  base::test::TestFuture<std::optional<AccountPreviewData>> cached_future;
+  service_->GetPreviewDataForAccount(secondary.GetGaiaId(),
+                                     cached_future.GetCallback());
+  EXPECT_TRUE(cached_future.IsReady());
+  EXPECT_EQ(cached_future.Take(), secondary_data);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewDataForAccountAttachesToOngoingBatchFetch) {
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+
+  ASSERT_TRUE(service_->HasActiveFetcherForTesting(account1.GetGaiaId()));
+  AccountPreviewDataFetcher* initial_fetcher =
+      service_->GetFetcherForTesting(account1.GetGaiaId());
+  ASSERT_NE(initial_fetcher, nullptr);
+
+  base::test::TestFuture<std::optional<AccountPreviewData>> future;
+  service_->GetPreviewDataForAccount(account1.GetGaiaId(),
+                                     future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  // Must attach to the existing fetcher rather than starting a new one.
+  EXPECT_EQ(service_->GetFetcherForTesting(account1.GetGaiaId()),
+            initial_fetcher);
+
+  AllDataAvailableWaiter waiter(service_.get());
+  MockSuccessfulFetch(&test_url_loader_factory_,
+                      {.bookmark_count = 15, .password_count = 25});
+
+  std::optional<AccountPreviewData> data = future.Take();
+  waiter.Wait();
+
+  ASSERT_TRUE(data.has_value());
+  EXPECT_EQ(data->counts[syncer::BOOKMARKS], 15u);
+  EXPECT_EQ(data->counts[syncer::PASSWORDS], 25u);
+  EXPECT_TRUE(waiter.is_all_data_available());
+  EXPECT_EQ(service_->GetAccountPreviewData(account1.GetGaiaId()), data);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewDataForAccountMultipleConcurrentRequestsAttachToSingleFetch) {
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  // Make an account available with a failed initial fetch so no data is cached
+  // and no batch fetcher is active.
+  MockFailedStatsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  AllDataAvailableWaiter initial_waiter(service_.get());
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  initial_waiter.Wait();
+  test_url_loader_factory_.ClearResponses();
+
+  ASSERT_FALSE(
+      service_->GetAccountPreviewData(account.GetGaiaId()).has_value());
+  ASSERT_FALSE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+
+  // Start a single-account fetch and attach additional concurrent requests for
+  // both `AccountPreviewData` and `AccountPreviewPreference`.
+  base::test::TestFuture<std::optional<AccountPreviewData>> data_future_1;
+  service_->GetPreviewDataForAccount(account.GetGaiaId(),
+                                     data_future_1.GetCallback());
+  AccountPreviewDataFetcher* fetcher =
+      service_->GetFetcherForTesting(account.GetGaiaId());
+  ASSERT_NE(fetcher, nullptr);
+
+  base::test::TestFuture<std::optional<AccountPreviewData>> data_future_2;
+  service_->GetPreviewDataForAccount(account.GetGaiaId(),
+                                     data_future_2.GetCallback());
+  base::test::TestFuture<std::optional<AccountPreviewPreference>> pref_future;
+  service_->GetPreviewPreferenceForAccount(account.GetGaiaId(),
+                                           pref_future.GetCallback());
+
+  EXPECT_EQ(service_->GetFetcherForTesting(account.GetGaiaId()), fetcher);
+  EXPECT_FALSE(data_future_1.IsReady());
+  EXPECT_FALSE(data_future_2.IsReady());
+  EXPECT_FALSE(pref_future.IsReady());
+
+  SimulateSuccessfulFetch(&test_url_loader_factory_,
+                          {.bookmark_count = 20, .password_count = 50});
+
+  std::optional<AccountPreviewData> data_1 = data_future_1.Take();
+  std::optional<AccountPreviewData> data_2 = data_future_2.Take();
+  std::optional<AccountPreviewPreference> pref = pref_future.Take();
+
+  ASSERT_TRUE(data_1.has_value());
+  EXPECT_EQ(data_1->counts[syncer::BOOKMARKS], 20u);
+  EXPECT_EQ(data_1->counts[syncer::PASSWORDS], 50u);
+  EXPECT_EQ(data_2, data_1);
+  EXPECT_THAT(
+      pref, testing::Optional(testing::Field(&AccountPreviewPreference::gaia_id,
+                                             account.GetGaiaId())));
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewDataForAccountInvalidOrUnauthenticatedAccount) {
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+  EXPECT_CALL(*mock_network_context_, PreconnectSockets).Times(0);
+
+  // Non-existent account.
+  {
+    base::test::TestFuture<std::optional<AccountPreviewData>> future;
+    service_->GetPreviewDataForAccount(GaiaId("non_existent_gaia_id"),
+                                       future.GetCallback());
+    EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Take(), std::nullopt);
+    EXPECT_FALSE(
+        service_->HasActiveFetcherForTesting(GaiaId("non_existent_gaia_id")));
+  }
+
+  // Empty GaiaId.
+  {
+    base::test::TestFuture<std::optional<AccountPreviewData>> future;
+    service_->GetPreviewDataForAccount(GaiaId(), future.GetCallback());
+    EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Take(), std::nullopt);
+  }
+
+  // Account without refresh token.
+  {
+    AccountInfo no_token_account = identity_test_env_.MakeAccountAvailable(
+        identity_test_env_.CreateAccountAvailabilityOptionsBuilder()
+            .WithoutRefreshToken()
+            .Build("notoken@gmail.com"));
+    base::test::TestFuture<std::optional<AccountPreviewData>> future;
+    service_->GetPreviewDataForAccount(no_token_account.GetGaiaId(),
+                                       future.GetCallback());
+    EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Take(), std::nullopt);
+    EXPECT_FALSE(
+        service_->HasActiveFetcherForTesting(no_token_account.GetGaiaId()));
+  }
+
+  // Account with persistent refresh token error.
+  {
+    AccountInfo error_account = identity_test_env_.MakeAccountAvailable(
+        identity_test_env_.CreateAccountAvailabilityOptionsBuilder()
+            .WithoutRefreshToken()
+            .Build("error@gmail.com"));
+    identity_test_env_.SetInvalidRefreshTokenForAccount(
+        error_account.GetAccountId());
+    base::test::TestFuture<std::optional<AccountPreviewData>> future;
+    service_->GetPreviewDataForAccount(error_account.GetGaiaId(),
+                                       future.GetCallback());
+    EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Take(), std::nullopt);
+    EXPECT_FALSE(
+        service_->HasActiveFetcherForTesting(error_account.GetGaiaId()));
+  }
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewDataForAccountRefreshTokensNotLoaded) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  identity_test_env_.ResetToAccountsNotYetLoadedFromDiskState();
+
+  base::test::TestFuture<std::optional<AccountPreviewData>> future;
+  service_->GetPreviewDataForAccount(account.GetGaiaId(), future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Take(), std::nullopt);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewDataForAccountSigninDisallowed) {
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  ASSERT_TRUE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+
+  // Attach to ongoing fetch, then disallow sign-in. Pending callback should be
+  // notified with nullopt.
+  base::test::TestFuture<std::optional<AccountPreviewData>> inflight_future;
+  service_->GetPreviewDataForAccount(account.GetGaiaId(),
+                                     inflight_future.GetCallback());
+  EXPECT_FALSE(inflight_future.IsReady());
+
+  prefs_.SetBoolean(prefs::kSigninAllowed, false);
+  EXPECT_TRUE(inflight_future.IsReady());
+  EXPECT_EQ(inflight_future.Take(), std::nullopt);
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+
+  // Subsequent calls while sign-in is disallowed return nullopt synchronously
+  // without starting a fetch.
+  base::test::TestFuture<std::optional<AccountPreviewData>> disallowed_future;
+  service_->GetPreviewDataForAccount(account.GetGaiaId(),
+                                     disallowed_future.GetCallback());
+  EXPECT_TRUE(disallowed_future.IsReady());
+  EXPECT_EQ(disallowed_future.Take(), std::nullopt);
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreviewDataForAccountFetchFailureAndAccountRemoval) {
+  // 1. Network failure resolves callback with nullopt.
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  base::test::TestFuture<std::optional<AccountPreviewData>> failure_future;
+  service_->GetPreviewDataForAccount(account.GetGaiaId(),
+                                     failure_future.GetCallback());
+  MockFailedStatsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  EXPECT_EQ(failure_future.Take(), std::nullopt);
+  EXPECT_FALSE(
+      service_->GetAccountPreviewData(account.GetGaiaId()).has_value());
+
+  // 2. Account removal while a single fetch is in flight resolves callback with
+  // nullopt.
+  test_url_loader_factory_.ClearResponses();
+  base::test::TestFuture<std::optional<AccountPreviewData>> removal_future;
+  service_->GetPreviewDataForAccount(account.GetGaiaId(),
+                                     removal_future.GetCallback());
+  ASSERT_TRUE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+  EXPECT_FALSE(removal_future.IsReady());
+
+  identity_test_env_.RemoveRefreshTokenForAccount(account.GetAccountId());
+  EXPECT_TRUE(removal_future.IsReady());
+  EXPECT_EQ(removal_future.Take(), std::nullopt);
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+}
+
+TEST_F(AccountPreviewDataServiceTest, GetPreviewDataForAccountRateLimited) {
+  base::HistogramTester histograms;
+  Mock429Fetch(&test_url_loader_factory_);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("account@gmail.com");
+  run_loop.Run();
+
+  test_url_loader_factory_.ClearResponses();
+  ASSERT_TRUE(service_->IsRateLimitedForTesting());
+
+  // Single data request is rejected synchronously while rate-limited.
+  base::test::TestFuture<std::optional<AccountPreviewData>> blocked_future;
+  service_->GetPreviewDataForAccount(account.GetGaiaId(),
+                                     blocked_future.GetCallback());
+  EXPECT_TRUE(blocked_future.IsReady());
+  EXPECT_EQ(blocked_future.Take(), std::nullopt);
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
+  histograms.ExpectBucketCount("Signin.AccountPreview.SingleRequestRateLimited",
+                               true, 1);
+
+  // After rate-limit expires, a new fetch succeeds and returns exact counts.
+  task_environment_.FastForwardBy(base::Hours(25));
+  ASSERT_FALSE(service_->IsRateLimitedForTesting());
+
+  MockSuccessfulFetch(&test_url_loader_factory_,
+                      {.bookmark_count = 11, .password_count = 22});
+  base::test::TestFuture<std::optional<AccountPreviewData>> allowed_future;
+  service_->GetPreviewDataForAccount(account.GetGaiaId(),
+                                     allowed_future.GetCallback());
+  std::optional<AccountPreviewData> data = allowed_future.Take();
+  ASSERT_TRUE(data.has_value());
+  EXPECT_EQ(data->counts[syncer::BOOKMARKS], 11u);
+  EXPECT_EQ(data->counts[syncer::PASSWORDS], 22u);
+}
+
 }  // namespace signin
