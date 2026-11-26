@@ -104,6 +104,22 @@ bool ShouldCaptureScreenshot(
 
 }  // namespace
 
+void SkillRecordingService::Observer::OnTranscriptUpdate(
+    const std::string& text,
+    base::TimeDelta timestamp,
+    bool is_final) {}
+
+void SkillRecordingService::Observer::OnRecordingStarted() {}
+
+void SkillRecordingService::Observer::OnActionUpdated(
+    size_t action_index,
+    const RecordedAction& action) {}
+
+void SkillRecordingService::Observer::OnRecordingStopped(
+    const RecordingArtifacts& artifacts) {}
+
+void SkillRecordingService::Observer::OnSkillRecordingServiceShuttingDown() {}
+
 SkillRecordingService::SkillRecordingService(
     Profile* profile,
     optimization_guide::RemoteModelExecutor* model_executor)
@@ -157,6 +173,8 @@ void SkillRecordingService::StartRecording() {
   }
   audio_capturer_->Start();
 
+  observers_.Notify(&Observer::OnRecordingStarted);
+
   if (mes_client_) {
     mes_client_->CancelPendingRequest();
   }
@@ -175,6 +193,12 @@ void SkillRecordingService::StopRecording() {
   tab_observer_.reset();
   browser_tab_strip_tracker_.reset();
   scoped_accessibility_mode_.reset();
+
+  for (RecordedAction& action : artifacts_.actions) {
+    action.is_loading_screenshot = false;
+  }
+
+  observers_.Notify(&Observer::OnRecordingStopped, artifacts_);
 }
 
 void SkillRecordingService::CaptureAction(
@@ -192,7 +216,25 @@ void SkillRecordingService::CaptureAction(
   content::WebContents* web_contents =
       tab_observer_ ? tab_observer_->web_contents() : nullptr;
   action.current_url = GetSanitizedRecordableUrl(web_contents);
-  if (!ShouldCaptureScreenshot(type) || action.current_url.is_empty()) {
+  const bool should_capture_screenshot = web_contents &&
+                                         ShouldCaptureScreenshot(type) &&
+                                         !action.current_url.is_empty();
+  action.is_loading_screenshot = should_capture_screenshot;
+  base::WeakPtr<content::WebContents> weak_web_contents =
+      should_capture_screenshot ? web_contents->GetWeakPtr() : nullptr;
+
+  observers_.Notify(&Observer::OnActionUpdated, action_index, action);
+
+  if (!should_capture_screenshot || !is_recording() ||
+      action_index >= artifacts_.actions.size() ||
+      !artifacts_.actions[action_index].is_loading_screenshot) {
+    return;
+  }
+  if (!weak_web_contents || weak_web_contents->IsBeingDestroyed() ||
+      !weak_web_contents->GetPrimaryMainFrame()) {
+    RecordedAction& updated_action = artifacts_.actions[action_index];
+    updated_action.is_loading_screenshot = false;
+    observers_.Notify(&Observer::OnActionUpdated, action_index, updated_action);
     return;
   }
 
@@ -213,7 +255,7 @@ void SkillRecordingService::CaptureAction(
           /*paint_preview_options=*/std::nullopt, collection_options);
 
   page_content_annotations::FetchPageContext(
-      *web_contents, options, /*progress_listener=*/nullptr,
+      *weak_web_contents, options, /*progress_listener=*/nullptr,
       BindScreenshotCapturedCallback(action_index));
 }
 
@@ -250,6 +292,7 @@ void SkillRecordingService::Shutdown() {
   artifacts_ = RecordingArtifacts();
   audio_capturer_.reset();
   mes_client_.reset();
+  observers_.Notify(&Observer::OnSkillRecordingServiceShuttingDown);
 }
 
 void SkillRecordingService::OnTabStripModelChanged(
@@ -337,9 +380,7 @@ void SkillRecordingService::OnTranscriptUpdate(const std::string& text,
       artifacts_.transcripts.emplace_back(std::string(trimmed_text), timestamp);
     }
   }
-  for (Observer& obs : observers_) {
-    obs.OnTranscriptUpdate(text, timestamp, is_final);
-  }
+  observers_.Notify(&Observer::OnTranscriptUpdate, text, timestamp, is_final);
 }
 
 page_content_annotations::FetchPageContextResultCallback
@@ -354,17 +395,18 @@ void SkillRecordingService::OnScreenshotCaptured(
   if (!is_recording() || action_index >= artifacts_.actions.size()) {
     return;
   }
-  if (!result.has_value() || !result.value() ||
-      !result.value()->screenshot_result.has_value()) {
-    return;
+  RecordedAction& action = artifacts_.actions[action_index];
+  action.is_loading_screenshot = false;
+  if (result.has_value() && result.value() &&
+      result.value()->screenshot_result.has_value()) {
+    const page_content_annotations::ScreenshotResult& screenshot =
+        result.value()->screenshot_result.value();
+    if (!screenshot.screenshot_data.empty() && !screenshot.mime_type.empty()) {
+      action.screenshot_jpeg_bytes =
+          std::string(base::as_string_view(screenshot.screenshot_data));
+    }
   }
-  const page_content_annotations::ScreenshotResult& screenshot =
-      result.value()->screenshot_result.value();
-  if (screenshot.screenshot_data.empty() || screenshot.mime_type.empty()) {
-    return;
-  }
-  artifacts_.actions[action_index].screenshot_jpeg_bytes =
-      std::string(base::as_string_view(screenshot.screenshot_data));
+  observers_.Notify(&Observer::OnActionUpdated, action_index, action);
 }
 
 void SkillRecordingService::MaybeCaptureTabSwitch() {

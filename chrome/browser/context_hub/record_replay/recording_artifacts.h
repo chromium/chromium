@@ -60,6 +60,9 @@ struct RecordedAction {
   // action, or empty if screenshot capture was unavailable or did not complete
   // before the session ended.
   std::string screenshot_jpeg_bytes;
+  // True while an asynchronous viewport screenshot capture is in flight for
+  // this action during an active recording session.
+  bool is_loading_screenshot = false;
 };
 
 // Represents a finalized voice transcript segment captured during a skill

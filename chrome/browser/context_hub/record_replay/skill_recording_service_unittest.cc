@@ -4,6 +4,7 @@
 
 #include "chrome/browser/context_hub/record_replay/skill_recording_service.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <map>
 #include <memory>
@@ -17,6 +18,7 @@
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -187,12 +189,39 @@ class TestBrowserInstance {
 class TestSkillRecordingServiceObserver
     : public SkillRecordingService::Observer {
  public:
+  enum class LifecycleEvent {
+    kRecordingStarted,
+    kRecordingStopped,
+    kServiceShuttingDown,
+  };
+
+  struct ActionUpdateRecord {
+    size_t action_index = 0;
+    std::string description;
+    bool is_loading_screenshot = false;
+    bool has_screenshot = false;
+
+    bool operator==(const ActionUpdateRecord&) const = default;
+  };
+
   TestSkillRecordingServiceObserver() = default;
   TestSkillRecordingServiceObserver(const TestSkillRecordingServiceObserver&) =
       delete;
   TestSkillRecordingServiceObserver& operator=(
       const TestSkillRecordingServiceObserver&) = delete;
   ~TestSkillRecordingServiceObserver() override = default;
+
+  // `service` must be non-null and must outlive this observer unless
+  // `OnSkillRecordingServiceShuttingDown()` runs first.
+  void Observe(SkillRecordingService* service) {
+    observation_.Observe(service);
+  }
+
+  bool IsObserving() const { return observation_.IsObserving(); }
+
+  void SetOnLoadingActionUpdatedCallback(base::OnceClosure callback) {
+    on_loading_action_updated_ = std::move(callback);
+  }
 
   // SkillRecordingService::Observer:
   void OnTranscriptUpdate(const std::string& text,
@@ -201,19 +230,68 @@ class TestSkillRecordingServiceObserver
     last_text_ = text;
     last_timestamp_ = timestamp;
     last_is_final_ = is_final;
-    update_count_++;
+    transcript_update_count_++;
+  }
+
+  void OnRecordingStarted() override {
+    lifecycle_events_.push_back(LifecycleEvent::kRecordingStarted);
+  }
+
+  void OnActionUpdated(size_t action_index,
+                       const RecordedAction& action) override {
+    action_updates_.push_back({
+        .action_index = action_index,
+        .description = action.description,
+        .is_loading_screenshot = action.is_loading_screenshot,
+        .has_screenshot = !action.screenshot_jpeg_bytes.empty(),
+    });
+    if (action.is_loading_screenshot && on_loading_action_updated_) {
+      std::move(on_loading_action_updated_).Run();
+    }
+  }
+
+  void OnRecordingStopped(const RecordingArtifacts& artifacts) override {
+    lifecycle_events_.push_back(LifecycleEvent::kRecordingStopped);
+    last_stopped_action_count_ = artifacts.actions.size();
+    stopped_had_loading_screenshot_ = std::ranges::any_of(
+        artifacts.actions, &RecordedAction::is_loading_screenshot);
+  }
+
+  void OnSkillRecordingServiceShuttingDown() override {
+    lifecycle_events_.push_back(LifecycleEvent::kServiceShuttingDown);
+    observation_.Reset();
   }
 
   const std::string& last_text() const { return last_text_; }
   base::TimeDelta last_timestamp() const { return last_timestamp_; }
   bool last_is_final() const { return last_is_final_; }
-  int update_count() const { return update_count_; }
+  int transcript_update_count() const { return transcript_update_count_; }
+  size_t last_stopped_action_count() const {
+    return last_stopped_action_count_;
+  }
+  bool stopped_had_loading_screenshot() const {
+    return stopped_had_loading_screenshot_;
+  }
+  const std::vector<LifecycleEvent>& lifecycle_events() const {
+    return lifecycle_events_;
+  }
+  const std::vector<ActionUpdateRecord>& action_updates() const {
+    return action_updates_;
+  }
 
  private:
   std::string last_text_;
   base::TimeDelta last_timestamp_;
   bool last_is_final_ = false;
-  int update_count_ = 0;
+  int transcript_update_count_ = 0;
+  size_t last_stopped_action_count_ = 0;
+  bool stopped_had_loading_screenshot_ = false;
+  std::vector<LifecycleEvent> lifecycle_events_;
+  std::vector<ActionUpdateRecord> action_updates_;
+  base::OnceClosure on_loading_action_updated_;
+  base::ScopedObservation<SkillRecordingService,
+                          SkillRecordingService::Observer>
+      observation_{this};
 };
 
 class SkillRecordingServiceTest : public testing::Test {
@@ -967,7 +1045,7 @@ TEST_F(SkillRecordingServiceTest, ForwardsTranscriptUpdatesToObservers) {
   service_.OnTranscriptUpdateForTesting("ignored before start",
                                         base::Milliseconds(100),
                                         /*is_final=*/true);
-  EXPECT_EQ(observer.update_count(), 0);
+  EXPECT_EQ(observer.transcript_update_count(), 0);
   EXPECT_TRUE(service_.artifacts().transcripts.empty());
 
   service_.StartRecording();
@@ -976,7 +1054,7 @@ TEST_F(SkillRecordingServiceTest, ForwardsTranscriptUpdatesToObservers) {
   // `artifacts().transcripts`.
   service_.OnTranscriptUpdateForTesting("hello", base::Milliseconds(100),
                                         /*is_final=*/false);
-  EXPECT_EQ(observer.update_count(), 1);
+  EXPECT_EQ(observer.transcript_update_count(), 1);
   EXPECT_EQ(observer.last_text(), "hello");
   EXPECT_EQ(observer.last_timestamp(), base::Milliseconds(100));
   EXPECT_FALSE(observer.last_is_final());
@@ -986,7 +1064,7 @@ TEST_F(SkillRecordingServiceTest, ForwardsTranscriptUpdatesToObservers) {
   // `artifacts().transcripts`.
   service_.OnTranscriptUpdateForTesting("   \t\n  ", base::Milliseconds(200),
                                         /*is_final=*/true);
-  EXPECT_EQ(observer.update_count(), 2);
+  EXPECT_EQ(observer.transcript_update_count(), 2);
   EXPECT_TRUE(service_.artifacts().transcripts.empty());
 
   // Finalized transcripts are trimmed and stored in `artifacts().transcripts`,
@@ -994,7 +1072,7 @@ TEST_F(SkillRecordingServiceTest, ForwardsTranscriptUpdatesToObservers) {
   service_.OnTranscriptUpdateForTesting("  hello world \n",
                                         base::Milliseconds(250),
                                         /*is_final=*/true);
-  EXPECT_EQ(observer.update_count(), 3);
+  EXPECT_EQ(observer.transcript_update_count(), 3);
   EXPECT_EQ(observer.last_text(), "  hello world \n");
   EXPECT_EQ(observer.last_timestamp(), base::Milliseconds(250));
   EXPECT_TRUE(observer.last_is_final());
@@ -1007,14 +1085,14 @@ TEST_F(SkillRecordingServiceTest, ForwardsTranscriptUpdatesToObservers) {
   service_.OnTranscriptUpdateForTesting("ignored after remove",
                                         base::Milliseconds(400),
                                         /*is_final=*/false);
-  EXPECT_EQ(observer.update_count(), 3);
+  EXPECT_EQ(observer.transcript_update_count(), 3);
 
   service_.StopRecording();
 
   service_.OnTranscriptUpdateForTesting("ignored after stop",
                                         base::Milliseconds(500),
                                         /*is_final=*/true);
-  EXPECT_EQ(observer.update_count(), 3);
+  EXPECT_EQ(observer.transcript_update_count(), 3);
   EXPECT_EQ(service_.artifacts().transcripts.size(), 1u);
 
   // Starting a new recording session clears transcripts from the previous
@@ -1210,6 +1288,179 @@ TEST_F(SkillRecordingServiceTest,
       no_executor_future.GetCallback());
   EXPECT_FALSE(no_executor_future.IsReady());
   EXPECT_EQ(no_executor_future.Get(), std::nullopt);
+}
+
+TEST_F(SkillRecordingServiceTest,
+       NotifiesObserversAcrossRecordingAndScreenshotFailure) {
+  using LifecycleEvent = TestSkillRecordingServiceObserver::LifecycleEvent;
+
+  TestBrowserInstance browser(&profile_);
+  browser.Activate();
+  AddTab(&browser, GURL("https://example.com/form"));
+
+  TestSkillRecordingServiceObserver observer;
+  observer.Observe(&service_);
+
+  service_.StartRecording();
+  EXPECT_THAT(observer.lifecycle_events(),
+              ElementsAre(LifecycleEvent::kRecordingStarted));
+
+  // In unit tests without a compositor frame, `FetchPageContext()` fails
+  // synchronously inside `CaptureAction()`: the first `OnActionUpdated()`
+  // notification reports `is_loading_screenshot == true`, and the failure
+  // callback immediately clears `is_loading_screenshot` and notifies again so
+  // UI shimmers do not hang until the session ends.
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "Clicked Submit");
+  EXPECT_THAT(observer.action_updates(),
+              ElementsAre(
+                  TestSkillRecordingServiceObserver::ActionUpdateRecord{
+                      .action_index = 0u,
+                      .description = "Clicked Submit",
+                      .is_loading_screenshot = true,
+                      .has_screenshot = false,
+                  },
+                  TestSkillRecordingServiceObserver::ActionUpdateRecord{
+                      .action_index = 0u,
+                      .description = "Clicked Submit",
+                      .is_loading_screenshot = false,
+                      .has_screenshot = false,
+                  }));
+
+  // Navigation actions do not capture screenshots and immediately report
+  // `is_loading_screenshot` as `false` in a single notification.
+  service_.CaptureAction(SkillRecordingActionType::kNavigation,
+                         "Navigated to https://example.com/next");
+  EXPECT_THAT(observer.action_updates(),
+              ElementsAre(
+                  TestSkillRecordingServiceObserver::ActionUpdateRecord{
+                      .action_index = 0u,
+                      .description = "Clicked Submit",
+                      .is_loading_screenshot = true,
+                      .has_screenshot = false,
+                  },
+                  TestSkillRecordingServiceObserver::ActionUpdateRecord{
+                      .action_index = 0u,
+                      .description = "Clicked Submit",
+                      .is_loading_screenshot = false,
+                      .has_screenshot = false,
+                  },
+                  TestSkillRecordingServiceObserver::ActionUpdateRecord{
+                      .action_index = 1u,
+                      .description = "Navigated to https://example.com/next",
+                      .is_loading_screenshot = false,
+                      .has_screenshot = false,
+                  }));
+
+  service_.StopRecording();
+  EXPECT_THAT(observer.lifecycle_events(),
+              ElementsAre(LifecycleEvent::kRecordingStarted,
+                          LifecycleEvent::kRecordingStopped));
+  EXPECT_EQ(observer.last_stopped_action_count(), 2u);
+  EXPECT_FALSE(observer.stopped_had_loading_screenshot());
+
+  // Shutting down while recording stops the active session first, then notifies
+  // `OnSkillRecordingServiceShuttingDown()` once so `ScopedObservation`
+  // observers can detach cleanly before `~SkillRecordingService()`.
+  service_.StartRecording();
+  EXPECT_THAT(observer.lifecycle_events(),
+              ElementsAre(LifecycleEvent::kRecordingStarted,
+                          LifecycleEvent::kRecordingStopped,
+                          LifecycleEvent::kRecordingStarted));
+  service_.CaptureAction(SkillRecordingActionType::kNavigation,
+                         "Navigated to https://example.com/next");
+  service_.Shutdown();
+  service_.Shutdown();
+  EXPECT_THAT(observer.lifecycle_events(),
+              ElementsAre(LifecycleEvent::kRecordingStarted,
+                          LifecycleEvent::kRecordingStopped,
+                          LifecycleEvent::kRecordingStarted,
+                          LifecycleEvent::kRecordingStopped,
+                          LifecycleEvent::kServiceShuttingDown));
+  EXPECT_EQ(observer.last_stopped_action_count(), 1u);
+  EXPECT_FALSE(observer.stopped_had_loading_screenshot());
+  EXPECT_FALSE(observer.IsObserving());
+}
+
+TEST_F(SkillRecordingServiceTest,
+       CaptureActionClearsLoadingScreenshotIfObserverClosesWebContents) {
+  TestBrowserInstance browser(&profile_);
+  browser.Activate();
+  AddTab(&browser, GURL("https://example.com/form"));
+
+  TestSkillRecordingServiceObserver observer;
+  observer.Observe(&service_);
+  observer.SetOnLoadingActionUpdatedCallback(base::BindLambdaForTesting([&] {
+    browser.tab_strip_model()->CloseWebContentsAt(
+        0, TabCloseTypes::CLOSE_USER_GESTURE);
+  }));
+
+  service_.StartRecording();
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "Clicked Submit");
+
+  EXPECT_THAT(observer.action_updates(),
+              ElementsAre(
+                  TestSkillRecordingServiceObserver::ActionUpdateRecord{
+                      .action_index = 0u,
+                      .description = "Clicked Submit",
+                      .is_loading_screenshot = true,
+                      .has_screenshot = false,
+                  },
+                  TestSkillRecordingServiceObserver::ActionUpdateRecord{
+                      .action_index = 0u,
+                      .description = "Clicked Submit",
+                      .is_loading_screenshot = false,
+                      .has_screenshot = false,
+                  }));
+  ASSERT_EQ(service_.artifacts().actions.size(), 1u);
+  EXPECT_FALSE(service_.artifacts().actions[0].is_loading_screenshot);
+  service_.StopRecording();
+}
+
+TEST_F(SkillRecordingServiceTest,
+       StartRecordingNotifiesStartedBeforeCancellingPendingSkillGeneration) {
+  using LifecycleEvent = TestSkillRecordingServiceObserver::LifecycleEvent;
+
+  service_.StartRecording();
+  service_.CaptureAction(SkillRecordingActionType::kLeftClick,
+                         "First session action");
+  service_.StopRecording();
+
+  TestFuture<optimization_guide::OptimizationGuideModelExecutionResultCallback>
+      execute_called_future;
+  EXPECT_CALL(mock_model_executor_, ExecuteModel(_, _, _, _))
+      .WillOnce(WithArg<3>(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            execute_called_future.SetValue(std::move(callback));
+          }));
+
+  service_.GenerateSkillFromRecording(base::BindLambdaForTesting(
+      [&](std::optional<std::string> skill_instructions) {
+        EXPECT_EQ(skill_instructions, std::nullopt);
+        service_.Shutdown();
+      }));
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      stale_mes_callback = execute_called_future.Take();
+
+  TestSkillRecordingServiceObserver observer;
+  observer.Observe(&service_);
+
+  // `OnRecordingStarted()` must fire before `CancelPendingRequest()` runs the
+  // cancelled `GenerateSkillCallback` (which calls `Shutdown()`), preserving
+  // the `[kRecordingStarted, kRecordingStopped, kServiceShuttingDown]`
+  // observer lifecycle order.
+  service_.StartRecording();
+  EXPECT_FALSE(service_.is_recording());
+  EXPECT_FALSE(observer.IsObserving());
+  EXPECT_THAT(observer.lifecycle_events(),
+              ElementsAre(LifecycleEvent::kRecordingStarted,
+                          LifecycleEvent::kRecordingStopped,
+                          LifecycleEvent::kServiceShuttingDown));
+
+  std::move(stale_mes_callback)
+      .Run(CreateSkillGenerationMesResult("Stale response"), nullptr);
 }
 }  // namespace
 }  // namespace context_hub

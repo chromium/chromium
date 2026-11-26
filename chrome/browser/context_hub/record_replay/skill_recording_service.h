@@ -52,6 +52,11 @@ class SkillRecordingService final : public KeyedService,
                                     public BrowserTabStripTrackerDelegate,
                                     public BrowserCollectionObserver {
  public:
+  // Observer for recording session lifecycle, action, and transcript updates.
+  // Observers must not re-entrantly call mutating `SkillRecordingService`
+  // methods that notify observers (such as `StartRecording()`,
+  // `StopRecording()`, or `CaptureAction()`) from any `Observer` callback;
+  // detaching via `RemoveObserver()` is permitted.
   class Observer : public base::CheckedObserver {
    public:
     // Called when a voice transcript segment is received during an active
@@ -60,7 +65,24 @@ class SkillRecordingService final : public KeyedService,
     // interim hypothesis.
     virtual void OnTranscriptUpdate(const std::string& text,
                                     base::TimeDelta timestamp,
-                                    bool is_final) = 0;
+                                    bool is_final);
+
+    // Called when a new recording session starts.
+    virtual void OnRecordingStarted();
+
+    // Called when the recorded action at `action_index` in
+    // `artifacts().actions` is captured or updated (for example, when
+    // screenshot capture finishes or fails).
+    virtual void OnActionUpdated(size_t action_index,
+                                 const RecordedAction& action);
+
+    // Called when the active recording session stops with the completed session
+    // `artifacts`.
+    virtual void OnRecordingStopped(const RecordingArtifacts& artifacts);
+
+    // Called during `Shutdown()` before the service is destroyed. Observers
+    // must unregister themselves via `RemoveObserver()` before destruction.
+    virtual void OnSkillRecordingServiceShuttingDown();
   };
 
   // `profile` must be non-null and must outlive this `SkillRecordingService`.
@@ -72,8 +94,9 @@ class SkillRecordingService final : public KeyedService,
   SkillRecordingService& operator=(const SkillRecordingService&) = delete;
   ~SkillRecordingService() override;
 
-  // `obs` must be non-null and must outlive this `SkillRecordingService` or
-  // unregister itself via `RemoveObserver()` before destruction.
+  // `obs` must be non-null and must unregister itself via `RemoveObserver()`
+  // before this `SkillRecordingService` is destroyed (for example, in
+  // `OnSkillRecordingServiceShuttingDown()`).
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
 
@@ -161,7 +184,7 @@ class SkillRecordingService final : public KeyedService,
   bool is_shut_down_ = false;
   std::optional<base::TimeTicks> start_time_;
   RecordingArtifacts artifacts_;
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<Observer, /*check_empty=*/true> observers_;
 
   std::unique_ptr<RecordReplayMesClient> mes_client_;
   std::unique_ptr<SkillAudioCapturer> audio_capturer_;
