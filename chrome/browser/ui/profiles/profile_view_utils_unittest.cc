@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 
-#include <utility>
-
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -13,8 +11,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -89,13 +86,14 @@ TEST_F(ProfileViewUtilsTest, AccessibleWindowTitleGuestPrecedesIncognito) {
             AnnotateAccessibleWindowTitleForProfile(u"Window title", *guest));
 }
 
-TEST_F(ProfileViewUtilsTest, AccessibleWindowTitleEnterpriseIsolatedMode) {
-  base::test::ScopedFeatureList feature_list(
-      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-  profile()->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      std::to_underlying(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+class ProfileViewUtilsIsolatedModeTest : public ProfileViewUtilsTest {
+ private:
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
+};
+
+TEST_F(ProfileViewUtilsIsolatedModeTest,
+       AccessibleWindowTitleEnterpriseIsolatedMode) {
   Profile* isolated =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(isolated->IsEnterpriseIsolatedModeProfile());
