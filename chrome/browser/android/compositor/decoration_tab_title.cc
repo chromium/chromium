@@ -123,13 +123,14 @@ void DecorationTabTitle::CreateTabBubble() {
   float offset = (bubble_outer_dimension_ - bubble_inner_dimension_) / 2.0f;
   tab_bubble_outer_circle_layer_->AddChild(tab_bubble_inner_circle_layer_);
   tab_bubble_inner_circle_layer_->SetPosition((gfx::PointF(offset, offset)));
+  layer_->AddChild(tab_bubble_outer_circle_layer_);
 }
 
 void DecorationTabTitle::CreateAndShowTabBubble(gfx::PointF position) {
   if (!tab_bubble_outer_circle_layer_) {
     CreateTabBubble();
   }
-  layer_->AddChild(tab_bubble_outer_circle_layer_);
+  tab_bubble_outer_circle_layer_->SetHideLayerAndSubtree(false);
   tab_bubble_outer_circle_layer_->SetPosition(position);
   tab_bubble_outer_circle_layer_->SetIsDrawable(true);
   tab_bubble_outer_circle_layer_->SetOpacity(1.0f);
@@ -142,7 +143,7 @@ void DecorationTabTitle::HideTabBubble() {
     return;
   }
 
-  // Ensure the bubble is not visible and removed from its parent.
+  // Ensure the bubble is not visible.
   tab_bubble_outer_circle_layer_->SetHideLayerAndSubtree(true);
 }
 
