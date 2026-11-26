@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
+#include "chrome/browser/browser_actuator/buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/stream_transport/transport_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -36,6 +37,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
+
+#if BUILDFLAG(ENABLE_BROWSER_ACTUATOR_FAKE_TASK_CLIENT)
+#include "base/command_line.h"
+#include "base/test/scoped_command_line.h"
+#include "components/browser_actuator/test_support/scripted_browser_actuator_task_client.h"  // nogncheck
+#endif
 
 namespace browser_actuator {
 namespace {
@@ -320,5 +327,95 @@ TEST_F(BrowserActuatorServiceFactoryTest, NoTaskClientWhenIngressDisabled) {
                   ->GetFactories(stream_transport::PayloadType::kTaskIngress)
                   .empty());
 }
+
+#if BUILDFLAG(ENABLE_BROWSER_ACTUATOR_FAKE_TASK_CLIENT)
+TEST_F(BrowserActuatorServiceFactoryTest,
+       FakeTaskClientSwitchCreatesTaskClient) {
+  feature_list_.InitWithFeatures({kBrowserActuator},
+                                 {kBrowserActuatorTaskIngress});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ScriptedBrowserActuatorTaskClient::kScenarioSwitch, "success");
+  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
+
+  BrowserActuatorService* service =
+      BrowserActuatorServiceFactory::GetForProfile(profile.get());
+  ASSERT_NE(nullptr, service);
+  EXPECT_NE(nullptr, service->CreateTaskClient());
+}
+
+TEST_F(BrowserActuatorServiceFactoryTest,
+       FakeTaskClientSwitchOverridesRealTaskClientWhenIngressEnabled) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kBrowserActuator, kBrowserActuatorTaskIngress},
+      /*disabled_features=*/{});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ScriptedBrowserActuatorTaskClient::kScenarioSwitch, "success");
+  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
+
+  BrowserActuatorService* service =
+      BrowserActuatorServiceFactory::GetForProfile(profile.get());
+  ASSERT_NE(nullptr, service);
+  EXPECT_NE(nullptr, service->CreateTaskClient());
+
+  stream_transport::TransportService* transport_service =
+      stream_transport::TransportServiceFactory::GetForProfile(profile.get());
+  ASSERT_NE(nullptr, transport_service);
+  ASSERT_NE(nullptr, transport_service->GetChannel());
+  EXPECT_TRUE(transport_service->GetChannel()
+                  ->GetHandlerFactoryRegistry()
+                  ->GetFactories(stream_transport::PayloadType::kTaskIngress)
+                  .empty());
+}
+
+TEST_F(BrowserActuatorServiceFactoryTest,
+       FakeTaskClientDetachesOnProfileShutdown) {
+  feature_list_.InitWithFeatures({kBrowserActuator},
+                                 {kBrowserActuatorTaskIngress});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ScriptedBrowserActuatorTaskClient::kScenarioSwitch, "success");
+
+  // Declare `task_client` before `profile` and `observer` so that shutting down
+  // `profile` detaches the fake client while it is still alive and lets
+  // `observer` be destroyed without a dangling `raw_ptr` or callbacks.
+  std::unique_ptr<BrowserActuatorTaskClient> task_client;
+  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
+  auto observer = std::make_unique<StrictMock<MockObserver>>();
+
+  BrowserActuatorService* service =
+      BrowserActuatorServiceFactory::GetForProfile(profile.get());
+  ASSERT_NE(nullptr, service);
+  task_client = service->CreateTaskClient();
+  ASSERT_NE(nullptr, task_client);
+
+  AutoPasswordChangeTaskPayload payload;
+  payload.set_domain("example.com");
+  task_client->StartTask(
+      BrowserActuatorTaskClient::UseCase::kAutoPasswordChange, payload,
+      observer.get());
+
+  profile.reset();
+  observer.reset();
+  task_client->Cancel();
+  task_client.reset();
+}
+
+TEST_F(BrowserActuatorServiceFactoryTest,
+       FakeTaskClientSwitchIgnoresUnknownScenario) {
+  feature_list_.InitWithFeatures({kBrowserActuator},
+                                 {kBrowserActuatorTaskIngress});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ScriptedBrowserActuatorTaskClient::kScenarioSwitch, "no-such-scenario");
+  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
+
+  BrowserActuatorService* service =
+      BrowserActuatorServiceFactory::GetForProfile(profile.get());
+  ASSERT_NE(nullptr, service);
+  EXPECT_EQ(nullptr, service->CreateTaskClient());
+}
+#endif
 
 }  // namespace browser_actuator

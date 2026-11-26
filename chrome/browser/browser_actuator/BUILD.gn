@@ -2,6 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+
+declare_args() {
+  # Enables the --browser-actuator-fake-task-client development switch.
+  enable_browser_actuator_fake_task_client = !is_official_build
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_BROWSER_ACTUATOR_FAKE_TASK_CLIENT=$enable_browser_actuator_fake_task_client" ]
+}
+
 group("browser_actuator") {
   public_deps = [ ":factory" ]
 }
@@ -13,6 +25,7 @@ source_set("factory") {
   ]
 
   deps = [
+    ":buildflags",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/stream_transport",
@@ -26,6 +39,11 @@ source_set("factory") {
     "//components/sync_device_info",
     "//content/public/browser",
   ]
+
+  if (enable_browser_actuator_fake_task_client) {
+    deps +=
+        [ "//components/browser_actuator/test_support:scripted_task_client" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -35,6 +53,7 @@ source_set("unit_tests") {
 
   deps = [
     ":browser_actuator",
+    ":buildflags",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/profiles:profile",
@@ -55,4 +74,9 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/protobuf:protobuf_lite",
   ]
+
+  if (enable_browser_actuator_fake_task_client) {
+    deps +=
+        [ "//components/browser_actuator/test_support:scripted_task_client" ]
+  }
 }

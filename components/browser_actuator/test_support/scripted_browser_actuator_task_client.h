@@ -34,6 +34,8 @@ namespace browser_actuator {
 // stops any remaining steps.
 class ScriptedBrowserActuatorTaskClient : public BrowserActuatorTaskClient {
  public:
+  // Command-line switch whose value names a scenario from `GetScenario()`.
+  static constexpr char kScenarioSwitch[] = "browser-actuator-fake-task-client";
   // The `Result::error_message` of the "start-failed" scenario.
   static constexpr std::string_view kStartFailedErrorMessage =
       "Fake: start failed";
