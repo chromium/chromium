@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -42,6 +43,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/history/content/browser/history_database_helper.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/prefs/pref_service.h"
@@ -470,8 +472,13 @@ IN_PROC_BROWSER_TEST_P(FirstRunInitialPrefsImportBookmarkFaviconBrowserTest,
   Profile* profile = browser()->GetProfile();
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
+  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
   const bookmarks::BookmarkNode* bar = bookmark_model->bookmark_bar_node();
+  // First-run bookmark import is posted to the current task runner once
+  // BookmarkModel loads, so wait for the imported bookmark to be added.
+  ASSERT_TRUE(
+      base::test::RunUntil([bar]() { return !bar->children().empty(); }));
   ASSERT_EQ(1u, bar->children().size());
 
   const bookmarks::BookmarkNode* node1 = bar->children()[0].get();
