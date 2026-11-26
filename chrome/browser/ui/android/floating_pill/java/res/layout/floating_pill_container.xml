@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- The window's floating pill container, see FloatingPillLayer. Its pills are
+     added in code, and kept apart by the divider, which skips GONE pills. -->
+<org.chromium.components.browser_ui.widget.floating_pill.FloatingPillContainer
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/floating_pill_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:divider="@drawable/floating_pill_spacer"
+    android:showDividers="middle"
+    android:visibility="gone" />

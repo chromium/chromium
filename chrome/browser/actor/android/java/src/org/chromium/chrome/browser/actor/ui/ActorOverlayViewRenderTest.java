@@ -8,6 +8,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.Gravity;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
@@ -24,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -129,9 +132,24 @@ public class ActorOverlayViewRenderTest {
                     viewStub.setLayoutResource(R.layout.actor_overlay);
                     mParentView.addView(viewStub);
 
+                    // The window's floating pill container, where the "Take over task" button
+                    // goes, as in the main layout.
+                    ViewStub pillContainerStub = new ViewStub(mActivity);
+                    pillContainerStub.setLayoutResource(R.layout.floating_pill_container);
+                    mParentView.addView(
+                            pillContainerStub,
+                            new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    Gravity.TOP | Gravity.CENTER_HORIZONTAL));
+
                     FloatingPillLayer floatingPillLayer =
                             new FloatingPillLayer(
-                                    mTopControlsStacker, mBrowserControlsVisibilityManager);
+                                    pillContainerStub,
+                                    mTopControlsStacker,
+                                    mBrowserControlsVisibilityManager,
+                                    mOmniboxFocusStateSupplier,
+                                    new OneshotSupplierImpl<>());
                     mCoordinator =
                             new ActorOverlayCoordinator(
                                     viewStub,

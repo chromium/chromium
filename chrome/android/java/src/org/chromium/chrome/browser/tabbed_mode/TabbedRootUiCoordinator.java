@@ -1572,7 +1572,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private FloatingPillLayer getFloatingPillLayer() {
         if (mFloatingPillLayer == null) {
             mFloatingPillLayer =
-                    new FloatingPillLayer(mTopControlsStacker, mBrowserControlsManager);
+                    new FloatingPillLayer(
+                            mActivity.findViewById(R.id.floating_pill_container_stub),
+                            mTopControlsStacker,
+                            mBrowserControlsManager,
+                            getOmniboxFocusStateSupplier(),
+                            mSideUiStateProviderSupplier);
         }
         return mFloatingPillLayer;
     }

@@ -4,27 +4,45 @@
 
 import("//build/config/android/rules.gni")
 
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/floating_pill_spacer.xml",
+    "java/res/layout/floating_pill_container.xml",
+    "java/res/values/dimens.xml",
+  ]
+}
+
 android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/floating_pill/FloatingPillLayer.java" ]
   deps = [
+    ":java_resources",
     "//base:base_java",
+    "//base:callback_java",
+    "//base:supplier_java",
     "//build/android:build_java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/ui/side_ui/public:java",
     "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  resources_package = "org.chromium.chrome.browser.ui.floating_pill"
 }
 
 robolectric_library("junit") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/floating_pill/FloatingPillLayerUnitTest.java" ]
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:supplier_java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/ui/side_ui/public:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
+  resources_package = "org.chromium.chrome.browser.ui.floating_pill"
 }

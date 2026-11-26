@@ -23,9 +23,11 @@ import org.chromium.chrome.R;
  * Helpers for asserting where the Actor overlay sits in the root coordinator layout's draw order.
  *
  * <p>The overlay is layered purely by sibling order: within the coordinator, later siblings draw on
- * top. It must therefore be declared after the control container, so the handoff button can
- * straddle the line of death, and before the snackbar host, bottom app bar, tab switcher, messages,
- * bottom sheet and tab group dialog, so the scrim neither covers them nor swallows their touches.
+ * top. It must therefore be declared after the control container, and before the snackbar host,
+ * bottom app bar, tab switcher, messages, bottom sheet and tab group dialog, so the scrim neither
+ * covers them nor swallows their touches. The window's floating pill container, which holds the
+ * handoff button, comes right after the overlay, so the button straddles the line of death above
+ * the scrim, and before the same views.
  *
  * <p>Ids are resolved to the coordinator's direct child that contains them, so the differences in
  * nesting between {@code main.xml} and {@code main_forked_with_secondary_ui_container.xml} do not
@@ -121,6 +123,49 @@ final class ActorOverlayZOrderTestUtil {
         assertDrawnBelow(
                 "actor overlay",
                 overlay,
+                "tab group dialog container",
+                childIndexOf(coordinator, R.id.tab_group_ui_dialog_container));
+
+        int pills =
+                childIndexOf(
+                        coordinator,
+                        R.id.floating_pill_container,
+                        R.id.floating_pill_container_stub);
+        assertDrawnBelow("actor overlay", overlay, "floating pill container", pills);
+        assertDrawnBelow(
+                "floating pill container",
+                pills,
+                "snackbar container",
+                childIndexOf(coordinator, R.id.bottom_container));
+        assertDrawnBelow(
+                "floating pill container",
+                pills,
+                "bottom app bar",
+                childIndexOf(
+                        coordinator,
+                        R.id.bottom_app_bar_container,
+                        R.id.bottom_app_bar_container_stub));
+        assertDrawnBelow(
+                "floating pill container",
+                pills,
+                "tab switcher",
+                childIndexOf(
+                        coordinator,
+                        R.id.tab_switcher_view_holder,
+                        R.id.tab_switcher_view_holder_stub));
+        assertDrawnBelow(
+                "floating pill container",
+                pills,
+                "message container",
+                childIndexOf(coordinator, R.id.message_container));
+        assertDrawnBelow(
+                "floating pill container",
+                pills,
+                "bottom sheet container",
+                childIndexOf(coordinator, R.id.sheet_container));
+        assertDrawnBelow(
+                "floating pill container",
+                pills,
                 "tab group dialog container",
                 childIndexOf(coordinator, R.id.tab_group_ui_dialog_container));
     }

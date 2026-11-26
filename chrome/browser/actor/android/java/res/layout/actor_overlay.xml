@@ -10,8 +10,6 @@ found in the LICENSE file.
     android:id="@+id/actor_overlay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false"
-    android:clipToPadding="false"
     android:visibility="gone">
 
     <org.chromium.chrome.browser.actor.ui.ActorOverlayView
@@ -19,13 +17,5 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
-
-    <ViewStub
-        android:id="@+id/actor_handoff_button_stub"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
-        android:inflatedId="@+id/actor_handoff_button_container"
-        android:layout="@layout/actor_handoff_button" />
 
 </FrameLayout>

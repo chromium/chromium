@@ -59,9 +59,9 @@ class ActorOverlayMediator
      * @param browserControlsVisibilityManager The BrowserControlsVisibilityManager to observe.
      * @param tabObscuringHandler The TabObscuringHandler to obscure the web content.
      * @param layoutManagerSupplier The LayoutManager supplier to observe layout changes.
-     * @param omniboxFocusStateSupplier Supplier for whether the omnibox currently has focus. The
-     *     take-over button is hidden while the omnibox is focused. On phones and tablets, the
-     *     overlay is also suppressed so it does not cover the full-width suggestions list.
+     * @param omniboxFocusStateSupplier Supplier for whether the omnibox currently has focus. On
+     *     phones and tablets, the overlay is suppressed while it is so it does not cover the
+     *     full-width suggestions list.
      * @param inflateOverlayCallback The callback to ensure the overlay view is inflated.
      * @param backPressCallback The callback to show the snackbar.
      * @param dismissSnackbarCallback The callback to dismiss the snackbar.
@@ -174,13 +174,9 @@ class ActorOverlayMediator
             mModel.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, false);
             return;
         }
-        // Like desktop Chrome's kGlicHandoffButtonHideWhenOmniboxPopupOpened, hide the button
-        // whenever the omnibox is focused, since it sits where the suggestions are drawn.
-        boolean isOmniboxFocused = Boolean.TRUE.equals(mOmniboxFocusStateSupplier.get());
-        boolean visible =
-                !isOmniboxFocused
-                        && calculateCanShowOverlay(mCurrentTab)
-                        && isHandoffButtonActive();
+        // While the omnibox is focused, the floating pill layer hides the button, like desktop
+        // Chrome's kGlicHandoffButtonHideWhenOmniboxPopupOpened.
+        boolean visible = calculateCanShowOverlay(mCurrentTab) && isHandoffButtonActive();
         mModel.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, visible);
     }
 

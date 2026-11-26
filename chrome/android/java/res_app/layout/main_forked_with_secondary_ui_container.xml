@@ -172,15 +172,27 @@ TODO(http://crbug.com/485940935): Delete this.
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- Must stay after control_container_stub so the Actor handoff button can straddle the
-             line of death, and before bottom_app_bar_container_stub so the overlay does not cover
-             the bottom bar, tab switcher, messages, or bottom sheet. -->
+        <!-- Must stay after control_container_stub, and before bottom_app_bar_container_stub so
+             the overlay does not cover the bottom bar, tab switcher, messages, or bottom sheet. -->
         <ViewStub
             android:id="@+id/actor_overlay_stub"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inflatedId="@+id/actor_overlay"
             android:layout="@layout/actor_overlay" />
+
+        <!-- The window's floating pills, e.g. auto browse's "Take over task" button, see
+             FloatingPillLayer. Must stay after control_container_stub and actor_overlay_stub so the
+             pills can straddle the line of death and stay usable over the Actor overlay, and before
+             bottom_app_bar_container_stub so they do not cover the bottom bar, tab switcher, messages,
+             or bottom sheet. -->
+        <ViewStub
+            android:id="@+id/floating_pill_container_stub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:inflatedId="@+id/floating_pill_container"
+            android:layout="@layout/floating_pill_container" />
 
         <ViewStub
             android:id="@+id/bottom_app_bar_container_stub"

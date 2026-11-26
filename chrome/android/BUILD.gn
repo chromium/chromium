@@ -182,6 +182,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/appmenu:java_resources",
       "//chrome/browser/ui/android/device_lock:java_resources",
       "//chrome/browser/ui/android/favicon:java_resources",
+      "//chrome/browser/ui/android/floating_pill:java_resources",
       "//chrome/browser/ui/android/google_bottom_bar:java_resources",
       "//chrome/browser/ui/android/logo:java_resources",
       "//chrome/browser/ui/android/management:java_resources",

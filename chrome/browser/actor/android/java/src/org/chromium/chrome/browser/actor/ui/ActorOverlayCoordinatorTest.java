@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -58,9 +57,7 @@ import org.chromium.chrome.browser.actor.ui.ActorUiTabController.ActorOverlaySta
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.HandoffButtonState;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
-import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -71,6 +68,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.floating_pill.FloatingPillLayer;
+import org.chromium.chrome.browser.ui.floating_pill.FloatingPillLayer.PillType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
@@ -83,11 +81,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link ActorOverlayCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.FLOATING_PILL_LAYER})
+@EnableFeatures(ChromeFeatureList.GLIC)
 public class ActorOverlayCoordinatorTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
-    @Mock private TopControlsStacker mTopControlsStacker;
+    @Mock private FloatingPillLayer mFloatingPillLayer;
     @Mock private Tab mTab;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private BackPressHandlerRegistry mBackPressHandlerRegistry;
@@ -111,7 +109,6 @@ public class ActorOverlayCoordinatorTest {
     private final SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
             ObservableSuppliers.createNonNull(false);
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
-    private FloatingPillLayer mFloatingPillLayer;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -150,8 +147,6 @@ public class ActorOverlayCoordinatorTest {
         mProfileSupplier.set(mProfile);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
 
-        mFloatingPillLayer =
-                new FloatingPillLayer(mTopControlsStacker, mBrowserControlsVisibilityManager);
         mCoordinator =
                 new ActorOverlayCoordinator(
                         mViewStub,
@@ -180,31 +175,10 @@ public class ActorOverlayCoordinatorTest {
         return view;
     }
 
-    private FloatingPillContainer getHandoffButtonView() {
-        FloatingPillContainer view = mCoordinator.getHandoffButtonViewForTesting();
+    private View getHandoffButtonView() {
+        View view = mCoordinator.getHandoffButtonViewForTesting();
         Assert.assertNotNull(view);
         return view;
-    }
-
-    private int getHandoffButtonTopMargin() {
-        return ((FrameLayout.LayoutParams) getHandoffButtonView().getLayoutParams()).topMargin;
-    }
-
-    /**
-     * Returns the expected top margin of the handoff button container. With top controls, the pill
-     * is centered on the bottom edge of the toolbar. With bottom controls, it sits a fixed margin
-     * below the top controls. In both cases the container's glow padding is accounted for.
-     */
-    private int expectedHandoffButtonTopMargin(int topControlsHeight, boolean controlsAtBottom) {
-        Resources res = mActivity.getResources();
-        int glowPadding = res.getDimensionPixelSize(R.dimen.floating_pill_glow_padding);
-        if (controlsAtBottom) {
-            int marginTop = res.getDimensionPixelSize(R.dimen.floating_pill_margin_top);
-            return topControlsHeight + marginTop - glowPadding;
-        }
-        int containerHeight =
-                res.getDimensionPixelSize(R.dimen.floating_pill_height) + 2 * glowPadding;
-        return topControlsHeight - containerHeight / 2;
     }
 
     private void assertOverlayMargins(int left, int top, int right, int bottom) {
@@ -235,11 +209,14 @@ public class ActorOverlayCoordinatorTest {
         return container.findViewById(R.id.actor_overlay_scrim);
     }
 
-    /** Creates a standalone handoff button view that is not managed by the coordinator. */
+    /**
+     * Creates a standalone handoff button in a {@link FloatingPillContainer}, as the floating pill
+     * layer shows it, that is not managed by the coordinator.
+     */
     private FloatingPillContainer createStandaloneHandoffButtonView() {
-        FloatingPillContainer buttonView =
-                (FloatingPillContainer)
-                        LayoutInflater.from(mActivity).inflate(R.layout.actor_handoff_button, null);
+        FloatingPillContainer buttonView = new FloatingPillContainer(mActivity);
+        LayoutInflater.from(mActivity).inflate(R.layout.actor_handoff_button, buttonView, true);
+        buttonView.findViewById(R.id.take_over_task_button).setVisibility(View.VISIBLE);
         buttonView.setLayoutParams(
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -825,7 +802,8 @@ public class ActorOverlayCoordinatorTest {
                         .getModelForTesting()
                         .get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
         Assert.assertEquals(View.VISIBLE, getHandoffButtonView().getVisibility());
-        Assert.assertNotNull(getHandoffButtonView().findViewById(R.id.take_over_task_button));
+        Assert.assertEquals(R.id.take_over_task_button, getHandoffButtonView().getId());
+        verify(mFloatingPillLayer).addPill(getHandoffButtonView(), PillType.ACTOR_TAKE_OVER);
 
         // State 2: handoff button becomes inactive
         UiTabState stateWithInactiveHandoff =
@@ -869,8 +847,8 @@ public class ActorOverlayCoordinatorTest {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         PropertyModel model = showActiveOverlayAndTakeOverButton();
 
-        // The full-width suggestions list would be drawn under the overlay, so the overlay glow
-        // and the handoff button must be suppressed.
+        // The full-width suggestions list would be drawn under the overlay, so the overlay glow is
+        // suppressed, and the handoff button with it.
         mOmniboxFocusStateSupplier.set(true);
 
         Assert.assertFalse(model.get(ActorOverlayProperties.VISIBLE));
@@ -884,52 +862,17 @@ public class ActorOverlayCoordinatorTest {
     }
 
     @Test
-    public void testOmniboxFocusOnDesktopKeepsOverlayAndHidesTakeOverButton() {
+    public void testOmniboxFocusOnDesktopKeepsOverlay() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         PropertyModel model = showActiveOverlayAndTakeOverButton();
 
         // On desktop platforms the suggestions popover is drawn above the overlay, so the overlay
-        // stays visible, but the handoff button is hidden while the omnibox is focused.
+        // stays visible. The floating pill layer hides the button while the omnibox is focused.
         mOmniboxFocusStateSupplier.set(true);
-
         Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
-        Assert.assertFalse(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
 
         mOmniboxFocusStateSupplier.set(false);
-
         Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
-        Assert.assertTrue(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
-    }
-
-    @Test
-    public void testOmniboxFocusOnDesktopKeepsInactiveTakeOverButtonHidden() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-        mCurrentTabSupplier.set(mTab);
-        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
-
-        UiTabState overlayOnlyState =
-                new UiTabState(
-                        TAB_ID,
-                        new ActorOverlayState(/* isActive= */ true, false, false),
-                        new HandoffButtonState(/* isActive= */ false, 0),
-                        0,
-                        false);
-        mTabController.onUiTabStateChange(overlayOnlyState);
-
-        PropertyModel model = mCoordinator.getModelForTesting();
-        Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
-        Assert.assertFalse(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
-
-        // The inactive handoff button must stay hidden across omnibox focus transitions.
-        mOmniboxFocusStateSupplier.set(true);
-
-        Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
-        Assert.assertFalse(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
-
-        mOmniboxFocusStateSupplier.set(false);
-
-        Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
-        Assert.assertFalse(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
     }
 
     @Test
@@ -968,7 +911,6 @@ public class ActorOverlayCoordinatorTest {
         // Both overlay view and handoff button view should now be inflated and visible.
         Assert.assertTrue(mCoordinator.isViewInflatedForTesting());
         Assert.assertTrue(isOverlayStubInflated());
-        Assert.assertNull(mCoordinator.getHandoffButtonStubForTesting());
         Assert.assertEquals(View.VISIBLE, getHandoffButtonView().getVisibility());
     }
 
@@ -1223,7 +1165,6 @@ public class ActorOverlayCoordinatorTest {
         Assert.assertEquals(0, lp.topMargin);
         Assert.assertEquals(40, lp.rightMargin);
         Assert.assertEquals(50, lp.bottomMargin);
-        Assert.assertNull(mCoordinator.getHandoffButtonStubForTesting());
         Assert.assertEquals(View.VISIBLE, getHandoffButtonView().getVisibility());
 
         // Verify subsequent updates while inflated propagate directly to the view.
@@ -1232,30 +1173,16 @@ public class ActorOverlayCoordinatorTest {
     }
 
     @Test
-    public void testHandoffButtonPlacedAgainstBrowserControls() {
-        when(mBrowserControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
-        when(mBrowserControlsVisibilityManager.getControlsPosition())
-                .thenReturn(ControlsPosition.TOP);
-        mCoordinator.showOverlayForTesting(true);
-        mCoordinator
-                .getModelForTesting()
-                .set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
-        Assert.assertEquals(
-                expectedHandoffButtonTopMargin(100, /* controlsAtBottom= */ false),
-                getHandoffButtonTopMargin());
-    }
-
-    @Test
     public void testDestroyRemovesHandoffButtonFromFloatingPillLayer() {
         mCoordinator.showOverlayForTesting(true);
         mCoordinator
                 .getModelForTesting()
                 .set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
-        verify(mTopControlsStacker).addControl(mFloatingPillLayer);
+        View button = getHandoffButtonView();
+        verify(mFloatingPillLayer).addPill(button, PillType.ACTOR_TAKE_OVER);
 
         mCoordinator.destroy();
-        // The handoff button was the layer's only container.
-        verify(mTopControlsStacker).removeControl(mFloatingPillLayer);
+        verify(mFloatingPillLayer).removePill(button);
     }
 
     @Test
@@ -1264,22 +1191,21 @@ public class ActorOverlayCoordinatorTest {
         PropertyModel model = mCoordinator.getModelForTesting();
 
         model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
-        verify(mTopControlsStacker).addControl(mFloatingPillLayer);
+        View button = getHandoffButtonView();
+        verify(mFloatingPillLayer).addPill(button, PillType.ACTOR_TAKE_OVER);
 
         // Hidden, it leaves the layer, so the layer no longer counts as a visible top control.
         model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, false);
-        verify(mTopControlsStacker).removeControl(mFloatingPillLayer);
+        verify(mFloatingPillLayer).removePill(button);
 
         model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
-        verify(mTopControlsStacker, times(2)).addControl(mFloatingPillLayer);
-        Assert.assertEquals(View.VISIBLE, getHandoffButtonView().getVisibility());
+        verify(mFloatingPillLayer, times(2)).addPill(button, PillType.ACTOR_TAKE_OVER);
+        Assert.assertEquals(View.VISIBLE, button.getVisibility());
 
-        // It also leaves with the overlay, which hides it, even while it's still active.
+        // The button is no longer inside the overlay, but still only shows with it.
         mCoordinator.showOverlayForTesting(false);
-        verify(mTopControlsStacker, times(2)).removeControl(mFloatingPillLayer);
-
-        mCoordinator.showOverlayForTesting(true);
-        verify(mTopControlsStacker, times(3)).addControl(mFloatingPillLayer);
+        verify(mFloatingPillLayer, times(2)).removePill(button);
+        Assert.assertEquals(View.GONE, button.getVisibility());
     }
 
     @Test
@@ -1298,12 +1224,9 @@ public class ActorOverlayCoordinatorTest {
         int height = 500;
         int topControlsHeight = 112;
 
-        when(mBrowserControlsVisibilityManager.getTopControlsHeight())
-                .thenReturn(topControlsHeight);
         mCoordinator.showOverlayForTesting(true);
         PropertyModel model = mCoordinator.getModelForTesting();
         model.set(ActorOverlayProperties.TOP_MARGIN, topControlsHeight);
-        model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
 
         FrameLayout container = getContainer();
         container.measure(
@@ -1314,13 +1237,14 @@ public class ActorOverlayCoordinatorTest {
         Bitmap rendered = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         container.draw(new Canvas(rendered));
 
-        // Outside the centered handoff button (e.g. x = 40), the top controls region (y < 112)
-        // must remain completely transparent.
-        for (int y = 0; y < topControlsHeight; y++) {
-            Assert.assertEquals(
-                    "Unexpected glow bleed in top controls at y=" + y,
-                    Color.TRANSPARENT,
-                    rendered.getPixel(40, y));
+        // The scrim and its inner glow stay below the top controls region (y < 112).
+        for (int x : new int[] {40, width / 2}) {
+            for (int y = 0; y < topControlsHeight; y++) {
+                Assert.assertEquals(
+                        "Unexpected glow bleed in top controls at x=" + x + ", y=" + y,
+                        Color.TRANSPARENT,
+                        rendered.getPixel(x, y));
+            }
         }
     }
 
@@ -1339,6 +1263,5 @@ public class ActorOverlayCoordinatorTest {
                 .set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
         Assert.assertFalse(mCoordinator.isViewInflatedForTesting());
         Assert.assertNull(mCoordinator.getHandoffButtonViewForTesting());
-        Assert.assertNull(mCoordinator.getHandoffButtonStubForTesting());
     }
 }

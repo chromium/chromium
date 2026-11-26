@@ -10,6 +10,7 @@ import android.content.Context;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -29,13 +30,13 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.floating_pill.FloatingPillLayer;
+import org.chromium.chrome.browser.ui.floating_pill.FloatingPillLayer.PillType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
-import org.chromium.components.browser_ui.widget.floating_pill.FloatingPillContainer;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 import org.chromium.ui.base.ViewUtils;
@@ -67,8 +68,7 @@ public class ActorOverlayCoordinator {
     private @Nullable FrameLayout mContainer;
     private @Nullable ActorOverlayView mView;
     private @Nullable PropertyModelChangeProcessor mChangeProcessor;
-    private @Nullable ViewStub mHandoffButtonStub;
-    private @Nullable FloatingPillContainer mHandoffButtonView;
+    private @Nullable View mHandoffButtonView;
     private @Nullable PropertyModelChangeProcessor mHandoffButtonChangeProcessor;
     private boolean mHandoffButtonInLayer;
 
@@ -164,7 +164,6 @@ public class ActorOverlayCoordinator {
         if (mContainer != null) return;
         mContainer = (FrameLayout) mViewStub.inflate();
         mView = mContainer.findViewById(R.id.actor_overlay_scrim);
-        mHandoffButtonStub = mContainer.findViewById(R.id.actor_handoff_button_stub);
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel,
@@ -185,16 +184,18 @@ public class ActorOverlayCoordinator {
         if (mHandoffButtonView == null || show == mHandoffButtonInLayer) return;
         mHandoffButtonInLayer = show;
         if (show) {
-            mFloatingPillLayer.addContainer(mHandoffButtonView);
+            mFloatingPillLayer.addPill(mHandoffButtonView, PillType.ACTOR_TAKE_OVER);
         } else {
-            mFloatingPillLayer.removeContainer(mHandoffButtonView);
+            mFloatingPillLayer.removePill(mHandoffButtonView);
         }
     }
 
     private void inflateHandoffButtonView() {
-        if (mHandoffButtonView != null || mContainer == null || mHandoffButtonStub == null) return;
-        mHandoffButtonView = (FloatingPillContainer) mHandoffButtonStub.inflate();
-        mHandoffButtonStub = null;
+        // Only once the overlay is inflated, since the button only shows with it.
+        if (mHandoffButtonView != null || mContainer == null) return;
+        mHandoffButtonView =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.actor_handoff_button, mContainer, false);
         mHandoffButtonChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel, mHandoffButtonView, ActorHandoffButtonViewBinder::bind);
@@ -307,12 +308,8 @@ public class ActorOverlayCoordinator {
         return mView;
     }
 
-    @Nullable FloatingPillContainer getHandoffButtonViewForTesting() {
+    @Nullable View getHandoffButtonViewForTesting() {
         return mHandoffButtonView;
-    }
-
-    @Nullable ViewStub getHandoffButtonStubForTesting() {
-        return mHandoffButtonStub;
     }
 
     PropertyModel getModelForTesting() {
@@ -347,13 +344,12 @@ public class ActorOverlayCoordinator {
             mHandoffButtonChangeProcessor = null;
         }
         if (mHandoffButtonView != null && mHandoffButtonInLayer) {
-            mFloatingPillLayer.removeContainer(mHandoffButtonView);
+            mFloatingPillLayer.removePill(mHandoffButtonView);
             mHandoffButtonInLayer = false;
         }
         mContainer = null;
         mView = null;
         mHandoffButtonView = null;
-        mHandoffButtonStub = null;
         dismissInteractionLimitedSnackbar();
     }
 }
