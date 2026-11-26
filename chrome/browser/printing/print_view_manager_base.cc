@@ -824,7 +824,9 @@ scoped_refptr<PrintJob> PrintViewManagerBase::CreatePrintJob(
 bool PrintViewManagerBase::SetupNewPrintJob(
     std::unique_ptr<PrinterQuery> query) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
-  CHECK(!quit_inner_loop_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/590393713): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!quit_inner_loop_);
   CHECK(query, base::NotFatalUntil::M162);
 
   // Disconnect the current `print_job_`.
