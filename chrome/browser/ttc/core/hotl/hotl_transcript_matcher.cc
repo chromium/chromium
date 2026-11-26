@@ -10,6 +10,8 @@
 
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ttc {
 
@@ -32,9 +34,16 @@ std::vector<std::u16string> TokenizeCaseFolded(std::u16string_view input) {
 
 }  // namespace
 
-HotlMatchResult MatchHotlTranscript(std::u16string_view transcript,
-                                    std::u16string_view localized_yes,
-                                    std::u16string_view localized_no) {
+HotlMatchResult MatchHotlTranscript(std::u16string_view transcript) {
+  return MatchHotlTranscriptForTesting(
+      transcript, l10n_util::GetStringUTF16(IDS_TTC_CONFIRMATION_YES),
+      l10n_util::GetStringUTF16(IDS_TTC_CONFIRMATION_NO));
+}
+
+HotlMatchResult MatchHotlTranscriptForTesting(
+    std::u16string_view transcript,
+    std::u16string_view localized_yes,
+    std::u16string_view localized_no) {
   const std::vector<std::u16string> transcript_tokens =
       TokenizeCaseFolded(transcript);
   const std::vector<std::u16string> yes_tokens =

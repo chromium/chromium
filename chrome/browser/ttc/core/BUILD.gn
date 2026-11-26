@@ -178,6 +178,7 @@ source_set("impl") {
   deps = [
     "//base",
     "//base:i18n",
+    "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/actor/tools/registry",
     "//chrome/browser/actor/ui",
@@ -302,7 +303,6 @@ source_set("impl") {
       deps += [
         "//ash",
         "//ash/constants",
-        "//chrome/app:generated_resources",
         "//chrome/browser/ash/accessibility",
         "//chromeos/ash/components/audio",
         "//components/session_manager:base",
@@ -359,6 +359,7 @@ source_set("unit_tests") {
     ":shortcut",
     ":test_support",
     "//base/test:test_support",
+    "//chrome/app:generated_resources",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/critical_actions",
     "//chrome/browser/ttc/app:public",
@@ -376,6 +377,7 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//ui/events:event_constants",
     "//ui/events:events_base",
     "//ui/gfx:test_support",

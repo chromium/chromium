@@ -30,7 +30,8 @@ class HotlSpeechRecognizer {
   // Starts local speech recognition for `locale` (non-empty BCP-47 tag, e.g.
   // "en-US", resolved via `hotl::GetHotlRecognitionLanguage`). Invokes
   // `on_transcript` whenever a finalized speech segment arrives, or `on_error`
-  // if local recognition cannot start or disconnects.
+  // if local recognition cannot start or disconnects. Never runs either
+  // callback synchronously from Start().
   virtual void Start(std::string_view locale,
                      TranscriptCallback on_transcript,
                      ErrorCallback on_error) = 0;

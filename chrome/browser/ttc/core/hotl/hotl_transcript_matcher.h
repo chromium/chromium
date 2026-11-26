@@ -22,12 +22,16 @@ enum class HotlMatchResult {
   kAmbiguous,
 };
 
-// Matches a finalized user speech transcript against the localized
-// confirmation labels. Matching is case-insensitive and works on whole words,
-// so "yesterday" does not match "yes".
-HotlMatchResult MatchHotlTranscript(std::u16string_view transcript,
-                                    std::u16string_view localized_yes,
-                                    std::u16string_view localized_no);
+// Matches a finalized user speech transcript against the localized UI
+// confirmation labels (`IDS_TTC_CONFIRMATION_YES` and
+// `IDS_TTC_CONFIRMATION_NO`). Matching is case-insensitive and works on whole
+// words, so "yesterday" does not match "yes".
+HotlMatchResult MatchHotlTranscript(std::u16string_view transcript);
+
+// Matches `transcript` against explicit localized confirmation labels.
+HotlMatchResult MatchHotlTranscriptForTesting(std::u16string_view transcript,
+                                              std::u16string_view localized_yes,
+                                              std::u16string_view localized_no);
 
 }  // namespace ttc
 
