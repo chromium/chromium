@@ -628,7 +628,9 @@ void MTPDeviceDelegateImpl::GetFileInfo(
     GetFileInfoSuccessCallback success_callback,
     ErrorCallback error_callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
-  CHECK(!file_path.empty(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/590196600): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!file_path.empty());
 
   // If a ReadDirectory operation is in progress, the file info may already be
   // cached.
