@@ -125,7 +125,9 @@ void VideoDecodePerfHistory::GetPerfInfo(mojom::PredictionFeaturesPtr features,
 
   CHECK_NE(features->profile, VIDEO_CODEC_PROFILE_UNKNOWN,
            base::NotFatalUntil::M163);
-  CHECK_GT(features->frames_per_sec, 0, base::NotFatalUntil::M163);
+  // TODO(crbug.com/588413835): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GT(features->frames_per_sec, 0);
   // TODO(crbug.com/582485473): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
   DCHECK(features->video_size.width() > 0 && features->video_size.height() > 0);

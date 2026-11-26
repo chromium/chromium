@@ -317,7 +317,11 @@ void MediaMetricsProvider::Initialize(
 }
 
 void MediaMetricsProvider::OnStarted(const PipelineStatus& status) {
-  CHECK(IsInitialized(), base::NotFatalUntil::M163);
+  if (!IsInitialized()) {
+    CHECK(mojo::IsInMessageDispatch());
+    mojo::ReportBadMessage(kInvalidInitialize);
+    return;
+  }
   if (is_shutting_down_cb_.Run()) {
     DVLOG(1) << __func__ << ": Start status " << PipelineStatusToString(status)
              << " ignored since it is reported during shutdown.";
@@ -328,7 +332,11 @@ void MediaMetricsProvider::OnStarted(const PipelineStatus& status) {
 }
 
 void MediaMetricsProvider::OnError(const PipelineStatus& status) {
-  CHECK(IsInitialized(), base::NotFatalUntil::M163);
+  if (!IsInitialized()) {
+    CHECK(mojo::IsInMessageDispatch());
+    mojo::ReportBadMessage(kInvalidInitialize);
+    return;
+  }
   if (is_shutting_down_cb_.Run()) {
     DVLOG(1) << __func__ << ": Error " << PipelineStatusToString(status)
              << " ignored since it is reported during shutdown.";
@@ -339,7 +347,11 @@ void MediaMetricsProvider::OnError(const PipelineStatus& status) {
 }
 
 void MediaMetricsProvider::OnFallback(const PipelineStatus& status) {
-  CHECK(IsInitialized(), base::NotFatalUntil::M163);
+  if (!IsInitialized()) {
+    CHECK(mojo::IsInMessageDispatch());
+    mojo::ReportBadMessage(kInvalidInitialize);
+    return;
+  }
   if (is_shutting_down_cb_.Run()) {
     DVLOG(1) << __func__ << ": Error " << PipelineStatusToString(status)
              << " ignored since it is reported during shutdown.";
@@ -358,20 +370,38 @@ void MediaMetricsProvider::SetHasTrackChange() {
 }
 
 void MediaMetricsProvider::SetTimeToMetadata(base::TimeDelta elapsed) {
-  CHECK(IsInitialized(), base::NotFatalUntil::M163);
-  CHECK_EQ(time_to_metadata_, kNoTimestamp, base::NotFatalUntil::M163);
+  if (!IsInitialized()) {
+    CHECK(mojo::IsInMessageDispatch());
+    mojo::ReportBadMessage(kInvalidInitialize);
+    return;
+  }
+  // TODO(crbug.com/588413835): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK_EQ(time_to_metadata_, kNoTimestamp);
   time_to_metadata_ = elapsed;
 }
 
 void MediaMetricsProvider::SetTimeToFirstFrame(base::TimeDelta elapsed) {
-  CHECK(IsInitialized(), base::NotFatalUntil::M163);
-  CHECK_EQ(time_to_first_frame_, kNoTimestamp, base::NotFatalUntil::M163);
+  if (!IsInitialized()) {
+    CHECK(mojo::IsInMessageDispatch());
+    mojo::ReportBadMessage(kInvalidInitialize);
+    return;
+  }
+  // TODO(crbug.com/588413835): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK_EQ(time_to_first_frame_, kNoTimestamp);
   time_to_first_frame_ = elapsed;
 }
 
 void MediaMetricsProvider::SetTimeToPlayReady(base::TimeDelta elapsed) {
-  CHECK(IsInitialized(), base::NotFatalUntil::M163);
-  CHECK_EQ(time_to_play_ready_, kNoTimestamp, base::NotFatalUntil::M163);
+  if (!IsInitialized()) {
+    CHECK(mojo::IsInMessageDispatch());
+    mojo::ReportBadMessage(kInvalidInitialize);
+    return;
+  }
+  // TODO(crbug.com/588413835): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK_EQ(time_to_play_ready_, kNoTimestamp);
   time_to_play_ready_ = elapsed;
 }
 
@@ -381,8 +411,14 @@ void MediaMetricsProvider::SetVisibilityRatioAtPlaybackStart(double ratio) {
 
 void MediaMetricsProvider::SetContainerName(
     container_names::MediaContainerName container_name) {
-  CHECK(IsInitialized(), base::NotFatalUntil::M163);
-  CHECK(!container_name_.has_value(), base::NotFatalUntil::M163);
+  if (!IsInitialized()) {
+    CHECK(mojo::IsInMessageDispatch());
+    mojo::ReportBadMessage(kInvalidInitialize);
+    return;
+  }
+  // TODO(crbug.com/588413835): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(!container_name_.has_value());
   container_name_ = container_name;
 }
 
