@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Nájsť a vyplniť pomocou Gemini</translation>
 <translation id="1096545575934602868">Toto pole by nemalo mať viac ako <ph name="MAX_ITEMS_LIMIT" /> vstupov. Všetky ďalšie vstupy budú zahodené.</translation>
 <translation id="1099928364755383720">automatický obraz v obraze</translation>
-<translation id="1100782917270858593">Tlačidlo na pokračovanie v ceste, stlačením klávesa Enter pokračujte v ceste a zobrazte si relevantnú aktivitu v histórii Chromu</translation>
 <translation id="1101672080107056897">Chybová akcia</translation>
 <translation id="1104409666019087579">Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.</translation>
 <translation id="1104860668737945357">Tlačidlo Spravovať heslá, ktorého aktivovaním môžete zobraziť a spravovať heslá v nastaveniach Chromu</translation>
@@ -2829,7 +2828,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="569000877158168851">Hodnota DnsOverHttpsTemplates nie je relevantná a použije sa iba vtedy, keď pravidlo DnsOverHttpsMode nastavíte na <ph name="SECURE_DNS_MODE_AUTOMATIC" /> alebo <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Uložená karta je otvorená na úplnú výšku.</translation>
 <translation id="5701381305118179107">Na stred</translation>
-<translation id="5707154300732650394">Pokračovať v ceste</translation>
 <translation id="57094364128775171">Navrhnúť silné heslo…</translation>
 <translation id="570953204696852961">Červená č. 3</translation>
 <translation id="5710907191777451677">Opýtajte sa Gemini v Chrome</translation>
@@ -3165,7 +3163,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6264636978858465832">Správca hesiel potrebuje rozsiahlejší prístup</translation>
 <translation id="6265794661083428563">Skopírovať hodnotu pravidla <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Váš prechod na web <ph name="URL" /> bol zablokovaný pre pravidlá vašej organizácie. Ak je to neočakávané, kontaktujte svojho správcu.</translation>
-<translation id="6272088941196661550">Pokračujte v ceste a zobrazte si relevantnú aktivitu v histórii Chromu</translation>
 <translation id="6272383483618007430">Aktualizácie Google</translation>
 <translation id="6278015583149890680">Disk Google a OneDrive</translation>
 <translation id="6279228081537458128">Zaplatiť neskôr</translation>
@@ -4835,7 +4832,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="9114101423898634479">Pridanie čísla Known Traveler Number</translation>
 <translation id="9114524666733003316">Overuje sa karta…</translation>
 <translation id="9114581008513152754">Tento prehliadač nespravuje firma ani iná organizácia. Aktivita v tomto zariadení môže byť spravovaná mimo Chromu. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, stlačte Tab, potom Enter a pokračujte tak v ceste so zobrazením relevantnej aktivity v histórii Chromu</translation>
 <translation id="9119042192571987207">Nahrané</translation>
 <translation id="9119764377203471454">Prílohy sa nepodarilo pridať</translation>
 <translation id="9120593907434185157">Uložte adresu</translation>

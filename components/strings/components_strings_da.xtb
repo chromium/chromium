@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Find og udfyld med Gemini</translation>
 <translation id="1096545575934602868">Dette felt må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster. Alle yderligere poster kasseres.</translation>
 <translation id="1099928364755383720">automatisk integreret billede</translation>
-<translation id="1100782917270858593">Knappen Genoptag din søgning – tryk på Enter for at genoptage din søgning og se relevant aktivitet i din Chrome-historik</translation>
 <translation id="1101672080107056897">Fejlhandling</translation>
 <translation id="1104409666019087579">Nogle obligatoriske felter er tomme. Udfyld dem, inden du gemmer.</translation>
 <translation id="1104860668737945357">Knappen Administrer adgangskoder, aktivér for at se og administrere dine adgangskoder i Chrome-indstillingerne</translation>
@@ -2833,7 +2832,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="569000877158168851">DnsOverHttpsTemplates-værdien er ikke relevant og anvendes ikke, medmindre politikken DnsOverHttpsMode er angivet som enten <ph name="SECURE_DNS_MODE_AUTOMATIC" /> eller <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">"Gem kort" er åbnet i fuld højde.</translation>
 <translation id="5701381305118179107">Centrér</translation>
-<translation id="5707154300732650394">Genoptag din søgning</translation>
 <translation id="57094364128775171">Foreslå stærk adgangskode…</translation>
 <translation id="570953204696852961">Rød 3</translation>
 <translation id="5710907191777451677">Spørg Gemini i Chrome i stedet</translation>
@@ -3170,7 +3168,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6264636978858465832">Adgangs­kode­admin­istrator skal bruge mere omfattende adgang</translation>
 <translation id="6265794661083428563">Kopiér værdien fra <ph name="POLICY_NAME" />-politikken</translation>
 <translation id="6271264012613848937">Du blev blokeret fra at besøge <ph name="URL" /> på grund af din organisations politikker. Hvis det er uventet, skal du kontakte din administrator.</translation>
-<translation id="6272088941196661550">Genoptag din søgning for at se relevant aktivitet i din Chrome-historik</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drev og OneDrive</translation>
 <translation id="6279228081537458128">Betal senere</translation>
@@ -4840,7 +4837,6 @@ Yderligere oplysninger:
 <translation id="9114101423898634479">Tilføj Known Traveler-nummer</translation>
 <translation id="9114524666733003316">Bekræfter kort...</translation>
 <translation id="9114581008513152754">Denne browser administreres ikke af en virksomhed eller en anden organisation. Aktivitet på denne enhed administreres muligvis uden for Chrome. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten og derefter Enter for at genoptage søgningen og se relevant aktivitet i din Chrome-historik</translation>
 <translation id="9119042192571987207">Uploadet</translation>
 <translation id="9119764377203471454">De vedhæftede filer kunne ikke tilføjes</translation>
 <translation id="9120593907434185157">Gem adressen</translation>

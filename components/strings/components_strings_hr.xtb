@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Pronalaženje i popunjavanje uz Gemini</translation>
 <translation id="1096545575934602868">Broj unosa u ovom polju ne smije biti veći od <ph name="MAX_ITEMS_LIMIT" />. Svi će se daljnji unosi odbaciti.</translation>
 <translation id="1099928364755383720">automatska slika u slici</translation>
-<translation id="1100782917270858593">Gumb Nastavite putovanje, pritisnite Enter da biste nastavili putovanje i vidjeli relevantne aktivnosti u svojoj povijesti na Chromeu</translation>
 <translation id="1101672080107056897">Radnja zbog pogreške</translation>
 <translation id="1104409666019087579">Neka su obavezna polja prazna. Ispunite ih prije spremanja.</translation>
 <translation id="1104860668737945357">Gumb Upravljaj zaporkama, aktivirajte ga za prikaz svojih zaporki i upravljanje njima u postavkama Chromea</translation>
@@ -2832,7 +2831,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="569000877158168851">Vrijednost DnsOverHttpsTemplates nije relevantna i neće se koristiti, osim ako se pravilo DnsOverHttpsMode postavi na <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ili <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Upit za spremanje kartice otvoren je u punoj visini.</translation>
 <translation id="5701381305118179107">Centriraj</translation>
-<translation id="5707154300732650394">Nastavite putovanje</translation>
 <translation id="57094364128775171">Predloži snažnu zaporku…</translation>
 <translation id="570953204696852961">crvena 3</translation>
 <translation id="5710907191777451677">Umjesto toga pokušajte pitati Gemini u Chromeu</translation>
@@ -3169,7 +3167,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="6264636978858465832">Upravitelj zaporki treba više pristupa</translation>
 <translation id="6265794661083428563">Kopiraj vrijednost pravila <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Vaš posjet web-lokaciji <ph name="URL" /> blokiran je zbog pravila vaše organizacije. Ako to niste očekivali, obratite se administratoru.</translation>
-<translation id="6272088941196661550">Nastavite putovanje da biste vidjeli relevantne aktivnosti u svojoj povijesti na Chromeu</translation>
 <translation id="6272383483618007430">Google ažuriranje</translation>
 <translation id="6278015583149890680">Google disku i OneDriveu</translation>
 <translation id="6279228081537458128">Plaćanje kasnije</translation>
@@ -4840,7 +4837,6 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9114101423898634479">Dodajte broj poznatog putnika</translation>
 <translation id="9114524666733003316">Potvrđivanje kartice...</translation>
 <translation id="9114581008513152754">Preglednikom ne upravlja tvrtka ili neka druga organizacija. Aktivnostima na ovom uređaju možda se upravlja izvan Chromea. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste nastavili putovanje i vidjeli relevantne aktivnosti u svojoj povijesti na Chromeu</translation>
 <translation id="9119042192571987207">Preneseno</translation>
 <translation id="9119764377203471454">Dodavanje privitaka nije uspjelo</translation>
 <translation id="9120593907434185157">Spremite adresu</translation>

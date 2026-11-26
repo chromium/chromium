@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Dod o hyd i wybodaeth a'i llenwi gyda Gemini</translation>
 <translation id="1096545575934602868">Ni ddylai'r maes hwn fod â mwy na <ph name="MAX_ITEMS_LIMIT" /> ymgais. Bydd pob cofnod pellach yn cael ei waredu.</translation>
 <translation id="1099928364755383720">llun mewn llun awtomatig</translation>
-<translation id="1100782917270858593">Botwm parhau â'ch taith, pwyswch Enter i barhau â'ch taith ac i weld gweithgarwch perthnasol yn eich hanes Chrome</translation>
 <translation id="1101672080107056897">Gweithred y gwall</translation>
 <translation id="1104409666019087579">Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.</translation>
 <translation id="1104860668737945357">Botwm rheoli cyfrineiriau, gweithredwch i weld a rheoli'ch cyfrineiriau yng ngosodiadau Chrome</translation>
@@ -2836,7 +2835,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="569000877158168851">Nid yw'r gwerth DnsOverHttpsTemplates yn berthnasol, ac ni chaiff ei ddefnyddio, oni bai bod y polisi DnsOverHttpsMode wedi'i osod naill ai i <ph name="SECURE_DNS_MODE_AUTOMATIC" /> neu <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Cadw cerdyn wedi'i agor ar uchder llawn.</translation>
 <translation id="5701381305118179107">Canoli</translation>
-<translation id="5707154300732650394">Parhau eich taith</translation>
 <translation id="57094364128775171">Awgrymu cyfrinair cryf…</translation>
 <translation id="570953204696852961">Coch 3</translation>
 <translation id="5710907191777451677">Gofynnwch i Gemini yn Chrome yn lle hynny</translation>
@@ -3174,7 +3172,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6264636978858465832">Mae angen mwy o fynediad ar Reolwr Cyfrineiriau</translation>
 <translation id="6265794661083428563">Copïo gwerth y polisi <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Cawsoch eich rhwystro rhag ymweld â <ph name="URL" /> oherwydd polisïau eich sefydliad. Os yw hynny'n annisgwyl, cysylltwch â'ch gweinyddwr.</translation>
-<translation id="6272088941196661550">Parhewch â'ch taith i weld gweithgarwch perthnasol yn eich hanes Chrome</translation>
 <translation id="6272383483618007430">Diweddariad Google</translation>
 <translation id="6278015583149890680">Google Drive a OneDrive</translation>
 <translation id="6279228081537458128">Talu'n nes ymlaen</translation>
@@ -4842,7 +4839,6 @@ Manylion ychwanegol:
 <translation id="9114101423898634479">Ychwanegu Rhif Teithiwr Hysbys</translation>
 <translation id="9114524666733003316">Wrthi'n cadarnhau'r cerdyn...</translation>
 <translation id="9114581008513152754">Nid yw'r porwr hwn yn cael ei reoli gan gwmni neu sefydliad arall. Gellir rheoli gweithgarwch ar y ddyfais hon y tu allan i Chrome. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab, yna Enter i barhau â'ch taith ac i weld gweithgarwch perthnasol yn eich hanes Chrome</translation>
 <translation id="9119042192571987207">Uwchlwythwyd</translation>
 <translation id="9119764377203471454">Methu ag ychwanegu atodiadau</translation>
 <translation id="9120593907434185157">Cadw'r cyfeiriad</translation>

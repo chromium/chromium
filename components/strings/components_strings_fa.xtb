@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">‏پیدا کردن و پر کردن با Gemini</translation>
 <translation id="1096545575934602868">این فیلد نباید بیشتر از <ph name="MAX_ITEMS_LIMIT" /> ورودی داشته باشد. از همه ورودی‌های آینده صرف‌نظر می‌شود.</translation>
 <translation id="1099928364755383720">تصویر در تصویر خودکار</translation>
-<translation id="1100782917270858593">‏دکمه «ازسرگیری مسیر»، برای ازسر گرفتن مسیر و دیدن فعالیت‌های مرتبط در سابقه Chrome، کلید «ورود» را فشار دهید</translation>
 <translation id="1101672080107056897">اقدام خطا</translation>
 <translation id="1104409666019087579">تعدادی از فیلدهای الزامی خالی است. آن‌ها را قبل‌از ذخیره کردن پر کنید.</translation>
 <translation id="1104860668737945357">‏دکمه «مدیریت گذرواژه‌ها»، برای مشاهده و مدیریت گذرواژه‌ها در تنظیمات Chrome، آن را فعال کنید</translation>
@@ -2834,7 +2833,6 @@
 <translation id="569000877158168851">‏مقدار DnsOverHttpsTemplates مرتبط نیست و استفاده نخواهد شد، مگراینکه خط‌مشی DnsOverHttpsMode روی <ph name="SECURE_DNS_MODE_AUTOMATIC" /> یا<ph name="SECURE_DNS_MODE_SECURE" /> تنظیم شده باشد.</translation>
 <translation id="5691848789297492617">ذخیره کردن کارت به‌صورت کامل باز شده است.</translation>
 <translation id="5701381305118179107">مرکز</translation>
-<translation id="5707154300732650394">ازسرگیری مسیر</translation>
 <translation id="57094364128775171">پیشنهاد گذرواژه قوی…</translation>
 <translation id="570953204696852961">قرمز ۳</translation>
 <translation id="5710907191777451677">‏در عوض، از Gemini در Chrome بپرسید</translation>
@@ -3171,7 +3169,6 @@
 <translation id="6264636978858465832">«مدیر گذرواژه» نیاز به دسترسی بیشتری دارد</translation>
 <translation id="6265794661083428563">کپی کردن مقدار خط‌مشی <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">بازدید شما از <ph name="URL" /> به‌دلیل خط‌مشی‌های سازمانتان مسدود شده است. اگر این موضوع غیرمنتظره است، با سرپرست خود تماس بگیرید.</translation>
-<translation id="6272088941196661550">‏مسیر را ازسر بگیرید تا فعالیت‌های مرتبط را در سابقه Chrome ببینید</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">‏‫Google Drive و OneDrive</translation>
 <translation id="6279228081537458128">بعداً پرداخت شود</translation>
@@ -4840,7 +4837,6 @@
 <translation id="9114101423898634479">افزودن شناسه مسافر شناخته‌شده</translation>
 <translation id="9114524666733003316">درحال تأیید کردن کارت…</translation>
 <translation id="9114581008513152754">‏این مرورگر را شرکت یا سازمان دیگری مدیریت نمی‌کند. فعالیت در این دستگاه ممکن است خارج از Chrome مدیریت شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831">‏<ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />، کلید Tab و سپس Enter را فشار دهید تا مسیر را ازسر بگیرید و فعالیت‌های مرتبط را در سابقه Chrome ببینید</translation>
 <translation id="9119042192571987207">بارگذاری‌شده</translation>
 <translation id="9119764377203471454">پیوست اضافه نشد</translation>
 <translation id="9120593907434185157">ذخیره کردن نشانی</translation>

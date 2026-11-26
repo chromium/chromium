@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Buscar e completar con Gemini</translation>
 <translation id="1096545575934602868">Este campo non debe ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas. Descartaranse todas as restantes.</translation>
 <translation id="1099928364755383720">pantalla superposta automática</translation>
-<translation id="1100782917270858593">Botón para retomar o percorrido. Para retomar o percorrido e ver a actividade relevante do teu historial de Chrome, preme Introducir</translation>
 <translation id="1101672080107056897">Acción incorrecta</translation>
 <translation id="1104409666019087579">Algúns campos obrigatorios están en branco. Cúbreos antes de gardar o formulario.</translation>
 <translation id="1104860668737945357">Botón para xestionar os contrasinais. Actívao para ver e xestionar os teus contrasinais na configuración de Chrome</translation>
@@ -2836,7 +2835,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="569000877158168851">O valor de DnsOverHttpsTemplates non é relevante e non se utilizará, a non ser que a política DnsOverHttpsMode se defina como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ou <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Tarxeta de gardado aberta a altura completa.</translation>
 <translation id="5701381305118179107">Centrar</translation>
-<translation id="5707154300732650394">Retomar percorrido</translation>
 <translation id="57094364128775171">Suxerir contrasinal seguro…</translation>
 <translation id="570953204696852961">Vermello 3</translation>
 <translation id="5710907191777451677">Proba a preguntarlle a Gemini en Chrome</translation>
@@ -3174,7 +3172,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6264636978858465832">O xestor de contrasinais necesita máis acceso</translation>
 <translation id="6265794661083428563">Copiar o valor da política <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Bloqueouse o teu acceso a <ph name="URL" /> debido ás políticas da túa organización. Se non é o que esperabas, ponte en contacto con quen che administra a conta.</translation>
-<translation id="6272088941196661550">Retomar o percorrido para ver a actividade relevante do teu historial de Chrome</translation>
 <translation id="6272383483618007430">Actualización de Google</translation>
 <translation id="6278015583149890680">Google Drive e OneDrive</translation>
 <translation id="6279228081537458128">Pago aprazado</translation>
@@ -4842,7 +4839,6 @@ Detalles adicionais:
 <translation id="9114101423898634479">Engadir o número de viaxeiro coñecido (KTN)</translation>
 <translation id="9114524666733003316">Confirmando tarxeta…</translation>
 <translation id="9114581008513152754">Ningunha compañía ou organización xestiona este navegador. A actividade deste dispositivo pódese xestionar fóra de Chrome. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />; para retomar o percorrido e ver a actividade relevante do teu historial de Chrome, preme Tabulador e, despois, Introducir</translation>
 <translation id="9119042192571987207">Cargouse</translation>
 <translation id="9119764377203471454">Non se puideron engadir os anexos</translation>
 <translation id="9120593907434185157">Gardar o enderezo</translation>

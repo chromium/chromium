@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Trouver et remplir avec Gemini</translation>
 <translation id="1096545575934602868">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Toutes les entrées supplémentaires seront supprimées.</translation>
 <translation id="1099928364755383720">Incrustation d'image automatique</translation>
-<translation id="1100782917270858593">Bouton de reprise de votre exploration, appuyez sur Entrée pour reprendre votre exploration et consulter l'activité pertinente dans votre historique de Chrome</translation>
 <translation id="1101672080107056897">Action en cas d'erreur</translation>
 <translation id="1104409666019087579">Certains champs obligatoires sont vides. Remplissez-les avant d'enregistrer.</translation>
 <translation id="1104860668737945357">Bouton Gérer les mots de passe, activez-le pour afficher et gérer vos mots de passe dans les paramètres de Chrome</translation>
@@ -2833,7 +2832,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="569000877158168851">La valeur DnsOverHttpsTemplates n'est pas pertinente et ne sera pas utilisée, à moins que la politique DnsOverHttpsMode soit définie à <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ou à <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Enregistrer la carte ouverte à pleine hauteur.</translation>
 <translation id="5701381305118179107">Centrer</translation>
-<translation id="5707154300732650394">Reprendre votre exploration</translation>
 <translation id="57094364128775171">Suggérer un mot de passe fort…</translation>
 <translation id="570953204696852961">Rouge 3</translation>
 <translation id="5710907191777451677">Demander plutôt à Gemini dans Chrome</translation>
@@ -3170,7 +3168,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6264636978858465832">Le gestionnaire de mots de passe demande davantage d'accès</translation>
 <translation id="6265794661083428563">Copier la valeur de la politique <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Vous n'avez pas pu visiter <ph name="URL" /> en raison des politiques de votre organisation. Si cela est inattendu, communiquez avec votre administrateur.</translation>
-<translation id="6272088941196661550">Reprenez votre exploration pour consulter l'activité pertinente dans votre historique de Chrome</translation>
 <translation id="6272383483618007430">Mise à jour Google</translation>
 <translation id="6278015583149890680">Google Disque et OneDrive</translation>
 <translation id="6279228081537458128">Payer plus tard</translation>
@@ -4838,7 +4835,6 @@ Détails supplémentaires :
 <translation id="9114101423898634479">Ajouter un numéro de voyageur connu</translation>
 <translation id="9114524666733003316">Confirmation de la carte en cours…</translation>
 <translation id="9114581008513152754">Ce navigateur n'est pas géré par une entreprise ou une organisation. L'activité sur cet appareil peut être gérée à l'extérieur de Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour reprendre votre recherche et voir l'activité pertinente dans votre historique de Chrome</translation>
 <translation id="9119042192571987207">Téléversé</translation>
 <translation id="9119764377203471454">Impossible d'ajouter des pièces jointes</translation>
 <translation id="9120593907434185157">Enregistrer l'adresse</translation>

@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini प्रयोग गरी खोज्नुहोस् र भर्नुहोस्</translation>
 <translation id="1096545575934602868">यो फिल्डमा <ph name="MAX_ITEMS_LIMIT" /> भन्दा धेरै प्रविष्टिहरू हुनु हुँदैन। थप सबै प्रविष्टिहरू खारेज गरिने छन्।</translation>
 <translation id="1099928364755383720">picture-in-picture मोडमा स्वतः प्रवेश गर्ने सेटिङ</translation>
-<translation id="1100782917270858593">"खोज्ने क्रम सुचारु गर्नुहोस्" नामक बटन, तपाईं खोज्ने क्रम सुचारु गर्न र Chrome को ब्राउजिङ इतिहासमा सान्दर्भिक गतिविधि हेर्न चाहनुहुन्छ भने इन्टर थिच्नुहोस्</translation>
 <translation id="1101672080107056897">त्रुटिसम्बन्धी कार्य</translation>
 <translation id="1104409666019087579">भर्नु पर्ने केही क्षेत्रहरू खाली छाडिएका छन्। भर्नु पर्ने क्षेत्रहरू भरेपछि मात्र सेभ गर्नुहोस्।</translation>
 <translation id="1104860668737945357">पासवर्डहरू व्यवस्थापन गर्ने बटन, Chrome का सेटिङमा गई आफ्ना पासवर्डहरू हेर्न तथा व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
@@ -2831,7 +2830,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates को यो मान सान्दर्भिक नभएकाले DnsOverHttpsMode नीति सेट गरेर <ph name="SECURE_DNS_MODE_AUTOMATIC" /> वा <ph name="SECURE_DNS_MODE_SECURE" /> नबनाइँदासम्म यसको प्रयोग गरिने छैन।</translation>
 <translation id="5691848789297492617">कार्ड सेभ गर्ने प्रम्प्ट पूरै स्क्रिनमा खोलिएको छ।</translation>
 <translation id="5701381305118179107">केन्द्र</translation>
-<translation id="5707154300732650394">खोज्ने क्रम सुचारु गर्नुहोस्</translation>
 <translation id="57094364128775171">भरपर्दो पासवर्ड सिफारिस गर्नुहोस्…</translation>
 <translation id="570953204696852961">रातो ३</translation>
 <translation id="5710907191777451677">यसको साटो Chrome मा उपलब्ध Gemini लाई सोध्नुहोस्</translation>
@@ -3168,7 +3166,6 @@
 <translation id="6264636978858465832">पासवर्ड म्यानेजरलाई थप कुराको अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> नीतिको मान कपी गर्नुहोस्</translation>
 <translation id="6271264012613848937">तपाईंको सङ्गठनका नीतिहरूका कारण तपाईंलाई <ph name="URL" /> मा जान रोक लगाइएको छ। तपाईंले यस्तो अपेक्षा गर्नुभएको थिएन भने आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
-<translation id="6272088941196661550">तपाईं Chrome को ब्राउजिङ इतिहासमा सान्दर्भिक गतिविधि हेर्न चाहनुहुन्छ भने खोज्ने क्रम सुचारु गर्नुहोस्</translation>
 <translation id="6272383483618007430">Google अपडेट</translation>
 <translation id="6278015583149890680">Google Drive र OneDrive</translation>
 <translation id="6279228081537458128">पछि भुक्तानी गर्नुहोस्</translation>
@@ -4836,7 +4833,6 @@
 <translation id="9114101423898634479">Known Traveler Number हाल्नुहोस्</translation>
 <translation id="9114524666733003316">कार्डको पुष्टि गर्दै...</translation>
 <translation id="9114581008513152754">कुनै कम्पनी वा अन्य सङ्गठनले यो ब्राउजर व्यवस्थापन गर्दैन। यो डिभाइसका क्रियाकलाप Chrome बाहिरबाट व्यवस्थापन गर्न सकिन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome को ब्राउजिङ इतिहासमा सान्दर्भिक गतिविधि हेर्न खोज्ने क्रम सुचारु गर्न Tab थिच्नुहोस् त्यसपछि Enter थिच्नुहोस्</translation>
 <translation id="9119042192571987207">अपलोड गरिएको</translation>
 <translation id="9119764377203471454">एट्याचमेन्टहरू हाल्न सकिएन</translation>
 <translation id="9120593907434185157">यो ठेगाना सेभ गर्नुहोस्</translation>

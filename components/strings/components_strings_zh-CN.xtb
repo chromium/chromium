@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini 智能查找和填充</translation>
 <translation id="1096545575934602868">此字段最多仅能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，超出的条目会被舍弃。</translation>
 <translation id="1099928364755383720">自动进入画中画模式</translation>
-<translation id="1100782917270858593">“继续您的历程”按钮，按 Enter 键即可继续您的历程，以查看您的 Chrome 历史记录中的相关活动记录</translation>
 <translation id="1101672080107056897">错误操作</translation>
 <translation id="1104409666019087579">请先填写所有必填字段，然后再保存。</translation>
 <translation id="1104860668737945357">“管理密码”按钮，激活它即可在 Chrome 设置中查看和管理您的密码</translation>
@@ -2829,7 +2828,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates 值不相关，因此不会被使用，除非 DnsOverHttpsMode 政策设为“<ph name="SECURE_DNS_MODE_AUTOMATIC" />”或“<ph name="SECURE_DNS_MODE_SECURE" />”。</translation>
 <translation id="5691848789297492617">保存的卡片已全屏打开。</translation>
 <translation id="5701381305118179107">居中</translation>
-<translation id="5707154300732650394">继续您的历程</translation>
 <translation id="57094364128775171">建议安全系数高的密码…</translation>
 <translation id="570953204696852961">红色 3</translation>
 <translation id="5710907191777451677">去问问 Chrome 中的 Gemini</translation>
@@ -3165,7 +3163,6 @@
 <translation id="6264636978858465832">密码管理工具需要更多访问权限</translation>
 <translation id="6265794661083428563">复制 <ph name="POLICY_NAME" /> 政策的值</translation>
 <translation id="6271264012613848937">根据您组织的政策，您无法访问 <ph name="URL" />。若有疑问，请与管理员联系。</translation>
-<translation id="6272088941196661550">继续您的历程，以查看您的 Chrome 历史记录中的相关活动记录</translation>
 <translation id="6272383483618007430">Google 更新</translation>
 <translation id="6278015583149890680">Google 云端硬盘和 OneDrive</translation>
 <translation id="6279228081537458128">先买后付</translation>
@@ -4835,7 +4832,6 @@
 <translation id="9114101423898634479">添加已知旅客编号</translation>
 <translation id="9114524666733003316">正在确认信用卡…</translation>
 <translation id="9114581008513152754">此浏览器并未由某个公司或其他组织管理。此设备上的活动可能在接受 Chrome 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可继续您的历程，以查看您的 Chrome 历史记录中的相关活动记录</translation>
 <translation id="9119042192571987207">已上传</translation>
 <translation id="9119764377203471454">无法添加附件</translation>
 <translation id="9120593907434185157">保存地址</translation>

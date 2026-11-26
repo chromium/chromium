@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini ile bul ve doldur</translation>
 <translation id="1096545575934602868">Bu alanda en çok <ph name="MAX_ITEMS_LIMIT" /> giriş olabilir. Diğer tüm girişler silinecektir.</translation>
 <translation id="1099928364755383720">otomatik pencere içinde pencere</translation>
-<translation id="1100782917270858593">Arama yolculuğunuzu devam ettirin düğmesi, arama yolculuğunuzu devam ettirerek Chrome geçmişinizdeki alakalı etkinlikleri görmek için Enter'a basın</translation>
 <translation id="1101672080107056897">Hata işlemi</translation>
 <translation id="1104409666019087579">Bazı zorunlu alanlar boş. Kaydetmeden önce bu alanları doldurun.</translation>
 <translation id="1104860668737945357">Şifreleri yönet düğmesi, Chrome ayarlarında şifrelerinizi görüp yönetmek için etkinleştirin</translation>
@@ -2833,7 +2832,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="569000877158168851">DnsOverHttpsTemplates değeri alakalı olmadığından kullanılmayacak. Bu durum DnsOverHttpsMode politikası <ph name="SECURE_DNS_MODE_AUTOMATIC" /> veya <ph name="SECURE_DNS_MODE_SECURE" /> olarak ayarlanmadığı sürece geçerlidir.</translation>
 <translation id="5691848789297492617">Kartı kaydet seçeneği tam ekranda açıldı.</translation>
 <translation id="5701381305118179107">Ortala</translation>
-<translation id="5707154300732650394">Arama yolculuğunuzu devam ettirin</translation>
 <translation id="57094364128775171">Güçlü şifre öner…</translation>
 <translation id="570953204696852961">Kırmızı 3</translation>
 <translation id="5710907191777451677">Bunun yerine Chrome'da Gemini'a sorun</translation>
@@ -3170,7 +3168,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6264636978858465832">Şifre Yöneticisi'nin daha fazla erişime ihtiyacı var</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> politikasının değerini kopyala</translation>
 <translation id="6271264012613848937">Kuruluşunuzun politikaları nedeniyle <ph name="URL" /> adresini ziyaret etmeniz engellendi. Bu beklenmeyen bir durumsa yöneticinizle iletişime geçin.</translation>
-<translation id="6272088941196661550">Chrome geçmişinizde alakalı etkinlikleri görmek için arama yolculuğunuzu devam ettirin.</translation>
 <translation id="6272383483618007430">Google Güncelleme</translation>
 <translation id="6278015583149890680">Google Drive ve OneDrive</translation>
 <translation id="6279228081537458128">Sonra ödeyin</translation>
@@ -4840,7 +4837,6 @@ Ek ayrıntılar:
 <translation id="9114101423898634479">Known Traveler Number ekle</translation>
 <translation id="9114524666733003316">Kart onaylanıyor...</translation>
 <translation id="9114581008513152754">Bu tarayıcı bir şirket veya başka bir kuruluş tarafından yönetilmemektedir. Bu cihazdaki etkinlikler Chrome dışında yönetilebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Sekme'ye basın, ardından yolculuğunuzu devam ettirmek ve Chrome geçmişinizdeki alakalı etkinlikleri görmek için Enter'a basın</translation>
 <translation id="9119042192571987207">Yüklendi</translation>
 <translation id="9119764377203471454">Dosya eklenemiyor</translation>
 <translation id="9120593907434185157">Adresi kaydedin</translation>

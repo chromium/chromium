@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Cari dan isi dengan Gemini</translation>
 <translation id="1096545575934602868">Medan ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri selebihnya akan dibuang.</translation>
 <translation id="1099928364755383720">gambar dalam gambar automatik</translation>
-<translation id="1100782917270858593">Butang sambung semula perjalanan anda, tekan Enter untuk menyambung semula perjalanan dan melihat aktiviti yang berkaitan dalam sejarah Chrome anda</translation>
 <translation id="1101672080107056897">Tindakan ralat</translation>
 <translation id="1104409666019087579">Beberapa medan yang diperlukan kosong. Isi sebelum menyimpan.</translation>
 <translation id="1104860668737945357">Butang urus kata laluan, aktifkan untuk melihat dan mengurus kata laluan anda dalam tetapan Chrome</translation>
@@ -2837,7 +2836,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="569000877158168851">Nilai DnsOverHttpsTemplates tidak berkaitan dan tidak akan digunakan, melainkan dasar DnsOverHttpsMode ditetapkan kepada <ph name="SECURE_DNS_MODE_AUTOMATIC" /> atau <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Simpan kad yang dibuka pada ketinggian penuh.</translation>
 <translation id="5701381305118179107">Tengah</translation>
-<translation id="5707154300732650394">Sambung semula perjalanan anda</translation>
 <translation id="57094364128775171">Cadangkan kata laluan yang kukuh…</translation>
 <translation id="570953204696852961">Merah 3</translation>
 <translation id="5710907191777451677">Minta Gemini dalam Chrome</translation>
@@ -3175,7 +3173,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6264636978858465832">Password Manager memerlukan lebih banyak akses</translation>
 <translation id="6265794661083428563">Salin nilai dasar <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Anda telah disekat daripada melawati <ph name="URL" /> disebabkan oleh dasar organisasi anda. Jika perkara itu tidak dijangka, hubungi pentadbir anda.</translation>
-<translation id="6272088941196661550">Sambung semula perjalanan anda untuk melihat aktiviti yang berkaitan dalam sejarah Chrome anda</translation>
 <translation id="6272383483618007430">Kemas Kini Google</translation>
 <translation id="6278015583149890680">Google Drive dan OneDrive</translation>
 <translation id="6279228081537458128">Bayar kemudian</translation>
@@ -4845,7 +4842,6 @@ Butiran tambahan:
 <translation id="9114101423898634479">Tambahkan Nombor Pengembara Yang Diketahui</translation>
 <translation id="9114524666733003316">Mengesahkan kad...</translation>
 <translation id="9114581008513152754">Penyemak imbas ini tidak diurus oleh syarikat atau organisasi lain. Aktiviti pada peranti ini mungkin diurus di luar Chrome. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk menyambung semula perjalanan dan melihat aktiviti yang berkaitan dalam sejarah Chrome anda</translation>
 <translation id="9119042192571987207">Dimuat naik</translation>
 <translation id="9119764377203471454">Tidak dapat menambahkan lampiran</translation>
 <translation id="9120593907434185157">Simpan alamat</translation>

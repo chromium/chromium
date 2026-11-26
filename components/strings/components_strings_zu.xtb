@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Thola futhi ugcwalise ngeGemini</translation>
 <translation id="1096545575934602868">Le nkambu akufanele ibe nokungena okungaphe kokungu-<ph name="MAX_ITEMS_LIMIT" />. Konke ukungena okuthuthukile kuzolahlwa.</translation>
 <translation id="1099928364755383720">isithombe-esithombeni esizenzakalelayo</translation>
-<translation id="1100782917270858593">Inkinobho yokuqhubeka nohambo lwakho, cindezela u-Enter ukuqhubeka nohambo lwakho futhi ubone umsebenzi ohambisanayo kumlando wakho we-Chrome</translation>
 <translation id="1101672080107056897">Isenzo sephutha</translation>
 <translation id="1104409666019087579">Ezinye izinkambu ezidingekayo azinalutho. Wagcwalise ngaphambi kokulondoloza.</translation>
 <translation id="1104860668737945357">Phatha inkinobho yamaphasiwedi, yenza kusebenze ukuze ubuke futhi uphathe amaphasiwedi wakho kumasethingi we-Chrome</translation>
@@ -2830,7 +2829,6 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="569000877158168851">Inani le-DnsOverHttpsTemplates alihlobene, futhi ngeke lisetshenziswe, ngaphandle kokuthi inqubomgomo ye-DnsOverHttpsMode isethwe kuya ku-<ph name="SECURE_DNS_MODE_AUTOMATIC" /> noma <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Londoloza ikhadi elivulwe kubude obugcwele.</translation>
 <translation id="5701381305118179107">Maphakathi</translation>
-<translation id="5707154300732650394">Qhubeka nohambo lwakho</translation>
 <translation id="57094364128775171">Iphakamisa iphasiwedi eqinile…</translation>
 <translation id="570953204696852961">Okubomvu 3</translation>
 <translation id="5710907191777451677">Esikhundleni salokho buza iGemini kuChrome</translation>
@@ -3167,7 +3165,6 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="6264636978858465832">Isiphathi Sephasiwedi sidinga ukufinyelela okwengeziwe</translation>
 <translation id="6265794661083428563">Kopisha inani lenqubomgomo ye-<ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Uvinjelwe ukuvakashela i-<ph name="URL" /> ngenxa yezinqubomgomo zenhlangano yakho. Uma lokho kungalindelekile, xhumana nomlawuli wakho.</translation>
-<translation id="6272088941196661550">Qhubeka nohambo ukuze ubone umsebenzi ohambisanayo kumlando wakho we-Chrome</translation>
 <translation id="6272383483618007430">Isibuyekezo se-Google</translation>
 <translation id="6278015583149890680">IGoogle Drive ne-OneDrive</translation>
 <translation id="6279228081537458128">Khokha kamuva</translation>
@@ -4835,7 +4832,6 @@ Imininingwane engeziwe:
 <translation id="9114101423898634479">Faka Inombolo Yesihambi Esaziwayo</translation>
 <translation id="9114524666733003316">Iqinisekisa ikhadi...</translation>
 <translation id="9114581008513152754">Lesi siphequluli asiphethwe inkampani noma enye inhlangano. Umsebenzi kule divayisi ungaphathwa ngaphandle kwe-Chrome. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, cindezela u-Tab, bese ucindezela u-Enter ukuqhubeka nohambo lwakho futhi ubone umsebenzi ohambisanayo kumlando wakho we-Chrome</translation>
 <translation id="9119042192571987207">Kulayishiwe</translation>
 <translation id="9119764377203471454">Ayikwazi ukufaka izinanyathiselwa</translation>
 <translation id="9120593907434185157">Londoloza ikheli</translation>

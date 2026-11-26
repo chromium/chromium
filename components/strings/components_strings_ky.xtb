@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini менен маалымат таап, толтуруңуз</translation>
 <translation id="1096545575934602868">Бул талаага киргизилген маанилердин саны <ph name="MAX_ITEMS_LIMIT" /> ашпашы керек. Ашыкча маанилер жоюлат.</translation>
 <translation id="1099928364755383720">сүрөттөгү сүрөт режимине автоматтык түрдө кирүү</translation>
-<translation id="1100782917270858593">Саякатты улантуу баскычы, саякатыңызды улантып, Chrome´до көрүлгөн вебсайттарыңыздын арасынан ылайыктууларын көрүү үчүн Enter баскычын басыңыз</translation>
 <translation id="1101672080107056897">Ката аракет</translation>
 <translation id="1104409666019087579">Талап кылынган айрым талаалар бош калды. Сактоодон мурда аларды толтуруңуз.</translation>
 <translation id="1104860668737945357">"Сырсөздөрдү башкаруу" баскычы. Chrome'дун жөндөөлөрүнө өтүп, сырсөздөрдү көрүү жана башкаруу үчүн иштетиңиз</translation>
@@ -2832,7 +2831,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates мааниси ылайыксыз, андыктан DnsOverHttpsMode саясаты <ph name="SECURE_DNS_MODE_AUTOMATIC" /> же <ph name="SECURE_DNS_MODE_SECURE" /> деп коюлмайынча, ал колдонулбайт.</translation>
 <translation id="5691848789297492617">Картаны сактоо бети толук экранда ачылды</translation>
 <translation id="5701381305118179107">Борбор</translation>
-<translation id="5707154300732650394">Саякатты улантуу</translation>
 <translation id="57094364128775171">Татаал сырсөз сунушталсын…</translation>
 <translation id="570953204696852961">Кызыл 3</translation>
 <translation id="5710907191777451677">Анын ордуна Chrome'догу Gemini'дан сураңыз</translation>
@@ -3169,7 +3167,6 @@
 <translation id="6264636978858465832">Сырсөздөрдү башкаргычка кошумча уруксат керек</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> саясатынын маанисин көчүрүү</translation>
 <translation id="6271264012613848937">Уюмуңуздун эрежелерине ылайык <ph name="URL" /> сайтына кирүүгө тыюу салынган. Эгер бул күтүлбөгөн нерсе болсо, администраторуңузга кайрылыңыз.</translation>
-<translation id="6272088941196661550">Chrome´до көрүлгөн вебсайттарыңыздын арасынан ылайыктууларын көрүү үчүн саякатты улантыңыз</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive жана OneDrive</translation>
 <translation id="6279228081537458128">Кийинчерээк төлөө</translation>
@@ -4837,7 +4834,6 @@
 <translation id="9114101423898634479">Белгилүү жүргүнчүнүн номерин кошуу</translation>
 <translation id="9114524666733003316">Карта текшерилүүдө…</translation>
 <translation id="9114581008513152754">Бул серепчи компанияңыз же башка уюм тарабынан башкарылбайт. Бул түзмөктө аткарылган аракеттер Chrome'дон тышкары башкарылышы мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, саякатыңызды улантып, Chrome´до көрүлгөн вебсайттарыңыздын арасынан ылайыктууларын көрүү үчүн Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="9119042192571987207">Жүктөлүп берилди</translation>
 <translation id="9119764377203471454">Тиркемелер кошулган жок</translation>
 <translation id="9120593907434185157">Даректи сактоо</translation>

@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Εύρεση και συμπλήρωση με το Gemini</translation>
 <translation id="1096545575934602868">Αυτό το πεδίο δεν θα πρέπει να έχει περισσότερες από <ph name="MAX_ITEMS_LIMIT" /> καταχωρίσεις. Τυχόν επιπλέον καταχωρίσεις θα απορριφθούν.</translation>
 <translation id="1099928364755383720">αυτόματη λειτουργία picture-in-picture</translation>
-<translation id="1100782917270858593">Κουμπί Συνέχιση της διαδρομής σας, πατήστε Enter για να συνεχίσετε τη διαδρομή σας και να δείτε σχετική δραστηριότητα στο Ιστορικό Chrome.</translation>
 <translation id="1101672080107056897">Ενέργεια σφάλματος</translation>
 <translation id="1104409666019087579">Ορισμένα απαιτούμενα πεδία είναι κενά. Συμπληρώστε τα πριν κάνετε αποθήκευση.</translation>
 <translation id="1104860668737945357">Κουμπί Διαχείριση κωδικών πρόσβασης, ενεργοποιήστε το για να δείτε και να διαχειριστείτε τους κωδικούς πρόσβασης στις ρυθμίσεις του Chrome</translation>
@@ -2834,7 +2833,6 @@
 <translation id="569000877158168851">Η τιμή DnsOverHttpsTemplates δεν είναι σχετική και δεν θα χρησιμοποιηθεί, εκτός αν η πολιτική DnsOverHttpsMode οριστεί είτε σε <ph name="SECURE_DNS_MODE_AUTOMATIC" /> είτε σε <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Η κάρτα αποθήκευσης άνοιξε σε πλήρες ύψος.</translation>
 <translation id="5701381305118179107">Κέντρο</translation>
-<translation id="5707154300732650394">Συνέχιση της διαδρομής σας</translation>
 <translation id="57094364128775171">Πρόταση για ισχυρό κωδικό πρόσβασης…</translation>
 <translation id="570953204696852961">Κόκκινο 3</translation>
 <translation id="5710907191777451677">Ρωτήστε το Gemini στο Chrome</translation>
@@ -3171,7 +3169,6 @@
 <translation id="6264636978858465832">Η Διαχείριση κωδικών πρόσβασης χρειάζεται περισσότερη πρόσβαση</translation>
 <translation id="6265794661083428563">Αντιγραφή της τιμής της πολιτικής <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Αποκλείστηκε η μετάβαση στον ιστότοπο <ph name="URL" /> λόγω των πολιτικών του οργανισμού σας. Αν αυτό δεν ήταν το αποτέλεσμα που αναμένατε, επικοινωνήστε με τον διαχειριστή σας.</translation>
-<translation id="6272088941196661550">Συνεχίστε τη διαδρομή σας για προβολή σχετικής δραστηριότητας στο Ιστορικό Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive και OneDrive</translation>
 <translation id="6279228081537458128">Πληρωμή αργότερα</translation>
@@ -4842,7 +4839,6 @@
 <translation id="9114101423898634479">Προσθήκη αριθμού γνωστού ταξιδιώτη</translation>
 <translation id="9114524666733003316">Επιβεβαίωση κάρτας…</translation>
 <translation id="9114581008513152754">Αυτός ο ιστότοπος δεν είναι διαχειριζόμενος από κάποια εταιρεία ή άλλον οργανισμό. Η διαχείριση της δραστηριότητας σε αυτήν τη συσκευή μπορεί να πραγματοποιηθεί εκτός Chrome. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και, στη συνέχεια, Enter για να συνεχίσετε τη διαδρομή σας και να δείτε σχετική δραστηριότητα στο Ιστορικό Chrome.</translation>
 <translation id="9119042192571987207">Έγινε μεταφόρτωση</translation>
 <translation id="9119764377203471454">Δεν είναι δυνατή η προσθήκη συνημμένων</translation>
 <translation id="9120593907434185157">Αποθήκευση διεύθυνσης</translation>

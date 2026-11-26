@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini ମାଧ୍ୟମରେ ଖୋଜି ପୂରଣ କରନ୍ତୁ</translation>
 <translation id="1096545575934602868">ଏହି ଫିଲ୍ଡରେ <ph name="MAX_ITEMS_LIMIT" />ରୁ ଅଧିକ ଏଣ୍ଟ୍ରି ରହିବା ଉଚିତ ନୁହେଁ। ସମସ୍ତ ପରବର୍ତ୍ତୀ ଏଣ୍ଟ୍ରିଗୁଡ଼ିକୁ ଖାରଜ କରାଯିବ।</translation>
 <translation id="1099928364755383720">ସ୍ୱତଃ ପିକଚର-ଇନ-ପିକଚର</translation>
-<translation id="1100782917270858593">"ଆପଣଙ୍କ ସର୍ଚ୍ଚ ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ" ବଟନ, ଆପଣଙ୍କ ସର୍ଚ୍ଚ ପୁଣି ଆରମ୍ଭ କରି Chrome ଇତିହାସରେ ପ୍ରାସଙ୍ଗିକ କାର୍ଯ୍ୟକଳାପ ଦେଖିବାକୁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="1101672080107056897">ତ୍ରୁଟି ସମ୍ବନ୍ଧିତ କାର୍ଯ୍ୟ</translation>
 <translation id="1104409666019087579">କିଛି ଆବଶ୍ୟକ ଫିଲ୍ଡ ଖାଲି ଅଛି। ସେଭ କରିବା ପୂର୍ବରୁ ସେଗୁଡ଼ିକୁ ପୂରଣ କରନ୍ତୁ।</translation>
 <translation id="1104860668737945357">'ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, Chrome ସେଟିଂସରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଭ୍ୟୁ କରି ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
@@ -2833,7 +2832,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates ମୂଲ୍ୟ ପ୍ରାସଙ୍ଗିକ ନୁହେଁ, DnsOverHttpsMode ନୀତି <ph name="SECURE_DNS_MODE_AUTOMATIC" /> କିମ୍ବା <ph name="SECURE_DNS_MODE_SECURE" />କୁ ସେଟ୍ କରାନଯିବା ପର୍ଯ୍ୟନ୍ତ ଏହା ବ୍ୟବହାର କରାଯିବ ନାହିଁ।</translation>
 <translation id="5691848789297492617">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଥିବା କାର୍ଡ ସେଭ କରନ୍ତୁ।</translation>
 <translation id="5701381305118179107">କେନ୍ଦ୍ର</translation>
-<translation id="5707154300732650394">ଆପଣଙ୍କ ସର୍ଚ୍ଚ ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="57094364128775171">ଜଟିଳ ପାସ୍‌ୱର୍ଡ ପରାମର୍ଶ କରନ୍ତୁ…</translation>
 <translation id="570953204696852961">ଲାଲ 3</translation>
 <translation id="5710907191777451677">ଏହା ପରିବର୍ତ୍ତେ Chromeରେ Geminiକୁ ପଚାରନ୍ତୁ</translation>
@@ -3170,7 +3168,6 @@
 <translation id="6264636978858465832">Password Manager ଅଧିକ ଆକ୍ସେସ ଆବଶ୍ୟକ କରେ</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> ନୀତିର ମୂଲ୍ୟ କପି କରନ୍ତୁ</translation>
 <translation id="6271264012613848937">ଆପଣଙ୍କ ସଂସ୍ଥାର ନୀତିଗୁଡ଼ିକ ଯୋଗୁଁ ଆପଣଙ୍କୁ <ph name="URL" />କୁ ଭିଜିଟ କରିବାରୁ ବ୍ଲକ କରାଯାଇଛି। ଯଦି ଏହା ଅପ୍ରତ୍ୟାଶିତ ଅଟେ, ତେବେ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
-<translation id="6272088941196661550">ଆପଣଙ୍କ Chrome ଇତିହାସରେ ପ୍ରାସଙ୍ଗିକ କାର୍ଯ୍ୟକଳାପ ଦେଖିବାକୁ ଆପଣଙ୍କ ସର୍ଚ୍ଚ ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="6272383483618007430">Google ଅପଡେଟ୍</translation>
 <translation id="6278015583149890680">Google Drive ଏବଂ OneDrive</translation>
 <translation id="6279228081537458128">ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
@@ -4838,7 +4835,6 @@
 <translation id="9114101423898634479">ଜଣା ଥିବା ଟ୍ରାଭେଲର ନମ୍ବର ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="9114524666733003316">କାର୍ଡ ସୁନିଶ୍ଚିତ କରାଯାଉଛି...</translation>
 <translation id="9114581008513152754">ଏହି ବ୍ରାଉଜର୍ ଏକ କମ୍ପାନୀ କିମ୍ବା ଅନ୍ୟ ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ ହେଉନାହିଁ। ଏହି ଡିଭାଇସରେ କରାଯାଉଥିବା କାର୍ଯ୍ୟକଳାପକୁ Chromeର ବାହାରେ ପରିଚାଳନା କରାଯାଇପାରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ ସନ୍ଧାନ ପୁଣି ଆରମ୍ଭ କରି Chrome ଇତିହାସରେ ପ୍ରାସଙ୍ଗିକ କାର୍ଯ୍ୟକଳାପ ଦେଖିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="9119042192571987207">ଅପଲୋଡ୍ କରାଯାଇଛି</translation>
 <translation id="9119764377203471454">ଆଟାଚମେଣ୍ଟଗୁଡ଼ିକୁ ଯୋଗ କରିବାରେ ଅସମର୍ଥ</translation>
 <translation id="9120593907434185157">ଠିକଣା ସେଭ କରନ୍ତୁ</translation>

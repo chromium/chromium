@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Trova e Completa con Gemini</translation>
 <translation id="1096545575934602868">Questo campo non deve avere più di <ph name="MAX_ITEMS_LIMIT" /> voci. Tutte le voci in esubero verranno eliminate.</translation>
 <translation id="1099928364755383720">modalità Picture in picture automatica</translation>
-<translation id="1100782917270858593">Pulsante Riprendi il percorso, premi Invio per riprendere il percorso e visualizzare le attività pertinenti nella tua cronologia di Chrome.</translation>
 <translation id="1101672080107056897">Azione errore</translation>
 <translation id="1104409666019087579">Ci sono alcuni campi obbligatori vuoti. Compilali prima di salvare.</translation>
 <translation id="1104860668737945357">Pulsante Gestisci password, attiva per visualizzare e gestire le tue password nelle impostazioni di Chrome</translation>
@@ -2830,7 +2829,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="569000877158168851">Il valore DnsOverHttpsTemplates non è pertinente e non verrà utilizzato a meno che la policy DnsOverHttpsMode non venga impostata su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> o su <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Salva carta aperta a schermo intero.</translation>
 <translation id="5701381305118179107">Centra</translation>
-<translation id="5707154300732650394">Riprendi il percorso</translation>
 <translation id="57094364128775171">Suggerisci password efficace…</translation>
 <translation id="570953204696852961">Rosso 3</translation>
 <translation id="5710907191777451677">Chiedi invece a Gemini in Chrome</translation>
@@ -3166,7 +3164,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6264636978858465832">Gestore delle password richiede un maggiore accesso</translation>
 <translation id="6265794661083428563">Copia il valore della policy <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">La visita a <ph name="URL" /> è stata bloccata a causa delle policy della tua organizzazione. Se ritieni che ci sia un errore, contatta l'amministratore.</translation>
-<translation id="6272088941196661550">Riprendi il percorso per visualizzare le attività pertinenti nella tua cronologia di Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive e OneDrive</translation>
 <translation id="6279228081537458128">Paga dopo</translation>
@@ -4835,7 +4832,6 @@ Ulteriori dettagli:
 <translation id="9114101423898634479">Aggiungi Known Traveler Number</translation>
 <translation id="9114524666733003316">Conferma della carta...</translation>
 <translation id="9114581008513152754">Questo browser non è gestito da un'azienda o da un'altra organizzazione. L'attività svolta su questo dispositivo potrebbe essere gestita al di fuori di Chrome. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per riprendere il percorso e visualizzare le attività pertinenti nella tua cronologia di Chrome</translation>
 <translation id="9119042192571987207">Caricato</translation>
 <translation id="9119764377203471454">Impossibile aggiungere allegati</translation>
 <translation id="9120593907434185157">Salva indirizzo</translation>

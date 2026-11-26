@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini वापरून शोधा आणि भरा</translation>
 <translation id="1096545575934602868">या भागात <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त नोंदी असू शकत नाहीत. उरलेल्या सर्व नोंदी काढून टाकल्या जातील.</translation>
 <translation id="1099928364755383720">ऑटोमॅटिक चित्रात-चित्र</translation>
-<translation id="1100782917270858593">तुमचा प्रवास पुन्हा सुरू करा बटण, तुमचा प्रवास पुन्हा सुरू करण्यासाठी आणि Chrome इतिहासामध्ये संबंधित अ‍ॅक्टिव्हिटी पाहण्यासाठी एंटर प्रेस करा</translation>
 <translation id="1101672080107056897">कृतीमध्ये एरर</translation>
 <translation id="1104409666019087579">भरणे आवश्यक असलेली फील्ड रिकामी आहेत. सेव्ह करण्याआधी ती भरा.</translation>
 <translation id="1104860668737945357">पासवर्ड व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुमचे पासवर्ड पाहण्यासाठी आणि व्यवस्थापित करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
@@ -2835,7 +2834,6 @@
 <translation id="569000877158168851">DnsOverHttpsMode धोरण <ph name="SECURE_DNS_MODE_AUTOMATIC" /> किंवा <ph name="SECURE_DNS_MODE_SECURE" /> वर सेट करेपर्यंत DnsOverHttpsTemplates मूल्य योग्य नाही आणि ते वापरले जाणार नाही.</translation>
 <translation id="5691848789297492617">सेव्ह कार्ड पूर्ण उंचीवर उघडले.</translation>
 <translation id="5701381305118179107">मध्यभागी</translation>
-<translation id="5707154300732650394">तुमचा प्रवास पुन्हा सुरू करा</translation>
 <translation id="57094364128775171">क्लिष्ट पासवर्ड सुचवा…</translation>
 <translation id="570953204696852961">लाल ३</translation>
 <translation id="5710907191777451677">त्याऐवजी Chrome मधील Gemini ला विचारा</translation>
@@ -3174,7 +3172,6 @@
 <translation id="6264636978858465832">पासवर्ड व्यवस्थापकाला आणखी अ‍ॅक्सेस हवा आहे</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> धोरणाचे मूल्य कॉपी करा</translation>
 <translation id="6271264012613848937">तुमच्या संस्थेच्या धोरणांमुळे तुम्हाला <ph name="URL" /> ला भेट देण्यापासून ब्लॉक केले होते. ते अनपेक्षित असल्यास, तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
-<translation id="6272088941196661550">तुमच्या Chrome इतिहासामध्ये संबंधित अ‍ॅक्टिव्हिटी पाहण्यासाठी तुमचा प्रवास पुन्हा सुरू करा</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive आणि OneDrive</translation>
 <translation id="6279228081537458128">नंतर पेमेंट करा</translation>
@@ -4843,7 +4840,6 @@
 <translation id="9114101423898634479">ओळखीच्या प्रवाशाचा नंबर जोडा</translation>
 <translation id="9114524666733003316">कार्डची निश्चिती करत आहे...</translation>
 <translation id="9114581008513152754">हा ब्राउझर कंपनी किंवा इतर संस्थेद्वारे व्यवस्थापित केला जात नाही. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी Chrome च्या बाहेर व्यवस्थापित केलेली असू शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Chrome इतिहासामध्ये संबंधित अ‍ॅक्टिव्हिटी पाहण्यासाठी आणि शोध पुन्हा सुरू करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="9119042192571987207">अपलोड केला</translation>
 <translation id="9119764377203471454">अटॅचमेंट जोडता आल्या नाहीत</translation>
 <translation id="9120593907434185157">पत्ता सेव्ह करा</translation>

@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Наоѓајте и пополнувајте со Gemini</translation>
 <translation id="1096545575934602868">Полево не треба да има повеќе од <ph name="MAX_ITEMS_LIMIT" /> записи. Сите идни записи ќе се отфрлат.</translation>
 <translation id="1099928364755383720">автоматска „слика во слика“</translation>
-<translation id="1100782917270858593">Копче „Продолжете со патувањето“, притиснете Enter за да продолжите со патувањето и да ја прегледате релевантната активност во вашата „Историја на Chrome“</translation>
 <translation id="1101672080107056897">Грешка во дејството</translation>
 <translation id="1104409666019087579">Некои задолжителни полиња се празни. Пополнете ги пред да зачувате.</translation>
 <translation id="1104860668737945357">Копче за управување со лозинките, активирајте го за да ги прегледате и управувате со вашите лозинки во поставките за Chrome</translation>
@@ -2833,7 +2832,6 @@
 <translation id="569000877158168851">Вредноста DnsOverHttpsTemplates не е важна и нема да се користи, освен ако правилото DnsOverHttpsMode не е поставено на<ph name="SECURE_DNS_MODE_AUTOMATIC" /> или <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Долниот лист со барање за зачувување картичка е отворен на цел екран.</translation>
 <translation id="5701381305118179107">Центар</translation>
-<translation id="5707154300732650394">Продолжете со патувањето</translation>
 <translation id="57094364128775171">Предложи силна лозинка…</translation>
 <translation id="570953204696852961">Црвена 3</translation>
 <translation id="5710907191777451677">Наместо тоа, прашајте го Gemini во Chrome</translation>
@@ -3170,7 +3168,6 @@
 <translation id="6264636978858465832">Password Manager бара повеќе пристап</translation>
 <translation id="6265794661083428563">Копирај ја вредноста на правилото <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Вашиот пристап до <ph name="URL" /> е блокиран од правилата на вашата организација. Ако тоа е неочекувано, контактирајте со администраторот.</translation>
-<translation id="6272088941196661550">Продолжете со патувањето за да ја прегледате релевантната активност во вашата „Историја на Chrome“</translation>
 <translation id="6272383483618007430">Ажурирање од Google</translation>
 <translation id="6278015583149890680">Google Drive и OneDrive</translation>
 <translation id="6279228081537458128">Платете подоцна</translation>
@@ -4838,7 +4835,6 @@
 <translation id="9114101423898634479">Додајте број на познат патник</translation>
 <translation id="9114524666733003316">Се потврдува картичката…</translation>
 <translation id="9114581008513152754">Прелистувачов не е управуван од компанија или друга организација. Активноста на уредов можеби се управува надвор од Chrome. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да продолжите со патувањето и да ја прегледате релевантната активност во вашата „Историја на Chrome“</translation>
 <translation id="9119042192571987207">Прикачен</translation>
 <translation id="9119764377203471454">Не можеше да се додадат прилози</translation>
 <translation id="9120593907434185157">Зачувајте ја адресата</translation>

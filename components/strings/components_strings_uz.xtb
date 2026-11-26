@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini yordamida toping va kiriting</translation>
 <translation id="1096545575934602868">Bu maydonchadagi elementlar soni <ph name="MAX_ITEMS_LIMIT" /> yozuvdan oshmasligi kerak. Barcha ortiqchasi rad etiladi.</translation>
 <translation id="1099928364755383720">avtomatik tasvir ustida tasvir</translation>
-<translation id="1100782917270858593">Tarixni qaytarish tugmasi, Chrome tarixidagi tegishli faollikni koʻrish uchun tarixni qaytarish uchun Enter tugmasini bosing</translation>
 <translation id="1101672080107056897">Xato amali</translation>
 <translation id="1104409666019087579">Ayrim majburiy maydonchalar boʻsh. Saqlashdan oldin ularni toʻldiring.</translation>
 <translation id="1104860668737945357">Parollarni boshqarish tugmasi, Chrome sozlamalari orqali parollarni koʻrish va boshqarish uchun faollashtiring</translation>
@@ -2831,7 +2830,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="569000877158168851">DnsOverHttpsTemplates qiymati mos emas va DnsOverHttpsMode qoidasi<ph name="SECURE_DNS_MODE_AUTOMATIC" /> yoki <ph name="SECURE_DNS_MODE_SECURE" /> qilib sozlanmaguncha ishlatilmaydi.</translation>
 <translation id="5691848789297492617">Karta maʼlumotlarini saqlash oynasi toʻliq hajmda ochildi.</translation>
 <translation id="5701381305118179107">Markaz bo‘yicha tartiblash</translation>
-<translation id="5707154300732650394">Tarixni qaytarish</translation>
 <translation id="57094364128775171">Ishonchli parol yaratish…</translation>
 <translation id="570953204696852961">Qizil 3</translation>
 <translation id="5710907191777451677">Oʻrniga Chrome ichida Geminidan soʻrang</translation>
@@ -3168,7 +3166,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6264636978858465832">Parollar menejeriga qoʻshimcha ruxsat kerak</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> siyosati qiymatidan nusxa olish</translation>
 <translation id="6271264012613848937">Tashkilotingiz siyosatlari asosida <ph name="URL" /> saytiga kirishingiz bloklandi. Bu kutilmagan xato boʻlsa, administratorga murojaat qiling.</translation>
-<translation id="6272088941196661550">Chrome tarixidagi tegishli faollikni koʻrish uchun tarixni qaytaring</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive va OneDrive</translation>
 <translation id="6279228081537458128">Keyinroq toʻlash</translation>
@@ -4836,7 +4833,6 @@ Batafsil axborot:
 <translation id="9114101423898634479">Tanish sayohatchi raqamini (KTN) kiritish</translation>
 <translation id="9114524666733003316">Karta tasdiqlanmoqda...</translation>
 <translation id="9114581008513152754">Bu brauzer kompaniya yoki tashkilot boshqaruvida emas. Bu qurilmadagi amallar Chromedan tashqarida boshqarilishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome tarixidagi tegishli faollikni koʻrish uchun tarixni qaytarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="9119042192571987207">Yuklangan</translation>
 <translation id="9119764377203471454">Biriktirma kiritish imkonsiz</translation>
 <translation id="9120593907434185157">Manzilni saqlang</translation>

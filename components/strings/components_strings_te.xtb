@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Geminiతో కనుగొని, ఫిల్ చేయండి</translation>
 <translation id="1096545575934602868">ఈ ఫీల్డ్‌లో <ph name="MAX_ITEMS_LIMIT" /> కంటే ఎక్కువ నమోదులు ఉండకూడదు. తదుపరి అన్ని నమోదులు విస్మరించబడతాయి.</translation>
 <translation id="1099928364755383720">ఆటోమేటిక్ పిక్చర్-ఇన్-పిక్చర్</translation>
-<translation id="1100782917270858593">'మీ సెర్చ్‌ను కొనసాగించండి' బటన్, మీ సెర్చ్‌ను కొనసాగించడానికి Enterను నొక్కండి, మీ Chrome హిస్టరీలో సందర్భోచితమైన యాక్టివిటీని చూడండి</translation>
 <translation id="1101672080107056897">అమలులో ఎర్రర్</translation>
 <translation id="1104409666019087579">కొన్ని అవసరమైన ఫీల్డ్‌లు ఖాళీగా ఉన్నాయి. సేవ్ చేయడానికి ముందు వాటిని పూరించండి.</translation>
 <translation id="1104860668737945357">'పాస్‌వర్డ్‌లను మేనేజ్ చేయండి' బటన్, Chrome సెట్టింగ్‌లలో మీ పాస్‌వర్డ్‌లను చూడటానికి, మేనేజ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
@@ -2828,7 +2827,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates విలువ ఔచిత్యంగా లేదు, DnsOverHttpsMode విధానాన్ని <ph name="SECURE_DNS_MODE_AUTOMATIC" />కు లేదా <ph name="SECURE_DNS_MODE_SECURE" />కు సెట్ చేస్తే మినహా, అది ఉపయోగించబడదు.</translation>
 <translation id="5691848789297492617">సేవ్ చేసిన కార్డ్ సమాచారం స్క్రీన్ పూర్తిగా తెరవబడింది.</translation>
 <translation id="5701381305118179107">మధ్యకు</translation>
-<translation id="5707154300732650394">మీ సెర్చ్‌ను కొనసాగించండి</translation>
 <translation id="57094364128775171">శక్తివంతమైన పాస్‌వర్డ్‌ సూచన</translation>
 <translation id="570953204696852961">ఎరుపు రంగు 3</translation>
 <translation id="5710907191777451677">బదులుగా Chromeలో Geminiని అడగండి</translation>
@@ -3165,7 +3163,6 @@
 <translation id="6264636978858465832">Password Managerకు మరింత యాక్సెస్ అవసరం</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> పాలసీ విలువను కాపీ చేయి</translation>
 <translation id="6271264012613848937">మీ సంస్థ పాలసీల కారణంగా మీరు <ph name="URL" />‌ను సందర్శించకుండా బ్లాక్ చేయడం జరిగింది. ఒకవేళ ఇది మీరు ఊహించనిది అయితే, మీ అడ్మినిస్ట్రేటర్‌ను కాంటాక్ట్ చేయండి.</translation>
-<translation id="6272088941196661550">మీ Chrome హిస్టరీలో మీ సందర్భోచితమైన యాక్టివిటీని చూడటానికి మీ సెర్చ్‌ను కొనసాగించండి</translation>
 <translation id="6272383483618007430">Google అప్‌డేట్</translation>
 <translation id="6278015583149890680">Google Drive, OneDrive</translation>
 <translation id="6279228081537458128">తర్వాత పేమెంట్ చేయండి</translation>
@@ -4834,7 +4831,6 @@
 <translation id="9114101423898634479">తెలిసిన ప్రయాణీకుల నంబర్‌ను జోడించండి</translation>
 <translation id="9114524666733003316">కార్డ్‌ నిర్ధారించబడుతోంది...</translation>
 <translation id="9114581008513152754">ఈ బ్రౌజర్ ఒక కంపెనీ లేదా ఇతర సంస్థ ద్వారా మేనేజ్ చేయబడదు. ఈ పరికరంలోని యాక్టివిటీని Chrome వెలుపల మేనేజ్ చేస్తుండవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, వెతకడాన్ని కొనసాగించడానికి 'Tab'ను నొక్కి, తర్వాత 'Enter'ను నొక్కండి, మీ Chrome హిస్టరీలో సందర్భోచితమైన యాక్టివిటీని చూడండి</translation>
 <translation id="9119042192571987207">అప్‌లోడ్ చేయబడింది</translation>
 <translation id="9119764377203471454">అటాచ్‌మెంట్‌లను జోడించడం సాధ్యపడలేదు</translation>
 <translation id="9120593907434185157">అడ్రస్‌ను సేవ్ చేయండి</translation>

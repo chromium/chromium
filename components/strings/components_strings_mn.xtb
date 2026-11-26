@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini-р олж, бөглөх</translation>
 <translation id="1096545575934602868">Энэ талбар нь <ph name="MAX_ITEMS_LIMIT" />-с илүү оролттой байж болохгүй. Цаашдын бүх оролтыг устгах болно.</translation>
 <translation id="1099928364755383720">автомат дэлгэц доторх дэлгэц</translation>
-<translation id="1100782917270858593">Аяллаа үргэлжлүүлэх товчлуур, аяллаа үргэлжлүүлэх болон Chrome-н түүхдээ хамааралтай үйл ажиллагааг харахын тулд Enter дээр дарна уу</translation>
 <translation id="1101672080107056897">Алдаа гарахад хийх үйлдэл</translation>
 <translation id="1104409666019087579">Зарим заавал бөглөх хэсэг хоосон байна. Хадгалахаасаа өмнө тэдгээрийг бөглөнө үү.</translation>
 <translation id="1104860668737945357">Нууц үгнүүд удирдах товчлуур, Chrome-н тохиргоонд нууц үгнүүдээ харах болон удирдахын тулд идэвхжүүлнэ үү</translation>
@@ -2837,7 +2836,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates-н утга нь хамааралгүй байгаа бөгөөд DnsOverHttpsMode удирдамжийг <ph name="SECURE_DNS_MODE_AUTOMATIC" /> эсвэл <ph name="SECURE_DNS_MODE_SECURE" /> болгож тохируулахгүй бол түүнийг ашиглахгүй.</translation>
 <translation id="5691848789297492617">Бүтэн өндрөөр нь нээсэн картыг хадгална уу.</translation>
 <translation id="5701381305118179107">Төв</translation>
-<translation id="5707154300732650394">Аяллаа үргэлжлүүлэх</translation>
 <translation id="57094364128775171">Хүчтэй нууц үг санал болгох...</translation>
 <translation id="570953204696852961">Улаан 3</translation>
 <translation id="5710907191777451677">Оронд нь Chrome дахь Gemini-с асуугаарай</translation>
@@ -3174,7 +3172,6 @@
 <translation id="6264636978858465832">Нууц үгний менежерт хандах илүү эрх шаардлагатай</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> удирдамжийн утгыг хуулах</translation>
 <translation id="6271264012613848937">Танай байгууллагын бодлогын улмаас таныг <ph name="URL" />-д зочлохыг блоклосон. Хэрэв энэ нь гэнэтийн зүйл бол администратортайгаа холбогдоно уу.</translation>
-<translation id="6272088941196661550">Chrome-н түүхдээ хамааралтай үйл ажиллагааг харахын тулд аяллаа үргэлжлүүлнэ үү</translation>
 <translation id="6272383483618007430">Google Шинэчлэл</translation>
 <translation id="6278015583149890680">Google Драйв болон OneDrive</translation>
 <translation id="6279228081537458128">Дараа төлөх</translation>
@@ -4842,7 +4839,6 @@
 <translation id="9114101423898634479">Бүртгэлтэй аялагчийн дугаар нэмэх</translation>
 <translation id="9114524666733003316">Картыг баталгаажуулж байна...</translation>
 <translation id="9114581008513152754">Энэ хөтчийг компани эсвэл бусад байгууллагаас удирддаггүй. Энэ төхөөрөмж дээрх үйл ажиллагааг Chrome-с гадуур удирддаг байж болзошгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Аяллаа үргэлжлүүлэх болон Chrome-н түүхдээ хамааралтай үйл ажиллагааг харахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="9119042192571987207">Байршуулсан</translation>
 <translation id="9119764377203471454">Хавсралт нэмэх боломжгүй</translation>
 <translation id="9120593907434185157">Хаягийг хадгалах</translation>

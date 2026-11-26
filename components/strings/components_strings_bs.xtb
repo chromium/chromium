@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Pronađi i popuni uz Gemini</translation>
 <translation id="1096545575934602868">Ovo polje ne smije sadržavati više od sljedećeg broja unosa: <ph name="MAX_ITEMS_LIMIT" />. Svi daljnji unosi će biti odbačeni.</translation>
 <translation id="1099928364755383720">automatsku sliku u slici</translation>
-<translation id="1100782917270858593">Dugme za nastavak iskustva pregledanja, pritisnite Enter da nastavite pregledati te da vidite relevantne aktivnosti u historiji Chromea</translation>
 <translation id="1101672080107056897">Postupak u slučaju greške</translation>
 <translation id="1104409666019087579">Neka obavezna polja su prazna. Popunite ih prije pohranjivanja.</translation>
 <translation id="1104860668737945357">Dugme Upravljaj lozinkama, aktivirajte da pregledate lozinke i upravljate lozinkama u postavkama Chromea</translation>
@@ -2833,7 +2832,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="569000877158168851">Vrijednost DnsOverHttpsTemplates nije relevantna i neće se koristiti osim ako se pravilo DnsOverHttpsMode ne postavi na <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ili <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Upit za pohranjivanje kartice je otvoren u punoj visini.</translation>
 <translation id="5701381305118179107">Sredina</translation>
-<translation id="5707154300732650394">Nastavite iskustvo pregledanja</translation>
 <translation id="57094364128775171">Predloži jaku lozinku…</translation>
 <translation id="570953204696852961">3. crvena</translation>
 <translation id="5710907191777451677">Umjesto toga pitajte Gemini u Chromeu</translation>
@@ -3170,7 +3168,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6264636978858465832">Upravitelj lozinki treba više pristupa</translation>
 <translation id="6265794661083428563">Kopirajte vrijednost pravila <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Pristup web lokaciji <ph name="URL" /> je blokiran zbog pravila vaše organizacije. Ako je to neočekivano, kontaktirajte administratora.</translation>
-<translation id="6272088941196661550">Nastavite iskustvo pregledanja da vidite relevantne aktivnosti u historiji Chromea</translation>
 <translation id="6272383483618007430">Google Ažuriranje</translation>
 <translation id="6278015583149890680">Google Disku i OneDriveu</translation>
 <translation id="6279228081537458128">Kasnije plaćanje</translation>
@@ -4839,7 +4836,6 @@ Dodatni detalji:
 <translation id="9114101423898634479">Dodajte broj poznatog putnika</translation>
 <translation id="9114524666733003316">Potvrđivanje kartice...</translation>
 <translation id="9114581008513152754">Ovim preglednikom ne upravlja kompanija ili neka druga organizacija. Aktivnostima na ovom uređaju se može upravljati van Chromea. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da nastavite pregledati te da vidite relevantne aktivnosti u historiji Chromea</translation>
 <translation id="9119042192571987207">Otpremljeno</translation>
 <translation id="9119764377203471454">Nije moguće dodati priloge</translation>
 <translation id="9120593907434185157">Sačuvajte adresu</translation>

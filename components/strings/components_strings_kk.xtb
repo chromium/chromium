@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini-мен табу және толтыру</translation>
 <translation id="1096545575934602868">Бұл өрісте <ph name="MAX_ITEMS_LIMIT" /> жазбадан аспауы керек. Кейінгі жазбалардың бәрі өшіріледі.</translation>
 <translation id="1099928364755383720">автоматты "суреттегі сурет" режимі</translation>
-<translation id="1100782917270858593">"Шарлауды жалғастыру" түймесі. Шарлауды жалғастырып, Chrome тарихынан сәйкес сұрауларды көру үшін Enter пернесін басыңыз.</translation>
 <translation id="1101672080107056897">Қате әрекет</translation>
 <translation id="1104409666019087579">Кейбір міндетті өрістер бос. Оларды сақтау алдында толтырыңыз.</translation>
 <translation id="1104860668737945357">"Құпия сөздерді басқару" түймесі, Chrome параметрлерінде құпия сөздеріңізді көру және басқару үшін белсендіріңіз</translation>
@@ -2831,7 +2830,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates мәні сәйкес емес және DnsOverHttpsMode саясаты <ph name="SECURE_DNS_MODE_AUTOMATIC" /> немесе <ph name="SECURE_DNS_MODE_SECURE" /> мәніне орнатылмайынша, ол пайдаланылмайды.</translation>
 <translation id="5691848789297492617">Толығымен ашылған картаны сақтау.</translation>
 <translation id="5701381305118179107">Ортаға</translation>
-<translation id="5707154300732650394">Шарлауды жалғастыру</translation>
 <translation id="57094364128775171">Күрделі құпия сөз жасау…</translation>
 <translation id="570953204696852961">Қызыл 3</translation>
 <translation id="5710907191777451677">Оның орнына Chrome-дағы Gemini-дан сұраңыз.</translation>
@@ -3168,7 +3166,6 @@
 <translation id="6264636978858465832">Password Manager қызметіне көбірек рұқсат қажет</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> саясатының мәнін көшіру</translation>
 <translation id="6271264012613848937">Ұйымыңыздың саясаттарына байланысты <ph name="URL" /> сайтына кіруіңіз блокталды. Бұл күтпеген жағдай болса, әкімшіге хабарласыңыз.</translation>
-<translation id="6272088941196661550">Chrome тарихынан сәйкес сұрауларды көру үшін шарлауды жалғастыру</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive және OneDrive</translation>
 <translation id="6279228081537458128">Кейінірек төлеу</translation>
@@ -4836,7 +4833,6 @@
 <translation id="9114101423898634479">Белгілі жолаушы нөмірін қосу</translation>
 <translation id="9114524666733003316">Карта расталуда...</translation>
 <translation id="9114581008513152754">Бұл браузер компания немесе басқа ұйым арқылы басқарылмайды. Құрылғыдағы әрекет Chrome браузерінен тыс басқарылуы мүмкін. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831">"<ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />". Іздеуді жалғастырып, Chrome тарихынан сәйкес сұрауларды көру үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="9119042192571987207">Жүктеп салынды</translation>
 <translation id="9119764377203471454">Тіркемелер қосу мүмкін емес.</translation>
 <translation id="9120593907434185157">Мекенжайды сақтау</translation>

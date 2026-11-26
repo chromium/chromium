@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">‏איתור ומילוי באמצעות Gemini</translation>
 <translation id="1096545575934602868">השדה הזה יכול לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות. כל הרשומות הנוספות יימחקו.</translation>
 <translation id="1099928364755383720">הפעלה אוטומטית של 'תמונה בתוך תמונה'</translation>
-<translation id="1100782917270858593">‏הכפתור להמשך התהליך, לוחצים על Enter כדי להמשיך בתהליך ולהציג את הפעילות הרלוונטית בהיסטוריה ב-Chrome</translation>
 <translation id="1101672080107056897">פעולת שגיאה</translation>
 <translation id="1104409666019087579">יש כמה שדות חובה ריקים. עליך למלא אותם לפני השמירה.</translation>
 <translation id="1104860668737945357">‏הכפתור לניהול סיסמאות, מפעילים אותו כדי להציג ולנהל את הסיסמאות בהגדרות Chrome</translation>
@@ -2838,7 +2837,6 @@ Del</translation>
 <translation id="569000877158168851">‏ערך DnsOverHttpsTemplates אינו רלוונטי ולא ייעשה בו שימוש, אלא אם מדיניות DnsOverHttpsMode תוגדר עם הערך <ph name="SECURE_DNS_MODE_AUTOMATIC" /> או <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">גיליון שמירת הכרטיס נפתח בגובה מלא.</translation>
 <translation id="5701381305118179107">מרכז</translation>
-<translation id="5707154300732650394">להמשך התהליך</translation>
 <translation id="57094364128775171">הצעת סיסמה חזקה…</translation>
 <translation id="570953204696852961">אדום 3</translation>
 <translation id="5710907191777451677">‏גם Gemini ב-Chrome יכול לעזור</translation>
@@ -3175,7 +3173,6 @@ Del</translation>
 <translation id="6264636978858465832">למנהל הסיסמאות נדרשת עוד גישה</translation>
 <translation id="6265794661083428563">העתקת ערך המדיניות <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">הגישה לאתר <ph name="URL" /> נחסמה בגלל מדיניות הארגון. אם זה לא היה צפוי, צריך לפנות לאדמין.</translation>
-<translation id="6272088941196661550">‏חזרה לתהליך כדי להציג את הפעילות הרלוונטית בהיסטוריה ב-Chrome</translation>
 <translation id="6272383483618007430">‏עדכוני Google</translation>
 <translation id="6278015583149890680">‏‫Google Drive ו-OneDrive</translation>
 <translation id="6279228081537458128">תשלום אחר כך</translation>
@@ -4844,7 +4841,6 @@ Del</translation>
 <translation id="9114101423898634479">‏הוספת מספר KTN</translation>
 <translation id="9114524666733003316">אישור הכרטיס מתבצע...</translation>
 <translation id="9114581008513152754">‏הדפדפן הזה לא מנוהל על ידי חברה או ארגון אחר. ייתכן שהפעילות במכשיר הזה מנוהלת מחוץ ל-Chrome. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831">‏<ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter להמשך התהליך ולהצגת פעילות רלוונטית בהיסטוריה ב-Chrome</translation>
 <translation id="9119042192571987207">הועלה</translation>
 <translation id="9119764377203471454">אי אפשר לצרף קבצים</translation>
 <translation id="9120593907434185157">שמירת הכתובת</translation>

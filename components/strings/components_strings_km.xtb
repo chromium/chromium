@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">ស្វែងរក និងបំពេញដោយប្រើ Gemini</translation>
 <translation id="1096545575934602868">កន្លែងបញ្ចូលនេះ​មិន​គួរមានច្រើនជាង <ph name="MAX_ITEMS_LIMIT" /> ធាតុ​ទេ។ ធាតុទាំងអស់ដែល​លើសពីនេះនឹងត្រូវលុបចោល។</translation>
 <translation id="1099928364755383720">រូបក្នុងរូប​ដោយស្វ័យប្រវត្តិ</translation>
-<translation id="1100782917270858593">ប៊ូតុង "បន្តការស្វែងរកអ្នក" ចុច Enter ដើម្បីបន្តការស្វែងរក​របស់អ្នក និងមើល​សកម្មភាព​ដែលពាក់ព័ន្ធ​នៅក្នុងប្រវត្តិ Chrome របស់អ្នក</translation>
 <translation id="1101672080107056897">សកម្មភាព​មានបញ្ហា</translation>
 <translation id="1104409666019087579">កន្លែងត្រូវបំពេញមួយចំនួនគឺទទេ។ សូមបំពេញកន្លែងទាំងនេះ មុនពេលរក្សាទុក។</translation>
 <translation id="1104860668737945357">ប៊ូតុង "គ្រប់គ្រងពាក្យសម្ងាត់", បើកដំណើរការ ដើម្បីមើល និងគ្រប់គ្រងពាក្យសម្ងាត់របស់អ្នកនៅក្នុងការកំណត់ Chrome</translation>
@@ -2840,7 +2839,6 @@
 <translation id="569000877158168851">តម្លៃ DnsOverHttpsTemplates គឺ​មិន​ពាក់ព័ន្ធ​ទេ ហើយ​នឹង​មិន​ត្រូវបាន​ប្រើប្រាស់​ឡើយ លុះត្រាតែ​កំណត់​គោលការណ៍ DnsOverHttpsMode ទៅ <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ឬ <ph name="SECURE_DNS_MODE_SECURE" />។</translation>
 <translation id="5691848789297492617">រក្សាទុក​កាត​ដែលបានបើក​ពេញអេក្រង់។</translation>
 <translation id="5701381305118179107">កណ្តាល</translation>
-<translation id="5707154300732650394">បន្ត​ការស្វែងរក​របស់អ្នក</translation>
 <translation id="57094364128775171">ណែនាំ​ពាក្យសម្ងាត់​ខ្លាំង…</translation>
 <translation id="570953204696852961">ក្រហមទី 3</translation>
 <translation id="5710907191777451677">សួរ Gemini ក្នុង Chrome ជំនួសវិញ</translation>
@@ -3178,7 +3176,6 @@
 <translation id="6264636978858465832">កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ត្រូវការសិទ្ធិចូលប្រើប្រាស់បន្ថែមទៀត</translation>
 <translation id="6265794661083428563">ចម្លងតម្លៃគោលការណ៍ <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">អ្នក​ត្រូវបាន​ទប់ស្កាត់​មិនឱ្យ​ចូលទៅកាន់ <ph name="URL" /> ដោយសារតែ​គោលការណ៍​របស់​ស្ថាប័នអ្នក។ ប្រសិនបើ​មិនបាន​រំពឹងទុក​ករណីនោះទេ សូម​ទាក់ទង​ទៅ​អ្នកគ្រប់គ្រង​របស់អ្នក។</translation>
-<translation id="6272088941196661550">បន្ត​ការស្វែងរករបស់អ្នក ដើម្បីមើល​សកម្មភាព​ដែលពាក់ព័ន្ធ​នៅក្នុង​ប្រវត្តិ Chrome របស់អ្នក</translation>
 <translation id="6272383483618007430">Google បច្ចុប្បន្នភាព</translation>
 <translation id="6278015583149890680">Google ថាស និង OneDrive</translation>
 <translation id="6279228081537458128">ទូទាត់​ពេលក្រោយ</translation>
@@ -4848,7 +4845,6 @@
 <translation id="9114101423898634479">បញ្ចូល​លេខ​អ្នកដំណើរ​ដែលស្គាល់</translation>
 <translation id="9114524666733003316">កំពុង​បញ្ជាក់​បណ្ណ​ឥណទាន...</translation>
 <translation id="9114581008513152754">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​នេះ​មិនស្ថិតក្រោម​ការគ្រប់គ្រង​របស់ក្រុមហ៊ុន ឬ​ស្ថាប័នផ្សេងទេ​។ សកម្មភាព​នៅលើឧបករណ៍នេះ​អាចនឹងត្រូវបាន​គ្រប់គ្រងក្រៅពី Chrome។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បីបន្ត​ការស្វែងរក​របស់អ្នក និងមើល​សកម្មភាព​ដែលពាក់ព័ន្ធ​នៅក្នុងប្រវត្តិ Chrome របស់អ្នក</translation>
 <translation id="9119042192571987207">បាន​បង្ហោះ</translation>
 <translation id="9119764377203471454">មិនអាច​បញ្ចូល​ឯកសារ​ភ្ជាប់​បានទេ</translation>
 <translation id="9120593907434185157">រក្សាទុក​អាសយដ្ឋាន</translation>

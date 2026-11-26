@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini ഉപയോഗിച്ച് കണ്ടെത്തി പൂരിപ്പിക്കുക</translation>
 <translation id="1096545575934602868">ഈ ഫീൽഡിന് <ph name="MAX_ITEMS_LIMIT" />-ൽ കൂടുതൽ എൻ‌ട്രികൾ ഉണ്ടാകരുത്. തുടർന്നുള്ള എല്ലാ എൻ‌ട്രികളും നിരസിക്കപ്പെടും.</translation>
 <translation id="1099928364755383720">സ്വയമേവയുള്ള ചിത്രത്തിനുള്ളിൽ ചിത്രം</translation>
-<translation id="1100782917270858593">'ജേർണി പുനരാരംഭിക്കുക' ബട്ടൺ, നിങ്ങളുടെ Chrome ചരിത്രത്തിൽ പ്രസക്തമായ ആക്റ്റിവിറ്റി കാണാനും ജേർണി പുനരാരംഭിക്കാനും Enter അമർത്തുക</translation>
 <translation id="1101672080107056897">പിശക് പ്രവർത്തനം</translation>
 <translation id="1104409666019087579">പൂരിപ്പിക്കേണ്ട ചില ഭാഗങ്ങളിൽ ഒന്നുമില്ല. സംരക്ഷിക്കുന്നതിന് മുമ്പ് അവ പൂരിപ്പിക്കുക.</translation>
 <translation id="1104860668737945357">'പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പാസ്‌വേഡുകൾ കാണാനും മാനേജ് ചെയ്യാനും സജീവമാക്കുക</translation>
@@ -2835,7 +2834,6 @@
 <translation id="569000877158168851">DnsOverHttpsMode നയം <ph name="SECURE_DNS_MODE_AUTOMATIC" /> എന്നതിലേക്ക് അല്ലെങ്കിൽ <ph name="SECURE_DNS_MODE_SECURE" /> എന്നതിലേക്ക് സജ്ജീകരിക്കുന്നില്ലെങ്കിൽ DnsOverHttpsTemplates മൂല്യം പ്രസക്തമായിരിക്കില്ല, അത് ഉപയോഗിക്കുകയുമില്ല.</translation>
 <translation id="5691848789297492617">'കാർഡ് സംരക്ഷിക്കുക' മുഴുവൻ ഉയരത്തിൽ തുറന്നു.</translation>
 <translation id="5701381305118179107">മധ്യഭാഗം</translation>
-<translation id="5707154300732650394">നിങ്ങളുടെ ജേർണി പുനരാരംഭിക്കുക</translation>
 <translation id="57094364128775171">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിക്കുക…</translation>
 <translation id="570953204696852961">ചുവപ്പ് 3</translation>
 <translation id="5710907191777451677">പകരം Chrome-ലെ Gemini-യോട് ചോദിക്കുക</translation>
@@ -3173,7 +3171,6 @@
 <translation id="6264636978858465832">Password Manager-ന് കൂടുതൽ ആക്‌സസ് ആവശ്യമാണ്</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> നയത്തിന്റെ മൂല്യം പകർത്തുക</translation>
 <translation id="6271264012613848937">നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ നയങ്ങൾ കാരണം <ph name="URL" /> സന്ദർശിക്കുന്നതിൽ നിന്ന് നിങ്ങളെ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു. അത് അപ്രതീക്ഷിതമാണെങ്കിൽ, നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
-<translation id="6272088941196661550">നിങ്ങളുടെ Chrome ചരിത്രത്തിൽ പ്രസക്തമായ ആക്റ്റിവിറ്റി കാണാൻ ജേർണി പുനരാരംഭിക്കുക</translation>
 <translation id="6272383483618007430">Google അപ്ഡേറ്റ്</translation>
 <translation id="6278015583149890680">Google Drive, OneDrive</translation>
 <translation id="6279228081537458128">പിന്നീട് പേ ചെയ്യുക</translation>
@@ -4840,7 +4837,6 @@
 <translation id="9114101423898634479">'നോൺ ട്രാവലർ നമ്പർ' ചേർക്കുക</translation>
 <translation id="9114524666733003316">കാർഡ് സ്ഥിരീകരിക്കുന്നു...</translation>
 <translation id="9114581008513152754">കമ്പനിയോ മറ്റേതെങ്കിലും സ്ഥാപനമോ മാനേജ് ചെയ്യുന്നതല്ല ഈ ബ്രൗസർ. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chrome-ന് പുറത്ത് മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, ടാബ് അമർത്തുക, തുടർന്ന് നിങ്ങളുടെ Chrome ചരിത്രത്തിൽ പ്രസക്തമായ ആക്റ്റിവിറ്റി കാണാനും തിരയൽ പുനരാരംഭിക്കാനും Enter അമർത്തുക</translation>
 <translation id="9119042192571987207">അപ്‌ലോഡ് ചെയ്തു</translation>
 <translation id="9119764377203471454">അറ്റാച്ച്‌മെന്റുകൾ ചേർക്കാനാകുന്നില്ല</translation>
 <translation id="9120593907434185157">വിലാസം സംരക്ഷിക്കുക</translation>

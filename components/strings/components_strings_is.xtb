@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Finna og fylla út með Gemini</translation>
 <translation id="1096545575934602868">Þessi reitur á ekki að vera með meira en <ph name="MAX_ITEMS_LIMIT" /> færslur. Færslum umfram það verður hent.</translation>
 <translation id="1099928364755383720">sjálfvirk mynd í mynd</translation>
-<translation id="1100782917270858593">Hnappur til að halda ferðinni áfram, ýttu á Enter til að halda ferðinni áfram og sjá viðkomandi virkni í Chrome ferlinum</translation>
 <translation id="1101672080107056897">Villuaðgerð</translation>
 <translation id="1104409666019087579">Einhverjir áskildir reitir eru auðir. Fylltu út í þá áður en þú vistar.</translation>
 <translation id="1104860668737945357">Hnappurinn „Stjórna aðgangsorðum“, virkjaðu til að skoða og stjórna aðgangsorðunum þínum í stillingum Chrome</translation>
@@ -2833,7 +2832,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="569000877158168851">Gildið DnsOverHttpsTemplates á ekki við og verður ekki notað nema reglan DnsOverHttpsMode sé stillt á annaðhvort <ph name="SECURE_DNS_MODE_AUTOMATIC" /> eða <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">„Vista kort“ opnað í fullri hæð.</translation>
 <translation id="5701381305118179107">Miðjujafna</translation>
-<translation id="5707154300732650394">Haltu ferðinni áfram</translation>
 <translation id="57094364128775171">Tillaga að traustu aðgangsorði…</translation>
 <translation id="570953204696852961">Rauður 3</translation>
 <translation id="5710907191777451677">Spyrðu Gemini í Chrome í staðinn</translation>
@@ -3170,7 +3168,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6264636978858465832">Aðgangsorðastjórnun þarfnast fleiri aðgangsheimilda</translation>
 <translation id="6265794661083428563">Afrita gildi <ph name="POLICY_NAME" /> reglunnar</translation>
 <translation id="6271264012613848937">Lokað var á að þú gætir opnað <ph name="URL" /> vegna reglna innan fyrirtækisins þíns. Hafðu samband við kerfisstjórann ef þetta er eitthvað sem ekki var búist við.</translation>
-<translation id="6272088941196661550">Haltu ferðinni áfram til að sjá viðkomandi virkni í Chrome ferlinum</translation>
 <translation id="6272383483618007430">Google uppfærslur</translation>
 <translation id="6278015583149890680">Google Drive og OneDrive</translation>
 <translation id="6279228081537458128">Greiða seinna</translation>
@@ -4838,7 +4835,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="9114101423898634479">Bæta við þekktu ferðalangsnúmeri</translation>
 <translation id="9114524666733003316">Staðfestir kort...</translation>
 <translation id="9114581008513152754">Þessi vafri er ekki í umsjón fyrirtækis eða annarrar stofnunar. Hægt er að hafa umsjón með aðgerðum í þessu tæki utan Chrome. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn og svo á Enter til að halda ferðinni áfram og sjá viðkomandi virkni í Chrome ferlinum</translation>
 <translation id="9119042192571987207">Sent</translation>
 <translation id="9119764377203471454">Ekki tókst að bæta viðhengjum við</translation>
 <translation id="9120593907434185157">Vista heimilisfang</translation>

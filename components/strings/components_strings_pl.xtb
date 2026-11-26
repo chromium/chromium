@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Znajdź i wypełnij z Gemini</translation>
 <translation id="1096545575934602868">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Kolejne wpisy zostaną odrzucone.</translation>
 <translation id="1099928364755383720">automatyczny obraz w obrazie</translation>
-<translation id="1100782917270858593">Przycisk wznawiania serii czynności; aby wznowić serię czynności i zobaczyć odpowiednią aktywność w historii Chrome, naciśnij Enter</translation>
 <translation id="1101672080107056897">Działanie w razie wystąpienia błędu</translation>
 <translation id="1104409666019087579">Niektóre wymagane pola są puste. Wypełnij je przed zapisaniem.</translation>
 <translation id="1104860668737945357">Przycisk Zarządzaj hasłami; aktywuj, aby wyświetlić hasła i zarządzać nimi w ustawieniach Chrome</translation>
@@ -2833,7 +2832,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="569000877158168851">Wartość DnsOverHttpsTemplates jest nieodpowiednia i nie zostanie użyta, chyba że zasada DnsOverHttpsMode jest ustawiona jako <ph name="SECURE_DNS_MODE_AUTOMATIC" /> lub <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Zapisywanie karty jest otwarte na całą wysokość.</translation>
 <translation id="5701381305118179107">Wyśrodkuj</translation>
-<translation id="5707154300732650394">Wznów swoją serię czynności</translation>
 <translation id="57094364128775171">Zaproponuj silne hasło…</translation>
 <translation id="570953204696852961">Czerwony 3</translation>
 <translation id="5710907191777451677">Zapytaj Gemini w Chrome</translation>
@@ -3170,7 +3168,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6264636978858465832">Menedżer haseł potrzebuje szerszych uprawnień dostępu</translation>
 <translation id="6265794661083428563">Skopiuj wartość zasad: <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Nie możesz odwiedzić strony <ph name="URL" /> ze względu na zasady obowiązujące w Twojej organizacji. Jeśli to nieoczekiwane, skontaktuj się z administratorem.</translation>
-<translation id="6272088941196661550">Wznów swoją serię czynności, aby zobaczyć odpowiednią aktywność w historii Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">na Dysku Google i w usłudze OneDrive</translation>
 <translation id="6279228081537458128">Zapłać później</translation>
@@ -4839,7 +4836,6 @@ Dodatkowe informacje:
 <translation id="9114101423898634479">Dodaj numer KTN</translation>
 <translation id="9114524666733003316">Sprawdzam kartę…</translation>
 <translation id="9114581008513152754">Ta przeglądarka nie jest zarządzana przez firmę ani inną organizację. Aktywność na tym urządzeniu może być zarządzana poza Chrome. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby wznowić serię czynności i zobaczyć odpowiednią aktywność w historii Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="9119042192571987207">Przesłano</translation>
 <translation id="9119764377203471454">Nie udało się dodać załączników</translation>
 <translation id="9120593907434185157">Zapisz adres</translation>

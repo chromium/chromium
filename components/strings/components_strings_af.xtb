@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Soek en vul met Gemini</translation>
 <translation id="1096545575934602868">Hierdie veld moenie meer as <ph name="MAX_ITEMS_LIMIT" /> inskrywings hê nie. Alle verdere inskrywings sal weggegooi word.</translation>
 <translation id="1099928364755383720">outomatiese prent-in-prent</translation>
-<translation id="1100782917270858593">Knoppie om jou reis te hervat. Druk Enter om jou reis te hervat en relevante aktiwiteit in jou Chrome-geskiedenis te sien</translation>
 <translation id="1101672080107056897">Fouthandeling</translation>
 <translation id="1104409666019087579">Sommige vereiste velde is leeg. Vul hulle in voordat jy stoor.</translation>
 <translation id="1104860668737945357">Knoppie om wagwoorde te bestuur; aktiveer om jou wagwoorde in Chrome-instellings te bekyk en te bestuur</translation>
@@ -2833,7 +2832,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="569000877158168851">Die DnsOverHttpsTemplates-waarde is nie relevant nie en sal nie gebruik word nie, tensy die DnsOverHttpsMode-beleid gestel word na <ph name="SECURE_DNS_MODE_AUTOMATIC" /> óf na <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Stoor kaart is op volle hoogte oopgemaak.</translation>
 <translation id="5701381305118179107">Sentreer</translation>
-<translation id="5707154300732650394">Hervat jou reis</translation>
 <translation id="57094364128775171">Stel sterk wagwoord voor …</translation>
 <translation id="570953204696852961">Rooi 3</translation>
 <translation id="5710907191777451677">Vra eerder Gemini in Chrome</translation>
@@ -3170,7 +3168,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6264636978858465832">Wagwoordbestuurder het meer toegang nodig</translation>
 <translation id="6265794661083428563">Kopieer die waarde van die <ph name="POLICY_NAME" />-beleid</translation>
 <translation id="6271264012613848937">Jy is weens jou organisasie se beleide geblokkeer om <ph name="URL" /> te besoek. Kontak jou administrateur as dit onverwags is.</translation>
-<translation id="6272088941196661550">Hervat jou reis om relevante aktiwiteit in jou Chrome-geskiedenis te sien</translation>
 <translation id="6272383483618007430">Google-opdatering</translation>
 <translation id="6278015583149890680">Google Drive en OneDrive</translation>
 <translation id="6279228081537458128">Betaal later</translation>
@@ -4838,7 +4835,6 @@ Bykomende besonderhede:
 <translation id="9114101423898634479">Voeg bekende reisigernommer by</translation>
 <translation id="9114524666733003316">Bevestig tans kaart …</translation>
 <translation id="9114581008513152754">Hierdie blaaier word nie deur 'n maatskappy of ander organisasie bestuur nie. Aktiwiteit op hierdie toestel kan buite Chrome bestuur word. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou reis te hervat en relevante aktiwiteit in jou Chrome-geskiedenis te sien</translation>
 <translation id="9119042192571987207">Opgelaai</translation>
 <translation id="9119764377203471454">Kan nie aanhegsels byvoeg nie</translation>
 <translation id="9120593907434185157">Stoor adres</translation>

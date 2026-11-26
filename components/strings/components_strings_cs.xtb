@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Vyhledávat a vyplňovat s Gemini</translation>
 <translation id="1096545575934602868">Toto pole nesmí mít více než <ph name="MAX_ITEMS_LIMIT" /> položek. Všechny další položky budou zahozeny.</translation>
 <translation id="1099928364755383720">automatický obraz v obraze</translation>
-<translation id="1100782917270858593">Tlačítko obnovení cesty, stisknutím klávesy Enter obnovíte svou cestu a zobrazíte příslušnou aktivitu v historii Chromu</translation>
 <translation id="1101672080107056897">Akce při chybě</translation>
 <translation id="1104409666019087579">Některá povinná pole jsou prázdná. Před uložením je vyplňte.</translation>
 <translation id="1104860668737945357">Tlačítko Spravovat hesla, aktivací můžete zobrazit a spravovat hesla v nastavení Chromu</translation>
@@ -2829,7 +2828,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="569000877158168851">Hodnota DnsOverHttpsTemplates je relevantní a použije se pouze v případě, že je zásada DnsOverHttpsMode nastavená na hodnotu <ph name="SECURE_DNS_MODE_AUTOMATIC" /> nebo <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Uložení karty je otevřené na celou výšku.</translation>
 <translation id="5701381305118179107">Na střed</translation>
-<translation id="5707154300732650394">Pokračovat v cestě</translation>
 <translation id="57094364128775171">Navrhnout silné heslo…</translation>
 <translation id="570953204696852961">Červená 3</translation>
 <translation id="5710907191777451677">Zeptejte se Gemini v Chromu</translation>
@@ -3165,7 +3163,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6264636978858465832">Správce hesel potřebuje širší přístupová oprávnění</translation>
 <translation id="6265794661083428563">Zkopírovat hodnotu zásady <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Web <ph name="URL" /> navštívit nemůžete, protože ho zásady vaší organizace blokují. Pokud je to neočekávané, kontaktujte svého administrátora.</translation>
-<translation id="6272088941196661550">Obnovením cesty zobrazíte příslušnou aktivitu v historii Chromu</translation>
 <translation id="6272383483618007430">Aktualizace Google</translation>
 <translation id="6278015583149890680">Disk Google a OneDrive</translation>
 <translation id="6279228081537458128">Zaplatit později</translation>
@@ -4834,7 +4831,6 @@ Další podrobnosti:
 <translation id="9114101423898634479">Přidání čísla prověřeného cestujícího</translation>
 <translation id="9114524666733003316">Ověřování karty...</translation>
 <translation id="9114581008513152754">Tento prohlížeč není spravován administrátorem ani jinou organizací. Aktivita na tomto zařízení může být spravována mimo Chrome. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter obnovíte svou cestu a zobrazíte příslušnou aktivitu v historii Chromu</translation>
 <translation id="9119042192571987207">Nahráno</translation>
 <translation id="9119764377203471454">Přílohy se nepodařilo přidat</translation>
 <translation id="9120593907434185157">Uložení adresy</translation>

@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini ilə tapın və doldurun</translation>
 <translation id="1096545575934602868">Bu sahədə maksimum <ph name="MAX_ITEMS_LIMIT" /> daxiletmə olmalıdır. Əlavə daxiletmələr silinəcək.</translation>
 <translation id="1099928364755383720">avtomatik şəkildə şəkil</translation>
-<translation id="1100782917270858593">"Baxışa davam edin" düyməsi, Enter düyməsinə basaraq baxışa davam edin və Chrome tarixçəsində əlaqəli fəaliyyəti görün</translation>
 <translation id="1101672080107056897">Xəta əməliyyatı</translation>
 <translation id="1104409666019087579">Tələb edilən bəzi sahələr boşdur. Yadda saxlamamışdan əvvəl doldurun.</translation>
 <translation id="1104860668737945357">"Parolları idarə edin" düyməsi, aktivləşdirərək Chrome ayarlarında parollara baxın və onları idarə edin</translation>
@@ -2832,7 +2831,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="569000877158168851">DnsOverHttpsTemplates dəyəri uyğun deyil və DnsOverHttpsMode siyasəti <ph name="SECURE_DNS_MODE_AUTOMATIC" /> və ya <ph name="SECURE_DNS_MODE_SECURE" /> kimi ayarlanana qədər istifadə edilməyəcək.</translation>
 <translation id="5691848789297492617">Kartın yadda saxlanması tam hündürlükdə açıldı.</translation>
 <translation id="5701381305118179107">Mərkəzi edin</translation>
-<translation id="5707154300732650394">Baxışı davam etdirin</translation>
 <translation id="57094364128775171">Güclü parol təklif edin…</translation>
 <translation id="570953204696852961">Qırmızı 3</translation>
 <translation id="5710907191777451677">Əvəzində Chrome-da Gemini-dan soruşun</translation>
@@ -3170,7 +3168,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6264636978858465832">Parol meneceri əlavə icazələr tələb edir</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> siyasətinin dəyərini kopyalayın</translation>
 <translation id="6271264012613848937">Təşkilatınızın siyasətlərinə görə <ph name="URL" /> saytına daxil olmağınız bloklanıb. Bu gözlənilməzdirsə, administratorunuzla əlaqə saxlayın.</translation>
-<translation id="6272088941196661550">Chrome tarixçəsində əlaqəli fəaliyyəti görmək üçün baxışa davam edin</translation>
 <translation id="6272383483618007430">Google Güncəlləməsi</translation>
 <translation id="6278015583149890680">Google Disk və OneDrive</translation>
 <translation id="6279228081537458128">Sonra ödəyin</translation>
@@ -4838,7 +4835,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="9114101423898634479">Məlum səyahətçi nömrəsi əlavə edin</translation>
 <translation id="9114524666733003316">Kart təsdiqlənir...</translation>
 <translation id="9114581008513152754">Bu brauzer şirkət və ya başqa təşkilat tərəfindən idarə edilmir. Bu cihazdakı fəaliyyət Chrome'dan kənarda idarə edilə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq baxışa davam edin və Chrome tarixçəsində əlaqəli fəaliyyəti görün</translation>
 <translation id="9119042192571987207">Yüklənib</translation>
 <translation id="9119764377203471454">Qoşma əlavə etmək olmur</translation>
 <translation id="9120593907434185157">Ünvanı yadda saxlayın</translation>

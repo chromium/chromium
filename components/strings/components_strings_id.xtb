@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Temukan dan isi dengan Gemini</translation>
 <translation id="1096545575934602868">Kolom ini tidak boleh memiliki lebih dari <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri lanjutan akan dibuang.</translation>
 <translation id="1099928364755383720">picture-in-picture otomatis</translation>
-<translation id="1100782917270858593">Tombol Lanjutkan perjalanan Anda, tekan Enter untuk melanjutkan perjalanan Anda dan melihat aktivitas yang relevan di histori Chrome Anda</translation>
 <translation id="1101672080107056897">Tindakan error</translation>
 <translation id="1104409666019087579">Beberapa kolom wajib diisi masih kosong. Isi kolom sebelum menyimpan.</translation>
 <translation id="1104860668737945357">Tombol Kelola sandi, aktifkan untuk melihat dan mengelola sandi Anda di setelan Chrome</translation>
@@ -2833,7 +2832,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="569000877158168851">Nilai DnsOverHttpsTemplates tidak relevan, dan tidak akan digunakan, kecuali kebijakan DnsOverHttpsMode ditetapkan ke <ph name="SECURE_DNS_MODE_AUTOMATIC" /> atau <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Simpan kartu terbuka sepenuhnya.</translation>
 <translation id="5701381305118179107">Tengah</translation>
-<translation id="5707154300732650394">Lanjutkan perjalanan Anda</translation>
 <translation id="57094364128775171">Sarankan sandi yang kuat…</translation>
 <translation id="570953204696852961">Merah 3</translation>
 <translation id="5710907191777451677">Coba tanya Gemini di Chrome</translation>
@@ -3170,7 +3168,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6264636978858465832">Pengelola Sandi memerlukan lebih banyak akses</translation>
 <translation id="6265794661083428563">Salin nilai kebijakan <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Anda tidak dapat mengunjungi <ph name="URL" /> karena kebijakan organisasi Anda memblokirnya. Jika hal ini tidak semestinya terjadi, hubungi administrator Anda.</translation>
-<translation id="6272088941196661550">Lanjutkan perjalanan Anda untuk melihat aktivitas yang relevan di histori Chrome Anda</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive dan OneDrive</translation>
 <translation id="6279228081537458128">Bayar nanti</translation>
@@ -4835,7 +4832,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="9114101423898634479">Tambahkan Known Traveler Number</translation>
 <translation id="9114524666733003316">Mengonfirmasi kartu...</translation>
 <translation id="9114581008513152754">Browser ini tidak dikelola oleh perusahaan atau organisasi lain. Aktivitas di perangkat ini mungkin dikelola di luar Chrome. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab, lalu Enter untuk melanjutkan penelusuran dan melihat aktivitas yang relevan di histori Chrome Anda</translation>
 <translation id="9119042192571987207">Diupload</translation>
 <translation id="9119764377203471454">Tidak dapat menambahkan lampiran</translation>
 <translation id="9120593907434185157">Simpan alamat</translation>

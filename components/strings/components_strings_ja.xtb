@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini で検索して自動入力する</translation>
 <translation id="1096545575934602868">このフィールドに入力できる件数は <ph name="MAX_ITEMS_LIMIT" /> 件までです。この件数を超える部分は破棄されます。</translation>
 <translation id="1099928364755383720">ピクチャー イン ピクチャーの自動開始</translation>
-<translation id="1100782917270858593">[ジャーニーを再開] ボタンです。Enter キーを押すと、ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認できます</translation>
 <translation id="1101672080107056897">エラー アクション</translation>
 <translation id="1104409666019087579">一部の必須項目が空白です。保存する前に入力してください。</translation>
 <translation id="1104860668737945357">[パスワードを管理] ボタンです。実行すると、Chrome の設定でパスワードを表示、管理できます</translation>
@@ -2836,7 +2835,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates の値は関連するものでないため、使用されません。ただし、DnsOverHttpsMode ポリシーが「<ph name="SECURE_DNS_MODE_AUTOMATIC" />」または「<ph name="SECURE_DNS_MODE_SECURE" />」に設定されている場合は除きます。</translation>
 <translation id="5691848789297492617">カード保存のメッセージが画面全体に表示されています。</translation>
 <translation id="5701381305118179107">中央揃え</translation>
-<translation id="5707154300732650394">ジャーニーを再開</translation>
 <translation id="57094364128775171">安全なパスワードを自動生成…</translation>
 <translation id="570953204696852961">赤 3</translation>
 <translation id="5710907191777451677">代わりに Gemini in Chrome に質問してみてください</translation>
@@ -3174,7 +3172,6 @@
 <translation id="6264636978858465832">パスワード マネージャーにさらにアクセスを許可する必要があります</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> ポリシーの値をコピーします</translation>
 <translation id="6271264012613848937">組織のポリシーにより、<ph name="URL" /> へのアクセスがブロックされました。これが想定外である場合は、管理者にお問い合わせください。</translation>
-<translation id="6272088941196661550">ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認します</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google ドライブと OneDrive</translation>
 <translation id="6279228081537458128">後払い</translation>
@@ -4844,7 +4841,6 @@
 <translation id="9114101423898634479">Known Traveler 番号の追加</translation>
 <translation id="9114524666733003316">カードを確認しています…</translation>
 <translation id="9114581008513152754">このブラウザは、会社またはその他の組織によって管理されていません。このデバイスでのアクティビティは、Chrome 以外で管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認できます</translation>
 <translation id="9119042192571987207">アップロード済み</translation>
 <translation id="9119764377203471454">添付ファイルを追加できません</translation>
 <translation id="9120593907434185157">住所の保存</translation>

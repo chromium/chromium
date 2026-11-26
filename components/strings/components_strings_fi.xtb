@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Hae ja täytä Geminillä</translation>
 <translation id="1096545575934602868">Kentässä voi olla korkeintaan <ph name="MAX_ITEMS_LIMIT" /> kohtaa. Muut kohdat ohitetaan.</translation>
 <translation id="1099928364755383720">automaattinen pikkuruutu</translation>
-<translation id="1100782917270858593">Jatka toimintoa ‑painike, paina Enter, niin voit jatkaa toimintoa ja nähdä oleelliset tapahtumat Chrome-historiassasi</translation>
 <translation id="1101672080107056897">Virhetapahtuma</translation>
 <translation id="1104409666019087579">Jotkin pakolliset kentät ovat tyhjiä. Täytä ne ennen tallentamista.</translation>
 <translation id="1104860668737945357">Ylläpidä salasanoja ‑painike, aktivoi katsoaksesi ja ylläpitääksesi salasanoja Chromen asetuksista</translation>
@@ -2834,7 +2833,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="569000877158168851">DnsOverHttpsTemplates-arvo ei ole olennainen, eikä sitä käytetä, ellei DnsOverHttpsMode-käytännön arvoksi määritetä <ph name="SECURE_DNS_MODE_AUTOMATIC" /> tai <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Tallennuskortti avattu koko näytön kokoisena.</translation>
 <translation id="5701381305118179107">Keskitä</translation>
-<translation id="5707154300732650394">Jatka toimintoa</translation>
 <translation id="57094364128775171">Ehdota vahvaa salasanaa…</translation>
 <translation id="570953204696852961">Punainen 3</translation>
 <translation id="5710907191777451677">Kysy sen sijaan Gemini in Chromelta</translation>
@@ -3171,7 +3169,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6264636978858465832">Salasanat tarvitsee lisää pääsyoikeuksia</translation>
 <translation id="6265794661083428563">Kopioi käytännön <ph name="POLICY_NAME" /> arvo</translation>
 <translation id="6271264012613848937">Pääsy sivustolle <ph name="URL" /> on estetty organisaation käytäntöjen vuoksi. Jos tämä on odottamatonta, ota yhteyttä järjestelmänvalvojaan.</translation>
-<translation id="6272088941196661550">Jatka toimintoa, niin näet oleelliset tapahtumat Chrome-historiassasi</translation>
 <translation id="6272383483618007430">Google-päivitys</translation>
 <translation id="6278015583149890680">Google Drive ja OneDrive</translation>
 <translation id="6279228081537458128">Maksa myöhemmin</translation>
@@ -4841,7 +4838,6 @@ Lisätietoja:
 <translation id="9114101423898634479">Lisää known traveler number</translation>
 <translation id="9114524666733003316">Vahvistetaan korttia…</translation>
 <translation id="9114581008513152754">Yritys tai muu organisaatio ei ylläpidä selainta. Laitteen toimintaa saatetaan ylläpitää Chromen ulkopuolelta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina sarkainta ja Enter, niin voit jatkaa toimintoa ja nähdä oleelliset tapahtumat Chrome-historiassasi</translation>
 <translation id="9119042192571987207">Lähetetty</translation>
 <translation id="9119764377203471454">Liitteiden lisääminen ei onnistu</translation>
 <translation id="9120593907434185157">Tallenna osoite</translation>

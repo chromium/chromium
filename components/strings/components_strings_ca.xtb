@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Cerca i emplena amb Gemini</translation>
 <translation id="1096545575934602868">Aquest camp no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> entrades. Es descartaran totes les entrades restants.</translation>
 <translation id="1099928364755383720">mode d'imatge sobre imatge automàtic</translation>
-<translation id="1100782917270858593">Botó Reprèn el recorregut: prem Retorn per reprendre el recorregut i veure activitat rellevant a l'historial de Chrome</translation>
 <translation id="1101672080107056897">Acció d'error</translation>
 <translation id="1104409666019087579">Alguns camps obligatoris són buits. Emplena'ls abans de desar.</translation>
 <translation id="1104860668737945357">Botó Gestiona les contrasenyes: activa'l per veure i gestionar les teves contrasenyes a la configuració de Chrome</translation>
@@ -2833,7 +2832,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="569000877158168851">El valor de DnsOverHttpsTemplates no és rellevant i no s'utilitzarà tret que la política DnsOverHttpsMode s'estableixi en <ph name="SECURE_DNS_MODE_AUTOMATIC" /> o en <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Desa la targeta oberta a alçada completa.</translation>
 <translation id="5701381305118179107">Centre</translation>
-<translation id="5707154300732650394">Reprèn el recorregut</translation>
 <translation id="57094364128775171">Suggereix una contrasenya segura…</translation>
 <translation id="570953204696852961">Vermell 3</translation>
 <translation id="5710907191777451677">Demana a Gemini a Chrome</translation>
@@ -3170,7 +3168,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6264636978858465832">El gestor de contrasenyes necessita un accés més ampli</translation>
 <translation id="6265794661083428563">Copia el valor de la política <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Se t'ha bloquejat l'accés a <ph name="URL" /> a causa de les polítiques de la teva organització. Si no t'ho esperaves, contacta amb l'administrador.</translation>
-<translation id="6272088941196661550">Reprèn el recorregut per veure activitat rellevant a l'historial de Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive i OneDrive</translation>
 <translation id="6279228081537458128">Paga més tard</translation>
@@ -4839,7 +4836,6 @@ Detalls addicionals:
 <translation id="9114101423898634479">Afegeix el número de viatger conegut</translation>
 <translation id="9114524666733003316">S'està confirmant la targeta...</translation>
 <translation id="9114581008513152754">Cap empresa ni cap altra organització no gestiona aquest navegador. És possible que l'activitat d'aquest dispositiu es gestioni fora de Chrome. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per reprendre el recorregut i veure activitat rellevant a l'historial de Chrome</translation>
 <translation id="9119042192571987207">Penjat</translation>
 <translation id="9119764377203471454">No es poden afegir fitxers adjunts</translation>
 <translation id="9120593907434185157">Desa l'adreça</translation>

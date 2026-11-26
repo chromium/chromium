@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Geminiga otsimine ja täitmine</translation>
 <translation id="1096545575934602868">Sellel väljal ei tohi olla üle <ph name="MAX_ITEMS_LIMIT" /> kirje. Kõigist ülejäänud kirjetest loobutakse.</translation>
 <translation id="1099928364755383720">automaatne pilt pildis režiim</translation>
-<translation id="1100782917270858593">Nupp Jätkake oma teekonda, teekonna jätkamiseks ja oma Chrome'i ajaloos asjakohaste tegevuste nägemiseks vajutage sisestusklahvi.</translation>
 <translation id="1101672080107056897">Veatoiming</translation>
 <translation id="1104409666019087579">Mõned kohustuslikud väljad on tühjad. Täitke need enne salvestamist.</translation>
 <translation id="1104860668737945357">Nupp Paroolide haldamine, aktiveerige nupp Chrome'i seadetes paroolide vaatamiseks ja haldamiseks</translation>
@@ -2833,7 +2832,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="569000877158168851">Reegli DnsOverHttpsTemplates väärtus pole asjakohane ja seda ei kasutata, kui reegli DnsOverHttpsMode väärtuseks pole määratud <ph name="SECURE_DNS_MODE_AUTOMATIC" /> või <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Kaardi salvestamise leht on avatud täiskõrgusel.</translation>
 <translation id="5701381305118179107">Keskel</translation>
-<translation id="5707154300732650394">Jätkake oma teekonda</translation>
 <translation id="57094364128775171">Soovita tugevat parooli …</translation>
 <translation id="570953204696852961">Punane 3</translation>
 <translation id="5710907191777451677">Küsige hoopis Geminilt Chrome'is.</translation>
@@ -3170,7 +3168,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6264636978858465832">Paroolihaldur vajab laialdasemat juurdepääsu</translation>
 <translation id="6265794661083428563">Kopeeri reegli <ph name="POLICY_NAME" /> väärtus</translation>
 <translation id="6271264012613848937">Teie organisatsiooni eeskirjade tõttu blokeeriti teie juurdepääs saidile <ph name="URL" />. Kui see on ootamatu, võtke ühendust administraatoriga.</translation>
-<translation id="6272088941196661550">Jätkake oma teekonda, et näha Chrome'i ajaloos asjakohaseid tegevusi</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive ja OneDrive</translation>
 <translation id="6279228081537458128">Hiljem maksmine</translation>
@@ -4839,7 +4836,6 @@ Lisateave:
 <translation id="9114101423898634479">Known Traveler Numberi lisamine</translation>
 <translation id="9114524666733003316">Kaardi kinnitamine …</translation>
 <translation id="9114581008513152754">Seda brauserit ei halda ettevõte ega muu organisatsioon. Selle seadme tegevusi võidakse hallata ka väljaspool Chrome'i. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage tabulaatorit ja siis sisestusklahvi, et teekonda jätkata ning oma Chrome'i ajaloos asjakohaseid tegevusi näha</translation>
 <translation id="9119042192571987207">Üles laaditud</translation>
 <translation id="9119764377203471454">Manuseid ei saa lisada.</translation>
 <translation id="9120593907434185157">Salvestage aadress</translation>

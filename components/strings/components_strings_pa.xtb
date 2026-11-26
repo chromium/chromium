@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini ਨਾਲ ਲੱਭੋ ਅਤੇ ਭਰੋ</translation>
 <translation id="1096545575934602868">ਇਸ ਖੇਤਰ ਵਿੱਚ <ph name="MAX_ITEMS_LIMIT" /> ਤੋਂ ਵੱਧ ਇੰਦਰਾਜ ਨਹੀਂ ਹੋਣੇ ਚਾਹੀਦੇ ਹਨ। ਅਗਲੇ ਸਾਰੇ ਇੰਦਰਾਜ ਰੱਦ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="1099928364755383720">ਸਵੈਚਲਿਤ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ</translation>
-<translation id="1100782917270858593">'ਆਪਣੇ ਖੋਜ ਸਫ਼ਰ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ' ਬਟਨ, ਆਪਣੇ ਖੋਜ ਸਫ਼ਰ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਅਤੇ ਆਪਣੇ Chrome ਇਤਿਹਾਸ ਵਿੱਚ ਢੁਕਵੀਂ ਸਰਗਰਮੀ ਦੇਖਣ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="1101672080107056897">ਗੜਬੜ ਕਾਰਵਾਈ</translation>
 <translation id="1104409666019087579">ਕੁਝ ਲੋੜੀਂਦੇ ਖੇਤਰ ਖਾਲੀ ਹਨ। ਰੱਖਿਅਤ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਉਨ੍ਹਾਂ ਨੂੰ ਭਰੋ।</translation>
 <translation id="1104860668737945357">'ਪਾਸਵਰਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ' ਬਟਨ, Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਪਾਸਵਰਡ ਦੇਖਣ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
@@ -2829,7 +2828,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates ਮੁੱਲ ਢੁਕਵਾਂ ਨਹੀਂ ਹੈ, ਅਤੇ ਇਸਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਵੇਗੀ, ਜਦੋਂ ਤੱਕ ਕਿ DnsOverHttpsMode ਨੀਤੀ <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ਜਾਂ <ph name="SECURE_DNS_MODE_SECURE" /> 'ਤੇ ਸੈੱਟ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ।</translation>
 <translation id="5691848789297492617">"ਕਾਰਡ ਰੱਖਿਅਤ ਕਰੋ" ਪ੍ਰੋਂਪਟ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹਿਆ ਹੈ।</translation>
 <translation id="5701381305118179107">ਕੇਂਦਰ</translation>
-<translation id="5707154300732650394">ਆਪਣਾ ਖੋਜ ਸਫ਼ਰ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="57094364128775171">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਸੁਝਾਓ…</translation>
 <translation id="570953204696852961">ਲਾਲ 3</translation>
 <translation id="5710907191777451677">ਇਸਦੀ ਬਜਾਏ Chrome ਵਿੱਚ Gemini ਤੋਂ ਪੁੱਛੋ</translation>
@@ -3165,7 +3163,6 @@
 <translation id="6264636978858465832">Password Manager ਨੂੰ ਹੋਰ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> ਨੀਤੀ ਦਾ ਮੁੱਲ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="6271264012613848937">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਨੀਤੀਆਂ ਕਰਕੇ ਤੁਹਾਨੂੰ <ph name="URL" /> 'ਤੇ ਜਾਣ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਸੀ। ਜੇ ਇਹ ਅਣਕਿਆਸਿਆ ਹੈ, ਤਾਂ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
-<translation id="6272088941196661550">ਆਪਣੇ Chrome ਇਤਿਹਾਸ ਵਿੱਚ ਢੁਕਵੀਂ ਸਰਗਰਮੀ ਦੇਖਣ ਲਈ ਆਪਣੇ ਖੋਜ ਸਫ਼ਰ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6272383483618007430">Google ਅੱਪਡੇਟ</translation>
 <translation id="6278015583149890680">Google Drive ਅਤੇ OneDrive</translation>
 <translation id="6279228081537458128">ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ</translation>
@@ -4833,7 +4830,6 @@
 <translation id="9114101423898634479">Known Traveler Number ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="9114524666733003316">ਕਾਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="9114581008513152754">ਇਹ ਬ੍ਰਾਊਜ਼ਰ ਕਿਸੇ ਕੰਪਨੀ ਜਾਂ ਹੋਰ ਸੰਸਥਾ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਇਸ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਨੂੰ Chrome ਦੇ ਬਾਹਰ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ ਆਪਣੀ ਖੋਜ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਅਤੇ ਆਪਣੇ Chrome ਇਤਿਹਾਸ ਵਿੱਚ ਢੁਕਵੀਂ ਸਰਗਰਮੀ ਦੇਖਣ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="9119042192571987207">ਅੱਪਲੋਡ ਕੀਤੀ ਗਈ</translation>
 <translation id="9119764377203471454">ਨੱਥੀ ਫ਼ਾਈਲਾਂ ਨੂੰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="9120593907434185157">ਪਤਾ ਰੱਖਿਅਤ ਕਰੋ</translation>

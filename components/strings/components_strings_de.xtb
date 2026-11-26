@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Mit Gemini suchen und ausfüllen</translation>
 <translation id="1096545575934602868">Dieses Feld sollte nicht mehr als <ph name="MAX_ITEMS_LIMIT" /> Einträge enthalten. Alle weiteren werden verworfen.</translation>
 <translation id="1099928364755383720">automatische Bild-im-Bild-Modus</translation>
-<translation id="1100782917270858593">Button „Weiter stöbern“ – drücke die Eingabetaste, um weiter zu recherchieren und relevante Aktivitäten in deinem Chrome-Verlauf zu sehen</translation>
 <translation id="1101672080107056897">Fehleraktion</translation>
 <translation id="1104409666019087579">Einige Pflichtfelder sind leer. Bitte fülle sie vor dem Speichern aus.</translation>
 <translation id="1104860668737945357">Button „Passwörter verwalten“ – aktivieren, um in den Chrome-Einstellungen Passwörter abzurufen und zu verwalten</translation>
@@ -2830,7 +2829,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="569000877158168851">Der Wert von "DnsOverHttpsTemplates" ist nicht relevant und wird nicht verwendet, es sei denn, die Richtlinie "DnsOverHttpsMode" ist auf <ph name="SECURE_DNS_MODE_AUTOMATIC" /> oder <ph name="SECURE_DNS_MODE_SECURE" /> gesetzt.</translation>
 <translation id="5691848789297492617">„Karte speichern“ ist vollständig geöffnet.</translation>
 <translation id="5701381305118179107">Zentrieren</translation>
-<translation id="5707154300732650394">Weiter stöbern</translation>
 <translation id="57094364128775171">Starkes Passwort vorschlagen…</translation>
 <translation id="570953204696852961">Rot 3</translation>
 <translation id="5710907191777451677">Stattdessen Gemini in Chrome fragen</translation>
@@ -3167,7 +3165,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6264636978858465832">Der Passwortmanager benötigt einen umfassenderen Zugriff</translation>
 <translation id="6265794661083428563">Den Wert der Richtlinie <ph name="POLICY_NAME" /> kopieren</translation>
 <translation id="6271264012613848937">Aufgrund der Richtlinien deiner Organisation konnte <ph name="URL" /> nicht aufgerufen werden. Wenn dies unerwartet ist, wende dich an deinen Administrator.</translation>
-<translation id="6272088941196661550">Du kannst weiter stöbern, um relevante Aktivitäten in deinem Chrome-Verlauf zu sehen</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive und OneDrive</translation>
 <translation id="6279228081537458128">Später bezahlen</translation>
@@ -4835,7 +4832,6 @@ Weitere Details:
 <translation id="9114101423898634479">Known Traveler Number hinzufügen</translation>
 <translation id="9114524666733003316">Karte wird bestätigt…</translation>
 <translation id="9114581008513152754">Dieser Browser wird nicht von einem Unternehmen oder einer anderen Organisation verwaltet. Aktivitäten auf diesem Gerät werden eventuell außerhalb von Chrome verwaltet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, drücke die Tabulatortaste und dann die Eingabetaste, um weiter zu stöbern und relevante Aktivitäten in deinem Chrome-Verlauf anzusehen</translation>
 <translation id="9119042192571987207">Hochgeladen</translation>
 <translation id="9119764377203471454">Anhänge können nicht hinzugefügt werden</translation>
 <translation id="9120593907434185157">Adresse speichern</translation>

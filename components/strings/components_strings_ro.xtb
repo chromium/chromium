@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Găsește și completează cu Gemini</translation>
 <translation id="1096545575934602868">Acest câmp nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări. Toate intrările suplimentare vor fi șterse.</translation>
 <translation id="1099928364755383720">picture-in-picture automat</translation>
-<translation id="1100782917270858593">Butonul Continuă-ți parcursul, apasă pe Enter pentru a-ți continua parcursul și a vedea activitatea relevantă din istoricul Chrome</translation>
 <translation id="1101672080107056897">Eroare privind acțiunea</translation>
 <translation id="1104409666019087579">Unele câmpuri obligatorii sunt necompletate. Completează-le înainte de a salva.</translation>
 <translation id="1104860668737945357">Butonul Gestionează parolele, activează pentru a vedea și a gestiona parolele în setările Chrome</translation>
@@ -2833,7 +2832,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="569000877158168851">Valoarea DnsOverHttpsTemplates nu este relevantă și nu va fi folosită decât dacă politica DnsOverHttpsMode este setată la <ph name="SECURE_DNS_MODE_AUTOMATIC" /> sau la <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Salvează cardul deschis la înălțimea completă.</translation>
 <translation id="5701381305118179107">Pe centru</translation>
-<translation id="5707154300732650394">Continuă-ți parcursul</translation>
 <translation id="57094364128775171">Sugerează o parolă puternică…</translation>
 <translation id="570953204696852961">Roșu 3</translation>
 <translation id="5710907191777451677">Întreabă Gemini în Chrome</translation>
@@ -3170,7 +3168,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6264636978858465832">Managerul de parole are nevoie de mai multe permisiuni de acces</translation>
 <translation id="6265794661083428563">Copiază valoarea pentru politica <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Nu ai putut accesa <ph name="URL" /> din cauza politicilor organizației tale. Dacă nu te așteptai la acest lucru, contactează administratorul.</translation>
-<translation id="6272088941196661550">Continuă-ți parcursul pentru a vedea activitatea relevantă din istoricul Chrome</translation>
 <translation id="6272383483618007430">Actualizare Google</translation>
 <translation id="6278015583149890680">Google Drive și OneDrive</translation>
 <translation id="6279228081537458128">Plătește mai târziu</translation>
@@ -4840,7 +4837,6 @@ Detalii suplimentare:
 <translation id="9114101423898634479">Adaugă numărul de călător cunoscut</translation>
 <translation id="9114524666733003316">Se confirmă cardul…</translation>
 <translation id="9114581008513152754">Browserul nu este gestionat de o companie sau o altă organizație. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată în afara Chrome. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a-ți continua parcursul și a vedea activitatea relevantă din istoricul Chrome</translation>
 <translation id="9119042192571987207">Încărcat</translation>
 <translation id="9119764377203471454">Nu se pot adăuga atașamente</translation>
 <translation id="9120593907434185157">Salvează adresa</translation>

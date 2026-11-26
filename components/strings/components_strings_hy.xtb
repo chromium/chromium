@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Գտեք և լրացրեք Gemini-ի օգնությամբ</translation>
 <translation id="1096545575934602868">Այս դաշտը չպետք է ունենա ավելի քան <ph name="MAX_ITEMS_LIMIT" /> գրառում: Ավել գրառումները կհեռացվեն:</translation>
 <translation id="1099928364755383720">«նկար նկարի մեջ» պատուհանի ավտոմատ ցուցադրում</translation>
-<translation id="1100782917270858593">«Շարունակել որոնումը» կոճակ։ Chrome-ի պատմության մեջ նման հարցումները դիտելու համար սեղմեք Enter։</translation>
 <translation id="1101672080107056897">Գործողություն սխալի դեպքում</translation>
 <translation id="1104409666019087579">Չլրացված պարտադիր դաշտեր կան։ Պահելուց առաջ լրացրեք դրանք։</translation>
 <translation id="1104860668737945357">«Կառավարել գաղտնաբառերը» կոճակ․ ակտիվացրեք՝ Chrome-ի կարգավորումներում գաղտնաբառերը դիտելու և կառավարելու համար</translation>
@@ -2832,7 +2831,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates կանոնի արժեքը անհամապատասխան է և չի կարող օգտագործվել, եթե DnsOverHttpsMode կանոնի համար չի կարգավորվել <ph name="SECURE_DNS_MODE_AUTOMATIC" /> կամ <ph name="SECURE_DNS_MODE_SECURE" /> արժեքը:</translation>
 <translation id="5691848789297492617">Քարտի տվյալների պահման պատուհանը բացված է ամբողջությամբ։</translation>
 <translation id="5701381305118179107">Կենտրոնաբերել</translation>
-<translation id="5707154300732650394">Շարունակել որոնումը</translation>
 <translation id="57094364128775171">Ստեղծել հուսալի գաղտնաբառ…</translation>
 <translation id="570953204696852961">Կարմիր 3</translation>
 <translation id="5710907191777451677">Փոխարենը հարցրեք Gemini-ին Chrome-ում</translation>
@@ -3169,7 +3167,6 @@
 <translation id="6264636978858465832">Գաղտնաբառերի կառավարչին ավելի շատ թույլտվություններ են հարկավոր</translation>
 <translation id="6265794661083428563">Պատճենել <ph name="POLICY_NAME" /> կանոնի արժեքը</translation>
 <translation id="6271264012613848937">Ձեր կազմակերպության կանոնները ձեզ արգելում են այցելել <ph name="URL" /> կայք։ Եթե դա անսպասելի է, դիմեք ձեր ադմինիստրատորին։</translation>
-<translation id="6272088941196661550">Շարունակել որոնումը՝ Chrome-ի պատմության մեջ նման հարցումները դիտելու համար</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive-ում և OneDrive-ում</translation>
 <translation id="6279228081537458128">Վճարել ավելի ուշ</translation>
@@ -4837,7 +4834,6 @@
 <translation id="9114101423898634479">Ուղևորի անձնական համարի ավելացում</translation>
 <translation id="9114524666733003316">Քարտի հաստատում...</translation>
 <translation id="9114581008513152754">Ձեր դիտարկիչը չի կառավարվում որևէ ընկերության կամ կազմակերպության կողմից։ Սարքում արվող գործողությունները կարող են կառավարվել Chrome-ից դուրս։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի պատմության մեջ նման հարցումները դիտելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="9119042192571987207">Վերբեռնված է</translation>
 <translation id="9119764377203471454">Չհաջողվեց ավելացնել առդիրները</translation>
 <translation id="9120593907434185157">Պահել հասցեն</translation>

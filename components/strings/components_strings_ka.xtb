@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini-თ პოვნა და შევსება</translation>
 <translation id="1096545575934602868">ამ ველში <ph name="MAX_ITEMS_LIMIT" />-ზე მეტი ჩანაწერი არ უნდა იყოს. ყველა დანარჩენი ჩანაწერი გაუქმდება.</translation>
 <translation id="1099928364755383720">რეჟიმში „ეკრანი ეკრანში“ ავტომატურად შესვლა</translation>
-<translation id="1100782917270858593">თქვენი პროცესის გაგრძელების ღილაკი, თქვენი პროცესის გასაგრძელებლად და თქვენს Chrome-ის ისტორიაში შესაბამისი აქტივობის სანახავად დააჭირეთ კლავიშს Tab, შემდეგ კი — Enter-ს</translation>
 <translation id="1101672080107056897">შეცდომასთან დაკავშირებული ქმედება</translation>
 <translation id="1104409666019087579">ზოგიერთი აუცილებელი ველი ცარიელია. შეავსეთ ისინი შენახვამდე.</translation>
 <translation id="1104860668737945357">პაროლების მართვის ღილაკი, Chrome-ის პარამეტრებიდან თქვენი პაროლების სანახავად და სამართავად გაააქტიურეთ ის</translation>
@@ -2836,7 +2835,6 @@
 <translation id="569000877158168851">„DnsOverHttpsTemplates“-ის მნიშვნელობა შეუსაბამოა და არ იქნება გამოყენებული, თუ „DnsOverHttpsMode“ წესების მნიშვნელობად არ არის მითითებული „<ph name="SECURE_DNS_MODE_AUTOMATIC" />“ ან „<ph name="SECURE_DNS_MODE_SECURE" />“.</translation>
 <translation id="5691848789297492617">ბარათის შენახვა გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="5701381305118179107">ცენტრირება</translation>
-<translation id="5707154300732650394">თქვენი პროცესის გაგრძელება</translation>
 <translation id="57094364128775171">ძლიერი პაროლის შემოთავაზება…</translation>
 <translation id="570953204696852961">წითელი 3</translation>
 <translation id="5710907191777451677">ამის ნაცვლად ჰკითხეთ Gemini-ს Chrome-ში</translation>
@@ -3174,7 +3172,6 @@
 <translation id="6264636978858465832">პაროლების მმართველი საჭიროებს მეტ წვდომას</translation>
 <translation id="6265794661083428563">„<ph name="POLICY_NAME" />“ წესების მნიშვნელობის კოპირება</translation>
 <translation id="6271264012613848937">თქვენი ორგანიზაციის წესების გამო, დაბლოკილია თქვენი წვდომა <ph name="URL" />-ზე. თუ ეს მოულოდნელია, დაუკავშირდით ადმინისტრატორს.</translation>
-<translation id="6272088941196661550">გააგრძელეთ თქვენი პროცესი, თქვენს Chrome-ის ისტორიაში შესაბამისი აქტივობა რომ იხილოთ</translation>
 <translation id="6272383483618007430">Google განახლება</translation>
 <translation id="6278015583149890680">Google Drive და OneDrive</translation>
 <translation id="6279228081537458128">მოგვიანებით გადახდა</translation>
@@ -4842,7 +4839,6 @@
 <translation id="9114101423898634479">აღიარებული მგზავრის ნომრის დამატება</translation>
 <translation id="9114524666733003316">მიმდინარეობს ბარათის დადასტურება...</translation>
 <translation id="9114581008513152754">ამ ბრაუზერს არ მართავს კომპანია თუ სხვა ორგანიზაცია. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chrome-ს მიღმა. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, პროცესის გასაგრძელებლად და თქვენს Chrome-ის ისტორიაში შესაბამისი აქტივობის სანახავად დააჭირეთ კლავიშს Tab, შემდეგ კი — Enter-ს</translation>
 <translation id="9119042192571987207">ატვირთულია</translation>
 <translation id="9119764377203471454">დანართების დამატება შეუძლებელია</translation>
 <translation id="9120593907434185157">მისამართის შენახვა</translation>

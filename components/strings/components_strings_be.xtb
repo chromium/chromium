@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Выконваць пошук і запаўняць інфармацыю з дапамогай Gemini</translation>
 <translation id="1096545575934602868">У гэтым полі павінна быць максімум <ph name="MAX_ITEMS_LIMIT" /> запісаў. Усе лішнія запісы будуць адхілены.</translation>
 <translation id="1099928364755383720">аўтаматычны запуск рэжыму "відарыс у відарысе"</translation>
-<translation id="1100782917270858593">Кнопка "Працягнуць пошук". Каб пашукаць звязаныя дзеянні ў гісторыі праглядаў Chrome, націсніце Enter</translation>
 <translation id="1101672080107056897">Памылковае дзеянне</translation>
 <translation id="1104409666019087579">Некаторыя абавязковыя палі пустыя. Каб захаваць даныя, вам трэба запоўніць іх.</translation>
 <translation id="1104860668737945357">Кнопка "Кіраваць паролямі". Каб паглядзець паролі або кіраваць імі ў наладах Chrome, націсніце яе.</translation>
@@ -2831,7 +2830,6 @@
 <translation id="569000877158168851">Калі для палітыкі DnsOverHttpsMode не зададзены параметр "<ph name="SECURE_DNS_MODE_AUTOMATIC" />" або "<ph name="SECURE_DNS_MODE_SECURE" />", значэнне DnsOverHttpsTemplates будзе лічыцца нерэлевантным і выкарыстоўвацца не будзе.</translation>
 <translation id="5691848789297492617">Захаванне карткі, адкрыта на ўвесь экран.</translation>
 <translation id="5701381305118179107">У цэнтры</translation>
-<translation id="5707154300732650394">Працягнуць пошук</translation>
 <translation id="57094364128775171">Прапанаваць надзейны пароль…</translation>
 <translation id="570953204696852961">Чырвоны 3</translation>
 <translation id="5710907191777451677">Спытць Gemini ў Chrome</translation>
@@ -3168,7 +3166,6 @@
 <translation id="6264636978858465832">Менеджару пароляў патрабуюцца шырэйшыя правы доступу</translation>
 <translation id="6265794661083428563">Скапіраваць значэнне палітыкі "<ph name="POLICY_NAME" />"</translation>
 <translation id="6271264012613848937">Правілы вашай арганізацыі забараняюць вам наведваць сайт <ph name="URL" />. Калі гэта не прадугледжвалася, звярніцеся да адміністратара.</translation>
-<translation id="6272088941196661550">Пашукаць звязаныя дзеянні ў гісторыі праглядаў Chrome</translation>
 <translation id="6272383483618007430">Абнаўленне Google</translation>
 <translation id="6278015583149890680">Google Дыск і OneDrive</translation>
 <translation id="6279228081537458128">Аплаціць пазней</translation>
@@ -4837,7 +4834,6 @@
 <translation id="9114101423898634479">Дадаванне нумара вядомага падарожніка</translation>
 <translation id="9114524666733003316">Пацвярджаюцца даныя карткі...</translation>
 <translation id="9114581008513152754">Гэты браўзер не знаходзіцца пад кіраваннем кампаніі або іншай арганізацыі. Аднак сама прылада можа знаходзіцца пад знешнім кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб пашукаць звязаныя дзеянні ў гісторыі праглядаў Chrome, націсніце Tab, затым Enter</translation>
 <translation id="9119042192571987207">Запампавана</translation>
 <translation id="9119764377203471454">Не ўдаецца дадаць далучэнні</translation>
 <translation id="9120593907434185157">Захаваць адрас</translation>

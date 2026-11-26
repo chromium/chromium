@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Zoeken en Vullen met Gemini</translation>
 <translation id="1096545575934602868">Dit veld mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten. Verdere items worden verwijderd.</translation>
 <translation id="1099928364755383720">automatische scherm-in-scherm</translation>
-<translation id="1100782917270858593">De knop Je traject hervatten, druk op Enter om je traject te hervatten en relevante activiteit in je Chrome-geschiedenis te bekijken</translation>
 <translation id="1101672080107056897">Fout in actie</translation>
 <translation id="1104409666019087579">Sommige verplichte velden zijn leeg. Vul ze in voordat je opslaat.</translation>
 <translation id="1104860668737945357">Knop Wachtwoorden beheren. Activeer deze om je wachtwoorden te bekijken en te beheren in de Chrome-instellingen.</translation>
@@ -2827,7 +2826,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="569000877158168851">De waarde voor DnsOverHttpsTemplates is niet relevant en wordt niet gebruikt, tenzij het beleid DnsOverHttpsMode is ingesteld op <ph name="SECURE_DNS_MODE_AUTOMATIC" /> of <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Kaart opslaan is op volledige hoogte geopend.</translation>
 <translation id="5701381305118179107">Centreren</translation>
-<translation id="5707154300732650394">Je traject hervatten</translation>
 <translation id="57094364128775171">Sterk wachtwoord voorstellen…</translation>
 <translation id="570953204696852961">Rood 3</translation>
 <translation id="5710907191777451677">Vraag het Gemini in Chrome</translation>
@@ -3163,7 +3161,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6264636978858465832">Wachtwoordmanager heeft meer toegang nodig</translation>
 <translation id="6265794661083428563">Kopieer de waarde van het <ph name="POLICY_NAME" />-beleid</translation>
 <translation id="6271264012613848937">Je kunt <ph name="URL" /> niet bezoeken vanwege het beleid van je organisatie. Neem contact op met je beheerder als dit onverwacht is.</translation>
-<translation id="6272088941196661550">Hervat je traject om relevante activiteit in je Chrome-geschiedenis te bekijken</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive en OneDrive</translation>
 <translation id="6279228081537458128">Later betalen</translation>
@@ -4832,7 +4829,6 @@ Aanvullende informatie:
 <translation id="9114101423898634479">Known Traveler Number toevoegen</translation>
 <translation id="9114524666733003316">Creditcard bevestigen...</translation>
 <translation id="9114581008513152754">Deze browser wordt niet beheerd door een bedrijf of andere organisatie. Activiteit op dit apparaat kan buiten Chrome worden beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en daarna op Enter om je reis te hervatten en relevante activiteit in je Chrome-geschiedenis te bekijken.</translation>
 <translation id="9119042192571987207">Geüpload</translation>
 <translation id="9119764377203471454">Kan bijlagen niet toevoegen</translation>
 <translation id="9120593907434185157">Adres opslaan</translation>

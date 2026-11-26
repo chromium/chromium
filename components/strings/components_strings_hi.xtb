@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini की मदद से जानकारी खोजें और भरें</translation>
 <translation id="1096545575934602868">इस फ़ाइल में <ph name="MAX_ITEMS_LIMIT" /> से ज़्यादा एंट्री नहीं हो सकती. इसके बाद की सभी एंट्री खारिज हो जाएंगी.</translation>
 <translation id="1099928364755383720">अपने-आप 'पिक्चर में पिक्चर' मोड में जाने की सेटिंग</translation>
-<translation id="1100782917270858593">'Chrome इतिहास' में आपकी गतिविधि फिर से शुरू करने का बटन, अपनी गतिविधि फिर से शुरू करने के लिए, Enter दबाएं. इससे आपको 'Chrome इतिहास' में आपके काम की गतिविधि दिखेगी</translation>
 <translation id="1101672080107056897">गड़बड़ी पर कार्रवाई</translation>
 <translation id="1104409666019087579">कुछ ज़रूरी फ़ील्ड खाली हैं. सेव करने से पहले इन्हें भरें.</translation>
 <translation id="1104860668737945357">'पासवर्ड मैनेज करें' बटन, Chrome की सेटिंग में पासवर्ड देखने और उन्हें मैनेज करने के लिए इसे चालू करें</translation>
@@ -2836,7 +2835,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates का मान सही नहीं है. इसका इस्तेमाल तब तक नहीं किया जाएगा, जब तक कि DnsOverHttpsMode नीति <ph name="SECURE_DNS_MODE_AUTOMATIC" /> या <ph name="SECURE_DNS_MODE_SECURE" /> पर सेट न हो.</translation>
 <translation id="5691848789297492617">कार्ड सेव करने की सुविधा पूरी स्क्रीन पर खुली है.</translation>
 <translation id="5701381305118179107">मध्य</translation>
-<translation id="5707154300732650394">'Chrome इतिहास' में, अपनी गतिविधियां फिर से शुरू करें</translation>
 <translation id="57094364128775171">मज़बूत पासवर्ड सुझाएं…</translation>
 <translation id="570953204696852961">रेड 3</translation>
 <translation id="5710907191777451677">इसके बजाय, 'Chrome में Gemini' से पूछें</translation>
@@ -3174,7 +3172,6 @@
 <translation id="6264636978858465832">Password Manager को और चीज़ों का ऐक्सेस चाहिए</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> नीति कॉपी करें</translation>
 <translation id="6271264012613848937">आपके संगठन की नीतियों की वजह से, आपके लिए <ph name="URL" /> का ऐक्सेस ब्लॉक कर दिया गया है. अगर आपको लगता है कि ऐसा नहीं होना चाहिए था, तो अपने एडमिन से संपर्क करें.</translation>
-<translation id="6272088941196661550">अपने 'Chrome इतिहास' में काम की गतिविधि देखने के लिए, फिर से शुरू करें</translation>
 <translation id="6272383483618007430">Google अपडेट</translation>
 <translation id="6278015583149890680">Google Drive और OneDrive</translation>
 <translation id="6279228081537458128">बाद में पैसे चुकाएं</translation>
@@ -4844,7 +4841,6 @@
 <translation id="9114101423898634479">नोन ट्रैवलर नंबर जोड़ें</translation>
 <translation id="9114524666733003316">कार्ड की पुष्टि की जा रही है...</translation>
 <translation id="9114581008513152754">यह ब्राउज़र कोई कंपनी या दूसरा संगठन प्रबंधित नहीं करता. इस डिवाइस की गतिविधि Chrome से बाहर प्रबंधित की जा सकती है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, ढूंढना जारी रखने के लिए Tab दबाएं और फिर Enter दबाएं. इससे आपको 'Chrome इतिहास' में मिलती-जुलती गतिविधि दिखेगी</translation>
 <translation id="9119042192571987207">अपलोड की गई</translation>
 <translation id="9119764377203471454">अटैचमेंट नहीं जोड़े जा सके</translation>
 <translation id="9120593907434185157">पता सेव करें</translation>

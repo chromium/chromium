@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">በGemini ያግኙ እና ይሙሉ</translation>
 <translation id="1096545575934602868">ይህመስክ ከ<ph name="MAX_ITEMS_LIMIT" /> ግቤቶች በላይ ሊኖሩት አይገባም። ሌሎች ተጨማሪ ግቤቶች ሁሉ ይወገዳሉ።</translation>
 <translation id="1099928364755383720">የራስ-ሰር ስዕል-ላይ-ስዕል</translation>
-<translation id="1100782917270858593">የጉዞን ከቆመበት ቀጥል አዝራር፣ ጉዞዎን ከቆመበት ለመቀጠል አስገባን ይጫኑ እና በChrome ታሪክዎ ውስጥ አግባብነት ያለው እንቅስቃሴን ይመልከቱ</translation>
 <translation id="1101672080107056897">የስህተት እርምጃ</translation>
 <translation id="1104409666019087579">አንዳንድ አስፈላጊ መስኮች ባዶ ናቸው። ከማስቀመጥ በፊት ይሙሏቸው።</translation>
 <translation id="1104860668737945357">የይለፍ ቃላት አዝራርን ያስተዳድሩ፣ በChrome ቅንብሮች ውስጥ የእርስዎን የይለፍ ቃላት ለማየት እና ለማስተዳደር ያግብሩ</translation>
@@ -2832,7 +2831,6 @@
 <translation id="569000877158168851">የDnsOverHttpsTemplates እሴቱ አይመለከተውም፣ እና ሥራ ላይ አይውልም፣ የDnsOverHttpsMode መመሪያው ወደ <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ወይም <ph name="SECURE_DNS_MODE_SECURE" /> ካልተዋቀረ በስተቀር።</translation>
 <translation id="5691848789297492617">በሙሉ ቁመት የተከፈተ ካርድን ያስቀምጡ።</translation>
 <translation id="5701381305118179107">መሃከል</translation>
-<translation id="5707154300732650394">ጉዞዎን ከቆመበት ይቀጥሉ</translation>
 <translation id="57094364128775171">ጠንካራ የይለፍ ቃል ጠቁም...</translation>
 <translation id="570953204696852961">ቀይ 3</translation>
 <translation id="5710907191777451677">በምትኩ Gemini በChrome ውስጥ ይጠይቁ</translation>
@@ -3169,7 +3167,6 @@
 <translation id="6264636978858465832">የሚስጥር ቁልፍ አስተዳዳሪ ተጨማሪ መዳረሻ ያስፈልገዋል</translation>
 <translation id="6265794661083428563">የ<ph name="POLICY_NAME" /> መመሪያውን ይቅዱ</translation>
 <translation id="6271264012613848937">በድርጅትዎ መመሪያዎች ምክንያት <ph name="URL" />ን እንዳይጎበኙ ታግደዋል። ያ ያልተጠበቀ ከሆነ አስተዳዳሪዎን ያነጋግሩ።</translation>
-<translation id="6272088941196661550">በእርስዎ የChrome ታሪክ ውስጥ አግባብነት ያለው እንቅስቃሴን ለማየት ጉዞዎን ከቆመበት ይቀጥሉ</translation>
 <translation id="6272383483618007430">የGoogle ዝማኔ</translation>
 <translation id="6278015583149890680">Google Drive እና OneDrive</translation>
 <translation id="6279228081537458128">በኋላ ይክፈሉ</translation>
@@ -4839,7 +4836,6 @@
 <translation id="9114101423898634479">የታወቀ የተጓዥ ቁጥር አክል</translation>
 <translation id="9114524666733003316">ካርድን በማረጋገጥ ላይ...</translation>
 <translation id="9114581008513152754">ይህ አሳሽ በኩባንያ ወይም ሌላ ድርጅት አይተዳደርም። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ ከChrome ውጭ ሊተዳደር ይችላል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ትርን ጠቅ ያድርጉ ከዚያ ጉዞዎን ከቆመበት ለመቀጠል ያስገቡ እና በChrome ታሪክዎ ውስጥ አግባብነት ያለው እንቅስቃሴን ይመልከቱ</translation>
 <translation id="9119042192571987207">ተሰቅሏል</translation>
 <translation id="9119764377203471454">ዓባሪዎችን ማከል አልተቻለም</translation>
 <translation id="9120593907434185157">አድራሻ ያስቀምጡ</translation>

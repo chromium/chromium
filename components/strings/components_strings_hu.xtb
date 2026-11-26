@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Keresés és kitöltés a Geminivel</translation>
 <translation id="1096545575934602868">Ebben a mezőben legfeljebb <ph name="MAX_ITEMS_LIMIT" /> bejegyzés szerepelhet. A rendszer az összes további bejegyzést elveti.</translation>
 <translation id="1099928364755383720">automatikus kép a képben mód</translation>
-<translation id="1100782917270858593">Utazás folytatása gomb. Nyomja le az Enter billentyűt, ha folytatni szeretné az utazást, és meg szeretné tekinteni a releváns tevékenységet Chrome-előzményei között.</translation>
 <translation id="1101672080107056897">Hibaművelet</translation>
 <translation id="1104409666019087579">Néhány kötelező mező üres. A mentés előtt töltse ki őket.</translation>
 <translation id="1104860668737945357">Jelszavak kezelése gomb. A gombot megnyomva megtekintheti és kezelheti jelszavait a Chrome beállításai között.</translation>
@@ -2830,7 +2829,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="569000877158168851">A DnsOverHttpsTemplates érték nem releváns, és a rendszer nem fogja használni, kivéve ha a DnsOverHttpsMode házirend <ph name="SECURE_DNS_MODE_AUTOMATIC" /> vagy <ph name="SECURE_DNS_MODE_SECURE" /> értékre van állítva.</translation>
 <translation id="5691848789297492617">A „Kártya mentése” utasítás teljes magasságban van megnyitva.</translation>
 <translation id="5701381305118179107">Középre</translation>
-<translation id="5707154300732650394">Utazás folytatása</translation>
 <translation id="57094364128775171">Erős jelszó ajánlása…</translation>
 <translation id="570953204696852961">Piros 3</translation>
 <translation id="5710907191777451677">Kérdezés a Geminitől a Chrome-ban</translation>
@@ -3167,7 +3165,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6264636978858465832">A Jelszókezelőnek további hozzáférésre van szüksége</translation>
 <translation id="6265794661083428563">A(z) <ph name="POLICY_NAME" /> házirend értékének másolása</translation>
 <translation id="6271264012613848937">A szervezete házirendjei miatt nem keresheti fel a következő webhelyet: <ph name="URL" />. Ha ez váratlanul éri, forduljon a rendszergazdához.</translation>
-<translation id="6272088941196661550">Utazás folytatása a Chrome-előzmények között található releváns tevékenységek megtekintéséhez</translation>
 <translation id="6272383483618007430">Google Frissítés</translation>
 <translation id="6278015583149890680">Google Drive és OneDrive</translation>
 <translation id="6279228081537458128">Fizetés később</translation>
@@ -4837,7 +4834,6 @@ További részletek:
 <translation id="9114101423898634479">Ismert utazói szám (known traveler number, KTN) hozzáadása</translation>
 <translation id="9114524666733003316">Kártya ellenőrzése…</translation>
 <translation id="9114581008513152754">Ezt a böngészőt nem kezeli cég vagy más szervezet. Lehetséges, hogy az eszközön végzett tevékenységeket a Chrome-on kívülről felügyelik. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt, ha folytatni szeretné a keresést, és meg szeretné tekinteni a releváns tevékenységet Chrome-előzményei között</translation>
 <translation id="9119042192571987207">Feltöltve</translation>
 <translation id="9119764377203471454">Nem sikerült hozzáadni a mellékleteket</translation>
 <translation id="9120593907434185157">Cím mentése</translation>

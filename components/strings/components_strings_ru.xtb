@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Поиск и Заполнение с Gemini</translation>
 <translation id="1096545575934602868">Максимальное число записей в этом поле: <ph name="MAX_ITEMS_LIMIT" />. Остальные записи не будут сохранены.</translation>
 <translation id="1099928364755383720">Автоматический показ картинки в картинке</translation>
-<translation id="1100782917270858593">Кнопка "Продолжить поиск в истории". Нажмите Ввод, чтобы посмотреть похожие действия в истории Chrome.</translation>
 <translation id="1101672080107056897">Действие при ошибке</translation>
 <translation id="1104409666019087579">Пропущены обязательные поля. Заполните их.</translation>
 <translation id="1104860668737945357">Кнопка "Управление паролями". Нажмите ее, чтобы перейти к управлению паролями в настройках Chrome.</translation>
@@ -2835,7 +2834,6 @@
 <translation id="569000877158168851">Значение правила DnsOverHttpsTemplates не релевантно и не будет использоваться, пока для правила DnsOverHttpsMode не будет выбрано значение <ph name="SECURE_DNS_MODE_AUTOMATIC" /> или <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Окно сохранения данных карты развернуто полностью.</translation>
 <translation id="5701381305118179107">Выровнять по центру</translation>
-<translation id="5707154300732650394">Продолжить поиск в истории</translation>
 <translation id="57094364128775171">Сгенерировать надежный пароль</translation>
 <translation id="570953204696852961">Красный 3</translation>
 <translation id="5710907191777451677">Спросить Gemini в Chrome</translation>
@@ -3173,7 +3171,6 @@
 <translation id="6264636978858465832">Менеджеру паролей нужен более широкий доступ</translation>
 <translation id="6265794661083428563">Копировать значение правила <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Вы не можете перейти на сайт <ph name="URL" /> из-за правил вашей организации. Если вы этого не ожидали, обратитесь к администратору.</translation>
-<translation id="6272088941196661550">Посмотреть похожие действия в истории Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Диск и OneDrive</translation>
 <translation id="6279228081537458128">Оплатить позднее</translation>
@@ -4842,7 +4839,6 @@
 <translation id="9114101423898634479">Добавление номера Known Traveler Number</translation>
 <translation id="9114524666733003316">Подтверждение карты...</translation>
 <translation id="9114581008513152754">Компания или организация не управляет этим браузером. Действиями на этом устройстве можно управлять вне браузера Chrome. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы посмотреть похожие запросы в истории Chrome.</translation>
 <translation id="9119042192571987207">Загружен</translation>
 <translation id="9119764377203471454">Не удалось добавить файлы.</translation>
 <translation id="9120593907434185157">Сохранить адрес</translation>

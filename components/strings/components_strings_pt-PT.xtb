@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Encontrar e preencher com o Gemini</translation>
 <translation id="1096545575934602868">Este campo não deve ter mais de <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as restantes entradas serão rejeitadas.</translation>
 <translation id="1099928364755383720">ecrã no ecrã automático</translation>
-<translation id="1100782917270858593">Botão Retomar percurso, prima Enter para retomar o percurso e ver atividade relevante no seu Histórico do Chrome</translation>
 <translation id="1101672080107056897">Ação com erro.</translation>
 <translation id="1104409666019087579">Alguns campos obrigatórios estão vazios. Preencha-os antes de guardar.</translation>
 <translation id="1104860668737945357">Botão Gerir palavras-passe; ative para ver e gerir as suas palavras-passe nas definições do Chrome</translation>
@@ -2836,7 +2835,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="569000877158168851">O valor DnsOverHttpsTemplates não é relevante e não será utilizado, a menos que a política DnsOverHttpsMode esteja definida como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ou <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Cartão guardado aberto à altura total.</translation>
 <translation id="5701381305118179107">Centrar</translation>
-<translation id="5707154300732650394">Retomar percurso</translation>
 <translation id="57094364128775171">Sugerir palavra-passe forte…</translation>
 <translation id="570953204696852961">Vermelho 3</translation>
 <translation id="5710907191777451677">Em alternativa, peça ao Gemini no Chrome</translation>
@@ -3174,7 +3172,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6264636978858465832">O Gestor de Palavras-passe precisa de mais acesso</translation>
 <translation id="6265794661083428563">Copie o valor da política <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">O seu acesso ao site <ph name="URL" /> foi bloqueado devido às políticas da sua organização. Se não era esta a ação esperada, contacte o seu administrador.</translation>
-<translation id="6272088941196661550">Retome o percurso para ver atividade relevante no seu Histórico do Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive e OneDrive</translation>
 <translation id="6279228081537458128">Pagar depois</translation>
@@ -4843,7 +4840,6 @@ Detalhes adicionais:
 <translation id="9114101423898634479">Adicione o número de viajante conhecido</translation>
 <translation id="9114524666733003316">A confirmar o cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerido por uma empresa ou outra entidade. A atividade neste dispositivo pode ser gerida fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para retomar o percurso e ver atividade relevante no Histórico do Chrome</translation>
 <translation id="9119042192571987207">Carregado</translation>
 <translation id="9119764377203471454">Não é possível adicionar anexos</translation>
 <translation id="9120593907434185157">Guarde a morada</translation>

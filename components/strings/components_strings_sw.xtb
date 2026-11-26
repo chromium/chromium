@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Tafuta na ujaze ukitumia Gemini</translation>
 <translation id="1096545575934602868">Hupaswi kuweka zaidi ya vipengee <ph name="MAX_ITEMS_LIMIT" /> katika sehemu hii. Vipengee vyote vya ziada vitafutwa</translation>
 <translation id="1099928364755383720">kupachika picha ndani ya picha nyingine kiotomatiki</translation>
-<translation id="1100782917270858593">Kitufe cha 'Endelea na ziara', bonyeza 'Enter' ili uendelee na ziara yako na uone shughuli muhimu katika historia yako kwenye Chrome</translation>
 <translation id="1101672080107056897">Kitendo kinacholeta hitilafu</translation>
 <translation id="1104409666019087579">Baadhi ya sehemu ambazo ni sharti zijazwe hazina chochote. Zijaze kabla ya kuhifadhi.</translation>
 <translation id="1104860668737945357">Kitufe cha 'Dhibiti manenosiri', washa ili uangalie na udhibiti manenosiri yako katika mipangilio ya Chrome</translation>
@@ -2833,7 +2832,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="569000877158168851">Thamani ya DnsOverHttpsTemplates haifai na haitatumika, isipokuwa sera ya DnsOverHttpsMode iwekwe kuwa <ph name="SECURE_DNS_MODE_AUTOMATIC" /> au <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Kidokezo cha kuhifadhi kadi kimefunguliwa katika skrini nzima.</translation>
 <translation id="5701381305118179107">Katikati</translation>
-<translation id="5707154300732650394">Endelea na ziara yako</translation>
 <translation id="57094364128775171">Pendekeza nenosiri thabiti…</translation>
 <translation id="570953204696852961">Nyekundu ya 3</translation>
 <translation id="5710907191777451677">Badala yake, uliza Gemini kwenye Chrome</translation>
@@ -3170,7 +3168,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="6264636978858465832">Kidhibiti cha Manenosiri kinahitaji ufikiaji zaidi</translation>
 <translation id="6265794661083428563">Nakili thamani ya sera ya <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Umezuiwa kutembelea <ph name="URL" /> kwa sababu ya sera za shirika lako. Iwapo hukutarajia jambo hili, wasiliana na msimamizi wako.</translation>
-<translation id="6272088941196661550">Endelea na ziara yako ili uone shughuli muhimu katika historia yako kwenye Chrome</translation>
 <translation id="6272383483618007430">Sasisho kwa Google</translation>
 <translation id="6278015583149890680">Hifadhi ya Google na OneDrive</translation>
 <translation id="6279228081537458128">Lipa baadaye</translation>
@@ -4836,7 +4833,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="9114101423898634479">Weka Namba ya Msafiri Inayojulikana</translation>
 <translation id="9114524666733003316">Inathibitisha kadi…</translation>
 <translation id="9114581008513152754">Kivinjari hiki hakidhibitiwi na kampuni au shirika lingine. Huenda shughuli kwenye kifaa hiki zinadhibitiwa nje ya Chrome. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza kifufe cha Tab, kisha Enter ili uendelee na ziara yako na uone shughuli muhimu katika historia yako kwenye Chrome</translation>
 <translation id="9119042192571987207">Imepakiwa</translation>
 <translation id="9119764377203471454">Imeshindwa kuweka viambatisho</translation>
 <translation id="9120593907434185157">Hifadhi anwani</translation>

@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Encontrar y completar con Gemini</translation>
 <translation id="1096545575934602868">Esta campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se descartarán las restantes.</translation>
 <translation id="1099928364755383720">modo de pantalla en pantalla automático</translation>
-<translation id="1100782917270858593">Botón Reanudar exploración, presiona Intro para reanudar tu exploración y ver actividad pertinente en tu historial de Chrome</translation>
 <translation id="1101672080107056897">Acción con error</translation>
 <translation id="1104409666019087579">Algunos campos obligatorios están vacíos. Llénalos antes de guardar.</translation>
 <translation id="1104860668737945357">Botón Administrar contraseñas: actívalo para ver y administrar tus contraseñas en la configuración de Chrome</translation>
@@ -2834,7 +2833,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="569000877158168851">El valor de la política DnsOverHttpsTemplates no es relevante y no se usará, a menos que se establezca la política DnsOverHttpsMode como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> o <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">El mensaje para guardar la tarjeta está totalmente abierto.</translation>
 <translation id="5701381305118179107">Centrar</translation>
-<translation id="5707154300732650394">Reanudar tu exploración</translation>
 <translation id="57094364128775171">Sugerir contraseña segura…</translation>
 <translation id="570953204696852961">Rojo 3</translation>
 <translation id="5710907191777451677">Pregúntale a Gemini en Chrome</translation>
@@ -3171,7 +3169,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6264636978858465832">El Administrador de contraseñas necesita más acceso</translation>
 <translation id="6265794661083428563">Copia el valor de la política <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Se bloqueó tu acceso a <ph name="URL" /> debido a las políticas de tu organización. Si no esperabas esto, comunícate con el administrador.</translation>
-<translation id="6272088941196661550">Reanuda la exploración para ver actividad pertinente en tu historial de Chrome.</translation>
 <translation id="6272383483618007430">Google Actualización</translation>
 <translation id="6278015583149890680">Google Drive y OneDrive</translation>
 <translation id="6279228081537458128">Pagar más tarde</translation>
@@ -4840,7 +4837,6 @@ Detalles adicionales:
 <translation id="9114101423898634479">Agregar el número de viajero conocido</translation>
 <translation id="9114524666733003316">Confirmando tarjeta…</translation>
 <translation id="9114581008513152754">Este navegador no está administrado por una empresa ni por otra organización. Es posible que la actividad de este dispositivo se administre fuera de Chrome. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para reanudar la búsqueda y ver la actividad relevante en tu historial de Chrome</translation>
 <translation id="9119042192571987207">Subido</translation>
 <translation id="9119764377203471454">No se pueden agregar archivos adjuntos</translation>
 <translation id="9120593907434185157">Guardar dirección</translation>

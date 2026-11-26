@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Iskanje in izpolnjevanje z Geminijem</translation>
 <translation id="1096545575934602868">V tem polju je lahko največ toliko vnosov: <ph name="MAX_ITEMS_LIMIT" />. Vsi nadaljnji vnosi bodo zavrženi.</translation>
 <translation id="1099928364755383720">samodejni način slike v sliki</translation>
-<translation id="1100782917270858593">Gumb za nadaljevanje poti, pritisnite Enter, če želite nadaljevati pot in si ogledati pomembno dejavnost v zgodovini uporabe Chroma.</translation>
 <translation id="1101672080107056897">Dejanje ob napaki</translation>
 <translation id="1104409666019087579">Nekatera obvezna polja so prazna. Pred shranjevanjem jih izpolnite.</translation>
 <translation id="1104860668737945357">Gumb za upravljanje gesel, aktivirajte, če si želite ogledati in upravljati gesla v Chromovih nastavitvah</translation>
@@ -2833,7 +2832,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="569000877158168851">Vrednost pravilnika DnsOverHttpsTemplates ni ustrezna in ne bo uporabljena, razen če je pravilnik DnsOverHttpsMode nastavljen na nastavitev <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ali <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Shranjevanje kartice je odprto pri polni višini.</translation>
 <translation id="5701381305118179107">Na sredino</translation>
-<translation id="5707154300732650394">Nadaljevanje poti</translation>
 <translation id="57094364128775171">Predlagaj močno geslo …</translation>
 <translation id="570953204696852961">Rdeča 3</translation>
 <translation id="5710907191777451677">Namesto tega vprašajte Geminija v Chromu</translation>
@@ -3170,7 +3168,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6264636978858465832">Upravitelj gesel potrebuje več dostopa</translation>
 <translation id="6265794661083428563">Kopiranje vrednosti pravilnika <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Obisk spletnega mesta <ph name="URL" /> je bil blokiran zaradi pravilnikov organizacije. Če je to nepričakovano, se obrnite na skrbnika.</translation>
-<translation id="6272088941196661550">Nadaljujte pot, če si želite ogledati pomembno dejavnost v zgodovini uporabe Chroma.</translation>
 <translation id="6272383483618007430">Google Posodobitve</translation>
 <translation id="6278015583149890680">Google Drive in OneDrive</translation>
 <translation id="6279228081537458128">Poznejše plačilo</translation>
@@ -4839,7 +4836,6 @@ Dodatne podrobnosti:
 <translation id="9114101423898634479">Dodajanje številke rednega potnika</translation>
 <translation id="9114524666733003316">Potrjevanje kartice …</translation>
 <translation id="9114581008513152754">Tega brskalnika ne upravlja podjetje ali druga organizacija. Dejavnost v tej napravi morda upravljajo zunaj Chroma. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite nadaljevati pot in si ogledati pomembno dejavnost v zgodovini uporabe Chroma.</translation>
 <translation id="9119042192571987207">Naloženo</translation>
 <translation id="9119764377203471454">Prilog ni mogoče dodati</translation>
 <translation id="9120593907434185157">Shranjevanje naslova</translation>

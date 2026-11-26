@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">‏‫Gemini کے ساتھ تلاش کریں اور پُر کریں</translation>
 <translation id="1096545575934602868">اس فیلڈ میں <ph name="MAX_ITEMS_LIMIT" /> سے زیادہ اندراجات نہیں ہونے چاہئیں۔ سبھی مزید اندراجات مسترد کر دیے جائیں گے۔</translation>
 <translation id="1099928364755383720">خودکار تصویر میں تصویر</translation>
-<translation id="1100782917270858593">‏اپنا صارف کا تجربہ بٹن دوبارہ شروع کریں، اپنا صارف کا تجربہ دوبارہ شروع کرنے اور اپنے Chrome کی سرگزشت میں متعلقہ سرگرمی دیکھنے کیلئے اینٹر دبائیں</translation>
 <translation id="1101672080107056897">خرابی کی کارروائی</translation>
 <translation id="1104409666019087579">کچھ مطلوبہ فیلڈز خالی ہیں۔ محفوظ کرنے سے پہلے انہیں پُر کریں۔</translation>
 <translation id="1104860668737945357">‏پاس ورڈز کا نظم کریں بٹن، Chrome کی ترتیبات میں اپنے پاس ورڈز کو دیکھنے اور ان کا نظم کرنے کے لیے فعال کریں</translation>
@@ -2833,7 +2832,6 @@
 <translation id="569000877158168851">‏DnsOverHttpsTemplates قدر متعلقہ نہیں ہے اور استعمال نہیں کی جائے گی الاؐ DnsOverHttpsMode پالیسی یا تو <ph name="SECURE_DNS_MODE_AUTOMATIC" /> یا <ph name="SECURE_DNS_MODE_SECURE" /> پر سیٹ ہو۔</translation>
 <translation id="5691848789297492617">پوری اسکرین پر کھلے ہوئے کارڈ کو محفوظ کریں۔</translation>
 <translation id="5701381305118179107">مرکز</translation>
-<translation id="5707154300732650394">اپنا صارف کا تجربہ دوبارہ شروع کریں</translation>
 <translation id="57094364128775171">مضبوط پاس ورڈ تجویز کریں…</translation>
 <translation id="570953204696852961">سرخ 3</translation>
 <translation id="5710907191777451677">‏اس کے بجائے Chrome میں Gemini سے پوچھیں</translation>
@@ -3171,7 +3169,6 @@
 <translation id="6264636978858465832">پاس ورڈ مینیجر مزید رسائی کی ضرورت ہے</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> پالیسی کی قدر کاپی کریں</translation>
 <translation id="6271264012613848937">آپ کی تنظیم کی پالیسیوں کی وجہ سے آپ کو <ph name="URL" /> ملاحظہ کرنے سے مسدود کر دیا گیا تھا۔ اگر یہ غیر متوقع ہے تو اپنے منتظم سے رابطہ کریں۔</translation>
-<translation id="6272088941196661550">‏اپنی Chrome کی سرگزشت میں متعلقہ سرگرمی دیکھنے کے لیے دوبارہ اپنا صارف کا تجربہ شروع کریں</translation>
 <translation id="6272383483618007430">‏Google اپ ڈیٹ</translation>
 <translation id="6278015583149890680">‏‫Google Drive اور OneDrive</translation>
 <translation id="6279228081537458128">بعد میں ادائیگی کریں</translation>
@@ -4840,7 +4837,6 @@
 <translation id="9114101423898634479">معلوم مسافر نمبر شامل کریں</translation>
 <translation id="9114524666733003316">کارڈ کی توثیق کی جا رہی ہے…</translation>
 <translation id="9114581008513152754">‏یہ براؤزر کسی کمپنی یا دوسری تنظیم کے زیر انتظام نہیں ہے۔ اس آلے پر ہونے والی سرگرمی کا Chrome سے باہر نظم کیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831">‏<ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنی Chrome کی سرگزشت میں اپنا سفر دوبارہ شروع کرنے اور متعلقہ سرگرمی دیکھنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="9119042192571987207">اپ لوڈ ہو گیا</translation>
 <translation id="9119764377203471454">منسلکات کو شامل نہیں کیا جا سکا</translation>
 <translation id="9120593907434185157">پتہ محفوظ کریں</translation>

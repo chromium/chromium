@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini로 정보 찾기 및 자동 완성</translation>
 <translation id="1096545575934602868">입력란에 항목이 <ph name="MAX_ITEMS_LIMIT" />개 넘게 있으면 안 됩니다. 추가되는 모든 항목은 삭제됩니다.</translation>
 <translation id="1099928364755383720">자동 PIP 모드</translation>
-<translation id="1100782917270858593">탐색 여정 재개 버튼, 탐색 여정을 재개하고 Chrome 방문 기록에서 관련 활동을 보려면 Enter를 누르세요</translation>
 <translation id="1101672080107056897">오류 작업</translation>
 <translation id="1104409666019087579">일부 필수 입력란이 비어 있습니다. 저장하기 전에 필수 입력란을 작성하세요.</translation>
 <translation id="1104860668737945357">비밀번호 관리 버튼, Chrome 설정에서 비밀번호를 확인하고 관리하려면 활성화하세요.</translation>
@@ -2836,7 +2835,6 @@
 <translation id="569000877158168851">DnsOverHttpsMode 정책이 <ph name="SECURE_DNS_MODE_AUTOMATIC" /> 또는 <ph name="SECURE_DNS_MODE_SECURE" />(으)로 설정되지 않는 한 DnsOverHttpsTemplates 값은 관련성이 없어 앞으로 사용되지 않습니다.</translation>
 <translation id="5691848789297492617">저장 카드가 전체 높이로 열렸습니다.</translation>
 <translation id="5701381305118179107">가운데</translation>
-<translation id="5707154300732650394">탐색 여정 재개</translation>
 <translation id="57094364128775171">강력한 비밀번호 추천...</translation>
 <translation id="570953204696852961">빨간색 3</translation>
 <translation id="5710907191777451677">대신 Chrome의 Gemini에게 물어보세요</translation>
@@ -3174,7 +3172,6 @@
 <translation id="6264636978858465832">비밀번호 관리자에 추가 액세스 권한 필요</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> 정책값 복사하기</translation>
 <translation id="6271264012613848937">조직의 정책으로 인해 <ph name="URL" /> 방문이 차단되었습니다. 예상치 못한 차단인 경우 관리자에게 문의하세요.</translation>
-<translation id="6272088941196661550">Chrome 방문 기록에서 관련 활동을 보려면 탐색 여정을 재개하세요.</translation>
 <translation id="6272383483618007430">Google 업데이트</translation>
 <translation id="6278015583149890680">Google Drive 및 OneDrive</translation>
 <translation id="6279228081537458128">나중에 결제</translation>
@@ -4842,7 +4839,6 @@
 <translation id="9114101423898634479">KTN(Known Traveler Number) 추가</translation>
 <translation id="9114524666733003316">카드 확인 중...</translation>
 <translation id="9114581008513152754">이 브라우저는 회사 또는 다른 조직에서 관리하지 않습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, 검색을 계속하고 Chrome 방문 기록에서 관련 활동을 보려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="9119042192571987207">업로드됨</translation>
 <translation id="9119764377203471454">첨부파일을 추가할 수 없습니다.</translation>
 <translation id="9120593907434185157">주소 저장</translation>

@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">‏البحث والملء باستخدام Gemini</translation>
 <translation id="1096545575934602868">يجب ألا يحتوي هذا الحقل على أكثر من <ph name="MAX_ITEMS_LIMIT" /> إدخال. سيتم تجاهل جميع الإدخالات الأخرى.</translation>
 <translation id="1099928364755383720">فتح النوافذ في وضع "نافذة ضمن النافذة" تلقائيًا</translation>
-<translation id="1100782917270858593">‏زر استئناف سجلّ أنشطة البحث والتصفُّح: اضغط على مفتاح Enter لاستئناف سجلّ أنشطة البحث والتصفُّح والاطّلاع على النشاط ذي الصلة في سجلّ Chrome.</translation>
 <translation id="1101672080107056897">خطأ في الإجراء</translation>
 <translation id="1104409666019087579">بعض الحقول المطلوبة فارغة. يُرجى ملء هذه الحقول قبل الحفظ.</translation>
 <translation id="1104860668737945357">‏زر إدارة كلمات المرور: انقر على هذا الزر لعرض كلمات المرور وإدارتها في إعدادات Chrome.</translation>
@@ -2836,7 +2835,6 @@
 <translation id="569000877158168851">‏قيمة DnsOverHttpsTemplates ليست مناسبة ولن يتم استخدامها ما لم يتم ضبط سياسة DnsOverHttpsMode على <ph name="SECURE_DNS_MODE_AUTOMATIC" /> أو <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">تم فتح نافذة بطول الشاشة لحفظ البطاقة</translation>
 <translation id="5701381305118179107">توسيط</translation>
-<translation id="5707154300732650394">استئناف سجلّ أنشطة البحث والتصفُّح</translation>
 <translation id="57094364128775171">اقتراح كلمة مرور قوية…</translation>
 <translation id="570953204696852961">أحمر 3</translation>
 <translation id="5710907191777451677">‏يمكنك سؤال "Gemini في Chrome" بدلاً من ذلك</translation>
@@ -3174,7 +3172,6 @@
 <translation id="6264636978858465832">يحتاج "مدير كلمات المرور" إلى مزيد من أذونات الوصول</translation>
 <translation id="6265794661083428563">نسخ قيمة السياسة <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">تم حظر الانتقال إلى <ph name="URL" /> بسبب سياسات مؤسستك. إذا كان هذا غير متوقع، يُرجى التواصل مع المشرف.</translation>
-<translation id="6272088941196661550">‏يمكنك استئناف سجلّ أنشطة البحث والتصفُّح للاطّلاع على النشاط ذي الصلة في سجلّ Chrome.</translation>
 <translation id="6272383483618007430">‏تحديث Google</translation>
 <translation id="6278015583149890680">‏Google Drive وOneDrive</translation>
 <translation id="6279228081537458128">الدفع لاحقًا</translation>
@@ -4846,7 +4843,6 @@
 <translation id="9114101423898634479">إضافة رقم المسافر المعروف</translation>
 <translation id="9114524666733003316">جارٍ التحقق من البطاقة...</translation>
 <translation id="9114581008513152754">‏لا تتم إدارة هذا المتصفِّح من خلال شركة أو مؤسسة أخرى. وقد تتم إدارة النشاط على هذا الجهاز خارج Chrome. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831">‏<ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab)، ثم Enter لاستئناف عملية البحث والاطّلاع على النشاط ذي الصلة في سجلّ Chrome.</translation>
 <translation id="9119042192571987207">تم التحميل</translation>
 <translation id="9119764377203471454">تتعذَّر إضافة المرفقات</translation>
 <translation id="9120593907434185157">حفظ العنوان</translation>

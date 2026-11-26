@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gjej dhe plotëso me Gemini</translation>
 <translation id="1096545575934602868">Kjo fushë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> regjistrime. Të gjitha regjistrimet e mëtejshme do të refuzohen.</translation>
 <translation id="1099928364755383720">modaliteti automatik "figurë brenda figurës"</translation>
-<translation id="1100782917270858593">Butoni "Vazhdo udhëtimin". Shtyp "Enter" për të vazhduar udhëtimin tënd dhe për të parë aktivitetin përkatës në historikun tënd të Chrome</translation>
 <translation id="1101672080107056897">Veprimi i gabimit</translation>
 <translation id="1104409666019087579">Disa fusha të detyrueshme janë bosh. Plotësoji para se t'i ruash.</translation>
 <translation id="1104860668737945357">Butoni "Menaxho fjalëkalimet". Aktivizoje për të parë dhe menaxhuar fjalëkalimet e tua te cilësimet e Chrome</translation>
@@ -2832,7 +2831,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="569000877158168851">Vlera e DnsOverHttpsTemplates nuk është e përshtatshme dhe nuk do të përdoret, përveçse nëse politika DnsOverHttpsMode është caktuar te <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ose <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Karta e ruajtur u hap në lartësi të plotë.</translation>
 <translation id="5701381305118179107">Qendër</translation>
-<translation id="5707154300732650394">Vazhdo udhëtimin tënd</translation>
 <translation id="57094364128775171">Sugjero fjalëkalim të fortë…</translation>
 <translation id="570953204696852961">E kuqe 3</translation>
 <translation id="5710907191777451677">Pyet Gemini në Chrome më mirë</translation>
@@ -3168,7 +3166,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6264636978858465832">"Menaxheri i fjalëkalimeve" ka nevojë për më shumë qasje</translation>
 <translation id="6265794661083428563">Kopjo vlerën e politikës së <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Je bllokuar që të mos vizitosh <ph name="URL" /> për shkak të politikave të organizatës sate. Nëse kjo është e papritur, kontakto me administratorin tënd.</translation>
-<translation id="6272088941196661550">Vazhdo udhëtimin për të parë aktivitetin përkatës në historikun tënd të Chrome</translation>
 <translation id="6272383483618007430">Përditësimi i Google</translation>
 <translation id="6278015583149890680">"Diskut të Google" dhe OneDrive</translation>
 <translation id="6279228081537458128">Paguaj më vonë</translation>
@@ -4836,7 +4833,6 @@ Detaje shtesë:
 <translation id="9114101423898634479">Shto numrin e udhëtarit të njohur</translation>
 <translation id="9114524666733003316">Karta po konfirmohet…</translation>
 <translation id="9114581008513152754">Ky shfletues nuk menaxhohet nga një kompani ose organizatë tjetër. Aktiviteti në këtë pajisje mund të menaxhohet jashtë Chrome. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp Tab dhe më pas Enter për të rifilluar udhëtimin tënd dhe për të parë aktivitetin përkatës në historikun tënd të Chrome</translation>
 <translation id="9119042192571987207">Ngarkuar</translation>
 <translation id="9119764377203471454">Bashkëngjitjet nuk mund të shtohen</translation>
 <translation id="9120593907434185157">Ruaj adresën</translation>

@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini ဖြင့် ရှာဖွေပြီး ဖြည့်ခြင်း</translation>
 <translation id="1096545575934602868">ဤအကွက်တွင် ထည့်သွင်းမှု <ph name="MAX_ITEMS_LIMIT" /> ခုထက်မပိုရ။ နောက်ထပ် ထည့်သွင်းမှုများကို ဖယ်ပစ်ပါမည်။</translation>
 <translation id="1099928364755383720">အလိုအလျောက် နှစ်ခုထပ်၍ကြည့်ခြင်း</translation>
-<translation id="1100782917270858593">သင်၏ခရီးစဉ်ကို ဆက်လုပ်ရန် ခလုတ်၊ သင့်ခရီးစဉ်ကို ဆက်လုပ်ရန်နှင့် သင်၏ Chrome မှတ်တမ်းရှိ သက်ဆိုင်ရာလုပ်ဆောင်ချက်ကို ကြည့်ရန် Enter နှိပ်ပါ</translation>
 <translation id="1101672080107056897">အမှား လုပ်ဆောင်ချက်</translation>
 <translation id="1104409666019087579">လိုအပ်သောအကွက်အချို့ အလွတ်ဖြစ်နေသည်။ မသိမ်းမီ ၎င်းတို့အားလုံးကို ဖြည့်ပါ။</translation>
 <translation id="1104860668737945357">Chrome ဆက်တင်များတွင် သင့်စကားဝှက်များ ကြည့်ရန်နှင့် စီမံရန်အတွက် ‘စကားဝှက်များ စီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
@@ -2834,7 +2833,6 @@
 <translation id="569000877158168851">DnsOverHttpsMode မူဝါဒကို <ph name="SECURE_DNS_MODE_AUTOMATIC" /> သို့မဟုတ် <ph name="SECURE_DNS_MODE_SECURE" /> တစ်ခုခုသို့ သတ်မှတ်မထားပါက DnsOverHttpsTemplates တန်ဖိုး သက်ဆိုင်မှုမရှိသဖြင့် အသုံးပြုမည်မဟုတ်ပါ။</translation>
 <translation id="5691848789297492617">သိမ်းသည့်ကတ်ကို မြင်ကွင်းအပြည့်ဖွင့်လိုက်သည်။</translation>
 <translation id="5701381305118179107">အလယ်</translation>
-<translation id="5707154300732650394">သင့်ခရီးစဉ်ကို ဆက်လုပ်ရန်</translation>
 <translation id="57094364128775171">ခိုင်မာသည့် စကားဝှက် အကြံပြုရန်…</translation>
 <translation id="570953204696852961">အနီ ၃</translation>
 <translation id="5710907191777451677">၎င်းအစား Chrome ရှိ Gemini ကို မေးပါ</translation>
@@ -3170,7 +3168,6 @@
 <translation id="6264636978858465832">Password Manager သည် သုံးခွင့်ထပ်လိုသည်</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> မူဝါဒ သတ်မှတ်ချက်ကို မိတ္တူကူးရန်</translation>
 <translation id="6271264012613848937">သင့်အဖွဲ့အစည်း၏ မူဝါဒများကြောင့် <ph name="URL" /> သို့ ဝင်ကြည့်ခြင်းကို ပိတ်ထားသည်။ ထိုသို့ဖြစ်ရန် မျှော်လင့်မထားပါက သင်၏စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
-<translation id="6272088941196661550">သင်၏ Chrome မှတ်တမ်းရှိ သက်ဆိုင်ရာလုပ်ဆောင်ချက်ကို ကြည့်ရန် သင့်ခရီးစဉ်ကို ဆက်လုပ်ပါ</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive၊ OneDrive</translation>
 <translation id="6279228081537458128">နောက်မှပေးရန်</translation>
@@ -4840,7 +4837,6 @@
 <translation id="9114101423898634479">သိသော ခရီးသည်နံပါတ် ထည့်ပါ</translation>
 <translation id="9114524666733003316">ကတ် အတည်ပြုနေသည်...</translation>
 <translation id="9114581008513152754">ဤဘရောင်ဇာကို ကုမ္ပဏီ သို့မဟုတ် အခြားအဖွဲ့အစည်းက စီမံခန့်ခွဲမထားပါ။ ဤစက်ပေါ်ရှိ လုပ်ဆောင်ချက်ကို Chrome ပြင်ပမှ စီမံခန့်ခွဲထားခြင်း ဖြစ်နိုင်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />။ တဘ်နှိပ်ပါ။ ထို့နောက် သင်၏ခရီးစဉ်ကို ဆက်လုပ်ရန်နှင့် သင်၏ Chrome မှတ်တမ်းရှိ သက်ဆိုင်ရာလုပ်ဆောင်ချက်ကို ကြည့်ရန် Enter နှိပ်ပါ</translation>
 <translation id="9119042192571987207">အပ်လုဒ်လုပ်ပြီးပြီ</translation>
 <translation id="9119764377203471454">ပူးတွဲဖိုင်များ ထည့်၍မရလိုက်ပါ</translation>
 <translation id="9120593907434185157">လိပ်စာသိမ်းခြင်း</translation>

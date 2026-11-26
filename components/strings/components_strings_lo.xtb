@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">ຊອກຫາ ແລະ ຕື່ມຂໍ້ມູນດ້ວຍ Gemini</translation>
 <translation id="1096545575934602868">ຊ່ອງຂໍ້ມູນນີ້ບໍ່ຄວນມີຫຼາຍກວ່າ <ph name="MAX_ITEMS_LIMIT" /> ລາຍການ. ລາຍການເພີ່ມເຕີມທັງໝົດຈະຖືກປະຖິ້ມ.</translation>
 <translation id="1099928364755383720">ການສະແດງຜົນຊ້ອນກັນອັດຕະໂນມັດ</translation>
-<translation id="1100782917270858593">ປຸ່ມສືບຕໍ່ບັນທຶກຂອງທ່ານ, ກົດ Enter ເພື່ອສືບຕໍ່ບັນທຶກຂອງທ່ານ ແລະ ເບິ່ງການເຄື່ອນໄຫວທີ່ກ່ຽວຂ້ອງໃນປະຫວັດ Chrome ຂອງທ່ານ</translation>
 <translation id="1101672080107056897">ການດຳເນີນການຜິດພາດ</translation>
 <translation id="1104409666019087579">ຊ່ອງຂໍ້ມູນທີ່ຈຳເປັນຈຳນວນໜຶ່ງຫວ່າງເປົ່າ. ຕື່ມພວກມັນກ່ອນການບັນທຶກ.</translation>
 <translation id="1104860668737945357">ປຸ່ມຈັດການລະຫັດຜ່ານ, ເປີດນຳໃຊ້ເພື່ອເບິ່ງ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
@@ -2833,7 +2832,6 @@
 <translation id="569000877158168851">ຄ່າ DnsOverHttpsTemplates ບໍ່ກ່ຽວຂ້ອງ ແລະ ຈະບໍ່ຖືກນຳໃຊ້, ເວັ້ນເສຍແຕ່ວ່າໄດ້ຕັ້ງຄ່ານະໂຍບາຍ DnsOverHttpsMode ເປັນ <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ຫຼື <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">ເປີດບັດທີ່ບັນທຶກໄວ້ແບບເຕັມຄວາມສູງແລ້ວ.</translation>
 <translation id="5701381305118179107">ໃຈກາງ</translation>
-<translation id="5707154300732650394">ສືບຕໍ່ບັນທຶກຂອງທ່ານ</translation>
 <translation id="57094364128775171">ແນະນຳລະຫັດຜ່ານທີ່ເດົາຍາກ…</translation>
 <translation id="570953204696852961">ສີແດງທີ 3</translation>
 <translation id="5710907191777451677">ຖາມ Gemini ໃນ Chrome ແທນ</translation>
@@ -3170,7 +3168,6 @@
 <translation id="6264636978858465832">ຕົວຈັດການລະຫັດຜ່ານຕ້ອງການສິດເຂົ້າເຖິງເພີ່ມເຕີມ</translation>
 <translation id="6265794661083428563">ສຳເນົາຄ່ານະໂຍບາຍ <ph name="POLICY_NAME" /> ໄວ້</translation>
 <translation id="6271264012613848937">ທ່ານຖືກບລັອກບໍ່ໃຫ້ເຂົ້າເບິ່ງ <ph name="URL" /> ເນື່ອງຈາກນະໂຍບາຍຂອງອົງກອນຂອງທ່ານ. ຫາກທ່ານບໍ່ໄດ້ຄາດໄວ້, ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
-<translation id="6272088941196661550">ສືບຕໍ່ບັນທຶກຂອງທ່ານເພື່ອເບິ່ງການເຄື່ອນໄຫວທີ່ກ່ຽວຂ້ອງໃນປະຫວັດ Chrome ຂອງທ່ານ</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive ແລະ OneDrive</translation>
 <translation id="6279228081537458128">ຈ່າຍພາຍຫຼັງ</translation>
@@ -4838,7 +4835,6 @@
 <translation id="9114101423898634479">ເພີ່ມໝາຍເລກປະຈຳຕົວຜູ້ເດີນທາງທີ່ກວດສອບແລ້ວ (KTN)</translation>
 <translation id="9114524666733003316">ກຳລັງຢືນຢັນບັດ...</translation>
 <translation id="9114581008513152754">ໂປຣແກຣມທ່ອງເວັບນີ້ບໍ່ໄດ້ຖືກຈັດການໂດຍບໍລິສັດ ຫຼື ອົງການຈັດຕັ້ງອື່ນ. ການເຄື່ອນໄຫວໃນອຸປະກອນນີ້ອາດຈະຖືກຈັດການຢູ່ນອກ Chrome ໄດ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab, ຈາກນັ້ນກົດ Enter ເພື່ອສືບຕໍ່ການສຳຫຼວດຂອງທ່ານ ແລະ ເບິ່ງການເຄື່ອນໄຫວທີ່ກ່ຽວຂ້ອງໃນປະຫວັດ Chrome ຂອງທ່ານ</translation>
 <translation id="9119042192571987207">ອັບໂຫລດແລ້ວ</translation>
 <translation id="9119764377203471454">ບໍ່ສາມາດເພີ່ມໄຟລ໌ແນບໄດ້</translation>
 <translation id="9120593907434185157">ບັນທຶກທີ່ຢູ່</translation>

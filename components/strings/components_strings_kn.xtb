@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini ಮೂಲಕ ಹುಡುಕಿ ಮತ್ತು ಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="1096545575934602868">ಈ ಕ್ಷೇತ್ರವು <ph name="MAX_ITEMS_LIMIT" /> ಗಿಂತ ಹೆಚ್ಚು ನಮೂದುಗಳನ್ನು ಹೊಂದಿರುವಂತಿಲ್ಲ. ಮುಂದಿನ ಎಲ್ಲಾ ನಮೂದುಗಳನ್ನು ತ್ಯಜಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1099928364755383720">ಸ್ವಯಂಚಾಲಿತ ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್</translation>
-<translation id="1100782917270858593">ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಲು ಮತ್ತು ನಿಮ್ಮ Chrome ಇತಿಹಾಸದಲ್ಲಿ ಸಂಬಂಧಿತ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು, ನಿಮ್ಮ ಪ್ರಯಾಣದ ಬಟನ್ ಅನ್ನು ಪುನರಾರಂಭಿಸಿ, Enter ಒತ್ತಿ</translation>
 <translation id="1101672080107056897">ದೋಷ ಕ್ರಿಯೆ</translation>
 <translation id="1104409666019087579">ಅಗತ್ಯವಿರುವ ಕೆಲವು ಕ್ಷೇತ್ರಗಳು ಖಾಲಿ ಇವೆ. ಉಳಿಸುವ ಮೊದಲು ಅವುಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.</translation>
 <translation id="1104860668737945357">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಬಟನ್, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ನಿರ್ವಹಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -2829,7 +2828,6 @@
 <translation id="569000877158168851">The DnsOverHttpsTemplates ನ ಮೌಲ್ಯವು ಪ್ರಸ್ತುತವಾಗಿಲ್ಲ ಮತ್ತು DnsOverHttpsMode ಕಾರ್ಯನೀತಿಯನ್ನು <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ಅಥವಾ <ph name="SECURE_DNS_MODE_SECURE" /> ಗೆ ಹೊಂದಿಸದ ಹೊರತು ಅದನ್ನು ಬಳಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="5691848789297492617">'ಸೇವ್ ಕಾರ್ಡ್' ಅನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="5701381305118179107">ಮಧ್ಯಕ್ಕೆ</translation>
-<translation id="5707154300732650394">ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="57094364128775171">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಸೂಚಿಸಿ…</translation>
 <translation id="570953204696852961">ಕೆಂಪು 3</translation>
 <translation id="5710907191777451677">ಬದಲಿಗೆ, Chrome ನಲ್ಲಿ Gemini ಅನ್ನು ಕೇಳಿ</translation>
@@ -3166,7 +3164,6 @@
 <translation id="6264636978858465832">Password Manager ಗೆ ಹೆಚ್ಚಿನ ಆ್ಯಕ್ಸೆಸ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> ಕಾರ್ಯನೀತಿಯ ಮೌಲ್ಯವನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="6271264012613848937">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಗಳ ಕಾರಣದಿಂದಾಗಿ <ph name="URL" /> ಗೆ ಭೇಟಿ ನೀಡದಂತೆ ನಿಮ್ಮನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ. ಇದು ಅನಿರೀಕ್ಷಿತವೆನಿಸಿದರೆ, ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
-<translation id="6272088941196661550">ನಿಮ್ಮ Chrome ಇತಿಹಾಸದಲ್ಲಿ ಸಂಬಂಧಿತ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="6272383483618007430">Google ಅಪ್‍ಡೇಟ್</translation>
 <translation id="6278015583149890680">Google Drive ಮತ್ತು OneDrive</translation>
 <translation id="6279228081537458128">ನಂತರ ಪಾವತಿಸಿ</translation>
@@ -4835,7 +4832,6 @@
 <translation id="9114101423898634479">ಪರಿಚಿತ ಪ್ರಯಾಣಿಕರ ಸಂಖ್ಯೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="9114524666733003316">ಕಾರ್ಡ್‌ ದೃಢೀಕರಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="9114581008513152754">ಈ ಬ್ರೌಸರ್ ಅನ್ನು ಕಂಪನಿ ಅಥವಾ ಇತರ ಸಂಸ್ಥೆಯು ನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ. ಈ ಸಾಧನದಲ್ಲಿನ ಚಟುವಟಿಕೆಯನ್ನು Chrome ನಿಂದ ಹೊರಗೆ ನಿರ್ವಹಿಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಲು ಮತ್ತು ನಿಮ್ಮ Chrome ಇತಿಹಾಸದಲ್ಲಿ ಸಂಬಂಧಿತ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು, Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="9119042192571987207">ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="9119764377203471454">ಲಗತ್ತುಗಳನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="9120593907434185157">ವಿಳಾಸವನ್ನು ಸೇವ್ ಮಾಡಿ</translation>

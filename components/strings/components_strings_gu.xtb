@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini વડે શોધો અને ભરો</translation>
 <translation id="1096545575934602868">આ ફીલ્ડમાં <ph name="MAX_ITEMS_LIMIT" /> કરતાં વધારે એન્ટ્રી હોવી જોઈએ નહી. વધારાની બધી એન્ટ્રીને કાઢી નાખવામાં આવશે.</translation>
 <translation id="1099928364755383720">ઑટોમૅટિક રીતે ચિત્ર-માં-ચિત્ર મોડ</translation>
-<translation id="1100782917270858593">તમારો પ્રવાસ ફરી શરૂ કરવાનું બટન, તમારો પ્રવાસ ફરી શરૂ કરવા અને તમારા Chrome ઇતિહાસમાં સંબંધિત પ્રવૃત્તિ જોવા માટે Enter કી દબાવો</translation>
 <translation id="1101672080107056897">ક્રિયામાં ભૂલ</translation>
 <translation id="1104409666019087579">ફરજિયાત ભરવા માટેના કેટલાક ફીલ્ડ ખાલી છે. સાચવતા પહેલાં તેને ભરો.</translation>
 <translation id="1104860668737945357">'પાસવર્ડ મેનેજ કરો' બટન, Chrome સેટિંગમાં તમારા પાસવર્ડ જોવા અને તેમને મેનેજ કરવા માટે સક્રિય કરો</translation>
@@ -2833,7 +2832,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplatesનું મૂલ્ય સંબંધિત નથી અને જો DnsOverHttpsMode નીતિને <ph name="SECURE_DNS_MODE_AUTOMATIC" /> અથવા <ph name="SECURE_DNS_MODE_SECURE" /> પર સેટ કરવામાં નહીં આવી હોય, તો તે મૂલ્યનો ઉપયોગ કરવામાં આવશે નહીં.</translation>
 <translation id="5691848789297492617">સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવેલા કાર્ડને સાચવો.</translation>
 <translation id="5701381305118179107">મધ્યમાં</translation>
-<translation id="5707154300732650394">તમારો પ્રવાસ ફરી શરૂ કરો</translation>
 <translation id="57094364128775171">સશક્ત પાસવર્ડ સૂચવો…</translation>
 <translation id="570953204696852961">લાલ 3</translation>
 <translation id="5710907191777451677">તેના બદલે Gemini in Chromeને પૂછો</translation>
@@ -3170,7 +3168,6 @@
 <translation id="6264636978858465832">Password Managerને વધુ ઍક્સેસની જરૂર છે</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> નીતિનું મૂલ્ય કૉપિ કરો</translation>
 <translation id="6271264012613848937">તમારી સંસ્થાની પૉલિસીઓને કારણે તમને <ph name="URL" />ની મુલાકાત લેવાથી બ્લૉક કરવામાં આવ્યા હતા. જો તે અણધાર્યું હોય, તો તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.</translation>
-<translation id="6272088941196661550">તમારા Chrome ઇતિહાસમાં સંબંધિત પ્રવૃત્તિ જોવા માટે, તમારો પ્રવાસ ફરી શરૂ કરો</translation>
 <translation id="6272383483618007430">Google અપડેટ</translation>
 <translation id="6278015583149890680">Google Drive અને OneDrive</translation>
 <translation id="6279228081537458128">પછીથી ચુકવો</translation>
@@ -4839,7 +4836,6 @@
 <translation id="9114101423898634479">નોન ટ્રાવેલર નંબર ઉમેરો</translation>
 <translation id="9114524666733003316">કાર્ડ કન્ફર્મ કરી રહ્યાં છીએ...</translation>
 <translation id="9114581008513152754">આ બ્રાઉઝર કંપની દ્વારા અથવા અન્ય સંસ્થા દ્વારા મેનેજ કરવામાં આવતું નથી. આ ડિવાઇસ પરની પ્રવૃત્તિ Chromeની બહાર મેનેજ કરી શકાય છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab કી દબાવો તેમજ તમારી યાત્રા ફરી શરૂ કરવા અને તમારા Chrome ઇતિહાસમાં સંબંધિત પ્રવૃત્તિ જોવા માટે Enter કી દબાવો</translation>
 <translation id="9119042192571987207">અપલોડ કર્યો</translation>
 <translation id="9119764377203471454">જોડાણો ઉમેરી શકતા નથી</translation>
 <translation id="9120593907434185157">સરનામું સાચવો</translation>

@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">使用 Gemini 尋找並填入內容</translation>
 <translation id="1096545575934602868">此欄位只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，其餘所有項目將會捨棄。</translation>
 <translation id="1099928364755383720">自動顯示畫中畫</translation>
-<translation id="1100782917270858593">恢復瀏覽過程按鈕，㩒一下 Enter 鍵就可以恢復瀏覽過程，同埋睇到 Chrome 記錄入面嘅相關活動</translation>
 <translation id="1101672080107056897">錯誤動作</translation>
 <translation id="1104409666019087579">部分必填欄位沒有內容，請填寫後再儲存。</translation>
 <translation id="1104860668737945357">管理密碼按鈕，啟動之後就可以喺 Chrome 設定度睇同管理密碼</translation>
@@ -2832,7 +2831,6 @@
 <translation id="569000877158168851">除非 DnsOverHttpsMode 政策設定為 <ph name="SECURE_DNS_MODE_AUTOMATIC" /> 或 <ph name="SECURE_DNS_MODE_SECURE" />，否則 DnsOverHttpsTemplates 的值不相關，系統也不會使用該值。</translation>
 <translation id="5691848789297492617">儲存付款卡宜家顯示喺成個畫面。</translation>
 <translation id="5701381305118179107">置中</translation>
-<translation id="5707154300732650394">恢復瀏覽過程</translation>
 <translation id="57094364128775171">建議安全性強的密碼…</translation>
 <translation id="570953204696852961">紅色 3</translation>
 <translation id="5710907191777451677">改為問 Chrome 版 Gemini</translation>
@@ -3169,7 +3167,6 @@
 <translation id="6264636978858465832">「密碼管理工具」需要更多存取權</translation>
 <translation id="6265794661083428563">複製 <ph name="POLICY_NAME" /> 政策的值</translation>
 <translation id="6271264012613848937">你機構的政策禁止你瀏覽 <ph name="URL" />。如有任何問題，請聯絡管理員。</translation>
-<translation id="6272088941196661550">恢復瀏覽過程以查看 Chrome 記錄中的相關活動</translation>
 <translation id="6272383483618007430">Google 更新</translation>
 <translation id="6278015583149890680">「Google 雲端硬碟」和 OneDrive</translation>
 <translation id="6279228081537458128">稍後付款</translation>
@@ -4838,7 +4835,6 @@
 <translation id="9114101423898634479">加入已知的旅客編號</translation>
 <translation id="9114524666733003316">正在驗證信用卡…</translation>
 <translation id="9114581008513152754">此瀏覽器未受任何公司或其他機構管理。此裝置上的活動可透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以恢復瀏覽過程，同埋睇到 Chrome 記錄入面嘅相關活動</translation>
 <translation id="9119042192571987207">已上載</translation>
 <translation id="9119764377203471454">無法新增附件</translation>
 <translation id="9120593907434185157">儲存地址</translation>

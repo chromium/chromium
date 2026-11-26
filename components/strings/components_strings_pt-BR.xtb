@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Encontre e preencha com o Gemini</translation>
 <translation id="1096545575934602868">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as outras entradas serão descartadas.</translation>
 <translation id="1099928364755383720">picture-in-picture automático</translation>
-<translation id="1100782917270858593">Botão "Retomar jornada". Pressione Enter para retomar a jornada e ver as atividades relevantes no seu histórico do Chrome</translation>
 <translation id="1101672080107056897">Ação de erro</translation>
 <translation id="1104409666019087579">Preencha os campos obrigatórios antes de salvar.</translation>
 <translation id="1104860668737945357">Botão "Gerenciar senhas". Ative para conferir e gerenciar suas senhas nas configurações do Chrome</translation>
@@ -2833,7 +2832,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="569000877158168851">O valor da DnsOverHttpsTemplates não é relevante e não será usado, a menos que a política DnsOverHttpsMode esteja configurada como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ou <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Página para salvar cartão aberta no tamanho máximo.</translation>
 <translation id="5701381305118179107">Centralizar</translation>
-<translation id="5707154300732650394">Retomar a jornada</translation>
 <translation id="57094364128775171">Sugerir senha forte…</translation>
 <translation id="570953204696852961">Vermelho 3</translation>
 <translation id="5710907191777451677">Peça ao Gemini no Chrome</translation>
@@ -3170,7 +3168,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6264636978858465832">O Gerenciador de senhas precisa de mais acesso</translation>
 <translation id="6265794661083428563">Copiar o valor da política <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">As políticas da sua organização impedem que você acesse <ph name="URL" />. Se você não esperava por isso, entre em contato com o admin.</translation>
-<translation id="6272088941196661550">Retomar a jornada para ver as atividades relevantes no seu histórico do Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive e OneDrive</translation>
 <translation id="6279228081537458128">Pagar depois</translation>
@@ -4841,7 +4838,6 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9114101423898634479">Adicionar número do programa de passageiro conhecido</translation>
 <translation id="9114524666733003316">Confirmando cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerenciado por uma empresa ou outra organização. A atividade deste dispositivo pode ser gerenciada fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para retomar a jornada e ver as atividades no seu histórico do Chrome</translation>
 <translation id="9119042192571987207">Enviado</translation>
 <translation id="9119764377203471454">Não foi possível adicionar anexos</translation>
 <translation id="9120593907434185157">Salvar endereço</translation>

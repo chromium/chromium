@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Hanapin at punan gamit ang Gemini</translation>
 <translation id="1096545575934602868">Ang field na ito ay hindi dapat magkaroon ng higit sa <ph name="MAX_ITEMS_LIMIT" /> (na) entry. Madi-discard ang lahat ng karagdagang entry.</translation>
 <translation id="1099928364755383720">awtomatikong picture-in-picture</translation>
-<translation id="1100782917270858593">Button na Ipagpatuloy ang iyong journey, pindutin ang Enter para ipagpatuloy ang journey mo at makakita ng nauugnay na aktibidad sa iyong history sa Chrome</translation>
 <translation id="1101672080107056897">Error sa pagkilos</translation>
 <translation id="1104409666019087579">Walang laman ang ilang nire-require na field. Sagutan ang mga ito bago i-save.</translation>
 <translation id="1104860668737945357">Button na Pamahalaan ang mga password, i-activate para matingnan at mapamahalaan ang iyong mga password sa mga setting ng Chrome</translation>
@@ -2836,7 +2835,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="569000877158168851">Walang kaugnayan ang value ng DnsOverHttpsTemplates, at hindi ito gagamitin, maliban na lang kung itatakda ang patakarang DnsOverHttpsMode sa <ph name="SECURE_DNS_MODE_AUTOMATIC" /> o <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Binuksan nang buo ang pag-save ng card.</translation>
 <translation id="5701381305118179107">Gitna</translation>
-<translation id="5707154300732650394">Ipagpatuloy ang iyong journey</translation>
 <translation id="57094364128775171">Magmungkahi ng malakas na password...</translation>
 <translation id="570953204696852961">Pula 3</translation>
 <translation id="5710907191777451677">Mag-ask na lang sa Gemini sa Chrome</translation>
@@ -3174,7 +3172,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6264636978858465832">Nangangailangan ng karagdagang access ang Password Manager</translation>
 <translation id="6265794661083428563">Kopyahin ang value ng patakarang <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Na-block ka sa pagbisita sa <ph name="URL" /> dahil sa mga patakaran ng iyong organisasyon. Kung hindi iyon inaasahan, makipag-ugnayan sa iyong administrator.</translation>
-<translation id="6272088941196661550">Ipagpatuloy ang iyong journey para makakita ng nauugnay na aktibidad sa history mo sa Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive at OneDrive</translation>
 <translation id="6279228081537458128">Pay later</translation>
@@ -4843,7 +4840,6 @@ Mga karagdagang detalye:
 <translation id="9114101423898634479">Magdagdag ng Known Traveler Number</translation>
 <translation id="9114524666733003316">Kinukumpirma ang card...</translation>
 <translation id="9114581008513152754">Hindi pinapamahalaan ng kumpanya o iba pang organisasyon ang browser na ito. Posibleng pinapamahalaan sa labas ng Chrome ang aktibidad sa device na ito. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para ipagpatuloy ang iyong paglalakbay para makakita ng nauugnay na aktibidad sa history mo sa Chrome</translation>
 <translation id="9119042192571987207">Na-upload</translation>
 <translation id="9119764377203471454">Hindi makapagdagdag ng mga attachment</translation>
 <translation id="9120593907434185157">I-save ang address</translation>

@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Намиране и попълване с Gemini</translation>
 <translation id="1096545575934602868">Това поле не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> записа. Всички допълнителни записи ще бъдат отхвърлени.</translation>
 <translation id="1099928364755383720">автоматичен режим „картина в картината“</translation>
-<translation id="1100782917270858593">Бутон „Възобновяване на пътешествието“. Натиснете Enter, за да възобновите пътешествието си и да прегледате съответната активност в историята си в Chrome</translation>
 <translation id="1101672080107056897">Грешка при действието</translation>
 <translation id="1104409666019087579">Някои от задължителните полета са празни. Попълнете ги, преди да запазите.</translation>
 <translation id="1104860668737945357">Бутон „Управление на паролите“. Активирайте, за да прегледате и управлявате паролите в настройките на Chrome</translation>
@@ -2833,7 +2832,6 @@
 <translation id="569000877158168851">Стойността на DnsOverHttpsTemplates не е подходяща и няма да се използва, освен ако за правилото DnsOverHttpsMode не е зададено <ph name="SECURE_DNS_MODE_AUTOMATIC" /> или <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Подканата за запазване на карта е отворена на пълната височина.</translation>
 <translation id="5701381305118179107">Центриране</translation>
-<translation id="5707154300732650394">Възобновяване на пътешествието</translation>
 <translation id="57094364128775171">Предложение за надеждна парола…</translation>
 <translation id="570953204696852961">червено 3</translation>
 <translation id="5710907191777451677">Вместо това попитайте Gemini в Chrome</translation>
@@ -3170,7 +3168,6 @@
 <translation id="6264636978858465832">Мениджър на пароли се нуждае от още разрешения за достъп</translation>
 <translation id="6265794661083428563">Копиране на стойността на правилото „<ph name="POLICY_NAME" />“</translation>
 <translation id="6271264012613848937">Посещението ви на <ph name="URL" /> бе блокирано поради правилата на организацията ви. Ако това не е очаквано, свържете се с администратора си.</translation>
-<translation id="6272088941196661550">Възобновете пътешествието си, за да прегледате съответната активност в историята си в Chrome</translation>
 <translation id="6272383483618007430">Google Актуализиране</translation>
 <translation id="6278015583149890680">Google Диск и OneDrive</translation>
 <translation id="6279228081537458128">Плащане по-късно</translation>
@@ -4839,7 +4836,6 @@
 <translation id="9114101423898634479">Добавяне на известен номер на пътника</translation>
 <translation id="9114524666733003316">Картата се потвърждава...</translation>
 <translation id="9114581008513152754">Този браузър не се управлява от дружество или друга организация. Възможно е активността на устройството да се управлява извън Chrome. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, натиснете Tab и след това Enter, за да продължите пътешествието си и да прегледате съответната активност в историята си в Chrome</translation>
 <translation id="9119042192571987207">Качено</translation>
 <translation id="9119764377203471454">Прикачените файлове не могат да бъдат добавени</translation>
 <translation id="9120593907434185157">Запазване на адреса</translation>

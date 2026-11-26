@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">ค้นหาและเติมข้อมูลด้วย Gemini</translation>
 <translation id="1096545575934602868">ช่องนี้ต้องมีข้อมูลไม่เกิน <ph name="MAX_ITEMS_LIMIT" /> รายการ ระบบจะทิ้งรายการอื่นๆ ทั้งหมด</translation>
 <translation id="1099928364755383720">การแสดงภาพซ้อนภาพอัตโนมัติ</translation>
-<translation id="1100782917270858593">ปุ่มสำรวจต่อ กด Enter เพื่อสำรวจต่อและดูกิจกรรมที่เกี่ยวข้องในประวัติการเข้าชมใน Chrome</translation>
 <translation id="1101672080107056897">การดำเนินการผิดพลาด</translation>
 <translation id="1104409666019087579">ไม่มีข้อมูลในช่องที่ต้องกรอกบางช่อง โปรดป้อนข้อมูลเหล่านี้ก่อนบันทึก</translation>
 <translation id="1104860668737945357">ปุ่มจัดการรหัสผ่าน เปิดใช้งานเพื่อดูและจัดการรหัสผ่านในการตั้งค่า Chrome</translation>
@@ -2832,7 +2831,6 @@
 <translation id="569000877158168851">ค่า DnsOverHttpsTemplates ไม่เกี่ยวข้องและจะไม่มีการนำไปใช้ นอกเสียจากจะมีการตั้งค่านโยบาย DnsOverHttpsMode เป็น <ph name="SECURE_DNS_MODE_AUTOMATIC" /> หรือ <ph name="SECURE_DNS_MODE_SECURE" /></translation>
 <translation id="5691848789297492617">ข้อความแจ้งให้บันทึกบัตรที่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="5701381305118179107">กึ่งกลาง</translation>
-<translation id="5707154300732650394">สำรวจต่อ</translation>
 <translation id="57094364128775171">แนะนำรหัสผ่านที่รัดกุม…</translation>
 <translation id="570953204696852961">แดง 3</translation>
 <translation id="5710907191777451677">ขอความช่วยเหลือจาก Gemini ใน Chrome แทน</translation>
@@ -3169,7 +3167,6 @@
 <translation id="6264636978858465832">เครื่องมือจัดการรหัสผ่านต้องการเข้าถึงเพิ่มเติม</translation>
 <translation id="6265794661083428563">คัดลอกค่าของนโยบาย <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">คุณถูกบล็อกไม่ให้เข้าชม <ph name="URL" /> เนื่องจากนโยบายขององค์กร หากคุณไม่ได้คาดไว้ โปรดติดต่อผู้ดูแลระบบ</translation>
-<translation id="6272088941196661550">สำรวจต่อเพื่อดูกิจกรรมที่เกี่ยวข้องในประวัติการเข้าชมใน Chrome</translation>
 <translation id="6272383483618007430">Google อัปเดต</translation>
 <translation id="6278015583149890680">Google ไดรฟ์และ OneDrive</translation>
 <translation id="6279228081537458128">การชำระภายหลัง</translation>
@@ -4839,7 +4836,6 @@
 <translation id="9114101423898634479">เพิ่มหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN)</translation>
 <translation id="9114524666733003316">กำลังยืนยันบัตร…</translation>
 <translation id="9114581008513152754">เบราว์เซอร์นี้ไม่ได้จัดการโดยบริษัทหรือองค์กรอื่นๆ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chrome <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อดำเนินการสำรวจต่อและดูกิจกรรมที่เกี่ยวข้องในประวัติการเข้าชมใน Chrome</translation>
 <translation id="9119042192571987207">อัปโหลดแล้ว</translation>
 <translation id="9119764377203471454">เพิ่มไฟล์แนบไม่ได้</translation>
 <translation id="9120593907434185157">บันทึกที่อยู่</translation>

@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Atrast un aizpildīt, izmantojot Gemini</translation>
 <translation id="1096545575934602868">Šajā laukā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> ierakstu. Visi turpmākie ieraksti tiks atmesti.</translation>
 <translation id="1099928364755383720">režīma “Attēls attēlā” automātiska aktivizēšana</translation>
-<translation id="1100782917270858593">Poga Atsākt meklēšanas ceļu. Lai atsāktu meklēšanas ceļu un skatītu atbilstošās darbības savā Chrome vēsturē, nospiediet taustiņu Enter.</translation>
 <translation id="1101672080107056897">Darbība pēc kļūdas konstatēšanas</translation>
 <translation id="1104409666019087579">Daži obligātie lauki ir tukši. Pirms saglabāšanas aizpildiet tos.</translation>
 <translation id="1104860668737945357">Poga “Pārvaldīt paroles”. Aktivizējiet, lai Chrome iestatījumos skatītu un pārvaldītu paroles.</translation>
@@ -2831,7 +2830,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="569000877158168851">DnsOverHttpsTemplates vērtība nav atbilstoša un netiks izmantota, ja politikai DnsOverHttpsMode nav iestatīta vērtība <ph name="SECURE_DNS_MODE_AUTOMATIC" /> vai <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Kartes saglabāšanas uzvedne ir atvērta pilnā augstumā.</translation>
 <translation id="5701381305118179107">Centrēt</translation>
-<translation id="5707154300732650394">Atsākt meklēšanas ceļu</translation>
 <translation id="57094364128775171">Ieteikt drošu paroli…</translation>
 <translation id="570953204696852961">Sarkana 3</translation>
 <translation id="5710907191777451677">Tā vietā jautājiet Gemini pārlūkā Chrome</translation>
@@ -3168,7 +3166,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6264636978858465832">Paroļu pārvaldniekam ir nepieciešama plašāka piekļuve</translation>
 <translation id="6265794661083428563">Kopēt politikas <ph name="POLICY_NAME" /> vērtību</translation>
 <translation id="6271264012613848937">Jūsu organizācijas politiku dēļ jums tika bloķēta piekļuve vietnei <ph name="URL" />. Ja tas notika negaidīti, sazinieties ar administratoru.</translation>
-<translation id="6272088941196661550">Atsāciet meklēšanas ceļu, lai skatītu atbilstošās darbības savā Chrome vēsturē</translation>
 <translation id="6272383483618007430">Google atjauninājums</translation>
 <translation id="6278015583149890680">Google diska un OneDrive</translation>
 <translation id="6279228081537458128">Maksāt vēlāk</translation>
@@ -4838,7 +4835,6 @@ Papildu informācija:
 <translation id="9114101423898634479">Zināmā ceļotāja numura pievienošana</translation>
 <translation id="9114524666733003316">Notiek kartes apstiprināšana...</translation>
 <translation id="9114581008513152754">Šo pārlūku nepārvalda uzņēmums vai cita organizācija. Darbību šajā ierīcē var pārvaldīt ārpus pārlūka Chrome. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />: nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu, lai atsāktu meklēšanu un skatītu atbilstošās darbības savā Chrome vēsturē.</translation>
 <translation id="9119042192571987207">Augšupielādēts</translation>
 <translation id="9119764377203471454">Nevar pievienot pielikumus.</translation>
 <translation id="9120593907434185157">Saglabāt adresi</translation>

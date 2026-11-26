@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Find and fill with Gemini</translation>
 <translation id="1096545575934602868">This field should not have more than <ph name="MAX_ITEMS_LIMIT" /> entries. All further entries will be discarded.</translation>
 <translation id="1099928364755383720">automatic picture-in-picture</translation>
-<translation id="1100782917270858593">Resume your journey button, press Enter to resume your journey and see relevant activity in your Chrome history</translation>
 <translation id="1101672080107056897">Error action</translation>
 <translation id="1104409666019087579">Some required fields are empty. Fill them before saving.</translation>
 <translation id="1104860668737945357">Manage passwords button, activate to view and manage your passwords in Chrome settings</translation>
@@ -2833,7 +2832,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="569000877158168851">The DnsOverHttpsTemplates value is not relevant, and will not be used, unless the DnsOverHttpsMode policy is set to either <ph name="SECURE_DNS_MODE_AUTOMATIC" /> or <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Save card opened at full height.</translation>
 <translation id="5701381305118179107">Centre</translation>
-<translation id="5707154300732650394">Resume your journey</translation>
 <translation id="57094364128775171">Suggest strong password…</translation>
 <translation id="570953204696852961">Red 3</translation>
 <translation id="5710907191777451677">Ask Gemini in Chrome instead</translation>
@@ -3170,7 +3168,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6264636978858465832">Password Manager needs more access</translation>
 <translation id="6265794661083428563">Copy the value of <ph name="POLICY_NAME" /> policy</translation>
 <translation id="6271264012613848937">You were blocked from visiting <ph name="URL" /> because of your organisation's policies. If that's unexpected, contact your administrator.</translation>
-<translation id="6272088941196661550">Resume your journey to see relevant activity in your Chrome history</translation>
 <translation id="6272383483618007430">Google update</translation>
 <translation id="6278015583149890680">Google Drive and OneDrive</translation>
 <translation id="6279228081537458128">Pay later</translation>
@@ -4838,7 +4835,6 @@ Additional details:
 <translation id="9114101423898634479">Add known traveller number</translation>
 <translation id="9114524666733003316">Confirming card...</translation>
 <translation id="9114581008513152754">This browser is not managed by a company or other organisation. Activity on this device may be managed outside of Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to resume your journey and see relevant activity in your Chrome history</translation>
 <translation id="9119042192571987207">Uploaded</translation>
 <translation id="9119764377203471454">Unable to add attachments</translation>
 <translation id="9120593907434185157">Save address</translation>

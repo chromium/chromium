@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Bilatu eta bete Gemini-rekin</translation>
 <translation id="1096545575934602868">Eremu honek ez lituzke <ph name="MAX_ITEMS_LIMIT" /> sarrera baino gehiago izan behar. Baztertu egingo dira gainerako sarrerak.</translation>
 <translation id="1099928364755383720">pantaila txiki gainjarri automatikoa</translation>
-<translation id="1100782917270858593">Bilaketa-ibilbideari berrekiteko botoia: sakatu "Sartu" tekla bilaketa-ibilbideari berrekiteko eta Chrome-ko historian dauden erlazionatutako jarduerak ikusteko</translation>
 <translation id="1101672080107056897">Errore-ekintza</translation>
 <translation id="1104409666019087579">Nahitaezko eremu batzuk hutsik daude. Bete itzazu gorde aurretik.</translation>
 <translation id="1104860668737945357">Pasahitzak kudeatzeko botoia: aktiba ezazu pasahitzak ikusi eta kudeatzeko Chrome-ren ezarpenetan</translation>
@@ -2828,7 +2827,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="569000877158168851">DnsOverHttpsTemplates aukerako balioa ez da egokia, eta ez da erabiliko DnsOverHttpsMode gidalerroan <ph name="SECURE_DNS_MODE_AUTOMATIC" /> edo <ph name="SECURE_DNS_MODE_SECURE" /> ezarri ezean.</translation>
 <translation id="5691848789297492617">Txartela gordetzeko leihoa altuera osoan irekita dago.</translation>
 <translation id="5701381305118179107">Erdiratu</translation>
-<translation id="5707154300732650394">Berrekin bilaketa-ibilbideari</translation>
 <translation id="57094364128775171">Iradoki pasahitz konplexu bat…</translation>
 <translation id="570953204696852961">Gorri iluna</translation>
 <translation id="5710907191777451677">Horren ordez, galdetu Chrome-ko Gemini-ri</translation>
@@ -3164,7 +3162,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6264636978858465832">Pasahitz-kudeatzailea zerbitzuak baimen gehiago behar ditu</translation>
 <translation id="6265794661083428563">Kopiatu <ph name="POLICY_NAME" /> gidalerroaren balioa</translation>
 <translation id="6271264012613848937">Ezin izan duzu bisitatu <ph name="URL" />, zure erakundearen gidalerroak direla eta. Hori espero ez bazenuen, jarri administratzailearekin harremanetan.</translation>
-<translation id="6272088941196661550">Berrekin bilaketa-ibilbideari Chrome-ko historian dauden erlazionatutako jarduerak ikusteko</translation>
 <translation id="6272383483618007430">Google-ren eguneratzea</translation>
 <translation id="6278015583149890680">Google Drive eta OneDrive</translation>
 <translation id="6279228081537458128">Ordaindu geroago</translation>
@@ -4830,7 +4827,6 @@ Xehetasun gehiago:
 <translation id="9114101423898634479">Gehitu fidagarritzat jotako bidaiariaren zenbakia</translation>
 <translation id="9114524666733003316">Txartela berresten…</translation>
 <translation id="9114581008513152754">Arakatzailea ez du enpresa edo erakunde batek kudeatzen. Baliteke gailu honetako jarduerak Chrome-tik kanpo kudeatzea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, sakatu tabuladorea eta, ondoren, sakatu Sartu bidaiari berrekiteko eta Chrome-ko historiako jarduera egokiak ikusteko</translation>
 <translation id="9119042192571987207">Kargatuta</translation>
 <translation id="9119764377203471454">Ezin da gehitu eranskinik</translation>
 <translation id="9120593907434185157">Gorde helbidea</translation>

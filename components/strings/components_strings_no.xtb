@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Finn og fyll ut med Gemini</translation>
 <translation id="1096545575934602868">Dette feltet skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> oppføringer. Oppføringer utover dette blir forkastet.</translation>
 <translation id="1099928364755383720">automatisk bilde-i-bilde</translation>
-<translation id="1100782917270858593">«Fortsett reisen»-knappen – trykk på Enter for å fortsette reisen og se relevant aktivitet i Chrome-loggen</translation>
 <translation id="1101672080107056897">Feilhandling</translation>
 <translation id="1104409666019087579">Enkelte obligatoriske felt er tomme. Fyll dem før du lagrer.</translation>
 <translation id="1104860668737945357">Knappen «Administrer passord» – aktiver for å se og administrere passord i Chrome-innstillingene</translation>
@@ -2833,7 +2832,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="569000877158168851">Verdien for DnsOverHttpsTemplates er irrelevant og blir ikke brukt med mindre DnsOverHttpsMode-regelen er satt til enten <ph name="SECURE_DNS_MODE_AUTOMATIC" /> eller <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Lagringskortet er åpnet i full høyde.</translation>
 <translation id="5701381305118179107">Midtstill</translation>
-<translation id="5707154300732650394">Fortsett reisen</translation>
 <translation id="57094364128775171">Foreslå et sterkt passord…</translation>
 <translation id="570953204696852961">Rød 3</translation>
 <translation id="5710907191777451677">Spør Gemini i Chrome i stedet</translation>
@@ -3170,7 +3168,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6264636978858465832">Passordlagring trenger mer tilgang</translation>
 <translation id="6265794661083428563">Kopiér verdien av <ph name="POLICY_NAME" />-regelen</translation>
 <translation id="6271264012613848937">Du ble blokkert fra å besøke <ph name="URL" /> på grunn av retningslinjene for organisasjonen din. Kontakt administratoren din hvis dette var uforventet.</translation>
-<translation id="6272088941196661550">Fortsett reisen for å se relevant aktivitet i Chrome-loggen</translation>
 <translation id="6272383483618007430">Google Oppdatering</translation>
 <translation id="6278015583149890680">Google Disk og OneDrive</translation>
 <translation id="6279228081537458128">Betal senere</translation>
@@ -4838,7 +4835,6 @@ Mer informasjon:
 <translation id="9114101423898634479">Legg til known traveler-nummer</translation>
 <translation id="9114524666733003316">Bekrefter kortet …</translation>
 <translation id="9114581008513152754">Denne nettleseren administreres ikke av et selskap eller en annen organisasjon. Aktiviteten på denne enheten kan bli administrert utenfor Chrome. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å fortsette ferden og se relevant aktivitet i Chrome-loggen</translation>
 <translation id="9119042192571987207">Opplastet</translation>
 <translation id="9119764377203471454">Kan ikke legge til vedlegg</translation>
 <translation id="9120593907434185157">Lagre adressen</translation>

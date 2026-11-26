@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Знайти й заповнити за допомогою Gemini</translation>
 <translation id="1096545575934602868">Максимальна кількість записів у цьому полі: <ph name="MAX_ITEMS_LIMIT" />. Усі подальші записи буде відхилено.</translation>
 <translation id="1099928364755383720">автоматичний перехід у режим "Картинка в картинці"</translation>
-<translation id="1100782917270858593">Кнопка "Відновити сеанс"; натисніть Enter, щоб відновити сеанс і переглянути релевантні дії в історії Chrome.</translation>
 <translation id="1101672080107056897">Помилка дії</translation>
 <translation id="1104409666019087579">Деякі обов’язкові поля порожні. Заповніть їх, перш ніж зберегти.</translation>
 <translation id="1104860668737945357">Кнопка "Керувати паролями"; активуйте, щоб переглянути паролі й керувати ними в налаштуваннях Chrome</translation>
@@ -2833,7 +2832,6 @@
 <translation id="569000877158168851">Значення DnsOverHttpsTemplates невідповідне й не використовуватиметься, якщо для правила DnsOverHttpsMode не буде вибрано значення <ph name="SECURE_DNS_MODE_AUTOMATIC" /> або <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Зберегти картку у відкритому вигляді на всю висоту.</translation>
 <translation id="5701381305118179107">По центру</translation>
-<translation id="5707154300732650394">Відновити сеанс</translation>
 <translation id="57094364128775171">Запропонувати надійний пароль…</translation>
 <translation id="570953204696852961">Червоний 3</translation>
 <translation id="5710907191777451677">Запитайте Gemini у Chrome</translation>
@@ -3170,7 +3168,6 @@
 <translation id="6264636978858465832">Менеджеру паролів потрібен додатковий доступ</translation>
 <translation id="6265794661083428563">Скопіювати значення правила <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Вам заблоковано доступ до сайту <ph name="URL" /> через правила вашої організації. Якщо це сталося помилково, зверніться до адміністратора.</translation>
-<translation id="6272088941196661550">Щоб бачити релевантні дії в історії Chrome, відновіть сеанс</translation>
 <translation id="6272383483618007430">Оновлення Google</translation>
 <translation id="6278015583149890680">Google Диск і OneDrive</translation>
 <translation id="6279228081537458128">Оплатити пізніше</translation>
@@ -4840,7 +4837,6 @@
 <translation id="9114101423898634479">Додати номер надійного мандрівника</translation>
 <translation id="9114524666733003316">Підтверджуються дані картки…</translation>
 <translation id="9114581008513152754">Цим веб-переглядачем не керує адміністратор компанії чи іншої організації. Діями на цьому пристрої можна керувати за межами Chrome. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб відновити пошук і переглянути релевантні дії в історії Chrome</translation>
 <translation id="9119042192571987207">Завантажено</translation>
 <translation id="9119764377203471454">Не вдалося долучити файли</translation>
 <translation id="9120593907434185157">Зберегти адресу</translation>

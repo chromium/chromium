@@ -62,7 +62,6 @@
 <translation id="1095093219235104018">Gemini দিয়ে খুঁজুন ও পূরণ করুন</translation>
 <translation id="1096545575934602868">এই ফিল্ডে <ph name="MAX_ITEMS_LIMIT" />টির বেশি এন্ট্রি লেখা যাবে না। অন্য সব এন্ট্রি বাতিল করা হবে।</translation>
 <translation id="1099928364755383720">অটোমেটিক 'ছবির-মধ্যে-ছবি'</translation>
-<translation id="1100782917270858593">'আপনার ব্রাউজার অ্যাক্টিভিটির আবার চালু করুন' বোতাম, ব্রাউজার অ্যাক্টিভিটি আবার চালু করতে এবং Chrome ইতিহাসে প্রাসঙ্গিক অ্যাক্টিভিটি দেখতে Enter প্রেস করুন</translation>
 <translation id="1101672080107056897">সমস্যা সংক্রান্ত অ্যাকশন</translation>
 <translation id="1104409666019087579">ফাঁকা রাখা যাবে না এমন কিছু ফিল্ড খালি আছে। সেভ করার আগে সেগুলি পূরণ করুন।</translation>
 <translation id="1104860668737945357">'পাসওয়ার্ড ম্যানেজ করুন' বোতাম, Chrome সেটিংসে আপনার পাসওয়ার্ড দেখতে ও ম্যানেজ করতে এটি চালু করুন</translation>
@@ -2834,7 +2833,6 @@
 <translation id="569000877158168851">DnsOverHttpsTemplates মান প্রাসঙ্গিক নয় এবং DnsOverHttpsMode নীতি হয় <ph name="SECURE_DNS_MODE_AUTOMATIC" /> অথবা <ph name="SECURE_DNS_MODE_SECURE" />-এ সেট না করা পর্যন্ত ব্যবহার করা যাবে না।</translation>
 <translation id="5691848789297492617">সম্পূর্ণ স্ক্রিন জুড়ে খোলা কার্ড সেভ করুন।</translation>
 <translation id="5701381305118179107">কেন্দ্র</translation>
-<translation id="5707154300732650394">আপনার ব্রাউজার অ্যাক্টিভিটি আবার চালু করুন</translation>
 <translation id="57094364128775171">শক্তিশালী পাসওয়ার্ড সাজেস্ট করুন…</translation>
 <translation id="570953204696852961">লাল ৩</translation>
 <translation id="5710907191777451677">Chrome-এ Gemini-কে জিজ্ঞাসা করুন</translation>
@@ -3170,7 +3168,6 @@
 <translation id="6264636978858465832">Password Manager-এর আরও বেশি অ্যাক্সেস প্রয়োজন</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" />-এর নীতির মান কপি করুন</translation>
 <translation id="6271264012613848937">আপনার সংস্থার নীতির কারণে আপনাকে সাইটে <ph name="URL" /> ভিজিট করা থেকে ব্লক করা হয়েছে। এটি অপ্রত্যাশিত হলে, আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
-<translation id="6272088941196661550">Chrome ইতিহাসে প্রাসঙ্গিক অ্যাক্টিভিটি দেখতে সার্চ করা আবার চালু করুন</translation>
 <translation id="6272383483618007430">Google আপডেট</translation>
 <translation id="6278015583149890680">Google Drive এবং OneDrive</translation>
 <translation id="6279228081537458128">পরে পেমেন্ট করুন</translation>
@@ -4839,7 +4836,6 @@
 <translation id="9114101423898634479">পরিচিত পর্যটকের নম্বর যোগ করুন</translation>
 <translation id="9114524666733003316">কার্ড নিশ্চিত করা হচ্ছে...</translation>
 <translation id="9114581008513152754">কোনও কোম্পানি বা অন্য কোনও সংস্থা এই ব্রাউজার ম্যানেজ করে না। এই ডিভাইসের অ্যাক্টিভিটি Chrome-এর বাইরে থেকে ম্যানেজ করা যেতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
-<translation id="9118692854637641831">সার্চ করা আবার চালু করতে <ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ও তারপরে Enter প্রেস করুন এবং আপনার Chrome ইতিহাসে প্রাসঙ্গিক অ্যাক্টিভিটি দেখুন</translation>
 <translation id="9119042192571987207">আপলোড করা হয়েছে</translation>
 <translation id="9119764377203471454">অ্যাটাচমেন্ট যোগ করা যায়নি</translation>
 <translation id="9120593907434185157">ঠিকানা সেভ করুন</translation>
