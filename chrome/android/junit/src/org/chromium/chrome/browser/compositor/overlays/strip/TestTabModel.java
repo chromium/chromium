@@ -125,12 +125,21 @@ public class TestTabModel extends EmptyTabModel {
     }
 
     public void setIndex(int index) {
-        mIndex = index;
+        updateIndexAndMultiSelection(index);
     }
 
     @Override
     public void setIndex(int i, @TabSelectionType int type) {
-        mIndex = i;
+        updateIndexAndMultiSelection(i);
+    }
+
+    private void updateIndexAndMultiSelection(int index) {
+        mIndex = index;
+        Tab currentTab = getTabAt(mIndex);
+        if (!mMultiSelectedTabs.isEmpty()
+                && (currentTab == null || !mMultiSelectedTabs.contains(currentTab.getId()))) {
+            mMultiSelectedTabs.clear();
+        }
     }
 
     public List<Tab> getAllTabs() {

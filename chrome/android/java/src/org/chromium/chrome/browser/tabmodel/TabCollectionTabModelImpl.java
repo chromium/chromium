@@ -247,7 +247,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
             boolean noTabIsActivated = !(mCurrentTabSupplier.get() != null);
             if (noTabIsActivated) {
-                mCurrentTabSupplier.set(tab);
+                setCurrentTab(tab);
             }
             if (tabGroupId != null) {
                 mHidingTabGroups.remove(tabGroupId);
@@ -266,10 +266,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             // If there is no selected tab, then trigger a proper selected tab update and
             // notify any observers.
             if (noTabIsActivated && isActiveModel()) {
+                // Intentionally reset directly instead of setCurrentTab() so mMultiSelectedTabs is
+                // not cleared before setIndex() enforces the invariant on the next line.
                 mCurrentTabSupplier.set(null);
                 setIndex(finalIndex, TabSelectionType.FROM_UNDO);
             } else if (noTabIsActivated && !isActiveModel()) {
-                mCurrentTabSupplier.set(tab);
+                setCurrentTab(tab);
             }
 
             if (restoredTabGroup) {
@@ -951,7 +953,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             if (isActiveModel()) {
                 setIndex(0, TabSelectionType.FROM_USER);
             } else {
-                mCurrentTabSupplier.set(getTabAt(0));
+                setCurrentTab(getTabAt(0));
             }
         }
 
@@ -984,7 +986,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         detachTabInternal(tab, DetachReason.INSERT_INTO_OTHER_WINDOW);
         invalidateCache();
         if (mCurrentTabSupplier.get() == tab) {
-            mCurrentTabSupplier.set(null);
+            setCurrentTab(/* currentTab= */ null);
         }
         mTabCountSupplier.set(getCount());
     }
@@ -1851,7 +1853,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         // When adding the first background tab make sure to select it.
         if (shouldSelectBackgroundTab) {
-            mCurrentTabSupplier.set(tab);
+            setCurrentTab(tab);
         }
 
         tab.onAddedToTabModel(mCurrentTabSupplier, this::isTabMultiSelected);
@@ -2134,7 +2136,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
             mCurrentTabSupplier.willSet(newSelectedTab);
             mModelDelegate.requestToShowTab(newSelectedTab, type);
-            mCurrentTabSupplier.set(newSelectedTab);
+            boolean clearedMultiSelection = setCurrentTab(newSelectedTab);
 
             if (newSelectedTab != null) {
                 Token tabGroupId = newSelectedTab.getTabGroupId();
@@ -2162,6 +2164,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 if (!wasAlreadySelected && type == TabSelectionType.FROM_USER) {
                     RecordUserAction.record("MobileTabSwitched");
                 }
+            } else if (clearedMultiSelection) {
+                notifyTabsSelectionChanged();
             }
         }
     }
@@ -2311,6 +2315,24 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     /**
+     * Updates {@link #mCurrentTabSupplier} to {@code currentTab}, first clearing {@link
+     * #mMultiSelectedTabs} silently if it is non-empty and does not contain {@code currentTab},
+     * maintaining the invariant that any non-empty multi-selection always includes the active tab.
+     *
+     * @return Whether {@link #mMultiSelectedTabs} was cleared.
+     */
+    private boolean setCurrentTab(@Nullable Tab currentTab) {
+        boolean cleared = false;
+        if (!mMultiSelectedTabs.isEmpty()
+                && (currentTab == null || !mMultiSelectedTabs.contains(currentTab.getId()))) {
+            clearMultiSelection(/* notifyObservers= */ false);
+            cleared = true;
+        }
+        mCurrentTabSupplier.set(currentTab);
+        return cleared;
+    }
+
+    /**
      * Detaches {@code tab} from the native collection, disconnects its supplier state, and removes
      * its Java tracking entries (including multi-selection membership).
      *
@@ -2406,7 +2428,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         if (nextTab != currentTabInModel) {
             if (nextIsInOtherModel) {
-                mCurrentTabSupplier.set(nearbyTab);
+                removedFromMultiSelection |= setCurrentTab(nearbyTab);
             }
 
             TabModel nextModel = mModelDelegate.getModel(nextIsIncognito);

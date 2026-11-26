@@ -216,7 +216,9 @@ public interface TabModel extends TabList {
     NextTabPolicySupplier getNextTabPolicySupplier();
 
     /**
-     * Activates a tab by its index (setting it as the current tab).
+     * Activates a tab by its index (setting it as the current tab). If a multi-selection is active
+     * and does not contain the newly activated tab, the multi-selection is cleared so the current
+     * tab always remains part of any non-empty multi-selection.
      *
      * @param i The index of the tab to activate.
      * @param type The type of selection.
