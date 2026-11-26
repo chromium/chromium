@@ -84,6 +84,7 @@ constexpr net::NetworkTrafficAnnotationTag kSyncFileSystemTrafficAnnotation =
           data:
             "Files created by Chrome Apps via Sync FileSystem API."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "drive.googleapis.com"
         }
         policy {
           cookies_allowed: NO
