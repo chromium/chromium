@@ -20,10 +20,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace page_content_annotations {
-class PageContentAnnotationsResult;
-}  // namespace page_content_annotations
-
 namespace page_actions {
 enum class PageActionPriorityCategory;
 }  // namespace page_actions
@@ -124,11 +120,8 @@ class CueTarget {
   bool SupportsIntrusiveness(CueIntrusiveness intrusiveness) const;
 
   // Synchronous profile-level gate (e.g., feature disabled, panel already
-  // open). Called by the controller before constructing the async barrier.
-  //
-  // TODO(b/523306363): Remove from the public interface once the legacy
-  // single-source path in ContextualCueingController is fully migrated. Targets
-  // should perform this check internally at the start of CheckEligibility().
+  // open). Called by the controller before constructing the async barrier and
+  // after model execution completes.
   virtual bool IsEligible() const = 0;
 
   // Callback invoked when content generation completes (successfully or not).
@@ -164,16 +157,6 @@ class CueTarget {
       base::WeakPtr<content::WebContents> web_contents,
       CueIntrusiveness intrusiveness,
       EligibilityCallback callback) = 0;
-
-  // Synchronous page-level gate (e.g., page content annotations, URL checks).
-  // Called by the controller before generating content in the legacy path.
-  //
-  // TODO(b/523306363): Remove from the public interface once the legacy
-  // single-source path in ContextualCueingController is fully migrated. Targets
-  // should perform this check internally in CheckEligibility().
-  virtual bool IsPageEligible(
-      const page_content_annotations::PageContentAnnotationsResult& result,
-      content::WebContents* active_web_contents) const = 0;
 
   // Called when the cue's omnibox suggestion chip is shown to the user.
   virtual void OnChipShown() {}

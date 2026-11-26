@@ -32,6 +32,8 @@ class TabInterface;
 
 namespace contextual_search {
 
+class ContextualSearchCueTarget;
+
 // Tab-scoped state helper for ContextualSearchCueTarget. Manages the per-tab
 // PageContentAnnotationsObserver, caches the latest classification result for
 // the current navigation, and manages the pending CheckEligibility callback and
@@ -63,7 +65,7 @@ class ContextualSearchCueTabState
   void CheckEligibility(
       contextual_cueing::CueIntrusiveness intrusiveness,
       contextual_cueing::CueTarget::EligibilityCallback callback,
-      base::WeakPtr<contextual_cueing::CueTarget> target);
+      base::WeakPtr<ContextualSearchCueTarget> target);
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
@@ -107,7 +109,7 @@ class ContextualSearchCueTabState
   struct PendingCheck {
     contextual_cueing::CueIntrusiveness intrusiveness;
     contextual_cueing::CueTarget::EligibilityCallback callback;
-    base::WeakPtr<contextual_cueing::CueTarget> target;
+    base::WeakPtr<ContextualSearchCueTarget> target;
   };
   std::optional<PendingCheck> pending_check_;
 

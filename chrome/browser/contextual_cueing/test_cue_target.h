@@ -20,7 +20,6 @@ class TestCueTarget : public CueTarget {
   std::set<CueIntrusiveness> supported_intrusiveness = {
       CueIntrusiveness::kLoud, CueIntrusiveness::kQuiet};
   std::optional<optimization_guide::proto::ContextualCue> generate_result;
-  bool page_eligible = true;
   CueActionData click_data = std::monostate();
   CueActionData edit_prompt_data = std::monostate();
   bool chip_shown = false;
@@ -45,9 +44,6 @@ class TestCueTarget : public CueTarget {
   void CheckEligibility(base::WeakPtr<content::WebContents> web_contents,
                         CueIntrusiveness intrusiveness,
                         EligibilityCallback callback) override;
-  bool IsPageEligible(
-      const page_content_annotations::PageContentAnnotationsResult& result,
-      content::WebContents* active_web_contents) const override;
   void OnChipShown() override;
   void OnChipClicked() override;
   void OnAnchoredMessageShown(

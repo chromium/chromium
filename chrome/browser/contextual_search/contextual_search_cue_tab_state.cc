@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/contextual_cueing/cueing_log.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/contextual_search/contextual_search_cue_target.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
@@ -162,7 +163,7 @@ bool ContextualSearchCueTabState::IsHistorySyncEnabled() const {
 void ContextualSearchCueTabState::CheckEligibility(
     contextual_cueing::CueIntrusiveness intrusiveness,
     contextual_cueing::CueTarget::EligibilityCallback callback,
-    base::WeakPtr<contextual_cueing::CueTarget> target) {
+    base::WeakPtr<ContextualSearchCueTarget> target) {
   if (!annotation_service_ || !is_observing_category_classifier_) {
     CUEING_LOG(
         "ContextualSearchCueTabState::CheckEligibility failed: No annotation "
@@ -227,7 +228,7 @@ void ContextualSearchCueTabState::ResolvePendingCheck() {
   annotation_timeout_timer_.Stop();
   contextual_cueing::CueTarget::EligibilityCallback callback =
       std::move(pending_check_->callback);
-  base::WeakPtr<contextual_cueing::CueTarget> target = pending_check_->target;
+  base::WeakPtr<ContextualSearchCueTarget> target = pending_check_->target;
   pending_check_.reset();
 
   const bool eligible =

@@ -100,10 +100,6 @@ class IndigoCueTargetTest : public testing::Test {
 TEST_F(IndigoCueTargetTest, BasicProperties) {
   EXPECT_EQ(cue_target_->GetType(), contextual_cueing::CueTargetType::kIndigo);
   EXPECT_TRUE(cue_target_->IsEligible());
-  EXPECT_FALSE(cue_target_->IsPageEligible(
-      page_content_annotations::PageContentAnnotationsResult::
-          CreateCategoryResults({}),
-      nullptr));
   EXPECT_EQ(cue_target_->GetSurface(),
             optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED);
   EXPECT_TRUE(cue_target_->OverridesUcbScoring());

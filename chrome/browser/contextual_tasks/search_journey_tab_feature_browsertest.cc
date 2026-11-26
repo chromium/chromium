@@ -1188,11 +1188,6 @@ class FakeNonAbaCueTarget : public contextual_cueing::CueTarget {
     });
     std::move(callback).Run(/*eligible=*/true, std::move(generator));
   }
-  bool IsPageEligible(
-      const page_content_annotations::PageContentAnnotationsResult& result,
-      content::WebContents* active_web_contents) const override {
-    return false;
-  }
   void OnAnchoredMessageClicked(contextual_cueing::CueActionData) override {}
   void OnEditPrompt(contextual_cueing::CueActionData) override {}
   ui::ImageModel GetAnchoredMessageIcon() const override {

@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/contextual_search/contextual_search_cue_target.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -55,16 +56,11 @@ class FakePageCategoryClassifierBridge
       callbacks_;
 };
 
-class FakeCueTarget : public contextual_cueing::CueTarget {
+class FakeCueTarget : public ContextualSearchCueTarget {
  public:
-  contextual_cueing::CueTargetType GetType() const override {
-    return contextual_cueing::CueTargetType::kContextualSearch;
-  }
-  bool RequiresModelExecution() const override { return true; }
-  bool IsEligible() const override { return true; }
-  void CheckEligibility(base::WeakPtr<content::WebContents> web_contents,
-                        contextual_cueing::CueIntrusiveness intrusiveness,
-                        EligibilityCallback callback) override {}
+  explicit FakeCueTarget(tabs::TabInterface& tab)
+      : ContextualSearchCueTarget(/*optimization_guide_keyed_service=*/nullptr,
+                                  tab) {}
   bool IsPageEligible(
       const page_content_annotations::PageContentAnnotationsResult& result,
       content::WebContents* active_web_contents) const override {
@@ -81,26 +77,8 @@ class FakeCueTarget : public contextual_cueing::CueTarget {
     }
     return false;
   }
-  void OnAnchoredMessageClicked(contextual_cueing::CueActionData) override {}
-  void OnEditPrompt(contextual_cueing::CueActionData) override {}
-  ui::ImageModel GetAnchoredMessageIcon() const override {
-    return ui::ImageModel();
-  }
-  ui::ImageModel GetOmniboxChipIcon() const override {
-    return ui::ImageModel();
-  }
-  contextual_cueing::CueActionData CueActionDataFromResponse(
-      const optimization_guide::proto::ContextualCue&,
-      std::vector<tabs::TabHandle>) const override {
-    return std::monostate{};
-  }
-  optimization_guide::proto::ContextualCueingSurface GetSurface()
-      const override {
-    return optimization_guide::proto::
-        CONTEXTUAL_CUEING_SURFACE_CONTEXTUAL_SEARCH;
-  }
 
-  base::WeakPtr<contextual_cueing::CueTarget> GetWeakPtr() {
+  base::WeakPtr<ContextualSearchCueTarget> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -169,7 +147,7 @@ class ContextualSearchCueTabStateTest
     EXPECT_CALL(*mock_tab_, GetUnownedUserDataHost())
         .WillRepeatedly(testing::ReturnRef(user_data_host_));
 
-    target_ = std::make_unique<FakeCueTarget>();
+    target_ = std::make_unique<FakeCueTarget>(*mock_tab_);
     cue_tab_state_ = std::make_unique<ContextualSearchCueTabState>(*mock_tab_);
   }
 

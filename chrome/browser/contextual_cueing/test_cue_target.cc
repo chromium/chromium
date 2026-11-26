@@ -67,12 +67,6 @@ void TestCueTarget::CheckEligibility(
   }
 }
 
-bool TestCueTarget::IsPageEligible(
-    const page_content_annotations::PageContentAnnotationsResult& result,
-    content::WebContents* active_web_contents) const {
-  return page_eligible;
-}
-
 void TestCueTarget::OnChipShown() {
   chip_shown = true;
 }

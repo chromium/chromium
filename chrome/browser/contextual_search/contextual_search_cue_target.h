@@ -48,9 +48,6 @@ class ContextualSearchCueTarget : public contextual_cueing::CueTarget {
   void CheckEligibility(base::WeakPtr<content::WebContents> web_contents,
                         contextual_cueing::CueIntrusiveness intrusiveness,
                         EligibilityCallback callback) override;
-  bool IsPageEligible(
-      const page_content_annotations::PageContentAnnotationsResult& result,
-      content::WebContents* active_web_contents) const override;
   void OnAnchoredMessageClicked(contextual_cueing::CueActionData data) override;
   bool SupportsEditPrompt() const override;
   void OnEditPrompt(contextual_cueing::CueActionData data) override;
@@ -61,6 +58,10 @@ class ContextualSearchCueTarget : public contextual_cueing::CueTarget {
       std::vector<tabs::TabHandle> tabs_to_show) const override;
   optimization_guide::proto::ContextualCueingSurface GetSurface()
       const override;
+
+  virtual bool IsPageEligible(
+      const page_content_annotations::PageContentAnnotationsResult& result,
+      content::WebContents* active_web_contents) const;
 
   base::WeakPtr<ContextualSearchCueTarget> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

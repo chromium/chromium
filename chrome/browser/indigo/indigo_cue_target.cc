@@ -120,12 +120,6 @@ void IndigoCueTarget::GenerateContent(
   std::move(callback).Run(std::move(cue));
 }
 
-bool IndigoCueTarget::IsPageEligible(
-    const page_content_annotations::PageContentAnnotationsResult& result,
-    content::WebContents* active_web_contents) const {
-  return false;
-}
-
 void IndigoCueTarget::OnChipShown() {
   RecordShownEntryPoint(IndigoPageActionEntryPoint::kSuggestionChip);
 }

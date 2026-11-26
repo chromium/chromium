@@ -99,13 +99,6 @@ void AbaSearchJourneyCueTarget::CheckEligibility(
       base::BindOnce(std::move(callback), eligible, std::move(generator)));
 }
 
-bool AbaSearchJourneyCueTarget::IsPageEligible(
-    const page_content_annotations::PageContentAnnotationsResult& result,
-    content::WebContents* active_web_contents) const {
-  // This target doesn't use PageContentAnnotationsResult.
-  return false;
-}
-
 void AbaSearchJourneyCueTarget::OnChipShown() {
   OnCueShown(/*is_anchored_message=*/false);
 }
