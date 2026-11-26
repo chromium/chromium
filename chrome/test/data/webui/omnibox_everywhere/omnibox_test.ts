@@ -5600,7 +5600,8 @@ suite('OmniboxEverywhereContextMenuTest', () => {
     }
   });
 
-  test(
+  // TODO(crbug.com/588125780): Re-enable once crrev.com/c/8857464 lands.
+  test.skip(
       'resolves dark mode tokens across omnibox, most visited, and composebox',
       async () => {
         const rootStyle = document.documentElement.style;
