@@ -900,9 +900,9 @@ void XMLDocumentParserRs::EndInternal() {
     // via XSLTProcessor::TransformToString(), which transforms the document and
     // re-parses the resulting HTML/XML. This avoids XMLDocumentParserRs ever
     // needing to construct Blink DOM elements for the untransformed source.
-    xmlDocPtr doc = XmlDocPtrForString(
-        GetDocument(), original_source_for_transform_.ToString(),
-        GetDocument()->Url().GetString());
+    xmlDocPtr doc =
+        XmlDocPtrForString(GetDocument(), original_source_for_transform_,
+                           GetDocument()->Url().GetString());
     GetDocument()->SetTransformSource(std::make_unique<TransformSource>(doc));
     DocumentParser::StopParsing();
   }

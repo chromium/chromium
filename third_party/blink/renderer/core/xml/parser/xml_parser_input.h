@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_PARSER_XML_PARSER_INPUT_H_
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 
@@ -40,10 +40,11 @@ class XMLParserInput {
   STACK_ALLOCATED();
 
  public:
-  explicit XMLParserInput(const String& source)
+  explicit XMLParserInput(const StringView& source)
       : source_(source), encoding_(nullptr), data_(nullptr), size_(0) {
-    if (source_.empty())
+    if (source_.empty()) {
       return;
+    }
 
     const UChar kBOM = 0xFEFF;
     const unsigned char bom_high_byte =
@@ -64,7 +65,7 @@ class XMLParserInput {
   int size() const { return size_; }
 
  private:
-  String source_;
+  StringView source_;
   const char* encoding_;
   const char* data_;
   int size_;

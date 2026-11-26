@@ -253,7 +253,7 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
 };
 
 xmlDocPtr XmlDocPtrForString(Document*,
-                             const String& source,
+                             const StringView& source,
                              const String& url);
 HashMap<String, String> ParseAttributes(const String&, bool& attrs_ok);
 

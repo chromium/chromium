@@ -1930,7 +1930,7 @@ void XMLDocumentParser::DoEnd() {
 }
 
 xmlDocPtr XmlDocPtrForString(Document* document,
-                             const String& source,
+                             const StringView& source,
                              const String& url) {
   if (source.empty())
     return nullptr;
