@@ -768,6 +768,9 @@ void ChromeAutofillClient::ShowAutofillSettings(
     case SuggestionType::kManageEnhancedAutofill:
       ShowAutofillPersonalContextSettings(web_contents());
       return;
+    case SuggestionType::kAutofillAiPrivateInferenceNotice:
+      ShowAutofillSettingsPage(web_contents());
+      return;
     default:
       break;
   }

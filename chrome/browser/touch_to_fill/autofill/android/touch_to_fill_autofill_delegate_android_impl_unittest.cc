@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
@@ -45,6 +46,10 @@ class MockAutofillClient : public TestAutofillClient {
               (base::WeakPtr<TouchToFillAutofillDelegate> delegate),
               (override));
   MOCK_METHOD(void, HideTouchToFillAutofillNotice, (), (override));
+  MOCK_METHOD(void,
+              ShowAutofillSettings,
+              (SuggestionType suggestion_type),
+              (override));
 };
 
 class TouchToFillAutofillDelegateAndroidImplTest
@@ -211,6 +216,8 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
       form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
   ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
 
+  EXPECT_CALL(autofill_client(),
+              ShowAutofillSettings(SuggestionType::kManageEnhancedAutofill));
   delegate().OnSettingsLinkClicked();
   EXPECT_TRUE(autofill_client()
                   .GetPersonalContextFirstRunService()
@@ -509,6 +516,8 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
   ASSERT_TRUE(delegate().IsShowingTouchToFill());
 
+  EXPECT_CALL(autofill_client(),
+              ShowAutofillSettings(SuggestionType::kManageEnhancedAutofill));
   delegate().OnSettingsLinkClicked();
   EXPECT_FALSE(delegate().IsShowingTouchToFill());
 
@@ -711,6 +720,9 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplPrivateInferenceTest,
       form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
   ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
 
+  EXPECT_CALL(
+      autofill_client(),
+      ShowAutofillSettings(SuggestionType::kAutofillAiPrivateInferenceNotice));
   delegate().OnSettingsLinkClicked();
   EXPECT_FALSE(
       autofill_client()

@@ -11,9 +11,7 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
-#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -21,6 +19,7 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
@@ -269,20 +268,14 @@ void TouchToFillAutofillDelegateAndroidImpl::OnSettingsLinkClicked() {
     case NoticeType::kPersonalContext:
       // Opening the settings counts as an acknowledgement of the notice.
       OnPersonalContextNoticeAcknowledged();
-      if (content::WebContents* web_contents =
-              static_cast<ContentAutofillClient&>(manager_->client())
-                  .web_contents()) {
-        ShowAutofillPersonalContextSettings(web_contents);
-      }
+      manager_->client().ShowAutofillSettings(
+          SuggestionType::kManageEnhancedAutofill);
       break;
     case NoticeType::kPrivateInference:
       // Opening the settings counts as an acknowledgement of the notice.
       OnPrivateInferenceNoticeAcknowledged();
-      if (content::WebContents* web_contents =
-              static_cast<ContentAutofillClient&>(manager_->client())
-                  .web_contents()) {
-        ShowAutofillSettingsPage(web_contents);
-      }
+      manager_->client().ShowAutofillSettings(
+          SuggestionType::kAutofillAiPrivateInferenceNotice);
       break;
   }
 }
