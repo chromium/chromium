@@ -158,11 +158,11 @@ bool IsPrimaryMainFrame(AutofillDriver& driver) {
 
 }  // namespace
 
-// Form parsing happens asynchronously. This struct holds the necessary context.
-// The AsyncContext can be passed to any sequence and its members can be
+// Holds the forms and predictions for local async parsing or crowdsourced
+// server responses. Can be passed to any sequence and its members can be
 // accessed on that sequence.
-struct AutofillManager::AsyncContext {
-  AsyncContext(AutofillManager& manager, std::vector<FormData> forms)
+struct AutofillManager::PredictionContext {
+  PredictionContext(AutofillManager& manager, std::vector<FormData> forms)
       : forms(std::move(forms)),
         country_code(manager.client().GetVariationConfigCountryCode()),
         current_page_language(manager.GetCurrentPageLanguage()),
@@ -174,6 +174,7 @@ struct AutofillManager::AsyncContext {
   std::vector<RegexPredictions> regex_predictions;
   std::vector<ModelPredictions> autofill_predictions;
   std::vector<ModelPredictions> password_manager_predictions;
+  std::vector<ServerPredictions> server_predictions;
   GeoIpCountryCode country_code;
   LanguageCode current_page_language;
   std::unique_ptr<BufferingLogManager> log_manager;
@@ -747,6 +748,7 @@ void AutofillManager::ParseFormAsync(
       cached_form_structure && !NeedsReparse(form, *cached_form_structure)) {
     UpdateFormCache(base::span_from_ref(form),
                     /*context=*/std::nullopt,
+                    /*source=*/std::nullopt,
                     /*preserve_signatures=*/true);
     std::move(callback).Run(*this, std::move(form));
     return;
@@ -773,7 +775,7 @@ void AutofillManager::ParseFormsAsyncCommon(
         callback) {
   // To be run on a different task (must not access global or member
   // variables).
-  auto run_heuristics = [](AsyncContext context, bool ignore_small_forms) {
+  auto run_heuristics = [](PredictionContext context, bool ignore_small_forms) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.RunHeuristics");
     context.regex_predictions =
         base::ToVector(context.forms, [&](const FormData& form) {
@@ -789,15 +791,13 @@ void AutofillManager::ParseFormsAsyncCommon(
       [](base::WeakPtr<AutofillManager> self, bool preserve_signatures,
          base::OnceCallback<void(AutofillManager&,
                                  const std::vector<FormData>&)> callback,
-         bool small_forms_were_parsed, AsyncContext context) {
+         bool small_forms_were_parsed, PredictionContext context) {
         if (!self) {
           return;
         }
-        self->OnFieldTypesDetermined(context, preserve_signatures,
-                                     small_forms_were_parsed);
-        if (context.log_manager && self->log_manager()) {
-          context.log_manager->Flush(*self->log_manager());
-        }
+        self->OnFieldTypesDetermined(
+            context, Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+            preserve_signatures, small_forms_were_parsed);
         std::move(callback).Run(*self, context.forms);
       },
       parsing_weak_ptr_factory_.GetWeakPtr(), preserve_signatures,
@@ -807,9 +807,9 @@ void AutofillManager::ParseFormsAsyncCommon(
   // To be run on the main thread (accesses member variables).
   auto run_heuristics_and_update_cache = base::BindOnce(
       [](base::WeakPtr<AutofillManager> self,
-         AsyncContext (*run_heuristics)(AsyncContext, bool),
-         base::OnceCallback<void(AsyncContext)> update_cache,
-         bool ignore_small_forms, AsyncContext context) {
+         PredictionContext (*run_heuristics)(PredictionContext, bool),
+         base::OnceCallback<void(PredictionContext)> update_cache,
+         bool ignore_small_forms, PredictionContext context) {
         if (!self) {
           return;
         }
@@ -828,7 +828,7 @@ void AutofillManager::ParseFormsAsyncCommon(
   // (2) Running heuristics (this ensures that rationalization and sectioning
   //     are done for the active Autofill predictions).
   // (3) Updating the form cache.
-  RunMlModels(AsyncContext(*this, std::move(forms)),
+  RunMlModels(PredictionContext(*this, std::move(forms)),
               std::move(run_heuristics_and_update_cache));
 }
 
@@ -836,17 +836,17 @@ void AutofillManager::ParseFormsAsyncCommon(
 // to `forms`. The model is executed on a background sequence.
 // Calls `done_callback` upon completion on the UI sequence.
 void AutofillManager::RunMlModels(
-    AsyncContext context,
-    base::OnceCallback<void(AsyncContext)> done_callback) {
+    PredictionContext context,
+    base::OnceCallback<void(PredictionContext)> done_callback) {
   // Runs the specified model and calls `response` with the results.
   // Otherwise runs `response` with the empty vector.
   // Called on the UI thread.
   auto run_model = [](HeuristicSource source,
                       base::WeakPtr<AutofillManager> manager,
-                      base::OnceCallback<void(AsyncContext context,
+                      base::OnceCallback<void(PredictionContext context,
                                               std::vector<ModelPredictions>)>
                           receive_predictions,
-                      AsyncContext context) {
+                      PredictionContext context) {
     if (!manager) {
       return;
     }
@@ -881,7 +881,7 @@ void AutofillManager::RunMlModels(
   // Stores the computed predictions.
   // Called on the UI thread.
   auto receive_predictions =
-      [](AsyncContext context,
+      [](PredictionContext context,
          std::vector<ModelPredictions> model_predictions) {
         if (model_predictions.empty()) {
           return context;
@@ -1045,58 +1045,90 @@ void AutofillManager::LogServerQueryResponseMetrics(
   }
 }
 
-void AutofillManager::OnFieldTypesDetermined(const AsyncContext& context,
+void AutofillManager::OnFieldTypesDetermined(PredictionContext& context,
+                                             Observer::FieldTypeSource source,
                                              bool preserve_signatures,
                                              bool small_forms_were_parsed) {
-  CHECK_EQ(context.regex_predictions.size(), context.forms.size());
-  UpdateFormCache(context.forms, context, preserve_signatures);
+  switch (source) {
+    case Observer::FieldTypeSource::kHeuristicsOrAutocomplete:
+      CHECK_EQ(context.regex_predictions.size(), context.forms.size());
+      break;
+    case Observer::FieldTypeSource::kAutofillServer:
+      CHECK_EQ(context.server_predictions.size(), context.forms.size());
+      break;
+    case Observer::FieldTypeSource::kAutofillAiModel:
+      // `kAutofillAiModel` predictions are applied directly to the cached
+      // `FormStructure` in `BrowserAutofillManager`.
+      NOTREACHED();
+  }
+  UpdateFormCache(context.forms, context, source, preserve_signatures);
   for (const FormData& form : context.forms) {
     if (const FormStructure* const form_structure =
             FindCachedFormById(form.global_id())) {
       LogCurrentFieldTypes(form_structure);
       NotifyObservers(&Observer::OnFieldTypesDetermined,
-                      form_structure->global_id(),
-                      Observer::FieldTypeSource::kHeuristicsOrAutocomplete,
+                      form_structure->global_id(), source,
                       small_forms_were_parsed);
     }
+  }
+  if (context.log_manager && log_manager()) {
+    context.log_manager->Flush(*log_manager());
   }
 }
 
 void AutofillManager::UpdateFormCache(
     base::span<const FormData> forms,
-    base::optional_ref<const AsyncContext> context,
+    base::optional_ref<const PredictionContext> context,
+    std::optional<Observer::FieldTypeSource> source,
     bool preserve_signatures) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(context.has_value(), source.has_value());
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.UpdateCache");
 
-  auto apply_predictions = [](FormStructure& form_structure,
-                              const AsyncContext& context, size_t i) {
-    for (HeuristicSource source : DenseSet<HeuristicSource>::all()) {
-      auto apply_or_reset = [&]<typename T>(const std::vector<T>& predictions) {
-        if (!predictions.empty()) {
-          predictions[i].ApplyTo(form_structure.fields());
-        } else {
-          T::Reset(source, form_structure.fields());
-        }
-      };
-      switch (source) {
-        case HeuristicSource::kAutofillMachineLearning:
-          apply_or_reset(context.autofill_predictions);
-          break;
-        case HeuristicSource::kPasswordManagerMachineLearning:
-          apply_or_reset(context.password_manager_predictions);
-          break;
-        case HeuristicSource::kRegexes:
-          apply_or_reset(context.regex_predictions);
-          break;
-      }
-    }
-    form_structure.RationalizeAndAssignSections(context.country_code,
-                                                context.current_page_language,
-                                                context.log_manager.get());
-  };
-
   for (size_t i = 0; i < forms.size(); ++i) {
+    auto apply_predictions = [&](FormStructure& form_structure) {
+      if (!context) {
+        return;
+      }
+      switch (*source) {
+        case Observer::FieldTypeSource::kHeuristicsOrAutocomplete:
+          for (HeuristicSource s : DenseSet<HeuristicSource>::all()) {
+            auto apply_or_reset =
+                [&]<typename T>(const std::vector<T>& predictions) {
+                  if (!predictions.empty()) {
+                    predictions[i].ApplyTo(form_structure.fields());
+                  } else {
+                    T::Reset(s, form_structure.fields());
+                  }
+                };
+            switch (s) {
+              case HeuristicSource::kAutofillMachineLearning:
+                apply_or_reset(context->autofill_predictions);
+                break;
+              case HeuristicSource::kPasswordManagerMachineLearning:
+                apply_or_reset(context->password_manager_predictions);
+                break;
+              case HeuristicSource::kRegexes:
+                apply_or_reset(context->regex_predictions);
+                break;
+            }
+          }
+          break;
+        case Observer::FieldTypeSource::kAutofillServer:
+          form_structure.set_server_predictions_received_timestamp(
+              base::TimeTicks::Now());
+          context->server_predictions[i].ApplyTo(form_structure);
+          break;
+        case Observer::FieldTypeSource::kAutofillAiModel:
+          // `kAutofillAiModel` predictions are applied directly to the cached
+          // `FormStructure` in `BrowserAutofillManager`.
+          NOTREACHED();
+      }
+      form_structure.RationalizeAndAssignSections(
+          context->country_code, context->current_page_language,
+          context->log_manager.get());
+    };
+
     FormStructure* cached_form_structure =
         FindCachedFormById(forms[i].global_id(), /*pass_key=*/{});
     const bool is_new_form = !cached_form_structure;
@@ -1111,9 +1143,7 @@ void AutofillManager::UpdateFormCache(
     if (is_new_form) {
       DCHECK(context);
       auto form_structure = std::make_unique<FormStructure>(forms[i]);
-      if (context) {
-        apply_predictions(*form_structure, *context, i);
-      }
+      apply_predictions(*form_structure);
       form_structures_[forms[i].global_id()] = std::move(form_structure);
       DCHECK_LE(form_structures_.size(), kAutofillManagerMaxFormCacheSize);
       continue;
@@ -1124,9 +1154,7 @@ void AutofillManager::UpdateFormCache(
         cached_form_structure->structural_form_signature();
     cached_form_structure->UpdateFormData(forms[i],
                                           base::PassKey<AutofillManager>());
-    if (context) {
-      apply_predictions(*cached_form_structure, *context, i);
-    }
+    apply_predictions(*cached_form_structure);
     if (preserve_signatures ||
         IsCreditCardFormForSignaturePurposes(
             *cached_form_structure, GetAcUnrecognizedBehavior(client()))) {

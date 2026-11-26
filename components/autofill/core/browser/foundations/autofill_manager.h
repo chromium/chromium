@@ -563,7 +563,7 @@ class AutofillManager
  private:
   friend class AutofillManagerTestApi;
 
-  struct AsyncContext;
+  struct PredictionContext;
 
   // OnFooImpl() is called, potentially asynchronously after parsing the form,
   // by the renderer event OnFoo(). There should be no other callers.
@@ -653,8 +653,8 @@ class AutofillManager
           callback);
 
   // Step 2 described above ParseFormsAsync().
-  void RunMlModels(AsyncContext context,
-                   base::OnceCallback<void(AsyncContext)> done_callback);
+  void RunMlModels(PredictionContext context,
+                   base::OnceCallback<void(PredictionContext)> done_callback);
 
   // Triggers the server predictions query for all `forms` that have
   // `FormParsingPermission::kServerQuery`.
@@ -682,21 +682,22 @@ class AutofillManager
   void OnFormsParsed(const std::vector<FormData>& forms);
 
   // Updates `form_structures_` with the predictions in `context`, logs field
-  // types, and notifies `Observer::OnFieldTypesDetermined`.
-  void OnFieldTypesDetermined(const AsyncContext& context,
+  // types, notifies `Observer::OnFieldTypesDetermined` with `source`, and
+  // flushes `context.log_manager`.
+  void OnFieldTypesDetermined(PredictionContext& context,
+                              Observer::FieldTypeSource source,
                               bool preserve_signatures,
                               bool small_forms_were_parsed);
 
-  // Updates `form_structures_` with the information in `forms` and `context`,
-  // if available. `context` is available when this function is called as a
-  // result of a parsing operation, `reason` is an indicator of that.
-  // If `preserve_signatures` is true, credit card forms have their
-  // `FormSignature`s preserved. `forms` might contain forms that are not in the
-  // cache (on pageload for example). In that case, the function creates and
-  // adds a `FormStructure` to the cache (`context` should not be `std::nullopt`
-  // in that case).
+  // Updates `form_structures_` with the information in `forms` and `context`
+  // (for `source`), if available. `forms` might contain forms that are not in
+  // the cache (on pageload for example). In that case, the function creates and
+  // adds a `FormStructure` to the cache (`context` and `source` must be set in
+  // that case). If `preserve_signatures` is true, all forms keep their existing
+  // `FormSignature`s; otherwise, only credit card forms do.
   void UpdateFormCache(base::span<const FormData> forms,
-                       base::optional_ref<const AsyncContext> context,
+                       base::optional_ref<const PredictionContext> context,
+                       std::optional<Observer::FieldTypeSource> source,
                        bool preserve_signatures);
 
   std::unique_ptr<autofill_metrics::FormInteractionsUkmLogger>
