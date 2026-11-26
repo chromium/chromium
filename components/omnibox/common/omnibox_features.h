@@ -338,6 +338,10 @@ BASE_DECLARE_FEATURE(kOmniboxVoicePlateIntent);
 // gfx::VectorIcon definitions (shared with desktop) instead of being sourced
 // from Android XML drawables.
 BASE_DECLARE_FEATURE(kOmniboxNativeVectorIcons);
+// If enabled, Fusebox icons identified by IconResourceIds (e.g. tool and model
+// icons) are rendered from the native OmniboxIconSource, falling back to the
+// bundled Android drawables when an icon is unavailable.
+BASE_DECLARE_FEATURE(kOmniboxFuseboxNativeIcons);
 // If enabled, the AI Mode button in the desktop omnibox is stateful: it stays
 // visible in AI Mode, and turns into a send button once there is something to
 // submit.

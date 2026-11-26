@@ -731,6 +731,11 @@ BASE_FEATURE(kOmniboxVoicePlateIntent, DISABLED);
 // from Android XML drawables.
 BASE_FEATURE(kOmniboxNativeVectorIcons, DISABLED);
 
+// If enabled, Fusebox icons identified by IconResourceIds (e.g. tool and model
+// icons) are rendered from the native OmniboxIconSource, falling back to the
+// bundled Android drawables when an icon is unavailable.
+BASE_FEATURE(kOmniboxFuseboxNativeIcons, DISABLED);
+
 // If enabled, the AI Mode button in the desktop omnibox is stateful: it stays
 // visible in AI Mode, and turns into a send button once there is something to
 // submit.
@@ -778,6 +783,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kAndroidTabSearchCloseTabButton,
       &kOmniboxVoicePlateIntent,
       &kOmniboxNativeVectorIcons,
+      &kOmniboxFuseboxNativeIcons,
       &kOmniboxStatefulAiModeButton};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);

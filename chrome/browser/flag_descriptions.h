@@ -3881,6 +3881,13 @@ inline constexpr char kOmniboxNativeVectorIconsDescription[] =
     "shared with desktop, rasterized on demand, instead of Android XML "
     "drawables";
 
+inline constexpr char kOmniboxFuseboxNativeIconsName[] =
+    "Omnibox Fusebox Native Icons";
+inline constexpr char kOmniboxFuseboxNativeIconsDescription[] =
+    "Renders Fusebox tool and model icons from the native icon source, "
+    "falling back to the bundled Android drawables when an icon is "
+    "unavailable";
+
 inline constexpr char kOmniboxStatefulAiModeButtonName[] =
     "Omnibox Stateful AI Mode Button";
 inline constexpr char kOmniboxStatefulAiModeButtonDescription[] =

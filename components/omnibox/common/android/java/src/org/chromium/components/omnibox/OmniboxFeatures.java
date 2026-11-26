@@ -316,6 +316,15 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.OMNIBOX_NATIVE_VECTOR_ICONS, FeatureState.DISABLED_IN_PROD);
 
     /**
+     * Renders Fusebox icons identified by IconResourceIds from the native OmniboxIconSource,
+     * falling back to bundled Android drawables when an icon is unavailable.
+     */
+    private static final CachedFlag sOmniboxFuseboxNativeIcons =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_FUSEBOX_NATIVE_ICONS,
+                    FeatureState.DISABLED_IN_PROD);
+
+    /**
      * Makes the AI Mode button in the desktop omnibox stateful: it stays visible in AI Mode, and
      * turns into a send button once there is text or an attachment to submit.
      */
@@ -502,6 +511,14 @@ public class OmniboxFeatures {
      */
     public static boolean isNativeVectorIconsEnabled() {
         return sOmniboxNativeVectorIcons.isEnabled();
+    }
+
+    /**
+     * Returns whether Fusebox icons identified by IconResourceIds should be rendered from the
+     * native OmniboxIconSource rather than bundled Android drawables.
+     */
+    public static boolean isFuseboxNativeIconsEnabled() {
+        return sOmniboxFuseboxNativeIcons.isEnabled();
     }
 
     /**

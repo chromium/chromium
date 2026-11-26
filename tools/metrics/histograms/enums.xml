@@ -9800,6 +9800,7 @@ from previous Chrome versions.
   <int value="-1537773844"
       label="ContextualSuggestionsAlternateCardLayout:disabled"/>
   <int value="-1537701085" label="FedCmUserInfo:enabled"/>
+  <int value="-1536913032" label="OmniboxFuseboxNativeIcons:disabled"/>
   <int value="-1536293422" label="SharedArrayBuffer:enabled"/>
   <int value="-1536242739" label="security-chip"/>
   <int value="-1535758690" label="AutoplayIgnoreWebAudio:disabled"/>
@@ -16094,6 +16095,7 @@ from previous Chrome versions.
   <int value="316778089" label="OmniboxConsumesImeInsets:disabled"/>
   <int value="317128092"
       label="kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration:enabled"/>
+  <int value="317249503" label="OmniboxFuseboxNativeIcons:enabled"/>
   <int value="317328599" label="RegionCaptureOfOtherTabs:enabled"/>
   <int value="317381675" label="WebRTCBoostMediaIOThreads:disabled"/>
   <int value="317432596" label="DisplayLocking:disabled"/>

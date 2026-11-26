@@ -7073,6 +7073,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxNativeVectorIconsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxNativeVectorIcons)},
 
+    {"omnibox-fusebox-native-icons",
+     flag_descriptions::kOmniboxFuseboxNativeIconsName,
+     flag_descriptions::kOmniboxFuseboxNativeIconsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxFuseboxNativeIcons)},
+
     {"omnibox-stateful-ai-mode-button",
      flag_descriptions::kOmniboxStatefulAiModeButtonName,
      flag_descriptions::kOmniboxStatefulAiModeButtonDescription, kOsAndroid,
