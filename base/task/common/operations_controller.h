@@ -124,10 +124,14 @@ class BASE_EXPORT OperationsController {
   // kAcceptingOperations    | 1                    | 0
   // kShuttingDown           | *                    | 1
   //
-  // The counter keeps track of the rejected operations when we are in
-  // the kRejectingOperations state, the number of inflight operations
-  // otherwise. If the count reaches zero and we are in the shutting down state
-  // |shutdown_complete_| will be signaled.
+  // The counter keeps track of the rejected operations while
+  // kAcceptingOperationsBitMask is unset, and the number of in-flight
+  // operations (plus any in-flight rejected TryBeginOperation() calls)
+  // otherwise. When the count first reaches zero in the kShuttingDown state
+  // after accepting operations, |shutdown_complete_| is signaled at most once.
+  // The first subsequent TryBeginOperation() observing count == 0 leaves +1
+  // permanently in the counter so later rejected attempts never transition back
+  // to zero or emit a duplicate Signal().
   static constexpr uint32_t kShuttingDownBitMask = uint32_t{1} << 31;
   static constexpr uint32_t kAcceptingOperationsBitMask = uint32_t{1} << 30;
   static constexpr uint32_t kFlagsBitMask =
