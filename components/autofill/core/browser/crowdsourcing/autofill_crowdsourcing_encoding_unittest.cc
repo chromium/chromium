@@ -4378,7 +4378,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_UpdatesVersion) {
   form_data.set_version(FormVersion(2));
 
   FormStructure& form_structure = SeeAndGetParsedForm(form_data);
-  form_structure.set_last_successfully_queried_version(FormVersion(1));
+  form_structure.set_last_predicted_version(FieldTypeSource::kAutofillServer,
+                                            FormVersion(1));
 
   AutofillQueryResponse response;
   test_api(autofill_manager())
@@ -4386,7 +4387,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_UpdatesVersion) {
                                  test::GetEncodedSignatures({form_structure}),
                                  {form_data});
 
-  EXPECT_EQ(form_structure.last_successfully_queried_version(), FormVersion(2));
+  EXPECT_EQ(
+      form_structure.last_predicted_version(FieldTypeSource::kAutofillServer),
+      FormVersion(2));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_SkipsOldVersion) {
@@ -4394,7 +4397,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_SkipsOldVersion) {
   form_data.set_version(FormVersion(1));
 
   FormStructure& form_structure = SeeAndGetParsedForm(form_data);
-  form_structure.set_last_successfully_queried_version(FormVersion(2));
+  form_structure.set_last_predicted_version(FieldTypeSource::kAutofillServer,
+                                            FormVersion(2));
 
   AutofillQueryResponse response;
   test_api(autofill_manager())
@@ -4402,7 +4406,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_SkipsOldVersion) {
                                  test::GetEncodedSignatures({form_structure}),
                                  {form_data});
 
-  EXPECT_EQ(form_structure.last_successfully_queried_version(), FormVersion(2));
+  EXPECT_EQ(
+      form_structure.last_predicted_version(FieldTypeSource::kAutofillServer),
+      FormVersion(2));
 }
 
 struct ClearSmallAddressFormPredictions_TestCase {

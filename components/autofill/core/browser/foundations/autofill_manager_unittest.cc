@@ -1557,5 +1557,46 @@ TEST_F(AutofillManagerTest,
   EXPECT_THAT(test_api(autofill_manager()).form_structures(), IsEmpty());
 }
 
+// Tests that updating a cached credit card form via OnLoadedServerPredictions()
+// preserves its original FormSignature, consistent with local parsing.
+TEST_F(AutofillManagerTest,
+       OnLoadedServerPredictions_PreservesCreditCardFormSignature) {
+  EXPECT_CALL(autofill_manager(), ShouldParseForms).WillOnce(Return(true));
+  TestAutofillManagerWaiter waiter(autofill_manager());
+  FormData initial_form = test::CreateTestCreditCardFormData(
+      /*is_https=*/true, /*use_month_type=*/false);
+  initial_form.set_version(FormVersion::FromUnsafeValue(1));
+  const FormSignature initial_signature = CalculateFormSignature(initial_form);
+  autofill_manager().OnFormsSeen({initial_form}, /*removed_forms=*/{},
+                                 AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(waiter.Wait());
+
+  FormData updated_form = initial_form;
+  updated_form.set_action(GURL("https://example.test/"));
+  updated_form.set_version(FormVersion::FromUnsafeValue(2));
+  const FormSignature updated_signature = CalculateFormSignature(updated_form);
+  ASSERT_NE(initial_signature, updated_signature);
+
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
+      .WillOnce(
+          [updated_signature](
+              const std::vector<FormData>&, std::optional<net::IsolationInfo>,
+              base::OnceCallback<void(
+                  std::optional<AutofillCrowdsourcingManager::QueryResponse>)>
+                  callback) {
+            std::move(callback).Run(AutofillCrowdsourcingManager::QueryResponse(
+                "", {updated_signature}));
+            return true;
+          });
+
+  EXPECT_CALL(autofill_manager(), OnFormProcessed);
+  test_api(autofill_manager()).QueryServerPredictions({updated_form});
+
+  const FormStructure& cached_form = CHECK_DEREF(
+      autofill_manager().FindCachedFormById(initial_form.global_id()));
+  EXPECT_EQ(cached_form.version(), updated_form.version());
+  EXPECT_EQ(cached_form.form_signature(), initial_signature);
+}
+
 }  // namespace
 }  // namespace autofill

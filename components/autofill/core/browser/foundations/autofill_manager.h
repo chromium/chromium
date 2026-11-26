@@ -656,11 +656,6 @@ class AutofillManager
   void QueryServerPredictions(base::span<const FormData> forms,
                               base::TimeTicks form_seen_timestamp);
 
-  // Populates the form cache with the forms matching `queried_form_signatures`.
-  void PopulateCacheForQueryResponse(
-      base::span<const FormData> forms,
-      const std::vector<FormSignature>& queried_form_signatures);
-
   // Invoked by `AutofillCrowdsourcingManager`.
   void OnLoadedServerPredictions(
       std::vector<FormData> forms,

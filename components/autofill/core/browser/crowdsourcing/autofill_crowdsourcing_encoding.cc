@@ -1187,8 +1187,7 @@ ServerPredictions::ServerPredictions(
     std::map<std::pair<FormSignature, FieldSignature>,
              std::deque<FieldSuggestion>>& field_signature_map,
     const FormData& form)
-    : version_(form.version()),
-      may_run_autofill_ai_model_(may_run_autofill_ai_model) {
+    : may_run_autofill_ai_model_(may_run_autofill_ai_model) {
   predictions_ =
       base::MakeFlatMap<FieldGlobalId, std::optional<FieldSuggestion>>(
           form.fields(), {}, [&](const FormFieldData& field) {
@@ -1210,10 +1209,6 @@ ServerPredictions& ServerPredictions::operator=(ServerPredictions&&) = default;
 ServerPredictions::~ServerPredictions() = default;
 
 void ServerPredictions::ApplyTo(FormStructure& form) const {
-  if (version_ < form.last_successfully_queried_version()) {
-    return;
-  }
-  form.set_last_successfully_queried_version(version_);
   form.set_may_run_autofill_ai_model(may_run_autofill_ai_model_);
 
   // Fields can share the same field signature. This map records for each

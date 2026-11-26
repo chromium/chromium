@@ -920,46 +920,6 @@ void AutofillManager::RunMlModels(
       std::move(context));
 }
 
-void AutofillManager::PopulateCacheForQueryResponse(
-    base::span<const FormData> forms,
-    const std::vector<FormSignature>& queried_form_signatures) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Create a set of the signatures that were returned by the server query.
-  base::flat_set<FormSignature> queried_signatures(queried_form_signatures);
-
-  // Add the forms to the cache if their signature was part of the query
-  // and if they do not already exist in the cache. Forms may already exist
-  // if local parsing finishes before the server predictions arrived or due
-  // to a previous request. Already existing forms are updated if the
-  // incoming form has a higher version.
-  for (const FormData& form : forms) {
-    FormStructure* form_structure =
-        FindCachedFormById(form.global_id(), /*pass_key=*/{});
-    if (form_structure && form_structure->version() >= form.version()) {
-      continue;
-    }
-
-    if (!queried_signatures.contains(CalculateFormSignature(form))) {
-      continue;
-    }
-
-    const bool is_new_form = !form_structure;
-    if (form_structures_.size() + is_new_form >
-        kAutofillManagerMaxFormCacheSize) {
-      LOG_AF(log_manager()) << LoggingScope::kAbortParsing
-                            << LogMessage::kAbortParsingTooManyForms << form;
-      break;
-    }
-
-    if (is_new_form) {
-      form_structures_[form.global_id()] =
-          std::make_unique<FormStructure>(form);
-    } else {
-      form_structure->UpdateFormData(form, base::PassKey<AutofillManager>());
-    }
-  }
-}
-
 void AutofillManager::OnLoadedServerPredictions(
     std::vector<FormData> forms,
     base::TimeTicks form_seen_timestamp,
@@ -997,31 +957,19 @@ void AutofillManager::OnLoadedServerPredictions(
               log_manager(),
               /*ignore_small_forms=*/!client().IsTabInActorMode());
       !form_server_predictions.empty()) {
-    CHECK_EQ(forms.size(), form_server_predictions.size());
-    // TODO(crbug.com/475586865): Replace PopulateCacheForQueryResponse() and
-    // the loop below with AutofillManager::OnFieldTypesDetermined().
-    PopulateCacheForQueryResponse(forms, response->queried_form_signatures);
-    queried_forms.reserve(forms.size());
-    for (auto [form, server_predictions] :
-         std::views::zip(forms, form_server_predictions)) {
-      FormStructure* form_structure =
-          FindCachedFormById(form.global_id(), /*pass_key=*/{});
-      if (!form_structure) {
-        continue;
+    PredictionContext context(*this, std::move(forms));
+    context.server_predictions = std::move(form_server_predictions);
+    OnFieldTypesDetermined(
+        context, Observer::FieldTypeSource::kAutofillServer,
+        /*preserve_signatures=*/false,
+        /*small_forms_were_parsed=*/client().IsTabInActorMode());
+    queried_forms.reserve(context.forms.size());
+    for (const FormData& form : context.forms) {
+      if (FormStructure* form_structure =
+              FindCachedFormById(form.global_id(), /*pass_key=*/{})) {
+        queried_forms.emplace_back(*form_structure);
+        OnFormProcessed(*form_structure);
       }
-
-      queried_forms.emplace_back(*form_structure);
-      form_structure->set_server_predictions_received_timestamp(
-          predictions_received_timestamp);
-      server_predictions.ApplyTo(*form_structure);
-      form_structure->RationalizeAndAssignSections(
-          client().GetVariationConfigCountryCode(), GetCurrentPageLanguage(),
-          log_manager());
-      LogCurrentFieldTypes(form_structure);
-      NotifyObservers(&Observer::OnFieldTypesDetermined, form.global_id(),
-                      Observer::FieldTypeSource::kAutofillServer,
-                      /*small_forms_were_parsed=*/client().IsTabInActorMode());
-      OnFormProcessed(*form_structure);
     }
     LogServerQueryResponseMetrics(queried_forms);
   }
@@ -1152,10 +1100,18 @@ void AutofillManager::UpdateFormCache(
       continue;
     }
 
-    // TODO(crbug.com/590212450): Use `<=` instead of `<` once
-    // `AutofillDriverIOS` and unit tests bypassing `AutofillDriver` set
-    // `FormVersion`.
-    if (forms[i].version() < cached_form_structure->version()) {
+    // TODO(crbug.com/590212450): Always require `>` once `AutofillDriverIOS`
+    // and unit tests bypassing `AutofillDriver` set `FormVersion`. Until then,
+    // local updates allow equal versions while server updates require a
+    // strictly newer version so delayed responses do not overwrite unversioned
+    // edits.
+    const bool is_local_update =
+        !source ||
+        *source == Observer::FieldTypeSource::kHeuristicsOrAutocomplete;
+    const bool should_update_form_data =
+        is_local_update ? forms[i].version() >= cached_form_structure->version()
+                        : forms[i].version() > cached_form_structure->version();
+    if (!should_update_form_data) {
       apply_predictions(*cached_form_structure);
       continue;
     }
