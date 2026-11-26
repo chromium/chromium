@@ -33430,7 +33430,8 @@ should be able to be added at any place in this file.
 
 <action name="Settings.AiPage.AutofillAIEntryPointClick">
   <owner>brunobraga@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when user clicks on the Auofill AI row in the chrome://settings/ai
@@ -33448,8 +33449,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.Compare.FeatureLinkClicked">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when the user clicks on the feature linkout in the
@@ -33458,8 +33459,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.Compare.LearnMoreClicked">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when the user clicks on the learn more link in the
@@ -33468,8 +33469,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.CompareEntryPointClick">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when user clicks on the Compare row in the chrome://settings/ai
@@ -33478,8 +33479,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.Compose.LearnMoreClicked">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when the user clicks on the learn more link in the
@@ -33488,8 +33489,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.Compose.ProactiveNudgeDisabled">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when the user disables Compose proactive nudge through the toggle
@@ -33498,8 +33499,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.Compose.ProactiveNudgeEnabled">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when the user enables Compose proactive nudge through the toggle in
@@ -33508,8 +33509,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.ComposeEntryPointClick">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when user clicks on the Compose row in the chrome://settings/ai
@@ -33573,7 +33574,8 @@ should be able to be added at any place in this file.
 
 <action name="Settings.AiPage.GoogleSearchAiModeWorkspaceEntryPointClick">
   <owner>adamyao@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when user clicks on the Google Search AI Mode Workspace row in the
@@ -33582,8 +33584,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.HistorySearch.Disabled">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when the user disables History Search through the toggle in the
@@ -33592,8 +33594,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.HistorySearch.Enabled">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when the user enables History Search through the toggle in the
@@ -33602,8 +33604,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.HistorySearch.FeatureLinkClicked">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when the user clicks on the feature linkout in the
@@ -33612,8 +33614,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.HistorySearch.LearnMoreClicked">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when the user clicks on the learn more link in the
@@ -33622,8 +33624,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.HistorySearchEntryPointClick">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when user clicks on the History Search row in the
@@ -33669,7 +33671,8 @@ should be able to be added at any place in this file.
 
 <action name="Settings.AiPage.PasswordChangeEntryPointClick">
   <owner>vsemeniuk@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     Reported when user clicks on the Password Change row in the
@@ -34884,8 +34887,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SettingsMenu_AiPageEntryPointClicked">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
     The user clicked the &quot;AI Innovations&quot; external link in the

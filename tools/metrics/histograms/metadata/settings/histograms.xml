@@ -132,8 +132,8 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram name="Settings.AiPage.Compose.Interactions"
     enum="SettingsAiPageComposeInteractions" expires_after="2027-02-28">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Captures the user interaction with all elements in AI Compose settings page.
@@ -142,8 +142,8 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram name="Settings.AiPage.ElementVisibility.{FeatureName}"
     enum="BooleanVisible" expires_after="2027-05-09">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Captures whether the entry point for the {FeatureName} in AI settings page
@@ -162,8 +162,8 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram name="Settings.AiPage.Interactions"
     enum="SettingsAiPageInteractions" expires_after="2027-05-02">
-  <owner>zalmashni@google.com</owner>
-  <owner>rainhard@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Captures the user interaction with all entrypoints in AI settings page.
