@@ -55,8 +55,7 @@ class MediaCastListViewTest : public AshTestBase {
   }
 
   MediaCastListView* media_cast_list_view() { return view_; }
-  std::vector<raw_ptr<views::View, DanglingUntriaged>>
-  GetContainerChildViews() {
+  views::View::Views GetContainerChildViews() {
     return view_->item_container_->children();
   }
 

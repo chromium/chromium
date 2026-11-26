@@ -96,8 +96,7 @@ class OutputAudioSlidersViewTest : public AshTestBase {
                             base::Unretained(this))));
   }
 
-  std::vector<raw_ptr<views::View, DanglingUntriaged>>
-  GetContainerChildViews() {
+  views::View::Views GetContainerChildViews() {
     return view_->GetSliderContainerForTesting()->children();
   }
 

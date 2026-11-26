@@ -39,8 +39,7 @@ class PanedWidgetDelegate : public views::WidgetDelegate {
   PanedWidgetDelegate(const PanedWidgetDelegate&) = delete;
   PanedWidgetDelegate& operator=(const PanedWidgetDelegate&) = delete;
 
-  void SetAccessiblePanes(
-      const std::vector<raw_ptr<views::View, DanglingUntriaged>>& panes) {
+  void SetAccessiblePanes(const views::View::Views& panes) {
     accessible_panes_ = panes;
   }
 
@@ -50,7 +49,7 @@ class PanedWidgetDelegate : public views::WidgetDelegate {
   }
 
  private:
-  std::vector<raw_ptr<views::View, DanglingUntriaged>> accessible_panes_;
+  views::View::Views accessible_panes_;
 };
 
 }  // namespace
@@ -284,7 +283,7 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
   view4->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   pane2->AddChildViewRaw(view4);
 
-  std::vector<raw_ptr<views::View, DanglingUntriaged>> panes;
+  views::View::Views panes;
   panes.push_back(pane1);
   panes.push_back(pane2);
 

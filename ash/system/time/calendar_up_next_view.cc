@@ -31,6 +31,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/view.h"
 
 namespace ash {
 namespace {
@@ -133,9 +134,8 @@ bool IsRightScrollButtonEnabled(views::ScrollView* scroll_view) {
 
 // Returns the index of the first (left-most) visible (partially or wholly)
 // child in the ScrollView.
-int GetFirstVisibleChildIndex(
-    std::vector<raw_ptr<views::View, DanglingUntriaged>> event_views,
-    views::View* scroll_view) {
+int GetFirstVisibleChildIndex(const views::View::Views& event_views,
+                              views::View* scroll_view) {
   for (size_t i = 0; i < event_views.size(); ++i) {
     auto* child = event_views[i].get();
     if (scroll_view->GetBoundsInScreen().Intersects(

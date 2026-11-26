@@ -396,8 +396,7 @@ class AshNotificationViewTestBase : public AshTestBase,
     return static_cast<AshNotificationView*>(
         view->grouped_notifications_container_->children().front());
   }
-  std::vector<raw_ptr<views::View, DanglingUntriaged>> GetChildNotifications(
-      AshNotificationView* view) {
+  views::View::Views GetChildNotifications(AshNotificationView* view) {
     return view->grouped_notifications_container_->children();
   }
   views::View* GetMainView(AshNotificationView* view) {
