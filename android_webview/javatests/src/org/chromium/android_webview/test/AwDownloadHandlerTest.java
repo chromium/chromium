@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Instrumentation tests for WebView-managed downloads (AwContents#setDownloadHandler). */
 @RunWith(Parameterized.class)
@@ -166,23 +165,15 @@ public class AwDownloadHandlerTest extends AwParameterizedTest {
      * client closes the connection.
      */
     private static CompletableFuture<Void> serveEndlessDownload(WebServer server) {
-        return serveEndlessDownload(server, "application/octet-stream", "endless.bin");
-    }
-
-    private static CompletableFuture<Void> serveEndlessDownload(
-            WebServer server, String mimeType, String filename) {
         CompletableFuture<Void> disconnected = new CompletableFuture<>();
         server.setRequestHandler(
                 (request, output) -> {
                     try {
                         output.write(
                                 ("HTTP/1.1 200 OK\r\n"
-                                                + "Content-Type: "
-                                                + mimeType
-                                                + "\r\n"
-                                                + "Content-Disposition: attachment; filename=\""
-                                                + filename
-                                                + "\"\r\n"
+                                                + "Content-Type: application/octet-stream\r\n"
+                                                + "Content-Disposition: attachment;"
+                                                + " filename=\"endless.bin\"\r\n"
                                                 + "Connection: close\r\n\r\n")
                                         .getBytes(StandardCharsets.US_ASCII));
                         while (true) {
@@ -197,23 +188,6 @@ public class AwDownloadHandlerTest extends AwParameterizedTest {
                     }
                 });
         return disconnected;
-    }
-
-    /**
-     * Loads {@code url} from an endless download handler and asserts that WebView cancels the
-     * transfer without passing the download to the handler.
-     */
-    private void assertDownloadBlocked(String url, CompletableFuture<Void> disconnected)
-            throws Exception {
-        AtomicBoolean handlerCalled = new AtomicBoolean();
-        setHandler(
-                download -> {
-                    handlerCalled.set(true);
-                    download.cancel();
-                });
-        mActivityTestRule.loadUrlAsync(mAwContents, url);
-        disconnected.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        ThreadUtils.runOnUiThreadBlocking(() -> Assert.assertFalse(handlerCalled.get()));
     }
 
     @Test
@@ -236,25 +210,6 @@ public class AwDownloadHandlerTest extends AwParameterizedTest {
             // have arrived first.
             Assert.assertEquals(legacyUrl, legacyHelper.getUrl());
             Assert.assertEquals(legacyCallCount + 1, legacyHelper.getCallCount());
-        }
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @MediumTest
-    public void testLegacyDownloadListenerReceivesApk() throws Exception {
-        // Dangerous file types like APKs are only blocked for the download handler. Without a
-        // handler, they still go to the legacy DownloadListener.
-        OnDownloadStartHelper legacyHelper = mContentsClient.getOnDownloadStartHelper();
-        int legacyCallCount = legacyHelper.getCallCount();
-        try (TestWebServer server = TestWebServer.start()) {
-            String mimeType = "application/vnd.android.package-archive";
-            String url =
-                    server.setResponse("/app.apk", CONTENT, attachmentHeaders(mimeType, "app.apk"));
-            mActivityTestRule.loadUrlAsync(mAwContents, url);
-            legacyHelper.waitForCallback(legacyCallCount);
-            Assert.assertEquals(url, legacyHelper.getUrl());
-            Assert.assertEquals(mimeType, legacyHelper.getMimeType());
         }
     }
 
@@ -463,40 +418,6 @@ public class AwDownloadHandlerTest extends AwParameterizedTest {
             AwWebDownload loaded = startDownload(fileUrl);
             Assert.assertFalse(loaded.hasGesture());
             cancel(loaded);
-        }
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @MediumTest
-    public void testBlocksApkByExtension() throws Exception {
-        try (WebServer server = new WebServer(0, false)) {
-            CompletableFuture<Void> disconnected =
-                    serveEndlessDownload(server, "application/octet-stream", "app.apk");
-            assertDownloadBlocked(server.getResponseUrl("/app.apk"), disconnected);
-        }
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @MediumTest
-    public void testBlocksApkByMimeType() throws Exception {
-        try (WebServer server = new WebServer(0, false)) {
-            CompletableFuture<Void> disconnected =
-                    serveEndlessDownload(
-                            server, "application/vnd.android.package-archive", "app.bin");
-            assertDownloadBlocked(server.getResponseUrl("/app.bin"), disconnected);
-        }
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @MediumTest
-    public void testBlocksDangerousExtensionWithTrailingDot() throws Exception {
-        try (WebServer server = new WebServer(0, false)) {
-            CompletableFuture<Void> disconnected =
-                    serveEndlessDownload(server, "application/octet-stream", "app.APK.");
-            assertDownloadBlocked(server.getResponseUrl("/download"), disconnected);
         }
     }
 }

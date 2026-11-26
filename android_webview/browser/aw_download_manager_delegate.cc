@@ -11,21 +11,17 @@
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
 #include "android_webview/browser/aw_web_download.h"
-#include "base/files/file_path.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_source.h"
 #include "components/download/public/common/download_target_info.h"
-#include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"
-#include "components/safe_browsing/content/common/file_type_policies/proto/download_file_types.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
-#include "net/base/mime_util.h"
 #include "net/http/http_content_disposition.h"
-#include "url/gurl.h"
 
 namespace android_webview {
 
@@ -47,12 +43,6 @@ bool IsForMainFrame(const download::DownloadItem& item) {
   content::RenderFrameHost* render_frame_host =
       content::DownloadItemUtils::GetRenderFrameHost(&item);
   return render_frame_host && render_frame_host->IsInPrimaryMainFrame();
-}
-
-bool IsDangerousFileName(const base::FilePath& file_name, const GURL& url) {
-  return safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-             file_name, url, /*prefs=*/nullptr) !=
-         safe_browsing::DownloadFileType::NOT_DANGEROUS;
 }
 
 }  // namespace
@@ -120,32 +110,21 @@ bool AwDownloadManagerDelegate::DetermineDownloadTarget(
       content::DownloadItemUtils::GetWebContents(item);
   AwContents* aw_contents =
       web_contents ? AwContents::FromWebContents(web_contents) : nullptr;
-  if (!aw_contents) {
-    return true;
+  if (aw_contents) {
+    // DownloadItem reports 0 both for an unknown size and for
+    // "Content-Length: 0". Report -1 for both.
+    int64_t total_bytes = item->GetTotalBytes();
+    int64_t content_length = total_bytes > 0 ? total_bytes : -1;
+    std::string suggested_filename =
+        base::UTF16ToUTF8(net::GetSuggestedFilename(
+            item->GetURL(), item->GetContentDisposition(),
+            /*referrer_charset=*/std::string(), item->GetSuggestedFilename(),
+            item->GetMimeType(), "download"));
+    aw_contents->OnDownloadRequested(
+        std::move(download), item->GetURL(), item->GetMimeType(),
+        content_length, suggested_filename, IsExplicitDownload(*item),
+        IsForMainFrame(*item), item->HasUserGesture());
   }
-
-  base::FilePath file_name = net::GenerateFileName(
-      item->GetURL(), item->GetContentDisposition(),
-      /*referrer_charset=*/std::string(), item->GetSuggestedFilename(),
-      item->GetMimeType(), "download");
-  base::FilePath::StringType mime_extension;
-  if (IsDangerousFileName(file_name, item->GetURL()) ||
-      (net::GetPreferredExtensionForMimeType(item->GetMimeType(),
-                                             &mime_extension) &&
-       IsDangerousFileName(file_name.AddExtension(mime_extension),
-                           item->GetURL()))) {
-    // Dropping `download` cancels the item without notifying the embedder.
-    return true;
-  }
-
-  // DownloadItem reports 0 both for an unknown size and for
-  // "Content-Length: 0". Report -1 for both.
-  int64_t total_bytes = item->GetTotalBytes();
-  int64_t content_length = total_bytes > 0 ? total_bytes : -1;
-  aw_contents->OnDownloadRequested(
-      std::move(download), item->GetURL(), item->GetMimeType(), content_length,
-      file_name.value(), IsExplicitDownload(*item), IsForMainFrame(*item),
-      item->HasUserGesture());
   return true;
 }
 
