@@ -15379,8 +15379,15 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="HistoryPage_EntryMenuShowMoreFromSite">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>aisulu@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User clicked 'More from this site' in the three-dot menu of an entry in the
+    chrome://history list. If the `BrowsingHistoryFilterByDomain` feature is
+    enabled, this sets the domain filter to the domain of that entry. Otherwise,
+    it searches history for 'host:[domain]' through the search box, which also
+    records HistoryPage_Search.
+  </description>
 </action>
 
 <action name="HistoryPage_InitClearBrowsingData">
