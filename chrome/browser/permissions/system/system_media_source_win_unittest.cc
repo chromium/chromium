@@ -25,21 +25,25 @@ class SystemMediaSourceWinTest : public testing::Test {
   raw_ptr<SystemMediaSourceWin> source_ = nullptr;
 };
 
-// Verify that construction completes without crashing or pumping window
-// messages. The COM message filter suppresses message dispatching during
-// RoGetActivationFactory, preventing re-entrancy crashes.
+// Verify that querying system permission status completes without crashing or
+// pumping window messages. The COM message filter suppresses message
+// dispatching during RoGetActivationFactory, preventing re-entrancy crashes.
 TEST_F(SystemMediaSourceWinTest, ConstructionDoesNotCrash) {
   auto& source = CreateSource();
 
-  // Status is available immediately after construction.
-  auto camera =
-      source.SystemPermissionStatus(ContentSettingsType::MEDIASTREAM_CAMERA);
-  auto mic =
-      source.SystemPermissionStatus(ContentSettingsType::MEDIASTREAM_MIC);
-
-  // Cached COM objects yield consistent results across calls.
-  EXPECT_EQ(camera, source.SystemPermissionStatus(
-                        ContentSettingsType::MEDIASTREAM_CAMERA));
-  EXPECT_EQ(
-      mic, source.SystemPermissionStatus(ContentSettingsType::MEDIASTREAM_MIC));
+  // Each call queries the Windows AppCapability WinRT API directly (caching is
+  // handled by SystemMediaPermissionCache). Transient WinRT failures on loaded
+  // bots can return kNotDetermined on one call and a concrete status on
+  // another, so only assert consistency when both calls return a determined
+  // status.
+  auto check_status = [&](ContentSettingsType type) {
+    auto first = source.SystemPermissionStatus(type);
+    auto second = source.SystemPermissionStatus(type);
+    if (first != SystemMediaSourceWin::Status::kNotDetermined &&
+        second != SystemMediaSourceWin::Status::kNotDetermined) {
+      EXPECT_EQ(first, second);
+    }
+  };
+  check_status(ContentSettingsType::MEDIASTREAM_CAMERA);
+  check_status(ContentSettingsType::MEDIASTREAM_MIC);
 }
