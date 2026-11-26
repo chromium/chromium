@@ -279,3 +279,10 @@ help-bubble {
   --cr-hover-background-color: var(--cr-icon-button-hover-background-color);
   background-color: var(--cr-icon-button-hover-background-color);
 }
+
+/* Keep file drag-and-drop overlay in light mode even in dark theme for parity
+ * with the browser omnibox. */
+search-animated-glow[animation-state='dragging'] {
+  --color-search-animated-glow-background: rgba(255, 255, 255, 1);
+  --cr-composebox-background-color: initial;
+}
