@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
@@ -405,7 +406,8 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
                                            "Invalid tool name"));
   }
 
-  if (!tool->description() || tool->description().empty()) {
+  if (!tool->description() ||
+      StripLeadingAndTrailingHtmlSpaces(tool->description()).empty()) {
     return ScriptPromise<IDLUndefined>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,

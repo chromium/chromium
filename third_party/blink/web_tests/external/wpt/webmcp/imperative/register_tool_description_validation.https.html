@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebMCP registerTool rejects on empty or whitespace-only description</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+promise_test(async t => {
+  const validDescriptions = [
+    'a',
+    ' leading space',
+    'trailing space ',
+    '\t\n\f\r padded \t\n\f\r',
+    // U+000B VERTICAL TAB and U+00A0 NO-BREAK SPACE are not ASCII whitespace.
+    '\v',
+    '\u00A0',
+  ];
+
+  for (const [index, description] of validDescriptions.entries()) {
+    const controller = new AbortController();
+    t.add_cleanup(() => controller.abort());
+    await document.modelContext.registerTool({
+      name: `valid_description_${index}`,
+      description,
+      execute: async () => 'empty'
+    }, {signal: controller.signal});
+  }
+}, 'Non-empty descriptions are accepted.');
+
+promise_test(async t => {
+  const invalidDescriptions = [
+    '',
+    ' ',
+    '   ',
+    '\t',
+    '\n',
+    '\f',
+    '\r',
+    ' \t\n\f\r ',
+  ];
+
+  for (const [index, description] of invalidDescriptions.entries()) {
+    await promise_rejects_dom(t,
+      'InvalidStateError',
+      document.modelContext.registerTool({
+        name: `invalid_description_${index}`,
+        description,
+        execute: async () => 'empty'
+      }),
+      `Description ${JSON.stringify(description)} is invalid.`
+    );
+  }
+}, 'Empty or ASCII-whitespace-only descriptions throw InvalidStateError.');
+</script>
+</body>
+</html>
