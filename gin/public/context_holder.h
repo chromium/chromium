@@ -5,6 +5,7 @@
 #ifndef GIN_PUBLIC_CONTEXT_HOLDER_H_
 #define GIN_PUBLIC_CONTEXT_HOLDER_H_
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "gin/gin_export.h"
 #include "v8/include/cppgc/persistent.h"
@@ -45,6 +46,10 @@ class GIN_EXPORT ContextHolder {
   }
 
   void SetContext(v8::Local<v8::Context> context);
+
+  void CheckContext(v8::Local<v8::Context> context) const {
+    CHECK(context_ == context);
+  }
 
  private:
   const raw_ptr<v8::Isolate> isolate_;
