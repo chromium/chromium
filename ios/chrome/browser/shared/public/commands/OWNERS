@@ -2,4 +2,5 @@ gambard@chromium.org
 marq@chromium.org
 rohitrao@chromium.org
 
+per-file scene_sign_in_commands.h=file://components/signin/IOS_OWNERS
 per-file show_signin*=arthurmilchior@chromium.org
