@@ -39,8 +39,8 @@ std::string ReloadResourceBundleLocale(const std::string& locale) {
   // resolved `.pak` path via `OverrideLocalePakForTest()` so reloading works
   // even when `l10n_util::GetApplicationLocale()` ignores `pref_locale` (e.g.
   // on Linux with GLib, or on Apple when a Cocoa locale override is set).
-  std::optional<std::string> resolved = l10n_util::CheckAndResolveLocale(
-      locale, l10n_util::CheckLocaleMode::kVerifyLocalizationDataExists);
+  std::optional<std::string> resolved =
+      l10n_util::CheckAndResolveLocale(locale);
   if (!resolved.has_value()) {
     return std::string();
   }

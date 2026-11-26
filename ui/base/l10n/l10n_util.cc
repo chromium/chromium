@@ -178,27 +178,23 @@ std::optional<LanguageTag> GetPreferredTag(std::string_view preferred_locale) {
 
 }  // namespace
 
-std::optional<LanguageTag> CheckAndResolveLocale(const LanguageTag& locale,
-                                                 CheckLocaleMode mode) {
-  if (mode == CheckLocaleMode::kVerifyLocalizationDataExists &&
-      IsResourceBundleLocale(locale)) {
+std::optional<LanguageTag> CheckAndResolveLocale(const LanguageTag& locale) {
+  if (IsResourceBundleLocale(locale)) {
     return locale;
   }
 
   std::optional<LanguageTag> matched =
       ui_l10n::GetPlatformLanguageMatcher().Match(locale);
-  if (!matched || (mode == CheckLocaleMode::kVerifyLocalizationDataExists &&
-                   !IsResourceBundleLocale(*matched))) {
+  if (!matched || !IsResourceBundleLocale(*matched)) {
     return std::nullopt;
   }
   return matched;
 }
 
-std::optional<std::string> CheckAndResolveLocale(std::string_view locale,
-                                                 CheckLocaleMode mode) {
+std::optional<std::string> CheckAndResolveLocale(std::string_view locale) {
   return GetLanguageTagFromString(locale).and_then(
-      [mode](const LanguageTag& language_tag) {
-        return CheckAndResolveLocale(language_tag, mode)
+      [](const LanguageTag& language_tag) {
+        return CheckAndResolveLocale(language_tag)
             .transform([](const LanguageTag& resolved) {
               return std::string(resolved.tag_string());
             });
@@ -211,8 +207,8 @@ std::string GetApplicationLocaleInternal(std::string_view pref_locale) {
   // If `preferred_tag`, it attempts to get a match for it, even if it is not
   // exact.
   if (preferred_tag) {
-    if (std::optional<LanguageTag> resolved = CheckAndResolveLocale(
-            *preferred_tag, CheckLocaleMode::kVerifyLocalizationDataExists)) {
+    if (std::optional<LanguageTag> resolved =
+            CheckAndResolveLocale(*preferred_tag)) {
       return std::string(resolved->tag_string());
     }
   }
@@ -228,9 +224,8 @@ std::string GetApplicationLocaleInternal(std::string_view pref_locale) {
     // If there was a match using `CheckAndResolveLocale`, it is stored but not
     // returned yet because the priority is to find a candidate that has an
     // exact match with a `ResourceBundle` locale.
-    if (std::optional<LanguageTag> resolved = CheckAndResolveLocale(
-            candidate, CheckLocaleMode::kVerifyLocalizationDataExists);
-        resolved) {
+    if (std::optional<LanguageTag> resolved =
+            CheckAndResolveLocale(candidate)) {
       return std::string(resolved->tag_string());
     }
   }
@@ -314,15 +309,14 @@ bool IsUserFacingUILocale(const LanguageTag& locale) {
   // As there are many callers of IsUserFacingUILocale and
   // GetUserFacingUILocaleList from threads where I/O is prohibited, do not
   // perform I/O here.
-  const std::optional<std::string> resolved_locale =
-      l10n_util::CheckAndResolveLocale(locale.tag_string(),
-                                       CheckLocaleMode::kUseKnownLocalesList);
-  if (!resolved_locale) {
+  std::optional<LanguageTag> matched =
+      ui_l10n::GetPlatformLanguageMatcher().Match(locale);
+  if (!matched) {
     return false;
   }
 
   // Locales that have strings on disk should always be shown to the user.
-  if (*resolved_locale == locale.tag_string()) {
+  if (*matched == locale) {
     return true;
   }
 

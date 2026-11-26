@@ -4,14 +4,19 @@
 
 #include "ui/base/l10n/l10n_util.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
+#include "base/i18n/language_tag_matcher.h"
+#include "base/i18n/tag_converters.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/chromium_language_matcher.h"
 
 namespace {
 
@@ -36,12 +41,17 @@ IN_PROC_BROWSER_TEST_F(L10nUtilBrowserTest, CheckAndResolveLocaleIO) {
   l10n_util::GetAcceptLanguages(&accept_languages);
 
   for (const std::string& locale : accept_languages) {
+    std::optional<base::i18n::LanguageTag> locale_tag =
+        base::i18n::GetLanguageTagFromString(locale);
+    ASSERT_TRUE(locale_tag);
+    std::optional<base::i18n::LanguageTag> matched =
+        ui_l10n::GetPlatformLanguageMatcher().Match(*locale_tag);
     const std::optional<std::string> resolved_locale =
-        l10n_util::CheckAndResolveLocale(
-            locale, l10n_util::CheckLocaleMode::kUseKnownLocalesList);
+        matched.transform([](const base::i18n::LanguageTag& tag) {
+          return std::string(tag.tag_string());
+        });
     const std::optional<std::string> resolved_locale_with_io =
-        l10n_util::CheckAndResolveLocale(
-            locale, l10n_util::CheckLocaleMode::kVerifyLocalizationDataExists);
+        l10n_util::CheckAndResolveLocale(locale);
 
 #if BUILDFLAG(IS_ANDROID)
     // False positives may occur on Android and iOS (and chrome/ isn't used on

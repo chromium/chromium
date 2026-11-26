@@ -31,23 +31,13 @@ class LanguageTag;
 
 namespace l10n_util {
 
-enum class CheckLocaleMode {
-  // Checks that the localization data is present on disk. It is the default,
-  // but potentially costly.
-  kVerifyLocalizationDataExists,
-  // Checks that the locale is in the list of known locales. It may lead to
-  // false positives on platforms where localization is downloaded on-demand
-  // - i.e., Android and iOS. See the `kPlatformLocales` documentation in
-  // l10n_util.cc for more information.
-  kUseKnownLocalesList,
-};
-
 // Translates a generic locale name to one of the locally defined ones or
-// `std::nullopt` if the resolution is unsuccessful.
+// `std::nullopt` if the resolution is unsuccessful. This checks that the
+// localization data is present on disk, which is potentially costly. To avoid
+// I/O, use `ui_l10n::GetPlatformLanguageMatcher()` instead, which may lead to
+// false positives on Android and iOS.
 COMPONENT_EXPORT(UI_BASE)
-std::optional<std::string> CheckAndResolveLocale(
-    std::string_view locale,
-    CheckLocaleMode mode = CheckLocaleMode::kVerifyLocalizationDataExists);
+std::optional<std::string> CheckAndResolveLocale(std::string_view locale);
 
 // This method is responsible for determining the locale as defined below. In
 // nearly all cases you shouldn't call this, rather use GetApplicationLocale

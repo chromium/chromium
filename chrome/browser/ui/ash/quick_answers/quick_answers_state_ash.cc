@@ -4,9 +4,15 @@
 
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_state_ash.h"
 
+#include <optional>
+#include <string>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/language_tag_matcher.h"
+#include "base/i18n/tag_converters.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
@@ -15,7 +21,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/chromium_language_matcher.h"
 
 namespace {
 
@@ -238,18 +244,21 @@ void QuickAnswersStateAsh::OnApplicationLocaleReady() {
 
   // We should not directly use the pref locale, resolve the generic locale name
   // to one of the locally defined ones first.
-  const std::optional<std::string> resolved_locale =
-      l10n_util::CheckAndResolveLocale(
-          locale, l10n_util::CheckLocaleMode::kUseKnownLocalesList);
-  CHECK(resolved_locale, base::NotFatalUntil::M162);
+  std::optional<base::i18n::LanguageTag> locale_tag =
+      base::i18n::GetLanguageTagFromString(locale);
+  std::optional<base::i18n::LanguageTag> matched =
+      locale_tag ? ui_l10n::GetPlatformLanguageMatcher().Match(*locale_tag)
+                 : std::nullopt;
+  CHECK(matched, base::NotFatalUntil::M162);
 
-  if (resolved_application_locale_ == resolved_locale) {
+  if (matched && resolved_application_locale_ == matched->tag_string()) {
     return;
   }
-  resolved_application_locale_ = resolved_locale.value_or("");
+  resolved_application_locale_ =
+      matched ? std::string(matched->tag_string()) : "";
 
   for (auto& observer : observers_) {
-    observer.OnApplicationLocaleReady(resolved_locale.value_or(""));
+    observer.OnApplicationLocaleReady(resolved_application_locale_);
   }
 
   MaybeNotifyEligibilityChanged();

@@ -15,6 +15,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
+#include "base/i18n/language_tag_matcher.h"
 #include "base/i18n/tag_converters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
@@ -30,7 +31,7 @@
 #include "extensions/common/extension_l10n_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/chromium_language_matcher.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/platform_font_skia.h"
 
@@ -179,10 +180,10 @@ void SwitchLanguage(ApplicationLocaleStorage* application_locale_storage,
     // Use resolved locale to match `ResourceBundle::LoadLocaleResources`
     // behavior. And skip reloading if locale is resolved successfully.
     if (std::optional<base::i18n::LanguageTag> resolved =
-            l10n_util::CheckAndResolveLocale(
-                locale, l10n_util::CheckLocaleMode::kUseKnownLocalesList)
-                .and_then([](const std::string& resolved_locale) {
-                  return base::i18n::GetLanguageTagFromString(resolved_locale);
+            base::i18n::GetLanguageTagFromString(locale).and_then(
+                [](const base::i18n::LanguageTag& locale_tag) {
+                  return ui_l10n::GetPlatformLanguageMatcher().Match(
+                      locale_tag);
                 })) {
       data->result.loaded_locale = std::move(resolved);
       data->result.success = true;

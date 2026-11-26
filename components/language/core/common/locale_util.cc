@@ -7,9 +7,14 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <optional>
+#include <string>
 #include <string_view>
 
-#include "ui/base/l10n/l10n_util.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/language_tag_matcher.h"
+#include "base/i18n/tag_converters.h"
+#include "ui/base/l10n/chromium_language_matcher.h"
 
 namespace language {
 
@@ -26,14 +31,16 @@ std::string_view ExtractBaseLanguage(std::string_view language_code) {
 }
 
 bool ConvertToActualUILocale(std::string* input_locale) {
-  if (std::optional<std::string> resolved_locale =
-          l10n_util::CheckAndResolveLocale(
-              *input_locale,
-              l10n_util::CheckLocaleMode::kUseKnownLocalesList)) {
-    input_locale->swap(*resolved_locale);
-    return true;
+  std::optional<base::i18n::LanguageTag> matched =
+      base::i18n::GetLanguageTagFromString(*input_locale)
+          .and_then([](const base::i18n::LanguageTag& locale) {
+            return ui_l10n::GetPlatformLanguageMatcher().Match(locale);
+          });
+  if (!matched) {
+    return false;
   }
-  return false;
+  *input_locale = std::string(matched->tag_string());
+  return true;
 }
 
 }  // namespace language
