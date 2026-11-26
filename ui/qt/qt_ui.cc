@@ -418,8 +418,13 @@ bool QtUi::Initialize() {
       cmd_line.AppendArg("xcb");
       break;
     case ui::LinuxUiBackend::kWayland:
+      // The QT wayland platform plugin is packaged separately on some distros
+      // (e.g. qtwayland5 on Debian and Ubuntu) and may not be installed. QT
+      // calls qFatal() if none of the listed platforms can be initialized, so
+      // fall back to xcb (XWayland) and then to offscreen, which needs no
+      // display server, rather than crashing the browser.
       cmd_line.AppendArg("-platform");
-      cmd_line.AppendArg("wayland");
+      cmd_line.AppendArg("wayland;xcb;offscreen");
       break;
   }
   cmd_line_ = CopyCmdLine(cmd_line);
