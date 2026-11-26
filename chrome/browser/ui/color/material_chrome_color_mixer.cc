@@ -398,6 +398,11 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorHistoryEmbeddingsImageBackgroundGradientStart] = {
       ui::kColorSysGradientPrimary};
 
+  // Settings Refresh 2026 colors.
+  // These must stay above `ShouldApplyChromeMaterialOverrides()` so Settings
+  // does not fall back to placeholder colors under custom themes.
+  ApplyChromeSettingsRefresh2026ColorOverrides(mixer);
+
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;
   }
@@ -581,5 +586,4 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorGlicTabUnderline3};
 
   ApplyChromeRefresh2026ColorOverrides(mixer);
-  ApplyChromeSettingsRefresh2026ColorOverrides(mixer);
 }
