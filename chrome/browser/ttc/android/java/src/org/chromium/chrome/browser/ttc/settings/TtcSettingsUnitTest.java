@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.ttc.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -15,12 +18,14 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.preference.Preference;
@@ -35,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -85,6 +91,7 @@ public class TtcSettingsUnitTest {
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
         TtcShortcutUtilsJni.setInstanceForTesting(mShortcutUtilsJni);
         when(mShortcutUtilsJni.getKeyLabels(anyString())).thenReturn(new String[] {"Key"});
+        when(mShortcutUtilsJni.canonicalize(anyString())).thenReturn("");
         when(mPrefService.getString(anyString())).thenReturn("");
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mOffTheRecordProfile.getOriginalProfile()).thenReturn(mProfile);
@@ -252,6 +259,18 @@ public class TtcSettingsUnitTest {
     }
 
     @Test
+    public void testInvalidSavedShortcutShowsAsNotSet() {
+        setHardKeyboardConnected(true);
+        when(mPrefService.getString(Pref.TTC_KEYBOARD_SHORTCUT)).thenReturn("Ctrl+T");
+        when(mShortcutUtilsJni.getStatus("Ctrl+T"))
+                .thenReturn(TtcShortcutStatus.CONFLICTS_WITH_BROWSER_SHORTCUT);
+        TtcShortcutPreference keyboardShortcut =
+                launchFragment(mProfile).findPreference(TtcSettings.PREF_KEYBOARD_SHORTCUT);
+
+        assertEquals("", keyboardShortcut.getShortcut());
+    }
+
+    @Test
     public void testShortcutRowShowsKeycaps() {
         setHardKeyboardConnected(true);
         when(mPrefService.getString(Pref.TTC_KEYBOARD_SHORTCUT)).thenReturn("Alt+Shift+K");
@@ -259,7 +278,6 @@ public class TtcSettingsUnitTest {
                 .thenReturn(new String[] {"Alt", "Shift", "K"});
         TtcShortcutPreference keyboardShortcut =
                 launchFragment(mProfile).findPreference(TtcSettings.PREF_KEYBOARD_SHORTCUT);
-        assertFalse(keyboardShortcut.isSelectable());
 
         View view = bindView(keyboardShortcut);
         LinearLayout keycaps = view.findViewById(R.id.ttc_shortcut_keycaps);
@@ -365,6 +383,92 @@ public class TtcSettingsUnitTest {
                 RuntimeEnvironment.getApplication(), mSettingsIndexData, mProfile);
 
         verifyNoInteractions(mSettingsIndexData);
+    }
+
+    private static void press(TtcShortcutRecorderDialog recorder, int keyCode, int metaState) {
+        KeyEvent down = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, keyCode, 0, metaState);
+        recorder.onKey(recorder.getDialogForTesting(), keyCode, down);
+    }
+
+    @Test
+    public void testEditShortcutSavesRecordedShortcut() {
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        setHardKeyboardConnected(true);
+        // TTC's other shortcut, saved with its modifiers in another order than a key press gives.
+        when(mPrefService.getString(Pref.TTC_HOLD_TO_SPEAK_SHORTCUT)).thenReturn("Shift+Alt+Space");
+        when(mShortcutUtilsJni.canonicalize("Shift+Alt+Space")).thenReturn("Alt+Shift+Space");
+        TtcSettings fragment = launchFragment(mProfile);
+        TtcShortcutPreference keyboardShortcut =
+                fragment.findPreference(TtcSettings.PREF_KEYBOARD_SHORTCUT);
+        // Clicking the row edits the shortcut too.
+        assertTrue(keyboardShortcut.isSelectable());
+
+        // The edit button names its row, and opens the recorder.
+        View edit = bindView(keyboardShortcut).findViewById(R.id.ttc_shortcut_edit);
+        assertEquals(
+                mActivity.getString(
+                        R.string.ttc_settings_shortcut_edit,
+                        mActivity.getString(R.string.ttc_settings_keyboard_shortcut)),
+                edit.getContentDescription().toString());
+        edit.performClick();
+        TtcShortcutRecorderDialog recorder = fragment.getShortcutRecorderDialogForTesting();
+        assertNotNull(recorder);
+        AlertDialog dialog = recorder.getDialogForTesting();
+        assertTrue(dialog.isShowing());
+
+        // Editing again while the recorder shows doesn't open another.
+        keyboardShortcut.edit();
+        assertSame(recorder, fragment.getShortcutRecorderDialogForTesting());
+
+        // TTC's other shortcut can't be recorded.
+        when(mShortcutUtilsJni.fromKeyEvent(any())).thenReturn("Alt+Shift+Space");
+        press(recorder, KeyEvent.KEYCODE_SPACE, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON);
+        assertNull(recorder.getRecordedShortcutForTesting());
+
+        // Any other valid shortcut is saved, and shown.
+        when(mShortcutUtilsJni.fromKeyEvent(any())).thenReturn("Ctrl+Shift+J");
+        press(recorder, KeyEvent.KEYCODE_J, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
+        when(mPrefService.getString(Pref.TTC_KEYBOARD_SHORTCUT)).thenReturn("Ctrl+Shift+J");
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        ShadowLooper.idleMainLooper();
+        verify(mPrefService).setString(Pref.TTC_KEYBOARD_SHORTCUT, "Ctrl+Shift+J");
+        assertEquals("Ctrl+Shift+J", keyboardShortcut.getShortcut());
+        assertFalse(dialog.isShowing());
+        assertNull(fragment.getShortcutRecorderDialogForTesting());
+    }
+
+    @Test
+    public void testRecorderClosesWhenKeyboardDisconnects() {
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        setHardKeyboardConnected(true);
+        TtcSettings fragment = launchFragment(mProfile);
+        TtcShortcutPreference holdToSpeakShortcut =
+                fragment.findPreference(TtcSettings.PREF_HOLD_TO_SPEAK_SHORTCUT);
+        holdToSpeakShortcut.edit();
+        AlertDialog dialog = fragment.getShortcutRecorderDialogForTesting().getDialogForTesting();
+        assertTrue(dialog.isShowing());
+
+        setHardKeyboardConnected(false);
+        fragment.onConfigurationChanged(mActivity.getResources().getConfiguration());
+        ShadowLooper.idleMainLooper();
+        assertFalse(dialog.isShowing());
+        assertNull(fragment.getShortcutRecorderDialogForTesting());
+    }
+
+    @Test
+    public void testRecorderClosesWithPage() {
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        setHardKeyboardConnected(true);
+        TtcSettings fragment = launchFragment(mProfile);
+        TtcShortcutPreference holdToSpeakShortcut =
+                fragment.findPreference(TtcSettings.PREF_HOLD_TO_SPEAK_SHORTCUT);
+        holdToSpeakShortcut.edit();
+        AlertDialog dialog = fragment.getShortcutRecorderDialogForTesting().getDialogForTesting();
+        assertTrue(dialog.isShowing());
+
+        mActivity.getSupportFragmentManager().beginTransaction().remove(fragment).commitNow();
+        ShadowLooper.idleMainLooper();
+        assertFalse(dialog.isShowing());
     }
 
     @Test

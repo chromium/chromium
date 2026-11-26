@@ -12,6 +12,7 @@ import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -55,6 +56,7 @@ public class TtcSettings extends ChromeBaseSettingsFragment {
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
+    private @Nullable TtcShortcutRecorderDialog mShortcutRecorderDialog;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
@@ -73,9 +75,17 @@ public class TtcSettings extends ChromeBaseSettingsFragment {
         updatePinToToolbarSummary();
 
         bindShortcutPreference(
-                PREF_KEYBOARD_SHORTCUT, Pref.TTC_KEYBOARD_SHORTCUT, prefs, registrar);
+                PREF_KEYBOARD_SHORTCUT,
+                Pref.TTC_KEYBOARD_SHORTCUT,
+                Pref.TTC_HOLD_TO_SPEAK_SHORTCUT,
+                prefs,
+                registrar);
         bindShortcutPreference(
-                PREF_HOLD_TO_SPEAK_SHORTCUT, Pref.TTC_HOLD_TO_SPEAK_SHORTCUT, prefs, registrar);
+                PREF_HOLD_TO_SPEAK_SHORTCUT,
+                Pref.TTC_HOLD_TO_SPEAK_SHORTCUT,
+                Pref.TTC_KEYBOARD_SHORTCUT,
+                prefs,
+                registrar);
         updateShortcutVisibility();
     }
 
@@ -92,6 +102,12 @@ public class TtcSettings extends ChromeBaseSettingsFragment {
         super.onResume();
         // TTC is pinned on the toolbar shortcut settings page, which the pin row opens.
         updatePinToToolbarSummary();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        dismissShortcutRecorderDialog();
     }
 
     @Override
@@ -134,18 +150,70 @@ public class TtcSettings extends ChromeBaseSettingsFragment {
         registrar.addObserver(pref, () -> switchPreference.setChecked(prefs.getBoolean(pref)));
     }
 
-    /** Binds the shortcut row {@code key} to the string profile pref {@code pref}. */
+    /**
+     * Binds the shortcut row {@code key} to the string profile pref {@code pref}. A recorded
+     * shortcut can't be the one {@code otherPref} holds, so that TTC's shortcuts stay distinct.
+     */
     private void bindShortcutPreference(
-            String key, String pref, PrefService prefs, PrefChangeRegistrar registrar) {
+            String key,
+            String pref,
+            String otherPref,
+            PrefService prefs,
+            PrefChangeRegistrar registrar) {
         TtcShortcutPreference shortcutPreference = assertNonNull(findPreference(key));
-        Runnable update = () -> shortcutPreference.setShortcut(prefs.getString(pref));
+        // A saved value that isn't a valid shortcut, e.g. one that Chrome has started to use
+        // since, shows as not set.
+        Runnable update =
+                () -> {
+                    String shortcut = prefs.getString(pref);
+                    boolean isValid =
+                            TtcShortcutUtils.getStatus(shortcut) == TtcShortcutStatus.VALID;
+                    shortcutPreference.setShortcut(isValid ? shortcut : "");
+                };
         update.run();
+        shortcutPreference.setOnEditListener(
+                () ->
+                        showShortcutRecorderDialog(
+                                shortcutPreference,
+                                /* unavailableShortcut= */ prefs.getString(otherPref),
+                                shortcut -> {
+                                    prefs.setString(pref, shortcut);
+                                    update.run();
+                                }));
         shortcutPreference.setOnClearListener(
                 () -> {
                     prefs.setString(pref, "");
                     update.run();
                 });
         registrar.addObserver(pref, update::run);
+    }
+
+    /**
+     * Shows the dialog that records the shortcut of {@code shortcutPreference}, unless one already
+     * shows, e.g. because the row was clicked twice.
+     */
+    private void showShortcutRecorderDialog(
+            TtcShortcutPreference shortcutPreference,
+            String unavailableShortcut,
+            Callback<String> onSave) {
+        if (mShortcutRecorderDialog != null) return;
+        TtcShortcutRecorderDialog dialog =
+                new TtcShortcutRecorderDialog(
+                        requireContext(),
+                        assertNonNull(shortcutPreference.getTitle()),
+                        unavailableShortcut,
+                        onSave,
+                        /* onDismiss= */ () -> mShortcutRecorderDialog = null);
+        mShortcutRecorderDialog = dialog;
+        dialog.show();
+    }
+
+    private void dismissShortcutRecorderDialog() {
+        if (mShortcutRecorderDialog != null) mShortcutRecorderDialog.dismiss();
+    }
+
+    @Nullable TtcShortcutRecorderDialog getShortcutRecorderDialogForTesting() {
+        return mShortcutRecorderDialog;
     }
 
     /**
@@ -161,6 +229,8 @@ public class TtcSettings extends ChromeBaseSettingsFragment {
             shortcutPreference.setVisible(hasKeyboard);
             changed = true;
         }
+        // Recording a shortcut needs a keyboard.
+        if (!hasKeyboard) dismissShortcutRecorderDialog();
         return changed;
     }
 

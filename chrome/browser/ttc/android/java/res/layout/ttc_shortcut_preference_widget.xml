@@ -31,6 +31,16 @@ found in the LICENSE file.
 
     <!-- TtcShortcutPreference sets the content description, which names the row. -->
     <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/ttc_shortcut_edit"
+        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_edit_24dp"
+        app:tint="@color/default_icon_color_tint_list"
+        tools:ignore="ContentDescription" />
+
+    <!-- TtcShortcutPreference sets the content description, which names the row. -->
+    <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/ttc_shortcut_clear"
         android:layout_width="@dimen/min_touch_target_size"
         android:layout_height="@dimen/min_touch_target_size"

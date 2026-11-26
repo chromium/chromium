@@ -8343,6 +8343,24 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TTC_SETTINGS_SHORTCUT_CLEAR" desc="Accessibility label of the button on the TTC settings page that clears a keyboard shortcut, named by the title of its row." translateable="false">
         Clear <ph name="SHORTCUT_NAME">%1$s<ex>Keyboard shortcut</ex></ph>
       </message>
+      <message name="IDS_TTC_SETTINGS_SHORTCUT_EDIT" desc="Accessibility label of the button on the TTC settings page that edits a keyboard shortcut, named by the title of its row." translateable="false">
+        Edit <ph name="SHORTCUT_NAME">%1$s<ex>Keyboard shortcut</ex></ph>
+      </message>
+      <message name="IDS_TTC_SETTINGS_SHORTCUT_DIALOG_MESSAGE" desc="Instructions in the dialog that records a new TTC keyboard shortcut from the keyboard." translateable="false">
+        Press the keys for the new shortcut
+      </message>
+      <message name="IDS_TTC_SETTINGS_SHORTCUT_DIALOG_RECORDED" desc="Shown in the dialog that records a new TTC keyboard shortcut from the keyboard, once the keys pressed make a shortcut that can be saved. Names those keys." translateable="false">
+        Select Save to use <ph name="SHORTCUT">%1$s<ex>Ctrl+Shift+K</ex></ph>
+      </message>
+      <message name="IDS_TTC_SETTINGS_SHORTCUT_DIALOG_INVALID" desc="Error in the dialog that records a new TTC keyboard shortcut, when the keys pressed don't make a valid shortcut." translateable="false">
+        Use Ctrl or Alt, but not both, together with another key
+      </message>
+      <message name="IDS_TTC_SETTINGS_SHORTCUT_DIALOG_BROWSER_SHORTCUT" desc="Error in the dialog that records a new TTC keyboard shortcut, when Chrome already uses the keys pressed for one of its own keyboard shortcuts." translateable="false">
+        Chrome already uses this shortcut
+      </message>
+      <message name="IDS_TTC_SETTINGS_SHORTCUT_DIALOG_IN_USE" desc="Error in the dialog that records a new TTC keyboard shortcut, when the other TTC keyboard shortcut already uses the keys pressed." translateable="false">
+        TTC already uses this shortcut
+      </message>
 
       <!-- Immersive Playback Confirmation strings -->
       <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_MESSAGE" desc="Message in the snackbar asking the user if they want to view the video in immersive mode.">

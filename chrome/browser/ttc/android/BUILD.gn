@@ -70,6 +70,7 @@ android_resources("java_resources") {
     "java/res/drawable/ttc_voice_plate_pause_background.xml",
     "java/res/layout/ttc_session_pill.xml",
     "java/res/layout/ttc_shortcut_preference_widget.xml",
+    "java/res/layout/ttc_shortcut_recorder_dialog.xml",
     "java/res/layout/ttc_voice_plate.xml",
     "java/res/values/dimens.xml",
     "java/res/xml/ttc_settings.xml",
@@ -90,6 +91,7 @@ android_library("settings_java") {
     "java/src/org/chromium/chrome/browser/ttc/settings/TtcSettings.java",
     "java/src/org/chromium/chrome/browser/ttc/settings/TtcSettingsUtils.java",
     "java/src/org/chromium/chrome/browser/ttc/settings/TtcShortcutPreference.java",
+    "java/src/org/chromium/chrome/browser/ttc/settings/TtcShortcutRecorderDialog.java",
     "java/src/org/chromium/chrome/browser/ttc/settings/TtcShortcutUtils.java",
   ]
   deps = [
@@ -107,11 +109,13 @@ android_library("settings_java") {
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -128,6 +132,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ttc/TtcVoicePlateViewTest.java",
     "java/src/org/chromium/chrome/browser/ttc/TtcWaveformViewTest.java",
     "java/src/org/chromium/chrome/browser/ttc/settings/TtcSettingsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ttc/settings/TtcShortcutRecorderDialogTest.java",
   ]
   deps = [
     ":entry_point_java",
@@ -137,6 +142,7 @@ robolectric_library("junit") {
     "//base:activity_state_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:callback_java",
     "//base:supplier_java",
     "//chrome/app:java_strings_grd",
     "//chrome/browser/android/lifecycle:java",
@@ -155,6 +161,7 @@ robolectric_library("junit") {
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_jvm_java",
@@ -198,7 +205,9 @@ source_set("android") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ttc/core",
+    "//chrome/browser/ttc/core:shortcut",
     "//components/ttc/app/public",
+    "//ui/android",
     "//ui/base",
   ]
 }

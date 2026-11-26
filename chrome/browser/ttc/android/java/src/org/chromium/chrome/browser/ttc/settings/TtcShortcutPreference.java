@@ -21,20 +21,19 @@ import org.chromium.chrome.browser.ttc.R;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 
 /**
- * A settings row showing a TTC keyboard shortcut as keycaps, or that it isn't set, with a button to
- * clear it.
+ * A settings row showing a TTC keyboard shortcut as keycaps, or that it isn't set, with buttons to
+ * edit and clear it. Clicking the row also edits the shortcut.
  */
 @NullMarked
 public class TtcShortcutPreference extends ChromeBasePreference {
     private String mShortcut = "";
+    private @Nullable Runnable mOnEditListener;
     private @Nullable Runnable mOnClearListener;
 
     /** Constructor for inflating from XML. */
     public TtcShortcutPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setWidgetLayoutResource(R.layout.ttc_shortcut_preference_widget);
-        // Clicking the row does nothing yet; only its clear button does something.
-        setSelectable(false);
     }
 
     /** Sets the shortcut to show, as a shortcut pref value, or "" if it isn't set. */
@@ -47,6 +46,11 @@ public class TtcShortcutPreference extends ChromeBasePreference {
     /** Returns the shortcut shown, as a shortcut pref value, or "" if it isn't set. */
     public String getShortcut() {
         return mShortcut;
+    }
+
+    /** Sets what clicking the row or its edit button does. */
+    public void setOnEditListener(@Nullable Runnable onEditListener) {
+        mOnEditListener = onEditListener;
     }
 
     /** Sets what clicking the clear button does. */
@@ -63,11 +67,26 @@ public class TtcShortcutPreference extends ChromeBasePreference {
         keycaps.setVisibility(isSet ? View.VISIBLE : View.GONE);
         holder.findViewById(R.id.ttc_shortcut_not_set)
                 .setVisibility(isSet ? View.GONE : View.VISIBLE);
+        View edit = holder.findViewById(R.id.ttc_shortcut_edit);
+        edit.setContentDescription(
+                getContext().getString(R.string.ttc_settings_shortcut_edit, getTitle()));
+        edit.setOnClickListener(v -> edit());
         View clear = holder.findViewById(R.id.ttc_shortcut_clear);
         clear.setVisibility(isSet ? View.VISIBLE : View.GONE);
         clear.setContentDescription(
                 getContext().getString(R.string.ttc_settings_shortcut_clear, getTitle()));
         clear.setOnClickListener(v -> clear());
+    }
+
+    @Override
+    protected void onClick() {
+        super.onClick();
+        edit();
+    }
+
+    @VisibleForTesting
+    void edit() {
+        if (mOnEditListener != null) mOnEditListener.run();
     }
 
     @VisibleForTesting
