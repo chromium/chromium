@@ -235,6 +235,19 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore {
     blink::mojom::IDBTransactionMode mode() const { return mode_; }
 
    private:
+    friend class BackingStore;
+
+    struct EncodedKeyComparator {
+      bool operator()(const std::string& a, const std::string& b) const {
+        return CompareKeys(a, b) < 0;
+      }
+    };
+
+    using ExternalObjectChangeMap =
+        std::map<std::string,
+                 std::unique_ptr<IndexedDBExternalObjectChangeRecord>,
+                 EncodedKeyComparator>;
+
     int64_t database_id() const { return *database_->metadata().id; }
 
     Status FindKeyInIndex(int64_t object_store_id,
@@ -277,10 +290,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore {
 
     std::unique_ptr<TransactionalLevelDBTransaction> transaction_;
 
-    std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
-        external_object_change_map_;
-    std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
-        in_memory_external_object_map_;
+    ExternalObjectChangeMap external_object_change_map_;
+    ExternalObjectChangeMap in_memory_external_object_map_;
 
     // List of blob files being newly written as part of this transaction.
     // These will be added to the recovery blob journal prior to commit, then
@@ -638,8 +649,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore {
   // backing store this is redundant but necessary for backwards compatibility.
   const std::string origin_identifier_;
 
-  std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
-      in_memory_external_object_map_;
+  Transaction::ExternalObjectChangeMap in_memory_external_object_map_;
 
   bool execute_journal_cleaning_on_no_txns_ = false;
   int num_aggregated_journal_cleaning_requests_ = 0;
