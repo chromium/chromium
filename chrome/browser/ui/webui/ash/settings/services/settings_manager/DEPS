@@ -12,7 +12,6 @@ include_rules = [
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/eche_app",
   "+chrome/browser/ash/kerberos",
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/multidevice_setup",
   "+chrome/browser/ash/phonehub",
   "+chrome/browser/ash/printing",

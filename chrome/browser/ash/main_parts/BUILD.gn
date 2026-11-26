@@ -51,7 +51,6 @@ static_library("main_parts") {
     "//chrome/browser/ash/customization",
     "//chrome/browser/ash/dbus",
     "//chrome/browser/ash/dbus/vm",
-    "//chrome/browser/ash/diagnostics",
     "//chrome/browser/ash/events",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/extensions/login_screen_ui",

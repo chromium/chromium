@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/ui/webui/ash/settings/pages/crostini",
   "+chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h",
-  "+chrome/browser/ui/webui/ash/settings/pages/system_preferences",
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/browser/ui/webui/ash/settings/services/settings_manager",
 

@@ -23,7 +23,6 @@ include_rules = [
   "+chrome/browser/ash/policy/off_hours",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/tpm",
-  "+chrome/browser/profiles",
   "+chrome/browser/site_isolation",
   "+chrome/test/base",
 ]

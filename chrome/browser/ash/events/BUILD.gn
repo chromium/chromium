@@ -50,7 +50,6 @@ source_set("unit_tests") {
     "//ash/public/mojom",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/preferences",

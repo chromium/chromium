@@ -15,7 +15,6 @@ include_rules = [
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/policy/skyvault",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/extensions/api/terminal",
   "+chrome/browser/profiles",
   "+chrome/test/base",
