@@ -37,6 +37,7 @@ namespace ui {
 class UI_ANDROID_EXPORT ModalDialogWrapper : public DialogModelHost,
                                              public DialogModelFieldHost {
  public:
+  // LINT.IfChange(ModalDialogButtonStyles)
   // Mirrors Java's `ModalDialogProperties#ButtonStyles`.
   // TODO(crbug.com/392977703): IntDef that enum in C++.
   enum class ModalDialogButtonStyles {
@@ -44,7 +45,9 @@ class UI_ANDROID_EXPORT ModalDialogWrapper : public DialogModelHost,
     kPrimaryFilledNegativeOutline = 1,
     kPrimaryOutlineNegativeFilled = 2,
     kPrimaryFilledNoNegative = 3,
+    kPrimaryFilledNegativeFilled = 4,
   };
+  // LINT.ThenChange(//ui/android/java/src/org/chromium/ui/modaldialog/ModalDialogProperties.java:ButtonStyles)
 
   static void ShowTabModal(std::unique_ptr<ui::DialogModel> dialog_model,
                            ui::WindowAndroid* window);

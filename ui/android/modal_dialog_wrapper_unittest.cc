@@ -4,6 +4,8 @@
 
 #include "ui/android/modal_dialog_wrapper.h"
 
+#include <utility>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
@@ -11,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
-#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -448,16 +449,22 @@ TEST_F(ModalDialogWrapperTest, ModalButtonsOverriddenNegative) {
   EXPECT_FALSE(dialog_destroyed_);
 }
 
-TEST_F(ModalDialogWrapperTest, ModalButtonsBothProminentNotAllowed) {
-  // If both buttons are set to prominent (and no override is provided), it
-  // should hit NOTREACHED(). Note that OK button is prominent by default.
+// Tests that setting both OK and Cancel buttons to prominent maps to
+// `kPrimaryFilledNegativeFilled`.
+TEST_F(ModalDialogWrapperTest, ModalButtonsBothProminent) {
+  // Note that OK button is prominent by default.
   auto dialog_model =
       DialogModelBuilder(&dialog_destroyed_)
           .WithCancelButton(base::DoNothing(), ui::ButtonStyle::kProminent)
           .Build();
 
-  EXPECT_DCHECK_DEATH(ModalDialogWrapper::ShowTabModal(std::move(dialog_model),
-                                                       window_->get()));
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
+
+  EXPECT_EQ(static_cast<ui::ModalDialogWrapper::ModalDialogButtonStyles>(
+                fake_dialog_manager_->GetButtonStyles()),
+            ui::ModalDialogWrapper::ModalDialogButtonStyles::
+                kPrimaryFilledNegativeFilled);
+  EXPECT_FALSE(dialog_destroyed_);
 }
 
 TEST_F(ModalDialogWrapperTest, ParagraphsAreSetAndReplaced) {

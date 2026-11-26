@@ -127,6 +127,12 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_Fullscreen,
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_DialogWhenLarge,
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_Fullscreen_Dark
+            },
+            {
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledButtons,
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledButtons_Fullscreen,
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledButtons_DialogWhenLarge,
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledButtons_Fullscreen_Dark
             }
         };
         int dialogIndex = 0;
@@ -147,6 +153,9 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         } else if (buttonStyle
                 == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {
             buttonIndex = 2;
+        } else if (buttonStyle
+                == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_FILLED) {
+            buttonIndex = 3;
         }
         mDialog = new ComponentDialog(mContext, styles[buttonIndex][dialogIndex]);
         if (mIsEdgeToEdgeEverywhereEnabled) {

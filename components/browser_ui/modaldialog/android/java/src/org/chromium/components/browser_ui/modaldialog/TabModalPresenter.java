@@ -143,6 +143,9 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
         } else if (buttonStyles
                 == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {
             style = R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton;
+        } else if (buttonStyles
+                == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_FILLED) {
+            style = R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledButtons;
         }
         mDialogView = loadDialogView(style);
         mModelChangeProcessor =

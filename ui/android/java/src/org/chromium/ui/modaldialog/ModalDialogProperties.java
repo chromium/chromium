@@ -76,14 +76,14 @@ public class ModalDialogProperties {
         int POSITIVE_EPHEMERAL = 2;
     }
 
-    /**
-     * Styles of the primary and negative button. Only one of them can be filled at the same time.
-     */
+    // LINT.IfChange(ButtonStyles)
+    /** Styles of the primary and negative button. */
     @IntDef({
         ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE,
         ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
         ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED,
         ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE,
+        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_FILLED,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ButtonStyles {
@@ -91,7 +91,10 @@ public class ModalDialogProperties {
         int PRIMARY_FILLED_NEGATIVE_OUTLINE = 1;
         int PRIMARY_OUTLINE_NEGATIVE_FILLED = 2;
         int PRIMARY_FILLED_NO_NEGATIVE = 3;
+        int PRIMARY_FILLED_NEGATIVE_FILLED = 4;
     }
+
+    // LINT.ThenChange(//ui/android/modal_dialog_wrapper.h:ModalDialogButtonStyles)
 
     /**
      * Specifies a button as part of a button group. To employ this UI component, set an array of
@@ -337,7 +340,7 @@ public class ModalDialogProperties {
     public static final WritableBooleanPropertyKey WRAP_CUSTOM_VIEW_IN_SCROLLABLE =
             new WritableBooleanPropertyKey();
 
-    /** Whether the primary (positive) or negative button should be a filled button */
+    /** Whether the primary (positive) and/or negative button should be a filled button. */
     public static final ReadableIntDefPropertyKey<ButtonStyles> BUTTON_STYLES =
             new ReadableIntDefPropertyKey<>(ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE);
 

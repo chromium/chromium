@@ -71,6 +71,10 @@ found in the LICENSE file.
         <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
     </style>
 
+    <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledButtons" parent="ThemeOverlay.BrowserUI.ModalDialog.FilledPrimaryButton">
+        <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
+    </style>
+
     <style name="ThemeOverlay.BrowserUI.ModalDialog.TextPrimaryButton.Fullscreen" parent="ThemeOverlay.BrowserUI.Fullscreen">
         <item name="buttonBarButtonStyle">@style/TextButton</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
@@ -89,6 +93,10 @@ found in the LICENSE file.
         <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledButtons.Fullscreen" parent="ThemeOverlay.BrowserUI.ModalDialog.FilledPrimaryButton.Fullscreen">
+        <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.TextPrimaryButton.Fullscreen.Dark" parent="ThemeOverlay.BrowserUI.ModalDialog.TextPrimaryButton.Fullscreen">
@@ -118,6 +126,10 @@ found in the LICENSE file.
         <item name="android:background">@color/toolbar_background_primary_dark</item>
     </style>
 
+    <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledButtons.Fullscreen.Dark" parent="ThemeOverlay.BrowserUI.ModalDialog.FilledPrimaryButton.Fullscreen.Dark">
+        <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
+    </style>
+
     <style name="ThemeOverlay.BrowserUI.ModalDialog.TextPrimaryButton.DialogWhenLarge" parent="ThemeOverlay.BrowserUI.Fullscreen.DialogWhenLarge">
         <item name="buttonBarButtonStyle">@style/TextButton</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
@@ -136,5 +148,9 @@ found in the LICENSE file.
         <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.ModalDialog.FilledButtons.DialogWhenLarge" parent="ThemeOverlay.BrowserUI.ModalDialog.FilledPrimaryButton.DialogWhenLarge">
+        <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
     </style>
 </resources>

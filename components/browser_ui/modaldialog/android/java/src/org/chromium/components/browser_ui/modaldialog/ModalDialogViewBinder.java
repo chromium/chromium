@@ -104,6 +104,7 @@ public class ModalDialogViewBinder
             view.setCheckboxChecked(model.get(ModalDialogProperties.CHECKBOX_CHECKED));
         } else if (ModalDialogProperties.POSITIVE_BUTTON_TEXT == propertyKey) {
             assert checkFilterTouchConsistency(model);
+            assert checkFilledButtonConsistency(model);
             assert checkDefaultButtonsNotCombinedWithButtonGroup(model);
             view.setButtonText(
                     ModalDialogProperties.ButtonType.POSITIVE,
@@ -217,26 +218,31 @@ public class ModalDialogViewBinder
      * Checks if the BUTTON_STYLES property is consistent with the set of enabled buttons. If the
      * primary button (== positive button for dialog view) is in filled state, it could be disabled
      * while the negative button is enabled. On the contrary, if the negative button is filled, it
-     * could also be disabled while the primary button is enabled. This check only applies to
-     * standard buttons on a modal dialog.
+     * could also be disabled while the primary button is enabled. If both buttons are filled, both
+     * must be present. This check only applies to standard buttons on a modal dialog.
      *
-     * @return false if one button is in filled state while the other button doesn't present. True
-     *     otherwise.
+     * @return false if the configured filled button style is inconsistent with the set of present
+     *     buttons. True otherwise.
      */
     private static boolean checkFilledButtonConsistency(PropertyModel model) {
         if (canChangeCustomViewOrButtons(model)) {
             return true;
         }
         int styles = model.get(ModalDialogProperties.BUTTON_STYLES);
-        if (styles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE) {
-            return !TextUtils.isEmpty(model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
-        } else if (styles == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {
-            return !TextUtils.isEmpty(model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
-        } else if (styles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE) {
-            return TextUtils.isEmpty(model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+        switch (styles) {
+            case ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE:
+                return !TextUtils.isEmpty(model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+            case ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED:
+                return !TextUtils.isEmpty(model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+            case ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE:
+                return TextUtils.isEmpty(model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+            case ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_FILLED:
+                return !TextUtils.isEmpty(model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT))
+                        && !TextUtils.isEmpty(
+                                model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+            default:
+                return true;
         }
-
-        return true;
     }
 
     /**

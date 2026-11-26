@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.modaldialog;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.robolectric.Robolectric.buildActivity;
 
@@ -719,5 +720,58 @@ public class ModalDialogViewUnitTest {
                 "The close button should be at the end of the title row.",
                 titleRow.getWidth() - titleRow.getPaddingRight() - params.rightMargin,
                 closeButton.getRight());
+    }
+
+    /**
+     * Tests that binding {@link ModalDialogProperties.ButtonStyles#PRIMARY_FILLED_NEGATIVE_FILLED}
+     * succeeds when both buttons are present and throws an {@link AssertionError} if either is
+     * missing or cleared after binding.
+     */
+    @Test
+    public void testFilledButtonConsistency_PrimaryAndNegativeFilled() {
+        ModalDialogViewBinder viewBinder = new ModalDialogViewBinder();
+        PropertyModel bothButtons =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "OK")
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, "Cancel")
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_FILLED)
+                        .build();
+        PropertyModelChangeProcessor.create(bothButtons, mDialogView, viewBinder);
+
+        assertThrows(
+                AssertionError.class,
+                () -> bothButtons.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, ""));
+        bothButtons.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "OK");
+        assertThrows(
+                AssertionError.class,
+                () -> bothButtons.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, ""));
+
+        PropertyModel missingNegative =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "OK")
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_FILLED)
+                        .build();
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        PropertyModelChangeProcessor.create(
+                                missingNegative, mDialogView, viewBinder));
+
+        PropertyModel missingPositive =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, "Cancel")
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_FILLED)
+                        .build();
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        PropertyModelChangeProcessor.create(
+                                missingPositive, mDialogView, viewBinder));
     }
 }

@@ -299,6 +299,27 @@ public class AppModalPresenterTest {
     }
 
     @Test
+    @SmallTest
+    @Feature({"ModalDialog"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/479879586
+    public void testButton_primaryAndNegativeButtonsFilled() throws Exception {
+        PropertyModel dialog =
+                createDialog(
+                        sActivity,
+                        mManager,
+                        "title",
+                        mTestObserver,
+                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_FILLED);
+        showDialogInRoot(mManager, dialog, ModalDialogType.APP);
+        onView(withText(R.string.cancel))
+                .inRoot(isDialog())
+                .check(matches(hasCurrentTextColor(Color.WHITE)));
+        onView(withText(R.string.ok))
+                .inRoot(isDialog())
+                .check(matches(hasCurrentTextColor(Color.WHITE)));
+    }
+
+    @Test
     @MediumTest
     @Feature({"ModalDialog"})
     // TODO(crbug.com/428281050): Do not read color from system window bars on B+.

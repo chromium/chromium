@@ -211,7 +211,7 @@ ModalDialogWrapper::GetButtonStyles() const {
        !override_default_button.has_value());
 
   if (is_ok_prominent && is_cancel_prominent) {
-    NOTREACHED() << "Both buttons cannot be prominent.";
+    return ModalDialogButtonStyles::kPrimaryFilledNegativeFilled;
   }
 
   if (is_ok_prominent) {

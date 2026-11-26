@@ -19,6 +19,8 @@ import static org.robolectric.Robolectric.buildActivity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -305,5 +307,43 @@ public class TabModalPresenterUnitTest {
                 .with(ModalDialogProperties.TITLE, "Title")
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "OK")
                 .build();
+    }
+
+    /**
+     * Tests that {@link ModalDialogProperties.ButtonStyles#PRIMARY_FILLED_NEGATIVE_FILLED} applies
+     * the filled button style to both positive and negative buttons.
+     */
+    @Test
+    public void addDialogView_PrimaryAndNegativeButtonsFilled() {
+        PropertyModel model =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.TITLE, "Title")
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "OK")
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, "Cancel")
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_FILLED)
+                        .build();
+        mPresenter.addDialogView(model, /* onDialogCreatedCallback= */ null, null);
+
+        ModalDialogView dialogView = mPresenter.getDialogViewForTest();
+        assertNotNull(dialogView);
+        Resources.Theme theme = dialogView.getContext().getTheme();
+
+        TypedValue positiveButtonStyle = new TypedValue();
+        assertTrue(
+                theme.resolveAttribute(
+                        R.attr.buttonBarPositiveButtonStyle,
+                        positiveButtonStyle,
+                        /* resolveRefs= */ true));
+        assertEquals(R.style.FilledButton, positiveButtonStyle.resourceId);
+
+        TypedValue negativeButtonStyle = new TypedValue();
+        assertTrue(
+                theme.resolveAttribute(
+                        R.attr.buttonBarNegativeButtonStyle,
+                        negativeButtonStyle,
+                        /* resolveRefs= */ true));
+        assertEquals(R.style.FilledButton, negativeButtonStyle.resourceId);
     }
 }
