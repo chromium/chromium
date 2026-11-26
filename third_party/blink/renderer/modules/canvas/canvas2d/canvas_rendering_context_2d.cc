@@ -274,22 +274,26 @@ void CanvasRenderingContext2D::SendContextLostEventIfNeeded() {
 }
 
 void CanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
-  if (context_lost_mode_ != kNotLostContext)
+  if (context_lost_mode_ != kNotLostContext) {
     return;
+  }
   context_lost_mode_ = lost_mode;
   ResetInternal();
   ResetRecorder();
-  HTMLCanvasElement* const element = canvas();
-  if (element != nullptr) [[likely]] {
+  if (CanvasRenderingContextHost* host = Host()) [[likely]] {
     ResetBacking();
-    element->DiscardResources();
-    element->DiscardResourceDispatcher();
+    host->DiscardResources();
+    host->DiscardResourceDispatcher();
+  }
+  ScheduleContextLostEvent();
+}
 
-    if (element->IsPageVisible()) {
-      dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(),
-                                                      FROM_HERE);
-      return;
-    }
+void CanvasRenderingContext2D::ScheduleContextLostEvent() {
+  if (HTMLCanvasElement* element = canvas();
+      element && element->IsPageVisible()) {
+    dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(),
+                                                    FROM_HERE);
+    return;
   }
   needs_context_lost_event_ = true;
 }

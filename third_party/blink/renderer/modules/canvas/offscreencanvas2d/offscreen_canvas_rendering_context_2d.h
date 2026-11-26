@@ -105,6 +105,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
  private:
   void FinalizeFrame(FlushReason) final;
+  void ScheduleContextLostEvent();
 
   scoped_refptr<ExportedCanvasResource> ProduceCanvasResource(FlushReason);
 
