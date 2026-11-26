@@ -10,14 +10,17 @@
 
 #include "base/byte_size.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
 #include "content/common/features.h"
+#include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -61,6 +64,77 @@ class MemoryDataSource : public mojo::DataPipeProducer::DataSource {
   size_t offset_;
   size_t size_;
 };
+
+// Sends `headers` and the `output_size` bytes in `pipe` to the client.
+void SendResponse(
+    network::mojom::URLResponseHeadPtr headers,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
+    mojo::ScopedDataPipeConsumerHandle pipe,
+    size_t output_size) {
+  // For media content, |content_length| must be known upfront for data that is
+  // assumed to be fully buffered (as opposed to streamed from the network),
+  // otherwise the media player will get confused and refuse to play.
+  // Content delivered via chrome:// URLs is assumed fully buffered.
+  headers->content_length = output_size;
+  auto now_ticks = base::TimeTicks::Now();
+  headers->response_start = now_ticks;
+  headers->response_time = base::Time::Now();
+  headers->load_timing.receive_headers_start = now_ticks;
+  headers->load_timing.receive_headers_end = now_ticks;
+
+  mojo::Remote<network::mojom::URLLoaderClient> client(
+      std::move(client_remote));
+  client->OnReceiveResponse(std::move(headers), std::move(pipe), std::nullopt);
+
+  network::URLLoaderCompletionStatus status(net::OK);
+  status.encoded_data_length = base::ByteSize(output_size);
+  status.encoded_body_length = base::ByteSize(output_size);
+  status.decoded_body_length = base::ByteSize(output_size);
+  status.completion_time = base::TimeTicks::Now();
+  client->OnComplete(status);
+}
+
+// Attempts to load `resource_id` directly into a payload-sized Mojo data pipe.
+// Returns an invalid handle if the resource cannot be loaded this way (e.g., it
+// exceeds the max pipe capacity, is empty, or the embedder does not support
+// direct loading).
+std::pair<mojo::ScopedDataPipeConsumerHandle, size_t> TryLoadResourceIntoPipe(
+    ContentClient* content_client,
+    int resource_id) {
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  size_t output_size = 0;
+  uint32_t max_data_pipe_size = network::GetDataPipeDefaultAllocationSize(
+      network::DataPipeAllocationSize::kLargerSizeIfPossible);
+  bool loaded = content_client->LoadDataResourceInto(
+      resource_id, [&](size_t size) -> base::span<uint8_t> {
+        CHECK(!producer_handle.is_valid());
+        // A capacity of 0 would mean "use the default capacity".
+        if (size == 0 || size > max_data_pipe_size) {
+          return {};
+        }
+        base::span<uint8_t> buffer;
+        if (mojo::CreateDataPipe(base::checked_cast<uint32_t>(size),
+                                 producer_handle,
+                                 consumer_handle) != MOJO_RESULT_OK ||
+            producer_handle->BeginWriteData(size,
+                                            MOJO_BEGIN_WRITE_DATA_FLAG_NONE,
+                                            buffer) != MOJO_RESULT_OK ||
+            buffer.size() < size) {
+          producer_handle.reset();
+          consumer_handle.reset();
+          return {};
+        }
+        output_size = size;
+        return buffer.first(size);
+      });
+  if (!loaded) {
+    return {{}, 0};
+  }
+  CHECK(producer_handle.is_valid());
+  CHECK_EQ(producer_handle->EndWriteData(output_size), MOJO_RESULT_OK);
+  return {std::move(consumer_handle), output_size};
+}
 
 }  // namespace
 
@@ -117,28 +191,32 @@ bool SendData(
     return false;
   }
 
-  // For media content, |content_length| must be known upfront for data that is
-  // assumed to be fully buffered (as opposed to streamed from the network),
-  // otherwise the media player will get confused and refuse to play.
-  // Content delivered via chrome:// URLs is assumed fully buffered.
-  headers->content_length = output_size;
-  auto now_ticks = base::TimeTicks::Now();
-  headers->response_start = now_ticks;
-  headers->response_time = base::Time::Now();
-  headers->load_timing.receive_headers_start = now_ticks;
-  headers->load_timing.receive_headers_end = now_ticks;
-
-  mojo::Remote<network::mojom::URLLoaderClient> client(
-      std::move(client_remote));
-  client->OnReceiveResponse(std::move(headers), std::move(pipe), std::nullopt);
-
-  network::URLLoaderCompletionStatus status(net::OK);
-  status.encoded_data_length = base::ByteSize(output_size);
-  status.encoded_body_length = base::ByteSize(output_size);
-  status.decoded_body_length = base::ByteSize(output_size);
-  status.completion_time = base::TimeTicks::Now();
-  client->OnComplete(status);
+  SendResponse(std::move(headers), std::move(client_remote), std::move(pipe),
+               output_size);
   return true;
+}
+
+bool SendDataResource(
+    network::mojom::URLResponseHeadPtr headers,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
+    int resource_id) {
+  ContentClient* content_client = GetContentClient();
+  if (base::FeatureList::IsEnabled(
+          features::kWebUIDirectResourceDecompression)) {
+    auto [pipe, output_size] =
+        TryLoadResourceIntoPipe(content_client, resource_id);
+    if (pipe.is_valid()) {
+      SendResponse(std::move(headers), std::move(client_remote),
+                   std::move(pipe), output_size);
+      return true;
+    }
+  }
+
+  scoped_refptr<base::RefCountedMemory> bytes =
+      content_client->GetDataResourceBytes(resource_id);
+  CHECK(bytes);
+  return SendData(std::move(headers), std::move(client_remote), std::nullopt,
+                  std::move(bytes));
 }
 
 std::pair<mojo::ScopedDataPipeConsumerHandle, size_t> GetPipe(

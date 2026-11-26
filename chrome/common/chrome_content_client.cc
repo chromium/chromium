@@ -317,6 +317,13 @@ scoped_refptr<base::RefCountedMemory> ChromeContentClient::GetDataResourceBytes(
       resource_id);
 }
 
+bool ChromeContentClient::LoadDataResourceInto(
+    int resource_id,
+    ResourceBufferAllocator allocate) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceInto(
+      resource_id, allocate);
+}
+
 std::string ChromeContentClient::GetDataResourceString(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
       resource_id);

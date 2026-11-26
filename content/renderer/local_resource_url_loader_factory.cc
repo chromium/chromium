@@ -142,6 +142,18 @@ void SendResponse(mojo::PendingRemote<network::mojom::URLLoaderClient> client,
                   bytes);
 }
 
+// Returns whether template expressions in a resource with `mime_type` should be
+// replaced with `replacement_strings`.
+bool ShouldReplaceStrings(
+    const blink::mojom::LocalResourceSourcePtr& source,
+    const std::map<std::string, std::string>& replacement_strings,
+    std::string_view mime_type) {
+  return !replacement_strings.empty() &&
+         (mime_type == "text/html" || mime_type == "text/css" ||
+          (source->should_replace_i18n_in_js &&
+           mime_type == "text/javascript"));
+}
+
 // Returns the bytes of the resource with the given `value`.
 // This function assumes that the resource value is a resource ID.
 scoped_refptr<base::RefCountedMemory> GetResourceBytes(
@@ -300,6 +312,21 @@ void LocalResourceURLLoaderFactory::GetResourceAndRespond(
     maybe_range = range_or_error.value();
   }
 
+  // Resources that are sent unmodified can be decompressed directly into the
+  // response's data pipe.
+  if (!maybe_range &&
+      !ShouldReplaceStrings(source, replacement_strings, mime_type)) {
+    auto resource_it =
+        source->path_to_resource_map.find(GetWebUIResourcePath(request.url));
+    // Response bodies were handled by FindResponse() above. Missing paths fall
+    // through so that GetResource() reports them.
+    if (resource_it != source->path_to_resource_map.end()) {
+      webui::SendDataResource(std::move(url_response_head), std::move(client),
+                              resource_it->second->get_resource_id());
+      return;
+    }
+  }
+
   webui::SendData(
       std::move(url_response_head), std::move(client), maybe_range,
       GetResource(request.url, source, replacement_strings, mime_type));
@@ -342,9 +369,7 @@ LocalResourceURLLoaderFactory::GetResource(
   std::string_view bytes(base::as_string_view(*raw_bytes));
 
   scoped_refptr<base::RefCountedMemory> bytes_after_replacement = raw_bytes;
-  if (replacement_strings.size() > 0 &&
-      (mime_type == "text/html" || mime_type == "text/css" ||
-       (source->should_replace_i18n_in_js && mime_type == "text/javascript"))) {
+  if (ShouldReplaceStrings(source, replacement_strings, mime_type)) {
     std::string replaced_string;
     if (mime_type == "text/javascript") {
       CHECK(ui::ReplaceTemplateExpressionsInJS(bytes, replacement_strings,

@@ -983,6 +983,15 @@ BASE_FEATURE(kWarmUpNetworkProcess, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable WebAssembly dynamic tiering (only tier up hot functions).
 BASE_FEATURE(kWebAssemblyDynamicTiering, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Loads unmodified WebUI resources (both compressed and uncompressed) directly
+// into a payload-sized Mojo data pipe instead of an intermediate buffer.
+// Eligible resources are written synchronously into the pipe regardless of
+// `kWebUISyncDataPipeWrite`, subsuming it for that subset; experiments
+// isolating this optimization should compare {WebUISyncDataPipeWrite} vs
+// {WebUISyncDataPipeWrite, WebUIDirectResourceDecompression}.
+BASE_FEATURE(kWebUIDirectResourceDecompression,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables in-process resource loading for WebUI renderer processes.
 BASE_FEATURE(kWebUIInProcessResourceLoading, base::FEATURE_ENABLED_BY_DEFAULT);
 

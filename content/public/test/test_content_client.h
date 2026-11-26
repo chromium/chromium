@@ -27,6 +27,8 @@ class TestContentClient : public ContentClient {
       ui::ResourceScaleFactor scale_factor) override;
   scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
       int resource_id) override;
+  bool LoadDataResourceInto(int resource_id,
+                            ResourceBufferAllocator allocate) override;
   std::string GetDataResourceString(int resource_id) override;
 };
 

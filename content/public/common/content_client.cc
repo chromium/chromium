@@ -125,6 +125,11 @@ scoped_refptr<base::RefCountedMemory> ContentClient::GetDataResourceBytes(
   return nullptr;
 }
 
+bool ContentClient::LoadDataResourceInto(int resource_id,
+                                         ResourceBufferAllocator allocate) {
+  return false;
+}
+
 std::string ContentClient::GetDataResourceString(int resource_id) {
   // Default implementation in terms of GetDataResourceBytes.
   scoped_refptr<base::RefCountedMemory> memory =

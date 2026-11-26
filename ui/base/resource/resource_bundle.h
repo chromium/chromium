@@ -19,6 +19,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -188,6 +189,8 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   using LottieData = std::vector<uint8_t>;
   using LottieImageParseFunction = gfx::ImageSkia (*)(LottieData);
   using LottieThemedImageParseFunction = ui::ImageModel (*)(LottieData);
+  using ResourceBufferAllocator =
+      base::FunctionRef<base::span<uint8_t>(size_t)>;
 
   // Initialize the ResourceBundle for this process. Does not take ownership of
   // the |delegate| value. Returns the language selected or an empty string if
@@ -335,6 +338,16 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Loads the raw bytes of a scale independent data resource or null.
   scoped_refptr<base::RefCountedMemory> LoadDataResourceBytes(
       int resource_id) const;
+
+  // Like LoadDataResourceBytes(), but writes the resource (decompressed, if
+  // necessary) into the buffer returned by `allocate`, which is called once
+  // with the resource's non-zero size and must return either a span of exactly
+  // that size or an empty span to abort. This avoids an intermediate buffer
+  // when the caller has its own destination (e.g. a Mojo data pipe). Returns
+  // false without calling `allocate` if the resource is not found, is empty, or
+  // a Delegate is set; also returns false if `allocate` returns an empty span.
+  bool LoadDataResourceInto(int resource_id,
+                            ResourceBufferAllocator allocate) const;
 
   // Returns whether `resource_id` is compressed (gzip, brotli, or zstd) in
   // this bundle. Returns false if the resource is not found.

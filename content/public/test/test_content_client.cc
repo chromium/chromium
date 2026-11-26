@@ -32,6 +32,12 @@ scoped_refptr<base::RefCountedMemory> TestContentClient::GetDataResourceBytes(
       resource_id);
 }
 
+bool TestContentClient::LoadDataResourceInto(int resource_id,
+                                             ResourceBufferAllocator allocate) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceInto(
+      resource_id, allocate);
+}
+
 std::string TestContentClient::GetDataResourceString(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
       resource_id);

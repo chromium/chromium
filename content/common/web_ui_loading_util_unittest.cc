@@ -8,19 +8,25 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
+#include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "content/common/features.h"
+#include "content/public/common/content_client.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -96,6 +102,115 @@ std::optional<std::string> ReadAllData(network::TestURLLoaderClient& client) {
   BodyReader reader(client.response_body_release());
   return reader.TakeContent();
 }
+
+// Serves a single data resource via GetDataResourceBytes() while installed as
+// the active ContentClient, inheriting the default LoadDataResourceInto().
+class BytesOnlyContentClient : public ContentClient {
+ public:
+  static constexpr int kResourceId = 123;
+
+  explicit BytesOnlyContentClient(std::string data)
+      : data_(std::move(data)), old_client_(GetContentClientForTesting()) {
+    SetContentClient(this);
+  }
+  BytesOnlyContentClient(const BytesOnlyContentClient&) = delete;
+  BytesOnlyContentClient& operator=(const BytesOnlyContentClient&) = delete;
+  ~BytesOnlyContentClient() override { SetContentClient(old_client_); }
+
+  // ContentClient:
+  scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
+      int resource_id) override {
+    if (resource_id != kResourceId) {
+      return nullptr;
+    }
+    ++get_bytes_count_;
+    return base::MakeRefCounted<base::RefCountedString>(data_);
+  }
+
+  int get_bytes_count() const { return get_bytes_count_; }
+
+ protected:
+  const std::string& data() const { return data_; }
+
+ private:
+  std::string data_;
+  raw_ptr<ContentClient> old_client_;
+  int get_bytes_count_ = 0;
+};
+
+// Also implements LoadDataResourceInto() and counts direct vs fallback loads.
+class FakeContentClient : public BytesOnlyContentClient {
+ public:
+  using BytesOnlyContentClient::BytesOnlyContentClient;
+
+  // ContentClient:
+  bool LoadDataResourceInto(int resource_id,
+                            ResourceBufferAllocator allocate) override {
+    if (resource_id != kResourceId) {
+      return false;
+    }
+    ++load_into_count_;
+    if (data().empty()) {
+      return false;
+    }
+    base::span<uint8_t> buffer = allocate(data().size());
+    if (buffer.empty()) {
+      return false;
+    }
+    buffer.copy_from(base::as_byte_span(data()));
+    return true;
+  }
+
+  int load_into_count() const { return load_into_count_; }
+
+ private:
+  int load_into_count_ = 0;
+};
+
+// Sends `resource_id` and verifies the response status, metadata, and body.
+void ExpectResourceSent(int resource_id,
+                        std::string_view expected,
+                        base::Location location = FROM_HERE) {
+  SCOPED_TRACE(location.ToString());
+  network::TestURLLoaderClient client;
+  bool success = SendDataResource(network::mojom::URLResponseHead::New(),
+                                  client.CreateRemote(), resource_id);
+  client.RunUntilComplete();
+  EXPECT_TRUE(success);
+  EXPECT_EQ(net::OK, client.completion_status().error_code);
+  EXPECT_EQ(base::ByteSize(expected.size()),
+            client.completion_status().decoded_body_length);
+  EXPECT_TRUE(client.response_head());
+  if (client.response_head()) {
+    EXPECT_EQ(static_cast<int64_t>(expected.size()),
+              client.response_head()->content_length);
+  }
+  EXPECT_TRUE(client.response_body().is_valid());
+  if (client.response_body().is_valid()) {
+    EXPECT_EQ(expected, ReadAllData(client));
+  }
+}
+
+void ExpectFallsBackWhenDisabled(bool enable_sync_write) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{features::kWebUIDirectResourceDecompression, false},
+       {features::kWebUISyncDataPipeWrite, enable_sync_write}});
+  base::test::TaskEnvironment task_environment;
+  FakeContentClient content_client("this is some data");
+  ExpectResourceSent(FakeContentClient::kResourceId, "this is some data");
+  EXPECT_EQ(0, content_client.load_into_count());
+  EXPECT_EQ(1, content_client.get_bytes_count());
+}
+
+class WebUILoadingUtilSendDataResourceTest : public ::testing::Test {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      {features::kWebUIDirectResourceDecompression},
+      {features::kWebUISyncDataPipeWrite}};
+  // For TestURLLoaderClient and mojo::DataPipeProducer.
+  base::test::TaskEnvironment task_environment_;
+};
 
 }  // namespace
 
@@ -294,6 +409,66 @@ TEST(WebUILoadingUtilTest, GetPipeFallsBackWhenExceedingMaxPipeCapacity) {
 
   BodyReader reader(std::move(pipe));
   EXPECT_EQ(expected, reader.TakeContent());
+}
+
+TEST_F(WebUILoadingUtilSendDataResourceTest, DecompressesIntoDataPipe) {
+  FakeContentClient content_client("this is some data");
+  ExpectResourceSent(FakeContentClient::kResourceId, "this is some data");
+  EXPECT_EQ(1, content_client.load_into_count());
+  EXPECT_EQ(0, content_client.get_bytes_count());
+}
+
+TEST(WebUILoadingUtilTest, SendDataResourceFallsBackWhenDisabled) {
+  ExpectFallsBackWhenDisabled(/*enable_sync_write=*/false);
+}
+
+TEST(WebUILoadingUtilTest, SendDataResourceFallsBackWhenDisabledWithSyncWrite) {
+  ExpectFallsBackWhenDisabled(/*enable_sync_write=*/true);
+}
+
+TEST_F(WebUILoadingUtilSendDataResourceTest, DefaultContentClientFallsBack) {
+  BytesOnlyContentClient content_client("fallback bytes");
+  ExpectResourceSent(BytesOnlyContentClient::kResourceId, "fallback bytes");
+  EXPECT_EQ(1, content_client.get_bytes_count());
+}
+
+TEST_F(WebUILoadingUtilSendDataResourceTest, ExactMaxPipeCapacity) {
+  size_t max_pipe_size = network::GetDataPipeDefaultAllocationSize(
+      network::DataPipeAllocationSize::kLargerSizeIfPossible);
+  std::string data(max_pipe_size, 'b');
+  FakeContentClient content_client(data);
+  ExpectResourceSent(FakeContentClient::kResourceId, data);
+  EXPECT_EQ(1, content_client.load_into_count());
+  EXPECT_EQ(0, content_client.get_bytes_count());
+}
+
+TEST_F(WebUILoadingUtilSendDataResourceTest, ExceedsMaxPipeCapacity) {
+  size_t max_pipe_size = network::GetDataPipeDefaultAllocationSize(
+      network::DataPipeAllocationSize::kLargerSizeIfPossible);
+  std::string data(max_pipe_size + 1, 'z');
+  FakeContentClient content_client(data);
+  ExpectResourceSent(FakeContentClient::kResourceId, data);
+  EXPECT_EQ(1, content_client.load_into_count());
+  EXPECT_EQ(1, content_client.get_bytes_count());
+}
+
+TEST_F(WebUILoadingUtilSendDataResourceTest, EmptyResource) {
+  FakeContentClient content_client("");
+  ExpectResourceSent(FakeContentClient::kResourceId, "");
+  EXPECT_EQ(1, content_client.load_into_count());
+  EXPECT_EQ(1, content_client.get_bytes_count());
+}
+
+TEST(WebUILoadingUtilDeathTest, SendDataResourceMissingResource) {
+  base::test::ScopedFeatureList feature_list(
+      features::kWebUIDirectResourceDecompression);
+  FakeContentClient content_client("this is some data");
+  EXPECT_CHECK_DEATH({
+    base::test::SingleThreadTaskEnvironment task_environment;
+    network::TestURLLoaderClient client;
+    SendDataResource(network::mojom::URLResponseHead::New(),
+                     client.CreateRemote(), FakeContentClient::kResourceId + 1);
+  });
 }
 
 }  // namespace webui

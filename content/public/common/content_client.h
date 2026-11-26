@@ -5,11 +5,15 @@
 #ifndef CONTENT_PUBLIC_COMMON_CONTENT_CLIENT_H_
 #define CONTENT_PUBLIC_COMMON_CONTENT_CLIENT_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -184,6 +188,18 @@ class CONTENT_EXPORT ContentClient {
   // Returns the raw bytes of a scale independent data resource.
   virtual scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
       int resource_id);
+
+  using ResourceBufferAllocator =
+      base::FunctionRef<base::span<uint8_t>(size_t)>;
+
+  // Like GetDataResourceBytes(), but writes the resource into the buffer
+  // returned by `allocate`, which is called once with the resource's non-zero
+  // size and must return either a span of exactly that size or an empty span to
+  // abort. This avoids an intermediate buffer when decompressing. Returns false
+  // if the resource is not available this way, is empty, or `allocate` returns
+  // an empty span.
+  virtual bool LoadDataResourceInto(int resource_id,
+                                    ResourceBufferAllocator allocate);
 
   // Returns the string contents of a resource given the resource id.
   virtual std::string GetDataResourceString(int resource_id);

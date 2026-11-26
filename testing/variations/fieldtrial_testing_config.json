@@ -22057,6 +22057,26 @@
             ]
         }
     ],
+    "WebUIDirectResourceDecompression": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebUIDirectResourceDecompression"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebUIInProcessResourceLoading": [
         {
             "platforms": [

@@ -6,15 +6,14 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
-#include <variant>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -144,36 +143,7 @@ size_t GetBrotliDecompressSize(std::string_view input) {
   for (size_t i = 0; i < bytes_size; i++) {
     uncompress_size |= static_cast<uint64_t>(raw_input[i]) << (i * 8);
   }
-  return static_cast<size_t>(uncompress_size);
-}
-
-using OutputBufferType = std::variant<std::string*, std::vector<uint8_t>*>;
-
-// Returns a span of the given length that writes into `out_buf`.
-base::span<uint8_t> GetBufferForWriting(OutputBufferType out_buf, size_t len) {
-  if (std::holds_alternative<std::string*>(out_buf)) {
-    std::string* str = std::get<std::string*>(out_buf);
-    str->resize(len);
-    return base::as_writable_byte_span(*str);
-  }
-
-  std::vector<uint8_t>* vec = std::get<std::vector<uint8_t>*>(out_buf);
-  vec->resize(len);
-  return base::as_writable_byte_span(*vec);
-}
-
-// Decompresses data in |input| using brotli, storing
-// the result in |output|, which is resized as necessary. Returns true for
-// success. To be used for grit compressed resources only.
-bool BrotliDecompress(std::string_view input, OutputBufferType output) {
-  size_t decompress_size = GetBrotliDecompressSize(input);
-  base::span<const uint8_t> raw_input = base::as_byte_span(input);
-  raw_input = raw_input.subspan(ResourceBundle::kBrotliHeaderSize);
-
-  return BrotliDecoderDecompress(
-             raw_input.size(), raw_input.data(), &decompress_size,
-             GetBufferForWriting(output, decompress_size).data()) ==
-         BROTLI_DECODER_RESULT_SUCCESS;
+  return base::checked_cast<size_t>(uncompress_size);
 }
 
 // Helper function for determining whether a resource is zstd compressed.
@@ -182,52 +152,90 @@ bool HasZstdHeader(std::string_view data) {
   return data.starts_with(std::string_view("\x28\xb5\x2f\xfd", 4));
 }
 
+enum class CompressionCodec {
+  kNone,
+  kGzip,
+  kBrotli,
+  kZstd,
+};
+
+CompressionCodec GetCompressionCodec(std::string_view data) {
+  if (net::GZipHeader::HasGZipHeader(base::as_byte_span(data))) {
+    return CompressionCodec::kGzip;
+  }
+  if (HasBrotliHeader(data)) {
+    return CompressionCodec::kBrotli;
+  }
+  if (HasZstdHeader(data)) {
+    return CompressionCodec::kZstd;
+  }
+  return CompressionCodec::kNone;
+}
+
 bool IsCompressedData(std::string_view data) {
-  return net::GZipHeader::HasGZipHeader(base::as_byte_span(data)) ||
-         HasBrotliHeader(data) || HasZstdHeader(data);
+  return GetCompressionCodec(data) != CompressionCodec::kNone;
 }
 
-// Decompresses data in |input| using zstd, storing the result in |output|,
-// which is resized as necessary. Returns true for success. Requires that the
-// frame header contains the decompressed size, which grit always includes.
-bool ZstdDecompress(std::string_view input, OutputBufferType output) {
-  uint64_t decompress_size =
-      ZSTD_getFrameContentSize(input.data(), input.size());
-  if (decompress_size == ZSTD_CONTENTSIZE_UNKNOWN ||
-      decompress_size == ZSTD_CONTENTSIZE_ERROR) {
-    return false;
+size_t GetDecompressedSize(CompressionCodec codec, std::string_view data) {
+  switch (codec) {
+    case CompressionCodec::kGzip:
+      return compression::GetUncompressedSize(data);
+    case CompressionCodec::kBrotli:
+      return GetBrotliDecompressSize(data);
+    case CompressionCodec::kZstd: {
+      // Assumes that resources starting with the zstd magic number were
+      // compressed by grit (which always stores the decompressed size).
+      uint64_t decompress_size =
+          ZSTD_getFrameContentSize(data.data(), data.size());
+      CHECK(decompress_size != ZSTD_CONTENTSIZE_UNKNOWN &&
+            decompress_size != ZSTD_CONTENTSIZE_ERROR);
+      return base::checked_cast<size_t>(decompress_size);
+    }
+    case CompressionCodec::kNone:
+      return data.size();
   }
-  base::span<uint8_t> dest =
-      GetBufferForWriting(output, base::checked_cast<size_t>(decompress_size));
-  size_t result =
-      ZSTD_decompress(dest.data(), dest.size(), input.data(), input.size());
-  return !ZSTD_isError(result) && result == dest.size();
 }
 
-// Helper function for decompressing resource.
-void DecompressIfNeeded(std::string_view data, OutputBufferType output) {
-  if (!data.empty() &&
-      net::GZipHeader::HasGZipHeader(base::as_byte_span(data))) {
-    TRACE_EVENT0("ui", "DecompressIfNeeded::GzipUncompress");
-    const uint32_t uncompressed_size = compression::GetUncompressedSize(data);
-    bool success = compression::GzipUncompress(
-        base::as_byte_span(data),
-        GetBufferForWriting(output, uncompressed_size));
-    CHECK(success, base::NotFatalUntil::M163);
-  } else if (!data.empty() && HasBrotliHeader(data)) {
-    TRACE_EVENT0("ui", "DecompressIfNeeded::BrotliDecompress");
-    bool success = BrotliDecompress(data, output);
-    CHECK(success, base::NotFatalUntil::M163);
-  } else if (HasZstdHeader(data)) {
-    // Assumes that resources starting with the zstd magic number were
-    // compressed by grit (which always stores the decompressed size).
-    TRACE_EVENT0("ui", "DecompressIfNeeded::ZstdDecompress");
-    bool success = ZstdDecompress(data, output);
-    CHECK(success);
-  } else {
-    base::span<uint8_t> dest = GetBufferForWriting(output, data.size());
-    std::ranges::copy(data, dest.data());
+bool DecompressInto(CompressionCodec codec,
+                    std::string_view data,
+                    base::span<uint8_t> dest) {
+  switch (codec) {
+    case CompressionCodec::kGzip: {
+      TRACE_EVENT0("ui", "DecompressIfNeeded::GzipUncompress");
+      // Assumes single-member grit streams: zlib's inflate() verifies the
+      // member's ISIZE trailer, which matches `dest.size()` (< 4 GiB).
+      return compression::GzipUncompress(base::as_byte_span(data), dest);
+    }
+    case CompressionCodec::kBrotli: {
+      TRACE_EVENT0("ui", "DecompressIfNeeded::BrotliDecompress");
+      size_t decompress_size = dest.size();
+      base::span<const uint8_t> raw_input =
+          base::as_byte_span(data).subspan(ResourceBundle::kBrotliHeaderSize);
+      return BrotliDecoderDecompress(raw_input.size(), raw_input.data(),
+                                     &decompress_size, dest.data()) ==
+                 BROTLI_DECODER_RESULT_SUCCESS &&
+             decompress_size == dest.size();
+    }
+    case CompressionCodec::kZstd: {
+      TRACE_EVENT0("ui", "DecompressIfNeeded::ZstdDecompress");
+      size_t result =
+          ZSTD_decompress(dest.data(), dest.size(), data.data(), data.size());
+      CHECK(!ZSTD_isError(result) && result == dest.size());
+      return true;
+    }
+    case CompressionCodec::kNone:
+      dest.copy_from(base::as_byte_span(data));
+      return true;
   }
+}
+
+template <typename Buffer>
+void DecompressIfNeeded(std::string_view data, Buffer* output) {
+  CompressionCodec codec = GetCompressionCodec(data);
+  output->resize(GetDecompressedSize(codec, data));
+  bool success =
+      DecompressInto(codec, data, base::as_writable_byte_span(*output));
+  CHECK(success, base::NotFatalUntil::M163);
 }
 
 }  // namespace
@@ -779,6 +787,39 @@ bool ResourceBundle::HasDataResource(int resource_id) const {
 scoped_refptr<base::RefCountedMemory> ResourceBundle::LoadDataResourceBytes(
     int resource_id) const {
   return LoadDataResourceBytesForScale(resource_id, ui::kScaleFactorNone);
+}
+
+bool ResourceBundle::LoadDataResourceInto(
+    int resource_id,
+    ResourceBufferAllocator allocate) const {
+  TRACE_EVENT("ui", "ResourceBundle::LoadDataResourceInto",
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                auto* data = event->set_resource_bundle();
+                data->set_resource_id(static_cast<uint32_t>(resource_id));
+              });
+
+  if (delegate_) {
+    return false;
+  }
+
+  std::string_view data = GetRawDataResource(resource_id);
+  if (data.empty()) {
+    return false;
+  }
+  CompressionCodec codec = GetCompressionCodec(data);
+  size_t size = GetDecompressedSize(codec, data);
+  if (size == 0) {
+    return false;
+  }
+  base::span<uint8_t> dest = allocate(size);
+  if (dest.empty()) {
+    return false;
+  }
+  CHECK_EQ(dest.size(), size);
+  CHECK(DecompressInto(codec, data, dest));
+  return true;
 }
 
 scoped_refptr<base::RefCountedMemory>

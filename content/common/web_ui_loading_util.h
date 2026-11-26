@@ -44,6 +44,17 @@ CONTENT_EXPORT bool SendData(
     std::optional<net::HttpByteRange> requested_range,
     scoped_refptr<base::RefCountedMemory> bytes);
 
+// Sends the data resource `resource_id` (via ContentClient) as the response
+// body. Callers must ensure the resource exists (e.g. via
+// ContentClient::HasDataResource()). When kWebUIDirectResourceDecompression is
+// enabled, eligible resources are loaded directly into a payload-sized data
+// pipe rather than into an intermediate buffer. Returns false (after reporting
+// an error to the client) if the response could not be sent.
+CONTENT_EXPORT bool SendDataResource(
+    network::mojom::URLResponseHeadPtr headers,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
+    int resource_id);
+
 // Returns a pair of (pipe, output size) that points to the data from `bytes`,
 // bounded by `requested_range` if set. On failure (e.g. data pipe creation
 // fails), the returned pipe handle is invalid and output size is 0.

@@ -4,10 +4,12 @@
 
 #include "content/renderer/local_resource_url_loader_factory.h"
 
+#include <atomic>
 #include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -21,9 +23,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
+#include "content/common/features.h"
 #include "content/common/web_ui_loading_util.h"
+#include "content/public/common/content_client.h"
+#include "content/public/test/test_content_client.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -48,6 +54,66 @@
 #include "url/url_util.h"
 
 namespace {
+
+// Serves registered resources while installed as the active ContentClient,
+// counting direct loads vs intermediate-buffer loads.
+class DirectLoadContentClient : public content::TestContentClient {
+ public:
+  DirectLoadContentClient()
+      : old_client_(content::GetContentClientForTesting()) {
+    content::SetContentClient(this);
+  }
+  DirectLoadContentClient(const DirectLoadContentClient&) = delete;
+  DirectLoadContentClient& operator=(const DirectLoadContentClient&) = delete;
+  ~DirectLoadContentClient() override {
+    content::SetContentClient(old_client_);
+  }
+
+  void AddResource(int resource_id, std::string data) {
+    resources_.insert_or_assign(resource_id, std::move(data));
+  }
+
+  int load_into_count() const {
+    return load_into_count_.load(std::memory_order_relaxed);
+  }
+  int get_bytes_count() const {
+    return get_bytes_count_.load(std::memory_order_relaxed);
+  }
+
+  // content::ContentClient:
+  bool HasDataResource(int resource_id) const override {
+    return resources_.contains(resource_id);
+  }
+  scoped_refptr<base::RefCountedMemory> GetDataResourceBytes(
+      int resource_id) override {
+    auto it = resources_.find(resource_id);
+    if (it == resources_.end()) {
+      return nullptr;
+    }
+    get_bytes_count_.fetch_add(1, std::memory_order_relaxed);
+    return base::MakeRefCounted<base::RefCountedString>(it->second);
+  }
+  bool LoadDataResourceInto(int resource_id,
+                            ResourceBufferAllocator allocate) override {
+    auto it = resources_.find(resource_id);
+    if (it == resources_.end() || it->second.empty()) {
+      return false;
+    }
+    load_into_count_.fetch_add(1, std::memory_order_relaxed);
+    base::span<uint8_t> buffer = allocate(it->second.size());
+    if (buffer.empty()) {
+      return false;
+    }
+    buffer.copy_from(base::as_byte_span(it->second));
+    return true;
+  }
+
+ private:
+  base::flat_map<int, std::string> resources_;
+  std::atomic<int> load_into_count_{0};
+  std::atomic<int> get_bytes_count_{0};
+  raw_ptr<content::ContentClient> old_client_;
+};
 
 // A URLLoaderFactory that always sends the string "out-of-process resource" to
 // the client.
@@ -88,6 +154,8 @@ class FakeURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
 class LocalResourceURLLoaderFactoryTest : public ::testing::Test {
  public:
+  LocalResourceURLLoaderFactoryTest() = default;
+
   void SetUp() override {
     source_ = blink::mojom::LocalResourceSource::New();
     source_->headers =
@@ -99,6 +167,13 @@ class LocalResourceURLLoaderFactoryTest : public ::testing::Test {
   }
 
  protected:
+  explicit LocalResourceURLLoaderFactoryTest(
+      const base::Feature& enabled_feature)
+      : feature_list_(enabled_feature),
+        direct_load_content_client_(std::in_place) {}
+  DirectLoadContentClient& direct_load_content_client() {
+    return *direct_load_content_client_;
+  }
   // Used to control the behavior of the mock ResourceBundle.
   // Marked non-private so that tests can call EXPECT_CALL on it.
   testing::NiceMock<ui::MockResourceBundleDelegate> resource_bundle_delegate_;
@@ -150,6 +225,9 @@ class LocalResourceURLLoaderFactoryTest : public ::testing::Test {
         std::move(config), std::move(pending_remote));
   }
 
+  base::test::ScopedFeatureList feature_list_;
+  std::optional<DirectLoadContentClient> direct_load_content_client_;
+
   std::unique_ptr<content::LocalResourceURLLoaderFactory> loader_factory_;
 
   FakeURLLoaderFactory fake_fallback_factory_;
@@ -199,6 +277,42 @@ class LocalResourceURLLoaderFactoryServeTest
 class LocalResourceURLLoaderFactoryRequestRangeTest
     : public LocalResourceURLLoaderFactoryTest,
       public ::testing::WithParamInterface<RequestRangeTestCase> {};
+class LocalResourceURLLoaderFactoryDirectLoadTest
+    : public LocalResourceURLLoaderFactoryTest {
+ public:
+  LocalResourceURLLoaderFactoryDirectLoadTest()
+      : LocalResourceURLLoaderFactoryTest(
+            features::kWebUIDirectResourceDecompression) {}
+
+ protected:
+  void AddDirectResource(const std::string& path, int id, std::string data) {
+    direct_load_content_client().AddResource(id, std::move(data));
+    AddResourceID(path, id);
+  }
+
+  std::string LoadResource(
+      const std::string& path,
+      std::optional<std::string_view> range = std::nullopt) {
+    network::TestURLLoaderClient client;
+    network::ResourceRequest request;
+    request.url = GURL("chrome://sourcename/" + path);
+    if (range) {
+      request.headers.SetHeader(net::HttpRequestHeaders::kRange, *range);
+    }
+    mojo::PendingRemote<network::mojom::URLLoader> loader;
+    loader_factory()->CreateLoaderAndStart(
+        loader.InitWithNewPipeAndPassReceiver(), 0, 0, request,
+        client.CreateRemote(), net::MutableNetworkTrafficAnnotationTag());
+    client.RunUntilComplete();
+
+    EXPECT_EQ(net::OK, client.completion_status().error_code);
+    if (!client.response_body().is_valid()) {
+      ADD_FAILURE() << "No response body for " << path;
+      return {};
+    }
+    return ReadAllData(client);
+  }
+};
 
 }  // namespace
 
@@ -413,3 +527,60 @@ INSTANTIATE_TEST_SUITE_P(
         // Error expected.
         RequestRangeTestCase("bytes=100-101",
                              net::ERR_REQUEST_RANGE_NOT_SATISFIABLE)));
+
+TEST_F(LocalResourceURLLoaderFactoryDirectLoadTest, DecompressesIntoDataPipe) {
+  AddDirectResource("foo.js", 1, "export const foo = 1;");
+  EXPECT_EQ("export const foo = 1;", LoadResource("foo.js"));
+  EXPECT_EQ(1, direct_load_content_client().load_into_count());
+  EXPECT_EQ(0, direct_load_content_client().get_bytes_count());
+}
+
+TEST_F(LocalResourceURLLoaderFactoryDirectLoadTest,
+       DirectLoadJsWithReplacementsWhenJsI18nDisabled) {
+  std::string js =
+      "_template: html`<!--_html_template_start_-->$i18n{foo}"
+      "<!--_html_template_end_-->`";
+  AddDirectResource("foo.js", 1, js);
+  AddReplacementString("foo", "bar");
+
+  EXPECT_EQ(js, LoadResource("foo.js"));
+  EXPECT_EQ(1, direct_load_content_client().load_into_count());
+  EXPECT_EQ(0, direct_load_content_client().get_bytes_count());
+}
+
+TEST_F(LocalResourceURLLoaderFactoryDirectLoadTest,
+       BypassesDirectLoadForHtmlAndCssReplacements) {
+  AddDirectResource("index.html", 1, "this is $i18n{foo}");
+  AddDirectResource("style.css", 2, "this is $i18n{foo}");
+  AddReplacementString("foo", "bar");
+
+  EXPECT_EQ("this is bar", LoadResource("index.html"));
+  EXPECT_EQ("this is bar", LoadResource("style.css"));
+  EXPECT_EQ(0, direct_load_content_client().load_into_count());
+  EXPECT_EQ(2, direct_load_content_client().get_bytes_count());
+}
+
+TEST_F(LocalResourceURLLoaderFactoryDirectLoadTest,
+       BypassesDirectLoadForJsReplacementsWhenEnabled) {
+  AddDirectResource("foo.js", 1,
+                    "_template: html`<!--_html_template_start_-->$i18n{foo}"
+                    "<!--_html_template_end_-->`");
+  AddReplacementString("foo", "bar");
+  SetShouldReplaceI18nInJs(true);
+
+  EXPECT_EQ(
+      "_template: html`<!--_html_template_start_-->bar"
+      "<!--_html_template_end_-->`",
+      LoadResource("foo.js"));
+  EXPECT_EQ(0, direct_load_content_client().load_into_count());
+  EXPECT_EQ(1, direct_load_content_client().get_bytes_count());
+}
+
+TEST_F(LocalResourceURLLoaderFactoryDirectLoadTest,
+       BypassesDirectLoadForRangeRequest) {
+  AddDirectResource("data.js", 1, "resource data");
+
+  EXPECT_EQ("ource da", LoadResource("data.js", "bytes=3-10"));
+  EXPECT_EQ(0, direct_load_content_client().load_into_count());
+  EXPECT_EQ(1, direct_load_content_client().get_bytes_count());
+}

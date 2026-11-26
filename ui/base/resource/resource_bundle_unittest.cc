@@ -288,6 +288,24 @@ TEST_F(ResourceBundleTest, DelegateLoadDataResourceBytes) {
   EXPECT_EQ(static_memory, result);
 }
 
+TEST_F(ResourceBundleTest, DelegateLoadDataResourceInto) {
+  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate_);
+  // SAFETY: `kSampleCompressPakContentsV5` has `kSampleCompressPakSizeV5`
+  // bytes.
+  resource_bundle->AddDataPackFromBuffer(
+      UNSAFE_BUFFERS(
+          base::span(kSampleCompressPakContentsV5, kSampleCompressPakSizeV5)),
+      kScaleFactorNone);
+  EXPECT_CALL(delegate_, LoadDataResourceBytes).Times(0);
+  EXPECT_CALL(delegate_, GetRawDataResource).Times(0);
+
+  EXPECT_FALSE(resource_bundle->LoadDataResourceInto(
+      4, [](size_t) -> base::span<uint8_t> {
+        ADD_FAILURE();
+        return {};
+      }));
+}
+
 TEST_F(ResourceBundleTest, DelegateGetRawDataResource) {
   ResourceBundle* resource_bundle = CreateResourceBundle(&delegate_);
 
@@ -564,6 +582,92 @@ TEST_F(ResourceBundleImageTest, LoadDataResourceString) {
 
   // Resource ID 4 is plain text (not compressed), expect to return as-is.
   EXPECT_EQ("this is id 4", resource_bundle->LoadDataResourceString(4));
+}
+
+TEST_F(ResourceBundleImageTest, LoadDataResourceInto) {
+  base::FilePath data_path = dir_path().Append(FILE_PATH_LITERAL("sample.pak"));
+  // SAFETY: `kSampleCompressPakContentsV5` has `kSampleCompressPakSizeV5`
+  // bytes.
+  ASSERT_TRUE(base::WriteFile(
+      data_path, UNSAFE_BUFFERS(base::span(kSampleCompressPakContentsV5,
+                                           kSampleCompressPakSizeV5))));
+  ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
+  resource_bundle->AddDataPackFromPath(data_path, kScaleFactorNone);
+
+  // Uncompressed, brotli, gzip, and zstd.
+  struct TestCase {
+    int resource_id;
+    std::string_view expected;
+  };
+  constexpr TestCase kTestCases[] = {
+      {4, "this is id 4"},
+      {6, "this is id 6"},
+      {8, "this is id 8"},
+      {9, "this is id 9"},
+  };
+  for (const TestCase& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.resource_id);
+    std::vector<uint8_t> buffer;
+    int allocate_calls = 0;
+    EXPECT_TRUE(resource_bundle->LoadDataResourceInto(
+        test_case.resource_id, [&](size_t size) {
+          ++allocate_calls;
+          buffer.resize(size);
+          return base::span(buffer);
+        }));
+    EXPECT_EQ(1, allocate_calls);
+    EXPECT_EQ(test_case.expected, base::as_string_view(buffer));
+
+    // Returning an empty span aborts without writing.
+    int abort_calls = 0;
+    size_t abort_size = 0;
+    EXPECT_FALSE(resource_bundle->LoadDataResourceInto(
+        test_case.resource_id, [&](size_t size) -> base::span<uint8_t> {
+          ++abort_calls;
+          abort_size = size;
+          return {};
+        }));
+    EXPECT_EQ(1, abort_calls);
+    EXPECT_EQ(test_case.expected.size(), abort_size);
+  }
+
+  // Non-existent resource.
+  EXPECT_FALSE(resource_bundle->LoadDataResourceInto(
+      200, [](size_t) -> base::span<uint8_t> {
+        ADD_FAILURE();
+        return {};
+      }));
+}
+
+TEST_F(ResourceBundleImageTest, LoadDataResourceIntoCompressedEmpty) {
+  // Compressed empty payloads still have non-empty headers in the pak file.
+  static constexpr char kGzipEmpty[] =
+      "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\x03"
+      "\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  static constexpr char kBrotliEmpty[] = "\x1e\x9b\x00\x00\x00\x00\x00\x00\x06";
+  static constexpr char kZstdEmpty[] = "\x28\xb5\x2f\xfd\x20\x00\x01\x00\x00";
+
+  base::FilePath data_path =
+      dir_path().Append(FILE_PATH_LITERAL("compressed_empty.pak"));
+  std::map<uint16_t, std::string_view> resources = {
+      {1, std::string_view(kGzipEmpty, sizeof(kGzipEmpty) - 1)},
+      {2, std::string_view(kBrotliEmpty, sizeof(kBrotliEmpty) - 1)},
+      {3, std::string_view(kZstdEmpty, sizeof(kZstdEmpty) - 1)},
+  };
+  ASSERT_TRUE(DataPack::WritePack(data_path, resources, DataPack::BINARY));
+
+  ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
+  resource_bundle->AddDataPackFromPath(data_path, kScaleFactorNone);
+
+  for (int resource_id : {1, 2, 3}) {
+    SCOPED_TRACE(resource_id);
+    EXPECT_EQ("", resource_bundle->LoadDataResourceString(resource_id));
+    EXPECT_FALSE(resource_bundle->LoadDataResourceInto(
+        resource_id, [](size_t) -> base::span<uint8_t> {
+          ADD_FAILURE();
+          return {};
+        }));
+  }
 }
 
 TEST_F(ResourceBundleImageTest, GetRawDataResource) {
