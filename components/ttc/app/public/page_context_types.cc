@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/notreached.h"
+
 namespace ttc {
 
 TabContextInfo::TabContextInfo() = default;
@@ -33,6 +35,22 @@ SharedPageContext::SharedPageContext(SharedPageContext&&) = default;
 SharedPageContext& SharedPageContext::operator=(SharedPageContext&&) = default;
 SharedPageContext::~SharedPageContext() = default;
 
+std::ostream& operator<<(std::ostream& os, PageRestrictionReason reason) {
+  switch (reason) {
+    case PageRestrictionReason::kOther:
+      return os << "Other";
+    case PageRestrictionReason::kUnsupportedScheme:
+      return os << "UnsupportedScheme";
+    case PageRestrictionReason::kEnterprisePolicy:
+      return os << "EnterprisePolicy";
+    case PageRestrictionReason::kSafetyPolicy:
+      return os << "SafetyPolicy";
+    case PageRestrictionReason::kRendererUnavailable:
+      return os << "RendererUnavailable";
+  }
+  NOTREACHED();
+}
+
 std::ostream& operator<<(std::ostream& os, const TabContextInfo& info) {
   return os << "{url: \"" << info.url.possibly_invalid_spec() << "\", title: \""
             << info.title << "\", mime_type: \"" << info.mime_type << "\"}";
@@ -45,8 +63,7 @@ std::ostream& operator<<(std::ostream& os, const SharedPageContext& context) {
 
 std::ostream& operator<<(std::ostream& os,
                          const RestrictedPageContext& context) {
-  return os << "{restriction_reason: " << static_cast<int>(context.reason)
-            << "}";
+  return os << "{restriction_reason: " << context.reason << "}";
 }
 
 }  // namespace ttc

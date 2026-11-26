@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_TTC_CORE_GET_POINTER_TOOL_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
@@ -13,6 +14,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/actor/tools/get_pointer/pointer_context_capturer.h"
 #include "chrome/browser/ttc/core/pointer_tracker.h"
+#include "components/ttc/app/public/page_context_types.h"
 #include "components/ttc/app/public/tool_types.h"
 
 namespace content {
@@ -51,7 +53,7 @@ class GetPointerTool {
   void OnUrlChecked(base::WeakPtr<content::Page> page,
                     std::vector<PointerTracker::Location> locations,
                     ToolResponseCallback callback,
-                    bool is_url_supported);
+                    std::optional<PageRestrictionReason> restriction);
   void OnCaptured(base::WeakPtr<content::Page> page,
                   std::vector<PointerTracker::Location> locations,
                   base::ElapsedTimer capture_timer,

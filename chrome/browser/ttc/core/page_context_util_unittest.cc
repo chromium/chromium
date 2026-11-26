@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ttc/core/page_context_util.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/test/task_environment.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "components/actor/core/safety_list_manager.h"
+#include "components/ttc/app/public/page_context_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -26,13 +28,14 @@ class PageContextUtilTest : public testing::Test {
                                     "{}");
   }
 
-  bool IsUrlSupported(const GURL& url,
-                      const actor::EnterprisePolicyChecker*
-                          enterprise_policy_checker = nullptr) {
-    base::test::TestFuture<bool> supported;
-    IsUrlSupportedForPageContext(url, enterprise_policy_checker,
-                                 supported.GetCallback());
-    return supported.Get();
+  std::optional<PageRestrictionReason> GetRestriction(
+      const GURL& url,
+      const actor::EnterprisePolicyChecker* enterprise_policy_checker =
+          nullptr) {
+    base::test::TestFuture<std::optional<PageRestrictionReason>> restriction;
+    GetPageRestrictionForUrl(url, enterprise_policy_checker,
+                             restriction.GetCallback());
+    return restriction.Get();
   }
 
  private:
@@ -45,7 +48,9 @@ class SupportedUrlTest : public PageContextUtilTest,
 };
 
 TEST_P(SupportedUrlTest, IsSupported) {
-  EXPECT_TRUE(IsUrlSupported(GURL(GetParam())));
+  const GURL url(GetParam());
+  EXPECT_EQ(GetPageRestrictionForUrlSync(url, nullptr), std::nullopt);
+  EXPECT_EQ(GetRestriction(url), std::nullopt);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -63,7 +68,10 @@ class UnsupportedUrlTest
       public testing::WithParamInterface<std::string_view> {};
 
 TEST_P(UnsupportedUrlTest, IsNotSupported) {
-  EXPECT_FALSE(IsUrlSupported(GURL(GetParam())));
+  const GURL url(GetParam());
+  EXPECT_EQ(GetPageRestrictionForUrlSync(url, nullptr),
+            PageRestrictionReason::kUnsupportedScheme);
+  EXPECT_EQ(GetRestriction(url), PageRestrictionReason::kUnsupportedScheme);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -100,10 +108,16 @@ TEST_F(PageContextUtilTest, SafetyLists) {
     }
   )json");
 
-  EXPECT_FALSE(IsUrlSupported(GURL("https://blocked.com/path")));
-  EXPECT_TRUE(IsUrlSupported(GURL("https://allowed.blocked.com/path")));
-  EXPECT_TRUE(IsUrlSupported(GURL("https://cross-origin-only.com/path")));
-  EXPECT_TRUE(IsUrlSupported(GURL("https://unlisted.com/path")));
+  EXPECT_EQ(
+      GetPageRestrictionForUrlSync(GURL("https://blocked.com/path"), nullptr),
+      std::nullopt);
+  EXPECT_EQ(GetRestriction(GURL("https://blocked.com/path")),
+            PageRestrictionReason::kSafetyPolicy);
+  EXPECT_EQ(GetRestriction(GURL("https://allowed.blocked.com/path")),
+            std::nullopt);
+  EXPECT_EQ(GetRestriction(GURL("https://cross-origin-only.com/path")),
+            std::nullopt);
+  EXPECT_EQ(GetRestriction(GURL("https://unlisted.com/path")), std::nullopt);
 }
 
 // URLs for which enterprise policy explicitly blocks actuation are unsupported.
@@ -114,19 +128,25 @@ TEST_F(PageContextUtilTest, EnterprisePolicy) {
   actor::MockPolicyChecker policy_checker(
       actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked);
 
-  EXPECT_FALSE(IsUrlSupported(blocked_url, &policy_checker));
+  EXPECT_EQ(GetPageRestrictionForUrlSync(blocked_url, &policy_checker),
+            PageRestrictionReason::kEnterprisePolicy);
+  EXPECT_EQ(GetRestriction(blocked_url, &policy_checker),
+            PageRestrictionReason::kEnterprisePolicy);
 
   policy_checker.set_reason(
       actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyAllowed);
-  EXPECT_TRUE(IsUrlSupported(allowed_url, &policy_checker));
+  EXPECT_EQ(GetPageRestrictionForUrlSync(allowed_url, &policy_checker),
+            std::nullopt);
+  EXPECT_EQ(GetRestriction(allowed_url, &policy_checker), std::nullopt);
 
   policy_checker.set_reason(
       actor::EnterprisePolicyChecker::UrlBlockReason::kNotBlocked);
-  EXPECT_TRUE(IsUrlSupported(allowed_url, &policy_checker));
+  EXPECT_EQ(GetRestriction(allowed_url, &policy_checker), std::nullopt);
 
   // Unsupported schemes remain unsupported even if enterprise policy allows
   // them.
-  EXPECT_FALSE(IsUrlSupported(GURL("chrome://settings/"), &policy_checker));
+  EXPECT_EQ(GetRestriction(GURL("chrome://settings/"), &policy_checker),
+            PageRestrictionReason::kUnsupportedScheme);
 }
 
 // Enterprise policy takes precedence over safety lists.
@@ -147,16 +167,21 @@ TEST_F(PageContextUtilTest, EnterprisePolicyAndSafetyListInteraction) {
       actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked);
 
   // Enterprise policy block overrides safety list allow.
-  EXPECT_FALSE(IsUrlSupported(safety_allowed_url, &policy_checker));
+  EXPECT_EQ(GetRestriction(safety_allowed_url, &policy_checker),
+            PageRestrictionReason::kEnterprisePolicy);
 
   // Enterprise policy block also blocks safety list blocked URLs.
-  EXPECT_FALSE(IsUrlSupported(safety_blocked_url, &policy_checker));
+  EXPECT_EQ(GetRestriction(safety_blocked_url, &policy_checker),
+            PageRestrictionReason::kEnterprisePolicy);
 
   // When enterprise policy does not block, safety list blocks still apply.
   policy_checker.set_reason(
       actor::EnterprisePolicyChecker::UrlBlockReason::kNotBlocked);
-  EXPECT_FALSE(IsUrlSupported(safety_blocked_url, &policy_checker));
-  EXPECT_TRUE(IsUrlSupported(safety_allowed_url, &policy_checker));
+  EXPECT_EQ(GetRestriction(safety_blocked_url, &policy_checker),
+            PageRestrictionReason::kSafetyPolicy);
+  EXPECT_EQ(GetRestriction(safety_allowed_url, &policy_checker), std::nullopt);
+  EXPECT_EQ(GetRestriction(GURL("chrome://settings/"), &policy_checker),
+            PageRestrictionReason::kUnsupportedScheme);
 }
 
 }  // namespace

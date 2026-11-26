@@ -47,7 +47,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
 #include "chrome/browser/ttc/core/hotl/soda_hotl_installer.h"
@@ -525,26 +524,25 @@ void SessionControllerImpl::OnPageContextFetched(
   if (!result.has_value()) {
 #if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
     if (debug_session_) {
-      debug_session_->OnPageContextFetchFailed(contents->GetLastCommittedURL(),
-                                               result.error());
+      debug_session_->OnPageContextFetchFailed(
+          contents->GetLastCommittedURL(),
+          result.error().ToFetchPageContextError());
     }
 #endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+    // Share nothing about a page whose context may not be shared, only that it
+    // is restricted.
+    if (result.error().restriction.has_value()) {
+      conversation_->SendContextUpdate(
+          RestrictedPageContext{*result.error().restriction});
+      return;
+    }
     // Replace the model's context with just the tab, so that it doesn't keep
     // using context of a page that's no longer shown, or whose content isn't
-    // available (e.g. a PDF). Only share the origin of a page whose context
-    // may not be shared.
-    // TODO(b/555804152): Tell the model why there's no page content.
+    // available (e.g. a PDF).
     content::RenderFrameHost& main_frame = page.GetMainDocument();
-    const TabContextInfo tab =
-        result.error() == page_content_annotations::FetchPageContextError::
-                              kPageContextNotEligible
-            ? TabContextInfo(main_frame.GetLastCommittedOrigin().GetURL(),
-                             /*title=*/std::string(),
-                             /*mime_type=*/std::string())
-            : TabContextInfo(main_frame.GetLastCommittedURL(),
-                             base::UTF16ToUTF8(contents->GetTitle()),
-                             page.GetContentsMimeType());
-    conversation_->SendContextUpdate(SharedPageContext(tab));
+    conversation_->SendContextUpdate(SharedPageContext(TabContextInfo(
+        main_frame.GetLastCommittedURL(),
+        base::UTF16ToUTF8(contents->GetTitle()), page.GetContentsMimeType())));
     return;
   }
   const optimization_guide::proto::AnnotatedPageContent& apc =

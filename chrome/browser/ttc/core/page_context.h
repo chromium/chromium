@@ -5,9 +5,15 @@
 #ifndef CHROME_BROWSER_TTC_CORE_PAGE_CONTEXT_H_
 #define CHROME_BROWSER_TTC_CORE_PAGE_CONTEXT_H_
 
+#include <optional>
+
 #include "base/types/expected.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
-#include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "components/ttc/app/public/page_context_types.h"
+
+namespace page_content_annotations {
+enum class FetchPageContextError;
+}
 
 namespace ttc {
 
@@ -30,11 +36,23 @@ struct PageContext {
       annotated_page_content;
 };
 
-// The result of fetching a PageContext; on failure, the reason the fetch
-// couldn't be performed at all.
-using PageContextResult =
-    base::expected<PageContext,
-                   page_content_annotations::FetchPageContextError>;
+// Describes why fetching a `PageContext` failed.
+struct PageContextError {
+  static PageContextError FetchFailed();
+  static PageContextError Restricted(PageRestrictionReason reason);
+
+  // Maps this error to `FetchPageContextError` for debug tools.
+  page_content_annotations::FetchPageContextError ToFetchPageContextError()
+      const;
+
+  // Set when page context is withheld due to a restriction; `std::nullopt` when
+  // extraction failed transiently or produced no APC on an unrestricted page.
+  std::optional<PageRestrictionReason> restriction;
+};
+
+// The result of fetching a `PageContext`; on failure, why context could not be
+// provided.
+using PageContextResult = base::expected<PageContext, PageContextError>;
 
 }  // namespace ttc
 

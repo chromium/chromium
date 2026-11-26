@@ -20,6 +20,7 @@
 #include "components/actor/core/aggregated_journal.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/ttc/app/public/page_context_types.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace actor {
@@ -45,12 +46,12 @@ class SessionJournalImpl;
 // every tab in the profile (not just the monitored one) for as long as this
 // object exists.
 //
-// Extracted page context is never emitted for a page whose URL is not
-// supported (see IsUrlSupportedForPageContext()). Instead, a
-// kPageContextNotEligible error is emitted.
+// Extracted page context is never emitted for a restricted page (see
+// `GetPageRestrictionForUrl()` and server-upload eligibility). Instead,
+// `PageContextError::Restricted(...)` is emitted.
 //
-// For a PDF, a kUnknown error is emitted instead (or kPageContextNotEligible if
-// its URL is not supported).
+// For an unrestricted PDF, `PageContextError::FetchFailed()` is emitted so the
+// tab metadata and MIME type can still be shared without APC.
 // TODO(b/555804152): Monitor for additional non-navigation, in-page changes.
 class TtcPageContextMonitor
     : public page_content_annotations::PageContentExtractionService::Observer,
@@ -101,11 +102,10 @@ class TtcPageContextMonitor
  private:
   SessionJournalImpl& GetJournal();
 
-  // Requests page context for the monitored page on construction. If PCES
-  // already has content cached for the page, `on_page_context_fetched_` is
-  // invoked asynchronously (if the page's URL is supported); otherwise an
-  // extraction is triggered and `on_page_context_fetched_` is invoked once it
-  // completes.
+  // Requests page context for the monitored page on construction. Synchronously
+  // restricted pages, crashed tabs, PDFs, and cached extractions post
+  // `on_page_context_fetched_` asynchronously; otherwise an extraction is
+  // triggered and `on_page_context_fetched_` runs once it completes.
   void FetchPageContext();
 
   // Triggers a fresh extraction of page context for the monitored page,
@@ -116,17 +116,21 @@ class TtcPageContextMonitor
   // Returns whether `page` is the primary page of the monitored WebContents.
   bool IsMonitoredPage(const content::Page& page) const;
 
-  // Asynchronously emits the result for `page`, a PDF, for which there is no
-  // APC, replacing any pending delivery of cached page context.
-  void PostPdfPageContext(content::Page& page);
+  // If `page` has an immediate non-extracted result (crashed renderer,
+  // synchronously restricted URL, or PDF), posts it via
+  // `PostPageContextFetched()` and returns true.
+  bool MaybePostImmediatePageContext(content::Page& page);
 
-  // Checks whether `page` has a supported URL and, if so and `page` is still
-  // the monitored page, invokes `on_page_context_fetched_` with `result`.
+  // Posts `MaybeNotifyPageContextFetched()` onto `pending_cached_notification_`
+  // so callbacks never run synchronously during construction.
+  void PostPageContextFetched(content::Page& page, PageContextResult result);
+
+  // Evaluates `GetPageRestrictionForUrl()` for `page` unless `result` already
+  // carries a restriction, then invokes `NotifyPageContextFetched()`.
   void MaybeNotifyPageContextFetched(base::WeakPtr<content::Page> page,
                                      PageContextResult result);
   void NotifyPageContextFetched(base::WeakPtr<content::Page> page,
-                                PageContextResult result,
-                                bool is_url_supported);
+                                PageContextResult result);
   void OnFetchCompleted(
       std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
           journal_event,
@@ -156,11 +160,14 @@ class TtcPageContextMonitor
   PageContextFetchedCallback on_page_context_fetched_;
 
   // Holds the posted task for delivering already-cached page content on
-  // construction, or the result for a PDF. Cancelled if a navigation or fresh
-  // extraction supersedes it.
+  // construction, or the result for a PDF or synchronously restricted page.
+  // Cancelled if a navigation or fresh extraction supersedes it.
   base::CancelableOnceClosure pending_cached_notification_;
 
+  // Scopes in-flight extraction requests (`IsFetchingForTesting()`).
   base::WeakPtrFactory<TtcPageContextMonitor> fetch_weak_ptr_factory_{this};
+  // Scopes asynchronous URL restriction checks
+  // (`MaybeNotifyPageContextFetched`).
   base::WeakPtrFactory<TtcPageContextMonitor> weak_ptr_factory_{this};
 };
 

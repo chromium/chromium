@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
 
 namespace ttc {
 
@@ -22,5 +23,23 @@ PageContext& PageContext::operator=(const PageContext&) = default;
 PageContext::PageContext(PageContext&&) = default;
 PageContext& PageContext::operator=(PageContext&&) = default;
 PageContext::~PageContext() = default;
+
+// static
+PageContextError PageContextError::FetchFailed() {
+  return PageContextError{};
+}
+
+// static
+PageContextError PageContextError::Restricted(PageRestrictionReason reason) {
+  return PageContextError{.restriction = reason};
+}
+
+page_content_annotations::FetchPageContextError
+PageContextError::ToFetchPageContextError() const {
+  return restriction.has_value()
+             ? page_content_annotations::FetchPageContextError::
+                   kPageContextNotEligible
+             : page_content_annotations::FetchPageContextError::kUnknown;
+}
 
 }  // namespace ttc

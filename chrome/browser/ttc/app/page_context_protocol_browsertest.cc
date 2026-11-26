@@ -216,6 +216,31 @@ IN_PROC_BROWSER_TEST_F(TtcPageContextProtocolBrowserTest,
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+IN_PROC_BROWSER_TEST_F(TtcPageContextProtocolBrowserTest,
+                       RestrictedPageSendsRestrictionReasonWithoutTabDetails) {
+  const GURL html_url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), html_url));
+
+  StartSession();
+
+  proto::ContextUpdate initial_update = TakeNextContextUpdate();
+  EXPECT_EQ(initial_update.active_tab().url(), html_url.spec());
+  EXPECT_EQ(initial_update.restriction_reason(),
+            proto::ContextUpdate::PAGE_RESTRICTION_REASON_UNSPECIFIED);
+  EXPECT_TRUE(initial_update.has_annotated_page_content());
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GURL("chrome://version")));
+
+  proto::ContextUpdate restricted_update = TakeNextContextUpdate();
+  EXPECT_EQ(restricted_update.restriction_reason(),
+            proto::ContextUpdate::PAGE_RESTRICTION_REASON_UNSUPPORTED_SCHEME);
+  EXPECT_TRUE(restricted_update.has_active_tab());
+  EXPECT_TRUE(restricted_update.active_tab().url().empty());
+  EXPECT_TRUE(restricted_update.active_tab().title().empty());
+  EXPECT_TRUE(restricted_update.active_tab().mime_type().empty());
+  EXPECT_FALSE(restricted_update.has_annotated_page_content());
+}
+
 }  // namespace
 
 }  // namespace ttc

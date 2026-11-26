@@ -13,6 +13,7 @@
 #include "chrome/browser/search/search.h"
 #include "components/actor/core/safety_list_manager.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/ttc/app/public/page_context_types.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -43,33 +44,46 @@ bool IsSchemeAndHostSupported(const GURL& url) {
 
 }  // namespace
 
-void IsUrlSupportedForPageContext(
+std::optional<PageRestrictionReason> GetPageRestrictionForUrlSync(
     const GURL& url,
-    const actor::EnterprisePolicyChecker* enterprise_policy_checker,
-    base::OnceCallback<void(bool)> callback) {
+    const actor::EnterprisePolicyChecker* enterprise_policy_checker) {
   if (!IsSchemeAndHostSupported(url)) {
-    std::move(callback).Run(false);
-    return;
+    return PageRestrictionReason::kUnsupportedScheme;
   }
-
   if (enterprise_policy_checker &&
       enterprise_policy_checker->Evaluate(url) ==
           actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked) {
-    std::move(callback).Run(false);
+    return PageRestrictionReason::kEnterprisePolicy;
+  }
+  return std::nullopt;
+}
+
+void GetPageRestrictionForUrl(
+    const GURL& url,
+    const actor::EnterprisePolicyChecker* enterprise_policy_checker,
+    base::OnceCallback<void(std::optional<PageRestrictionReason>)> callback) {
+  if (std::optional<PageRestrictionReason> sync_restriction =
+          GetPageRestrictionForUrlSync(url, enterprise_policy_checker)) {
+    std::move(callback).Run(*sync_restriction);
     return;
   }
 
   // Ask the actor safety lists whether a navigation from `url` to itself is
-  // allowed, and invoke `callback` with false iff it is blocked. This mirrors
-  // how the actor's safety list gating predicate (see
+  // allowed, and invoke `callback` with `kSafetyPolicy` iff it is blocked.
+  // This mirrors how the actor's safety list gating predicate (see
   // CreateSafetyListPredicate() in chrome/browser/actor/execution_engine.cc)
   // evaluates an event that has no distinct source URL: the destination is used
   // as the source. As there, a lack of decision (e.g. because the lists have
   // not been loaded) does not block.
   actor::SafetyListManager::GetInstance()->Find(
-      url, url, base::BindOnce([](actor::SafetyListManager::Decision decision) {
-                  return decision != actor::SafetyListManager::Decision::kBlock;
-                }).Then(std::move(callback)));
+      url, url,
+      base::BindOnce([](actor::SafetyListManager::Decision decision)
+                         -> std::optional<PageRestrictionReason> {
+        if (decision == actor::SafetyListManager::Decision::kBlock) {
+          return PageRestrictionReason::kSafetyPolicy;
+        }
+        return std::nullopt;
+      }).Then(std::move(callback)));
 }
 
 std::optional<ToolResponse> CheckPageForCapture(

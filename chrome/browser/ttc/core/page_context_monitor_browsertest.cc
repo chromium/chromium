@@ -47,7 +47,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -116,13 +115,6 @@ std::vector<std::string> CollectText(
   return text;
 }
 
-// Matches an AnnotatedPageContent without any content.
-auto IsEmptyPageContent() {
-  return testing::Property(
-      "ByteSizeLong",
-      &optimization_guide::proto::AnnotatedPageContent::ByteSizeLong, 0u);
-}
-
 class PageContextMonitorBrowserTest : public TtcCoreBrowserTestBase {
  public:
   PageContextMonitorBrowserTest() = default;
@@ -169,6 +161,36 @@ class PageContextMonitorBrowserTest : public TtcCoreBrowserTestBase {
     return future;
   }
 
+  // Expects the conversation to receive only a `RestrictedPageContext` update
+  // with `reason` (never a `SharedPageContext`).
+  base::test::TestFuture<void> ExpectRestrictedUpdate(
+      PageRestrictionReason reason) {
+    base::test::TestFuture<void> future;
+    EXPECT_CALL(*conversation(), SendContextUpdate(RestrictedContextIs(reason)))
+        .WillOnce(base::test::InvokeFuture(future));
+    return future;
+  }
+
+  // Starts a session on the current page and waits for both the initial
+  // invalidation and a restricted context update with `reason`.
+  void StartSessionExpectingRestricted(PageRestrictionReason reason) {
+    ttc_service().StartSession();
+    ASSERT_TRUE(conversation());
+    auto page_changed = ExpectPageChange();
+    auto restricted = ExpectRestrictedUpdate(reason);
+    EXPECT_TRUE(page_changed.Wait());
+    EXPECT_TRUE(restricted.Wait());
+  }
+
+  // Simulates the user starting to speak and waits for a restricted context
+  // update with `reason`.
+  void SpeakExpectingRestricted(PageRestrictionReason reason) {
+    auto refreshed = ExpectRestrictedUpdate(reason);
+    ttc_service().session_controller()->OnSpeakerChanged(Speaker::kUser);
+    EXPECT_TRUE(refreshed.Wait());
+    EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+  }
+
   void FlushMessageLoop() {
     base::RunLoop run_loop;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -205,10 +227,10 @@ class PageContextMonitorBrowserTest : public TtcCoreBrowserTestBase {
   bool IsUrlSupported(const GURL& url,
                       const actor::EnterprisePolicyChecker*
                           enterprise_policy_checker = nullptr) {
-    base::test::TestFuture<bool> supported;
-    IsUrlSupportedForPageContext(url, enterprise_policy_checker,
-                                 supported.GetCallback());
-    return supported.Get();
+    base::test::TestFuture<std::optional<PageRestrictionReason>> restriction;
+    GetPageRestrictionForUrl(url, enterprise_policy_checker,
+                             restriction.GetCallback());
+    return !restriction.Get().has_value();
   }
 
  private:
@@ -368,31 +390,6 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
           GetForProfile(profile());
   ASSERT_TRUE(extraction_service);
 
-  // Starts a session on `url` and waits for the initial invalidation (and, if
-  // `wait_for_context_update` is true, for the origin-only context update).
-  auto start_session_expecting_no_context = [&](const GURL& url,
-                                                bool wait_for_context_update) {
-    ttc_service().StartSession();
-    ASSERT_TRUE(conversation());
-    base::test::TestFuture<void> context_updated;
-    // Only the page's origin may be sent, without its title or content.
-    auto& expectation = EXPECT_CALL(
-        *conversation(), SendContextUpdate(SharedContextIs(
-                             TabContextIs(url::Origin::Create(url).GetURL(),
-                                          std::string(), std::string()),
-                             IsEmptyPageContent())));
-    if (wait_for_context_update) {
-      expectation.WillOnce(
-          base::test::RunOnceClosure(context_updated.GetCallback()));
-    } else {
-      expectation.Times(testing::AnyNumber());
-    }
-    EXPECT_TRUE(ExpectPageChange().Wait());
-    if (wait_for_context_update) {
-      EXPECT_TRUE(context_updated.Wait());
-    }
-  };
-
   for (const GURL& url :
        {GURL("chrome://version/"), GURL("data:text/html,<title>Data</title>"),
         GURL("about:blank")}) {
@@ -400,9 +397,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
     ASSERT_FALSE(IsUrlSupported(url));
     ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-    // Starting a session must not send anything for the page.
-    ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context(
-        url, /*wait_for_context_update=*/false));
+    // Starting a session must emit only `kUnsupportedScheme`.
+    ASSERT_NO_FATAL_FAILURE(StartSessionExpectingRestricted(
+        PageRestrictionReason::kUnsupportedScheme));
 
     // Having an active session makes PCES extract every page in the profile.
     // Wait for that extraction (triggering it if it has not started), to make
@@ -420,10 +417,15 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
-    // Neither must a new session, which finds the extracted content cached.
+    // The user speaking refreshes the restricted status without leaking the
+    // page.
+    SpeakExpectingRestricted(PageRestrictionReason::kUnsupportedScheme);
+
+    // Starting a new session when extracted content is cached must still emit
+    // only `kUnsupportedScheme`.
     ttc_service().EndSession();
-    ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context(
-        url, /*wait_for_context_update=*/false));
+    ASSERT_NO_FATAL_FAILURE(StartSessionExpectingRestricted(
+        PageRestrictionReason::kUnsupportedScheme));
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
@@ -434,8 +436,8 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   // must invalidate the context and send context for the new page.
   const GURL unsupported_url("chrome://version/");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), unsupported_url));
-  ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context(
-      unsupported_url, /*wait_for_context_update=*/true));
+  ASSERT_NO_FATAL_FAILURE(StartSessionExpectingRestricted(
+      PageRestrictionReason::kUnsupportedScheme));
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
   const GURL supported_url = embedded_test_server()->GetURL("/simple.html");
@@ -448,6 +450,16 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), supported_url));
   EXPECT_TRUE(navigated.Wait());
   EXPECT_TRUE(sent.Wait());
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  // Navigating back to an unsupported page (such as `about:blank`) must
+  // replace the previous page's context with `kUnsupportedScheme`.
+  navigated = ExpectPageChange();
+  auto restricted_sent =
+      ExpectRestrictedUpdate(PageRestrictionReason::kUnsupportedScheme);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GURL("about:blank")));
+  EXPECT_TRUE(navigated.Wait());
+  EXPECT_TRUE(restricted_sent.Wait());
 }
 
 // Page context fetched for the voice-focused tab must be sent to the
@@ -520,18 +532,6 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
           GetForProfile(profile());
   ASSERT_TRUE(extraction_service);
 
-  auto start_session_expecting_no_context = [&]() {
-    ttc_service().StartSession();
-    ASSERT_TRUE(conversation());
-    // Only the page's origin may be sent, without its title or content.
-    EXPECT_CALL(*conversation(),
-                SendContextUpdate(SharedContextIs(
-                    TabContextIs(testing::_, std::string(), std::string()),
-                    IsEmptyPageContent())))
-        .Times(testing::AnyNumber());
-    EXPECT_TRUE(ExpectPageChange().Wait());
-  };
-
   // Pages the safety lists do not block send context to the conversation as
   // usual.
   const GURL allowed_url =
@@ -554,27 +554,24 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   ASSERT_FALSE(IsUrlSupported(blocked_url));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), blocked_url));
 
-  // Starting a session on a blocked page must not send context even once PCES
-  // extracts the page's content.
-  ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
-  base::test::TestFuture<
-      std::optional<page_content_annotations::ExtractedPageContentResult>>
-      extracted;
-  extraction_service->GetExtractedPageContentAndEligibilityForPageAsync(
-      web_contents()->GetPrimaryPage(), extracted.GetCallback(),
-      /*trigger_if_not_cached=*/true);
-  ASSERT_TRUE(extracted.Wait());
-  FlushMessageLoop();
+  // Starting a session on a blocked page must emit only `kSafetyPolicy` once
+  // PCES extracts the page's content.
+  ASSERT_NO_FATAL_FAILURE(
+      StartSessionExpectingRestricted(PageRestrictionReason::kSafetyPolicy));
+  EXPECT_TRUE(extraction_service
+                  ->GetExtractedPageContentAndEligibilityForPage(
+                      web_contents()->GetPrimaryPage())
+                  .has_value());
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
-  // Neither must a new session, which finds the extracted content cached.
-  // Delivering cached content takes two task hops: `FetchPageContext` posts
-  // `MaybeNotifyPageContextFetched`, which posts the `SafetyListManager::Find`
-  // callback (`NotifyPageContextFetched`).
+  // The user speaking refreshes `kSafetyPolicy` without leaking the page.
+  SpeakExpectingRestricted(PageRestrictionReason::kSafetyPolicy);
+
+  // Starting a new session when extracted content is cached must also emit
+  // `kSafetyPolicy`.
   ttc_service().EndSession();
-  ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
-  FlushMessageLoop();
-  FlushMessageLoop();
+  ASSERT_NO_FATAL_FAILURE(
+      StartSessionExpectingRestricted(PageRestrictionReason::kSafetyPolicy));
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
   // Navigating from a blocked page to an allowed one during a session must
@@ -588,12 +585,22 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), allowed_url));
   EXPECT_TRUE(navigated.Wait());
   EXPECT_TRUE(sent.Wait());
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  // Navigating back to a blocked page during an active session replaces the
+  // allowed page's context with `kSafetyPolicy`.
+  navigated = ExpectPageChange();
+  auto blocked_sent =
+      ExpectRestrictedUpdate(PageRestrictionReason::kSafetyPolicy);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), blocked_url));
+  EXPECT_TRUE(navigated.Wait());
+  EXPECT_TRUE(blocked_sent.Wait());
 }
 
 // A renderer crash must replace the conversation's context for the page with
-// just the page's origin, since the page's content is gone.
+// a restricted context update, since the page's content is gone.
 IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
-                       RendererCrashSendsContextWithoutContent) {
+                       RendererCrashSendsRendererUnavailable) {
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -607,15 +614,20 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
   }
 
-  base::test::TestFuture<void> sent;
-  EXPECT_CALL(*conversation(),
-              SendContextUpdate(SharedContextIs(
-                  TabContextIs(url::Origin::Create(url).GetURL(), std::string(),
-                               std::string()),
-                  IsEmptyPageContent())))
-      .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
+  auto sent =
+      ExpectRestrictedUpdate(PageRestrictionReason::kRendererUnavailable);
   content::CrashTab(web_contents());
   EXPECT_TRUE(sent.Wait());
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  // The user speaking on a crashed tab refreshes `kRendererUnavailable`.
+  SpeakExpectingRestricted(PageRestrictionReason::kRendererUnavailable);
+
+  // Starting a new session on an already-crashed tab emits
+  // `kRendererUnavailable`.
+  ttc_service().EndSession();
+  ASSERT_NO_FATAL_FAILURE(StartSessionExpectingRestricted(
+      PageRestrictionReason::kRendererUnavailable));
 }
 
 // Enterprise policy explicitly blocking URLs must prevent page context from
@@ -634,18 +646,6 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
           GetForProfile(profile());
   ASSERT_TRUE(extraction_service);
 
-  auto start_session_expecting_no_context = [&]() {
-    ttc_service().StartSession();
-    ASSERT_TRUE(conversation());
-    // Only the page's origin may be sent, without its title or content.
-    EXPECT_CALL(*conversation(),
-                SendContextUpdate(SharedContextIs(
-                    TabContextIs(testing::_, std::string(), std::string()),
-                    IsEmptyPageContent())))
-        .Times(testing::AnyNumber());
-    EXPECT_TRUE(ExpectPageChange().Wait());
-  };
-
   const GURL blocked_url =
       embedded_test_server()->GetURL("blocked.com", "/simple.html");
   const GURL allowed_url =
@@ -654,9 +654,10 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   ASSERT_FALSE(IsUrlSupported(blocked_url, raw_checker));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), blocked_url));
 
-  // Starting a session on a blocked page must not send context even once PCES
-  // extracts the page's content.
-  ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
+  // Starting a session on a blocked page must emit `kEnterprisePolicy` and
+  // never send page context even once PCES extracts the page's content.
+  ASSERT_NO_FATAL_FAILURE(StartSessionExpectingRestricted(
+      PageRestrictionReason::kEnterprisePolicy));
   base::test::TestFuture<
       std::optional<page_content_annotations::ExtractedPageContentResult>>
       extracted;
@@ -667,9 +668,14 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   FlushMessageLoop();
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
-  // Neither must a new session, which finds the extracted content cached.
+  // The user speaking refreshes `kEnterprisePolicy`.
+  SpeakExpectingRestricted(PageRestrictionReason::kEnterprisePolicy);
+
+  // Starting a new session when extracted content is cached must also emit
+  // `kEnterprisePolicy`.
   ttc_service().EndSession();
-  ASSERT_NO_FATAL_FAILURE(start_session_expecting_no_context());
+  ASSERT_NO_FATAL_FAILURE(StartSessionExpectingRestricted(
+      PageRestrictionReason::kEnterprisePolicy));
   FlushMessageLoop();
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
@@ -690,19 +696,17 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
 
   // Navigating back to a blocked page during an active session invalidates old
-  // context and suppresses sending new page context.
+  // context and emits `kEnterprisePolicy`.
   raw_checker->set_reason(
       actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked);
   ASSERT_FALSE(IsUrlSupported(blocked_url, raw_checker));
 
-  EXPECT_CALL(*conversation(),
-              SendContextUpdate(SharedContextIs(
-                  TabContextIs(testing::_, std::string(), std::string()),
-                  IsEmptyPageContent())))
-      .Times(testing::AnyNumber());
+  auto blocked_sent =
+      ExpectRestrictedUpdate(PageRestrictionReason::kEnterprisePolicy);
   navigated = ExpectPageChange();
   ASSERT_TRUE(content::NavigateToURL(web_contents(), blocked_url));
   EXPECT_TRUE(navigated.Wait());
+  EXPECT_TRUE(blocked_sent.Wait());
 
   base::test::TestFuture<
       std::optional<page_content_annotations::ExtractedPageContentResult>>
@@ -832,10 +836,14 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, PdfSendsMimeType) {
   constexpr char kPdfTitle[] = "test.pdf";
   auto expect_pdf_context = [&](base::test::TestFuture<void>& sent,
                                 auto title_matcher) {
-    EXPECT_CALL(*conversation(),
-                SendContextUpdate(SharedContextIs(
-                    TabContextIs(pdf_url, title_matcher, "application/pdf"),
-                    IsEmptyPageContent())))
+    EXPECT_CALL(
+        *conversation(),
+        SendContextUpdate(SharedContextIs(
+            TabContextIs(pdf_url, title_matcher, "application/pdf"),
+            testing::Property(
+                "ByteSizeLong",
+                &optimization_guide::proto::AnnotatedPageContent::ByteSizeLong,
+                0u))))
         .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
   };
 

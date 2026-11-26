@@ -199,7 +199,7 @@ void GetPointerTool::Run(ToolResponseCallback callback) {
   // The session is owned by the TtcKeyedService.
   const TtcKeyedService& ttc_service =
       CHECK_DEREF(TtcKeyedService::Get(session_controller_->GetProfile()));
-  IsUrlSupportedForPageContext(
+  GetPageRestrictionForUrl(
       page.GetMainDocument().GetLastCommittedURL(),
       ttc_service.enterprise_policy_checker(),
       base::BindOnce(&GetPointerTool::OnUrlChecked, weak_factory_.GetWeakPtr(),
@@ -211,11 +211,11 @@ void GetPointerTool::OnUrlChecked(
     base::WeakPtr<content::Page> page,
     std::vector<PointerTracker::Location> locations,
     ToolResponseCallback callback,
-    bool is_url_supported) {
+    std::optional<PageRestrictionReason> restriction) {
   content::WebContents* web_contents =
       session_controller_->GetVoiceFocusedWebContents();
-  if (std::optional<ToolResponse> error =
-          CheckPageForCapture(web_contents, page, is_url_supported)) {
+  if (std::optional<ToolResponse> error = CheckPageForCapture(
+          web_contents, page, /*is_url_supported=*/!restriction.has_value())) {
     std::move(callback).Run(std::move(*error));
     return;
   }

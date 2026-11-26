@@ -24,6 +24,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/pdf/common/constants.h"
+#include "components/ttc/app/public/page_context_types.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -40,12 +41,11 @@ PageContextResult BuildPageContextResult(
     page_content_annotations::RefCountedAnnotatedPageContentPtr page_content,
     bool is_eligible_for_server_upload) {
   if (!page_content) {
-    return base::unexpected(
-        page_content_annotations::FetchPageContextError::kUnknown);
+    return base::unexpected(PageContextError::FetchFailed());
   }
   if (!is_eligible_for_server_upload) {
-    return base::unexpected(page_content_annotations::FetchPageContextError::
-                                kPageContextNotEligible);
+    return base::unexpected(
+        PageContextError::Restricted(PageRestrictionReason::kSafetyPolicy));
   }
   return PageContext(std::move(page_content));
 }
@@ -106,28 +106,19 @@ SessionJournalImpl& TtcPageContextMonitor::GetJournal() {
 }
 
 void TtcPageContextMonitor::RefreshPageContext() {
-  if (!web_contents() || web_contents()->IsCrashed()) {
-    return;
-  }
-
-  content::Page& page = web_contents()->GetPrimaryPage();
-  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
-
-  if (enterprise_policy_checker_ &&
-      enterprise_policy_checker_->Evaluate(url) ==
-          actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked) {
-    GetJournal().Log("TtcPageContextEnterpriseBlocked",
-                     actor::JournalDetailsBuilder().Add("url", url).Build());
+  if (!web_contents()) {
     return;
   }
 
   pending_cached_notification_.Cancel();
-
-  if (IsPdf(page)) {
-    PostPdfPageContext(page);
+  fetch_weak_ptr_factory_.InvalidateWeakPtrs();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  content::Page& page = web_contents()->GetPrimaryPage();
+  if (MaybePostImmediatePageContext(page)) {
     return;
   }
 
+  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
   if (kTtcPageContentMode.Get() == TtcPageContentMode::kActionable) {
     optimization_guide::GetAIPageContent(
         web_contents(), CreateActionableOptions(),
@@ -161,21 +152,7 @@ void TtcPageContextMonitor::FetchPageContext() {
   CHECK(web_contents());
 
   content::Page& page = web_contents()->GetPrimaryPage();
-  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
-
-  // If enterprise policy explicitly blocks the URL, suppress context extraction
-  // immediately: do not trigger async extraction, and do not notify cached
-  // context.
-  if (enterprise_policy_checker_ &&
-      enterprise_policy_checker_->Evaluate(url) ==
-          actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked) {
-    GetJournal().Log("TtcPageContextEnterpriseBlocked",
-                     actor::JournalDetailsBuilder().Add("url", url).Build());
-    return;
-  }
-
-  if (IsPdf(page)) {
-    PostPdfPageContext(page);
+  if (MaybePostImmediatePageContext(page)) {
     return;
   }
 
@@ -188,14 +165,11 @@ void TtcPageContextMonitor::FetchPageContext() {
     // Notify async so callbacks are never invoked synchronously during
     // construction.
     CHECK(pending_cached_notification_.IsCancelled());
-    pending_cached_notification_.Reset(base::BindOnce(
-        &TtcPageContextMonitor::MaybeNotifyPageContextFetched,
-        base::Unretained(this), page.GetWeakPtr(),
-        BuildPageContextResult(std::move(extracted->page_content),
-                               extracted->is_eligible_for_server_upload)));
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, pending_cached_notification_.callback());
+    PostPageContextFetched(
+        page, BuildPageContextResult(std::move(extracted->page_content),
+                                     extracted->is_eligible_for_server_upload));
   } else {
+    const GURL& url = page.GetMainDocument().GetLastCommittedURL();
     // PCES will call its own fetch method, triggering OnPageContentExtracted,
     // when this async method actually extracts new APC.
     extraction_service_->GetExtractedPageContentAndEligibilityForPageAsync(
@@ -216,16 +190,14 @@ void TtcPageContextMonitor::OnPageContentReset(content::Page& current_page,
     return;
   }
 
-  // Deliberately not gated on IsUrlSupportedForPageContext(), so that
+  // Deliberately not gated on `GetPageRestrictionForUrl()`, so that
   // observers learn that context for the previous page no longer applies.
   pending_cached_notification_.Cancel();
+  fetch_weak_ptr_factory_.InvalidateWeakPtrs();
   weak_ptr_factory_.InvalidateWeakPtrs();
   on_page_context_invalidated_.Run();
 
-  // OnPageContentExtracted() ignores PDF text, so report the PDF now.
-  if (IsPdf(current_page)) {
-    PostPdfPageContext(current_page);
-  }
+  MaybePostImmediatePageContext(current_page);
 }
 
 void TtcPageContextMonitor::OnPageContentExtracted(
@@ -238,6 +210,13 @@ void TtcPageContextMonitor::OnPageContentExtracted(
   }
   // PDF text is not supported as page context.
   if (!page_content_annotations::IsAnnotatedPageContentPtr(page_content)) {
+    return;
+  }
+  // Synchronously restricted pages are already reported in `FetchPageContext()`
+  // and `OnPageContentReset()`.
+  if (GetPageRestrictionForUrlSync(page.GetMainDocument().GetLastCommittedURL(),
+                                   enterprise_policy_checker_)
+          .has_value()) {
     return;
   }
 
@@ -257,17 +236,14 @@ void TtcPageContextMonitor::OnPageContentExtracted(
 void TtcPageContextMonitor::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   // The page's content is gone, and PCES won't report anything for the page
-  // until it's reloaded. Report it as not eligible, which only shares its
-  // origin, rather than checking whether its URL is supported: the crashed
-  // main document no longer has one.
-  GetJournal().Log("TtcPageContextRendererGone", {});
+  // until it's reloaded. Report it as restricted rather than checking whether
+  // its URL is supported: the crashed main document no longer has one.
   pending_cached_notification_.Cancel();
   fetch_weak_ptr_factory_.InvalidateWeakPtrs();
   weak_ptr_factory_.InvalidateWeakPtrs();
-  on_page_context_fetched_.Run(
-      web_contents()->GetPrimaryPage(),
-      base::unexpected(page_content_annotations::FetchPageContextError::
-                           kPageContextNotEligible));
+  NotifyPageContextFetched(web_contents()->GetPrimaryPage().GetWeakPtr(),
+                           base::unexpected(PageContextError::Restricted(
+                               PageRestrictionReason::kRendererUnavailable)));
 }
 
 void TtcPageContextMonitor::OnSpeakerChanged(Speaker speaker) {
@@ -280,20 +256,45 @@ bool TtcPageContextMonitor::IsMonitoredPage(const content::Page& page) const {
   return web_contents() && &page == &web_contents()->GetPrimaryPage();
 }
 
-void TtcPageContextMonitor::PostPdfPageContext(content::Page& page) {
-  CHECK(IsPdf(page));
-  GetJournal().Log("TtcPageContextPdf",
-                   actor::JournalDetailsBuilder()
-                       .Add("url", page.GetMainDocument().GetLastCommittedURL())
-                       .Build());
-  // We do not extract APC for a PDF, so report it like a page whose content
-  // couldn't be extracted: the tab is still shared if the page's URL is
-  // supported.
+bool TtcPageContextMonitor::MaybePostImmediatePageContext(content::Page& page) {
+  if (web_contents()->IsCrashed()) {
+    PostPageContextFetched(page,
+                           base::unexpected(PageContextError::Restricted(
+                               PageRestrictionReason::kRendererUnavailable)));
+    return true;
+  }
+
+  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
+  if (std::optional<PageRestrictionReason> restriction =
+          GetPageRestrictionForUrlSync(url, enterprise_policy_checker_)) {
+    PostPageContextFetched(
+        page, base::unexpected(PageContextError::Restricted(*restriction)));
+    return true;
+  }
+
+  // `OnPageContentExtracted()` ignores PDF text, and we do not extract APC for
+  // a PDF. Report it like a fetch failure so tab metadata can still be shared
+  // if the URL is allowed.
+  if (IsPdf(page)) {
+    GetJournal().Log("TtcPageContextPdf",
+                     actor::JournalDetailsBuilder().Add("url", url).Build());
+    PostPageContextFetched(page,
+                           base::unexpected(PageContextError::FetchFailed()));
+    return true;
+  }
+
+  return false;
+}
+
+void TtcPageContextMonitor::PostPageContextFetched(content::Page& page,
+                                                   PageContextResult result) {
+  fetch_weak_ptr_factory_.InvalidateWeakPtrs();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  // Unretained is safe: `this` owns `pending_cached_notification_`, which
+  // cancels the callback on destruction.
   pending_cached_notification_.Reset(base::BindOnce(
       &TtcPageContextMonitor::MaybeNotifyPageContextFetched,
-      base::Unretained(this), page.GetWeakPtr(),
-      base::unexpected(
-          page_content_annotations::FetchPageContextError::kUnknown)));
+      base::Unretained(this), page.GetWeakPtr(), std::move(result)));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, pending_cached_notification_.callback());
 }
@@ -304,33 +305,44 @@ void TtcPageContextMonitor::MaybeNotifyPageContextFetched(
   if (!weak_page || !IsMonitoredPage(*weak_page)) {
     return;
   }
-  IsUrlSupportedForPageContext(
-      weak_page->GetMainDocument().GetLastCommittedURL(),
-      enterprise_policy_checker_,
-      base::BindOnce(&TtcPageContextMonitor::NotifyPageContextFetched,
-                     weak_ptr_factory_.GetWeakPtr(), weak_page,
-                     std::move(result)));
+  if (!result.has_value() && result.error().restriction.has_value()) {
+    NotifyPageContextFetched(std::move(weak_page), std::move(result));
+    return;
+  }
+  const GURL& url = weak_page->GetMainDocument().GetLastCommittedURL();
+  GetPageRestrictionForUrl(
+      url, enterprise_policy_checker_,
+      base::BindOnce(
+          [](PageContextResult result,
+             std::optional<PageRestrictionReason> url_restriction)
+              -> PageContextResult {
+            if (url_restriction.has_value()) {
+              return base::unexpected(
+                  PageContextError::Restricted(*url_restriction));
+            }
+            return result;
+          },
+          std::move(result))
+          .Then(base::BindOnce(&TtcPageContextMonitor::NotifyPageContextFetched,
+                               weak_ptr_factory_.GetWeakPtr(), weak_page)));
 }
 
 void TtcPageContextMonitor::NotifyPageContextFetched(
     base::WeakPtr<content::Page> weak_page,
-    PageContextResult result,
-    bool is_url_supported) {
-  // The URL support check may complete asynchronously, by which time the
+    PageContextResult result) {
+  // The URL restriction check may complete asynchronously, by which time the
   // monitored page may have changed.
   if (!weak_page || !IsMonitoredPage(*weak_page)) {
     return;
   }
   const GURL& url = weak_page->GetMainDocument().GetLastCommittedURL();
-  if (!is_url_supported) {
+  if (!result.has_value() && result.error().restriction.has_value()) {
     GetJournal().Log("TtcPageContextBlocked",
-                     actor::JournalDetailsBuilder().Add("url", url).Build());
-    // TODO(b/555804152): Figure out how to send specific error messages to
-    // the server.
-    on_page_context_fetched_.Run(
-        *weak_page,
-        base::unexpected(page_content_annotations::FetchPageContextError::
-                             kPageContextNotEligible));
+                     actor::JournalDetailsBuilder()
+                         .Add("url", url)
+                         .Add("reason", *result.error().restriction)
+                         .Build());
+    on_page_context_fetched_.Run(*weak_page, result);
     return;
   }
   GetJournal().Log("TtcPageContextUpdated",
@@ -366,9 +378,7 @@ void TtcPageContextMonitor::OnActionablePageContentFetched(
   weak_ptr_factory_.InvalidateWeakPtrs();
   if (!actionable_result.has_value()) {
     MaybeNotifyPageContextFetched(
-        weak_page,
-        base::unexpected(
-            page_content_annotations::FetchPageContextError::kUnknown));
+        weak_page, base::unexpected(PageContextError::FetchFailed()));
     return;
   }
 
