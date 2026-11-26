@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">Прегледајте задатак. Питајте Gemini</translation>
 <translation id="1100504063505580045">Актуелна икона</translation>
 <translation id="1101267749138963680">Проверава се безбедност...</translation>
-<translation id="1102759278139578486">Преузимање фајлова са коментарима о главном чвору није успело. Пробајте поново касније.</translation>
 <translation id="1103523840287552314">Увек преводи <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Одмах ћете изгубити приступ овој групи картица и она ће бити избрисана са свих уређаја</translation>
 <translation id="1106270460549661906">Опозови дељење са Gemini-јем</translation>
@@ -653,7 +652,6 @@
 <translation id="1709916727352927457">Избришите приступни кôд</translation>
 <translation id="1712143791363119140">У току</translation>
 <translation id="1714265454085143857">Закачене картице</translation>
-<translation id="1714326320203665217">Преузети су фајлови са коментарима о главном чвору</translation>
 <translation id="1716034099915639464">Желите да избришете податке о сајтовима и дозволе за сајт <ph name="SITE_NAME" /> и његову инсталирану апликацију?</translation>
 <translation id="1718835860248848330">Последњих сат времена</translation>
 <translation id="1720244237656138008">Импресионизам</translation>
@@ -2959,7 +2957,6 @@
 <translation id="4209251085232852247">Искључено</translation>
 <translation id="4210380525132844778">Разлог: Правило <ph name="RULE" /> је пронађено на листи <ph name="LIST_NAME" />.</translation>
 <translation id="4210428686880035809">Отвори линк у левом приказу</translation>
-<translation id="4211362364312260125">Идентификујте главно обележје на веб-страницама за технологију за помоћ особама са инвалидитетом</translation>
 <translation id="42126664696688958">Извези</translation>
 <translation id="4213540068152645535">Проблем са променом лозинке</translation>
 <translation id="42137655013211669">Сервер је забранио приступ овом ресурсу.</translation>
@@ -3692,7 +3689,6 @@
 <translation id="5012016139642806466">Приступајте лозинкама и другом садржају на свим уређајима</translation>
 <translation id="5012523644916800014">Управљајте лозинкама и приступним кодовима</translation>
 <translation id="5015344424288992913">Одређује се прокси...</translation>
-<translation id="5017250179386090956">Преузимају се фајлови са коментарима о главном чвору</translation>
 <translation id="5017529052065664584">Последњих 15 минута</translation>
 <translation id="5018207570537526145">Отвори веб-сајта додатка</translation>
 <translation id="5020008942039547742">Одабери други прозор</translation>
@@ -6179,7 +6175,6 @@
 <translation id="7804072833593604762">Картица је затворена</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7805906048382884326">Затвори савет</translation>
-<translation id="7806659658565827531">Додајте коментар главном чвору</translation>
 <translation id="7807711621188256451">Увек дозволи да <ph name="HOST" /> приступа камери</translation>
 <translation id="7810202088502699111">Искачући прозори су блокирани на овој страници.</translation>
 <translation id="7810951505946824824">Chrome омогућавају Chromium пројекат отвореног кода и други софтвер <ph name="BEGIN_HIGHLIGHT" />отвореног кода<ph name="END_HIGHLIGHT" />.</translation>
@@ -6405,7 +6400,6 @@
 <translation id="8045752459073395242">Сазнајте више о коришћењу генеративне вештачке интелигенције на послу</translation>
 <translation id="8045923671629973368">Унесите ИД апликације или URL веб-продавнице</translation>
 <translation id="804786196054284061">Уговор о лиценцирању са крајњим корисником</translation>
-<translation id="8048596485169033655">Преузимају се фајлови са коментарима о главном чвору… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Направите пречицу на радној површини на уређају да бисте директно приступали овом профилу</translation>
 <translation id="8049122382261047457">Претражите било коју слику помоћу Google објектива</translation>
 <translation id="8050038245906040378">Microsoft потписивање комерцијалних кодова</translation>

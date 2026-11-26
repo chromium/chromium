@@ -100,7 +100,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1100040363679327583">Tapşırığı nəzərdən keçirin. Gemini-dan soruşun</translation>
 <translation id="1100504063505580045">Cari işarə</translation>
 <translation id="1101267749138963680">Təhlükəsizlik yoxlanılır...</translation>
-<translation id="1102759278139578486">Əsas düyün annotasiya fayllarını endirmək mümkün deyil. Sonra cəhd edin.</translation>
 <translation id="1103523840287552314">Həmişə <ph name="LANGUAGE" /> dilinə tərcümə edin</translation>
 <translation id="1104098698795583187">Bu tab qrupuna girişi dərhal itirəcəksiniz və o, bütün cihazlarınızdan silinəcək</translation>
 <translation id="1106270460549661906">Gemini ilə paylaşımı ləğv edin</translation>
@@ -653,7 +652,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1709916727352927457">Giriş açarını silin</translation>
 <translation id="1712143791363119140">Davam edir</translation>
 <translation id="1714265454085143857">Bərkidilmiş tablar</translation>
-<translation id="1714326320203665217">Əsas düyün annotasiya faylları endirildi</translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" />, habelə quraşdırılmış əlaqədar tətbiq üçün sayt datası və icazələr silinsin?</translation>
 <translation id="1718835860248848330">Son saat</translation>
 <translation id="1720244237656138008">İmpressionizm</translation>
@@ -2963,7 +2961,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="4209251085232852247">Deaktivdir</translation>
 <translation id="4210380525132844778">Səbəb: <ph name="RULE" /> "<ph name="LIST_NAME" />" siyahısında tapıldı.</translation>
 <translation id="4210428686880035809">Keçidi sol görünüşdə açın</translation>
-<translation id="4211362364312260125">Köməkçi texnologiya üçün veb-səhifələrdə əsas nişanı müəyyənləşdirin</translation>
 <translation id="42126664696688958">Eksport</translation>
 <translation id="4213540068152645535">Parolunuzu dəyişərkən problem oldu</translation>
 <translation id="42137655013211669">Bu resursa giriş server tərəfindən qadağan edilib.</translation>
@@ -3697,7 +3694,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="5012016139642806466">Parol və digər məlumatları bütün cihazlarda əldə edin</translation>
 <translation id="5012523644916800014">Parolları və giriş açarlarını idarə edin</translation>
 <translation id="5015344424288992913">Proksi həll olunur...</translation>
-<translation id="5017250179386090956">Əsas düyün annotasiya faylları endirilir</translation>
 <translation id="5017529052065664584">Son 15 dəqiqə</translation>
 <translation id="5018207570537526145">Artırma veb səhifəsini açın</translation>
 <translation id="5020008942039547742">Başqa pəncərə seçin</translation>
@@ -6183,7 +6179,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="7804072833593604762">Tab bağlanıb</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Tövsiyəni bağlayın</translation>
-<translation id="7806659658565827531">Əsas düyün annotasiyası</translation>
 <translation id="7807711621188256451">Kameranıza daxil olmaq üçün həmişə <ph name="HOST" /> hostuna icazə verin</translation>
 <translation id="7810202088502699111">Bu səhifədə popaplar bloklanıb.</translation>
 <translation id="7810951505946824824">Chrome <ph name="BEGIN_HIGHLIGHT" />Chromium<ph name="END_HIGHLIGHT" /> açıq mənbə layihəsi və digər açıq mənbə proqram təminatları tərəfindən əlçatan edilib.</translation>
@@ -6409,7 +6404,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8045752459073395242">İşdə yaradan Sİ-dən istifadə haqqında ətraflı məlumat əldə edin</translation>
 <translation id="8045923671629973368">Tətbiqin ID və ya veb mağaza linkini daxil edin</translation>
 <translation id="804786196054284061">Son İstifadəçinin Lisenziya Müqaviləsi</translation>
-<translation id="8048596485169033655">Əsas düyün annotasiya faylları endirilir… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Bu profilə birbaşa giriş üçün cihazınızda masaüstü qısayol yaradın</translation>
 <translation id="8049122382261047457">Google Linza ilə şəkilləri axtarın</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>

@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">Görevi inceleyin. Gemini'a sorun.</translation>
 <translation id="1100504063505580045">Mevcut simge</translation>
 <translation id="1101267749138963680">Güvenlik kontrolü yapılıyor...</translation>
-<translation id="1102759278139578486">Ana düğüm ek açıklama dosyaları indirilemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> dilini daima çevir</translation>
 <translation id="1104098698795583187">Sekme grubuna erişiminizi anında kaybedersiniz ve grup tüm cihazlarınızdan silinir</translation>
 <translation id="1106270460549661906">Gemini ile paylaşımı kaldır</translation>
@@ -653,7 +652,6 @@
 <translation id="1709916727352927457">Geçiş anahtarını silin</translation>
 <translation id="1712143791363119140">Devam ediyor</translation>
 <translation id="1714265454085143857">Sabit sekmeler</translation>
-<translation id="1714326320203665217">Ana düğüm ek açıklama dosyaları indirildi</translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> sitesi ve yüklü uygulamasındaki site verileri ile izinler silinsin mi?</translation>
 <translation id="1718835860248848330">Son bir saat</translation>
 <translation id="1720244237656138008">Empresyonizm</translation>
@@ -2957,7 +2955,6 @@
 <translation id="4209251085232852247">Kapatıldı</translation>
 <translation id="4210380525132844778">Neden: "<ph name="LIST_NAME" />" listesinde <ph name="RULE" /> bulundu.</translation>
 <translation id="4210428686880035809">Bağlantıyı sol görünümde aç</translation>
-<translation id="4211362364312260125">Yardımcı teknolojiler için web sayfalarındaki ana belirgin işaret tanımlanır</translation>
 <translation id="42126664696688958">Dışa Aktar</translation>
 <translation id="4213540068152645535">Şifreniz değiştirilirken bir sorun oluştu</translation>
 <translation id="42137655013211669">Bu kaynağa erişim sunucu tarafından yasaklandı.</translation>
@@ -3690,7 +3687,6 @@
 <translation id="5012016139642806466">Şifrelerinizi ve diğer öğelerinizi tüm cihazlarınızda kullanın</translation>
 <translation id="5012523644916800014">Şifreleri ve geçiş anahtarlarını yönet</translation>
 <translation id="5015344424288992913">Proxy çözümleniyor...</translation>
-<translation id="5017250179386090956">Ana düğüm ek açıklama dosyaları indiriliyor</translation>
 <translation id="5017529052065664584">Son 15 dakika</translation>
 <translation id="5018207570537526145">Uzantı web sitesini aç</translation>
 <translation id="5020008942039547742">Farklı bir pencere seç</translation>
@@ -6173,7 +6169,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="7804072833593604762">Sekme Kapatıldı</translation>
 <translation id="7805768142964895445">Durum</translation>
 <translation id="7805906048382884326">İpucunu kapat</translation>
-<translation id="7806659658565827531">Ana düğüme ek açıklama ekle</translation>
 <translation id="7807711621188256451">Kameranıza <ph name="HOST" /> tarafından erişilmesine her zaman izin verin</translation>
 <translation id="7810202088502699111">Bu sayfadaki pop-up'lar engellendi.</translation>
 <translation id="7810951505946824824">Chrome, Chromium açık kaynak projesi ve diğer <ph name="BEGIN_HIGHLIGHT" />açık kaynak <ph name="END_HIGHLIGHT" />yazılımlar ile oluşturulmuştur.</translation>
@@ -6399,7 +6394,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8045752459073395242">Üretken yapay zekayı iş yerinde kullanma hakkında daha fazla bilgi</translation>
 <translation id="8045923671629973368">Uygulama kimliğini veya web mağazası URL'sini girin</translation>
 <translation id="804786196054284061">Son Kullanıcı Lisans Sözleşmesi</translation>
-<translation id="8048596485169033655">Ana düğüm ek açıklama dosyaları indiriliyor… %<ph name="PERCENT" /></translation>
 <translation id="8048977114738515028">Bu profile doğrudan erişmek için cihazınızda masaüstü kısayolu oluşturun</translation>
 <translation id="8049122382261047457">Google Lens ile istediğiniz görseli arayın</translation>
 <translation id="8050038245906040378">Microsoft Ticari Kod İmzalama</translation>

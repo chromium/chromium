@@ -70,6 +70,7 @@
 <translation id="1792680680989393197">Anda dapat menghapusnya kapan saja. Chromium dapat otomatis mendownloadnya lagi saat situs atau fitur membutuhkannya.</translation>
 <translation id="1793486931176048546">Klik <ph name="BEGIN_BOLD" />Ya<ph name="END_BOLD" /> di notifikasi Windows untuk menyematkan Chromium ke taskbar agar dapat diakses dengan cepat.</translation>
 <translation id="1808667845054772817">Instal ulang Chromium</translation>
+<translation id="1814482312667514397">Dapatkan fitur keamanan terbaik Chromium kapan saja di mana saja, dengan aplikasi Chromium di ponsel Anda</translation>
 <translation id="1820835682567584003">Chromium sedang mencoba <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chromium di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan ekstensi dan data lainnya dari <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Saat Anda membuka Chromium di <ph name="DEVICE_TYPE" />, Anda akan melihat perintah untuk menggunakan Pengelola Sandi Google.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Tidak ada perangkat HID yang diakses oleh ekstensi Chromium}=1{1 perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chromium}other{# perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chromium}}</translation>
 <translation id="2401032172288869980">Chromium memerlukan izin mikrofon dan kamera untuk situs ini</translation>
 <translation id="2403703063067034158">Error saat sistem dimulai: instance penyiapan lain sedang berjalan, coba lagi nanti.</translation>
+<translation id="241044568699443215">Dapatkan keamanan Chromium kapan saja di mana saja dengan aplikasi Chromium di <ph name="DEVICE_TYPE" /> Anda</translation>
 <translation id="2418322681019544463">Buka link di Chromium dari aplikasi apa pun dan buat browser tetap dapat diakses di taskbar Anda</translation>
 <translation id="2425157128016763890">Klik tombol Ringkas untuk membagikan dokumen ini ke Gemini di Chromium guna mendapatkan ringkasan cepat dan mengajukan pertanyaan lanjutan</translation>
 <translation id="2440750600860946460">Dengan <ph name="BEGIN_LINK" />alat dari Chromium<ph name="END_LINK" />, Anda dapat menjelajah dengan aman dan tetap memegang kendali</translation>
@@ -749,6 +751,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8907580949721785412">Chromium mencoba menampilkan sandi. Ketik sandi Windows untuk mengizinkannya.</translation>
 <translation id="8910309838319708610">Berhasil. Kini Anda dapat dengan mudah mengajukan pertanyaan saat menjelajah dengan Mode AI Penelusuran</translation>
 <translation id="8932992523185907506">Chromium bukan lagi browser default Anda. Jadikan Chromium browser default?</translation>
+<translation id="8940844567350264767">Dapatkan fitur keamanan terbaik Chromium kapan saja di mana saja dengan Chromium</translation>
 <translation id="8941642502866065432">Tidak dapat mengupdate Chromium</translation>
 <translation id="8944232836376404813">Tindakan ini akan:
           <ph name="LINE_BREAKS" />

@@ -70,6 +70,7 @@
 <translation id="1792680680989393197">Saate need igal ajal eemaldada. Chromium võib need automaatselt uuesti alla laadida, kui sait või funktsioon neid vajab.</translation>
 <translation id="1793486931176048546">Kiireks juurdepääsuks klõpsake Windowsi märguandes nupul <ph name="BEGIN_BOLD" />Jah<ph name="END_BOLD" />, et kinnitada Chromium tegumiribale</translation>
 <translation id="1808667845054772817">Installi Chromium uuesti</translation>
+<translation id="1814482312667514397">Chromiumi telefonirakendusega kaitsevad Chromiumi parimad ohutusfunktsioonid teid ka liikvel olles</translation>
 <translation id="1820835682567584003">Chromium püüab teha järgmist: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete juurde oma laiendustele ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Järgmine kord, kui avate oma seadmes <ph name="DEVICE_TYPE" /> Chromiumi, kuvatakse teile Google'i paroolihalduri kasutamise viip.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Üks või mitu Chromiumi laiendust kasutasid juurdepääsu ühele HID-seadmele}=1{Üks või mitu Chromiumi laiendust pääsevad juurde ühele HID-seadmele}other{Üks või mitu Chromiumi laiendust pääsevad juurde # HID-seadmele}}</translation>
 <translation id="2401032172288869980">Chromium vajab selle saidi puhul kaamera ja mikrofoni kasutamise luba</translation>
 <translation id="2403703063067034158">Käivitamisviga: praegu käitatakse seadistuse teist eksemplari, proovige hiljem uuesti.</translation>
+<translation id="241044568699443215">Võtke Chromiumi turvalisus liikvel olles kaasa, kasutades oma seadmes <ph name="DEVICE_TYPE" /> Chromiumi rakendust</translation>
 <translation id="2418322681019544463">Avage mis tahes rakenduse lingid Chromiumis ja hoidke brauser tegumiribal käepärast.</translation>
 <translation id="2425157128016763890">Selle dokumendi jagamiseks Chrome'i Geminis klõpsake kokkuvõtte nuppu, et saada kiire ülevaade ja esitada täpsustavaid küsimusi.</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromiumi tööriistadega<ph name="END_LINK" /> saate ohutult sirvida ja kõik kontrolli all hoida</translation>
@@ -751,6 +753,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8907580949721785412">Chromium proovib kuvada paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="8910309838319708610">Õnnestus! Nüüd saate otsingu AI-režiimi abil sirvimise ajal hõlpsasti küsimusi esitada</translation>
 <translation id="8932992523185907506">Chromium ei ole enam teie vaikebrauser. Kas määrata Chromium vaikebrauseriks?</translation>
+<translation id="8940844567350264767">Chromium pakub Chromiumi parimaid ohutusfunktsioone liikvel olles.</translation>
 <translation id="8941642502866065432">Chromiumi ei saa värskendada</translation>
 <translation id="8944232836376404813">Selle toiminguga kaasneb järgmine.
           <ph name="LINE_BREAKS" />

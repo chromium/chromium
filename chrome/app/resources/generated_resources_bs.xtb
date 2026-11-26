@@ -100,7 +100,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1100040363679327583">Pregledajte zadatak. Pitajte Gemini</translation>
 <translation id="1100504063505580045">Trenutna ikona</translation>
 <translation id="1101267749138963680">Provjera sigurnosti…</translation>
-<translation id="1102759278139578486">Nije moguće preuzeti fajlove s bilješkama o glavnom čvoru. Pokušajte ponovo kasnije.</translation>
 <translation id="1103523840287552314">Uvijek prevodi <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Odmah ćete izgubiti pristup grupi kartica, a ona će se izbrisati sa svih vaših uređaja</translation>
 <translation id="1106270460549661906">Prekini dijeljenje s Geminijem</translation>
@@ -659,7 +658,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1709916727352927457">Izbrišite pristupni ključ</translation>
 <translation id="1712143791363119140">U toku</translation>
 <translation id="1714265454085143857">Zakačene kartice</translation>
-<translation id="1714326320203665217">Fajlovi s bilješkama o glavnom čvoru su preuzeti</translation>
 <translation id="1716034099915639464">Izbrisati podatke web lokacije i odobrenja za <ph name="SITE_NAME" /> i instaliranu aplikaciju web lokacije?</translation>
 <translation id="1718835860248848330">Posljednji sat</translation>
 <translation id="1720244237656138008">Impresionizam</translation>
@@ -2969,7 +2967,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="4209251085232852247">Isključeno</translation>
 <translation id="4210380525132844778">Razlog: pravilo <ph name="RULE" /> je pronađeno na listi "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Otvori link u lijevom prikazu</translation>
-<translation id="4211362364312260125">Utvrđivanje glavnog obilježja na web stranicama za tehnologiju za pomoć</translation>
 <translation id="42126664696688958">Izvezi</translation>
 <translation id="4213540068152645535">Imamo poteškoće s promjenom lozinke</translation>
 <translation id="42137655013211669">Server je zabranio pristup ovom izvoru.</translation>
@@ -3702,7 +3699,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="5012016139642806466">Dobijajte svoje lozinke i druge stavke na svim svojim uređajima</translation>
 <translation id="5012523644916800014">Upravljajte lozinkama i pristupnim ključevima</translation>
 <translation id="5015344424288992913">Rješavanje problema s proksi serverom...</translation>
-<translation id="5017250179386090956">Preuzimanje fajlova s bilješkama o glavnom čvoru</translation>
 <translation id="5017529052065664584">Posljednjih 15 minuta</translation>
 <translation id="5018207570537526145">Otvori ekstenziju web lokacije</translation>
 <translation id="5020008942039547742">Odaberite drugi prozor</translation>
@@ -6189,7 +6185,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="7804072833593604762">Kartica je zatvorena</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Zatvaranje savjeta</translation>
-<translation id="7806659658565827531">Zapisuj bilješke o glavnom čvoru</translation>
 <translation id="7807711621188256451">Uvijek dozvolite web lokaciji <ph name="HOST" /> da pristupa vašoj kameri</translation>
 <translation id="7810202088502699111">Skočni prozori su blokirani na ovoj stranici.</translation>
 <translation id="7810951505946824824">Chrome su omogućili Chromium projekat otvorenog koda i drugi softver <ph name="BEGIN_HIGHLIGHT" />otvorenog koda<ph name="END_HIGHLIGHT" />.</translation>
@@ -6415,7 +6410,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8045752459073395242">Više informacija o korištenju generativnog AI-ja na poslu</translation>
 <translation id="8045923671629973368">Unesite ID aplikacije ili URL web trgovine</translation>
 <translation id="804786196054284061">Ugovor o licenci za krajnjeg korisnika</translation>
-<translation id="8048596485169033655">Preuzimanje fajlova s bilješkama o glavnom čvoru… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Kreirajte prečicu na radnoj površini uređaja da direktno pristupite ovom profilu</translation>
 <translation id="8049122382261047457">Pretražite bilo koju sliku pomoću Google Objektiva</translation>
 <translation id="8050038245906040378">Microsoft komercijalno potpisivanje izvršnog koda</translation>

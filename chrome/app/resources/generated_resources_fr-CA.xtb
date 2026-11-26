@@ -100,7 +100,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1100040363679327583">Examinez la tâche. Demander à Gemini</translation>
 <translation id="1100504063505580045">Icône actuelle</translation>
 <translation id="1101267749138963680">Vérification en matière de sécurité en cours…</translation>
-<translation id="1102759278139578486">Impossible de télécharger les fichiers d'annotation du nœud principal. Réessayez plus tard.</translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Vous perdrez immédiatement l'accès au groupe d'onglets, et il sera supprimé de tous vos appareils.</translation>
 <translation id="1106270460549661906">Annuler le partage avec Gemini</translation>
@@ -653,7 +652,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1709916727352927457">Supprimer la clé d'accès</translation>
 <translation id="1712143791363119140">En cours de traitement…</translation>
 <translation id="1714265454085143857">Onglets épinglés</translation>
-<translation id="1714326320203665217">Fichiers d'annotation du nœud principal téléchargés</translation>
 <translation id="1716034099915639464">Supprimer les données et les autorisations relatives aux sites pour le site <ph name="SITE_NAME" /> ainsi que l'application qui y est installée?</translation>
 <translation id="1718835860248848330">Dernière heure</translation>
 <translation id="1720244237656138008">Impressionnisme</translation>
@@ -2961,7 +2959,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4209251085232852247">Désactivé</translation>
 <translation id="4210380525132844778">Motif : la règle <ph name="RULE" /> a été trouvée dans la liste « <ph name="LIST_NAME" /> ».</translation>
 <translation id="4210428686880035809">Ouvrir le lien dans l'affichage de gauche</translation>
-<translation id="4211362364312260125">Déterminez le point d'intérêt principal dans les pages Web pour les technologies d'assistance</translation>
 <translation id="42126664696688958">Exporter</translation>
 <translation id="4213540068152645535">Problème de modification du mot de passe</translation>
 <translation id="42137655013211669">L'accès à ces ressources a été interdit par le serveur.</translation>
@@ -3693,7 +3690,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="5012016139642806466">Accédez à vos mots de passe et plus encore sur tous vos appareils</translation>
 <translation id="5012523644916800014">Gérer les mots de passe et les clés d'accès</translation>
 <translation id="5015344424288992913">Résolution du mandataire...</translation>
-<translation id="5017250179386090956">Téléchargement des fichiers d'annotation du nœud principal en cours…</translation>
 <translation id="5017529052065664584">Les 15 dernières minutes</translation>
 <translation id="5018207570537526145">Ouvrir le site Web pour les extensions</translation>
 <translation id="5020008942039547742">Choisissez une autre fenêtre</translation>
@@ -6176,7 +6172,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="7804072833593604762">Onglet fermé</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7805906048382884326">Fermer le conseil</translation>
-<translation id="7806659658565827531">Annotez le nœud principal</translation>
 <translation id="7807711621188256451">Toujours autoriser <ph name="HOST" /> à accéder à votre caméra</translation>
 <translation id="7810202088502699111">Des fenêtres contextuelles ont été bloquées sur cette page.</translation>
 <translation id="7810951505946824824">Chrome fonctionne grâce au projet de logiciel libre Chromium ainsi qu'à d'autres <ph name="BEGIN_HIGHLIGHT" />logiciels libres<ph name="END_HIGHLIGHT" />.</translation>
@@ -6402,7 +6397,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8045752459073395242">En savoir plus sur l'utilisation de l'IA générative au travail</translation>
 <translation id="8045923671629973368">Entrer l'identifiant de l'application ou l'URL de la boutique en ligne</translation>
 <translation id="804786196054284061">Contrat de licence pour utilisateur final</translation>
-<translation id="8048596485169033655">Téléchargement des fichiers d'annotation du nœud principal en cours…<ph name="PERCENT" /> %</translation>
 <translation id="8048977114738515028">Créez un raccourci sur le bureau de votre appareil pour accéder directement à ce profil</translation>
 <translation id="8049122382261047457">Recherchez n'importe quelle image avec Lentille Google</translation>
 <translation id="8050038245906040378">Signature du code commercial Microsoft</translation>

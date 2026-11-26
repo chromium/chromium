@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">Перевірте завдання. Запитайте Gemini</translation>
 <translation id="1100504063505580045">Поточний значок</translation>
 <translation id="1101267749138963680">Перевірка безпеки…</translation>
-<translation id="1102759278139578486">Не вдалося завантажити файли анотацій основного вузла. Повторіть спробу пізніше.</translation>
 <translation id="1103523840287552314">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Ви відразу втратите доступ до цієї групи вкладок, і її буде видалено з усіх ваших пристроїв</translation>
 <translation id="1106270460549661906">Скасувати доступ для Gemini</translation>
@@ -662,7 +661,6 @@
 <translation id="1709916727352927457">Видалити ключ доступу</translation>
 <translation id="1712143791363119140">Триває</translation>
 <translation id="1714265454085143857">Закріплені вкладки</translation>
-<translation id="1714326320203665217">Файли анотацій основного вузла завантажено</translation>
 <translation id="1716034099915639464">Видалити дані й дозволи для сайту <ph name="SITE_NAME" /> і встановленого додатка?</translation>
 <translation id="1718835860248848330">Остання година</translation>
 <translation id="1720244237656138008">Імпресіонізм</translation>
@@ -2972,7 +2970,6 @@
 <translation id="4209251085232852247">Вимкнено</translation>
 <translation id="4210380525132844778">Причина: у списку "<ph name="LIST_NAME" />" виявлено правило <ph name="RULE" />.</translation>
 <translation id="4210428686880035809">Відкрити посилання на лівому екрані</translation>
-<translation id="4211362364312260125">Визначати на вебсторінках основний орієнтир для технології доступності</translation>
 <translation id="42126664696688958">Експортувати</translation>
 <translation id="4213540068152645535">Не вдалося змінити пароль</translation>
 <translation id="42137655013211669">Сервер заборонив доступ до цього ресурсу.</translation>
@@ -3704,7 +3701,6 @@
 <translation id="5012016139642806466">Отримуйте доступ до своїх паролів і інших даних на всіх пристроях</translation>
 <translation id="5012523644916800014">Керувати паролями та ключами доступу</translation>
 <translation id="5015344424288992913">-...</translation>
-<translation id="5017250179386090956">Завантаження файлів анотацій основного вузла</translation>
 <translation id="5017529052065664584">Останні 15 хвилин</translation>
 <translation id="5018207570537526145">Відкрити веб-сайт розширення</translation>
 <translation id="5020008942039547742">Вибрати інше вікно</translation>
@@ -6189,7 +6185,6 @@
 <translation id="7804072833593604762">Вкладку закрито</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7805906048382884326">Закрити підказку</translation>
-<translation id="7806659658565827531">Створювати анотації основного вузла</translation>
 <translation id="7807711621188256451">Завжди дозволяти хосту <ph name="HOST" /> доступ до вашої камери</translation>
 <translation id="7810202088502699111">На цій сторінці спливаючі вікна заблоковано.</translation>
 <translation id="7810951505946824824">Chrome створено на основі проєкту програмного забезпечення з відкритим кодом Chromium і іншого <ph name="BEGIN_HIGHLIGHT" />програмного забезпечення з відкритим кодом<ph name="END_HIGHLIGHT" />.</translation>
@@ -6415,7 +6410,6 @@
 <translation id="8045752459073395242">Докладніше про використання генеративного ШІ для роботи</translation>
 <translation id="8045923671629973368">Введіть ідентифікатор додатка або URL-адресу веб-магазину</translation>
 <translation id="804786196054284061">Ліцензійна угода кінцевого користувача</translation>
-<translation id="8048596485169033655">Завантаження файлів анотацій основного вузла… (<ph name="PERCENT" />%)</translation>
 <translation id="8048977114738515028">Створити ярлик на робочому столі, щоб відразу переходити до цього профілю</translation>
 <translation id="8049122382261047457">Шукайте будь-яке зображення через Google Об’єктив</translation>
 <translation id="8050038245906040378">Підписування комерційного коду Microsoft</translation>

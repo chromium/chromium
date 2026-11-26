@@ -100,7 +100,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1100040363679327583">Gjennomgå oppgaven. Spør Gemini</translation>
 <translation id="1100504063505580045">Nåværende ikon</translation>
 <translation id="1101267749138963680">Sjekker sikkerheten …</translation>
-<translation id="1102759278139578486">Kan ikke laste ned kommentarfiler for hovednoden. Prøv igjen senere.</translation>
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Du mister umiddelbart tilgangen til denne fanegruppen, og den blir slettet fra alle enhetene dine</translation>
 <translation id="1106270460549661906">Fjern deling med Gemini</translation>
@@ -660,7 +659,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1709916727352927457">Slett sikkerhetsnøkkel</translation>
 <translation id="1712143791363119140">Pågår</translation>
 <translation id="1714265454085143857">Faner som er festet</translation>
-<translation id="1714326320203665217">Kommentarfiler for hovednoden er lastet ned</translation>
 <translation id="1716034099915639464">Vil du slette nettstedsdata og tillatelser for <ph name="SITE_NAME" /> og den tilhørende installerte appen?</translation>
 <translation id="1718835860248848330">Siste time</translation>
 <translation id="1720244237656138008">Impresjonisme</translation>
@@ -2967,7 +2965,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="4209251085232852247">Slått av</translation>
 <translation id="4210380525132844778">Årsak: Fant <ph name="RULE" /> på «<ph name="LIST_NAME" />»-listen.</translation>
 <translation id="4210428686880035809">Åpne linken i venstre visning</translation>
-<translation id="4211362364312260125">Identifiser det viktigste landemerket på nettsider for assisterende teknologi</translation>
 <translation id="42126664696688958">Eksportér</translation>
 <translation id="4213540068152645535">Problemer med å endre passordet</translation>
 <translation id="42137655013211669">Tilgangen til denne ressursen ble avvist av tjeneren.</translation>
@@ -3699,7 +3696,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="5012016139642806466">Få passordene dine med mer på alle enhetene dine</translation>
 <translation id="5012523644916800014">Administrer passord og passnøkler</translation>
 <translation id="5015344424288992913">Konverterer proxy ...</translation>
-<translation id="5017250179386090956">Laster ned kommentarfiler for hovednoden</translation>
 <translation id="5017529052065664584">De siste 15 minuttene</translation>
 <translation id="5018207570537526145">Åpne nettstedet for utvidelsen</translation>
 <translation id="5020008942039547742">Velg et annet vindu</translation>
@@ -6181,7 +6177,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="7804072833593604762">Fanen er lukket</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Lukk tipset</translation>
-<translation id="7806659658565827531">Kommenter hovednoden</translation>
 <translation id="7807711621188256451">Tillat alltid at <ph name="HOST" /> bruker kameraet ditt</translation>
 <translation id="7810202088502699111">Forgrunnsvinduer er blokkert på siden.</translation>
 <translation id="7810951505946824824">Chrome er gjort mulig av åpen kildekode-prosjektet Chromium og annen programvare med <ph name="BEGIN_HIGHLIGHT" />åpen kildekode<ph name="END_HIGHLIGHT" />.</translation>
@@ -6407,7 +6402,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8045752459073395242">Finn ut mer om bruk av generativ AI på jobb</translation>
 <translation id="8045923671629973368">Skriv inn app-ID-en eller nettadressen til nettbutikken</translation>
 <translation id="804786196054284061">Brukerlisensavtale</translation>
-<translation id="8048596485169033655">Laster ned kommentarfiler for hovednoden … <ph name="PERCENT" /> %</translation>
 <translation id="8048977114738515028">Opprett en snarvei på skrivebordet på enheten din for å få direkte tilgang til denne profilen</translation>
 <translation id="8049122382261047457">Søk etter et bilde med Google Lens</translation>
 <translation id="8050038245906040378">Microsoft-signering med kommersiell kode</translation>

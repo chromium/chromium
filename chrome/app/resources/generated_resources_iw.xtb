@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">‏המשימה דורשת בדיקה. יש לך שאלה ל-Gemini?</translation>
 <translation id="1100504063505580045">הסמל הנוכחי</translation>
 <translation id="1101267749138963680">בתהליך בדיקת בטיחות…</translation>
-<translation id="1102759278139578486">אי אפשר להוריד את קובצי הרישומים של הצומת הראשי. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="1103523840287552314">ברצוני לקבל תרגום מ<ph name="LANGUAGE" /> תמיד</translation>
 <translation id="1104098698795583187">הגישה שלך לקבוצת הכרטיסיות הזו תאבד באופן מיידי, והיא תימחק מכל המכשירים שלך</translation>
 <translation id="1106270460549661906">‏ביטול השיתוף עם Gemini</translation>
@@ -662,7 +661,6 @@
 <translation id="1709916727352927457">מחיקת מפתח הגישה</translation>
 <translation id="1712143791363119140">בתהליך</translation>
 <translation id="1714265454085143857">כרטיסיות מוצמדות</translation>
-<translation id="1714326320203665217">קובצי הרישומים של הצומת הראשי הורדו</translation>
 <translation id="1716034099915639464">למחוק את הנתונים ואת ההרשאות לאתר <ph name="SITE_NAME" /> ולאפליקציות המותקנות בו?</translation>
 <translation id="1718835860248848330">מהשעה האחרונה</translation>
 <translation id="1720244237656138008">אימפרסיוניזם</translation>
@@ -2971,7 +2969,6 @@
 <translation id="4209251085232852247">מושבת</translation>
 <translation id="4210380525132844778">סיבה: הכלל <ph name="RULE" /> נמצא ברשימה '<ph name="LIST_NAME" />'.</translation>
 <translation id="4210428686880035809">פתיחת הקישור בתצוגה השמאלית</translation>
-<translation id="4211362364312260125">‏זיהוי המאפיין העיקרי של ARIA בדפי אינטרנט בנושא טכנולוגיה מסייעת</translation>
 <translation id="42126664696688958">ייצוא</translation>
 <translation id="4213540068152645535">הייתה בעיה בשינוי הסיסמה</translation>
 <translation id="42137655013211669">הגישה למשאב זה נאסרה על-ידי השרת.</translation>
@@ -3705,7 +3702,6 @@
 <translation id="5012016139642806466">אפשר לקבל גישה לסיסמאות ולנתונים נוספים בכל המכשירים שלך</translation>
 <translation id="5012523644916800014">ניהול הסיסמאות ומפתחות הגישה</translation>
 <translation id="5015344424288992913">פותר פרוקסי...</translation>
-<translation id="5017250179386090956">מתבצעת הורדה של קובצי הרישומים של הצומת הראשי</translation>
 <translation id="5017529052065664584">15 הדקות האחרונות</translation>
 <translation id="5018207570537526145">פתיחת אתר התוסף</translation>
 <translation id="5020008942039547742">בחירת חלון אחר</translation>
@@ -6192,7 +6188,6 @@
 <translation id="7804072833593604762">הכרטיסייה נסגרה</translation>
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7805906048382884326">סגירת הטיפ</translation>
-<translation id="7806659658565827531">הוספת הערות לצומת הראשי</translation>
 <translation id="7807711621188256451">התרה תמיד ל-<ph name="HOST" /> לגשת למצלמה שלך</translation>
 <translation id="7810202088502699111">חלונות קופצים נחסמו בדף זה.</translation>
 <translation id="7810951505946824824">‏מערכת Chrome פותחה באמצעות פרויקט הקוד הפתוח של Chromium ותוכנות <ph name="BEGIN_HIGHLIGHT" />קוד פתוח<ph name="END_HIGHLIGHT" /> אחרות.</translation>
@@ -6418,7 +6413,6 @@
 <translation id="8045752459073395242">‏מידע נוסף על השימוש ב-AI גנרטיבי בעבודה</translation>
 <translation id="8045923671629973368">‏יש להזין מזהה אפליקציה או כתובת URL של חנות אינטרנט</translation>
 <translation id="804786196054284061">הסכם רישיון למשתמש קצה</translation>
-<translation id="8048596485169033655">‏מתבצעת הורדה של קובצי הרישומים של הצומת הראשי… ‎<ph name="PERCENT" />%‎</translation>
 <translation id="8048977114738515028">יצירת קיצור דרך בשולחן העבודה במכשיר שלך כדי לגשת ישירות לפרופיל זה.</translation>
 <translation id="8049122382261047457">‏חיפוש תמונה כלשהי באמצעות Google Lens</translation>
 <translation id="8050038245906040378">‏חתימת קוד מסחרי של Microsoft</translation>

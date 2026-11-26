@@ -100,7 +100,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1100040363679327583">Rishiko detyrën. Pyet Gemini</translation>
 <translation id="1100504063505580045">Ikona aktuale</translation>
 <translation id="1101267749138963680">Po kontrollohet për sigurinë...</translation>
-<translation id="1102759278139578486">Skedarët e shënimeve të nyjës kryesore nuk mund të shkarkohen. Provo përsëri më vonë.</translation>
 <translation id="1103523840287552314">Përkthe gjithmonë nga <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Do të humbasësh menjëherë qasjen në ky grup skedash dhe ai do të fshihet nga të gjitha pajisjet e tua</translation>
 <translation id="1106270460549661906">Anulo ndarjen me Gemini</translation>
@@ -653,7 +652,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1709916727352927457">Fshi çelësin e kalimit</translation>
 <translation id="1712143791363119140">Në vazhdim</translation>
 <translation id="1714265454085143857">Skedat e gozhduara</translation>
-<translation id="1714326320203665217">Skedarët e shënimeve të nyjës kryesore u shkarkuar</translation>
 <translation id="1716034099915639464">Të fshihen të dhënat e sajtit dhe lejet për <ph name="SITE_NAME" /> dhe aplikacionin e tij të instaluar?</translation>
 <translation id="1718835860248848330">Ora e fundit</translation>
 <translation id="1720244237656138008">Impresionizëm</translation>
@@ -2959,7 +2957,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4209251085232852247">Çaktivizuar</translation>
 <translation id="4210380525132844778">Arsyeja: <ph name="RULE" /> u gjet në listën"<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Hape lidhjen në pamjen majtas</translation>
-<translation id="4211362364312260125">Identifiko pikën kryesore të referimit në faqet e uebit për teknologjinë ndihmëse</translation>
 <translation id="42126664696688958">Eksporto</translation>
 <translation id="4213540068152645535">Problem gjatë ndryshimit të fjalëkalimit</translation>
 <translation id="42137655013211669">Qasja te ky burim është e ndaluar nga serveri.</translation>
@@ -3691,7 +3688,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5012016139642806466">Merr fjalëkalimet etj. në të gjitha pajisjet e tua</translation>
 <translation id="5012523644916800014">Menaxho fjalëkalimet dhe çelësat e kalimit</translation>
 <translation id="5015344424288992913">Po zgjidh përfaqësuesin...</translation>
-<translation id="5017250179386090956">Po shkarkohen skedarët e shënimeve të nyjës kryesore</translation>
 <translation id="5017529052065664584">15 minutat e fundit</translation>
 <translation id="5018207570537526145">Hap uebsajtin e shtesës</translation>
 <translation id="5020008942039547742">Zgjidh një dritare tjetër</translation>
@@ -6172,7 +6168,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="7804072833593604762">Skeda u mbyll</translation>
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7805906048382884326">Mbylle këshillën</translation>
-<translation id="7806659658565827531">Shëno nyjën kryesore</translation>
 <translation id="7807711621188256451">Lejo gjithmonë që <ph name="HOST" /> të qaset në kamerën tënde</translation>
 <translation id="7810202088502699111">Dritaret kërcyese u bllokuan në këtë faqe.</translation>
 <translation id="7810951505946824824">Chrome mundësohet nga projekti me burim të hapur Chromium dhe softuerë të tjerë <ph name="BEGIN_HIGHLIGHT" />me burim të hapur<ph name="END_HIGHLIGHT" />.</translation>
@@ -6398,7 +6393,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8045752459073395242">Mëso më shumë rreth përdorimit të IA-së gjeneruese në punë</translation>
 <translation id="8045923671629973368">Fut ID-në e aplikacionit ose URL-në e dyqanit të uebit</translation>
 <translation id="804786196054284061">Marrëveshje Licence për Përdoruesin</translation>
-<translation id="8048596485169033655">Po shkarkohen skedarët e shënimeve të nyjës kryesore… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Krijo një shkurtore për desktop në pajisjen tënde për t'u qasur direkt në këtë profil</translation>
 <translation id="8049122382261047457">Kërko për çdo imazh me "Lenten e Google"</translation>
 <translation id="8050038245906040378">Nënshkrimi tregtar i kodit nga Microsoft</translation>

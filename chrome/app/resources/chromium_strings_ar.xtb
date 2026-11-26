@@ -70,6 +70,7 @@
 <translation id="1792680680989393197">‏يمكنك إزالة النماذج في أي وقت. وقد يعيد Chromium تنزيلها تلقائيًا عندما يحتاج إليها أي موقع إلكتروني أو ميزة.</translation>
 <translation id="1793486931176048546">‏انقر على <ph name="BEGIN_BOLD" />نعم<ph name="END_BOLD" /> في إشعار Windows لتثبيت Chromium في شريط التطبيقات والوصول إليه بسرعة.</translation>
 <translation id="1808667845054772817">‏إعادة تثبيت Chromium</translation>
+<translation id="1814482312667514397">‏يوفّر لك تطبيق Chromium أفضل ميزات الأمان على هاتفك أثناء التنقل</translation>
 <translation id="1820835682567584003">‏يحاول Chromium <ph name="AUTHENTICATION_PURPOSE" />.</translation>
 <translation id="1828328511398219809">‏حساب "<ph name="EXISTING_USER" />" مسجّل الدخول حاليًا. للحصول على تجربة تصفّح منفصلة، يُرجى تسجيل الدخول إلى ملفك الشخصي في Chromium بحساب <ph name="USER_EMAIL_ADDRESS" />. سيتيح لك ذلك أيضًا الوصول إلى إضافاتك وغيرها من <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">‏عند فتح Chromium على <ph name="DEVICE_TYPE" /> في المرة القادمة، ستظهر لك رسالة تطلب منك استخدام "مدير كلمات المرور في Google".</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{‏كانت إضافة واحدة أو أكثر من إضافات Chromium تصل إلى جهاز HID واحد}=1{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى جهاز HID واحد}two{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى جهازَي HID}few{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى # أجهزة HID}many{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى # جهاز HID}other{‏تصل إضافة واحدة أو أكثر من إضافات Chromium إلى # جهاز HID}}</translation>
 <translation id="2401032172288869980">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا والميكروفون من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="2403703063067034158">خطأ في بدء التشغيل: هناك عملية إعداد أخرى قيد التشغيل حاليًا. يُرجى إعادة المحاولة لاحقًا.</translation>
+<translation id="241044568699443215">‏يوفّر لك تطبيق Chromium ميزات أمان على "<ph name="DEVICE_TYPE" />" أثناء التنقل</translation>
 <translation id="2418322681019544463">‏يمكنك فتح الروابط من أي تطبيق على Chromium والوصول إلى المتصفّح بسهولة من خلال شريط المهام</translation>
 <translation id="2425157128016763890">‏يمكنك النقر على زر "تلخيص" لمشاركة هذا المستند مع "Gemini في Chromium" والحصول على نظرة عامة سريعة وطرح أسئلة إضافية</translation>
 <translation id="2440750600860946460">‏باستخدام <ph name="BEGIN_LINK" />أدوات من Chromium<ph name="END_LINK" />، يمكنك التصفُّح بأمان والتحكُّم بشكل كامل</translation>
@@ -518,6 +520,7 @@
 <translation id="6598877126913850652">‏الانتقال إلى إعدادات الإشعارات في Chromium</translation>
 <translation id="6600016381025017075">البحث عن أي محتوى على هذه الصفحة</translation>
 <translation id="6613594504749178791">‏ستسري التغييرات في المرة التالية التي تعيد فيها تشغيل Chromium.</translation>
+<translation id="6637855549677695722">‏عند فتح Chromium على <ph name="DEVICE_TYPE" /> في المرة القادمة، ستظهر لك رسالة تطلب منك الاستفادة من أفضل ميزات الأمان التي يوفّرها Chromium.</translation>
 <translation id="6637908313088374648">‏يتم الآن فتح Chromium تلقائيًا عند بدء تشغيل Windows، ما يتيح لك بدء التصفّح على الفور. ويمكنك إيقاف هذا الإجراء من خلال الإعدادات.</translation>
 <translation id="6644846457769259194">جارٍ تحديث جهازك (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا من أجل إنشاء خريطة ثلاثية الأبعاد للمكان حولك.</translation>
@@ -751,6 +754,7 @@
 <translation id="8907580949721785412">‏يحاول Chromium عرض كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="8910309838319708610">‏نجح الإجراء. يمكنك الآن طرح الأسئلة بسهولة أثناء التصفّح باستخدام "وضع AI" في "بحث Google"</translation>
 <translation id="8932992523185907506">‏لم يعُد Chromium متصفّحك التلقائي. جعل Chromium المتصفح التلقائي؟</translation>
+<translation id="8940844567350264767">‏يوفّر لك Chromium أفضل ميزات الأمان أثناء التنقّل</translation>
 <translation id="8941642502866065432">‏تعذّرت إعادة التحميل Chromium</translation>
 <translation id="8944232836376404813">سيؤدي هذا الإجراء إلى ما يلي:
           <ph name="LINE_BREAKS" />

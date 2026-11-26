@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">Проверьте задачу. Задайте вопрос Gemini</translation>
 <translation id="1100504063505580045">Текущий значок</translation>
 <translation id="1101267749138963680">Проверка безопасности…</translation>
-<translation id="1102759278139578486">Не удалось скачать файлы аннотаций основного узла. Повторите попытку позже.</translation>
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Эта группа сразу станет вам недоступна и будет удалена со всех ваших устройств.</translation>
 <translation id="1106270460549661906">Отменить доступ для Gemini</translation>
@@ -653,7 +652,6 @@
 <translation id="1709916727352927457">Удаление ключа доступа</translation>
 <translation id="1712143791363119140">Идет сейчас</translation>
 <translation id="1714265454085143857">Закрепленные вкладки</translation>
-<translation id="1714326320203665217">Файлы аннотации основного узла скачаны</translation>
 <translation id="1716034099915639464">Удалить данные и разрешения сайта <ph name="SITE_NAME" /> и связанного с ним установленного приложения?</translation>
 <translation id="1718835860248848330">Последний час</translation>
 <translation id="1720244237656138008">Импрессионизм</translation>
@@ -2962,7 +2960,6 @@
 <translation id="4209251085232852247">Отключено</translation>
 <translation id="4210380525132844778">Причина: в списке "<ph name="LIST_NAME" />" обнаружено правило <ph name="RULE" />.</translation>
 <translation id="4210428686880035809">Открыть ссылку в левом окне</translation>
-<translation id="4211362364312260125">Выявлять на веб-страницах основной ориентир для технологии специальных возможностей</translation>
 <translation id="42126664696688958">Экспортировать</translation>
 <translation id="4213540068152645535">Не удалось изменить пароль</translation>
 <translation id="42137655013211669">Доступ к этому ресурсу запрещен сервером.</translation>
@@ -3695,7 +3692,6 @@
 <translation id="5012016139642806466">Получите доступ к паролям и другой информации на всех своих устройствах.</translation>
 <translation id="5012523644916800014">Управление паролями и ключами доступа</translation>
 <translation id="5015344424288992913">Определение прокси-сервера...</translation>
-<translation id="5017250179386090956">Скачиваются файлы аннотации основного узла</translation>
 <translation id="5017529052065664584">Последние 15 минут</translation>
 <translation id="5018207570537526145">Перейти на сайт разработчика</translation>
 <translation id="5020008942039547742">Выбрать другое окно</translation>
@@ -6188,7 +6184,6 @@
 <translation id="7804072833593604762">Вкладка закрыта</translation>
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7805906048382884326">Закрыть подсказку</translation>
-<translation id="7806659658565827531">Аннотировать основной узел</translation>
 <translation id="7807711621188256451">Всегда предоставлять <ph name="HOST" /> доступ к моей камере</translation>
 <translation id="7810202088502699111">Всплывающие окна были заблокированы. </translation>
 <translation id="7810951505946824824">Chrome создан на основе Chromium и другого <ph name="BEGIN_HIGHLIGHT" />ПО с открытым исходным кодом<ph name="END_HIGHLIGHT" />.</translation>
@@ -6414,7 +6409,6 @@
 <translation id="8045752459073395242">Подробнее об использовании генеративного искусственного интеллекта на работе</translation>
 <translation id="8045923671629973368">Введите идентификатор приложения или URL интернет-магазина</translation>
 <translation id="804786196054284061">Лицензионное соглашение с конечным пользователем</translation>
-<translation id="8048596485169033655">Скачиваются файлы аннотации основного узла (<ph name="PERCENT" /> %)</translation>
 <translation id="8048977114738515028">Чтобы быстро переключаться на этот профиль, создайте ярлык на рабочем столе</translation>
 <translation id="8049122382261047457">Ищите по изображениям с Google Объективом</translation>
 <translation id="8050038245906040378">Подписывание коммерческого кода Microsoft</translation>

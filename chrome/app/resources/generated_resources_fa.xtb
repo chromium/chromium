@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">‏تکلیف را بازبینی کنید. پرسیدن از Gemini</translation>
 <translation id="1100504063505580045">نماد کنونی</translation>
 <translation id="1101267749138963680">درحال بررسی ایمنی…</translation>
-<translation id="1102759278139578486">فایل‌های گزارمان گره اصلی بارگیری نشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> همیشه ترجمه شود</translation>
 <translation id="1104098698795583187">دسترسی به این گروه زبانه را فوراً ازدست می‌دهید و این گروه از همه دستگاه‌هایتان حذف می‌شود</translation>
 <translation id="1106270460549661906">‏لغو هم‌رسانی با Gemini</translation>
@@ -662,7 +661,6 @@
 <translation id="1709916727352927457">حذف گذرکلید</translation>
 <translation id="1712143791363119140">درجریان است</translation>
 <translation id="1714265454085143857">زبانه‌های سنجاق‌شده</translation>
-<translation id="1714326320203665217">فایل‌های گزارمان گره اصلی بارگیری شد</translation>
 <translation id="1716034099915639464">داده‌ها و اجازه‌های سایت <ph name="SITE_NAME" /> و برنامه‌های نصب‌شده‌اش حذف شود؟</translation>
 <translation id="1718835860248848330">ساعت قبل</translation>
 <translation id="1720244237656138008">امپرسیونیسم</translation>
@@ -2971,7 +2969,6 @@
 <translation id="4209251085232852247">خاموش</translation>
 <translation id="4210380525132844778">دلیل: <ph name="RULE" /> در فهرست «<ph name="LIST_NAME" />» پیدا شد.</translation>
 <translation id="4210428686880035809">باز کردن پیوند در نمای چپ</translation>
-<translation id="4211362364312260125">شناسایی نشانگر مکانی اصلی در صفحه‌های وب برای فناوری یاری‌رسان</translation>
 <translation id="42126664696688958">صادر کردن</translation>
 <translation id="4213540068152645535">مشکلی در تغییر گذرواژه‌تان روی داد</translation>
 <translation id="42137655013211669">سرور، دسترسی به این منبع را ممنوع کرد.</translation>
@@ -3704,7 +3701,6 @@
 <translation id="5012016139642806466">گذرواژه‌ها و موارد دیگر را در همه دستگاه‌ها دریافت کنید</translation>
 <translation id="5012523644916800014">مدیریت گذرواژه‌ها و گذرکلیدها</translation>
 <translation id="5015344424288992913">در حال تحلیل پراکسی...</translation>
-<translation id="5017250179386090956">درحال بارگیری فایل‌های گزارمان گره اصلی</translation>
 <translation id="5017529052065664584">۱۵ دقیقه اخیر</translation>
 <translation id="5018207570537526145">باز کردن وب‌سایت افزونه</translation>
 <translation id="5020008942039547742">پنجره دیگری را انتخاب کنید</translation>
@@ -6189,7 +6185,6 @@
 <translation id="7804072833593604762">زبانه بسته شد</translation>
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="7805906048382884326">بستن نکته</translation>
-<translation id="7806659658565827531">تهیه گزارمان از گره اصلی</translation>
 <translation id="7807711621188256451">همیشه اجازه دادن به <ph name="HOST" /> برای دسترسی به دوربین شما</translation>
 <translation id="7810202088502699111">پنجره‌های بازشو در این صفحه مسدود شده‌اند.</translation>
 <translation id="7810951505946824824">‏ارائه Chrome به‌واسطه پروژه متن‌باز Chromium و دیگر نرم‌افزارهای <ph name="BEGIN_HIGHLIGHT" />متن‌باز<ph name="END_HIGHLIGHT" /> ممکن شده است.</translation>
@@ -6415,7 +6410,6 @@
 <translation id="8045752459073395242">درباره استفاده از هوش مصنوعی زایا در کار بیشتر بدانید</translation>
 <translation id="8045923671629973368">شناسه برنامه یا نشانی وب فروشگاه وب را وارد کنید</translation>
 <translation id="804786196054284061">قرارداد مجوز کاربر نهایی</translation>
-<translation id="8048596485169033655">درحال بارگیری فایل‌های گزارمان گره اصلی… <ph name="PERCENT" />٪</translation>
 <translation id="8048977114738515028">ایجاد میانبر میز کار در دستگاهتان برای دسترسی مستقیم به این نمایه</translation>
 <translation id="8049122382261047457">‏جستجوی تصاویر با «لنز Google»</translation>
 <translation id="8050038245906040378">‏امضای کد تجاری Microsoft</translation>

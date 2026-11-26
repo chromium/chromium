@@ -100,7 +100,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1100040363679327583">Tinjau tugas. Minta Gemini</translation>
 <translation id="1100504063505580045">Ikon saat ini</translation>
 <translation id="1101267749138963680">Memeriksa keamanan...</translation>
-<translation id="1102759278139578486">Tidak dapat mendownload file anotasi node utama. Coba lagi nanti.</translation>
 <translation id="1103523840287552314">Selalu terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Anda akan segera kehilangan akses ke grup tab ini, dan grup ini akan dihapus dari semua perangkat Anda</translation>
 <translation id="1106270460549661906">Berhenti berbagi dengan Gemini</translation>
@@ -662,7 +661,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1709916727352927457">Hapus kunci sandi</translation>
 <translation id="1712143791363119140">Dalam Proses</translation>
 <translation id="1714265454085143857">Tab tersemat</translation>
-<translation id="1714326320203665217">File anotasi node utama didownload</translation>
 <translation id="1716034099915639464">Hapus data situs dan izin untuk <ph name="SITE_NAME" /> dan aplikasi terinstalnya?</translation>
 <translation id="1718835860248848330">Sejam terakhir</translation>
 <translation id="1720244237656138008">Impresionisme</translation>
@@ -2971,7 +2969,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="4209251085232852247">Dinonaktifkan</translation>
 <translation id="4210380525132844778">Alasan: <ph name="RULE" /> ditemukan dalam daftar "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Buka Link di Tampilan Kiri</translation>
-<translation id="4211362364312260125">Mengidentifikasi penanda utama di halaman web untuk teknologi pendukung</translation>
 <translation id="42126664696688958">Ekspor</translation>
 <translation id="4213540068152645535">Terjadi error saat mengubah sandi Anda</translation>
 <translation id="42137655013211669">Akses ke sumber daya ini tidak diizinkan oleh server.</translation>
@@ -3704,7 +3701,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="5012016139642806466">Dapatkan sandi dan info Anda yang lain di semua perangkat Anda</translation>
 <translation id="5012523644916800014">Kelola sandi dan kunci sandi</translation>
 <translation id="5015344424288992913">Mengontak proxy...</translation>
-<translation id="5017250179386090956">Mendownload file anotasi node utama</translation>
 <translation id="5017529052065664584">15 menit terakhir</translation>
 <translation id="5018207570537526145">Buka situs ekstensi</translation>
 <translation id="5020008942039547742">Pilih jendela lain</translation>
@@ -6187,7 +6183,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="7804072833593604762">Tab Ditutup</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Tutup tips</translation>
-<translation id="7806659658565827531">Anotasi node utama</translation>
 <translation id="7807711621188256451">Selalu izinkan <ph name="HOST" /> mengakses kamera Anda</translation>
 <translation id="7810202088502699111">Pop-up diblokir di halaman ini.</translation>
 <translation id="7810951505946824824">Chrome dikembangkan berkat proyek open source Chromium dan software <ph name="BEGIN_HIGHLIGHT" />open source<ph name="END_HIGHLIGHT" /> lainnya.</translation>
@@ -6413,7 +6408,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8045752459073395242">Pelajari lebih lanjut cara menggunakan AI generatif di tempat kerja</translation>
 <translation id="8045923671629973368">Masukan ID aplikasi atau URL toko web</translation>
 <translation id="804786196054284061">Perjanjian Lisensi Pengguna Akhir</translation>
-<translation id="8048596485169033655">Mendownload file anotasi node utama… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Buat pintasan desktop di perangkat Anda untuk mengakses langsung ke profil ini</translation>
 <translation id="8049122382261047457">Telusuri gambar apa pun dengan Google Lens</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>

@@ -100,7 +100,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1100040363679327583">Aufgabe prüfen. Gemini nach etwas fragen.</translation>
 <translation id="1100504063505580045">Aktuelles Symbol</translation>
 <translation id="1101267749138963680">Sicherheitscheck läuft…</translation>
-<translation id="1102759278139578486">Dateien zur Annotation von Hauptknoten können nicht heruntergeladen werden. Versuch es später noch einmal.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
 <translation id="1104098698795583187">Du verlierst dann sofort den Zugriff auf diese Tabgruppe und sie wird von allen deinen Geräten gelöscht</translation>
 <translation id="1106270460549661906">Teilen mit Gemini aufheben</translation>
@@ -651,7 +650,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1709916727352927457">Passkey löschen</translation>
 <translation id="1712143791363119140">Läuft</translation>
 <translation id="1714265454085143857">Angepinnte Tabs</translation>
-<translation id="1714326320203665217">Dateien zur Annotation von Hauptknoten wurden heruntergeladen</translation>
 <translation id="1716034099915639464">Websitedaten und Berechtigungen für <ph name="SITE_NAME" /> und die auf ihr installierten Apps löschen?</translation>
 <translation id="1718835860248848330">Letzte Stunde</translation>
 <translation id="1720244237656138008">Impressionismus</translation>
@@ -2940,7 +2938,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4209251085232852247">Deaktiviert</translation>
 <translation id="4210380525132844778">Grund: <ph name="RULE" /> wurde in der Liste „<ph name="LIST_NAME" />“ gefunden.</translation>
 <translation id="4210428686880035809">Link in Ansicht links öffnen</translation>
-<translation id="4211362364312260125">Hauptmarkierung auf Webseiten für Hilfstechnologien identifizieren</translation>
 <translation id="42126664696688958">Exportieren</translation>
 <translation id="4213540068152645535">Passwort konnte nicht geändert werden</translation>
 <translation id="42137655013211669">Der Zugriff auf diese Ressource wurde vom Server nicht zugelassen.</translation>
@@ -3667,7 +3664,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5012016139642806466">Passwörter und andere Daten auf allen deinen Geräten abrufen</translation>
 <translation id="5012523644916800014">Passwörter und Passkeys verwalten</translation>
 <translation id="5015344424288992913">Proxy auflösen...</translation>
-<translation id="5017250179386090956">Dateien zur Annotation von Hauptknoten werden heruntergeladen</translation>
 <translation id="5017529052065664584">Letzte 15 Minuten</translation>
 <translation id="5018207570537526145">Erweiterungs-Website öffnen</translation>
 <translation id="5020008942039547742">Anderes Fenster auswählen</translation>
@@ -6132,7 +6128,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="7804072833593604762">Tab geschlossen</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Infofeld schließen</translation>
-<translation id="7806659658565827531">Hauptknoten mit Anmerkungen versehen</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> immer Zugriff auf deine Kamera gestatten</translation>
 <translation id="7810202088502699111">Pop-ups wurden auf dieser Seite blockiert.</translation>
 <translation id="7810951505946824824">Chrome wird durch das Open-Source-Projekt Chromium und andere <ph name="BEGIN_HIGHLIGHT" />Open-Source-Software<ph name="END_HIGHLIGHT" /> ermöglicht.</translation>
@@ -6356,7 +6351,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8045752459073395242">Weitere Informationen zur Nutzung von generativer KI am Arbeitsplatz</translation>
 <translation id="8045923671629973368">Anwendungs-ID oder Webstore-URL eingeben</translation>
 <translation id="804786196054284061">Endnutzer-Lizenzvereinbarung</translation>
-<translation id="8048596485169033655">Dateien zur Annotation von Hauptknoten werden heruntergeladen… <ph name="PERCENT" /> %</translation>
 <translation id="8048977114738515028">Erstelle auf deinem Gerät eine Desktopverknüpfung, um direkt auf dieses Profil zuzugreifen</translation>
 <translation id="8049122382261047457">Mit Google Lens nach beliebigen Bildern suchen</translation>
 <translation id="8050038245906040378">Kommerzielle Microsoft-Codesignatur</translation>

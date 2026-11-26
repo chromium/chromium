@@ -100,7 +100,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1100040363679327583">Gennemgå opgave. Spørg Gemini</translation>
 <translation id="1100504063505580045">Aktuelt ikon</translation>
 <translation id="1101267749138963680">Tjekker sikkerheden…</translation>
-<translation id="1102759278139578486">Annoteringsfilerne for den primære node kan ikke downloades. Prøv igen senere.</translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Du mister øjeblikkeligt adgang til denne fanegruppe, og den slettes fra alle dine enheder</translation>
 <translation id="1106270460549661906">Del ikke med Gemini</translation>
@@ -662,7 +661,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1709916727352927457">Slet adgangsnøgle</translation>
 <translation id="1712143791363119140">I gang</translation>
 <translation id="1714265454085143857">Fastgjorte faner</translation>
-<translation id="1714326320203665217">Annoteringsfilerne for den primære node er downloadet</translation>
 <translation id="1716034099915639464">Vil du slette websitedata og tilladelser for <ph name="SITE_NAME" /> samt websitets installerede apps?</translation>
 <translation id="1718835860248848330">Seneste time</translation>
 <translation id="1720244237656138008">Impressionisme</translation>
@@ -2973,7 +2971,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4209251085232852247">Slået fra</translation>
 <translation id="4210380525132844778">Årsag: <ph name="RULE" /> blev fundet på listen "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Åbn link i venstre visning</translation>
-<translation id="4211362364312260125">Identificer det primære område på websider for hjælpeteknologi</translation>
 <translation id="42126664696688958">Eksportér</translation>
 <translation id="4213540068152645535">Der opstod et problem med at ændre din adgangskode</translation>
 <translation id="42137655013211669">Serveren har forbudt dig adgang til denne ressource.</translation>
@@ -3706,7 +3703,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5012016139642806466">Få dine adgangskoder og meget mere på alle dine enheder</translation>
 <translation id="5012523644916800014">Administrer adgangskoder og adgangsnøgler</translation>
 <translation id="5015344424288992913">Identificerer proxy...</translation>
-<translation id="5017250179386090956">Downloader annoteringsfilerne for den primære node</translation>
 <translation id="5017529052065664584">De seneste 15 minutter</translation>
 <translation id="5018207570537526145">Åbn udvidelsens website</translation>
 <translation id="5020008942039547742">Vælg et andet vindue</translation>
@@ -6191,7 +6187,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="7804072833593604762">Fanen er lukket</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Luk tip</translation>
-<translation id="7806659658565827531">Annoter den primære node</translation>
 <translation id="7807711621188256451">Tillad altid, at <ph name="HOST" /> har adgang til dit kamera</translation>
 <translation id="7810202088502699111">Pop op-vinduer blev blokeret på denne side.</translation>
 <translation id="7810951505946824824">Chrome er realiseret ved hjælp af open source-projektet Chromium og anden <ph name="BEGIN_HIGHLIGHT" />open source-software<ph name="END_HIGHLIGHT" />.</translation>
@@ -6417,7 +6412,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8045752459073395242">Få flere oplysninger om, hvordan du bruger generativ AI på arbejdet</translation>
 <translation id="8045923671629973368">Angiv et app-id eller webadressen til Chrome Webshop</translation>
 <translation id="804786196054284061">Slutbrugerlicensaftale</translation>
-<translation id="8048596485169033655">Downloader annoteringsfilerne for den primære node… <ph name="PERCENT" /> %</translation>
 <translation id="8048977114738515028">Opret en skrivebordsgenvej på din enhed for at få direkte adgang til denne profil</translation>
 <translation id="8049122382261047457">Søg efter et hvilket som helst billede med Google Lens</translation>
 <translation id="8050038245906040378">Microsoft-signering af kommerciel kode</translation>

@@ -100,7 +100,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1100040363679327583">Sprawdź zadanie. Zapytaj Gemini</translation>
 <translation id="1100504063505580045">Aktualna ikona</translation>
 <translation id="1101267749138963680">Sprawdzam pod kątem bezpieczeństwa…</translation>
-<translation id="1102759278139578486">Nie udało się pobrać plików z adnotacjami głównego węzła. Spróbuj ponownie później.</translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Natychmiast utracisz dostęp do tej grupy kart i zostanie ona usunięta ze wszystkich Twoich urządzeń</translation>
 <translation id="1106270460549661906">Przestań udostępniać Gemini</translation>
@@ -653,7 +652,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1709916727352927457">Usuwanie klucza</translation>
 <translation id="1712143791363119140">W toku</translation>
 <translation id="1714265454085143857">Przypięte karty</translation>
-<translation id="1714326320203665217">Pliki z adnotacjami głównego węzła zostały pobrane</translation>
 <translation id="1716034099915639464">Czy chcesz usunąć dane i uprawnienia witryny <ph name="SITE_NAME" /> i zainstalowanej z niej aplikacji?</translation>
 <translation id="1718835860248848330">Ostatnia godzina</translation>
 <translation id="1720244237656138008">Impresjonizm</translation>
@@ -2948,7 +2946,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="4209251085232852247">Wyłączony</translation>
 <translation id="4210380525132844778">Przyczyna: na liście „<ph name="LIST_NAME" />” znaleziono regułę <ph name="RULE" />.</translation>
 <translation id="4210428686880035809">Otwórz link w widoku po lewej stronie</translation>
-<translation id="4211362364312260125">Identyfikowanie głównych punktów orientacyjnych na stronach internetowych na potrzeby technologii wspomagającej osoby z niepełnosprawnością</translation>
 <translation id="42126664696688958">Eksportuj</translation>
 <translation id="4213540068152645535">Problemy ze zmianą hasła</translation>
 <translation id="42137655013211669">Serwer zabronił dostępu do tego zasobu.</translation>
@@ -3680,7 +3677,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="5012016139642806466">Korzystaj z haseł i innych ustawień na wszystkich swoich urządzeniach</translation>
 <translation id="5012523644916800014">Zarządzaj hasłami i kluczami dostępu</translation>
 <translation id="5015344424288992913">Łączenie z proxy...</translation>
-<translation id="5017250179386090956">Pobieram pliki z adnotacjami głównego węzła</translation>
 <translation id="5017529052065664584">Ostatnie 15 minut</translation>
 <translation id="5018207570537526145">Otwórz stronę rozszerzeń</translation>
 <translation id="5020008942039547742">Wybierz inne okno</translation>
@@ -6164,7 +6160,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="7804072833593604762">Karta została zamknięta</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7805906048382884326">Zamknij wskazówkę</translation>
-<translation id="7806659658565827531">Dodaj adnotację do głównego węzła</translation>
 <translation id="7807711621188256451">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do kamery</translation>
 <translation id="7810202088502699111">Wyskakujące okienka na tej stronie zostały zablokowane.</translation>
 <translation id="7810951505946824824">Stworzenie przeglądarki Chrome było możliwe dzięki projektowi open source Chromium i innym <ph name="BEGIN_HIGHLIGHT" />programom o otwartym kodzie źródłowym<ph name="END_HIGHLIGHT" />.</translation>
@@ -6390,7 +6385,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8045752459073395242">Więcej informacji o korzystaniu z generatywnej AI w pracy</translation>
 <translation id="8045923671629973368">Wpisz identyfikator aplikacji lub URL sklepu internetowego</translation>
 <translation id="804786196054284061">Umowa licencyjna użytkownika</translation>
-<translation id="8048596485169033655">Pobieram pliki z adnotacjami głównego węzła… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Utwórz skrót na pulpicie swojego urządzenia, by mieć bezpośredni dostęp do tego profilu</translation>
 <translation id="8049122382261047457">Wyszukaj dowolny obraz za pomocą Obiektywu Google</translation>
 <translation id="8050038245906040378">Podpisywanie kodu handlowego firmy Microsoft</translation>

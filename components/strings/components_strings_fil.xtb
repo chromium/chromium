@@ -78,6 +78,7 @@
 <translation id="112840717907525620">OK ang cache ng patakaran</translation>
 <translation id="1131264053432022307">Larawang Kinopya Mo</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para lumabas sa full screen, mag-drag mula sa itaas at pindutin ang button na bumalik</translation>
+<translation id="1132789342529761192">Hindi inirerekomenda ang pag-upload</translation>
 <translation id="11370190534773372">Napunan ang mga detalye ng card</translation>
 <translation id="1138458427267715730">Makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site sa buong web</translation>
 <translation id="1142713751288681188">Uri ng papel</translation>
@@ -604,6 +605,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2025891858974379949">Hindi secure na content</translation>
 <translation id="2027465737841872819">Plastic</translation>
 <translation id="2027707238798802149">Hindi available ang card</translation>
+<translation id="2028329426302356196">Hindi inirerekomenda ang pag-download</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Suriin ang proxy at ang firewall<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Tumatakbo ang instance na ito ng Chrome nang may mga manual na itinakdang command line flag. Tandaang posibleng magbago ang mga command line flag anumang oras at hindi sinusuportahan ang mga ito.</translation>
 <translation id="2033900728810589426">Hindi puwedeng pareho ang shortcut at ang default na keyword ng provider ng paghahanap na tinukoy ng <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1457,6 +1459,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3443504041532578451">Optical Disc (Satin)</translation>
 <translation id="3447661539832366887">Na-off ng may-ari ng device na ito ang larong dinosaur.</translation>
 <translation id="3447884698081792621">Ipakita ang certificate (ibinigay ng <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Hindi inirerekomenda ang pag-print</translation>
 <translation id="3450323514459570273">Puwedeng humiling na kontrolin at i-reprogram ang iyong mga MIDI device</translation>
 <translation id="3452404311384756672">Kunin ang agwat:</translation>
 <translation id="345268527248907593">Hindi maabot site na ito</translation>
@@ -2918,6 +2921,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5851548754964597211">Listahan ng tab</translation>
 <translation id="5851868085455377790">Nagbigay</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Hindi inirerekomenda ang pagkopya</translation>
 <translation id="5860491529813859533">I-on</translation>
 <translation id="5862579898803147654">Stacker 8</translation>
 <translation id="5863515189965725638">I-edit ang IBAN</translation>

@@ -100,7 +100,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1100040363679327583">Vaadake ülesanne üle. Küsige Geminilt</translation>
 <translation id="1100504063505580045">Praegune ikoon</translation>
 <translation id="1101267749138963680">Ohutuse kontrollimine…</translation>
-<translation id="1102759278139578486">Põhisõlme märgistamise faile ei saa alla laadida. Proovige hiljem uuesti.</translation>
 <translation id="1103523840287552314">Tõlgi alati: <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Kaotate kohe juurdepääsu sellele vahelehegrupile ja see kustutatakse kõigist teie seadmetest</translation>
 <translation id="1106270460549661906">Jagamise tühistamine Geminiga</translation>
@@ -654,7 +653,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1709916727352927457">Pääsuvõtme kustutamine</translation>
 <translation id="1712143791363119140">Pooleli</translation>
 <translation id="1714265454085143857">Kinnitatud vahelehed</translation>
-<translation id="1714326320203665217">Põhisõlme märgistamise failid laaditi alla</translation>
 <translation id="1716034099915639464">Kas kustutada saidi <ph name="SITE_NAME" /> ning selle installitud rakenduse andmed ja load?</translation>
 <translation id="1718835860248848330">Viimane tund</translation>
 <translation id="1720244237656138008">Impressionism</translation>
@@ -2963,7 +2961,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4209251085232852247">Välja lülitatud</translation>
 <translation id="4210380525132844778">Põhjus: reegel <ph name="RULE" /> leiti loendist „<ph name="LIST_NAME" />“.</translation>
 <translation id="4210428686880035809">Lingi avamine vasakpoolses vaates</translation>
-<translation id="4211362364312260125">Peamise orientiiri tuvastamine abitehnoloogia veebilehtedel</translation>
 <translation id="42126664696688958">Eksportimine</translation>
 <translation id="4213540068152645535">Parooli muutmisel ilmnes probleem</translation>
 <translation id="42137655013211669">Server keelas juurdepääsu ressursile.</translation>
@@ -3696,7 +3693,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5012016139642806466">Pääsete oma paroolidele ja muule juurde kõigis oma seadmetes.</translation>
 <translation id="5012523644916800014">Paroolide ja pääsukoodide haldamine</translation>
 <translation id="5015344424288992913">Puhverserveri lahendamine...</translation>
-<translation id="5017250179386090956">Põhisõlme märgistamise failide allalaadimine</translation>
 <translation id="5017529052065664584">Viimased 15 minutit</translation>
 <translation id="5018207570537526145">Ava laienduse veebisait</translation>
 <translation id="5020008942039547742">Valige teine aken</translation>
@@ -6179,7 +6175,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="7804072833593604762">Vaheleht suleti</translation>
 <translation id="7805768142964895445">Olek</translation>
 <translation id="7805906048382884326">Sule nõuanne</translation>
-<translation id="7806659658565827531">Põhisõlme märgistamine</translation>
 <translation id="7807711621188256451">Luba saidil <ph name="HOST" /> alati kaamera juurde pääseda</translation>
 <translation id="7810202088502699111">Hüpikaknad blokeeriti sellel lehel.</translation>
 <translation id="7810951505946824824">Chrome'i aluseks on avatud lähtekoodiga projekt Chromium ja muu <ph name="BEGIN_HIGHLIGHT" />avatud lähtekoodiga<ph name="END_HIGHLIGHT" /> tarkvara.</translation>
@@ -6405,7 +6400,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8045752459073395242">Lisateave generatiivse AI kasutamise kohta tööl</translation>
 <translation id="8045923671629973368">Sisestage rakenduse ID või veebipoe URL</translation>
 <translation id="804786196054284061">Lõppkasutaja litsentsileping</translation>
-<translation id="8048596485169033655">Põhisõlme märgistamise failide allalaadimine … <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Looge oma seadmes töölaua otsetee, mille kaudu pääsete otse selle profiili juurde</translation>
 <translation id="8049122382261047457">Otsige Google Lensi abil mis tahes pilti</translation>
 <translation id="8050038245906040378">Microsofti äriline koodsigneerimine</translation>

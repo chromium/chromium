@@ -100,7 +100,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1100040363679327583">Revisa a tarefa. Pregúntalle a Gemini</translation>
 <translation id="1100504063505580045">Icona actual</translation>
 <translation id="1101267749138963680">Comprobando seguranza...</translation>
-<translation id="1102759278139578486">Non se puideron descargar os ficheiros de anotación do nó principal. Téntao de novo máis tarde.</translation>
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Perderás inmediatamente o acceso ao grupo de pestanas, que se eliminará de todos os teus dispositivos</translation>
 <translation id="1106270460549661906">Deixar de compartir o contido con Gemini</translation>
@@ -653,7 +652,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1709916727352927457">Eliminar a clave de acceso</translation>
 <translation id="1712143791363119140">En curso</translation>
 <translation id="1714265454085143857">Pestanas fixadas</translation>
-<translation id="1714326320203665217">Descargáronse os ficheiros de anotación do nó principal</translation>
 <translation id="1716034099915639464">Queres eliminar os datos do sitio e os permisos de <ph name="SITE_NAME" />, así como os da súa aplicación instalada?</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1720244237656138008">Impresionista</translation>
@@ -2962,7 +2960,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4209251085232852247">Estado: desactivado</translation>
 <translation id="4210380525132844778">Razón: atopouse <ph name="RULE" /> na lista "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Abrir ligazón na vista esquerda</translation>
-<translation id="4211362364312260125">Identifica o punto de referencia principal nas páxinas web para a tecnoloxía asistencial</translation>
 <translation id="42126664696688958">Exportar</translation>
 <translation id="4213540068152645535">Produciuse un erro ao cambiar o teu contrasinal</translation>
 <translation id="42137655013211669">O servidor non permitiu acceder a este recurso.</translation>
@@ -3696,7 +3693,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="5012016139642806466">Accede aos teus contrasinais e moito máis en todos os teus dispositivos</translation>
 <translation id="5012523644916800014">Xestionar contrasinais e claves de acceso</translation>
 <translation id="5015344424288992913">Resolvendo proxy...</translation>
-<translation id="5017250179386090956">Descargando ficheiros de anotación do nó principal</translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5018207570537526145">Abrir sitio web da extensión</translation>
 <translation id="5020008942039547742">Seleccionar ventá diferente</translation>
@@ -6179,7 +6175,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="7804072833593604762">Pestana pechada</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7805906048382884326">Pechar o consello</translation>
-<translation id="7806659658565827531">Anotar o nó principal</translation>
 <translation id="7807711621188256451">Permitir sempre a <ph name="HOST" /> acceder á túa cámara</translation>
 <translation id="7810202088502699111">Bloqueáronse as ventás emerxentes nesta páxina.</translation>
 <translation id="7810951505946824824">Chrome creouse grazas ao proxecto de código aberto Chromium e a outro software de <ph name="BEGIN_HIGHLIGHT" />código aberto<ph name="END_HIGHLIGHT" />.</translation>
@@ -6405,7 +6400,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8045752459073395242">Máis información sobre o uso da IA xenerativa no traballo</translation>
 <translation id="8045923671629973368">Introduce o código da aplicación ou o URL de almacenamento web.</translation>
 <translation id="804786196054284061">Contrato de licenza de usuario final</translation>
-<translation id="8048596485169033655">Descargando ficheiros de anotación do nó principal… <ph name="PERCENT" /> %</translation>
 <translation id="8048977114738515028">Crea un acceso directo do escritorio no dispositivo para acceder directamente a este perfil</translation>
 <translation id="8049122382261047457">Busca calquera imaxe con Google Lens</translation>
 <translation id="8050038245906040378">Sinatura de código comercial de Microsoft</translation>

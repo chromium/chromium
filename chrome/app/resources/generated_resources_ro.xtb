@@ -100,7 +100,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1100040363679327583">Examinează activitatea. Întreabă Gemini</translation>
 <translation id="1100504063505580045">Pictograma actuală</translation>
 <translation id="1101267749138963680">Se verifică siguranța...</translation>
-<translation id="1102759278139578486">Nu se pot descărca fișierele cu adnotări pentru nodurile principale. Încearcă din nou mai târziu.</translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Vei pierde imediat accesul la acest grup de file și el va fi șters de pe toate dispozitivele tale</translation>
 <translation id="1106270460549661906">Nu mai permite accesul Gemini</translation>
@@ -653,7 +652,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1709916727352927457">Șterge cheia de acces</translation>
 <translation id="1712143791363119140">În desfășurare</translation>
 <translation id="1714265454085143857">File fixate</translation>
-<translation id="1714326320203665217">S-au descărcat fișierele cu adnotări pentru nodurile principale</translation>
 <translation id="1716034099915639464">Ștergi datele privind site-ul și permisiunile pentru <ph name="SITE_NAME" /> și aplicația instalată?</translation>
 <translation id="1718835860248848330">Ultima oră</translation>
 <translation id="1720244237656138008">Impresionism</translation>
@@ -2958,7 +2956,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="4209251085232852247">Dezactivat</translation>
 <translation id="4210380525132844778">Motivul: <ph name="RULE" /> s-a găsit în lista <ph name="LIST_NAME" />.</translation>
 <translation id="4210428686880035809">Deschide linkul în afișarea din stânga</translation>
-<translation id="4211362364312260125">Identifică reperul principal în paginile web pentru tehnologia de asistare</translation>
 <translation id="42126664696688958">Exportă</translation>
 <translation id="4213540068152645535">Probleme la schimbarea parolei</translation>
 <translation id="42137655013211669">Accesul la această resursă a fost interzis de server.</translation>
@@ -3690,7 +3687,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="5012016139642806466">Accesează-ți parolele și alte date pe toate dispozitivele tale</translation>
 <translation id="5012523644916800014">Gestionează parolele și cheile de acces</translation>
 <translation id="5015344424288992913">Se rezolvă proxy-ul...</translation>
-<translation id="5017250179386090956">Se descarcă fișierele cu adnotări pentru nodurile principale</translation>
 <translation id="5017529052065664584">Ultimele 15 minute</translation>
 <translation id="5018207570537526145">Deschide site-ul extensiei</translation>
 <translation id="5020008942039547742">Alege altă fereastră</translation>
@@ -6174,7 +6170,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="7804072833593604762">Fila a fost închisă</translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7805906048382884326">Închide sfatul</translation>
-<translation id="7806659658565827531">Adnotează nodul principal</translation>
 <translation id="7807711621188256451">Permiteți întotdeauna accesul <ph name="HOST" /> la camera dvs.</translation>
 <translation id="7810202088502699111">Ferestrele pop-up au fost blocate pe această pagină.</translation>
 <translation id="7810951505946824824">Chrome există ca urmare a proiectului open source Chromium și al altor software-uri <ph name="BEGIN_HIGHLIGHT" />open source<ph name="END_HIGHLIGHT" />.</translation>
@@ -6400,7 +6395,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8045752459073395242">Află mai multe despre folosirea AI-ului generativ la locul de muncă</translation>
 <translation id="8045923671629973368">Introdu ID-ul aplicației sau adresa URL din magazinul web</translation>
 <translation id="804786196054284061">Acord de licență pentru utilizatorul final</translation>
-<translation id="8048596485169033655">Se descarcă fișierele cu adnotări pentru nodurile principale… <ph name="PERCENT" /> %</translation>
 <translation id="8048977114738515028">Creează o comandă rapidă pe desktop pe dispozitiv ca să accesezi direct profilul</translation>
 <translation id="8049122382261047457">Caută orice imagine cu Google Lens</translation>
 <translation id="8050038245906040378">Semnare comercială a codului Microsoft</translation>

@@ -70,6 +70,7 @@
 <translation id="1792680680989393197">మీరు వాటిని ఎప్పుడైనా తీసివేయవచ్చు. ఏదైనా సైట్ లేదా ఫీచర్‌కు అవసరమైనప్పుడు Chromium వాటిని ఆటోమేటిక్‌గా మళ్లీ డౌన్‌లోడ్ చేయవచ్చు.</translation>
 <translation id="1793486931176048546">Chromiumను మీ టాస్క్‌బార్‌కు పిన్ చేసి, దాన్ని ఫాస్ట్‌గా యాక్సెస్ చేసేందుకు, Windows నోటిఫికేషన్‌లో <ph name="BEGIN_BOLD" />Yes<ph name="END_BOLD" />ను క్లిక్ చేయండి</translation>
 <translation id="1808667845054772817">Chromiumను మళ్లీ ఇన్‌స్టాల్ చేయి</translation>
+<translation id="1814482312667514397">మీ ఫోన్‌లోని Chromium యాప్‌తో, ప్రయాణంలోనూ Chromium అత్యుత్తమ సేఫ్టీ ఫీచర్‌లను పొందండి</translation>
 <translation id="1820835682567584003"><ph name="AUTHENTICATION_PURPOSE" /> కోసం Chromium ట్రై చేస్తోంది</translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> ఇప్పటికే సైన్ ఇన్ అయి ఉన్నారు. మీ బ్రౌజింగ్ వివరాలను విడిగా ఉంచడానికి, <ph name="USER_EMAIL_ADDRESS" />గా మీ స్వంత ప్రొఫైల్‌తో Chromiumకి సైన్ ఇన్ చేయండి. మీరు <ph name="DEVICE" /> నుండి మీ ఎక్స్‌టెన్షన్‌లను, అలాగే మరిన్ని వివరాలను కూడా పొందుతారు.</translation>
 <translation id="183031085822326697">మీరు నెక్స్ట్ టైమ్ మీ <ph name="DEVICE_TYPE" />‌లో Chromiumను తెరిచినప్పుడు, Google Password Managerను ట్రై చేయమని మీకొక ప్రాంప్ట్ కనిపిస్తుంది.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{ఒకటి లేదా అంతకంటే ఎక్కువ Chromium ఎక్స్‌టెన్షన్‌లు 1 HID డివైజ్‌ను యాక్సెస్ చేస్తున్నాయి}=1{1 HID డివైజ్ ఒకటి లేదా అంతకంటే ఎక్కువ Chromium ఎక్స్‌టెన్షన్‌ల ద్వారా యాక్సెస్ చేయబడుతోంది}other{ఒకటి లేదా అంతకంటే ఎక్కువ Chromium ఎక్స్‌టెన్షన్‌లు # HID డివైజ్‌లను యాక్సెస్ చేస్తున్నాయి}}</translation>
 <translation id="2401032172288869980">ఈ సైట్ కోసం Chromiumకు కెమెరా, ఇంకా మైక్రోఫోన్ అనుమతులు అవసరం</translation>
 <translation id="2403703063067034158">స్టార్టప్ ఎర్రర్: ప్రస్తుతం వేరొక సెటప్ రన్ అవుతోంది, దయచేసి తర్వాత మళ్లీ ట్రై చేయండి.</translation>
+<translation id="241044568699443215">మీ <ph name="DEVICE_TYPE" />‌లోని Chromium యాప్‌తో, Chromium సేఫ్టీని ఎక్కడికైనా మీతో పాటు తీసుకెళ్లండి</translation>
 <translation id="2418322681019544463">ఏదైనా యాప్ నుండి Chromiumలో లింక్‌లను తెరవండి, మీ టాస్క్‌బార్‌లో బ్రౌజర్‌ను యాక్సెస్ చేయండి</translation>
 <translation id="2425157128016763890">త్వరగా ఓవర్‌వ్యూ పొందడానికి, ఫాలో-అప్ ప్రశ్నలు అడగడానికి ఈ డాక్యుమెంట్‌ను Chromiumలోని Geminiకి షేర్ చేసేందుకు 'సారాంశం' బటన్‌ను క్లిక్ చేయండి</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium నుండి టూల్స్‌<ph name="END_LINK" />‌తో, మీరు సురక్షితంగా బ్రౌజ్ చేయవచ్చు, కంట్రోల్‌లో ఉండవచ్చు</translation>
@@ -747,6 +749,7 @@
 <translation id="8907580949721785412">Chromium పాస్‌వర్డ్‌లను చూపడానికి ప్రయత్నిస్తోంది. దీన్ని అనుమతించడానికి మీ Windows పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>
 <translation id="8910309838319708610">విజయవంతమైంది! ఇకపై మీరు Search AI మోడ్‌తో బ్రౌజ్ చేస్తున్నప్పుడే సులభంగా ప్రశ్నలు అడగవచ్చు</translation>
 <translation id="8932992523185907506">Chromium ఇకపై మీ ఆటోమేటిక్ బ్రౌజర్‌గా ఉండదు. Chromiumను ఆటోమేటిక్ బ్రౌజర్‌గా చేయాలా?</translation>
+<translation id="8940844567350264767">Chromiumతో, ప్రయాణంలోనూ Chromium అత్యుత్తమ సేఫ్టీ ఫీచర్‌లను పొందండి</translation>
 <translation id="8941642502866065432">Chromiumని అప్‌డేట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="8944232836376404813">ఈ చర్య కారణంగా:
           <ph name="LINE_BREAKS" />

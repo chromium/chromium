@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">কাৰ্য পৰ্যালোচনা কৰক। Geminiক সোধক</translation>
 <translation id="1100504063505580045">বৰ্তমানৰ চিহ্ন</translation>
 <translation id="1101267749138963680">সুৰক্ষা পৰীক্ষা কৰি থকা হৈছে...</translation>
-<translation id="1102759278139578486">মুখ্য ন’ড এন’টেশ্বন ফাইল ডাউনল’ড কৰিব নোৱাৰি। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> সদাই অনুবাদ কৰক</translation>
 <translation id="1104098698795583187">আপুনি তাৎক্ষণিকভাৱে এই টেবৰ গোটটোৰ এক্সেছ হেৰুৱাব আৰু এইটো আপোনাৰ আটাইবোৰ ডিভাইচৰ পৰা মচা হ’ব</translation>
 <translation id="1106270460549661906">Geminiৰ জৰিয়তে আনশ্বেয়াৰ কৰক</translation>
@@ -662,7 +661,6 @@
 <translation id="1709916727352927457">পাছকী মচক</translation>
 <translation id="1712143791363119140">চলি আছে</translation>
 <translation id="1714265454085143857">পিন কৰি থোৱা টেব</translation>
-<translation id="1714326320203665217">মুখ্য ন’ড এন’টেশ্বন ফাইলসমূহ ডাউনল’ড কৰা হৈছে</translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> আৰু ইয়াত ইনষ্টল কৰি থোৱা এপৰ বাবে ছাইটৰ ডেটা আৰু অনুমতিসমূহ মচিবনে?</translation>
 <translation id="1718835860248848330">যোৱা ১ ঘণ্টাৰ</translation>
 <translation id="1720244237656138008">ইম্প্ৰেশ্বনিজম</translation>
@@ -2971,7 +2969,6 @@
 <translation id="4209251085232852247">অফ কৰা হ’ল</translation>
 <translation id="4210380525132844778">কাৰণ: <ph name="RULE" />ক "<ph name="LIST_NAME" />" সূচীত পোৱা গৈছে।</translation>
 <translation id="4210428686880035809">বাওঁফালৰ ভিউত লিংক খোলক</translation>
-<translation id="4211362364312260125">সহায়ক প্ৰযুক্তিৰ বাবে ৱেব পৃষ্ঠাত মুখ্য লেণ্ডমাৰ্ক চিনাক্ত কৰা</translation>
 <translation id="42126664696688958">ৰপ্তানি কৰক</translation>
 <translation id="4213540068152645535">আপোনাৰ পাছৱৰ্ডটো সলনি কৰাত সমস্যা হৈছে</translation>
 <translation id="42137655013211669">ছাৰ্ভাৰে এই সম্পদটোলৈ এক্সেছ নিষিদ্ধ কৰিছে।</translation>
@@ -3704,7 +3701,6 @@
 <translation id="5012016139642806466">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ পাছৱৰ্ড আৰু আন বহুতো লাভ কৰক</translation>
 <translation id="5012523644916800014">পাছৱৰ্ড আৰু পাছকী পৰিচালনা কৰক</translation>
 <translation id="5015344424288992913">প্ৰক্সিৰ সমাধান কৰি থকা হৈছে...</translation>
-<translation id="5017250179386090956">মুখ্য ন’ড এন’টেশ্বন ফাইলসমূহ ডাউনল’ড কৰি থকা হৈছে</translation>
 <translation id="5017529052065664584">যোৱা ১৫ মিনিটৰ</translation>
 <translation id="5018207570537526145">এক্সটেনশ্বনৰ ৱেবছাইটটো খোলক</translation>
 <translation id="5020008942039547742">অন্য এখন ৱিণ্ড’ বাছনি কৰক</translation>
@@ -6188,7 +6184,6 @@
 <translation id="7804072833593604762">টেবটো বন্ধ কৰা হ'ল</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7805906048382884326">কিটিপ বন্ধ কৰক</translation>
-<translation id="7806659658565827531">মুখ্য ন’ড এন’টেট কৰক</translation>
 <translation id="7807711621188256451"><ph name="HOST" />ক সদায় আপোনাৰ কেমেৰালৈ এক্সেছ দিয়ক</translation>
 <translation id="7810202088502699111">এই পৃষ্ঠাটোট পপ্-আপ অৱৰোধ কৰা হৈছে।</translation>
 <translation id="7810951505946824824">Chromiumৰ মুক্ত উৎসৰ প্ৰ’জেক্ট আৰু অন্য <ph name="BEGIN_HIGHLIGHT" />মুক্ত উৎস<ph name="END_HIGHLIGHT" />ৰ ছফ্টৱেৰে Chromeক ব্যৱহাৰযোগ্য কৰি তুলিছে।</translation>
@@ -6414,7 +6409,6 @@
 <translation id="8045752459073395242">কৰ্মস্থানত Generative AI ব্যৱহাৰ কৰাৰ বিষয়ে অধিক জানক</translation>
 <translation id="8045923671629973368">এপ্লিকেশ্বন আইডি বা ৱেবষ্ট’ৰৰ URL দিয়ক</translation>
 <translation id="804786196054284061">অন্তিম ব্যৱহাৰকাৰীৰ অনুজ্ঞাপত্ৰৰ চুক্তি</translation>
-<translation id="8048596485169033655">মুখ্য ন’ড এন’টেশ্বন ফাইলসমূহ ডাউনল’ড কৰি থকা হৈছে… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">এই প্ৰ’ফাইলটোৰ পোনপটীয়াকৈ এক্সেছ পাবলৈ আপোনাৰ ডিভাইচত এটা ডেস্কটপ শ্বৰ্টকাট সৃষ্টি কৰক</translation>
 <translation id="8049122382261047457">Google Lensৰ জৰিয়তে যিকোনো প্ৰতিচ্ছবি সন্ধান কৰক</translation>
 <translation id="8050038245906040378">Microsoft কমাৰ্চিয়েল ক’ড ছাইনিং</translation>

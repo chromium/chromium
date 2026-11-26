@@ -100,7 +100,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1100040363679327583">Peržiūrėkite užduotį. Paklausti „Gemini“</translation>
 <translation id="1100504063505580045">Dabartinė piktograma</translation>
 <translation id="1101267749138963680">Tikrinama, ar saugu...</translation>
-<translation id="1102759278139578486">Nepavyko atsisiųsti pagrindinio mazgo anotacijų failų. Bandykite dar kartą vėliau.</translation>
 <translation id="1103523840287552314">Visada versti <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Iš karto neteksite prieigos prie skirtukų grupės, o ji bus ištrinta iš visų jūsų įrenginių</translation>
 <translation id="1106270460549661906">Bendrinimo panaikinimas naudojant „Gemini“</translation>
@@ -662,7 +661,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1709916727352927457">Ištrinti „passkey“</translation>
 <translation id="1712143791363119140">Vykdoma</translation>
 <translation id="1714265454085143857">Prisegti skirtukai</translation>
-<translation id="1714326320203665217">Pagrindinio mazgo anotacijų failai atsisiųsti</translation>
 <translation id="1716034099915639464">Ištrinti svetainės <ph name="SITE_NAME" /> ir įdiegtos programos duomenis bei leidimus?</translation>
 <translation id="1718835860248848330">Paskutinė valanda</translation>
 <translation id="1720244237656138008">Impresionizmas</translation>
@@ -2975,7 +2973,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4209251085232852247">Išjungta</translation>
 <translation id="4210380525132844778">Priežastis: taisyklė „<ph name="RULE" />“ rasta sąraše „<ph name="LIST_NAME" />“.</translation>
 <translation id="4210428686880035809">Nuorodos atidarymas kairiajame rodinyje</translation>
-<translation id="4211362364312260125">Nurodykite pagrindinį pagalbinių technologijų tinklalapių orientyrą</translation>
 <translation id="42126664696688958">Eksportuoti</translation>
 <translation id="4213540068152645535">Problemos keičiant slaptažodį</translation>
 <translation id="42137655013211669">Prieigą prie šio ištekliaus uždraudė serveris.</translation>
@@ -3709,7 +3706,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5012016139642806466">Gaukite slaptažodžius ir kitus duomenis visuose įrenginiuose</translation>
 <translation id="5012523644916800014">Tvarkyti slaptažodžius ir „passkey“</translation>
 <translation id="5015344424288992913">Ieškoma proxy...</translation>
-<translation id="5017250179386090956">Atsisiunčiami pagrindinio mazgo anotacijų failai</translation>
 <translation id="5017529052065664584">Pastarosios penkiolika minučių</translation>
 <translation id="5018207570537526145">Atidaryti plėtinio svetainę</translation>
 <translation id="5020008942039547742">Pasirinkti kitą langą</translation>
@@ -6203,7 +6199,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="7804072833593604762">Skirtukas uždarytas</translation>
 <translation id="7805768142964895445">Būsena</translation>
 <translation id="7805906048382884326">Uždaryti patarimą</translation>
-<translation id="7806659658565827531">Komentuoti pagrindinį mazgą</translation>
 <translation id="7807711621188256451">Visada leisti <ph name="HOST" /> pasiekti fotoaparatą</translation>
 <translation id="7810202088502699111">Šiame puslapyje iššokantieji langai buvo užblokuoti.</translation>
 <translation id="7810951505946824824">„Chrome“ pasiekiama naudojant „Chromium“ atvirojo šaltinio projektą ir kitą <ph name="BEGIN_HIGHLIGHT" />atvirojo šaltinio<ph name="END_HIGHLIGHT" /> programinę įrangą.</translation>
@@ -6429,7 +6424,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8045752459073395242">Sužinokite daugiau apie generatyvinio DI naudojimą darbe</translation>
 <translation id="8045923671629973368">Įveskite programos ID arba žiniatinklio parduotuvės URL</translation>
 <translation id="804786196054284061">Galutinio naudotojo licencijos sutartis</translation>
-<translation id="8048596485169033655">Atsisiunčiami pagrindinio mazgo anotacijų failai… <ph name="PERCENT" /> proc.</translation>
 <translation id="8048977114738515028">Sukurkite darbalaukio spartųjį klavišą savo įrenginyje, kad iš karto pasiektumėte šį profilį</translation>
 <translation id="8049122382261047457">Bet kokio vaizdo paieška naudojant „Google Lens“</translation>
 <translation id="8050038245906040378">„Microsoft“ komercinio kodo pasirašymas</translation>

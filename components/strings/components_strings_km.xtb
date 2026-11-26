@@ -78,6 +78,7 @@
 <translation id="112840717907525620">ស្ថានភាពឃ្លាំងសម្ងាត់គោលការណ៍មានភាពប្រក្រតី</translation>
 <translation id="1131264053432022307">រូបភាព​ដែលអ្នកបានចម្លង</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ដើម្បី​ចាកចេញពី​អេក្រង់ពេញ សូមអូស​ពីខាងលើ ហើយចុច​ប៊ូតុង​ថយក្រោយ</translation>
+<translation id="1132789342529761192">មិនណែនាំ​ឱ្យបង្ហោះទេ</translation>
 <translation id="11370190534773372">បានបំពេញព័ត៌មានលម្អិតកាត</translation>
 <translation id="1138458427267715730">ទទួលបានការជូនដំណឹង នៅពេលដែលតម្លៃធ្លាក់ចុះនៅលើគេហទំព័រណាមួយលើបណ្ដាញ</translation>
 <translation id="1142713751288681188">ប្រភេទក្រដាស</translation>
@@ -606,6 +607,7 @@
 <translation id="2025891858974379949">ខ្លឹមសារ​ដែលគ្មាន​សុវត្ថិភាព</translation>
 <translation id="2027465737841872819">ប្លាស្ទិក</translation>
 <translation id="2027707238798802149">មិនអាចប្រើ​កាត​បានទេ</translation>
+<translation id="2028329426302356196">មិនណែនាំឱ្យទាញយកទេ</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />សូមពិនិត្យប្រូកស៊ី និង firewall<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">វគ្គ Chrome នេះ​កំពុង​ដំណើរការ​ដោយប្រើ​ទង់​ឃ្លាបញ្ជា​ដែលបាន​កំណត់​ដោយផ្ទាល់ដៃ។ សូមចំណាំថា ទង់ឃ្លាបញ្ជាអាចផ្លាស់ប្ដូរនៅពេលណាក៏បាន និងមិនអាចប្រើបានទេ។</translation>
 <translation id="2033900728810589426">ផ្លូវកាត់មិនអាចដូចគ្នានឹងពាក្យគន្លឹះ​ក្រុមហ៊ុនផ្ដល់សេវា​ស្វែងរក​លំនាំដើមដែលកំណត់ដោយ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />៖ <ph name="SHORTCUT_NAME" /></translation>
@@ -1460,6 +1462,7 @@
 <translation id="3443504041532578451">ឌីសអុបទិក (សាទីន)</translation>
 <translation id="3447661539832366887">ម្ចាស់ឧបករណ៍នេះបានបិទហ្គេមដាយណូស័រ។</translation>
 <translation id="3447884698081792621">បង្ហាញវិញ្ញាបនបត្រ (ចេញដោយ <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">មិនណែនាំឱ្យបោះពុម្ពទេ</translation>
 <translation id="3450323514459570273">អាចស្នើសុំ​គ្រប់គ្រង និង​សរសេរកម្មវិធី​ឧបករណ៍ MIDI របស់អ្នក​ឡើងវិញ</translation>
 <translation id="3452404311384756672">ចន្លោះពេលយកត្រលប់វិញ៖</translation>
 <translation id="345268527248907593">មិនអាច​ភ្ជាប់ទៅ​គេហទំព័រ​នេះបានទេ</translation>
@@ -2922,6 +2925,7 @@
 <translation id="5851548754964597211">បញ្ជីផ្ទាំង</translation>
 <translation id="5851868085455377790">អ្នកចេញផ្សាយ</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">មិនណែនាំឱ្យចម្លងទេ</translation>
 <translation id="5860491529813859533">បើក</translation>
 <translation id="5862579898803147654">ទម្រគំនរ​ទី 8</translation>
 <translation id="5863515189965725638">កែ IBAN</translation>

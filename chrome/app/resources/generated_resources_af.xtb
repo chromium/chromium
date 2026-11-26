@@ -100,7 +100,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1100040363679327583">Gaan taak na. Vra Gemini</translation>
 <translation id="1100504063505580045">Huidige ikoon</translation>
 <translation id="1101267749138963680">Kontroleer tans vir veiligheid …</translation>
-<translation id="1102759278139578486">Kan nie die hoofnodus se annotasielêers aflaai nie. Probeer later weer.</translation>
 <translation id="1103523840287552314">Vertaal <ph name="LANGUAGE" /> altyd</translation>
 <translation id="1104098698795583187">Jy sal onmiddellik toegang tot die hierdie oortjiegroep verloor, en dit sal van al jou toestelle af uitgevee word</translation>
 <translation id="1106270460549661906">Ontdeel met Gemini</translation>
@@ -662,7 +661,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1709916727352927457">Vee toegangsleutel uit</translation>
 <translation id="1712143791363119140">Tans besig</translation>
 <translation id="1714265454085143857">Vasgespelde oortjies</translation>
-<translation id="1714326320203665217">Die hoofnodus se annotasielêers is afgelaai</translation>
 <translation id="1716034099915639464">Vee werfdata en toestemmings vir <ph name="SITE_NAME" /> en sy geïnstalleerde app uit?</translation>
 <translation id="1718835860248848330">Afgelope uur</translation>
 <translation id="1720244237656138008">Impressionisme</translation>
@@ -2972,7 +2970,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="4209251085232852247">Afgeskakel</translation>
 <translation id="4210380525132844778">Rede: <ph name="RULE" /> is op die "<ph name="LIST_NAME" />"-lys gevind.</translation>
 <translation id="4210428686880035809">Maak skakel in linkeraansig oop</translation>
-<translation id="4211362364312260125">Identifiseer die hoofbaken in webbladsye vir ondersteunende tegnologie</translation>
 <translation id="42126664696688958">Voer uit</translation>
 <translation id="4213540068152645535">Probleem met die verandering van jou wagwoord</translation>
 <translation id="42137655013211669">Toegang tot hierdie hulpbron is deur die bediener verbied.</translation>
@@ -3705,7 +3702,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="5012016139642806466">Kry jou wagwoorde en meer op al jou toestelle</translation>
 <translation id="5012523644916800014">Bestuur wagwoorde en toegangsleutels</translation>
 <translation id="5015344424288992913">Besluit tans oor instaanbediener …</translation>
-<translation id="5017250179386090956">Laai tans die hoofnodus se annotasielêers af</translation>
 <translation id="5017529052065664584">Afgelope 15 minute</translation>
 <translation id="5018207570537526145">Maak uitbreidingwebwerf oop</translation>
 <translation id="5020008942039547742">Kies ’n ander venster</translation>
@@ -6188,7 +6184,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="7804072833593604762">Oortjie is toegemaak</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Maak wenk toe</translation>
-<translation id="7806659658565827531">Annoteer hoofnodus</translation>
 <translation id="7807711621188256451">Laat <ph name="HOST" /> altyd toe om by jou kamera in te gaan</translation>
 <translation id="7810202088502699111">Opspringers is op hierdie bladsy geblokkeer.</translation>
 <translation id="7810951505946824824">Chrome word moontlik gemaak deur die Chromium-oopbronprojek en ander <ph name="BEGIN_HIGHLIGHT" />oopbronsagteware<ph name="END_HIGHLIGHT" />.</translation>
@@ -6414,7 +6409,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8045752459073395242">Kry meer inligting oor die gebruik van generatiewe KI by die werk</translation>
 <translation id="8045923671629973368">Voer app-ID of webwinkel-URL in</translation>
 <translation id="804786196054284061">Lisensie-ooreenkoms vir eindgebruikers</translation>
-<translation id="8048596485169033655">Laai tans die hoofnodus se annotasielêers af … <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Skep 'n werkskermkortpad op jou toestel om direk na hierdie profiel toe te gaan</translation>
 <translation id="8049122382261047457">Soek enige prent met Google Lens</translation>
 <translation id="8050038245906040378">Microsoft se kommersiële kode-ondertekening</translation>

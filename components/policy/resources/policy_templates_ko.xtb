@@ -954,6 +954,11 @@ URL은 http://example.com 또는 https://example.com과 같은 표준 스킴이�
       이 정책이 False로 설정되어 있으면 사용자가 자체 프린터를 추가하고 구성할 수 없으며 이전에 구성된 기본 프린터로 인쇄할 수도 없게 됩니다.
       </translation>
 <translation id="1613327425322354195">기기 보안 상태 보고</translation>
+<translation id="1613552398317518165">이 정책은 지원이 중단되며 아무런 영향을 미치지 않습니다. 기본 검색 요청은 항상 GET 메서드를 사용하여 전송되므로 이 정책에 지정된 매개변수는 적용되지 않습니다. 대신 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" />를 사용하여 <ph name="SEARCH_TERM_MARKER" /> 플레이스홀더를 포함한 검색 URL을 구성하세요.
+
+POST 매개변수는 <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />를 통한 이미지 검색에만 지원됩니다.
+
+이전에는 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />가 설정된 경우, <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> 설정을 통해 POST 방식으로 URL을 검색할 때 사용할 매개변수를 쉼표로 구분된 이름-값 쌍으로 지정할 수 있었습니다.</translation>
 <translation id="1615221548356595305">클라이언트 인증서가 사용되는 경우에도 이러한 호스트에 HTTP/2 연결 병합 허용</translation>
 <translation id="1616280227447957376">특정 출처의 SSL 경고 페이지 클릭 연결 허용</translation>
 <translation id="1617235075406854669">브라우저 및 다운로드 기록을 삭제하도록 설정합니다.</translation>
@@ -6097,6 +6102,11 @@ URL 패턴이 <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />와 충돌하는 경�
 <translation id="4725801978265372736">로컬 사용자의 이름과 원격 액세스 호스트 소유자가 일치해야 함</translation>
 <translation id="4726228171190098009">기기에서 파워워시를 요청하도록 허용 안함</translation>
 <translation id="4726895359147376813">영구 ID에서 VM 구성에 매핑합니다.</translation>
+<translation id="473189306848333308">이 정책은 지원이 중단되며 아무런 영향을 미치지 않습니다. 추천 요청은 항상 GET 메서드를 사용하여 전송되므로 이 정책에 지정된 매개변수는 적용되지 않습니다. 대신 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" />를 사용하여 <ph name="SEARCH_TERM_MARKER" /> 플레이스홀더를 포함한 추천 URL을 구성하세요.
+
+POST 매개변수는 <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />를 통한 이미지 검색에만 지원됩니다.
+
+이전에는 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />가 사용 설정된 경우, <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> 설정을 통해 POST 방식으로 추천 검색어를 검색할 때 사용할 매개변수를 쉼표로 구분된 이름-값 쌍으로 지정할 수 있었습니다.</translation>
 <translation id="4732069502693984686">여러 화면에 대한 자동 화면 캡처 사용 설정</translation>
 <translation id="4733471537137819387">통합 HTTP 인증과 관련된 정책입니다.</translation>
 <translation id="4737832614429402441">TLS의 포스트 퀀텀 키 계약에 기본값 사용</translation>
@@ -8306,6 +8316,15 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
 <translation id="6075316301208933536"><ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />를 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />으로 설정하고 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />을 설정하면 배터리 충전 백분율을 기준으로 배터리 충전 중단 시기가 맞춤설정됩니다. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />은 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />보다 최소 5퍼센트 포인트 낮아야 합니다.
 
       정책을 설정하지 않으면 <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> 배터리 충전 모드가 적용됩니다.</translation>
+<translation id="6077759101739558312">정책을 사용으로 설정하면 세이프 브라우징에서 내가 지정한 도메인을 신뢰합니다. 지정한 도메인에서는 세이프 브라우징이 위험한 리소스(예: 피싱, 멀웨어, 원치 않는 소프트웨어) 여부를 확인하지 않습니다. 세이프 브라우징의 다운로드 보호 서비스(iOS에서는 지원되지 않음)는 해당 도메인에 호스팅된 다운로드 항목을 확인하지 않습니다. 비밀번호 보호 서비스는 비밀번호 재사용 여부를 확인하지 않습니다.
+
+정책을 설정하지 않으면 기본 세이프 브라우징 보호 기능이 모든 리소스에 적용됩니다.
+
+이 정책은 정규 표현식을 지원하지 않지만, 특정 도메인의 하위 도메인은 허용 목록에 추가되어 있습니다. 정규화된 도메인 이름(FQDN)은 필수 항목이 아닙니다.
+
+<ph name="MS_WIN_NAME" />의 경우 이 정책은 <ph name="MS_AD_NAME" /> 도메인에 연결되거나, <ph name="MS_AAD_NAME" />에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.
+
+<ph name="MAC_OS_NAME" />의 경우 이 정책은 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.</translation>
 <translation id="6082161804984853051">정책을 설정하면 <ph name="PRODUCT_NAME" />에서 사용자가 --disk-cache-dir 플래그를 지정한 여부와 관계없이 디스크에 캐시된 파일을 저장하는 데 제공된 디렉터리를 사용합니다.
 
       설정되지 않으면 <ph name="PRODUCT_NAME" />에서 기본 캐시 디렉터리를 사용하지만 사용자는 --disk-cache-dir 명령줄 플래그를 사용하여 해당 설정을 변경할 수 있습니다.

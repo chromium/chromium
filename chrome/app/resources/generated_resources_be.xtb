@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">Праверыць задачу. Спытаць Gemini</translation>
 <translation id="1100504063505580045">Бягучы значок</translation>
 <translation id="1101267749138963680">Ідзе праверка бяспекі…</translation>
-<translation id="1102759278139578486">Не ўдаецца спампаваць файлы з анатацыямі галоўнага вузла. Паўтарыце спробу пазней.</translation>
 <translation id="1103523840287552314">Заўсёды перакладаць з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Вы адразу страціце доступ да гэтай групы ўкладак, і яна будзе выдалена з усіх вашых прылад</translation>
 <translation id="1106270460549661906">Спыніць абагульванне з Gemini</translation>
@@ -653,7 +652,6 @@
 <translation id="1709916727352927457">Выдаленне ключа доступу</translation>
 <translation id="1712143791363119140">Ідзе</translation>
 <translation id="1714265454085143857">Замацаваныя ўкладкі</translation>
-<translation id="1714326320203665217">Файлы з анатацыямі галоўнага вузла спампаваны</translation>
 <translation id="1716034099915639464">Выдаліць дазволы і даныя сайта <ph name="SITE_NAME" /> і яго ўсталяваную праграму?</translation>
 <translation id="1718835860248848330">За апошнюю гадзіну</translation>
 <translation id="1720244237656138008">Імпрэсіянізм</translation>
@@ -2958,7 +2956,6 @@
 <translation id="4209251085232852247">Выключана</translation>
 <translation id="4210380525132844778">Прычына: у спісе "<ph name="LIST_NAME" />" знойдзена правіла <ph name="RULE" />.</translation>
 <translation id="4210428686880035809">Адкрыць спасылку ў левым акне</translation>
-<translation id="4211362364312260125">Вызначаць галоўны арыенцір на вэб-старонках для тэхналогіі спецыяльных магчымасцей</translation>
 <translation id="42126664696688958">Экспартаваць</translation>
 <translation id="4213540068152645535">Не ўдаецца змяніць пароль</translation>
 <translation id="42137655013211669">Доступ да рэсурсу быў забаронены серверам.</translation>
@@ -3691,7 +3688,6 @@
 <translation id="5012016139642806466">Выкарыстоўвайце свае паролі і іншыя даныя на ўсіх сваіх прыладах</translation>
 <translation id="5012523644916800014">Кіраваць паролямі і ключамі доступу</translation>
 <translation id="5015344424288992913">Вызначэнне проксі-сервера...</translation>
-<translation id="5017250179386090956">Спампоўваюцца файлы з анатацыямі галоўнага вузла</translation>
 <translation id="5017529052065664584">За апошнія 15 хвілін</translation>
 <translation id="5018207570537526145">Адкрыць вэб-сайт пашырэння</translation>
 <translation id="5020008942039547742">Выбраць іншае акно</translation>
@@ -6178,7 +6174,6 @@
 <translation id="7804072833593604762">Укладка закрыта</translation>
 <translation id="7805768142964895445">Стан</translation>
 <translation id="7805906048382884326">Закрыць параду</translation>
-<translation id="7806659658565827531">Анатаваць галоўны вузел</translation>
 <translation id="7807711621188256451">Заўсёды даваць хосту <ph name="HOST" /> доступ да камеры</translation>
 <translation id="7810202088502699111">Усплывальныя вокны на гэтай старонцы заблакіраваны.</translation>
 <translation id="7810951505946824824">Chrome працуе дзякуючы праекту Chromium з адкрытым зыходным кодам і іншаму ПЗ <ph name="BEGIN_HIGHLIGHT" />з адкрытым зыходным кодам<ph name="END_HIGHLIGHT" />.</translation>
@@ -6404,7 +6399,6 @@
 <translation id="8045752459073395242">Даведацца больш пра выкарыстанне генератыўнага штучнага інтэлекту на працы</translation>
 <translation id="8045923671629973368">Увядзіце ідэнтыфікатар праграмы ці URL-адрас вэб-крамы</translation>
 <translation id="804786196054284061">Ліцэнзійнае пагадненне канцавога карыстальніка</translation>
-<translation id="8048596485169033655">Спампоўваюцца файлы з анатацыямі галоўнага вузла… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Стварыце ярлык на працоўным стале прылады, каб мець прамы доступ да гэтага профілю</translation>
 <translation id="8049122382261047457">Шукайце відарысы з дапамогай Google Аб’ектыва</translation>
 <translation id="8050038245906040378">Камерцыйнае падпісванне кода ў Microsoft</translation>

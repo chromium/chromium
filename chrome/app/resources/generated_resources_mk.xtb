@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">Прегледајте ја задачата. Прашајте го Gemini</translation>
 <translation id="1100504063505580045">Моментална икона</translation>
 <translation id="1101267749138963680">Се проверува дали е безбедно…</translation>
-<translation id="1102759278139578486">Не може да се преземат датотеки со прибелешки за главниот нод. Обидете се повторно подоцна.</translation>
 <translation id="1103523840287552314">Секогаш преведувај <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Веднаш ќе го изгубите пристапот до групава картички и таа ќе се избрише од сите ваши уреди</translation>
 <translation id="1106270460549661906">Сопри го споделувањето со Gemini</translation>
@@ -662,7 +661,6 @@
 <translation id="1709916727352927457">Избришете го криптографскиот клуч</translation>
 <translation id="1712143791363119140">Во тек</translation>
 <translation id="1714265454085143857">Прикачени картички</translation>
-<translation id="1714326320203665217">Датотеките со прибелешки за главниот нод се преземени</translation>
 <translation id="1716034099915639464">Да се избришат податоците и дозволите од сајтот за <ph name="SITE_NAME" /> и неговата инсталирана апликација?</translation>
 <translation id="1718835860248848330">Изминатиот час</translation>
 <translation id="1720244237656138008">Импресионизам</translation>
@@ -2972,7 +2970,6 @@
 <translation id="4209251085232852247">Исклучено</translation>
 <translation id="4210380525132844778">Причина: <ph name="RULE" /> беше најдено во списокот „<ph name="LIST_NAME" />“.</translation>
 <translation id="4210428686880035809">Отвори го линкот во приказот одлево</translation>
-<translation id="4211362364312260125">Идентификувајте го главниот атрибут на веб-страниците за помошна технологија</translation>
 <translation id="42126664696688958">Извези</translation>
 <translation id="4213540068152645535">Проблем при променување на лозинката</translation>
 <translation id="42137655013211669">Пристапот до изворов е забранет од серверот.</translation>
@@ -3705,7 +3702,6 @@
 <translation id="5012016139642806466">Добијте ги лозинките и друго на сите ваши уреди</translation>
 <translation id="5012523644916800014">Управувајте со лозинките и криптографските клучеви</translation>
 <translation id="5015344424288992913">Разрешување прокси...</translation>
-<translation id="5017250179386090956">Се преземаат датотеките со прибелешки за главниот нод</translation>
 <translation id="5017529052065664584">Изминатите 15 минути</translation>
 <translation id="5018207570537526145">Отвори вебсајт со екстензии</translation>
 <translation id="5020008942039547742">Изберете друг прозорец</translation>
@@ -6189,7 +6185,6 @@
 <translation id="7804072833593604762">Картичката е затворена</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7805906048382884326">Затвори го советот</translation>
-<translation id="7806659658565827531">Додавајте прибелешки на главниот нод</translation>
 <translation id="7807711621188256451">Секогаш дозволувај <ph name="HOST" /> да пристапи до камерата</translation>
 <translation id="7810202088502699111">На оваа страница се блокирани појавни прозорци.</translation>
 <translation id="7810951505946824824">Chrome е овозможен од проектот за софтвер со отворен код на Chromium и друг софтвер со <ph name="BEGIN_HIGHLIGHT" />отворен код<ph name="END_HIGHLIGHT" />.</translation>
@@ -6415,7 +6410,6 @@
 <translation id="8045752459073395242">Дознајте повеќе за користењето на генеративната AI на работа</translation>
 <translation id="8045923671629973368">Внеси ID на апликација или URL на веб-продавница</translation>
 <translation id="804786196054284061">Договор за лиценца со краен корисник</translation>
-<translation id="8048596485169033655">Се преземаат датотеките со прибелешки за главниот нод… <ph name="PERCENT" /> %</translation>
 <translation id="8048977114738515028">Создајте кратенка за работна површина на уредот за да може директно да пристапувате до профилов</translation>
 <translation id="8049122382261047457">Пребарајте ја која било слика со Google Lens</translation>
 <translation id="8050038245906040378">Пријавување со комерцијален код на Microsoft</translation>

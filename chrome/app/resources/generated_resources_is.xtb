@@ -100,7 +100,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1100040363679327583">Fara yfir verkefni. Spyrja Gemini</translation>
 <translation id="1100504063505580045">Núverandi tákn</translation>
 <translation id="1101267749138963680">Athugar öryggi...</translation>
-<translation id="1102759278139578486">Ekki tókst að sækja textaskýringarskrár aðalhnúts. Reyndu aftur síðar.</translation>
 <translation id="1103523840287552314">Þýða alltaf <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Þú munt umsvifalaust missa aðgang að þessum flipahópi og honum verður eytt úr öllum tækjunum þínum</translation>
 <translation id="1106270460549661906">Hætta að deila með Gemini</translation>
@@ -662,7 +661,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1709916727352927457">Eyða aðgangslykli</translation>
 <translation id="1712143791363119140">Í vinnslu</translation>
 <translation id="1714265454085143857">Festir flipar</translation>
-<translation id="1714326320203665217">Textaskýringarskrár aðalhnúts voru sóttar</translation>
 <translation id="1716034099915639464">Eyða vefsvæðagögnum og heimildum fyrir <ph name="SITE_NAME" /> og uppsett forrit?</translation>
 <translation id="1718835860248848330">Undanfarna klukkustund</translation>
 <translation id="1720244237656138008">Impressjónismi</translation>
@@ -2972,7 +2970,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4209251085232852247">Slökkt</translation>
 <translation id="4210380525132844778">Ástæða: <ph name="RULE" /> fannst á listanum „<ph name="LIST_NAME" />“.</translation>
 <translation id="4210428686880035809">Opna tengil í vinstri glugga</translation>
-<translation id="4211362364312260125">Berðu kennsl á helstu kennileiti vefsíðna fyrir hjálpartækni</translation>
 <translation id="42126664696688958">Flytja út</translation>
 <translation id="4213540068152645535">Villa kom upp við að breyta aðgangsorðinu þínu</translation>
 <translation id="42137655013211669">Þjónninn bannaði aðgang að þessu tilfangi.</translation>
@@ -3705,7 +3702,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5012016139642806466">Sæktu aðgangsorðin þín og fleira í öllum tækjunum þínum</translation>
 <translation id="5012523644916800014">Stjórna aðgangsorðum og aðgangslyklum</translation>
 <translation id="5015344424288992913">Leysir úr proxy-þjóni...</translation>
-<translation id="5017250179386090956">Sækir textaskýringarskrár aðalhnúts</translation>
 <translation id="5017529052065664584">Síðustu 15 mínútur</translation>
 <translation id="5018207570537526145">Opna vefsvæði viðbótar</translation>
 <translation id="5020008942039547742">Veldu annan glugga</translation>
@@ -6189,7 +6185,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="7804072833593604762">Flipa lokað</translation>
 <translation id="7805768142964895445">Staða</translation>
 <translation id="7805906048382884326">Loka ábendingu</translation>
-<translation id="7806659658565827531">Skrifa textaskýringu fyrir aðalhnút</translation>
 <translation id="7807711621188256451">Veita <ph name="HOST" /> alltaf aðgang að myndavélinni</translation>
 <translation id="7810202088502699111">Sprettigluggar voru útilokaðir á þessari síðu.</translation>
 <translation id="7810951505946824824">Opna kóðaverkefnið <ph name="BEGIN_HIGHLIGHT" />Chromium<ph name="END_HIGHLIGHT" /> og annar opinn hugbúnaður gerir Chrome mögulegt.</translation>
@@ -6415,7 +6410,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8045752459073395242">Kynntu þér hvernig þú getur notað skapandi gervigreind í vinnunni</translation>
 <translation id="8045923671629973368">Sláðu inn auðkenni forrits eða vefslóð vefverslunar</translation>
 <translation id="804786196054284061">Leyfissamningur notanda</translation>
-<translation id="8048596485169033655">Sækir textaskýringarskrár aðalhnúts… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Búðu til flýtileið á skjáborði tækisins til að fá beinan aðgang að þessum prófíl.</translation>
 <translation id="8049122382261047457">Leitaðu að hvaða mynd sem er með Google-linsu.</translation>
 <translation id="8050038245906040378">Kóðaundirritunarþjónusta Microsoft</translation>

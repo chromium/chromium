@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">टास्क की समीक्षा करें. Gemini से कहें</translation>
 <translation id="1100504063505580045">मौजूदा आइकॉन</translation>
 <translation id="1101267749138963680">सुरक्षा की जांच की जा रही है...</translation>
-<translation id="1102759278139578486">मुख्य नोड की व्याख्या करने के लिए फ़ाइलें डाउनलोड नहीं की जा सकीं. कुछ देर बाद कोशिश करें.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> का हमेशा अनुवाद करें</translation>
 <translation id="1104098698795583187">आपके लिए, इस टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, इसे आपके सभी डिवाइसों से मिटा दिया जाएगा</translation>
 <translation id="1106270460549661906">Gemini के साथ शेयर करना बंद करें</translation>
@@ -662,7 +661,6 @@
 <translation id="1709916727352927457">पासकी मिटाएं</translation>
 <translation id="1712143791363119140">प्रोसेस जारी है</translation>
 <translation id="1714265454085143857">पिन किए गए टैब</translation>
-<translation id="1714326320203665217">मुख्य नोड की व्याख्या करने के लिए फ़ाइलें डाउनलोड हो गईं</translation>
 <translation id="1716034099915639464">क्या आपको <ph name="SITE_NAME" /> और इसके इंस्टॉल किए गए ऐप्लिकेशन के लिए, साइट डेटा और अनुमतियां मिटानी हैं?</translation>
 <translation id="1718835860248848330">पिछला घंटा</translation>
 <translation id="1720244237656138008">इंप्रेशनिज़्म</translation>
@@ -2974,7 +2972,6 @@
 <translation id="4209251085232852247">सूचनाएं बंद की गई हैं</translation>
 <translation id="4210380525132844778">वजह: "<ph name="LIST_NAME" />" सूची में <ph name="RULE" /> मिला था.</translation>
 <translation id="4210428686880035809">लिंक को लेफ़्ट व्यू में खोलें</translation>
-<translation id="4211362364312260125">सहायक टेक्नोलॉजी के लिए, वेब पेजों में मुख्य लैंडमार्क को पहचानें</translation>
 <translation id="42126664696688958">निर्यात करें</translation>
 <translation id="4213540068152645535">पासवर्ड बदलने में समस्या हुई</translation>
 <translation id="42137655013211669">इस संसाधन के लिए सर्वर ने ऐक्सेस नहीं दिया था.</translation>
@@ -3707,7 +3704,6 @@
 <translation id="5012016139642806466">अपने सभी डिवाइसों पर पासवर्ड वगैरह ऐक्सेस करें</translation>
 <translation id="5012523644916800014">पासवर्ड और पासकी मैनेज करें</translation>
 <translation id="5015344424288992913">प्रॉक्सी को परिष्कृत कर रहा है...</translation>
-<translation id="5017250179386090956">मुख्य नोड की व्याख्या करने के लिए फ़ाइलें डाउनलोड हो रही हैं</translation>
 <translation id="5017529052065664584">पिछले 15 मिनट</translation>
 <translation id="5018207570537526145">एक्सटेंशन की वेबसाइट खोलें</translation>
 <translation id="5020008942039547742">कोई दूसरी विंडो चुनें</translation>
@@ -6195,7 +6191,6 @@
 <translation id="7804072833593604762">टैब बंद है</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7805906048382884326">सलाह बंद करें</translation>
-<translation id="7806659658565827531">मुख्य नोड की व्याख्या करें</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> को हमेशा अपने कैमरे को एक्सेस करने की अनुमति दें</translation>
 <translation id="7810202088502699111">इस पेज पर पॉप-अप अवरोधित किए गए थे.</translation>
 <translation id="7810951505946824824">Chrome को बनाने में Chromium के ओपन सोर्स प्रोजेक्ट और अन्य <ph name="BEGIN_HIGHLIGHT" />ओपन सोर्स<ph name="END_HIGHLIGHT" /> सॉफ़्टवेयर की मदद ली गई है.</translation>
@@ -6421,7 +6416,6 @@
 <translation id="8045752459073395242">काम को आसान बनाने के लिए, जनरेटिव एआई का इस्तेमाल करने के बारे में ज़्यादा जानें</translation>
 <translation id="8045923671629973368">ऐप्लिकेशन आईडी या वेबस्टोर यूआरएल डालें</translation>
 <translation id="804786196054284061">असली उपयोगकर्ता के लाइसेंस का समझौता</translation>
-<translation id="8048596485169033655">मुख्य नोड की व्याख्या करने के लिए फ़ाइलें डाउनलोड हो रही हैं… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">इस प्रोफ़ाइल को सीधे ऐक्सेस करने के लिए, अपने डिवाइस पर एक डेस्कटॉप शॉर्टकट बनाएं</translation>
 <translation id="8049122382261047457">Google Lens की मदद से किसी भी इमेज की जानकारी खोजें</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>

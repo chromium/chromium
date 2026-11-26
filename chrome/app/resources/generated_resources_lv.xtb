@@ -100,7 +100,6 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1100040363679327583">Pārskatiet uzdevumu. Jautāt Gemini</translation>
 <translation id="1100504063505580045">Pašreizējā ikona</translation>
 <translation id="1101267749138963680">Notiek drošības pārbaude…</translation>
-<translation id="1102759278139578486">Nevar lejupielādēt galvenā mezgla anotāciju failus. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="1103523840287552314">Vienmēr tulkot <ph name="LANGUAGE" /> valodas saturu</translation>
 <translation id="1104098698795583187">Jūs uzreiz zaudēsiet piekļuvi šai ciļņu grupai, un tā tiks izdzēsta no visām jūsu ierīcēm.</translation>
 <translation id="1106270460549661906">Pārtraukt kopīgošanu ar Gemini</translation>
@@ -653,7 +652,6 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1709916727352927457">Piekļuves atslēgas dzēšana</translation>
 <translation id="1712143791363119140">Notiek pašlaik</translation>
 <translation id="1714265454085143857">Piespraustās cilnes</translation>
-<translation id="1714326320203665217">Galvenā mezgla anotāciju faili ir lejupielādēti.</translation>
 <translation id="1716034099915639464">Vai dzēst vietnes <ph name="SITE_NAME" /> datus, atļaujas un instalēto lietotni?</translation>
 <translation id="1718835860248848330">Pēdējā stunda</translation>
 <translation id="1720244237656138008">Impresionisms</translation>
@@ -2957,7 +2955,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4209251085232852247">Izslēgts</translation>
 <translation id="4210380525132844778">Iemesls: sarakstā “<ph name="LIST_NAME" />” tika konstatēta kārtula “<ph name="RULE" />”.</translation>
 <translation id="4210428686880035809">Atvērt saiti kreisās puses skatā</translation>
-<translation id="4211362364312260125">Norādiet galveno orientieri tīmekļa lapās atbalsta tehnoloģijai.</translation>
 <translation id="42126664696688958">Eksportēt</translation>
 <translation id="4213540068152645535">Neizdevās nomainīt paroli</translation>
 <translation id="42137655013211669">Serveris neatļāva piekļūt šim resursam.</translation>
@@ -3690,7 +3687,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5012016139642806466">Iegūstiet paroles un citus datus visās savās ierīcēs.</translation>
 <translation id="5012523644916800014">Pārvaldīt paroles un piekļuves atslēgas</translation>
 <translation id="5015344424288992913">Risina starpniekserveri...</translation>
-<translation id="5017250179386090956">Notiek galvenā mezgla anotāciju failu lejupielāde…</translation>
 <translation id="5017529052065664584">Pēdējās 15 minūtes</translation>
 <translation id="5018207570537526145">Atvērt paplašinājuma vietni</translation>
 <translation id="5020008942039547742">Izvēlēties citu logu</translation>
@@ -6173,7 +6169,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="7804072833593604762">Cilne ir aizvērta</translation>
 <translation id="7805768142964895445">Statuss</translation>
 <translation id="7805906048382884326">Aizvērt padomu</translation>
-<translation id="7806659658565827531">Anotēt galveno mezglu</translation>
 <translation id="7807711621188256451">Vienmēr ļaut vietnei <ph name="HOST" /> piekļūt kamerai</translation>
 <translation id="7810202088502699111">Uznirstošie logi šajā lapā tika bloķēti.</translation>
 <translation id="7810951505946824824">Pārlūku Chrome nodrošina Chromium atklātā pirmkoda projekts un cita <ph name="BEGIN_HIGHLIGHT" />atklātā pirmkoda<ph name="END_HIGHLIGHT" /> programmatūra.</translation>
@@ -6399,7 +6394,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8045752459073395242">Uzzināt vairāk par ģeneratīvā MI izmantošanu darbā</translation>
 <translation id="8045923671629973368">Ievadiet lietojumprogrammas ID vai interneta veikala URL</translation>
 <translation id="804786196054284061">Galalietotāja licences līgums</translation>
-<translation id="8048596485169033655">Notiek galvenā mezgla anotāciju failu lejupielāde… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Ierīcē izveidojiet darbvirsmas saīsni, lai varētu tieši piekļūt šim profilam</translation>
 <translation id="8049122382261047457">Meklējiet pēc jebkura attēla, izmantojot Google Lens</translation>
 <translation id="8050038245906040378">Microsoft tirdzniecības koda parakstīšana</translation>

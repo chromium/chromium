@@ -100,7 +100,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1100040363679327583">Kagua jukumu. Uliza Gemini</translation>
 <translation id="1100504063505580045">Aikoni ya sasa</translation>
 <translation id="1101267749138963680">Inakagua usalama...</translation>
-<translation id="1102759278139578486">Imeshindwa kupakua faili za ufafanuzi wa kipengele kikuu. Jaribu tena baadaye.</translation>
 <translation id="1103523840287552314">Tafsiri <ph name="LANGUAGE" /> kila wakati</translation>
 <translation id="1104098698795583187">Utapoteza papo hapo uwezo wa kufikia kikundi hiki cha vichupo na kitafutwa kwenye vifaa vyako vyote</translation>
 <translation id="1106270460549661906">Acha kuruhusu ufikiaji ukitumia Gemini</translation>
@@ -662,7 +661,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1709916727352927457">Futa ufunguo wa siri</translation>
 <translation id="1712143791363119140">Unaendelea</translation>
 <translation id="1714265454085143857">Vichupo vilivyobandikwa</translation>
-<translation id="1714326320203665217">Faili za ufafanuzi wa kipengele kikuu zimepakuliwa</translation>
 <translation id="1716034099915639464">Je, ungependa kufuta data na ruhusa za tovuti ya <ph name="SITE_NAME" /> na programu yake iliyosakinishwa?</translation>
 <translation id="1718835860248848330">Saa iliyopita</translation>
 <translation id="1720244237656138008">Uchoraji wa mwanga hafifu</translation>
@@ -2969,7 +2967,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4209251085232852247">Imezimwa</translation>
 <translation id="4210380525132844778">Sababu: <ph name="RULE" /> imepatikana katika orodha ya "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Fungua Kiungo katika Mwonekano wa Kushoto</translation>
-<translation id="4211362364312260125">Tambua alama kuu muhimu ya teknolojia ya kuwasaidia walio na ulemavu katika kurasa za wavuti</translation>
 <translation id="42126664696688958">Hamisha</translation>
 <translation id="4213540068152645535">Tatizo limetokea wakati wa kubadilisha nenosiri lako</translation>
 <translation id="42137655013211669">Idhini ya kufikia rasilimali hii ilizuiwa na seva.</translation>
@@ -3702,7 +3699,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5012016139642806466">Pata manenosiri yako na zaidi kwenye vifaa vyako vyote</translation>
 <translation id="5012523644916800014">Dhibiti manenosiri na funguo za siri</translation>
 <translation id="5015344424288992913">Inatafuta seva mbadala...</translation>
-<translation id="5017250179386090956">Inapakua faili za ufafanuzi wa kipengele kikuu</translation>
 <translation id="5017529052065664584">Dakika 15 zilizopita</translation>
 <translation id="5018207570537526145">Fungua tovuti ya kiendelezi</translation>
 <translation id="5020008942039547742">Chagua dirisha tofauti</translation>
@@ -6185,7 +6181,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="7804072833593604762">Kichupo Kimefungwa</translation>
 <translation id="7805768142964895445">Hali</translation>
 <translation id="7805906048382884326">Funga kidokezo</translation>
-<translation id="7806659658565827531">Fafanua kipengele kikuu</translation>
 <translation id="7807711621188256451">Ruhusu <ph name="HOST" /> kufikia kamera yako kila wakati</translation>
 <translation id="7810202088502699111">Madirisha ibukizi yalizuiwa kwenye ukurasa huu.</translation>
 <translation id="7810951505946824824">Chrome imefanikishwa na mradi wa programu huria wa Chromium pamoja na <ph name="BEGIN_HIGHLIGHT" />programu huria<ph name="END_HIGHLIGHT" /> nyingine.</translation>
@@ -6411,7 +6406,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8045752459073395242">Pata maelezo zaidi kuhusu jinsi ya kutumia AI zalishi kazini</translation>
 <translation id="8045923671629973368">Weka kitambulisho cha programu au URL ya duka la wavuti</translation>
 <translation id="804786196054284061">Makubaliano ya Leseni ya Mtumiaji wa Hatima</translation>
-<translation id="8048596485169033655">Inapakua faili za ufafanuzi wa kipengele kikuu… asilimia <ph name="PERCENT" /></translation>
 <translation id="8048977114738515028">Unda mkato wa eneo-kazi kwenye kifaa chako ili uweze kufikia wasifu huu moja kwa moja</translation>
 <translation id="8049122382261047457">Tafuta picha yoyote ukitumia Lenzi ya Google</translation>
 <translation id="8050038245906040378">Uwekaji Sahihi kwa Misimbo kwa Biashara kutoka Microsoft</translation>

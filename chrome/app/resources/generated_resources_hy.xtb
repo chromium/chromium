@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">Ստուգեք առաջադրանքը։ Հարցրեք Gemini-ին</translation>
 <translation id="1100504063505580045">Ընթացիկ պատկերակ</translation>
 <translation id="1101267749138963680">Անվտանգության ստուգում…</translation>
-<translation id="1102759278139578486">Չհաջողվեց ներբեռնել հիմնական հանգույցի ծանոթագրության ֆայլերը։ Փորձեք ավելի ուշ։</translation>
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
 <translation id="1104098698795583187">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների այս խումբը, և այն կջնջվի ձեր բոլոր սարքերից</translation>
 <translation id="1106270460549661906">Չեղարկել Gemini-ի հետ համատեղ օգտագործումը</translation>
@@ -653,7 +652,6 @@
 <translation id="1709916727352927457">Մուտքի բանալու ջնջում</translation>
 <translation id="1712143791363119140">Ընթացքում է</translation>
 <translation id="1714265454085143857">Ամրացված ներդիրներ</translation>
-<translation id="1714326320203665217">Հիմնական հանգույցի ծանոթագրման ֆայլերը ներբեռնվել են</translation>
 <translation id="1716034099915639464">Հեռացնե՞լ <ph name="SITE_NAME" /> կայքի և դրա համար տեղադրված հավելվածի կայքի տվյալներն ու թույլտվությունները</translation>
 <translation id="1718835860248848330">Վերջին 1 ժամվա</translation>
 <translation id="1720244237656138008">Իմպրեսիոնիզմ</translation>
@@ -2955,7 +2953,6 @@
 <translation id="4209251085232852247">Անջատված է</translation>
 <translation id="4210380525132844778">Պատճառը՝ «<ph name="LIST_NAME" />» ցանկում հայտնաբերվել է «<ph name="RULE" />» կանոնը։</translation>
 <translation id="4210428686880035809">Բացել հղումը ձախ դիտակերպում</translation>
-<translation id="4211362364312260125">Վեբկայքերում օժանդակ տեխնոլոգիաների համար որոշել հիմնական ուղենիշը</translation>
 <translation id="42126664696688958">Արտահանում</translation>
 <translation id="4213540068152645535">Չհաջողվեց փոխել գաղտնաբառը</translation>
 <translation id="42137655013211669">Այս ռեսուրսի մուտքն արգելափակվել է սերվերի կողմից:</translation>
@@ -3688,7 +3685,6 @@
 <translation id="5012016139642806466">Օգտագործեք գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում</translation>
 <translation id="5012523644916800014">Կառավարել գաղտնաբառերն ու մուտքի բանալիները</translation>
 <translation id="5015344424288992913">Պրոքսի-սերվերի լուծում…</translation>
-<translation id="5017250179386090956">Հիմնական հանգույցի ծանոթագրման ֆայլերը ներբեռնվում են</translation>
 <translation id="5017529052065664584">Վերջին 15 րոպեն</translation>
 <translation id="5018207570537526145">Բացել ընդլայնման կայքը</translation>
 <translation id="5020008942039547742">Ընտրել այլ պատուհան</translation>
@@ -6168,7 +6164,6 @@
 <translation id="7804072833593604762">Ներդիրը փակված է</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7805906048382884326">Փակել խորհուրդը</translation>
-<translation id="7806659658565827531">Ավելացնել ծանոթագրություն հիմնական հանգույցին</translation>
 <translation id="7807711621188256451">Միշտ թույլ տալ <ph name="HOST" />-ին օգտագործել տեսախցիկը</translation>
 <translation id="7810202088502699111">Ելնող պատուհաններն արգելափակված են այս էջում:</translation>
 <translation id="7810951505946824824">Chrome-ը ստեղծվել է Chromium նախագծի և այլ <ph name="BEGIN_HIGHLIGHT" />բաց կոդով<ph name="END_HIGHLIGHT" /> ծրագրակազմերի հիման վրա։</translation>
@@ -6394,7 +6389,6 @@
 <translation id="8045752459073395242">Իմանալ ավելին գեներատիվ արհեստական բանականությունը աշխատավայրում օգտագործելու մասին</translation>
 <translation id="8045923671629973368">Մուտքագրեք հավելվածի ID-ն կամ վեբ խանութի URL-ը</translation>
 <translation id="804786196054284061">Վերջնական օգտատիրոջ արտոնագրային պայմանագիր</translation>
-<translation id="8048596485169033655">Հիմնական հանգույցի ծանոթագրման ֆայլերը ներբեռնվում են… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Ստեղծեք աշխատասեղանի դյուրանցում ձեր սարքում՝ այս պրոֆիլն ուղղակիորեն բացելու համար</translation>
 <translation id="8049122382261047457">Որոնեք պատկերներ Google Տեսապակու միջոցով</translation>
 <translation id="8050038245906040378">Microsoft-ի առևտրային կոդի ստորագրում</translation>

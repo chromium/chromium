@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">टास्कचे पुनरावलोकन करा. Gemini ला विचारा</translation>
 <translation id="1100504063505580045">सध्याचा आयकन</translation>
 <translation id="1101267749138963680">सुरक्षितता तपासत आहे...</translation>
-<translation id="1102759278139578486">मुख्य नोड भाष्य फाइल डाउनलोड करू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="1103523840287552314">नेहमी भाषांतर करा <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">तुम्ही लगेच या टॅब गटाचा ॲक्सेस गमवाल आणि तो तुमच्या सर्व डिव्हाइसवरून हटवला जाईल</translation>
 <translation id="1106270460549661906">Gemini वापरून शेअर करणे थांबवा</translation>
@@ -662,7 +661,6 @@
 <translation id="1709916727352927457">पासकी हटवा</translation>
 <translation id="1712143791363119140">प्रगतीपथावर आहे</translation>
 <translation id="1714265454085143857">पिन केलेले टॅब</translation>
-<translation id="1714326320203665217">मुख्य नोड भाष्य फाइल डाउनलोड केल्या आहेत</translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> आणि त्याचे इंस्टॉल केलेले अ‍ॅप यांच्यासाठी साइट डेटा व परवानग्या हटवायच्या आहेत का?</translation>
 <translation id="1718835860248848330">शेवटच्या तासामधील</translation>
 <translation id="1720244237656138008">इंप्रेशनिझम</translation>
@@ -2973,7 +2971,6 @@
 <translation id="4209251085232852247">बंद केले</translation>
 <translation id="4210380525132844778">कारण: "<ph name="LIST_NAME" />" सूचीमध्ये <ph name="RULE" /> आढळला होता.</translation>
 <translation id="4210428686880035809">डावीकडील दृश्य मध्ये लिंक उघडा</translation>
-<translation id="4211362364312260125">साहाय्यकारी तंत्रज्ञानासाठी वेब पेजमधील मुख्य लँडमार्क ओळखा</translation>
 <translation id="42126664696688958">एक्सपोर्ट</translation>
 <translation id="4213540068152645535">तुमचा पासवर्ड बदलताना समस्या आली</translation>
 <translation id="42137655013211669">सर्व्हरद्वारे या स्त्रोताचा ॲक्सेस निषिद्ध केला होता.</translation>
@@ -3707,7 +3704,6 @@
 <translation id="5012016139642806466">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळवा</translation>
 <translation id="5012523644916800014">पासवर्ड आणि पासकी व्यवस्थापित करा</translation>
 <translation id="5015344424288992913">प्रॉक्सी निराकरण करीत आहे...</translation>
-<translation id="5017250179386090956">मुख्य नोड भाष्य फाइल डाउनलोड करत आहे</translation>
 <translation id="5017529052065664584">शेवटची १५ मिनिटे</translation>
 <translation id="5018207570537526145">एक्स्टेंशन वेबसाइट उघडा</translation>
 <translation id="5020008942039547742">वेगळी विंडो निवडा</translation>
@@ -6196,7 +6192,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7804072833593604762">टॅब बंद केला</translation>
 <translation id="7805768142964895445">स्थिती</translation>
 <translation id="7805906048382884326">टीप बंद करा</translation>
-<translation id="7806659658565827531">मुख्य नोडवर भाष्य करा</translation>
 <translation id="7807711621188256451">तुमचा कॅमेरा ॲक्सेस करण्यासाठी <ph name="HOST" /> ला नेहमी परवानगी द्या</translation>
 <translation id="7810202088502699111">या पेजवर पॉप-अप ब्लॉक केलेले होते.</translation>
 <translation id="7810951505946824824">Chromium मुक्त स्रोत प्रोजेक्ट आणि इतर <ph name="BEGIN_HIGHLIGHT" />मुक्त स्रोत<ph name="END_HIGHLIGHT" /> सॉफ्टवेअरमुळे Chrome ची निर्मिती शक्य झाली आहे.</translation>
@@ -6422,7 +6417,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8045752459073395242">ऑफिसमध्ये जनरेटिव्ह AI वापरण्याविषयी अधिक जाणून घ्या</translation>
 <translation id="8045923671629973368">ॲप्लिकेशन आयडी किंवा वेबस्टोअर URL टाका</translation>
 <translation id="804786196054284061">अंतिम वापरकर्ता परवाना करारनामा</translation>
-<translation id="8048596485169033655">मुख्य नोड भाष्य फाइल डाउनलोड करत आहे… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">ही प्रोफाइल थेट अ‍ॅक्सेस करण्यासाठी तुमच्या डिव्हाइसवर डेस्कटॉप शॉर्टकट तयार करा</translation>
 <translation id="8049122382261047457">Google Lens वापरून कोणतीही इमेज शोधा</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>

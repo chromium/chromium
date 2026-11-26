@@ -100,7 +100,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1100040363679327583">Xem xét việc cần làm. Hỏi Gemini</translation>
 <translation id="1100504063505580045">Biểu tượng hiện tại</translation>
 <translation id="1101267749138963680">Đang kiểm tra an toàn...</translation>
-<translation id="1102759278139578486">Không thể tải tệp chú thích cho nút chính xuống. Hãy thử lại sau.</translation>
 <translation id="1103523840287552314">Luôn dịch <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Bạn sẽ mất ngay quyền truy cập vào nhóm thẻ và nhóm thẻ này sẽ bị xoá khỏi mọi thiết bị của bạn</translation>
 <translation id="1106270460549661906">Ngừng chia sẻ bằng Gemini</translation>
@@ -662,7 +661,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1709916727352927457">Xoá khoá đăng nhập</translation>
 <translation id="1712143791363119140">Đang diễn ra</translation>
 <translation id="1714265454085143857">Thẻ được ghim</translation>
-<translation id="1714326320203665217">Đã tải tệp chú thích cho nút chính xuống</translation>
 <translation id="1716034099915639464">Xoá dữ liệu trang web và quyền của <ph name="SITE_NAME" />, cũng như ứng dụng đã cài đặt của trang web này?</translation>
 <translation id="1718835860248848330">1 giờ qua</translation>
 <translation id="1720244237656138008">Trường phái ấn tượng</translation>
@@ -2972,7 +2970,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="4209251085232852247">Đang tắt</translation>
 <translation id="4210380525132844778">Lý do: Tìm thấy <ph name="RULE" /> trong danh sách "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Mở đường liên kết ở dạng xem bên trái</translation>
-<translation id="4211362364312260125">Xác định điểm mốc chính trên các trang web dành cho công nghệ hỗ trợ</translation>
 <translation id="42126664696688958">Xuất</translation>
 <translation id="4213540068152645535">Đã xảy ra sự cố khi đổi mật khẩu</translation>
 <translation id="42137655013211669">Máy chủ cấm truy cập vào tài nguyên này.</translation>
@@ -3705,7 +3702,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="5012016139642806466">Sử dụng mật khẩu và nhiều nội dung khác trên mọi thiết bị của bạn</translation>
 <translation id="5012523644916800014">Quản lý mật khẩu và khoá đăng nhập</translation>
 <translation id="5015344424288992913">Đang phân giải proxy…</translation>
-<translation id="5017250179386090956">Đang tải tệp chú thích cho nút chính xuống</translation>
 <translation id="5017529052065664584">15 phút qua</translation>
 <translation id="5018207570537526145">Mở trang web của tiện ích</translation>
 <translation id="5020008942039547742">Chọn một cửa sổ khác</translation>
@@ -6188,7 +6184,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7804072833593604762">Đã đóng thẻ</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7805906048382884326">Đóng mẹo</translation>
-<translation id="7806659658565827531">Chú thích cho nút chính</translation>
 <translation id="7807711621188256451">Luôn cho phép <ph name="HOST" /> truy cập máy ảnh của bạn</translation>
 <translation id="7810202088502699111">Cửa sổ bật lên đã bị chặn trên trang này.</translation>
 <translation id="7810951505946824824">Chrome được tạo ra nhờ dự án nguồn mở Chromium và các phần mềm <ph name="BEGIN_HIGHLIGHT" />nguồn mở<ph name="END_HIGHLIGHT" /> khác.</translation>
@@ -6414,7 +6409,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8045752459073395242">Tìm hiểu thêm về việc sử dụng AI tạo sinh trong công việc</translation>
 <translation id="8045923671629973368">Hãy nhập ID ứng dụng hoặc URL cửa hàng trực tuyến</translation>
 <translation id="804786196054284061">Thỏa thuận cấp phép người dùng cuối</translation>
-<translation id="8048596485169033655">Đang tải tệp chú thích cho nút chính xuống… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Tạo một lối tắt trên màn hình trên thiết bị của bạn để truy cập ngay vào hồ sơ này</translation>
 <translation id="8049122382261047457">Tìm bằng hình ảnh qua Google Ống kính</translation>
 <translation id="8050038245906040378">Ký Mã Thương mại của Microsoft</translation>

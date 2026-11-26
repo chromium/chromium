@@ -100,7 +100,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1100040363679327583">Esamina l'attività. Chiedi a Gemini</translation>
 <translation id="1100504063505580045">Icona attuale</translation>
 <translation id="1101267749138963680">Controllo di sicurezza in corso…</translation>
-<translation id="1102759278139578486">Impossibile scaricare i file di annotazioni del nodo principale. Riprova più tardi.</translation>
 <translation id="1103523840287552314">Traduci sempre <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Perderai immediatamente l'accesso a questo gruppo di schede, che verrà eliminato da tutti i tuoi dispositivi</translation>
 <translation id="1106270460549661906">Annulla condivisione con Gemini</translation>
@@ -653,7 +652,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1709916727352927457">Elimina passkey</translation>
 <translation id="1712143791363119140">In corso</translation>
 <translation id="1714265454085143857">Schede bloccate</translation>
-<translation id="1714326320203665217">File di annotazioni del nodo principale scaricati</translation>
 <translation id="1716034099915639464">Vuoi eliminare le autorizzazioni e i dati del sito <ph name="SITE_NAME" /> e della relativa app installata?</translation>
 <translation id="1718835860248848330">Ultima ora</translation>
 <translation id="1720244237656138008">Impressionismo</translation>
@@ -2958,7 +2956,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="4209251085232852247">Disattivato</translation>
 <translation id="4210380525132844778">Motivo: la regola <ph name="RULE" /> è stata rilevata nell'elenco "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Apri link nella visualizzazione a sinistra</translation>
-<translation id="4211362364312260125">Identifica il punto di riferimento principale nelle pagine web per le tecnologie per la disabilità</translation>
 <translation id="42126664696688958">Esporta</translation>
 <translation id="4213540068152645535">Problemi con la modifica della password</translation>
 <translation id="42137655013211669">L'accesso a questa risorsa è vietato dal server.</translation>
@@ -3690,7 +3687,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="5012016139642806466">Trova le tue password e altro su tutti i tuoi dispositivi</translation>
 <translation id="5012523644916800014">Gestisci password e passkey</translation>
 <translation id="5015344424288992913">Risoluzione proxy in corso...</translation>
-<translation id="5017250179386090956">Download dei file di annotazioni del nodo principale in corso…</translation>
 <translation id="5017529052065664584">Ultimi 15 minuti</translation>
 <translation id="5018207570537526145">Apri sito web dell'estensione</translation>
 <translation id="5020008942039547742">Scegli un'altra finestra</translation>
@@ -6170,7 +6166,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="7804072833593604762">Scheda chiusa</translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="7805906048382884326">Chiudi suggerimento</translation>
-<translation id="7806659658565827531">Annota il nodo principale</translation>
 <translation id="7807711621188256451">Consenti sempre a <ph name="HOST" /> di accedere alla webcam</translation>
 <translation id="7810202088502699111">I popup sono stati bloccati in questa pagina.</translation>
 <translation id="7810951505946824824">La realizzazione di Chrome è stata possibile grazie al progetto open source Chromium e altri software <ph name="BEGIN_HIGHLIGHT" />open source<ph name="END_HIGHLIGHT" />.</translation>
@@ -6396,7 +6391,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8045752459073395242">Scopri di più sull'utilizzo dell'AI generativa al lavoro</translation>
 <translation id="8045923671629973368">Inserisci l'ID applicazione o l'URL del webstore</translation>
 <translation id="804786196054284061">Contratto di licenza con l'utente finale</translation>
-<translation id="8048596485169033655">Download dei file di annotazioni del nodo principale in corso… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Crea un collegamento sul desktop del dispositivo per accedere direttamente al profilo</translation>
 <translation id="8049122382261047457">Cerca qualsiasi immagine con Google Lens</translation>
 <translation id="8050038245906040378">Firma codice commerciale Microsoft</translation>

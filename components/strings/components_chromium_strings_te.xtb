@@ -24,6 +24,7 @@
 <translation id="4949828774841497663">అప్లికేషన్‌లు &gt; సిస్టమ్ సెట్టింగ్‌లు &gt; నెట్‌వర్క్ ఆప్షన్‌కు వెళ్లి,
           యాక్టివ్‌గా ఉన్న నెట్‌వర్క్‌ను ఎంచుకొని, వివరాలు... బటన్‌ను క్లిక్ చేసి, ఏవైనా ప్రాక్సీలు ఎంపిక చేసి ఉంటే,
           ఎంపికను తొలగించండి.</translation>
+<translation id="5228339820845278804">రిమైండర్: Chromium అత్యుత్తమ సేఫ్టీని ఫీచర్‌లు ఇక ఎల్లప్పుడూ మీతోనే!</translation>
 <translation id="6480456350195404966">Chromium
           మెనూ &gt;
           <ph name="SETTINGS_TITLE" />
@@ -39,6 +40,7 @@
 <translation id="6613594504749178791">మీ మార్పులు మీరు Chromiumని మరుసటిసారి ప్రారంభించినప్పుడు ప్రభావాన్ని చూపుతాయి.</translation>
 <translation id="691026815377248078">పెయిరింగ్‌ను కొనసాగించడానికి Chromiumకు 
  బ్లూటూత్ యాక్సెస్ అవసరం. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7641677656706511803">ప్రయాణంలోనూ Chromium సేఫ్టీని పొందడానికి Chromium యాప్‌ను ఉపయోగించండి</translation>
 <translation id="7681937895330411637"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ఓపెన్ సోర్స్ ప్రాజెక్ట్ ద్వారా Chromiumను రూపొందించడం సాధ్యమయ్యింది.</translation>
 <translation id="7861509383340276692">Chromium మెనూ &gt;
           <ph name="SETTINGS_TITLE" />

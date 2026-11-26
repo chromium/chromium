@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">ಕಾರ್ಯವನ್ನು ಪರಿಶೀಲಿಸಿ. Gemini ಅನ್ನು ಕೇಳಿ</translation>
 <translation id="1100504063505580045">ಪ್ರಸ್ತುತ ಐಕಾನ್</translation>
 <translation id="1101267749138963680">ಸುರಕ್ಷತೆಗಾಗಿ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="1102759278139578486">ಪ್ರಮುಖ ನೋಡ್ ಟಿಪ್ಪಣಿ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1103523840287552314">ಯಾವಾಗಲೂ ಅನುವಾದಿಸಿ <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">ನೀವು ತಕ್ಷಣವೇ ಈ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತೀರಿ ಮತ್ತು ಅದನ್ನು ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="1106270460549661906">Gemini ಜೊತೆ ಹಂಚಿಕೊಳ್ಳುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
@@ -654,7 +653,6 @@
 <translation id="1709916727352927457">ಪಾಸ್‌ಕೀಯನ್ನು ಅಳಿಸಿ</translation>
 <translation id="1712143791363119140">ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
 <translation id="1714265454085143857">ಪಿನ್ ಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳು</translation>
-<translation id="1714326320203665217">ಪ್ರಮುಖ ನೋಡ್ ಟಿಪ್ಪಣಿ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> ಮತ್ತು ಅದರಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ಸೈಟ್ ಡೇಟಾ ಮತ್ತು ಅನುಮತಿಗಳನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
 <translation id="1718835860248848330">ಕಳೆದ ಗಂಟೆ</translation>
 <translation id="1720244237656138008">ಇಂಪ್ರೆಷನಿಸಂ</translation>
@@ -2962,7 +2960,6 @@
 <translation id="4209251085232852247">ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4210380525132844778">ಕಾರಣ: "<ph name="LIST_NAME" />" ಪಟ್ಟಿಯಲ್ಲಿ <ph name="RULE" /> ಕಂಡುಬಂದಿದೆ.</translation>
 <translation id="4210428686880035809">ಎಡ ವೀಕ್ಷಣೆಯಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
-<translation id="4211362364312260125">ಸಹಾಯಕ ತಂತ್ರಜ್ಞಾನಕ್ಕಾಗಿ ವೆಬ್ ಪುಟಗಳಲ್ಲಿ ಮುಖ್ಯ ಲ್ಯಾಂಡ್‌ಮಾರ್ಕ್ ಅನ್ನು ಗುರುತಿಸಿ</translation>
 <translation id="42126664696688958">ರಫ್ತು</translation>
 <translation id="4213540068152645535">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸುವಲ್ಲಿ ಸಮಸ್ಯೆ ಉಂಟಾಗಿದೆ</translation>
 <translation id="42137655013211669">ಈ ಸಂಪನ್ಮೂಲಕ್ಕೆ ಪ್ರವೇಶವನ್ನು ಸರ್ವರ್‌ ಮೂಲಕ ನಿಷೇಧಿಸಲಾಗಿದೆ.</translation>
@@ -3695,7 +3692,6 @@
 <translation id="5012016139642806466">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="5012523644916800014">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ಕೀಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5015344424288992913">ಪ್ರಾಕ್ಸಿಯನ್ನು ಪರಿಹರಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="5017250179386090956">ಪ್ರಮುಖ ನೋಡ್ ಟಿಪ್ಪಣಿ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5017529052065664584">ಹಿಂದಿನ 15 ನಿಮಿಷಗಳು</translation>
 <translation id="5018207570537526145">ವಿಸ್ತರಣೆ ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5020008942039547742">ಬೇರೆ ವಿಂಡೋವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
@@ -6180,7 +6176,6 @@
 <translation id="7804072833593604762">ಟ್ಯಾಬ್ ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
 <translation id="7805906048382884326">ಸಲಹೆ ಮುಚ್ಚಿರಿ</translation>
-<translation id="7806659658565827531">ಪ್ರಮುಖ ನೋಡ್ ಅನ್ನು ಟಿಪ್ಪಣಿ ಮಾಡಿ</translation>
 <translation id="7807711621188256451">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು <ph name="HOST" /> ಅನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="7810202088502699111">ಈ ಪುಟದಲ್ಲಿ ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="7810951505946824824">Chromium ಓಪನ್ ಸೋರ್ಸ್ ಪ್ರಾಜೆಕ್ಟ್ ಮತ್ತು ಇತರ <ph name="BEGIN_HIGHLIGHT" />ಓಪನ್ ಸೋರ್ಸ್<ph name="END_HIGHLIGHT" /> ಸಾಫ್ಟ್‌ವೇರ್‌ಗಳನ್ನು ಬಳಸಿಕೊಂಡು Chrome ಅನ್ನು ಅಭಿವೃದ್ಧಿಪಡಿಸಲಾಗಿದೆ.</translation>
@@ -6403,7 +6398,6 @@
 <translation id="8045752459073395242">ಕೆಲಸದಲ್ಲಿ ಜನರೇಟಿವ್ AI ಅನ್ನು ಬಳಸುವ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="8045923671629973368">ಅಪ್ಲಿಕೇಶನ್ ಐಡಿ ಅಥವಾ ವೆಬ್‌ಅಂಗಡಿ URL ನಮೂದಿಸಿ</translation>
 <translation id="804786196054284061">ಅಂತಿಮ ಬಳಕೆದಾರ ಪರವಾನಗಿ ಒಪ್ಪಂದ</translation>
-<translation id="8048596485169033655">ಪ್ರಮುಖ ನೋಡ್ ಟಿಪ್ಪಣಿ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನೇರವಾಗಿ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಡೆಸ್ಕ್‌ಟಾಪ್ ಶಾರ್ಟ್‌ಕಟ್ ರಚಿಸಿ</translation>
 <translation id="8049122382261047457">Google Lens ಬಳಸಿಕೊಂಡು ಯಾವುದೇ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>

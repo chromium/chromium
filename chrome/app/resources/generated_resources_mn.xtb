@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">Даалгаврыг хянана уу. Gemini-с асуух</translation>
 <translation id="1100504063505580045">Одоогийн дүрс тэмдэг</translation>
 <translation id="1101267749138963680">Аюулгүй байдлыг шалгаж байна...</translation>
-<translation id="1102759278139578486">Үндсэн зангилааны тэмдэглэгээний файлуудыг татаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />-ийг үргэлж орчуулах</translation>
 <translation id="1104098698795583187">Та энэ табын бүлэгт хандах эрхээ тэр даруй алдах ба уг бүлгийг таны бүх төхөөрөмжөөс устгана</translation>
 <translation id="1106270460549661906">Gemini-тай хуваалцахыг болих</translation>
@@ -662,7 +661,6 @@
 <translation id="1709916727352927457">Passkey-г устгах</translation>
 <translation id="1712143791363119140">Үргэлжилж байна</translation>
 <translation id="1714265454085143857">Бэхэлсэн табууд</translation>
-<translation id="1714326320203665217">Үндсэн зангилааны тэмдэглэгээний файлуудыг татаж авлаа</translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> болон түүний суулгасан аппын сайтын өгөгдөл, зөвшөөрлийг устгах уу?</translation>
 <translation id="1718835860248848330">Сүүлийн цаг</translation>
 <translation id="1720244237656138008">Импрессионизм</translation>
@@ -2973,7 +2971,6 @@
 <translation id="4209251085232852247">Унтраасан</translation>
 <translation id="4210380525132844778">Шалтгаан: <ph name="RULE" />-г "<ph name="LIST_NAME" />" жагсаалтаас олсон.</translation>
 <translation id="4210428686880035809">Холбоосыг зүүн харагдах байдалд нээх</translation>
-<translation id="4211362364312260125">Туслах технологийн веб хуудасны үндсэн газрын тэмдэглэгээг тодорхойлоорой</translation>
 <translation id="42126664696688958">Экспортлох</translation>
 <translation id="4213540068152645535">Нууц үгээ өөрчлөхөд асуудал гарсан уу?</translation>
 <translation id="42137655013211669">Энэ нөөцөд хандалт хийхийг серверээс хориглосон байна.</translation>
@@ -3707,7 +3704,6 @@
 <translation id="5012016139642806466">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ аваарай</translation>
 <translation id="5012523644916800014">Нууц үг болон passkey-г удирдах</translation>
 <translation id="5015344424288992913">Проксигийн асуудлыг шийдэж байна...</translation>
-<translation id="5017250179386090956">Үндсэн зангилааны тэмдэглэгээний файлуудыг татаж байна</translation>
 <translation id="5017529052065664584">Сүүлийн 15 минут</translation>
 <translation id="5018207570537526145">Өргөтгөлийн вебсайтыг нээх</translation>
 <translation id="5020008942039547742">Өөр цонх сонгох</translation>
@@ -6193,7 +6189,6 @@
 <translation id="7804072833593604762">Таб хаагдсан</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7805906048382884326">Зөвлөгөөг хаах</translation>
-<translation id="7806659658565827531">Тэмдэглэгээний үндсэн зангилаа</translation>
 <translation id="7807711621188256451"><ph name="HOST" />-д таны камерт нэвтрэх зөвшөөрөл олгох</translation>
 <translation id="7810202088502699111">Зар сурталчилгааг энэ хуудсанд хориглосон байна.</translation>
 <translation id="7810951505946824824">Chrome-г Chromium нээлттэй эх кодын төсөл болон бусад <ph name="BEGIN_HIGHLIGHT" />нээлттэй эх кодын<ph name="END_HIGHLIGHT" /> программ хангамжаар бүтээсэн.</translation>
@@ -6418,7 +6413,6 @@
 <translation id="8045752459073395242">Үүсгэгч ХОУ-ыг ажил дээр ашиглах талаар нэмэлт мэдээлэл авах</translation>
 <translation id="8045923671629973368">Аппын ID эсвэл веб дэлгүүрийн URL-г оруулах</translation>
 <translation id="804786196054284061">Эцсийн хэрэглэгчийн лицензийн гэрээ</translation>
-<translation id="8048596485169033655">Үндсэн зангилааны тэмдэглэгээний файлуудыг татаж авч байна… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Энэ профайлд шууд хандахын тулд төхөөрөмж дээрээ дэлгэц дээрх холбоос үүсгэнэ үү</translation>
 <translation id="8049122382261047457">Google Lens-р дурын зураг хайна уу</translation>
 <translation id="8050038245906040378">Майкрософтын Арилжааны Кодын гарын үсэг зурах</translation>

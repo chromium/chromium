@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">ተግባርን ይገምግሙ። Gemini ጠይቅ</translation>
 <translation id="1100504063505580045">የአሁኑ አዶ</translation>
 <translation id="1101267749138963680">ደኅንነትን በመፈተሽ ላይ...</translation>
-<translation id="1102759278139578486">የዋና አንጓ ማብራሪያ ፋይሎችን ማውረድ አልተቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="1103523840287552314">ሁልጊዜ <ph name="LANGUAGE" />ን መተርጎም</translation>
 <translation id="1104098698795583187">ለዚህ የትር ቡድን ያለዎትን መዳረሻ ወዲያውኑ ያጣሉ እና ከሁሉም መሣሪያዎችዎ ላይ ይሰረዛል</translation>
 <translation id="1106270460549661906">ከGemini ጋር አታጋራ</translation>
@@ -660,7 +659,6 @@
 <translation id="1709916727352927457">የይለፍ ቁልፍን ይሰርዙ</translation>
 <translation id="1712143791363119140">በሂደት ላይ</translation>
 <translation id="1714265454085143857">የተሰኩ ትሮች</translation>
-<translation id="1714326320203665217">የዋና አንጓ ማብራሪያ ፋይሎች ወርደዋል</translation>
 <translation id="1716034099915639464">ለ<ph name="SITE_NAME" /> እና ለእሱ የተጫነ መተግበሪያ የጣቢያ ውሂብ እና ፈቃዶችን ይሰረዙ?</translation>
 <translation id="1718835860248848330">የመጨረሻው ሰዓት</translation>
 <translation id="1720244237656138008">ኢምፕረሽናሊዝም</translation>
@@ -2965,7 +2963,6 @@
 <translation id="4209251085232852247">ጠፍተዋል</translation>
 <translation id="4210380525132844778">ምክንያት፦ <ph name="RULE" /> በ«<ph name="LIST_NAME" />» ዝርዝር ውስጥ ተገኝቷል።</translation>
 <translation id="4210428686880035809">አገናኝን በግራ ዕይታ ውስጥ ክፈት</translation>
-<translation id="4211362364312260125">ለረዳት ቴክኖሎጂ በድረ-ገፆች ውስጥ ዋናውን የሚታወቅ ቦታ ይለዩ</translation>
 <translation id="42126664696688958">ወደ ውጭ ላክ</translation>
 <translation id="4213540068152645535">የይለፍ ቃልዎን በመለወጥ ወቅት ችግር አለ</translation>
 <translation id="42137655013211669">የዚህ መርጃ መዳረሻ በአገልጋዩ ተከልክሏል።</translation>
@@ -3698,7 +3695,6 @@
 <translation id="5012016139642806466">የይለፍ ቃላትዎን እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ያግኙ</translation>
 <translation id="5012523644916800014">የይለፍ ቃላትን እና የይለፍ ቁልፎችን አስተዳድር</translation>
 <translation id="5015344424288992913">ለproxy መፍትሄ በመፈለግ ላይ…</translation>
-<translation id="5017250179386090956">የዋና አንጓ ማብራሪያ ፋይሎችን በማውረድ ላይ</translation>
 <translation id="5017529052065664584">ያለፉት 15 ደቂቃዎች</translation>
 <translation id="5018207570537526145">የቅጥያ ድር ጣቢያን ክፈት</translation>
 <translation id="5020008942039547742">የተለየ መስኮት ይምረጡ</translation>
@@ -6183,7 +6179,6 @@
 <translation id="7804072833593604762">ትር ተዘግቷል</translation>
 <translation id="7805768142964895445">ሁኔታ</translation>
 <translation id="7805906048382884326">ጠቃሚ ምክር ዝጋ</translation>
-<translation id="7806659658565827531">ዋና አንጓ አብራራ</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> ሁልጊዜ የእርስዎ ካሜራ መዳረሻ ይፈቀድለት</translation>
 <translation id="7810202088502699111">በዚህ ገፅ ብቅ-ባዮች ታግደዋል።</translation>
 <translation id="7810951505946824824">Chrome በChromium ክፍት ምንጭ ፕሮጀክት እና በሌላ <ph name="BEGIN_HIGHLIGHT" />ክፍት ምንጭ<ph name="END_HIGHLIGHT" /> ሶፍትዌር ሊሠራ ችሏል።</translation>
@@ -6414,7 +6409,6 @@ nil</translation>
 <translation id="8045752459073395242">በሥራ ቦታ ሰው ሠራሽ አስተውሎት አመንጪ ስለመጠቀም የበለጠ ይወቁ</translation>
 <translation id="8045923671629973368">የመተግበሪያ መታወቂያ ወይም የድር መደብር ዩአርኤል ያስገቡ</translation>
 <translation id="804786196054284061">የመጨረሻ ተጠቃሚ የፍቃድ ስምምነት</translation>
-<translation id="8048596485169033655">የዋና አንጓ ማብራሪያ ፋይሎችን በማውረድ ላይ… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">በቀጥታ ወደዚህ መገለጫ ለመድረስ በመሣሪያዎ ላይ የዴስክቶፕ አቋራጭ ይፍጠሩ</translation>
 <translation id="8049122382261047457">በGoogle ሌንስ አማካኝነት ማንኛውንም ምስል ይፈልጉ</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>

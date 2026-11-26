@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">Тапсырманы қарап шығыңыз. Gemini-дан сұрау</translation>
 <translation id="1100504063505580045">Қазіргі белгіше</translation>
 <translation id="1101267749138963680">Қауіпсіздік тексеріліп жатыр...</translation>
-<translation id="1102759278139578486">Негізгі түйіннің aннотация файлдарын жүктеп алу мүмкін емес. Кейінірек қайталап көріңіз.</translation>
 <translation id="1103523840287552314">Әрқашан <ph name="LANGUAGE" /> тіліне аудару</translation>
 <translation id="1104098698795583187">Осы қойындылар тобын пайдалану рұқсатынан бірден айырылып қаласыз. Бұл топ барлық құрылғыңыздан жойылады.</translation>
 <translation id="1106270460549661906">Gemini-мен бөлісуді тоқтату</translation>
@@ -653,7 +652,6 @@
 <translation id="1709916727352927457">Кіру кілтін жою</translation>
 <translation id="1712143791363119140">Орындалып жатыр</translation>
 <translation id="1714265454085143857">Бекітілген қойындылар</translation>
-<translation id="1714326320203665217">Негізгі түйіннің aннотация файлдары жүктеп алынды.</translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> және оның орнатылған қолданбасы үшін сайт деректері мен рұқсаттарын жою керек пе?</translation>
 <translation id="1718835860248848330">Соңғы бір сағат</translation>
 <translation id="1720244237656138008">Импрессионизм</translation>
@@ -2957,7 +2955,6 @@
 <translation id="4209251085232852247">Өшірулі</translation>
 <translation id="4210380525132844778">Себеп: <ph name="RULE" /> ережесі "<ph name="LIST_NAME" />" тізімінен табылды.</translation>
 <translation id="4210428686880035809">Сілтемені сол жақ көріністе ашу</translation>
-<translation id="4211362364312260125">Көмекші технология үшін веб-беттердегі негізгі көрнекті белгіні анықтау</translation>
 <translation id="42126664696688958">Экспорттау</translation>
 <translation id="4213540068152645535">Құпия сөз өзгертілмеді</translation>
 <translation id="42137655013211669">Бұл ресурсқа кіруге сервер тыйым салған.</translation>
@@ -3689,7 +3686,6 @@
 <translation id="5012016139642806466">Құпия сөздер және т.б. ақпарат барлық құрылғыда болады.</translation>
 <translation id="5012523644916800014">Құпия сөздер мен кіру кілттерін басқару</translation>
 <translation id="5015344424288992913">Прокси анықталуда…</translation>
-<translation id="5017250179386090956">Негізгі түйіннің aннотация файлдары жүктеп алынып жатыр.</translation>
 <translation id="5017529052065664584">Соңғы 15 минут</translation>
 <translation id="5018207570537526145">Кеңейтім вебсайтын ашу</translation>
 <translation id="5020008942039547742">Басқа терезе таңдау</translation>
@@ -6167,7 +6163,6 @@
 <translation id="7804072833593604762">Қойынды жабық</translation>
 <translation id="7805768142964895445">Күйі</translation>
 <translation id="7805906048382884326">Кеңесті жабу</translation>
-<translation id="7806659658565827531">Негізгі доменді аннотациялау</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> үшін камераға кіру рұқсатын әрдайым беру</translation>
 <translation id="7810202088502699111">Қалқымалы терезелерге бұл бетте тыйым салынған.</translation>
 <translation id="7810951505946824824">Chrome браузері Chromium-нің <ph name="BEGIN_HIGHLIGHT" />ашық кодты бағдарлама<ph name="END_HIGHLIGHT" /> жобасы мен басқа ашық кодты бағдарлама негізінде жасалды.</translation>
@@ -6393,7 +6388,6 @@
 <translation id="8045752459073395242">Жасампаз AI-ды жұмыста пайдалану туралы толық ақпарат</translation>
 <translation id="8045923671629973368">Қолданба идентификаторын немесе вебдүкеннің URL мекенжайын енгізіңіз</translation>
 <translation id="804786196054284061">Түпкі пайдаланушының лицензия туралы келісімі</translation>
-<translation id="8048596485169033655">Негізгі түйіннің aннотация файлдары жүктеп алынып жатыр… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Осы профильге тікелей кіру үшін құрылғыңызда жұмыс үстелі таңбашасын жасаңыз.</translation>
 <translation id="8049122382261047457">Google Lens арқылы кез келген кескінді іздеу</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>

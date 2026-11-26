@@ -100,7 +100,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1100040363679327583">Granska uppgiften. Fråga Gemini</translation>
 <translation id="1100504063505580045">Nuvarande ikon</translation>
 <translation id="1101267749138963680">Kontrollerar säkerheten …</translation>
-<translation id="1102759278139578486">Det gick inte att ladda ned kommentarsfiler för huvudnoden. Försök igen senare.</translation>
 <translation id="1103523840287552314">Översätt alltid <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Du förlorar omedelbart åtkomst till flikgruppen och den raderas från alla dina enheter</translation>
 <translation id="1106270460549661906">Sluta dela med Gemini</translation>
@@ -662,7 +661,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1709916727352927457">Radera nyckel</translation>
 <translation id="1712143791363119140">Pågår</translation>
 <translation id="1714265454085143857">Fästa flikar</translation>
-<translation id="1714326320203665217">Kommentarsfiler för huvudnoden har laddats ned</translation>
 <translation id="1716034099915639464">Vill du radera webbplatsdata och behörigheter för <ph name="SITE_NAME" /> och den tillhörande installerade appen?</translation>
 <translation id="1718835860248848330">Senaste timmen</translation>
 <translation id="1720244237656138008">Impressionism</translation>
@@ -2972,7 +2970,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4209251085232852247">Inaktiverade</translation>
 <translation id="4210380525132844778">Orsak: <ph name="RULE" /> hittades i listan <ph name="LIST_NAME" />.</translation>
 <translation id="4210428686880035809">Öppna länken i vänster vy</translation>
-<translation id="4211362364312260125">Identifiera det viktigaste landmärket på webbsidor för hjälpmedelsteknik</translation>
 <translation id="42126664696688958">Exportera</translation>
 <translation id="4213540068152645535">Problem med att ändra lösenordet</translation>
 <translation id="42137655013211669">Åtkomsten till den här resursen blockerades av servern.</translation>
@@ -3705,7 +3702,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5012016139642806466">Använd dina lösenord med mera på alla dina enheter</translation>
 <translation id="5012523644916800014">Hantera lösenord och nycklar</translation>
 <translation id="5015344424288992913">Tolkar proxy...</translation>
-<translation id="5017250179386090956">Laddar ned kommentarsfiler för huvudnod</translation>
 <translation id="5017529052065664584">De senaste 15 minuterna</translation>
 <translation id="5018207570537526145">Öppna webbplatsen för tillägget</translation>
 <translation id="5020008942039547742">Välj ett annat fönster</translation>
@@ -6188,7 +6184,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="7804072833593604762">Fliken har stängts</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Stäng tips</translation>
-<translation id="7806659658565827531">Kommentera huvudnod</translation>
 <translation id="7807711621188256451">Låt alltid <ph name="HOST" /> använda din kamera</translation>
 <translation id="7810202088502699111">Popup-fönster är blockerade på den här sidan.</translation>
 <translation id="7810951505946824824">Chrome finns tack vare det öppna källkodsprojektet Chromium och annan mjukvara med <ph name="BEGIN_HIGHLIGHT" />öppen källkod<ph name="END_HIGHLIGHT" />.</translation>
@@ -6414,7 +6409,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8045752459073395242">Läs mer om att använda generativ AI på jobbet</translation>
 <translation id="8045923671629973368">Ange program-id eller adress i webbutik</translation>
 <translation id="804786196054284061">Licensavtal för slutanvändare</translation>
-<translation id="8048596485169033655">Laddar ned kommentarsfiler för huvudnod … <ph name="PERCENT" /> %</translation>
 <translation id="8048977114738515028">Skapa en skrivbordsgenväg direkt till den här profilen på din enhet.</translation>
 <translation id="8049122382261047457">Sök med valfri bild med Google Lens</translation>
 <translation id="8050038245906040378">Microsofts kommersiella kodsignering</translation>

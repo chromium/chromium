@@ -100,7 +100,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1100040363679327583">Semak tugasan. Minta Gemini</translation>
 <translation id="1100504063505580045">Ikon semasa</translation>
 <translation id="1101267749138963680">Menyemak keselamatan...</translation>
-<translation id="1102759278139578486">Tidak dapat memuat turun fail anotasi nod utama. Cuba lagi nanti.</translation>
 <translation id="1103523840287552314">Sentiasa terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Anda akan kehilangan akses kepada kumpulan tab ini dengan serta-merta dan kumpulan tab ini akan dipadamkan daripada semua peranti anda</translation>
 <translation id="1106270460549661906">Nyahkongsi dengan Gemini</translation>
@@ -662,7 +661,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1709916727352927457">Padamkan kunci laluan</translation>
 <translation id="1712143791363119140">Dalam Proses</translation>
 <translation id="1714265454085143857">Tab yang disematkan</translation>
-<translation id="1714326320203665217">Fail anotasi nod utama telah dimuat turun</translation>
 <translation id="1716034099915639464">Padamkan data laman dan kebenaran untuk <ph name="SITE_NAME" /> dan apl yang dipasang laman tersebut?</translation>
 <translation id="1718835860248848330">Jam terakhir</translation>
 <translation id="1720244237656138008">Impresionisme</translation>
@@ -2975,7 +2973,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4209251085232852247">Dimatikan</translation>
 <translation id="4210380525132844778">Sebab: <ph name="RULE" /> ditemukan dalam senarai "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Buka Pautan dalam Paparan Kiri</translation>
-<translation id="4211362364312260125">Kenal pasti tanda tempat utama dalam halaman web untuk teknologi bantu</translation>
 <translation id="42126664696688958">Eksport</translation>
 <translation id="4213540068152645535">Masalah semasa menukar kata laluan anda</translation>
 <translation id="42137655013211669">Akses kepada sumber ini dilarang oleh pelayan.</translation>
@@ -3709,7 +3706,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5012016139642806466">Dapatkan kata laluan anda dan pelbagai lagi pada semua peranti anda</translation>
 <translation id="5012523644916800014">Urus kata laluan dan kunci laluan</translation>
 <translation id="5015344424288992913">Menyelesaikan proksi...</translation>
-<translation id="5017250179386090956">Memuat turun fail anotasi nod utama</translation>
 <translation id="5017529052065664584">15 minit yang lalu</translation>
 <translation id="5018207570537526145">Buka laman web sambungan</translation>
 <translation id="5020008942039547742">Pilih tetingkap lain</translation>
@@ -6196,7 +6192,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="7804072833593604762">Tab Ditutup</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Tutup petua</translation>
-<translation id="7806659658565827531">Anotasi nod utama</translation>
 <translation id="7807711621188256451">Sentiasa benarkan <ph name="HOST" /> mengakses kamera anda</translation>
 <translation id="7810202088502699111">Pop muncul disekat pada halaman ini.</translation>
 <translation id="7810951505946824824">Chrome berjaya dilaksanakan melalui projek sumber terbuka Chromium dan perisian <ph name="BEGIN_HIGHLIGHT" />sumber terbuka<ph name="END_HIGHLIGHT" /> yang lain.</translation>
@@ -6422,7 +6417,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8045752459073395242">Ketahui AI generatif di tempat kerja dengan lebih lanjut</translation>
 <translation id="8045923671629973368">Masukkan ID aplikasi atau URL gedung web</translation>
 <translation id="804786196054284061">Perjanjian Lesen Pengguna Akhir</translation>
-<translation id="8048596485169033655">Memuat turun fail anotasi nod utama… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Buat pintasan desktop pada peranti anda untuk terus mengakses profil ini</translation>
 <translation id="8049122382261047457">Cari apa-apa imej dengan Google Lens</translation>
 <translation id="8050038245906040378">Menandatangani Kod Komersial Microsoft</translation>

@@ -78,6 +78,7 @@
 <translation id="112840717907525620">정책 캐시 확인</translation>
 <translation id="1131264053432022307">복사한 이미지</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: 전체 화면을 종료하려면 상단에서 드래그한 후 뒤로 버튼을 터치하세요.</translation>
+<translation id="1132789342529761192">업로드는 권장되지 않음</translation>
 <translation id="11370190534773372">카드 세부정보 입력됨</translation>
 <translation id="1138458427267715730">웹에 가격이 인하된 사이트가 있으면 알림이 전송됩니다.</translation>
 <translation id="1142713751288681188">용지 종류</translation>
@@ -604,6 +605,7 @@
 <translation id="2025891858974379949">안전하지 않은 콘텐츠</translation>
 <translation id="2027465737841872819">플라스틱</translation>
 <translation id="2027707238798802149">카드를 사용할 수 없음</translation>
+<translation id="2028329426302356196">다운로드는 권장되지 않음</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />프록시 및 방화벽 확인<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">이 Chrome 인스턴스는 수동으로 설정된 명령줄 플래그를 사용하여 실행 중입니다. 명령줄 플래그는 언제든지 변경될 수 있으며, 지원되지 않습니다.</translation>
 <translation id="2033900728810589426">바로가기는 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />에서 정의한 기본 검색 공급자 키워드와 같을 수 없습니다. <ph name="SHORTCUT_NAME" /></translation>
@@ -1457,6 +1459,7 @@
 <translation id="3443504041532578451">광디스크(새틴)</translation>
 <translation id="3447661539832366887">이 기기의 소유자가 공룡 게임을 사용 중지했습니다.</translation>
 <translation id="3447884698081792621">인증서 표시(발급 기관: <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">인쇄는 권장되지 않음</translation>
 <translation id="3450323514459570273">MIDI 기기 제어 및 재프로그래밍을 요청할 수 있음</translation>
 <translation id="3452404311384756672">가져오기 간격:</translation>
 <translation id="345268527248907593">이 사이트에 연결할 수 없음</translation>
@@ -2918,6 +2921,7 @@
 <translation id="5851548754964597211">탭 목록</translation>
 <translation id="5851868085455377790">발행기관</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">복사는 권장되지 않음</translation>
 <translation id="5860491529813859533">사용</translation>
 <translation id="5862579898803147654">스태커 8</translation>
 <translation id="5863515189965725638">IBAN 수정</translation>

@@ -71,6 +71,7 @@
 <translation id="1792680680989393197">언제든지 삭제할 수 있습니다. 사이트 또는 기능에 필요한 경우 Chromium에서 자동으로 다시 다운로드할 수 있습니다.</translation>
 <translation id="1793486931176048546">빠른 액세스를 위해 Windows 알림에서 <ph name="BEGIN_BOLD" />예<ph name="END_BOLD" /> 버튼을 클릭하여 Chromium을 태스크 바에 고정합니다.</translation>
 <translation id="1808667845054772817">Chromium 재설치</translation>
+<translation id="1814482312667514397">휴대전화에서 Chromium 앱을 사용하여 이동 중에도 Chromium 최고의 안전 기능을 이용하세요</translation>
 <translation id="1820835682567584003">Chromium에서 <ph name="AUTHENTICATION_PURPOSE" />을(를) 시도하는 중입니다.</translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chromium에 로그인하세요. 이렇게 하면 <ph name="DEVICE" />에서 내 확장 프로그램 등을 사용할 수 있습니다.</translation>
 <translation id="183031085822326697">다음번에 <ph name="DEVICE_TYPE" />에서 Chromium을 열면 Google 비밀번호 관리자를 사용하라는 메시지가 표시됩니다.</translation>
@@ -134,6 +135,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{하나 이상의 Chromium 확장 프로그램에서 HID 기기 1대에 액세스함}=1{하나 이상의 Chromium 확장 프로그램에서 HID 기기 1대에 액세스 중}other{하나 이상의 Chromium 확장 프로그램에서 HID 기기 #대에 액세스 중}}</translation>
 <translation id="2401032172288869980">Chromium에서 사이트에 대한 카메라 및 마이크 권한이 필요합니다.</translation>
 <translation id="2403703063067034158">시작 오류: 현재 다른 설정 인스턴스가 실행 중입니다. 나중에 다시 시도해 주세요.</translation>
+<translation id="241044568699443215"><ph name="DEVICE_TYPE" />에서 Chromium 앱을 사용하여 이동 중에도 Chromium의 안전 기능을 이용하세요</translation>
 <translation id="2418322681019544463">모든 앱에서 Chromium으로 링크를 열고 작업 표시줄에서 브라우저에 계속 액세스할 수 있습니다</translation>
 <translation id="2425157128016763890">요약 버튼을 클릭하여 Chromium의 Gemini와 이 문서를 공유하고 간략한 개요를 확인한 후 후속 질문을 하세요.</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromium의 도구<ph name="END_LINK" />로 안전하게 탐색하고 관리할 수 있습니다.</translation>
@@ -519,6 +521,7 @@
 <translation id="6598877126913850652">Chromium 알림 설정으로 이동</translation>
 <translation id="6600016381025017075">이 페이지에 표시된 모든 항목을 검색하세요</translation>
 <translation id="6613594504749178791">변경사항은 다음에 Chromium을 다시 시작할 때 적용됩니다.</translation>
+<translation id="6637855549677695722">다음번에 <ph name="DEVICE_TYPE" />에서 Chromium을 열면 Chromium의 가장 강력한 안전 기능을 활성화하라는 메시지가 표시됩니다.</translation>
 <translation id="6637908313088374648">이제 Windows 시작 시 Chromium이 실행되므로 즉시 탐색을 시작할 수 있습니다. 설정에서 이 기능을 사용 중지할 수 있습니다</translation>
 <translation id="6644846457769259194">기기 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium에서 주변의 3D 지도를 만들려면 카메라 권한이 필요합니다.</translation>
@@ -752,6 +755,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8907580949721785412">Chromium에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="8910309838319708610">완료 이제 검색 AI 모드를 사용해 탐색 중에도 쉽게 질문할 수 있습니다.</translation>
 <translation id="8932992523185907506">Chromium이 더 이상 기본 브라우저가 아닙니다. Chromium을 기본 브라우저로 설정하시겠습니까?</translation>
+<translation id="8940844567350264767">이동 중에도 Chromium 앱을 사용해 Chromium 최고의 안전 기능을 이용하세요.</translation>
 <translation id="8941642502866065432">Chromium을 업데이트하지 못함</translation>
 <translation id="8944232836376404813">이 작업으로 인해 나타날 수 있는 결과는 다음과 같습니다.
           <ph name="LINE_BREAKS" />

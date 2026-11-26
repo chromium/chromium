@@ -972,6 +972,11 @@ Nilai minimumnya adalah 1 menit.
       Jika kebijakan ini disetel ke Salah (False), pengguna tidak akan dapat menambahkan dan mengonfigurasi printernya sendiri. Pengguna juga tidak akan dapat mencetak menggunakan printer yang telah dikonfigurasikan sebelumnya.
       </translation>
 <translation id="1613327425322354195">Melaporkan status keamanan perangkat</translation>
+<translation id="1613552398317518165">Kebijakan ini sudah tidak digunakan lagi dan tidak berpengaruh. Permintaan penelusuran default selalu dikirim menggunakan metode GET, sehingga parameter yang ditentukan oleh kebijakan ini tidak akan pernah diterapkan. Sebagai gantinya, gunakan <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> untuk mengonfigurasi URL penelusuran, termasuk placeholder <ph name="SEARCH_TERM_MARKER" />.
+
+Parameter POST hanya didukung untuk penelusuran gambar, melalui <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Sebelumnya, jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, setelan <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> dimaksudkan untuk menentukan parameter saat menelusuri URL dengan POST, sebagai pasangan nama-nilai yang dipisahkan koma.</translation>
 <translation id="1615221548356595305">Izinkan koneksi HTTP/2 bergabung untuk host ini bahkan saat sertifikat klien digunakan</translation>
 <translation id="1616280227447957376">Mengizinkan untuk melanjutkan dari halaman peringatan SSL di asal tertentu</translation>
 <translation id="1617235075406854669">Aktifkan penghapusan histori download atau browser</translation>
@@ -6225,6 +6230,11 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER
 <translation id="4725801978265372736">Wajibkan pencocokan nama pengguna lokal dengan pemilik host akses jarak jauh</translation>
 <translation id="4726228171190098009">Jangan izinkan perangkat meminta powerwash</translation>
 <translation id="4726895359147376813">Pemetaan dari ID persisten ke konfigurasi VM</translation>
+<translation id="473189306848333308">Kebijakan ini sudah tidak digunakan lagi dan tidak berpengaruh. Permintaan saran selalu dikirim menggunakan metode GET, sehingga parameter yang ditentukan oleh kebijakan ini tidak akan pernah diterapkan. Sebagai gantinya, gunakan <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> untuk mengonfigurasi URL saran, termasuk placeholder <ph name="SEARCH_TERM_MARKER" />.
+
+Parameter POST hanya didukung untuk penelusuran gambar, melalui <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Sebelumnya, jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, setelan <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> dimaksudkan untuk menentukan parameter selama penelusuran yang disarankan dengan POST, sebagai pasangan nama-nilai yang dipisahkan koma.</translation>
 <translation id="4732069502693984686">Mengaktifkan screenshot otomatis beberapa layar</translation>
 <translation id="4733471537137819387">Kebijakan yang terkait dengan autentikasi HTTP terintegrasi.</translation>
 <translation id="4737832614429402441">Gunakan Nilai Default untuk perjanjian kunci pasca-kuantum untuk koneksi TLS</translation>
@@ -8453,6 +8463,15 @@ Jika disetel ke salah (false), pengajar tidak dapat mengakses fitur ini.</transl
 <translation id="6075316301208933536">Jika <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> disetel ke <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, menyetel <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> akan menyesuaikan waktu berhenti pengisian daya baterai, berdasarkan persentase pengisian daya baterai. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> harus setidaknya 5 persen di bawah <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Tidak menyetel kebijakan akan memberlakukan mode pengisian daya baterai <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />.</translation>
+<translation id="6077759101739558312">Jika kebijakan ini disetel ke Aktif, Safe Browsing akan memercayai domain yang Anda tentukan. Safe Browsing tidak akan memeriksa domain tersebut untuk menemukan resource berbahaya seperti phishing, malware, atau software yang tidak diinginkan. Layanan perlindungan download Safe Browsing (tidak didukung di iOS) tidak akan memeriksa file hasil download yang dihosting di domain ini. Layanan perlindungan sandi Safe Browsing tidak akan memeriksa penggunaan ulang sandi.
+
+Jika kebijakan ini tidak disetel, perlindungan Safe Browsing default akan berlaku untuk semua resource.
+
+Kebijakan ini tidak mendukung ekspresi reguler, tetapi subdomain dari domain yang ditentukan akan masuk ke daftar yang diizinkan. Nama domain yang sepenuhnya memenuhi syarat (FQDN) tidak diwajibkan.
+
+Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6082161804984853051">Jika kebijakan ditetapkan, <ph name="PRODUCT_NAME" /> akan menggunakan direktori yang Anda sediakan untuk menyimpan file cache di disk, baik pengguna menentukan tanda --dir-cache-disk maupun tidak.
 
       Jika tidak ditetapkan, <ph name="PRODUCT_NAME" /> akan menggunakan direktori cache default, tetapi pengguna dapat mengubah setelan tersebut dengan tanda command line --dir-cache-disk.

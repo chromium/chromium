@@ -100,7 +100,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1100040363679327583">Zkontrolujte úkol. Zeptat se Gemini</translation>
 <translation id="1100504063505580045">Aktuální ikona</translation>
 <translation id="1101267749138963680">Kontrola bezpečnosti…</translation>
-<translation id="1102759278139578486">Soubory s poznámkami k hlavnímu uzlu nelze stáhnout. Zkuste to později.</translation>
 <translation id="1103523840287552314">Vždy překládat jazyk <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">K této skupině karet okamžitě ztratíte přístup a bude smazána ze všech vašich zařízení</translation>
 <translation id="1106270460549661906">Zrušit sdílení s Gemini</translation>
@@ -653,7 +652,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1709916727352927457">Smazat přístupový klíč</translation>
 <translation id="1712143791363119140">Probíhá</translation>
 <translation id="1714265454085143857">Připnuté karty</translation>
-<translation id="1714326320203665217">Soubory s poznámkami k hlavnímu uzlu byly staženy</translation>
 <translation id="1716034099915639464">Vymazat data a oprávnění webu <ph name="SITE_NAME" /> a jeho nainstalované aplikace?</translation>
 <translation id="1718835860248848330">Poslední hodina</translation>
 <translation id="1720244237656138008">Impresionismus</translation>
@@ -2956,7 +2954,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="4209251085232852247">Vypnuto</translation>
 <translation id="4210380525132844778">Důvod: Pravidlo <ph name="RULE" /> bylo nalezeno v seznamu <ph name="LIST_NAME" />.</translation>
 <translation id="4210428686880035809">Otevřít odkaz v levém zobrazení</translation>
-<translation id="4211362364312260125">Identifikovat na webových stránkách hlavní orientační bod pro asistenční technologie</translation>
 <translation id="42126664696688958">Exportovat</translation>
 <translation id="4213540068152645535">Při změně hesla se vyskytly potíže</translation>
 <translation id="42137655013211669">Server zakázal přístup k tomuto zdroji.</translation>
@@ -3688,7 +3685,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="5012016139642806466">Mějte svá hesla a další obsah na všech svých zařízeních</translation>
 <translation id="5012523644916800014">Spravovat hesla a přístupové klíče</translation>
 <translation id="5015344424288992913">Rozpoznávání proxy serveru...</translation>
-<translation id="5017250179386090956">Stahování souborů s poznámkami k hlavnímu uzlu</translation>
 <translation id="5017529052065664584">Posledních 15 minut</translation>
 <translation id="5018207570537526145">Otevřít web rozšíření</translation>
 <translation id="5020008942039547742">Vybrat jiné okno</translation>
@@ -6171,7 +6167,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="7804072833593604762">Karta zavřena</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7805906048382884326">Zavřít tip</translation>
-<translation id="7806659658565827531">Popsat hlavní uzel</translation>
 <translation id="7807711621188256451">Vždy povolit webu <ph name="HOST" /> přístup ke kameře</translation>
 <translation id="7810202088502699111">Na této stránce byla zablokována vyskakovací okna.</translation>
 <translation id="7810951505946824824">Chrome staví na projektu s otevřeným zdrojovým kódem Chromium a využívá i další <ph name="BEGIN_HIGHLIGHT" />open source<ph name="END_HIGHLIGHT" /> software.</translation>
@@ -6397,7 +6392,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8045752459073395242">Další informace o používání generativní umělé inteligence v práci</translation>
 <translation id="8045923671629973368">Zadejte identifikátor aplikace nebo URL internetového obchodu</translation>
 <translation id="804786196054284061">Licenční smlouva s koncovým uživatelem</translation>
-<translation id="8048596485169033655">Stahování souborů s poznámkami k hlavnímu uzlu… <ph name="PERCENT" /> %</translation>
 <translation id="8048977114738515028">Přidat na plochu zařízení zástupce k přímému otevření tohoto profilu</translation>
 <translation id="8049122382261047457">Vyhledejte pomocí Google Lens jakýkoliv obrázek</translation>
 <translation id="8050038245906040378">Komerční podepisování kódu Microsoft</translation>

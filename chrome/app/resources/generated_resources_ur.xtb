@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">‏ٹاسک کا جائزہ لیں۔ ‫Gemini سے پوچھیں</translation>
 <translation id="1100504063505580045">موجودہ آئیکن</translation>
 <translation id="1101267749138963680">حفاظت کی جانچ کی جا رہی ہے...</translation>
-<translation id="1102759278139578486">اصل نوڈ تشریح والی فائلوں کو ڈاؤن لوڈ نہیں کیا جا سکتا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> کو ہمیشہ ترجمہ کریں</translation>
 <translation id="1104098698795583187">آپ فوری طور پر اس ٹیب گروپ تک رسائی سے محروم ہو جائیں گے اور اسے آپ کے تمام آلات سے حذف کر دیا جائے گا</translation>
 <translation id="1106270460549661906">‏‫Gemini کے ساتھ اشتراک ختم کریں</translation>
@@ -653,7 +652,6 @@
 <translation id="1709916727352927457">پاس کی حذف کریں</translation>
 <translation id="1712143791363119140">پیش رفت میں ہے</translation>
 <translation id="1714265454085143857">پن کردہ ٹیبز</translation>
-<translation id="1714326320203665217">اصل نوڈ تشریحی فائلیں ڈاؤن لوڈ ہو گئیں</translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> اور اس کی انسٹال کردہ ایپ کے لیے سائٹ کا ڈیٹا اور اجازتیں حذف کریں؟</translation>
 <translation id="1718835860248848330">پچھلے گھنٹے</translation>
 <translation id="1720244237656138008">تاثریت</translation>
@@ -2957,7 +2955,6 @@
 <translation id="4209251085232852247">آف ہے</translation>
 <translation id="4210380525132844778">وجہ: "<ph name="LIST_NAME" />" کی فہرست میں <ph name="RULE" /> پایا گیا۔</translation>
 <translation id="4210428686880035809">بائیں منظر میں لنک کھولیں</translation>
-<translation id="4211362364312260125">مددگار ٹیکنالوجی کے لیے ویب صفحات میں اہم لینڈ مارک کی شناخت کریں</translation>
 <translation id="42126664696688958">برآمد کریں</translation>
 <translation id="4213540068152645535">آپ کا پاس ورڈ تبدیل کرنے میں دشواری</translation>
 <translation id="42137655013211669">سرور نے اس ماخذ تک رسائی کو ممنوع کر دیا۔</translation>
@@ -3689,7 +3686,6 @@
 <translation id="5012016139642806466">اپنے تمام آلات پر اپنے پاس ورڈز وغیرہ حاصل کریں</translation>
 <translation id="5012523644916800014">پاس ورڈز اور پاس کیز کا نظم کریں</translation>
 <translation id="5015344424288992913">پراکسی کو حل کیا جا رہا ہے…</translation>
-<translation id="5017250179386090956">اصل نوڈ تشریح والی فائلز ڈاؤن لوڈ ہو رہی ہیں</translation>
 <translation id="5017529052065664584">آخری 15 منٹ</translation>
 <translation id="5018207570537526145">ایکسٹینشن ویب سائٹ کھولیں</translation>
 <translation id="5020008942039547742">مختلف ونڈو منتخب کریں</translation>
@@ -6170,7 +6166,6 @@
 <translation id="7804072833593604762">ٹیب بند ہو گیا</translation>
 <translation id="7805768142964895445">صورتحال</translation>
 <translation id="7805906048382884326">ٹپ بند کریں</translation>
-<translation id="7806659658565827531">اصل نوڈ کی تشریح کریں</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> کو ہمیشہ اپنے کیمرے تک رسائی حاصل کرنے کی اجازت دیں</translation>
 <translation id="7810202088502699111">پاپ اپس کو اس صفحہ پر مسدود کر دیا گیا۔</translation>
 <translation id="7810951505946824824">‏‫Chrome کو Chromium اوپن سورس پروجیکٹ اور دیگر <ph name="BEGIN_HIGHLIGHT" />اوپن سورس<ph name="END_HIGHLIGHT" /> سافٹ ویئر کے ذریعے ممکن بنایا گیا ہے۔</translation>
@@ -6396,7 +6391,6 @@
 <translation id="8045752459073395242">‏کام پر تخلیق کر سکنے والا AI استعمال کرنے کے بارے میں مزید جانیں</translation>
 <translation id="8045923671629973368">‏ایپلیکیشن ID یا ویب اسٹور URL درج کریں</translation>
 <translation id="804786196054284061">انتہائی صارف کے لائسنس کا اقرار نامہ</translation>
-<translation id="8048596485169033655">اصل نوڈ تشریح والی فائلز ڈاؤن لوڈ ہو رہی ہے… <ph name="PERCENT" /> فیصد</translation>
 <translation id="8048977114738515028">اس پروفائل تک براہ راست رسائی حاصل کرنے کے لیے اپنے آلے پر ایک ڈیسک ٹاپ شارٹ کٹ بنائیں</translation>
 <translation id="8049122382261047457">‏Google لینز کے ساتھ کوئی بھی تصویر تلاش کریں</translation>
 <translation id="8050038245906040378">‏Microsoft تجارتی کوڈ سائننگ</translation>

@@ -100,7 +100,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1100040363679327583">Analisar tarefa. Peça ao Gemini</translation>
 <translation id="1100504063505580045">Ícone atual</translation>
 <translation id="1101267749138963680">Verificando a segurança…</translation>
-<translation id="1102759278139578486">Não foi possível baixar os arquivos de anotações do nó principal. Tente de novo mais tarde.</translation>
 <translation id="1103523840287552314">Sempre traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Você vai perder imediatamente o acesso a este grupo de guias, e ele será excluído de todos seus dispositivos</translation>
 <translation id="1106270460549661906">Cancelar o compartilhamento com o Gemini</translation>
@@ -662,7 +661,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1709916727352927457">Excluir chave de acesso</translation>
 <translation id="1712143791363119140">Em andamento</translation>
 <translation id="1714265454085143857">Guias fixadas</translation>
-<translation id="1714326320203665217">Os arquivos de anotações do nó principal foram baixados</translation>
 <translation id="1716034099915639464">Excluir permissões e dados do site <ph name="SITE_NAME" /> e do app relacionado instalado?</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1720244237656138008">Impressionismo</translation>
@@ -2972,7 +2970,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="4209251085232852247">Desativado</translation>
 <translation id="4210380525132844778">Motivo: a regra <ph name="RULE" /> foi encontrada na lista "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Abrir link na visualização à esquerda</translation>
-<translation id="4211362364312260125">Identificar o principal ponto de referência em páginas da Web para tecnologia adaptativa</translation>
 <translation id="42126664696688958">Exportar</translation>
 <translation id="4213540068152645535">Ocorreu um problema ao mudar a senha</translation>
 <translation id="42137655013211669">O acesso a este recurso foi proibido pelo servidor.</translation>
@@ -3705,7 +3702,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="5012016139642806466">Acesse suas senhas e muito mais em todos os seus dispositivos</translation>
 <translation id="5012523644916800014">Gerenciar senhas e chaves de acesso</translation>
 <translation id="5015344424288992913">Resolvendo proxy...</translation>
-<translation id="5017250179386090956">Baixando os arquivos de anotações do nó principal</translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5018207570537526145">Abrir o site da extensão</translation>
 <translation id="5020008942039547742">Escolher outra janela</translation>
@@ -6191,7 +6187,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="7804072833593604762">Guia fechada</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Fechar dica</translation>
-<translation id="7806659658565827531">Anotar o nó principal</translation>
 <translation id="7807711621188256451">Sempre permitir que <ph name="HOST" /> acesse sua câmera</translation>
 <translation id="7810202088502699111">As pop-ups foram bloqueadas nesta página.</translation>
 <translation id="7810951505946824824">O Chrome se tornou possível graças a projetos de <ph name="BEGIN_HIGHLIGHT" />código aberto<ph name="END_HIGHLIGHT" />, como o Chromium e outros softwares.</translation>
@@ -6417,7 +6412,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8045752459073395242">Saiba mais sobre como usar a IA generativa no trabalho</translation>
 <translation id="8045923671629973368">Informe o ID do aplicativo ou o URL da loja on-line</translation>
 <translation id="804786196054284061">Contrato de licença do usuário final</translation>
-<translation id="8048596485169033655">Baixando os arquivos de anotações do nó principal… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Criar um atalho na área de trabalho no seu dispositivo para acessar este perfil diretamente</translation>
 <translation id="8049122382261047457">Pesquise qualquer imagem com o Google Lens</translation>
 <translation id="8050038245906040378">Assinatura do código comercial da Microsoft</translation>

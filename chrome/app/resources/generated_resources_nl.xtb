@@ -100,7 +100,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1100040363679327583">Taak controleren. Vraag het Gemini</translation>
 <translation id="1100504063505580045">Huidig icoon</translation>
 <translation id="1101267749138963680">Checken op veiligheid...</translation>
-<translation id="1102759278139578486">Kan annotatiebestanden voor hoofdknooppunt niet downloaden. Probeer het later opnieuw.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> altijd vertalen</translation>
 <translation id="1104098698795583187">Je raakt meteen de toegang tot deze tabbladgroep kwijt en de groep wordt verwijderd van al je apparaten</translation>
 <translation id="1106270460549661906">Delen met Gemini ongedaan maken</translation>
@@ -653,7 +652,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1709916727352927457">Toegangscode verwijderen</translation>
 <translation id="1712143791363119140">Bezig</translation>
 <translation id="1714265454085143857">Vastgezette tabbladen</translation>
-<translation id="1714326320203665217">Annotatiebestanden voor hoofdknooppunt gedownload</translation>
 <translation id="1716034099915639464">Sitegegevens en rechten verwijderen voor <ph name="SITE_NAME" /> en de geïnstalleerde app?</translation>
 <translation id="1718835860248848330">Afgelopen uur</translation>
 <translation id="1720244237656138008">Impressionisme</translation>
@@ -2956,7 +2954,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4209251085232852247">Uitgezet</translation>
 <translation id="4210380525132844778">Reden: <ph name="RULE" /> is gevonden in de lijst <ph name="LIST_NAME" />.</translation>
 <translation id="4210428686880035809">Link openen in weergave links</translation>
-<translation id="4211362364312260125">Het belangrijkste oriëntatiepunt op webpagina's identificeren voor ondersteunende technologie</translation>
 <translation id="42126664696688958">Exporteren</translation>
 <translation id="4213540068152645535">Problemen met het wijzigen van je wachtwoord</translation>
 <translation id="42137655013211669">De toegang tot deze bron is verboden door de server.</translation>
@@ -3688,7 +3685,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="5012016139642806466">Gebruik onder andere je wachtwoorden op al je apparaten</translation>
 <translation id="5012523644916800014">Wachtwoorden en toegangssleutels beheren</translation>
 <translation id="5015344424288992913">Proxy laden...</translation>
-<translation id="5017250179386090956">Annotatiebestanden voor hoofdknooppunt downloaden</translation>
 <translation id="5017529052065664584">Afgelopen 15 minuten</translation>
 <translation id="5018207570537526145">Website voor extensie openen</translation>
 <translation id="5020008942039547742">Ander venster kiezen</translation>
@@ -6167,7 +6163,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="7804072833593604762">Tabblad gesloten</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Tip sluiten</translation>
-<translation id="7806659658565827531">Hoofdknooppunt annoteren</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> altijd toegang tot je camera geven</translation>
 <translation id="7810202088502699111">Er zijn pop-ups op deze pagina geblokkeerd</translation>
 <translation id="7810951505946824824">Chrome wordt mogelijk gemaakt door het opensource-project Chromium en andere <ph name="BEGIN_HIGHLIGHT" />opensource<ph name="END_HIGHLIGHT" />-software.</translation>
@@ -6393,7 +6388,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8045752459073395242">Meer informatie over het gebruik van generatieve AI op het werk</translation>
 <translation id="8045923671629973368">Geef de app-ID of URL voor Web Store op</translation>
 <translation id="804786196054284061">Licentieovereenkomst voor eindgebruikers</translation>
-<translation id="8048596485169033655">Annotatiebestanden voor hoofdknooppunt downloaden… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Maak een snelkoppeling op je apparaat voor directe toegang tot dit profiel</translation>
 <translation id="8049122382261047457">Zoek een afbeelding met Google Lens</translation>
 <translation id="8050038245906040378">Commerciële handtekening bij programmacode van Microsoft</translation>

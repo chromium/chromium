@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">कार्यको समीक्षा गर्नुहोस्। Gemini लाई सोध्नुहोस्</translation>
 <translation id="1100504063505580045">हालको आइकन</translation>
 <translation id="1101267749138963680">सुरक्षित छ कि छैन भन्ने कुरा जाँच गरिँदै छ...</translation>
-<translation id="1102759278139578486">मुख्य नोड एनोटेसन फाइलहरू डाउनलोड गर्न सकिएन। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1103523840287552314">सँधै अनुवाद गर्नुहोस् <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">तपाईं तुरुन्तै यो ट्याब समूहको एक्सेस गुमाउनु हुने छ र यो ट्याब समूह सबै डिभाइसबाट मेटाइने छ</translation>
 <translation id="1106270460549661906">Gemini सँग अनसेयर गर्नुहोस्</translation>
@@ -654,7 +653,6 @@
 <translation id="1709916727352927457">पासकी मेटाउनुहोस्</translation>
 <translation id="1712143791363119140">चलिरहेको छ</translation>
 <translation id="1714265454085143857">पिन गरिएका ट्याबहरू</translation>
-<translation id="1714326320203665217">मुख्य नोड एनोटेसन फाइलहरू डाउनलोड गरिएका छन्</translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> र इन्स्टल गरिएको सम्बन्धित वेब एपको साइट डेटा मेटाउनुका साथै यो साइट र एपलाई दिइएका अनुमति रद्द गर्ने हो?</translation>
 <translation id="1718835860248848330">पछिल्लो घन्टा</translation>
 <translation id="1720244237656138008">इम्प्रेसनिजम्</translation>
@@ -2956,7 +2954,6 @@
 <translation id="4209251085232852247">अफ छ</translation>
 <translation id="4210380525132844778">कारण: <ph name="RULE" /> "<ph name="LIST_NAME" />" को सूचीमा भेटिएको थियो।</translation>
 <translation id="4210428686880035809">यो लिंक बायाँ भ्यूमा खोल्नुहोस्</translation>
-<translation id="4211362364312260125">सहायक प्रविधिका लागि वेब पेजहरूमा भएको मुख्य ल्यान्डमार्क पहिचान गर्नुहोस्</translation>
 <translation id="42126664696688958">एक्सपोर्ट गर्नुहोस्</translation>
 <translation id="4213540068152645535">तपाईंको पासवर्ड परिवर्तन गर्ने क्रममा समस्या आयो</translation>
 <translation id="42137655013211669">सर्भरद्वारा यो संसाधनमा पहुँच गर्न निषेध गरिएको थियो।</translation>
@@ -3689,7 +3686,6 @@
 <translation id="5012016139642806466">आफ्ना सबै डिभाइसमा आफ्ना पासवर्डलगायतका थप कुराहरू प्राप्त गर्नुहोस्</translation>
 <translation id="5012523644916800014">पासवर्ड तथा पासकीहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5015344424288992913">प्रोक्सी समाधान गर्दै...</translation>
-<translation id="5017250179386090956">मुख्य नोड एनोटेसन फाइलहरू डाउनलोड गरिँदै छन्</translation>
 <translation id="5017529052065664584">पछिल्लो १५ मिनेट</translation>
 <translation id="5018207570537526145">विस्तारको वेबसाइट खोल्नुहोस्</translation>
 <translation id="5020008942039547742">अर्को विन्डो छनौट गर्नुहोस्</translation>
@@ -6169,7 +6165,6 @@
 <translation id="7804072833593604762">ट्याब बन्द गरियो</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7805906048382884326">सुझाव बन्द गर्नुहोस्</translation>
-<translation id="7806659658565827531">मुख्य नोड एनोटेट गर्नुहोस्</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> लाई तपाईंको क्यामेराको पहुँच गर्ने अनुमति सँधै दिनुहोस्</translation>
 <translation id="7810202088502699111">पप-अप यो पेजमा अवरुद्ध भएको थियो ।</translation>
 <translation id="7810951505946824824">Chromium खुला स्रोतको परियोजना र अन्य <ph name="BEGIN_HIGHLIGHT" />खुला स्रोत<ph name="END_HIGHLIGHT" />को सफ्टवेयर प्रयोग गरी Chrome निर्माण गरिएको हो।</translation>
@@ -6395,7 +6390,6 @@
 <translation id="8045752459073395242">कार्यस्थलमा जेनेरेटिभ AI प्रयोग गर्ने बारेमा थप जान्नुहोस्</translation>
 <translation id="8045923671629973368">एपको ID वा वेबस्टोरको URL प्रविष्टि गर्नुहोस्</translation>
 <translation id="804786196054284061">प्रयोगकर्ताको इजाजतपत्रसम्बन्धी सम्झौता</translation>
-<translation id="8048596485169033655">मुख्य नोड एनोटेसन फाइलहरू डाउनलोड गरिँदै छन्… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">सीधै यो प्रोफाइल प्रयोग गरी Chrome चलाउन आफ्नो यन्त्रमा यसको डेस्कटप सर्टकट बनाउनुहोस्</translation>
 <translation id="8049122382261047457">Google लेन्सका सहायताले जुनसुकै फोटो खोज्नुहोस्</translation>
 <translation id="8050038245906040378">Microsoft वाणिज्य कोड सङ्केत</translation>

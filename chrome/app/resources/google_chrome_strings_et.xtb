@@ -455,6 +455,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="568656514202614970">Õnnestus! Nüüd saate külgpaneelil oleva Google'i otsingu kaudu sirvimise ajal hõlpsasti küsimusi esitada</translation>
 <translation id="5686916850681061684">Kohandage ja hallake Google Chrome'i. Miski vajab teie tähelepanu – klõpsake üksikasjade nägemiseks.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">Chrome pakub Google'i parimaid ohutusfunktsioone liikvel olles.</translation>
 <translation id="569897634095159764">Internetiga ei õnnestu ühendust luua. Puhverserver nõuab autentimist.</translation>
 <translation id="5709557627224531708">Määrake Chrome vaikebrauseriks</translation>
 <translation id="5715427327524421317">Chrome laadib need AI-mudelid alla ja värskendab neid automaatselt.</translation>
@@ -620,6 +621,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7099479769133613710">Taaskäivitage &amp;Chrome OS-i värskendamiseks</translation>
 <translation id="7106741999175697885">Tegumihaldur - Google Chrome</translation>
 <translation id="7121179479711575744">Logige Chrome'i sisse</translation>
+<translation id="7137056136322108339">Chrome'i telefonirakendusega kaitsevad Google'i parimad ohutusfunktsioonid teid ka liikvel olles</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel.}=1{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel. Teie inkognito akent ei avata uuesti.}other{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel. Teie # inkognito akent ei avata uuesti.}}</translation>
 <translation id="7161904924553537242">Tere tulemast Google Chrome'i</translation>
 <translation id="7193885263065350793">Teie organisatsioon suleb Chrome'i, kui seda ei kasutata <ph name="TIMEOUT_DURATION" /> jooksul.</translation>

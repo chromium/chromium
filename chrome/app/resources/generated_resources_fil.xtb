@@ -100,7 +100,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1100040363679327583">Suriin ang gawain. Mag-ask sa Gemini</translation>
 <translation id="1100504063505580045">Kasalukuyang icon</translation>
 <translation id="1101267749138963680">Sinusuri ang kaligtasan...</translation>
-<translation id="1102759278139578486">Hindi ma-download ang mga file ng annotation ng pangunahing node. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Mawawalan ka kaagad ng access sa grupo ng tab na ito, at ide-delete ito sa lahat ng device mo</translation>
 <translation id="1106270460549661906">Mag-unshare sa Gemini</translation>
@@ -662,7 +661,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1709916727352927457">I-delete ang passkey</translation>
 <translation id="1712143791363119140">Isinasagawa</translation>
 <translation id="1714265454085143857">Mga naka-pin na tab</translation>
-<translation id="1714326320203665217">Na-download na ang mga file ng annotation ng pangunahing node</translation>
 <translation id="1716034099915639464">I-delete ang data ng site at mga pahintulot para sa <ph name="SITE_NAME" /> at naka-install na app nito?</translation>
 <translation id="1718835860248848330">Huling oras</translation>
 <translation id="1720244237656138008">Impressionism</translation>
@@ -1310,6 +1308,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="244071666433939959">Bubukas ang mga app sa isang window</translation>
 <translation id="2442916515643169563">Shadow ng text</translation>
 <translation id="2443487764245141020">Posibleng kailanganin ng mga site na matukoy ang iyong device sa pamamagitan ng identifier</translation>
+<translation id="2444282212665587861">update, mga update, upgrade, bersyon, build, impormasyon, tingnan kung may mga update</translation>
 <translation id="244475495405467108">Isara ang Mga Tab sa Kaliwa</translation>
 <translation id="2444874983932528148">Madaling makapagpatuloy kung saan ka huminto</translation>
 <translation id="2445081178310039857">Kinakailangan ang pinagmulang direktoryo ng extension.</translation>
@@ -2147,6 +2146,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3321512411079201586">&amp;Naka-isolate</translation>
 <translation id="3323288183237359315">I-install para sa Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Para protektahan ang iyong privacy, inalis ang mga pahintulot sa isang site}one{Para protektahan ang iyong privacy, inalis ang mga pahintulot sa ilang site}other{Para protektahan ang iyong privacy, inalis ang mga pahintulot sa ilang site}}</translation>
+<translation id="3325561120400598624">Sinusuri at ginagamit ang mga chat para i-train ang mga generative AI model. AI ang Gemini at puwede itong magkamali. Posibleng hindi naaangkop para sa lahat ang ilang content. Puwede mong <ph name="BEGIN_LINK_MANAGE_HISTORY" />pamahalaan ang iyong history<ph name="END_LINK_MANAGE_HISTORY" />, kasama ang <ph name="BEGIN_LINK_LOCATION_INFO" />impormasyon tungkol sa lokasyon mo<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa tungkol sa iyong mga pagpipilian<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Istilo</translation>
 <translation id="3331974543021145906">Impormasyon ng app</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Nagpe-play ang video sa picture-in-picture mode</translation>
@@ -2272,6 +2272,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Mag-upload ng 1 .pdf file na gagamitin sa iyong tanong}one{Mag-upload ng hanggang # .pdf file na gagamitin sa iyong tanong}other{Mag-upload ng hanggang # na .pdf file na gagamitin sa iyong tanong}}</translation>
 <translation id="3456750372063895499">Buksan ang Link sa I&amp;solated Window</translation>
 <translation id="345693547134384690">Buksan ang &amp;imahe sa bagong tab</translation>
+<translation id="3456949031754827166">Muling ayusin</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Panatilihin ang Grupo}one{Panatilihin ang Mga Grupo}other{Panatilihin ang Mga Grupo}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Na-delete ang 1 bookmark}one{Na-delete ang # bookmark}other{Na-delete ang # na bookmark}}</translation>
 <translation id="3471687177769494956">I-edit ang shortcut sa pag-navigate</translation>
@@ -2972,7 +2973,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="4209251085232852247">Naka-off</translation>
 <translation id="4210380525132844778">Dahilan: Nakita ang <ph name="RULE" /> sa listahang "<ph name="LIST_NAME" />."</translation>
 <translation id="4210428686880035809">Buksan ang Link sa Kaliwang View</translation>
-<translation id="4211362364312260125">Tukuyin ang pangunahing landmark sa mga web page para sa pantulong na teknolohiya</translation>
 <translation id="42126664696688958">I-export</translation>
 <translation id="4213540068152645535">Nagkakaproblema sa pagpapalit ng iyong password</translation>
 <translation id="42137655013211669">Ipinagbabawal ng server ang access sa mapagkukunang ito.</translation>
@@ -3326,6 +3326,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="4602776638371779614">Aktibong nagsa-scan ang tab na ito para sa mga Bluetooth device</translation>
 <translation id="4605026046465576953">Hindi mabubuksan ang app na ito dahil wala kang pahintulot para magpatakbo ng mga naka-isolate na web app</translation>
 <translation id="4606551464649945562">Huwag payagan ang mga site na gumawa ng 3D na mapa ng iyong kapaligiran o subaybayan ang posisyon ng camera</translation>
+<translation id="4606965546067937011">bilis, RAM, lag, pag-freeze, pag-crash, resource, paggamit, baterya, optimizer, mabagal, memory, memory saver</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{I-delete ang grupo ng tab?}one{I-delete ang mga grupo ng tab?}other{I-delete ang mga grupo ng tab?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Mag-upload ng 1 file na gagamitin sa iyong tanong}one{Mag-upload ng hanggang # file na gagamitin sa iyong tanong}other{Mag-upload ng hanggang # na file na gagamitin sa iyong tanong}}</translation>
 <translation id="4608500690299898628">&amp;Hanapin...</translation>
@@ -3705,7 +3706,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="5012016139642806466">Makuha ang iyong mga password at higit pa sa lahat ng device mo</translation>
 <translation id="5012523644916800014">Pamahalaan ang mga password at passkey</translation>
 <translation id="5015344424288992913">Nilulutas ang proxy...</translation>
-<translation id="5017250179386090956">Dina-download ang mga file ng annotation ng pangunahing node</translation>
 <translation id="5017529052065664584">Nakalipas na 15 minuto</translation>
 <translation id="5018207570537526145">Buksan ang website ng extension</translation>
 <translation id="5020008942039547742">Pumili ng ibang window</translation>
@@ -4159,6 +4159,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="5535769176698670170">I-swap sa view sa itaas</translation>
 <translation id="5536642445914063887">Lumipat ng Profile</translation>
 <translation id="5537725057119320332">I-cast</translation>
+<translation id="553876896781261711">i-delete, alisin, seguridad, privacy, cleanup, storage, i-reset, cache, cookies, mabagal, bilis, history</translation>
 <translation id="5541091577812545428">Hindi nabago ang password</translation>
 <translation id="5542132724887566711">Profile</translation>
 <translation id="5543983818738093899">Hinahanap ang status...</translation>
@@ -4750,6 +4751,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="6214157047210274853">I-edit sa Google Wallet</translation>
 <translation id="621470880408090483">Huwag payagan ang mga site na kumonekta sa mga Bluetooth device</translation>
 <translation id="6215039389782910006">{1,plural, =1{Para mapanatiling ligtas ang iyong mga password, mala-lock ang <ph name="BRAND" /> pagkalipas ng 1 minutong walang aktibidad}one{Para mapanatiling ligtas ang iyong mga password, mala-lock ang <ph name="BRAND" /> pagkalipas ng # minutong walang aktibidad}other{Para mapanatiling ligtas ang iyong mga password, mala-lock ang <ph name="BRAND" /> pagkalipas ng # na minutong walang aktibidad}}</translation>
+<translation id="6215427500141060726">Sinusuri at ginagamit ang mga chat para i-train ang mga generative AI model. AI ang Gemini at puwede itong magkamali. Puwede mong <ph name="BEGIN_LINK_MANAGE_HISTORY" />pamahalaan ang iyong history<ph name="END_LINK_MANAGE_HISTORY" />, kasama ang <ph name="BEGIN_LINK_LOCATION_INFO" />impormasyon tungkol sa lokasyon mo<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa tungkol sa iyong mga pagpipilian<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Mga tinanggihang site at app</translation>
 <translation id="6216696360484424239">Awtomatikong mag-sign in</translation>
 <translation id="6218961554829577610">Hindi ko gusto ang boses</translation>
@@ -4901,6 +4903,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="639880411171387127">Ang pinili mo gamit ang Google Lens. Pindutin ang enter o backspace para i-delete ang iyong pinili gamit ang Google Lens</translation>
 <translation id="6400360390396538896">Palagi sa <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">I-unfocus ang grupo ng tab</translation>
+<translation id="6401522392962817913">Sa pagpapatuloy, sumasang-ayon ka sa Mga Tuntunin ng Serbisyo ng Google Payments. Inilalarawan ng Notification ng Privacy kung paano pinapangasiwaan ang data mo. Sine-save sa Google Account mong <ph name="ACCOUNT" /> ang iyong card.</translation>
 <translation id="6402042774506839496">Para malaman kung bakit, makipag-ugnayan sa developer ng app</translation>
 <translation id="6402921224457714577">Puwedeng hilingin ng mga site na kontrolin at i-reprogram ang iyong mga MIDI device</translation>
 <translation id="6404511346730675251">I-edit ang bookmark</translation>
@@ -4989,6 +4992,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="6499143127267478107">Nireresolba ang host sa proxy script...</translation>
 <translation id="6503077044568424649">Pinaka-nabisita</translation>
 <translation id="6504601948739128893">Hindi pinapayagang gamitin ang mga font na naka-install sa iyong device</translation>
+<translation id="6505525633061207363">mga kredensyal, pag-sign in, passkey, lock, vault, mga key, pag-log in, mag-log in, mag-sign in</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{Gusto ng "<ph name="APP_NAME" />" na i-install ang sumusunod na app sa device na ito:}one{Gusto ng "<ph name="APP_NAME" />" na i-install ang mga sumusunod na app sa device na ito:}other{Gusto ng "<ph name="APP_NAME" />" na i-install ang mga sumusunod na app sa device na ito:}}</translation>
 <translation id="6508248480704296122">Kaugnay ng <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
@@ -6190,7 +6194,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="7804072833593604762">Isinara ang Tab</translation>
 <translation id="7805768142964895445">Katayuan</translation>
 <translation id="7805906048382884326">Isara ang tip</translation>
-<translation id="7806659658565827531">I-annotate ang pangunahing node</translation>
 <translation id="7807711621188256451">Palaging pahintulutan ang <ph name="HOST" /> na i-access ang iyong camera</translation>
 <translation id="7810202088502699111">Hinarangan ang mga pop-up sa pahinang ito.</translation>
 <translation id="7810951505946824824">Nagiging posible ang Chrome sa pamamagitan ng open source na proyektong Chromium at iba pang <ph name="BEGIN_HIGHLIGHT" />open source<ph name="END_HIGHLIGHT" /> na software.</translation>
@@ -6416,7 +6419,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8045752459073395242">Matuto pa tungkol sa paggamit ng generative AI sa trabaho</translation>
 <translation id="8045923671629973368">Maglagay ng application ID o URL ng webstore</translation>
 <translation id="804786196054284061">Kasunduan sa Lisensya ng End User</translation>
-<translation id="8048596485169033655">Dina-download ang mga file ng annotation ng pangunahing node… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Gumawa ng desktop shortcut sa iyong device para direktang ma-access ang profile na ito</translation>
 <translation id="8049122382261047457">Maghanap ng anumang larawan gamit ang Google Lens</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>

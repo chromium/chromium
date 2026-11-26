@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">タスクを確認Gemini に相談</translation>
 <translation id="1100504063505580045">現在のアイコン</translation>
 <translation id="1101267749138963680">安全性を確認しています...</translation>
-<translation id="1102759278139578486">メインノードのアノテーション ファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
 <translation id="1104098698795583187">このタブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
 <translation id="1106270460549661906">Gemini との共有を解除</translation>
@@ -653,7 +652,6 @@
 <translation id="1709916727352927457">パスキーの削除</translation>
 <translation id="1712143791363119140">進行中</translation>
 <translation id="1714265454085143857">固定タブ</translation>
-<translation id="1714326320203665217">メインノードのアノテーション ファイルをダウンロードしました</translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> のサイトデータと権限、およびそのサイトのインストール済みのアプリを削除しますか？</translation>
 <translation id="1718835860248848330">過去 1 時間</translation>
 <translation id="1720244237656138008">印象派</translation>
@@ -2959,7 +2957,6 @@
 <translation id="4209251085232852247">オフになっています</translation>
 <translation id="4210380525132844778">理由: <ph name="RULE" /> が「<ph name="LIST_NAME" />」のリストに含まれています。</translation>
 <translation id="4210428686880035809">左側のビューでリンクを開く</translation>
-<translation id="4211362364312260125">支援技術向けにウェブページのメインのランドマークを指定します</translation>
 <translation id="42126664696688958">エクスポート</translation>
 <translation id="4213540068152645535">パスワードの変更に関する問題</translation>
 <translation id="42137655013211669">このリソースへのアクセスはサーバーにより禁止されています。</translation>
@@ -3692,7 +3689,6 @@
 <translation id="5012016139642806466">すべてのデバイスでパスワードなどの設定を使用できます</translation>
 <translation id="5012523644916800014">パスワードとパスキーを管理</translation>
 <translation id="5015344424288992913">プロキシを解決しています...</translation>
-<translation id="5017250179386090956">メインノードのアノテーション ファイルをダウンロードしています</translation>
 <translation id="5017529052065664584">過去 15 分間</translation>
 <translation id="5018207570537526145">拡張機能のウェブサイトを開く</translation>
 <translation id="5020008942039547742">別のウィンドウを選択</translation>
@@ -6177,7 +6173,6 @@
 <translation id="7804072833593604762">タブが閉じられました</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7805906048382884326">ヒントを閉じる</translation>
-<translation id="7806659658565827531">メインノードにアノテーションを付ける</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> によるカメラへのアクセスを常に許可する</translation>
 <translation id="7810202088502699111">このページのポップアップはブロックされました。</translation>
 <translation id="7810951505946824824">Chrome は、Chromium オープンソース プロジェクトやその他の<ph name="BEGIN_HIGHLIGHT" />オープンソース<ph name="END_HIGHLIGHT" /> ソフトウェアによって実現しました。</translation>
@@ -6403,7 +6398,6 @@
 <translation id="8045752459073395242">会社での生成 AI の使用に関する詳細</translation>
 <translation id="8045923671629973368">アプリケーション ID またはウェブストアの URL を入力します</translation>
 <translation id="804786196054284061">エンドユーザー使用許諾契約</translation>
-<translation id="8048596485169033655">メインノードのアノテーション ファイルをダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">デバイスにデスクトップ ショートカットを作成して、このプロファイルに直接アクセスできるようにします</translation>
 <translation id="8049122382261047457">Google レンズで画像を検索</translation>
 <translation id="8050038245906040378">Microsoft 商用コード署名</translation>

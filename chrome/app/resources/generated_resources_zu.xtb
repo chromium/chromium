@@ -100,7 +100,6 @@ Hlola amaphasiwedi wakho noma kunini ku-<ph name="GOOGLE_PASSWORD_MANAGER" />.</
 <translation id="1100040363679327583">Buyekeza umsebenzi. Buza iGemini</translation>
 <translation id="1100504063505580045">Isithonjana samanje</translation>
 <translation id="1101267749138963680">Ihlola ukuphepha...</translation>
-<translation id="1102759278139578486">Ayikwazi ukudawuniloda amafayela okuthasisela inodi eyinhloko. Zama futhi kamuva.</translation>
 <translation id="1103523840287552314">Humusha njalo i-<ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Ngokushesha uzolahlekelwa ukufinyelela kuleli qembu lamathebhu, futhi lizosuswa kuwo wonke amadivayisi akho</translation>
 <translation id="1106270460549661906">Yeka ukwabelana ngeGemini</translation>
@@ -662,7 +661,6 @@ Hlola amaphasiwedi wakho noma kunini ku-<ph name="GOOGLE_PASSWORD_MANAGER" />.</
 <translation id="1709916727352927457">Sula ukhiye wokudlula</translation>
 <translation id="1712143791363119140">Kuyaqhubeka</translation>
 <translation id="1714265454085143857">Amathebhu aphiniwe</translation>
-<translation id="1714326320203665217">Amafayela okuthasisela inodi eyinhloko adawunilodiwe</translation>
 <translation id="1716034099915639464">Sula idatha yesayithi nezimvume ze-<ph name="SITE_NAME" /> kanye nawo wonke ama-app wayo afakiwe?</translation>
 <translation id="1718835860248848330">Ihora lokugcina</translation>
 <translation id="1720244237656138008">Umbono</translation>
@@ -2970,7 +2968,6 @@ Hlola amaphasiwedi wakho noma kunini ku-<ph name="GOOGLE_PASSWORD_MANAGER" />.</
 <translation id="4209251085232852247">Vala</translation>
 <translation id="4210380525132844778">Isizathu: <ph name="RULE" /> kutholwe ohlwini oluthi "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Vula Ilinki Ekubukeni Kwesokunxele</translation>
-<translation id="4211362364312260125">Thola isibonisindawo esiyinhloko emakhasini ewebhu sobuchwepheshe obusizayo</translation>
 <translation id="42126664696688958">Thumela kwelinye izwe</translation>
 <translation id="4213540068152645535">Inkinga ngokushintsha iphasiwedi yakho</translation>
 <translation id="42137655013211669">Ukufinyelela kule nsiza kuye kwanqatshelwa yiseva.</translation>
@@ -3703,7 +3700,6 @@ Hlola amaphasiwedi wakho noma kunini ku-<ph name="GOOGLE_PASSWORD_MANAGER" />.</
 <translation id="5012016139642806466">Thola amaphasiwedi akho nokuningi kuwo wonke amadivayisi akho</translation>
 <translation id="5012523644916800014">Phatha amaphasiwedi nokhiye bokudlula</translation>
 <translation id="5015344424288992913">Ixazulula ummeleli...</translation>
-<translation id="5017250179386090956">Idawuniloda amafayela okuthasisela inodi eyinhloko</translation>
 <translation id="5017529052065664584">Amaminithi angu-15 okugcina</translation>
 <translation id="5018207570537526145">Vula isandiso sewebhusayithi</translation>
 <translation id="5020008942039547742">Khetha iwindi elehlukile</translation>
@@ -6188,7 +6184,6 @@ Lokhu kungabandakanya ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza y
 <translation id="7804072833593604762">Ithebhu Ivaliwe</translation>
 <translation id="7805768142964895445">Isimo</translation>
 <translation id="7805906048382884326">Vala ithiphu</translation>
-<translation id="7806659658565827531">Thasisela inodi eyinhloko</translation>
 <translation id="7807711621188256451">Vumela njalo i-<ph name="HOST" /> ukuthi ifinyelele kukhamela yakho</translation>
 <translation id="7810202088502699111">Izigelekeqe ziye zavinjwa kule khasi.</translation>
 <translation id="7810951505946824824">IChrome yenziwe yakwazi yiChromium iphrojekthi yomthombo ovulekile kanye nenye <ph name="BEGIN_HIGHLIGHT" />isofthiwe yomthombo ovulekile<ph name="END_HIGHLIGHT" />.</translation>
@@ -6414,7 +6409,6 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8045752459073395242">Funa kabanzi ngokusebenzisa i-AI ekhiqizayo emsebenzini</translation>
 <translation id="8045923671629973368">Faka i-ID yohlelo lokusebenza noma i-URL yesitolo sewebhu</translation>
 <translation id="804786196054284061">Isivumelwano selayisense yomsebenzisi</translation>
-<translation id="8048596485169033655">Idawuniloda amafayela okuthasisela inodi eyinhloko… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Dala isinqamuleli sedeskithophu kudivayisi yakho ukuze ufinyelele ngokuqondile kule phrofayela</translation>
 <translation id="8049122382261047457">Sesha noma yimuphi umfanekiso nge-Google Lens</translation>
 <translation id="8050038245906040378">Ukusayina kwekhodi yokuhweba ye-Microsift</translation>

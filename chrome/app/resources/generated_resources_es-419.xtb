@@ -100,7 +100,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1100040363679327583">Revisa la tarea. Pedirle a Gemini</translation>
 <translation id="1100504063505580045">Ícono actual</translation>
 <translation id="1101267749138963680">Verificando la seguridad…</translation>
-<translation id="1102759278139578486">No se pueden descargar los archivos de anotaciones de nodos principales. Vuelve a intentarlo más tarde.</translation>
 <translation id="1103523840287552314">Siempre traducir <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Perderás de inmediato el acceso a este grupo de pestañas y se borrará de todos tus dispositivos</translation>
 <translation id="1106270460549661906">Dejar de compartir con Gemini</translation>
@@ -653,7 +652,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1709916727352927457">Borra la llave de acceso</translation>
 <translation id="1712143791363119140">En curso</translation>
 <translation id="1714265454085143857">Pestañas fijas</translation>
-<translation id="1714326320203665217">Se descargaron los archivos de anotaciones de nodos principales</translation>
 <translation id="1716034099915639464">¿Quieres borrar los datos y permisos de <ph name="SITE_NAME" /> y su app instalada?</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1720244237656138008">Impresionismo</translation>
@@ -2950,7 +2948,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="4209251085232852247">Desactivados</translation>
 <translation id="4210380525132844778">Motivo: Se encontró <ph name="RULE" /> en la lista "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Abrir vínculo en la vista izquierda</translation>
-<translation id="4211362364312260125">Identifica los puntos de referencia principales en las páginas web para la tecnología de accesibilidad</translation>
 <translation id="42126664696688958">Exportar</translation>
 <translation id="4213540068152645535">Problemas para cambiar la contraseña</translation>
 <translation id="42137655013211669">El servidor prohibió el acceso a este recurso.</translation>
@@ -3679,7 +3676,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="5012016139642806466">Obtén tus contraseñas y más en todos tus dispositivos</translation>
 <translation id="5012523644916800014">Administrar contraseñas y llaves de acceso</translation>
 <translation id="5015344424288992913">Resolviendo proxy...</translation>
-<translation id="5017250179386090956">Descargando los archivos de anotaciones de nodos principales</translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5018207570537526145">Abrir el sitio web de la extensión</translation>
 <translation id="5020008942039547742">Elegir otra ventana</translation>
@@ -6150,7 +6146,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="7804072833593604762">Pestaña cerrada</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7805906048382884326">Cerrar la sugerencia</translation>
-<translation id="7806659658565827531">Anotar nodo principal</translation>
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>
 <translation id="7810202088502699111">Se bloquearon las ventanas emergentes en esta página.</translation>
 <translation id="7810951505946824824">Chrome es una realidad gracias al proyecto de código abierto Chromium y a otros software de <ph name="BEGIN_HIGHLIGHT" />código abierto<ph name="END_HIGHLIGHT" />.</translation>
@@ -6375,7 +6370,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8045752459073395242">Obtén más información sobre el uso de la IA generativa en el trabajo</translation>
 <translation id="8045923671629973368">Ingresa el ID de aplicación o la URL de la tienda web</translation>
 <translation id="804786196054284061">Acuerdo de licencia de usuario final</translation>
-<translation id="8048596485169033655">Descargando archivos de anotación de nodos principales… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Crea un acceso directo de escritorio en tu dispositivo para acceder directamente a este perfil</translation>
 <translation id="8049122382261047457">Busca cualquier imagen con Google Lens</translation>
 <translation id="8050038245906040378">Firma de código comercial de Microsoft</translation>

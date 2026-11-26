@@ -100,7 +100,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1100040363679327583">Revisa la tasca. Pregunta a Gemini</translation>
 <translation id="1100504063505580045">Icona actual</translation>
 <translation id="1101267749138963680">S'està comprovant la seguretat...</translation>
-<translation id="1102759278139578486">No es poden baixar els fitxers d'anotacions del node principal. Torna-ho a provar més tard.</translation>
 <translation id="1103523840287552314">Tradueix sempre el text en <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Perdràs immediatament l'accés a aquest grup de pestanyes i se suprimirà de tots els teus dispositius</translation>
 <translation id="1106270460549661906">Deixa de compartir amb Gemini</translation>
@@ -653,7 +652,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1709916727352927457">Suprimeix la clau d'accés</translation>
 <translation id="1712143791363119140">En curs</translation>
 <translation id="1714265454085143857">Pestanyes fixades</translation>
-<translation id="1714326320203665217">S'han baixat els fitxers d'anotacions del node principal</translation>
 <translation id="1716034099915639464">Vols suprimir les dades i els permisos del lloc web <ph name="SITE_NAME" /> i la seva aplicació instal·lada?</translation>
 <translation id="1718835860248848330">Darrera hora</translation>
 <translation id="1720244237656138008">Impressionisme</translation>
@@ -2956,7 +2954,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="4209251085232852247">S'ha desactivat</translation>
 <translation id="4210380525132844778">Motiu: s'ha trobat <ph name="RULE" /> a la llista "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Obre l'enllaç a la vista esquerra</translation>
-<translation id="4211362364312260125">Identifica el punt de referència principal a les pàgines web de tecnologia assistencial</translation>
 <translation id="42126664696688958">Exporta</translation>
 <translation id="4213540068152645535">Hi ha hagut un problema en canviar la contrasenya</translation>
 <translation id="42137655013211669">El servidor ha prohibit l'accés a aquest recurs.</translation>
@@ -3688,7 +3685,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="5012016139642806466">Obtén les teves contrasenyes i altres dades en tots els dispositius</translation>
 <translation id="5012523644916800014">Gestiona les contrasenyes i les claus d'accés</translation>
 <translation id="5015344424288992913">S'està resolent el servidor intermediari...</translation>
-<translation id="5017250179386090956">S'estan baixant els fitxers d'anotacions del node principal</translation>
 <translation id="5017529052065664584">Últims 15 minuts</translation>
 <translation id="5018207570537526145">Obre el lloc web de l'extensió</translation>
 <translation id="5020008942039547742">Tria una altra finestra</translation>
@@ -6169,7 +6165,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="7804072833593604762">Pestanya tancada</translation>
 <translation id="7805768142964895445">Estat</translation>
 <translation id="7805906048382884326">Tanca el consell</translation>
-<translation id="7806659658565827531">Fes anotacions al node principal</translation>
 <translation id="7807711621188256451">Permet sempre que <ph name="HOST" /> accedeixi a la càmera</translation>
 <translation id="7810202088502699111">S'han bloquejat finestres emergents en aquesta pàgina.</translation>
 <translation id="7810951505946824824">Chrome és possible gràcies al projecte de codi obert Chromium i a altres programes de <ph name="BEGIN_HIGHLIGHT" />codi obert<ph name="END_HIGHLIGHT" />.</translation>
@@ -6395,7 +6390,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8045752459073395242">Més informació sobre l'ús de la IA generativa a la feina</translation>
 <translation id="8045923671629973368">Introdueix l'identificador de l'aplicació o l'URL de Web Store</translation>
 <translation id="804786196054284061">Acord de llicència d'usuari final</translation>
-<translation id="8048596485169033655">S'estan baixant els fitxers d'anotacions del node principal… <ph name="PERCENT" /> %</translation>
 <translation id="8048977114738515028">Crea una drecera d'escriptori al dispositiu per accedir directament a aquest perfil</translation>
 <translation id="8049122382261047457">Cerca qualsevol imatge amb Google Lens</translation>
 <translation id="8050038245906040378">Signatura de codi comercial de Microsoft</translation>

@@ -100,7 +100,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1100040363679327583">Vazifani tekshiring. Geminidan soʻrash</translation>
 <translation id="1100504063505580045">Joriy belgi</translation>
 <translation id="1101267749138963680">Xavfsizlik tekshirilmoqda...</translation>
-<translation id="1102759278139578486">Asosiy tugun izoh fayllari yuklab olinmadi. Keyinroq qayta urining.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> tilidan har doim tarjima qilinsin</translation>
 <translation id="1104098698795583187">Bu sahifalar guruhiga ruxsat darhol yopiladi va u barcha qurilmalardan oʻchiriladi</translation>
 <translation id="1106270460549661906">Gemini bilan ulashishni bekor qilish</translation>
@@ -654,7 +653,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1709916727352927457">Kodni oʻchirish</translation>
 <translation id="1712143791363119140">Bajarilmoqda</translation>
 <translation id="1714265454085143857">Mahkamlangan varaqlar</translation>
-<translation id="1714326320203665217">Asosiy tugun izoh fayllari yuklab olindi</translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> maʼlumotlari, ruxsatlari va oʻrnatilgan ilovalar oʻchirilsinmi?</translation>
 <translation id="1718835860248848330">Oxirgi bir soat</translation>
 <translation id="1720244237656138008">Impressionizm</translation>
@@ -2965,7 +2963,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="4209251085232852247">Oʻchiq</translation>
 <translation id="4210380525132844778">Sababi: <ph name="RULE" /> <ph name="LIST_NAME" /> roʻyxatida edi.</translation>
 <translation id="4210428686880035809">Havolani chap panelda ochish</translation>
-<translation id="4211362364312260125">Yordamchi texnologiyalar uchun veb sahifalarda asosiy moʻljalni aniqlash</translation>
 <translation id="42126664696688958">Eksport</translation>
 <translation id="4213540068152645535">Parolni almashtirishda muammo yuz berdi</translation>
 <translation id="42137655013211669">Server bu manbaga kirishga ruxsat bermagan.</translation>
@@ -3698,7 +3695,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="5012016139642806466">Parollar, tarix va sozlamalarni barcha qurilmalarda sinxronlang</translation>
 <translation id="5012523644916800014">Parol va kodlarni boshqarish</translation>
 <translation id="5015344424288992913">Proksi-server aniqlanmoqda...</translation>
-<translation id="5017250179386090956">Asosiy tugun izoh fayllari yuklab olinmoqda</translation>
 <translation id="5017529052065664584">Oxirgi 15 daqiqa</translation>
 <translation id="5018207570537526145">Kengaytma saytini ochish</translation>
 <translation id="5020008942039547742">Boshqa oynani tanlang</translation>
@@ -6184,7 +6180,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="7804072833593604762">Varaq yopildi</translation>
 <translation id="7805768142964895445">Holat</translation>
 <translation id="7805906048382884326">Maslahatni yopish</translation>
-<translation id="7806659658565827531">Asosiy tugunni izohlash</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> saytiga kameradan foydalanishga doim ruxsat berish</translation>
 <translation id="7810202088502699111">Qalqib chiquvchi oynalar bloklandi.</translation>
 <translation id="7810951505946824824">Chrome Chromium ochiq kodli loyihasi va boshqa <ph name="BEGIN_HIGHLIGHT" />ochiq kodli<ph name="END_HIGHLIGHT" /> dasturiy taʼminotlar sharofati bilan yaratilgan.</translation>
@@ -6410,7 +6405,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8045752459073395242">Ishda generativ AI imkoniyatlaridan foydalanish haqida batafsil</translation>
 <translation id="8045923671629973368">Dastur identifikatori yoki internet-do‘kon URL manzilini kiriting</translation>
 <translation id="804786196054284061">Yakuniy foydalanuvchi litsenziyasi kelishuvi</translation>
-<translation id="8048596485169033655">Asosiy tugun izoh fayllari yuklab olinmoqda… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Bu profilni bevosita ochish uchun ish stolida yorliq yaratish</translation>
 <translation id="8049122382261047457">Google Lens yordamida istalgan rasmni qidiring</translation>
 <translation id="8050038245906040378">Microsoft tijorat kodini imzolash</translation>

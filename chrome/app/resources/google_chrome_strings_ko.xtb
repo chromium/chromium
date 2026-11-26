@@ -103,6 +103,7 @@
 <translation id="1896602904211344018">Chrome 앱 다운로드</translation>
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>
 <translation id="1925069572871307609">향후 Chrome 업데이트를 받으려면 Windows 10 버전 1809 이상이 필요합니다. 이 컴퓨터에서는 이전 버전의 Windows 10을 사용 중입니다.</translation>
+<translation id="1975069140856174874">다음에 <ph name="DEVICE_TYPE" />에서 Chrome을 열면 Google의 가장 강력한 안전 기능을 활성화하라는 메시지가 표시됩니다.</translation>
 <translation id="1975400514743766362"><ph name="DEVICE_TYPE" />에서 Chrome 앱을 사용하여 이동 중에도 Google의 안전 기능을 활용하세요</translation>
 <translation id="1979600810166324878">iOS용 Chrome의 향상된 세이프 브라우징으로 이동 중에도 더 안전하게 보호하세요.</translation>
 <translation id="2001586581944147178">내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 확인하기가 더 어려워집니다. Chrome은 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회하는 데 보안 연결을 사용합니다.</translation>
@@ -458,6 +459,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="568656514202614970">완료되었습니다. 이제 Google 검색 측면 패널을 사용해 탐색 중에도 쉽게 질문할 수 있습니다.</translation>
 <translation id="5686916850681061684">Chrome을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5690600720065756725">이동 중에도 Chrome 앱을 사용하여 Google 최고의 안전 기능을 이용하세요.</translation>
 <translation id="569897634095159764">인터넷에 연결할 수 없습니다. 프록시 서버를 인증해야 합니다.</translation>
 <translation id="5709557627224531708">Chrome을 기본 브라우저로 설정</translation>
 <translation id="5715427327524421317">Chrome에서 이러한 AI 모델을 자동으로 다운로드하고 업데이트합니다.</translation>
@@ -623,6 +625,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7099479769133613710">다시 실행하여 ChromeOS 업데이트</translation>
 <translation id="7106741999175697885">작업 관리자 - Chrome</translation>
 <translation id="7121179479711575744">Chrome에 로그인</translation>
+<translation id="7137056136322108339">휴대전화에서 Chrome 앱을 사용하여 이동 중에도 Google 최고의 안전 기능을 이용하세요</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다.}=1{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창이 다시 열리지 않습니다.}other{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="7161904924553537242">신개념 브라우저 - Chrome</translation>
 <translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chrome을 종료합니다.</translation>

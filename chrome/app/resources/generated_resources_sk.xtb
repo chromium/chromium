@@ -100,7 +100,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1100040363679327583">Skontrolujte úlohu. Opýtať sa Gemini</translation>
 <translation id="1100504063505580045">Aktuálna ikona</translation>
 <translation id="1101267749138963680">Kontroluje sa bezpečnosť…</translation>
-<translation id="1102759278139578486">Súbory s anotáciami hlavného uzla sa nedajú stiahnuť. Skúste to neskôr.</translation>
 <translation id="1103523840287552314">Vždy preložiť nasledujúci jazyk: <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Okamžite stratíte prístup k tejto skupine kariet, ktorá bude odstránená zo všetkých vašich zariadení</translation>
 <translation id="1106270460549661906">Zrušiť zdieľanie s Gemini</translation>
@@ -653,7 +652,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1709916727352927457">Odstránenie prístupového kľúča</translation>
 <translation id="1712143791363119140">Spracúva sa</translation>
 <translation id="1714265454085143857">Pripnuté karty</translation>
-<translation id="1714326320203665217">Súbory s anotáciami hlavného uzla boli stiahnuté</translation>
 <translation id="1716034099915639464">Chcete odstrániť dáta a povolenia webu <ph name="SITE_NAME" /> a jeho nainštalovanú aplikáciu?</translation>
 <translation id="1718835860248848330">Posledná hodina</translation>
 <translation id="1720244237656138008">Impresionizmus</translation>
@@ -2959,7 +2957,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="4209251085232852247">Vypnuté</translation>
 <translation id="4210380525132844778">Dôvod: V zozname „<ph name="LIST_NAME" />“ bolo nájdené pravidlo <ph name="RULE" />.</translation>
 <translation id="4210428686880035809">Otvoriť odkaz v ľavom zobrazení</translation>
-<translation id="4211362364312260125">Identifikujte hlavný orientačný bod na webových stránkach pre asistenčnú technológiu</translation>
 <translation id="42126664696688958">Exportovať</translation>
 <translation id="4213540068152645535">Pri zmene hesla sa vyskytol problém</translation>
 <translation id="42137655013211669">Server zakázal prístup k tomuto zdroju</translation>
@@ -3691,7 +3688,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="5012016139642806466">Majte heslá a ďalší obsah k dispozícii vo všetkých zariadeniach</translation>
 <translation id="5012523644916800014">Spravovať heslá a prístupové kľúče</translation>
 <translation id="5015344424288992913">Určenie proxy...</translation>
-<translation id="5017250179386090956">Sťahujú sa súbory s anotáciami hlavného uzla</translation>
 <translation id="5017529052065664584">Posledných 15 minút</translation>
 <translation id="5018207570537526145">Otvoriť web rozšírenia</translation>
 <translation id="5020008942039547742">Vybrať iné okno</translation>
@@ -6177,7 +6173,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="7804072833593604762">Karta je zatvorená</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7805906048382884326">Zavrieť tip</translation>
-<translation id="7806659658565827531">Pridať anotáciu hlavného uzla</translation>
 <translation id="7807711621188256451">Vždy povoliť stránkam <ph name="HOST" /> prístup ku kamere</translation>
 <translation id="7810202088502699111">Na tejto stránke boli zablokované kontextové okná.</translation>
 <translation id="7810951505946824824">Chrome je založený na open source projekte Chromium a ďalšom <ph name="BEGIN_HIGHLIGHT" />open source<ph name="END_HIGHLIGHT" /> softvéri.</translation>
@@ -6403,7 +6398,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8045752459073395242">Ďalšie informácie o používaní generatívnej umelej inteligencie v práci</translation>
 <translation id="8045923671629973368">Zadajte ID aplikácie alebo adresu webového obchodu</translation>
 <translation id="804786196054284061">Licenčná zmluva koncového používateľa</translation>
-<translation id="8048596485169033655">Sťahujú sa súbory s anotáciami hlavného uzla… <ph name="PERCENT" /> %</translation>
 <translation id="8048977114738515028">Vytvorte si v zariadení odkaz na pracovnej ploche, aby ste získali priamy prístup k tomuto profilu</translation>
 <translation id="8049122382261047457">Vyhľadajte ľubovoľný obrázok pomocou funkcie Google Lens</translation>
 <translation id="8050038245906040378">Komerčné podpisovanie kódu Microsoft</translation>

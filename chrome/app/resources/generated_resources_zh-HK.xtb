@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">檢視工作。問 Gemini</translation>
 <translation id="1100504063505580045">目前圖示</translation>
 <translation id="1101267749138963680">正在檢查安全性…</translation>
-<translation id="1102759278139578486">無法下載主節點註釋檔案，請稍後再試。</translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">你將立即無法再存取此分頁群組，且該群組會從你的所有裝置中刪除</translation>
 <translation id="1106270460549661906">取消與 Gemini 分享</translation>
@@ -661,7 +660,6 @@
 <translation id="1709916727352927457">刪除密鑰</translation>
 <translation id="1712143791363119140">進行中</translation>
 <translation id="1714265454085143857">固定分頁</translation>
-<translation id="1714326320203665217">已下載主節點註釋檔案</translation>
 <translation id="1716034099915639464">要刪除 <ph name="SITE_NAME" /> 和網站已安裝應用程式的網站資料和權限嗎？</translation>
 <translation id="1718835860248848330">過去一小時</translation>
 <translation id="1720244237656138008">印象派</translation>
@@ -2969,7 +2967,6 @@
 <translation id="4209251085232852247">已關閉</translation>
 <translation id="4210380525132844778">原因：在「<ph name="LIST_NAME" />」清單中找到 <ph name="RULE" />。</translation>
 <translation id="4210428686880035809">在左邊畫面中開啟連結</translation>
-<translation id="4211362364312260125">識別網頁中用於輔助技術的主要標籤</translation>
 <translation id="42126664696688958">匯出</translation>
 <translation id="4213540068152645535">無法變更密碼</translation>
 <translation id="42137655013211669">伺服器已禁止存取此資源。</translation>
@@ -3701,7 +3698,6 @@
 <translation id="5012016139642806466">在所有裝置上存取密碼及其他設定</translation>
 <translation id="5012523644916800014">管理密碼和密鑰</translation>
 <translation id="5015344424288992913">正在解析 Proxy…</translation>
-<translation id="5017250179386090956">正在下載主節點註釋檔案</translation>
 <translation id="5017529052065664584">過去 15 分鐘</translation>
 <translation id="5018207570537526145">開啟擴充程式網站</translation>
 <translation id="5020008942039547742">選擇其他視窗</translation>
@@ -6178,7 +6174,6 @@
 <translation id="7804072833593604762">閂咗分頁</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7805906048382884326">閂提示</translation>
-<translation id="7806659658565827531">為主節點加上註釋</translation>
 <translation id="7807711621188256451">永遠允許 <ph name="HOST" /> 存取您的相機</translation>
 <translation id="7810202088502699111">系統已封鎖此網頁的彈出式視窗。</translation>
 <translation id="7810951505946824824">Chrome 的開發有賴 Chromium 開放原始碼計劃和其他<ph name="BEGIN_HIGHLIGHT" />開放原始碼<ph name="END_HIGHLIGHT" />軟件才得以完成。</translation>
@@ -6404,7 +6399,6 @@
 <translation id="8045752459073395242">進一步瞭解如何將生成式 AI 用於工作</translation>
 <translation id="8045923671629973368">請輸入應用程式 ID 或網上商店網址</translation>
 <translation id="804786196054284061">使用者授權協議</translation>
-<translation id="8048596485169033655">正在下載主節點註釋檔案…<ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">在裝置上建立桌面捷徑，方便直接存取此設定檔</translation>
 <translation id="8049122382261047457">使用「Google 智能鏡頭」搜尋任何圖片</translation>
 <translation id="8050038245906040378">Microsoft 商用程式碼簽署</translation>

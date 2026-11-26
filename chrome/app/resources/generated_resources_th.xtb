@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">ตรวจสอบงาน ขอความช่วยเหลือจาก Gemini</translation>
 <translation id="1100504063505580045">ไอคอนปัจจุบัน</translation>
 <translation id="1101267749138963680">กำลังตรวจสอบความปลอดภัย...</translation>
-<translation id="1102759278139578486">ดาวน์โหลดไฟล์คำอธิบายประกอบของโหนดหลักไม่ได้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="1103523840287552314">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
 <translation id="1104098698795583187">คุณจะเสียสิทธิ์เข้าถึงกลุ่มแท็บนี้ทันที และระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="1106270460549661906">เลิกแชร์กับ Gemini</translation>
@@ -653,7 +652,6 @@
 <translation id="1709916727352927457">ลบพาสคีย์</translation>
 <translation id="1712143791363119140">กำลังดำเนินการ</translation>
 <translation id="1714265454085143857">แท็บที่ปักหมุด</translation>
-<translation id="1714326320203665217">ดาวน์โหลดไฟล์คำอธิบายประกอบของโหนดหลักแล้ว</translation>
 <translation id="1716034099915639464">ลบข้อมูลเว็บไซต์และสิทธิ์ของ <ph name="SITE_NAME" /> รวมถึงแอปของเว็บไซต์นี้ที่ติดตั้งไว้ใช่ไหม</translation>
 <translation id="1718835860248848330">1 ชั่วโมงที่ผ่านมา</translation>
 <translation id="1720244237656138008">อิมเพรสชันนิสม์</translation>
@@ -2957,7 +2955,6 @@
 <translation id="4209251085232852247">ปิดอยู่</translation>
 <translation id="4210380525132844778">เหตุผล: พบ <ph name="RULE" /> ในรายการ "<ph name="LIST_NAME" />"</translation>
 <translation id="4210428686880035809">เปิดลิงก์ในมุมมองด้านซ้าย</translation>
-<translation id="4211362364312260125">ระบุจุดสังเกตหลักในหน้าเว็บสำหรับเทคโนโลยีความช่วยเหลือพิเศษ</translation>
 <translation id="42126664696688958">ส่งออก</translation>
 <translation id="4213540068152645535">ปัญหาในการเปลี่ยนรหัสผ่าน</translation>
 <translation id="42137655013211669">เซิร์ฟเวอร์ได้ห้ามการเข้าถึงทรัพยากรนี้</translation>
@@ -3689,7 +3686,6 @@
 <translation id="5012016139642806466">รับรหัสผ่านและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="5012523644916800014">จัดการรหัสผ่านและพาสคีย์</translation>
 <translation id="5015344424288992913">กำลังแปลงพร็อกซี...</translation>
-<translation id="5017250179386090956">กำลังดาวน์โหลดไฟล์คำอธิบายประกอบของโหนดหลัก</translation>
 <translation id="5017529052065664584">15 นาทีที่ผ่านมา</translation>
 <translation id="5018207570537526145">เปิดเว็บไซต์ส่วนขยาย</translation>
 <translation id="5020008942039547742">เลือกหน้าต่างอื่น</translation>
@@ -6168,7 +6164,6 @@
 <translation id="7804072833593604762">ปิดแท็บแล้ว</translation>
 <translation id="7805768142964895445">สถานะ</translation>
 <translation id="7805906048382884326">ปิดเคล็ดลับ</translation>
-<translation id="7806659658565827531">ใส่คำอธิบายประกอบในโหนดหลัก</translation>
 <translation id="7807711621188256451">อนุญาตให้ <ph name="HOST" /> เข้าถึงกล้องของคุณเสมอ</translation>
 <translation id="7810202088502699111">หน้าเว็บนี้บล็อกป๊อปอัป</translation>
 <translation id="7810951505946824824">Chrome เป็นจริงขึ้นได้จากโปรเจ็กต์โอเพนซอร์ส Chromium และซอฟต์แวร์<ph name="BEGIN_HIGHLIGHT" />โอเพนซอร์ส<ph name="END_HIGHLIGHT" />อื่นๆ</translation>
@@ -6394,7 +6389,6 @@
 <translation id="8045752459073395242">ดูข้อมูลเพิ่มเติมเกี่ยวกับการใช้ Generative AI ในการทำงาน</translation>
 <translation id="8045923671629973368">ป้อนรหัสแอปพลิเคชันหรือ URL เว็บสโตร์</translation>
 <translation id="804786196054284061">ข้อตกลงใบอนุญาตผู้ใช้ปลายทาง</translation>
-<translation id="8048596485169033655">กำลังดาวน์โหลดไฟล์คำอธิบายประกอบของโหนดหลัก… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">สร้างทางลัดบนเดสก์ท็อปในอุปกรณ์เพื่อเข้าถึงโปรไฟล์นี้โดยตรง</translation>
 <translation id="8049122382261047457">ค้นหารูปภาพต่างๆ ด้วย Google Lens</translation>
 <translation id="8050038245906040378">การรับรองรหัสเชิงพาณิชย์ของ Microsoft</translation>

@@ -100,7 +100,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1100040363679327583">Tekintse át a feladatot. Kérdezés a Geminitől</translation>
 <translation id="1100504063505580045">Jelenlegi ikon</translation>
 <translation id="1101267749138963680">Biztonsági ellenőrzés…</translation>
-<translation id="1102759278139578486">Nem sikerült letölteni a fő annotációs fájlokat. Próbálja újra később.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> - mindig legyen lefordítva</translation>
 <translation id="1104098698795583187">Azonnal elveszíti a jelen lapcsoporthoz való hozzáférését, és a lapcsoport az összes eszközéről törlődik</translation>
 <translation id="1106270460549661906">A Geminivel való megosztás visszavonása</translation>
@@ -662,7 +661,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1709916727352927457">Azonosítókulcs törlése</translation>
 <translation id="1712143791363119140">Folyamatban</translation>
 <translation id="1714265454085143857">Rögzített lapok</translation>
-<translation id="1714326320203665217">Fő csomóponti annotációs fájlok letöltve</translation>
 <translation id="1716034099915639464">Törli a(z) <ph name="SITE_NAME" /> webhelyre, valamint a webhely telepített alkalmazásaira vonatkozó webhelyadatokat és engedélyeket?</translation>
 <translation id="1718835860248848330">Az elmúlt órából</translation>
 <translation id="1720244237656138008">Impresszionizmus</translation>
@@ -2969,7 +2967,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4209251085232852247">Kikapcsolva</translation>
 <translation id="4210380525132844778">Ok: A(z) <ph name="RULE" /> szabályt találta a rendszer a következő listában: „<ph name="LIST_NAME" />”.</translation>
 <translation id="4210428686880035809">Link megnyitása a bal oldali nézetben</translation>
-<translation id="4211362364312260125">A segítő technológiai megoldások fő ARIA-pontjának azonosítása a weboldalakon</translation>
 <translation id="42126664696688958">Exportálás</translation>
 <translation id="4213540068152645535">Probléma adódott a jelszó módosítása közben</translation>
 <translation id="42137655013211669">A szerver letiltotta a hozzáférést ehhez az erőforráshoz.</translation>
@@ -3702,7 +3699,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5012016139642806466">Bármely eszközéről hozzáférhet jelszavaihoz és egyebekhez</translation>
 <translation id="5012523644916800014">Jelszavak és azonosítókulcsok kezelése</translation>
 <translation id="5015344424288992913">Proxy azonosítása folyamatban...</translation>
-<translation id="5017250179386090956">Fő csomóponti annotációs fájlok letöltése…</translation>
 <translation id="5017529052065664584">Elmúlt 15 perc</translation>
 <translation id="5018207570537526145">Bővítmény webhelyének megnyitása</translation>
 <translation id="5020008942039547742">Válasszon másik ablakot</translation>
@@ -6186,7 +6182,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="7804072833593604762">Lap bezárva</translation>
 <translation id="7805768142964895445">Állapot</translation>
 <translation id="7805906048382884326">Tipp bezárása</translation>
-<translation id="7806659658565827531">Fő csomópont jelölése</translation>
 <translation id="7807711621188256451">A(z) <ph name="HOST" /> mindig hozzáférhet az Ön kamerájához</translation>
 <translation id="7810202088502699111">Az előugró ablakok le vannak tiltva ezen az oldalon.</translation>
 <translation id="7810951505946824824">A Chrome a Chromium nyílt forráskódú projektnek és további <ph name="BEGIN_HIGHLIGHT" />nyílt forráskódú<ph name="END_HIGHLIGHT" /> szoftvereknek köszönhetően jött létre.</translation>
@@ -6412,7 +6407,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8045752459073395242">További információ a generatív AI munkahelyi használatáról</translation>
 <translation id="8045923671629973368">Adja meg az alkalmazás azonosítóját vagy internetes áruházi URL-jét</translation>
 <translation id="804786196054284061">Végfelhasználói licencszerződés</translation>
-<translation id="8048596485169033655">Fő csomóponti annotációs fájlok letöltése… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Hozzon létre asztali parancsikont az eszközén, hogy közvetlen hozzáférhessen ehhez a profilhoz</translation>
 <translation id="8049122382261047457">Bármilyen képet használhat a Google Lens szolgáltatással való kereséshez</translation>
 <translation id="8050038245906040378">Microsoft kereskedelmi kódaláírás</translation>

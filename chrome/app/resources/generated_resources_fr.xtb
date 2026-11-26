@@ -100,7 +100,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1100040363679327583">Examiner la tâche. Demander à Gemini</translation>
 <translation id="1100504063505580045">Icône actuelle</translation>
 <translation id="1101267749138963680">Vérification de la sécurité...</translation>
-<translation id="1102759278139578486">Impossible de télécharger les fichiers d'annotation du nœud principal. Réessayez plus tard.</translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Vous perdrez immédiatement l'accès à ce groupe d'onglets, qui sera supprimé de tous vos appareils</translation>
 <translation id="1106270460549661906">Ne plus partager avec Gemini</translation>
@@ -653,7 +652,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1709916727352927457">Supprimer la clé d'accès</translation>
 <translation id="1712143791363119140">En cours</translation>
 <translation id="1714265454085143857">Onglets épinglés</translation>
-<translation id="1714326320203665217">Fichiers d'annotation du nœud principal téléchargés</translation>
 <translation id="1716034099915639464">Supprimer les données et autorisations de <ph name="SITE_NAME" /> et de son appli installée ?</translation>
 <translation id="1718835860248848330">Dernière heure</translation>
 <translation id="1720244237656138008">Impressionnisme</translation>
@@ -2957,7 +2955,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4209251085232852247">Désactivé</translation>
 <translation id="4210380525132844778">Motif : <ph name="RULE" /> a été trouvé dans la liste "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Ouvrir le lien dans la vue de gauche</translation>
-<translation id="4211362364312260125">Identifier le repère principal dans les pages Web pour la technologie d'assistance</translation>
 <translation id="42126664696688958">Exporter</translation>
 <translation id="4213540068152645535">Problème pour modifier votre mot de passe</translation>
 <translation id="42137655013211669">L'accès à cette ressource est interdit sur ce serveur.</translation>
@@ -3689,7 +3686,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5012016139642806466">Accédez à vos mots de passe et plus encore sur tous vos appareils</translation>
 <translation id="5012523644916800014">Gérer les mots de passe et les clés d'accès</translation>
 <translation id="5015344424288992913">Résolution du proxy...</translation>
-<translation id="5017250179386090956">Télécharger les fichiers d'annotations du nœud principal</translation>
 <translation id="5017529052065664584">15 dernières minutes</translation>
 <translation id="5018207570537526145">Ouvrir le site Web de l'extension</translation>
 <translation id="5020008942039547742">Choisir une autre fenêtre</translation>
@@ -6174,7 +6170,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="7804072833593604762">Onglet fermé</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7805906048382884326">Fermer le conseil</translation>
-<translation id="7806659658565827531">Annotation du nœud principal</translation>
 <translation id="7807711621188256451">Toujours autoriser <ph name="HOST" /> à accéder à votre caméra</translation>
 <translation id="7810202088502699111">Des fenêtres pop-up ont été bloquées sur cette page.</translation>
 <translation id="7810951505946824824">Chrome fonctionne grâce au projet Open Source Chromium et à d'autres logiciels <ph name="BEGIN_HIGHLIGHT" />Open Source<ph name="END_HIGHLIGHT" />.</translation>
@@ -6400,7 +6395,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8045752459073395242">En savoir plus sur l'utilisation de l'IA générative au travail</translation>
 <translation id="8045923671629973368">Saisissez l'ID de l'application ou l'URL du Chrome Web Store</translation>
 <translation id="804786196054284061">Contrat de licence utilisateur final</translation>
-<translation id="8048596485169033655">Téléchargement des fichiers d'annotation du nœud principal… (<ph name="PERCENT" /> %)</translation>
 <translation id="8048977114738515028">Créez un raccourci sur le bureau pour accéder directement à ce profil depuis votre appareil</translation>
 <translation id="8049122382261047457">Rechercher une image avec Google Lens</translation>
 <translation id="8050038245906040378">Signature du code commercial Microsoft</translation>

@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">Tarkista tehtävä. Kysy Geminiltä</translation>
 <translation id="1100504063505580045">Nykyinen kuvake</translation>
 <translation id="1101267749138963680">Tarkistetaan turvallisuutta…</translation>
-<translation id="1102759278139578486">Pääsolmun merkintätiedostoja ei voi ladata. Yritä myöhemmin uudelleen.</translation>
 <translation id="1103523840287552314">Käännä <ph name="LANGUAGE" /> aina</translation>
 <translation id="1104098698795583187">Menetät välittömästi pääsyn välilehtiryhmään, ja se poistetaan kaikilta laitteiltasi</translation>
 <translation id="1106270460549661906">Peru Geminille jakaminen</translation>
@@ -661,7 +660,6 @@
 <translation id="1709916727352927457">Avainkoodin poistaminen</translation>
 <translation id="1712143791363119140">Käynnissä</translation>
 <translation id="1714265454085143857">Kiinnitetyt välilehdet</translation>
-<translation id="1714326320203665217">Pääsolmun merkintätiedostot ladattu</translation>
 <translation id="1716034099915639464">Poistetaanko sivuston <ph name="SITE_NAME" /> ja sen asennetun sovelluksen sivustodata ja luvat?</translation>
 <translation id="1718835860248848330">Viimeinen tunti</translation>
 <translation id="1720244237656138008">Impressionismi</translation>
@@ -2968,7 +2966,6 @@
 <translation id="4209251085232852247">Poistettu käytöstä</translation>
 <translation id="4210380525132844778">Syy: <ph name="RULE" /> löytyi <ph name="LIST_NAME" />-luettelosta.</translation>
 <translation id="4210428686880035809">Avaa linkki vasemmanpuoleisessa näkymässä</translation>
-<translation id="4211362364312260125">Nimeä avustavan teknologian verkkosivujen tärkein merkki</translation>
 <translation id="42126664696688958">Vie</translation>
 <translation id="4213540068152645535">Salasanan vaihtamisessa on ongelmia</translation>
 <translation id="42137655013211669">Palvelin kielsi tämän resurssin käytön.</translation>
@@ -3701,7 +3698,6 @@
 <translation id="5012016139642806466">Käytä salasanoja ja muita tietoja kaikilla laitteilla</translation>
 <translation id="5012523644916800014">Muokkaa salasanoja ja avainkoodeja</translation>
 <translation id="5015344424288992913">Jäsennetään välityspalvelinta...</translation>
-<translation id="5017250179386090956">Ladataan pääsolmun merkintätiedostoja</translation>
 <translation id="5017529052065664584">Viimeiset 15 minuuttia</translation>
 <translation id="5018207570537526145">Avaa laajennussivusto</translation>
 <translation id="5020008942039547742">Valitse toinen ikkuna</translation>
@@ -6184,7 +6180,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="7804072833593604762">Välilehti suljettu</translation>
 <translation id="7805768142964895445">Tila</translation>
 <translation id="7805906048382884326">Sulje vinkki</translation>
-<translation id="7806659658565827531">Tee merkintöjä pääsolmuun</translation>
 <translation id="7807711621188256451">Anna aina sivuston <ph name="HOST" /> käyttää kameraasi</translation>
 <translation id="7810202088502699111">Ponnahdusikkunat estettiin tällä sivulla.</translation>
 <translation id="7810951505946824824">Chromen mahdollistivat avoimen lähdekoodin projekti Chromium ja muut <ph name="BEGIN_HIGHLIGHT" />avoimen lähdekoodin<ph name="END_HIGHLIGHT" /> ohjelmistot.</translation>
@@ -6410,7 +6405,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8045752459073395242">Lue lisää generatiivisen tekoälyn käytöstä työssä</translation>
 <translation id="8045923671629973368">Anna sovellustunnus tai verkkokaupan URL-osoite.</translation>
 <translation id="804786196054284061">Käyttölupasopimus</translation>
-<translation id="8048596485169033655">Ladataan pääsolmun merkintätiedostoja… <ph name="PERCENT" /> %</translation>
 <translation id="8048977114738515028">Luo laitteelle työpöydän pikakuvake, josta pääset suoraan tähän profiiliin</translation>
 <translation id="8049122382261047457">Hae mitä tahansa kuvaa Google Lensilla</translation>
 <translation id="8050038245906040378">Microsoftin kaupallinen koodin allekirjoitus</translation>

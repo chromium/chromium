@@ -100,7 +100,6 @@
 <translation id="1100040363679327583">请查看任务。问问 Gemini</translation>
 <translation id="1100504063505580045">当前图标</translation>
 <translation id="1101267749138963680">正在检查安全性…</translation>
-<translation id="1102759278139578486">无法下载主要节点标注文件。请稍后再试。</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">您将立即失去对此标签页分组的访问权限，并且该分组将从您的所有设备中删除</translation>
 <translation id="1106270460549661906">取消与 Gemini 分享</translation>
@@ -653,7 +652,6 @@
 <translation id="1709916727352927457">删除通行密钥</translation>
 <translation id="1712143791363119140">进行中</translation>
 <translation id="1714265454085143857">固定标签页</translation>
-<translation id="1714326320203665217">主要节点标注文件已下载</translation>
 <translation id="1716034099915639464">为 <ph name="SITE_NAME" /> 及其已安装的应用删除网站数据和权限？</translation>
 <translation id="1718835860248848330">过去 1 小时</translation>
 <translation id="1720244237656138008">印象派</translation>
@@ -2956,7 +2954,6 @@
 <translation id="4209251085232852247">已关闭</translation>
 <translation id="4210380525132844778">原因：系统在“<ph name="LIST_NAME" />”列表中发现了“<ph name="RULE" />”。</translation>
 <translation id="4210428686880035809">在左侧视图中打开链接</translation>
-<translation id="4211362364312260125">在网页中注明主要位置标记以供辅助技术使用</translation>
 <translation id="42126664696688958">导出</translation>
 <translation id="4213540068152645535">更改密码时遇到问题</translation>
 <translation id="42137655013211669">服务器禁止访问此资源。</translation>
@@ -3688,7 +3685,6 @@
 <translation id="5012016139642806466">在您的所有设备上获取密码等信息</translation>
 <translation id="5012523644916800014">管理密码和通行密钥</translation>
 <translation id="5015344424288992913">正在解析代理...</translation>
-<translation id="5017250179386090956">正在下载主要节点标注文件</translation>
 <translation id="5017529052065664584">过去 15 分钟</translation>
 <translation id="5018207570537526145">打开扩展程序网站</translation>
 <translation id="5020008942039547742">选择一个不同的窗口</translation>
@@ -6167,7 +6163,6 @@
 <translation id="7804072833593604762">已关闭标签页</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7805906048382884326">关闭提示</translation>
-<translation id="7806659658565827531">标注主要节点</translation>
 <translation id="7807711621188256451">始终允许 <ph name="HOST" /> 使用您的摄像头</translation>
 <translation id="7810202088502699111">已拦截此网页上的弹出式窗口。</translation>
 <translation id="7810951505946824824">Chrome 的诞生离不开 Chromium 开源项目以及其他<ph name="BEGIN_HIGHLIGHT" />开源<ph name="END_HIGHLIGHT" />软件。</translation>
@@ -6393,7 +6388,6 @@
 <translation id="8045752459073395242">详细了解如何在工作中使用生成式 AI</translation>
 <translation id="8045923671629973368">输入应用 ID 或网上应用店网址</translation>
 <translation id="804786196054284061">最终用户许可协议</translation>
-<translation id="8048596485169033655">正在下载主要节点标注文件…，进度为 <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">在设备上创建桌面快捷方式，以便直接访问此个人资料</translation>
 <translation id="8049122382261047457">使用 Google 智能镜头搜索任意图片</translation>
 <translation id="8050038245906040378">Microsoft 商业代码签名</translation>

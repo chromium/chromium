@@ -100,7 +100,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1100040363679327583">Adolygu tasg. Gofyn i Gemini</translation>
 <translation id="1100504063505580045">Eicon presennol</translation>
 <translation id="1101267749138963680">Wrthi'n gwirio am ddiogelwch...</translation>
-<translation id="1102759278139578486">Nid oes modd lawrlwytho ffeiliau anodiadau prif nod. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="1103523840287552314">Cyfieithu <ph name="LANGUAGE" /> bob amser</translation>
 <translation id="1104098698795583187">Byddwch yn colli mynediad at y grŵp tabiau hwn ar unwaith, a bydd yn cael ei ddileu o'ch holl ddyfeisiau</translation>
 <translation id="1106270460549661906">Peidio â rhannu gyda Gemini</translation>
@@ -662,7 +661,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1709916727352927457">Dileu cod pas</translation>
 <translation id="1712143791363119140">Ar waith</translation>
 <translation id="1714265454085143857">Tabiau sydd wedi'u pinio</translation>
-<translation id="1714326320203665217">Ffeiliau anodiadau prif nod wedi'u lawrlwytho</translation>
 <translation id="1716034099915639464">Dileu data a chaniatadau ar gyfer <ph name="SITE_NAME" /> a'i ap sydd wedi'i osod?</translation>
 <translation id="1718835860248848330">Awr ddiwethaf</translation>
 <translation id="1720244237656138008">Argraffiadaeth</translation>
@@ -2975,7 +2973,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="4209251085232852247">Wedi'i ddiffodd</translation>
 <translation id="4210380525132844778">Rheswm: Canfuwyd <ph name="RULE" /> yn y rhestr "<ph name="LIST_NAME" />".</translation>
 <translation id="4210428686880035809">Agor Dolen yn y Wedd Chwith</translation>
-<translation id="4211362364312260125">Nodi'r prif gyfarwyddnod ar dudalennau gwe ar gyfer technoleg gynorthwyol</translation>
 <translation id="42126664696688958">Allforio</translation>
 <translation id="4213540068152645535">Trafferth wrth newid eich cyfrinair</translation>
 <translation id="42137655013211669">Gwaharddwyd mynediad at yr adnodd hwn gan y gweinydd.</translation>
@@ -3709,7 +3706,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="5012016139642806466">Cael eich cyfrineiriau a rhagor ar eich holl ddyfeisiau</translation>
 <translation id="5012523644916800014">Rheoli cyfrineiriau a chodau pas</translation>
 <translation id="5015344424288992913">Wrthi'n datrys y dirprwy weinydd...</translation>
-<translation id="5017250179386090956">Wrthi'n lawrlwytho ffeiliau anodi prif nodau</translation>
 <translation id="5017529052065664584">Y 15 munud diwethaf</translation>
 <translation id="5018207570537526145">Agor gwefan yr estyniad</translation>
 <translation id="5020008942039547742">Dewiswch ffenestr wahanol</translation>
@@ -6203,7 +6199,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="7804072833593604762">Mae'r Tab wedi'i Gau</translation>
 <translation id="7805768142964895445">Statws</translation>
 <translation id="7805906048382884326">Cau awgrym</translation>
-<translation id="7806659658565827531">Anodi'r prif nod</translation>
 <translation id="7807711621188256451">Rhoi mynediad i <ph name="HOST" /> at eich camera bob tro</translation>
 <translation id="7810202088502699111">Cafodd ffenestri naid eu rhwystro ar y dudalen hon.</translation>
 <translation id="7810951505946824824">Mae Chrome yn bosib oherwydd prosiect ffynhonnell agored Chromium a meddalwedd <ph name="BEGIN_HIGHLIGHT" />ffynhonnell agored<ph name="END_HIGHLIGHT" /> eraill.</translation>
@@ -6429,7 +6424,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8045752459073395242">Dysgu rhagor am ddefnyddio AI cynhyrchiol yn y gwaith</translation>
 <translation id="8045923671629973368">Rhowch rif adnabod yr ap neu URL Web Store</translation>
 <translation id="804786196054284061">Cytundeb Trwydded Defnyddiwr Terfynol</translation>
-<translation id="8048596485169033655">Wrthi'n lawrlwytho ffeiliau anodi prif nodau… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Creu llwybr byr bwrdd gwaith ar eich dyfais i gael mynediad uniongyrchol at y proffil hwn</translation>
 <translation id="8049122382261047457">Gallwch chwilio unrhyw lun gyda Google Lens</translation>
 <translation id="8050038245906040378">Llofnodi Cod Masnachol Microsoft</translation>

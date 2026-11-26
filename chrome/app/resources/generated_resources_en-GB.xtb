@@ -100,7 +100,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1100040363679327583">Review task. Ask Gemini</translation>
 <translation id="1100504063505580045">Current icon</translation>
 <translation id="1101267749138963680">Checking for safety…</translation>
-<translation id="1102759278139578486">Can't download main node annotation files. Please try again later.</translation>
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">You'll immediately lose access to this tab group, and it will be deleted from all your devices</translation>
 <translation id="1106270460549661906">Unshare with Gemini</translation>
@@ -662,7 +661,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1709916727352927457">Delete passkey</translation>
 <translation id="1712143791363119140">In progress</translation>
 <translation id="1714265454085143857">Pinned tabs</translation>
-<translation id="1714326320203665217">Main node annotation files downloaded</translation>
 <translation id="1716034099915639464">Delete site data and permissions for <ph name="SITE_NAME" /> and its installed app?</translation>
 <translation id="1718835860248848330">Last hour</translation>
 <translation id="1720244237656138008">Impressionism</translation>
@@ -2963,7 +2961,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="4209251085232852247">Turned off</translation>
 <translation id="4210380525132844778">Reason: <ph name="RULE" /> was found in the '<ph name="LIST_NAME" />' list.</translation>
 <translation id="4210428686880035809">Open link in left view</translation>
-<translation id="4211362364312260125">Identify the main landmark in web pages for assistive technology</translation>
 <translation id="42126664696688958">Export</translation>
 <translation id="4213540068152645535">Trouble changing your password</translation>
 <translation id="42137655013211669">Access to this resource was forbidden by the server.</translation>
@@ -3692,7 +3689,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="5012016139642806466">Get your passwords and more on all your devices</translation>
 <translation id="5012523644916800014">Manage passwords and passkeys</translation>
 <translation id="5015344424288992913">Resolving proxy...</translation>
-<translation id="5017250179386090956">Downloading main node annotation files</translation>
 <translation id="5017529052065664584">Last 15 minutes</translation>
 <translation id="5018207570537526145">Open extension website</translation>
 <translation id="5020008942039547742">Choose a different window</translation>
@@ -6163,7 +6159,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="7804072833593604762">Tab closed</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Close tip</translation>
-<translation id="7806659658565827531">Annotate main node</translation>
 <translation id="7807711621188256451">Always allow <ph name="HOST" /> to access your camera</translation>
 <translation id="7810202088502699111">Pop-ups were blocked on this page.</translation>
 <translation id="7810951505946824824">Chrome is made possible by the Chromium open-source project and other <ph name="BEGIN_HIGHLIGHT" />open-source<ph name="END_HIGHLIGHT" /> software.</translation>
@@ -6388,7 +6383,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8045752459073395242">Learn more about using generative AI at work</translation>
 <translation id="8045923671629973368">Enter application ID or web store URL</translation>
 <translation id="804786196054284061">End User Licence Agreement</translation>
-<translation id="8048596485169033655">Downloading main node annotation files… <ph name="PERCENT" />%</translation>
 <translation id="8048977114738515028">Create a desktop shortcut on your device to access directly to this profile</translation>
 <translation id="8049122382261047457">Search any image with Google Lens</translation>
 <translation id="8050038245906040378">Microsoft Commercial Code Signing</translation>

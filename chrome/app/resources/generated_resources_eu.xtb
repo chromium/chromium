@@ -100,7 +100,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1100040363679327583">Berrikusi zeregina. Galdetu Gemini-ri</translation>
 <translation id="1100504063505580045">Une honetako ikonoa</translation>
 <translation id="1101267749138963680">Segurtasuna egiaztatzen…</translation>
-<translation id="1102759278139578486">Ezin dira deskargatu nodo nagusiko oharpen-fitxategiak. Saiatu berriro geroago.</translation>
 <translation id="1103523840287552314">Itzuli <ph name="LANGUAGE" /> beti</translation>
 <translation id="1104098698795583187">Berehala galduko duzu fitxa talde honetarako sarbidea, eta zure gailu guztietatik ezabatuko da</translation>
 <translation id="1106270460549661906">Utzi Gemini-rekin partekatzeari</translation>
@@ -651,7 +650,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1709916727352927457">Ezabatu sarbide-gakoa</translation>
 <translation id="1712143791363119140">Abian</translation>
 <translation id="1714265454085143857">Fitxa ainguratuak</translation>
-<translation id="1714326320203665217">Deskargatu dira nodo nagusiko oharpen-fitxategiak</translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> webguneko eta instalatutako aplikazioko datuak eta baimenak ezabatu nahi dituzu?</translation>
 <translation id="1718835860248848330">Azken ordukoak</translation>
 <translation id="1720244237656138008">Inpresionismoa</translation>
@@ -2942,7 +2940,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="4209251085232852247">Desaktibatuta</translation>
 <translation id="4210380525132844778">Arrazoia: <ph name="RULE" /> "<ph name="LIST_NAME" />" zerrendan aurkitu da.</translation>
 <translation id="4210428686880035809">Ireki esteka ezkerreko ikuspegian</translation>
-<translation id="4211362364312260125">Identifikatu web-orrietako mugarri nagusia teknologia laguntzailea erabiltzeko</translation>
 <translation id="42126664696688958">Esportatu</translation>
 <translation id="4213540068152645535">Arazoak daude pasahitza aldatzeko</translation>
 <translation id="42137655013211669">Zerbitzariak debekatu egin du baliabiderako sarbidea.</translation>
@@ -3669,7 +3666,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="5012016139642806466">Eduki pasahitzak eta bestelako datuak gailu guztietan</translation>
 <translation id="5012523644916800014">Kudeatu pasahitzak eta sarbide-gakoak</translation>
 <translation id="5015344424288992913">Proxya ebazten…</translation>
-<translation id="5017250179386090956">Nodo nagusiko oharpen-fitxategiak deskargatzen</translation>
 <translation id="5017529052065664584">Azken 15 minutuetan</translation>
 <translation id="5018207570537526145">Ireki luzapenaren webgunea</translation>
 <translation id="5020008942039547742">Aukeratu beste leiho bat</translation>
@@ -6133,7 +6129,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="7804072833593604762">Itxi da fitxa</translation>
 <translation id="7805768142964895445">Egoera</translation>
 <translation id="7805906048382884326">Itxi aholkua</translation>
-<translation id="7806659658565827531">Egin nodo nagusiaren inguruko oharpenak</translation>
 <translation id="7807711621188256451">Eman beti zure kamera erabiltzeko baimena <ph name="HOST" /> ostalariari</translation>
 <translation id="7810202088502699111">Orri honetako popup-mezuak blokeatu dira.</translation>
 <translation id="7810951505946824824">Chromium-en kode irekiko proiektuari eta <ph name="BEGIN_HIGHLIGHT" />kode irekiko<ph name="END_HIGHLIGHT" /> beste software batzuei esker da posible Chrome.</translation>
@@ -6357,7 +6352,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8045752459073395242">Lortu AA generatiboa lanean erabiltzeari buruzko informazio gehiago</translation>
 <translation id="8045923671629973368">Idatzi aplikazio-identifikatzailea edo sareko dendaren URLa</translation>
 <translation id="804786196054284061">Azken erabiltzailearen lizentzia-kontratua</translation>
-<translation id="8048596485169033655">Nodo nagusiko oharpen-fitxategiak deskargatzen… % <ph name="PERCENT" /></translation>
 <translation id="8048977114738515028">Profil hau zuzenean atzitzeko, sortu mahaigaineko lasterbide bat gailuan</translation>
 <translation id="8049122382261047457">Bilatu irudiak Google Lens-ekin</translation>
 <translation id="8050038245906040378">Microsoft kode komertzialen sinadurak</translation>

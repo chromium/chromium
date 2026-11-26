@@ -100,7 +100,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1100040363679327583">Preglejte opravilo. Vprašajte Geminija</translation>
 <translation id="1100504063505580045">Trenutna ikona</translation>
 <translation id="1101267749138963680">Preverjanje varnosti …</translation>
-<translation id="1102759278139578486">Datotek z obvestili glavnega vozlišča ni mogoče prenesti. Poskusite pozneje.</translation>
 <translation id="1103523840287552314">Vedno prevedi ta jezik: <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Takoj boste izgubili dostop do te skupine zavihkov in izbrisana bo iz vseh vaših naprav</translation>
 <translation id="1106270460549661906">Preklic deljenja z Geminijem</translation>
@@ -662,7 +661,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1709916727352927457">Brisanje gesla</translation>
 <translation id="1712143791363119140">Poteka</translation>
 <translation id="1714265454085143857">Pripeti zavihki</translation>
-<translation id="1714326320203665217">Prenesene so datoteke z obvestili glavnega vozlišča</translation>
 <translation id="1716034099915639464">Želite izbrisati podatke spletnega mesta in dovoljenja za <ph name="SITE_NAME" /> ter njegovo nameščeno aplikacijo?</translation>
 <translation id="1718835860248848330">Zadnja ura</translation>
 <translation id="1720244237656138008">Impresionizem</translation>
@@ -2971,7 +2969,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="4209251085232852247">Izklopljeno</translation>
 <translation id="4210380525132844778">Razlog: Pravilo <ph name="RULE" /> je bilo najdeno na seznamu »<ph name="LIST_NAME" />«.</translation>
 <translation id="4210428686880035809">Odpiranje povezave v levem pogledu</translation>
-<translation id="4211362364312260125">Določite glavno orientacijsko točko na spletnih straneh za podporno tehnologijo</translation>
 <translation id="42126664696688958">Izvozi</translation>
 <translation id="4213540068152645535">Težave pri spreminjanju gesla</translation>
 <translation id="42137655013211669">Strežnik je onemogočil dostop do tega vira.</translation>
@@ -3704,7 +3701,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="5012016139642806466">Dostop do gesel in drugih podatkov v vseh vaših napravah</translation>
 <translation id="5012523644916800014">Upravljanje gesel in ključev za dostop</translation>
 <translation id="5015344424288992913">Razrešujem proxy ...</translation>
-<translation id="5017250179386090956">Prenašanje datotek z obvestili glavnega vozlišča</translation>
 <translation id="5017529052065664584">Zadnjih 15 minut</translation>
 <translation id="5018207570537526145">Odpri spletno mesto razširitve</translation>
 <translation id="5020008942039547742">Izberite drugo okno</translation>
@@ -6194,7 +6190,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="7804072833593604762">Zavihek je zaprt</translation>
 <translation id="7805768142964895445">Stanje</translation>
 <translation id="7805906048382884326">Zapri nasvet</translation>
-<translation id="7806659658565827531">Dodaj obvestilo za glavno vozlišče</translation>
 <translation id="7807711621188256451">Vedno dovoli gostitelju <ph name="HOST" /> dostop do kamere</translation>
 <translation id="7810202088502699111">Pojavna okna na tej strani so blokirana.</translation>
 <translation id="7810951505946824824">Chrome omogočajo odprtokodni projekt Chromium in druga <ph name="BEGIN_HIGHLIGHT" />odprtokodna<ph name="END_HIGHLIGHT" /> programska oprema.</translation>
@@ -6420,7 +6415,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8045752459073395242">Preberite več o uporabi generativne umetne inteligence na delovnem mestu</translation>
 <translation id="8045923671629973368">Vnesite ID aplikacije ali URL spletne trgovine</translation>
 <translation id="804786196054284061">Licenčna pogodba za končnega uporabnika</translation>
-<translation id="8048596485169033655">Prenašanje datotek z obvestili glavnega vozlišča … <ph name="PERCENT" /> %</translation>
 <translation id="8048977114738515028">V napravi ustvarite bližnjico na namizju, če želite neposredno dostopati do tega profila.</translation>
 <translation id="8049122382261047457">Poiščite poljubno sliko z Googlom Lens</translation>
 <translation id="8050038245906040378">Microsoftovo komercialno podpisovanje kode</translation>
