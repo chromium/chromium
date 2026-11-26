@@ -2213,6 +2213,14 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   return _awaitingAttachmentSignals;
 }
 
+- (BOOL)hasAttachments {
+  return !_items.empty;
+}
+
+- (BOOL)willFulfillInAIM {
+  return [_stateManager willFulfillInAIM];
+}
+
 // Centralized entrypoint to record navigation metrics exactly once.
 - (void)recordNavigationInitiated {
   if (_inNavigation) {
@@ -2622,6 +2630,14 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
   switch (_uiInputState.activeTool) {
     case ComposeboxMode::kRegularSearch:
+      // With dynamic AIM fulfillment, regular search can have attachments.
+      // Searches keep them, including attachments sent without text (which
+      // arrive with no URL), while URL suggestions still navigate directly.
+      if ([self isDynamicAIMFulfillmentEnabled] &&
+          (isSearchType || destinationURL.is_empty()) && !_items.empty) {
+        [self sendText:[NSString cr_fromString16:text]];
+        break;
+      }
       [self recordNavigationInitiated];
       [self.URLLoader loadURLParams:URLLoadParams];
       break;

@@ -51,6 +51,14 @@
   return NO;
 }
 
+- (BOOL)hasAttachments {
+  return NO;
+}
+
+- (BOOL)willFulfillInAIM {
+  return YES;
+}
+
 @end
 
 class ComposeboxCobrowseOmniboxClientTest : public PlatformTest {

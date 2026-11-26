@@ -47,6 +47,19 @@
 #import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "url/gurl.h"
 
+namespace {
+
+// Whether the composebox is a plain search box: regular search with no
+// attachments, outside AI Mode. With dynamic AIM fulfillment, regular search
+// can have attachments or stay in AI Mode, which need contextual suggestions
+// and must not be dropped by a prerendered page.
+bool IsPlainSearch(id<ComposeboxOmniboxClientDelegate> delegate) {
+  return [delegate composeboxMode] == ComposeboxMode::kRegularSearch &&
+         ![delegate hasAttachments] && ![delegate willFulfillInAIM];
+}
+
+}  // namespace
+
 ComposeboxOmniboxClient::ComposeboxOmniboxClient(
     WebLocationBar* location_bar,
     Browser* browser,
@@ -157,10 +170,7 @@ GURL ComposeboxOmniboxClient::GetNavigationEntryURL() const {
 
 metrics::OmniboxEventProto::PageClassification
 ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
-  BOOL is_in_regular_search =
-      [delegate_ composeboxMode] == ComposeboxMode::kRegularSearch;
-
-  if (is_in_regular_search) {
+  if (IsPlainSearch(delegate_)) {
     return location_bar_->GetLocationBarModel()->GetPageClassification(
         is_prefetch);
   }
@@ -214,7 +224,7 @@ void ComposeboxOmniboxClient::OnFocusChanged(OmniboxFocusState state,
         agent->SetWebStatePrecloningNeeded(false);
       }
     } else if (IsOmniboxPrerenderOnTouchDownEnabled() &&
-               [delegate_ composeboxMode] == ComposeboxMode::kRegularSearch) {
+               IsPlainSearch(delegate_)) {
       agent->SetWebStatePrecloningNeeded(true);
     }
   }
@@ -252,8 +262,7 @@ void ComposeboxOmniboxClient::OnResultChanged(
   // Only prerender HISTORY_URL matches, which come from the history DB.  Do
   // not prerender other types of matches, including matches from the search
   // provider.
-  if ([delegate_ composeboxMode] == ComposeboxMode::kRegularSearch &&
-      is_inline_autocomplete &&
+  if (IsPlainSearch(delegate_) && is_inline_autocomplete &&
       match.type == omnibox::AutocompleteMatchType::kHistoryUrl) {
     ui::PageTransition transition = ui::PageTransitionFromInt(
         match.transition | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
@@ -269,7 +278,7 @@ void ComposeboxOmniboxClient::OnResultChanged(
 
 void ComposeboxOmniboxClient::StartPrerender(const GURL& url,
                                              ui::PageTransition transition) {
-  if ([delegate_ composeboxMode] != ComposeboxMode::kRegularSearch) {
+  if (!IsPlainSearch(delegate_)) {
     return;
   }
   PrerenderBrowserAgent* agent = PrerenderBrowserAgent::FromBrowser(browser_);
@@ -397,5 +406,5 @@ bool ComposeboxOmniboxClient::ShouldSuppressVerbatimSuggestion() const {
   if (IsComposeboxVerbatimSuggestionInAIMEnabled()) {
     return false;
   }
-  return [delegate_ composeboxMode] != ComposeboxMode::kRegularSearch;
+  return [delegate_ willFulfillInAIM];
 }

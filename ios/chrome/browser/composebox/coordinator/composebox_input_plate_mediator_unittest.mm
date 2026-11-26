@@ -97,6 +97,8 @@
 @interface FakeComposeboxURLLoader : NSObject <ComposeboxURLLoader>
 @property(nonatomic, assign) GURL loadedURL;
 @property(nonatomic, assign) BOOL prepareLoadCalled;
+// Number of times `loadURLParams:` was called.
+@property(nonatomic, readonly) NSUInteger loadURLCallCount;
 @end
 
 @implementation FakeComposeboxURLLoader
@@ -105,6 +107,7 @@
   _prepareLoadCalled = YES;
 }
 - (void)loadURLParams:(const UrlLoadParams&)params {
+  _loadURLCallCount++;
   _loadedURL = params.web_params.url;
 }
 @end
@@ -833,6 +836,89 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kAIM]);
 }
 
+// Tests that, with dynamic AIM fulfillment, accepting a search suggestion with
+// an image in regular search keeps the image rather than loading the plain
+// suggestion URL.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       DynamicAimFulfillmentSearchSuggestionKeepsAttachments) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures({omnibox::kDynamicAimFulfillment}, {});
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ForwardSearchboxConfig();
+  FakeComposeboxURLLoader* fake_loader = [[FakeComposeboxURLLoader alloc] init];
+  mediator_.URLLoader = fake_loader;
+  NSItemProvider* provider =
+      [[NSItemProvider alloc] initWithObject:[[UIImage alloc] init]];
+  [mediator_
+      processImageItemProvider:provider
+                       assetID:@"123"
+                        source:ComposeboxInputItemSource::kGalleryPicker];
+
+  GURL suggestion_url("https://www.google.com/search?q=query");
+  [mediator_ omniboxDidAcceptText:u"query"
+                   destinationURL:suggestion_url
+                    URLLoadParams:UrlLoadParams::InCurrentTab(suggestion_url)
+                     isSearchType:YES];
+
+  EXPECT_NE(fake_loader.loadedURL, suggestion_url);
+}
+
+// Tests that, with dynamic AIM fulfillment, accepting a URL suggestion with an
+// image in regular search navigates to the URL.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       DynamicAimFulfillmentURLSuggestionNavigatesDirectly) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures({omnibox::kDynamicAimFulfillment}, {});
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ForwardSearchboxConfig();
+  FakeComposeboxURLLoader* fake_loader = [[FakeComposeboxURLLoader alloc] init];
+  mediator_.URLLoader = fake_loader;
+  NSItemProvider* provider =
+      [[NSItemProvider alloc] initWithObject:[[UIImage alloc] init]];
+  [mediator_
+      processImageItemProvider:provider
+                       assetID:@"123"
+                        source:ComposeboxInputItemSource::kGalleryPicker];
+
+  GURL page_url("https://example.com/");
+  [mediator_ omniboxDidAcceptText:u"example.com"
+                   destinationURL:page_url
+                    URLLoadParams:UrlLoadParams::InCurrentTab(page_url)
+                     isSearchType:NO];
+
+  EXPECT_EQ(fake_loader.loadedURL, page_url);
+}
+
+// Tests that, with dynamic AIM fulfillment, sending an image with no text in
+// regular search goes through the contextual session rather than loading the
+// empty URL of the thumbnail-only accept.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       DynamicAimFulfillmentImageWithoutTextUsesContextualSession) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures({omnibox::kDynamicAimFulfillment}, {});
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ForwardSearchboxConfig();
+  FakeComposeboxURLLoader* fake_loader = [[FakeComposeboxURLLoader alloc] init];
+  mediator_.URLLoader = fake_loader;
+  NSItemProvider* provider =
+      [[NSItemProvider alloc] initWithObject:[[UIImage alloc] init]];
+  [mediator_
+      processImageItemProvider:provider
+                       assetID:@"123"
+                        source:ComposeboxInputItemSource::kGalleryPicker];
+
+  [mediator_ omniboxDidAcceptText:u""
+                   destinationURL:GURL()
+                    URLLoadParams:UrlLoadParams::InCurrentTab(GURL())
+                     isSearchType:NO];
+
+  // The empty thumbnail-only URL isn't loaded directly.
+  EXPECT_EQ(fake_loader.loadURLCallCount, 0u);
+}
+
 // Disables multimodal options when not eligible.
 TEST_F(ComposeboxInputPlateMediatorTest,
        DisablesMultimodalActionsWhenAIMNotEligible) {
@@ -1536,6 +1622,67 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   ASSERT_TRUE(base::test::RunUntil([&]() { return called; }));
 
   [test_mediator disconnect];
+}
+
+// Tests that, with dynamic AIM fulfillment, a search accepted in regular search
+// while AI Mode is on and nothing is attached opens AI Mode through the session
+// rather than loading the plain search URL.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       DynamicAimFulfillmentSearchInAIModeWithoutAttachmentsUsesSession) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures({omnibox::kDynamicAimFulfillment}, {});
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  auto real_session = service_->CreateSession(
+      std::make_unique<
+          contextual_search::ContextualSearchContextController::ConfigParams>(),
+      contextual_search::ContextualSearchSource::kUnknown, std::nullopt);
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  contextual_search::MockContextualSearchSessionHandle* raw_mock =
+      mock_session.get();
+  ON_CALL(*raw_mock, GetController())
+      .WillByDefault(testing::Return(real_session->GetController()));
+  ComposeboxInputPlateMediator* test_mediator =
+      CreateMediator(std::move(mock_session), ComposeboxEntrypoint::kOther,
+                     ComposeboxMode::kRegularSearch);
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(
+      [](ComposeboxInputPlateMediator* mediator) { [mediator disconnect]; },
+      test_mediator));
+  FakeComposeboxURLLoader* fake_loader = [[FakeComposeboxURLLoader alloc] init];
+  test_mediator.URLLoader = fake_loader;
+  omnibox::ModelConfig* model_config = searchbox_config_.add_model_configs();
+  model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  model_config->mutable_rule()->set_allow_all_input_types(true);
+  searchbox_config_.mutable_rule_set()->add_allowed_models(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  ForwardSearchboxConfig();
+  // Picking a model enters AI Mode, shown as the AI Mode tool in the UI.
+  [test_mediator setModel:omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR
+       explicitUserAction:YES];
+  ASSERT_EQ([test_mediator composeboxMode], ComposeboxMode::kAIM);
+
+  bool called = false;
+  EXPECT_CALL(*raw_mock, CreateSearchUrl(testing::_, testing::_))
+      .WillOnce(
+          [&called](std::unique_ptr<
+                        contextual_search::ContextualSearchContextController::
+                            CreateSearchUrlRequestInfo> info,
+                    base::OnceCallback<void(GURL)> callback) {
+            EXPECT_EQ(info->search_url_type,
+                      contextual_search::ContextualSearchContextController::
+                          SearchUrlType::kAim);
+            called = true;
+          });
+
+  GURL search_url("https://www.google.com/search?q=query");
+  [test_mediator omniboxDidAcceptText:u"query"
+                       destinationURL:search_url
+                        URLLoadParams:UrlLoadParams::InCurrentTab(search_url)
+                         isSearchType:YES];
+
+  ASSERT_TRUE(base::test::RunUntil([&]() { return called; }));
+  EXPECT_EQ(fake_loader.loadURLCallCount, 0u);
 }
 
 // Tests that closing an attached tab in cobrowse mode removes the item and

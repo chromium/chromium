@@ -45,6 +45,13 @@ class WebState;
 /// Returns whether the composebox is awaiting attachment signals to fully load.
 - (BOOL)awaitingAttachmentSignals;
 
+/// Returns whether the composebox has attachments.
+- (BOOL)hasAttachments;
+
+/// Returns whether submitting the current composition opens AI Mode rather
+/// than the Search results page.
+- (BOOL)willFulfillInAIM;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_OMNIBOX_CLIENT_DELEGATE_H_
