@@ -5,11 +5,12 @@
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 
 #include <string>
+#include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -124,8 +125,11 @@ static PrivacyCAType GetAttestationServerType() {
   return DEFAULT_PCA;
 }
 
-AttestationCAClient::AttestationCAClient() {
-  pca_type_ = GetAttestationServerType();
+AttestationCAClient::AttestationCAClient(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    : shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      pca_type_(GetAttestationServerType()) {
+  CHECK(shared_url_loader_factory_);
 }
 
 AttestationCAClient::~AttestationCAClient() = default;
@@ -220,7 +224,7 @@ void AttestationCAClient::FetchURL(const std::string& url,
   url_loaders_.push_back(std::move(url_loader));
 
   raw_url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      g_browser_process->shared_url_loader_factory().get(),
+      shared_url_loader_factory_.get(),
       base::BindOnce(&AttestationCAClient::OnURLLoadComplete,
                      base::Unretained(this), std::move(--url_loaders_.end()),
                      std::move(on_response)));

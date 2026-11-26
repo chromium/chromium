@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/boringssl/src/pki/pem.h"
 
 namespace {
@@ -307,10 +308,12 @@ bool CertificateManager::Key::operator==(const Key& other) const {
 
 // static
 std::unique_ptr<CertificateManager> CertificateManager::Create(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const AccountId& account_id,
     base::TimeDelta expiration_buffer) {
   std::unique_ptr<ash::attestation::ServerProxy> attestation_ca_client =
-      std::make_unique<ash::attestation::AttestationCAClient>();
+      std::make_unique<ash::attestation::AttestationCAClient>(
+          std::move(shared_url_loader_factory));
   auto attestation_flow =
       std::make_unique<ash::attestation::AttestationFlowAdaptive>(
           std::move(attestation_ca_client));

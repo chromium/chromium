@@ -31,6 +31,7 @@ specific_include_rules = {
   # The keyed service factory is the //chrome seam for the sync and favicon
   # services that PhoneHubManager takes by constructor.
   "phone_hub_manager_factory\\.cc": [
+    "+chrome/browser/browser_process.h",
     "+chrome/browser/favicon/history_ui_favicon_request_handler_factory.h",
     "+chrome/browser/sync/session_sync_service_factory.h",
     "+chrome/browser/sync/sync_service_factory.h",

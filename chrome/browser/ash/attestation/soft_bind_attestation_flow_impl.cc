@@ -24,6 +24,7 @@
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
@@ -161,9 +162,12 @@ void SoftBindAttestationFlowImpl::Session::ReportSuccess(
   std::move(callback_).Run(certificate_chain, /*valid=*/true);
 }
 
-SoftBindAttestationFlowImpl::SoftBindAttestationFlowImpl()
+SoftBindAttestationFlowImpl::SoftBindAttestationFlowImpl(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : attestation_client_(AttestationClient::Get()) {
-  std::unique_ptr<ServerProxy> attestation_ca_client(new AttestationCAClient());
+  std::unique_ptr<ServerProxy> attestation_ca_client =
+      std::make_unique<AttestationCAClient>(
+          std::move(shared_url_loader_factory));
   attestation_flow_ = std::make_unique<AttestationFlowAdaptive>(
       std::move(attestation_ca_client));
 }

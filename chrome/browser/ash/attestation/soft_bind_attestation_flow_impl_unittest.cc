@@ -23,6 +23,8 @@
 #include "crypto/test_support.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 #include "third_party/securemessage/src/cpp/include/securemessage/crypto_ops.h"
@@ -53,8 +55,8 @@ class SoftBindAttestationFlowImplTest : public ::testing::Test {
     auto mock_attestation_flow =
         std::make_unique<StrictMock<MockAttestationFlow>>();
     mock_attestation_flow_ = mock_attestation_flow.get();
-    soft_bind_attestation_flow_ =
-        std::make_unique<SoftBindAttestationFlowImpl>();
+    soft_bind_attestation_flow_ = std::make_unique<SoftBindAttestationFlowImpl>(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     soft_bind_attestation_flow_->SetAttestationFlowForTesting(
         std::move(mock_attestation_flow));
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
@@ -132,6 +134,7 @@ class SoftBindAttestationFlowImplTest : public ::testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  network::TestURLLoaderFactory test_url_loader_factory_;
   raw_ptr<StrictMock<MockAttestationFlow>, DanglingUntriaged>
       mock_attestation_flow_;
   ScopedCrosSettingsTestHelper settings_helper_;

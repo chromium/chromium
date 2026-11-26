@@ -11,12 +11,17 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace ash {
 namespace attestation {
@@ -26,13 +31,18 @@ class AttestationFlow;
 // A class which uploads enterprise machine certificates.
 class MachineCertificateUploaderImpl : public MachineCertificateUploader {
  public:
-  explicit MachineCertificateUploaderImpl(
+  // `shared_url_loader_factory` must be non-null.
+  MachineCertificateUploaderImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       policy::CloudPolicyClient* policy_client);
 
   // A constructor which allows custom AttestationFlow implementations. Useful
-  // for testing.
-  MachineCertificateUploaderImpl(policy::CloudPolicyClient* policy_client,
-                                 AttestationFlow* attestation_flow);
+  // for testing. `shared_url_loader_factory` must be non-null if
+  // `attestation_flow` is null.
+  MachineCertificateUploaderImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      policy::CloudPolicyClient* policy_client,
+      AttestationFlow* attestation_flow);
 
   MachineCertificateUploaderImpl(const MachineCertificateUploaderImpl&) =
       delete;
@@ -104,6 +114,8 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
 
   void RunCallbacks(bool status);
 
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
   raw_ptr<policy::CloudPolicyClient, DanglingUntriaged> policy_client_ =
       nullptr;
   std::unique_ptr<AttestationFlow> default_attestation_flow_;

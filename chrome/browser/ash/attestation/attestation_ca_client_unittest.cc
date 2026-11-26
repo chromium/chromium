@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
@@ -88,9 +87,6 @@ class AttestationCAClientTest : public ::testing::Test {
   ~AttestationCAClientTest() override = default;
 
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
-        test_shared_url_loader_factory_);
-
     test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
         [&](const network::ResourceRequest& request) {
           last_resource_request_ = request;
@@ -151,7 +147,7 @@ class AttestationCAClientTest : public ::testing::Test {
 };
 
 TEST_F(AttestationCAClientTest, EnrollRequest) {
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.SendEnrollRequest(
       "enroll", base::BindOnce(&AttestationCAClientTest::DataCallback,
                                base::Unretained(this)));
@@ -164,7 +160,7 @@ TEST_F(AttestationCAClientTest, EnrollRequest) {
 }
 
 TEST_F(AttestationCAClientTest, CertificateRequest) {
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.SendCertificateRequest(
       "certificate", base::BindOnce(&AttestationCAClientTest::DataCallback,
                                     base::Unretained(this)));
@@ -177,7 +173,7 @@ TEST_F(AttestationCAClientTest, CertificateRequest) {
 }
 
 TEST_F(AttestationCAClientTest, CertificateRequestNetworkFailure) {
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.SendCertificateRequest(
       "certificate", base::BindOnce(&AttestationCAClientTest::DataCallback,
                                     base::Unretained(this)));
@@ -189,7 +185,7 @@ TEST_F(AttestationCAClientTest, CertificateRequestNetworkFailure) {
 }
 
 TEST_F(AttestationCAClientTest, CertificateRequestHttpError) {
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.SendCertificateRequest(
       "certificate", base::BindOnce(&AttestationCAClientTest::DataCallback,
                                     base::Unretained(this)));
@@ -201,7 +197,8 @@ TEST_F(AttestationCAClientTest, CertificateRequestHttpError) {
 }
 
 TEST_F(AttestationCAClientTest, DeleteOnCallback) {
-  AttestationCAClient* client = new AttestationCAClient();
+  AttestationCAClient* client =
+      new AttestationCAClient(test_shared_url_loader_factory_);
   client->SendCertificateRequest(
       "certificate",
       base::BindOnce(&AttestationCAClientTest::DeleteClientDataCallback,
@@ -219,7 +216,7 @@ class AttestationCAClientAttestationServerTest
 TEST_F(AttestationCAClientAttestationServerTest, DefaultEnrollRequest) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       chromeos::switches::kAttestationServer, "default");
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.SendEnrollRequest(
       "enroll", base::BindOnce(&AttestationCAClientTest::DataCallback,
                                base::Unretained(this)));
@@ -234,7 +231,7 @@ TEST_F(AttestationCAClientAttestationServerTest, DefaultEnrollRequest) {
 TEST_F(AttestationCAClientAttestationServerTest, DefaultCertificateRequest) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       chromeos::switches::kAttestationServer, "default");
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.SendCertificateRequest(
       "certificate", base::BindOnce(&AttestationCAClientTest::DataCallback,
                                     base::Unretained(this)));
@@ -249,7 +246,7 @@ TEST_F(AttestationCAClientAttestationServerTest, DefaultCertificateRequest) {
 TEST_F(AttestationCAClientAttestationServerTest, TestEnrollRequest) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       chromeos::switches::kAttestationServer, "test");
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.SendEnrollRequest(
       "enroll", base::BindOnce(&AttestationCAClientTest::DataCallback,
                                base::Unretained(this)));
@@ -264,7 +261,7 @@ TEST_F(AttestationCAClientAttestationServerTest, TestEnrollRequest) {
 TEST_F(AttestationCAClientAttestationServerTest, TestCertificateRequest) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       chromeos::switches::kAttestationServer, "test");
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.SendCertificateRequest(
       "certificate", base::BindOnce(&AttestationCAClientTest::DataCallback,
                                     base::Unretained(this)));
@@ -284,7 +281,7 @@ TEST_F(AttestationCAClientAttestationServerTest, ProxyPresentForDefaultCA) {
                                    true);
   EXPECT_CALL(network_context,
               LookUpProxyForURL(GURL("https://chromeos-ca.gstatic.com"), _, _));
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.set_network_context_for_testing(&network_context);
   bool is_proxy_present = false;
   client.CheckIfAnyProxyPresent(base::BindOnce(
@@ -303,7 +300,7 @@ TEST_F(AttestationCAClientAttestationServerTest, ProxyPresentForTestCA) {
   EXPECT_CALL(
       network_context,
       LookUpProxyForURL(GURL("https://asbestos-qa.corp.google.com"), _, _));
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.set_network_context_for_testing(&network_context);
   bool is_proxy_present = false;
   client.CheckIfAnyProxyPresent(base::BindOnce(
@@ -321,7 +318,7 @@ TEST_F(AttestationCAClientAttestationServerTest, ProxyNotPresentForDefaultCA) {
                                    false);
   EXPECT_CALL(network_context,
               LookUpProxyForURL(GURL("https://chromeos-ca.gstatic.com"), _, _));
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.set_network_context_for_testing(&network_context);
   bool is_proxy_present = true;
   client.CheckIfAnyProxyPresent(base::BindOnce(
@@ -340,7 +337,7 @@ TEST_F(AttestationCAClientAttestationServerTest, ProxyNotPresentForTestCA) {
   EXPECT_CALL(
       network_context,
       LookUpProxyForURL(GURL("https://asbestos-qa.corp.google.com"), _, _));
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.set_network_context_for_testing(&network_context);
   bool is_proxy_present = true;
   client.CheckIfAnyProxyPresent(base::BindOnce(
@@ -354,7 +351,7 @@ TEST_F(AttestationCAClientAttestationServerTest,
        ProxyAssumedToBePresentUponError) {
   StrictMock<MockNetworkContext> network_context;
   EXPECT_CALL(network_context, LookUpProxyForURL(_, _, _));
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.set_network_context_for_testing(&network_context);
   bool is_proxy_present = false;
   client.CheckIfAnyProxyPresent(base::BindOnce(
@@ -373,7 +370,7 @@ TEST_F(AttestationCAClientAttestationServerTest, CheckProxyMultipleCalls) {
   EXPECT_CALL(network_context,
               LookUpProxyForURL(GURL("https://chromeos-ca.gstatic.com"), _, _))
       .Times(2);
-  AttestationCAClient client;
+  AttestationCAClient client(test_shared_url_loader_factory_);
   client.set_network_context_for_testing(&network_context);
   bool is_proxy_present1 = false;
   bool is_proxy_present2 = false;

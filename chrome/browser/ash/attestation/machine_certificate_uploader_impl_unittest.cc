@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -201,8 +202,9 @@ class MachineCertificateUploaderTestBase : public ::testing::Test {
 
   void RunUploader(
       base::OnceCallback<void(bool)> upload_callback = base::DoNothing()) {
-    MachineCertificateUploaderImpl uploader(&policy_client_,
-                                            &attestation_flow_);
+    MachineCertificateUploaderImpl uploader(
+        /*shared_url_loader_factory=*/nullptr, &policy_client_,
+        &attestation_flow_);
     uploader.set_retry_limit_for_testing(kRetryLimit);
     uploader.set_retry_delay_for_testing(base::TimeDelta());
     if (GetShouldRefreshCert())
@@ -271,7 +273,9 @@ TEST_P(MachineCertificateUploaderTest, WaitForUploadComplete) {
   SetupMocks(MOCK_NEW_KEY, "");
 
   StrictMock<CallbackObserver> waiting_callback_observer;
-  MachineCertificateUploaderImpl uploader(&policy_client_, &attestation_flow_);
+  MachineCertificateUploaderImpl uploader(
+      /*shared_url_loader_factory=*/nullptr, &policy_client_,
+      &attestation_flow_);
 
   uploader.WaitForUploadComplete(waiting_callback_observer.GetCallback());
   EXPECT_CALL(waiting_callback_observer, Callback(true));
@@ -304,7 +308,9 @@ TEST_P(MachineCertificateUploaderTest, WaitForUploadFail) {
       .WillOnce(WithArgs<7>(CertCallbackBadRequestFailure));
 
   StrictMock<CallbackObserver> waiting_callback_observer;
-  MachineCertificateUploaderImpl uploader(&policy_client_, &attestation_flow_);
+  MachineCertificateUploaderImpl uploader(
+      /*shared_url_loader_factory=*/nullptr, &policy_client_,
+      &attestation_flow_);
 
   uploader.WaitForUploadComplete(waiting_callback_observer.GetCallback());
   EXPECT_CALL(waiting_callback_observer, Callback(false));

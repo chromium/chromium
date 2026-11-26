@@ -22,6 +22,8 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -75,7 +77,9 @@ void ResultCallbackSuccess(policy::CloudPolicyClient::ResultCallback callback) {
 
 class EnrollmentCertificateUploaderTest : public ::testing::Test {
  public:
-  EnrollmentCertificateUploaderTest() : uploader_(&policy_client_) {
+  EnrollmentCertificateUploaderTest()
+      : uploader_(test_url_loader_factory_.GetSafeWeakWrapper(),
+                  &policy_client_) {
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     policy_client_.SetDMToken("fake_dm_token");
 
@@ -96,6 +100,7 @@ class EnrollmentCertificateUploaderTest : public ::testing::Test {
   ScopedStubAttestationFeatures attestation_features_;
   StrictMock<MockAttestationFlow> attestation_flow_;
   StrictMock<policy::MockCloudPolicyClient> policy_client_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 
   EnrollmentCertificateUploaderImpl uploader_;
 };

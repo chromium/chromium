@@ -10,11 +10,13 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 
 namespace network {
 
+class SharedURLLoaderFactory;
 class SimpleURLLoader;
 
 namespace mojom {
@@ -30,7 +32,9 @@ namespace attestation {
 // flow.  It sends all requests to an Attestation CA via HTTPS.
 class AttestationCAClient : public ServerProxy {
  public:
-  AttestationCAClient();
+  // `shared_url_loader_factory` must be non-null.
+  explicit AttestationCAClient(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
   AttestationCAClient(const AttestationCAClient&) = delete;
   AttestationCAClient& operator=(const AttestationCAClient&) = delete;
@@ -58,6 +62,8 @@ class AttestationCAClient : public ServerProxy {
   }
 
  private:
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
   PrivacyCAType pca_type_;
 
   // POSTs |request| data to |url| and calls |on_response| with the response

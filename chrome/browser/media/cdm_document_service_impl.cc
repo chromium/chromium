@@ -28,9 +28,11 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/platform_verification_chromeos.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -278,9 +280,11 @@ void CdmDocumentServiceImpl::ChallengePlatform(
     return;
   }
 
-  if (!platform_verification_flow_)
+  if (!platform_verification_flow_) {
     platform_verification_flow_ =
-        base::MakeRefCounted<ash::attestation::PlatformVerificationFlow>();
+        base::MakeRefCounted<ash::attestation::PlatformVerificationFlow>(
+            g_browser_process->shared_url_loader_factory());
+  }
 
   platform_verification_flow_->ChallengePlatformKey(
       content::WebContents::FromRenderFrameHost(&render_frame_host()),

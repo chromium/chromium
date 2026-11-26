@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,9 +49,12 @@ bool IsEnrollmentAllowedByPolicy(content::BrowserContext* context) {
 // Class that wraps DeviceSyncClient in a KeyedService.
 class DeviceSyncClientHolder : public KeyedService {
  public:
-  explicit DeviceSyncClientHolder(content::BrowserContext* context)
+  DeviceSyncClientHolder(
+      content::BrowserContext* context,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
       : soft_bind_attestation_flow_(
-            std::make_unique<attestation::SoftBindAttestationFlowImpl>()),
+            std::make_unique<attestation::SoftBindAttestationFlowImpl>(
+                std::move(shared_url_loader_factory))),
         device_sync_(CreateDeviceSyncImplForProfile(
             Profile::FromBrowserContext(context))),
         device_sync_client_(DeviceSyncClientImpl::Factory::Create()) {
@@ -154,8 +158,12 @@ DeviceSyncClientFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // TODO(crbug.com/208930612): Check prohibited by policy in services that
   // depend on this Factory, not here.
-  if (IsEnrollmentAllowedByPolicy(context))
-    return std::make_unique<DeviceSyncClientHolder>(context);
+  if (IsEnrollmentAllowedByPolicy(context)) {
+    // NOTE: Allow g_browser_process here as this class is initialized lazily
+    // with base::NoDestructor.
+    return std::make_unique<DeviceSyncClientHolder>(
+        context, g_browser_process->shared_url_loader_factory());
+  }
 
   return nullptr;
 }

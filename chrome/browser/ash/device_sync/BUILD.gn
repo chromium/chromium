@@ -12,6 +12,7 @@ static_library("device_sync") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/cryptauth",
     "//chrome/browser/gcm",

@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/attestation/certificate_util.h"
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow.h"
@@ -17,13 +18,19 @@
 #include "components/account_id/account_id.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace ash {
 namespace attestation {
 
 // Generates certificates asynchronously for soft key binding.
 class SoftBindAttestationFlowImpl : public SoftBindAttestationFlow {
  public:
-  SoftBindAttestationFlowImpl();
+  // `shared_url_loader_factory` must be non-null.
+  explicit SoftBindAttestationFlowImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   ~SoftBindAttestationFlowImpl() override;
 
   SoftBindAttestationFlowImpl(const SoftBindAttestationFlowImpl&) = delete;

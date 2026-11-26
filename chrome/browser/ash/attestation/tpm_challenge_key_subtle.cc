@@ -40,6 +40,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 namespace attestation {
@@ -174,7 +175,9 @@ std::string GetKeyNameWithDefault(VerifiedAccessFlow flow_type,
 
 TpmChallengeKeySubtleImpl::TpmChallengeKeySubtleImpl()
     : default_attestation_flow_(std::make_unique<AttestationFlowAdaptive>(
-          std::make_unique<AttestationCAClient>())),
+          // TODO(crbug.com/404129439): Avoid using g_browser_process.
+          std::make_unique<AttestationCAClient>(
+              g_browser_process->shared_url_loader_factory()))),
       attestation_flow_(default_attestation_flow_.get()) {
   policy::DeviceCloudPolicyManagerAsh* manager =
       g_browser_process->platform_part()

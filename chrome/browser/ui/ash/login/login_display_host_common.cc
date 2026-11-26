@@ -209,9 +209,11 @@ class AccessibilityManagerWrapper
 };
 
 std::unique_ptr<quick_start::SecondDeviceAuthBroker>
-CreateSecondDeviceAuthBroker() {
-  std::unique_ptr<attestation::ServerProxy> server_proxy(
-      new attestation::AttestationCAClient());
+CreateSecondDeviceAuthBroker(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
+  std::unique_ptr<attestation::ServerProxy> server_proxy =
+      std::make_unique<attestation::AttestationCAClient>(
+          std::move(shared_url_loader_factory));
   std::unique_ptr<attestation::AttestationFlow> attestation_flow =
       std::make_unique<attestation::AttestationFlowAdaptive>(
           std::move(server_proxy));
@@ -798,7 +800,8 @@ LoginDisplayHostCommon::GetQuickStartBootstrapController() {
 
     bootstrap_controller_ =
         std::make_unique<ash::quick_start::TargetDeviceBootstrapController>(
-            &local_state_.get(), CreateSecondDeviceAuthBroker(),
+            &local_state_.get(),
+            CreateSecondDeviceAuthBroker(shared_url_loader_factory_),
             std::make_unique<AccessibilityManagerWrapper>(), service);
   }
   return bootstrap_controller_->GetAsWeakPtrForClient();

@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,6 +38,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/base/features.h"
 #include "components/user_manager/user_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash::phonehub {
 
@@ -124,8 +126,11 @@ PhoneHubManagerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  // NOTE: Allow g_browser_process here as this class is initialized lazily
+  // with base::NoDestructor.
   auto soft_bind_attestation_flow =
-      std::make_unique<attestation::SoftBindAttestationFlowImpl>();
+      std::make_unique<attestation::SoftBindAttestationFlowImpl>(
+          g_browser_process->shared_url_loader_factory());
 
   auto attestation_certificate_generator =
       std::make_unique<AttestationCertificateGeneratorImpl>(

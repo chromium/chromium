@@ -78,8 +78,10 @@ class RequestSignerImpl : public ash::RequestSigner {
   explicit RequestSignerImpl(const AccountId& account_id,
                              const std::string& device_id)
       : account_id_(account_id), device_id_(device_id) {
-    certificate_manager_ =
-        CertificateManager::Create(account_id, kCertificateBuffer);
+    // TODO(crbug.com/403152904): Avoid using g_browser_process.
+    certificate_manager_ = CertificateManager::Create(
+        g_browser_process->shared_url_loader_factory(), account_id,
+        kCertificateBuffer);
     signature_builder_ =
         std::make_unique<SignatureBuilder>(certificate_manager_.get());
   }

@@ -12,8 +12,13 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace ash {
 
@@ -53,11 +58,13 @@ class CertificateManager {
     kCertificateExpired
   };
 
+  // `shared_url_loader_factory` must be non-null.
   // `expiration_buffer` defines the time allowed before a certificate is
   // considered expired. If a certificate expires in less than
   // `expiration_buffer`, a new certificate will be retrieved. Otherwise, the
   // cached certificate will be provided.
   static std::unique_ptr<CertificateManager> Create(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       const AccountId& account_id,
       base::TimeDelta expiration_buffer);
 

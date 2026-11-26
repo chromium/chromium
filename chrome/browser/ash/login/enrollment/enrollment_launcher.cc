@@ -68,14 +68,16 @@ const char kOAuthConsumerName[] = "enterprise_enrollment";
 base::NoDestructor<EnrollmentLauncher::AttestationFlowFactory>
     g_testing_attestation_flow_factory;
 
-std::unique_ptr<ash::attestation::AttestationFlow> CreateAttestationFlow() {
+std::unique_ptr<ash::attestation::AttestationFlow> CreateAttestationFlow(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   if (!g_testing_attestation_flow_factory->is_null()) {
     CHECK_IS_TEST();
     return g_testing_attestation_flow_factory->Run();
   }
 
   return std::make_unique<ash::attestation::AttestationFlowAdaptive>(
-      std::make_unique<ash::attestation::AttestationCAClient>());
+      std::make_unique<ash::attestation::AttestationCAClient>(
+          std::move(shared_url_loader_factory)));
 }
 
 base::NoDestructor<EnrollmentLauncher::Factory> g_testing_factory;
@@ -323,7 +325,7 @@ void EnrollmentLauncherImpl::DoEnroll(policy::DMAuth auth_data) {
       shared_url_loader_factory_,
       policy::CloudPolicyClient::DeviceDMTokenCallback());
 
-  attestation_flow_ = CreateAttestationFlow();
+  attestation_flow_ = CreateAttestationFlow(shared_url_loader_factory_);
 
   enrollment_handler_ = std::make_unique<policy::EnrollmentHandler>(
       &local_state_.get(), shared_url_loader_factory_,

@@ -38,6 +38,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash::attestation {
 
@@ -95,13 +96,16 @@ PlatformVerificationFlow::ChallengeContext::ChallengeContext(
 
 PlatformVerificationFlow::ChallengeContext::~ChallengeContext() = default;
 
-PlatformVerificationFlow::PlatformVerificationFlow()
+PlatformVerificationFlow::PlatformVerificationFlow(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : attestation_flow_(nullptr),
       attestation_client_(AttestationClient::Get()),
       delegate_(nullptr),
       timeout_delay_(base::Seconds(kTimeoutInSeconds)) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-  std::unique_ptr<ServerProxy> attestation_ca_client(new AttestationCAClient());
+  std::unique_ptr<ServerProxy> attestation_ca_client =
+      std::make_unique<AttestationCAClient>(
+          std::move(shared_url_loader_factory));
   default_attestation_flow_ = std::make_unique<AttestationFlowAdaptive>(
       std::move(attestation_ca_client));
   attestation_flow_ = default_attestation_flow_.get();

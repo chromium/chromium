@@ -230,7 +230,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
 
   enrollment_certificate_uploader_ =
       std::make_unique<ash::attestation::EnrollmentCertificateUploaderImpl>(
-          client());
+          shared_url_loader_factory_, client());
   enrollment_id_upload_manager_ =
       std::make_unique<ash::attestation::EnrollmentIdUploadManager>(
           client(), enrollment_certificate_uploader_.get());
@@ -245,7 +245,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
           ash::switches::kDisableMachineCertRequest))) {
     machine_certificate_uploader_ =
         std::make_unique<ash::attestation::MachineCertificateUploaderImpl>(
-            client());
+            shared_url_loader_factory_, client());
     machine_certificate_uploader_->UploadCertificateIfNeeded(base::DoNothing());
   }
 

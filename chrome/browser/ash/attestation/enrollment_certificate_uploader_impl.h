@@ -11,12 +11,17 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace ash {
 namespace attestation {
@@ -26,7 +31,9 @@ class AttestationFeatures;
 // A class which uploads enterprise enrollment certificates.
 class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
  public:
-  explicit EnrollmentCertificateUploaderImpl(
+  // `shared_url_loader_factory` must be non-null.
+  EnrollmentCertificateUploaderImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       policy::CloudPolicyClient* policy_client);
 
   EnrollmentCertificateUploaderImpl(const EnrollmentCertificateUploaderImpl&) =
@@ -90,6 +97,8 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   // Run all callbacks with |status|.
   void RunCallbacks(Status status);
 
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
   raw_ptr<policy::CloudPolicyClient, DanglingUntriaged> policy_client_;
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
   raw_ptr<AttestationFlow> attestation_flow_ = nullptr;

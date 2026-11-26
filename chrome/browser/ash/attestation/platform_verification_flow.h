@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
@@ -23,6 +24,10 @@ class AccountId;
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace user_manager {
 class User;
@@ -40,7 +45,8 @@ class PlatformVerificationFlowTest;
 // This class allows platform verification for the content protection use case.
 // All methods must only be called on the UI thread.  Example:
 //   scoped_refptr<PlatformVerificationFlow> verifier =
-//       new PlatformVerificationFlow();
+//       base::MakeRefCounted<PlatformVerificationFlow>(
+//           shared_url_loader_factory);
 //   PlatformVerificationFlow::ChallengeCallback callback =
 //       base::BindOnce(&MyCallback);
 //   verifier->ChallengePlatformKey(my_web_contents, "my_id", "some_challenge",
@@ -107,9 +113,9 @@ class PlatformVerificationFlow
                               const std::string& signature,
                               const std::string& platform_key_certificate)>;
 
-  // A constructor that uses the default implementation of all dependencies
-  // including Delegate.
-  PlatformVerificationFlow();
+  // `shared_url_loader_factory` must be non-null.
+  explicit PlatformVerificationFlow(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
   // An alternate constructor which specifies dependent objects explicitly.
   // This is useful in testing.  The caller retains ownership of all pointers.
