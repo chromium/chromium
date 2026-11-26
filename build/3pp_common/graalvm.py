@@ -385,6 +385,27 @@ def build_native_image(
         if register_all_fields:
             _register_all_fields(config_dir)
 
+        extra_native_image_args = list(extra_native_image_args or [])
+        if '--gc=G1' in extra_native_image_args:
+            # TODO(crbug.com/590277979): Remove once
+            # https://github.com/oracle/graal/issues/15215 is fixed in the
+            # rolling 25i release. Oracle GraalVM 25i's G1 updates
+            # SoftReference.clock from C++ while G1AccessedFields only calls
+            # registerAsAccessed() (not registerAsUnsafeAccessed()), causing
+            # points-to analysis to fold SoftReference.clock to 0L and clear
+            # all SoftReferences on every young GC.
+            _merge_reachability_metadata(
+                config_dir,
+                {
+                    'reflection': [
+                        {
+                            'type': 'java.lang.ref.SoftReference',
+                            'fields': [{'name': 'clock'}],
+                        }
+                    ]
+                },
+            )
+
         # 2. Compile GraalVmWrapper so java.home is initialized at startup.
         wrapper_dir = os.path.join(work_dir, 'wrapper')
         os.makedirs(wrapper_dir, exist_ok=True)
@@ -418,7 +439,6 @@ def build_native_image(
         # do not pollute output_prefix.
         full_cp = os.pathsep.join([os.path.abspath(wrapper_dir)] + cp_entries)
 
-        extra_native_image_args = list(extra_native_image_args or [])
         if '-H:+AllowJRTFileSystem' in extra_native_image_args:
             extra_native_image_args += _jrt_file_system_args(
                 graal_home, work_dir
