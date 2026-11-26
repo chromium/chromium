@@ -41,6 +41,29 @@ const GLIC_BORDER_GLOW_COLORS: string[] = [
   '#7CACF8',
 ];
 
+const ENDPOINT_SWITCH_DURATION_MS = 420;
+const ENDPOINT_SWITCH_EASING = 'cubic-bezier(0.22, 1, 0.36, 1)';
+const ENDPOINT_CIRCLE_SIZE_PX = 44;
+const ENDPOINT_ROW_GAP_PX = 6;
+
+function createPillGhost(pill: HTMLElement): HTMLElement {
+  const ghost = pill.cloneNode(true) as HTMLElement;
+  ghost.querySelector('#endpointLiveRegion')?.remove();
+  const realInput = pill.querySelector<HTMLInputElement>('#promptInput');
+  const ghostInput = ghost.querySelector<HTMLInputElement>('.prompt-input');
+  if (realInput && ghostInput) {
+    ghostInput.value = realInput.value;
+    ghostInput.readOnly = true;
+    ghostInput.tabIndex = -1;
+  }
+  ghost.removeAttribute('id');
+  ghost.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+  ghost.setAttribute('aria-hidden', 'true');
+  ghost.inert = true;
+  ghost.classList.add('searchbox-pill-ghost');
+  return ghost;
+}
+
 /*
  * Element responsible for coordinating selections between the various selection
  * features. This includes:
@@ -141,6 +164,12 @@ export class GlicSelectionOverlayElement extends
   private isRightButtonGesture_: boolean = false;
   // Number of selected regions, as last sent by the browser.
   private regionCount_: number = 0;
+  // Tracks the active endpoint switch animation so rapid switches or overlay
+  // teardown cleanly cancel and reset transient DOM state.
+  private switchAnimationToken_: number = 0;
+  private switchAnimations_: Animation[] = [];
+  private switchCleanup_: (() => void)|null = null;
+  private switchCleanupTimer_: number = 0;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -153,6 +182,7 @@ export class GlicSelectionOverlayElement extends
     this.listenerIds.push(handlerImpl.addSetPromptEndpointsListener(
         (endpoints: PromptEndpointInfo[],
          defaultEndpointId: PromptEndpointId) => {
+          this.finishSwitchAnimation_();
           const prevActiveId = this.getActiveEndpoint_()?.id ?? null;
           this.promptEndpoints = endpoints;
           const defaultIdx =
@@ -209,6 +239,7 @@ export class GlicSelectionOverlayElement extends
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.finishSwitchAnimation_();
     this.floatingPromptResizeObserver_.disconnect();
   }
 
@@ -298,7 +329,15 @@ export class GlicSelectionOverlayElement extends
           .handlePostSelectionDragGestureEnd();
     }
     if (changedProperties.has('showFloatingPrompt')) {
-      this.focusPromptInput_();
+      if (this.showFloatingPrompt) {
+        this.focusPromptInput_();
+      } else {
+        this.finishSwitchAnimation_();
+      }
+    }
+    if (changedProperties.has('enableSelectionOverlayPromptBox') &&
+        !this.enableSelectionOverlayPromptBox) {
+      this.finishSwitchAnimation_();
     }
   }
 
@@ -491,15 +530,19 @@ export class GlicSelectionOverlayElement extends
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
 
+    const extraRowWidth = Math.max(0, this.promptEndpoints.length - 1) *
+        (ENDPOINT_CIRCLE_SIZE_PX + ENDPOINT_ROW_GAP_PX);
+
     const computeStyle = (width: number, height: number): string => {
       if (this.enableSelectionOverlayPromptBox) {
         const isRtl = getComputedStyle(this).direction === 'rtl';
         // Sufficient space requires fitting the input box (320px wide, 44px
-        // tall) plus two 1-line contextual suggestions (32px tall each) with
-        // 6px gaps (44 + 6 + 32 + 6 + 32 = 120px). The inline fulfillment host
-        // prefers 380px width but can shrink down to 320px to fit the available
-        // space at the chosen position without moving.
-        const minWidth = 320;
+        // tall) plus any inactive endpoint switcher circle buttons, plus two
+        // 1-line contextual suggestions (32px tall each) with 6px gaps
+        // (44 + 6 + 32 + 6 + 32 = 120px). The inline fulfillment host prefers
+        // 380px width but can shrink down to 320px to fit the available space
+        // at the chosen position without moving.
+        const minWidth = 320 + extraRowWidth;
         const minHeight = 120;
 
         const fitsVertically = (reqTop: number): boolean => {
@@ -647,7 +690,8 @@ export class GlicSelectionOverlayElement extends
 
     const container =
         this.shadowRoot.querySelector<HTMLElement>('#floatingPromptContainer');
-    let promptWidth = this.enableSelectionOverlayPromptBox ? 320 : 32;
+    let promptWidth =
+        this.enableSelectionOverlayPromptBox ? 320 + extraRowWidth : 32;
     let promptHeight = this.enableSelectionOverlayPromptBox ? 44 : 32;
 
     if (container) {
@@ -827,8 +871,8 @@ export class GlicSelectionOverlayElement extends
         loadTimeData.getString('askGemini');
   }
 
-  protected getActiveEndpointIconClass(): string {
-    switch (this.getActiveEndpoint_()?.id) {
+  protected getEndpointIconClass(id?: PromptEndpointId): string {
+    switch (id) {
       case PromptEndpointId.kGoogleSearch:
         return 'google-search';
       case PromptEndpointId.kGemini:
@@ -837,19 +881,95 @@ export class GlicSelectionOverlayElement extends
     }
   }
 
+  protected getActiveEndpointIconClass(): string {
+    return this.getEndpointIconClass(this.getActiveEndpoint_()?.id);
+  }
+
+  protected getInactiveEndpoints():
+      Array<{endpoint: PromptEndpointInfo, index: number}> {
+    if (!this.hasMultipleEndpoints()) {
+      return [];
+    }
+    const count = this.promptEndpoints.length;
+    const active =
+        this.activeEndpointIndex >= 0 && this.activeEndpointIndex < count ?
+        this.activeEndpointIndex :
+        0;
+    const result: Array<{endpoint: PromptEndpointInfo, index: number}> = [];
+    for (let offset = 1; offset < count; offset++) {
+      const index = (active + offset) % count;
+      const endpoint = this.promptEndpoints[index];
+      if (endpoint) {
+        result.push({endpoint, index});
+      }
+    }
+    return result;
+  }
+
   protected getEndpointSwitchTitle(): string {
     return this.hasMultipleEndpoints() ?
         loadTimeData.getString('switchProviderTooltip') :
         '';
   }
 
-  private cycleEndpoint_(delta: number) {
+  private finishSwitchAnimation_() {
+    this.switchAnimationToken_++;
+    if (this.switchCleanupTimer_) {
+      clearTimeout(this.switchCleanupTimer_);
+      this.switchCleanupTimer_ = 0;
+    }
+    const animations = this.switchAnimations_;
+    this.switchAnimations_ = [];
+    for (const animation of animations) {
+      animation.onfinish = null;
+      animation.oncancel = null;
+      animation.cancel();
+    }
+    const cleanup = this.switchCleanup_;
+    this.switchCleanup_ = null;
+    cleanup?.();
+  }
+
+  private switchToEndpoint_(newIndex: number) {
     if (!this.hasMultipleEndpoints()) {
       return;
     }
     const count = this.promptEndpoints.length;
-    this.activeEndpointIndex =
-        (this.activeEndpointIndex + delta + count) % count;
+    if (!Number.isInteger(newIndex) || newIndex < 0 || newIndex >= count ||
+        newIndex === this.activeEndpointIndex) {
+      return;
+    }
+
+    this.finishSwitchAnimation_();
+
+    const prefersReducedMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const searchboxRow =
+        this.shadowRoot.querySelector<HTMLElement>('.searchbox-row');
+    const pill = this.shadowRoot.querySelector<HTMLElement>('.searchbox-pill');
+    let ghost: HTMLElement|null = null;
+    let rowRect: DOMRect|null = null;
+    let capRect: DOMRect|null = null;
+    let sourceRect: DOMRect|null = null;
+    const oldRects = new Map<number, DOMRect>();
+
+    if (this.showFloatingPrompt && !prefersReducedMotion && searchboxRow &&
+        pill) {
+      rowRect = searchboxRow.getBoundingClientRect();
+      capRect = pill.getBoundingClientRect();
+      if (capRect.width > 0) {
+        this.shadowRoot
+            .querySelectorAll<HTMLElement>('.endpoint-switcher-button')
+            .forEach(button => {
+              const idx = Number(button.dataset['endpointIndex']);
+              oldRects.set(idx, button.getBoundingClientRect());
+            });
+        sourceRect = oldRects.get(newIndex) ?? capRect;
+        ghost = createPillGhost(pill);
+      }
+    }
+
+    this.activeEndpointIndex = newIndex;
     const activeEndpoint = this.getActiveEndpoint_();
     if (!activeEndpoint) {
       return;
@@ -858,10 +978,236 @@ export class GlicSelectionOverlayElement extends
     (this.baseHandler as SelectionOverlayBaseHandlerImpl)
         .setActivePromptEndpoint(activeEndpoint.id);
     this.fetchSuggestedActions();
+
+    if (!ghost || !rowRect || !capRect || !sourceRect || !searchboxRow ||
+        !pill) {
+      return;
+    }
+
+    void this.animateEndpointSwitch_({
+      searchboxRow,
+      pill,
+      ghost,
+      rowRect,
+      capRect,
+      sourceRect,
+      oldRects,
+    });
   }
 
-  protected onEndpointIconClick() {
-    this.cycleEndpoint_(1);
+  private async animateEndpointSwitch_(params: {
+    searchboxRow: HTMLElement,
+    pill: HTMLElement,
+    ghost: HTMLElement,
+    rowRect: DOMRect,
+    capRect: DOMRect,
+    sourceRect: DOMRect,
+    oldRects: Map<number, DOMRect>,
+  }) {
+    const {searchboxRow, pill, ghost, rowRect, capRect, sourceRect, oldRects} =
+        params;
+    const token = ++this.switchAnimationToken_;
+    await this.updateComplete;
+    if (token !== this.switchAnimationToken_ || !this.isConnected ||
+        !this.showFloatingPrompt || !searchboxRow.isConnected ||
+        !pill.isConnected) {
+      return;
+    }
+
+    const isRtl = getComputedStyle(this).direction === 'rtl';
+    const capTop = capRect.top - rowRect.top;
+    const capWidth = capRect.width;
+    const capHeight = capRect.height;
+
+    ghost.style.top = `${capTop}px`;
+    ghost.style.width = `${capWidth}px`;
+    ghost.style.height = `${capHeight}px`;
+    ghost.style.minWidth = '0px';
+    if (isRtl) {
+      ghost.style.right = `${rowRect.right - capRect.right}px`;
+    } else {
+      ghost.style.left = `${capRect.left - rowRect.left}px`;
+    }
+    searchboxRow.appendChild(ghost);
+
+    // Hold the pill's flex slot with a fixed spacer while the pill expands
+    // out of flow, so circle buttons and the container size never shift.
+    const spacer = document.createElement('div');
+    spacer.className = 'searchbox-pill-spacer';
+    spacer.style.width = `${capWidth}px`;
+    spacer.style.height = `${capHeight}px`;
+    pill.after(spacer);
+
+    pill.style.position = 'absolute';
+    pill.style.top = `${capTop}px`;
+    pill.style.width = `${capWidth}px`;
+    if (isRtl) {
+      pill.style.right = `${rowRect.right - capRect.right}px`;
+    } else {
+      pill.style.left = `${capRect.left - rowRect.left}px`;
+    }
+
+    const animations: Animation[] = [];
+
+    // Outgoing pill collapses toward the start edge and fades out.
+    const ghostAnim = ghost.animate(
+        [
+          {
+            width: `${capWidth}px`,
+            opacity: 1,
+            transform: 'translateX(0)',
+          },
+          {
+            width: `${ENDPOINT_CIRCLE_SIZE_PX}px`,
+            opacity: 0,
+            transform: `translateX(${isRtl ? 10 : -10}px)`,
+          },
+        ],
+        {
+          duration: Math.round(ENDPOINT_SWITCH_DURATION_MS * 0.85),
+          easing: ENDPOINT_SWITCH_EASING,
+          fill: 'forwards',
+        });
+    ghostAnim.onfinish = () => ghost.remove();
+    ghostAnim.oncancel = () => ghost.remove();
+    animations.push(ghostAnim);
+
+    // Incoming pill expands from the chosen provider's circle button.
+    const dx = isRtl ? sourceRect.right - capRect.right :
+                       sourceRect.left - capRect.left;
+    const startW = sourceRect.width || ENDPOINT_CIRCLE_SIZE_PX;
+    const capAnim = pill.animate(
+        [
+          {
+            transform: `translateX(${dx}px)`,
+            width: `${startW}px`,
+            minWidth: `${startW}px`,
+          },
+          {
+            transform: 'translateX(0)',
+            width: `${capWidth}px`,
+            minWidth: `${capWidth}px`,
+          },
+        ],
+        {
+          duration: ENDPOINT_SWITCH_DURATION_MS,
+          easing: ENDPOINT_SWITCH_EASING,
+        });
+    animations.push(capAnim);
+
+    // Input contents fade in as the pill expands.
+    for (const child of pill.children) {
+      if (!(child instanceof HTMLElement) || child.id === 'endpointIcon' ||
+          child.id === 'endpointLiveRegion' || child.hidden ||
+          getComputedStyle(child).display === 'none') {
+        continue;
+      }
+      animations.push(child.animate(
+          [
+            {opacity: 0},
+            {opacity: 0, offset: 0.35},
+            {opacity: 1},
+          ],
+          {duration: ENDPOINT_SWITCH_DURATION_MS, easing: 'ease-out'}));
+    }
+
+    // Circle buttons moving toward the start edge FLIP-slide; newly arrived
+    // buttons (including the previously active provider) slide in from the
+    // far end while fading in.
+    let enterDelay = 70;
+    const enterOffset =
+        isRtl ? -ENDPOINT_CIRCLE_SIZE_PX : ENDPOINT_CIRCLE_SIZE_PX;
+    this.shadowRoot.querySelectorAll<HTMLElement>('.endpoint-switcher-button')
+        .forEach(button => {
+          const idx = Number(button.dataset['endpointIndex']);
+          const before = oldRects.get(idx);
+          const after = button.getBoundingClientRect();
+          const movedTowardStart = before &&
+              (isRtl ? before.left < after.left - 0.5 :
+                       before.left > after.left + 0.5);
+          if (movedTowardStart) {
+            animations.push(button.animate(
+                [
+                  {transform: `translateX(${before.left - after.left}px)`},
+                  {transform: 'translateX(0)'},
+                ],
+                {
+                  duration: ENDPOINT_SWITCH_DURATION_MS,
+                  easing: ENDPOINT_SWITCH_EASING,
+                }));
+          } else {
+            animations.push(button.animate(
+                [
+                  {opacity: 0, transform: `translateX(${enterOffset}px)`},
+                  {opacity: 1, transform: 'translateX(0)'},
+                ],
+                {
+                  duration: ENDPOINT_SWITCH_DURATION_MS,
+                  easing: ENDPOINT_SWITCH_EASING,
+                  delay: enterDelay,
+                  fill: 'backwards',
+                }));
+            enterDelay += 60;
+          }
+        });
+
+    this.switchAnimations_ = animations;
+
+    let cleanedUp = false;
+    const cleanup = () => {
+      if (cleanedUp) {
+        return;
+      }
+      cleanedUp = true;
+      if (this.switchCleanupTimer_) {
+        clearTimeout(this.switchCleanupTimer_);
+        this.switchCleanupTimer_ = 0;
+      }
+      if (this.switchCleanup_ === cleanup) {
+        this.switchCleanup_ = null;
+      }
+      spacer.remove();
+      pill.style.position = '';
+      pill.style.left = '';
+      pill.style.right = '';
+      pill.style.top = '';
+      pill.style.width = '';
+      ghost.remove();
+    };
+
+    this.switchCleanup_ = cleanup;
+    capAnim.onfinish = cleanup;
+    capAnim.oncancel = cleanup;
+    this.switchCleanupTimer_ =
+        setTimeout(cleanup, ENDPOINT_SWITCH_DURATION_MS + 200);
+  }
+
+  private cycleEndpoint_(delta: number) {
+    if (!this.hasMultipleEndpoints()) {
+      return;
+    }
+    const count = this.promptEndpoints.length;
+    this.switchToEndpoint_((this.activeEndpointIndex + delta + count) % count);
+  }
+
+  protected onEndpointSwitcherMousedown(event: MouseEvent): void {
+    // Keep focus in the prompt input when clicking a provider circle button.
+    event.preventDefault();
+  }
+
+  protected onEndpointSwitcherClick(event: Event): void {
+    event.stopPropagation();
+    const index =
+        Number((event.currentTarget as HTMLElement).dataset['endpointIndex']);
+    this.switchToEndpoint_(index);
+    this.focusPromptInput_();
+  }
+
+  protected onEndpointSwitcherKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      (this.baseHandler as SelectionOverlayBaseHandlerImpl)
+          .dismissOverlay(DismissOverlayReason.kCloseButton);
+    }
   }
 
   private hasModifierKey_(event: KeyboardEvent, allowShift: boolean = false):
@@ -937,7 +1283,7 @@ export class GlicSelectionOverlayElement extends
     this.submitPromptInput_();
   }
 
-  protected onSearchboxPillClick() {
+  protected onSearchboxPillClick(): void {
     this.focusPromptInput_();
   }
 

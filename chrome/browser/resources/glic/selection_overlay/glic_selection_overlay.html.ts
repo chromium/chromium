@@ -62,19 +62,13 @@ ${this.enableSelectionOverlayPrompt || this.enableSelectionOverlayPromptBox ?
       <div class="searchbox-row">
         <div class="searchbox-pill" @click="${this.onSearchboxPillClick}"
             @pointerdown="${this.onPromptPointerdown}">
-          <div id="endpointIcon" class="endpoint-icon"
-              ?interactive="${this.hasMultipleEndpoints()}"
-              role="${this.hasMultipleEndpoints() ? 'button' : nothing}"
-              aria-label="${this.getEndpointSwitchTitle() || nothing}"
-              aria-hidden="${this.hasMultipleEndpoints() ? nothing : 'true'}"
-              title="${this.getEndpointSwitchTitle() || nothing}"
-              @click="${this.onEndpointIconClick}">
+          <div id="endpointIcon" class="endpoint-icon" aria-hidden="true">
             <div
                 class="endpoint-icon-image
                 ${this.getActiveEndpointIconClass()}">
             </div>
           </div>
-          <input id="promptInput" type="text"
+          <input id="promptInput" class="prompt-input" type="text"
               placeholder="${this.getActiveEndpointPlaceholder()}"
               aria-label="${this.getActiveEndpointPlaceholder()}"
               aria-description="${this.getEndpointSwitchTitle() || nothing}"
@@ -82,7 +76,7 @@ ${this.enableSelectionOverlayPrompt || this.enableSelectionOverlayPromptBox ?
                   this.hasMultipleEndpoints() ? 'Tab Shift+Tab' : nothing}"
               @input="${this.onPromptInput}" @keydown="${this.onInputKeydown}"
               autocomplete="off">
-          <cr-icon-button id="submitPromptButton"
+          <cr-icon-button id="submitPromptButton" class="submit-prompt-button"
               ?hidden="${!this.hasPromptText}"
               ?disabled="${!this.pageContextReceived}"
               title="${this.getSubmitPromptTitle()}"
@@ -94,6 +88,20 @@ ${this.enableSelectionOverlayPrompt || this.enableSelectionOverlayPromptBox ?
             ${this.endpointLiveAnnouncement}
           </div>
         </div>
+        ${this.getInactiveEndpoints().map(({endpoint, index}) => html`
+          <cr-button class="endpoint-switcher-button"
+              data-endpoint-index="${index}" title="${endpoint.name}"
+              aria-label="${endpoint.name}"
+              @pointerdown="${this.onPromptPointerdown}"
+              @mousedown="${this.onEndpointSwitcherMousedown}"
+              @click="${this.onEndpointSwitcherClick}"
+              @keydown="${this.onEndpointSwitcherKeydown}">
+            <div
+                class="endpoint-icon-image
+                ${this.getEndpointIconClass(endpoint.id)}">
+            </div>
+          </cr-button>
+        `)}
         ${this.enableSelectionOverlayDogfoodFeedback ? html`
           <cr-button id="dogfoodFeedbackButton" class="dogfood-feedback-button"
               title="$i18n{sendFeedback}" aria-label="$i18n{sendFeedback}"
