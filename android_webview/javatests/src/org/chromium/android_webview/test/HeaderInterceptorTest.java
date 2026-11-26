@@ -28,7 +28,9 @@ import org.chromium.android_webview.AwNavigationParams;
 import org.chromium.android_webview.AwPrefetchCallback;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.http_headers.AwHeaderInterceptor;
+import org.chromium.android_webview.test.AwActivityTestRule.PopupInfo;
 import org.chromium.android_webview.test.AwPrefetchTestBase.TestAwPrefetchCallback;
+import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -1343,6 +1345,161 @@ public class HeaderInterceptorTest extends AwParameterizedTest {
         }
     }
 
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    public void testBrowserContextInterceptor_interceptsPopupWindow() throws Exception {
+        try (TestWebServer server = TestWebServer.start()) {
+            String popupPath = "/popup.html";
+            String parentPageHtml = makePopupOpenerHtml(popupPath);
+            String popupPageHtml =
+                    CommonResources.makeHtmlPageFrom(
+                            "<title>Popup Window</title>", "This is a popup window");
+
+            registerBrowserContextInterceptorOnUiThread(
+                    request -> hashMapOf("X-BrowserContext-Header", "BrowserContext"),
+                    server.getResponseUrl("/*"));
+
+            mActivityTestRule.triggerPopup(
+                    mAwContents,
+                    mContentsClient,
+                    server,
+                    parentPageHtml,
+                    popupPageHtml,
+                    popupPath,
+                    "tryOpenWindow()");
+            mActivityTestRule.connectPendingPopup(mAwContents);
+
+            assertThat(server.getRequestCount(popupPath)).isEqualTo(1);
+            assertThat(server.getLastRequest(popupPath).headerValue("X-BrowserContext-Header"))
+                    .isEqualTo("BrowserContext");
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    public void testWebContentsInterceptor_onPopupWindow_interceptsPopupWindow() throws Exception {
+        try (TestWebServer server = TestWebServer.start()) {
+            String popupPath = "/popup.html";
+            String parentPageHtml = makePopupOpenerHtml(popupPath);
+            String popupPageHtml =
+                    CommonResources.makeHtmlPageFrom(
+                            "<title>Popup Window</title>", "This is a popup window");
+
+            mActivityTestRule.triggerPopup(
+                    mAwContents,
+                    mContentsClient,
+                    server,
+                    parentPageHtml,
+                    popupPageHtml,
+                    popupPath,
+                    "tryOpenWindow()");
+            PopupInfo popupInfo = mActivityTestRule.createPopupContents(mAwContents);
+            mActivityTestRule.loadPopupContents(
+                    mAwContents,
+                    popupInfo,
+                    popupContents -> {
+                        registerContentsInterceptorOnUiThread(
+                                popupContents,
+                                request -> hashMapOf("X-Popup-Header", "Popup-Value"),
+                                server.getResponseUrl("/*"));
+                        return true;
+                    });
+
+            assertThat(server.getLastRequest("/popupParent.html").headerValue("X-Popup-Header"))
+                    .isEqualTo("");
+            assertThat(server.getRequestCount(popupPath)).isEqualTo(1);
+            assertThat(server.getLastRequest(popupPath).headerValue("X-Popup-Header"))
+                    .isEqualTo("Popup-Value");
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    public void testWebContentsInterceptor_onParentWindow_doesNotInterceptPopupWindow()
+            throws Exception {
+        try (TestWebServer server = TestWebServer.start()) {
+            String popupPath = "/popup.html";
+            String parentPageHtml = makePopupOpenerHtml(popupPath);
+            String popupPageHtml =
+                    CommonResources.makeHtmlPageFrom(
+                            "<title>Popup Window</title>", "This is a popup window");
+
+            registerContentsInterceptorOnUiThread(
+                    request -> hashMapOf("X-Parent-Header", "Parent-Value"),
+                    server.getResponseUrl("/*"));
+
+            mActivityTestRule.triggerPopup(
+                    mAwContents,
+                    mContentsClient,
+                    server,
+                    parentPageHtml,
+                    popupPageHtml,
+                    popupPath,
+                    "tryOpenWindow()");
+            mActivityTestRule.connectPendingPopup(mAwContents);
+
+            assertThat(server.getLastRequest("/popupParent.html").headerValue("X-Parent-Header"))
+                    .isEqualTo("Parent-Value");
+            assertThat(server.getRequestCount(popupPath)).isEqualTo(1);
+            assertThat(server.getLastRequest(popupPath).headerValue("X-Parent-Header"))
+                    .isEqualTo("");
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    public void testRemoveInterceptor_onPopupWindow() throws Exception {
+        try (TestWebServer server = TestWebServer.start()) {
+            String popupPath = "/popup.html";
+            String parentPageHtml = makePopupOpenerHtml(popupPath);
+            String popupPageHtml =
+                    CommonResources.makeHtmlPageFrom(
+                            "<title>Popup Window</title>", "This is a popup window");
+            mActivityTestRule.triggerPopup(
+                    mAwContents,
+                    mContentsClient,
+                    server,
+                    parentPageHtml,
+                    popupPageHtml,
+                    popupPath,
+                    "tryOpenWindow()");
+            PopupInfo popupInfo = mActivityTestRule.createPopupContents(mAwContents);
+            AtomicInteger interceptorId = new AtomicInteger();
+            mActivityTestRule.loadPopupContents(
+                    mAwContents,
+                    popupInfo,
+                    popupContents -> {
+                        interceptorId.set(
+                                registerContentsInterceptorOnUiThread(
+                                        popupContents,
+                                        request -> hashMapOf("X-Test-Header", "active"),
+                                        server.getResponseUrl("/*")));
+                        return true;
+                    });
+            assertThat(server.getRequestCount(popupPath)).isEqualTo(1);
+            assertThat(server.getLastRequest(popupPath).headerValue("X-Test-Header"))
+                    .isEqualTo("active");
+
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            popupInfo
+                                    .popupContents
+                                    .getHeaderInterceptorStore()
+                                    .removeInterceptor(interceptorId.get()));
+
+            mActivityTestRule.loadUrlSync(
+                    popupInfo.popupContents,
+                    popupInfo.popupContentsClient.getOnPageFinishedHelper(),
+                    server.getResponseUrl(popupPath));
+            assertThat(server.getRequestCount(popupPath)).isEqualTo(2);
+            assertThat(server.getLastRequest(popupPath).headerValue("X-Test-Header")).isEqualTo("");
+        }
+    }
+
     private int registerBrowserContextInterceptorOnUiThread(
             AwHeaderInterceptor interceptor, String urlPattern) {
         return ThreadUtils.runOnUiThreadBlocking(
@@ -1354,11 +1511,22 @@ public class HeaderInterceptorTest extends AwParameterizedTest {
 
     private int registerContentsInterceptorOnUiThread(
             AwHeaderInterceptor interceptor, String urlPattern) {
+        return registerContentsInterceptorOnUiThread(mAwContents, interceptor, urlPattern);
+    }
+
+    private static int registerContentsInterceptorOnUiThread(
+            AwContents awContents, AwHeaderInterceptor interceptor, String urlPattern) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        mAwContents
+                        awContents
                                 .getHeaderInterceptorStore()
                                 .addInterceptor(interceptor, List.of(urlPattern)));
+    }
+
+    private static String makePopupOpenerHtml(String popupPath) {
+        return CommonResources.makeHtmlPageFrom(
+                "",
+                "<script>function tryOpenWindow() { window.open('" + popupPath + "'); }</script>");
     }
 
     private static String setMockResponse(TestWebServer server) {

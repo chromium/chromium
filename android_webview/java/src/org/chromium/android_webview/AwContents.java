@@ -1819,6 +1819,8 @@ public class AwContents implements SmartClipProvider {
         // Move the TextClassifier to the new WebContents.
         TextClassifier textClassifier = mWebContents != null ? getTextClassifier() : null;
         if (mNativeAwContents != null) {
+            AwContentsJni.get()
+                    .moveHeaderInterceptorsToNewAwContents(mNativeAwContents, newAwContentsPtr);
             destroyNatives();
             mWebContents = null;
             mWebContentsInternalsHolder = null;
@@ -5520,6 +5522,9 @@ public class AwContents implements SmartClipProvider {
                 AwContentsIoThreadClient ioThreadClient,
                 InterceptNavigationDelegate navigationInterceptionDelegate,
                 AwNavigationClient navigationClient);
+
+        void moveHeaderInterceptorsToNewAwContents(
+                JniPtr<NativeAwContents> self, JniPtr<NativeAwContents> newAwContents);
 
         void initializeAndroidAutofill(JniPtr<NativeAwContents> self);
 

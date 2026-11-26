@@ -419,6 +419,17 @@ void AwContents::SetJavaPeers(
       std::make_unique<AwNavigationClient>(env, navigation_client);
 }
 
+void AwContents::MoveHeaderInterceptorsToNewAwContents(
+    JNIEnv* env,
+    AwContents* new_aw_contents) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(new_aw_contents);
+  // Note: `new_aw_contents` has not yet had its Java peers set up via
+  // SetJavaPeers(), so only self-contained native state should be touched here.
+  new_aw_contents->header_interceptor_store_ =
+      std::move(header_interceptor_store_);
+}
+
 void AwContents::InitializeAndroidAutofill(JNIEnv* env) {
   DCHECK(autofill::AutofillProvider::FromWebContents(web_contents_.get()));
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

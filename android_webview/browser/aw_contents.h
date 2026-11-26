@@ -134,6 +134,13 @@ class AwContents : public FindHelper::Listener,
       const base::android::JavaRef<jobject>& io_thread_client,
       const base::android::JavaRef<jobject>& intercept_navigation_delegate,
       const base::android::JavaRef<jobject>& navigation_client);
+  // Moves the registered header interceptors from this native AwContents to
+  // `new_aw_contents` when the Java AwContents is adopting a new native
+  // instance (e.g., for popup windows or profile changes).
+  // Note: `new_aw_contents` has not yet been bound to Java peers via
+  // SetJavaPeers(), so this method must only touch self-contained native state.
+  void MoveHeaderInterceptorsToNewAwContents(JNIEnv* env,
+                                             AwContents* new_aw_contents);
   void InitializeAndroidAutofill(JNIEnv* env);
   void InitSensitiveContentClient(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetWebContents(JNIEnv* env);
