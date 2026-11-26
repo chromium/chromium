@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -40,7 +41,7 @@ class PaymentResponseHelper final : public PaymentApp::Delegate {
 
   // The spec, selected_app and delegate cannot be null.
   PaymentResponseHelper(
-      std::string app_locale,
+      const base::i18n::LanguageTag& app_locale,
       base::WeakPtr<PaymentRequestSpec> spec,
       base::WeakPtr<PaymentApp> selected_app,
       base::WeakPtr<PaymentRequestDelegate> payment_request_delegate,
@@ -85,7 +86,7 @@ class PaymentResponseHelper final : public PaymentApp::Delegate {
   // window.
   bool WasPaymentHandlerWindowInteractedWith();
 
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
   bool is_waiting_for_shipping_address_normalization_ = false;
   bool is_waiting_for_instrument_details_ = false;
   bool is_waiting_for_user_gesture_ = false;

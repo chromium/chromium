@@ -29,7 +29,7 @@
 namespace payments {
 
 PaymentResponseHelper::PaymentResponseHelper(
-    std::string app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::WeakPtr<PaymentRequestSpec> spec,
     base::WeakPtr<PaymentApp> selected_app,
     base::WeakPtr<PaymentRequestDelegate> payment_request_delegate,
@@ -37,7 +37,7 @@ PaymentResponseHelper::PaymentResponseHelper(
     autofill::AutofillProfile* selected_contact_profile,
     base::WeakPtr<JourneyLogger> journey_logger,
     base::WeakPtr<Delegate> delegate)
-    : app_locale_(std::move(app_locale)),
+    : app_locale_(app_locale),
       spec_(spec),
       delegate_(delegate),
       journey_logger_(journey_logger),
@@ -164,8 +164,8 @@ mojom::PayerDetailPtr PaymentResponseHelper::GeneratePayerDetail(
       payer->name = payer_data_from_app_.payer_name;
     } else {
       DCHECK(selected_contact_profile);
-      payer->name = base::UTF16ToUTF8(
-          selected_contact_profile->GetInfo(autofill::NAME_FULL, app_locale_));
+      payer->name = base::UTF16ToUTF8(selected_contact_profile->GetInfo(
+          autofill::NAME_FULL, app_locale_.tag_string()));
     }
   }
   if (spec_->request_payer_email()) {
@@ -189,10 +189,11 @@ mojom::PayerDetailPtr PaymentResponseHelper::GeneratePayerDetail(
       // https://w3c.github.io/payment-request/#paymentrequest-updated-algorithm
       const std::string original_number =
           base::UTF16ToUTF8(selected_contact_profile->GetInfo(
-              autofill::PHONE_HOME_WHOLE_NUMBER, app_locale_));
+              autofill::PHONE_HOME_WHOLE_NUMBER, app_locale_.tag_string()));
 
       const std::string default_region_code =
-          autofill::AutofillCountry::CountryCodeForLocale(app_locale_);
+          autofill::AutofillCountry::CountryCodeForLocale(
+              app_locale_.tag_string());
       payer->phone = autofill::i18n::FormatPhoneForResponse(
           original_number, default_region_code);
     }

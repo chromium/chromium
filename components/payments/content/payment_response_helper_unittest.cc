@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
@@ -142,9 +143,10 @@ TEST_F(PaymentResponseHelperTest, GeneratePaymentResponse_SupportedMethod) {
   // Default options (no shipping, no contact info).
   RecreateSpecWithOptions(mojom::PaymentOptions::New());
 
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
   EXPECT_EQ("method-name", response()->method_name);
   EXPECT_EQ("{\"data\":\"details\"}", response()->stringified_details);
 }
@@ -165,9 +167,10 @@ TEST_F(PaymentResponseHelperTest, GeneratePaymentResponse_ShippingAddress) {
   RecreateSpecWithOptionsAndDetails(std::move(options), std::move(details),
                                     GetMethodDataForVisa());
 
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
 
   // Check that all the expected values were set.
   EXPECT_EQ("US", response()->shipping_address->country);
@@ -193,9 +196,10 @@ TEST_F(PaymentResponseHelperTest, GeneratePaymentResponse_ContactDetails_All) {
   options->request_payer_email = true;
   RecreateSpecWithOptions(std::move(options));
 
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
 
   // Check that all the expected values were set.
   EXPECT_EQ("John H. Doe", response()->payer->name.value());
@@ -211,9 +215,10 @@ TEST_F(PaymentResponseHelperTest, GeneratePaymentResponse_ContactDetails_Some) {
   options->request_payer_name = true;
   RecreateSpecWithOptions(std::move(options));
 
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
 
   // Check that the name was set, but not the other values.
   EXPECT_EQ("John H. Doe", response()->payer->name.value());
@@ -232,9 +237,10 @@ TEST_F(PaymentResponseHelperTest,
                              u"(515) 223-1234");
   RecreateSpecWithOptions(std::move(options));
 
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
 
   // Check that the phone was formatted.
   EXPECT_EQ("+15152231234", response()->payer->phone.value());
@@ -251,9 +257,10 @@ TEST_F(PaymentResponseHelperTest,
                              u"(515) 123-1234");
   RecreateSpecWithOptions(std::move(options));
 
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
 
   // Check that the phone was formatted.
   EXPECT_EQ("+15151231234", response()->payer->phone.value());
@@ -299,9 +306,10 @@ TEST_F(PaymentResponseHelperMandatoryUiTest,
 
   RecreateSpecWithOptions(mojom::PaymentOptions::New());
 
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
 
   // Since window was not interacted with and mandatory UI feature is enabled,
   // the payment response generation should be stashed/deferred (response is
@@ -324,9 +332,10 @@ TEST_F(PaymentResponseHelperMandatoryUiTest,
 
   RecreateSpecWithOptions(mojom::PaymentOptions::New());
 
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
 
   // Since it's a non-service worker app, the payment response generation should
   // NOT be stashed/deferred (response is not null).
@@ -340,8 +349,9 @@ TEST_F(PaymentResponseHelperMandatoryUiTest,
   was_payment_handler_window_interacted_with_ = false;
   RecreateSpecWithOptions(mojom::PaymentOptions::New());
   auto helper = std::make_unique<PaymentResponseHelper>(
-      "en-US", spec(), test_app(), test_payment_request_delegate(),
-      test_address(), test_address(), journey_logger(), GetWeakPtr());
+      base::i18n::GetKnownLanguageTag("en-US"), spec(), test_app(),
+      test_payment_request_delegate(), test_address(), test_address(),
+      journey_logger(), GetWeakPtr());
 
   EXPECT_TRUE(helper->is_waiting_for_user_gesture_for_testing());
   histogram_tester.ExpectTotalCount(
@@ -373,8 +383,9 @@ TEST_F(PaymentResponseHelperMandatoryUiTest,
   was_payment_handler_window_interacted_with_ = false;
   RecreateSpecWithOptions(mojom::PaymentOptions::New());
   auto helper = std::make_unique<PaymentResponseHelper>(
-      "en-US", spec(), test_app(), test_payment_request_delegate(),
-      test_address(), test_address(), journey_logger(), GetWeakPtr());
+      base::i18n::GetKnownLanguageTag("en-US"), spec(), test_app(),
+      test_payment_request_delegate(), test_address(), test_address(),
+      journey_logger(), GetWeakPtr());
   EXPECT_TRUE(helper->is_waiting_for_user_gesture_for_testing());
   histogram_tester.ExpectTotalCount(
       "PaymentRequest.MandatoryPaymentAppUi."
@@ -396,8 +407,9 @@ TEST_F(PaymentResponseHelperMandatoryUiTest,
   was_payment_handler_window_interacted_with_ = true;
   RecreateSpecWithOptions(mojom::PaymentOptions::New());
   auto helper = std::make_unique<PaymentResponseHelper>(
-      "en-US", spec(), test_app(), test_payment_request_delegate(),
-      test_address(), test_address(), journey_logger(), GetWeakPtr());
+      base::i18n::GetKnownLanguageTag("en-US"), spec(), test_app(),
+      test_payment_request_delegate(), test_address(), test_address(),
+      journey_logger(), GetWeakPtr());
 
   EXPECT_FALSE(helper->is_waiting_for_user_gesture_for_testing());
 
@@ -415,8 +427,9 @@ TEST_F(PaymentResponseHelperMandatoryUiTest,
                                                 PaymentApp::Type::INTERNAL));
   RecreateSpecWithOptions(mojom::PaymentOptions::New());
   auto helper = std::make_unique<PaymentResponseHelper>(
-      "en-US", spec(), test_app(), test_payment_request_delegate(),
-      test_address(), test_address(), journey_logger(), GetWeakPtr());
+      base::i18n::GetKnownLanguageTag("en-US"), spec(), test_app(),
+      test_payment_request_delegate(), test_address(), test_address(),
+      journey_logger(), GetWeakPtr());
 
   EXPECT_FALSE(helper->is_waiting_for_user_gesture_for_testing());
 
@@ -431,9 +444,10 @@ TEST_F(PaymentResponseHelperMandatoryUiTest,
   was_payment_handler_window_interacted_with_ = true;
   RecreateSpecWithShipping();
   test_address_normalizer()->DelayNormalization();
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
   EXPECT_TRUE(response().is_null());
 }
 
@@ -446,9 +460,10 @@ TEST_F(PaymentResponseHelperMandatoryUiTest,
   // Address normalization finishes synchronously before `InvokePaymentApp()`
   // rejects, calling `GeneratePaymentResponseIfNeeded()` while instrument
   // details are still pending.
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
   EXPECT_EQ(mojom::PaymentEventResponseType::PAYMENT_EVENT_REJECT,
             response_error_);
   EXPECT_TRUE(response().is_null());
@@ -458,9 +473,10 @@ TEST_F(PaymentResponseHelperMandatoryUiTest,
        GeneratePaymentResponseIfNeeded_MissingUserInteraction) {
   was_payment_handler_window_interacted_with_ = false;
   RecreateSpecWithShipping();
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
   EXPECT_TRUE(response().is_null());
 }
 
@@ -468,9 +484,10 @@ TEST_F(PaymentResponseHelperMandatoryUiTest,
        GeneratePaymentResponseIfNeeded_AllSignalsPresent) {
   was_payment_handler_window_interacted_with_ = true;
   RecreateSpecWithShipping();
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
   ASSERT_FALSE(response().is_null());
   EXPECT_EQ("method-name", response()->method_name);
   EXPECT_EQ("US", response()->shipping_address->country);
@@ -482,9 +499,10 @@ TEST_F(PaymentResponseHelperTest, RespondWithResolvedMetrics_ServiceWorkerApp) {
 
   RecreateSpecWithOptions(mojom::PaymentOptions::New());
 
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
 
   histogram_tester.ExpectUniqueSample(
       "PaymentRequest.MandatoryPaymentAppUi."
@@ -506,9 +524,10 @@ TEST_F(PaymentResponseHelperTest,
 
   RecreateSpecWithOptions(mojom::PaymentOptions::New());
 
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
 
   histogram_tester.ExpectTotalCount(
       "PaymentRequest.MandatoryPaymentAppUi."
@@ -529,9 +548,10 @@ TEST_F(PaymentResponseHelperTest, RespondWithRejectedMetrics_ServiceWorkerApp) {
 
   RecreateSpecWithOptions(mojom::PaymentOptions::New());
 
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
 
   histogram_tester.ExpectUniqueSample(
       "PaymentRequest.MandatoryPaymentAppUi."
@@ -553,9 +573,10 @@ TEST_F(PaymentResponseHelperTest,
 
   RecreateSpecWithOptions(mojom::PaymentOptions::New());
 
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
 
   histogram_tester.ExpectTotalCount(
       "PaymentRequest.MandatoryPaymentAppUi."
@@ -578,9 +599,10 @@ TEST_F(PaymentResponseHelperTest,
 
   RecreateSpecWithOptions(mojom::PaymentOptions::New());
 
-  PaymentResponseHelper helper("en-US", spec(), test_app(),
-                               test_payment_request_delegate(), test_address(),
-                               test_address(), journey_logger(), GetWeakPtr());
+  PaymentResponseHelper helper(base::i18n::GetKnownLanguageTag("en-US"), spec(),
+                               test_app(), test_payment_request_delegate(),
+                               test_address(), test_address(), journey_logger(),
+                               GetWeakPtr());
 
   histogram_tester.ExpectTotalCount(
       "PaymentRequest.MandatoryPaymentAppUi."

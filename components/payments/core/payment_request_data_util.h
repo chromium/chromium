@@ -13,6 +13,10 @@
 #include "components/payments/mojom/payment_request_data.mojom.h"
 #include "url/gurl.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 class AutofillProfile;
 }  // namespace autofill
@@ -27,7 +31,7 @@ namespace data_util {
 // profile.
 mojom::PaymentAddressPtr GetPaymentAddressFromAutofillProfile(
     const autofill::AutofillProfile& profile,
-    const std::string& app_locale);
+    const base::i18n::LanguageTag& app_locale);
 
 // Parse the supported URL payment methods from the merchant.
 // |out_url_payment_method_identifiers| is filled with a list of all the

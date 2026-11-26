@@ -386,9 +386,8 @@ void PaymentRequestState::GeneratePaymentResponse() {
 
   // Once the response is ready, will call back into OnPaymentResponseReady.
   response_helper_ = std::make_unique<PaymentResponseHelper>(
-      std::string(app_locale_.tag_string()), spec_, selected_app_,
-      payment_request_delegate_, selected_shipping_profile_,
-      selected_contact_profile_, journey_logger_,
+      app_locale_, spec_, selected_app_, payment_request_delegate_,
+      selected_shipping_profile_, selected_contact_profile_, journey_logger_,
       weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -709,8 +708,8 @@ void PaymentRequestState::OnAddressNormalized(
     return;
 
   delegate_->OnShippingAddressSelected(
-      data_util::GetPaymentAddressFromAutofillProfile(
-          normalized_profile, std::string(app_locale_.tag_string())));
+      data_util::GetPaymentAddressFromAutofillProfile(normalized_profile,
+                                                      app_locale_));
 }
 
 void PaymentRequestState::OnGetTwaPackageName(

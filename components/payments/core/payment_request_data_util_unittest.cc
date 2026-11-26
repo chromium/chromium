@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -38,8 +39,8 @@ static const char* kUnsupportedPaymentMethodIdentifiers[] = {
 TEST(PaymentRequestDataUtilTest, GetPaymentAddressFromAutofillProfile) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   base::DictValue address_value = payments::PaymentAddressToValueDict(
-      *payments::data_util::GetPaymentAddressFromAutofillProfile(address,
-                                                                 "en-US"));
+      *payments::data_util::GetPaymentAddressFromAutofillProfile(
+          address, base::i18n::GetKnownLanguageTag("en-US")));
   std::string json_address = base::WriteJson(address_value).value_or("");
   EXPECT_EQ(
       "{\"addressLine\":[\"666 Erebus St.\",\"Apt 8\"],"
