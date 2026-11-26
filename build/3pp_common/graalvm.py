@@ -10,6 +10,7 @@ import pathlib
 import shutil
 import subprocess
 import tempfile
+import urllib.parse
 import urllib.request
 import zipfile
 
@@ -20,15 +21,17 @@ import common
 # runtime performance of the generated binaries. It is distributed under the
 # GraalVM Free Terms and Conditions (GFTC) license.
 #
-# Uses the latest release of this major version. Packages that use this module
-# should pass version_strings_func=graalvm.version_strings to common.main() so
-# that they are rebuilt when a new release comes out.
+# Uses the latest Innovation release of this major version, which includes
+# Native Image CRC32 intrinsics and other compiler improvements on top of the
+# LTS JDK. Packages that use this module should pass
+# version_strings_func=graalvm.version_strings to common.main() so that they
+# are rebuilt when a new release comes out.
 # LINT.IfChange(jdk_major_version)
 _GRAALVM_MAJOR_VERSION = 25
 # LINT.ThenChange(//third_party/jdk/3pp/3pp.py:jdk_major_version)
 _GRAALVM_URL = (
-    'https://download.oracle.com/graalvm/{v}/latest/'
-    'graalvm-jdk-{v}_linux-x64_bin.tar.gz'
+    'https://gds.oracle.com/download/graal/{v}i/latest/'
+    'graalvm-jdk-{v}i-{v}_linux-x64_bin.tar.gz'
 ).format(v=_GRAALVM_MAJOR_VERSION)
 
 # Without this wrapper, JAVA_HOME is not respected. The wrapper could be
@@ -54,15 +57,38 @@ _EXE_RELATIVE_JAVA_HOME_TEMPLATE = (
 )
 
 
+class _HeadRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Preserves HEAD across redirects on Python <= 3.11 (CPython gh-99730)."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        new_req = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if new_req is not None and req.get_method() == 'HEAD':
+            new_req.method = 'HEAD'
+        return new_req
+
+
 def version_strings():
     """Returns strings that identify the GraalVM release that will be used.
 
     For use as common.main()'s version_strings_func.
     """
-    # Oracle does not publish version numbers for "latest", but it does publish
-    # the checksum of the archive.
-    with urllib.request.urlopen(_GRAALVM_URL + '.sha256') as r:
-        return [_GRAALVM_URL, r.read().decode('utf-8').split()[0]]
+    # gds.oracle.com does not serve .sha256 sidecars, and redirects through a
+    # rotating pre-authenticated OCI Object Storage URL
+    # (/p/<token>/.../<filename>). Identify the release by the rolling URL,
+    # redirected filename, and content SHA-256 (or ETag fallback).
+    opener = urllib.request.build_opener(_HeadRedirectHandler)
+    req = urllib.request.Request(_GRAALVM_URL, method='HEAD')
+    with opener.open(req) as r:
+        filename = urllib.parse.urlparse(r.geturl()).path.rsplit('/', 1)[-1]
+        digest = r.headers.get('opc-meta-content-sha256') or r.headers.get(
+            'ETag'
+        )
+        if not filename.endswith('.tar.gz') or not digest:
+            raise RuntimeError(
+                f'Unexpected HEAD response for {_GRAALVM_URL}: '
+                f'url={r.geturl()!r}, digest={digest!r}'
+            )
+        return [_GRAALVM_URL, filename, digest]
 
 
 def _find_native_image(root):
@@ -276,7 +302,8 @@ def build_native_image(
       extra_native_image_args: Optional list of extra flags for native-image.
           If this contains -H:+AllowJRTFileSystem, the jrt:/ filesystem reads
           $java.home/lib/modules.
-          Unless this contains a -march= flag, -march=compatibility is used.
+          Unless this contains a -march= flag, -march=x86-64-v2 with
+          -H:CPUFeatures=AVX,AES,CLMUL is used.
       pgo_args_list: Optional list of argv lists to run an instrumented binary
           with in order to collect profiles for profile-guided optimizations.
           These should be representative of real workloads.
@@ -412,12 +439,20 @@ def build_native_image(
             for x in all_opens:
                 ni_cmd.append(f'--add-opens={x}')
             # native-image defaults to -march=x86-64-v3 (AVX2), which fails to
-            # start on older hosts. Some intrinsics still use AVX and AVX2 when
-            # available via -H:RuntimeCheckedCPUFeatures (default: AVX,AVX2).
+            # start on older hosts. Target the GCE minimum x86-64 baseline
+            # (Intel Sandy Bridge: x86-64-v2 + AVX, AES, CLMUL) so hardware
+            # CRC32, CRC32C, POPCNT, and AES intrinsics are enabled while AVX2
+            # still dispatches via -H:RuntimeCheckedCPUFeatures (default:
+            # AVX,AVX2).
             if not any(
                 a.startswith('-march=') for a in extra_native_image_args
             ):
-                ni_cmd.append('-march=compatibility')
+                ni_cmd.extend(
+                    [
+                        '-march=x86-64-v2',
+                        '-H:CPUFeatures=AVX,AES,CLMUL',
+                    ]
+                )
             ni_cmd.extend(extra_native_image_args)
             ni_cmd.extend(extra_args)
             ni_cmd.append('GraalVmWrapper')
@@ -461,7 +496,12 @@ def build_native_image(
             final_args = [
                 '-O3',
                 '--pgo=' + ','.join(profiles),
-                '-H:+UnlockExperimentalVMOptions',
+            ]
+            # GraalVM 25i warns if -H:+UnlockExperimentalVMOptions is passed
+            # more than once.
+            if '-H:+UnlockExperimentalVMOptions' not in extra_native_image_args:
+                final_args.append('-H:+UnlockExperimentalVMOptions')
+            final_args.append(
                 # GraalVM's -H:+PGORemoveMonitorFields (on by default with
                 # --pgo) strips the inline monitor slot from any class whose
                 # monitor count is < 2 in monitorProfiles, falling back to a
@@ -473,8 +513,8 @@ def build_native_image(
                 #    PGOData$Builder.addMonitorProfiles calls
                 #    metadataBuilder.setKnownTypeIDs() per file, overwriting
                 #    earlier files' monitor types with only the last file's.
-                '-H:-PGORemoveMonitorFields',
-            ]
+                '-H:-PGORemoveMonitorFields'
+            )
 
         temp_output = os.path.abspath(
             os.path.join(work_dir, os.path.basename(output_path))
