@@ -986,6 +986,10 @@ Called by update_protocol_commands_enum.py.-->
   <int value="205" label="AI Code Generation - Request triggered from Sources"/>
   <int value="206" label="AI Code Completion - FRE completed from Console"/>
   <int value="207" label="AI Code Completion - FRE completed from Sources"/>
+  <int value="208"
+      label="AI Assistance - Opened from Application panel floating button"/>
+  <int value="209"
+      label="AI Assistance - Opened from Application panel context menu"/>
 </enum>
 
 <enum name="DevToolsAiClientRequestResult">
