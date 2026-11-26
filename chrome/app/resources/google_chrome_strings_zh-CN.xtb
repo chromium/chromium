@@ -137,6 +137,7 @@
 <translation id="2295218613066132598">显示 Chrome 网站快捷方式</translation>
 <translation id="2301513536169703857">登录 Chrome，在您的所有设备上同步密码、书签等信息</translation>
 <translation id="2307973900865360088">保留在程序坞中</translation>
+<translation id="2308558013860776484">共享 Chrome 之外的内容（例如其他应用或文件）的屏幕截图</translation>
 <translation id="2309047409763057870">这是 Google Chrome 的并行安装，您无法将此浏览器设为默认浏览器。</translation>
 <translation id="2345992953227471816">Chrome 发现这些扩展程序包含恶意软件：</translation>
 <translation id="2358140144860869442">如需在您的所有设备上获取阅读清单等内容，请登录 Chrome</translation>
@@ -246,6 +247,7 @@
 <translation id="3294686910656423119">使用情况统计信息和崩溃报告</translation>
 <translation id="3327226547491422998">Chrome 以后可以询问您是否要使用已保存的信息为您自动填写表单</translation>
 <translation id="3352986031709923790">搜索区域的右上角：右侧 <ph name="RIGHT" />%，顶部 <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">网站和 Chrome 可利用直接在您设备上运行的 AI 来提供总结、校对和生成字幕等功能。此功能不同于 Chrome 中的 Gemini。<ph name="BEGIN_LINK" />详细了解设备端 AI<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">某些 Chrome 功能和扩展程序附带快捷字词。您可以选择重新开启它们。</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 将立即重新启动}=1{Chrome 将在 1 秒后重新启动}other{Chrome 将在 # 秒后重新启动}}</translation>
 <translation id="3380249972812870825">如需打开 Chrome 中的 Gemini，请按 <ph name="GLOBAL_HOTKEY" /></translation>
@@ -345,6 +347,7 @@
 <translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
 <translation id="4434353761996769206">安装程序错误：<ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">与 Chrome 中的 Gemini 分享此文档，快速了解概要并追问相关问题</translation>
+<translation id="4440999670272408191">您可以随时移除这些模型。当网站或某项功能需要使用这些模型时，Chrome 可能会自动重新下载。</translation>
 <translation id="4450664632294415862">Chrome - 网络登录 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在执行另一项操作，请稍后重试。</translation>
 <translation id="4493028449971051158">启动错误：请以管理员身份运行安装程序。</translation>
@@ -352,6 +355,7 @@
 <translation id="4501839397124711198">您可以将 Google 搜索固定到侧边栏，以便在浏览时随时提问</translation>
 <translation id="4571503333518166079">转到 Chrome 通知设置</translation>
 <translation id="4580939929828762295">使用 Google 密码管理工具确保安全</translation>
+<translation id="4589544932092381064">在 Windows 任务栏中显示“使用 Chrome 搜索”并开启键盘快捷键</translation>
 <translation id="459622048091363950">一旦 Chrome 获得了使用权限，网站便能请求您向其授予使用权限。</translation>
 <translation id="4598116752460667024">从列表中搜索任何进程。</translation>
 <translation id="4600710005438004015">Chrome 无法更新至最新版本，因此您未能获得最新的功能和安全修复程序。</translation>
@@ -367,6 +371,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">使用 Chrome 的 V8 引擎加快网站速度，但 Chrome 的防范攻击能力会略微降低</translation>
 <translation id="4768676935374695498">使用 Google 智能镜头搜索此视频</translation>
+<translation id="4783580253728290203">关闭后，Chrome 会移除设备端 AI 模型，且不会重新下载。某些网站和 Chrome 功能可能无法正常运行。</translation>
 <translation id="479167709087336770">这项服务会使用 Google 搜索所用的拼写检查工具。您在浏览器中输入的文字会被发送给 Google。您随时可在“设置”中更改此行为。</translation>
 <translation id="4793679854893018356">了解 Chrome 如何保障您的安全</translation>
 <translation id="4803313124144656665">关闭 Chrome 中的 Google 搜索</translation>
@@ -448,6 +453,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">无法连接到互联网。代理服务器要求进行身份验证。</translation>
 <translation id="5709557627224531708">将 Chrome 设为您的默认浏览器</translation>
+<translation id="5715427327524421317">Chrome 会自动下载和更新这些 AI 模型</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{高级保护计划要求您重新启动 Chrome 以应用一项更新。隔离窗口将不会重新打开。}other{高级保护计划要求您重新启动 Chrome 以应用一项更新。# 个隔离窗口将不会重新打开。}}</translation>
 <translation id="5719246646468301581">Google Chrome 和 ChromeOS 附加服务条款</translation>
 <translation id="5736850870166430177">如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能</translation>
@@ -539,6 +545,7 @@
 <translation id="6491330562720922580">用于在移动设备上下载 Chrome 浏览器的二维码</translation>
 <translation id="6493527311031785448">Google Chrome 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome 已自动关闭</translation>
+<translation id="650039555447046671">Chrome 会从此设备中移除 AI 模型。某些网站和 Chrome 功能可能无法正常运行。</translation>
 <translation id="6506909944137591434">Chrome 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 开发者版</translation>
 <translation id="6520670145826811516">如需使用位置信息，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chrome 访问权限</translation>
@@ -577,6 +584,7 @@
 <translation id="6877155553248388166">搜索区域的右下角：右侧 <ph name="RIGHT" />%，底部 <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">使用 Chrome 打开搜索功能</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
+<translation id="6881997500528805781">会占用设备存储空间。Chrome 会在 45 天后或存储空间不足时移除未使用的 AI 模型</translation>
 <translation id="6885412569789873916">Chrome 测试版应用</translation>
 <translation id="6893363893008038481">从 Chrome 中移除账号</translation>
 <translation id="6896758677409633944">复制</translation>

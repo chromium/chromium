@@ -71,6 +71,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1792680680989393197">Mund t'i heqësh në çdo kohë. Chromium mund t'i shkarkojë përsëri automatikisht kur një sajt ose një veçori ka nevojë për to.</translation>
 <translation id="1793486931176048546">Kliko te <ph name="BEGIN_BOLD" />Po<ph name="END_BOLD" /> në njoftimin e Windows për të gozhduar Chromium te shiriti i detyrave për qasje të shpejtë.</translation>
 <translation id="1808667845054772817">Instalo përsëri Chromium</translation>
+<translation id="1814482312667514397">Merr veçoritë më të mira të sigurisë të Chromium kur je në lëvizje me aplikacionin e Chromium në telefonin tënd</translation>
 <translation id="1820835682567584003">Chromium po përpiqet <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chromium në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />. Do të marrësh gjithashtu shtesat e tua etj. nga <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Herën tjetër që të hapësh Chromium në <ph name="DEVICE_TYPE" />, do të shikosh një kërkesë për të përdorur "Menaxherin e fjalëkalimeve të Google".</translation>
@@ -134,6 +135,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Një ose disa shtesa të Chromium kanë pasur qasje në 1 pajisje HID}=1{Një ose disa shtesa të Chromium kanë qasje në 1 pajisje HID}other{Një ose disa shtesa të Chromium kanë qasje në # pajisje HID}}</translation>
 <translation id="2401032172288869980">Chromium ka nevojë për lejet e kamerës dhe të mikrofonit për këtë sajt</translation>
 <translation id="2403703063067034158">Gabim në nisje: aktualisht po ekzekutohet një shembull tjetër i konfigurimit; provo përsëri më vonë.</translation>
+<translation id="241044568699443215">Merr sigurinë e Chromium kur je në lëvizje me aplikacionin e Chromium në <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Hap lidhjet në Chromium nga çdo aplikacion dhe mbaje shfletuesin të qasshëm në shiritin e detyrave</translation>
 <translation id="2425157128016763890">Kliko te butoni "Përmblidh" për ta ndarë këtë dokument me Gemini në Chromium për të marrë një përmbledhje të shpejtë dhe për të bërë pyetje vijuese</translation>
 <translation id="2440750600860946460">Me <ph name="BEGIN_LINK" />veglat nga Chromium<ph name="END_LINK" />, mund të shfletosh në mënyrë të sigurt dhe të qëndrosh në kontroll</translation>
@@ -750,6 +752,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8907580949721785412">Chromium po përpiqet të shfaqë fjalëkalime. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="8910309838319708610">Me sukses! Tani mund të bësh me lehtësi pyetje ndërkohë që shfleton me "Modalitetin e IA-së" të "Kërko"</translation>
 <translation id="8932992523185907506">Chromium nuk është më shfletuesi yt i parazgjedhur. Të bëhet Chromium shfletuesi yt i parazgjedhur?</translation>
+<translation id="8940844567350264767">Merr veçoritë më të mira të sigurisë të Chromium kur je në lëvizje me Chromium</translation>
 <translation id="8941642502866065432">Chromium nuk mund të përditësohet</translation>
 <translation id="8944232836376404813">Ky veprim:
           <ph name="LINE_BREAKS" />

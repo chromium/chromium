@@ -1300,6 +1300,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="244071666433939959">Tətbiqlər bir pəncərədə açılır</translation>
 <translation id="2442916515643169563">Mətn kölgəsi</translation>
 <translation id="2443487764245141020">Saytlar ayrıca bir identifikatorla cihazınızı tanımalı ola bilər</translation>
+<translation id="2444282212665587861">güncəllənmə, güncəllənmələr, təkmilləşdirmə, versiya, məlumat, güncəlləmələri yoxlayın</translation>
 <translation id="244475495405467108">Sol Panelləri bağlayın</translation>
 <translation id="2444874983932528148">Qaldığınız yerdən asanlıqla davam edin</translation>
 <translation id="2445081178310039857">Daxili kök kataloq tələb olunur.</translation>
@@ -2137,6 +2138,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="3321512411079201586">&amp;İzolə edilmiş</translation>
 <translation id="3323288183237359315">Edge üçün quraşdırın</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Məxfiliyi qorumaq üçün icazələr saytdan silindi}other{Məxfiliyi qorumaq üçün icazələr bəzi saytlardan silindi}}</translation>
+<translation id="3325561120400598624">Çatlar nəzərdən keçirilir və generativ Sİ modellərini öyrətmək üçün istifadə olunur. Gemini Sİ-dir və səhvə yola verə bilər. Bəzi kontentlər hər kəs üçün uyğun olmaya bilər. <ph name="BEGIN_LINK_LOCATION_INFO" />Məkanınız haqqında məlumat<ph name="END_LINK_LOCATION_INFO" /> da daxil olmaqla <ph name="BEGIN_LINK_MANAGE_HISTORY" />tarixçənizi idarə edə<ph name="END_LINK_MANAGE_HISTORY" /> bilərsiniz. <ph name="BEGIN_LINK_LEARN_MORE" />Seçimləriniz haqqında ətraflı məlumat əldə edin<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Üslub</translation>
 <translation id="3331974543021145906">Tətbiq haqqında</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video Şəkil içində Şəkil rejimində oxudulur</translation>
@@ -2262,6 +2264,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Sualınızda istifadə etmək üçün 1 .pdf faylı yükləyin}other{Sualınızda istifadə etmək üçün maksimum # .pdf faylı yükləyin}}</translation>
 <translation id="3456750372063895499">Keçidi başqa pəncərədə açın</translation>
 <translation id="345693547134384690">Tabda şəkil açın</translation>
+<translation id="3456949031754827166">Yenidən nizamlayın</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Qrupu saxlayın}other{Qrupları saxlayın}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 əlfəcin silindi}other{# əlfəcin silindi}}</translation>
 <translation id="3471687177769494956">Naviqasiya qısayolunu redaktə edin</translation>
@@ -3314,6 +3317,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="4602776638371779614">Bu tab Bluetooth cihazlarını aktiv şəkildə skanlayır</translation>
 <translation id="4605026046465576953">Təcrid edilmiş veb-tətbiqlərdən istifadə icazəniz olmadığı üçün bu tətbiqi açmaq mümkün deyil</translation>
 <translation id="4606551464649945562">Saytların ətrafınızdakı sahələrin 3D xəritəsini yaratmasına və ya kamera mövqeyini izləməsinə icazə verməyin</translation>
+<translation id="4606965546067937011">sürət, RAM, gecikmə, donma, çökmə, resurs, istifadə, batareya, optimizator, yavaşlama, yaddaş, yaddaşa qənaət</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Tab qrupu silinsin?}other{Tab qrupları silinsin?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Sualınızda istifadə etmək üçün 1 fayl yükləyin}other{Sualınızda istifadə etmək üçün maksimum # fayl yükləyin}}</translation>
 <translation id="4608500690299898628">Tapın...</translation>
@@ -4147,6 +4151,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="5535769176698670170">Üst görünüşlə dəyişin</translation>
 <translation id="5536642445914063887">Profili dəyişdirin</translation>
 <translation id="5537725057119320332">Yayım</translation>
+<translation id="553876896781261711">silmək, sil, təhlükəsizlik, məxfilik, təmizləmə, yaddaş, sıfırlama, keş, kukilər, yavaş, sürət, tarixçə</translation>
 <translation id="5541091577812545428">Parol dəyişdirilməyib</translation>
 <translation id="5542132724887566711">Profil</translation>
 <translation id="5543983818738093899">Status yoxlanılır...</translation>
@@ -4738,6 +4743,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="6214157047210274853">Google Pulqabıda redaktə edin</translation>
 <translation id="621470880408090483">Saytlara Bluetooth cihazlarına qoşulmaq icazəsi verməyin</translation>
 <translation id="6215039389782910006">{1,plural, =1{Parolların təhlükəsizliyi üçün <ph name="BRAND" /> 1 dəqiqəlik fəaliyyətsizlikdən sonra kilidlənir}other{Parolların təhlükəsizliyi üçün <ph name="BRAND" /> # dəqiqəlik fəaliyyətsizlikdən sonra kilidlənir}}</translation>
+<translation id="6215427500141060726">Çatlar nəzərdən keçirilir və generativ Sİ modellərini öyrətmək üçün istifadə olunur. Gemini Sİ-dir və səhvə yola verə bilər. <ph name="BEGIN_LINK_LOCATION_INFO" />Məkanınız haqqında məlumat<ph name="END_LINK_LOCATION_INFO" /> da daxil olmaqla <ph name="BEGIN_LINK_MANAGE_HISTORY" />tarixçənizi idarə edə<ph name="END_LINK_MANAGE_HISTORY" /> bilərsiniz. <ph name="BEGIN_LINK_LEARN_MORE" />Seçimləriniz haqqında ətraflı məlumat əldə edin<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Rədd edilən sayt və tətbiqlər</translation>
 <translation id="6216696360484424239">Avtomatik daxil olun</translation>
 <translation id="6218961554829577610">Səsi bəyənmədim</translation>
@@ -4889,6 +4895,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="639880411171387127">Google Linza seçiminiz. Google Linza seçiminizi silmək üçün enter və ya geri düyməsinə basın</translation>
 <translation id="6400360390396538896">Həmişə aktiv <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Tab qrupunu fokusdan çıxarın</translation>
+<translation id="6401522392962817913">Davam etməklə Google Payments Xidmət Şərtləri ilə razılaşırsınız. Məxfilik Bildirişi datanızın idarə olunma qaydasını təsvir edir. Kartınız Google Hesabınızda yadda saxlanılır, <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">Səbəbini öyrənmək üçün tətbiqin tərtibatçısı ilə əlaqə saxlayın</translation>
 <translation id="6402921224457714577">Saytlar MIDI cihazlarını idarə etmək və təkrar proqramlaşdırmaq istəyə bilər</translation>
 <translation id="6404511346730675251">Əlfəcinə düzəliş edin</translation>
@@ -4977,6 +4984,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="6499143127267478107">Proksi skriptdə host həll olunur...</translation>
 <translation id="6503077044568424649">Ən çox ziyarət edilən</translation>
 <translation id="6504601948739128893">Cihazınızda quraşdırılmış şriftləri istifadə etmək icazəsi verilmir</translation>
+<translation id="6505525633061207363">giriş məlumatları, giriş açarı, kilid, kassa, açarlar, giriş, daxil olmaq</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" bu cihazda aşağıdakı tətbiqi quraşdırmaq istəyir:}other{"<ph name="APP_NAME" />" bu cihazda aşağıdakı tətbiqləri quraşdırmaq istəyir:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> ilə əlaqədar</translation>
 <translation id="6508261954199872201">Tətbiq: <ph name="APP_NAME" /></translation>

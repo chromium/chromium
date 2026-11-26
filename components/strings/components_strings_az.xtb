@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Siyasət keşi OK-dir</translation>
 <translation id="1131264053432022307">Kopyalanmış Şəkil</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Tam ekrandan çıxmaq üçün yuxarıdan dartın və geri düyməsinə toxunun</translation>
+<translation id="1132789342529761192">Yükləmək tövsiyə edilmir</translation>
 <translation id="11370190534773372">Kart detalları dolduruldu</translation>
 <translation id="1138458427267715730">Veb-saytlarda qiymət düşəndə bildiriş alın</translation>
 <translation id="1142713751288681188">Kağız növü</translation>
@@ -583,6 +584,7 @@
 <translation id="1988881251331415125">Yazılış doğrudursa, <ph name="BEGIN_LINK" />Bağlantı Diaqnostikasını icra edin<ph name="END_LINK" />.</translation>
 <translation id="1991370806334788445">Üçüncü tərəf kukilərinə icazə verin. Axtarış zamanı qoruma az olsa da, funksiyaların gözlənilən kimi işləmə ehtimalı yüksəkdir.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1995173078718234136">Kontent skan edilir...</translation>
 <translation id="1996557034791506430">İcazə silinsin?</translation>
 <translation id="1997484222658892567"><ph name="URL" /> böyük həcmli datanı həmişəlik lokal kompüterinizdə yadda saxlamaq istəyir</translation>
 <translation id="1997774360448418989">Kağız (yüngül)</translation>
@@ -602,6 +604,7 @@
 <translation id="2025891858974379949">Təhlükəli məzmun</translation>
 <translation id="2027465737841872819">Plastik</translation>
 <translation id="2027707238798802149">Kart əlçatan deyil</translation>
+<translation id="2028329426302356196">Endirmək tövsiyə edilmir</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proksi və güvənlik divarı yoxlanılır<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Chrome-un bu nüsxəsi manual olaraq təyin edilmiş əmr sətri parametrləri ilə işləyir. Nəzərə alın ki, əmr sətri parametrləri istənilən vaxt dəyişə bilər və dəstəklənmir.</translation>
 <translation id="2033900728810589426">Qısayol <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> tərəfindən müəyyən edilmiş axtarış provayderi defolt açar sözü eyni ola bilməz: <ph name="SHORTCUT_NAME" /></translation>
@@ -1453,6 +1456,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3443504041532578451">Optik disk (hamar)</translation>
 <translation id="3447661539832366887">Bu cihazın sahibi dinozavr oyununu söndürüb.</translation>
 <translation id="3447884698081792621">Sertifikatı göstərin (<ph name="ISSUER" /> tərəfindən paylaşılan)</translation>
+<translation id="3449239216441121005">Çap etmək tövsiyə edilmir</translation>
 <translation id="3450323514459570273">MIDI cihazlarını idarə etmək və təkrar proqramlaşdırmaq istəyə bilər</translation>
 <translation id="3452404311384756672">Əldə etmə intervalı:</translation>
 <translation id="345268527248907593">Bu sayta daxil olmaq mümkün olmadı</translation>
@@ -2912,6 +2916,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5851548754964597211">Panel siyahısı</translation>
 <translation id="5851868085455377790">Emitent</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Kopiyalamaq tövsiyə edilmir</translation>
 <translation id="5860491529813859533">Aktiv edin</translation>
 <translation id="5862579898803147654">Yığıcı 8</translation>
 <translation id="5863515189965725638">IBAN-a düzəliş edin</translation>

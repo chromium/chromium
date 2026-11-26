@@ -51,6 +51,7 @@
 <translation id="1572572333538561328">重新打开“搜索 AI 模式”</translation>
 <translation id="1574377791422810894">Chromium 的安全工具</translation>
 <translation id="1594928384848033697">Chromium 想要删除您的密码管理工具数据。请输入您的 Windows 密码以允许此操作。</translation>
+<translation id="1599690375407103815">关闭后，Chromium 会移除设备端 AI 模型，且不会重新下载。某些网站和 Chromium 功能可能无法正常运行。</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{您的管理员要求您重新启动 Chromium 以应用一项更新}=1{您的管理员要求您重新启动 Chromium 以应用一项更新。您的无痕式窗口不会重新打开。}other{您的管理员要求您重新启动 Chromium 以应用一项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="1625909126243026060">检查 Chromium 中重要的隐私控制设置和安全控件</translation>
 <translation id="1640672724030957280">正在下载...</translation>
@@ -65,6 +66,7 @@
 <translation id="1745121272106313518">Chromium 将在 <ph name="REMAINING_TIME" />后重启</translation>
 <translation id="1749104137266986751">如果 HTTPS 不可用，Chromium 会在不向您发出警告的情况下使用不安全的连接</translation>
 <translation id="1774152462503052664">让 Chromium 在后台运行</translation>
+<translation id="1792680680989393197">您可以随时移除这些模型。当网站或某项功能需要使用这些模型时，Chromium 可能会自动重新下载。</translation>
 <translation id="1793486931176048546">点击 Windows 通知中的<ph name="BEGIN_BOLD" />是<ph name="END_BOLD" />，将 Chromium 固定到任务栏，以便快速访问。</translation>
 <translation id="1808667845054772817">重新安装Chromium</translation>
 <translation id="1820835682567584003">Chromium 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -249,6 +251,7 @@
 <translation id="3751920144677881410">点击工具栏上的“‘搜索’侧边栏”按钮，即可重新打开“搜索”侧边栏，以便在浏览时随时提问</translation>
 <translation id="3788675262216168505">管理 Chromium 个人资料</translation>
 <translation id="3790262771324122253">了解 Chromium 为何会拦截部分下载内容</translation>
+<translation id="3793196697433239004">会占用设备存储空间。Chromium 会在 45 天后或存储空间不足时移除未使用的 AI 模型</translation>
 <translation id="379589255253486813">如有任何事项需要您审核，Chromium 会通知您</translation>
 <translation id="3802055581630249637">Chromium 会预加载您可能访问的网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -331,6 +334,7 @@
 <translation id="4621240073146040695">即将更新到最新版本！重新启动 Chromium 即可完成更新。</translation>
 <translation id="4625064703209785397">使用 Chromium 的 V8 引擎加快网站速度，但 Chromium 的防范攻击能力会略微降低</translation>
 <translation id="4626321472657185181">使用 Chromium 打开搜索功能</translation>
+<translation id="4639628733881319833">共享 Chromium 之外的内容（例如其他应用或文件）的屏幕截图</translation>
 <translation id="4654639495249754755">Chromium 个人资料</translation>
 <translation id="4665829708273112819">警告：Chromium 无法阻止扩展程序记录您的浏览活动。若要在无痕模式下停用该扩展程序，请取消选中此选项。</translation>
 <translation id="4673151026126227699">如果您还分享 Chromium 使用情况报告，这些报告会包含您访问过的网址</translation>
@@ -388,6 +392,7 @@
 <translation id="5405650547142096840">从Chromium中移除</translation>
 <translation id="5424544524441439284">降低性能，但提高 Chromium 防范攻击的能力</translation>
 <translation id="5427571867875391349">将Chromium设为默认浏览器</translation>
+<translation id="5435079900593041559">在 Windows 任务栏中显示“使用 Chromium 搜索”并开启键盘快捷键</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium 测试版</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium 建议您暂停导致浏览器运行缓慢的标签页}other{Chromium 建议您暂停导致浏览器运行缓慢的标签页}}</translation>
 <translation id="5473971139929175403">Chromium 可能无法正常运行，因为它不再支持此 Linux 发行版</translation>
@@ -414,6 +419,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">以这种语言显示 Chromium</translation>
 <translation id="569897634095159764">无法连接到互联网。代理服务器要求进行身份验证。</translation>
+<translation id="5755377560105094542">网站和 Chromium 可利用直接在您设备上运行的 AI 来提供总结、校对和生成字幕等功能。此功能不同于 Chromium 中的 Gemini。<ph name="BEGIN_LINK" />详细了解设备端 AI<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">点击工具栏上的“‘搜索’面板”按钮，即可重新打开“搜索”面板，以便在浏览时随时提问</translation>
 <translation id="5768371961535086509">Chromium 会释放闲置标签页占用的内存。这可让活跃标签页和其他应用获得更多计算机资源，并让 Chromium 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活跃状态。<ph name="BEGIN_LINK" />详细了解省内存模式<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">如果您忘记了口令或想更改此设置，请<ph name="SETTINGS_LINK" />您账号中的 Chromium 数据</translation>
@@ -470,6 +476,7 @@
 <translation id="6245734527075554892">将网址与存储在 Chromium 中的不安全网站列表进行比对</translation>
 <translation id="6248213926982192922">将 Chromium 设置为默认浏览器</translation>
 <translation id="6248988683584659830">搜索设置</translation>
+<translation id="6251986571402453005">Chromium 会自动下载和更新这些 AI 模型</translation>
 <translation id="6268381023930128611">退出 Chromium？</translation>
 <translation id="6270547683008298381">这些标签页正在使用额外的资源。为了提升性能，请让 Chromium 将它们设为非活跃状态。</translation>
 <translation id="6281746429495226318">自定义您的 Chromium 个人资料</translation>
@@ -760,6 +767,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8981886272598860786">即可使用 Chromium 搜索，也可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中自定义</translation>
 <translation id="8988036198400390003">管理 Chromium 个人资料</translation>
 <translation id="8993855408334954620">使用键盘可在 Chromium 中的 Gemini 和打开的标签页之间切换。</translation>
+<translation id="9002987346523307190">Chromium 将从此设备中移除 AI 模型。某些网站和 Chromium 功能可能无法正常运行。</translation>
 <translation id="9018218886431812662">安装完成</translation>
 <translation id="9022552996538154597">登录 Chromium</translation>
 <translation id="9035791714111278917">在 Mac 菜单栏中显示“使用 Chromium 搜索”并开启键盘快捷键</translation>
