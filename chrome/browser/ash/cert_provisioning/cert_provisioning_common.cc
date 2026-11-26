@@ -23,8 +23,8 @@
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
@@ -50,7 +50,7 @@ std::optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
     }
     case CertScope::kUser: {
       user_manager::User* user =
-          ProfileHelper::Get()->GetUserByProfile(profile);
+          BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
       if (!user) {
         return std::nullopt;
       }
