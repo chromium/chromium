@@ -3744,7 +3744,11 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
       // Tools annotated with `debugging: true` are intended for developer
       // tooling only, and must not be exposed to AI consumers such as the
       // actor. Developer tooling introspects them via the WebMCP CDP domain.
-      if (tool.annotations && tool.annotations->debugging) {
+      const mojom::blink::NaturalLanguageProperties*
+          natural_language_properties = tool.natural_language_properties.get();
+      if (natural_language_properties &&
+          natural_language_properties->annotations &&
+          natural_language_properties->annotations->debugging) {
         return;
       }
       frame_data.script_tools.push_back(tool.Clone());

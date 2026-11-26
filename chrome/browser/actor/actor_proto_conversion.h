@@ -184,13 +184,17 @@ void CopyScriptToolResults(
       script_tool_result->set_input_arguments(response->input_arguments);
       auto* tool = script_tool_result->mutable_tool();
       tool->set_name(response->tool->name);
-      tool->set_description(response->tool->description);
-      if (response->tool->input_schema.has_value()) {
-        tool->set_input_schema(response->tool->input_schema.value());
-      }
-      if (response->tool->annotations) {
-        tool->mutable_annotations()->set_read_only(
-            response->tool->annotations->read_only);
+      if (const auto& natural_language_properties =
+              response->tool->natural_language_properties) {
+        tool->set_description(natural_language_properties->description);
+        if (natural_language_properties->input_schema.has_value()) {
+          tool->set_input_schema(
+              natural_language_properties->input_schema.value());
+        }
+        if (natural_language_properties->annotations) {
+          tool->mutable_annotations()->set_read_only(
+              natural_language_properties->annotations->read_only);
+        }
       }
     }
   }

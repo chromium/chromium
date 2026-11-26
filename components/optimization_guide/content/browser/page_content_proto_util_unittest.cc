@@ -3635,8 +3635,11 @@ TEST_F(PageContentProtoUtilTest, ScriptToolsFilteredByRenderFrameInfo) {
   auto root_content = CreatePageContent();
   auto tool = blink::mojom::ScriptTool::New();
   tool->name = "forged_tool";
-  tool->description = "forged description";
-  tool->annotations = blink::mojom::ScriptToolAnnotations::New();
+  tool->natural_language_properties =
+      blink::mojom::NaturalLanguageProperties::New();
+  tool->natural_language_properties->description = "forged description";
+  tool->natural_language_properties->annotations =
+      blink::mojom::ScriptToolAnnotations::New();
   root_content->frame_data->script_tools.push_back(std::move(tool));
 
   AIPageContentMap page_content_map;

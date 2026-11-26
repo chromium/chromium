@@ -169,14 +169,18 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
   EXPECT_EQ(response->result, "This is an example sentence.");
   EXPECT_EQ(response->input_arguments, input_arguments);
   EXPECT_EQ(response->tool->name, "echo");
-  EXPECT_EQ(response->tool->description, "echo input");
-  EXPECT_EQ(response->tool->annotations->read_only, true);
+  ASSERT_TRUE(response->tool->natural_language_properties);
+  EXPECT_EQ(response->tool->natural_language_properties->description,
+            "echo input");
+  EXPECT_EQ(response->tool->natural_language_properties->annotations->read_only,
+            true);
   EXPECT_TRUE(action_result->requires_page_stabilization);
 
   const std::string expected_input_schema =
       R"JSON({"type":"object","properties":{"text":{"description":)JSON"
       R"JSON("Value to echo","type":"string"}},"required":["text"]})JSON";
-  EXPECT_EQ(response->tool->input_schema, expected_input_schema);
+  EXPECT_EQ(response->tool->natural_language_properties->input_schema,
+            expected_input_schema);
 
   // Navigate to a new document before invoking the tool; a request bound to
   // the previous document's identifier must fail with kTabWentAway.
@@ -240,11 +244,14 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeToolCrossDocument) {
   ASSERT_TRUE(response);
   EXPECT_EQ(response->input_arguments, declarative_input);
   EXPECT_EQ(response->tool->name, "declarative_tool");
-  EXPECT_EQ(response->tool->description, "A declarative WebMCP tool");
-  EXPECT_FALSE(response->tool->annotations);
+  ASSERT_TRUE(response->tool->natural_language_properties);
+  EXPECT_EQ(response->tool->natural_language_properties->description,
+            "A declarative WebMCP tool");
+  EXPECT_FALSE(response->tool->natural_language_properties->annotations);
   const std::string expected_input_schema =
       R"JSON({"type":"object","properties":{"echo":{"type":"string","description":"Value to echo"}},"required":["echo"]})JSON";
-  EXPECT_EQ(response->tool->input_schema, expected_input_schema);
+  EXPECT_EQ(response->tool->natural_language_properties->input_schema,
+            expected_input_schema);
 
   base::Value actual_json = base::test::ParseJson(*response->result);
   base::Value expected_json = base::test::ParseJson(R"JSON(

@@ -27,11 +27,17 @@ Tool::Tool(DOMWindow* source,
   // The browser only accepts (and therefore only returns) tools that were
   // registered with a `tool_id`.
   CHECK(script_tool_->tool_id);
-  CHECK_EQ(script_tool_->input_schema.IsNull(), input_schema.IsEmpty());
+  const mojom::blink::NaturalLanguageProperties* natural_language_properties =
+      script_tool_->natural_language_properties.get();
+  CHECK_EQ(!natural_language_properties ||
+               natural_language_properties->input_schema.IsNull(),
+           input_schema.IsEmpty());
   if (!input_schema.IsEmpty()) {
     input_schema_.Reset(input_schema.GetIsolate(), input_schema.V8Value());
   }
-  CHECK_EQ(script_tool_->output_schema.IsNull(), output_schema.IsEmpty());
+  CHECK_EQ(!natural_language_properties ||
+               natural_language_properties->output_schema.IsNull(),
+           output_schema.IsEmpty());
   if (!output_schema.IsEmpty()) {
     output_schema_.Reset(output_schema.GetIsolate(), output_schema.V8Value());
   }
@@ -51,12 +57,20 @@ const String& Tool::name() const {
 }
 
 const String& Tool::description() const {
-  return script_tool_->description;
+  // A tool without natural language properties is exposed to script with an
+  // empty description.
+  if (!script_tool_->natural_language_properties) {
+    return g_empty_string;
+  }
+  return script_tool_->natural_language_properties->description;
 }
 
 const String& Tool::title() const {
   // A null title in mojo is exposed to script as "".
-  return script_tool_->title;
+  if (!script_tool_->natural_language_properties) {
+    return g_empty_string;
+  }
+  return script_tool_->natural_language_properties->title;
 }
 
 DOMWindow* Tool::source() const {
@@ -84,16 +98,21 @@ ScriptObject Tool::outputSchema(ScriptState* script_state) const {
 }
 
 ScriptObject Tool::annotations(ScriptState* script_state) const {
-  if (!script_tool_->annotations) {
+  const mojom::blink::NaturalLanguageProperties* natural_language_properties =
+      script_tool_->natural_language_properties.get();
+  if (!natural_language_properties ||
+      !natural_language_properties->annotations) {
     return ScriptObject::CreateNull(script_state->GetIsolate());
   }
 
+  const mojom::blink::ScriptToolAnnotations& script_tool_annotations =
+      *natural_language_properties->annotations;
   auto* annotations = ToolAnnotations::Create();
-  annotations->setReadOnlyHint(script_tool_->annotations->read_only);
+  annotations->setReadOnlyHint(script_tool_annotations.read_only);
   annotations->setUntrustedContentHint(
-      script_tool_->annotations->untrusted_content);
-  annotations->setConsequentialHint(script_tool_->annotations->consequential);
-  annotations->setDebugging(script_tool_->annotations->debugging);
+      script_tool_annotations.untrusted_content);
+  annotations->setConsequentialHint(script_tool_annotations.consequential);
+  annotations->setDebugging(script_tool_annotations.debugging);
   return ScriptObject::From(script_state, annotations);
 }
 

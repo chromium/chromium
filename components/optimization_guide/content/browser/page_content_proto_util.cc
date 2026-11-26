@@ -1041,19 +1041,27 @@ void ConvertScriptTool(
     const blink::mojom::ScriptTool& tool,
     optimization_guide::proto::ScriptTool* proto_script_tool) {
   proto_script_tool->set_name(tool.name);
-  proto_script_tool->set_description(tool.description);
-
-  if (tool.input_schema) {
-    proto_script_tool->set_input_schema(*tool.input_schema);
+  const blink::mojom::NaturalLanguageProperties* natural_language_properties =
+      tool.natural_language_properties.get();
+  if (!natural_language_properties) {
+    return;
   }
 
-  if (tool.output_schema) {
-    proto_script_tool->set_output_schema(*tool.output_schema);
+  proto_script_tool->set_description(natural_language_properties->description);
+
+  if (natural_language_properties->input_schema) {
+    proto_script_tool->set_input_schema(
+        *natural_language_properties->input_schema);
   }
 
-  if (tool.annotations) {
+  if (natural_language_properties->output_schema) {
+    proto_script_tool->set_output_schema(
+        *natural_language_properties->output_schema);
+  }
+
+  if (natural_language_properties->annotations) {
     proto_script_tool->mutable_annotations()->set_read_only(
-        tool.annotations->read_only);
+        natural_language_properties->annotations->read_only);
   }
 }
 

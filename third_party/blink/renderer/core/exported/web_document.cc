@@ -426,17 +426,22 @@ std::unique_ptr<WebScriptToolDeclaration> MakeWebScriptToolDeclaration(
   if (!tool_data) {
     return web_tool_declaration;
   }
-  const mojom::blink::ScriptTool& script_tool = tool_data->ScriptTool();
-  web_tool_declaration->description = WebString(script_tool.description);
-  web_tool_declaration->input_schema = WebString(script_tool.input_schema);
-  web_tool_declaration->output_schema = WebString(script_tool.output_schema);
-  if (script_tool.annotations) {
-    web_tool_declaration->read_only = script_tool.annotations->read_only;
-    web_tool_declaration->untrusted_content =
-        script_tool.annotations->untrusted_content;
-    web_tool_declaration->consequential =
-        script_tool.annotations->consequential;
-    web_tool_declaration->debugging = script_tool.annotations->debugging;
+  const mojom::blink::NaturalLanguageProperties* natural_language_properties =
+      tool_data->ScriptTool().natural_language_properties.get();
+  if (!natural_language_properties) {
+    return web_tool_declaration;
+  }
+  web_tool_declaration->description =
+      WebString(natural_language_properties->description);
+  web_tool_declaration->input_schema =
+      WebString(natural_language_properties->input_schema);
+  web_tool_declaration->output_schema =
+      WebString(natural_language_properties->output_schema);
+  if (const auto& annotations = natural_language_properties->annotations) {
+    web_tool_declaration->read_only = annotations->read_only;
+    web_tool_declaration->untrusted_content = annotations->untrusted_content;
+    web_tool_declaration->consequential = annotations->consequential;
+    web_tool_declaration->debugging = annotations->debugging;
   }
   return web_tool_declaration;
 }

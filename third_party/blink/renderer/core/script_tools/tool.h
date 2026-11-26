@@ -42,10 +42,10 @@ class CORE_EXPORT Tool final : public ScriptWrappable {
  public:
   // `source` is the (non-null) window of the document that registered the
   // tool, and `origin` is that document's origin; `script_tool` is a snapshot
-  // of the tool's state. `input_schema` and `output_schema` are
-  // `script_tool->input_schema` and `script_tool->output_schema` already parsed
-  // into script values, and are each empty iff the corresponding `script_tool`
-  // member is null.
+  // of the tool's state. `input_schema` and `output_schema` are the
+  // `input_schema` and `output_schema` of `script_tool`'s natural language
+  // properties already parsed into script values, and are each empty iff the
+  // corresponding member is null or absent.
   Tool(DOMWindow* source,
        scoped_refptr<const SecurityOrigin> origin,
        mojom::blink::ScriptToolPtr script_tool,

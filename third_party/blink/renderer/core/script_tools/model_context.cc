@@ -497,30 +497,36 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
             this, tool_id, resolver, signal));
   }
 
+  auto natural_language_properties =
+      mojom::blink::NaturalLanguageProperties::New();
+  // If `tool` is not provided, the null string fallback is treated as a
+  // nullable member by mojo.
+  natural_language_properties->title =
+      tool->hasTitle() ? tool->title() : String();
+  natural_language_properties->description = tool->description();
+  natural_language_properties->input_schema = input_schema;
+  natural_language_properties->output_schema = output_schema;
+
+  if (tool->hasAnnotations()) {
+    auto annotations = mojom::blink::ScriptToolAnnotations::New();
+    CHECK(tool->annotations()->hasReadOnlyHint());
+    annotations->read_only = tool->annotations()->readOnlyHint();
+    CHECK(tool->annotations()->hasUntrustedContentHint());
+    annotations->untrusted_content =
+        tool->annotations()->untrustedContentHint();
+    CHECK(tool->annotations()->hasConsequentialHint());
+    annotations->consequential = tool->annotations()->consequentialHint();
+    CHECK(tool->annotations()->hasDebugging());
+    annotations->debugging = tool->annotations()->debugging();
+    natural_language_properties->annotations = std::move(annotations);
+  }
+
   auto script_tool = mojom::blink::ScriptTool::New();
   script_tool->tool_id = tool_id;
   script_tool->name = tool->name();
-  // If `tool` is not provided, the null string fallback is treated as a
-  // nullable member by mojo.
-  script_tool->title = tool->hasTitle() ? tool->title() : String();
-  script_tool->description = tool->description();
-  script_tool->input_schema = input_schema;
-  script_tool->output_schema = output_schema;
+  script_tool->natural_language_properties =
+      std::move(natural_language_properties);
   script_tool->exposed_origins = std::move(exposed_origins);
-
-  if (tool->hasAnnotations()) {
-    script_tool->annotations = mojom::blink::ScriptToolAnnotations::New();
-    CHECK(tool->annotations()->hasReadOnlyHint());
-    script_tool->annotations->read_only = tool->annotations()->readOnlyHint();
-    CHECK(tool->annotations()->hasUntrustedContentHint());
-    script_tool->annotations->untrusted_content =
-        tool->annotations()->untrustedContentHint();
-    CHECK(tool->annotations()->hasConsequentialHint());
-    script_tool->annotations->consequential =
-        tool->annotations()->consequentialHint();
-    CHECK(tool->annotations()->hasDebugging());
-    script_tool->annotations->debugging = tool->annotations()->debugging();
-  }
 
   auto* tool_data = MakeGarbageCollected<ToolData>(
       base::PassKey<ModelContext>(), std::move(script_tool),
@@ -628,15 +634,19 @@ std::optional<ScriptToolDeclaration> ModelContext::GetScriptToolDeclaration(
     return std::nullopt;
   }
   ScriptToolDeclaration declaration;
-  const mojom::blink::ScriptTool& script_tool = tool_data->ScriptTool();
-  declaration.description = script_tool.description;
-  declaration.input_schema = script_tool.input_schema;
-  declaration.output_schema = script_tool.output_schema;
-  if (script_tool.annotations) {
-    declaration.read_only = script_tool.annotations->read_only;
-    declaration.untrusted_content = script_tool.annotations->untrusted_content;
-    declaration.consequential = script_tool.annotations->consequential;
-    declaration.debugging = script_tool.annotations->debugging;
+  const mojom::blink::NaturalLanguageProperties* natural_language_properties =
+      tool_data->ScriptTool().natural_language_properties.get();
+  if (!natural_language_properties) {
+    return declaration;
+  }
+  declaration.description = natural_language_properties->description;
+  declaration.input_schema = natural_language_properties->input_schema;
+  declaration.output_schema = natural_language_properties->output_schema;
+  if (const auto& annotations = natural_language_properties->annotations) {
+    declaration.read_only = annotations->read_only;
+    declaration.untrusted_content = annotations->untrusted_content;
+    declaration.consequential = annotations->consequential;
+    declaration.debugging = annotations->debugging;
   }
   return declaration;
 }
@@ -1003,9 +1013,14 @@ bool ModelContext::RegisterDeclarativeTool(
   auto script_tool = mojom::blink::ScriptTool::New();
   script_tool->tool_id = tool_id;
   script_tool->name = declarative_tool->ToolName();
-  script_tool->description = declarative_tool->ToolDescription();
-  script_tool->title = declarative_tool->ToolTitle();
-  script_tool->input_schema = declarative_tool->ComputeInputSchema();
+  script_tool->natural_language_properties =
+      mojom::blink::NaturalLanguageProperties::New();
+  script_tool->natural_language_properties->description =
+      declarative_tool->ToolDescription();
+  script_tool->natural_language_properties->title =
+      declarative_tool->ToolTitle();
+  script_tool->natural_language_properties->input_schema =
+      declarative_tool->ComputeInputSchema();
 
   auto* tool_data = MakeGarbageCollected<ToolData>(
       base::PassKey<ModelContext>(), std::move(script_tool), declarative_tool);
@@ -1270,22 +1285,30 @@ void ModelContext::OnGetScriptToolsCompleted(
       continue;
     }
 
+    const mojom::blink::NaturalLanguageProperties* natural_language_properties =
+        t->natural_language_properties.get();
+    const String input_schema_json =
+        natural_language_properties ? natural_language_properties->input_schema
+                                    : String();
     ScriptValue input_schema;
-    if (!t->input_schema.IsNull()) {
+    if (!input_schema_json.IsNull()) {
       v8::TryCatch try_catch(script_state->GetIsolate());
       auto script_object =
-          JSONStringToScriptObject(script_state, t->input_schema);
+          JSONStringToScriptObject(script_state, input_schema_json);
       input_schema = script_object;
       if (try_catch.HasCaught() || input_schema.IsEmpty()) {
         continue;
       }
     }
 
+    const String output_schema_json =
+        natural_language_properties ? natural_language_properties->output_schema
+                                    : String();
     ScriptValue output_schema;
-    if (!t->output_schema.IsNull()) {
+    if (!output_schema_json.IsNull()) {
       v8::TryCatch try_catch(script_state->GetIsolate());
       auto script_object =
-          JSONStringToScriptObject(script_state, t->output_schema);
+          JSONStringToScriptObject(script_state, output_schema_json);
       output_schema = script_object;
       if (try_catch.HasCaught() || output_schema.IsEmpty()) {
         continue;
@@ -1618,8 +1641,12 @@ void ToolData::Trace(Visitor* visitor) const {
 bool ToolData::RefreshDeclarativeInputSchema() {
   if (declarative_tool_) {
     String new_schema = declarative_tool_->ComputeInputSchema();
-    if (new_schema != script_tool_->input_schema) {
-      script_tool_->input_schema = new_schema;
+    // Declarative tools always have natural language properties.
+    CHECK(script_tool_->natural_language_properties);
+    String& input_schema =
+        script_tool_->natural_language_properties->input_schema;
+    if (new_schema != input_schema) {
+      input_schema = new_schema;
       return true;
     }
   }

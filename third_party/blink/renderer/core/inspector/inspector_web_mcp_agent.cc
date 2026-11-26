@@ -70,7 +70,7 @@ std::unique_ptr<protocol::Value> ParseJSON(const String& value) {
 }
 
 std::unique_ptr<protocol::WebMCP::Annotation> BuildAnnotations(
-    const mojom::blink::ScriptToolAnnotationsPtr& annotations,
+    const mojom::blink::ScriptToolAnnotations* annotations,
     Element* element) {
   auto builder = protocol::WebMCP::Annotation::create();
   bool has_annotations = false;
@@ -94,27 +94,36 @@ std::unique_ptr<protocol::WebMCP::Tool> InspectorWebMCPAgent::BuildProtocolTool(
     const ToolData& tool_data) {
   DCHECK(frame);
 
+  const mojom::blink::NaturalLanguageProperties* natural_language_properties =
+      tool_data.ScriptTool().natural_language_properties.get();
   auto tool = protocol::WebMCP::Tool::create()
                   .setToolId(String(tool_data.Id().ToString()))
                   .setName(tool_data.Name())
-                  .setDescription(tool_data.ScriptTool().description)
+                  .setDescription(natural_language_properties
+                                      ? natural_language_properties->description
+                                      : g_empty_string)
                   .setFrameId(IdentifiersFactory::FrameId(frame))
                   .build();
-  if (auto input_schema = tool_data.ScriptTool().input_schema) {
-    if (auto parsed =
-            protocol::DictionaryValue::cast(ParseJSON(input_schema))) {
-      tool->setInputSchema(std::move(parsed));
+  if (natural_language_properties) {
+    if (auto input_schema = natural_language_properties->input_schema) {
+      if (auto parsed =
+              protocol::DictionaryValue::cast(ParseJSON(input_schema))) {
+        tool->setInputSchema(std::move(parsed));
+      }
     }
-  }
-  if (auto output_schema = tool_data.ScriptTool().output_schema) {
-    if (auto parsed =
-            protocol::DictionaryValue::cast(ParseJSON(output_schema))) {
-      tool->setOutputSchema(std::move(parsed));
+    if (auto output_schema = natural_language_properties->output_schema) {
+      if (auto parsed =
+              protocol::DictionaryValue::cast(ParseJSON(output_schema))) {
+        tool->setOutputSchema(std::move(parsed));
+      }
     }
   }
 
-  if (auto annotations = BuildAnnotations(tool_data.ScriptTool().annotations,
-                                          tool_data.BackingFormElement())) {
+  if (auto annotations =
+          BuildAnnotations(natural_language_properties
+                               ? natural_language_properties->annotations.get()
+                               : nullptr,
+                           tool_data.BackingFormElement())) {
     tool->setAnnotations(std::move(annotations));
   }
   if (auto* node = tool_data.BackingFormElement()) {

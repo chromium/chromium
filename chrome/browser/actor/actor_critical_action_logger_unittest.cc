@@ -411,13 +411,17 @@ TEST_F(ActorCriticalActionLoggerTest, LogsWebMcpToolAction) {
   result->script_tool_response->input_arguments = "{\"destination\":\"Paris\"}";
   result->script_tool_response->tool = blink::mojom::ScriptTool::New();
   result->script_tool_response->tool->name = "flight_search";
-  result->script_tool_response->tool->title = "Search Flights";
-  result->script_tool_response->tool->description =
+  auto natural_language_properties =
+      blink::mojom::NaturalLanguageProperties::New();
+  natural_language_properties->title = "Search Flights";
+  natural_language_properties->description =
       "Searches and books flight tickets";
-  result->script_tool_response->tool->annotations =
+  natural_language_properties->annotations =
       blink::mojom::ScriptToolAnnotations::New();
-  result->script_tool_response->tool->annotations->consequential = true;
-  result->script_tool_response->tool->annotations->read_only = false;
+  natural_language_properties->annotations->consequential = true;
+  natural_language_properties->annotations->read_only = false;
+  result->script_tool_response->tool->natural_language_properties =
+      std::move(natural_language_properties);
 
   ActorCriticalActionLogger::MaybeLogAction(*task, profile(), request, *result,
                                             /*navigation_id=*/1014);

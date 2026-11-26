@@ -59,30 +59,30 @@ mojom::ActionResultPtr OnToolExecuted(
   script_tool_response->input_arguments = input_arguments;
   script_tool_response->tool = blink::mojom::ScriptTool::New();
   script_tool_response->tool->name = name;
-  script_tool_response->tool->description = tool->description.Utf8();
-  script_tool_response->tool->input_schema = tool->input_schema.Utf8();
-  script_tool_response->tool->output_schema = tool->output_schema.Utf8();
+  auto natural_language_properties =
+      blink::mojom::NaturalLanguageProperties::New();
+  natural_language_properties->description = tool->description.Utf8();
+  natural_language_properties->input_schema = tool->input_schema.Utf8();
+  natural_language_properties->output_schema = tool->output_schema.Utf8();
   if (tool->read_only.has_value() || tool->untrusted_content.has_value() ||
       tool->consequential.has_value() || tool->debugging.has_value()) {
-    script_tool_response->tool->annotations =
-        blink::mojom::ScriptToolAnnotations::New();
+    auto annotations = blink::mojom::ScriptToolAnnotations::New();
     if (tool->read_only.has_value()) {
-      script_tool_response->tool->annotations->read_only =
-          tool->read_only.value();
+      annotations->read_only = tool->read_only.value();
     }
     if (tool->untrusted_content.has_value()) {
-      script_tool_response->tool->annotations->untrusted_content =
-          tool->untrusted_content.value();
+      annotations->untrusted_content = tool->untrusted_content.value();
     }
     if (tool->consequential.has_value()) {
-      script_tool_response->tool->annotations->consequential =
-          tool->consequential.value();
+      annotations->consequential = tool->consequential.value();
     }
     if (tool->debugging.has_value()) {
-      script_tool_response->tool->annotations->debugging =
-          tool->debugging.value();
+      annotations->debugging = tool->debugging.value();
     }
+    natural_language_properties->annotations = std::move(annotations);
   }
+  script_tool_response->tool->natural_language_properties =
+      std::move(natural_language_properties);
   if (!response->IsEmpty()) {
     script_tool_response->result = response->Utf8();
   }

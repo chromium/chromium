@@ -89,7 +89,10 @@ class TabObservationControllerBrowserTest : public InProcessBrowserTest {
     action_result->script_tool_response->input_arguments = "args";
     action_result->script_tool_response->tool = blink::mojom::ScriptTool::New();
     action_result->script_tool_response->tool->name = "test_tool";
-    action_result->script_tool_response->tool->description = "desc";
+    action_result->script_tool_response->tool->natural_language_properties =
+        blink::mojom::NaturalLanguageProperties::New();
+    action_result->script_tool_response->tool->natural_language_properties
+        ->description = "desc";
     return action_result;
   }
 

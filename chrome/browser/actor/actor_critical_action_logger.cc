@@ -65,18 +65,22 @@ std::string GetWebMcpToolMetadata(const mojom::ActionResult& result) {
   const blink::mojom::ScriptTool& tool = *result.script_tool_response->tool;
   base::DictValue dict;
   dict.Set("tool_name", tool.name);
-  if (tool.title.has_value() && !tool.title->empty()) {
-    dict.Set("tool_title", *tool.title);
-  }
-  dict.Set("tool_description", tool.description);
+  if (const auto& natural_language_properties =
+          tool.natural_language_properties) {
+    if (natural_language_properties->title.has_value() &&
+        !natural_language_properties->title->empty()) {
+      dict.Set("tool_title", *natural_language_properties->title);
+    }
+    dict.Set("tool_description", natural_language_properties->description);
 
-  if (tool.annotations) {
-    dict.Set("annotations",
-             base::DictValue()
-                 .Set("consequential", tool.annotations->consequential)
-                 .Set("read_only", tool.annotations->read_only)
-                 .Set("untrusted_content", tool.annotations->untrusted_content)
-                 .Set("debugging", tool.annotations->debugging));
+    if (const auto& annotations = natural_language_properties->annotations) {
+      dict.Set("annotations",
+               base::DictValue()
+                   .Set("consequential", annotations->consequential)
+                   .Set("read_only", annotations->read_only)
+                   .Set("untrusted_content", annotations->untrusted_content)
+                   .Set("debugging", annotations->debugging));
+    }
   }
 
   std::string json_metadata;

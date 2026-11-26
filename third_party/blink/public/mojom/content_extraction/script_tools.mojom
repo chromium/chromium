@@ -17,6 +17,24 @@ struct ScriptToolAnnotations {
   bool debugging;
 };
 
+// The properties of a `ScriptTool` that describe it in natural language, e.g.
+// to an AI agent. See NaturalLanguageProperties in the WebMCP explainer.
+//
+// TODO(crbug.com/581478899): `input_schema` and `output_schema` should be
+// required, to match the IDL, once the final API ships. They are optional
+// because `document.modelContext` allows tools to omit them.
+struct NaturalLanguageProperties {
+  // The optional title for the tool. This can be null if the tool is registered
+  // without a title — either imperatively (where the `title` property of
+  // `ModelContextTool` is omitted) or declaratively (where the `<form>` lacks
+  // a `tooltitle` attribute).
+  string? title;
+  string description;
+  string? input_schema;
+  string? output_schema;
+  ScriptToolAnnotations? annotations;
+};
+
 // See ModelContextTool in model_context_tool.idl for details of
 // this data structure.
 struct ScriptTool {
@@ -46,15 +64,7 @@ struct ScriptTool {
   blink.mojom.ScriptToolToken? tool_id;
   // These directly map to the corresponding fields in the web API.
   string name;
-  // The optional title for the tool. This can be null if the tool is registered
-  // without a title — either imperatively (where the `title` property of
-  // `ModelContextTool` is omitted) or declaratively (where the `<form>` lacks
-  // a `tooltitle` attribute).
-  string? title;
-  string description;
-  string? input_schema;
-  string? output_schema;
-  ScriptToolAnnotations? annotations;
+  NaturalLanguageProperties? natural_language_properties;
   // See the documentation in `model_context.idl` for more about this member.
   array<url.mojom.Origin> exposed_origins;
 };
