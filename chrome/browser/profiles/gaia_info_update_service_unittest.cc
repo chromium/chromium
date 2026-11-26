@@ -187,7 +187,14 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
-TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
+// TODO(crbug.com/590655539): Deprecated Sync test fails MainThreadIsIdle() on
+// Linux after GTEST_SKIP().
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SyncOnSyncOff DISABLED_SyncOnSyncOff
+#else
+#define MAYBE_SyncOnSyncOff SyncOnSyncOff
+#endif
+TEST_F(GAIAInfoUpdateServiceTest, MAYBE_SyncOnSyncOff) {
   if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     GTEST_SKIP() << "Sync is deprecated";
   }
@@ -225,7 +232,14 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST_F(GAIAInfoUpdateServiceTest, RevokeSyncConsent) {
+// TODO(crbug.com/590655539): Deprecated Sync test fails MainThreadIsIdle() on
+// Linux after GTEST_SKIP().
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_RevokeSyncConsent DISABLED_RevokeSyncConsent
+#else
+#define MAYBE_RevokeSyncConsent RevokeSyncConsent
+#endif
+TEST_F(GAIAInfoUpdateServiceTest, MAYBE_RevokeSyncConsent) {
   if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     GTEST_SKIP() << "RevokeSyncConsent() is no-op as Sync is deprecated";
   }
