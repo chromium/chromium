@@ -1192,4 +1192,105 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerContextMenuBrowserTest,
       OrganizerPanelCloseAction::kOpenTabGroupMenu, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerContextMenuBrowserTest,
+                       ShowContextMenuInIncognito) {
+  BrowserWindowInterface* const incognito_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(incognito_browser);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(incognito_browser, 1, GURL("about:blank"),
+                                     ui::PAGE_TRANSITION_LINK, true));
+
+  TabStripModel* const tsm = incognito_browser->GetTabStripModel();
+  ASSERT_EQ(2, tsm->count());
+  const tab_groups::TabGroupId local_id = tsm->AddToNewGroup({0});
+
+  OrganizerPanelController* const organizer_controller =
+      OrganizerPanelController::From(incognito_browser);
+  ASSERT_TRUE(organizer_controller);
+  organizer_controller->SetOrganizerVisible(true, /*immediate=*/true);
+  RunScheduledLayouts();
+  ASSERT_TRUE(organizer_controller->IsOrganizerPanelVisible());
+  content::WebContents* const host_contents =
+      organizer_controller->web_contents();
+  ASSERT_TRUE(host_contents);
+
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      host_contents);
+
+  base::test::TestFuture<std::vector<organizer_panel::mojom::TabGroupPtr>>
+      groups_future;
+  handler_remote->GetTabGroups(groups_future.GetCallback());
+  const std::vector<organizer_panel::mojom::TabGroupPtr>& returned_groups =
+      groups_future.Get();
+  ASSERT_EQ(1u, returned_groups.size());
+  EXPECT_EQ(returned_groups[0]->id,
+            tab_groups::LocalTabGroupIDToString(local_id));
+
+  handler_remote->ShowContextMenu(returned_groups[0]->id,
+                                  gfx::Rect(10, 20, 30, 40), base::DoNothing());
+  handler_remote.FlushForTesting();
+  ASSERT_TRUE(handler.IsContextMenuRunningForTesting());
+
+  tab_groups::STGTabsMenuModel* const model = handler.menu_model_for_testing();
+  ASSERT_TRUE(model);
+  EXPECT_FALSE(GetIndexOfElementId(
+                   model, tab_groups::STGTabsMenuModel::kDeleteGroupMenuItem)
+                   .has_value());
+  EXPECT_FALSE(GetIndexOfElementId(
+                   model, tab_groups::STGTabsMenuModel::kLeaveGroupMenuItem)
+                   .has_value());
+
+  std::optional<size_t> close_index =
+      GetIndexOfElementId(model, tab_groups::STGTabsMenuModel::kCloseGroup);
+  ASSERT_TRUE(close_index.has_value());
+  model->ActivatedAt(close_index.value());
+  EXPECT_FALSE(tsm->group_model()->ContainsTabGroup(local_id));
+  EXPECT_FALSE(organizer_controller->IsOrganizerPanelVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerContextMenuBrowserTest,
+                       ShowContextMenuForUnsavedGroupInRegularProfile) {
+  tab_groups::TabGroupSyncService* const service = sync_service();
+  ASSERT_TRUE(service);
+
+  TabStripModel* const tsm = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId local_id = tsm->AddToNewGroup({0});
+  service->RemoveGroup(local_id);
+  ASSERT_FALSE(service->GetGroup(local_id).has_value());
+
+  OrganizerPanelController* const organizer_controller =
+      OrganizerPanelController::From(browser());
+  ASSERT_TRUE(organizer_controller);
+  organizer_controller->SetOrganizerVisible(true, /*immediate=*/true);
+  RunScheduledLayouts();
+  ASSERT_TRUE(organizer_controller->IsOrganizerPanelVisible());
+
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      organizer_controller->web_contents());
+
+  handler_remote->ShowContextMenu(tab_groups::LocalTabGroupIDToString(local_id),
+                                  gfx::Rect(10, 20, 30, 40), base::DoNothing());
+  handler_remote.FlushForTesting();
+  ASSERT_TRUE(handler.IsContextMenuRunningForTesting());
+
+  tab_groups::STGTabsMenuModel* const model = handler.menu_model_for_testing();
+  ASSERT_TRUE(model);
+  EXPECT_TRUE(
+      GetIndexOfElementId(model, tab_groups::STGTabsMenuModel::kCloseGroup)
+          .has_value());
+  EXPECT_FALSE(GetIndexOfElementId(
+                   model, tab_groups::STGTabsMenuModel::kDeleteGroupMenuItem)
+                   .has_value());
+  EXPECT_FALSE(GetIndexOfElementId(
+                   model, tab_groups::STGTabsMenuModel::kLeaveGroupMenuItem)
+                   .has_value());
+}
+
 }  // namespace

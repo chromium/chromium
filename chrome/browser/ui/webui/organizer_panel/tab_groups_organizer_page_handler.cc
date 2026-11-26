@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -261,21 +262,24 @@ void TabGroupsOrganizerPageHandler::ShowContextMenu(
 
   on_menu_closed_callback_ = std::move(callback);
 
-  std::optional<tab_groups::SavedTabGroup> saved_group;
+  std::optional<
+      std::variant<tab_groups::SavedTabGroup, tab_groups::LocalTabGroupID>>
+      menu_group;
   const base::Uuid uuid = base::Uuid::ParseLowercase(group_id);
   if (tab_group_sync_service_ && uuid.is_valid()) {
-    saved_group = tab_group_sync_service_->GetGroup(uuid);
-  }
-  if (!saved_group.has_value()) {
-    std::optional<tab_groups::LocalTabGroupID> local_group_id =
-        tab_groups::LocalTabGroupIDFromString(group_id);
-    if (local_group_id && GetUnsavedTabGroup(*local_group_id)) {
-      saved_group =
-          tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-              *local_group_id);
+    if (std::optional<tab_groups::SavedTabGroup> saved_group =
+            tab_group_sync_service_->GetGroup(uuid)) {
+      menu_group.emplace(std::move(*saved_group));
     }
   }
-  if (!saved_group.has_value()) {
+  if (!menu_group.has_value()) {
+    if (std::optional<tab_groups::LocalTabGroupID> local_group_id =
+            tab_groups::LocalTabGroupIDFromString(group_id);
+        local_group_id && GetUnsavedTabGroup(*local_group_id)) {
+      menu_group.emplace(*local_group_id);
+    }
+  }
+  if (!menu_group.has_value()) {
     OnContextMenuClosed();
     return;
   }
@@ -304,7 +308,7 @@ void TabGroupsOrganizerPageHandler::ShowContextMenu(
   menu_model_ = std::make_unique<tab_groups::STGTabsMenuModel>(
       browser, tab_groups::TabGroupMenuContext::ORGANIZER_PANEL);
   menu_model_->Build(
-      saved_group.value(),
+      std::move(*menu_group),
       base::BindRepeating(
           &TabGroupsOrganizerPageHandler::GetAndIncrementLatestCommandId,
           base::Unretained(this)),
