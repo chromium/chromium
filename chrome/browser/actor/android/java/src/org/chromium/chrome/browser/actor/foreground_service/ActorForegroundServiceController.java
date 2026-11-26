@@ -95,9 +95,10 @@ public interface ActorForegroundServiceController {
      * Handles task completion by persisting associated background tabs to disk and restoring warm
      * sessions.
      *
+     * @param service The {@link ActorKeyedService} that owns the completed task.
      * @param taskId The ID of the completed task.
      */
-    default void onTaskCompleted(int taskId) {}
+    default void onTaskCompleted(ActorKeyedService service, int taskId) {}
 
     /**
      * Returns whether the given task currently has an active background actuation session.

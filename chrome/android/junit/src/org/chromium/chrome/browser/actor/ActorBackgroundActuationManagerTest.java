@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.tab.Tab;
@@ -140,7 +139,6 @@ public class ActorBackgroundActuationManagerTest {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
 
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         mManager = new ActorBackgroundActuationManager();
     }
@@ -150,7 +148,6 @@ public class ActorBackgroundActuationManagerTest {
         ActorMetrics.resetForTesting();
         ActorForegroundServiceController.setInstanceForTesting(null);
         ProfileResolverJni.setInstanceForTesting(null);
-        ProfileManager.resetForTesting();
         BackgroundTabPoolManager.resetForTesting();
         ActorKeyedServiceFactory.setForTesting(null);
         OffscreenRenderingManager.setInstanceForTesting(null);
@@ -469,7 +466,7 @@ public class ActorBackgroundActuationManagerTest {
                         mTabDelegateFactory,
                         /* waitDurationMs= */ 0,
                         /* isColdStart= */ false));
-        mManager.onTaskCompleted(123);
+        mManager.onTaskCompleted(mActorKeyedService, 123);
         ActorMetrics.getInstance().onTaskStateChangedForTesting(123, ActorTaskState.FINISHED);
 
         ActorTask newTask = mock(ActorTask.class);
@@ -524,8 +521,9 @@ public class ActorBackgroundActuationManagerTest {
         when(fcmTask.getId()).thenReturn(123);
         when(fcmTask.getTabs()).thenReturn(Collections.emptySet());
         when(fcmTask.getLastActuatedTabId()).thenReturn(100);
-        when(mActorKeyedService.getTask(123)).thenReturn(fcmTask);
-        mManager.onTaskCompleted(123);
+        ActorKeyedService taskService = mock(ActorKeyedService.class);
+        when(taskService.getTask(123)).thenReturn(fcmTask);
+        mManager.onTaskCompleted(taskService, 123);
 
         // 4. Launch a new non-FCM foreground task on the reused tab and transition to background.
         when(mTabModel.indexOf(mTab)).thenReturn(0);
@@ -904,7 +902,7 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testOnTaskCompleted_NoSession_NoOp() {
-        mManager.onTaskCompleted(999);
+        mManager.onTaskCompleted(mActorKeyedService, 999);
         verify(mTab, never()).updateAttachment(any(), any());
     }
 
@@ -949,7 +947,7 @@ public class ActorBackgroundActuationManagerTest {
         mManager.transitionActiveTasksToBackground(mTabModelSelector);
         assertEquals(1, mManager.getBackgroundSessions().size());
 
-        mManager.onTaskCompleted(500);
+        mManager.onTaskCompleted(mActorKeyedService, 500);
 
         // Offscreen rendering should be stopped for the tab to conserve resources
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
@@ -1203,7 +1201,7 @@ public class ActorBackgroundActuationManagerTest {
                                 ActorMetrics.ACTOR_BACKGROUND_ACTUATION_RESTORE_LATENCY_TOTAL_COLD)
                         .build();
 
-        mManager.onTaskCompleted(777);
+        mManager.onTaskCompleted(mActorKeyedService, 777);
 
         watcher.assertExpected();
         verify(mTab).updateAttachment(eq(mWindowAndroid), any());

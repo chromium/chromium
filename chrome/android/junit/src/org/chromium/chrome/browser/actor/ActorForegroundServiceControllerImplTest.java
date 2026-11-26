@@ -623,6 +623,16 @@ public class ActorForegroundServiceControllerImplTest {
         assertTrue(IntentHandler.wasIntentSenderChrome(intent));
     }
 
+    @Test
+    public void testOnTaskCompleted_DelegatesToBackgroundManager() {
+        ActorKeyedService service = mock(ActorKeyedService.class);
+        mController.setBackgroundManagerForTesting(mMockBackgroundManager);
+
+        mController.onTaskCompleted(service, 123);
+
+        verify(mMockBackgroundManager).onTaskCompleted(service, 123);
+    }
+
     public ServiceConnection getServiceConnectionForTesting() {
         return mController.getServiceConnectionForTesting();
     }

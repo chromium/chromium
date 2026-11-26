@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.actor.background_tabs.BackgroundSession;
 import org.chromium.chrome.browser.actor.background_tabs.OffscreenRenderingManager;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -352,22 +351,17 @@ public class ActorBackgroundActuationManager {
      * Handles task completion by restoring any warm background sessions for the task and stopping
      * offscreen rendering.
      *
+     * @param service The {@link ActorKeyedService} that owns the completed task.
      * @param taskId The ID of the task that completed.
      */
-    public void onTaskCompleted(int taskId) {
+    public void onTaskCompleted(ActorKeyedService service, int taskId) {
         ThreadUtils.assertOnUiThread();
-        if (ProfileManager.isInitialized()) {
-            Profile profile = ProfileManager.getLastUsedRegularProfile();
-            ActorKeyedService service = ActorKeyedServiceFactory.getForProfile(profile);
-            if (service != null) {
-                ActorTask task = service.getTask(taskId);
-                if (task != null) {
-                    mFcmInitiatedTabIds.removeAll(task.getTabs());
-                    int lastActuatedTabId = task.getLastActuatedTabId();
-                    if (lastActuatedTabId != Tab.INVALID_TAB_ID) {
-                        mFcmInitiatedTabIds.remove(lastActuatedTabId);
-                    }
-                }
+        ActorTask task = service.getTask(taskId);
+        if (task != null) {
+            mFcmInitiatedTabIds.removeAll(task.getTabs());
+            int lastActuatedTabId = task.getLastActuatedTabId();
+            if (lastActuatedTabId != Tab.INVALID_TAB_ID) {
+                mFcmInitiatedTabIds.remove(lastActuatedTabId);
             }
         }
 

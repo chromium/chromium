@@ -258,7 +258,7 @@ public class ActorBackgroundActuationIntegrationTest {
                     when(mActorTask.isCompleted()).thenReturn(true);
                     when(mActorTask.isUnderActorControl()).thenReturn(false);
 
-                    mController.onTaskCompleted(TASK_ID);
+                    mController.onTaskCompleted(mActorService, TASK_ID);
                 });
 
         // Warm session restoration places the tab back in the model and destroys placeholder.
@@ -470,7 +470,7 @@ public class ActorBackgroundActuationIntegrationTest {
                     when(mActorTask.isCompleted()).thenReturn(true);
                     when(mActorTask.isUnderActorControl()).thenReturn(false);
 
-                    mController.onTaskCompleted(TASK_ID);
+                    mController.onTaskCompleted(mActorService, TASK_ID);
                 });
 
         // Verify offscreen rendering is stopped, but session is preserved in RAM.

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.actor.foreground_service;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Notification;
@@ -232,7 +233,7 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             mActiveTaskIds.add(taskId);
         } else {
             mActiveTaskIds.remove(taskId);
-            getServiceController().onTaskCompleted(taskId);
+            getServiceController().onTaskCompleted(assertNonNull(mKeyedService), taskId);
             if (mPinnedNotificationId == taskId
                     && hasActiveOrPendingTasks()
                     && mNotificationService != null) {

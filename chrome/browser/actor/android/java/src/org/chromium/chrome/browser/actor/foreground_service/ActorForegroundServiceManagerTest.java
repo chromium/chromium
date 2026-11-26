@@ -219,7 +219,7 @@ public class ActorForegroundServiceManagerTest {
         stopCallback.waitForOnly();
 
         assertFalse("Service should be unbound after delay.", mManager.isServiceBoundForTesting());
-        verify(mServiceController).onTaskCompleted(1);
+        verify(mServiceController).onTaskCompleted(mKeyedService, 1);
         verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
         verify(mNotificationService).repostNotification(1, /* isWarning= */ false);
         verify(mServiceController).unbindService();
