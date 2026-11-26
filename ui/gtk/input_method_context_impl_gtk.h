@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/glib/glib_integers.h"
 #include "ui/base/glib/scoped_gsignal.h"
@@ -24,7 +25,8 @@ class GtkUiPlatform;
 
 // An implementation of LinuxInputMethodContext which uses GtkIMContext
 // (gtk-immodule) as a bridge from/to underlying IMEs.
-class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
+class COMPONENT_EXPORT(GTK) InputMethodContextImplGtk
+    : public ui::LinuxInputMethodContext {
  public:
   explicit InputMethodContextImplGtk(
       ui::LinuxInputMethodContextDelegate* delegate,
@@ -84,6 +86,13 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   // Last known caret bounds relative to the screen coordinates, in DIPs.
   // Effective only on non-simple context.
   gfx::Rect last_caret_bounds_;
+
+  // Points to a local in DispatchKeyEvent() while GTK filters a key event, and
+  // is null otherwise. OnCommit() and OnPreeditChanged() set the pointee to
+  // true when the IME commits or changes its preedit string during the filter.
+  // Those signals may also fire outside a filter call (e.g. asynchronous IME
+  // results), in which case this is null.
+  raw_ptr<bool> ime_result_during_filter_ = nullptr;
 
   std::vector<ScopedGSignal> signals_;
 };

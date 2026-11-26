@@ -5,7 +5,9 @@
 #include "ui/gtk/input_method_context_impl_gtk.h"
 
 #include <cstddef>
+#include <string_view>
 
+#include "base/auto_reset.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/composition_text.h"
@@ -14,6 +16,7 @@
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/ozone/events_ozone.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/native_ui_types.h"
@@ -205,6 +208,16 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
     CHECK(event, base::NotFatalUntil::M163);
 
     auto* window = GetTargetWindow(key_event);
+    // GetTargetWindow() returns null when the event has no target (e.g. in
+    // unit tests) or when XLIB_SKIP_ARGB_VISUALS is set. GtkIMContextSimple
+    // uses event->window to look up the display's keymap, so fall back to the
+    // dummy window rather than passing a null window to GTK.
+    if (!window) {
+      window = gtk_widget_get_window(GetDummyWindow());
+      if (window) {
+        g_object_ref(window);
+      }
+    }
     event->window = window;
 
     auto& last_set_client_window =
@@ -226,7 +239,7 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   }
   // Use absolute coordinates on GTK4 since a dummy context window is provided
   // to GTK at position (0, 0).
-  if (!GtkCheckVersion(4)) {
+  if (!GtkCheckVersion(4) && window) {
     caret_bounds -= window->GetBoundsInScreen().OffsetFromOrigin();
   }
 
@@ -239,9 +252,39 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
                            caret_bounds.width(), caret_bounds.height()};
   gtk_im_context_set_cursor_location(gtk_context, &gdk_rect);
 
+  // A KeyRelease that commits text or changes the preedit string (e.g. the
+  // Shift release that ends a Ctrl+Shift+U hex sequence) stays handled, so
+  // InputMethodAuraLinux does not insert the result as unfiltered text.
+  bool ime_result_during_filter = false;
+  base::AutoReset<raw_ptr<bool>> reset_ime_result(&ime_result_during_filter_,
+                                                  &ime_result_during_filter);
   if (!GtkCheckVersion(4)) {
     const bool handled = GtkImContextFilterKeypress(gtk_context, event);
+    const guint result_state = event->state;
     gdk_event_free(reinterpret_cast<GdkEvent*>(event));
+    if (key_event.type() == ui::EventType::kKeyReleased && handled &&
+        !ime_result_during_filter) {
+      // GtkIMContextSimple filters every KeyRelease while a dead-key or
+      // Multi_key compose sequence is active, without re-injecting a fallback
+      // event. IBus-GTK and Fcitx-GTK set kPropertyKeyboardImeHandledFlag on
+      // event->state when the IME framework itself consumes or asynchronously
+      // queues the event, and leave it unset when delegating to their
+      // GtkIMContextSimple slave.
+      if (gtk_context == gtk_simple_context_) {
+        return false;
+      }
+      // GtkIMContextXIM sends filtered events to the XIM server, which
+      // forwards the ones it does not consume back to the client. GDK then
+      // delivers them as new key events, so the release is not lost.
+      const char* context_id = gtk_im_multicontext_get_context_id(
+          GTK_IM_MULTICONTEXT(gtk_context_.get()));
+      if (context_id && std::string_view(context_id) == "xim") {
+        return true;
+      }
+      constexpr guint kImeHandledMask = ui::kPropertyKeyboardImeHandledFlag
+                                        << ui::kPropertyKeyboardImeFlagOffset;
+      return (result_state & kImeHandledMask) != 0;
+    }
     return handled;
   }
   // In GTK4, clients can no longer create or modify events.  This makes using
@@ -258,8 +301,12 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   auto keycode = GetKeyEventProperty(key_event, ui::kPropertyKeyboardHwKeyCode);
   auto group = GetKeyEventProperty(key_event, ui::kPropertyKeyboardGroup);
   auto state = GetGdkKeyEventState(key_event);
-  return gtk_im_context_filter_key(gtk_context, press, surface, device, time,
-                                   keycode, state, group);
+  const bool handled = gtk_im_context_filter_key(
+      gtk_context, press, surface, device, time, keycode, state, group);
+  // In GTK4, gtk_im_context_filter_key() does not re-queue fallback X11 key
+  // release events, so reporting a release event as handled (e.g. from
+  // GtkIMContextSimple during a dead-key compose sequence) drops DOM keyup.
+  return handled && (press || ime_result_during_filter);
 }
 
 bool InputMethodContextImplGtk::IsPeekKeyEvent(const ui::KeyEvent& key_event) {
@@ -336,6 +383,9 @@ void InputMethodContextImplGtk::OnCommit(GtkIMContext* context, gchar* text) {
     return;
   }
 
+  if (ime_result_during_filter_) {
+    *ime_result_during_filter_ = true;
+  }
   delegate_->OnCommit(base::UTF8ToUTF16(text));
 }
 
@@ -344,6 +394,9 @@ void InputMethodContextImplGtk::OnPreeditChanged(GtkIMContext* context) {
     return;
   }
 
+  if (ime_result_during_filter_) {
+    *ime_result_during_filter_ = true;
+  }
   gchar* str = nullptr;
   PangoAttrList* attrs = nullptr;
   gint cursor_pos = 0;
