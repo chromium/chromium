@@ -13,9 +13,12 @@ import org.chromium.build.annotations.NullMarked;
 public interface TabGroupUiActionHandler {
 
     /**
-     * Opens a tab group locally that matches the remote tab group associated with {@code syncId}.
+     * Opens a tab group locally that matches the remote tab group associated with {@code syncId},
+     * recording {@code openingSource}.
      *
-     * @param syncId The sync ID associated with the tab group to be opened.
+     * @param syncId The sync ID of the tab group to open.
+     * @param openingSource The UI surface requesting the open.
+     * @return True if the group opened, false if it is already open or could not open.
      */
-    void openTabGroup(String syncId);
+    boolean openTabGroup(String syncId, @OpeningSource int openingSource);
 }

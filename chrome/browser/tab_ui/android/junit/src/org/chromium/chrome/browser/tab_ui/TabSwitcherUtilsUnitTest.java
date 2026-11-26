@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
@@ -114,10 +115,10 @@ public class TabSwitcherUtilsUnitTest {
                             Mockito.reset(mTabGroupSyncService);
                             when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1))
                                     .thenReturn(syncGroup2);
-                            return null;
+                            return true;
                         })
                 .when(mTabGroupUiActionHandler)
-                .openTabGroup(SYNC_GROUP_ID1);
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
 
         TabSwitcherUtils.focusTabGroup(
                 SYNC_GROUP_ID1,

@@ -141,6 +141,7 @@ public final class TabGroupSyncControllerImpl
 
     @Override
     public void destroy() {
+        mSyncBackendInitialized = false;
         mTabGroupSyncService.removeObserver(mSyncInitObserver);
         mCallbackController.destroy();
         if (mLocalObserver != null) mLocalObserver.destroy();
@@ -148,20 +149,25 @@ public final class TabGroupSyncControllerImpl
     }
 
     @Override
-    public void openTabGroup(String syncId) {
-        // It's possible that the sync backend isn't initialized but we get a request to open tab
-        // group from the revisit surface. In that case, simply ignore the request.
-        if (!mSyncBackendInitialized) return;
+    public boolean openTabGroup(String syncId, @OpeningSource int openingSource) {
+        // Ignore requests before the sync backend finishes initializing or after destroy.
+        if (!mSyncBackendInitialized) return false;
 
-        // Skip groups that are open in another window, or have been deleted.
+        // Skip groups that are missing, empty, or already open in a window.
         SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncId);
-        if (savedTabGroup == null || savedTabGroup.localId != null) return;
+        if (savedTabGroup == null
+                || savedTabGroup.localId != null
+                || savedTabGroup.savedTabs.isEmpty()) {
+            return false;
+        }
 
         assert mLocalObserver != null;
 
+        boolean wasObserving = mLocalObserver.isObserving();
         mLocalObserver.enableObservers(false);
-        mLocalMutationHelper.createNewTabGroup(savedTabGroup, OpeningSource.OPENED_FROM_REVISIT_UI);
-        mLocalObserver.enableObservers(true);
+        mLocalMutationHelper.createNewTabGroup(savedTabGroup, openingSource);
+        mLocalObserver.enableObservers(wasObserving);
+        return true;
     }
 
     @Override

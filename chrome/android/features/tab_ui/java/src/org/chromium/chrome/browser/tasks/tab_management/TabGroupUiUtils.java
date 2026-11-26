@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -555,7 +556,7 @@ public class TabGroupUiUtils {
                 }
             }
         }
-        uiActionHandler.openTabGroup(syncId);
+        uiActionHandler.openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
         return OpenTabGroupResult.CURRENT_WINDOW;
     }
 

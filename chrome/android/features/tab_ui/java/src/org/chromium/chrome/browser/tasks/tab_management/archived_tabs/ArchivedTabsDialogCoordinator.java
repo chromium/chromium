@@ -105,6 +105,7 @@ import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
@@ -1123,7 +1124,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         /* updateTimestamp= */ true,
                         /* areTabsBeingOpened= */ false);
         for (String syncId : tabGroupSyncIds) {
-            mTabGroupUiActionHandlerSupplier.get().openTabGroup(syncId);
+            mTabGroupUiActionHandlerSupplier
+                    .get()
+                    .openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
             if (mTabListEditorCoordinator != null) {
                 mTabListEditorCoordinator.removeListItem(
                         UiType.TAB_GROUP,

@@ -66,6 +66,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -391,7 +392,8 @@ public class TabGroupMenuActionHandlerUnitTest {
                 mHandler.handleAddToExistingGroupAction(
                         List.of(mTab), /* groupId= */ null, "sync_group_id"));
 
-        verify(mTabGroupUiActionHandler).openTabGroup("sync_group_id");
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup("sync_group_id", OpeningSource.OPENED_FROM_REVISIT_UI);
         assertTrue(actionTester.getActions().contains("MobileMenuAddToExistingGroup"));
     }
 
@@ -436,7 +438,7 @@ public class TabGroupMenuActionHandlerUnitTest {
     public void testHandleOpenGroupAction_nullSyncGroupId() {
         UserActionTester actionTester = new UserActionTester();
         assertFalse(mHandler.handleOpenGroupAction(/* syncGroupId= */ null));
-        verify(mTabGroupUiActionHandler, never()).openTabGroup(any());
+        verify(mTabGroupUiActionHandler, never()).openTabGroup(any(), anyInt());
         assertFalse(actionTester.getActions().contains("MobileMenuOpenGroup"));
     }
 
@@ -444,7 +446,8 @@ public class TabGroupMenuActionHandlerUnitTest {
     public void testHandleOpenGroupAction_validSyncGroupId() {
         UserActionTester actionTester = new UserActionTester();
         assertTrue(mHandler.handleOpenGroupAction("sync_group_id"));
-        verify(mTabGroupUiActionHandler).openTabGroup("sync_group_id");
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup("sync_group_id", OpeningSource.OPENED_FROM_REVISIT_UI);
         assertTrue(actionTester.getActions().contains("MobileMenuOpenGroup"));
     }
 

@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.GroupData;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
@@ -110,7 +111,7 @@ final class UndoGroupRestorer {
 
             // Reopening via TabGroupSyncService creates new tabs under a fresh local Token at the
             // end of tabModel.
-            uiActionHandler.openTabGroup(syncId);
+            uiActionHandler.openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
             Token newGroupId = findLocalGroupIdInModel(tabModel, syncService, syncId);
             if (newGroupId == null) continue;
 
@@ -231,7 +232,7 @@ final class UndoGroupRestorer {
             }
 
             if (uiActionHandler != null) {
-                uiActionHandler.openTabGroup(syncId);
+                uiActionHandler.openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
                 Token reopenedGroupId = findLocalGroupIdInModel(tabModel, syncService, syncId);
                 if (reopenedGroupId != null) {
                     mergeIntoLiveGroup(

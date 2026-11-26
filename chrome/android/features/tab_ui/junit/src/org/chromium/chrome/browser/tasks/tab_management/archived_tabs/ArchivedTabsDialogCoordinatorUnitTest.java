@@ -79,6 +79,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOv
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -377,7 +378,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         TabActionListener listener = provider.onTabGroupClicked(TAB_GROUP_ID_STRING);
         listener.run(new View(mActivity), TAB_GROUP_ID_STRING, /* triggeringMotion= */ null);
 
-        verify(mTabGroupUiActionHandler).openTabGroup(TAB_GROUP_ID_STRING);
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(TAB_GROUP_ID_STRING, OpeningSource.OPENED_FROM_REVISIT_UI);
 
         // Assert the dialog is hidden and destroyed.
         RobolectricUtil.runAllBackgroundAndUi();

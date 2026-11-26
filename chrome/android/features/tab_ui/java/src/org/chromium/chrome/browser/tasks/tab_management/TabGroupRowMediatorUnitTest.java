@@ -86,6 +86,7 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.SyncedGroupTestHelper;
@@ -344,17 +345,20 @@ public class TabGroupRowMediatorUnitTest {
     @Test
     public void testOpen_InAnother() {
         doAnswer(
-                        invocationOnMock ->
-                                mSyncGroup.localId =
-                                        new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_ID1)))
+                        invocationOnMock -> {
+                            mSyncGroup.localId =
+                                    new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_ID1));
+                            return true;
+                        })
                 .when(mTabGroupUiActionHandler)
-                .openTabGroup(SYNC_GROUP_ID1);
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
         mSyncGroup.localId = null;
 
         propertyModel.get(OPEN_RUNNABLE).run();
-        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
         verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(GROUP_ID1);
     }
@@ -385,7 +389,7 @@ public class TabGroupRowMediatorUnitTest {
         propertyModel.get(OPEN_RUNNABLE).run();
         verifyNoInteractions(mPaneManager);
         verifyNoInteractions(mTabSwitcherPaneBase);
-        verify(mTabGroupUiActionHandler, never()).openTabGroup(any());
+        verify(mTabGroupUiActionHandler, never()).openTabGroup(any(), anyInt());
 
         Intent intent =
                 Shadows.shadowOf((Application) ApplicationProvider.getApplicationContext())
@@ -425,10 +429,10 @@ public class TabGroupRowMediatorUnitTest {
                             when(mTabModel.containsTabGroup(
                                             TabGroupId.fromOptionalToken(GROUP_ID1)))
                                     .thenReturn(true);
-                            return null;
+                            return true;
                         })
                 .when(mTabGroupUiActionHandler)
-                .openTabGroup(SYNC_GROUP_ID1);
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
 
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
@@ -436,7 +440,8 @@ public class TabGroupRowMediatorUnitTest {
                 .thenReturn(List.of());
 
         propertyModel.get(OPEN_RUNNABLE).run();
-        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
         verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(GROUP_ID1);
     }
@@ -459,7 +464,8 @@ public class TabGroupRowMediatorUnitTest {
                         .build();
 
         propertyModel.get(OPEN_RUNNABLE).run();
-        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
         verifyNoInteractions(mPaneManager);
         verifyNoInteractions(mTabSwitcherPaneBase);
         histograms.assertExpected();
@@ -471,11 +477,13 @@ public class TabGroupRowMediatorUnitTest {
         setupOtherWindowGroupNotFound();
 
         doAnswer(
-                        inv ->
-                                mSyncGroup.localId =
-                                        new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_ID1)))
+                        inv -> {
+                            mSyncGroup.localId =
+                                    new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_ID1));
+                            return true;
+                        })
                 .when(mTabGroupUiActionHandler)
-                .openTabGroup(SYNC_GROUP_ID1);
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
 
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
@@ -491,7 +499,8 @@ public class TabGroupRowMediatorUnitTest {
                         .build();
 
         propertyModel.get(OPEN_RUNNABLE).run();
-        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
         verifyNoInteractions(mPaneManager);
         verifyNoInteractions(mTabSwitcherPaneBase);
         histograms.assertExpected();
@@ -500,11 +509,13 @@ public class TabGroupRowMediatorUnitTest {
     @Test
     public void testOpen_Hidden() {
         doAnswer(
-                        invocationOnMock ->
-                                mSyncGroup.localId =
-                                        new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_ID1)))
+                        invocationOnMock -> {
+                            mSyncGroup.localId =
+                                    new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_ID1));
+                            return true;
+                        })
                 .when(mTabGroupUiActionHandler)
-                .openTabGroup(SYNC_GROUP_ID1);
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.HIDDEN);
         mIsArchived = true;
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
@@ -520,7 +531,8 @@ public class TabGroupRowMediatorUnitTest {
         mSyncGroup.archivalTimeMs = 1L;
 
         propertyModel.get(OPEN_RUNNABLE).run();
-        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
         verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(GROUP_ID1);
         assertEquals(1, userActionTester.getActionCount("TabGroups.RestoreFromTabGroupPane"));
@@ -542,7 +554,8 @@ public class TabGroupRowMediatorUnitTest {
         mSyncGroup.localId = null;
 
         propertyModel.get(OPEN_RUNNABLE).run();
-        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
         verifyNoInteractions(mPaneManager);
         verifyNoInteractions(mTabSwitcherPaneBase);
         assertEquals(0, userActionTester.getActionCount("TabGroups.RestoreFromTabGroupPane"));
@@ -553,11 +566,13 @@ public class TabGroupRowMediatorUnitTest {
     @Test
     public void testOpen_Hidden_NotInTabModel_RecordsHistogram() {
         doAnswer(
-                        inv ->
-                                mSyncGroup.localId =
-                                        new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_ID1)))
+                        inv -> {
+                            mSyncGroup.localId =
+                                    new LocalTabGroupId(TabGroupId.fromRawToken(GROUP_ID1));
+                            return true;
+                        })
                 .when(mTabGroupUiActionHandler)
-                .openTabGroup(SYNC_GROUP_ID1);
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
 
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.HIDDEN);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
@@ -571,7 +586,8 @@ public class TabGroupRowMediatorUnitTest {
                         .build();
 
         propertyModel.get(OPEN_RUNNABLE).run();
-        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
         verifyNoInteractions(mPaneManager);
         verifyNoInteractions(mTabSwitcherPaneBase);
         histograms.assertExpected();
@@ -588,7 +604,8 @@ public class TabGroupRowMediatorUnitTest {
         propertyModel.get(OPEN_RUNNABLE).run();
         verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(eq(localId), eq(ClosingSource.CLOSED_BY_USER));
-        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
     }
 
     @Test

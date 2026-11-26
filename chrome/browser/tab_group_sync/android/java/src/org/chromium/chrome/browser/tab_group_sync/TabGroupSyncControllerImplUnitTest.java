@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
@@ -42,17 +45,23 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupId;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -123,15 +132,28 @@ public class TabGroupSyncControllerImplUnitTest {
                         mIsActiveWindowSupplier);
     }
 
-    @Test
-    public void testInitialization() {
-        // Set tab model as initialized.
+    /** Creates the controller with both the tab model and the sync backend initialized. */
+    private void createInitializedController() {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(new ArrayList<>());
-        // Create controller.
         createController();
-        // Init sync backend.
         mTabGroupSyncServiceObserverCaptor.getValue().onInitialized();
+    }
+
+    /** Triggers a local tab addition on {@link #mTabModel} to probe local sync observation. */
+    private void addGroupedTabToModel() {
+        when(mTab1.getUrl()).thenReturn(new GURL("https://url1.com"));
+        when(mTab1.getTitle()).thenReturn("Tab 1");
+        mTabModel.addTab(
+                mTab1,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+    }
+
+    @Test
+    public void testInitialization() {
+        createInitializedController();
 
         // Observe calls to the sync backend on controller startup.
         verify(mTabGroupSyncService, times(2)).addObserver(any());
@@ -140,31 +162,105 @@ public class TabGroupSyncControllerImplUnitTest {
 
     @Test
     public void testOpenTabGroup() {
-        // Init both tab model and sync backend.
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(new ArrayList<>());
-        createController();
-        mTabGroupSyncServiceObserverCaptor.getValue().onInitialized();
+        createInitializedController();
 
-        // Open a tab group. It should invoke TabModel to create a tab group.
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         when(mTabGroupSyncService.getGroup(savedTabGroup.syncId)).thenReturn(savedTabGroup);
-        mController.openTabGroup(savedTabGroup.syncId);
+        assertTrue(
+                mController.openTabGroup(
+                        savedTabGroup.syncId, OpeningSource.OPENED_FROM_TOAST_ACTION));
         verify(mTabModel, times(1)).mergeListOfTabsToGroup(any(), any(), anyInt());
+        verify(mTabGroupSyncService)
+                .updateLocalTabGroupMapping(
+                        eq(savedTabGroup.syncId),
+                        any(),
+                        eq(OpeningSource.OPENED_FROM_TOAST_ACTION));
     }
 
     @Test
     public void testOpenTabGroup_beforeSyncBackendInit() {
-        // Init tab model but not the sync backend.
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(new ArrayList<>());
         createController();
 
-        // Open a tab group. It should not invoke TabModel to create groups.
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        assertFalse(
+                mController.openTabGroup(
+                        savedTabGroup.syncId, OpeningSource.OPENED_FROM_REVISIT_UI));
+        verify(mTabGroupSyncService, never()).getGroup(anyString());
+        verify(mTabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+    }
+
+    @Test
+    public void testOpenTabGroup_afterDestroy() {
+        createInitializedController();
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        TabGroupSyncController controller = mController;
+        mController = null;
+        controller.destroy();
+
+        assertFalse(
+                controller.openTabGroup(
+                        savedTabGroup.syncId, OpeningSource.OPENED_FROM_REVISIT_UI));
+        verify(mTabGroupSyncService, never()).getGroup(anyString());
+    }
+
+    @Test
+    public void testOpenTabGroup_skipsInvalidOrAlreadyOpenGroup() {
+        createInitializedController();
+        when(mTabGroupSyncService.getGroup("missing")).thenReturn(null);
+        assertFalse(mController.openTabGroup("missing", OpeningSource.OPENED_FROM_REVISIT_UI));
+
+        SavedTabGroup emptyGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        emptyGroup.savedTabs.clear();
+        when(mTabGroupSyncService.getGroup("empty")).thenReturn(emptyGroup);
+        assertFalse(mController.openTabGroup("empty", OpeningSource.OPENED_FROM_REVISIT_UI));
+
+        SavedTabGroup openGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        openGroup.localId = new LocalTabGroupId(TabGroupId.fromRawToken(TOKEN_1));
+        when(mTabGroupSyncService.getGroup("open")).thenReturn(openGroup);
+        assertFalse(mController.openTabGroup("open", OpeningSource.OPENED_FROM_REVISIT_UI));
+
+        verify(mTabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+    }
+
+    @Test
+    public void testOpenTabGroup_pausesAndReenablesLocalObserver() {
+        createInitializedController();
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         when(mTabGroupSyncService.getGroup(savedTabGroup.syncId)).thenReturn(savedTabGroup);
-        mController.openTabGroup(savedTabGroup.syncId);
-        verify(mTabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
+        doAnswer(
+                        i -> {
+                            addGroupedTabToModel();
+                            return null;
+                        })
+                .when(mTabModel)
+                .mergeListOfTabsToGroup(any(), any(), anyInt());
+
+        assertTrue(
+                mController.openTabGroup(
+                        savedTabGroup.syncId, OpeningSource.OPENED_FROM_REVISIT_UI));
+        verify(mTabGroupSyncService, never()).addTab(any(), anyInt(), any(), any(), anyInt());
+
+        addGroupedTabToModel();
+        verify(mTabGroupSyncService).addTab(any(), eq(TAB_ID_1), any(), any(), anyInt());
+    }
+
+    @Test
+    public void testOpenTabGroup_preservesOuterObserverPause() {
+        createInitializedController();
+        for (TabGroupSyncService.Observer observer :
+                mTabGroupSyncServiceObserverCaptor.getAllValues()) {
+            observer.onLocalObservationModeChanged(false);
+        }
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        when(mTabGroupSyncService.getGroup(savedTabGroup.syncId)).thenReturn(savedTabGroup);
+
+        assertTrue(
+                mController.openTabGroup(
+                        savedTabGroup.syncId, OpeningSource.OPENED_FROM_REVISIT_UI));
+
+        addGroupedTabToModel();
+        verify(mTabGroupSyncService, never()).addTab(any(), anyInt(), any(), any(), anyInt());
     }
 
     @Test

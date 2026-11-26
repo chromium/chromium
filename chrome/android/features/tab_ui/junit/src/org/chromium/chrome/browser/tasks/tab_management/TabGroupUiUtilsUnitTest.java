@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiUtils.OpenTabG
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -682,7 +683,7 @@ public class TabGroupUiUtilsUnitTest {
                 callback,
                 false);
 
-        verify(mUiActionHandler, never()).openTabGroup(any());
+        verify(mUiActionHandler, never()).openTabGroup(any(), anyInt());
         verify(mTabModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
         verify(callback, never()).onTabMoved();
     }
@@ -716,7 +717,7 @@ public class TabGroupUiUtilsUnitTest {
                 callback,
                 false);
 
-        verify(mUiActionHandler).openTabGroup(syncId);
+        verify(mUiActionHandler).openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTab)),
@@ -755,7 +756,7 @@ public class TabGroupUiUtilsUnitTest {
                 callback,
                 false);
 
-        verify(mUiActionHandler).openTabGroup(syncId);
+        verify(mUiActionHandler).openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTab)),
@@ -1106,7 +1107,7 @@ public class TabGroupUiUtilsUnitTest {
         inOrder.verify(mTabModel).commitTabClosure(111);
         inOrder.verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(savedGroup.localId, ClosingSource.CLOSED_BY_USER);
-        inOrder.verify(mUiActionHandler).openTabGroup(syncId);
+        inOrder.verify(mUiActionHandler).openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
     }
 
     @Test
@@ -1150,7 +1151,7 @@ public class TabGroupUiUtilsUnitTest {
         inOrder.verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(
                         reopenedSavedGroup.localId, ClosingSource.CLOSED_BY_USER);
-        inOrder.verify(mUiActionHandler).openTabGroup(syncId);
+        inOrder.verify(mUiActionHandler).openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
     }
 
     @Test
@@ -1276,7 +1277,7 @@ public class TabGroupUiUtilsUnitTest {
         inOrder.verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(
                         reopenedSavedGroup.localId, ClosingSource.CLOSED_BY_USER);
-        inOrder.verify(mUiActionHandler).openTabGroup(syncId);
+        inOrder.verify(mUiActionHandler).openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mTabModel, never()).commitTabClosure(anyInt());
     }
 
@@ -1364,7 +1365,7 @@ public class TabGroupUiUtilsUnitTest {
                 callback,
                 false);
 
-        verify(mUiActionHandler).openTabGroup(syncId);
+        verify(mUiActionHandler).openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTabToAdd)),
@@ -1430,7 +1431,7 @@ public class TabGroupUiUtilsUnitTest {
                 false);
 
         verify(mOtherModel).commitTabClosure(55);
-        verify(mUiActionHandler).openTabGroup(syncId);
+        verify(mUiActionHandler).openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTabToAdd)),
@@ -1457,7 +1458,7 @@ public class TabGroupUiUtilsUnitTest {
                 callback,
                 false);
 
-        verify(mUiActionHandler, never()).openTabGroup(any());
+        verify(mUiActionHandler, never()).openTabGroup(any(), anyInt());
         verify(mTabModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
         verify(callback, never()).onTabMoved();
     }
@@ -1566,7 +1567,7 @@ public class TabGroupUiUtilsUnitTest {
                 intent.getIntExtra(
                         IntentHandler.EXTRA_WINDOW_ID, TabWindowManager.INVALID_WINDOW_ID));
         assertEquals(syncId, IntentHandler.getBringTabGroupToFrontId(intent));
-        verify(mUiActionHandler, never()).openTabGroup(any());
+        verify(mUiActionHandler, never()).openTabGroup(any(), anyInt());
     }
 
     @Test
@@ -1594,7 +1595,7 @@ public class TabGroupUiUtilsUnitTest {
 
         verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(savedGroup.localId, ClosingSource.CLOSED_BY_USER);
-        verify(mUiActionHandler).openTabGroup(syncId);
+        verify(mUiActionHandler).openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
     }
 
     @Test
@@ -1630,7 +1631,7 @@ public class TabGroupUiUtilsUnitTest {
                         mUiActionHandler,
                         syncId));
 
-        verify(mUiActionHandler, never()).openTabGroup(any());
+        verify(mUiActionHandler, never()).openTabGroup(any(), anyInt());
         verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(any(), anyInt());
         assertNull(
                 Shadows.shadowOf((Application) ApplicationProvider.getApplicationContext())
@@ -1657,7 +1658,7 @@ public class TabGroupUiUtilsUnitTest {
 
         verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(savedGroup.localId, ClosingSource.CLOSED_BY_USER);
-        verify(mUiActionHandler).openTabGroup(syncId);
+        verify(mUiActionHandler).openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
     }
 
     @Test
@@ -2138,7 +2139,7 @@ public class TabGroupUiUtilsUnitTest {
                         mUiActionHandler,
                         mMultiInstanceManager));
 
-        verify(mUiActionHandler).openTabGroup(syncId);
+        verify(mUiActionHandler).openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mMultiInstanceOrchestrator)
                 .moveTabGroupToNewWindow(any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));
         verify(mMultiInstanceManager).closeChromeWindowIfEmpty(0);
@@ -2180,7 +2181,7 @@ public class TabGroupUiUtilsUnitTest {
                         mUiActionHandler,
                         mMultiInstanceManager));
 
-        verify(mUiActionHandler).openTabGroup(syncId);
+        verify(mUiActionHandler).openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mMultiInstanceOrchestrator)
                 .moveTabGroupToNewWindow(any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));
         verify(mMultiInstanceManager).closeChromeWindowIfEmpty(0);
@@ -2565,7 +2566,7 @@ public class TabGroupUiUtilsUnitTest {
                 .removeLocalTabGroupMapping(
                         eq(new LocalTabGroupId(TabGroupId.fromRawToken(oldGroupId))),
                         eq(ClosingSource.CLOSED_BY_USER));
-        verify(mUiActionHandler).openTabGroup(syncId);
+        verify(mUiActionHandler).openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTabToAdd)),
@@ -2643,7 +2644,7 @@ public class TabGroupUiUtilsUnitTest {
                 .removeLocalTabGroupMapping(
                         eq(new LocalTabGroupId(TabGroupId.fromRawToken(oldGroupId))),
                         eq(ClosingSource.CLOSED_BY_USER));
-        verify(mUiActionHandler).openTabGroup(syncId);
+        verify(mUiActionHandler).openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mMultiInstanceOrchestrator)
                 .moveTabGroupToNewWindow(any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));
         verify(mMultiInstanceManager).closeChromeWindowIfEmpty(1);

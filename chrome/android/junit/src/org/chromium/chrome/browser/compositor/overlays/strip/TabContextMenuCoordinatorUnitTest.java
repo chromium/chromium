@@ -150,6 +150,7 @@ import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -1426,7 +1427,8 @@ public class TabContextMenuCoordinatorUnitTest {
         OnClickListener remoteClickListener =
                 remoteGroupRow.model.get(ListMenuItemProperties.CLICK_LISTENER);
         remoteClickListener.onClick(mView);
-        verify(mTabGroupUiActionHandler).openTabGroup(eq("remote1"));
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(eq("remote1"), eq(OpeningSource.OPENED_FROM_REVISIT_UI));
     }
 
     @Test
@@ -1478,7 +1480,8 @@ public class TabContextMenuCoordinatorUnitTest {
                 existingGroupRow.model.get(ListMenuItemProperties.CLICK_LISTENER);
         existingGroupClickListener.onClick(mView);
         verify(mTabGroupSyncService).removeLocalTabGroupMapping(any(), anyInt());
-        verify(mTabGroupUiActionHandler).openTabGroup(eq("sync1"));
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(eq("sync1"), eq(OpeningSource.OPENED_FROM_REVISIT_UI));
     }
 
     @Test

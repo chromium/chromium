@@ -89,6 +89,11 @@ public final class TabGroupSyncLocalObserver {
         mTabModel.removeObserver(mTabModelObserver);
     }
 
+    /** Returns whether local tab group observation is enabled. */
+    public boolean isObserving() {
+        return mIsObserving;
+    }
+
     /**
      * Called to enable or disable this observer. When disabled, none of the local changes will not
      * be propagated to sync. Typically invoked when chrome is in the middle of applying remote

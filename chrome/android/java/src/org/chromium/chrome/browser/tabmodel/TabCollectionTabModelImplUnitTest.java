@@ -74,6 +74,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJ
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
@@ -1884,7 +1885,7 @@ public class TabCollectionTabModelImplUnitTest {
                 archivedModel.restoreClosedTabsForUndo(
                         snapshot, /* reselect= */ true, mTabGroupUiActionHandler));
         verifyBatchedAndReset();
-        verify(mTabGroupUiActionHandler, never()).openTabGroup(any());
+        verify(mTabGroupUiActionHandler, never()).openTabGroup(any(), anyInt());
         verify(mTabModelObserver, never())
                 .didSelectTab(any(), eq(TabSelectionType.FROM_UNDO), anyInt());
     }
@@ -1961,7 +1962,8 @@ public class TabCollectionTabModelImplUnitTest {
         assertArrayEquals(new int[] {201, 202}, restoredIds);
         assertEquals(List.of(existingTab1, reopenedTab1, reopenedTab2, existingTab2), mTabs);
         verify(mTabModelDelegate, never()).restoreForUndo(any(), anyInt(), any());
-        verify(mTabGroupUiActionHandler).openTabGroup(HIDDEN_GROUP_SYNC_ID);
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(HIDDEN_GROUP_SYNC_ID, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mTabCollectionTabModelImplJni)
                 .moveTabGroupTo(any(), eq(TabGroupId.fromRawToken(REOPENED_GROUP_ID)), eq(1));
         assertEquals(reopenedTab2, mTabModel.getCurrentTabSupplier().get());
@@ -2014,7 +2016,8 @@ public class TabCollectionTabModelImplUnitTest {
                         existingTab2),
                 mTabs);
         InOrder inOrder = inOrder(mTabGroupUiActionHandler, mTabModelDelegate);
-        inOrder.verify(mTabGroupUiActionHandler).openTabGroup(HIDDEN_GROUP_SYNC_ID);
+        inOrder.verify(mTabGroupUiActionHandler)
+                .openTabGroup(HIDDEN_GROUP_SYNC_ID, OpeningSource.OPENED_FROM_REVISIT_UI);
         inOrder.verify(mTabModelDelegate).restoreForUndo(mTabModel, ENTRY_ID, snapshot.tabs);
         assertEquals(tabRestoreServiceTab1, mTabModel.getCurrentTabSupplier().get());
     }
@@ -2086,10 +2089,10 @@ public class TabCollectionTabModelImplUnitTest {
                             }
                             savedGroup.localId =
                                     new LocalTabGroupId(TabGroupId.fromRawToken(REOPENED_GROUP_ID));
-                            return null;
+                            return true;
                         })
                 .when(mTabGroupUiActionHandler)
-                .openTabGroup(HIDDEN_GROUP_SYNC_ID);
+                .openTabGroup(HIDDEN_GROUP_SYNC_ID, OpeningSource.OPENED_FROM_REVISIT_UI);
     }
 
     private static UndoClosureSnapshot createMixedHiddenGroupAndTabRestoreServiceSnapshot() {

@@ -92,6 +92,7 @@ import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
@@ -743,7 +744,7 @@ public class TabSearchOverlayCoordinator
             TabGroupUiActionHandler handler = mTabGroupUiActionHandlerSupplier.get();
             if (handler == null) return;
 
-            handler.openTabGroup(syncGroup.syncId);
+            handler.openTabGroup(syncGroup.syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
             // Re-fetch the synced group to obtain the newly mapped local group ID.
             syncGroup = syncService.getGroup(tabGroupId);
             if (syncGroup == null || syncGroup.localId == null) return;

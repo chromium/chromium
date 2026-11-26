@@ -66,6 +66,7 @@ import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.ParseUrlStatus;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SyncedGroupTestHelper;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -321,15 +322,16 @@ public class DataSharingTabManagerUnitTest {
         doAnswer(
                         invocation -> {
                             mSavedTabGroup.localId = LOCAL_ID;
-                            return null;
+                            return true;
                         })
                 .when(mTabGroupUiActionHandler)
-                .openTabGroup(SYNC_GROUP_ID1);
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
 
         mDataSharingTabManager.displayTabGroupAnywhere(
                 COLLABORATION_ID1, /* isFromInviteFlow= */ true);
 
-        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mDataSharingTabGroupsDelegate).openTabGroup(GROUP_ID);
     }
 

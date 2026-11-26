@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
@@ -118,7 +119,8 @@ public class TabSwitcherUtils {
         if (syncGroup == null) return;
 
         if (syncGroup.localId == null) {
-            tabGroupUiActionHandler.openTabGroup(assertNonNull(syncGroup.syncId));
+            tabGroupUiActionHandler.openTabGroup(
+                    assertNonNull(syncGroup.syncId), OpeningSource.OPENED_FROM_REVISIT_UI);
             syncGroup = tabGroupSyncService.getGroup(syncId);
             assert syncGroup != null;
             assert syncGroup.localId != null;

@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.GroupData;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
@@ -476,7 +477,8 @@ public class UndoGroupRestorerUnitTest {
         UndoGroupRestorer.apply(mTabModel, mSyncService, mUiActionHandler, restoredIds, snapshot);
 
         InOrder inOrder = inOrder(mUiActionHandler, mTabModel);
-        inOrder.verify(mUiActionHandler).openTabGroup(SYNC_ID_A);
+        inOrder.verify(mUiActionHandler)
+                .openTabGroup(SYNC_ID_A, OpeningSource.OPENED_FROM_REVISIT_UI);
         inOrder.verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(GROUP_REOPENED), 2);
         inOrder.verify(mTabModel)
                 .setTabGroupCollapsed(
@@ -506,7 +508,7 @@ public class UndoGroupRestorerUnitTest {
 
         UndoGroupRestorer.apply(mTabModel, mSyncService, mUiActionHandler, restoredIds, snapshot);
 
-        verify(mUiActionHandler).openTabGroup(SYNC_ID_A);
+        verify(mUiActionHandler).openTabGroup(SYNC_ID_A, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mTabModel, never()).moveGroupToIndex(any(), anyInt());
         verify(mTabModel)
                 .setTabGroupCollapsed(
@@ -531,7 +533,7 @@ public class UndoGroupRestorerUnitTest {
 
         UndoGroupRestorer.apply(mTabModel, mSyncService, mUiActionHandler, restoredIds, snapshot);
 
-        verify(mUiActionHandler).openTabGroup(SYNC_ID_A);
+        verify(mUiActionHandler).openTabGroup(SYNC_ID_A, OpeningSource.OPENED_FROM_REVISIT_UI);
         verifyNoGroupMutations();
     }
 
@@ -549,7 +551,7 @@ public class UndoGroupRestorerUnitTest {
                         mTabModel, mSyncService, mUiActionHandler, snapshot);
         assertArrayEquals(new int[] {INVALID_TAB_ID}, restoredIds);
 
-        verify(mUiActionHandler, never()).openTabGroup(anyString());
+        verify(mUiActionHandler, never()).openTabGroup(anyString(), anyInt());
         verifyNoGroupMutations();
     }
 
@@ -577,7 +579,7 @@ public class UndoGroupRestorerUnitTest {
                 new int[] {TAB_ID_1, TAB_ID_2},
                 snapshot);
 
-        verify(mUiActionHandler, never()).openTabGroup(anyString());
+        verify(mUiActionHandler, never()).openTabGroup(anyString(), anyInt());
         InOrder inOrder = inOrder(mTabModel);
         inOrder.verify(mTabModel).getTabGroupCollapsed(TabGroupId.fromRawToken(GROUP_REOPENED));
         inOrder.verify(mTabModel)
@@ -615,7 +617,7 @@ public class UndoGroupRestorerUnitTest {
         UndoGroupRestorer.apply(
                 mTabModel, mSyncService, mUiActionHandler, new int[] {TAB_ID_1}, snapshot);
 
-        verify(mUiActionHandler, never()).openTabGroup(anyString());
+        verify(mUiActionHandler, never()).openTabGroup(anyString(), anyInt());
         verifyNoGroupMutations();
     }
 
@@ -639,7 +641,8 @@ public class UndoGroupRestorerUnitTest {
                 snapshot);
 
         InOrder inOrder = inOrder(mUiActionHandler, mTabModel);
-        inOrder.verify(mUiActionHandler).openTabGroup(SYNC_ID_A);
+        inOrder.verify(mUiActionHandler)
+                .openTabGroup(SYNC_ID_A, OpeningSource.OPENED_FROM_REVISIT_UI);
         inOrder.verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         Collections.singletonList(mTab2),
@@ -674,7 +677,8 @@ public class UndoGroupRestorerUnitTest {
                 mTabModel, mSyncService, mUiActionHandler, new int[] {TAB_ID_1}, snapshot);
 
         InOrder inOrder = inOrder(mUiActionHandler, mTabModel);
-        inOrder.verify(mUiActionHandler).openTabGroup(SYNC_ID_A);
+        inOrder.verify(mUiActionHandler)
+                .openTabGroup(SYNC_ID_A, OpeningSource.OPENED_FROM_REVISIT_UI);
         inOrder.verify(mTabModel)
                 .createTabGroupForTabGroupSync(List.of(mTab1), TabGroupId.fromRawToken(GROUP_A));
     }
@@ -702,10 +706,10 @@ public class UndoGroupRestorerUnitTest {
                             when(mTabModel.getTabsInGroup(
                                             TabGroupId.fromOptionalToken(reopenedGroupId)))
                                     .thenReturn(reopenedTabs);
-                            return null;
+                            return true;
                         })
                 .when(mUiActionHandler)
-                .openTabGroup(syncId);
+                .openTabGroup(syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
     }
 
     private void verifyNoGroupMutations() {

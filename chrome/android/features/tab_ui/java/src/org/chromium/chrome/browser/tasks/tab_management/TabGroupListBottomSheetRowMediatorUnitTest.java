@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.SyncedGroupTestHelper;
@@ -169,7 +170,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupUiActionHandler, never()).openTabGroup(any());
+        verify(mTabGroupUiActionHandler, never()).openTabGroup(any(), anyInt());
         verify(mTabModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
@@ -201,7 +202,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupUiActionHandler, never()).openTabGroup(any());
+        verify(mTabGroupUiActionHandler, never()).openTabGroup(any(), anyInt());
         verify(mTabModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
@@ -240,7 +241,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupUiActionHandler).openTabGroup(eq(TEST_SYNC_ID));
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(eq(TEST_SYNC_ID), eq(OpeningSource.OPENED_FROM_REVISIT_UI));
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(mTabs),
@@ -259,7 +261,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupUiActionHandler, never()).openTabGroup(any());
+        verify(mTabGroupUiActionHandler, never()).openTabGroup(any(), anyInt());
         verify(mTabModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();

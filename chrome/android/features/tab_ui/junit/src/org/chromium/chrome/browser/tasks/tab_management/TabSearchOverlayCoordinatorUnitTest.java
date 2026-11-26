@@ -115,6 +115,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
@@ -632,7 +633,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         watcher.assertExpected();
         assertFalse(mCoordinator.isVisible());
 
-        verify(mTabGroupUiActionHandler, never()).openTabGroup(any());
+        verify(mTabGroupUiActionHandler, never()).openTabGroup(any(), anyInt());
         verify(mTabModel).setIndex(2, TabSelectionType.FROM_USER);
     }
 
@@ -668,7 +669,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
         watcher.assertExpected();
         assertFalse(mCoordinator.isVisible());
 
-        verify(mTabGroupUiActionHandler).openTabGroup("sync_id_1");
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup("sync_id_1", OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mTabModel).setIndex(2, TabSelectionType.FROM_USER);
     }
 

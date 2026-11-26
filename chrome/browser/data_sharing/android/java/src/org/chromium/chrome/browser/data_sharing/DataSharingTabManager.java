@@ -69,6 +69,7 @@ import org.chromium.components.data_sharing.configs.DataSharingUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingUiConfig.DataSharingUserAction;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -529,7 +530,8 @@ public class DataSharingTabManager {
                 (tabGroupUiActionHandler) -> {
                     // Note: This does not switch the active tab to the opened tab.
                     String syncId = assertNonNull(group.syncId);
-                    tabGroupUiActionHandler.openTabGroup(syncId);
+                    tabGroupUiActionHandler.openTabGroup(
+                            syncId, OpeningSource.OPENED_FROM_REVISIT_UI);
                     DataSharingMetrics.recordJoinActionFlowState(
                             DataSharingMetrics.JoinActionStateAndroid.LOCAL_TAB_GROUP_ADDED);
                     SavedTabGroup savedTabGroup =

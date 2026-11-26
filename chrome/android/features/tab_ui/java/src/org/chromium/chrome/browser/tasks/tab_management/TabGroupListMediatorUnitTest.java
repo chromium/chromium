@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -88,6 +89,7 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SyncedGroupTestHelper;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -97,7 +99,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -454,8 +455,8 @@ public class TabGroupListMediatorUnitTest {
         verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(LOCAL_GROUP_ID1);
 
         // Set up mocks to change behavior after #openTabGroup() is called.
-        MockitoHelper.doRunnable(
-                        () -> {
+        doAnswer(
+                        inv -> {
                             SavedTabGroup updatedGroup2 =
                                     mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID2);
                             updatedGroup2.syncId = SYNC_GROUP_ID2;
@@ -466,15 +467,17 @@ public class TabGroupListMediatorUnitTest {
                             when(mTabModel.containsTabGroup(
                                             TabGroupId.fromOptionalToken(LOCAL_GROUP_ID2)))
                                     .thenReturn(true);
+                            return true;
                         })
                 .when(mTabGroupUiActionHandler)
-                .openTabGroup(SYNC_GROUP_ID2);
+                .openTabGroup(SYNC_GROUP_ID2, OpeningSource.OPENED_FROM_REVISIT_UI);
 
         RobolectricUtil.runAllBackgroundAndUi();
 
         PropertyModel model2 = mModelList.get(1).model;
         model2.get(OPEN_RUNNABLE).run();
-        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID2);
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID2, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mPaneManager, times(2)).focusPane(PaneId.TAB_SWITCHER);
         verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(LOCAL_GROUP_ID2);
     }
@@ -501,20 +504,22 @@ public class TabGroupListMediatorUnitTest {
         when(mComprehensiveModel.iterator())
                 .thenAnswer(invocation -> Collections.emptyList().iterator());
         when(mComprehensiveModel.getCount()).thenReturn(0);
-        MockitoHelper.doRunnable(
-                        () -> {
+        doAnswer(
+                        inv -> {
                             group1.localId =
                                     new LocalTabGroupId(TabGroupId.fromRawToken(LOCAL_GROUP_ID1));
                             when(mTabModel.containsTabGroup(
                                             TabGroupId.fromOptionalToken(LOCAL_GROUP_ID1)))
                                     .thenReturn(true);
+                            return true;
                         })
                 .when(mTabGroupUiActionHandler)
-                .openTabGroup(SYNC_GROUP_ID1);
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
 
         PropertyModel model1 = mModelList.get(0).model;
         model1.get(OPEN_RUNNABLE).run();
-        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
+        verify(mTabGroupUiActionHandler)
+                .openTabGroup(SYNC_GROUP_ID1, OpeningSource.OPENED_FROM_REVISIT_UI);
         verify(mTabModel, never()).cancelTabClosure(TAB_ID1);
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
         verify(mTabSwitcherPaneBase).requestOpenTabGroupDialog(LOCAL_GROUP_ID1);
