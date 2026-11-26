@@ -1186,6 +1186,12 @@ inline constexpr char kIOSGeminiBottomSheetMigrationDescription[] =
     " of a overlay view. This feature requires both 'Gemini Copresence'"
     " and 'Assistant Container' features to be enabled.";
 
+inline constexpr char kIOSGeolocationSitePermissionsName[] =
+    "iOS Geolocation Site Permissions";
+inline constexpr char kIOSGeolocationSitePermissionsDescription[] =
+    "Enables site-level geolocation permissions and Site Settings on iOS 27+. "
+    "Requires 'New Geolocation Permission Delegate' to be enabled.";
+
 inline constexpr char kIOSLevelUpName[] = "Level Up";
 inline constexpr char kIOSLevelUpDescription[] =
     "Enables the 'Level Up' feature on iOS.";

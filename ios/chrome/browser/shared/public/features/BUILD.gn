@@ -21,6 +21,7 @@ source_set("features") {
     "//ios/chrome/browser/safety_check_notifications/utils:constants",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/common",
+    "//ios/web/common:features",
     "//ui/base",
   ]
   public_deps = [ "//base" ]

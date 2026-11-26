@@ -3241,6 +3241,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillRegionalizedPrivatePassesUxRefine)},
+    {"ios-geolocation-site-permissions",
+     flag_descriptions::kIOSGeolocationSitePermissionsName,
+     flag_descriptions::kIOSGeolocationSitePermissionsDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSGeolocationSitePermissions)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

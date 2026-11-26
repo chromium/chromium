@@ -1047,4 +1047,12 @@ BASE_DECLARE_FEATURE(kAssistantAimLargeState);
 // Returns true if the AssistantAimLargeState feature is enabled.
 bool IsAssistantAimLargeStateEnabled();
 
+// Enables site-level geolocation permissions and Site Settings on iOS 27+.
+BASE_DECLARE_FEATURE(kIOSGeolocationSitePermissions);
+
+// Returns true if running on iOS 27.0+ and both
+// `kIOSGeolocationSitePermissions` and
+// `web::features::kNewGeolocationPermissionDelegate` are enabled.
+bool IsIOSGeolocationSitePermissionsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

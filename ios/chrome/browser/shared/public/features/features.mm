@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/common/channel_info.h"
+#import "ios/web/common/features.h"
 #import "ui/base/device_form_factor.h"
 
 BASE_FEATURE(kTestFeature, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1274,4 +1275,15 @@ BASE_FEATURE(kAssistantAimLargeState, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAssistantAimLargeStateEnabled() {
   return base::FeatureList::IsEnabled(kAssistantAimLargeState);
+}
+
+BASE_FEATURE(kIOSGeolocationSitePermissions, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSGeolocationSitePermissionsEnabled() {
+  if (@available(iOS 27.0, *)) {
+    return base::FeatureList::IsEnabled(kIOSGeolocationSitePermissions) &&
+           base::FeatureList::IsEnabled(
+               web::features::kNewGeolocationPermissionDelegate);
+  }
+  return false;
 }
