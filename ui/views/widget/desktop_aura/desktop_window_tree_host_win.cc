@@ -774,7 +774,9 @@ void DesktopWindowTreeHostWin::SetOpacity(float opacity) {
 void DesktopWindowTreeHostWin::SetAspectRatio(
     const gfx::SizeF& aspect_ratio,
     const gfx::Size& excluded_margin) {
-  CHECK(!aspect_ratio.IsEmpty(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/586834802): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(!aspect_ratio.IsEmpty());
   message_handler_->SetAspectRatio(aspect_ratio.width() / aspect_ratio.height(),
                                    excluded_margin);
 }
