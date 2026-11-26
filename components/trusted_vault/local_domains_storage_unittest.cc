@@ -159,7 +159,8 @@ TEST_F(LocalDomainsStorageTest,
       test_gaia(),
       [&](PhysicalDeviceRecoveryFactorData& data) { data = factor_data; });
 
-  storage()->ClearDataForUser(test_gaia());
+  storage()->ClearDataForUnknownUsersOrMarkForDeletion(
+      /*known_gaia_ids=*/{}, /*primary_account_gaia_id=*/std::nullopt);
 
   EXPECT_FALSE(storage()
                    ->GetPhysicalDeviceRecoveryFactorData(test_gaia())
@@ -240,19 +241,153 @@ TEST_F(LocalDomainsStorageTest, ShouldSupportDomainThrottling) {
             kPasskeysMillis);
 }
 
-TEST_F(LocalDomainsStorageTest, ShouldClearDataForUser) {
-  GaiaId gaia1("user1");
-  GaiaId gaia2("user2");
+TEST_F(LocalDomainsStorageTest,
+       ShouldClearDomainDataForUserPreservingOtherDomainsAndSharedState) {
+  const GaiaId kOtherGaia("other_user");
+  const std::vector<std::vector<uint8_t>> kSyncKeys = {{1, 2, 3}};
+  const std::vector<std::vector<uint8_t>> kPasskeysKeys = {{4, 5, 6}};
+  const std::vector<std::vector<uint8_t>> kOtherSyncKeys = {{7, 8, 9}};
+  trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState degraded_state;
+  degraded_state.set_degraded_recoverability_value(
+      trusted_vault_pb::DegradedRecoverabilityValue::kDegraded);
 
-  storage()->SetVaultKeys(gaia1, SecurityDomainId::kChromeSync, {{1, 2}}, 1);
-  storage()->SetVaultKeys(gaia2, SecurityDomainId::kChromeSync, {{3, 4}}, 1);
+  storage()->SetVaultKeys(test_gaia(), SecurityDomainId::kChromeSync, kSyncKeys,
+                          /*last_key_version=*/3);
+  storage()->SetKeysMarkedAsStaleByConsumer(
+      test_gaia(), SecurityDomainId::kChromeSync, true);
+  storage()->SetRecoveryFactorRegistered(
+      test_gaia(), SecurityDomainId::kChromeSync,
+      LocalRecoveryFactorType::kPhysicalDevice, true);
+  storage()->SetLastRegistrationReturnedLocalDataObsolete(
+      test_gaia(), SecurityDomainId::kChromeSync, true);
+  storage()->SetLastFailedRequestMillis(test_gaia(),
+                                        SecurityDomainId::kChromeSync, 1000);
+  storage()->SetDegradedRecoverabilityState(
+      test_gaia(), SecurityDomainId::kChromeSync, degraded_state);
 
-  storage()->ClearDataForUser(gaia1);
+  storage()->SetVaultKeys(test_gaia(), SecurityDomainId::kPasskeys,
+                          kPasskeysKeys, /*last_key_version=*/7);
+  storage()->SetRecoveryFactorRegistered(
+      test_gaia(), SecurityDomainId::kPasskeys,
+      LocalRecoveryFactorType::kPhysicalDevice, true);
+  storage()->MutatePhysicalDeviceRecoveryFactorData(
+      test_gaia(), [](PhysicalDeviceRecoveryFactorData& data) {
+        data.set_private_key_material("shared_private_key");
+      });
 
-  EXPECT_TRUE(
-      storage()->GetVaultKeys(gaia1, SecurityDomainId::kChromeSync).empty());
+  storage()->SetVaultKeys(kOtherGaia, SecurityDomainId::kChromeSync,
+                          kOtherSyncKeys, /*last_key_version=*/4);
+  storage()->SetRecoveryFactorRegistered(
+      kOtherGaia, SecurityDomainId::kChromeSync,
+      LocalRecoveryFactorType::kPhysicalDevice, true);
+
+  storage()->ClearDataForUnknownUsersOrMarkForDeletion(
+      /*known_gaia_ids=*/{kOtherGaia}, /*primary_account_gaia_id=*/test_gaia());
+
+  trusted_vault_pb::LocalDomainsData stored_data =
+      file_access()->GetStoredLocalDomainsData();
+  ASSERT_EQ(stored_data.user_size(), 2);
+  trusted_vault_pb::UserDomainData* test_user_data = nullptr;
+  for (trusted_vault_pb::UserDomainData& user : *stored_data.mutable_user()) {
+    if (user.gaia_id() == test_gaia().ToString()) {
+      test_user_data = &user;
+      break;
+    }
+  }
+  ASSERT_NE(test_user_data, nullptr);
+  trusted_vault_pb::GpmPinData* seeded_gpm_pin =
+      test_user_data->mutable_gpm_pin_data();
+  seeded_gpm_pin->set_scrypt_hash("pin_scrypt_hash");
+  seeded_gpm_pin->set_hash_salt("pin_salt");
+  seeded_gpm_pin->set_hash_difficulty(16384);
+  seeded_gpm_pin->set_pin_form(trusted_vault_pb::GpmPinData::SIX_DIGITS);
+  seeded_gpm_pin->set_failed_attempts(2);
+  file_access()->SetStoredLocalDomainsData(stored_data);
+  storage()->ReadDataFromDisk();
+
+  storage()->ClearDomainDataForUser(test_gaia(), SecurityDomainId::kChromeSync);
+
+  // All `kChromeSync` state is cleared for `test_gaia()`.
+  EXPECT_TRUE(storage()
+                  ->GetVaultKeys(test_gaia(), SecurityDomainId::kChromeSync)
+                  .empty());
+  EXPECT_EQ(
+      storage()->GetLastKeyVersion(test_gaia(), SecurityDomainId::kChromeSync),
+      0);
   EXPECT_FALSE(
-      storage()->GetVaultKeys(gaia2, SecurityDomainId::kChromeSync).empty());
+      storage()->HasNonConstantKey(test_gaia(), SecurityDomainId::kChromeSync));
+  EXPECT_FALSE(storage()->GetKeysMarkedAsStaleByConsumer(
+      test_gaia(), SecurityDomainId::kChromeSync));
+  EXPECT_FALSE(storage()->IsRecoveryFactorRegistered(
+      test_gaia(), SecurityDomainId::kChromeSync,
+      LocalRecoveryFactorType::kPhysicalDevice));
+  EXPECT_FALSE(storage()->GetLastRegistrationReturnedLocalDataObsolete(
+      test_gaia(), SecurityDomainId::kChromeSync));
+  EXPECT_EQ(storage()->GetLastFailedRequestMillis(
+                test_gaia(), SecurityDomainId::kChromeSync),
+            0);
+  EXPECT_EQ(storage()
+                ->GetDegradedRecoverabilityState(test_gaia(),
+                                                 SecurityDomainId::kChromeSync)
+                .degraded_recoverability_value(),
+            trusted_vault_pb::DegradedRecoverabilityValue::kUnknown);
+
+  // `kPasskeys` state, shared physical device key material, GPM PIN data, and
+  // other users' data are preserved.
+  EXPECT_EQ(storage()->GetVaultKeys(test_gaia(), SecurityDomainId::kPasskeys),
+            kPasskeysKeys);
+  EXPECT_EQ(
+      storage()->GetLastKeyVersion(test_gaia(), SecurityDomainId::kPasskeys),
+      7);
+  EXPECT_TRUE(storage()->IsRecoveryFactorRegistered(
+      test_gaia(), SecurityDomainId::kPasskeys,
+      LocalRecoveryFactorType::kPhysicalDevice));
+  EXPECT_EQ(storage()
+                ->GetPhysicalDeviceRecoveryFactorData(test_gaia())
+                .private_key_material(),
+            "shared_private_key");
+
+  EXPECT_EQ(storage()->GetVaultKeys(kOtherGaia, SecurityDomainId::kChromeSync),
+            kOtherSyncKeys);
+  EXPECT_EQ(
+      storage()->GetLastKeyVersion(kOtherGaia, SecurityDomainId::kChromeSync),
+      4);
+  EXPECT_TRUE(storage()->IsRecoveryFactorRegistered(
+      kOtherGaia, SecurityDomainId::kChromeSync,
+      LocalRecoveryFactorType::kPhysicalDevice));
+
+  const trusted_vault_pb::LocalDomainsData post_clear_data =
+      file_access()->GetStoredLocalDomainsData();
+  ASSERT_EQ(post_clear_data.user_size(), 2);
+  const trusted_vault_pb::UserDomainData* post_clear_test_user = nullptr;
+  for (const trusted_vault_pb::UserDomainData& user : post_clear_data.user()) {
+    if (user.gaia_id() == test_gaia().ToString()) {
+      post_clear_test_user = &user;
+      break;
+    }
+  }
+  ASSERT_NE(post_clear_test_user, nullptr);
+  const trusted_vault_pb::GpmPinData& persisted_gpm_pin =
+      post_clear_test_user->gpm_pin_data();
+  EXPECT_EQ(persisted_gpm_pin.scrypt_hash(), "pin_scrypt_hash");
+  EXPECT_EQ(persisted_gpm_pin.hash_salt(), "pin_salt");
+  EXPECT_EQ(persisted_gpm_pin.hash_difficulty(), 16384);
+  EXPECT_EQ(persisted_gpm_pin.pin_form(),
+            trusted_vault_pb::GpmPinData::SIX_DIGITS);
+  EXPECT_EQ(persisted_gpm_pin.failed_attempts(), 2);
+
+  // Deferred primary-account deletion flag on the user entry is also preserved,
+  // while the other user remains untouched.
+  storage()->ClearDataForUsersMarkedForDeletion(
+      /*primary_account_gaia_id=*/std::nullopt);
+  EXPECT_TRUE(storage()
+                  ->GetVaultKeys(test_gaia(), SecurityDomainId::kPasskeys)
+                  .empty());
+  EXPECT_FALSE(storage()
+                   ->GetPhysicalDeviceRecoveryFactorData(test_gaia())
+                   .has_private_key_material());
+  EXPECT_EQ(storage()->GetVaultKeys(kOtherGaia, SecurityDomainId::kChromeSync),
+            kOtherSyncKeys);
 }
 
 TEST_F(LocalDomainsStorageTest,
@@ -637,6 +772,54 @@ TEST_F(LocalDomainsStorageDiskTest,
   // deprecated_last_registration_returned_local_data_obsolete.
   EXPECT_TRUE(storage->GetLastRegistrationReturnedLocalDataObsolete(
       gaia_id, SecurityDomainId::kChromeSync));
+}
+
+TEST_F(LocalDomainsStorageDiskTest,
+       ShouldSkipDiskWriteWhenClearDomainDataForUserIsNoOp) {
+  const GaiaId kGaiaId("user1");
+  const GaiaId kOtherGaiaId("user2");
+  const std::vector<std::vector<uint8_t>> kPasskeysKeys = {{7, 8, 9}};
+  const std::vector<std::vector<uint8_t>> kOtherPasskeysKeys = {{10, 11, 12}};
+
+  auto storage = LocalDomainsStorage::Create(base_dir(), encryptor());
+  storage->ReadDataFromDisk();
+  storage->SetVaultKeys(kOtherGaiaId, SecurityDomainId::kPasskeys,
+                        kOtherPasskeysKeys, /*last_key_version=*/3);
+
+  // Unknown user: no disk write.
+  {
+    base::HistogramTester histogram_tester;
+    storage->ClearDomainDataForUser(kGaiaId, SecurityDomainId::kChromeSync);
+    histogram_tester.ExpectTotalCount("TrustedVault.FileWriteSuccess", 0);
+  }
+
+  storage->SetVaultKeys(kGaiaId, SecurityDomainId::kPasskeys, kPasskeysKeys,
+                        /*last_key_version=*/2);
+
+  // Known user without `kChromeSync` data: no disk write.
+  {
+    base::HistogramTester histogram_tester;
+    storage->ClearDomainDataForUser(kGaiaId, SecurityDomainId::kChromeSync);
+    histogram_tester.ExpectTotalCount("TrustedVault.FileWriteSuccess", 0);
+  }
+
+  // Clearing populated `kPasskeys` data writes once and persists across reload,
+  // leaving other users' data untouched.
+  {
+    base::HistogramTester histogram_tester;
+    storage->ClearDomainDataForUser(kGaiaId, SecurityDomainId::kPasskeys);
+    histogram_tester.ExpectUniqueSample("TrustedVault.FileWriteSuccess", true,
+                                        1);
+  }
+
+  auto reloaded_storage = LocalDomainsStorage::Create(base_dir(), encryptor());
+  reloaded_storage->ReadDataFromDisk();
+  EXPECT_TRUE(
+      reloaded_storage->GetVaultKeys(kGaiaId, SecurityDomainId::kPasskeys)
+          .empty());
+  EXPECT_EQ(
+      reloaded_storage->GetVaultKeys(kOtherGaiaId, SecurityDomainId::kPasskeys),
+      kOtherPasskeysKeys);
 }
 
 }  // namespace

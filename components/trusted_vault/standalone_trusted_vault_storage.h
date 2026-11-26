@@ -181,8 +181,11 @@ class StandaloneTrustedVaultStorage : public RecoveryFactorRegistrationStorage,
   // Reads persisted state from disk.
   virtual void ReadDataFromDisk() = 0;
 
-  // Clears all state associated with `gaia_id`.
-  virtual void ClearDataForUser(const GaiaId& gaia_id) = 0;
+  // Clears state scoped to `domain` for `gaia_id`, preserving state for other
+  // security domains and shared user-level state (such as physical device key
+  // material).
+  virtual void ClearDomainDataForUser(const GaiaId& gaia_id,
+                                      SecurityDomainId domain) = 0;
 
   // Clears state for users not in `known_gaia_ids` (except
   // `primary_account_gaia_id`).

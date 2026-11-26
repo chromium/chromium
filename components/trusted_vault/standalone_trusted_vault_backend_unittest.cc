@@ -13,6 +13,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -167,7 +168,7 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
       SecurityDomainId security_domain_id,
       RegisterCallback callback) override {
     CHECK(connection_);
-    maybe_register_was_called_ = true;
+    maybe_register_called_domains_.insert(security_domain_id);
 
     auto it = register_callbacks_.find(security_domain_id);
     if (it != register_callbacks_.end()) {
@@ -231,7 +232,13 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
 
   bool AttemptRecoveryWasCalled() const { return attempt_recovery_was_called_; }
 
-  bool MaybeRegisterWasCalled() const { return maybe_register_was_called_; }
+  bool MaybeRegisterWasCalled() const {
+    return !maybe_register_called_domains_.empty();
+  }
+
+  bool MaybeRegisterWasCalled(SecurityDomainId security_domain_id) const {
+    return maybe_register_called_domains_.contains(security_domain_id);
+  }
 
   void ExpectAttemptRecoveryAndRunCallback(
       RecoveryStatus status,
@@ -270,7 +277,7 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
     recovery_callbacks_.clear();
     register_callbacks_.clear();
     attempt_recovery_was_called_ = false;
-    maybe_register_was_called_ = false;
+    maybe_register_called_domains_.clear();
   }
 
  private:
@@ -281,7 +288,7 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
   base::flat_map<SecurityDomainId, bool> is_registered_;
   base::flat_map<SecurityDomainId, bool> key_pair_exists_;
   bool attempt_recovery_was_called_ = false;
-  bool maybe_register_was_called_ = false;
+  base::flat_set<SecurityDomainId> maybe_register_called_domains_;
   base::flat_map<SecurityDomainId, AttemptRecoveryCallback> recovery_callbacks_;
   base::flat_map<SecurityDomainId, RegisterCallback> register_callbacks_;
 };
@@ -1138,7 +1145,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // shared storage. Thus, it's reset explicitly here.
   GetOrCreateRecoveryFactor(kAccountInfo)
       ->MarkAsNotRegistered(security_domain_id());
-  backend()->ClearLocalDataForAccount(kAccountInfo);
+  backend()->ClearLocalDataForAccount(kAccountInfo, security_domain_id());
   // Let the registration attempt fail, so the recovery attempt triggered below
   // returns with "not registered" immediately.
   GetOrCreateRecoveryFactor(kAccountInfo)
@@ -1159,6 +1166,105 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       GetOrCreateRecoveryFactor(kAccountInfo)->AttemptRecoveryWasCalled());
   EXPECT_FALSE(
       GetOrCreateRecoveryFactor(kAccountInfo)->MaybeRegisterWasCalled());
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldClearLocalDataForDomainPreservingOtherDomainsAndRegisterFactor) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      kTrustedVaultSharedRecoveryFactorsAndEncryption);
+
+  const CoreAccountInfo kPrimaryAccount = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo kOtherAccount = MakeAccountInfoWithGaiaId("user2");
+  const std::vector<uint8_t> kSyncKey = {1, 2, 3};
+  const std::vector<uint8_t> kPasskeysKey = {4, 5, 6};
+  const std::vector<uint8_t> kOtherSyncKey = {7, 8, 9};
+  constexpr int kSyncKeyVersion = 2;
+  constexpr int kPasskeysKeyVersion = 5;
+  constexpr int kServerConstantKeyVersion = 10;
+
+  storage()->MutatePhysicalDeviceRecoveryFactorData(
+      kPrimaryAccount.gaia, [](PhysicalDeviceRecoveryFactorData& data) {
+        data.set_private_key_material("shared_device_private_key");
+      });
+  storage()->SetRecoveryFactorRegistered(
+      kPrimaryAccount.gaia, SecurityDomainId::kChromeSync,
+      LocalRecoveryFactorType::kPhysicalDevice, true);
+  storage()->SetRecoveryFactorRegistered(
+      kPrimaryAccount.gaia, SecurityDomainId::kPasskeys,
+      LocalRecoveryFactorType::kPhysicalDevice, true);
+  backend()->StoreKeys(kPrimaryAccount.gaia, SecurityDomainId::kChromeSync,
+                       {kSyncKey}, kSyncKeyVersion);
+  backend()->StoreKeys(kPrimaryAccount.gaia, SecurityDomainId::kPasskeys,
+                       {kPasskeysKey}, kPasskeysKeyVersion);
+  backend()->StoreKeys(kOtherAccount.gaia, SecurityDomainId::kChromeSync,
+                       {kOtherSyncKey}, /*last_key_version=*/1);
+  backend()->StoreKeys(kOtherAccount.gaia, SecurityDomainId::kPasskeys,
+                       {kPasskeysKey}, kPasskeysKeyVersion);
+
+  SetPrimaryAccountWithUnknownAuthError(kPrimaryAccount);
+  FakeLocalRecoveryFactor* recovery_factor =
+      GetOrCreateRecoveryFactor(kPrimaryAccount);
+  recovery_factor->ExpectMaybeRegisterAndRunCallback(
+      TrustedVaultRegistrationStatus::kSuccess, kSyncKeyVersion,
+      /*had_local_keys=*/true, SecurityDomainId::kChromeSync);
+  recovery_factor->ExpectMaybeRegisterAndRunCallback(
+      TrustedVaultRegistrationStatus::kSuccess, kPasskeysKeyVersion,
+      /*had_local_keys=*/true, SecurityDomainId::kPasskeys);
+  recovery_factor->ResetCallInfo();
+
+  EXPECT_CALL(*delegate(), NotifyVaultKeysChanged).Times(0);
+
+  // Clearing a non-primary account's security domain clears only that domain
+  // without triggering recovery factor registration for `kPrimaryAccount`.
+  backend()->ClearLocalDataForAccount(kOtherAccount,
+                                      SecurityDomainId::kChromeSync);
+  EXPECT_THAT(storage()->GetVaultKeys(kOtherAccount.gaia,
+                                      SecurityDomainId::kChromeSync),
+              IsEmpty());
+  EXPECT_THAT(
+      storage()->GetVaultKeys(kOtherAccount.gaia, SecurityDomainId::kPasskeys),
+      ElementsAre(kPasskeysKey));
+  EXPECT_FALSE(recovery_factor->MaybeRegisterWasCalled());
+
+  // Clearing `kChromeSync` for `kPrimaryAccount` preserves `kPasskeys` keys and
+  // shared device key material while immediately triggering `MaybeRegister` for
+  // `kChromeSync` only.
+  recovery_factor->MarkAsNotRegistered(SecurityDomainId::kChromeSync);
+  backend()->ClearLocalDataForAccount(kPrimaryAccount,
+                                      SecurityDomainId::kChromeSync);
+
+  EXPECT_TRUE(
+      recovery_factor->MaybeRegisterWasCalled(SecurityDomainId::kChromeSync));
+  EXPECT_FALSE(
+      recovery_factor->MaybeRegisterWasCalled(SecurityDomainId::kPasskeys));
+  EXPECT_THAT(storage()->GetVaultKeys(kPrimaryAccount.gaia,
+                                      SecurityDomainId::kChromeSync),
+              IsEmpty());
+  EXPECT_THAT(storage()->GetVaultKeys(kPrimaryAccount.gaia,
+                                      SecurityDomainId::kPasskeys),
+              ElementsAre(kPasskeysKey));
+  EXPECT_EQ(storage()
+                ->GetPhysicalDeviceRecoveryFactorData(kPrimaryAccount.gaia)
+                .private_key_material(),
+            "shared_device_private_key");
+  EXPECT_FALSE(storage()->IsRecoveryFactorRegistered(
+      kPrimaryAccount.gaia, SecurityDomainId::kChromeSync,
+      LocalRecoveryFactorType::kPhysicalDevice));
+  EXPECT_TRUE(storage()->IsRecoveryFactorRegistered(
+      kPrimaryAccount.gaia, SecurityDomainId::kPasskeys,
+      LocalRecoveryFactorType::kPhysicalDevice));
+
+  // Completing pre-enrollment registration stores the constant key in
+  // `kChromeSync` without touching `kPasskeys`.
+  recovery_factor->ExpectMaybeRegisterAndRunCallback(
+      TrustedVaultRegistrationStatus::kSuccess, kServerConstantKeyVersion,
+      /*had_local_keys=*/false, SecurityDomainId::kChromeSync);
+  EXPECT_THAT(storage()->GetVaultKeys(kPrimaryAccount.gaia,
+                                      SecurityDomainId::kChromeSync),
+              ElementsAre(GetConstantTrustedVaultKey()));
+  EXPECT_THAT(storage()->GetVaultKeys(kPrimaryAccount.gaia,
+                                      SecurityDomainId::kPasskeys),
+              ElementsAre(kPasskeysKey));
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,

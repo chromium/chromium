@@ -195,7 +195,8 @@ class StandaloneTrustedVaultBackend
               SecurityDomainId security_domain,
               EnrollCallback cb);
 
-  void ClearLocalDataForAccount(const CoreAccountInfo& account_info);
+  void ClearLocalDataForAccount(const CoreAccountInfo& account_info,
+                                SecurityDomainId security_domain);
 
   std::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 

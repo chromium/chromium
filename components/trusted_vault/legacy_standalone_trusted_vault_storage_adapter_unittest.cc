@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
@@ -70,23 +71,79 @@ TEST_F(LegacyStandaloneTrustedVaultStorageAdapterTest, ShouldReadDataFromDisk) {
       adapter()->GetLastKeyVersion(kGaiaId, SecurityDomainId::kChromeSync), 3);
 }
 
-TEST_F(LegacyStandaloneTrustedVaultStorageAdapterTest, ShouldClearDataForUser) {
-  const GaiaId kGaiaId1("user1");
-  const GaiaId kGaiaId2("user2");
+TEST_F(LegacyStandaloneTrustedVaultStorageAdapterTest,
+       ShouldClearDomainDataForUserPreservingDeviceKeyAndDeletionFlag) {
+  const GaiaId kGaiaId("user1");
+  const GaiaId kMissingGaiaId("missing_user");
+  const std::vector<uint8_t> kKey = {1, 2, 3};
 
   trusted_vault_pb::LocalTrustedVault initial_data;
   initial_data.set_data_version(4);
-  initial_data.add_user()->set_gaia_id(kGaiaId1.ToString());
-  initial_data.add_user()->set_gaia_id(kGaiaId2.ToString());
+  trusted_vault_pb::LocalTrustedVaultPerUser* user = initial_data.add_user();
+  user->set_gaia_id(kGaiaId.ToString());
+  AssignBytesToProtoString(kKey, user->add_vault_key()->mutable_key_material());
+  user->set_last_vault_key_version(5);
+  user->set_keys_marked_as_stale_by_consumer(true);
+  user->set_last_registration_returned_local_data_obsolete(true);
+  user->set_last_failed_request_millis_since_unix_epoch(999);
+  user->mutable_degraded_recoverability_state()
+      ->set_degraded_recoverability_value(
+          trusted_vault_pb::DegradedRecoverabilityValue::kDegraded);
+  user->mutable_local_device_registration_info()->set_private_key_material(
+      "preserved_private_key");
+  user->mutable_local_device_registration_info()->set_device_registered(true);
+  user->mutable_local_device_registration_info()->set_device_registered_version(
+      1);
+#if BUILDFLAG(IS_MAC)
+  user->mutable_icloud_keychain_registration_info()->set_registered(true);
+#endif
+  user->set_should_delete_keys_when_non_primary(true);
   file_access()->SetStoredLocalTrustedVault(initial_data);
   adapter()->ReadDataFromDisk();
 
-  adapter()->ClearDataForUser(kGaiaId1);
+  // Clearing a missing user does not create a new `UserVault` entry.
+  adapter()->ClearDomainDataForUser(kMissingGaiaId,
+                                    SecurityDomainId::kChromeSync);
+  ASSERT_THAT(file_access()->GetStoredLocalTrustedVault().user_size(), Eq(1));
 
-  trusted_vault_pb::LocalTrustedVault stored_data =
+  adapter()->ClearDomainDataForUser(kGaiaId, SecurityDomainId::kChromeSync);
+
+  EXPECT_TRUE(
+      adapter()->GetVaultKeys(kGaiaId, SecurityDomainId::kChromeSync).empty());
+  EXPECT_EQ(
+      adapter()->GetLastKeyVersion(kGaiaId, SecurityDomainId::kChromeSync), 0);
+  EXPECT_FALSE(adapter()->GetKeysMarkedAsStaleByConsumer(
+      kGaiaId, SecurityDomainId::kChromeSync));
+  EXPECT_FALSE(adapter()->IsRecoveryFactorRegistered(
+      kGaiaId, SecurityDomainId::kChromeSync,
+      LocalRecoveryFactorType::kPhysicalDevice));
+#if BUILDFLAG(IS_MAC)
+  EXPECT_FALSE(adapter()->IsRecoveryFactorRegistered(
+      kGaiaId, SecurityDomainId::kChromeSync,
+      LocalRecoveryFactorType::kICloudKeychain));
+#endif
+  EXPECT_FALSE(adapter()->GetLastRegistrationReturnedLocalDataObsolete(
+      kGaiaId, SecurityDomainId::kChromeSync));
+  EXPECT_EQ(adapter()->GetLastFailedRequestMillis(
+                kGaiaId, SecurityDomainId::kChromeSync),
+            0);
+  EXPECT_EQ(adapter()
+                ->GetDegradedRecoverabilityState(kGaiaId,
+                                                 SecurityDomainId::kChromeSync)
+                .degraded_recoverability_value(),
+            trusted_vault_pb::DegradedRecoverabilityValue::kUnknown);
+
+  EXPECT_EQ(adapter()
+                ->GetPhysicalDeviceRecoveryFactorData(kGaiaId)
+                .private_key_material(),
+            "preserved_private_key");
+  const trusted_vault_pb::LocalTrustedVault stored_data =
       file_access()->GetStoredLocalTrustedVault();
   ASSERT_THAT(stored_data.user_size(), Eq(1));
-  EXPECT_EQ(stored_data.user(0).gaia_id(), kGaiaId2.ToString());
+  EXPECT_TRUE(stored_data.user(0).should_delete_keys_when_non_primary());
+  EXPECT_FALSE(stored_data.user(0)
+                   .local_device_registration_info()
+                   .has_device_registered_version());
 }
 
 TEST_F(LegacyStandaloneTrustedVaultStorageAdapterTest,

@@ -109,7 +109,8 @@ class StandaloneTrustedVaultFrontend
   void Enroll(const CoreAccountInfo& account_info,
               SecurityDomainId security_domain,
               base::OnceCallback<void(const std::vector<uint8_t>&, int)> cb);
-  void ClearLocalDataForAccount(const CoreAccountInfo& account_info);
+  void ClearLocalDataForAccount(const CoreAccountInfo& account_info,
+                                SecurityDomainId security_domain);
 
   // Testing methods.
   void InitializeBackendForTesting(
