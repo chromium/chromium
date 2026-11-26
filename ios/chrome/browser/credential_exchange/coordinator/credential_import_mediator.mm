@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
 
+#import <vector>
+
 #import "base/check.h"
 #import "base/functional/callback_helpers.h"
 #import "base/not_fatal_until.h"
@@ -16,6 +18,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_importer.h"
 #import "ios/chrome/browser/credential_exchange/public/credential_import_stage.h"
@@ -122,7 +125,7 @@ bool ImportBlockedByPolicy(const PrefService* pref_service,
 #pragma mark - Public
 
 - (void)startImportingCredentialsWithTrustedVaultKeys:
-    (webauthn::SharedKeyList)trustedVaultKeys {
+    (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)trustedVaultKeys {
   [_consumer transitionToImportStage:CredentialImportStage::kImporting];
   self.importStage = CredentialImportStage::kImporting;
   [_credentialImporter

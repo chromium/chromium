@@ -9,8 +9,8 @@
 
 #import <memory>
 #import <string>
+#import <vector>
 
-#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_mutator.h"
 
 namespace password_manager {
@@ -24,6 +24,10 @@ class IdentityManager;
 namespace syncer {
 class SyncService;
 }  // namespace syncer
+
+namespace trusted_vault {
+struct TrustedVaultKeyAndVersion;
+}  // namespace trusted_vault
 
 namespace webauthn {
 class PasskeyModel;
@@ -98,7 +102,7 @@ class PrefService;
 // `trustedVaultKeys` are needed to encrypt passkeys if there are any to be
 // imported.
 - (void)startImportingCredentialsWithTrustedVaultKeys:
-    (webauthn::SharedKeyList)trustedVaultKeys;
+    (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)trustedVaultKeys;
 
 @end
 

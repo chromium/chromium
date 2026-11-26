@@ -9,7 +9,6 @@
 
 #import <vector>
 
-#import "base/containers/to_vector.h"
 #import "base/ios/block_types.h"
 #import "base/not_fatal_until.h"
 #import "base/notreached.h"
@@ -261,11 +260,7 @@
              std::vector<trusted_vault::TrustedVaultKeyAndVersion>
                  trustedVaultKeys,
              NSError* error) {
-            // TODO(crbug.com/588274186): Clean this up after refactor.
-            [weakSelf onTrustedVaultKeysFetched:
-                          base::ToVector(
-                              trustedVaultKeys,
-                              &trusted_vault::TrustedVaultKeyAndVersion::key)
+            [weakSelf onTrustedVaultKeysFetched:std::move(trustedVaultKeys)
                                           error:error];
           },
           weakSelf));
@@ -417,7 +412,9 @@
 // Called when fetching trusted vault keys for passkeys finishes. If there are
 // no unexpected errors and the keys are present, informs the mediator to start
 // importing credentials.
-- (void)onTrustedVaultKeysFetched:(webauthn::SharedKeyList)trustedVaultKeys
+- (void)onTrustedVaultKeysFetched:
+            (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)
+                trustedVaultKeys
                             error:(NSError*)error {
   // First, dismiss welcome screens if there are any presented.
   if (_viewController.presentedViewController) {

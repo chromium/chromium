@@ -20,11 +20,11 @@
 #import "components/password_manager/core/browser/ui/credential_utils.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/import/import_processing_result.h"
 #import "components/webauthn/core/browser/import/passkey_importer.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
-#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
 #import "ios/chrome/browser/credential_exchange/model/features.h"
@@ -104,7 +104,7 @@ constexpr int kSupportedCredentialTypesCount = 2;
 #pragma mark - Public
 
 - (void)startImportingCredentialsWithTrustedVaultKeys:
-    (webauthn::SharedKeyList)trustedVaultKeys {
+    (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)trustedVaultKeys {
   __weak __typeof(self) weakSelf = self;
   _allCredentialTypesProcessedClosure =
       base::BarrierClosure(kSupportedCredentialTypesCount, base::BindOnce(^{
@@ -114,7 +114,7 @@ constexpr int kSupportedCredentialTypesCount = 2;
   std::vector<uint8_t> trustedVaultKey;
   if (_passkeys.count != 0) {
     CHECK_GE(trustedVaultKeys.size(), 1u);
-    trustedVaultKey = trustedVaultKeys.back();
+    trustedVaultKey = trustedVaultKeys.back().key;
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(

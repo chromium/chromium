@@ -7,6 +7,7 @@
 #import <memory>
 #import <tuple>
 #import <utility>
+#import <vector>
 
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
@@ -23,6 +24,7 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/import/imported_passkey_checker.h"
 #import "components/webauthn/core/browser/passkey_model_change.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
@@ -56,6 +58,11 @@ using ::testing::SizeIs;
 
 std::vector<uint8_t> TestTrustedVaultKey() {
   return std::vector<uint8_t>(32, 0);
+}
+
+trusted_vault::TrustedVaultKeyAndVersion TestTrustedVaultKeyAndVersion() {
+  return trusted_vault::TrustedVaultKeyAndVersion(TestTrustedVaultKey(),
+                                                  /*version=*/1);
 }
 
 NSData* ToNSData(const std::string& str) {
@@ -198,8 +205,8 @@ TEST_F(CredentialImporterTest, ImportsValidPasskey) {
 
   FakePasskeyModelObserver observer(passkey_model_.get());
 
-  [importer_
-      startImportingCredentialsWithTrustedVaultKeys:{TestTrustedVaultKey()}];
+  [importer_ startImportingCredentialsWithTrustedVaultKeys:
+                 {TestTrustedVaultKeyAndVersion()}];
 
   ASSERT_TRUE(observer.WaitForPasskeysChanged());
   ASSERT_FALSE(passkey_model_->IsEmpty());
@@ -224,8 +231,8 @@ TEST_F(CredentialImporterTest, ImportsPasskeyWithHmacSecret) {
 
   FakePasskeyModelObserver observer(passkey_model_.get());
 
-  [importer_
-      startImportingCredentialsWithTrustedVaultKeys:{TestTrustedVaultKey()}];
+  [importer_ startImportingCredentialsWithTrustedVaultKeys:
+                 {TestTrustedVaultKeyAndVersion()}];
 
   ASSERT_TRUE(observer.WaitForPasskeysChanged());
   ASSERT_FALSE(passkey_model_->IsEmpty());
@@ -253,8 +260,8 @@ TEST_F(CredentialImporterTest, ImportsPasskeyWithLargeBlob) {
 
   FakePasskeyModelObserver observer(passkey_model_.get());
 
-  [importer_
-      startImportingCredentialsWithTrustedVaultKeys:{TestTrustedVaultKey()}];
+  [importer_ startImportingCredentialsWithTrustedVaultKeys:
+                 {TestTrustedVaultKeyAndVersion()}];
 
   ASSERT_TRUE(observer.WaitForPasskeysChanged());
   ASSERT_FALSE(passkey_model_->IsEmpty());
@@ -283,8 +290,8 @@ TEST_F(CredentialImporterTest, ImportsPasskeyWithEmptyLargeBlob) {
 
   FakePasskeyModelObserver observer(passkey_model_.get());
 
-  [importer_
-      startImportingCredentialsWithTrustedVaultKeys:{TestTrustedVaultKey()}];
+  [importer_ startImportingCredentialsWithTrustedVaultKeys:
+                 {TestTrustedVaultKeyAndVersion()}];
 
   ASSERT_TRUE(observer.WaitForPasskeysChanged());
   ASSERT_FALSE(passkey_model_->IsEmpty());
@@ -331,8 +338,8 @@ TEST_F(CredentialImporterTest, ConflictPasskeyPassesCreationDateToUI) {
         future.SetValue(items);
       });
 
-  [importer_
-      startImportingCredentialsWithTrustedVaultKeys:{TestTrustedVaultKey()}];
+  [importer_ startImportingCredentialsWithTrustedVaultKeys:
+                 {TestTrustedVaultKeyAndVersion()}];
 
   NSArray<PasskeyImportItem*>* items = future.Get();
   ASSERT_EQ(items.count, 1u);
@@ -550,8 +557,8 @@ TEST_F(CredentialImporterTest, TestImportPasskeyWithInvalidPrivateKey) {
       });
 
   base::HistogramTester histogram_tester;
-  [importer_
-      startImportingCredentialsWithTrustedVaultKeys:{TestTrustedVaultKey()}];
+  [importer_ startImportingCredentialsWithTrustedVaultKeys:
+                 {TestTrustedVaultKeyAndVersion()}];
   run_loop.Run();
 
   EXPECT_OCMOCK_VERIFY(importer_delegate_);
@@ -590,8 +597,8 @@ TEST_F(CredentialImporterTest, TestImportPasskeyWithUnsupportedAlgorithm) {
       });
 
   base::HistogramTester histogram_tester;
-  [importer_
-      startImportingCredentialsWithTrustedVaultKeys:{TestTrustedVaultKey()}];
+  [importer_ startImportingCredentialsWithTrustedVaultKeys:
+                 {TestTrustedVaultKeyAndVersion()}];
   run_loop.Run();
 
   EXPECT_OCMOCK_VERIFY(importer_delegate_);
@@ -623,8 +630,8 @@ TEST_F(CredentialImporterFidoExtensionsDisabledTest,
 
   FakePasskeyModelObserver observer(passkey_model_.get());
 
-  [importer_
-      startImportingCredentialsWithTrustedVaultKeys:{TestTrustedVaultKey()}];
+  [importer_ startImportingCredentialsWithTrustedVaultKeys:
+                 {TestTrustedVaultKeyAndVersion()}];
 
   ASSERT_TRUE(observer.WaitForPasskeysChanged());
   ASSERT_FALSE(passkey_model_->IsEmpty());

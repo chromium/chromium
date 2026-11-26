@@ -9,8 +9,11 @@
 
 #import <vector>
 
-#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_import_manager_swift.h"
+
+namespace trusted_vault {
+struct TrustedVaultKeyAndVersion;
+}  // namespace trusted_vault
 
 namespace webauthn {
 class PasskeyModel;
@@ -76,7 +79,7 @@ class SavedPasswordsPresenter;
 // type is handled in a separate async task. Results are analyzed once all tasks
 // complete.
 - (void)startImportingCredentialsWithTrustedVaultKeys:
-    (webauthn::SharedKeyList)trustedVaultKeys;
+    (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)trustedVaultKeys;
 
 // Triggers storing data for all supported credential types in the user's
 // account. This should be called after conflicts with existing credential data

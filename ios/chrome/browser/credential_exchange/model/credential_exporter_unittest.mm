@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/credential_exchange/model/credential_exporter.h"
 
+#import <vector>
+
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
@@ -28,6 +31,11 @@ NSString* const kUserEmail = @"test@example.com";
 
 std::vector<uint8_t> GetTrustedVaultKey() {
   return {1, 2, 3, 4, 5};
+}
+
+trusted_vault::TrustedVaultKeyAndVersion GetTrustedVaultKeyAndVersion() {
+  return trusted_vault::TrustedVaultKeyAndVersion(GetTrustedVaultKey(),
+                                                  /*version=*/1);
 }
 
 NSData* ToNSData(const std::string& str) {
@@ -177,7 +185,7 @@ TEST_F(CredentialExporterTest, ExportsPasskeys) {
 
     [exporter startExportWithPasswords:{}
                               passkeys:{CreatePasskeySpecifics({})}
-                      trustedVaultKeys:{GetTrustedVaultKey()}
+                      trustedVaultKeys:{GetTrustedVaultKeyAndVersion()}
                              userEmail:kUserEmail];
 
     [mockExportManager verify];
@@ -207,7 +215,7 @@ TEST_F(CredentialExporterTest, ExportsPasskeysWithHmacSecret) {
     [exporter startExportWithPasswords:{}
                               passkeys:{CreatePasskeySpecifics(
                                            {.include_hmac_secret = true})}
-                      trustedVaultKeys:{GetTrustedVaultKey()}
+                      trustedVaultKeys:{GetTrustedVaultKeyAndVersion()}
                              userEmail:kUserEmail];
 
     [mockExportManager verify];
@@ -238,7 +246,7 @@ TEST_F(CredentialExporterTest, ExportsPasskeysWithLargeBlob) {
     [exporter startExportWithPasswords:{}
                               passkeys:{CreatePasskeySpecifics(
                                            {.include_large_blob = true})}
-                      trustedVaultKeys:{GetTrustedVaultKey()}
+                      trustedVaultKeys:{GetTrustedVaultKeyAndVersion()}
                              userEmail:kUserEmail];
 
     [mockExportManager verify];
@@ -278,7 +286,7 @@ TEST_F(CredentialExporterFidoExtensionsDisabledTest,
                               passkeys:{CreatePasskeySpecifics(
                                            {.include_hmac_secret = true,
                                             .include_large_blob = true})}
-                      trustedVaultKeys:{GetTrustedVaultKey()}
+                      trustedVaultKeys:{GetTrustedVaultKeyAndVersion()}
                              userEmail:kUserEmail];
 
     [mockExportManager verify];

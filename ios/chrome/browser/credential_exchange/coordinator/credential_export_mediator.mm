@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_export_mediator.h"
 
+#import <vector>
+
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -14,8 +16,8 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/passkey_model.h"
-#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exporter.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_group_identifier.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -135,12 +137,14 @@ const CGFloat kMinFaviconSize = 16.0;
   } else {
     __weak __typeof(self) weakSelf = self;
 
-    base::OnceCallback<void(webauthn::SharedKeyList)> fetchSecretsCallback =
-        base::BindOnce(
+    base::OnceCallback<void(
+        std::vector<trusted_vault::TrustedVaultKeyAndVersion>)>
+        fetchSecretsCallback = base::BindOnce(
             [](__weak CredentialExportMediator* mediator,
                std::vector<password_manager::CredentialUIEntry> passwords,
                std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
-               webauthn::SharedKeyList trustedVaultKeys) {
+               std::vector<trusted_vault::TrustedVaultKeyAndVersion>
+                   trustedVaultKeys) {
               [mediator
                   startExportWithTrustedVaultKeys:std::move(trustedVaultKeys)
                                         passwords:std::move(passwords)
@@ -149,7 +153,8 @@ const CGFloat kMinFaviconSize = 16.0;
             weakSelf, std::move(passwordsToExport),
             std::move(passkeysToExport));
 
-    void (^completionBlock)(webauthn::SharedKeyList) =
+    void (^completionBlock)(
+        std::vector<trusted_vault::TrustedVaultKeyAndVersion>) =
         base::CallbackToBlock(std::move(fetchSecretsCallback));
 
     [self.delegate fetchTrustedVaultKeysWithCompletion:completionBlock];
@@ -194,7 +199,8 @@ const CGFloat kMinFaviconSize = 16.0;
 #pragma mark - Private
 
 - (void)
-    startExportWithTrustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
+    startExportWithTrustedVaultKeys:
+        (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)trustedVaultKeys
                           passwords:
                               (std::vector<password_manager::CredentialUIEntry>)
                                   passwords

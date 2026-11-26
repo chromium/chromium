@@ -12,7 +12,10 @@
 
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
-#import "components/webauthn/ios/passkey_types.h"
+
+namespace trusted_vault {
+struct TrustedVaultKeyAndVersion;
+}  // namespace trusted_vault
 
 @protocol CredentialExporterDelegate <NSObject>
 
@@ -39,7 +42,9 @@
                         passkeys:
                             (std::vector<sync_pb::WebauthnCredentialSpecifics>)
                                 passkeys
-                trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
+                trustedVaultKeys:
+                    (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)
+                        trustedVaultKeys
                        userEmail:(NSString*)userEmail API_AVAILABLE(ios(26.0));
 
 @end

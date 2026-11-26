@@ -7,7 +7,6 @@
 #import <string>
 #import <vector>
 
-#import "base/containers/to_vector.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -172,7 +171,8 @@
 #pragma mark - CredentialExportMediatorDelegate
 
 - (void)fetchTrustedVaultKeysWithCompletion:
-    (void (^)(webauthn::SharedKeyList))completion {
+    (void (^)(std::vector<trusted_vault::TrustedVaultKeyAndVersion>))
+        completion {
   CHECK(completion);
   bool metricsReportingEnabled =
       metrics::MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
@@ -190,16 +190,13 @@
   __weak __typeof(self) weakSelf = self;
   auto completion_block = base::CallbackToBlock(base::BindOnce(
       [](__weak __typeof(self) weakSelf,
-         void (^completion)(webauthn::SharedKeyList),
+         void (^completion)(
+             std::vector<trusted_vault::TrustedVaultKeyAndVersion>),
          std::vector<trusted_vault::TrustedVaultKeyAndVersion> trustedVaultKeys,
          NSError* error) {
-        // TODO(crbug.com/588274186): Clean this up after refactor.
-        [weakSelf
-            onTrustedVaultKeysFetched:
-                base::ToVector(trustedVaultKeys,
-                               &trusted_vault::TrustedVaultKeyAndVersion::key)
-                                error:error
-                           completion:completion];
+        [weakSelf onTrustedVaultKeysFetched:std::move(trustedVaultKeys)
+                                      error:error
+                                 completion:completion];
       },
       weakSelf, completion));
   [_passkeyKeychainProviderBridge
@@ -328,10 +325,14 @@
 
 // Called when fetching trusted vault keys for passkeys finishes. If there are
 // no unexpected errors and the keys are present, calls `completion`
-- (void)onTrustedVaultKeysFetched:(webauthn::SharedKeyList)trustedVaultKeys
+- (void)onTrustedVaultKeysFetched:
+            (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)
+                trustedVaultKeys
                             error:(NSError*)error
                        completion:
-                           (void (^)(webauthn::SharedKeyList))completion {
+                           (void (^)(std::vector<
+                                     trusted_vault::TrustedVaultKeyAndVersion>))
+                               completion {
   // First, dismiss welcome screens if there are any presented.
   if (_viewController.presentedViewController) {
     __weak __typeof(self) weakSelf = self;

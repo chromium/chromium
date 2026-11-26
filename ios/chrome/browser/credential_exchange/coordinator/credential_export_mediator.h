@@ -10,7 +10,6 @@
 
 #import <vector>
 
-#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_consumer.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_favicon_provider.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller.h"
@@ -33,6 +32,10 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
+namespace trusted_vault {
+struct TrustedVaultKeyAndVersion;
+}  // namespace trusted_vault
+
 class FaviconLoader;
 @protocol ReauthenticationProtocol;
 
@@ -42,7 +45,7 @@ class FaviconLoader;
 // Asks the delegate to fetch trusted vault keys. This is only called if
 // passkeys are detected in the export list.
 - (void)fetchTrustedVaultKeysWithCompletion:
-    (void (^)(webauthn::SharedKeyList))completion;
+    (void (^)(std::vector<trusted_vault::TrustedVaultKeyAndVersion>))completion;
 
 // Asks the delegate to display a generic error alert.
 - (void)showGenericError;

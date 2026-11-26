@@ -5,14 +5,15 @@
 #import "ios/chrome/browser/credential_exchange/model/credential_exporter.h"
 
 #import <optional>
+#import <vector>
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
-#import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_export_manager_swift.h"
@@ -56,7 +57,9 @@
                         passkeys:
                             (std::vector<sync_pb::WebauthnCredentialSpecifics>)
                                 passkeys
-                trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
+                trustedVaultKeys:
+                    (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)
+                        trustedVaultKeys
                        userEmail:(NSString*)userEmail API_AVAILABLE(ios(26.0)) {
   NSArray<CredentialExchangePassword*>* exportedPasswords =
       [self transformPasswords:std::move(passwords)];
@@ -107,7 +110,9 @@
 - (NSArray<CredentialExchangePasskey*>*)
         transformPasskeys:
             (std::vector<sync_pb::WebauthnCredentialSpecifics>)passkeys
-    usingTrustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys {
+    usingTrustedVaultKeys:
+        (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)
+            trustedVaultKeys {
   NSMutableArray<CredentialExchangePasskey*>* exportedPasskeys =
       [NSMutableArray arrayWithCapacity:passkeys.size()];
 
@@ -179,12 +184,16 @@
     decryptEncryptedDataForPasskey:
         (const sync_pb::WebauthnCredentialSpecifics&)passkey
              usingTrustedVaultKeys:
-                 (const webauthn::SharedKeyList&)trustedVaultKeys {
+                 (const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&)
+                     trustedVaultKeys {
   sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
-  for (const webauthn::SharedKey& trustedVaultKey : trustedVaultKeys) {
+  for (const trusted_vault::TrustedVaultKeyAndVersion& trustedVaultKey :
+       trustedVaultKeys) {
+    // TODO(crbug.com/588274186): Check if `passkey.key_version()` matches
+    // `trustedVaultKey.version` before attempting decryption.
     // TODO(crbug.com/405036154): Pass the device authorization key.
     if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-            trustedVaultKey, /*device_authorization_key=*/{}, passkey,
+            trustedVaultKey.key, /*device_authorization_key=*/{}, passkey,
             &decrypted)) {
       return decrypted;
     }
