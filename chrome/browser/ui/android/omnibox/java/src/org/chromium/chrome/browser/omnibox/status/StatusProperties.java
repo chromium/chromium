@@ -33,7 +33,6 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -245,9 +244,6 @@ public class StatusProperties {
         }
     }
 
-    /** Alpha of the entire StatusView container. */
-    static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
-
     /** Whether animations are turned on. */
     static final WritableBooleanPropertyKey ANIMATIONS_ENABLED = new WritableBooleanPropertyKey();
 
@@ -318,7 +314,6 @@ public class StatusProperties {
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 // go/keep-sorted start
-                ALPHA,
                 ANIMATIONS_ENABLED,
                 RESOURCE_PROVIDER,
                 SEPARATOR_COLOR,

@@ -22,9 +22,7 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
 
     @Override
     public void bind(PropertyModel model, StatusView view, PropertyKey propertyKey) {
-        if (propertyKey == StatusProperties.ALPHA) {
-            view.setAlpha(model.get(StatusProperties.ALPHA));
-        } else if (propertyKey == StatusProperties.ANIMATIONS_ENABLED) {
+        if (propertyKey == StatusProperties.ANIMATIONS_ENABLED) {
             view.setAnimationsEnabled(model.get(StatusProperties.ANIMATIONS_ENABLED));
         } else if (propertyKey == StatusProperties.RESOURCE_PROVIDER) {
             view.setResourceProvider(model.get(StatusProperties.RESOURCE_PROVIDER));
