@@ -6,9 +6,12 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
+#import <vector>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/time/time.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/credential_provider/net_util.h"
@@ -154,7 +157,9 @@ constexpr base::TimeDelta kPasskeyUpgradeRecencyThreshold = base::Minutes(5);
 
 - (ASPasskeyRegistrationCredential*)
            createPasskeyForGaia:(NSString*)gaia
-               trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
+               trustedVaultKeys:
+                   (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)
+                       trustedVaultKeys
     didCompleteUserVerification:(BOOL)didCompleteUserVerification {
   NSArray<NSData*>* prfInputs = nil;
   if (_prf.inputValues) {
@@ -185,7 +190,9 @@ constexpr base::TimeDelta kPasskeyUpgradeRecencyThreshold = base::Minutes(5);
 
 - (ASPasskeyAssertionCredential*)
         assertPasskeyCredential:(id<Credential>)credential
-               trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
+               trustedVaultKeys:
+                   (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)
+                       trustedVaultKeys
     didCompleteUserVerification:(BOOL)didCompleteUserVerification {
   NSArray<NSData*>* prfInputs = nil;
   PRFInputValues* inputValues = nil;

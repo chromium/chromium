@@ -4,18 +4,24 @@
 
 #import "ios/chrome/credential_provider_extension/ui/mock_credential_response_handler.h"
 
+#import <cstdint>
+#import <vector>
+
 #import "base/strings/string_number_conversions.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "ios/chrome/credential_provider_extension/passkey_request_details.h"
 
 namespace {
 
-std::vector<std::vector<uint8_t>> TrustedVaultKeys() {
+std::vector<trusted_vault::TrustedVaultKeyAndVersion> TrustedVaultKeys() {
   const std::vector<char> key_values = {
       '\x1f', '\xfa', '\x97', '\x98', '\xdf', '\n',   '\xc7', '\xe4',
       '\xf6', 'G',    '\xd5', 'm',    'C',    '\xa2', 'P',    '\xe0',
       '\xa2', 'E',    '\x90', '\xb2', '\x86', '\xbf', '\xfc', 'E',
       '\e',   'N',    '\x15', '\xea', 'G',    '\x9b', '\x9b', '\xc8'};
-  return {std::vector<uint8_t>(key_values.begin(), key_values.end())};
+  return {trusted_vault::TrustedVaultKeyAndVersion(
+      std::vector<uint8_t>(key_values.begin(), key_values.end()),
+      /*version=*/0)};
 }
 
 }  // namespace

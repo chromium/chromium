@@ -168,6 +168,7 @@ source_set("mock_credential_response_handler") {
   deps = [
     ":credential_response_handler",
     "//base",
+    "//components/trusted_vault:trusted_vault_key_and_version",
     "//ios/chrome/credential_provider_extension:passkey_request_details",
   ]
 }

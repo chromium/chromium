@@ -4,6 +4,8 @@
 
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
 
+#import <vector>
+
 #import "base/apple/foundation_util.h"
 #import "base/containers/span.h"
 #import "base/strings/string_number_conversions.h"
@@ -11,6 +13,7 @@
 #import "base/time/time.h"
 #import "components/cbor/writer.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/gpm_user_verification_policy.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "device/fido/public/fido_types.h"
@@ -145,8 +148,9 @@ void SaveToIdentityStore(id<Credential> credential,
 }  // namespace
 
 std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted>
-DecryptCredentialSecrets(id<Credential> credential,
-                         webauthn::SharedKeyList trusted_vault_keys) {
+DecryptCredentialSecrets(
+    id<Credential> credential,
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> trusted_vault_keys) {
   if (trusted_vault_keys.empty()) {
     return std::nullopt;
   }
@@ -163,11 +167,15 @@ DecryptCredentialSecrets(id<Credential> credential,
     return std::nullopt;
   }
 
-  for (const webauthn::SharedKey& trusted_vault_key : trusted_vault_keys) {
+  // TODO(crbug.com/588274186): Store `key_version` on `id<Credential>` and
+  // match it against `TrustedVaultKeyAndVersion::version` when present before
+  // falling back to trial decryption.
+  for (const trusted_vault::TrustedVaultKeyAndVersion& trusted_vault_key :
+       trusted_vault_keys) {
     sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
     // TODO(crbug.com/405036154): Pass the device authorization key.
     if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
-            trusted_vault_key, /*device_authorization_key=*/{},
+            trusted_vault_key.key, /*device_authorization_key=*/{},
             credential_specifics, &credential_secrets)) {
       return credential_secrets;
     }
@@ -182,7 +190,7 @@ PasskeyCreationOutput PerformPasskeyCreation(
     NSString* user_name,
     NSData* user_handle,
     NSString* gaia,
-    webauthn::SharedKeyList trusted_vault_keys,
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> trusted_vault_keys,
     NSArray<NSData*>* prf_inputs,
     bool did_complete_uv) {
   if (trusted_vault_keys.empty()) {
@@ -206,7 +214,7 @@ PasskeyCreationOutput PerformPasskeyCreation(
           rp_id_str,
           webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
                                              user_name_str),
-          std::move(trusted_vault_keys[0]), /*trusted_vault_key_version=*/0,
+          trusted_vault_keys.back().key, trusted_vault_keys.back().version,
           /*device_authorization_key=*/std::nullopt, extension_input_data,
           &extension_output_data);
 
@@ -242,7 +250,7 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
     id<Credential> credential,
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
-    webauthn::SharedKeyList trusted_vault_keys,
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> trusted_vault_keys,
     NSArray<NSData*>* prf_inputs,
     bool did_complete_uv) {
   if (trusted_vault_keys.empty()) {

@@ -10,12 +10,15 @@
 
 #import <optional>
 #import <string>
-
-#import "components/webauthn/ios/passkey_types.h"
+#import <vector>
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics_Encrypted;
 }  // namespace sync_pb
+
+namespace trusted_vault {
+struct TrustedVaultKeyAndVersion;
+}  // namespace trusted_vault
 
 @protocol Credential;
 
@@ -24,8 +27,9 @@ class WebauthnCredentialSpecifics_Encrypted;
 // If the decryption is successful, the results will be stored in the provided
 // `credential_secrets` structure.
 std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted>
-DecryptCredentialSecrets(id<Credential> credential,
-                         webauthn::SharedKeyList trusted_vault_keys);
+DecryptCredentialSecrets(
+    id<Credential> credential,
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> trusted_vault_keys);
 
 // Credential and extension data returned by the passkey creation process.
 struct PasskeyCreationOutput {
@@ -46,7 +50,7 @@ PasskeyCreationOutput PerformPasskeyCreation(
     NSString* user_name,
     NSData* user_handle,
     NSString* gaia,
-    webauthn::SharedKeyList trusted_vault_keys,
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> trusted_vault_keys,
     NSArray<NSData*>* prf_inputs,
     bool did_complete_uv);
 
@@ -68,7 +72,7 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
     id<Credential> credential,
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
-    webauthn::SharedKeyList trusted_vault_keys,
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> trusted_vault_keys,
     NSArray<NSData*>* prf_inputs,
     bool did_complete_uv);
 

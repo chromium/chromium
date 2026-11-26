@@ -11,7 +11,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/command_line.h"
-#import "base/containers/to_vector.h"
 #import "base/ios/block_types.h"
 #import "base/not_fatal_until.h"
 #import "base/notreached.h"
@@ -586,18 +585,13 @@ enum class PasskeyCreationEligibility {
 - (void)userSelectedPasskey:(id<Credential>)credential
       passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails {
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^(
-      std::vector<trusted_vault::TrustedVaultKeyAndVersion> trustedVaultKeys,
-      NSError* error) {
-    // TODO(crbug.com/588274186): Clean this up after refactor.
-    [weakSelf
-        passkeyAssertionWithCredential:credential
-                 passkeyRequestDetails:passkeyRequestDetails
-                      trustedVaultKeys:
-                          base::ToVector(
-                              trustedVaultKeys,
-                              &trusted_vault::TrustedVaultKeyAndVersion::key)];
-  };
+  auto completion =
+      ^(std::vector<trusted_vault::TrustedVaultKeyAndVersion> trustedVaultKeys,
+        NSError* error) {
+        [weakSelf passkeyAssertionWithCredential:credential
+                           passkeyRequestDetails:passkeyRequestDetails
+                                trustedVaultKeys:std::move(trustedVaultKeys)];
+      };
 
   [self fetchTrustedVaultKeysForGaia:credential.gaia
                           credential:credential
@@ -1183,7 +1177,9 @@ enum class PasskeyCreationEligibility {
 // Attempts to create a passkey.
 - (void)createPasskeyWithDetails:(PasskeyRequestDetails*)passkeyRequestDetails
                             gaia:(NSString*)gaia
-                trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys {
+                trustedVaultKeys:
+                    (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)
+                        trustedVaultKeys {
   if (trustedVaultKeys.empty()) {
     [self exitWithErrorCode:ASExtensionErrorCodeFailed];
     return;
@@ -1213,17 +1209,13 @@ enum class PasskeyCreationEligibility {
 - (void)createPasskeyWithDetails:(PasskeyRequestDetails*)passkeyRequestDetails
                             gaia:(NSString*)gaia {
   __weak __typeof(self) weakSelf = self;
-  auto completion = ^(
-      std::vector<trusted_vault::TrustedVaultKeyAndVersion> trustedVaultKeys,
-      NSError* error) {
-    // TODO(crbug.com/588274186): Clean this up after refactor.
-    [weakSelf createPasskeyWithDetails:passkeyRequestDetails
-                                  gaia:gaia
-                      trustedVaultKeys:
-                          base::ToVector(
-                              trustedVaultKeys,
-                              &trusted_vault::TrustedVaultKeyAndVersion::key)];
-  };
+  auto completion =
+      ^(std::vector<trusted_vault::TrustedVaultKeyAndVersion> trustedVaultKeys,
+        NSError* error) {
+        [weakSelf createPasskeyWithDetails:passkeyRequestDetails
+                                      gaia:gaia
+                          trustedVaultKeys:std::move(trustedVaultKeys)];
+      };
 
   [self fetchTrustedVaultKeysForGaia:gaia
                           credential:nil
@@ -1237,7 +1229,9 @@ enum class PasskeyCreationEligibility {
 - (void)
     passkeyAssertionWithCredential:(id<Credential>)credential
              passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails
-                  trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys {
+                  trustedVaultKeys:
+                      (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)
+                          trustedVaultKeys {
   if (trustedVaultKeys.empty()) {
     [self exitWithErrorCode:ASExtensionErrorCodeFailed];
     return;

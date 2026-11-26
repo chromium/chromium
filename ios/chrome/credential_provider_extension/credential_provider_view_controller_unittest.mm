@@ -14,7 +14,6 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
-#import "base/containers/to_vector.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
@@ -142,7 +141,6 @@ using ::base::apple::ObjCCast;
 using ::base::test::TestFuture;
 using ::password_manager::metrics_util::BrowserAssistedLoginType;
 using ::webauthn::PasskeyWelcomeScreenPurpose;
-using ::webauthn::SharedKeyList;
 
 constexpr int kPasskeyBucket = static_cast<int>(
     BrowserAssistedLoginType::kPasskeyStoredInGPMFacilitatedThroughIOSUI);
@@ -183,10 +181,12 @@ NSURL* TestStorageFileURL() {
       URLByAppendingPathComponent:@"credentials"];
 }
 
-// Returns a valid 32-byte trusted vault key for tests.
-webauthn::SharedKey GetTestTrustedVaultKey() {
-  return std::vector<uint8_t>{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4,
-                              1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
+// Returns a valid 32-byte trusted vault key and version for tests.
+trusted_vault::TrustedVaultKeyAndVersion GetTestTrustedVaultKey() {
+  return trusted_vault::TrustedVaultKeyAndVersion(
+      std::vector<uint8_t>{1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4,
+                           1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4},
+      /*version=*/1);
 }
 
 // Creates a passkey `ArchivableCredential` with valid encrypted secrets using
@@ -196,11 +196,12 @@ ArchivableCredential* TestEncryptedPasskeyCredential() {
   webauthn::PasskeyModel::UserEntity user_entity(
       user_id, SysNSStringToUTF8(kDefaultUsername),
       SysNSStringToUTF8(kDefaultUserDisplayName));
+  const trusted_vault::TrustedVaultKeyAndVersion trusted_vault_key =
+      GetTestTrustedVaultKey();
   auto generated_passkey =
       webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
-          SysNSStringToUTF8(kDefaultRpId), user_entity,
-          GetTestTrustedVaultKey(),
-          /*trusted_vault_key_version=*/0,
+          SysNSStringToUTF8(kDefaultRpId), user_entity, trusted_vault_key.key,
+          trusted_vault_key.version,
           /*device_authorization_key=*/std::nullopt,
           /*extension_input_data=*/{}, /*extension_output_data=*/nullptr);
   return [[ArchivableCredential alloc] initWithFavicon:kDefaultFavicon
@@ -326,17 +327,12 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
  public:
   FakePasskeyKeychainProvider()
       : PasskeyKeychainProvider(/*metrics_reporting_enabled=*/false),
-        keys_(
-            {trusted_vault::TrustedVaultKeyAndVersion(GetTestTrustedVaultKey(),
-                                                      /*version=*/0)}) {}
+        keys_({GetTestTrustedVaultKey()}) {}
 
   ~FakePasskeyKeychainProvider() override = default;
 
-  // TODO(crbug.com/588274186): Clean this up after refactor.
-  void SetKeys(SharedKeyList keys) {
-    keys_ = base::ToVector(keys, [](const webauthn::SharedKey& key) {
-      return trusted_vault::TrustedVaultKeyAndVersion(key, /*version=*/0);
-    });
+  void SetKeys(std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys) {
+    keys_ = std::move(keys);
   }
   void SetIsEnrolled(bool is_enrolled) { is_enrolled_ = is_enrolled; }
   void SetHoldCheckEnrolled(bool hold) { hold_check_enrolled_ = hold; }

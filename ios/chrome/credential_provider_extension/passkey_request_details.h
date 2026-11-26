@@ -8,7 +8,11 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
-#import "components/webauthn/ios/passkey_types.h"
+#import <vector>
+
+namespace trusted_vault {
+struct TrustedVaultKeyAndVersion;
+}  // namespace trusted_vault
 
 @protocol Credential;
 
@@ -29,13 +33,17 @@
 // Performs passkey creation and returns the new credential.
 - (ASPasskeyRegistrationCredential*)
            createPasskeyForGaia:(NSString*)gaia
-               trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
+               trustedVaultKeys:
+                   (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)
+                       trustedVaultKeys
     didCompleteUserVerification:(BOOL)didCompleteUserVerification;
 
 // Performs passkey assertion and returns the assertion response.
 - (ASPasskeyAssertionCredential*)
         assertPasskeyCredential:(id<Credential>)credential
-               trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
+               trustedVaultKeys:
+                   (std::vector<trusted_vault::TrustedVaultKeyAndVersion>)
+                       trustedVaultKeys
     didCompleteUserVerification:(BOOL)didCompleteUserVerification;
 
 // Returns whether the list of credentials contains a password that has eTLD+1
