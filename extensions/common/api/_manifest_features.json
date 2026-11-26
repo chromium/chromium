@@ -125,11 +125,13 @@
   "chrome_url_overrides.activationmessage": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
+    "location": "component",
     "platforms": ["chromeos"]
   },
   "chrome_url_overrides.keyboard": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
+    "location": "component",
     "platforms": ["chromeos"]
   },
   "commands": {

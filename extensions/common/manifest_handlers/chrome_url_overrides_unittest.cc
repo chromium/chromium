@@ -45,12 +45,39 @@ TEST_F(URLOverridesManifestTest, Override) {
   extension = LoadAndExpectSuccess("override_invalid_page.json");
   EXPECT_TRUE(URLOverrides::GetChromeURLOverrides(extension.get()).empty());
 
-  // "keyboard" property is only available on ChromeOS Ash.
+  // "keyboard" property is only available for component extensions on ChromeOS.
   extension = LoadAndExpectSuccess("override_keyboard_page.json");
+  EXPECT_TRUE(URLOverrides::GetChromeURLOverrides(extension.get()).empty());
+
+  extension = LoadAndExpectSuccess("override_keyboard_page.json",
+                                   mojom::ManifestLocation::kComponent);
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(extension->url().spec() + "a_page.html",
             extensions::URLOverrides::GetChromeURLOverrides(extension.get())
                 .find("keyboard")
+                ->second.spec());
+#else
+  EXPECT_TRUE(URLOverrides::GetChromeURLOverrides(extension.get()).empty());
+#endif
+
+  // "activationmessage" property is only available for component extensions on
+  // ChromeOS.
+  auto activation_manifest =
+      base::DictValue()
+          .Set("name", "test")
+          .Set("version", "1")
+          .Set("manifest_version", 3)
+          .Set("chrome_url_overrides",
+               base::DictValue().Set("activationmessage", "a_page.html"));
+  extension = LoadAndExpectSuccess(ManifestData(activation_manifest.Clone()));
+  EXPECT_TRUE(URLOverrides::GetChromeURLOverrides(extension.get()).empty());
+
+  extension = LoadAndExpectSuccess(ManifestData(activation_manifest.Clone()),
+                                   mojom::ManifestLocation::kComponent);
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(extension->url().spec() + "a_page.html",
+            extensions::URLOverrides::GetChromeURLOverrides(extension.get())
+                .find("activationmessage")
                 ->second.spec());
 #else
   EXPECT_TRUE(URLOverrides::GetChromeURLOverrides(extension.get()).empty());

@@ -143,9 +143,20 @@ void AddOverridesToList(base::ListValue& list, const GURL& override_url) {
   list.Insert(list.begin(), base::Value(std::move(dict)));
 }
 
+// Returns true if `extension` currently declares an override for `page` in its
+// parsed manifest. Entries in the overrides pref may outlive the declaration,
+// e.g. if the extension registered the override with an older browser version
+// that still allowed the extension to override `page`.
+bool ExtensionDeclaresOverride(const Extension& extension,
+                               const std::string& page) {
+  return URLOverrides::GetChromeURLOverrides(&extension).contains(page);
+}
+
 // Validates that each entry in |list| contains a valid url and points to an
-// extension contained in |all_extensions| (and, if not, removes it).
+// extension contained in |all_extensions| that still declares an override for
+// |page| (and, if not, removes it).
 void ValidateOverridesList(const extensions::ExtensionSet* all_extensions,
+                           const std::string& page,
                            base::ListValue& list) {
   base::ListValue migrated;
   std::set<std::string> seen_hosts;
@@ -162,7 +173,9 @@ void ValidateOverridesList(const extensions::ExtensionSet* all_extensions,
       continue;
     }
 
-    if (!all_extensions->GetByID(override_url.GetHost())) {
+    const Extension* extension =
+        all_extensions->GetByID(override_url.GetHost());
+    if (!extension || !ExtensionDeclaresOverride(*extension, page)) {
       continue;
     }
 
@@ -332,13 +345,23 @@ const Extension* ValidateOverrideURL(const base::Value* override_url_value,
   if (!override_url->is_valid()) {
     return nullptr;
   }
-  return extensions.GetByID(override_url->GetHost());
+  const Extension* extension = extensions.GetByID(override_url->GetHost());
+  // Only honor the entry if the extension still declares an override for the
+  // page. Stale entries are removed by ValidateChromeURLOverrides(), but they
+  // may still be present until then.
+  if (!extension ||
+      !ExtensionDeclaresOverride(*extension, source_url.GetHost())) {
+    return nullptr;
+  }
+  return extension;
 }
 
-// Fetches each list in the overrides dictionary and runs |callback| on it.
+// Fetches each list in the overrides dictionary and runs |callback| on it,
+// along with the page (key) the list is associated with.
 void ForEachOverrideList(
     Profile* profile,
-    base::RepeatingCallback<void(base::ListValue&)> callback) {
+    base::RepeatingCallback<void(const std::string&, base::ListValue&)>
+        callback) {
   PrefService* prefs = profile->GetPrefs();
   ScopedDictPrefUpdate update(prefs,
                               ExtensionUrlOverrides::kExtensionURLOverrides);
@@ -359,7 +382,7 @@ void ForEachOverrideList(
       all_overrides.Remove(key);
       continue;
     }
-    callback.Run(*list);
+    callback.Run(key, *list);
   }
 }
 
@@ -561,7 +584,10 @@ size_t ExtensionUrlOverrides::GetNumberOfExtensionsOverridingURL(
 
 // static
 void ExtensionUrlOverrides::InitializeChromeURLOverrides(Profile* profile) {
-  ForEachOverrideList(profile, base::BindRepeating(&InitializeOverridesList));
+  ForEachOverrideList(profile, base::BindRepeating([](const std::string& page,
+                                                      base::ListValue& list) {
+                        InitializeOverridesList(list);
+                      }));
 }
 
 // static

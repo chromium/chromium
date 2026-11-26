@@ -105,6 +105,47 @@ TEST(FeatureProviderTest, ManifestFeatureAvailability) {
                 .result());
 }
 
+// Tests that chrome_url_overrides.keyboard and activationmessage are only
+// available to component extensions on ChromeOS.
+TEST(FeatureProviderTest, ChromeUrlOverridesKeyboardAvailability) {
+  const FeatureProvider* provider = FeatureProvider::GetManifestFeatures();
+  ASSERT_TRUE(provider);
+
+  for (const char* name : {"chrome_url_overrides.keyboard",
+                           "chrome_url_overrides.activationmessage"}) {
+    SCOPED_TRACE(name);
+    const Feature* feature = provider->GetFeature(name);
+    ASSERT_TRUE(feature);
+
+    // Non-component location should not be available on ChromeOS.
+    EXPECT_EQ(Feature::AvailabilityResult::kInvalidLocation,
+              feature
+                  ->IsAvailableToManifest(
+                      HashedExtensionId(), Manifest::Type::kExtension,
+                      mojom::ManifestLocation::kInternal, 3,
+                      Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
+                  .result());
+
+    // Component location on ChromeOS should be available.
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+              feature
+                  ->IsAvailableToManifest(
+                      HashedExtensionId(), Manifest::Type::kExtension,
+                      mojom::ManifestLocation::kComponent, 3,
+                      Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
+                  .result());
+
+    // Component location on other platforms should not be available.
+    EXPECT_EQ(Feature::AvailabilityResult::kInvalidPlatform,
+              feature
+                  ->IsAvailableToManifest(
+                      HashedExtensionId(), Manifest::Type::kExtension,
+                      mojom::ManifestLocation::kComponent, 3,
+                      Feature::LINUX_PLATFORM, kUnspecifiedContextId)
+                  .result());
+  }
+}
+
 // Tests that a real permission feature is available for the correct types of
 // extensions and apps.
 TEST(FeatureProviderTest, PermissionFeatureTypes) {

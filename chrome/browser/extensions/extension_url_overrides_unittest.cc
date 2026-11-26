@@ -222,6 +222,173 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   EXPECT_EQ(kBookmarksUrl, changed_url);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// The "keyboard" and "activationmessage" overrides are only available on
+// ChromeOS, and only to component extensions there.
+TEST_F(ExtensionWebUITest, NonComponentCannotOverrideKeyboard) {
+  const char kOverrideResource[] = "1.html";
+  auto manifest =
+      base::DictValue()
+          .Set(manifest_keys::kName, "ext")
+          .Set(manifest_keys::kVersion, "0.1")
+          .Set(manifest_keys::kManifestVersion, 2)
+          .Set(api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
+               base::DictValue().Set("keyboard", kOverrideResource));
+  scoped_refptr<const Extension> extension(
+      ExtensionBuilder()
+          .SetManifest(std::move(manifest))
+          .SetLocation(ManifestLocation::kUnpacked)
+          .SetID("abcdefghijabcdefghijabcdefghijaa")
+          .Build());
+  EXPECT_TRUE(URLOverrides::GetChromeURLOverrides(extension.get()).empty());
+  registrar()->AddExtension(extension.get());
+
+  GURL keyboard_url("chrome://keyboard");
+  GURL changed_url = keyboard_url;
+  EXPECT_FALSE(ExtensionUrlOverrides::HandleChromeURLOverride(&changed_url,
+                                                              profile_.get()));
+  EXPECT_EQ(keyboard_url, changed_url);
+}
+
+TEST_F(ExtensionWebUITest, NonComponentCannotOverrideActivationMessage) {
+  const char kOverrideResource[] = "1.html";
+  auto manifest =
+      base::DictValue()
+          .Set(manifest_keys::kName, "ext")
+          .Set(manifest_keys::kVersion, "0.1")
+          .Set(manifest_keys::kManifestVersion, 2)
+          .Set(api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
+               base::DictValue().Set("activationmessage", kOverrideResource));
+  scoped_refptr<const Extension> extension(
+      ExtensionBuilder()
+          .SetManifest(std::move(manifest))
+          .SetLocation(ManifestLocation::kUnpacked)
+          .SetID("abcdefghijabcdefghijabcdefghijaa")
+          .Build());
+  EXPECT_TRUE(URLOverrides::GetChromeURLOverrides(extension.get()).empty());
+  registrar()->AddExtension(extension.get());
+
+  GURL activation_url("chrome://activationmessage");
+  GURL changed_url = activation_url;
+  EXPECT_FALSE(ExtensionUrlOverrides::HandleChromeURLOverride(&changed_url,
+                                                              profile_.get()));
+  EXPECT_EQ(activation_url, changed_url);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(ExtensionWebUITest, ComponentKeyboardOverride) {
+  const char kOverrideResource[] = "1.html";
+  auto manifest =
+      base::DictValue()
+          .Set(manifest_keys::kName, "keyboard_app")
+          .Set(manifest_keys::kVersion, "0.1")
+          .Set(manifest_keys::kManifestVersion, 2)
+          .Set(api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
+               base::DictValue().Set("keyboard", kOverrideResource));
+  scoped_refptr<const Extension> extension(
+      ExtensionBuilder()
+          .SetManifest(std::move(manifest))
+          .SetLocation(ManifestLocation::kComponent)
+          .SetID("bbabcdefghijabcdefghijabcdefghij")
+          .Build());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(URLOverrides::GetChromeURLOverrides(extension.get()).empty());
+  registrar()->AddComponentExtension(extension.get());
+
+  GURL keyboard_url("chrome://keyboard");
+  GURL changed_url = keyboard_url;
+  EXPECT_TRUE(ExtensionUrlOverrides::HandleChromeURLOverride(&changed_url,
+                                                             profile_.get()));
+  EXPECT_EQ(extension->GetResourceURL(kOverrideResource), changed_url);
+#else
+  EXPECT_TRUE(URLOverrides::GetChromeURLOverrides(extension.get()).empty());
+#endif
+}
+
+// Tests that an override entry left in prefs for a page the extension no
+// longer declares an override for (e.g. registered by an older browser version
+// that allowed a non-component extension to override chrome://keyboard) is
+// not honored, and is removed on startup validation.
+TEST_F(ExtensionWebUITest, StaleOverrideEntryIsIgnoredAndRemoved) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder()
+          .SetManifest(base::DictValue()
+                           .Set(manifest_keys::kName, "ext")
+                           .Set(manifest_keys::kVersion, "0.1")
+                           .Set(manifest_keys::kManifestVersion, 2)
+                           .Set(api::chrome_url_overrides::ManifestKeys::
+                                    kChromeUrlOverrides,
+                                base::DictValue()
+                                    .Set("bookmarks", "bookmarks.html")
+                                    .Set("keyboard", "keyboard.html")))
+          .SetLocation(ManifestLocation::kInternal)
+          .SetID("abcdefghijabcdefghijabcdefghijaa")
+          .Build();
+  const URLOverrides::URLOverrideMap& overrides =
+      URLOverrides::GetChromeURLOverrides(extension.get());
+  EXPECT_TRUE(overrides.contains("bookmarks"));
+  EXPECT_FALSE(overrides.contains("keyboard"));
+
+  const GURL kKeyboardOverrideUrl = extension->GetResourceURL("keyboard.html");
+  const GURL kBookmarksOverrideUrl =
+      extension->GetResourceURL("bookmarks.html");
+
+  // Simulate active entries registered by an older browser version.
+  PrefService* prefs = profile_->GetPrefs();
+  {
+    ScopedDictPrefUpdate update(prefs,
+                                ExtensionUrlOverrides::kExtensionURLOverrides);
+    update->Set("keyboard", base::ListValue().Append(
+                                base::DictValue()
+                                    .Set("entry", kKeyboardOverrideUrl.spec())
+                                    .Set("active", true)));
+    update->Set("bookmarks", base::ListValue().Append(
+                                 base::DictValue()
+                                     .Set("entry", kBookmarksOverrideUrl.spec())
+                                     .Set("active", true)));
+  }
+
+  registrar()->AddExtension(extension.get());
+
+  // The stale keyboard entry must not be honored.
+  const GURL kKeyboardUrl("chrome://keyboard/");
+  GURL changed_url = kKeyboardUrl;
+  EXPECT_FALSE(ExtensionUrlOverrides::HandleChromeURLOverride(&changed_url,
+                                                              profile_.get()));
+  EXPECT_EQ(kKeyboardUrl, changed_url);
+  EXPECT_FALSE(ExtensionUrlOverrides::GetExtensionControllingURL(
+      kKeyboardUrl, profile_.get()));
+  EXPECT_EQ(0u, ExtensionUrlOverrides::GetNumberOfExtensionsOverridingURL(
+                    kKeyboardUrl, profile_.get()));
+
+  // The override that the extension still declares keeps working.
+  const GURL kBookmarksUrl(chrome::kChromeUIBookmarksURL);
+  changed_url = kBookmarksUrl;
+  EXPECT_TRUE(ExtensionUrlOverrides::HandleChromeURLOverride(&changed_url,
+                                                             profile_.get()));
+  EXPECT_EQ(kBookmarksOverrideUrl, changed_url);
+
+  // Startup validation (in response to ExtensionSystem::ready()) removes the
+  // stale entry, and keeps the valid one.
+  static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()))
+      ->SetReady();
+  base::RunLoop().RunUntilIdle();
+
+  const base::DictValue& pref_overrides =
+      prefs->GetDict(ExtensionUrlOverrides::kExtensionURLOverrides);
+  const base::ListValue* keyboard_overrides =
+      pref_overrides.FindList("keyboard");
+  ASSERT_TRUE(keyboard_overrides);
+  EXPECT_TRUE(keyboard_overrides->empty());
+  const base::ListValue* bookmarks_overrides =
+      pref_overrides.FindList("bookmarks");
+  ASSERT_TRUE(bookmarks_overrides);
+  ASSERT_EQ(1u, bookmarks_overrides->size());
+  EXPECT_EQ(
+      kBookmarksOverrideUrl.spec(),
+      CHECK_DEREF((*bookmarks_overrides)[0].GetDict().FindString("entry")));
+}
+
 TEST_F(ExtensionWebUITest, OverrideRegistrarObserver) {
   TestOverrideRegistrarObserver observer;
   ExtensionUrlOverridesRegistrar* override_registrar =

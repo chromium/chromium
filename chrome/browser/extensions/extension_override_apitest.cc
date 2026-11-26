@@ -33,6 +33,7 @@
 #include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -515,5 +516,37 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, ShouldCleanUpDuplicateEntries) {
 
   ASSERT_TRUE(CheckHistoryOverridesContainsNoDupes());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests that a non-component extension cannot override the keyboard URL.
+// The "keyboard" override is only available on ChromeOS.
+IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest,
+                       NonComponentCannotOverrideKeyboard) {
+  TestExtensionDir extension_dir;
+  constexpr char kManifest[] =
+      R"({
+           "name": "Custom Keyboard",
+           "version": "1.0",
+           "manifest_version": 3,
+           "chrome_url_overrides": {
+             "keyboard": "custom_keyboard.html"
+           }
+         })";
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("custom_keyboard.html"),
+                          "<h1>Custom Keyboard Page</h1>");
+  const Extension* extension = LoadExtension(
+      extension_dir.UnpackedPath(), {.ignore_manifest_warnings = true});
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(URLOverrides::GetChromeURLOverrides(extension).empty());
+
+  // Note: on ChromeOS, chrome://keyboard/ may be overridden by the built-in
+  // virtual keyboard component extension, so only verify that the page is not
+  // controlled by the non-component extension loaded above.
+  auto* web_contents = GetActiveWebContents();
+  std::ignore = NavigateToURL(web_contents, GURL("chrome://keyboard/"));
+  EXPECT_FALSE(ExtensionControlsPage(web_contents, extension->id()));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

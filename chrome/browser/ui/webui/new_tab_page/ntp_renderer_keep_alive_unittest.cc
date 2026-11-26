@@ -297,10 +297,13 @@ TEST_F(NtpRendererKeepAliveTest, PolicyDseAndExtensionNtpOverrides) {
   // Activating a `newtab` extension override releases the pin and blocks
   // re-pinning until removed.
   scoped_refptr<const extensions::Extension> ext =
-      extensions::ExtensionBuilder("NTP Override").Build();
+      extensions::ExtensionBuilder("NTP Override")
+          .SetManifestPath("chrome_url_overrides.newtab", "ntp.html")
+          .Build();
   extensions::ExtensionRegistry::Get(profile.get())->AddEnabled(ext);
-  extensions::URLOverrides::URLOverrideMap overrides;
-  overrides["newtab"] = ext->GetResourceURL("ntp.html");
+  const extensions::URLOverrides::URLOverrideMap& overrides =
+      extensions::URLOverrides::GetChromeURLOverrides(ext.get());
+  ASSERT_TRUE(overrides.contains("newtab"));
   ExtensionUrlOverrides::RegisterOrActivateChromeURLOverrides(profile.get(),
                                                               overrides);
 

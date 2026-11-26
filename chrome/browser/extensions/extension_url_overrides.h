@@ -55,7 +55,8 @@ class ExtensionUrlOverrides {
   static void InitializeChromeURLOverrides(Profile* profile);
 
   // Validate the Chrome URL overrides, ensuring that each is valid and points
-  // to an existing extension. To be called once all extensions are loaded.
+  // to an existing extension that still declares the override. To be called
+  // once all extensions are loaded.
   static void ValidateChromeURLOverrides(Profile* profile);
 
   // Add new Chrome URL overrides. If an entry exists, it is marked as active.
