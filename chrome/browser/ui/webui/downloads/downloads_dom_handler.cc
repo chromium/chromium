@@ -20,11 +20,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
-#include "base/task/current_thread.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/download/download_item_model.h"
@@ -33,7 +31,6 @@
 #include "chrome/browser/download/download_query.h"
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
-#include "chrome/browser/download/drag_download_item.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/feature_engagement/non_iph_promo.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -41,15 +38,13 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
+#include "chrome/browser/ui/webui/downloads/downloads_ui_platform_handlers.h"
 #include "chrome/browser/ui/webui/fileicon_source.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -61,8 +56,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
@@ -77,9 +70,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/filename_util.h"
 #include "ui/base/l10n/time_format.h"
-#include "ui/display/screen.h"
-#include "ui/gfx/image/image.h"
-#include "ui/views/interaction/element_tracker_views.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
@@ -269,14 +259,7 @@ void DownloadsDOMHandler::OpenFileRequiringGesture(const std::string& id) {
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_OPEN_FILE);
   download::DownloadItem* file = GetDownloadByStringId(id);
   if (file) {
-    if (auto* tab_interface =
-            tabs::TabInterface::MaybeGetFromContents(GetWebUIWebContents())) {
-      if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(
-              tab_interface->GetBrowserWindowInterface())) {
-        views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-            kDownloadedFileOpenedCustomEventId, browser_view);
-      }
-    }
+    downloads::NotifyDownloadOpened(GetWebUIWebContents());
     file->OpenDownload();
   }
 }
@@ -297,16 +280,7 @@ void DownloadsDOMHandler::Drag(const std::string& id) {
   if (file->GetState() != download::DownloadItem::COMPLETE) {
     return;
   }
-  const display::Screen* const screen = display::Screen::Get();
-  gfx::NativeView view = web_contents->GetNativeView();
-  gfx::Image* icon = g_browser_process->icon_manager()->LookupIconFromFilepath(
-      file->GetTargetFilePath(), IconLoader::NORMAL,
-      screen->GetPreferredScaleFactorForView(view).value_or(1.0f));
-  {
-    // Enable nested tasks during DnD, while |DragDownload()| blocks.
-    base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
-    DragDownloadItem(file, icon, view);
-  }
+  downloads::DragDownload(file, web_contents);
 }
 
 // "Suspicious" in this context applies to insecure as well as dangerous
@@ -704,19 +678,14 @@ void DownloadsDOMHandler::ReviewDangerousRequiringGesture(
 // the feature engagement backend to record the event that the
 // promo was clicked.
 void DownloadsDOMHandler::OpenEsbSettings() {
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          GetWebUIWebContents());
-  if (!browser) {
+  content::WebContents* web_contents = GetWebUIWebContents();
+  if (!downloads::ShowEsbSettings(web_contents)) {
     return;
   }
-  chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
-      browser,
-      safe_browsing::SafeBrowsingSettingReferralMethod::kDownloadPageRowPromo);
 
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(
-          browser->GetProfile());
+          web_contents->GetBrowserContext());
   tracker->NotifyEvent("esb_download_promo_row_clicked");
   base::RecordAction(
       base::UserMetricsAction("SafeBrowsing.EsbDownloadRowPromo.Click"));

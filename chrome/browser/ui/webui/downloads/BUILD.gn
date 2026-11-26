@@ -21,6 +21,8 @@ source_set("downloads") {
     "downloads_dom_handler.cc",
     "downloads_list_tracker.cc",
     "downloads_ui.cc",
+    "downloads_ui_platform_handlers.h",
+    "downloads_ui_platform_handlers_desktop.cc",
   ]
   public = [
     "downloads_dom_handler.h",
