@@ -12,11 +12,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/select_audio_output_request.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_view_host.h"
@@ -42,6 +45,10 @@ class MockRenderFrameHostDelegate : public RenderFrameHostDelegate {
                                     MediaResponseCallback callback) override {
     return RequestMediaAccessPermission(request, &callback);
   }
+  void ProcessSelectAudioOutput(const SelectAudioOutputRequest& request,
+                                SelectAudioOutputCallback callback) override {
+    ProcessSelectAudioOutput(request, &callback);
+  }
   const blink::web_pref::WebPreferences& GetOrCreateWebPreferences() override {
     return mock_web_preferences_;
   }
@@ -51,6 +58,9 @@ class MockRenderFrameHostDelegate : public RenderFrameHostDelegate {
   MOCK_METHOD2(RequestMediaAccessPermission,
                void(const MediaStreamRequest& request,
                     MediaResponseCallback* callback));
+  MOCK_METHOD2(ProcessSelectAudioOutput,
+               void(const SelectAudioOutputRequest& request,
+                    SelectAudioOutputCallback* callback));
   MOCK_METHOD3(CheckMediaAccessPermission,
                bool(RenderFrameHostImpl* render_frame_host,
                     const url::Origin& security_origin,
@@ -836,6 +846,222 @@ TEST_F(MediaStreamUIProxyPermissionsPolicyTest, PermissionsPolicy) {
       &devices, &result);
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
   ASSERT_EQ(0u, devices.size());
+}
+
+class MediaStreamUIProxyInactiveRfhTest : public RenderViewHostImplTestHarness {
+ public:
+  void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
+    NavigateAndCommit(GURL("https://example.com"));
+    proxy_ = MediaStreamUIProxy::CreateForTests(&delegate_);
+  }
+
+  void TearDown() override {
+    proxy_.reset();
+    base::RunLoop run_loop;
+    GetUIThreadTaskRunner({})->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+    RenderViewHostImplTestHarness::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<MediaStreamRequest> CreateRequest(RenderFrameHost* rfh) {
+    return std::make_unique<MediaStreamRequest>(
+        rfh->GetProcess()->GetDeprecatedID(), rfh->GetRoutingID(), 0,
+        url::Origin::Create(rfh->GetLastCommittedURL()), false,
+        blink::MEDIA_GENERATE_STREAM,
+        /*requested_audio_device_ids=*/std::vector<std::string>{},
+        /*requested_video_device_ids=*/std::vector<std::string>{},
+        blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
+        blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+        /*disable_local_echo=*/false,
+        /*request_pan_tilt_zoom_permission=*/false,
+        /*captured_surface_control_active=*/false);
+  }
+
+  void DeactivateMainRfh() {
+    RenderFrameHostImpl::From(main_rfh())
+        ->SetLifecycleState(
+            RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  }
+
+  MockRenderFrameHostDelegate delegate_;
+  MockResponseCallback response_callback_;
+  std::unique_ptr<MediaStreamUIProxy> proxy_;
+};
+
+TEST_F(MediaStreamUIProxyInactiveRfhTest,
+       RequestAccessRejectedWhenRfhInBackForwardCache) {
+  DeactivateMainRfh();
+
+  EXPECT_CALL(delegate_, RequestMediaAccessPermission(_, _)).Times(0);
+
+  base::RunLoop run_loop;
+  blink::mojom::MediaStreamRequestResult result =
+      blink::mojom::MediaStreamRequestResult::OK;
+  blink::mojom::StreamDevicesSetPtr response;
+  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _, _))
+      .WillOnce([&](const blink::mojom::StreamDevicesSet& devices_set,
+                    blink::mojom::MediaStreamRequestResult req_result,
+                    bool /*is_allowed_while_screen_locked*/) {
+        response = devices_set.Clone();
+        result = req_result;
+        run_loop.Quit();
+      });
+
+  proxy_->RequestAccess(
+      CreateRequest(main_rfh()),
+      base::BindOnce(&MockResponseCallback::OnAccessRequestResponse,
+                     base::Unretained(&response_callback_)));
+  run_loop.Run();
+
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::
+                FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_HANDLER,
+            result);
+  ASSERT_TRUE(response);
+  EXPECT_TRUE(response->stream_devices.empty());
+}
+
+TEST_F(MediaStreamUIProxyInactiveRfhTest,
+       ResponseRejectedWhenRfhEntersBackForwardCacheDuringRequest) {
+  auto request = CreateRequest(main_rfh());
+  MediaStreamRequest* request_ptr = request.get();
+
+  MediaResponseCallback permission_callback;
+  base::RunLoop request_loop;
+  EXPECT_CALL(delegate_,
+              RequestMediaAccessPermission(SameRequest(request_ptr), _))
+      .WillOnce([&](testing::Unused, MediaResponseCallback* cb) {
+        permission_callback = std::move(*cb);
+        request_loop.Quit();
+      });
+
+  proxy_->RequestAccess(
+      std::move(request),
+      base::BindOnce(&MockResponseCallback::OnAccessRequestResponse,
+                     base::Unretained(&response_callback_)));
+  request_loop.Run();
+  ASSERT_FALSE(permission_callback.is_null());
+
+  // Simulate the frame entering BackForwardCache while the permission request
+  // is pending in the delegate/embedder.
+  DeactivateMainRfh();
+
+  blink::mojom::StreamDevicesSet granted_devices_set;
+  granted_devices_set.stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  granted_devices_set.stream_devices[0]->audio_device =
+      blink::MediaStreamDevice(
+          blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "Mic", "Mic");
+  auto ui = std::make_unique<MockMediaStreamUI>();
+  EXPECT_CALL(*ui, MockOnStarted(_, _)).Times(0);
+
+  base::RunLoop response_loop;
+  blink::mojom::MediaStreamRequestResult result =
+      blink::mojom::MediaStreamRequestResult::OK;
+  blink::mojom::StreamDevicesSetPtr response;
+  EXPECT_CALL(response_callback_, OnAccessRequestResponse(_, _, _))
+      .WillOnce([&](const blink::mojom::StreamDevicesSet& devices_set,
+                    blink::mojom::MediaStreamRequestResult req_result,
+                    bool /*is_allowed_while_screen_locked*/) {
+        response = devices_set.Clone();
+        result = req_result;
+        response_loop.Quit();
+      });
+
+  std::move(permission_callback)
+      .Run(granted_devices_set, blink::mojom::MediaStreamRequestResult::OK,
+           std::move(ui));
+  response_loop.Run();
+
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::
+                FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_HANDLER,
+            result);
+  ASSERT_TRUE(response);
+  EXPECT_TRUE(response->stream_devices.empty());
+}
+
+TEST_F(MediaStreamUIProxyInactiveRfhTest,
+       RequestSelectAudioOutputRejectedWhenRfhInBackForwardCache) {
+  DeactivateMainRfh();
+
+  EXPECT_CALL(delegate_, ProcessSelectAudioOutput(_, _)).Times(0);
+
+  auto select_request = std::make_unique<SelectAudioOutputRequest>(
+      main_rfh()->GetGlobalId(), std::vector<AudioOutputDeviceInfo>{});
+  base::test::TestFuture<
+      base::expected<std::string, content::SelectAudioOutputError>>
+      future;
+  proxy_->RequestSelectAudioOutput(std::move(select_request),
+                                   future.GetCallback());
+
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(SelectAudioOutputError::kOtherError, result.error());
+}
+
+TEST_F(MediaStreamUIProxyInactiveRfhTest,
+       RequestSelectAudioOutputResponseRejectedWhenRfhEntersBackForwardCache) {
+  SelectAudioOutputCallback picker_callback;
+  base::RunLoop request_loop;
+  EXPECT_CALL(delegate_, ProcessSelectAudioOutput(_, _))
+      .WillOnce(
+          [&](const SelectAudioOutputRequest&, SelectAudioOutputCallback* cb) {
+            picker_callback = std::move(*cb);
+            request_loop.Quit();
+          });
+
+  auto select_request = std::make_unique<SelectAudioOutputRequest>(
+      main_rfh()->GetGlobalId(), std::vector<AudioOutputDeviceInfo>{});
+  base::test::TestFuture<
+      base::expected<std::string, content::SelectAudioOutputError>>
+      future;
+  proxy_->RequestSelectAudioOutput(std::move(select_request),
+                                   future.GetCallback());
+  request_loop.Run();
+  ASSERT_FALSE(picker_callback.is_null());
+
+  // Mirror MediaDevicesDispatcherHost, which drops the proxy right after
+  // dispatching RequestSelectAudioOutput().
+  proxy_.reset();
+
+  // Simulate the frame entering BackForwardCache while the picker is open.
+  DeactivateMainRfh();
+
+  std::move(picker_callback).Run("device_id");
+
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(SelectAudioOutputError::kOtherError, result.error());
+}
+
+TEST_F(MediaStreamUIProxyInactiveRfhTest,
+       RequestSelectAudioOutputResponseAllowedWhenRfhStaysActive) {
+  SelectAudioOutputCallback picker_callback;
+  base::RunLoop request_loop;
+  EXPECT_CALL(delegate_, ProcessSelectAudioOutput(_, _))
+      .WillOnce(
+          [&](const SelectAudioOutputRequest&, SelectAudioOutputCallback* cb) {
+            picker_callback = std::move(*cb);
+            request_loop.Quit();
+          });
+
+  auto select_request = std::make_unique<SelectAudioOutputRequest>(
+      main_rfh()->GetGlobalId(), std::vector<AudioOutputDeviceInfo>{});
+  base::test::TestFuture<
+      base::expected<std::string, content::SelectAudioOutputError>>
+      future;
+  proxy_->RequestSelectAudioOutput(std::move(select_request),
+                                   future.GetCallback());
+  request_loop.Run();
+  ASSERT_FALSE(picker_callback.is_null());
+
+  proxy_.reset();
+  std::move(picker_callback).Run("device_id");
+
+  const auto& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ("device_id", result.value());
 }
 
 }  // namespace content

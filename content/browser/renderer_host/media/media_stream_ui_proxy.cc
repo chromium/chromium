@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/bind_post_task.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -39,6 +40,15 @@ bool IsFeatureEnabled(RenderFrameHost* rfh,
     return false;
 
   return rfh->IsFeatureEnabled(feature);
+}
+
+bool IsHostActive(RenderFrameHost* rfh,
+                  bool tests_use_fake_render_frame_hosts) {
+  if (!rfh && tests_use_fake_render_frame_hosts) {
+    return true;
+  }
+
+  return rfh && rfh->IsActive();
 }
 
 class MediaStreamUIProxy::Core {
@@ -118,6 +128,8 @@ class MediaStreamUIProxy::Core {
   base::WeakPtr<MediaStreamUIProxy> proxy_;
   std::unique_ptr<MediaStreamUI> ui_;
 
+  // TODO(crbug.com/590441962): Remove tests_use_fake_render_frame_hosts_ from
+  // production code.
   bool tests_use_fake_render_frame_hosts_;
   const raw_ptr<RenderFrameHostDelegate> test_render_delegate_;
 
@@ -167,6 +179,15 @@ void MediaStreamUIProxy::Core::RequestAccess(
   RenderFrameHostImpl* host = RenderFrameHostImpl::FromID(
       ChildProcessId::FromUnsafeValue(request->render_process_id),
       request->render_frame_id);
+  if (!IsHostActive(host, tests_use_fake_render_frame_hosts_)) {
+    ProcessAccessRequestResponse(request->render_process_id,
+                                 request->render_frame_id, request->url_origin,
+                                 blink::mojom::StreamDevicesSet(),
+                                 blink::mojom::MediaStreamRequestResult::
+                                     FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_HANDLER,
+                                 std::unique_ptr<MediaStreamUI>());
+    return;
+  }
 
   render_delegate->RequestMediaAccessPermission(
       host, *request,
@@ -189,7 +210,36 @@ void MediaStreamUIProxy::Core::RequestSelectAudioOutput(
     return;
   }
 
-  render_delegate->ProcessSelectAudioOutput(*request, std::move(callback));
+  RenderFrameHostImpl* host =
+      RenderFrameHostImpl::FromID(request->render_frame_host_id());
+  if (!IsHostActive(host, tests_use_fake_render_frame_hosts_)) {
+    std::move(callback).Run(
+        base::unexpected(SelectAudioOutputError::kOtherError));
+    return;
+  }
+
+  // Re-validate on the UI thread when the async picker completes. Embedders
+  // such as SelectAudioOutputDialog may invoke the callback on the IO thread,
+  // and MediaStreamUIProxy::Core may already have been destroyed.
+  render_delegate->ProcessSelectAudioOutput(
+      *request,
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          [](GlobalRenderFrameHostId rfh_id,
+             bool tests_use_fake_render_frame_hosts,
+             SelectAudioOutputCallback callback,
+             base::expected<std::string, SelectAudioOutputError> result) {
+            CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M155);
+            if (result.has_value() &&
+                !IsHostActive(RenderFrameHostImpl::FromID(rfh_id),
+                              tests_use_fake_render_frame_hosts)) {
+              std::move(callback).Run(
+                  base::unexpected(SelectAudioOutputError::kOtherError));
+              return;
+            }
+            std::move(callback).Run(std::move(result));
+          },
+          request->render_frame_host_id(), tests_use_fake_render_frame_hosts_,
+          std::move(callback))));
 }
 
 void MediaStreamUIProxy::Core::OnStarted(
@@ -296,6 +346,17 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
   // TODO(crbug.com/379869738): Remove FromUnsafeValue().
   auto* host = RenderFrameHostImpl::FromID(
       ChildProcessId::FromUnsafeValue(render_process_id), render_frame_id);
+  if (result == blink::mojom::MediaStreamRequestResult::OK &&
+      !IsHostActive(host, tests_use_fake_render_frame_hosts_)) {
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MediaStreamUIProxy::ProcessAccessRequestResponse,
+                       proxy_, blink::mojom::StreamDevicesSet::New(),
+                       blink::mojom::MediaStreamRequestResult::
+                           FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_HANDLER,
+                       /*is_allowed_while_screen_locked=*/false));
+    return;
+  }
   bool is_allowed_while_screen_locked = false;
   if (result == blink::mojom::MediaStreamRequestResult::OK &&
       devices.video_device.has_value() &&

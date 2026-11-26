@@ -3960,6 +3960,62 @@ TEST_F(WebContentsImplTest, RequestMediaAccessPermissionNoDelegate) {
   ASSERT_TRUE(callback_run);
 }
 
+TEST_F(WebContentsImplTest, RequestMediaAccessPermissionInactiveFrame) {
+  class RecordingMediaWebContentsDelegate : public WebContentsDelegate {
+   public:
+    void RequestMediaAccessPermission(WebContents* web_contents,
+                                      const MediaStreamRequest& request,
+                                      MediaResponseCallback callback) override {
+      delegate_called_ = true;
+      std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                              blink::mojom::MediaStreamRequestResult::OK,
+                              nullptr);
+    }
+    bool delegate_called() const { return delegate_called_; }
+
+   private:
+    bool delegate_called_ = false;
+  };
+
+  RecordingMediaWebContentsDelegate delegate;
+  contents()->SetDelegate(&delegate);
+
+  TestRenderFrameHost* rfh = contents()->GetPrimaryMainFrame();
+  rfh->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+
+  MediaStreamRequest dummy_request(
+      rfh->GetProcess()->GetDeprecatedID(), rfh->GetRoutingID(),
+      /*page_request_id=*/0,
+      /*url_origin=*/url::Origin::Create(GURL("https://example.com")),
+      /*user_gesture=*/false,
+      blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_ids=*/{},
+      /*requested_video_device_ids=*/{},
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
+
+  bool callback_run = false;
+  contents()->RequestMediaAccessPermission(
+      rfh, dummy_request,
+      base::BindLambdaForTesting(
+          [&callback_run](
+              const blink::mojom::StreamDevicesSet& stream_devices_set,
+              blink::mojom::MediaStreamRequestResult result,
+              std::unique_ptr<MediaStreamUI> ui) {
+            EXPECT_TRUE(stream_devices_set.stream_devices.empty());
+            EXPECT_EQ(result, blink::mojom::MediaStreamRequestResult::
+                                  FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_HANDLER);
+            callback_run = true;
+          }));
+  ASSERT_TRUE(callback_run);
+  EXPECT_FALSE(delegate.delegate_called());
+
+  contents()->SetDelegate(nullptr);
+}
+
 TEST_F(WebContentsImplTest, IgnoreInputEvents) {
   // By default, input events should not be ignored.
   EXPECT_FALSE(contents()->ShouldIgnoreInputEvents());
@@ -4480,6 +4536,42 @@ TEST_F(WebContentsImplTest, ProcessSelectAudioOutputNoDelegate) {
           }));
 
   ASSERT_TRUE(callback_run);
+}
+
+TEST_F(WebContentsImplTest, ProcessSelectAudioOutputInactiveFrame) {
+  class RecordingAudioOutputWebContentsDelegate : public WebContentsDelegate {
+   public:
+    void ProcessSelectAudioOutput(const SelectAudioOutputRequest& request,
+                                  SelectAudioOutputCallback callback) override {
+      delegate_called_ = true;
+      std::move(callback).Run("device_id");
+    }
+    bool delegate_called() const { return delegate_called_; }
+
+   private:
+    bool delegate_called_ = false;
+  };
+
+  RecordingAudioOutputWebContentsDelegate delegate;
+  contents()->SetDelegate(&delegate);
+
+  TestRenderFrameHost* rfh = contents()->GetPrimaryMainFrame();
+  rfh->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+
+  SelectAudioOutputRequest request(rfh->GetGlobalId(),
+                                   std::vector<AudioOutputDeviceInfo>());
+  base::test::TestFuture<
+      base::expected<std::string, content::SelectAudioOutputError>>
+      future;
+  contents()->ProcessSelectAudioOutput(request, future.GetCallback());
+
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), content::SelectAudioOutputError::kOtherError);
+  EXPECT_FALSE(delegate.delegate_called());
+
+  contents()->SetDelegate(nullptr);
 }
 
 TEST_F(WebContentsImplTest, IsLoadingExcludingAdFrames) {

@@ -6470,10 +6470,16 @@ void WebContentsImpl::RequestMediaAccessPermission(
                         "render_process_id", request.render_process_id,
                         "render_frame_id", request.render_frame_id);
 
+  if (!render_frame_host || !render_frame_host->IsActive()) {
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            blink::mojom::MediaStreamRequestResult::
+                                FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_HANDLER,
+                            std::unique_ptr<MediaStreamUI>());
+    return;
+  }
+
   if (GuestPageHolderImpl* guest =
-          render_frame_host
-              ? GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)
-              : nullptr) {
+          GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)) {
     if (auto* delegate = guest->delegate()) {
       delegate->GuestRequestMediaAccessPermission(request, std::move(callback));
       return;
@@ -6501,12 +6507,21 @@ void WebContentsImpl::ProcessSelectAudioOutput(
     SelectAudioOutputCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (delegate_) {
-    delegate_->ProcessSelectAudioOutput(request, std::move(callback));
-  } else {
+  if (!delegate_) {
     std::move(callback).Run(
         base::unexpected(content::SelectAudioOutputError::kNotSupported));
+    return;
   }
+
+  RenderFrameHostImpl* render_frame_host =
+      RenderFrameHostImpl::FromID(request.render_frame_host_id());
+  if (!render_frame_host || !render_frame_host->IsActive()) {
+    std::move(callback).Run(
+        base::unexpected(content::SelectAudioOutputError::kOtherError));
+    return;
+  }
+
+  delegate_->ProcessSelectAudioOutput(request, std::move(callback));
 }
 
 bool WebContentsImpl::CheckMediaAccessPermission(
