@@ -922,11 +922,10 @@ void AutofillManager::RunMlModels(
 
 void AutofillManager::PopulateCacheForQueryResponse(
     base::span<const FormData> forms,
-    const AutofillCrowdsourcingManager::QueryResponse& response) {
+    const std::vector<FormSignature>& queried_form_signatures) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Create a set of the signatures that were returned by the server query.
-  base::flat_set<FormSignature> queried_signatures(
-      response.queried_form_signatures);
+  base::flat_set<FormSignature> queried_signatures(queried_form_signatures);
 
   // Add the forms to the cache if their signature was part of the query
   // and if they do not already exist in the cache. Forms may already exist
@@ -962,14 +961,14 @@ void AutofillManager::PopulateCacheForQueryResponse(
 }
 
 void AutofillManager::OnLoadedServerPredictions(
-    base::span<const FormData> forms,
+    std::vector<FormData> forms,
     base::TimeTicks form_seen_timestamp,
     std::optional<AutofillCrowdsourcingManager::QueryResponse> response) {
   base::TimeTicks predictions_received_timestamp = base::TimeTicks::Now();
   if (!form_seen_timestamp.is_null()) {
     base::UmaHistogramTimes(
         "Autofill.TimingInterval.FormsSeen.LoadedServerPredictions",
-        base::TimeTicks::Now() - form_seen_timestamp);
+        predictions_received_timestamp - form_seen_timestamp);
   }
   std::vector<FormGlobalId> form_ids =
       base::ToVector(forms, &FormData::global_id);
@@ -982,25 +981,27 @@ void AutofillManager::OnLoadedServerPredictions(
     return;
   }
 
-  // Update the form cache with the form structures that were part of the
-  // query. The form structures are conditionally created here depending on
-  // whether local parsing has already finished and populated the cache.
-  // TODO(crbug.com/475586865): Consider replacing the mechanism below with
-  // AutofillManager::UpdateFormCache().
-  PopulateCacheForQueryResponse(forms, *response);
+  base::flat_set<FormSignature> queried_signatures(
+      response->queried_form_signatures);
+  std::erase_if(forms, [&](const FormData& form) {
+    return !queried_signatures.contains(CalculateFormSignature(form));
+  });
+  if (forms.empty()) {
+    return;
+  }
 
   std::vector<raw_ref<FormStructure>> queried_forms;
-  queried_forms.reserve(forms.size());
-
   if (std::vector<ServerPredictions> form_server_predictions =
           ParseServerPredictionsFromQueryResponse(
-              std::move(response->response), forms,
-              response->queried_form_signatures, log_manager(),
+              response->response, forms, response->queried_form_signatures,
+              log_manager(),
               /*ignore_small_forms=*/!client().IsTabInActorMode());
       !form_server_predictions.empty()) {
     CHECK_EQ(forms.size(), form_server_predictions.size());
-    // TODO(crbug.com/475586865): Use `AutofillManager::UpdateFormCache()`
-    // instead of duplicating the logic.
+    // TODO(crbug.com/475586865): Replace PopulateCacheForQueryResponse() and
+    // the loop below with AutofillManager::OnFieldTypesDetermined().
+    PopulateCacheForQueryResponse(forms, response->queried_form_signatures);
+    queried_forms.reserve(forms.size());
     for (auto [form, server_predictions] :
          std::views::zip(forms, form_server_predictions)) {
       FormStructure* form_structure =

@@ -1531,5 +1531,31 @@ TEST_F(AutofillManagerTest,
             expected_last_field_type);
 }
 
+// Tests that an unparseable server response payload does not insert
+// unrationalized forms into the cache.
+TEST_F(AutofillManagerTest,
+       OnLoadedServerPredictions_InvalidResponse_DoesNotPopulateCache) {
+  std::vector<FormData> forms = CreateTestForms(1);
+  std::vector<FormSignature> form_signatures = {
+      CalculateFormSignature(forms[0])};
+
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
+      .WillOnce(
+          [form_signatures](
+              const std::vector<FormData>&, std::optional<net::IsolationInfo>,
+              base::OnceCallback<void(
+                  std::optional<AutofillCrowdsourcingManager::QueryResponse>)>
+                  callback) {
+            std::move(callback).Run(AutofillCrowdsourcingManager::QueryResponse(
+                "not valid base64!!!", form_signatures));
+            return true;
+          });
+
+  EXPECT_CALL(autofill_manager(), OnFormProcessed).Times(0);
+
+  test_api(autofill_manager()).QueryServerPredictions(forms);
+  EXPECT_THAT(test_api(autofill_manager()).form_structures(), IsEmpty());
+}
+
 }  // namespace
 }  // namespace autofill
