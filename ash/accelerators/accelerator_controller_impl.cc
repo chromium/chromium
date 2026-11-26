@@ -350,11 +350,6 @@ AcceleratorControllerImpl::TestApi::TestApi(
   DCHECK(controller_);
 }
 
-bool AcceleratorControllerImpl::TestApi::TriggerTabletModeVolumeAdjustTimer() {
-  return controller_->tablet_volume_controller_
-      .TriggerTabletModeVolumeAdjustTimerForTest();  // IN-TEST
-}
-
 void AcceleratorControllerImpl::TestApi::RegisterAccelerators(
     base::span<const AcceleratorData> accelerators) {
   // Initializing accelerators will register them.
@@ -1018,15 +1013,12 @@ void AcceleratorControllerImpl::PerformAction(
 
   if ((action == AcceleratorAction::kVolumeDown ||
        action == AcceleratorAction::kVolumeUp) &&
-      display::Screen::Get()->InTabletMode()) {
-    if (tablet_volume_controller_.ShouldSwapSideVolumeButtons(
-            accelerator.source_device_id()))
-      action = action == AcceleratorAction::kVolumeDown
-                   ? AcceleratorAction::kVolumeUp
-                   : AcceleratorAction::kVolumeDown;
-
-    tablet_volume_controller_.StartTabletModeVolumeAdjustTimer(
-        action == AcceleratorAction::kVolumeUp);
+      display::Screen::Get()->InTabletMode() &&
+      tablet_volume_controller_.ShouldSwapSideVolumeButtons(
+          accelerator.source_device_id())) {
+    action = action == AcceleratorAction::kVolumeDown
+                 ? AcceleratorAction::kVolumeUp
+                 : AcceleratorAction::kVolumeDown;
   }
 
   const bool key_pressed =

@@ -7,12 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "base/files/file_path.h"
-#include "base/timer/timer.h"
 
 namespace ash {
-
-// Histogram for volume adjustment in tablet mode.
-ASH_EXPORT extern const char kTabletCountOfVolumeAdjustType[];
 
 // Fields of the side volume button location info.
 ASH_EXPORT extern const char kVolumeButtonRegion[];
@@ -25,15 +21,6 @@ ASH_EXPORT extern const char kVolumeButtonSideLeft[];
 ASH_EXPORT extern const char kVolumeButtonSideRight[];
 ASH_EXPORT extern const char kVolumeButtonSideTop[];
 ASH_EXPORT extern const char kVolumeButtonSideBottom[];
-
-// See TabletModeVolumeAdjustType at tools/metrics/histograms/enums.xml.
-enum class TabletModeVolumeAdjustType {
-  kAccidentalAdjustWithSwapEnabled = 0,
-  kNormalAdjustWithSwapEnabled = 1,
-  kAccidentalAdjustWithSwapDisabled = 2,
-  kNormalAdjustWithSwapDisabled = 3,
-  kMaxValue = kNormalAdjustWithSwapDisabled,
-};
 
 class ASH_EXPORT TabletVolumeController {
  public:
@@ -74,19 +61,7 @@ class ASH_EXPORT TabletVolumeController {
   // |side_volume_button_location_|.
   void ParseSideVolumeButtonLocationInfo();
 
-  // Starts |tablet_mode_volume_adjust_timer_| while see VOLUME_UP or
-  // VOLUME_DOWN acceleration action when in tablet mode.
-  void StartTabletModeVolumeAdjustTimer(bool is_volume_up);
-
-  // The metrics recorded include accidental volume adjustments (defined as a
-  // sequence of volume button events in close succession starting with a
-  // volume-up event but ending with an overall-decreased volume, or vice versa)
-  // or normal volume adjustments w/o SwapSideVolumeButtonsForOrientation
-  // feature enabled.
-  void UpdateTabletModeVolumeAdjustHistogram();
-
   const SideVolumeButtonLocation& GetSideVolumeButtonLocationForTest() const;
-  bool TriggerTabletModeVolumeAdjustTimerForTest();
   void SetSideVolumeButtonFilePathForTest(base::FilePath path);
   void SetSideVolumeButtonLocationForTest(const std::string& region,
                                           const std::string& side);
@@ -99,17 +74,6 @@ class ASH_EXPORT TabletVolumeController {
 
   // Stores the location info of side volume buttons.
   SideVolumeButtonLocation side_volume_button_location_;
-
-  // Started when VOLUME_DOWN or VOLUME_UP accelerator action is seen while in
-  // tablet mode. Runs UpdateTabletModeVolumeAdjustHistogram() to record
-  // metrics.
-  base::OneShotTimer tablet_mode_volume_adjust_timer_;
-
-  // True if volume adjust starts with VOLUME_UP action.
-  bool volume_adjust_starts_with_up_ = false;
-
-  // The initial volume percentage when volume adjust starts.
-  int initial_volume_percent_ = 0;
 };
 }  // namespace ash
 

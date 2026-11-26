@@ -5504,16 +5504,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="Tablet.CountOfVolumeAdjustType" units="numbers"
-    expires_after="2023-02-12">
-  <owner>minch@chromium.org</owner>
-  <owner>omrilio@chromium.org</owner>
-  <summary>
-    The number of each volume adjust type in tablet mode. Logged when starts
-    volume adjust while in tablet mode.
-  </summary>
-</histogram>
-
 <histogram name="TimeZone.TimeZoneRequest.Event" enum="TimeZoneRequestEvent"
     expires_after="never">
 <!-- expires-never: This reports external time zone provider health status and

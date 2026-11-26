@@ -1818,32 +1818,6 @@ TEST_F(AcceleratorControllerTest, SideVolumeButtonLocation) {
   base::DeleteFile(file_path);
 }
 
-// Tests the histogram of volume adjustment in tablet mode.
-TEST_F(AcceleratorControllerTest, TabletModeVolumeAdjustHistogram) {
-  ash::TabletModeControllerTestApi().EnterTabletMode();
-  base::HistogramTester histogram_tester;
-  const ui::Accelerator kVolumeDown(ui::VKEY_VOLUME_DOWN, ui::EF_NONE);
-  const ui::Accelerator kVolumeUp(ui::VKEY_VOLUME_UP, ui::EF_NONE);
-
-  // Starts with volume up but ends with an overall-decreased volume.
-  ProcessInController(kVolumeUp);
-  ProcessInController(kVolumeDown);
-  ProcessInController(kVolumeDown);
-  EXPECT_TRUE(test_api_->TriggerTabletModeVolumeAdjustTimer());
-  histogram_tester.ExpectBucketCount(
-      kTabletCountOfVolumeAdjustType,
-      TabletModeVolumeAdjustType::kAccidentalAdjustWithSwapEnabled, 1);
-
-  // Starts with volume up and ends with an overall-increased volume.
-  ProcessInController(kVolumeUp);
-  ProcessInController(kVolumeUp);
-  ProcessInController(kVolumeUp);
-  EXPECT_TRUE(test_api_->TriggerTabletModeVolumeAdjustTimer());
-  histogram_tester.ExpectBucketCount(
-      kTabletCountOfVolumeAdjustType,
-      TabletModeVolumeAdjustType::kNormalAdjustWithSwapEnabled, 1);
-}
-
 class SideVolumeButtonAcceleratorTest
     : public AcceleratorControllerTest,
       public testing::WithParamInterface<std::pair<std::string, std::string>> {

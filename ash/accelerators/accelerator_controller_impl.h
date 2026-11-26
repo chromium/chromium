@@ -77,10 +77,6 @@ class ASH_EXPORT AcceleratorControllerImpl
 
     ~TestApi() = default;
 
-    // If |controller_->tablet_mode_volume_adjust_timer_| is running, stops it,
-    // runs its task, and returns true. Otherwise returns false.
-    [[nodiscard]] bool TriggerTabletModeVolumeAdjustTimer();
-
     // Registers the specified accelerators.
     void RegisterAccelerators(base::span<const AcceleratorData> accelerators);
 

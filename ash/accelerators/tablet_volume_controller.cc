@@ -10,8 +10,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/histogram_macros.h"
-#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/events/devices/device_data_manager.h"
 
 namespace ash {
@@ -21,16 +19,7 @@ namespace {
 constexpr char kSideVolumeButtonLocationFilePath[] =
     "/usr/share/chromeos-assets/side_volume_button/location.json";
 
-// The interval between two volume control actions within one volume adjust.
-constexpr base::TimeDelta kVolumeAdjustTimeout = base::Seconds(2);
-
-void RecordTabletVolumeAdjustTypeHistogram(TabletModeVolumeAdjustType type) {
-  UMA_HISTOGRAM_ENUMERATION(kTabletCountOfVolumeAdjustType, type);
-}
-
 }  // namespace
-
-const char kTabletCountOfVolumeAdjustType[] = "Tablet.CountOfVolumeAdjustType";
 
 // Fields of the side volume button location info.
 const char kVolumeButtonRegion[] = "region";
@@ -124,20 +113,6 @@ bool TabletVolumeController::ShouldSwapSideVolumeButtons(
   return is_landscape_secondary_or_portrait_primary;
 }
 
-void TabletVolumeController::UpdateTabletModeVolumeAdjustHistogram() {
-  const int volume_percent = CrasAudioHandler::Get()->GetOutputVolumePercent();
-  if ((volume_adjust_starts_with_up_ &&
-       volume_percent >= initial_volume_percent_) ||
-      (!volume_adjust_starts_with_up_ &&
-       volume_percent <= initial_volume_percent_)) {
-    RecordTabletVolumeAdjustTypeHistogram(
-        TabletModeVolumeAdjustType::kNormalAdjustWithSwapEnabled);
-  } else {
-    RecordTabletVolumeAdjustTypeHistogram(
-        TabletModeVolumeAdjustType::kAccidentalAdjustWithSwapEnabled);
-  }
-}
-
 bool TabletVolumeController::IsInternalKeyboardOrUncategorizedDevice(
     int source_device_id) const {
   if (source_device_id == ui::ED_UNKNOWN_DEVICE)
@@ -160,25 +135,6 @@ bool TabletVolumeController::IsInternalKeyboardOrUncategorizedDevice(
     }
   }
   return false;
-}
-
-void TabletVolumeController::StartTabletModeVolumeAdjustTimer(
-    bool is_volume_up) {
-  if (!tablet_mode_volume_adjust_timer_.IsRunning()) {
-    volume_adjust_starts_with_up_ = is_volume_up;
-    initial_volume_percent_ = CrasAudioHandler::Get()->GetOutputVolumePercent();
-  }
-  tablet_mode_volume_adjust_timer_.Start(
-      FROM_HERE, kVolumeAdjustTimeout, this,
-      &TabletVolumeController::UpdateTabletModeVolumeAdjustHistogram);
-}
-
-bool TabletVolumeController::TriggerTabletModeVolumeAdjustTimerForTest() {
-  if (!tablet_mode_volume_adjust_timer_.IsRunning())
-    return false;
-
-  tablet_mode_volume_adjust_timer_.FireNow();
-  return true;
 }
 
 void TabletVolumeController::SetSideVolumeButtonFilePathForTest(
