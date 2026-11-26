@@ -238,7 +238,11 @@ message NotificationConfiguration {
   bool send_to_primary_admins = 3;
 
   // List of emails to receive the notification.
-  repeated string recipient_emails = 4;
+  repeated string recipient_emails = 4
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_EMAIL_ID]
+      // copybara:datapol_end
+      ;
 }
 
 enum ServerScanStatus {
@@ -449,7 +453,11 @@ message RiskInfo {
 // Next ID: 9
 message UrlInfo {
   // The URL.
-  string url = 1;
+  string url = 1
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // The URL category according to go/webcat-doc.
   repeated string url_categories = 2;
@@ -481,7 +489,12 @@ message UrlInfo {
     }
     InitiatorType initiator_type = 1;
 
-    string entity = 2;  // URL of the notification, name of APP, etc.
+    // URL of the notification, name of APP, etc.
+    string entity = 2
+        // copybara:datapol_begin
+        // [(datapol.semantic_type) = ST_USER_CONTENT]
+        // copybara:datapol_end
+        ;
   }
   NavigationInitiator navigation_initiator = 7;
 
@@ -528,20 +541,36 @@ message SafeBrowsingPasswordReuseEvent {
   reserved 5, 6, 7, 8, 9, 10;
 
   // URL where this reuse happened
-  string url = 1;
+  string url = 1
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Username of the reused password.
   // May be email address or another identifier.
-  string user_name = 2;
+  string user_name = 2
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USERNAME]
+      // copybara:datapol_end
+      ;
 
   // Indicates if the url is considered a phishing URL.
   bool is_phishing_url = 3;
 
   // Username of the profile. This will be an email address.
-  string profile_user_name = 4;
+  string profile_user_name = 4
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_EMAIL_ID]
+      // copybara:datapol_end
+      ;
 
   // The address of the webpages that sent the user to this url.
-  repeated string referral_urls = 11;
+  repeated string referral_urls = 11
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Whether the warning has been ignored.
   bool clicked_through = 12;
@@ -577,10 +606,18 @@ message SafeBrowsingPasswordReuseEvent {
 message SafeBrowsingPasswordChangedEvent {
   // Username of the reused password.
   // May be email address or another identifier.
-  string user_name = 1;
+  string user_name = 1
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USERNAME]
+      // copybara:datapol_end
+      ;
 
   // Username of the profile. This will be an email address.
-  string profile_user_name = 2;
+  string profile_user_name = 2
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_EMAIL_ID]
+      // copybara:datapol_end
+      ;
 
   // Identifier of the profile. On a managed browser this is the path to the
   // profile storage which must be used in conjunction with the device
@@ -608,13 +645,25 @@ message SafeBrowsingDangerousDownloadEvent {
   string scan_id = 24;
 
   // URL of the download.
-  string url = 1;
+  string url = 1
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Source, e.g., a file system type.
-  string source = 25;
+  string source = 25
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Destination, e.g., a file system type.
-  string destination = 26;
+  string destination = 26
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // The file name.
   string file_name = 2;
@@ -623,7 +672,11 @@ message SafeBrowsingDangerousDownloadEvent {
   string download_digest_sha256 = 3;
 
   // Username of the profile. This will be an email address.
-  string profile_user_name = 4;
+  string profile_user_name = 4
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_EMAIL_ID]
+      // copybara:datapol_end
+      ;
 
   enum DangerousDownloadThreatType {
     DANGEROUS_DOWNLOAD_THREAT_TYPE_UNSPECIFIED = 0;
@@ -660,7 +713,11 @@ message SafeBrowsingDangerousDownloadEvent {
   DataTransferEventTrigger trigger = 10;
 
   // The address of the webpages that sent the user to this url.
-  repeated string referral_urls = 17;
+  repeated string referral_urls = 17
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Whether the warning has been ignored.
   bool clicked_through = 18;
@@ -773,13 +830,21 @@ message SafeBrowsingInterstitialEvent {
   reserved 2, 6, 8, 9, 10, 11, 12, 13, 15;
 
   // Top level URL that triggers this interstitial.
-  string url = 1;
+  string url = 1
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Net error code.
   int32 net_error_code = 3;
 
   // Username of the profile. This will be an email address.
-  string profile_user_name = 4;
+  string profile_user_name = 4
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_EMAIL_ID]
+      // copybara:datapol_end
+      ;
 
   // Whether the warning has been ignored.
   bool clicked_through = 5;
@@ -798,7 +863,11 @@ message SafeBrowsingInterstitialEvent {
   InterstitialThreatType threat_type = 7;
 
   // The address of the webpages that sent the user to this url.
-  repeated string referral_urls = 14;
+  repeated string referral_urls = 14
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // To indicate why this interstitial is shown.
   enum InterstitialReason {
@@ -880,13 +949,25 @@ message DlpSensitiveDataEvent {
   string user_justification = 20;
 
   // Top level URL that triggers this event.
-  string url = 8;
+  string url = 8
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Source, e.g., a file system type.
-  string source = 23;
+  string source = 23
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Destination, e.g., a file system type.
-  string destination = 24;
+  string destination = 24
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Username of the profile. This will be an email address.
   string profile_user_name = 14
@@ -898,7 +979,11 @@ message DlpSensitiveDataEvent {
       ;
 
   // The address of the webpages that sent the user to this url.
-  repeated string referral_urls = 16;
+  repeated string referral_urls = 16
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // The reporting target of the event.
   ReportingTarget reporting_target = 18;
@@ -1039,23 +1124,43 @@ message UnscannedFileEvent {
   DataTransferEventTrigger trigger = 5;
 
   // Top level URL that triggers this event.
-  string url = 7;
+  string url = 7
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Source, e.g., a file system type.
-  string source = 19;
+  string source = 19
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Destination, e.g., a file system type.
-  string destination = 20;
+  string destination = 20
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Reason why the file could not be scanned. e.g. fileTooLarge,
   // filePasswordProtected
   string reason = 8;
 
   // Username of the profile. This will be an email address.
-  string profile_user_name = 13;
+  string profile_user_name = 13
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_EMAIL_ID]
+      // copybara:datapol_end
+      ;
 
   // The address of the webpages that sent the user to this url.
-  repeated string referral_urls = 15;
+  repeated string referral_urls = 15
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Whether the warning has been ignored.
   bool clicked_through = 16;
@@ -1135,13 +1240,25 @@ message ContentTransferEvent {
       ;
 
   // Top level URL that triggers this event.
-  string url = 3;
+  string url = 3
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Source, e.g., a file system type.
-  string source = 9;
+  string source = 9
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Destination, e.g., a file system type.
-  string destination = 10;
+  string destination = 10
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Name of the transferred file.
   string file_name = 4
@@ -1256,20 +1373,36 @@ message ContentTransferEvent {
 // Next ID: 10.
 message LoginEvent {
   // The URL on which the login took place.
-  string url = 1;
+  string url = 1
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // True if the login happens through a third-party provider (such as "Sign in
   // with Google")
   bool is_federated = 2;
 
   // The origin of the third-party login provider, if |federated| is true.
-  string federated_origin = 3;
+  string federated_origin = 3
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Username of the profile. This will be an email address.
-  string profile_user_name = 4;
+  string profile_user_name = 4
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_EMAIL_ID]
+      // copybara:datapol_end
+      ;
 
   // Username used to login.
-  string login_user_name = 5;
+  string login_user_name = 5
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USERNAME]
+      // copybara:datapol_end
+      ;
 
   // Identifier of the profile. On a managed browser this is the path to the
   // profile storage which must be used in conjunction with the device
@@ -1319,10 +1452,18 @@ message PasswordBreachEvent {
   // breached password is used.
   message Identity {
     // Login URL of the site for which the user has breached credentials.
-    string url = 1;
+    string url = 1
+        // copybara:datapol_begin
+        // [(datapol.semantic_type) = ST_USER_CONTENT]
+        // copybara:datapol_end
+        ;
 
     // Username associated with |domain|.
-    string username = 2;
+    string username = 2
+        // copybara:datapol_begin
+        // [(datapol.semantic_type) = ST_USERNAME]
+        // copybara:datapol_end
+        ;
   }
 
   // List of all identities for which the user has breached credentials.
@@ -1330,7 +1471,11 @@ message PasswordBreachEvent {
 
   // Username of the profile. This will be an email address and could be
   // different from the usernames in |identities|.
-  string profile_user_name = 3;
+  string profile_user_name = 3
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_EMAIL_ID]
+      // copybara:datapol_end
+      ;
 
   // Identifier of the profile. On a managed browser this is the path to the
   // profile storage which must be used in conjunction with the device
@@ -1365,7 +1510,11 @@ message BrowserExtensionInstallEvent {
   string description = 3;
 
   // Username of the profile. This will be an email address.
-  string profile_user_name = 4;
+  string profile_user_name = 4
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_EMAIL_ID]
+      // copybara:datapol_end
+      ;
 
   // Identifier of the profile. On a managed browser this is the path to the
   // profile storage which must be used in conjunction with the device
@@ -1438,7 +1587,11 @@ message BrowserCrashEvent {
   string platform = 4;
 
   // Username of the profile. This will be an email address.
-  string profile_user_name = 5;
+  string profile_user_name = 5
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_EMAIL_ID]
+      // copybara:datapol_end
+      ;
 
   // Identifier of the profile. On a managed browser this is the path to the
   // profile storage which must be used in conjunction with the device
@@ -1459,10 +1612,18 @@ message BrowserCrashEvent {
 // Next ID: 17.
 message UrlFilteringInterstitialEvent {
   // Top level URL that triggers this interstitial.
-  string url = 1;
+  string url = 1
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // Username of the profile. This will be an email address.
-  string profile_user_name = 2;
+  string profile_user_name = 2
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_EMAIL_ID]
+      // copybara:datapol_end
+      ;
 
   // Whether the warning has been ignored.
   bool clicked_through = 3;
@@ -1478,7 +1639,11 @@ message UrlFilteringInterstitialEvent {
   InterstitialThreatType threat_type = 4;
 
   // The address of the webpages that sent the user to this url.
-  repeated string referrer_urls = 5;
+  repeated string referrer_urls = 5
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_USER_CONTENT]
+      // copybara:datapol_end
+      ;
 
   // This is the list of rules that were triggered for this event. They are
   // ordered by rule severity (block>warn) and the rule with url category is
@@ -1615,7 +1780,11 @@ message SuspiciousURLEvent {
   repeated UrlInfo referrers = 2;
 
   // Username of the profile. This will be an email address.
-  string profile_user_name = 3;
+  string profile_user_name = 3
+      // copybara:datapol_begin
+      // [(datapol.semantic_type) = ST_EMAIL_ID]
+      // copybara:datapol_end
+      ;
 
   // Identifier of the profile. On a managed browser this is the path to the
   // profile storage which must be used in conjunction with the device
