@@ -122,7 +122,7 @@ namespace web {
 const char kRestoreNavigationItemCount[] = "IOS.RestoreNavigationItemCount";
 
 BASE_FEATURE(kSkipAutomaticNavigationInBackForwardListKillSwitch,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool SkipAutomaticNavigationInBackForwardList() {
   return !base::FeatureList::IsEnabled(
