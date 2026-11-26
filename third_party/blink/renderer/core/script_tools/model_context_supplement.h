@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class DOMModelContext;
+
 class CORE_EXPORT ModelContextSupplement final
     : public GarbageCollected<ModelContextSupplement>,
       public Supplement<Document> {
@@ -21,6 +23,10 @@ class CORE_EXPORT ModelContextSupplement final
   static ModelContextSupplement& From(Document&);
   static ModelContext* GetIfExists(Document&);
   static ModelContext* modelContext(Document&);
+  static DOMModelContext* domModelContext(Document&);
+  // Returns the `DOMModelContext` of `document`, or null if it hasn't been
+  // created.
+  static DOMModelContext* DOMModelContextIfExists(Document&);
 
   explicit ModelContextSupplement(Document&);
   ModelContextSupplement(const ModelContextSupplement&) = delete;
@@ -30,8 +36,10 @@ class CORE_EXPORT ModelContextSupplement final
 
  private:
   ModelContext* modelContext();
+  DOMModelContext* domModelContext();
 
   Member<ModelContext> model_context_;
+  Member<DOMModelContext> dom_model_context_;
 };
 
 }  // namespace blink

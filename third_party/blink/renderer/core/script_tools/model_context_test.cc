@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
+#include "third_party/blink/renderer/core/script_tools/dom_model_context.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -730,8 +731,8 @@ TEST_F(ModelContextTest, CancelToolReentrancy) {
   auto* model_context = ModelContextSupplement::modelContext(GetDocument());
 
   auto* listener = MakeGarbageCollected<ReentrantListener>(model_context);
-  model_context->addEventListener(event_type_names::kToolcancel, listener,
-                                  false);
+  ModelContextSupplement::domModelContext(GetDocument())
+      ->addEventListener(event_type_names::kToolcancel, listener, false);
 
   base::RunLoop run_loop;
 

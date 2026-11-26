@@ -8,6 +8,6 @@
   RuntimeEnabled=WebMCP,
   ImplementedAs=ModelContextSupplement
 ] partial interface Document {
-  [SecureContext, SameObject] readonly attribute ModelContext modelContext;
+  [SecureContext, SameObject, ImplementedAs=domModelContext] readonly attribute ModelContext modelContext;
 };
 

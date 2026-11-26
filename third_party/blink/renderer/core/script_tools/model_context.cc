@@ -6,7 +6,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -42,6 +41,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/script_tools/dom_model_context.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_tool_invocation.h"
 #include "third_party/blink/renderer/core/script_tools/script_tool_context.h"
@@ -724,8 +724,11 @@ bool ModelContext::ExecuteTool(ToolInvocationToken invocation_id,
   // ExecuteDeclarativeTool(), so by the time the event is fired, the form will
   // be populated.
   // This is a synchronous, non-cancelable event.
-  DispatchEvent(
-      *ToolActivatedEvent::Create(event_type_names::kToolactivated, name));
+  if (DOMModelContext* dom_model_context =
+          ModelContextSupplement::DOMModelContextIfExists(*document_)) {
+    dom_model_context->DispatchEvent(
+        *ToolActivatedEvent::Create(event_type_names::kToolactivated, name));
+  }
 
   return success;
 }
@@ -795,8 +798,11 @@ bool ModelContext::CancelTool(ToolInvocationToken invocation_id) {
   }
 
   // Dispatch the synchronous toolcancel event for both types of tools.
-  DispatchEvent(
-      *ToolCancelEvent::Create(event_type_names::kToolcancel, tool_name));
+  if (DOMModelContext* dom_model_context =
+          ModelContextSupplement::DOMModelContextIfExists(*document_)) {
+    dom_model_context->DispatchEvent(
+        *ToolCancelEvent::Create(event_type_names::kToolcancel, tool_name));
+  }
 
   return true;
 }
@@ -1063,7 +1069,11 @@ void ModelContext::PauseExecution() {
 }
 
 void ModelContext::NotifyToolChange() {
-  DispatchEvent(*Event::Create(event_type_names::kToolchange));
+  if (DOMModelContext* dom_model_context =
+          ModelContextSupplement::DOMModelContextIfExists(*document_)) {
+    dom_model_context->DispatchEvent(
+        *Event::Create(event_type_names::kToolchange));
+  }
 }
 
 void ModelContext::ExecuteScriptTool(const ToolInvocationToken& invocation_id,
@@ -1144,8 +1154,11 @@ void ModelContext::RunResumedScriptTool(
                     },
                     std::move(callback)));
 
-  DispatchEvent(
-      *ToolActivatedEvent::Create(event_type_names::kToolactivated, tool_name));
+  if (DOMModelContext* dom_model_context =
+          ModelContextSupplement::DOMModelContextIfExists(*document_)) {
+    dom_model_context->DispatchEvent(*ToolActivatedEvent::Create(
+        event_type_names::kToolactivated, tool_name));
+  }
 }
 
 void ModelContext::CancelScriptTool(const ToolInvocationToken& invocation_id) {
@@ -1186,12 +1199,6 @@ ToolData* ModelContext::FindToolDataById(const ScriptToolToken& tool_id) const {
 
 ExecutionContext* ModelContext::GetExecutionContext() const {
   return document_ ? document_->GetExecutionContext() : nullptr;
-}
-
-const AtomicString& ModelContext::InterfaceName() const {
-  static base::NoDestructor<AtomicString> name(
-      AtomicString::FromLiteral<"ModelContext">());
-  return *name;
 }
 
 ScriptPromise<IDLSequence<Tool>> ModelContext::getTools(
@@ -1579,7 +1586,6 @@ void ModelContext::PendingExecution::Trace(Visitor* visitor) const {
 }
 
 void ModelContext::Trace(Visitor* visitor) const {
-  EventTarget::Trace(visitor);
   visitor->Trace(tool_map_);
   visitor->Trace(pending_resumptions_);
   visitor->Trace(pending_executions_);

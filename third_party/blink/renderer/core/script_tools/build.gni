@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 blink_core_sources_script_tools = [
+  "dom_model_context.cc",
+  "dom_model_context.h",
   "model_context.cc",
   "model_context.h",
   "model_context_supplement.cc",

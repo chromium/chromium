@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/script_tools/dom_model_context.h"
 
 namespace blink {
 
@@ -30,8 +31,21 @@ ModelContext* ModelContextSupplement::GetIfExists(Document& document) {
 }
 
 // static
+DOMModelContext* ModelContextSupplement::DOMModelContextIfExists(
+    Document& document) {
+  ModelContextSupplement* supplement =
+      Supplement<Document>::From<ModelContextSupplement>(document);
+  return supplement ? supplement->dom_model_context_.Get() : nullptr;
+}
+
+// static
 ModelContext* ModelContextSupplement::modelContext(Document& document) {
   return From(document).modelContext();
+}
+
+// static
+DOMModelContext* ModelContextSupplement::domModelContext(Document& document) {
+  return From(document).domModelContext();
 }
 
 ModelContextSupplement::ModelContextSupplement(Document& document)
@@ -39,6 +53,7 @@ ModelContextSupplement::ModelContextSupplement(Document& document)
 
 void ModelContextSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(model_context_);
+  visitor->Trace(dom_model_context_);
   Supplement<Document>::Trace(visitor);
 }
 
@@ -49,6 +64,15 @@ ModelContext* ModelContextSupplement::modelContext() {
     model_context_ = MakeGarbageCollected<ModelContext>(*document);
   }
   return model_context_.Get();
+}
+
+DOMModelContext* ModelContextSupplement::domModelContext() {
+  if (!dom_model_context_) {
+    ModelContext* model_context = modelContext();
+    dom_model_context_ = MakeGarbageCollected<DOMModelContext>(
+        *GetSupplementable(), *model_context);
+  }
+  return dom_model_context_.Get();
 }
 
 }  // namespace blink

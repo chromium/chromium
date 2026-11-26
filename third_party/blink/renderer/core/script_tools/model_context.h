@@ -14,10 +14,8 @@
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_model_context.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
-#include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
 #include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -36,6 +34,7 @@ class Element;
 class ExceptionState;
 class ExecuteToolOptions;
 class SourceLocation;
+class ModelContext;
 class ModelContextGetToolOptions;
 class ModelContextRegisterToolOptions;
 class ModelContextTool;
@@ -134,10 +133,8 @@ class CORE_EXPORT ToolData : public GarbageCollected<ToolData> {
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_ = nullptr;
 };
 
-class CORE_EXPORT ModelContext : public EventTarget,
+class CORE_EXPORT ModelContext : public GarbageCollected<ModelContext>,
                                  public mojom::blink::ModelContext {
-  DEFINE_WRAPPERTYPEINFO();
-
  public:
   ModelContext(Document& document);
 
@@ -148,12 +145,6 @@ class CORE_EXPORT ModelContext : public EventTarget,
   // enabled (via flag or origin trial). This ensures the kWebMCP kill switch
   // disables both.
   static bool IsDeclarativeWebMCPEnabled(const ExecutionContext* context);
-
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(toolchange, kToolchange)
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(toolactivated, kToolactivated)
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(toolcancel, kToolcancel)
-
-  const AtomicString& InterfaceName() const override;
 
   void ForEachScriptTool(
       base::FunctionRef<void(const mojom::blink::ScriptTool&)>) const;
@@ -261,8 +252,6 @@ class CORE_EXPORT ModelContext : public EventTarget,
   // Returns the tool registered with `tool_id`, or null if there is none.
   ToolData* FindToolDataById(const ScriptToolToken& tool_id) const;
 
-  ExecutionContext* GetExecutionContext() const override;
-
   void OnGetScriptToolsCompleted(
       ScriptPromiseResolver<IDLSequence<Tool>>* resolver,
       Vector<mojom::blink::ExposedScriptToolPtr> tools);
@@ -273,12 +262,14 @@ class CORE_EXPORT ModelContext : public EventTarget,
       const String& result,
       std::optional<mojom::blink::ExecuteRemoteScriptToolError> error);
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
  private:
   class ToolFunctionFinishedCallback;
   class ToolUnregisterAbortAlgorithm;
   class WaitForToolsSettled;
+
+  ExecutionContext* GetExecutionContext() const;
 
   void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
                               ToolInvocationToken invocation_id,
