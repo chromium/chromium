@@ -759,6 +759,18 @@ bool IsAndroidSurfaceControlEnabled() {
 
   // On WebView we require thread-safe media to use SurfaceControl
   if (IsUsingThreadSafeMediaForWebView()) {
+    // We decouple experiments between ATV and the rest of the users by using
+    // different flags here.
+    auto& feature = base::android::device_info::is_tv()
+                        ? kWebViewSurfaceControlForTV
+                        : kWebViewSurfaceControl;
+
+    base::FeatureList* feature_list = base::FeatureList::GetInstance();
+    if (feature_list &&
+        feature_list->IsFeatureOverriddenFromCommandLine(feature.name)) {
+      return base::FeatureList::IsEnabled(feature);
+    }
+
     // MediaTek devices have problems of importing overlay-able images to the
     // Vulkan. Don't use SurfaceControl there until this is resolved.
     if (base::StartsWith(base::android::android_info::model(), "mt") &&
@@ -767,13 +779,7 @@ bool IsAndroidSurfaceControlEnabled() {
       return false;
     }
 
-    // We decouple experiments between ATV and the rest of the users by using
-    // different flags here.
-    if (base::android::device_info::is_tv()) {
-      return base::FeatureList::IsEnabled(kWebViewSurfaceControlForTV);
-    } else {
-      return base::FeatureList::IsEnabled(kWebViewSurfaceControl);
-    }
+    return base::FeatureList::IsEnabled(feature);
   }
 
   return base::FeatureList::IsEnabled(kAndroidSurfaceControl);
