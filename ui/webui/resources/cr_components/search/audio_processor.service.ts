@@ -19,6 +19,7 @@ export class AudioProcessorService {
   // conflicts with Android speech recognition.
   private simulate: boolean = false;
   private isListening: boolean = false;
+  private sessionId: number = 0;
   private startTimeMs: number = 0;
   private lastVolumeTimeMs: number = 0;
   private decayingAmplitude: number = 0;
@@ -34,6 +35,7 @@ export class AudioProcessorService {
   // Returning a boolean lets the UI know if it actually worked
   async startMonitoringLevels(): Promise<boolean> {
     if (this.simulate) {
+      this.sessionId++;
       this.isListening = true;
       this.startTimeMs = performance.now();
       this.lastVolumeTimeMs = this.startTimeMs;
@@ -45,37 +47,49 @@ export class AudioProcessorService {
       return true;
     }
 
-    // Do not create another audio stream if one already exists.
-    if (this.audioContext) {
+    // Do not create another audio stream if one already exists or is starting.
+    if (this.audioContext || this.isListening) {
       return false;
     }
 
+    this.isListening = true;
+    const sessionId = ++this.sessionId;
+    let stream: MediaStream|null = null;
+    let audioContext: AudioContext|null = null;
     try {
-      this.mediaStream =
-          await navigator.mediaDevices.getUserMedia({audio: true});
-
-      this.audioContext = new AudioContext({sampleRate: 16000});
-
-      if (this.audioContext.state === 'suspended') {
-        await this.audioContext.resume();
+      stream = await navigator.mediaDevices.getUserMedia({audio: true});
+      // If `sessionId` no longer matches (or `isListening` was cleared),
+      // `stopListening()` was called while awaiting `getUserMedia()`.
+      if (sessionId !== this.sessionId || !this.isListening) {
+        stream.getTracks().forEach((track) => track.stop());
+        return false;
       }
 
-
+      audioContext = new AudioContext({sampleRate: 16000});
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+      // If `sessionId` no longer matches (or `isListening` was cleared),
+      // `stopListening()` was called while awaiting `audioContext.resume()`.
+      if (sessionId !== this.sessionId || !this.isListening) {
+        stream.getTracks().forEach((track) => track.stop());
+        await audioContext.close().catch(() => {});
+        return false;
+      }
       // Used to derive numbers like volume and frequency from the audio stream.
-      this.analyser = this.audioContext.createAnalyser();
+      const analyser = audioContext.createAnalyser();
 
-      this.microphoneSource =
-          this.audioContext.createMediaStreamSource(this.mediaStream);
+      const microphoneSource = audioContext.createMediaStreamSource(stream);
 
       // Plug the mic straight into the analyser. Done.
-      this.microphoneSource.connect(this.analyser);
+      microphoneSource.connect(analyser);
 
       // Fast Fourier Transform - higher means more detail, but slower
       // calculations.
-      this.analyser.fftSize = 1024;
+      analyser.fftSize = 1024;
 
       // Set the default smoothing to 0 to utilize the Chrome custom smoother.
-      this.analyser.smoothingTimeConstant = 0;
+      analyser.smoothingTimeConstant = 0;
 
       // frequencyBinCount is half of fftSize, so 512 in this case.
       // Assuming a 16000Hz sample rate, the maximum measurable frequency
@@ -87,14 +101,26 @@ export class AudioProcessorService {
       //   ~1094Hz, used).
       //   - Bucket (70, 512): high frequencies (>1094Hz; noise, clicks,
       //   sibilance, clipped).
-      const bucketSize = this.analyser.frequencyBinCount;
+      const bucketSize = analyser.frequencyBinCount;
+      this.mediaStream = stream;
+      this.audioContext = audioContext;
+      this.analyser = analyser;
+      this.microphoneSource = microphoneSource;
       this.levels = new Float32Array(bucketSize);
       return true;
 
     } catch (err) {
-      if (this.mediaStream) {
-        this.mediaStream.getTracks().forEach(track => track.stop());
-        this.mediaStream = null;
+      // Only stop listening if the error belongs to this session; do not clear
+      // `isListening` for a newer valid session.
+      if (sessionId === this.sessionId) {
+        this.isListening = false;
+      }
+      // Stop mic tracks before closing `audioContext` to avoid a delay.
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+      if (audioContext) {
+        await audioContext.close().catch(() => {});
       }
       return false;
     }
@@ -192,6 +218,7 @@ export class AudioProcessorService {
 
   // Cleanup.
   async stopListening(): Promise<void> {
+    this.sessionId++;
     this.isListening = false;
     if (this.simulate) {
       this.activeSimulatedBumps = [];
@@ -206,10 +233,13 @@ export class AudioProcessorService {
       this.mediaStream = null;
     }
     if (this.audioContext) {
-      await this.audioContext.close();
+      const audioContext = this.audioContext;
+      this.microphoneSource?.disconnect();
       this.audioContext = null;
       this.analyser = null;
+      this.levels = null;
       this.microphoneSource = null;
+      await audioContext.close().catch(() => {});
     }
   }
 }

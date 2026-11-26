@@ -332,6 +332,10 @@ export class OmniboxEverywhereOmniboxElement extends
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
+    if (!this.inVoiceSearchMode && changedProperties.has('inVoiceSearchMode') &&
+        this.animationState === GlowAnimationState.LISTENING) {
+      this.animationState = GlowAnimationState.NONE;
+    }
     if (!this.canCyclePlaceholders_()) {
       this.showLensPlaceholder_ = false;
     }
