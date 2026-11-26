@@ -16,7 +16,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -26,6 +25,7 @@
 #include "content/public/browser/file_url_loader.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -40,6 +40,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/test/mock_url_loader_client.h"
 #include "services/network/test/test_url_loader_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -172,7 +173,7 @@ class FileURLLoaderFactoryTest : public testing::Test {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  BrowserTaskEnvironment task_environment_;
   base::FilePath profile_dummy_path_;
   scoped_refptr<SharedCorsOriginAccessListForTesting> access_list_;
   mojo::Remote<network::mojom::URLLoaderFactory> factory_;
@@ -490,14 +491,15 @@ TEST_F(FileURLLoaderFactoryTest, DlpNoInitiatorDeny) {
 
 TEST_F(FileURLLoaderFactoryTest, DlpRemoteValidFileUrl) {
   file_access::MockScopedFileAccessDelegate file_access_delegate;
-  base::MockCallback<base::RepeatingCallback<void(
-      const std::vector<base::FilePath>&,
-      base::OnceCallback<void(file_access::ScopedFileAccess)>)>>
-      cb;
-  EXPECT_CALL(cb, Run).WillOnce(
-      base::test::RunOnceCallback<1>(file_access::ScopedFileAccess::Denied()));
+  base::MockCallback<
+      file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback>
+      io_cb;
+  EXPECT_CALL(io_cb, Run).Times(0);
   file_access::ScopedFileAccessDelegate::
-      ScopedRequestFilesAccessCallbackForTesting scoped_callback(cb.Get());
+      ScopedRequestFilesAccessCallbackForTesting scoped_callback(io_cb.Get());
+  EXPECT_CALL(file_access_delegate, RequestFilesAccessForSystem)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          file_access::ScopedFileAccess::Denied()));
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = GURL("file:///test");
 
@@ -505,15 +507,41 @@ TEST_F(FileURLLoaderFactoryTest, DlpRemoteValidFileUrl) {
             CreateLoaderBypassingSecurityAndRun(std::move(request)).error_code);
 }
 
+TEST_F(FileURLLoaderFactoryTest, DlpRemoteValidFileUrlAllow) {
+  file_access::MockScopedFileAccessDelegate file_access_delegate;
+  base::MockCallback<
+      file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback>
+      io_cb;
+  EXPECT_CALL(io_cb, Run).Times(0);
+  file_access::ScopedFileAccessDelegate::
+      ScopedRequestFilesAccessCallbackForTesting scoped_callback(io_cb.Get());
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file = temp_dir.GetPath().AppendASCII("test_file.txt");
+  ASSERT_TRUE(base::WriteFile(file, "test content"));
+
+  EXPECT_CALL(file_access_delegate,
+              RequestFilesAccessForSystem(testing::ElementsAre(file), _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          file_access::ScopedFileAccess::Allowed()));
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = net::FilePathToFileURL(file);
+
+  EXPECT_EQ(net::OK,
+            CreateLoaderBypassingSecurityAndRun(std::move(request)).error_code);
+}
+
 TEST_F(FileURLLoaderFactoryTest, DlpRemoteInvalidFileUrl) {
   file_access::MockScopedFileAccessDelegate file_access_delegate;
-  base::MockCallback<base::RepeatingCallback<void(
-      const std::vector<base::FilePath>&,
-      base::OnceCallback<void(file_access::ScopedFileAccess)>)>>
-      cb;
-  EXPECT_CALL(cb, Run).Times(0);
+  base::MockCallback<
+      file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback>
+      io_cb;
+  EXPECT_CALL(io_cb, Run).Times(0);
   file_access::ScopedFileAccessDelegate::
-      ScopedRequestFilesAccessCallbackForTesting scoped_callback(cb.Get());
+      ScopedRequestFilesAccessCallbackForTesting scoped_callback(io_cb.Get());
+  EXPECT_CALL(file_access_delegate, RequestFilesAccessForSystem).Times(0);
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = GURL("file:///%00");
 

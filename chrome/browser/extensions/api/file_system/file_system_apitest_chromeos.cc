@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
+#include <vector>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
@@ -43,6 +46,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/file_system.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 
@@ -60,6 +64,28 @@ const char kChildDirectory[] = "child-dir";
 
 // ID of a testing extension.
 const char kTestingExtensionId[] = "pkplfbidichfdicaijlchgnapepdginl";
+
+// Allows extension resource loads (which go through
+// `CreateFileURLLoaderBypassingSecurityChecks()`) while tests mock
+// `ScopedFileAccessDelegate` for user file access checks.
+void AllowSystemFileAccess(
+    file_access::MockScopedFileAccessDelegate& file_access,
+    const base::FilePath& disallowed_dir) {
+  EXPECT_CALL(file_access, RequestFilesAccessForSystem)
+      .WillRepeatedly([disallowed_dir](
+                          const std::vector<base::FilePath>& paths,
+                          base::OnceCallback<void(
+                              file_access::ScopedFileAccess)> callback) {
+        for (const base::FilePath& path : paths) {
+          if (path == disallowed_dir || disallowed_dir.IsParent(path)) {
+            ADD_FAILURE() << "Unexpected system file access for " << path;
+            std::move(callback).Run(file_access::ScopedFileAccess::Denied());
+            return;
+          }
+        }
+        std::move(callback).Run(file_access::ScopedFileAccess::Allowed());
+      });
+}
 
 }  // namespace
 
@@ -567,6 +593,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiKioskTestForRequestFileSystem,
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
                        DlpOpenFileAllow) {
   file_access::MockScopedFileAccessDelegate file_access;
+  AllowSystemFileAccess(file_access, temp_dir_.GetPath());
   base::MockRepeatingCallback<void(
       const std::vector<base::FilePath>&,
       base::OnceCallback<void(file_access::ScopedFileAccess)>)>
@@ -604,6 +631,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
 
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem, DlpOpenFileDeny) {
   file_access::MockScopedFileAccessDelegate file_access;
+  AllowSystemFileAccess(file_access, temp_dir_.GetPath());
   base::MockRepeatingCallback<void(
       const std::vector<base::FilePath>&,
       base::OnceCallback<void(file_access::ScopedFileAccess)>)>
@@ -643,6 +671,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem, DlpOpenFileDeny) {
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
                        AllowlistedComponentBackgroundDlpAllow) {
   file_access::MockScopedFileAccessDelegate file_access;
+  AllowSystemFileAccess(file_access, temp_dir_.GetPath());
   base::MockRepeatingCallback<void(
       const std::vector<base::FilePath>&,
       base::OnceCallback<void(file_access::ScopedFileAccess)>)>
@@ -677,6 +706,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
                        AllowlistedComponentBackgroundDlpDeny) {
   file_access::MockScopedFileAccessDelegate file_access;
+  AllowSystemFileAccess(file_access, temp_dir_.GetPath());
   base::MockRepeatingCallback<void(
       const std::vector<base::FilePath>&,
       base::OnceCallback<void(file_access::ScopedFileAccess)>)>

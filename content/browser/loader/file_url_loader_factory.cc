@@ -986,6 +986,8 @@ void CreateFileURLLoaderBypassingSecurityChecks(
     std::unique_ptr<FileURLLoaderObserver> observer,
     bool allow_directory_listing,
     scoped_refptr<net::HttpResponseHeaders> extra_response_headers) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+
   // TODO(crbug.com/41436919): Re-evaluate how TaskPriority is set here and in
   // other file URL-loading-related code. Some callers require USER_VISIBLE
   // (i.e., BEST_EFFORT is not enough).
@@ -1005,8 +1007,8 @@ void CreateFileURLLoaderBypassingSecurityChecks(
                        FileAccessPolicy::kUnrestricted,
                        LinkFollowingPolicy::kDoNotFollow, std::move(observer),
                        std::move(extra_response_headers)));
-    file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
-        {path}, std::move(create_and_start_cb));
+    file_access::RequestFilesAccessForSystem({path},
+                                             std::move(create_and_start_cb));
   } else {
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
         ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_INVALID_URL));
