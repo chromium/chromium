@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkFlattenable.h"
 #include "third_party/skia/include/ports/SkFontConfigInterface.h"
 
@@ -102,6 +103,11 @@ SK_API std::optional<SkPixmap> MakeSkPixmap(
     const SkImageInfo& info,
     base::span<const uint8_t> pixels,
     std::optional<size_t> row_bytes = std::nullopt);
+
+// Returns the color type that is `color_type` with its X channel replaced by
+// alpha, with all other bits unchanged. Returns `color_type` if it has alpha,
+// and std::nullopt if there is no such color type (e.g., for kRGB_565).
+SK_API std::optional<SkColorType> SkColorTypeWithAlpha(SkColorType color_type);
 
 }  // namespace skia
 

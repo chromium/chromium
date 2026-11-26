@@ -21,6 +21,7 @@
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_rect_util.h"
@@ -209,6 +210,20 @@ bool BackgroundReadback::CopyMappablePlanes(const media::VideoFrame& src_frame,
     return false;
   }
   media::internals::CopyVisiblePlanes(src_frame, dest_frame);
+
+  // Make the padding byte of RGBX and BGRX opaque.
+  // TODO(https://crbug.com/589781111): This is skipped if the stride is not a
+  // multiple of the pixel size, which SkPixmap can't represent.
+  if (dest_frame.format() == media::PIXEL_FORMAT_XRGB ||
+      dest_frame.format() == media::PIXEL_FORMAT_XBGR) {
+    if (const auto pixmap = dest_frame.GetWritableVisibleRGBPlanePixmap()) {
+      const SkPixmap pixmap_with_alpha(
+          pixmap->info().makeColorType(
+              skia::SkColorTypeWithAlpha(pixmap->colorType()).value()),
+          pixmap->addr(), pixmap->rowBytes());
+      CHECK(pixmap_with_alpha.readPixels(*pixmap));
+    }
+  }
   return true;
 }
 

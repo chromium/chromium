@@ -207,4 +207,24 @@ base::span<uint8_t> as_writable_byte_span(const SkPixmap& pixmap) {
       base::span(static_cast<uint8_t*>(pixmap.writable_addr()), size));
 }
 
+std::optional<SkColorType> SkColorTypeWithAlpha(SkColorType color_type) {
+  switch (color_type) {
+    case kRGB_888x_SkColorType:
+      return kRGBA_8888_SkColorType;
+    case kBGR_888x_SkColorType:
+      return kBGRA_8888_SkColorType;
+    case kRGB_101010x_SkColorType:
+      return kRGBA_1010102_SkColorType;
+    case kBGR_101010x_SkColorType:
+      return kBGRA_1010102_SkColorType;
+    case kRGB_F16F16F16x_SkColorType:
+      return kRGBA_F16_SkColorType;
+    default:
+      if (SkColorTypeIsAlwaysOpaque(color_type)) {
+        return std::nullopt;
+      }
+      return color_type;
+  }
+}
+
 }  // namespace skia
