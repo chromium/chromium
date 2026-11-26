@@ -257,6 +257,7 @@ public class LocationBarMediator
             ObservableSuppliers.createNonNull(false);
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final FuseboxCoordinator mFuseboxCoordinator;
+    private final FuseboxGuidedTourController mFuseboxGuidedTourController;
     private final Callback<@AutocompleteRequestType Integer> mAutocompleteRequestTypeObserver =
             this::onAutocompleteRequestTypeChanged;
     private final Callback<@DisplayState Integer> mDisplayStateObserver =
@@ -379,6 +380,7 @@ public class LocationBarMediator
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             @Nullable PageZoomIndicatorCoordinator pageZoomIndicatorCoordinator,
             FuseboxCoordinator fuseboxCoordinator,
+            FuseboxGuidedTourController fuseboxGuidedTourController,
             LocationBarEmbedder locationBarEmbedder,
             @Nullable OmniboxChipManager omniboxChipManager,
             @Nullable LocationBarFocusScrimHandler scrimHandler,
@@ -390,6 +392,7 @@ public class LocationBarMediator
         mResourceProvider = resourceProvider;
         mLocationBarEmbedder = locationBarEmbedder;
         mFuseboxCoordinator = fuseboxCoordinator;
+        mFuseboxGuidedTourController = fuseboxGuidedTourController;
         mLocationBarDataProvider.addObserver(this);
         mEmbedderUiOverrides = embedderUiOverrides;
         mProfileSupplier = profileSupplier;
@@ -3190,6 +3193,9 @@ public class LocationBarMediator
             return;
         }
 
+        // Set guided tour mode before applyAutocompleteInput() so it is active before Fusebox
+        // enters COMPACT (including when transitioning out of DRAFTING_NO_FOCUS).
+        mFuseboxGuidedTourController.beginInput(input.getFocusReason());
         state.applyAutocompleteInput(input);
 
         if (!mUrlHasFocus) {
@@ -3274,6 +3280,7 @@ public class LocationBarMediator
                     false, /* animate= */ OmniboxCapabilities.areAnimationsEnabled());
         }
         disconnectObservers(input);
+        mFuseboxGuidedTourController.endInput();
         mFuseboxCoordinator.endInput();
         mHintTextUpdater.endInput();
         mIsTextWrapping = false;

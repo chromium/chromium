@@ -40,6 +40,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -83,6 +84,8 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
      * @param fuseboxStateSupplier Used to decide if an plus button for fusebox should be shown.
      * @param fuseboxLayoutModeSupplier Used to decide if the plus button should be hidden (AL).
      * @param onPlusButtonClicked Toggle the fusebox attachments menu when plus button used.
+     * @param isFuseboxGuidedTourModeActiveSupplier Supplies whether fusebox guided tour mode is
+     *     active.
      */
     public StatusCoordinator(
             OmniboxResourceProvider resourceProvider,
@@ -97,7 +100,8 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
                     browserControlsVisibilityDelegate,
             NonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
             NonNullObservableSupplier<@FuseboxLayoutMode Integer> fuseboxLayoutModeSupplier,
-            Runnable onPlusButtonClicked) {
+            Runnable onPlusButtonClicked,
+            BooleanSupplier isFuseboxGuidedTourModeActiveSupplier) {
         mIsTablet = isTablet;
         mStatusView = statusView;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -140,7 +144,8 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
                         userEducationHelper,
                         mStatusView,
                         fuseboxStateSupplier,
-                        mMediator.getStatusIconTypeSupplier());
+                        mMediator.getStatusIconTypeSupplier(),
+                        isFuseboxGuidedTourModeActiveSupplier);
 
         Resources res = mStatusView.getResources();
         int statusIconWidth = resourceProvider.getStatusIconSize();

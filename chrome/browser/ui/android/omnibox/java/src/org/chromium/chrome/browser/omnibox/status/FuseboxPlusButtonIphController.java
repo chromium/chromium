@@ -20,6 +20,8 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * Controller to manage when an In-Product Help (IPH) callout bubble for the Fusebox (+) button is
  * shown.
@@ -30,6 +32,7 @@ class FuseboxPlusButtonIphController {
     private final View mStatusView;
     private final NonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private final NonNullObservableSupplier<@StatusIconType Integer> mStatusIconTypeSupplier;
+    private final BooleanSupplier mIsFuseboxGuidedTourModeActiveSupplier;
     private final Callback<@FuseboxState Integer> mFuseboxStateObserver = _ -> updateVisibility();
     private final Callback<@StatusIconType Integer> mStatusIconTypeObserver =
             _ -> updateVisibility();
@@ -40,16 +43,20 @@ class FuseboxPlusButtonIphController {
      * @param statusView The {@link StatusView} to anchor the IPH bubble to.
      * @param fuseboxStateSupplier Supplies the current {@link FuseboxState}.
      * @param statusIconTypeSupplier Supplies the currently resolved {@link StatusIconType}.
+     * @param isFuseboxGuidedTourModeActiveSupplier Supplies whether fusebox guided tour mode is
+     *     active.
      */
     FuseboxPlusButtonIphController(
             UserEducationHelper userEducationHelper,
             View statusView,
             NonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
-            NonNullObservableSupplier<@StatusIconType Integer> statusIconTypeSupplier) {
+            NonNullObservableSupplier<@StatusIconType Integer> statusIconTypeSupplier,
+            BooleanSupplier isFuseboxGuidedTourModeActiveSupplier) {
         mUserEducationHelper = userEducationHelper;
         mStatusView = statusView;
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mStatusIconTypeSupplier = statusIconTypeSupplier;
+        mIsFuseboxGuidedTourModeActiveSupplier = isFuseboxGuidedTourModeActiveSupplier;
 
         // Suppress on desktop by not adding observers.
         if (OmniboxCapabilities.isDesktopPlatform()) return;
@@ -83,10 +90,15 @@ class FuseboxPlusButtonIphController {
         if (mIsShowing) return;
 
         mIsShowing = true;
+        // Guided tour mode bypasses organic FET caps since the user explicitly launched the tour.
+        String featureConstantName =
+                mIsFuseboxGuidedTourModeActiveSupplier.getAsBoolean()
+                        ? FeatureConstants.GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE
+                        : FeatureConstants.FUSEBOX_PLUS_BUTTON_HINT_FEATURE;
         IphCommand command =
                 new IphCommandBuilder(
                                 mStatusView.getResources(),
-                                FeatureConstants.FUSEBOX_PLUS_BUTTON_HINT_FEATURE,
+                                featureConstantName,
                                 /* stringId= */ R.string.fusebox_attachment_button_iph,
                                 /* accessibilityStringId= */ R.string.fusebox_attachment_button_iph)
                         .setAnchorView(mStatusView)

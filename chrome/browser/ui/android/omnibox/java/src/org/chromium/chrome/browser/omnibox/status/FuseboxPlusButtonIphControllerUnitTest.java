@@ -39,6 +39,8 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.base.TestActivity;
 
+import java.util.function.BooleanSupplier;
+
 /** Unit tests for {@link FuseboxPlusButtonIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @NullMarked
@@ -53,6 +55,7 @@ public class FuseboxPlusButtonIphControllerUnitTest {
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private final SettableNonNullObservableSupplier<@StatusIconType Integer>
             mStatusIconTypeSupplier = ObservableSuppliers.createNonNull(StatusIconType.NONE);
+    private boolean mIsFuseboxGuidedTourModeActive;
 
     private View mStatusView;
     private FuseboxPlusButtonIphController mController;
@@ -62,14 +65,23 @@ public class FuseboxPlusButtonIphControllerUnitTest {
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mStatusView = new View(activity);
         activity.setContentView(mStatusView);
-        mController = createController(mFuseboxStateSupplier, mStatusIconTypeSupplier);
+        mController =
+                createController(
+                        mFuseboxStateSupplier,
+                        mStatusIconTypeSupplier,
+                        () -> mIsFuseboxGuidedTourModeActive);
     }
 
     private FuseboxPlusButtonIphController createController(
             SettableNonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
-            SettableNonNullObservableSupplier<@StatusIconType Integer> statusIconTypeSupplier) {
+            SettableNonNullObservableSupplier<@StatusIconType Integer> statusIconTypeSupplier,
+            BooleanSupplier isFuseboxGuidedTourModeActiveSupplier) {
         return new FuseboxPlusButtonIphController(
-                mUserEducationHelper, mStatusView, fuseboxStateSupplier, statusIconTypeSupplier);
+                mUserEducationHelper,
+                mStatusView,
+                fuseboxStateSupplier,
+                statusIconTypeSupplier,
+                isFuseboxGuidedTourModeActiveSupplier);
     }
 
     private void setIphShowingState() {
@@ -152,6 +164,18 @@ public class FuseboxPlusButtonIphControllerUnitTest {
     }
 
     @Test
+    public void fuseboxGuidedTourMode_usesAlwaysTriggerFeature() {
+        mIsFuseboxGuidedTourModeActive = true;
+
+        setIphShowingState();
+
+        assertTrue(mController.isShowingForTesting());
+        verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
+        IphCommand command = mIphCommandCaptor.getValue();
+        assertEquals(FeatureConstants.GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE, command.featureName);
+    }
+
+    @Test
     public void updateVisibility_onNotShownCallback_resetsShowingState() {
         setIphShowingState();
         verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
@@ -188,7 +212,8 @@ public class FuseboxPlusButtonIphControllerUnitTest {
         var fuseboxStateSupplier = ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
         var statusIconTypeSupplier = ObservableSuppliers.createNonNull(StatusIconType.NONE);
 
-        var controller = createController(fuseboxStateSupplier, statusIconTypeSupplier);
+        var controller =
+                createController(fuseboxStateSupplier, statusIconTypeSupplier, () -> false);
 
         assertFalse(fuseboxStateSupplier.hasObservers());
         assertFalse(statusIconTypeSupplier.hasObservers());

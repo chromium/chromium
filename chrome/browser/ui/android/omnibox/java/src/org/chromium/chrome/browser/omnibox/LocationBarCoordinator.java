@@ -153,6 +153,7 @@ public class LocationBarCoordinator
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private StatusCoordinator mStatusCoordinator;
     private FuseboxCoordinator mFuseboxCoordinator;
+    private FuseboxGuidedTourController mFuseboxGuidedTourController;
     private final WindowAndroid mWindowAndroid;
     private final Callback<@FuseboxState Integer> mOnFuseboxStateChange =
             this::onFuseboxStateChange;
@@ -335,6 +336,8 @@ public class LocationBarCoordinator
         mFuseboxCoordinator
                 .getPopupStateSupplier()
                 .addSyncObserverAndPostIfNonNull(mOnPopupStateChange);
+        mFuseboxGuidedTourController =
+                new FuseboxGuidedTourController(mFuseboxCoordinator.getPopupStateSupplier());
         NonNullObservableSupplier<Integer> fuseboxLayoutModeSupplier =
                 mFuseboxCoordinator.getFuseboxLayoutModeSupplier();
 
@@ -408,6 +411,7 @@ public class LocationBarCoordinator
                         modalDialogManagerSupplier,
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
+                        mFuseboxGuidedTourController,
                         locationBarEmbedder,
                         omniboxChipManager,
                         scrimHandler,
@@ -475,7 +479,8 @@ public class LocationBarCoordinator
                         browserControlsVisibilityDelegate,
                         fuseboxStateSupplier,
                         fuseboxLayoutModeSupplier,
-                        this::onPlusButtonClicked);
+                        this::onPlusButtonClicked,
+                        mFuseboxGuidedTourController::isGuidedTourModeActive);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
 
@@ -655,6 +660,9 @@ public class LocationBarCoordinator
 
         mOmniboxDropdownEmbedderImpl.destroy();
         mOmniboxDropdownEmbedderImpl = null;
+
+        mFuseboxGuidedTourController.destroy();
+        mFuseboxGuidedTourController = null;
 
         if (mFuseboxCoordinator != null) {
             mFuseboxCoordinator.getFuseboxStateSupplier().removeObserver(mOnFuseboxStateChange);

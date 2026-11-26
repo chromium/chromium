@@ -247,6 +247,7 @@ public class LocationBarMediatorUnitTest {
     @Mock private AppBannerManager.Natives mAppBannerManagerJni;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private FuseboxCoordinator mFuseboxCoordinator;
+    @Mock private FuseboxGuidedTourController mFuseboxGuidedTourController;
     @Mock private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
     @Mock private AutocompleteController mAutocompleteController;
     @Mock private ComposeboxQueryControllerBridge mComposeboxBridge;
@@ -511,6 +512,7 @@ public class LocationBarMediatorUnitTest {
                         () -> mModalDialogManager,
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
+                        mFuseboxGuidedTourController,
                         mLocationBarEmbedder,
                         /* omniboxChipManager= */ null,
                         mScrimHandler,
@@ -592,6 +594,7 @@ public class LocationBarMediatorUnitTest {
                         () -> mModalDialogManager,
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
+                        mFuseboxGuidedTourController,
                         mLocationBarEmbedder,
                         /* omniboxChipManager= */ null,
                         mScrimHandler,
@@ -2185,6 +2188,7 @@ public class LocationBarMediatorUnitTest {
                         () -> mModalDialogManager,
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
+                        mFuseboxGuidedTourController,
                         mLocationBarEmbedder,
                         /* omniboxChipManager= */ null,
                         mScrimHandler,
@@ -6898,5 +6902,14 @@ public class LocationBarMediatorUnitTest {
                 IntentUtils.safeGetParcelableExtra(chooserCaptor.getValue(), Intent.EXTRA_INTENT);
         assertNotNull(sendIntent);
         return sendIntent;
+    }
+
+    @Test
+    public void testGuidedTourController_beginAndEndInputForwarded() {
+        mMediator.beginInput(new AutocompleteInput(OmniboxFocusReason.FUSEBOX_GUIDED_TOUR));
+        verify(mFuseboxGuidedTourController).beginInput(OmniboxFocusReason.FUSEBOX_GUIDED_TOUR);
+
+        mMediator.endInput();
+        verify(mFuseboxGuidedTourController).endInput();
     }
 }

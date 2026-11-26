@@ -37,6 +37,7 @@ import java.lang.annotation.RetentionPolicy;
     OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP,
     OmniboxFocusReason.KEYBOARD_NAVIGATION_FOCUS,
     OmniboxFocusReason.NTP_GALLERY_CHIP_CLICKED,
+    OmniboxFocusReason.FUSEBOX_GUIDED_TOUR,
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:OmniboxFocusReason) -->
 })
 @Retention(RetentionPolicy.SOURCE)
@@ -70,5 +71,7 @@ public @interface OmniboxFocusReason {
     int KEYBOARD_NAVIGATION_FOCUS = 21; // Omnibox focused via Tab/Shift-Tab traversal.
     // Omnibox focused via the NTP gallery action chip; opens the Fusebox gallery picker.
     int NTP_GALLERY_CHIP_CLICKED = 22;
-    int NUM_ENTRIES = 23;
+    // Omnibox focused to start the Fusebox guided tour from the NTP Magic Stack Chrome tip.
+    int FUSEBOX_GUIDED_TOUR = 23;
+    int NUM_ENTRIES = 24;
 }
