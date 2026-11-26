@@ -11,7 +11,6 @@
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace actor {
 
@@ -52,7 +51,6 @@ class OpenUrlToolRequest : public TabToolRequest {
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
   std::string_view Name() const override;
-  std::optional<url::Origin> AssociatedOriginGrant() const override;
 
  private:
   GURL url_;

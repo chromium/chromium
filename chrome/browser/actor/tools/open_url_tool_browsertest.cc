@@ -288,6 +288,47 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool(),
                          &OpenUrlModeName);
 
+class ActorOpenUrlToolImplicitGrantBrowserTest
+    : public ActorOpenUrlToolExplicitGrantRequiredBrowserTest {
+ public:
+  ActorOpenUrlToolImplicitGrantBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kGlicCrossOriginNavigationGating,
+        {{kGlicConfirmNavigationToNewOrigins.name, "true"},
+         {kGlicAllowImplicitToolOriginGrants.name, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ActorOpenUrlToolImplicitGrantBrowserTest,
+                       CrossSiteOpenUrlAllowedByImplicitGrant) {
+  const GURL url_start =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html?start");
+  const GURL url_target = embedded_https_test_server().GetURL(
+      "bar.com", "/actor/blank.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+  const int initial_tab_count = tab_list()->GetTabCount();
+  tabs::TabInterface* source_tab = active_tab();
+
+  std::unique_ptr<ToolRequest> action =
+      MakeOpenUrlRequest(*source_tab, url_target);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  tabs::TabInterface* navigated_tab =
+      GetNavigatedTab(source_tab, url_start, initial_tab_count);
+  ASSERT_TRUE(navigated_tab);
+  EXPECT_EQ(navigated_tab->GetContents()->GetLastCommittedURL(), url_target);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ActorOpenUrlToolImplicitGrantBrowserTest,
+                         testing::Bool(),
+                         &OpenUrlModeName);
+
 }  // namespace
 
 }  // namespace actor

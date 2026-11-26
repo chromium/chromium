@@ -18,7 +18,6 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
-#include "url/origin.h"
 
 namespace actor {
 
@@ -103,12 +102,6 @@ std::string_view OpenUrlToolRequest::Name() const {
 
 bool OpenUrlToolRequest::ActsOnWebContents() const {
   return false;
-}
-
-std::optional<url::Origin> OpenUrlToolRequest::AssociatedOriginGrant() const {
-  // The navigation to `url_` runs as a follow-up `NavigateToolRequest`, which
-  // doesn't get its implicit grant applied, so grant the origin up front.
-  return url::Origin::Create(url_);
 }
 
 }  // namespace actor

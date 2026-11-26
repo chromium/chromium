@@ -1619,19 +1619,6 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   act_callback_ = std::move(callback);
   observation_strategy_ = TabObservationStrategy();
 
-  for (const std::unique_ptr<ToolRequest>& action : actions) {
-    CHECK(action);
-    if (IsNavigationGatingEnabled() &&
-        kGlicAllowImplicitToolOriginGrants.Get()) {
-      if (std::optional<url::Origin> maybe_origin =
-              action->AssociatedOriginGrant();
-          maybe_origin) {
-        GetOriginGatingChecker().AllowNavigationTo(maybe_origin.value(),
-                                                   /*is_user_confirmed=*/false);
-      }
-    }
-  }
-
   dispatcher_ = std::make_unique<BaseDispatcher>(std::move(actions));
   ProcessNextFromDispatcher();
 }
@@ -1648,6 +1635,16 @@ void ExecutionEngine::ProcessNextFromDispatcher() {
 
   executing_request_ = std::move(std::get<std::unique_ptr<ToolRequest>>(next));
   CHECK(executing_request_);
+
+  if (IsNavigationGatingEnabled() && kGlicAllowImplicitToolOriginGrants.Get()) {
+    if (std::optional<url::Origin> maybe_origin =
+            executing_request_->AssociatedOriginGrant();
+        maybe_origin) {
+      GetOriginGatingChecker().AllowNavigationTo(maybe_origin.value(),
+                                                 /*is_user_confirmed=*/false);
+    }
+  }
+
   StartExecutingNewRequest();
 }
 
@@ -2134,7 +2131,6 @@ base::WeakPtr<ExecutionEngine> ExecutionEngine::GetActionSequenceWeakPtr() {
   return actions_weak_ptr_factory_.GetWeakPtr();
 }
 
-// TODO(b/555808355): Rename "Action" to "Request" throughout this class.
 bool ExecutionEngine::HasActionSequence() const {
   return dispatcher_ != nullptr;
 }
@@ -2496,6 +2492,7 @@ const ToolRequest& ExecutionEngine::GetNextAction() const {
   return *executing_request_;
 }
 
+// TODO(b/555808355): Rename "Action" to "Request" throughout this class.
 const ToolRequest& ExecutionEngine::GetInProgressAction() const {
   CHECK(state_ == State::kUiPreInvoke || state_ == State::kToolInvoke ||
         state_ == State::kUiPostInvoke || state_ == State::kToolCreateAndVerify)

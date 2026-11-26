@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <functional>
+#include <memory>
+#include <optional>
+#include <string_view>
+#include <utility>
+
 #include "base/strings/strcat.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
@@ -13,18 +19,27 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/actor/tools/fake_tool.h"
+#include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/browser/actor/tools/tool_delegate.h"
+#include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
+#include "chrome/browser/actor/tools/wait_tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_switches.h"
@@ -3793,5 +3808,112 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineSubframeGatingDryRunDisabledBrowserTest,
   histogram_tester.ExpectTotalCount(kTargetFrameTypeHistogram, 0);
   histogram_tester.ExpectTotalCount(kSubframeDryRunOutcomeHistogram, 0);
 }
+
+namespace {
+
+// A fake tool request that simply enqueues the given `followup_action` action
+// as a followup.
+class FollowupToolRequest : public TabToolRequest {
+ public:
+  FollowupToolRequest(ActorSurfaceHandle actor_surface_handle,
+                      std::unique_ptr<ToolRequest> followup_action)
+      : TabToolRequest(actor_surface_handle),
+        followup_action_(std::move(followup_action)) {}
+  ~FollowupToolRequest() override = default;
+
+  CreateToolResult CreateTool(TaskId task_id,
+                              ToolDelegate& tool_delegate) const override {
+    return {std::make_unique<FakeTool>(
+                task_id, tool_delegate,
+                base::BindOnce(
+                    [](ToolDelegate& delegate,
+                       std::unique_ptr<ToolRequest> followup,
+                       ToolResultCallback callback) {
+                      delegate.EnqueueFollowupAction(std::move(followup));
+                      std::move(callback).Run(
+                          ToolResult::FromDeprecatedActionResult(MakeOkResult(
+                              /*requires_page_stabilization=*/false)));
+                    },
+                    std::ref(tool_delegate), std::move(followup_action_)),
+                /*on_destroy=*/base::OnceClosure()),
+            MakeOkResult()};
+  }
+
+  void Apply(ToolRequestVisitorFunctor& f) const override {
+    // Test-only ToolRequests are not listed in ToolRequestVisitorFunctor /
+    // ToolRequestVariant, so stub with WaitToolRequest like FakeToolRequest.
+    f.Apply(WaitToolRequest(base::Seconds(0)));
+  }
+
+  std::string_view Name() const override { return "FollowupTool"; }
+  bool RequiresUrlCheckInCurrentTab() const override { return false; }
+  bool ActsOnWebContents() const override { return false; }
+
+ private:
+  mutable std::unique_ptr<ToolRequest> followup_action_;
+};
+
+}  // namespace
+
+class ExecutionEngineFollowupImplicitOriginGrantBrowserTest
+    : public ExecutionEngineOriginGatingBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExecutionEngineFollowupImplicitOriginGrantBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kGlicCrossOriginNavigationGating,
+        {{kGlicConfirmNavigationToNewOrigins.name, "true"},
+         {kGlicAllowImplicitToolOriginGrants.name,
+          allow_implicit_tool_origin_grants() ? "true" : "false"}});
+  }
+
+  bool allow_implicit_tool_origin_grants() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineFollowupImplicitOriginGrantBrowserTest,
+                       FollowupActionAppliesImplicitOriginGrant) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("a.com", "/actor/blank.html");
+  const GURL cross_origin_url =
+      embedded_https_test_server().GetURL("b.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  std::unique_ptr<ToolRequest> followup_navigate =
+      MakeNavigateRequest(*active_tab(), cross_origin_url.spec());
+  ASSERT_EQ(followup_navigate->AssociatedOriginGrant(),
+            url::Origin::Create(cross_origin_url));
+
+  std::unique_ptr<ToolRequest> request = std::make_unique<FollowupToolRequest>(
+      ActorSurfaceHandle::From(active_tab()->GetHandle()),
+      std::move(followup_navigate));
+  ASSERT_EQ(request->AssociatedOriginGrant(), std::nullopt);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(request), result.GetCallback());
+  if (!allow_implicit_tool_origin_grants()) {
+    ExpectErrorResult(result,
+                      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), start_url);
+    return;
+  }
+
+  ExpectOkResult(result);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), cross_origin_url);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExecutionEngineFollowupImplicitOriginGrantBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "ImplicitGrantsEnabled"
+                                             : "ImplicitGrantsDisabled";
+                         });
 
 }  // namespace actor
