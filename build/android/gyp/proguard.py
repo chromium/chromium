@@ -192,7 +192,14 @@ def _ParseOptions():
         '--source-file', help='Value for source file attribute.'
     )
     parser.add_argument(
-        '--package-name', help='Goes into a comment in the mapping file.'
+        '--package-name',
+        help='Manifest package name (for mapping file comment and '
+        '--app-as-shared-lib).',
+    )
+    parser.add_argument(
+        '--app-as-shared-lib',
+        action='store_true',
+        help='Keep <package>.R.onResourcesLoaded(int) for shared library APKs.',
     )
     parser.add_argument(
         '--force-enable-assertions',
@@ -407,6 +414,10 @@ class _SplitContext:
             raise Exception(
                 'Missing dex outputs in {}'.format(self.staging_dir)
             )
+
+        # Bundle module --dex-dest outputs come from @FileArg rather than GN
+        # outputs, so Ninja does not pre-create their parent directories.
+        build_utils.MakeDirectory(os.path.dirname(self.final_output_path))
 
         if self.final_output_path.endswith('.dex'):
             if len(found_files) != 1:
@@ -691,9 +702,7 @@ def _OutputKeepRules(
     build_utils.CheckOutput(cmd, print_stderr=False, fail_on_output=False)
 
 
-def _CombineConfigs(
-    configs, dynamic_config_data, embedded_configs, exclude_generated=False
-):
+def _CombineConfigs(configs, dynamic_config_data, embedded_configs):
     # Sort in this way so //clank versions of the same libraries will sort
     # to the same spot in the file.
     def sort_key(path):
@@ -720,9 +729,6 @@ def _CombineConfigs(
 
     ret = []
     for config in sorted(configs, key=sort_key):
-        if exclude_generated and config.endswith('.resources.proguard.txt'):
-            continue
-
         # Exclude some confs from expectations.
         if any(entry in config for entry in _BLOCKLISTED_EXPECTATION_PATHS):
             continue
@@ -751,6 +757,18 @@ def _CreateDynamicConfig(options):
 
     if options.apply_mapping:
         ret.append("-applymapping '%s'" % options.apply_mapping)
+
+    if options.app_as_shared_lib:
+        assert options.package_name
+        # Make sure the R class associated with the manifest package does not
+        # have its onResourcesLoaded method obfuscated or removed, so that the
+        # framework can call it in the case where the APK is being loaded as a
+        # library.
+        ret.append(
+            f'-keep,allowoptimization class {options.package_name}.R {{\n'
+            '  public static void onResourcesLoaded(int);\n'
+            '}'
+        )
 
     return '\n'.join(ret)
 
@@ -839,7 +857,6 @@ def _Run(options):
         options.proguard_configs,
         dynamic_config_data,
         embedded_configs,
-        exclude_generated=True,
     )
 
     depfile_inputs = options.proguard_configs + options.input_paths + libraries

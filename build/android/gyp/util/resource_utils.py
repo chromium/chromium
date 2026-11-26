@@ -925,10 +925,6 @@ class _ResourceBuildContext:
         self.info_path = os.path.join(self.temp_dir, 'size.info')
         self.stable_ids_path = os.path.join(self.temp_dir, 'in_ids.txt')
         self.emit_ids_path = os.path.join(self.temp_dir, 'out_ids.txt')
-        self.proguard_path = os.path.join(self.temp_dir, 'keeps.flags')
-        self.proguard_main_dex_path = os.path.join(
-            self.temp_dir, 'maindex.flags'
-        )
         self.arsc_path = os.path.join(self.temp_dir, 'out.ap_')
         self.proto_path = os.path.join(self.temp_dir, 'out.proto.ap_')
         self.optimized_arsc_path = os.path.join(self.temp_dir, 'out.opt.ap_')

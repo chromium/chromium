@@ -967,3 +967,6 @@
 
 # File: //build/android/gyp/proguard.py (generated rules)
 -repackageclasses 'WV'
+-keep,allowoptimization class com.android.webview.R {
+  public static void onResourcesLoaded(int);
+}

@@ -371,7 +371,6 @@ def __android_compile_resources_handler(ctx, cmd):
     #   --include-resources(=)../../third_party/android_sdk/public/platforms/android-34/android.jar
     #   --info-path obj/chrome/android/webapk/shell_apk/maps_go_webapk.ap_.info
     #   --min-sdk-version=24
-    #   --proguard-file obj/chrome/android/webapk/shell_apk/maps_go_webapk/maps_go_webapk.resources.proguard.txt
     #   --r-text-out gen/chrome/android/webapk/shell_apk/maps_go_webapk__compile_resources_R.txt
     #   --rename-manifest-package=org.chromium.trichromelibrary
     #   --srcjar-out gen/chrome/android/webapk/shell_apk/maps_go_webapk__compile_resources.srcjar

@@ -19,7 +19,6 @@ import pathlib
 import re
 import shutil
 import sys
-import textwrap
 from xml.etree import ElementTree
 import zipfile
 
@@ -192,10 +191,6 @@ def _ParseArgs(args):
     output_opts.add_argument(
         '--r-text-out', help='Path to store the generated R.txt file.'
     )
-    output_opts.add_argument(
-        '--proguard-file', help='Path to proguard.txt generated file.'
-    )
-    output_opts.add_argument('--use-r8-resource-shrinking', action='store_true')
     output_opts.add_argument(
         '--emit-ids-out', help='Path to file produced by aapt2 --emit-ids.'
     )
@@ -594,9 +589,6 @@ def _PackageApk(options, build):
 
     for j in options.include_resources:
         link_command += ['-I', j]
-    if options.proguard_file and not options.use_r8_resource_shrinking:
-        link_command += ['--proguard', build.proguard_path]
-        link_command += ['--proguard-minimal-keep-rules']
     if options.emit_ids_out:
         link_command += ['--emit-ids', build.emit_ids_path]
 
@@ -665,19 +657,6 @@ def _PackageApk(options, build):
 
     logging.debug('Finished: aapt2 link')
 
-    if options.proguard_file:
-        with open(build.proguard_path, 'a', encoding='utf-8') as proguard_file:
-            if options.app_as_shared_lib:
-                # Make sure the R class associated with the manifest package does not have
-                # its onResourcesLoaded method obfuscated or removed, so that the framework
-                # can call it in the case where the APK is being loaded as a library.
-                keep_rule = '''
-                      -keep,allowoptimization class {package}.R {{
-                        public static void onResourcesLoaded(int);
-                      }}
-                      '''.format(package=desired_manifest_package_name)
-                proguard_file.write(textwrap.dedent(keep_rule))
-
     # Sanity check that the created resources have the expected package ID.
     logging.debug('Performing sanity check')
     actual_package_id = _ExtractPackageIdFromRTxt(build.r_txt_path)
@@ -730,7 +709,6 @@ def _WriteOutputs(options, build):
         (options.r_text_out, build.r_txt_path),
         (options.arsc_path, build.arsc_path),
         (options.proto_path, build.proto_path),
-        (options.proguard_file, build.proguard_path),
         (options.emit_ids_out, build.emit_ids_path),
         (options.info_path, build.info_path),
     ]

@@ -39,8 +39,12 @@ def _ParseArgs(args):
     )
     parser.add_argument(
         '--r-text-in',
-        required=True,
         help='Path to R.txt. Used to exclude id/ resources.',
+    )
+    parser.add_argument(
+        '--skip-optimize',
+        action='store_true',
+        help='Skip `aapt2 optimize` and only run `aapt2 convert`.',
     )
     parser.add_argument(
         '--resources-path-map-out-path',
@@ -50,7 +54,8 @@ def _ParseArgs(args):
     parser.add_argument(
         '--optimized-output-path',
         required=True,
-        help='Output for `aapt2 optimize`.',
+        help='Output for `aapt2 optimize` (or `aapt2 convert` with '
+        '--skip-optimize).',
     )
     options = parser.parse_args(args)
 
@@ -97,8 +102,34 @@ def _ExtractNonCollapsableResources(rtxt_path):
     return resources
 
 
+def _ConvertApk(
+    aapt2_path, input_path, output_path, current_format, output_format
+):
+    logging.debug(
+        'Running aapt2 convert (%s -> %s)', current_format, output_format
+    )
+    convert_command = [
+        aapt2_path,
+        'convert',
+        # Use faster (level 1) compression. Shipped artifacts are built
+        # from app bundles, where bundletool handles compression.
+        '-Othroughput',
+        '--output-format',
+        output_format,
+        '-o',
+        output_path,
+        input_path,
+    ]
+    build_utils.CheckOutput(
+        convert_command,
+        env=resource_utils.Aapt2Env(),
+        print_stdout=False,
+        print_stderr=False,
+    )
+
+
 def _OptimizeApk(output, options, temp_dir, unoptimized_path, r_txt_path):
-    """Optimize intermediate .ap_ file with aapt2.
+    """Optimize and/or convert intermediate .ap_ file with aapt2.
 
     Args:
       output: Path to write to.
@@ -113,6 +144,22 @@ def _OptimizeApk(output, options, temp_dir, unoptimized_path, r_txt_path):
     # We assume aapt2 optimize output matches its input format.
     current_format = 'proto' if '.proto' in unoptimized_path else 'binary'
 
+    if options.skip_optimize:
+        assert output_format != current_format, (
+            '--skip-optimize requires input and output formats to differ'
+        )
+        assert not options.resources_config_paths
+        assert not options.resources_path_map_out_path
+        _ConvertApk(
+            options.aapt2_path,
+            unoptimized_path,
+            output,
+            current_format,
+            output_format,
+        )
+        return
+
+    assert r_txt_path, '--r-text-in is required unless --skip-optimize'
     if output_format != current_format:
         # We will need to aapt convert to the final output location.
         optimize_output = os.path.join(
@@ -163,26 +210,12 @@ def _OptimizeApk(output, options, temp_dir, unoptimized_path, r_txt_path):
     )
 
     if output_format != current_format:
-        logging.debug(
-            'Running aapt2 convert (%s -> %s)', current_format, output_format
-        )
-        convert_command = [
+        _ConvertApk(
             options.aapt2_path,
-            'convert',
-            # Use faster (level 1) compression. Shipped artifacts are built
-            # from app bundles, where bundletool handles compression.
-            '-Othroughput',
-            '--output-format',
-            output_format,
-            '-o',
-            output,
             optimize_output,
-        ]
-        build_utils.CheckOutput(
-            convert_command,
-            env=resource_utils.Aapt2Env(),
-            print_stdout=False,
-            print_stderr=False,
+            output,
+            current_format,
+            output_format,
         )
 
 

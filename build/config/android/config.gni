@@ -297,8 +297,8 @@ if (is_android) {
     # configured to use it.
     enable_proguard_obfuscation = true
 
-    # Enables all resource optimizations (shrinking, shortening paths, stripping
-    # names).
+    # Enables aapt2 resource optimizations (shortening paths, stripping names).
+    # R8 resource shrinking is controlled by proguard_enabled instead.
     optimize_android_resources = !is_java_debug
 
     # Converts PNG resources (except 9-patch files) to lossless WebP.

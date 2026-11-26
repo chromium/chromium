@@ -1567,7 +1567,6 @@ if (enable_java_templates) {
     ]
 
     _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
-    _resource_shrinking = optimize_android_resources
 
     # This is generally the apk name, and serves to identify the mapping
     # file that would be required to deobfuscate a stacktrace.
@@ -1618,6 +1617,9 @@ if (enable_java_templates) {
     if (defined(invoker.repackage_classes)) {
       _args += [ "--repackage-classes=" + invoker.repackage_classes ]
     }
+    if (defined(invoker.app_as_shared_lib) && invoker.app_as_shared_lib) {
+      _args += [ "--app-as-shared-lib" ]
+    }
     if (defined(invoker.apply_mapping)) {
       _inputs += [ invoker.apply_mapping ]
       _rebased_apply_mapping_path =
@@ -1632,7 +1634,7 @@ if (enable_java_templates) {
       _args += [ "--proguard-configs=$_rebased_proguard_configs" ]
     }
 
-    if (_resource_shrinking && defined(invoker.resources_input)) {
+    if (defined(invoker.resources_input)) {
       _usage_log = "${invoker.resources_output}.log"
       _inputs += [ invoker.resources_input ]
       _outputs += [
@@ -1669,39 +1671,37 @@ if (enable_java_templates) {
           _args += [ "--uses-split=${_feature_module.name}:${_feature_module.uses_split}" ]
         }
 
-        if (_resource_shrinking) {
-          _module_target_dir =
-              get_label_info(_feature_module.module_target, "target_out_dir")
-          _module_target_name =
-              get_label_info(_feature_module.module_target, "name")
-          _module_proto_path =
-              "$_module_target_dir/$_module_target_name.proto.ap_"
-          _module_shrunk_proto_path =
-              "$_module_target_dir/$_module_target_name.shrunk.proto.ap_"
+        _module_target_dir =
+            get_label_info(_feature_module.module_target, "target_out_dir")
+        _module_target_name =
+            get_label_info(_feature_module.module_target, "name")
+        _module_proto_path =
+            "$_module_target_dir/$_module_target_name.proto.ap_"
+        _module_shrunk_proto_path =
+            "$_module_target_dir/$_module_target_name.shrunk.proto.ap_"
 
-          if (_feature_module.name == "base") {
-            _usage_log = "${_module_shrunk_proto_path}.log"
-            _outputs += [ _usage_log ]
-            _args += [
-              "--resources-input",
-              rebase_path(_module_proto_path, root_build_dir),
-              "--resources-output",
-              rebase_path(_module_shrunk_proto_path, root_build_dir),
-              "--resources-usage-log",
-              rebase_path(_usage_log, root_build_dir),
-            ]
-          } else {
-            _args += [
-              "--feature-resources",
-              "${_feature_module.name}:" +
-                  rebase_path(_module_proto_path, root_build_dir) + ":" +
-                  rebase_path(_module_shrunk_proto_path, root_build_dir),
-            ]
-          }
-          _inputs += [ _module_proto_path ]
-          _outputs += [ _module_shrunk_proto_path ]
-          _deps += [ "${_feature_module.module_target}__compile_resources" ]
+        if (_feature_module.name == "base") {
+          _usage_log = "${_module_shrunk_proto_path}.log"
+          _outputs += [ _usage_log ]
+          _args += [
+            "--resources-input",
+            rebase_path(_module_proto_path, root_build_dir),
+            "--resources-output",
+            rebase_path(_module_shrunk_proto_path, root_build_dir),
+            "--resources-usage-log",
+            rebase_path(_usage_log, root_build_dir),
+          ]
+        } else {
+          _args += [
+            "--feature-resources",
+            "${_feature_module.name}:" +
+                rebase_path(_module_proto_path, root_build_dir) + ":" +
+                rebase_path(_module_shrunk_proto_path, root_build_dir),
+          ]
         }
+        _inputs += [ _module_proto_path ]
+        _outputs += [ _module_shrunk_proto_path ]
+        _deps += [ "${_feature_module.module_target}__compile_resources" ]
         _deps += [ _feature_module.build_config_target ]
       }
       _output_args = []
@@ -1959,6 +1959,7 @@ if (enable_java_templates) {
         forward_variables_from(invoker,
                                TESTONLY_AND_VISIBILITY + [
                                      "add_view_trace_events",
+                                     "app_as_shared_lib",
                                      "apply_mapping",
                                      "build_config",
                                      "custom_assertion_handler",
@@ -2543,9 +2544,6 @@ if (enable_java_templates) {
   #   rtxt_out_path: (optional):
   #       Path for the corresponding generated R.txt file.
   #
-  #   proguard_file: (optional)
-  #       Path to proguard configuration file for this apk target.
-  #
   template("compile_resources") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
@@ -2731,17 +2729,6 @@ if (enable_java_templates) {
       ]
     }
 
-    if (defined(invoker.proguard_file)) {
-      _outputs += [ invoker.proguard_file ]
-      _args += [
-        "--proguard-file",
-        rebase_path(invoker.proguard_file, root_build_dir),
-      ]
-      if (optimize_android_resources) {
-        _args += [ "--use-r8-resource-shrinking" ]
-      }
-    }
-
     if (defined(invoker.aapt_locale_allowlist)) {
       _args += [ "--locale-allowlist=${invoker.aapt_locale_allowlist}" ]
     }
@@ -2869,16 +2856,23 @@ if (enable_java_templates) {
     }
   }
 
-  # A template that is used to optimize compiled resources using aapt2 optimize.
+  # A template that is used to optimize and/or convert compiled resources using
+  # aapt2.
   #
   #   proto_input_path:
   #     Path to input compiled .proto.ap_ file.
   #
-  #   resources_configs_paths: (optional)
+  #   skip_optimize: (optional)
+  #     If true, skip `aapt2 optimize` and only run `aapt2 convert`.
+  #
+  #   rtxt_path: (required unless skip_optimize is true)
+  #     Path to R.txt. Used to exclude id/ and mipmap/ resources from collapsing.
+  #
+  #   resources_config_paths: (optional)
   #     List of resource configs to use for optimization.
   #
-  #   optimized_proto_output:
-  #     Path to output optimized .proto.ap_ file.
+  #   optimized_proto_output / optimized_arsc_output:
+  #     Path to output .proto.ap_ or binary .ap_ file.
   #
   #   resources_path_map_out_path: (optional):
   #       Path for the generated map between original resource paths and
@@ -2886,20 +2880,26 @@ if (enable_java_templates) {
   template("optimize_resources") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
+    _skip_optimize = defined(invoker.skip_optimize) && invoker.skip_optimize
+
     python_action(target_name) {
       forward_variables_from(invoker, [ "deps" ])
       python_binary = "//build/android:optimize_resources"
-      inputs = [
-        android_sdk_tools_bundle_aapt2,
-        invoker.rtxt_path,
-      ]
+      inputs = [ android_sdk_tools_bundle_aapt2 ]
       outputs = []
       args = [
         "--aapt2-path",
         rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
-        "--r-text-in",
-        rebase_path(invoker.rtxt_path, root_build_dir),
       ]
+      if (_skip_optimize) {
+        args += [ "--skip-optimize" ]
+      } else {
+        inputs += [ invoker.rtxt_path ]
+        args += [
+          "--r-text-in",
+          rebase_path(invoker.rtxt_path, root_build_dir),
+        ]
+      }
       if (defined(invoker.optimized_proto_output)) {
         _output_path = invoker.optimized_proto_output
       } else {
@@ -4943,9 +4943,7 @@ if (enable_java_templates) {
           # https://crbug.com/827197
           if (compute_inputs_for_analyze && defined(invoker.proguard_configs)) {
             inputs = invoker.proguard_configs
-
-            # For the aapt-generated proguard rules.
-            deps += _non_java_deps + _srcjar_deps + _rjava_srcjar_deps
+            deps += _non_java_deps
           }
         }
       }

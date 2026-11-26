@@ -93,7 +93,7 @@ void org.chromium.base.library_loader.LibraryPrefetcherJni.<init>()
 |  void org.chromium.base.library_loader.LibraryPrefetcher.asyncPrefetchLibrariesToMemory()
 ... more code path lines
 |- is referenced in keep rule:
-|  obj/chrome/android/chrome_public_apk/chrome_public_apk.resources.proguard.txt:104:1
+|  ../../chrome/android/proguard/main.flags:104:1
 
 Error: Discard checks failed.
 ```
