@@ -418,9 +418,14 @@ public class FirstRunActivity extends FirstRunActivityBase
                             () ->
                                     FirstRunUtils.shouldShowSafetyFrePromoCarousel()
                                             && mSafetyPromoFirstRunState.hasSelectedItem()));
-            // TODO(crbug.com/543028748): Introduce and log a dedicated MobileFreProgress state for
-            // the carousel page instead of reusing SAFETY_PROMO_SHOWN.
-            mFreProgressStates.add(MobileFreProgress.SAFETY_PROMO_SHOWN);
+            mFreProgressStates.add(MobileFreProgress.SAFETY_PROMO_CAROUSEL_SHOWN);
+
+            // TODO(crbug.com/534388538): Restore the selected card when the FRE resumes on the
+            // carousel. Until then, resume on the overview: the carousel is only shown with a
+            // selected card, and skipping it would complete the FRE.
+            if (FirstRunStatus.getResumePage() == MobileFreProgress.SAFETY_PROMO_CAROUSEL_SHOWN) {
+                FirstRunStatus.setResumePage(MobileFreProgress.SAFETY_PROMO_SHOWN);
+            }
         }
 
         if (mPagerAdapter != null) {

@@ -897,7 +897,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.firstrun") {
     "src/org/chromium/chrome/browser/firstrun/FirstRunIntegrationTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/safety_promo:java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.gesturenav") {

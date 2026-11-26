@@ -379,6 +379,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Safety promo shown"/>
   <int value="19"
       label="The user clicked the start browsing button on safety promo"/>
+  <int value="20" label="Safety promo carousel shown"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/first_run/android/java/src/org/chromium/chrome/browser/firstrun/MobileFreProgress.java:MobileFreProgress) -->

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.firstrun;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -14,6 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 
@@ -82,6 +84,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunActivityTestObserver.ScopedObserverData;
+import org.chromium.chrome.browser.firstrun.FirstRunUtils.SafetyFrePromoArm;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -91,6 +94,7 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.safety_promo.SafetyPromoItem;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -602,6 +606,22 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.SAFETY_FRE_PROMO)
+    public void testResumeFromSafetyPromoCarousel_FallsBackToOverview() throws Exception {
+        ChromeFeatureList.sSafetyFrePromoArm.setForTesting(SafetyFrePromoArm.PASSWORD_MANAGER);
+        initializePreferences(new FirstRunPagesTestCase());
+        FirstRunStatus.setSkipWelcomePage(true);
+        FirstRunStatus.setResumePage(MobileFreProgress.SAFETY_PROMO_CAROUSEL_SHOWN);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+        new FirstRunNavigationHelper(firstRunActivity)
+                .ensurePagesCreationSucceeded()
+                .ensureSafetyPromoIsCurrentPage();
+        Assert.assertEquals(MobileFreProgress.SAFETY_PROMO_SHOWN, FirstRunStatus.getResumePage());
+    }
+
+    @Test
+    @MediumTest
     @Features.DisableFeatures(ChromeFeatureList.SAFETY_FRE_PROMO)
     public void testNoResumeIfSafetyFrePromoDisabled() throws Exception {
         initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos());
@@ -775,6 +795,45 @@ public class FirstRunIntegrationTest {
                 .dismissSigninPromo();
 
         waitForActivity(BlankUiTestActivity.class);
+
+        histograms.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    // Sign-in is not supported on automotive devices.
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Features.EnableFeatures(ChromeFeatureList.SAFETY_FRE_PROMO)
+    public void testFirstRunPages_ProgressHistogramRecording_SafetyPromoCarousel()
+            throws Exception {
+        ChromeFeatureList.sSafetyFrePromoArm.setForTesting(SafetyFrePromoArm.PASSWORD_MANAGER);
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "MobileFre.Progress.ViewIntent",
+                                MobileFreProgress.STARTED,
+                                MobileFreProgress.WELCOME_SHOWN,
+                                MobileFreProgress.WELCOME_DISMISS,
+                                MobileFreProgress.SAFETY_PROMO_SHOWN)
+                        .build();
+        initializePreferences(new FirstRunPagesTestCase());
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+        FirstRunNavigationHelper navigationHelper =
+                new FirstRunNavigationHelper(firstRunActivity)
+                        .ensurePagesCreationSucceeded()
+                        .dismissSigninPromo()
+                        .ensureSafetyPromoIsCurrentPage();
+
+        histograms.assertExpected();
+
+        histograms =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "MobileFre.Progress.ViewIntent",
+                        MobileFreProgress.SAFETY_PROMO_CAROUSEL_SHOWN);
+        navigationHelper
+                .clickSafetyPromoCard(SafetyPromoItem.PASSWORD_MANAGER)
+                .ensureSafetyPromoCarouselIsCurrentPage(SafetyPromoItem.PASSWORD_MANAGER);
 
         histograms.assertExpected();
     }
@@ -1767,6 +1826,31 @@ public class FirstRunIntegrationTest {
             return waitForCurrentFragmentToMatch(
                     "Safety promo should be the current page",
                     Matchers.instanceOf(SafetyPromoFirstRunFragment.class));
+        }
+
+        protected FirstRunNavigationHelper ensureSafetyPromoCarouselIsCurrentPage(
+                SafetyPromoItem activeItem) {
+            waitForCurrentFragmentToMatch(
+                    "Safety promo carousel should be the current page",
+                    Matchers.instanceOf(SafetyPromoCarouselFirstRunFragment.class));
+            waitForView(
+                    withId(R.id.safety_promo_carousel_title),
+                    withText(activeItem.carouselTitleResId));
+
+            return this;
+        }
+
+        protected FirstRunNavigationHelper clickSafetyPromoCard(SafetyPromoItem item)
+                throws Exception {
+            ensureSafetyPromoIsCurrentPage();
+
+            int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
+            onView(allOf(withId(R.id.card_title), withText(item.cardTitleResId)))
+                    .perform(scrollTo(), click());
+            mScopedObserverData.jumpToPageCallback.waitForCallback(
+                    "Failed trying to move to the Safety promo carousel", jumpCallCount);
+
+            return this;
         }
 
         protected FirstRunNavigationHelper continueAndSignIn(AccountInfo accountInfo)
