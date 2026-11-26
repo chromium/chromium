@@ -38,6 +38,7 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "content/test/render_document_feature.h"
@@ -60,6 +61,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 #include "url/url_util.h"
 
 using blink::MessagePortChannel;
@@ -2390,6 +2392,73 @@ TEST_F(SharedWorkerServiceImplTest,
     EXPECT_EQ("SWH_INVALID_PERMISSIONS_POLICY",
               bad_message_observer.WaitForBadMessage());
   }
+}
+
+TEST_F(SharedWorkerServiceImplTest,
+       CrossOriginSharedWorkerPermissionsPolicyUsesCreatorOrigin) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kPermissionsPolicyForSharedWorkers);
+
+  class AllowCrossOriginSharedWorkerBrowserClient
+      : public TestContentBrowserClient {
+   public:
+    bool DoesSchemeAllowCrossOriginSharedWorker(
+        const std::string& scheme) override {
+      return scheme == url::kHttpsScheme;
+    }
+  };
+  AllowCrossOriginSharedWorkerBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  const GURL kUrl("https://example.com/");
+  const GURL kCrossOriginWorkerUrl("https://other.example/w.js");
+
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kUrl);
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+
+  // Navigate with `Permissions-Policy: hid=(self)`.
+  network::ParsedPermissionsPolicy header_policy(1);
+  header_policy[0].feature = network::mojom::PermissionsPolicyFeature::kHid;
+  header_policy[0].self_if_matches = url::Origin::Create(kUrl);
+  auto navigation_simulator =
+      NavigationSimulator::CreateRendererInitiated(kUrl, render_frame_host);
+  navigation_simulator->SetPermissionsPolicyHeader(header_policy);
+  navigation_simulator->Commit();
+  render_frame_host = web_contents->GetPrimaryMainFrame();
+
+  // Because the cross-origin shared worker runs in the creator's origin
+  // (`storage_key.origin()`), delegating `kHid` must be allowed without
+  // triggering SWH_INVALID_PERMISSIONS_POLICY.
+  mojo::Remote<blink::mojom::SharedWorkerConnector> connector =
+      MakeSharedWorkerConnector(*render_frame_host);
+
+  network::PermissionsPolicyFeaturesBitset valid_policy;
+  valid_policy.Add(network::mojom::PermissionsPolicyFeature::kHid);
+
+  auto options = blink::mojom::WorkerOptions::New();
+  options->name = "name";
+  auto policies = blink::mojom::PolicyContainerPolicies::New();
+  policies->referrer_policy = network::mojom::ReferrerPolicy::kDefault;
+  blink::mojom::SharedWorkerInfoPtr info = blink::mojom::SharedWorkerInfo::New(
+      kCrossOriginWorkerUrl, std::move(options),
+      std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      blink::mojom::FetchClientSettingsObject::New(
+          std::move(policies), GURL(),
+          blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+      /*outside_settings_reporter=*/mojo::NullRemote(),
+      blink::mojom::SharedWorkerSameSiteCookies::kAll,
+      /*extended_lifetime=*/false, valid_policy);
+
+  blink::MessagePortDescriptorPair pipe;
+  mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_proxy;
+  std::ignore = client_proxy.InitWithNewPipeAndPassReceiver();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  connector->Connect(std::move(info), std::move(client_proxy),
+                     blink::mojom::SharedWorkerCreationContextType::kSecure,
+                     pipe.TakePort1(), mojo::NullRemote());
+  connector.FlushForTesting();
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
 }
 
 TEST_F(SharedWorkerServiceImplTest,

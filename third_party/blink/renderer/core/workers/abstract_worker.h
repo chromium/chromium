@@ -33,6 +33,7 @@
 
 #include <optional>
 
+#include "base/memory/scoped_refptr.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
@@ -44,8 +45,9 @@
 namespace blink {
 
 class ExceptionState;
-class KURL;
 class ExecutionContext;
+class KURL;
+class SecurityOrigin;
 
 // Implementation of the AbstractWorker interface defined in the WebWorker HTML
 // spec: https://html.spec.whatwg.org/C/#abstractworker
@@ -91,11 +93,22 @@ class CORE_EXPORT AbstractWorker
   // startup and scheduling an error event.
   bool CheckCanReadScriptURLForNoThrow(const KURL& script_url);
 
+  // Returns the origin to use for the worker with `script_url`. Must only be
+  // called after verifying that the creating context can read `script_url`
+  // (e.g., via `ResolveURL()` and `CheckCanReadScriptURLForNoThrow()`).
+  // Per HTML, a worker's origin is a unique opaque origin for `data:` URLs and
+  // the creating context's origin otherwise (including `blob:` URLs, whose
+  // origin cannot always be recovered via `SecurityOrigin::Create()` across
+  // threads when the creating context has an opaque origin).
+  scoped_refptr<const SecurityOrigin> ComputeWorkerOrigin(
+      const KURL& script_url) const;
+
   // Parses the `allow` parameter as a `network::ParsedPermissionsPolicy` and
-  // validates it against the parent context Permissions Policy. Logs a console
-  // error and returns `std::nullopt` if validation failed.
+  // validates it against the parent context Permissions Policy for
+  // `worker_origin`. Logs a console error and returns `std::nullopt` if
+  // validation failed.
   std::optional<network::ParsedPermissionsPolicy> ParsePermissionsPolicy(
-      const KURL& script_request_url,
+      const SecurityOrigin& worker_origin,
       const String& allow);
 
   void DispatchErrorEvent();

@@ -66,5 +66,65 @@ promise_test(async t => {
   const worker = new Worker(dataWorkerUrl(), { allow: 'hid' });
   assert_equals(await workerOutcome(t, worker), 'error');
 }, "data: URL DedicatedWorker cannot be delegated a feature declared as 'self'");
+
+promise_test(async t => {
+  // Inside a sandboxed iframe (opaque origin N1), create a blob:null/... URL
+  // on the main thread, pass it to a DedicatedWorker W1 (also origin N1), and
+  // have W1 spawn a nested DedicatedWorker from that blob:null/... URL.
+  // 'serial' is disabled in this document and therefore in the iframe and W1,
+  // so `allow: "serial 'self'"` must fire an error event.
+  const iframe = document.createElement('iframe');
+  iframe.sandbox = 'allow-scripts';
+  iframe.allow = 'usb';
+  iframe.srcdoc = `<script>
+    const nestedUrl = URL.createObjectURL(
+        new Blob(["postMessage('running');"], { type: 'application/javascript' }));
+    const parentCode = \`
+      onmessage = e => {
+        const w = new Worker(e.data.url, { allow: e.data.allow });
+        w.onerror = ev => { ev.preventDefault(); postMessage('error'); w.terminate(); };
+        w.onmessage = ev => { postMessage(ev.data); w.terminate(); };
+      };
+    \`;
+    const parentUrl = URL.createObjectURL(
+        new Blob([parentCode], { type: 'application/javascript' }));
+    const parentWorker = new Worker(parentUrl);
+    parentWorker.onerror = e => {
+      e.preventDefault();
+      parentWorker.terminate();
+      parent.postMessage({ parentWorkerError: e.message || 'error' }, '*');
+    };
+    async function runCase(allow) {
+      return new Promise(resolve => {
+        parentWorker.onmessage = e => resolve(e.data);
+        parentWorker.postMessage({ url: nestedUrl, allow });
+      });
+    }
+    (async () => {
+      const serialResult = await runCase("serial 'self'");
+      // Sanity check: delegating an allowed undeclared feature still succeeds.
+      const usbResult = await runCase('usb');
+      parentWorker.terminate();
+      parent.postMessage({ serialResult, usbResult }, '*');
+    })();
+  <\/script>`;
+  t.add_cleanup(() => iframe.remove());
+  const result = await new Promise(resolve => {
+    const onMessage = e => {
+      if (e.source === iframe.contentWindow) {
+        window.removeEventListener('message', onMessage);
+        resolve(e.data);
+      }
+    };
+    t.add_cleanup(() => window.removeEventListener('message', onMessage));
+    window.addEventListener('message', onMessage);
+    document.body.appendChild(iframe);
+  });
+  assert_equals(result.parentWorkerError, undefined,
+                'parentWorker should not error');
+  assert_equals(result.serialResult, 'error');
+  assert_equals(result.usbResult, 'running');
+}, "Nested DedicatedWorker created from cross-thread opaque blob: URL uses " +
+   "creator's opaque origin for 'allow' checks");
 </script>
 </body>

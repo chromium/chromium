@@ -300,9 +300,9 @@ void DedicatedWorker::Start() {
 
   if (RuntimeEnabledFeatures::PermissionsPolicyForDedicatedWorkersEnabled()) {
     std::optional<network::ParsedPermissionsPolicy> parsed_permissions_policy =
-        ParsePermissionsPolicy(script_request_url_, options_->hasAllow()
-                                                        ? options_->allow()
-                                                        : g_empty_string);
+        ParsePermissionsPolicy(
+            *ComputeWorkerOrigin(script_request_url_),
+            options_->hasAllow() ? options_->allow() : g_empty_string);
     if (!parsed_permissions_policy) {
       factory_client_.reset();
       GetExecutionContext()

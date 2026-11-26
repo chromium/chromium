@@ -255,19 +255,22 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   if (base::FeatureList::IsEnabled(
           blink::features::kPermissionsPolicyForSharedWorkers)) {
     // The shared worker cannot be delegated any features that the creator
-    // context cannot delegate to the worker script's origin. This check is
-    // already performed in the renderer, so it should never fail for a
-    // well-behaving renderer process.
+    // context cannot delegate to the worker's origin. This check is already
+    // performed in the renderer, so it should never fail for a well-behaving
+    // renderer process.
     const network::PermissionsPolicy* creator_permissions_policy =
         render_frame_host->GetPermissionsPolicy();
     CHECK(creator_permissions_policy);
-    const url::Origin src_origin = url::Origin::Create(info->url);
+    const url::Origin worker_origin =
+        info->url.SchemeIs(url::kDataScheme)
+            ? storage_key.origin().DeriveNewOpaqueOrigin()
+            : storage_key.origin();
     for (size_t i = 0; i < network::kPermissionsPolicyFeaturesBitsetSize; ++i) {
       const auto feature =
           static_cast<network::mojom::PermissionsPolicyFeature>(i);
       if (info->permissions_policy.Contains(feature) &&
-          !creator_permissions_policy->CanDelegateFeatureToOrigin(feature,
-                                                                  src_origin)) {
+          !creator_permissions_policy->CanDelegateFeatureToOrigin(
+              feature, worker_origin)) {
         mojo::ReportBadMessage("SWH_INVALID_PERMISSIONS_POLICY");
         return;
       }

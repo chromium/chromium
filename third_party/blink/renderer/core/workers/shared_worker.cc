@@ -34,10 +34,10 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/buildflag.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -50,10 +50,8 @@
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
-#include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/workers/shared_worker_client_holder.h"
@@ -280,8 +278,10 @@ SharedWorker::ParsePermissionsPolicy(const KURL& script_url,
   if (!RuntimeEnabledFeatures::PermissionsPolicyForSharedWorkersEnabled()) {
     return network::PermissionsPolicyFeaturesBitset();
   }
+  scoped_refptr<const SecurityOrigin> worker_origin =
+      ComputeWorkerOrigin(script_url);
   std::optional<network::ParsedPermissionsPolicy> parsed_permissions_policy =
-      AbstractWorker::ParsePermissionsPolicy(script_url, allow);
+      AbstractWorker::ParsePermissionsPolicy(*worker_origin, allow);
   if (!parsed_permissions_policy) {
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kInternalLoading)
@@ -289,15 +289,14 @@ SharedWorker::ParsePermissionsPolicy(const KURL& script_url,
                                        WrapPersistent(this)));
     return std::nullopt;
   }
-  const url::Origin src_url_origin =
-      SecurityOrigin::Create(script_url)->ToUrlOrigin();
+  const url::Origin worker_url_origin = worker_origin->ToUrlOrigin();
   network::PermissionsPolicyFeaturesBitset allowed_features;
   for (const auto& decl : *parsed_permissions_policy) {
     // The 'allow' parameter for shared workers determines the feature->boolean
     // mapping of whether each feature is enabled or not in the worker. Since
     // workers cannot be navigated away, we can just check here whether the
     // worker's origin (which is immutable) is allowed or not.
-    if (decl.Contains(src_url_origin)) {
+    if (decl.Contains(worker_url_origin)) {
       allowed_features.Add(decl.feature);
     }
   }

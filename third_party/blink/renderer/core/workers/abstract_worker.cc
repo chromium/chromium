@@ -32,6 +32,7 @@
 
 #include <optional>
 
+#include "base/check.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -131,17 +132,25 @@ bool AbstractWorker::CheckCanReadScriptURLForNoThrow(const KURL& script_url) {
   return true;
 }
 
+scoped_refptr<const SecurityOrigin> AbstractWorker::ComputeWorkerOrigin(
+    const KURL& script_url) const {
+  const SecurityOrigin* self_origin =
+      GetExecutionContext()->GetSecurityOrigin();
+  if (script_url.ProtocolIsData()) {
+    return self_origin->DeriveNewOpaqueOrigin();
+  }
+  return self_origin;
+}
+
 std::optional<network::ParsedPermissionsPolicy>
-AbstractWorker::ParsePermissionsPolicy(const KURL& script_url,
+AbstractWorker::ParsePermissionsPolicy(const SecurityOrigin& worker_origin,
                                        const String& allow) {
   ExecutionContext* execution_context = GetExecutionContext();
   const SecurityOrigin* self_origin = execution_context->GetSecurityOrigin();
-  scoped_refptr<const SecurityOrigin> src_origin =
-      SecurityOrigin::Create(script_url);
   PolicyParserMessageBuffer logger;
   network::ParsedPermissionsPolicy parsed_permissions_policy =
-      PermissionsPolicyParser::ParseAttribute(allow, *self_origin, *src_origin,
-                                              logger, execution_context);
+      PermissionsPolicyParser::ParseAttribute(
+          allow, *self_origin, worker_origin, logger, execution_context);
   for (const auto& message : logger.GetMessages()) {
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther, message.level,
@@ -150,12 +159,12 @@ AbstractWorker::ParsePermissionsPolicy(const KURL& script_url,
   const network::PermissionsPolicy* permissions_policy =
       execution_context->GetSecurityContext().GetPermissionsPolicy();
   CHECK(permissions_policy);
-  const url::Origin src_url_origin = src_origin->ToUrlOrigin();
+  const url::Origin worker_url_origin = worker_origin.ToUrlOrigin();
   const bool is_isolated_context = execution_context->IsIsolatedContext();
   for (const auto& decl : parsed_permissions_policy) {
-    if (decl.Contains(src_url_origin) &&
+    if (decl.Contains(worker_url_origin) &&
         !permissions_policy->CanDelegateFeatureToOrigin(decl.feature,
-                                                        src_url_origin)) {
+                                                        worker_url_origin)) {
       execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kSecurity,
           mojom::blink::ConsoleMessageLevel::kError,
