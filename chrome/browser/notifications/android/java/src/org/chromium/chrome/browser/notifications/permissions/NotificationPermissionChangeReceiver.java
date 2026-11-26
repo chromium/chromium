@@ -40,6 +40,7 @@ public class NotificationPermissionChangeReceiver extends BroadcastReceiver {
                 intent.getBooleanExtra(NotificationManager.EXTRA_BLOCKED_STATE, false);
         NotificationProxyUtils.setNotificationEnabled(!blockedState);
         NotificationUmaTracker.getInstance().onNotificationPermissionSettingChange(blockedState);
+        NotificationPermissionChangeNotifier.notifyAppNotificationPermissionChanged(!blockedState);
     }
 
     private void onNotificationChannelStateChanged(Intent intent) {
@@ -59,5 +60,7 @@ public class NotificationPermissionChangeReceiver extends BroadcastReceiver {
                 channelId, intent.getBooleanExtra(NotificationManager.EXTRA_BLOCKED_STATE, false));
         NotificationUmaTracker.getInstance()
                 .onNotificationChannelPermissionSettingChange(channelId, blockedState);
+        NotificationPermissionChangeNotifier.notifyNotificationChannelStateChanged(
+                channelId, !blockedState);
     }
 }

@@ -410,6 +410,8 @@ public class NotificationPermissionController {
         NotificationProxyUtils.setNotificationEnabled(isPermissionGranted);
         NotificationUmaTracker.getInstance()
                 .recordNotificationPermissionRequestResult(isPermissionGranted);
+        NotificationPermissionChangeNotifier.notifyAppNotificationPermissionChanged(
+                isPermissionGranted);
     }
 
     /** Some heuristic based re-triggering logic. */

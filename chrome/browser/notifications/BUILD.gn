@@ -674,6 +674,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitions.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/LocaleChangedBroadcastReceiver.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/SiteChannelsManager.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionChangeNotifier.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionChangeReceiver.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionController.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionRationaleDialogController.java",

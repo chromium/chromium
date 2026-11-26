@@ -24,6 +24,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -156,6 +157,9 @@ public class TipsUtils {
     public static final String RECENT_TABS_SHOWN = "android.tips.notifications.recent_tabs_shown";
 
     // LINT.ThenChange(//chrome/browser/tips/core/tips_prefs.cc:TipsShownPrefs)
+
+    // Bumped on each eligibility clear/refresh so stale async lookups are discarded.
+    private static int sOptInEligibilityVersion;
 
     /**
      * Assembles a {@link FeatureTipPromoData} object containing required UI and callback
@@ -460,6 +464,17 @@ public class TipsUtils {
     }
 
     /**
+     * Clears the cached Magic Stack Tips opt-in eligibility pref synchronously without querying the
+     * notification channel or native feature flags.
+     */
+    static void clearTipsNotificationsOptInEligibilityPref(
+            SharedPreferencesManager sharedPreferences) {
+        ThreadUtils.assertOnUiThread();
+        sOptInEligibilityVersion++;
+        writeOptInEligibilityPrefIfChanged(sharedPreferences, false);
+    }
+
+    /**
      * Refreshes the cached answer to whether the Magic Stack Tips notifications opt-in card can be
      * shown. Magic Stack ranking needs the answer synchronously, but the channel lookup is async.
      *
@@ -471,6 +486,8 @@ public class TipsUtils {
      */
     public static void updateTipsNotificationsOptInEligibilityPref(
             SharedPreferencesManager sharedPreferences) {
+        ThreadUtils.assertOnUiThread();
+        int version = ++sOptInEligibilityVersion;
         if (!isTipsNotificationsFeatureAvailable()) {
             writeOptInEligibilityPrefIfChanged(sharedPreferences, false);
             return;
@@ -490,6 +507,7 @@ public class TipsUtils {
 
         areTipsNotificationsEnabled(
                 (enabled) -> {
+                    if (version != sOptInEligibilityVersion) return;
                     // Read again, since the user may have accepted during the lookup.
                     boolean accepted =
                             sharedPreferences.readBoolean(

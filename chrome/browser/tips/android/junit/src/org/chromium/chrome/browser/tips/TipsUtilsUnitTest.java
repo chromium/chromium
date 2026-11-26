@@ -18,7 +18,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Intent;
 
 import org.junit.After;
 import org.junit.Before;
@@ -35,6 +37,7 @@ import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -51,7 +54,9 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
+import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionChangeReceiver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
@@ -111,6 +116,7 @@ public class TipsUtilsUnitTest {
     public void tearDown() {
         mWindowAndroid.destroy();
         TipsPromoHandlerFactory.resetForTesting();
+        TipsNotificationPermissionObserver.unregisterForTesting();
     }
 
     @Test
@@ -1052,6 +1058,90 @@ public class TipsUtilsUnitTest {
 
         verify(mSharedPreferences)
                 .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false);
+    }
+
+    @Test
+    public void testNotificationPermissionChangeObserver_AppNotificationsChanged_UpdatesPref() {
+        TipsNotificationPermissionObserver.register();
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        NotificationPermissionChangeReceiver receiver = new NotificationPermissionChangeReceiver();
+
+        Intent unblockedIntent = new Intent(NotificationManager.ACTION_APP_BLOCK_STATE_CHANGED);
+        unblockedIntent.putExtra(NotificationManager.EXTRA_BLOCKED_STATE, false);
+        receiver.onReceive(ContextUtils.getApplicationContext(), unblockedIntent);
+        ShadowLooper.idleMainLooper();
+        assertTrue(
+                prefs.readBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false));
+
+        // App blocked: clears the pref synchronously without needing the looper.
+        Intent blockedIntent = new Intent(NotificationManager.ACTION_APP_BLOCK_STATE_CHANGED);
+        blockedIntent.putExtra(NotificationManager.EXTRA_BLOCKED_STATE, true);
+        receiver.onReceive(ContextUtils.getApplicationContext(), blockedIntent);
+        assertFalse(
+                prefs.readBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, true));
+    }
+
+    @Test
+    public void testNotificationPermissionChangeObserver_TipsChannelChanged_UpdatesPref() {
+        TipsNotificationPermissionObserver.register();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        prefs.writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, true);
+        NotificationPermissionChangeReceiver receiver = new NotificationPermissionChangeReceiver();
+
+        // Channel unblocked: clears the pref synchronously without an async channel lookup.
+        Intent unblockedIntent =
+                new Intent(NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED);
+        unblockedIntent.putExtra(
+                NotificationManager.EXTRA_NOTIFICATION_CHANNEL_ID, ChannelId.TIPS_V2);
+        unblockedIntent.putExtra(NotificationManager.EXTRA_BLOCKED_STATE, false);
+        receiver.onReceive(ContextUtils.getApplicationContext(), unblockedIntent);
+        assertFalse(
+                prefs.readBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, true));
+
+        // Channel blocked: eligible again (provided opt-in was not accepted).
+        BaseNotificationManagerProxyFactory.create()
+                .createNotificationChannel(
+                        new NotificationChannel(
+                                ChannelId.TIPS_V2, "Tips", NotificationManager.IMPORTANCE_NONE));
+        Intent blockedIntent =
+                new Intent(NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED);
+        blockedIntent.putExtra(
+                NotificationManager.EXTRA_NOTIFICATION_CHANNEL_ID, ChannelId.TIPS_V2);
+        blockedIntent.putExtra(NotificationManager.EXTRA_BLOCKED_STATE, true);
+        receiver.onReceive(ContextUtils.getApplicationContext(), blockedIntent);
+        ShadowLooper.idleMainLooper();
+        assertTrue(
+                prefs.readBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false));
+
+        // Channel blocked then unblocked before the async lookup completes: the stale lookup must
+        // not overwrite the synchronous clear.
+        receiver.onReceive(ContextUtils.getApplicationContext(), blockedIntent);
+        receiver.onReceive(ContextUtils.getApplicationContext(), unblockedIntent);
+        ShadowLooper.idleMainLooper();
+        assertFalse(
+                prefs.readBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, true));
+    }
+
+    @Test
+    public void testNotificationPermissionChangeObserver_OtherChannelChanged_Ignored() {
+        TipsNotificationPermissionObserver.register();
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        // Notifications are enabled and TIPS_V2 does not exist, so a refresh would flip this to
+        // true; leaving it false verifies other channels do not trigger a refresh.
+        prefs.writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false);
+        NotificationPermissionChangeReceiver receiver = new NotificationPermissionChangeReceiver();
+
+        Intent otherChannelIntent =
+                new Intent(NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED);
+        otherChannelIntent.putExtra(
+                NotificationManager.EXTRA_NOTIFICATION_CHANNEL_ID, ChannelId.BROWSER);
+        otherChannelIntent.putExtra(NotificationManager.EXTRA_BLOCKED_STATE, true);
+        receiver.onReceive(ContextUtils.getApplicationContext(), otherChannelIntent);
+        ShadowLooper.idleMainLooper();
+
+        assertFalse(
+                prefs.readBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_ELIGIBLE, false));
     }
 
     private void scheduleOrCancelTipsNotification() {

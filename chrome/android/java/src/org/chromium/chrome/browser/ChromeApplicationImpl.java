@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
+import org.chromium.chrome.browser.tips.TipsNotificationPermissionObserver;
 import org.chromium.components.browser_ui.util.BrowserUiUtilsCachedFlags;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.module_installer.util.ModuleUtil;
@@ -84,6 +85,7 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
         // Set Chrome factory for mapping BackgroundTask classes to TaskIds.
         ChromeBackgroundTaskFactory.setAsDefault();
         ContextualNotificationPermissionRequesterImpl.initialize();
+        TipsNotificationPermissionObserver.register();
 
         new ChimeDelegate().initialize();
 

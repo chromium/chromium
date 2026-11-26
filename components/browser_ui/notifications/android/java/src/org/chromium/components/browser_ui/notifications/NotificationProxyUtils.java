@@ -31,6 +31,7 @@ public class NotificationProxyUtils {
                 && NotificationFeatureMap.sCacheNotificationsEnabled.isEnabled()) {
             if (sAreNotificationsEnabled == null) {
                 sAreNotificationsEnabled = getNotificationsEnabled();
+                ResettersForTesting.register(() -> sAreNotificationsEnabled = null);
             }
             return sAreNotificationsEnabled;
         }
@@ -40,6 +41,7 @@ public class NotificationProxyUtils {
     /** Sets whether notifications are enabled for the app. */
     public static void setNotificationEnabled(boolean enabled) {
         sAreNotificationsEnabled = enabled;
+        ResettersForTesting.register(() -> sAreNotificationsEnabled = null);
     }
 
     public static void setNotificationEnabledForTest(Boolean enabled) {

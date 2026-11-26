@@ -25,10 +25,14 @@ import android.text.format.DateUtils;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -62,11 +66,20 @@ import java.lang.ref.WeakReference;
 @Config(sdk = VERSION_CODES.TIRAMISU)
 @DisableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
 public class NotificationPermissionControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeRule = new FakeTimeTestRule();
+
+    @Mock private NotificationPermissionChangeNotifier.Observer mPermissionChangeObserver;
 
     @Before
     public void setUp() {
         setupFeatureParams(false, null, null, null);
+        NotificationPermissionChangeNotifier.addObserver(mPermissionChangeObserver);
+    }
+
+    @After
+    public void tearDown() {
+        NotificationPermissionChangeNotifier.removeObserver(mPermissionChangeObserver);
     }
 
     @Rule
@@ -1162,6 +1175,37 @@ public class NotificationPermissionControllerTest {
                             verify(tracker, never())
                                     .dismissed(
                                             FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE);
+                        });
+    }
+
+    @Test
+    public void testNotificationPrompt_osPromptAccepted_NotifiesObservers() {
+        verifyOsPromptResultNotifiesObservers(/* permissionGranted= */ true);
+    }
+
+    @Test
+    public void testNotificationPrompt_osPromptDenied_NotifiesObservers() {
+        verifyOsPromptResultNotifiesObservers(/* permissionGranted= */ false);
+    }
+
+    private void verifyOsPromptResultNotifiesObservers(boolean permissionGranted) {
+        mActivityScenarios
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            TestAndroidPermissionDelegate permissionDelegate =
+                                    new TestAndroidPermissionDelegate(
+                                            new WeakReference<>(activity));
+                            NotificationPermissionController controller =
+                                    createNotificationPermissionController(
+                                            new TestRationaleDelegate(), permissionDelegate);
+
+                            setShouldShowRequestPermissionRationale(activity, false);
+                            controller.requestPermissionIfNeeded();
+                            invokeOSPermissionCallback(permissionDelegate, permissionGranted);
+
+                            verify(mPermissionChangeObserver)
+                                    .onAppNotificationPermissionChanged(permissionGranted);
                         });
     }
 }

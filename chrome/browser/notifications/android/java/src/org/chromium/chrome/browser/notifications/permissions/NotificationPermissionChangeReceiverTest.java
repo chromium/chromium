@@ -5,14 +5,22 @@
 package org.chromium.chrome.browser.notifications.permissions;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.app.NotificationManager;
 import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -24,6 +32,19 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
 public class NotificationPermissionChangeReceiverTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private NotificationPermissionChangeNotifier.Observer mObserver;
+
+    @Before
+    public void setUp() {
+        NotificationPermissionChangeNotifier.addObserver(mObserver);
+    }
+
+    @After
+    public void tearDown() {
+        NotificationPermissionChangeNotifier.removeObserver(mObserver);
+    }
 
     private void verifyPermissionChangeHistogramWasRecorded(boolean expectedPermissionState) {
         int histogramValue = expectedPermissionState ? 1 : 0;
@@ -98,5 +119,51 @@ public class NotificationPermissionChangeReceiverTest {
 
         receiver.onReceive(ApplicationProvider.getApplicationContext(), broadcastIntent);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testAppBlockStateChanged_NotifiesObservers() {
+        NotificationPermissionChangeReceiver receiver = new NotificationPermissionChangeReceiver();
+
+        Intent blockedIntent = new Intent(NotificationManager.ACTION_APP_BLOCK_STATE_CHANGED);
+        blockedIntent.putExtra(NotificationManager.EXTRA_BLOCKED_STATE, true);
+        receiver.onReceive(ApplicationProvider.getApplicationContext(), blockedIntent);
+        verify(mObserver).onAppNotificationPermissionChanged(false);
+
+        Intent unblockedIntent = new Intent(NotificationManager.ACTION_APP_BLOCK_STATE_CHANGED);
+        unblockedIntent.putExtra(NotificationManager.EXTRA_BLOCKED_STATE, false);
+        receiver.onReceive(ApplicationProvider.getApplicationContext(), unblockedIntent);
+        verify(mObserver).onAppNotificationPermissionChanged(true);
+
+        NotificationPermissionChangeNotifier.removeObserver(mObserver);
+        receiver.onReceive(ApplicationProvider.getApplicationContext(), blockedIntent);
+        verifyNoMoreInteractions(mObserver);
+    }
+
+    @Test
+    public void testChannelBlockStateChanged_NotifiesObservers() {
+        NotificationPermissionChangeReceiver receiver = new NotificationPermissionChangeReceiver();
+
+        Intent blockedIntent =
+                new Intent(NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED);
+        blockedIntent.putExtra(
+                NotificationManager.EXTRA_NOTIFICATION_CHANNEL_ID,
+                ChromeChannelDefinitions.ChannelId.TIPS_V2);
+        blockedIntent.putExtra(NotificationManager.EXTRA_BLOCKED_STATE, true);
+        receiver.onReceive(ApplicationProvider.getApplicationContext(), blockedIntent);
+        verify(mObserver)
+                .onNotificationChannelStateChanged(
+                        ChromeChannelDefinitions.ChannelId.TIPS_V2, false);
+
+        Intent unblockedIntent =
+                new Intent(NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED);
+        unblockedIntent.putExtra(
+                NotificationManager.EXTRA_NOTIFICATION_CHANNEL_ID,
+                ChromeChannelDefinitions.ChannelId.TIPS_V2);
+        unblockedIntent.putExtra(NotificationManager.EXTRA_BLOCKED_STATE, false);
+        receiver.onReceive(ApplicationProvider.getApplicationContext(), unblockedIntent);
+        verify(mObserver)
+                .onNotificationChannelStateChanged(
+                        ChromeChannelDefinitions.ChannelId.TIPS_V2, true);
     }
 }
