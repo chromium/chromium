@@ -5,10 +5,13 @@
 #include "components/session_manager/test/fake_user_session_test_environment_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -89,6 +92,45 @@ TEST_F(FakeUserSessionTestEnvironmentDelegateTest, LogIn) {
   EXPECT_EQ(0, prefs->GetInteger(kTestPref));
   prefs->SetInteger(kTestPref, 1);
   EXPECT_EQ(1, prefs->GetInteger(kTestPref));
+}
+
+TEST_F(FakeUserSessionTestEnvironmentDelegateTest, InitialProfilePrefs) {
+  CreateUserSessionTestEnvironment(
+      base::BindRepeating([](PrefRegistrySimple* registry) {
+        registry->RegisterIntegerPref(kTestPref, 0);
+      }));
+
+  // Observes the value on the Profile creation.
+  class Observer : public user_manager::UserManager::Observer {
+   public:
+    void OnUserProfileCreated(const user_manager::User& user) override {
+      value_on_profile_created = user.GetProfilePrefs()->GetInteger(kTestPref);
+    }
+    std::optional<int> value_on_profile_created;
+  } observer;
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      observation(&observer);
+  observation.Observe(user_manager::UserManager::Get());
+
+  user_manager::User* user1 = user_session_test_environment().AddRegularUser(
+      kAccountId1, base::DictValue().Set(kTestPref, 10));
+  ASSERT_TRUE(user1);
+  user_manager::User* user2 =
+      user_session_test_environment().AddRegularUser(kAccountId2);
+  ASSERT_TRUE(user2);
+
+  // The initial value is already visible on the Profile creation.
+  user_session_test_environment().LogIn(kAccountId1);
+  EXPECT_EQ(10, observer.value_on_profile_created);
+  ASSERT_TRUE(user1->GetProfilePrefs());
+  EXPECT_EQ(10, user1->GetProfilePrefs()->GetInteger(kTestPref));
+
+  // The initial value is set only to the specified user.
+  user_session_test_environment().LogIn(kAccountId2);
+  EXPECT_EQ(0, observer.value_on_profile_created);
+  ASSERT_TRUE(user2->GetProfilePrefs());
+  EXPECT_EQ(0, user2->GetProfilePrefs()->GetInteger(kTestPref));
 }
 
 TEST_F(FakeUserSessionTestEnvironmentDelegateTest, NoRegisterProfilePrefs) {

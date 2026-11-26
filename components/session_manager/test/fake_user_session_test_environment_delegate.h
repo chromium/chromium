@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/test/user_session_test_environment.h"
 
@@ -26,6 +27,8 @@ namespace ash::test {
 // ProfileUserManagerController does for a real Profile in //chrome.
 // So, after UserSessionTestEnvironment::LogIn(), the User is marked as its
 // Profile being created, and User::GetProfilePrefs() returns the PrefService.
+// The initial values given on adding the user to UserSessionTestEnvironment
+// are set to the PrefService before notifying UserManager.
 //
 // See ChromeUserSessionTestEnvironmentDelegate for tests in //chrome that
 // need a TestingProfile.
@@ -61,7 +64,8 @@ class FakeUserSessionTestEnvironmentDelegate
   // UserSessionTestEnvironment::Delegate:
   void CreateProfileManager() override;
   void DestroyProfileManager() override;
-  void CreateProfile(const AccountId& account_id) override;
+  void CreateProfile(const AccountId& account_id,
+                     const base::DictValue& initial_profile_prefs) override;
 
  private:
   const RegisterProfilePrefsCallback register_profile_prefs_;

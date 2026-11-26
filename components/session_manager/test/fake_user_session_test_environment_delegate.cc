@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/values.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_manager.h"
 
@@ -42,7 +43,8 @@ void FakeUserSessionTestEnvironmentDelegate::DestroyProfileManager() {
 }
 
 void FakeUserSessionTestEnvironmentDelegate::CreateProfile(
-    const AccountId& account_id) {
+    const AccountId& account_id,
+    const base::DictValue& initial_profile_prefs) {
   CHECK(profile_manager_created_);
   CHECK(!prefs_.contains(account_id)) << account_id;
 
@@ -50,6 +52,13 @@ void FakeUserSessionTestEnvironmentDelegate::CreateProfile(
   auto prefs = std::make_unique<TestingPrefServiceSimple>();
   if (register_profile_prefs_) {
     register_profile_prefs_.Run(prefs->registry());
+  }
+
+  // Sets the initial values, similar to the ones loaded from the persistent
+  // storage in production.
+  for (const auto [name, value] : initial_profile_prefs) {
+    CHECK(prefs->FindPreference(name)) << "Unregistered pref: " << name;
+    prefs->Set(name, value);
   }
 
   auto* user_manager = user_manager::UserManager::Get();

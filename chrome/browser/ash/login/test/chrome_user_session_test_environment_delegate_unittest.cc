@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -15,6 +16,8 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -121,6 +124,29 @@ TEST_F(ChromeUserSessionTestEnvironmentDelegateTest,
   // automatically triggers OnUserProfileWillBeDestroyed on UserManager.
   ASSERT_EQ(observer.destroyed_users().size(), 1u);
   EXPECT_EQ(observer.destroyed_users()[0], kAccountId);
+}
+
+TEST_F(ChromeUserSessionTestEnvironmentDelegateTest, InitialProfilePrefs) {
+  const AccountId kAccountId =
+      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("1234567890"));
+
+  UserSessionTestEnvironment env(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      std::make_unique<ChromeUserSessionTestEnvironmentDelegate>(
+          TestingBrowserProcess::GetGlobal()));
+
+  user_manager::User* user = env.AddRegularUser(
+      kAccountId,
+      base::DictValue().Set(language::prefs::kApplicationLocale, "ja"));
+  ASSERT_TRUE(user);
+  env.LogIn(kAccountId);
+
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          kAccountId));
+  ASSERT_TRUE(profile);
+  EXPECT_EQ("ja", profile->GetPrefs()->GetString(
+                      language::prefs::kApplicationLocale));
 }
 
 }  // namespace ash::test

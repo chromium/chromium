@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_SESSION_MANAGER_TEST_USER_SESSION_TEST_ENVIRONMENT_H_
 #define COMPONENTS_SESSION_MANAGER_TEST_USER_SESSION_TEST_ENVIRONMENT_H_
 
+#include <map>
 #include <memory>
 #include <string_view>
 
+#include "base/values.h"
+#include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 
-class AccountId;
 class PrefRegistrySimple;
 class PrefService;
 
@@ -45,7 +47,13 @@ class UserSessionTestEnvironment {
     // Called during LogIn() after CreateSession() and before SessionStarted(),
     // as UserSessionManager creates the profile before the session becomes
     // active.
-    virtual void CreateProfile(const AccountId& account_id) = 0;
+    // `initial_profile_prefs` is the dictionary of the initial values of the
+    // Profile's prefs, keyed by pref names, which is given on adding the user.
+    // Implementations are expected to create the Profile's PrefService with
+    // the values, so the values are visible already on the Profile creation.
+    virtual void CreateProfile(
+        const AccountId& account_id,
+        const base::DictValue& initial_profile_prefs) = 0;
   };
 
   // `local_state` must not be nullptr and must outlive this instance.
@@ -63,24 +71,46 @@ class UserSessionTestEnvironment {
 
   // Following methods add a user. They must be called *ANY* of LogIn call.
   // Returns nullptr on error, so callers should check it always.
-  [[nodiscard]] user_manager::User* AddRegularUser(const AccountId& account_id);
-  [[nodiscard]] user_manager::User* AddChildUser(const AccountId& account_id);
+  // `initial_profile_prefs` is the dictionary of the initial values of the
+  // user's Profile prefs, keyed by pref names. It is passed to
+  // Delegate::CreateProfile() on LogIn(). It must be empty if Delegate is not
+  // set. Guest user does not take it, because guest user's Profile is always
+  // created freshly.
+  [[nodiscard]] user_manager::User* AddRegularUser(
+      const AccountId& account_id,
+      base::DictValue initial_profile_prefs = {});
+  [[nodiscard]] user_manager::User* AddChildUser(
+      const AccountId& account_id,
+      base::DictValue initial_profile_prefs = {});
   [[nodiscard]] user_manager::User* AddGuestUser();
   [[nodiscard]] user_manager::User* AddPublicAccountUser(
-      std::string_view user_id);
+      std::string_view user_id,
+      base::DictValue initial_profile_prefs = {});
   [[nodiscard]] user_manager::User* AddKioskChromeAppUser(
-      std::string_view user_id);
+      std::string_view user_id,
+      base::DictValue initial_profile_prefs = {});
   [[nodiscard]] user_manager::User* AddKioskWebAppUser(
-      std::string_view user_id);
-  [[nodiscard]] user_manager::User* AddKioskIwaUser(std::string_view user_id);
+      std::string_view user_id,
+      base::DictValue initial_profile_prefs = {});
+  [[nodiscard]] user_manager::User* AddKioskIwaUser(
+      std::string_view user_id,
+      base::DictValue initial_profile_prefs = {});
 
   // Logs in to a new user session with the user specified by `account_id`.
   void LogIn(const AccountId& account_id, bool new_user = false);
 
  private:
+  // Remembers `initial_profile_prefs` for the `user` to be passed to
+  // Delegate::CreateProfile() on LogIn(), if it is not empty.
+  void MaybeSetInitialProfilePrefs(const user_manager::User& user,
+                                   base::DictValue initial_profile_prefs);
+
   std::unique_ptr<Delegate> delegate_;
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
+
+  // Initial values of the Profile prefs for each user.
+  std::map<AccountId, base::DictValue> initial_profile_prefs_;
 };
 
 }  // namespace ash::test

@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/values.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/session_manager/test/user_session_test_environment.h"
 
@@ -25,6 +26,10 @@ namespace ash::test {
 
 // Implementation of UserSessionTestEnvironment::Delegate to integrate with
 // TestingProfileManager in //chrome tests.
+// The initial Profile pref values given on adding the user to
+// UserSessionTestEnvironment are set to the PrefService passed to the
+// TestingProfile. Note that TestingProfile::GetTestingPrefService() is not
+// available in that case.
 class ChromeUserSessionTestEnvironmentDelegate
     : public UserSessionTestEnvironment::Delegate {
  public:
@@ -52,7 +57,8 @@ class ChromeUserSessionTestEnvironmentDelegate
   // UserSessionTestEnvironment::Delegate:
   void CreateProfileManager() override;
   void DestroyProfileManager() override;
-  void CreateProfile(const AccountId& account_id) override;
+  void CreateProfile(const AccountId& account_id,
+                     const base::DictValue& initial_profile_prefs) override;
 
  private:
   const raw_ref<TestingBrowserProcess> browser_process_;

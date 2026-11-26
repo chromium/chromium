@@ -25,6 +25,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
+#include "base/values.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
@@ -49,7 +50,6 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/extension_builder.h"
@@ -64,37 +64,6 @@ constexpr char kResourcesComponent[] = "demo-mode-resources";
 constexpr char kTestDemoModeResourcesMountPoint[] =
     "/run/imageloader/demo_mode_resources";
 constexpr char kDemoUserEmail[] = "demo@public-accounts.device-local.localhost";
-
-class TestUserSessionEnvironmentDelegate
-    : public test::ChromeUserSessionTestEnvironmentDelegate {
- public:
-  using ChromeUserSessionTestEnvironmentDelegate::
-      ChromeUserSessionTestEnvironmentDelegate;
-
-  void set_initial_locale(std::string locale) {
-    initial_locale_ = std::move(locale);
-  }
-
-  // test::ChromeUserSessionTestEnvironmentDelegate:
-  void CreateProfile(const AccountId& account_id) override {
-    ChromeUserSessionTestEnvironmentDelegate::CreateProfile(account_id);
-    // `UserSessionTestEnvironment::LogIn()` calls `SessionStarted()` right
-    // after `CreateProfile()`, which synchronously fires
-    // `DemoSession::OnSessionStateChanged()` and reads `kApplicationLocale`.
-    if (!initial_locale_.empty()) {
-      PrefService* prefs =
-          CHECK_DEREF(
-              user_manager::UserManager::Get()->FindUserAndModify(account_id))
-              .GetProfilePrefs();
-      CHECK(prefs);
-      prefs->SetString(language::prefs::kApplicationLocale,
-                       std::exchange(initial_locale_, std::string()));
-    }
-  }
-
- private:
-  std::string initial_locale_;
-};
 
 class DemoSessionTest : public testing::Test {
  public:
@@ -118,16 +87,11 @@ class DemoSessionTest : public testing::Test {
     InitializeComponentManager();
 
     auto* browser_process = TestingBrowserProcess::GetGlobal();
-    auto delegate =
-        std::make_unique<TestUserSessionEnvironmentDelegate>(browser_process);
-    delegate_ = delegate.get();
     user_session_test_environment_ =
         std::make_unique<test::UserSessionTestEnvironment>(
-            browser_process->local_state(), std::move(delegate));
-    user_manager::User* demo_user =
-        user_session_test_environment_->AddPublicAccountUser(kDemoUserEmail);
-    ASSERT_TRUE(demo_user);
-    demo_account_id_ = demo_user->GetAccountId();
+            browser_process->local_state(),
+            std::make_unique<test::ChromeUserSessionTestEnvironmentDelegate>(
+                browser_process));
 
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
@@ -143,7 +107,6 @@ class DemoSessionTest : public testing::Test {
 
     browser_controller_.reset();
     wallpaper_controller_client_.reset();
-    delegate_ = nullptr;
     user_session_test_environment_.reset();
 
     component_manager_ash_ = nullptr;
@@ -174,13 +137,24 @@ class DemoSessionTest : public testing::Test {
         std::move(fake_component_manager_ash));
   }
 
-  // Logs in the demo public-account user and returns its profile.
+  // Adds and logs in the demo public-account user and returns its profile.
+  // If `initial_locale` is not empty, it is set to the user's Profile as the
+  // initial application locale.
   TestingProfile* LoginDemoUser(std::string_view initial_locale = {}) {
-    delegate_->set_initial_locale(std::string(initial_locale));
-    user_session_test_environment_->LogIn(demo_account_id_);
+    base::DictValue initial_profile_prefs;
+    if (!initial_locale.empty()) {
+      initial_profile_prefs.Set(language::prefs::kApplicationLocale,
+                                initial_locale);
+    }
+    user_manager::User* demo_user =
+        user_session_test_environment_->AddPublicAccountUser(
+            kDemoUserEmail, std::move(initial_profile_prefs));
+    CHECK(demo_user);
+    const AccountId demo_account_id = demo_user->GetAccountId();
+    user_session_test_environment_->LogIn(demo_account_id);
     content::BrowserContext* browser_context =
         BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-            demo_account_id_);
+            demo_account_id);
     CHECK(browser_context);
     return static_cast<TestingProfile*>(
         Profile::FromBrowserContext(browser_context));
@@ -204,8 +178,6 @@ class DemoSessionTest : public testing::Test {
   raw_ptr<FakeComponentManagerAsh> component_manager_ash_ = nullptr;
   std::unique_ptr<test::UserSessionTestEnvironment>
       user_session_test_environment_;
-  raw_ptr<TestUserSessionEnvironmentDelegate> delegate_ = nullptr;
-  AccountId demo_account_id_;
   TestWallpaperController test_wallpaper_controller_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   base::UserActionTester user_action_tester_;
