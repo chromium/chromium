@@ -68,7 +68,6 @@ source_set("generator") {
 if (is_android) {
   android_library("java") {
     deps = [
-      ":jni_headers",
       ":proto_java",
       "//base:base_java",
       "//build/android:build_java",
@@ -172,7 +171,6 @@ if (is_android) {
     ]
 
     deps = [
-      ":test_support_jni_headers",
       "//base:base_java",
       "//build/android:build_java",
       "//third_party/jni_zero:jni_zero_java",

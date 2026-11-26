@@ -298,7 +298,23 @@ template("write_build_config") {
     }
     if (defined(invoker.possible_config_deps)) {
       _is_bundle = _type == "android_app_bundle"
-      not_needed([ "_is_bundle" ])
+
+      # Restrict to java_group and non-prebuilt java_library targets. Other
+      # types legitimately receive non-Java "*jni*" targets in deps, e.g.:
+      # - android_apk: gtest APKs (//base:base_unittests__apk__java) inherit
+      #   native test deps like //base:base_unittest_support_jni.
+      # - dist_jar: cronet_test() jars (//net:net_unittests_single_jar_java)
+      #   likewise receive native test deps like //net:net_jni_headers.
+      # - Prebuilt java_library:
+      #   //components/cronet/android:repackage_test_jars_without_jni_java
+      #   depends on its jar-producing target :repackage_test_jars_without_jni.
+      _forbid_jni_deps = _type == "group" || (_type == "java_library" &&
+                                              !(defined(invoker.is_prebuilt) &&
+                                                invoker.is_prebuilt))
+      not_needed([
+                   "_forbid_jni_deps",
+                   "_is_bundle",
+                 ])
       foreach(_possible_dep, invoker.possible_config_deps) {
         _dep_label = get_label_info(_possible_dep, "label_no_toolchain")
         if (filter_exclude([ _dep_label ], java_target_patterns) == []) {
@@ -310,6 +326,23 @@ template("write_build_config") {
             _inputs += [ "$_dep_gen_dir/$_dep_name.build_config.json" ]
             _deps += [ "$_dep_label$build_config_target_suffix" ]
           }
+        } else if (_forbid_jni_deps) {
+          # generate_jni() targets (which always contain "jni" in their target
+          # name) must be referenced via <target>_java in deps, never directly
+          # in deps where they are treated as non-Java targets. Exclude:
+          # - *__action: generate_jni_impl()'s <target>_java java_library must
+          #   depend on its own action subtarget to generate its srcjar.
+          # - *__unpack_aar: android_aar_prebuilt()'s wrapper java_group depends
+          #   on its unpack action, which matches "*:*jni*" for AARs with "jni"
+          #   in their name.
+          assert(filter_exclude(filter_include([ _dep_label ], [ "*:*jni*" ]),
+                                [
+                                  "*__action",
+                                  "*__unpack_aar",
+                                ]) == [],
+                 "Do not depend on generate_jni() target $_possible_dep " +
+                     "directly in deps of $_target_label; depend on " +
+                     "${_dep_label}_java instead.")
         }
       }
     }
@@ -4213,9 +4246,6 @@ if (enable_java_templates) {
       }
       if (defined(invoker.asset_deps)) {
         possible_config_deps += invoker.asset_deps
-      }
-      if (defined(apk_under_test)) {
-        possible_config_deps += [ apk_under_test ]
       }
       if (defined(_jacoco_instrument) && _jacoco_instrument) {
         possible_config_deps += [ _jacoco_dep ]
