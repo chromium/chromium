@@ -70,6 +70,7 @@
 <translation id="1792680680989393197">Você pode remover esses dados quando quiser. O Chromium pode fazer o download deles de novo automaticamente quando um site ou um recurso precisar deles.</translation>
 <translation id="1793486931176048546">Clique em <ph name="BEGIN_BOLD" />Sim<ph name="END_BOLD" /> na notificação do Windows para fixar o Chromium na barra de tarefas e ter acesso rápido.</translation>
 <translation id="1808667845054772817">Reinstalar o Chromium</translation>
+<translation id="1814482312667514397">Aproveite os melhores recursos de segurança do Chromium em qualquer lugar com o app Chromium no seu celular</translation>
 <translation id="1820835682567584003">O Chromium está tentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809">A conta <ph name="EXISTING_USER" /> já está conectada. Para manter a navegação separada, faça login no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Você também terá acesso às suas extensões e muito mais do <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Na próxima vez que você abrir o Chromium no seu <ph name="DEVICE_TYPE" />, vai aparecer uma mensagem para usar o Gerenciador de Senhas do Google.</translation>
@@ -133,6 +134,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{unused plural form}=1{Uma ou mais extensões do Chromium estão acessando 1 dispositivo HID}one{Uma ou mais extensões do Chromium estão acessando # dispositivo HID}other{Uma ou mais extensões do Chromium estão acessando # dispositivos HID}}</translation>
 <translation id="2401032172288869980">O Chromium precisa da permissão de acesso ao microfone e à câmera para este site</translation>
 <translation id="2403703063067034158">Erro de inicialização: outra instância de configuração está sendo executada. Tente de novo mais tarde.</translation>
+<translation id="241044568699443215">Leve a segurança do Chromium com você usando o app Chromium no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Clicar em links de qualquer app vai abri-los no Chromium, e você poderá acessar o navegador com mais rapidez na barra de tarefas.</translation>
 <translation id="2425157128016763890">Clique no botão Resumir para compartilhar este documento com o Gemini no Chromium, assim você recebe uma visão geral rápida e pode fazer perguntas complementares</translation>
 <translation id="2440750600860946460">Com as <ph name="BEGIN_LINK" />ferramentas do Chromium<ph name="END_LINK" />, você pode navegar com segurança e ficar no controle</translation>
@@ -745,6 +747,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8907580949721785412">O Chromium está tentando mostrar senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="8910309838319708610">Pronto. Agora você pode fazer perguntas com facilidade enquanto navega com o Modo IA de Pesquisa</translation>
 <translation id="8932992523185907506">O Chromium não é mais seu navegador padrão. Definir o Chromium como navegador padrão?</translation>
+<translation id="8940844567350264767">Aproveite os melhores recursos de segurança do Chromium em qualquer lugar com o Chromium</translation>
 <translation id="8941642502866065432">Não é possível atualizar o Chromium</translation>
 <translation id="8944232836376404813">Essa ação vai:
           <ph name="LINE_BREAKS" />

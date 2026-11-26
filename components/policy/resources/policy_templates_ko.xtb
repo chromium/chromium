@@ -13198,13 +13198,6 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise 커넥터 설정 정책</translation>
 <translation id="9088433379343318874">관리 대상 사용자 콘텐츠 제공업체 사용</translation>
 <translation id="9088444059179765143">자동 시간대 감지 방법 설정</translation>
-<translation id="9094681501120769194"><ph name="PRODUCT_NAME" />의 PDF 뷰어에서 프로세스 외부 iframe(OOPIF)을 사용할지 여부를 제어합니다. 더 간단해지고 새로운 기능을 더 쉽게 추가할 수 있으므로 향후 새로운 PDF 뷰어 아키텍처가 될 것입니다. 기존 GuestView PDF 뷰어는 오래되고 복잡한 아키텍처로서 지원이 중단됩니다.
-
-정책을 '사용'으로 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 OOPIF PDF 뷰어 아키텍처를 사용할 수 있습니다. 사용 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 기본 동작을 결정합니다.
-
-정책을 '사용 안함'으로 설정하면 <ph name="PRODUCT_NAME" />에서 기존 GuestView PDF 뷰어를 엄격하게 사용합니다. 별도의 프레임 트리가 있는 웹페이지를 다른 웹페이지에 삽입합니다.
-
-이 정책은 M152에서 지원 중단되며 M155에서 삭제될 예정입니다. GuestView PDF 뷰어가 삭제되고 프로세스 외부 iframe(OOPIF) PDF 뷰어 아키텍처가 항상 사용됩니다.</translation>
 <translation id="9095599826504830315">탭 비교를 허용하지 않습니다.</translation>
 <translation id="9096772739225230999">네트워크 구성 보고 안함</translation>
 <translation id="9098409326885953506">가려진 창을 감지하여 색상 설정 정지</translation>

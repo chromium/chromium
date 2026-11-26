@@ -969,6 +969,11 @@ A "entrada do usuário" é definida pelas APIs do sistema operacional e inclui a
       Se ela for definida como falsa, os usuários não poderão adicionar e configurar as próprias impressoras. Eles também não poderão imprimir com impressoras configurada anteriormente.
       </translation>
 <translation id="1613327425322354195">Informar status de segurança do dispositivo</translation>
+<translation id="1613552398317518165">Esta política foi descontinuada e não tem efeito. As solicitações de pesquisa padrão são sempre enviadas usando o método GET. Por isso, os parâmetros especificados por essa política nunca são aplicados. Use <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> para configurar o URL de pesquisa, incluindo o marcador de posição <ph name="SEARCH_TERM_MARKER" />.
+
+Os parâmetros POST só são compatíveis com a pesquisa de imagens, por meio de <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Anteriormente, se a política <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estivesse ativada, a configuração <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> especificava os parâmetros ao pesquisar um URL com POST, como pares de nome-valor separados por vírgulas.</translation>
 <translation id="1615221548356595305">Permitir a união de conexões HTTP/2 para esses hosts mesmo quando certificados do cliente são utilizados</translation>
 <translation id="1616280227447957376">Permitir que páginas de aviso SSL em origens específicas sejam ignoradas</translation>
 <translation id="1617235075406854669">Ativar exclusão do histórico do navegador e de downloads</translation>
@@ -6213,6 +6218,11 @@ Esta política não terá efeito quando a <ph name="DEVICE_SCREENSAVER_LOGIN_SCR
 <translation id="4725801978265372736">Exigir correspondência entre o nome do usuário local e o proprietário do host de acesso remoto</translation>
 <translation id="4726228171190098009">Não permitir que o dispositivo solicite a execução de um Powerwash</translation>
 <translation id="4726895359147376813">Mapeamento de IDs persistentes para as configurações da VM</translation>
+<translation id="473189306848333308">Esta política foi descontinuada e não tem efeito. As solicitações de sugestão são sempre enviadas usando o método GET. Por isso, os parâmetros especificados por essa política nunca são aplicados. Use <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> para configurar o URL de sugestão, incluindo o marcador de posição <ph name="SEARCH_TERM_MARKER" />.
+
+Os parâmetros POST só são compatíveis com a pesquisa de imagens, por meio de <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" />.
+
+Anteriormente, se <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estivesse ativada, a definição de <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> especificava os parâmetros durante a pesquisa sugerida com POST, como pares nome-valor separados por vírgulas.</translation>
 <translation id="4732069502693984686">Ativa a captura automática de várias telas</translation>
 <translation id="4733471537137819387">Políticas relacionadas à autenticação integrada de HTTP.</translation>
 <translation id="4737832614429402441">Usar o valor padrão para o contrato de chave pós-quântico para TLS</translation>
@@ -8432,6 +8442,15 @@ Se o valor for "false", os usuários não poderão acessar o recurso.</translati
 <translation id="6075316301208933536">Se a <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> for definida como <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, a definição de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> personalizará quando o carregamento da bateria será interrompido, com base na porcentagem de carga da bateria. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> precisa ficar pelo menos 5% abaixo de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Se a política não for definida, o modo de carregamento da bateria <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> será aplicado.</translation>
+<translation id="6077759101739558312">Se a política for definida como "Ativada", a "Navegação segura" confiará nos domínios designados. Ele não verificará a presença de recursos perigosos como phishing, malware ou software indesejado. O serviço de proteção de downloads da Navegação segura (não compatível com o iOS) não verificará downloads hospedados nesses domínios. O serviço de proteção de senhas não verificará a reutilização de senhas.
+
+Se a política não for definida, as proteções padrão da Navegação segura serão aplicadas a todos os recursos.
+
+Esta política não aceita o uso de expressões regulares. No entanto, os subdomínios de um determinado domínio estão na lista de permissões. Nomes de domínio totalmente qualificados (FQDNs, na sigla em inglês) não são obrigatórios.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6082161804984853051">Com a definição da política, o <ph name="PRODUCT_NAME" /> usará o diretório fornecido para o armazenamento de arquivos em cache, independentemente de o usuário ter especificado ou não a sinalização "--disk-cache-dir".
 
       Se ela não for definida, o <ph name="PRODUCT_NAME" /> usará o diretório de cache padrão, mas os usuários poderão mudar isso com a sinalização da linha de comando "--disk-cache-dir".
@@ -13475,13 +13494,6 @@ Observação: a reinicialização do dispositivo limpa o cache. Até os dados te
 <translation id="9087652369391570821">Política de configuração para o conector OnFileTransfer do Chrome Enterprise</translation>
 <translation id="9088433379343318874">Ativar o provedor de conteúdo de usuário supervisionado</translation>
 <translation id="9088444059179765143">Configurar o método de detecção automática de fuso horário</translation>
-<translation id="9094681501120769194">Controla se o visualizador de PDF no <ph name="PRODUCT_NAME" /> usa um iframe fora do processo (OOPIF, na sigla em inglês). Essa será a nova arquitetura do visualizador de PDF no futuro, porque é mais simples e facilita a adição de novos recursos. O visualizador de PDF do GuestView atual é uma arquitetura complexa e desatualizada que está sendo descontinuada.
-
-Quando esta política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> poderá usar a arquitetura do visualizador de PDF OOPIF. Se a política for ativada ou deixada sem definição, o comportamento padrão será decidido pelo <ph name="PRODUCT_NAME" />.
-
-Se ela for desativada, o <ph name="PRODUCT_NAME" /> vai usar estritamente o visualizador de PDF do GuestView. Ele incorpora uma página da web, com uma árvore de frames separada, a outra página.
-
-Esta política foi descontinuada na versão M152 e será removida na versão M155. O visualizador de PDF do GuestView está sendo removido, e a arquitetura do visualizador de PDF do iframe fora do processo (OOPIF) será sempre usada.</translation>
 <translation id="9095599826504830315">Não permitir o uso da Tabela de comparação.</translation>
 <translation id="9096772739225230999">Não informar configuração da rede</translation>
 <translation id="9098409326885953506">Detectar janela coberta e suspender a pintura</translation>

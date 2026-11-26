@@ -141,6 +141,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2295218613066132598">Snelkoppelingen naar Chrome-sites tonen</translation>
 <translation id="2301513536169703857">Log in bij Chrome om onder andere je wachtwoorden en bookmarks te gebruiken op al je apparaten</translation>
 <translation id="2307973900865360088">In Dock houden</translation>
+<translation id="2308558013860776484">Deel een screenshot van content buiten Chrome, zoals andere apps of bestanden</translation>
 <translation id="2309047409763057870">Dit is een tweede installatie van Google Chrome en kan niet als standaardbrowser worden ingesteld.</translation>
 <translation id="2345992953227471816">Chrome heeft vastgesteld dat deze extensies malware bevatten:</translation>
 <translation id="2358140144860869442">Log in bij Chrome om onder andere je leeslijst op al je apparaten te gebruiken</translation>
@@ -250,6 +251,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="3294686910656423119">Gebruiksstatistieken en crashrapporten</translation>
 <translation id="3327226547491422998">Chrome kan je later vragen of je opgeslagen informatie wilt gebruiken om formulieren automatisch voor je in te vullen</translation>
 <translation id="3352986031709923790">rechterbovenhoek van zoekgebied: rechts <ph name="RIGHT" />%, boven <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">Sites en Chrome kunnen AI gebruiken die rechtstreeks op je apparaat wordt uitgevoerd voor functies zoals overzichten, proeflezen en ondertiteling. Dit staat los van Gemini in Chrome. <ph name="BEGIN_LINK" />Meer informatie over AI op het apparaat<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Sommige Chrome-functies en -extensies hebben snelkoppelingen. Je kunt deze weer aanzetten.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome wordt nu opnieuw gestart}=1{Chrome wordt over één seconde opnieuw gestart}other{Chrome wordt over # seconden opnieuw gestart}}</translation>
 <translation id="3380249972812870825">Druk op <ph name="GLOBAL_HOTKEY" /> om Gemini in Chrome te openen</translation>
@@ -348,6 +350,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="4427306783828095590">Geoptimaliseerde beveiliging die je nog beter beschermt tegen phishing en malware</translation>
 <translation id="4434353761996769206">Fout met installatieprogramma: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Deel dit document met Gemini in Chrome om een snel overzicht te krijgen en follow-upvragen te stellen</translation>
+<translation id="4440999670272408191">Je kunt ze altijd verwijderen. Chrome kan ze automatisch opnieuw downloaden als een site of functie ze nodig heeft.</translation>
 <translation id="4450664632294415862">Chrome - Inloggen op netwerk - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Er wordt een andere bewerking in Google Chrome uitgevoerd. Probeer het later opnieuw.</translation>
 <translation id="4493028449971051158">Opstartfout: voer het installatieprogramma uit als beheerder.</translation>
@@ -355,6 +358,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="4501839397124711198">Je kunt Google Zoeken vastzetten in het zijvenster om vragen te stellen terwijl je browst</translation>
 <translation id="4571503333518166079">Ga naar instellingen voor Chrome-meldingen</translation>
 <translation id="4580939929828762295">Veilig blijven met Google Wachtwoordmanager</translation>
+<translation id="4589544932092381064">Zoeken met Chrome tonen in Windows-taakbalk en sneltoets aanzetten</translation>
 <translation id="459622048091363950">Zodra Chrome toegang heeft, kunnen websites je om toegang vragen.</translation>
 <translation id="4598116752460667024">Zoek naar een proces in de lijst.</translation>
 <translation id="4600710005438004015">Chrome kan niet worden geüpdatet naar de nieuwste versie, dus je loopt nieuwe functies en beveiligingsoplossingen mis.</translation>
@@ -370,6 +374,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Versnelt sites met de V8-engine van Chrome, maar maakt Chrome iets minder goed bestand tegen aanvallen</translation>
 <translation id="4768676935374695498">Deze video doorzoeken met Google Lens</translation>
+<translation id="4783580253728290203">Als deze optie uitstaat, verwijdert Chrome AI-modellen op het apparaat en worden ze niet opnieuw gedownload. Sommige sites en Chrome-functies werken misschien niet.</translation>
 <translation id="479167709087336770">Hiervoor wordt dezelfde spellingcontrole gebruikt als voor Google Zoeken. Tekst die je in de browser typt, wordt naar Google gestuurd. Je kunt dit altijd wijzigen in de instellingen.</translation>
 <translation id="4793679854893018356">Meer informatie over hoe Chrome je beschermt</translation>
 <translation id="4803313124144656665">Google Zoeken in Chrome sluiten</translation>
@@ -453,6 +458,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Kan geen verbinding maken met internet. Proxyserver vereist verificatie.</translation>
 <translation id="5709557627224531708">Chrome instellen als je standaardbrowser</translation>
+<translation id="5715427327524421317">Chrome downloadt en updatet deze AI-modellen automatisch</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Voor Geavanceerde beveiliging moet je Chrome herstarten om een update toe te passen. Je geïsoleerde venster wordt niet opnieuw geopend.}other{Voor Geavanceerde beveiliging moet je Chrome herstarten om een update toe te passen. Je # geïsoleerde vensters worden niet opnieuw geopend.}}</translation>
 <translation id="5719246646468301581">Aanvullende Servicevoorwaarden van Google Chrome en ChromeOS</translation>
 <translation id="5736850870166430177">Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen</translation>
@@ -544,6 +550,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6491330562720922580">QR-code om de Chrome-browser te downloaden naar mobiele apparaten</translation>
 <translation id="6493527311031785448">Google Chrome probeert het volgende te doen: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome is automatisch gesloten</translation>
+<translation id="650039555447046671">Chrome verwijdert AI-modellen van dit apparaat. Sommige sites en Chrome-functies werken misschien niet.</translation>
 <translation id="6506909944137591434">Chrome heeft camerarechten nodig om een 3D-kaart van je omgeving te maken</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">Geef Chrome toegang via de <ph name="BEGIN_LINK" />systeeminstellingen<ph name="END_LINK" /> om je locatie te gebruiken</translation>
@@ -582,6 +589,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6877155553248388166">rechterbenedenhoek van zoekgebied: rechts <ph name="RIGHT" />%, onder <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">Zoeken met Chrome openen</translation>
 <translation id="6881299373831449287">Chrome updaten</translation>
+<translation id="6881997500528805781">Gebruikt apparaatopslag. Chrome verwijdert ongebruikte AI-modellen na 45 dagen of als de opslagruimte bijna vol is</translation>
 <translation id="6885412569789873916">Chrome Bèta-apps</translation>
 <translation id="6893363893008038481">Account verwijderen uit Chrome</translation>
 <translation id="6896758677409633944">Kopiëren</translation>

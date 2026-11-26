@@ -53,6 +53,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1572572333538561328">Znovu otevřít režim AI ve Vyhledávání</translation>
 <translation id="1574377791422810894">Bezpečnostní nástroje prohlížeče Chromium</translation>
 <translation id="1594928384848033697">Chromium chce smazat vaše data Správce hesel. Tato akce vyžaduje zadání hesla systému Windows.</translation>
+<translation id="1599690375407103815">Když je toto nastavení vypnuté, Chromium odstraní AI modely v zařízení a už je nestáhne. Některé weby a funkce prohlížeče Chromium nemusí fungovat.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali}=1{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="1625909126243026060">Zkontrolujte klíčové ovládací prvky ochrany soukromí a zabezpečení v prohlížeči Chromium</translation>
 <translation id="1640672724030957280">Stahování...</translation>
@@ -67,6 +68,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1745121272106313518">Chromium se restartuje za <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Když není k dispozici protokol HTTPS, použije prohlížeč Chromium nezabezpečené připojení, aniž by vás upozornil</translation>
 <translation id="1774152462503052664">Nechat prohlížeč Chromium spuštěný na pozadí</translation>
+<translation id="1792680680989393197">Můžete je kdykoli odstranit. Když je bude nějaký web nebo funkce potřebovat, může je Chromium automaticky znovu stáhnout.</translation>
 <translation id="1793486931176048546">Kliknutím na <ph name="BEGIN_BOLD" />Ano<ph name="END_BOLD" /> v oznámení systému Windows připněte prohlížeč Chromium na hlavní panel, aby byl rychle k dispozici.</translation>
 <translation id="1808667845054772817">Přeinstalovat Chromium</translation>
 <translation id="1820835682567584003">Chromium se pokouší <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -251,6 +253,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3751920144677881410">Pomocí tlačítka Boční panel Vyhledávání na liště můžete tuto funkci znovu otevřít a pokládat otázky při prohlížení</translation>
 <translation id="3788675262216168505">Spravovat profily Chromium</translation>
 <translation id="3790262771324122253">Přečtěte si, proč Chromium blokuje některá stahování</translation>
+<translation id="3793196697433239004">Využívá úložiště zařízení. Nepoužívané AI modely Chromium po 45 dnech nebo při nedostatku úložného prostoru odstraní</translation>
 <translation id="379589255253486813">Pokud něco bude vyžadovat vaši pozornost, Chromium vám dá vědět</translation>
 <translation id="3802055581630249637">Chromium předběžně načítá stránky, které byste pravděpodobně mohli navštívit. Když je navštívíte, načtou se tak rychleji</translation>
 <translation id="3810973564298564668">Spravovat</translation>
@@ -332,6 +335,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4621240073146040695">Aktualizace je téměř hotova. Dokončíte ji restartováním prohlížeče Chromium.</translation>
 <translation id="4625064703209785397">Zrychluje weby pomocí modulu V8 prohlížeče Chromium, ale trochu snižuje odolnost prohlížeče Chromium vůči útokům</translation>
 <translation id="4626321472657185181">Otevřít vyhledávání v Chromiu</translation>
+<translation id="4639628733881319833">Sdílejte snímek obrazovky s obsahem mimo Chromium, jako jsou jiné aplikace nebo soubory</translation>
 <translation id="4654639495249754755">Profil prohlížeče Chromium</translation>
 <translation id="4665829708273112819">Upozornění: Chromium nemůže rozšířením zabránit v zaznamenávání vaší historie prohlížení. Pokud toto rozšíření chcete v anonymním režimu deaktivovat, zrušte výběr této možnosti.</translation>
 <translation id="4673151026126227699">Pokud také sdílíte přehledy využití prohlížeče Chromium, budou zahrnovat navštívené adresy URL</translation>
@@ -389,6 +393,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="5405650547142096840">Odstranit z prohlížeče Chromium</translation>
 <translation id="5424544524441439284">Snižuje výkon, ale zvyšuje odolnost prohlížeče Chromium proti útokům</translation>
 <translation id="5427571867875391349">Nastavit Chromium jako výchozí prohlížeč</translation>
+<translation id="5435079900593041559">Zobrazovat vyhledávání v Chromiu na hlavním panelu Windows a zapnout klávesovou zkratku</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium doporučuje pozastavit kartu, která ho zpomaluje}few{Chromium doporučuje pozastavit karty, které ho zpomalují}many{Chromium doporučuje pozastavit karty, které ho zpomalují}other{Chromium doporučuje pozastavit karty, které ho zpomalují}}</translation>
 <translation id="5473971139929175403">Prohlížeč Chromium nemusí fungovat správně, protože v této distribuci Linuxu už není podporován</translation>
@@ -415,6 +420,7 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Zobrazit Chromium v tomto jazyce</translation>
 <translation id="569897634095159764">Nelze se připojit k internetu. Proxy server vyžaduje ověření.</translation>
+<translation id="5755377560105094542">Weby a Chromium můžou pro funkce, jako jsou souhrny, kontrola pravopisu, titulky a další, používat umělou inteligenci, která běží přímo ve vašem zařízení. Tato funkce je oddělená od Gemini v Chromiu. <ph name="BEGIN_LINK" />Další informace o AI v zařízení<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">Pomocí tlačítka Panel vyhledávání na liště můžete tento panel znovu otevřít a pokládat otázky při prohlížení</translation>
 <translation id="5768371961535086509">Chromium uvolňuje paměť obsazenou neaktivními kartami. Aktivní karty a jiné aplikace tak mají k dispozici více výpočetních zdrojů a prohlížeč Chromium zůstává rychlý. Když se k neaktivním kartám vrátíte, automaticky se aktivují. <ph name="BEGIN_LINK" />Další informace o Spořiči paměti<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="SETTINGS_LINK" /> data prohlížeče Chromium ve svém účtu.</translation>
@@ -471,6 +477,7 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="6245734527075554892">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v prohlížeči Chromium</translation>
 <translation id="6248213926982192922">Nastavit Chromium jako výchozí prohlížeč</translation>
 <translation id="6248988683584659830">Nastavení vyhledávání</translation>
+<translation id="6251986571402453005">Chromium tyto AI modely automaticky stahuje a aktualizuje</translation>
 <translation id="6268381023930128611">Odhlásit se z prohlížeče Chromium?</translation>
 <translation id="6270547683008298381">Tyto karty využívají další zdroje. Ke zlepšení výkonu je Chromium nechte deaktivovat.</translation>
 <translation id="6281746429495226318">Upravit profil Chromium</translation>
@@ -761,6 +768,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8981886272598860786">– aktivuje vyhledávání v Chromiu. Lze přizpůsobit v <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="8988036198400390003">Spravovat profily Chromium</translation>
 <translation id="8993855408334954620">Pomocí klávesnice můžete přecházet mezi Gemini v Chromiu a otevřenou kartou.</translation>
+<translation id="9002987346523307190">Chromium z tohoto zařízení odstraní AI modely. Některé weby a funkce prohlížeče Chromium nemusí fungovat.</translation>
 <translation id="9018218886431812662">Instalace byla dokončena</translation>
 <translation id="9022552996538154597">Přihlásit se do prohlížeče Chromium</translation>
 <translation id="9035791714111278917">Zobrazovat vyhledávání v Chromiu na liště s nabídkou na Macu a zapnout klávesovou zkratku</translation>

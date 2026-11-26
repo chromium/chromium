@@ -850,6 +850,7 @@
 <translation id="1921544956190977703">သင့်တွင် အန္တရာယ်ရှိသည့် ဝဘ်ဆိုက်၊ ဒေါင်းလုဒ်နှင့် နောက်ဆက်တွဲများကို ကာကွယ်ပေးမည့် Chrome ၏ အားအကောင်းဆုံး လုံခြုံရေးရှိသည်</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">“<ph name="NAME" />” ကို ဤစက်တွင်သာ သိမ်းထားသည်။ အခြားစက်များ၌သုံးရန် ၎င်းကို သင့်အကောင့်တွင် သိမ်းပါ။</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">ဖြင့်ဖွင့်ပါ</translation>
 <translation id="1925017091976104802">ကူးထည့်ရန် <ph name="MODIFIER_KEY_DESCRIPTION" /> ကို နှိပ်ပါ</translation>
 <translation id="1925021887439448749">စိတ်ကြိုက်ဝဘ်လိပ်စာကို ထည့်ရန်</translation>
@@ -1399,6 +1400,7 @@
 <translation id="2528487766183344810">ကလိုင်းယင့် အသိအမှတ်ပြုလက်မှတ် ထုတ်ယူရန်အတွက် <ph name="TOKEN_NAME" /> ကို ဖွင့်ပါ။</translation>
 <translation id="2532198298278778531">ChromeOS Flex ဆက်တင်များတွင် လုံခြုံသည့် DNS ကို စီမံရန်</translation>
 <translation id="253434972992662860">&amp;ဆိုင်းငံ့</translation>
+<translation id="2534439599863644240">အစဉ်လိုက်ပို့တ်</translation>
 <translation id="253498598929009420">ဤဝဘ်ဆိုက်သည် သင့်ဖန်သားပြင်ပေါ်ရှိ အကြောင်းအရာများကို မြင်နိုင်ပါမည်</translation>
 <translation id="253557089021624350">Keepalive အရေအတွက်</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> က အောက်ပါဖိုင်နှင့် ဖိုင်တွဲများကို ကြည့်ရှု တည်းဖြတ်နိုင်သည်</translation>

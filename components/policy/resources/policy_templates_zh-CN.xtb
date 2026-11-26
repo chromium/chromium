@@ -2463,6 +2463,19 @@ PAC 样式的字符串：
 <translation id="2521581787935130926">在书签栏中显示应用快捷方式</translation>
 <translation id="2522304491589804974">配置扩展程序安装许可名单</translation>
 <translation id="2523511232831599126">为登录屏幕启用无障碍快捷方式</translation>
+<translation id="2524400223625951315">指定强制安装的扩展程序在隔离模式下的行为。
+
+这适用于通过 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 配置的扩展程序，或在 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 中将 <ph name="INSTALLATION_MODE_FIELD" /> 设置为 <ph name="FORCE_INSTALLED_VALUE" /> 的扩展程序。将 <ph name="INSTALLATION_MODE_FIELD" /> 设置为 <ph name="NORMAL_INSTALLED_VALUE" /> 的扩展程序由 <ph name="ISOLATED_MODE_USER_INSTALLED_EXTENSIONS_SETTINGS_POLICY_NAME" /> 控制。
+
+如果此政策设为 0（始终启用）或未设置，在隔离模式下，强制安装的扩展程序将始终启用，且用户无法自行停用。
+
+如果此政策设为 1（默认启用），在隔离模式下，强制安装的扩展程序默认启用，且用户可以自行停用。当此政策仍设为 1 时，以用户的选择为准。在隔离模式之外，用户仍然无法停用强制安装的扩展程序。
+
+无论此政策如何设置，在清单中将 <ph name="INCOGNITO_MANIFEST_KEY" /> 设为 <ph name="INCOGNITO_NOT_ALLOWED_VALUE" /> 的扩展程序都无法在隔离模式下运行。
+
+此政策仅在启用 <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> 时才会生效。
+
+此政策需要 <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> 许可才能生效。</translation>
 <translation id="252742292004421898">允许在这些网站上使用 Direct Sockets API</translation>
 <translation id="2528762900096510743">启用自动退出账号服务</translation>
 <translation id="2529880111512635313">配置强制安装的应用和扩展程序的列表</translation>
@@ -3920,6 +3933,7 @@ Microsoft Outlook 卡片需要由管理员进行额外配置。如需详细了�
 
       如果您未为某个网站设置此政策，系统便会将 <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> 中的政策（若已设置）应用于该网站，或者让该网站遵循浏览器的默认权限设置并允许用户按网站选择这项权限。</translation>
 <translation id="3435796032110614169">允许删除打印任务记录</translation>
+<translation id="3435849940943480491">在隔离模式下，强制安装的扩展程序始终处于启用状态，且无法停用</translation>
 <translation id="3436217793443508863">当使用电池供电时系统应在设备闲置多久（以毫秒为单位）后锁定屏幕</translation>
 <translation id="3437391374720747482">首选满足 CNSA 2.0 要求的密钥交换方法</translation>
 <translation id="3437924696598384725">允许用户管理 VPN 连接</translation>
@@ -6221,6 +6235,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="4927797103413916381">如果 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 未停用，您便可通过启用或不设置 <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> 来阻止提供误导性体验的网站打开新窗口或标签页。
 
        如果 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 已停用或者 <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> 已停用，系统会允许提供误导性体验的网站打开新窗口或标签页。</translation>
+<translation id="4928435626872799127">控制强制安装的扩展程序在隔离模式下的行为</translation>
 <translation id="4929721861648439998">在登录屏幕上启用“单声道音频”无障碍功能。
 
           借助此功能，用户可以将设备模式从默认立体声音频切换为单声道音频。
@@ -9664,6 +9679,7 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 <translation id="7054840304131108563">停用渲染程序无障碍功能</translation>
 <translation id="7055022222176591388">禁止使用已过时的 <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="7056040036973126753">系统可能会根据 Chrome 用户指标 (UMA) 政策将网域可靠性数据发送给 Google</translation>
+<translation id="7057522375529097624">在隔离模式下，强制安装的扩展程序默认处于启用状态，并且可以停用</translation>
 <translation id="7062803946218028349">允许启用 Phone Hub</translation>
 <translation id="7063646777978847358">此政策用于控制是否限制来自 Service Worker 的后台提取请求。如果某项在后台下载文件的功能受到影响，此政策可能适用。
 
@@ -12797,13 +12813,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="9087652369391570821">OnFileTransfer Chrome 企业版接口的配置政策</translation>
 <translation id="9088433379343318874">启用受监管用户内容提供方</translation>
 <translation id="9088444059179765143">配置自动检测时区方法</translation>
-<translation id="9094681501120769194">控制 <ph name="PRODUCT_NAME" /> 中的 PDF 查看器是否会使用进程外 iframe (OOPIF)。这将成为未来的新 PDF 查看器架构，因为它更加简单，并且更易于添加新功能。现有的 GuestView PDF 查看器架构陈旧且复杂，目前正被逐步弃用。
-
-如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 便能使用 OOPIF PDF 查看器架构。如果此政策已启用或未设置，默认行为将由 <ph name="PRODUCT_NAME" /> 决定。
-
-如果此政策已停用，<ph name="PRODUCT_NAME" /> 将严格使用现有的 GuestView PDF 查看器。它会将具有单独框架树的网页嵌入到另一个网页中。
-
-此政策已在 M152 中弃用，并将在 M155 中移除。GuestView PDF 查看器正在被移除，系统将始终使用进程外 iframe (OOPIF) PDF 查看器架构。</translation>
 <translation id="9095599826504830315">不允许使用“标签页比较”工具。</translation>
 <translation id="9096772739225230999">不报告网络配置</translation>
 <translation id="9098409326885953506">检测被遮挡的窗口并暂停其渲染进程</translation>

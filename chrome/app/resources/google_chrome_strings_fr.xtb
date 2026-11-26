@@ -140,6 +140,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2295218613066132598">Afficher les raccourcis de sites Chrome</translation>
 <translation id="2301513536169703857">Pour accéder à vos mots de passe, vos favoris et plus sur tous vos appareils, connectez-vous à Chrome</translation>
 <translation id="2307973900865360088">Garder dans le Dock</translation>
+<translation id="2308558013860776484">Partagez une capture d'écran de contenu en dehors de Chrome, comme d'autres applis ou fichiers</translation>
 <translation id="2309047409763057870">Ceci est une installation secondaire de Google Chrome. Vous ne pouvez pas le définir comme navigateur par défaut.</translation>
 <translation id="2345992953227471816">Chrome a détecté que ces extensions contiennent des logiciels malveillants :</translation>
 <translation id="2358140144860869442">Pour accéder à votre liste de lecture et plus encore sur tous vos appareils, connectez-vous à Chrome</translation>
@@ -249,6 +250,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="3294686910656423119">Statistiques d'utilisation et rapports d'erreur</translation>
 <translation id="3327226547491422998">Plus tard, Chrome pourra vous demander si vous souhaitez utiliser les informations enregistrées pour remplir automatiquement des formulaires</translation>
 <translation id="3352986031709923790">angle supérieur droit de la zone de recherche : <ph name="RIGHT" /> % droite, <ph name="TOP" /> % haut</translation>
+<translation id="3370239327277137701">Les sites et Chrome peuvent utiliser l'IA qui s'exécute directement sur votre appareil pour des fonctionnalités telles que les résumés, la relecture, les sous-titres et plus encore. Cette IA est distincte de Gemini dans Chrome. <ph name="BEGIN_LINK" />En savoir plus à propos de l'IA sur l'appareil<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Certaines fonctionnalités et extensions Chrome sont accompagnées de raccourcis. Vous pouvez choisir de les réactiver.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome va être relancé maintenant}=1{Chrome va être relancé dans 1 seconde}one{Chrome va être relancé dans # seconde}other{Chrome va être relancé dans # secondes}}</translation>
 <translation id="3380249972812870825">Pour ouvrir Gemini dans Chrome, appuyez sur <ph name="GLOBAL_HOTKEY" /></translation>
@@ -348,6 +350,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4427306783828095590">La protection renforcée assure une meilleure protection contre l'hameçonnage et les logiciels malveillants</translation>
 <translation id="4434353761996769206">Erreur du programme d'installation : <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Partagez ce document avec Gemini dans Chrome pour obtenir un aperçu rapide et poser des questions complémentaires</translation>
+<translation id="4440999670272408191">Vous pouvez les supprimer à tout moment. Chrome peut les télécharger à nouveau automatiquement lorsqu'un site ou une fonctionnalité en a besoin.</translation>
 <translation id="4450664632294415862">Chrome - Connexion au réseau - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Une autre opération est en cours dans Google Chrome. Veuillez réessayer ultérieurement.</translation>
 <translation id="4493028449971051158">Erreur au démarrage : Veuillez exécuter le programme d'installation en tant qu'administrateur.</translation>
@@ -355,6 +358,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4501839397124711198">Vous pouvez épingler la Recherche Google dans le panneau latéral pour poser des questions pendant que vous naviguez</translation>
 <translation id="4571503333518166079">Accéder aux paramètres de notification de Chrome</translation>
 <translation id="4580939929828762295">Protégez-vous avec Gestionnaire mots de passe Google</translation>
+<translation id="4589544932092381064">Afficher la recherche avec Chrome dans la barre des tâches Windows et activer le raccourci clavier</translation>
 <translation id="459622048091363950">Une fois l'accès à une ressource accordé à Chrome, les sites Web sont également en mesure de vous demander l'accès.</translation>
 <translation id="4598116752460667024">Rechercher n'importe quel processus dans la liste.</translation>
 <translation id="4600710005438004015">Échec de l'installation de la dernière version de Chrome. Vous ne disposez donc pas des nouvelles fonctionnalités, ni des correctifs de sécurité.</translation>
@@ -370,6 +374,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Accélère les sites avec le moteur V8 de Chrome, mais rend Chrome légèrement moins résistant aux attaques</translation>
 <translation id="4768676935374695498">Rechercher dans cette vidéo avec Google Lens</translation>
+<translation id="4783580253728290203">Lorsqu'il est désactivé, Chrome supprime les modèles d'IA sur l'appareil et ne les télécharge plus. Il est possible que certains sites et certaines fonctionnalités Chrome ne fonctionnent pas.</translation>
 <translation id="479167709087336770">Le correcteur orthographique utilisé est le même que celui employé dans la recherche Google. Le texte que vous saisissez dans le navigateur est envoyé à Google. Vous pouvez toujours modifier ce comportement dans les paramètres.</translation>
 <translation id="4793679854893018356">Découvrez comment Chrome vous protège</translation>
 <translation id="4803313124144656665">Fermer la Recherche Google dans Chrome</translation>
@@ -455,6 +460,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Impossible de se connecter à Internet. Le serveur proxy exige que vous vous authentifiiez.</translation>
 <translation id="5709557627224531708">Définir Chrome comme navigateur par défaut</translation>
+<translation id="5715427327524421317">Chrome télécharge et met à jour ces modèles d'IA automatiquement</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{La Protection Avancée nécessite que vous relanciez Chrome pour appliquer une mise à jour. Votre fenêtre isolée ne sera pas rouverte.}one{La Protection Avancée nécessite que vous relanciez Chrome pour appliquer une mise à jour. # fenêtre isolée ne sera pas rouverte.}other{La Protection Avancée nécessite que vous relanciez Chrome pour appliquer une mise à jour. # fenêtres isolées ne seront pas rouvertes.}}</translation>
 <translation id="5719246646468301581">Conditions d'utilisation supplémentaires de Google Chrome et ChromeOS</translation>
 <translation id="5736850870166430177">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu des pages, à la fonctionnalité de navigation sécurisée</translation>
@@ -546,6 +552,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6491330562720922580">QR Code pour télécharger le navigateur Chrome sur des appareils mobiles</translation>
 <translation id="6493527311031785448">Google Chrome tente <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome a été fermé automatiquement</translation>
+<translation id="650039555447046671">Chrome supprimera les modèles d'IA de cet appareil. Il est possible que certains sites et certaines fonctionnalités Chrome ne fonctionnent pas.</translation>
 <translation id="6506909944137591434">Pour créer un plan 3D de votre environnement, Chrome a besoin de l'autorisation d'accéder à la caméra</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome pour les développeurs</translation>
 <translation id="6520670145826811516">Pour que Chrome puisse utiliser votre position, autorisez-le à y accéder dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
@@ -584,6 +591,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6877155553248388166">angle inférieur droit de la zone de recherche : <ph name="RIGHT" /> % droite, <ph name="BOTTOM" /> % bas</translation>
 <translation id="6879791154455204815">Ouvrir Rechercher avec Chrome</translation>
 <translation id="6881299373831449287">Mise à jour de Chrome</translation>
+<translation id="6881997500528805781">Utilise l'espace de stockage de l'appareil. Chrome supprime les modèles d'IA inutilisés après 45 jours ou lorsque l'espace de stockage est faible</translation>
 <translation id="6885412569789873916">Applications pour la version bêta de Chrome</translation>
 <translation id="6893363893008038481">Retirer le compte de Chrome</translation>
 <translation id="6896758677409633944">Copier</translation>

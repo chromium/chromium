@@ -141,6 +141,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2295218613066132598">Zobrazovat v Chromu zkratky webů</translation>
 <translation id="2301513536169703857">Pokud svá hesla, záložky a další položky chcete mít na všech svých zařízeních, přihlaste se do Chromu</translation>
 <translation id="2307973900865360088">Přidat do Docku</translation>
+<translation id="2308558013860776484">Sdílejte snímek obrazovky s obsahem mimo Chrome, jako jsou jiné aplikace nebo soubory</translation>
 <translation id="2309047409763057870">Toto je druhá instalace prohlížeče Google Chrome. Tuto instalaci nelze nastavit jako výchozí prohlížeč.</translation>
 <translation id="2345992953227471816">Prohlížeč Chrome zjistil, že tato rozšíření obsahují malware:</translation>
 <translation id="2358140144860869442">Pokud svůj seznam četby a další položky chcete mít na všech svých zařízeních, přihlaste se do Chromu</translation>
@@ -250,6 +251,7 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="3294686910656423119">Statistiky využití a zprávy o selhání</translation>
 <translation id="3327226547491422998">Později vám může Chrome nabízet automatické vyplnění formulářů uloženými údaji</translation>
 <translation id="3352986031709923790">pravý horní roh oblasti hledání: vpravo <ph name="RIGHT" /> %, nahoře <ph name="TOP" /> %</translation>
+<translation id="3370239327277137701">Weby a Chrome můžou pro funkce, jako jsou souhrny, kontrola pravopisu, titulky a další, používat umělou inteligenci, která běží přímo ve vašem zařízení. Tato funkce je oddělená od Gemini v Chromu. <ph name="BEGIN_LINK" />Další informace o AI v zařízení<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Některé funkce a rozšíření Chromu mají zkratky. Můžete je znovu zapnout.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se nyní restartuje}=1{Chrome se za 1 sekundu restartuje}few{Chrome se za # sekundy restartuje}many{Chrome se za # sekundy restartuje}other{Chrome se za # sekund restartuje}}</translation>
 <translation id="3380249972812870825">Pokud chcete otevřít Gemini v Chromu, stiskněte <ph name="GLOBAL_HOTKEY" /></translation>
@@ -348,6 +350,7 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="4427306783828095590">Vylepšená ochrana vás lépe ochrání před phishingem a malwarem</translation>
 <translation id="4434353761996769206">Chyba instalačního programu: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Sdílejte tento dokument s Gemini v Chromu, ať získáte rychlý přehled a můžete klást doplňující otázky</translation>
+<translation id="4440999670272408191">Můžete je kdykoli odstranit. Když je bude nějaký web nebo funkce potřebovat, může je Chrome automaticky znovu stáhnout.</translation>
 <translation id="4450664632294415862">Chrome – přihlášení k síti – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">V prohlížeči Google Chrome právě probíhá jiná operace. Zkuste to znovu později.</translation>
 <translation id="4493028449971051158">Chyba při spuštění: Spusťte instalační program jako administrátor.</translation>
@@ -355,6 +358,7 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="4501839397124711198">Vyhledávání Google si můžete připnout na boční panel a pokládat pak otázky přímo při prohlížení</translation>
 <translation id="4571503333518166079">Přejít na nastavení oznámení prohlížeče Chrome</translation>
 <translation id="4580939929828762295">Buďte v bezpečí se Správcem hesel Google</translation>
+<translation id="4589544932092381064">Zobrazovat vyhledávání v Chromu na hlavním panelu Windows a zapnout klávesovou zkratku</translation>
 <translation id="459622048091363950">Až bude mít Chrome přístup, budou vás weby moci požádat o přístup.</translation>
 <translation id="4598116752460667024">Vyhledejte libovolný proces ze seznamu.</translation>
 <translation id="4600710005438004015">Chrome nebylo možné aktualizovat na nejnovější verzi. Nemáte proto k dispozici nové funkce a opravy zabezpečení.</translation>
@@ -370,6 +374,7 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Zrychluje weby pomocí modulu V8 prohlížeče Chrome, ale trochu snižuje odolnost Chromu vůči útokům</translation>
 <translation id="4768676935374695498">Vyhledat toto video pomocí Google Lens</translation>
+<translation id="4783580253728290203">Když je toto nastavení vypnuté, Chrome odstraní AI modely v zařízení a už je nestáhne. Některé weby a funkce Chromu nemusí fungovat.</translation>
 <translation id="479167709087336770">Tato funkce využívá stejnou službu kontroly pravopisu, jaká se používá ve vyhledávání Google. Text, který v prohlížeči zadáte, se odešle do Googlu. Toto chování můžete kdykoliv změnit v nastavení.</translation>
 <translation id="4793679854893018356">Přečtěte si, jak vás Chrome chrání</translation>
 <translation id="4803313124144656665">Zavřít Vyhledávání Google v Chromu</translation>
@@ -455,6 +460,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nelze se připojit k internetu. Proxy server vyžaduje ověření.</translation>
 <translation id="5709557627224531708">Nastavte si Chrome jako výchozí prohlížeč</translation>
+<translation id="5715427327524421317">Chrome tyto AI modely automaticky stahuje a aktualizuje</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Pokročilá ochrana vyžaduje opětovné spuštění Chromu, aby bylo možné nainstalovat aktualizaci. Izolované okno se znovu neotevře.}few{Pokročilá ochrana vyžaduje opětovné spuštění Chromu, aby bylo možné nainstalovat aktualizaci. Vaše # izolovaná okna se znovu neotevřou.}many{Pokročilá ochrana vyžaduje opětovné spuštění Chromu, aby bylo možné nainstalovat aktualizaci. Vašich # izolovaného okna se znovu neotevře.}other{Pokročilá ochrana vyžaduje opětovné spuštění Chromu, aby bylo možné nainstalovat aktualizaci. Vašich # izolovaných oken se znovu neotevře.}}</translation>
 <translation id="5719246646468301581">Dodatečné smluvní podmínky prohlížeče Google Chrome a systému ChromeOS</translation>
 <translation id="5736850870166430177">Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky</translation>
@@ -546,6 +552,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6491330562720922580">QR kód ke stažení prohlížeče Chrome do mobilních zařízení</translation>
 <translation id="6493527311031785448">Google Chrome se pokouší <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome byl automaticky ukončen</translation>
+<translation id="650039555447046671">Chrome z tohoto zařízení odstraní AI modely. Některé weby a funkce Chromu nemusí fungovat.</translation>
 <translation id="6506909944137591434">K vytvoření 3D mapy vašeho okolí potřebuje Chrome přístup k fotoaparátu</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Pokud chcete používat polohu, udělte Chromu přístup v <ph name="BEGIN_LINK" />nastavení systému<ph name="END_LINK" /></translation>
@@ -584,6 +591,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6877155553248388166">pravý dolní roh oblasti hledání: vpravo <ph name="RIGHT" /> %, dole <ph name="BOTTOM" /> %</translation>
 <translation id="6879791154455204815">Otevřít vyhledávání v Chromu</translation>
 <translation id="6881299373831449287">Aktualizace Chromu</translation>
+<translation id="6881997500528805781">Využívá úložiště zařízení. Nepoužívané AI modely Chrome po 45 dnech nebo při nedostatku úložného prostoru odstraní</translation>
 <translation id="6885412569789873916">Chrome Beta – aplikace</translation>
 <translation id="6893363893008038481">Odstranit účet z Chromu</translation>
 <translation id="6896758677409633944">Kopírovat</translation>

@@ -2631,6 +2631,23 @@ OPMERKING: Dit beleid had de onjuist gedocumenteerde standaardwaarde 'waar' in M
        Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
 
        Dit beleid is in het verleden ten onrechte toegepast op Android, maar deze functionaliteit is nooit volledig ondersteund voor Android.</translation>
+<translation id="2585054570696570117">Als je dit beleid instelt, worden de extensiebeheerinstellingen voor <ph name="PRODUCT_NAME" /> beheerd, waaronder instellingen die worden beheerd door bestaande, aan extensies gerelateerde beleidsregels.
+
+Met dit beleid wordt alleen een extensie-ID of een update-URL toegewezen aan de bijbehorende specifieke instelling. Er kan een standaardconfiguratie worden ingesteld voor de speciale ID <ph name="DEFAULT_SCOPE" />, die van toepassing is op alle extensies waarvoor geen aangepaste configuratie is ingesteld in dit beleid.
+
+Dit beleid kan de configuratie per extensie uit oudere beleidsregels overschrijven.
+
+Instellingen voor extensies per ID van <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> of <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> nemen alleen de standaardinstellingen voor <ph name="DEFAULT_SCOPE" /> over voor installation_mode en update_url. De property neemt geen andere property's over. Bij een update-URL is de configuratie van toepassing op alle extensies met de exacte update-URL die wordt vermeld in het manifest van de extensie (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Als de flag override_update_url is ingesteld op Waar, wordt de extensie geïnstalleerd en aangepast met de update-URL die is gespecificeerd in het beleid <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of in het veld update_url in dit beleid. De markering override_update_url wordt genegeerd als de update_url een URL voor de Chrome Web Store is.
+
+In <ph name="PRODUCT_NAME" />-versies 155 tot 158 kan 'chrome.debugger.attach()' volledig worden uitgezet voor alle doelen als je 'runtime_blocked_hosts' toepast op een extensie met het recht 'debugger', bijvoorbeeld als het beleid <ph name="CHROME_VARIATIONS_POLICY_NAME" /> alle varianten uitzet.
+
+Vanaf <ph name="PRODUCT_NAME" /> versie 160 accepteren blocked_permissions en allowed_permissions ook deze interne rechten, die extensies krijgen van manifestsleutels: searchProvider, homepage en startupPages (alleen van chrome_settings_overrides, <ph name="MS_WIN_NAME" /> en <ph name="MAC_OS_NAME" />) en newTabPageOverride (van chrome_url_overrides).
+
+In <ph name="MS_WIN_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen geïnstalleerd worden als de instantie is gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen geïnstalleerd worden als de instantie wordt beheerd via MDM, via MCX aan een domein is gekoppeld of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</translation>
 <translation id="2585535930727399201">Zakelijke extensies kunnen logboeken aan een systeemlogboek toevoegen via de chrome.systemLog API.
 
 Als je het beleid toepast, kunnen de logboeken beperkte tijd worden bewaard in het systeemlogboek.
@@ -12889,13 +12906,6 @@ Opmerking: Als het apparaat opnieuw wordt opgestart, wordt het cachegeheugen gew
 <translation id="9087652369391570821">Configuratiebeleid voor de Chrome Enterprise Connector OnFileTransfer</translation>
 <translation id="9088433379343318874">Contentprovider voor gebruiker onder toezicht gebruiken</translation>
 <translation id="9088444059179765143">De methode voor automatische tijdzonedetectie configureren</translation>
-<translation id="9094681501120769194">Hiermee bepaal je of de pdf-viewer in <ph name="PRODUCT_NAME" /> een out-of-process iframe (OOPIF) gebruikt. In de toekomst wordt dit de nieuwe pdf-viewerarchitectuur, omdat dit eenvoudiger is en het makkelijker maakt om nieuwe functies toe te voegen. De bestaande GuestView-pdf-viewer is een verouderde, complexe architectuur die wordt beëindigd.
-
-Als je dit beleid toepast of niet instelt, kan <ph name="PRODUCT_NAME" /> de OOPIF-pdf-viewerarchitectuur gebruiken. Wanneer je dit beleid toepast of niet instelt, wordt het standaardgedrag bepaald door <ph name="PRODUCT_NAME" />.
-
-Als je dit beleid niet toepast, gebruikt <ph name="PRODUCT_NAME" /> uitsluitend de bestaande GuestView-pdf-viewer. Hiermee wordt een webpagina met een afzonderlijke framestructuur ingesloten in een andere webpagina.
-
-Dit beleid is beëindigd in M152 en wordt verwijderd in M155. De GuestView-pdf-viewer wordt verwijderd en de out-of-process iframe (OOPIF)-pdf-viewerarchitectuur wordt altijd gebruikt.</translation>
 <translation id="9095599826504830315">Sta Tabbladen vergelijken niet toe.</translation>
 <translation id="9096772739225230999">Netwerkconfiguratie niet rapporteren</translation>
 <translation id="9098409326885953506">Afgedekt venster detecteren en de weergave ervan opschorten</translation>

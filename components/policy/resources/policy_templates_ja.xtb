@@ -12491,13 +12491,6 @@ M119 よりデフォルトで無効になります）。
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise コネクタの設定ポリシー</translation>
 <translation id="9088433379343318874">監視対象ユーザーのコンテンツ プロバイダを有効にする</translation>
 <translation id="9088444059179765143">タイムゾーン自動検出の方法を設定する</translation>
-<translation id="9094681501120769194"><ph name="PRODUCT_NAME" /> の PDF ビューアでプロセス外の iframe（OOPIF）を使用するかどうかを制御します。よりシンプルで新機能の追加が容易なため、将来的にはこれが新しい PDF ビューア アーキテクチャになります。既存の GuestView PDF ビューアは、古い複雑なアーキテクチャであり、非推奨となります。
-
-このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> で OOPIF PDF ビューア アーキテクチャを使用できるようになります。有効にするか未設定のままにした場合、デフォルトの動作は <ph name="PRODUCT_NAME" /> によって決定されます。
-
-このポリシーを無効に設定した場合、<ph name="PRODUCT_NAME" /> では既存の GuestView PDF ビューアのみが使用されます。個別のフレームツリーを持つウェブページは別のウェブページに埋め込まれます。
-
-このポリシーは M152 でサポートが終了し、M155 で削除される予定です。GuestView PDF ビューアは削除され、プロセス外の iframe（OOPIF）PDF ビューア アーキテクチャが常に使用されるようになります。</translation>
 <translation id="9095599826504830315">タブ比較を許可しない。</translation>
 <translation id="9096772739225230999">ネットワーク設定を報告しない</translation>
 <translation id="9098409326885953506">背面にあるウィンドウを検出して、描画を一時停止する</translation>

@@ -137,6 +137,7 @@
 <translation id="2295218613066132598">Chrome site kısayollarını göster</translation>
 <translation id="2301513536169703857">Şifrelerinizi, yer işaretlerinizi ve diğer öğelerinizi tüm cihazlarınızda kullanmak için Chrome'da oturum açın</translation>
 <translation id="2307973900865360088">Dock'ta tut</translation>
+<translation id="2308558013860776484">Chrome dışındaki içeriklerin (ör. diğer uygulamalar veya dosyalar) ekran görüntüsünü paylaşın</translation>
 <translation id="2309047409763057870">Bu, Google Chrome'un ikincil bir yüklemesidir ve varsayılan tarayıcınız yapılamaz.</translation>
 <translation id="2345992953227471816">Chrome aşağıdaki uzantılarda kötü amaçlı yazılım tespit etti:</translation>
 <translation id="2358140144860869442">Okuma listenize ve diğer öğelerinize tüm cihazlarınızda erişmek için Chrome'da oturum açın</translation>
@@ -246,6 +247,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="3294686910656423119">Kullanım istatistikleri ve kilitlenme raporları</translation>
 <translation id="3327226547491422998">Daha sonra Chrome, formlarınızın otomatik olarak doldurulması için kayıtlı bilgileri kullanmak isteyip istemediğinizi sorabilir</translation>
 <translation id="3352986031709923790">arama alanının sağ üst köşesi: sağ %<ph name="RIGHT" />, üst %<ph name="TOP" /></translation>
+<translation id="3370239327277137701">Siteler ve Chrome; özetleme, gözden geçirme ve altyazı gibi özellikler için doğrudan cihazınızda çalışan yapay zekayı kullanabilir. Bu, Chrome'da Gemini'dan ayrıdır. <ph name="BEGIN_LINK" />Cihaz üzerinde yapay zeka hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="3373752068427117404">Bazı Chrome özellikleri ve uzantıları kısayollar içerir. Dilerseniz bunları tekrar etkinleştirebilirsiniz.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome şimdi yeniden başlatılacak}=1{Chrome 1 saniye içinde yeniden başlatılacak}other{Chrome # saniye içinde yeniden başlatılacak}}</translation>
 <translation id="3380249972812870825">Chrome'da Gemini'i açmak için <ph name="GLOBAL_HOTKEY" /> tuşuna basın</translation>
@@ -344,6 +346,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="4427306783828095590">Gelişmiş koruma, kimlik avını ve kötü amaçlı yazılımları engellemek için daha fazla özellik sunar</translation>
 <translation id="4434353761996769206">Yükleyici hatası: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Kısa bir genel bakış almak ve ek sorular sormak için bu dokümanı Chrome'da Gemini ile paylaşın</translation>
+<translation id="4440999670272408191">Bunları istediğiniz zaman kaldırabilirsiniz. Bir site veya özelliğin ihtiyaç duyması halinde Chrome bunları otomatik olarak tekrar indirebilir.</translation>
 <translation id="4450664632294415862">Chrome - Ağda Oturum Açın - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome'da başka bir işlem devam ediyor. Lütfen daha sonra yeniden deneyin.</translation>
 <translation id="4493028449971051158">Başlatma hatası: Lütfen yükleyiciyi yönetici olarak çalıştırın.</translation>
@@ -351,6 +354,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="4501839397124711198">İnternette gezinirken soru sormak için Google Arama'yı yan panele sabitleyebilirsiniz</translation>
 <translation id="4571503333518166079">Chrome bildirim ayarlarına git</translation>
 <translation id="4580939929828762295">Google Şifre Yöneticisi ile güvende kalın</translation>
+<translation id="4589544932092381064">Chrome ile arama özelliğini Windows görev çubuğunda göster ve klavye kısayolunu aç</translation>
 <translation id="459622048091363950">Chrome erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.</translation>
 <translation id="4598116752460667024">Listeden herhangi bir işlemi arayın.</translation>
 <translation id="4600710005438004015">Chrome en son sürüme güncellenemediği için yeni özellikler ve güvenlik düzeltmeleri cihazınızda bulunmuyor.</translation>
@@ -366,6 +370,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Chrome'un V8 motoruyla siteleri hızlandırır ancak bu durumda Chrome, saldırılara karşı biraz daha dirençsiz hale gelir.</translation>
 <translation id="4768676935374695498">Bu Videoyu Google Lens ile Arayın</translation>
+<translation id="4783580253728290203">Bu ayar kapalıyken Chrome, cihaz üzerinde yapay zeka modellerini kaldırır ve tekrar indirmez. Bazı siteler ve Chrome özellikleri çalışmayabilir</translation>
 <translation id="479167709087336770">Bu işlev, Google Arama'da kullanılan yazım denetiminin aynısını kullanır. Tarayıcıda yazdığınız metin Google'a gönderilir. Bu davranışı istediğiniz zaman ayarlardan değiştirebilirsiniz.</translation>
 <translation id="4793679854893018356">Chrome'un güvenliğinizi nasıl sağladığını öğrenin</translation>
 <translation id="4803313124144656665">Chrome'da Google Arama'yı kapat</translation>
@@ -450,6 +455,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5690600720065756725">Chrome ile Google'ın en iyi güvenlik özelliklerinden hareket halindeyken yararlanın</translation>
 <translation id="569897634095159764">İnternet'e bağlanılamıyor. Proxy sunucu kimlik doğrulama gerektiriyor.</translation>
 <translation id="5709557627224531708">Chrome'u varsayılan tarayıcınız olarak ayarlayın</translation>
+<translation id="5715427327524421317">Chrome bu yapay zeka modellerini otomatik olarak indirir ve günceller</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Gelişmiş Koruma, bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. Yalıtılmış pencereniz yeniden açılmayacak.}other{Gelişmiş Koruma, bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. # yalıtılmış pencereniz yeniden açılmayacak.}}</translation>
 <translation id="5719246646468301581">Google Chrome ve ChromeOS Ek Hizmet Şartları</translation>
 <translation id="5736850870166430177">Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir</translation>
@@ -541,6 +547,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6491330562720922580">Chrome tarayıcıyı mobil cihazlarda indirmek için QR kodu</translation>
 <translation id="6493527311031785448">Google Chrome şunu yapmaya çalışıyor: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome otomatik olarak kapatıldı</translation>
+<translation id="650039555447046671">Chrome, yapay zeka modellerini bu cihazdan kaldıracak. Bazı siteler ve Chrome özellikleri çalışmayabilir.</translation>
 <translation id="6506909944137591434">Çevrenizin 3D haritasını oluşturmak için Chrome'un kamera iznine ihtiyacı var</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">Konumunuzu kullanması için <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> Chrome'a erişim izni verin</translation>
@@ -579,6 +586,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6877155553248388166">arama alanının sağ alt köşesi: sağ %<ph name="RIGHT" />, alt %<ph name="BOTTOM" /></translation>
 <translation id="6879791154455204815">Chrome ile aramayı aç</translation>
 <translation id="6881299373831449287">Chrome güncelleniyor</translation>
+<translation id="6881997500528805781">Cihaz depolama alanını kullanır. Chrome, kullanılmayan yapay zeka modellerini 45 gün sonra veya depolama alanı azaldığında kaldırır</translation>
 <translation id="6885412569789873916">Chrome Beta Uygulamaları</translation>
 <translation id="6893363893008038481">Hesabı Chrome'dan kaldır</translation>
 <translation id="6896758677409633944">Kopyala</translation>

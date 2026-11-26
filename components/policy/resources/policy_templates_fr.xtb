@@ -2630,6 +2630,23 @@ REMARQUE : Cette règle avait une valeur par défaut ("True") incorrectement do
        Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
 
        Notez que cette règle était auparavant activée par erreur pour Android. Toutefois, cette fonctionnalité n'a jamais été parfaitement compatible avec Android.</translation>
+<translation id="2585054570696570117">Cette règle permet de contrôler les paramètres de gestion des extensions pour <ph name="PRODUCT_NAME" />, y compris ceux contrôlés par des règles existantes liées aux extensions.
+
+Elle fait correspondre un ID d'extension ou une URL de mise à jour uniquement avec sa configuration spécifique. Une configuration par défaut peut être définie pour l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les extensions pour lesquelles aucune configuration personnalisée n'est définie dans cette règle.
+
+Cette règle peut remplacer la configuration par extension des anciennes règles.
+
+Notez que tout paramètre d'extension par ID provenant de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> ou <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> n'héritera que de "installation_mode" et "update_url" à partir des valeurs par défaut de <ph name="DEFAULT_SCOPE" />. Il n'héritera d'aucune autre propriété. Avec une URL de mise à jour, la configuration s'applique aux extensions avec l'URL de mise à jour telle qu'elle est indiquée dans le fichier manifeste de ces extensions ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ). Si le flag "override_update_url" est défini sur "True", l'extension est installée et mise à jour à l'aide de l'URL spécifiée dans la règle "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" ou dans le champ "update_url" de cette règle. L'indicateur "override_update_url" est ignoré si le champ "update_url" contient une URL du Chrome Web Store.
+
+Dans les versions 155 à 158 de <ph name="PRODUCT_NAME" />, l'application de "runtime_blocked_hosts" à une extension disposant de l'autorisation "debugger" peut désactiver complètement "chrome.debugger.attach()" sur toutes les cibles, par exemple lorsque la règle <ph name="CHROME_VARIATIONS_POLICY_NAME" /> désactive toutes les variantes.
+
+À partir de la version 160 de <ph name="PRODUCT_NAME" />, les champs "blocked_permissions" et "allowed_permissions" acceptent également ces autorisations internes, que les extensions obtiennent à partir des clés du fichier manifeste : "searchProvider", "homepage" et "startupPages" (à partir de "chrome_settings_overrides", <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" /> uniquement), et "newTabPageOverride" (à partir de "chrome_url_overrides").
+
+Pour les instances <ph name="MS_WIN_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est associée à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou bénéficie de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Pour les instances <ph name="MAC_OS_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est gérée via MDM, associée à un domaine via MCX ou bénéficie de la <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Remarque : Cette règle ne s'applique qu'aux plates-formes compatibles avec les extensions.</translation>
 <translation id="2585535930727399201">Les extensions d'entreprise permettent d'ajouter des journaux à un fichier journal système à l'aide de l'API chrome.systemLog.
 
 Si cette règle est activée, les journaux sont conservés dans le fichier journal système pendant une durée limitée.
@@ -12930,13 +12947,6 @@ Remarque : Le cache est vidé en cas de redémarrage de l'appareil. Les donnée
 <translation id="9087652369391570821">Règle de configuration du connecteur Chrome Enterprise OnFileTransfer</translation>
 <translation id="9088433379343318874">Activer le fournisseur de contenu de l'utilisateur supervisé</translation>
 <translation id="9088444059179765143">Configurer la méthode de détection automatique du fuseau horaire</translation>
-<translation id="9094681501120769194">Détermine si la visionneuse de PDF de <ph name="PRODUCT_NAME" /> utilise un iFrame hors processus (OOPIF). Cette architecture sera utilisée à l'avenir pour la visionneuse de PDF, car elle est plus simple et permet d'ajouter plus facilement de nouvelles fonctionnalités. L'architecture GuestView complexe et obsolète de la visionneuse de PDF est en cours d'abandon.
-
-Si cette règle est activée ou n'est pas configurée, <ph name="PRODUCT_NAME" /> peut utiliser l'architecture OOPIF de la visionneuse de PDF. Si cette règle est activée ou n'est pas configurée, le comportement par défaut est défini par <ph name="PRODUCT_NAME" />.
-
-Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise uniquement la visionneuse de PDF GuestView existante. Elle intègre une page Web avec une arborescence de frames distincte dans une autre page Web.
-
-Cette règle est abandonnée dans M152 et sera supprimée dans M155. La visionneuse de PDF GuestView est en cours de suppression. L'architecture OOPIF de la visionneuse de PDF sera toujours utilisée.</translation>
 <translation id="9095599826504830315">Ne pas autoriser le comparateur d'onglets.</translation>
 <translation id="9096772739225230999">Ne pas signaler la configuration du réseau</translation>
 <translation id="9098409326885953506">Détecter une fenêtre recouverte et interrompre le processus de rendu</translation>

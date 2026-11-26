@@ -51,6 +51,7 @@
 <translation id="1572572333538561328">Atkārtoti atvērt meklēšanas MI režīmu</translation>
 <translation id="1574377791422810894">Chromium drošības rīki</translation>
 <translation id="1594928384848033697">Chromium pieprasa dzēst jūsu paroļu pārvaldnieka datus. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
+<translation id="1599690375407103815">Ja šis iestatījums ir izslēgts, pārlūkā Chromium tiek noņemti ierīcē saglabātie MI modeļi un tie vairs netiek lejupielādēti. Dažas vietnes un Chromium funkcijas var nedarboties.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium.}=1{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="1625909126243026060">Pārskatiet svarīgākās konfidencialitātes un drošības vadīklas pārlūkā Chromium.</translation>
 <translation id="1640672724030957280">Notiek lejupielāde...</translation>
@@ -65,6 +66,7 @@
 <translation id="1745121272106313518">Pārlūks Chromium tiks restartēts pēc: <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Ja HTTPS nav pieejams, pārlūkā Chromium bez brīdinājuma tiks izmantots nedrošs savienojums.</translation>
 <translation id="1774152462503052664">Ļaut Chromium darboties fonā</translation>
+<translation id="1792680680989393197">Varat jebkurā laikā tos noņemt. Pārlūks Chromium var tos automātiski lejupielādēt vēlreiz, kad tie būs nepieciešami kādai vietnei vai funkcijai.</translation>
 <translation id="1793486931176048546">Windows paziņojumā noklikšķiniet uz <ph name="BEGIN_BOLD" />Jā<ph name="END_BOLD" />, lai piespraustu pārlūku Chromium uzdevumu joslai, tādējādi nodrošinot ātru piekļuvi.</translation>
 <translation id="1808667845054772817">Pārinstalēt Chromium</translation>
 <translation id="1820835682567584003">Chromium mēģina <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -249,6 +251,7 @@
 <translation id="3751920144677881410">Izmantojot rīkjoslā pieejamo pogu “Meklēšanas sānu panelis”, varat atkārtoti atvērt meklēšanas sānu paneli, lai uzdotu jautājumus pārlūkošanas laikā.</translation>
 <translation id="3788675262216168505">Pārvaldīt Chromium profilus</translation>
 <translation id="3790262771324122253">Uzziniet, kāpēc Chromium bloķē noteiktas lejupielādes</translation>
+<translation id="3793196697433239004">Tiek izmantota ierīces krātuve. Chromium noņem neizmantotos MI modeļus pēc 45 dienām vai tad, ja krātuvē ir maz vietas.</translation>
 <translation id="379589255253486813">Ja kaut kas būs jāpārskata, saņemsiet Chromium paziņojumu</translation>
 <translation id="3802055581630249637">Pārlūkā Chromium tiek iepriekš ielādētas lapas, ko jūs, iespējams, apmeklēsiet. Tādējādi var tās ielādēt ātrāk tad, kad tās tiešām apmeklējat.</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
@@ -330,6 +333,7 @@
 <translation id="4621240073146040695">Atjaunināšana ir gandrīz pabeigta. Lai pabeigtu atjaunināšanu, atkārtoti palaidiet pārlūku Chromium.</translation>
 <translation id="4625064703209785397">Paātrina vietņu darbību, izmantojot Chromium programmu V8, taču nedaudz samazina Chromium izturību pret uzbrukumiem.</translation>
 <translation id="4626321472657185181">Atvērt meklēšanu pārlūkā Chromium</translation>
+<translation id="4639628733881319833">Kopīgojiet ekrānuzņēmumu ar saturu ārpus pārlūka Chromium, piemēram, ar citām lietotnēm vai failiem.</translation>
 <translation id="4654639495249754755">Chromium profils</translation>
 <translation id="4665829708273112819">Brīdinājums! Chromium nevar novērst to, ka paplašinājumi ieraksta jūsu pārlūkošanas vēsturi. Lai atspējotu šo paplašinājumu inkognito režīmā, noņemiet šīs opcijas atlasi.</translation>
 <translation id="4673151026126227699">Ja kopīgojat arī Chromium lietojuma pārskatus, šajos pārskatos tiek iekļauti jūsu apmeklētie vietrāži URL.</translation>
@@ -387,6 +391,7 @@
 <translation id="5405650547142096840">Noņemt no pārlūka Chromium</translation>
 <translation id="5424544524441439284">Samazina veiktspēju, taču uzlabo Chromium izturību pret uzbrukumiem.</translation>
 <translation id="5427571867875391349">Iestatīt Chromium kā noklusējuma pārlūku</translation>
+<translation id="5435079900593041559">Rādīt Chromium meklēšanu Windows uzdevumu joslā un ieslēgt īsinājumtaustiņus.</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> — Chromium beta versija</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium iesaka pārtraukt tās cilnes darbību, kas palēnina pārlūka darbību}zero{Chromium iesaka pārtraukt to ciļņu darbību, kas palēnina pārlūka darbību}one{Chromium iesaka pārtraukt to ciļņu darbību, kas palēnina pārlūka darbību}other{Chromium iesaka pārtraukt to ciļņu darbību, kas palēnina pārlūka darbību}}</translation>
 <translation id="5473971139929175403">Iespējams, pārlūks Chromium nedarbosies pareizi, jo tas vairs netiek atbalstīts šajā Linux izdevumā.</translation>
@@ -413,6 +418,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Rādīt Chromium šajā valodā</translation>
 <translation id="569897634095159764">Nevar izveidot savienojumu ar internetu. Starpniekserverī ir nepieciešama autentifikācija.</translation>
+<translation id="5755377560105094542">Vietnes un pārlūks Chromium var izmantot MI, kas darbojas tieši jūsu ierīcē, lai nodrošinātu tādas funkcijas kā kopsavilkumi, pareizrakstības pārbaude, subtitri un citas funkcijas. Tas atšķiras no Gemini pārlūkā Chromium. <ph name="BEGIN_LINK" />Uzziniet vairāk par ierīcē iebūvētu MI<ph name="END_LINK" />.</translation>
 <translation id="5762954990778294910">Izmantojot rīkjoslā pieejamo pogu “Meklēšanas panelis”, varat atkārtoti atvērt meklēšanas paneli, lai uzdotu jautājumus pārlūkošanas laikā.</translation>
 <translation id="5768371961535086509">Pārlūkā Chromium neaktīvās cilnēs tiek atbrīvota atmiņa. Tādējādi aktīvajām cilnēm un citām lietotnēm tiek nodrošināts vairāk datora resursu un tiek uzlabots Chromium darbības ātrums. Neaktīvās cilnes atkal tiek automātiski aktivizētas, kad tās atverat. Varat <ph name="BEGIN_LINK" />uzzināt vairāk par atmiņas taupīšanas režīmu<ph name="END_LINK" />.</translation>
 <translation id="5775198138441669627">Ja aizmirsāt ieejas frāzi vai vēlaties mainīt šo iestatījumu, varat <ph name="SETTINGS_LINK" /> Chromium datus savā kontā.</translation>
@@ -469,6 +475,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="6245734527075554892">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošo vietņu sarakstu, kas ir saglabāts pārlūkprogrammā Chromium.</translation>
 <translation id="6248213926982192922">Padarīt Chromium par noklusējuma pārlūku</translation>
 <translation id="6248988683584659830">Meklēt iestatījumus</translation>
+<translation id="6251986571402453005">Chromium automātiski lejupielādē un atjaunina šos MI modeļus.</translation>
 <translation id="6268381023930128611">Vai izrakstīties no Chromium?</translation>
 <translation id="6270547683008298381">Šīs cilnes izmanto papildu resursus. Lai uzlabotu veiktspēju, ļaujiet pārlūkam Chromium padarīt tās neaktīvas.</translation>
 <translation id="6281746429495226318">Pielāgot Chromium profilu</translation>
@@ -757,6 +764,7 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="8981886272598860786">meklēšanai pārlūkā Chromium vai pielāgošanai sadaļā <ph name="BEGIN_LINK" />Iestatījumi<ph name="END_LINK" />.</translation>
 <translation id="8988036198400390003">Pārvaldīt Chromium profilus</translation>
 <translation id="8993855408334954620">Izmantojiet tastatūru, lai pārvietotos starp Gemini pārlūkā Chromium un atvērto cilni.</translation>
+<translation id="9002987346523307190">Chromium noņems MI modeļus no šīs ierīces. Dažas vietnes un Chromium funkcijas var nedarboties.</translation>
 <translation id="9018218886431812662">Instalēšana pabeigta</translation>
 <translation id="9022552996538154597">Pierakstieties pārlūkā Chromium</translation>
 <translation id="9035791714111278917">Rādīt meklēšanu pārlūkā Chromium Mac izvēļņu joslā un ieslēgt īsinājumtaustiņu</translation>

@@ -2412,6 +2412,19 @@ PAC 樣式的字串：
 <translation id="2521581787935130926">在書籤列中顯示應用程式捷徑</translation>
 <translation id="2522304491589804974">設定擴充功能安裝許可清單</translation>
 <translation id="2523511232831599126">在登入畫面上啟用無障礙捷徑</translation>
+<translation id="2524400223625951315">指定強制安裝的擴充功能在隔離模式中的行為。
+
+這項政策適用於透過 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 設定的擴充功能，或在 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 中將 <ph name="INSTALLATION_MODE_FIELD" /> 設為 <ph name="FORCE_INSTALLED_VALUE" /> 的擴充功能。如果擴充功能的 <ph name="INSTALLATION_MODE_FIELD" /> 設為 <ph name="NORMAL_INSTALLED_VALUE" />，則會由 <ph name="ISOLATED_MODE_USER_INSTALLED_EXTENSIONS_SETTINGS_POLICY_NAME" /> 控制。
+
+如果設為 0 (一律啟用) 或未設定，強制安裝的擴充功能一律會在隔離模式中啟用，且使用者無法停用。
+
+如果設為 1 (預設啟用)，強制安裝的擴充功能預設會在隔離模式下啟用，使用者可以停用。只要政策仍設為 1，系統就會優先採用使用者的選擇。在隔離模式以外，使用者還是無法停用強制安裝的擴充功能。
+
+如果擴充功能在資訊清單中將 <ph name="INCOGNITO_MANIFEST_KEY" /> 設為 <ph name="INCOGNITO_NOT_ALLOWED_VALUE" />，無論這項政策如何設定，都無法在隔離模式中執行。
+
+只有在啟用 <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> 時，這項政策才會生效。
+
+必須具備 <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> 授權，這項政策才會生效。</translation>
 <translation id="252742292004421898">允許這些網站使用 Direct Sockets API</translation>
 <translation id="2528762900096510743">啟用自動登出服務</translation>
 <translation id="2529880111512635313">設定強制安裝的應用程式和擴充功能清單</translation>
@@ -3860,6 +3873,7 @@ Microsoft Outlook 資訊卡需要額外的管理員設定。想進一步瞭解�
 
       如果未針對某個網站設定這項政策，該網站就會套用 <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> 政策 (如果已設定)，否則系統會採用瀏覽器的預設值，並讓使用者決定是否要將這項權限授予網站。</translation>
 <translation id="3435796032110614169">允許刪除列印工作的歷史記錄</translation>
+<translation id="3435849940943480491">強制安裝的擴充功能在隔離模式下會一律啟用，且無法停用</translation>
 <translation id="3436217793443508863">使用電池供電時的閒置時間長度 (以毫秒為單位)。如果使用者在這段時間內沒有任何動作，系統就會鎖定螢幕</translation>
 <translation id="3437391374720747482">優先採用符合 CNSA 2.0 規定的金鑰交換方法</translation>
 <translation id="3437924696598384725">允許使用者管理 VPN 連線</translation>
@@ -6153,6 +6167,7 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 <translation id="4927797103413916381">如果未停用 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />，則將 <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> 設為啟用或未設定時，系統會禁止發生濫用行為的網站開啟新視窗或新分頁。
 
        如果將 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 或 <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> 設為停用，系統會允許發生濫用行為的網站開啟新視窗或新分頁。</translation>
+<translation id="4928435626872799127">控管強制安裝的擴充功能在隔離模式下的行為</translation>
 <translation id="4929721861648439998">在登入畫面上啟用單聲道音訊無障礙功能。
 
           這項功能可讓使用者將裝置模式從預設的立體聲音訊切換為單聲道音訊。
@@ -9535,6 +9550,7 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="7054840304131108563">停用轉譯器無障礙功能</translation>
 <translation id="7055022222176591388">禁止執行過期的 <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="7056040036973126753">系統可能會將網域可靠性資料傳送給 Google，實際情況取決於 Chrome 使用者指標 (UMA) 政策</translation>
+<translation id="7057522375529097624">在隔離模式下，強制安裝的擴充功能預設為啟用，但可以停用</translation>
 <translation id="7062803946218028349">允許啟用 Phone Hub</translation>
 <translation id="7063646777978847358">這項政策可控管是否要限制 Service Worker 的背景擷取要求。如果某項在背景下載檔案的功能受到影響，此政策就可能與其相關。
 
@@ -12628,13 +12644,6 @@ Proxy 可讓瀏覽器將網址的部分雜湊傳送給 Google，而不必連結�
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise 連接器的設定政策</translation>
 <translation id="9088433379343318874">啟用受監管的使用者內容提供者</translation>
 <translation id="9088444059179765143">設定自動偵測時區方式</translation>
-<translation id="9094681501120769194">控制 <ph name="PRODUCT_NAME" /> 中的 PDF 檢視器是否使用獨立處理程序 iframe (OOPIF)。這個架構更為簡潔，且更易於新增功能，因此將成為未來的 PDF 檢視器架構。現有的 GuestView PDF 檢視器架構過時且複雜，即將遭到淘汰。
-
-如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 可以採用 OOPIF PDF 檢視器架構。在啟用或未設定的狀態下，預設行為將由 <ph name="PRODUCT_NAME" /> 決定。
-
-如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 會一律使用現有的 GuestView PDF 檢視器。這個檢視器會將具有獨立頁框樹狀結構的網頁嵌入至其他網頁。
-
-這項政策已在 M152 版淘汰，並將在 M155 版移除。GuestView PDF 檢視器即將移除，系統一律會採用獨立處理程序 iframe (OOPIF) PDF 檢視器架構。</translation>
 <translation id="9095599826504830315">不允許使用「分頁比較」。</translation>
 <translation id="9096772739225230999">不要回報網路設定</translation>
 <translation id="9098409326885953506">偵測被覆蓋的視窗並暫停相關繪製工作</translation>

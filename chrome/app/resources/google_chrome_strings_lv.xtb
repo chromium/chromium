@@ -139,6 +139,7 @@
 <translation id="2295218613066132598">Rādīt vietņu saīsnes pārlūkā Chrome</translation>
 <translation id="2301513536169703857">Pierakstieties pārlūkā Chrome, lai varētu piekļūt parolēm, grāmatzīmēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="2307973900865360088">Paturēt dokā</translation>
+<translation id="2308558013860776484">Kopīgojiet ekrānuzņēmumu ar saturu ārpus pārlūka Chrome, piemēram, no citām lietotnēm vai failiem.</translation>
 <translation id="2309047409763057870">Šī ir Google Chrome papildu instalācija, un to nevar izmantot kā noklusējuma pārlūku.</translation>
 <translation id="2345992953227471816">Pārlūkā Chrome tika konstatēts, ka tālāk norādītie paplašinājumi satur ļaunprātīgu programmatūru:</translation>
 <translation id="2358140144860869442">Pierakstieties pārlūkā Chrome, lai piekļūtu lasīšanas sarakstam un citiem datiem visās savās ierīcēs.</translation>
@@ -248,6 +249,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="3294686910656423119">Lietojuma statistika un avāriju pārskati</translation>
 <translation id="3327226547491422998">Vēlāk pārlūkā Chrome var tikt vaicāts, vai vēlaties izmantot saglabāto informāciju veidlapu automātiskai aizpildei.</translation>
 <translation id="3352986031709923790">meklēšanas apgabala augšējais labais stūris: <ph name="RIGHT" />% pa labi, <ph name="TOP" />% augšdaļā</translation>
+<translation id="3370239327277137701">Vietnēs un pārlūkā Chrome var tikt izmantots MI, kas darbojas tieši jūsu ierīcē, lai nodrošinātu tādas funkcijas kā kopsavilkumi, pareizrakstības pārbaude, subtitri un citas. Tas ir nošķirts no Gemini pārlūkā Chrome. <ph name="BEGIN_LINK" />Uzziniet vairāk par ierīcē iebūvētu MI<ph name="END_LINK" />.</translation>
 <translation id="3373752068427117404">Dažām Chrome funkcijām un paplašinājumiem ir pieejamas saīsnes. Varat izvēlēties tos atkal ieslēgt.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Pārlūks Chrome tūlīt tiks restartēts}=1{Pārlūks Chrome pēc 1 sekundes tiks restartēts}zero{Pārlūks Chrome pēc # sekundēm tiks restartēts}one{Pārlūks Chrome pēc # sekundes tiks restartēts}other{Pārlūks Chrome pēc # sekundēm tiks restartēts}}</translation>
 <translation id="3380249972812870825">Lai atvērtu Gemini pārlūkā Chrome, nospiediet <ph name="GLOBAL_HOTKEY" /></translation>
@@ -346,6 +348,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="4427306783828095590">Uzlabotā aizsardzība labāk bloķē pikšķerēšanas mēģinājumus un ļaunprātīgu programmatūru</translation>
 <translation id="4434353761996769206">Instalēšanas kļūda: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Kopīgojiet šo dokumentu ar Gemini pārlūkā Chrome, lai iegūtu īsu kopsavilkumu un uzdotu papildu jautājumus.</translation>
+<translation id="4440999670272408191">Varat jebkurā laikā tos noņemt. Pārlūkā Chrome tie var tikt automātiski lejupielādēti atkārtoti, kad tie būs nepieciešami kādai vietnei vai funkcijai.</translation>
 <translation id="4450664632294415862">Chrome — pierakstīšanās vietnē — <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Tiek veikta cita darbība pārlūkā Google Chrome. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="4493028449971051158">Palaišanas kļūda: lūdzu, palaidiet instalēšanas programmu kā administrators.</translation>
@@ -353,6 +356,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="4501839397124711198">Varat piespraust Google meklēšanu sānu panelī, lai uzdotu jautājumus pārlūkošanas laikā.</translation>
 <translation id="4571503333518166079">Pāriet uz Chrome paziņojumu iestatījumiem</translation>
 <translation id="4580939929828762295">Esiet drošībā, izmantojot Google paroļu pārvaldnieku</translation>
+<translation id="4589544932092381064">Rādīt Chrome meklēšanu Windows uzdevumu joslā un ieslēgt īsinājumtaustiņus.</translation>
 <translation id="459622048091363950">Tiklīdz pārlūkam Chrome tiks sniegta piekļuve, vietnes varēs lūgt jums piekļuvi.</translation>
 <translation id="4598116752460667024">Sarakstā meklējiet jebkuru procesu.</translation>
 <translation id="4600710005438004015">Nevarēja atjaunināt uz jaunāko Chrome versiju, tādēļ jūs nevarēsiet piekļūt jaunākajām funkcijām un drošības labojumiem.</translation>
@@ -368,6 +372,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="4754614261631455953">Google Chrome Canary (ienākošā mDNS datplūsma)</translation>
 <translation id="4756182432527369254">Paātrina vietņu darbību, izmantojot Chrome programmu V8, taču nedaudz samazina Chrome izturību pret uzbrukumiem.</translation>
 <translation id="4768676935374695498">Meklēt šo videoklipu, izmantojot Google Lens</translation>
+<translation id="4783580253728290203">Ja šis iestatījums ir izslēgts, pārlūkā Chrome tiek noņemti ierīcē instalētie MI modeļi un tie vairs netiek lejupielādēti. Dažas vietnes un Chrome funkcijas var nedarboties.</translation>
 <translation id="479167709087336770">Šeit tiek izmantota tāds pats pareizrakstības pārbaudītājs, kāds tiek izmantots Google meklēšanā. Pārlūkprogrammā ievadītais teksts tiek nosūtīts Google serveriem. Jebkurā brīdī varat mainīt šo darbību iestatījumos.</translation>
 <translation id="4793679854893018356">Uzziniet, kā Chrome rūpējas par jūsu drošību</translation>
 <translation id="4803313124144656665">Aizvērt Google meklēšanu pārlūkā Chrome</translation>
@@ -451,6 +456,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nevar izveidot savienojumu ar internetu. Starpniekserverī ir nepieciešama autentifikācija.</translation>
 <translation id="5709557627224531708">Chrome iestatīšana par noklusējuma pārlūku</translation>
+<translation id="5715427327524421317">Chrome automātiski lejupielādē un atjaunina šos MI modeļus.</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chrome ir atkārtoti jāpalaiž, lai atjauninājums tiktu lietots. Izolētais logs netiks atkārtoti atvērts.}zero{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chrome ir atkārtoti jāpalaiž, lai atjauninājums tiktu lietots. # izolētie logi netiks atkārtoti atvērti.}one{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chrome ir atkārtoti jāpalaiž, lai atjauninājums tiktu lietots. # izolētais logs netiks atkārtoti atvērts.}other{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chrome ir atkārtoti jāpalaiž, lai atjauninājums tiktu lietots. # izolētie logi netiks atkārtoti atvērti.}}</translation>
 <translation id="5719246646468301581">Google Chrome un ChromeOS pakalpojumu sniegšanas papildu noteikumi</translation>
 <translation id="5736850870166430177">Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chrome var arī nosūtīt attiecīgos URL, tostarp lapas satura fragmentus, uz funkciju Droša pārlūkošana.</translation>
@@ -542,6 +548,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6491330562720922580">Kvadrātkods pārlūka Chrome lejupielādei mobilajās ierīcēs</translation>
 <translation id="6493527311031785448">Google Chrome mēģina <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Pārlūks Chrome tika automātiski aizvērts</translation>
+<translation id="650039555447046671">Pārlūkā Chrome no šīs ierīces tiks noņemti MI modeļi. Dažas vietnes un Chrome funkcijas var nedarboties.</translation>
 <translation id="6506909944137591434">Pārlūkam Chrome ir nepieciešama atļauja izmantot kameru, lai varētu izveidot jūsu apkārtnes 3D karti.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> — Google Chrome izstrādātāju versija</translation>
 <translation id="6520670145826811516">Lai varētu izmantot atrašanās vietas datus, piešķiriet pārlūkam Chrome piekļuvi <ph name="BEGIN_LINK" />sistēmas iestatījumos<ph name="END_LINK" />.</translation>
@@ -580,6 +587,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6877155553248388166">meklēšanas apgabala apakšējais labais stūris: <ph name="RIGHT" />% pa labi, <ph name="BOTTOM" />% apakšdaļā</translation>
 <translation id="6879791154455204815">Atvērt meklēšanu pārlūkā Chrome</translation>
 <translation id="6881299373831449287">Notiek Chrome atjaunināšana</translation>
+<translation id="6881997500528805781">Tiek izmantota ierīces krātuve. Pārlūkā Chrome neizmantotie MI modeļi tiek noņemti pēc 45 dienām vai tad, ja krātuvē ir maz vietas.</translation>
 <translation id="6885412569789873916">Chrome Beta lietotnes</translation>
 <translation id="6893363893008038481">Noņemt kontu no pārlūka Chrome</translation>
 <translation id="6896758677409633944">Kopēt</translation>

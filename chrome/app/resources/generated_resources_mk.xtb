@@ -852,6 +852,7 @@
 <translation id="1921544956190977703">Ја имате најсилната безбедност на Chrome од опасни веб-сајтови, преземања и екстензии</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">Екстензијата „<ph name="NAME" />“ е зачувана само на овој уред. За да ја користите на другите ваши уреди, зачувајте ја во вашата сметка.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Отвори со</translation>
 <translation id="1925017091976104802">Притиснете <ph name="MODIFIER_KEY_DESCRIPTION" /> за да залепите</translation>
 <translation id="1925021887439448749">Внесете приспособена веб-адреса</translation>
@@ -1401,6 +1402,7 @@
 <translation id="2528487766183344810">Отклучете го уредот <ph name="TOKEN_NAME" /> за да го извезете сертификатот на клиент.</translation>
 <translation id="2532198298278778531">Управувајте со „Безбеден DNS“ во поставките за ChromeOS Flex</translation>
 <translation id="253434972992662860">&amp;Паузирај</translation>
+<translation id="2534439599863644240">Сериска порта</translation>
 <translation id="253498598929009420">Сајтот ќе може да ги гледа содржините на вашиот екран</translation>
 <translation id="253557089021624350">Број на „одржливи настани“</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> може да ги прегледува и изменува следниве датотеки и папки</translation>

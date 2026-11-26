@@ -53,6 +53,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1572572333538561328">Rouvrir le mode IA de Recherche</translation>
 <translation id="1574377791422810894">Les outils de sécurité de Chromium</translation>
 <translation id="1594928384848033697">Chromium souhaite supprimer vos données du gestionnaire de mots de passe. Tapez votre mot de passe Windows pour autoriser la suppression.</translation>
+<translation id="1599690375407103815">Lorsque ce paramètre est désactivé, Chromium retire les modèles d'IA sur l'appareil et ne les téléchargera plus. Certains sites et certaines fonctionnalités de Chromium pourraient ne pas fonctionner.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Votre administrateur exige que vous relanciez Chromium pour appliquer une mise à jour}=1{Votre administrateur exige que vous relanciez Chromium pour appliquer une mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}one{Votre administrateur exige que vous relanciez Chromium pour appliquer une mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}other{Votre administrateur exige que vous relanciez Chromium pour appliquer une mise à jour. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="1625909126243026060">Passer en revue les principaux paramètres de confidentialité et de sécurité dans Chromium</translation>
 <translation id="1640672724030957280">Téléchargement en cours…</translation>
@@ -67,6 +68,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1745121272106313518">Chromium redémarrera dans <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Lorsque le protocole HTTPS n'est pas accessible, Chromium utilisera une connexion non sécurisée sans vous avertir</translation>
 <translation id="1774152462503052664">Laisser Chromium fonctionner en arrière-plan</translation>
+<translation id="1792680680989393197">Vous pouvez les retirer à tout moment. Chromium peut les télécharger à nouveau automatiquement lorsqu'un site ou une fonctionnalité en a besoin.</translation>
 <translation id="1793486931176048546">Cliquez sur <ph name="BEGIN_BOLD" />Oui<ph name="END_BOLD" /> dans la notification Windows afin d'épingler Chromium à votre barre des tâches pour un accès rapide.</translation>
 <translation id="1808667845054772817">Réinstaller Chromium</translation>
 <translation id="1820835682567584003">Chromium essaie de <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -251,6 +253,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3751920144677881410">Grâce au bouton « Recherche dans le panneau latéral » de la barre d'outils, vous pouvez rouvrir Recherche dans le panneau latéral pour poser des questions pendant votre navigation</translation>
 <translation id="3788675262216168505">Gérer les profils Chromium</translation>
 <translation id="3790262771324122253">Découvrir pourquoi Chromium bloque certains téléchargements</translation>
+<translation id="3793196697433239004">Utilise l'espace de stockage de l'appareil. Chromium retire les modèles d'IA inutilisés après 45 jours ou lorsque l'espace de stockage est faible</translation>
 <translation id="379589255253486813">Chromium vous informera si vous devez examiner quelque chose</translation>
 <translation id="3802055581630249637">Chromium précharge les pages que vous êtes susceptible de visiter, afin qu'elles se chargent plus rapidement lorsque vous le faites.</translation>
 <translation id="3810973564298564668">Gérer</translation>
@@ -332,6 +335,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4621240073146040695">La mise à jour est presque terminée! Il ne reste plus qu'à relancer Chromium.</translation>
 <translation id="4625064703209785397">Accélère les sites avec le moteur V8 de Chromium, mais rend Chromium légèrement moins résistant aux attaques</translation>
 <translation id="4626321472657185181">Ouvrir la recherche avec Chromium</translation>
+<translation id="4639628733881319833">Partagez une capture d'écran de contenu en dehors de Chromium, comme d'autres applis ou fichiers</translation>
 <translation id="4654639495249754755">Profil Chromium</translation>
 <translation id="4665829708273112819">Avertissement : Chromium ne peut pas empêcher les extensions d'enregistrer votre historique de navigation. Pour désactiver cette extension en mode de navigation privée, désélectionnez cette option.</translation>
 <translation id="4673151026126227699">Si vous partagez aussi les rapports d'utilisation de Chromium, ceux-ci incluent les URL des pages que vous visitez</translation>
@@ -389,6 +393,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="5405650547142096840">Supprimer de Chromium</translation>
 <translation id="5424544524441439284">Réduit les performances, mais rend Chromium plus résistant aux attaques</translation>
 <translation id="5427571867875391349">Faire de Chromium le navigateur par défaut</translation>
+<translation id="5435079900593041559">Afficher la recherche avec Chromium dans la barre des tâches Windows et activer le raccourci-clavier</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium bêta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium recommande de suspendre l'onglet qui ralentit votre navigateur}one{Chromium recommande de suspendre l'onglet qui ralentit votre navigateur}other{Chromium recommande de suspendre les onglets qui ralentissent votre navigateur}}</translation>
 <translation id="5473971139929175403">Chromium peut ne pas fonctionner correctement parce qu'il n'est plus pris en charge sur cette distribution Linux</translation>
@@ -415,6 +420,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Afficher Chromium dans cette langue</translation>
 <translation id="569897634095159764">Impossible de se connecter à Internet. Le serveur mandataire nécessite une authentification.</translation>
+<translation id="5755377560105094542">Les sites et Chromium peuvent utiliser l'IA qui s'exécute directement sur votre appareil pour des fonctionnalités telles que les résumés, la relecture, les sous-titres et plus encore. Cette fonctionnalité est distincte de Gemini dans Chromium. <ph name="BEGIN_LINK" />En savoir plus sur l'IA sur l'appareil<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">Grâce au bouton « Panneau Recherche » de la barre d'outils, vous pouvez rouvrir le panneau Recherche pour poser des questions pendant votre navigation</translation>
 <translation id="5768371961535086509">Chromium libère de la mémoire à partir des onglets inactifs. Cela donne aux onglets actifs et aux autres applis plus de ressources informatiques, et assure la rapidité de Chromium. Vos onglets inactifs redeviennent automatiquement actifs lorsque vous y revenez. <ph name="BEGIN_LINK" />En savoir plus sur l'Économiseur de mémoire<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Si vous avez oublié votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="SETTINGS_LINK" /> les données Chromium de votre compte</translation>
@@ -471,6 +477,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="6245734527075554892">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chromium</translation>
 <translation id="6248213926982192922">Faire de Chromium le navigateur par défaut</translation>
 <translation id="6248988683584659830">Rechercher dans les paramètres</translation>
+<translation id="6251986571402453005">Chromium télécharge et met à jour ces modèles d'IA automatiquement</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium?</translation>
 <translation id="6270547683008298381">Ces onglets utilisent des ressources supplémentaires. Pour améliorer vos performances, laissez Chromium les rendre inactifs.</translation>
 <translation id="6281746429495226318">Personnaliser votre profil Chromium</translation>
@@ -761,6 +768,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="8981886272598860786">pour effectuer une recherche avec Chromium ou pour personnaliser l'option dans <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Gérer les profils Chromium</translation>
 <translation id="8993855408334954620">Utilisez votre clavier pour naviguer entre Gemini dans Chromium et votre onglet ouvert.</translation>
+<translation id="9002987346523307190">Chromium retirera les modèles d'IA de cet appareil. Certains sites et certaines fonctionnalités de Chromium pourraient ne pas fonctionner.</translation>
 <translation id="9018218886431812662">Installation terminée</translation>
 <translation id="9022552996538154597">Connexion à Chromium</translation>
 <translation id="9035791714111278917">Afficher la recherche avec Chromium dans la barre de menu Mac et activer le raccourci-clavier</translation>

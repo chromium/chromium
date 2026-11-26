@@ -2716,6 +2716,23 @@ NOT: Bu politikanın varsayılan değeri M117 dokümanında hatalı bir şekilde
        Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
 
        Bu politikanın önceden Android'de hatalı bir şekilde etkinleştirildiğini, ancak bu işlevin Android'de hiçbir zaman tam olarak desteklenmediğini unutmayın.</translation>
+<translation id="2585054570696570117">Politikanın ayarlanması, mevcut uzantılarla alakalı politikalar dahil olmak üzere <ph name="PRODUCT_NAME" /> ürünü için uzantı yönetim ayarlarını kontrol eder.
+
+Bu politika, uzantı kimliklerini veya güncelleme URL'lerini yalnızca kendi özel ayarlarıyla eşleştirir. <ph name="DEFAULT_SCOPE" /> özel kimliği için varsayılan bir yapılandırma ayarlanabilir. Bu varsayılan yapılandırma, bu politikada özel bir yapılandırma ayarlanmamış tüm uzantılara uygulanır.
+
+Bu politika, eski politikalardaki uzantı bazında yapılandırmayı geçersiz kılabilir.
+
+<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> veya <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> Politikası'ndaki kimlik bazında uzantı ayarlarının, <ph name="DEFAULT_SCOPE" /> varsayılanlarından yalnızca "installation_mode" ve "update_url" özelliklerini devralacağını unutmayın. Başka hiçbir özellik devralınmaz. Güncelleme URL'si olduğunda yapılandırma, uzantı manifest'inde (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy) belirtilenle tam olarak aynı güncelleme URL'sine sahip tüm uzantılara uygulanır. "override_update_url" işareti doğru değerine ayarlanırsa uzantı yüklenip <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> Politikası'nda veya bu politikanın "update_url" alanında belirtilen "güncelleme" URL'si kullanılarak güncellenir. "update_url", Chrome Web Mağazası URL'si ise "override_update_url" işareti dikkate alınmaz.
+
+<ph name="PRODUCT_NAME" /> 155 ila 158 sürümlerinde, "debugger" iznine sahip bir uzantıya "runtime_blocked_hosts" uygulandığında tüm hedeflerde "chrome.debugger.attach()" tamamen devre dışı bırakılabilir. Örneğin, <ph name="CHROME_VARIATIONS_POLICY_NAME" /> politikası tüm varyasyonları devre dışı bıraktığında bu durum geçerlidir.
+
+<ph name="PRODUCT_NAME" /> 160. sürümünden itibaren "blocked_permissions" ve "allowed_permissions", uzantıların manifest anahtarlarından aldığı şu dahili izinleri de kabul eder: "searchProvider", "homepage", "startupPages" (yalnızca <ph name="MS_WIN_NAME" /> ile <ph name="MAC_OS_NAME" /> için "chrome_settings_overrides"dan) ve "newTabPageOverride" ("chrome_url_overrides"dan).
+
+<ph name="MS_WIN_NAME" /> örneklerinde, Chrome Web Mağazası dışından uygulamalar ve uzantılar, örnek yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmışsa ya da <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuşsa zorunlu olarak yüklenebilir.
+
+<ph name="MAC_OS_NAME" /> örneklerinde, Chrome Web Mağazası dışından uygulamalar ve uzantılar, örnek yalnızca MDM ile çalışıyorsa, MCX aracılığıyla bir alan adına katılmışsa veya <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuşsa zorunlu olarak yüklenebilir.
+
+Not: Bu politika yalnızca uzantıları destekleyen platformlarda geçerlidir.</translation>
 <translation id="2585535930727399201">Kurumsal uzantılar, chrome.systemLog API aracılığıyla günlükleri bir sistem günlük dosyasına ekleyebilir.
 
 Politika, Etkin değerine ayarlanırsa günlüklerin sınırlı bir süre boyunca sistem günlük dosyasında saklanmasına izin verilir.
@@ -13201,13 +13218,6 @@ Not: Cihazın yeniden başlatılması, önbelleğin temizlenmesine neden olur. G
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise Connector için yapılandırma politikası</translation>
 <translation id="9088433379343318874">Denetlenen kullanıcı içerik sağlayıcısını etkinleştirme</translation>
 <translation id="9088444059179765143">Otomatik saat dilimi algılama yöntemini yapılandır</translation>
-<translation id="9094681501120769194"><ph name="PRODUCT_NAME" /> ürünündeki PDF görüntüleyicinin işlem dışı iFrame (OOPIF) kullanıp kullanmayacağını kontrol eder. Bu mimari, daha basit olduğu ve yeni özelliklerin eklenmesini kolaylaştırdığı için gelecekte yeni PDF görüntüleyici mimarisi olarak kullanılacaktır. Mevcut GuestView PDF görüntüleyici, desteği sonlandırılmakta olan eski ve karmaşık bir mimaridir.
-
-Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, OOPIF PDF görüntüleyici mimarisini kullanabilir. Politika, Etkin değerine ayarlandıktan veya ayarlanmadan bırakıldıktan sonra varsayılan davranış, <ph name="PRODUCT_NAME" /> tarafından belirlenir.
-
-Bu politika, Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yalnızca mevcut GuestView PDF görüntüleyiciyi kullanır. Ayrı bir çerçeve ağacına sahip bir web sayfasını başka web sayfasına yerleştirir.
-
-Bu politikanın desteği M152 sürümünde sonlandırıldı ve M155 sürümünde kaldırılacak. GuestView PDF görüntüleyici kaldırılıyor ve işlem dışı iFrame (OOPIF) PDF görüntüleyici mimarisi her zaman kullanılacak.</translation>
 <translation id="9095599826504830315">Sekme Karşılaştırma'ya izin verme.</translation>
 <translation id="9096772739225230999">Ağ yapılandırmasını raporlama</translation>
 <translation id="9098409326885953506">Kapalı pencereyi tespit edip boyamasını askıya al</translation>

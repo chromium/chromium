@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Mae'r storfa polisïau yn iawn</translation>
 <translation id="1131264053432022307">Llun y gwnaethoch ei gopïo</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – I adael y sgrîn lawn, llusgwch o'r brig a chyffwrdd â'r botwm yn ôl</translation>
+<translation id="1132789342529761192">Ni argymhellir uwchlwytho</translation>
 <translation id="11370190534773372">Manylion cerdyn wedi'u llenwi</translation>
 <translation id="1138458427267715730">Cael rhybuddion pan fydd y pris yn gostwng ar unrhyw wefan ar draws y we</translation>
 <translation id="1142713751288681188">Math o bapur</translation>
@@ -583,6 +584,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1988881251331415125">Os yw'r sillafu'n gywir, <ph name="BEGIN_LINK" />rhowch gynnig ar redeg Diagnosteg Cysylltedd<ph name="END_LINK" />.</translation>
 <translation id="1991370806334788445">Rhowch gynnig ar ganiatáu cwcis trydydd parti, sy'n golygu llai o amddiffyniad pori ond mae nodweddion y wefan yn fwy tebygol o weithio yn ôl y disgwyl.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
+<translation id="1995173078718234136">Wrthi’n sganio cynnwys...</translation>
 <translation id="1996557034791506430">Tynnu caniatâd?</translation>
 <translation id="1997484222658892567">Mae <ph name="URL" /> eisiau storio data mawr ar eich cyfrifiadur lleol yn barhaol</translation>
 <translation id="1997774360448418989">Papur (Pwysau Ysgafn)</translation>
@@ -602,6 +604,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2025891858974379949">Cynnwys anniogel</translation>
 <translation id="2027465737841872819">Plastig</translation>
 <translation id="2027707238798802149">Nid yw'r cerdyn ar gael.</translation>
+<translation id="2028329426302356196">Ni argymhellir lawrlwytho</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Wrthi'n gwirio'r dirprwy weinydd a'r wal dân<ph name="END_LINK" /></translation>
 <translation id="2033550997390154638">Mae'r enghraifft hon o Chrome yn rhedeg gyda fflagiau llinell orchymyn wedi'u gosod yn bwrpasol. Sylwer y gall fflagiau llinell orchymyn newid unrhyw bryd ac nad ydynt yn cael eu cefnogi.</translation>
 <translation id="2033900728810589426">Ni all llwybr byr fod yr un fath â'r allweddair darparwr chwilio diofyn a ddiffinnir gan <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -1455,6 +1458,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3443504041532578451">Disg Optegol (Satin)</translation>
 <translation id="3447661539832366887">Gwnaeth perchennog y ddyfais hon ddiffodd y gêm ddeinosor.</translation>
 <translation id="3447884698081792621">Dangos tystysgrif (cyhoeddwyd gan <ph name="ISSUER" />)</translation>
+<translation id="3449239216441121005">Ni argymhellir argraffu</translation>
 <translation id="3450323514459570273">Yn gallu gofyn i reoli ac ailraglennu eich dyfeisiau MIDI</translation>
 <translation id="3452404311384756672">Cyfnod Nôl:</translation>
 <translation id="345268527248907593">Nid oedd modd cyrraedd y wefan hon</translation>
@@ -2916,6 +2920,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5851548754964597211">Rhestr tabiau</translation>
 <translation id="5851868085455377790">Cyhoeddwr</translation>
 <translation id="5852909432155870672">RA4</translation>
+<translation id="5857470404774131196">Ni argymhellir copïo</translation>
 <translation id="5860491529813859533">Troi ymlaen</translation>
 <translation id="5862579898803147654">Pentyrrwr 8</translation>
 <translation id="5863515189965725638">Golygu'r IBAN</translation>

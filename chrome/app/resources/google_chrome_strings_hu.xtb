@@ -137,6 +137,7 @@
 <translation id="2295218613066132598">A webhelyeken használható Chrome-billentyűparancsok megjelenítése</translation>
 <translation id="2301513536169703857">Ha az összes eszközén szeretne hozzáférni jelszavaihoz, könyvjelzőihez és egyebekhez, jelentkezzen be a Chrome-ba</translation>
 <translation id="2307973900865360088">Megtartás a Dockban</translation>
+<translation id="2308558013860776484">Megoszthatja a Chrome-on kívüli tartalmakról (például más alkalmazásokról vagy fájlokról) készült képernyőképeket.</translation>
 <translation id="2309047409763057870">Ez a Google Chrome második telepítése, amelyet nem állíthat be az alapértelmezett böngészővé.</translation>
 <translation id="2345992953227471816">A Chrome kártékony programokat talált a következő bővítményekben:</translation>
 <translation id="2358140144860869442">Ha az összes eszközén szeretne hozzáférni az olvasólistájához és egyebekhez, jelentkezzen be a Chrome-ba</translation>
@@ -246,6 +247,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="3294686910656423119">Használati statisztikák és hibajelentések</translation>
 <translation id="3327226547491422998">A Chrome később rákérdezhet, hogy szeretné-e a mentett adatokat űrlapok automatikus kitöltéséhez használni</translation>
 <translation id="3352986031709923790">keresési terület jobb felső sarka: jobb <ph name="RIGHT" />%, fent <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">A webhelyek és a Chrome használhatnak közvetlenül az eszközön futó AI-t az olyan funkciókhoz, mint az összefoglalók, a lektorálás, a feliratok és egyebek. Ez elkülönül a Gemini a Chrome-ban funkciótól. <ph name="BEGIN_LINK" />További információ az eszközalapú AI-ról<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Egyes Chrome-funkciókhoz és -bővítményekhez gyorsparancsok tartoznak. Újra bekapcsolhatja őket.</translation>
 <translation id="3379938682270551431">{0,plural, =0{A Chrome most újraindul}=1{A Chrome 1 másodpercen belül újraindul}other{A Chrome # másodpercen belül újraindul}}</translation>
 <translation id="3380249972812870825">A Gemini a Chrome-ban funkció megnyitásához nyomja meg a következőt: <ph name="GLOBAL_HOTKEY" /></translation>
@@ -345,6 +347,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="4427306783828095590">A Speciális védelem még többet tesz annak érdekében, hogy letiltsa az adathalászatot és a rosszindulatú programokat</translation>
 <translation id="4434353761996769206">Telepítőhiba: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Megoszthatja ezt a dokumentumot a Gemini a Chrome-ban szolgáltatással, hogy gyors áttekintést kapjon, és utánkövető kérdéseket tehessen fel</translation>
+<translation id="4440999670272408191">Ezeket bármikor eltávolíthatja. A Chrome automatikusan letöltheti őket újra, amikor egy webhelynek vagy funkciónak szüksége van rájuk.</translation>
 <translation id="4450664632294415862">Chrome – Hálózati bejelentkezés – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Egy másik Google Chrome-művelet is folyamatban van. Próbálkozzon újra később.</translation>
 <translation id="4493028449971051158">Indítási hiba: rendszergazdaként futtassa a telepítőt.</translation>
@@ -352,6 +355,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="4501839397124711198">Kitűzheti a Google Keresőt az oldalsó panelen, hogy böngészés közben kérdéseket tehessen fel.</translation>
 <translation id="4571503333518166079">A Chrome értesítési beállításainak megnyitása</translation>
 <translation id="4580939929828762295">A Google Jelszókezelővel biztonságban lesz</translation>
+<translation id="4589544932092381064">A Keresés a Chrome-mal szolgáltatás megjelenítése a Windows tálcáján, valamint a billentyűparancs bekapcsolása</translation>
 <translation id="459622048091363950">Miután hozzáférést biztosított a Chrome-nak, a webhelyek is hozzáférést kérhetnek.</translation>
 <translation id="4598116752460667024">Keressen rá a listában található bármelyik folyamatra.</translation>
 <translation id="4600710005438004015">Nem sikerült a Chrome frissítése a legújabb verzióra, így Ön lemarad az új funkciókról és biztonsági javításokról.</translation>
@@ -367,6 +371,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">A Chrome V8 motorjával felgyorsítja a webhelyeket, de kissé kevésbé ellenállóvá teszi a Chrome-ot a támadásokkal szemben.</translation>
 <translation id="4768676935374695498">A videó megkeresése a Google Lens használatával</translation>
+<translation id="4783580253728290203">Ha ki van kapcsolva, a Chrome eltávolítja az eszközalapú AI-modelleket, és nem tölti le őket újra. Előfordulhat, hogy egyes webhelyek és Chrome-funkciók nem fognak működni.</translation>
 <translation id="479167709087336770">A szolgáltatás ugyanazt a helyesírás-ellenőrzést használja, mint a Google Kereső. A begépelt szöveget a böngésző elküldi a Google-nak. A beállítások között ezt bármikor módosíthatja.</translation>
 <translation id="4793679854893018356">További információ arról, hogy miként gondoskodik a Chrome az Ön biztonságáról</translation>
 <translation id="4803313124144656665">A Google Kereső bezárása a Chrome-ban</translation>
@@ -448,6 +453,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nem lehet csatlakozni az internethez. A proxyszerver hitelesítést igényel.</translation>
 <translation id="5709557627224531708">A Chrome beállítása alapértelmezett böngészőként</translation>
+<translation id="5715427327524421317">A Chrome automatikusan letölti és frissíti ezeket az AI-modelleket.</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{A Speciális védelemhez újra kell indítania a Chrome-ot a frissítés alkalmazásához. Az izolált ablak nem fog újra megnyílni.}other{A Speciális védelemhez újra kell indítania a Chrome-ot a frissítés alkalmazásához. A(z) # izolált ablak nem fog újra megnyílni.}}</translation>
 <translation id="5719246646468301581">A Google Chrome és a ChromeOS kiegészítő szerződési feltételei</translation>
 <translation id="5736850870166430177">Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
@@ -539,6 +545,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="6491330562720922580">QR-kód a Chrome böngésző mobileszközökre való letöltéséhez</translation>
 <translation id="6493527311031785448">A Google Chrome megpróbálja a következőt: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">A Chrome automatikusan bezárult</translation>
+<translation id="650039555447046671">A Chrome eltávolítja az AI-modelleket erről az eszközről. Előfordulhat, hogy egyes webhelyek és Chrome-funkciók nem fognak működni.</translation>
 <translation id="6506909944137591434">A Chrome-nak kamerahasználati engedélyre van szüksége, hogy 3D-s térképet készíthessen az Ön környezetéről</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">A helyadatok használatához adjon hozzáférést a Chrome-nak a <ph name="BEGIN_LINK" />rendszerbeállításokban<ph name="END_LINK" /></translation>
@@ -577,6 +584,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="6877155553248388166">keresési terület jobb alsó sarka: jobb <ph name="RIGHT" />%, lent <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">A Keresés a Chrome-mal megnyitása</translation>
 <translation id="6881299373831449287">A Chrome frissítése</translation>
+<translation id="6881997500528805781">Az eszköz tárhelyét használja. A Chrome 45 nap elteltével vagy kevés tárhely esetén eltávolítja a nem használt AI-modelleket.</translation>
 <translation id="6885412569789873916">Chrome Beta-alkalmazások</translation>
 <translation id="6893363893008038481">Fiók eltávolítása a Chrome-ból</translation>
 <translation id="6896758677409633944">Másolás</translation>

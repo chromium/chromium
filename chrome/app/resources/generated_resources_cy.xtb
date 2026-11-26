@@ -1310,6 +1310,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="244071666433939959">Mae apiau yn agor mewn ffenestr</translation>
 <translation id="2442916515643169563">Cysgod testun</translation>
 <translation id="2443487764245141020">Efallai y bydd angen i wefannau adnabod eich dyfais gan ddefnyddio dynodwr</translation>
+<translation id="2444282212665587861">diweddaru, diweddariadau, uwchraddio, fersiwn, adeiladu, gwybodaeth, gwirio am ddiweddariadau</translation>
 <translation id="244475495405467108">Cau Tabiau i'r Chwith</translation>
 <translation id="2444874983932528148">Parhau lle y gwnaethoch adael yn hawdd</translation>
 <translation id="2445081178310039857">Mae angen cyfeiriadur gwraidd yr estyniad.</translation>
@@ -2147,6 +2148,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="3321512411079201586">&amp;Ynysig</translation>
 <translation id="3323288183237359315">Gosod ar gyfer Edge</translation>
 <translation id="332376831173229695">{NUM_SITES,plural, =1{Er mwyn diogelu eich preifatrwydd, tynnwyd caniatadau o wefan}zero{Er mwyn diogelu eich preifatrwydd, tynnwyd caniatadau o rai gwefannau}two{Er mwyn diogelu eich preifatrwydd, tynnwyd caniatadau o rai gwefannau}few{Er mwyn diogelu eich preifatrwydd, tynnwyd caniatadau o rai gwefannau}many{Er mwyn diogelu eich preifatrwydd, tynnwyd caniatadau o rai gwefannau}other{Er mwyn diogelu eich preifatrwydd, tynnwyd caniatadau o rai gwefannau}}</translation>
+<translation id="3325561120400598624">Mae sgyrsiau'n cael eu hadolygu a'u defnyddio i hyfforddi modelau AI cynhyrchiol. Mae Gemini yn AI a gall wneud camgymeriadau. Mae'n bosib na fydd rhywfaint o'r cynnwys yn addas i bawb. Gallwch <ph name="BEGIN_LINK_MANAGE_HISTORY" />reoli eich hanes<ph name="END_LINK_MANAGE_HISTORY" />, gan gynnwys <ph name="BEGIN_LINK_LOCATION_INFO" />gwybodaeth am eich lleoliad<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor am eich dewisiadau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3325995804968971809">Arddull</translation>
 <translation id="3331974543021145906">Gwybodaeth yr ap</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Fideo yn chwarae yn y modd llun mewn llun</translation>
@@ -2272,6 +2274,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="3454276058453724464">{FILE_LIMIT,plural, =1{Uwchlwythwch 1 ffeil .pdf i'w defnyddio gyda'ch cwestiwn}zero{Uwchlwythwch hyd at # ffeil pdf i'w defnyddio gyda'ch cwestiwn}two{Uwchlwythwch hyd at # ffeil .pdf i'w defnyddio gyda'ch cwestiwn}few{Uwchlwythwch hyd at # ffeil .pdf i'w defnyddio gyda'ch cwestiwn}many{Uwchlwythwch hyd at # ffeil .pdf i'w defnyddio gyda'ch cwestiwn}other{Uwchlwythwch hyd at # ffeil .pdf i'w defnyddio gyda'ch cwestiwn}}</translation>
 <translation id="3456750372063895499">Agor Dolen mewn Ffenestr Ynysig</translation>
 <translation id="345693547134384690">Agor y &amp;llun mewn tab newydd</translation>
+<translation id="3456949031754827166">Aildrefnu</translation>
 <translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Cadw'r Grŵp}zero{Cadw'r Grwpiau}two{Cadw'r Grwpiau}few{Cadw'r Grwpiau}many{Cadw'r Grwpiau}other{Cadw'r Grwpiau}}</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Mae 1 nod tudalen wedi'i ddileu}zero{Mae # nod tudalen wedi'u dileu}two{Mae # nod tudalen wedi'u dileu}few{Mae # nod tudalen wedi'u dileu}many{Mae # nod tudalen wedi'u dileu}other{Mae # nod tudalen wedi'u dileu}}</translation>
 <translation id="3471687177769494956">Golygu llwybr byr llywio</translation>
@@ -3326,6 +3329,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="4602776638371779614">Mae'r tab hwn wrthi'n sganio am ddyfeisiau Bluetooth</translation>
 <translation id="4605026046465576953">Ni ellir agor yr ap hwn oherwydd nad oes gennych ganiatâd i redeg apiau gwe ynysig</translation>
 <translation id="4606551464649945562">Peidiwch â chaniatáu i wefannau greu map 3D o'ch amgylchoedd neu olrhain safle'r camera</translation>
+<translation id="4606965546067937011">cyflymder, RAM, oedi, rhewi, chwalu, adnodd, defnydd, batri, optimeiddiwr, araf, cof, arbedwr cof</translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Dileu'r grŵp tabiau?}zero{Dileu'r grwpiau tabiau?}two{Dileu'r grwpiau tabiau?}few{Dileu'r grwpiau tabiau?}many{Dileu'r grwpiau tabiau?}other{Dileu'r grwpiau tabiau?}}</translation>
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Uwchlwythwch 1 ffeil i'w defnyddio gyda'ch cwestiwn}zero{Uwchlwythwch hyd at # ffeiliau i'w defnyddio gyda'ch cwestiwn}two{Uwchlwythwch hyd at # ffeil i'w defnyddio gyda'ch cwestiwn}few{Uwchlwythwch hyd at # ffeil i'w defnyddio gyda'ch cwestiwn}many{Uwchlwythwch hyd at # ffeil i'w defnyddio gyda'ch cwestiwn}other{Uwchlwythwch hyd at # ffeil i'w defnyddio gyda'ch cwestiwn}}</translation>
 <translation id="4608500690299898628">&amp;Chwilio...</translation>
@@ -4159,6 +4163,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="5535769176698670170">Cyfnewid gyda'r wedd uchaf</translation>
 <translation id="5536642445914063887">Newid Proffil</translation>
 <translation id="5537725057119320332">Castio</translation>
+<translation id="553876896781261711">dileu, tynnu, diogelwch, preifatrwydd, glanhau, storfa, ailosod, storfa dros dro, cwcis, araf, cyflymder, hanes</translation>
 <translation id="5541091577812545428">Nid yw'r cyfrinair wedi ei newid</translation>
 <translation id="5542132724887566711">Proffil</translation>
 <translation id="5543983818738093899">Wrthi'n gwirio am statws...</translation>
@@ -4750,6 +4755,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="6214157047210274853">Golygu yn Google Wallet</translation>
 <translation id="621470880408090483">Peidio â chaniatáu i wefannau gysylltu â dyfeisiau Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{I gadw'ch cyfrineiriau'n ddiogel, mae <ph name="BRAND" /> yn cloi ar ôl 1 funud o anweithgarwch}zero{I gadw'ch cyfrineiriau'n ddiogel, mae <ph name="BRAND" /> yn cloi ar ôl # munud o anweithgarwch}two{I gadw'ch cyfrineiriau'n ddiogel, mae <ph name="BRAND" /> yn cloi ar ôl # funud o anweithgarwch}few{I gadw'ch cyfrineiriau'n ddiogel, mae <ph name="BRAND" /> yn cloi ar ôl # munud o anweithgarwch}many{I gadw'ch cyfrineiriau'n ddiogel, mae <ph name="BRAND" /> yn cloi ar ôl # munud o anweithgarwch}other{I gadw'ch cyfrineiriau'n ddiogel, mae <ph name="BRAND" /> yn cloi ar ôl # munud o anweithgarwch}}</translation>
+<translation id="6215427500141060726">Mae sgyrsiau'n cael eu hadolygu a'u defnyddio i hyfforddi modelau AI cynhyrchiol. Mae Gemini yn AI a gall wneud camgymeriadau. Gallwch <ph name="BEGIN_LINK_MANAGE_HISTORY" />reoli eich hanes<ph name="END_LINK_MANAGE_HISTORY" />, gan gynnwys <ph name="BEGIN_LINK_LOCATION_INFO" />gwybodaeth am eich lleoliad<ph name="END_LINK_LOCATION_INFO" />. <ph name="BEGIN_LINK_LEARN_MORE" />Dysgu rhagor am eich dewisiadau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6216239400972191926">Gwefan ac apiau sydd wedi'u gwrthod</translation>
 <translation id="6216696360484424239">Mewngofnodi'n awtomatig</translation>
 <translation id="6218961554829577610">Ddim yn hoffi'r llais</translation>
@@ -4901,6 +4907,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="639880411171387127">Eich dewis Google Lens. Pwyswch enter neu ôl-nod i ddileu'ch dewis Google Lens</translation>
 <translation id="6400360390396538896">Bob amser ar <ph name="ORIGIN" /></translation>
 <translation id="6400714103322134861">Dadffocysu grŵp tabiau</translation>
+<translation id="6401522392962817913">Drwy barhau, rydych chi'n cytuno i Delerau Gwasanaeth Google Payments. Mae'r Hysbysiad Preifatrwydd yn disgrifio sut y caiff eich data eu trin. Mae eich cerdyn wedi'i gadw i'ch Cyfrif Google, <ph name="ACCOUNT" />.</translation>
 <translation id="6402042774506839496">I ddysgu pam, cysylltwch â datblygwr yr ap</translation>
 <translation id="6402921224457714577">Gall gwefannau ofyn i reoli ac ailraglennu eich dyfeisiau MIDI</translation>
 <translation id="6404511346730675251">Golygu nod tudalen</translation>
@@ -4989,6 +4996,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="6499143127267478107">Wrthi'n datrys y gwesteiwr mewn sgript ddirprwyol...</translation>
 <translation id="6503077044568424649">Yr ymwelwyd â nhw y mwyaf</translation>
 <translation id="6504601948739128893">Ni chaniateir i ddefnyddio ffontiau sydd wedi'u gosod ar eich dyfais</translation>
+<translation id="6505525633061207363">manylion adnabod, mewngofnodi, cod pas, clo, cadwrfa, allweddi, mewngofnodi, mewngofnodi, mewngofnodi</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{Hoffai ‘<ph name="APP_NAME" />' osod yr ap canlynol ar y ddyfais hon:}zero{Hoffai ‘<ph name="APP_NAME" />' osod yr apiau canlynol ar y ddyfais hon:}two{Hoffai ‘<ph name="APP_NAME" />' osod yr apiau canlynol ar y ddyfais hon:}few{Hoffai ‘<ph name="APP_NAME" />' osod yr apiau canlynol ar y ddyfais hon:}many{Hoffai ‘<ph name="APP_NAME" />' osod yr apiau canlynol ar y ddyfais hon:}other{Hoffai ‘<ph name="APP_NAME" />' osod yr apiau canlynol ar y ddyfais hon:}}</translation>
 <translation id="6508248480704296122">Yn gysylltiedig â <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Ap: <ph name="APP_NAME" /></translation>
