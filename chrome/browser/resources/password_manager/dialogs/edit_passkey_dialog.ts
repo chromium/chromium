@@ -8,7 +8,6 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -27,9 +26,7 @@ export interface EditPasskeyDialogElement {
   };
 }
 
-const EditPasskeyDialogElementBase = I18nMixinLit(CrLitElement);
-
-export class EditPasskeyDialogElement extends EditPasskeyDialogElementBase {
+export class EditPasskeyDialogElement extends CrLitElement {
   static get is() {
     return 'edit-passkey-dialog';
   }

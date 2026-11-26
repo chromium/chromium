@@ -480,7 +480,7 @@ export function toMojoActionableError(
  * Maps chrome.passwordsPrivate.ImportResultsStatus to
  * password_manager.mojom.ImportResultsStatus.
  */
-export function toMojoImportResultsStatus(
+function toMojoImportResultsStatus(
     status: chrome.passwordsPrivate.ImportResultsStatus): ImportResultsStatus {
   const PrivateStatus = chrome.passwordsPrivate.ImportResultsStatus;
   switch (status) {
@@ -511,7 +511,7 @@ export function toMojoImportResultsStatus(
  * Maps chrome.passwordsPrivate.ImportEntryStatus to
  * password_manager.mojom.ImportEntryStatus.
  */
-export function toMojoImportEntryStatus(
+function toMojoImportEntryStatus(
     status: chrome.passwordsPrivate.ImportEntryStatus): ImportEntryStatus {
   const PrivateStatus = chrome.passwordsPrivate.ImportEntryStatus;
   switch (status) {
@@ -550,8 +550,8 @@ export function toMojoImportEntryStatus(
  * Maps chrome.passwordsPrivate.ImportResults to
  * password_manager.mojom.ImportResults.
  */
-export function toMojoImportResults(
-    results: chrome.passwordsPrivate.ImportResults): ImportResults {
+function toMojoImportResults(results: chrome.passwordsPrivate.ImportResults):
+    ImportResults {
   return {
     status: toMojoImportResultsStatus(results.status),
     numberImported: results.numberImported,
@@ -571,7 +571,7 @@ export function toMojoImportResults(
  * Maps chrome.passwordsPrivate.PasswordStoreSet to
  * password_manager.mojom.PasswordStoreSet.
  */
-export function toMojoPasswordStoreSet(
+function toMojoPasswordStoreSet(
     store: chrome.passwordsPrivate.PasswordStoreSet): MojoPasswordStoreSet {
   switch (store) {
     case chrome.passwordsPrivate.PasswordStoreSet.DEVICE:
@@ -589,8 +589,8 @@ export function toMojoPasswordStoreSet(
  * Maps `chrome.passwordsPrivate.UrlCollection` to
  * `password_manager.mojom.DomainInfo`.
  */
-export function toMojoDomainInfo(
-    urlCollection: chrome.passwordsPrivate.UrlCollection): DomainInfo {
+function toMojoDomainInfo(urlCollection: chrome.passwordsPrivate.UrlCollection):
+    DomainInfo {
   return {
     humanReadableName: urlCollection.shown,
     url: urlCollection.link,

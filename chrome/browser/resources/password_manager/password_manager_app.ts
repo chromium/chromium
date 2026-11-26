@@ -10,7 +10,6 @@ import './checkup_section.js';
 import './checkup_details_section.js';
 import './password_details_section.js';
 import './password_change_details.js';
-import './passwords_exporter.js';
 import './passwords_section.js';
 import './settings_section.js';
 import './side_bar.js';

@@ -6,7 +6,6 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -73,9 +72,7 @@ export interface NotificationCardElement {
 
 const isOpenedAsShortcut = window.matchMedia('(display-mode: standalone)');
 
-const NotificationCardElementBase = I18nMixinLit(CrLitElement);
-
-export class NotificationCardElement extends NotificationCardElementBase {
+export class NotificationCardElement extends CrLitElement {
   static get is() {
     return 'notification-card';
   }

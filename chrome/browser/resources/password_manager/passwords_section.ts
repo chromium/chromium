@@ -7,7 +7,6 @@ import './password_list_item.js';
 import './dialogs/add_password_dialog.js';
 import './dialogs/auth_timed_out_dialog.js';
 import './notification_cards/notification_card.js';
-import './notification_cards/notification_cards_browser_proxy.js';
 
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';

@@ -6,7 +6,7 @@
  * @fileoverview
  * `pref-toggle-button` is a toggle that controls a supplied preference.
  */
-import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
 import {PrefKeyObserverMixinLit} from '/shared/settings/prefs2/pref_key_observer_mixin_lit.js';

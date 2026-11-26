@@ -6,10 +6,9 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import './password_preview_item.js';
 
-import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -32,7 +31,7 @@ export interface MovePasswordsDialogElement {
 }
 
 const MovePasswordsDialogElementBase =
-    WebUiListenerMixinLit(UserUtilMixin(I18nMixinLit(CrLitElement)));
+    UserUtilMixin(I18nMixinLit(CrLitElement));
 
 export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
   static get is() {

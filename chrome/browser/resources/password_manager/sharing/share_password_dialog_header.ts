@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import './metrics_utils.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

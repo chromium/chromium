@@ -34,7 +34,7 @@ import {getHtml} from './add_password_dialog.html.js';
  * persisted to logs. Entries should not be renumbered and numeric values should
  * never be reused.
  */
-export enum AddCredentialFromSettingsUserInteractions {
+enum AddCredentialFromSettingsUserInteractions {
   // Used when the add credential dialog is opened from the settings.
   ADD_DIALOG_OPENED = 0,
   // Used when the add credential dialog is closed from the settings.

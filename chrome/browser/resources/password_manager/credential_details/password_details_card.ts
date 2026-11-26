@@ -12,7 +12,6 @@ import './credential_note.js';
 import '../dialogs/edit_password_dialog.js';
 import '../dialogs/multi_store_delete_password_dialog.js';
 import '../sharing/share_password_flow.js';
-import '../sharing/metrics_utils.js';
 
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';

@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import './metrics_utils.js';
 import './share_password_dialog_header.js';
 import './share_password_group_avatar.js';
 import '../site_favicon.js';
