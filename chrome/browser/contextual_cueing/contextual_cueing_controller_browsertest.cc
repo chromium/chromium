@@ -3885,11 +3885,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(cs_tab_state);
 
   // With V2MultiSource and History Sync enabled, GlicCueTabState and
-  // ContextualSearchCueTabState observe SyncService and kCategoryClassifier,
-  // while ContextualCueingController observes neither.
+  // ContextualSearchCueTabState observe SyncService and kCategoryClassifier.
   EXPECT_TRUE(bridge->demand_active());
-  EXPECT_FALSE(
-      GetTestSyncService()->HasObserver(contextual_cueing_controller()));
   EXPECT_TRUE(GetTestSyncService()->HasObserver(tab_state));
   EXPECT_TRUE(GetTestSyncService()->HasObserver(cs_tab_state));
 
@@ -3899,8 +3896,6 @@ IN_PROC_BROWSER_TEST_F(
       browser(), GURL("https://www.example.com/tab2"),
       ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_FALSE(
-      GetTestSyncService()->HasObserver(contextual_cueing_controller()));
   EXPECT_TRUE(bridge->demand_active());
   browser()->GetTabStripModel()->CloseWebContentsAt(1,
                                                     TabCloseTypes::CLOSE_NONE);

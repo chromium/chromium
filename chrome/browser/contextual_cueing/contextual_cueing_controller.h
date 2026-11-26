@@ -21,10 +21,8 @@
 #include "components/contextual_cueing/contextual_cueing_enums.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
-#include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_service_observer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -69,11 +67,7 @@ namespace contextual_cueing {
 class ContextualCueingService;
 struct CueTabMetrics;
 
-class ContextualCueingController
-    : public page_content_annotations::PageContentAnnotationsService::
-          PageContentAnnotationsObserver,
-      public syncer::SyncServiceObserver,
-      public TabListInterfaceObserver {
+class ContextualCueingController : public TabListInterfaceObserver {
  public:
   DECLARE_USER_DATA(ContextualCueingController);
 
@@ -91,17 +85,6 @@ class ContextualCueingController
   // Once registered, cue types are never unregistered -- features may prevent
   // cues by returning false from IsEligible.
   void RegisterCueTarget(CueTargetType type, std::unique_ptr<CueTarget> target);
-
-  // page_content_annotations::PageContentAnnotationsService::
-  // PageContentAnnotationsServiceObserver:
-  void OnPageContentAnnotated(
-      const page_content_annotations::HistoryVisit& visit,
-      const page_content_annotations::PageContentAnnotationsResult& result)
-      override;
-
-  // syncer::SyncServiceObserver:
-  void OnStateChanged(syncer::SyncService* sync) override;
-  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // TabListInterfaceObserver:
   void OnTabRemoved(TabListInterface& tab_list,
@@ -170,16 +153,6 @@ class ContextualCueingController
       optimization_guide::proto::Tab active_tab,
       optimization_guide::proto::ContextualCueingRequest request,
       history::QueryResults results);
-
-  // The V1 single-source evaluation path, triggered by page content
-  // annotations. Performs URL eligibility checks, category classification
-  // (delegated to the registered CueTarget), quota/backoff checks, and then
-  // invokes InitiateModelExecutionRequest() if all checks pass.
-  //
-  // TODO(b/523306363): Remove once the V2 multi-source path is fully launched.
-  void RunGlicSingleSourcePath(
-      const page_content_annotations::HistoryVisit& visit,
-      const page_content_annotations::PageContentAnnotationsResult& result);
 
   // Shared implementation of `EvaluateCues()` and `EvaluateCueForTarget()`.
   // If `only_type` is set, only considers the target registered for it.
@@ -307,11 +280,6 @@ class ContextualCueingController
   // Starts observing the SidePanelUI to detect when it is shown.
   void ObserveSidePanel();
 
-  // Returns the list of cue surfaces that are currently eligible to show a cue.
-  absl::flat_hash_set<optimization_guide::proto::ContextualCueingSurface>
-  GetEligibleCueSurfaces();
-
-  void UpdateCategoryClassifierObservation();
   bool IsHistorySyncEnabled() const;
 
   // Not owned. Guaranteed to outlive `this`.
@@ -326,17 +294,11 @@ class ContextualCueingController
   base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
       tab_list_observation_{this};
   raw_ptr<ContextualCueingService> contextual_cueing_service_;
-  raw_ptr<page_content_annotations::PageContentAnnotationsService>
-      page_content_annotations_service_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
-  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
   raw_ptr<syncer::SyncService> sync_service_;
   raw_ptr<TemplateURLService> template_url_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<favicon::FaviconService> favicon_service_;
-  bool is_observing_category_classifier_ = false;
-  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_service_observation_{this};
   raw_ptr<history::HistoryService> history_service_;
   absl::flat_hash_map<CueTargetType, std::unique_ptr<CueTarget>> cue_targets_;
   base::CallbackListSubscription side_panel_shown_subscription_;

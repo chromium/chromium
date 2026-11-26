@@ -32,7 +32,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -178,9 +177,6 @@ ContextualCueingController::ContextualCueingController(tabs::TabInterface* tab)
     : tab_(tab),
       contextual_cueing_service_(
           ContextualCueingServiceFactory::GetForProfile(tab_->GetProfile())),
-      page_content_annotations_service_(
-          PageContentAnnotationsServiceFactory::GetForProfile(
-              tab_->GetProfile())),
       optimization_guide_keyed_service_(
           OptimizationGuideKeyedServiceFactory::GetForProfile(
               tab_->GetProfile())),
@@ -203,12 +199,6 @@ ContextualCueingController::ContextualCueingController(tabs::TabInterface* tab)
       base::BindRepeating(&ContextualCueingController::OnCueFormFactorHidden,
                           weak_ptr_factory_.GetWeakPtr()));
 #endif
-  if (!base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
-    if (sync_service_) {
-      sync_service_observation_.Observe(sync_service_);
-    }
-    UpdateCategoryClassifierObservation();
-  }
   tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&ContextualCueingController::OnTabActivated,
                           weak_ptr_factory_.GetWeakPtr())));
@@ -220,12 +210,7 @@ ContextualCueingController::ContextualCueingController(tabs::TabInterface* tab)
                           weak_ptr_factory_.GetWeakPtr())));
 }
 
-ContextualCueingController::~ContextualCueingController() {
-  if (is_observing_category_classifier_ && page_content_annotations_service_) {
-    page_content_annotations_service_->RemoveObserver(
-        page_content_annotations::AnnotationType::kCategoryClassifier, this);
-  }
-}
+ContextualCueingController::~ContextualCueingController() = default;
 
 ContextualCueingController::ActiveCueData::ActiveCueData(
     CueTargetType cue_type,
@@ -272,149 +257,10 @@ void ContextualCueingController::RegisterCueTarget(
   cue_targets_.insert_or_assign(type, std::move(target));
 }
 
-void ContextualCueingController::OnPageContentAnnotated(
-    const page_content_annotations::HistoryVisit& visit,
-    const page_content_annotations::PageContentAnnotationsResult& result) {
-  // V2 multi-source path is driven by ActiveTabUrlChanged, not by annotation
-  // arrival.  Page content annotations are consumed directly by each
-  // CueTarget's CheckEligibility() via GlicCueTabState.
-  if (base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
-    return;
-  }
-  RunGlicSingleSourcePath(visit, result);
-}
-
-void ContextualCueingController::OnStateChanged(syncer::SyncService* sync) {
-  UpdateCategoryClassifierObservation();
-}
-
-void ContextualCueingController::OnSyncShutdown(syncer::SyncService* sync) {
-  sync_service_observation_.Reset();
-  sync_service_ = nullptr;
-  UpdateCategoryClassifierObservation();
-}
-
-void ContextualCueingController::UpdateCategoryClassifierObservation() {
-  if (!page_content_annotations_service_) {
-    return;
-  }
-  const bool should_observe =
-      !base::FeatureList::IsEnabled(kContextualCueingV2MultiSource) &&
-      IsHistorySyncEnabled();
-  if (should_observe == is_observing_category_classifier_) {
-    return;
-  }
-  is_observing_category_classifier_ = should_observe;
-  if (should_observe) {
-    page_content_annotations_service_->AddObserver(
-        page_content_annotations::AnnotationType::kCategoryClassifier, this);
-  } else {
-    page_content_annotations_service_->RemoveObserver(
-        page_content_annotations::AnnotationType::kCategoryClassifier, this);
-  }
-}
-
 bool ContextualCueingController::IsHistorySyncEnabled() const {
   return sync_service_ &&
          sync_service_->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kHistory);
-}
-
-void ContextualCueingController::RunGlicSingleSourcePath(
-    const page_content_annotations::HistoryVisit& visit,
-    const page_content_annotations::PageContentAnnotationsResult& result) {
-  if (!tab_->IsActivated()) {
-    return;
-  }
-
-  content::WebContents* active_web_contents = tab_->GetContents();
-  if (!active_web_contents ||
-      visit.url != active_web_contents->GetLastCommittedURL()) {
-    CUEING_LOG(base::StringPrintf(
-        "Ignoring category classification - received category classification "
-        "not for current active tab. Received URL: %s Current URL: %s",
-        visit.url.spec(),
-        active_web_contents ? active_web_contents->GetLastCommittedURL().spec()
-                            : "unknown"));
-    return;
-  }
-
-  if (!IsUrlEligibleForCue(active_web_contents->GetLastCommittedURL())) {
-    CUEING_LOG(
-        base::StringPrintf("%s ineligible for cue: URL is ineligible.",
-                           active_web_contents->GetLastCommittedURL().spec()));
-    RecordContextualCueingDecision(ContextualCueingDecision::kUrlNotEligible);
-    return;
-  }
-
-  if (GetEligibleCueSurfaces().empty()) {
-    CUEING_LOG(
-        base::StringPrintf("%s ineligible for cue: No eligible cue surfaces.",
-                           active_web_contents->GetLastCommittedURL().spec()));
-    RecordContextualCueingDecision(
-        ContextualCueingDecision::kNoEligibleCueSurfaces);
-    return;
-  }
-
-  if (auto decision = IsAllowedToShowCue();
-      decision != ContextualCueingDecision::kUnspecified) {
-    CUEING_LOG(base::StringPrintf(
-        "%s ineligible for cue with reason: %s.",
-        active_web_contents->GetLastCommittedURL().spec(), GetName(decision)));
-    // Cueing decision already recorded in IsAllowedToShowCue().
-    return;
-  }
-
-  // Delegate page-level classification to the registered category-classifier
-  // targets (Glic and ContextualSearch), which own the edu/shopping threshold
-  // logic.
-  CueTarget* glic_target = GetTarget(CueTargetType::kGlic);
-  CueTarget* contextual_search_target =
-      GetTarget(CueTargetType::kContextualSearch);
-  if (!glic_target && !contextual_search_target) {
-    CUEING_LOG(base::StringPrintf(
-        "%s ineligible for cue: Target feature not registered.",
-        active_web_contents->GetLastCommittedURL().spec()));
-    RecordContextualCueingDecision(
-        ContextualCueingDecision::kTargetFeatureNotRegistered);
-    return;
-  }
-
-  std::optional<CueTargetType> winning_target_type;
-  for (CueTargetType type :
-       {CueTargetType::kGlic, CueTargetType::kContextualSearch}) {
-    CueTarget* target = GetTarget(type);
-    if (target && target->IsEligible() &&
-        target->IsPageEligible(result, active_web_contents)) {
-      winning_target_type = type;
-      break;
-    }
-  }
-
-  if (!winning_target_type) {
-    CUEING_LOG(base::StringPrintf(
-        "%s ineligible for cue: Failed category classification.",
-        active_web_contents->GetLastCommittedURL().spec()));
-    RecordContextualCueingDecision(
-        ContextualCueingDecision::kFailedCategoryClassification);
-    return;
-  }
-
-  if (auto decision = contextual_cueing_service_->CanShowCue(
-          active_web_contents->GetLastCommittedURL());
-      decision != ContextualCueingDecision::kSuccess) {
-    CUEING_LOG(base::StringPrintf(
-        "%s ineligible for cue with reason: %s.",
-        active_web_contents->GetLastCommittedURL().spec(), GetName(decision)));
-    RecordContextualCueingDecision(decision);
-    return;
-  }
-
-  CUEING_LOG(
-      base::StringPrintf("%s eligible for cue: Category classification "
-                         "succeeded. Initiating model execution request.",
-                         active_web_contents->GetLastCommittedURL().spec()));
-  InitiateModelExecutionRequest(*winning_target_type);
 }
 
 void ContextualCueingController::OnTabRemoved(TabListInterface& tab_list,
@@ -492,10 +338,6 @@ void ContextualCueingController::EvaluateCueForTarget(CueTargetType type) {
 
 void ContextualCueingController::EvaluateCuesImpl(
     std::optional<CueTargetType> only_type) {
-  if (!base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
-    return;
-  }
-
   content::WebContents* web_contents = tab_->GetContents();
   if (!web_contents) {
     CUEING_LOG("skipping evaluating cues: web contents gone");
@@ -761,10 +603,6 @@ void ContextualCueingController::InitiateModelExecutionRequest(
       winner->GetSurface() !=
           optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED) {
     request.add_supported_surfaces(winner->GetSurface());
-  } else if (!base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
-    auto eligible_cue_surfaces = GetEligibleCueSurfaces();
-    *request.mutable_supported_surfaces() = {eligible_cue_surfaces.begin(),
-                                             eligible_cue_surfaces.end()};
   }
 
   optimization_guide::proto::Tab active_tab =
@@ -1760,20 +1598,6 @@ bool ContextualCueingController::ShouldRecordUcbStats(
     return true;
   }
   return !iter->second->OverridesUcbScoring();
-}
-
-absl::flat_hash_set<optimization_guide::proto::ContextualCueingSurface>
-ContextualCueingController::GetEligibleCueSurfaces() {
-  absl::flat_hash_set<optimization_guide::proto::ContextualCueingSurface>
-      eligible_cue_surfaces;
-  for (const auto& [cue_type, target] : cue_targets_) {
-    if (target->IsEligible() &&
-        target->GetSurface() !=
-            optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED) {
-      eligible_cue_surfaces.insert(target->GetSurface());
-    }
-  }
-  return eligible_cue_surfaces;
 }
 
 }  // namespace contextual_cueing
