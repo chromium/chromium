@@ -82,8 +82,8 @@ void EnsureCFNetworkProxyStateInitialized(CFURLRef query_url_ref) {
       CFNetworkCopyProxiesForURL(query_url_ref, empty_dictionary.get()));
 }
 
-// Converts a CFProxy dictionary array returned by
-// `CFNetworkExecuteProxyAutoConfigurationURL` into a `ProxyList`.
+// Converts the CFProxy dictionary array returned by CFNetwork PAC evaluation
+// into a `ProxyList`.
 ProxyList CFArrayToProxyList(CFArrayRef proxy_array_ref) {
   DCHECK(proxy_array_ref);
 
@@ -345,8 +345,7 @@ class ProxyResolverApple : public ProxyResolver {
 
 class ProxyResolverApple::RequestImpl : public ProxyResolver::Request {
  public:
-  RequestImpl()
-      : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
+  RequestImpl() = default;
 
   RequestImpl(const RequestImpl&) = delete;
   RequestImpl& operator=(const RequestImpl&) = delete;
@@ -372,17 +371,10 @@ class ProxyResolverApple::RequestImpl : public ProxyResolver::Request {
     results_ = results;
     callback_ = std::move(callback);
 
-    // Bind `WeakPtr` on the origin sequence before handing `Context` to
-    // `PacCFRunLoopThread`, where calling `weak_factory_.GetWeakPtr()` is not
-    // allowed.
-    context_ = base::MakeRefCounted<Context>(
-        task_runner_, weak_factory_.GetWeakPtr(), std::move(pac_url_ref),
-        std::move(query_url_ref));
-
     resolver_->AddActiveRequest(this);
-
-    GetPacRunLoopTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&Context::StartOnPacThread, context_));
+    pac_request_ = std::make_unique<ProxyResolverAppleRequest>(
+        pac_url_ref.get(), query_url_ref.get(),
+        base::BindOnce(&RequestImpl::OnResult, weak_factory_.GetWeakPtr()));
   }
 
   void Cancel() {
@@ -391,141 +383,11 @@ class ProxyResolverApple::RequestImpl : public ProxyResolver::Request {
       return;
     }
     callback_.Reset();
-    TeardownAndReleaseContext();
+    Teardown();
   }
 
  private:
-  // Ref-counted state shared between `RequestImpl` on the origin sequence and
-  // the `CFRunLoopSourceRef` callbacks/tasks running on `PacCFRunLoopThread`.
-  // All `CFRunLoop` source creation, scheduling, and invalidation happen
-  // exclusively on `PacCFRunLoopThread` so that the origin (IO) thread never
-  // acquires `GetCFNetworkPacRunloopLock()` or blocks on a stalled PAC script
-  // evaluation.
-  class Context : public base::RefCountedThreadSafe<Context> {
-   public:
-    Context(scoped_refptr<base::SequencedTaskRunner> origin_task_runner,
-            base::WeakPtr<RequestImpl> request,
-            base::apple::ScopedCFTypeRef<CFURLRef> pac_url_ref,
-            base::apple::ScopedCFTypeRef<CFURLRef> query_url_ref)
-        : origin_task_runner_(std::move(origin_task_runner)),
-          request_(std::move(request)),
-          pac_url_ref_(std::move(pac_url_ref)),
-          query_url_ref_(std::move(query_url_ref)) {
-      DETACH_FROM_SEQUENCE(pac_sequence_checker_);
-    }
-
-    Context(const Context&) = delete;
-    Context& operator=(const Context&) = delete;
-
-    void MarkCancelled() { cancelled_.store(true, std::memory_order_relaxed); }
-
-    void StartOnPacThread() {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(pac_sequence_checker_);
-      if (cancelled_.load(std::memory_order_relaxed)) {
-        return;
-      }
-
-      // Tasks on this thread may run while `SynchronizedRunLoopObserver` holds
-      // `GetCFNetworkPacRunloopLock()`; never acquire it here.
-      EnsureCFNetworkProxyStateInitialized(query_url_ref_.get());
-
-      // Intentionally pass `nullptr` for `retain` and `release`:
-      // 1. `this` is an opaque cookie only dereferenced by
-      //    `ResultCallbackOnPacThread` on `PacCFRunLoopThread` while
-      //    `runloop_source_` is valid, and `Context` is kept alive until
-      //    `CancelOnPacThread` invalidates `runloop_source_` on this same
-      //    thread.
-      // 2. CFNetwork holds its client context until it frees the source or
-      //    until a hung socket closes, so a retained `Context` would leak
-      //    (when the source leaks per FB12170226) or outlive cancellation.
-      CFStreamClientContext client_context = {0, this, nullptr, nullptr,
-                                              nullptr};
-      runloop_source_.reset(CFNetworkExecuteProxyAutoConfigurationURL(
-          pac_url_ref_.get(), query_url_ref_.get(),
-          &Context::ResultCallbackOnPacThread, &client_context));
-#if LEAK_SANITIZER
-      // CFNetworkExecuteProxyAutoConfigurationURL leaks the returned
-      // CFRunLoopSourceRef. Filed as FB12170226.
-      __lsan_ignore_object(runloop_source_.get());
-#endif
-      if (!runloop_source_) {
-        origin_task_runner_->PostTask(
-            FROM_HERE, base::BindOnce(&RequestImpl::OnResult, request_,
-                                      ERR_FAILED, ProxyList()));
-        return;
-      }
-
-      CFRunLoopAddSource(CFRunLoopGetCurrent(), runloop_source_.get(),
-                         kCFRunLoopCommonModes);
-    }
-
-    void CancelOnPacThread() {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(pac_sequence_checker_);
-      if (!runloop_source_) {
-        return;
-      }
-      // `CFRunLoopSourceInvalidate` also removes the source from all runloops
-      // and modes on which it was scheduled.
-      CFRunLoopSourceInvalidate(runloop_source_.get());
-      runloop_source_.reset();
-    }
-
-   private:
-    friend class base::RefCountedThreadSafe<Context>;
-    ~Context() = default;
-
-    static void ResultCallbackOnPacThread(void* client,
-                                          CFArrayRef proxies,
-                                          CFErrorRef error) {
-      auto* self = static_cast<Context*>(client);
-      if (!self) {
-        return;
-      }
-      DCHECK_CALLED_ON_VALID_SEQUENCE(self->pac_sequence_checker_);
-
-      // CFNetwork removes the source from the runloop on completion, but only
-      // `CFRunLoopSourceInvalidate` runs its cancel hook and lets the source
-      // and its internal context be freed (see FB12170226). Invalidating a
-      // source from inside its own callout is safe because CFRunLoop retains
-      // the source across the callout.
-      DCHECK(self->runloop_source_);
-      CFRunLoopSourceInvalidate(self->runloop_source_.get());
-      self->runloop_source_.reset();
-
-      if (self->cancelled_.load(std::memory_order_relaxed)) {
-        return;
-      }
-
-      DCHECK((proxies != nullptr) == (error == nullptr));
-      int net_error = ERR_FAILED;
-      ProxyList proxy_list;
-      if (error == nullptr) {
-        if (CFArrayRef proxy_array_ref =
-                base::apple::CFCast<CFArrayRef>(proxies)) {
-          proxy_list = CFArrayToProxyList(proxy_array_ref);
-          net_error = OK;
-        }
-      }
-
-      // Always post: this callback runs on `PacCFRunLoopThread` while
-      // `SynchronizedRunLoopObserver` holds `GetCFNetworkPacRunloopLock()`,
-      // and `callback_` must never run synchronously before `GetProxyForURL()`
-      // returns `ERR_IO_PENDING`.
-      self->origin_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&RequestImpl::OnResult, self->request_,
-                                    net_error, std::move(proxy_list)));
-    }
-
-    const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
-    const base::WeakPtr<RequestImpl> request_;
-    const base::apple::ScopedCFTypeRef<CFURLRef> pac_url_ref_;
-    const base::apple::ScopedCFTypeRef<CFURLRef> query_url_ref_;
-    std::atomic<bool> cancelled_{false};
-    base::apple::ScopedCFTypeRef<CFRunLoopSourceRef> runloop_source_;
-    SEQUENCE_CHECKER(pac_sequence_checker_);
-  };
-
-  void TeardownAndReleaseContext() {
+  void Teardown() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     completed_or_cancelled_ = true;
     results_ = nullptr;
@@ -534,15 +396,12 @@ class ProxyResolverApple::RequestImpl : public ProxyResolver::Request {
       resolver_ = nullptr;
     }
     weak_factory_.InvalidateWeakPtrs();
-    if (context_) {
-      context_->MarkCancelled();
-      GetPacRunLoopTaskRunner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&Context::CancelOnPacThread, std::move(context_)));
-    }
+    pac_request_.reset();
   }
 
-  void OnResult(int net_error, ProxyList proxy_list) {
+  void OnResult(int net_error,
+                ProxyList proxy_list,
+                base::apple::ScopedCFTypeRef<CFErrorRef> /*error*/) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (completed_or_cancelled_) {
       return;
@@ -556,14 +415,13 @@ class ProxyResolverApple::RequestImpl : public ProxyResolver::Request {
     // `callback`, as `callback.Run()` may synchronously destroy `this`,
     // `results_`, or `resolver_`.
     CompletionOnceCallback callback = std::move(callback_);
-    TeardownAndReleaseContext();
+    Teardown();
 
     std::move(callback).Run(net_error);
   }
 
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<ProxyResolverApple> resolver_ = nullptr;
-  scoped_refptr<Context> context_;
+  std::unique_ptr<ProxyResolverAppleRequest> pac_request_;
   raw_ptr<ProxyInfo> results_ = nullptr;
   CompletionOnceCallback callback_;
   bool completed_or_cancelled_ = false;
@@ -695,6 +553,179 @@ int ProxyResolverApple::GetProxyForURL(
 }
 
 }  // namespace
+
+// State shared between the caller and the PAC thread. Source creation,
+// scheduling, and invalidation stay on the PAC thread so cancellation never
+// waits for a stalled script.
+class ProxyResolverAppleRequest::Context
+    : public base::RefCountedThreadSafe<Context> {
+ public:
+  Context(base::WeakPtr<ProxyResolverAppleRequest> request,
+          CFURLRef pac_url,
+          CFStringRef script,
+          CFURLRef query_url)
+      : origin_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+        request_(std::move(request)),
+        pac_url_ref_(pac_url, base::scoped_policy::RETAIN),
+        // Take an immutable snapshot before posting to the PAC thread.
+        script_(script ? CFStringCreateCopy(kCFAllocatorDefault, script)
+                       : nullptr),
+        query_url_ref_(query_url, base::scoped_policy::RETAIN) {
+    CHECK(!script || script_);
+    DETACH_FROM_SEQUENCE(pac_sequence_checker_);
+  }
+
+  void MarkCancelled() { cancelled_.store(true, std::memory_order_relaxed); }
+
+  void StartOnPacThread() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(pac_sequence_checker_);
+    if (cancelled_.load(std::memory_order_relaxed)) {
+      return;
+    }
+
+    // The runloop observer may hold `GetCFNetworkPacRunloopLock()` while this
+    // task runs. Never acquire it here.
+    EnsureCFNetworkProxyStateInitialized(query_url_ref_.get());
+
+    // The owner retains this context until cancellation invalidates the source
+    // on this same thread. CFNetwork retaining it would leak on FB12170226.
+    CFStreamClientContext client_context = {0, this, nullptr, nullptr, nullptr};
+    if (script_) {
+      runloop_source_.reset(CFNetworkExecuteProxyAutoConfigurationScript(
+          script_.get(), query_url_ref_.get(),
+          &Context::ResultCallbackOnPacThread, &client_context));
+    } else {
+      runloop_source_.reset(CFNetworkExecuteProxyAutoConfigurationURL(
+          pac_url_ref_.get(), query_url_ref_.get(),
+          &Context::ResultCallbackOnPacThread, &client_context));
+    }
+#if LEAK_SANITIZER
+    // CFNetwork leaks the returned source. Filed as FB12170226.
+    __lsan_ignore_object(runloop_source_.get());
+#endif
+    if (!runloop_source_) {
+      origin_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ProxyResolverAppleRequest::OnResult, request_,
+                         ERR_FAILED, ProxyList(),
+                         base::apple::ScopedCFTypeRef<CFErrorRef>()));
+      return;
+    }
+
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), runloop_source_.get(),
+                       kCFRunLoopCommonModes);
+  }
+
+  void CancelOnPacThread() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(pac_sequence_checker_);
+    if (runloop_source_) {
+      CFRunLoopSourceInvalidate(runloop_source_.get());
+      runloop_source_.reset();
+    }
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<Context>;
+  ~Context() = default;
+
+  static void ResultCallbackOnPacThread(void* client,
+                                        CFArrayRef proxies,
+                                        CFErrorRef error) {
+    auto* self = static_cast<Context*>(client);
+    if (!self) {
+      return;
+    }
+    auto keep_alive = base::WrapRefCounted(self);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(self->pac_sequence_checker_);
+
+    // Keep the error alive across source invalidation and callback delivery.
+    base::apple::ScopedCFTypeRef<CFErrorRef> retained_error(
+        error, base::scoped_policy::RETAIN);
+
+    // Invalidation runs the source's cancel hook (FB12170226). CFRunLoop
+    // retains the source across the callback, so it is safe to invalidate here.
+    DCHECK(self->runloop_source_);
+    self->CancelOnPacThread();
+    if (self->cancelled_.load(std::memory_order_relaxed)) {
+      return;
+    }
+
+    DCHECK((proxies != nullptr) == (error == nullptr));
+    int net_error = ERR_FAILED;
+    ProxyList proxy_list;
+    if (!error) {
+      if (CFArrayRef proxy_array = base::apple::CFCast<CFArrayRef>(proxies)) {
+        proxy_list = CFArrayToProxyList(proxy_array);
+        net_error = OK;
+      }
+    }
+
+    self->origin_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ProxyResolverAppleRequest::OnResult, self->request_,
+                       net_error, std::move(proxy_list),
+                       std::move(retained_error)));
+  }
+
+  const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
+  const base::WeakPtr<ProxyResolverAppleRequest> request_;
+  const base::apple::ScopedCFTypeRef<CFURLRef> pac_url_ref_;
+  const base::apple::ScopedCFTypeRef<CFStringRef> script_;
+  const base::apple::ScopedCFTypeRef<CFURLRef> query_url_ref_;
+  std::atomic<bool> cancelled_{false};
+  base::apple::ScopedCFTypeRef<CFRunLoopSourceRef> runloop_source_;
+  SEQUENCE_CHECKER(pac_sequence_checker_);
+};
+
+ProxyResolverAppleRequest::ProxyResolverAppleRequest(CFURLRef pac_url,
+                                                     CFURLRef query_url,
+                                                     ResultCallback callback)
+    : ProxyResolverAppleRequest(pac_url,
+                                nullptr,
+                                query_url,
+                                std::move(callback)) {}
+
+ProxyResolverAppleRequest::ProxyResolverAppleRequest(CFStringRef script,
+                                                     CFURLRef query_url,
+                                                     ResultCallback callback)
+    : ProxyResolverAppleRequest(nullptr,
+                                script,
+                                query_url,
+                                std::move(callback)) {}
+
+ProxyResolverAppleRequest::ProxyResolverAppleRequest(CFURLRef pac_url,
+                                                     CFStringRef script,
+                                                     CFURLRef query_url,
+                                                     ResultCallback callback)
+    : callback_(std::move(callback)) {
+  CHECK(query_url);
+  CHECK((pac_url != nullptr) != (script != nullptr));
+  CHECK(callback_);
+  context_ = base::MakeRefCounted<Context>(weak_factory_.GetWeakPtr(), pac_url,
+                                           script, query_url);
+  GetPacRunLoopTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&Context::StartOnPacThread, context_));
+}
+
+ProxyResolverAppleRequest::~ProxyResolverAppleRequest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  context_->MarkCancelled();
+  GetPacRunLoopTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Context::CancelOnPacThread, std::move(context_)));
+}
+
+void ProxyResolverAppleRequest::OnResult(
+    int net_error,
+    ProxyList proxy_list,
+    base::apple::ScopedCFTypeRef<CFErrorRef> error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!callback_) {
+    return;
+  }
+  ResultCallback callback = std::move(callback_);
+  std::move(callback).Run(net_error, std::move(proxy_list), std::move(error));
+}
 
 ProxyResolverFactoryApple::ProxyResolverFactoryApple()
     : ProxyResolverFactory(false /*expects_pac_bytes*/) {

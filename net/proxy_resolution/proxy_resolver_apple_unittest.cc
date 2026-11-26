@@ -4,6 +4,7 @@
 
 #include "net/proxy_resolution/proxy_resolver_apple.h"
 
+#include <CoreFoundation/CoreFoundation.h>
 #include <stdint.h>
 
 #include <memory>
@@ -12,12 +13,14 @@
 #include <string_view>
 #include <utility>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -40,6 +43,7 @@
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/proxy_resolution_request.h"
 #include "net/proxy_resolution/proxy_resolver.h"
 #include "net/proxy_resolution/proxy_resolver_factory.h"
@@ -220,6 +224,86 @@ class ProxyResolverAppleTest : public ::testing::Test {
     }
   }
 };
+
+using PacResultFuture = base::test::
+    TestFuture<int, ProxyList, base::apple::ScopedCFTypeRef<CFErrorRef>>;
+
+TEST_F(ProxyResolverAppleTest, InlinePacScriptResolvesAsynchronously) {
+  const CFStringRef script = CFSTR(
+      "function FindProxyForURL(url, host) {"
+      "  return host == 'target.example.test'"
+      "      ? 'PROXY proxy.example.test:8080; DIRECT' : 'DIRECT';"
+      "}");
+  base::apple::ScopedCFTypeRef<CFURLRef> url(CFURLCreateWithString(
+      nullptr, CFSTR("http://target.example.test/page"), nullptr));
+  ASSERT_TRUE(url);
+  PacResultFuture result;
+  ProxyResolverAppleRequest request(script, url.get(), result.GetCallback());
+
+  EXPECT_FALSE(result.IsReady());
+  const auto& [net_error, proxy_list, error] = result.Get();
+  EXPECT_EQ(OK, net_error);
+  EXPECT_EQ("PROXY proxy.example.test:8080;DIRECT", proxy_list.ToPacString());
+  EXPECT_FALSE(error);
+}
+
+TEST_F(ProxyResolverAppleTest, InlinePacScriptFailureReturnsCFError) {
+  const CFStringRef script = CFSTR(
+      "function FindProxyForURL(url, host) {"
+      "  throw new Error('PAC test failure');"
+      "}");
+  base::apple::ScopedCFTypeRef<CFURLRef> url(CFURLCreateWithString(
+      nullptr, CFSTR("http://target.example.test/page"), nullptr));
+  ASSERT_TRUE(url);
+
+  PacResultFuture result;
+  ProxyResolverAppleRequest request(script, url.get(), result.GetCallback());
+
+  const auto& [net_error, proxy_list, error] = result.Get();
+  EXPECT_EQ(ERR_FAILED, net_error);
+  EXPECT_TRUE(proxy_list.IsEmpty());
+  EXPECT_TRUE(error);
+}
+
+TEST_F(ProxyResolverAppleTest, CancellingInlinePacScriptSuppressesCallback) {
+  const CFStringRef script =
+      CFSTR("function FindProxyForURL(url, host) { return 'DIRECT'; }");
+  base::apple::ScopedCFTypeRef<CFURLRef> url(CFURLCreateWithString(
+      nullptr, CFSTR("http://target.example.test/page"), nullptr));
+  ASSERT_TRUE(url);
+  PacResultFuture cancelled;
+  {
+    ProxyResolverAppleRequest request(script, url.get(),
+                                      cancelled.GetCallback());
+  }
+
+  PacResultFuture subsequent;
+  ProxyResolverAppleRequest request(script, url.get(),
+                                    subsequent.GetCallback());
+  EXPECT_EQ(OK, subsequent.Get<0>());
+  EXPECT_FALSE(cancelled.IsReady());
+}
+
+TEST_F(ProxyResolverAppleTest, PacRequestFetchFailureReturnsCFError) {
+  ASSERT_TRUE(test_server_.Start());
+  auto pac_url_string =
+      base::SysUTF8ToCFStringRef(test_server_.GetURL(kNotFoundPacPath).spec());
+  base::apple::ScopedCFTypeRef<CFURLRef> pac_url(
+      CFURLCreateWithString(nullptr, pac_url_string.get(), nullptr));
+  base::apple::ScopedCFTypeRef<CFURLRef> query_url(CFURLCreateWithString(
+      nullptr, CFSTR("http://target.example.test/page"), nullptr));
+  ASSERT_TRUE(pac_url);
+  ASSERT_TRUE(query_url);
+
+  PacResultFuture result;
+  ProxyResolverAppleRequest request(pac_url.get(), query_url.get(),
+                                    result.GetCallback());
+
+  const auto& [net_error, proxy_list, error] = result.Get();
+  EXPECT_EQ(ERR_FAILED, net_error);
+  EXPECT_TRUE(proxy_list.IsEmpty());
+  EXPECT_TRUE(error);
+}
 
 // Tests that async `GetProxyForURL` returns `ERR_IO_PENDING` and resolves a PAC
 // script served by `EmbeddedTestServer` without blocking the calling thread.
