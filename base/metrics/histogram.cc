@@ -738,7 +738,7 @@ HistogramBase* Histogram::DeserializeInfoImpl(PickleIterator* iter,
   }
 
   std::string_view name_to_use =
-      mapper ? mapper.Run(histogram_name) : histogram_name;
+      MapHistogramName(histogram_name, &flags, mapper);
   if (name_to_use.empty()) {
     return nullptr;
   }
@@ -1040,7 +1040,7 @@ HistogramBase* LinearHistogram::DeserializeInfoImpl(PickleIterator* iter,
   }
 
   std::string_view name_to_use =
-      mapper ? mapper.Run(histogram_name) : histogram_name;
+      MapHistogramName(histogram_name, &flags, mapper);
   if (name_to_use.empty()) {
     return nullptr;
   }
@@ -1266,7 +1266,7 @@ HistogramBase* BooleanHistogram::DeserializeInfoImpl(PickleIterator* iter,
   }
 
   std::string_view name_to_use =
-      mapper ? mapper.Run(histogram_name) : histogram_name;
+      MapHistogramName(histogram_name, &flags, mapper);
   if (name_to_use.empty()) {
     return nullptr;
   }
@@ -1437,7 +1437,7 @@ HistogramBase* CustomHistogram::DeserializeInfoImpl(PickleIterator* iter,
   }
 
   std::string_view name_to_use =
-      mapper ? mapper.Run(histogram_name) : histogram_name;
+      MapHistogramName(histogram_name, &flags, mapper);
   if (name_to_use.empty()) {
     return nullptr;
   }

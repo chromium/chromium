@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
@@ -94,4 +96,39 @@ IN_PROC_BROWSER_TEST_F(ChromeHistogramsBrowserTest, All) {
   histogram_tester.ExpectUniqueSample("Test.ExactLinear", 5, 1);
   histogram_tester.ExpectUniqueSample("Test.Enumeration", 1, 1);
   histogram_tester.ExpectUniqueSample("Test.Sparse", 10, 1);
+
+  const struct {
+    const char* name;
+    base::HistogramType type;
+    int max = 0;
+    size_t buckets = 0;
+  } kExpected[] = {
+      {"Test.Boolean", base::BOOLEAN_HISTOGRAM, 2, 3},
+      {"Test.Percentage", base::LINEAR_HISTOGRAM, 101, 102},
+      {"Test.PercentageFloat", base::LINEAR_HISTOGRAM, 101, 102},
+      {"Test.Counts100", base::HISTOGRAM, 100, 50},
+      {"Test.Counts10000", base::HISTOGRAM, 10000, 50},
+      {"Test.Counts1M", base::HISTOGRAM, 1000000, 50},
+      {"Test.Times", base::HISTOGRAM, 10000, 50},
+      {"Test.TimesFloat", base::HISTOGRAM, 10000, 50},
+      {"Test.MediumTimes", base::HISTOGRAM, 180000, 50},
+      {"Test.LongTimes", base::HISTOGRAM, 3600000, 50},
+      {"Test.CustomCounts", base::HISTOGRAM, 100, 10},
+      {"Test.ExactLinear", base::LINEAR_HISTOGRAM, 10, 11},
+      {"Test.Enumeration", base::LINEAR_HISTOGRAM, 10, 11},
+      {"Test.Sparse", base::SPARSE_HISTOGRAM},
+  };
+  for (const auto& expected : kExpected) {
+    SCOPED_TRACE(expected.name);
+    base::HistogramBase* histogram =
+        base::StatisticsRecorder::FindHistogram(expected.name);
+    ASSERT_TRUE(histogram);
+    EXPECT_TRUE(
+        histogram->HasFlags(base::HistogramBase::kUmaTargetedHistogramFlag));
+    EXPECT_EQ(histogram->GetHistogramType(), expected.type);
+    if (expected.buckets) {
+      EXPECT_TRUE(histogram->HasConstructionArguments(1, expected.max,
+                                                      expected.buckets));
+    }
+  }
 }

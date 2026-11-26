@@ -4,10 +4,14 @@
 
 #include "components/metrics/content/subprocess_metrics_provider.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/base64.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -15,6 +19,8 @@
 #include "base/metrics/sparse_histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/bind.h"
+#include "components/metrics/mapping/metrics_name_mapper.h"
+#include "components/metrics/mapping/metrics_name_mapping.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -163,6 +169,32 @@ class SubprocessMetricsProviderTest : public testing::Test {
     SubprocessMetricsProvider::GetInstance()->RegisterSubprocessAllocator(
         id, std::move(allocator));
   }
+
+  class ScopedWebiumMetricsNameMapper {
+   public:
+    ScopedWebiumMetricsNameMapper(
+        content::BrowserTaskEnvironment* task_environment,
+        std::unique_ptr<MetricsNameMapper> mapper)
+        : task_environment_(task_environment), mapper_(std::move(mapper)) {
+      SubprocessMetricsProvider::GetInstance()
+          ->webium_metrics_name_mapper_.swap(mapper_);
+    }
+
+    ScopedWebiumMetricsNameMapper(const ScopedWebiumMetricsNameMapper&) =
+        delete;
+    ScopedWebiumMetricsNameMapper& operator=(
+        const ScopedWebiumMetricsNameMapper&) = delete;
+
+    ~ScopedWebiumMetricsNameMapper() {
+      task_environment_->RunUntilIdle();
+      SubprocessMetricsProvider::GetInstance()
+          ->webium_metrics_name_mapper_.swap(mapper_);
+    }
+
+   private:
+    raw_ptr<content::BrowserTaskEnvironment> task_environment_;
+    std::unique_ptr<MetricsNameMapper> mapper_;
+  };
 
   void DeregisterSubprocessAllocator(content::ChildProcessId id) {
     SubprocessMetricsProvider::GetInstance()->DeregisterSubprocessAllocator(id);
@@ -393,6 +425,48 @@ TEST_F(SubprocessMetricsProviderTest, AllocatorRefCounted) {
                   HistogramData{"_bar", /*total_count=*/1, /*sum=*/84},
                   HistogramData{"_baz", /*total_count=*/3, /*sum=*/6},
                   HistogramData{"_foobar", /*total_count=*/3, /*sum=*/15}));
+}
+
+TEST_F(SubprocessMetricsProviderTest, WebiumRendererExemptFromNameMapping) {
+  MetricsNameMappingConfiguration config;
+  auto* rule = config.add_rules();
+  rule->set_metric_name("_flagged_ruled");
+  rule->set_new_metric_name("_renamed_flagged");
+  rule = config.add_rules();
+  rule->set_metric_name("_unflagged_ruled");
+  rule->set_new_metric_name("_renamed");
+
+  ScopedWebiumMetricsNameMapper scoped_mapper(
+      task_environment(), std::make_unique<MetricsNameMapper>(
+                              base::Base64Encode(config.SerializeAsString())));
+
+  constexpr int32_t kUma = base::HistogramBase::kUmaTargetedHistogramFlag;
+  constexpr int32_t kExempt =
+      kUma | base::HistogramBase::kExemptFromNameMappingFlag;
+  base::Histogram::FactoryGet("_flagged", 1, 100, 10, kExempt)->Add(1);
+  base::Histogram::FactoryGet("_flagged_ruled", 1, 100, 10, kExempt)->Add(2);
+  base::SparseHistogram::FactoryGet("_flagged_sparse", kExempt)->Add(5);
+  base::Histogram::FactoryGet("_unflagged_ruled", 1, 100, 10, kUma)->Add(3);
+  base::Histogram::FactoryGet("_unflagged_dropped", 1, 100, 10, kUma)->Add(4);
+
+  SubprocessMetricsProvider::GetInstance()->RegisterSubprocessAllocator(
+      content::ChildProcessId(123),
+      CreateDuplicateAllocator(
+          base::GlobalHistogramAllocator::ReleaseForTesting()),
+      /*is_webium_renderer=*/true);
+  SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  EXPECT_THAT(GetSnapshotHistograms(),
+              UnorderedElementsAre(HistogramData{"_flagged", 1, 1},
+                                   HistogramData{"_renamed_flagged", 1, 2},
+                                   HistogramData{"_flagged_sparse", 1, 5},
+                                   HistogramData{"_renamed", 1, 3}));
+  DeregisterSubprocessAllocator(content::ChildProcessId(123));
+  for (const char* name : {"_flagged", "_renamed_flagged", "_flagged_sparse"}) {
+    base::HistogramBase* merged = base::StatisticsRecorder::FindHistogram(name);
+    ASSERT_TRUE(merged) << name;
+    EXPECT_FALSE(
+        merged->HasFlags(base::HistogramBase::kExemptFromNameMappingFlag));
+  }
 }
 
 }  // namespace metrics

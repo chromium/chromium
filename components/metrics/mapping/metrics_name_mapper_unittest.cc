@@ -5,11 +5,13 @@
 #include "components/metrics/mapping/metrics_name_mapper.h"
 
 #include <array>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/metrics/histogram_base.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/metrics/mapping/metrics_mapping_features.h"
@@ -18,6 +20,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 namespace metrics {
 namespace {
+
+constexpr int32_t kNoFlags = base::HistogramBase::kNoFlags;
 
 class MetricsNameMapperTest : public testing::Test {
  public:
@@ -58,7 +62,7 @@ TEST_F(MetricsNameMapperTest, DefaultDrop) {
   MetricsNameMappingConfiguration config;
   SetUpMapperWithConfig(config);
 
-  EXPECT_THAT(mapper()->GetMetricsNameIfAllowed("AnyHistogram"),
+  EXPECT_THAT(mapper()->GetMetricsNameIfAllowed("AnyHistogram", kNoFlags),
               testing::IsEmpty());
 }
 
@@ -72,9 +76,9 @@ TEST_F(MetricsNameMapperTest, ExactMatchAllowWithRename) {
 
   SetUpMapperWithConfig(config);
 
-  EXPECT_EQ(mapper()->GetMetricsNameIfAllowed("TargetHistogram"),
+  EXPECT_EQ(mapper()->GetMetricsNameIfAllowed("TargetHistogram", kNoFlags),
             "RenamedHistogram");
-  EXPECT_THAT(mapper()->GetMetricsNameIfAllowed("OtherHistogram"),
+  EXPECT_THAT(mapper()->GetMetricsNameIfAllowed("OtherHistogram", kNoFlags),
               testing::IsEmpty());
 }
 
@@ -88,7 +92,7 @@ TEST_F(MetricsNameMapperTest, ExactMatchAllowWithEmptyRenameIgnored) {
 
   SetUpMapperWithConfig(config);
 
-  EXPECT_EQ(mapper()->GetMetricsNameIfAllowed("TargetHistogram"),
+  EXPECT_EQ(mapper()->GetMetricsNameIfAllowed("TargetHistogram", kNoFlags),
             "TargetHistogram");
 }
 
@@ -101,7 +105,7 @@ TEST_F(MetricsNameMapperTest, ExactMatchAllowWithoutRename) {
 
   SetUpMapperWithConfig(config);
 
-  EXPECT_EQ(mapper()->GetMetricsNameIfAllowed("TargetHistogram"),
+  EXPECT_EQ(mapper()->GetMetricsNameIfAllowed("TargetHistogram", kNoFlags),
             "TargetHistogram");
 }
 
@@ -119,7 +123,7 @@ TEST_F(MetricsNameMapperTest, ExactMatchFirstRuleWins) {
 
   SetUpMapperWithConfig(config);
 
-  EXPECT_EQ(mapper()->GetMetricsNameIfAllowed("TargetHistogram"),
+  EXPECT_EQ(mapper()->GetMetricsNameIfAllowed("TargetHistogram", kNoFlags),
             "FirstRename");
 }
 
@@ -129,7 +133,7 @@ TEST_F(MetricsNameMapperTest, InvalidBase64Config) {
   SetUpMapperWithBase64Config("invalid_base64_%$#");
 
   // Since configuration fell back to nothing, it is treated as empty -> drop
-  EXPECT_THAT(mapper()->GetMetricsNameIfAllowed("AnyHistogram"),
+  EXPECT_THAT(mapper()->GetMetricsNameIfAllowed("AnyHistogram", kNoFlags),
               testing::IsEmpty());
 }
 
@@ -137,7 +141,7 @@ TEST_F(MetricsNameMapperTest, InvalidBase64Config) {
 // bytes fails gracefully and defaults to DROP.
 TEST_F(MetricsNameMapperTest, InvalidProtoConfig) {
   SetUpMapperWithBase64Config(base::Base64Encode("invalid_proto_data"));
-  EXPECT_THAT(mapper()->GetMetricsNameIfAllowed("AnyHistogram"),
+  EXPECT_THAT(mapper()->GetMetricsNameIfAllowed("AnyHistogram", kNoFlags),
               testing::IsEmpty());
 }
 
@@ -154,6 +158,7 @@ struct DefaultPrecedenceCase {
   std::string_view test_name;
   std::string_view input;
   std::string_view expected;
+  int32_t flags = base::HistogramBase::kNoFlags;
 };
 
 class MetricsNameMapperTestWithDefaults
@@ -189,7 +194,8 @@ class MetricsNameMapperTestWithDefaults
 
 TEST_P(MetricsNameMapperTestWithDefaults, EvaluatesInPrecedenceOrder) {
   const auto& param = GetParam();
-  EXPECT_EQ(mapper()->GetMetricsNameIfAllowed(param.input), param.expected);
+  EXPECT_EQ(mapper()->GetMetricsNameIfAllowed(param.input, param.flags),
+            param.expected);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -209,6 +215,15 @@ INSTANTIATE_TEST_SUITE_P(
         DefaultPrecedenceCase{"AllowedPrefixKeeps", "WebUI.Other",
                               "WebUI.Other"},
         DefaultPrecedenceCase{"PrefixRequiresDot", "WebUIOther", ""},
+        DefaultPrecedenceCase{"DefaultRuleBeatsExemptFlag", "Renamed.Metric",
+                              "WebUI.TopChrome.Renamed.Metric",
+                              base::HistogramBase::kExemptFromNameMappingFlag},
+        DefaultPrecedenceCase{"ServedRuleBeatsExemptFlag", "Served.Metric",
+                              "Server.Renamed",
+                              base::HistogramBase::kExemptFromNameMappingFlag},
+        DefaultPrecedenceCase{"ExemptFlagKeepsUnlisted", "Unlisted.Metric",
+                              "Unlisted.Metric",
+                              base::HistogramBase::kExemptFromNameMappingFlag},
         DefaultPrecedenceCase{"UnlistedDropped", "Unlisted.Metric", ""}),
     [](const testing::TestParamInfo<DefaultPrecedenceCase>& info) {
       return std::string(info.param.test_name);
@@ -221,10 +236,11 @@ TEST_F(MetricsNameMapperTest, DefaultsApplyWithEmptyOrInvalidConfig) {
 
   for (const char* config : {"", "invalid_base64_%$#"}) {
     SetUpMapperWithBase64Config(config);
-    EXPECT_EQ(mapper()->GetMetricsNameIfAllowed("Renamed.Metric"),
+    EXPECT_EQ(mapper()->GetMetricsNameIfAllowed("Renamed.Metric", kNoFlags),
               "WebUI.TopChrome.Renamed.Metric");
-    EXPECT_EQ(mapper()->GetMetricsNameIfAllowed("WebUI.Other"), "WebUI.Other");
-    EXPECT_THAT(mapper()->GetMetricsNameIfAllowed("Unlisted.Metric"),
+    EXPECT_EQ(mapper()->GetMetricsNameIfAllowed("WebUI.Other", kNoFlags),
+              "WebUI.Other");
+    EXPECT_THAT(mapper()->GetMetricsNameIfAllowed("Unlisted.Metric", kNoFlags),
                 testing::IsEmpty());
   }
 }
@@ -243,10 +259,11 @@ TEST_F(MetricsNameMapperTest, CreateInstanceAppliesDefaultsOnlyWhenEnabled) {
   std::unique_ptr<MetricsNameMapper> instance =
       MetricsNameMapper::CreateInstance();
   ASSERT_TRUE(instance);
-  EXPECT_EQ(instance->GetMetricsNameIfAllowed("Renamed.Metric"),
+  EXPECT_EQ(instance->GetMetricsNameIfAllowed("Renamed.Metric", kNoFlags),
             "WebUI.TopChrome.Renamed.Metric");
-  EXPECT_EQ(instance->GetMetricsNameIfAllowed("WebUI.Other"), "WebUI.Other");
-  EXPECT_THAT(instance->GetMetricsNameIfAllowed("Unlisted.Metric"),
+  EXPECT_EQ(instance->GetMetricsNameIfAllowed("WebUI.Other", kNoFlags),
+            "WebUI.Other");
+  EXPECT_THAT(instance->GetMetricsNameIfAllowed("Unlisted.Metric", kNoFlags),
               testing::IsEmpty());
 }
 
@@ -282,7 +299,7 @@ TEST_F(MetricsNameMapperTest, DefaultRenameOutlivesMapper) {
   MetricsNameMapper::SetDefaults(kDefaultRules, kDefaultAllowedPrefixes);
   SetUpMapperWithBase64Config("");
   std::string_view renamed =
-      mapper()->GetMetricsNameIfAllowed("Renamed.Metric");
+      mapper()->GetMetricsNameIfAllowed("Renamed.Metric", kNoFlags);
 
   DestroyMapper();
   EXPECT_EQ(renamed, "WebUI.TopChrome.Renamed.Metric");

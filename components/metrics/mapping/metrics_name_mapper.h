@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_METRICS_MAPPING_METRICS_NAME_MAPPER_H_
 #define COMPONENTS_METRICS_MAPPING_METRICS_NAME_MAPPER_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -57,6 +58,8 @@ class COMPONENT_EXPORT(METRICS_MAPPING) MetricsNameMapper {
   //    no server rule can undo a built-in rename.
   // 2. A server-provided rule in `exact_rules_`.
   // 3. An allowed prefix from `SetDefaults()`, which keeps `metric_name`.
+  // 4. `base::HistogramBase::kExemptFromNameMappingFlag` in the histogram's
+  //    `flags`, which keeps `metric_name`.
   // A matching rule returns its new name, or `metric_name` if it has none. If
   // nothing matches, returns an empty string_view to drop the metric.
   //
@@ -64,7 +67,8 @@ class COMPONENT_EXPORT(METRICS_MAPPING) MetricsNameMapper {
   // passed-in `metric_name`, `exact_rules_`, or the static storage that
   // `SetDefaults()` fills, so it stays valid while `metric_name` and this
   // instance are alive.
-  std::string_view GetMetricsNameIfAllowed(std::string_view metric_name) const;
+  std::string_view GetMetricsNameIfAllowed(std::string_view metric_name,
+                                           int32_t flags) const;
 
   base::WeakPtr<MetricsNameMapper> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

@@ -17,6 +17,7 @@
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_base.h"
 #include "base/no_destructor.h"
 #include "components/metrics/mapping/metrics_mapping_features.h"
 #include "components/metrics/mapping/metrics_name_mapping.pb.h"
@@ -135,7 +136,8 @@ std::unique_ptr<MetricsNameMapper> MetricsNameMapper::CreateInstance() {
 }
 
 std::string_view MetricsNameMapper::GetMetricsNameIfAllowed(
-    std::string_view metric_name) const {
+    std::string_view metric_name,
+    int32_t flags) const {
   const Defaults& defaults = GetDefaults();
   // Built-in rules come first so that no server rule can undo a built-in
   // rename.
@@ -155,6 +157,11 @@ std::string_view MetricsNameMapper::GetMetricsNameIfAllowed(
     if (metric_name.starts_with(prefix)) {
       return metric_name;
     }
+  }
+
+  // Exempt histograms keep their names when no rule or allowed prefix matches.
+  if (flags & base::HistogramBase::kExemptFromNameMappingFlag) {
+    return metric_name;
   }
 
   // If no rule or allowed prefix matches, the metric is dropped (return empty

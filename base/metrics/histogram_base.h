@@ -74,9 +74,11 @@ class BASE_EXPORT HistogramBase {
   using Sample32 = int32_t;              // Used for samples.
   using AtomicCount = subtle::Atomic32;  // Used to count samples.
   using Count32 = int32_t;  // Used to manipulate counts in temporaries.
-  // Used to rename or drop a histogram name when empty is returned.
+  // Used to rename or drop a histogram name when empty is returned. Receives
+  // the histogram name and its deserialized flags.
   using NameMapper =
-      base::RepeatingCallback<std::string_view(std::string_view)>;
+      base::RepeatingCallback<std::string_view(std::string_view name,
+                                               int32_t flags)>;
 
   static const Sample32 kSampleType_MAX;  // INT_MAX
 
@@ -125,6 +127,17 @@ class BASE_EXPORT HistogramBase {
     // defining or creating a histogram.
     kIsPersistent = 0x40,
 
+    // 0x80 was `kPumaRcTargetedHistogramFlag`. It stays unused so that flags
+    // persisted by older versions are not misread.
+
+    // Indicates that embedder name-mapping policies must keep this histogram
+    // under its original name instead of dropping it when no mapping rule
+    // matches it. A matching rule still applies. Cleared during
+    // `DeserializeInfo()` after `NameMapper` runs. Pass at creation:
+    // `SetFlags()` after creation does not reach persistent memory, and
+    // `FactoryGet()` returns an existing histogram unchanged.
+    kExemptFromNameMappingFlag = 0x100,
+
     // Mask of flags indicating that the histogram should be persisted in PMA
     // files. Currently, only UMA-targeted histograms (including stability
     // histograms, which include `kUmaTargetedHistogramFlag`) are persisted.
@@ -139,7 +152,8 @@ class BASE_EXPORT HistogramBase {
 
     // A combination of all flags used in tests.
     kAllFlags = kUmaTargetedHistogramFlag | kUmaStabilityHistogramFlag |
-                kIPCSerializationSourceFlag | kCallbackExists | kIsPersistent,
+                kIPCSerializationSourceFlag | kCallbackExists | kIsPersistent |
+                kExemptFromNameMappingFlag,
   };
 
   // Histogram data inconsistency types.
@@ -154,11 +168,13 @@ class BASE_EXPORT HistogramBase {
   };
 
   // Create or find existing histogram that matches the pickled info.
-  // The `mapper` callback is invoked with the original histogram name. It can
-  // return a new name to rename the histogram, the original name to keep it,
-  // or an empty string to drop the histogram entirely. This allows renaming
+  // The `mapper` callback is invoked with the original histogram name and its
+  // deserialized flags (with `kIPCSerializationSourceFlag` cleared). It can
+  // return a new name to rename the histogram, the original name to keep it, or
+  // an empty string to drop the histogram entirely. This allows renaming
   // metrics during deserialization, e.g., adding prefixes based on process
-  // type.
+  // type. `kExemptFromNameMappingFlag` is cleared after `mapper` runs so it is
+  // not persisted on the deserialized histogram.
   // Returns nullptr if the pickled data has problems.
   static HistogramBase* DeserializeInfo(base::PickleIterator* iter,
                                         HistogramBase::NameMapper mapper);
@@ -344,6 +360,12 @@ class BASE_EXPORT HistogramBase {
   // when the original string is not a code constant or held in persistent
   // memory.
   static DurableStringView GetPermanentName(std::string_view name);
+
+  // Maps `histogram_name` via `mapper` if set and clears
+  // `kExemptFromNameMappingFlag` from `*flags`.
+  static std::string_view MapHistogramName(std::string_view histogram_name,
+                                           int* flags,
+                                           const NameMapper& mapper);
 
  private:
   friend class HistogramBaseTest;

@@ -4,6 +4,7 @@
 
 #include "content/browser/metrics/histogram_synchronizer.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "base/check_op.h"
@@ -270,9 +271,9 @@ void HistogramSynchronizer::OnHistogramDataCollected(
   if (is_webium_renderer && webium_metrics_name_mapper_) {
     mapper = base::BindRepeating(
         [](base::WeakPtr<metrics::MetricsNameMapper> mapper,
-           std::string_view name) -> std::string_view {
+           std::string_view name, int32_t flags) -> std::string_view {
           if (mapper) {
-            return mapper->GetMetricsNameIfAllowed(name);
+            return mapper->GetMetricsNameIfAllowed(name, flags);
           }
           // If the mapper was destroyed, drop the metric by returning empty
           // string.

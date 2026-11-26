@@ -250,4 +250,17 @@ DurableStringView HistogramBase::GetPermanentName(std::string_view name) {
   return DurableStringView(*it);
 }
 
+// static
+std::string_view HistogramBase::MapHistogramName(
+    std::string_view histogram_name,
+    int* flags,
+    const NameMapper& mapper) {
+  std::string_view name_to_use =
+      mapper ? mapper.Run(histogram_name, *flags) : histogram_name;
+  // The exemption only matters to `mapper`; clear it so histograms in this
+  // process never carry it.
+  *flags &= ~kExemptFromNameMappingFlag;
+  return name_to_use;
+}
+
 }  // namespace base

@@ -708,6 +708,8 @@ if (!is_cronet_build) {
     if (use_blink) {
       deps += [
         ":content",
+        "//components/metrics/mapping",
+        "//components/metrics/mapping:metrics_name_mapping_proto",
         "//content/test:test_support",
       ]
     }

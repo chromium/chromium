@@ -34,3 +34,9 @@ apply.
 The `MetricsNameMapper` evaluator is called dynamically by the
 `SubprocessMetricsProvider` when parsing and merging metric allocation streams
 from child processes.
+
+Its IPC counterpart `HistogramSynchronizer` (via
+`HistogramBase::DeserializeInfo()`) and `SubprocessMetricsProvider` pass
+histograms' flags to `MetricsNameMapper`, which keeps those created with
+`base::HistogramBase::kExemptFromNameMappingFlag` under their own names when
+no rule or allowed prefix matches them, instead of dropping them.

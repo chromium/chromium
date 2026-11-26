@@ -28,8 +28,9 @@ class MetricsNameMapper;
 }  // namespace metrics
 
 namespace base {
+class HistogramBase;
 class PersistentHistogramAllocator;
-}
+}  // namespace base
 
 namespace metrics {
 
@@ -146,12 +147,13 @@ class SubprocessMetricsProvider
   static void MergeHistogramDeltasFromAllocator(content::ChildProcessId id,
                                                 RefCountedAllocator* allocator);
 
-  // Returns the overridden histogram name for merging if the mapping is
-  // initialized and the `histogram_name` is allowed. Otherwise, returns the
-  // original `histogram_name` or an empty string if it should be dropped.
+  // Returns the histogram name to use for merging. If `is_webium_renderer` is
+  // true and mapping is initialized, delegates to `webium_metrics_name_mapper_`
+  // with `histogram.flags()` (returning empty if dropped). Otherwise, returns
+  // `histogram.histogram_name()`.
   static std::string_view GetHistogramNameForMerging(
       bool is_webium_renderer,
-      std::string_view histogram_name);
+      const base::HistogramBase& histogram);
 
   // Merges all histograms of the |allocators| to the global StatisticsRecorder.
   // Does not have any form of ownership on the allocators. May be called on a

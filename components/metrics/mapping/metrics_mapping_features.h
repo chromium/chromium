@@ -14,7 +14,9 @@ namespace metrics::features {
 // Controls whether Webium (Initial WebUI) telemetry is separated from
 // general web browsing metrics. When disabled, all metrics are reported as-is.
 // When enabled, metrics are filtered or renamed according to the provided
-// configuration rules.
+// configuration rules. Histograms created with
+// `base::HistogramBase::kExemptFromNameMappingFlag` keep their names when no
+// rule matches them.
 COMPONENT_EXPORT(METRICS_MAPPING) BASE_DECLARE_FEATURE(kWebiumMetricsMapping);
 
 // The base64-encoded binary proto configuration for the Webium metrics mapping

@@ -276,15 +276,16 @@ void SubprocessMetricsProvider::RecreateTaskRunnerForTesting() {
 // static
 std::string_view SubprocessMetricsProvider::GetHistogramNameForMerging(
     bool is_webium_renderer,
-    std::string_view histogram_name) {
+    const base::HistogramBase& histogram) {
   if (is_webium_renderer) {
     auto* mapper = SubprocessMetricsProvider::GetInstance()
                        ->webium_metrics_name_mapper_.get();
     if (mapper) {
-      return mapper->GetMetricsNameIfAllowed(histogram_name);
+      return mapper->GetMetricsNameIfAllowed(histogram.histogram_name(),
+                                             histogram.flags());
     }
   }
-  return histogram_name;
+  return histogram.histogram_name();
 }
 
 // static
@@ -302,8 +303,8 @@ void SubprocessMetricsProvider::MergeHistogramDeltasFromAllocator(
       break;
     }
 
-    std::string_view final_name = GetHistogramNameForMerging(
-        allocator->IsWebiumRenderer(), histogram->histogram_name());
+    std::string_view final_name =
+        GetHistogramNameForMerging(allocator->IsWebiumRenderer(), *histogram);
 
     if (final_name.empty()) {
       continue;

@@ -1029,8 +1029,9 @@ class InitialWebUIMetricsDropBrowserTest : public InitialWebUIBrowserTestBase {
  public:
   InitialWebUIMetricsDropBrowserTest() {
     // Enable the feature with an empty configuration.
-    // This implies that NO metrics are mapped or allowed, so all Webium
-    // renderer metrics should be dropped.
+    // Unflagged Webium renderer metrics (e.g., Blink, V8, and cc histograms)
+    // are not mapped or allowed and should be dropped, while histograms exempt
+    // from name mapping (such as those from `chrome.histograms`) are kept.
     metrics::MetricsNameMappingConfiguration config;
     std::string serialized_config;
     config.SerializeToString(&serialized_config);
@@ -1065,6 +1066,33 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMetricsDropBrowserTest,
   std::unique_ptr<content::WebContents> initial_webui_web_contents =
       CreateAndNavigateWebContents(url, &initializer);
 
+  ASSERT_TRUE(content::ExecJs(initial_webui_web_contents.get(), R"(
+    chrome.histograms.recordBoolean('Test.Webium.Boolean', true);
+    chrome.histograms.recordPercentage('Test.Webium.Percentage', 50);
+    chrome.histograms.recordSmallCount('Test.Webium.SmallCount', 10);
+    chrome.histograms.recordMediumCount('Test.Webium.MediumCount', 100);
+    chrome.histograms.recordCount('Test.Webium.Count', 1000);
+    chrome.histograms.recordTime('Test.Webium.Time', 100);
+    chrome.histograms.recordMediumTime('Test.Webium.MediumTime', 1000);
+    chrome.histograms.recordLongTime('Test.Webium.LongTime', 10000);
+    chrome.histograms.recordValue({
+      metricName: 'Test.Webium.Value',
+      type: 'histogram-log',
+      min: 1,
+      max: 100,
+      buckets: 10,
+    }, 10);
+    chrome.histograms.recordValue({
+      metricName: 'Test.Webium.LinearValue',
+      type: 'histogram-linear',
+      min: 1,
+      max: 10,
+      buckets: 11,
+    }, 5);
+    chrome.histograms.recordEnumerationValue('Test.Webium.Enum', 1, 10);
+    chrome.histograms.recordSparseValue('Test.Webium.Sparse', 10);
+  )"));
+
   // Fetch the histograms from the Webium renderer and merge them into the
   // browser's StatisticsRecorder.
   content::FetchHistogramsFromChildProcesses();
@@ -1080,6 +1108,24 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMetricsDropBrowserTest,
   // 2. Verify original metric does NOT exist (it was dropped, not emitted
   // as-is).
   histogram_tester.ExpectTotalCount(kTestMetricName, 0);
+
+  // 3. Verify `chrome.histograms` metrics are exempt from name mapping and
+  // kept.
+  const struct {
+    const char* name;
+    int sample;
+  } kExemptSamples[] = {
+      {"Test.Webium.Boolean", 1},       {"Test.Webium.Percentage", 50},
+      {"Test.Webium.SmallCount", 10},   {"Test.Webium.MediumCount", 100},
+      {"Test.Webium.Count", 1000},      {"Test.Webium.Time", 100},
+      {"Test.Webium.MediumTime", 1000}, {"Test.Webium.LongTime", 10000},
+      {"Test.Webium.Value", 10},        {"Test.Webium.LinearValue", 5},
+      {"Test.Webium.Enum", 1},          {"Test.Webium.Sparse", 10},
+  };
+  for (const auto& expected : kExemptSamples) {
+    SCOPED_TRACE(expected.name);
+    histogram_tester.ExpectUniqueSample(expected.name, expected.sample, 1);
+  }
 }
 
 // TODO(crbug.com/493786816): Add test case for startup metrics verification

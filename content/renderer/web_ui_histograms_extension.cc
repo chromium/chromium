@@ -13,7 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/metrics/sparse_histogram.h"
+#include "base/time/time.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_thread.h"
 #include "gin/arguments.h"
@@ -61,6 +62,12 @@ namespace {
 
 const size_t kMaxBuckets = 10000;
 
+// Exempts histograms recorded via chrome.histograms from Webium name mapping
+// so top-chrome WebUI metrics are not dropped.
+constexpr int32_t kWebUIHistogramFlags =
+    base::HistogramBase::kUmaTargetedHistogramFlag |
+    base::HistogramBase::kExemptFromNameMappingFlag;
+
 // Implementation moved from
 // extensions/browser/api/metrics_private/metrics_private_api.cc
 void RecordValue(const std::string& name,
@@ -85,13 +92,11 @@ void RecordValue(const std::string& name,
 
   base::HistogramBase* counter;
   if (type == base::LINEAR_HISTOGRAM) {
-    counter = base::LinearHistogram::FactoryGet(
-        name, min, max, buckets,
-        base::HistogramBase::kUmaTargetedHistogramFlag);
+    counter = base::LinearHistogram::FactoryGet(name, min, max, buckets,
+                                                kWebUIHistogramFlags);
   } else {
-    counter = base::Histogram::FactoryGet(
-        name, min, max, buckets,
-        base::HistogramBase::kUmaTargetedHistogramFlag);
+    counter = base::Histogram::FactoryGet(name, min, max, buckets,
+                                          kWebUIHistogramFlags);
   }
 
   // The histogram can be NULL if it is constructed with bad arguments.  Ignore
@@ -99,6 +104,37 @@ void RecordValue(const std::string& name,
   if (counter) {
     counter->Add(sample);
   }
+}
+
+// File-local copies of the base::UmaHistogram* helpers that chrome.histograms
+// records through, creating each histogram with `kWebUIHistogramFlags`. Bucket
+// layouts match base/metrics/histogram_functions.cc.
+void WebUIHistogramExactLinear(const std::string& name,
+                               int sample,
+                               int exclusive_max) {
+  base::LinearHistogram::FactoryGet(name, 1, exclusive_max,
+                                    static_cast<size_t>(exclusive_max + 1),
+                                    kWebUIHistogramFlags)
+      ->Add(sample);
+}
+
+void WebUIHistogramCustomCounts(const std::string& name,
+                                int sample,
+                                int min,
+                                int exclusive_max,
+                                size_t buckets) {
+  base::Histogram::FactoryGet(name, min, exclusive_max, buckets,
+                              kWebUIHistogramFlags)
+      ->Add(sample);
+}
+
+void WebUIHistogramCustomTimes(const std::string& name,
+                               base::TimeDelta sample,
+                               base::TimeDelta min,
+                               base::TimeDelta max,
+                               size_t buckets) {
+  base::Histogram::FactoryTimeGet(name, min, max, buckets, kWebUIHistogramFlags)
+      ->AddTimeMillisecondsGranularity(sample);
 }
 
 }  // namespace
@@ -123,38 +159,52 @@ void InstallWebUIHistogramsExtension(v8::Isolate* isolate,
   });
 
   bind("recordBoolean", [](const std::string& name, bool value) {
-    base::UmaHistogramBoolean(name, value);
+    // Same layout as base::UmaHistogramBoolean().
+    base::BooleanHistogram::FactoryGet(name, kWebUIHistogramFlags)->Add(value);
   });
 
   bind("recordPercentage", [](const std::string& name, double value) {
-    base::UmaHistogramPercentage(name, static_cast<int>(std::round(value)));
+    // Same layout as base::UmaHistogramPercentage().
+    WebUIHistogramExactLinear(name, static_cast<int>(std::round(value)), 101);
   });
 
   bind("recordSmallCount", [](const std::string& name, double value) {
-    base::UmaHistogramCounts100(name, static_cast<int>(std::round(value)));
+    // Same layout as base::UmaHistogramCounts100().
+    WebUIHistogramCustomCounts(name, static_cast<int>(std::round(value)), 1,
+                               100, 50);
   });
 
   bind("recordMediumCount", [](const std::string& name, double value) {
-    base::UmaHistogramCounts10000(name, static_cast<int>(std::round(value)));
+    // Same layout as base::UmaHistogramCounts10000().
+    WebUIHistogramCustomCounts(name, static_cast<int>(std::round(value)), 1,
+                               10000, 50);
   });
 
   bind("recordCount", [](const std::string& name, double value) {
-    base::UmaHistogramCounts1M(name, static_cast<int>(std::round(value)));
+    // Same layout as base::UmaHistogramCounts1M().
+    WebUIHistogramCustomCounts(name, static_cast<int>(std::round(value)), 1,
+                               1000000, 50);
   });
 
   bind("recordTime", [](const std::string& name, double value) {
-    base::UmaHistogramTimes(
-        name, base::Milliseconds(static_cast<int64_t>(std::round(value))));
+    // Same layout as base::UmaHistogramTimes().
+    WebUIHistogramCustomTimes(
+        name, base::Milliseconds(static_cast<int64_t>(std::round(value))),
+        base::Milliseconds(1), base::Seconds(10), 50);
   });
 
   bind("recordMediumTime", [](const std::string& name, double value) {
-    base::UmaHistogramMediumTimes(
-        name, base::Milliseconds(static_cast<int64_t>(std::round(value))));
+    // Same layout as base::UmaHistogramMediumTimes().
+    WebUIHistogramCustomTimes(
+        name, base::Milliseconds(static_cast<int64_t>(std::round(value))),
+        base::Milliseconds(1), base::Minutes(3), 50);
   });
 
   bind("recordLongTime", [](const std::string& name, double value) {
-    base::UmaHistogramLongTimes(
-        name, base::Milliseconds(static_cast<int64_t>(std::round(value))));
+    // Same layout as base::UmaHistogramLongTimes().
+    WebUIHistogramCustomTimes(
+        name, base::Milliseconds(static_cast<int64_t>(std::round(value))),
+        base::Milliseconds(1), base::Hours(1), 50);
   });
 
   bind("recordValue", [](const MetricType& metric, double value) {
@@ -167,12 +217,15 @@ void InstallWebUIHistogramsExtension(v8::Isolate* isolate,
 
   bind("recordEnumerationValue",
        [](const std::string& name, double sample, int enum_size) {
-         base::UmaHistogramExactLinear(
-             name, static_cast<int>(std::round(sample)), enum_size);
+         // Same layout as base::UmaHistogramExactLinear().
+         WebUIHistogramExactLinear(name, static_cast<int>(std::round(sample)),
+                                   enum_size);
        });
 
   bind("recordSparseValue", [](const std::string& name, double value) {
-    base::UmaHistogramSparse(name, static_cast<int>(std::round(value)));
+    // Same layout as base::UmaHistogramSparse().
+    base::SparseHistogram::FactoryGet(name, kWebUIHistogramFlags)
+        ->Add(static_cast<int>(std::round(value)));
   });
 }
 

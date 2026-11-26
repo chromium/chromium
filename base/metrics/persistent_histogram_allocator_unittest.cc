@@ -945,4 +945,49 @@ TEST_F(PersistentHistogramAllocatorTest, CorruptSparseHistogramMetadataId) {
   EXPECT_TRUE(valid_histogram);
 }
 
+TEST_F(PersistentHistogramAllocatorTest, MergeExemptHistogramWithNameOverride) {
+  std::unique_ptr<StatisticsRecorder> local_sr =
+      StatisticsRecorder::CreateTemporaryForTesting();
+  GlobalHistogramAllocator* old_allocator =
+      GlobalHistogramAllocator::ReleaseForTesting();
+  GlobalHistogramAllocator::CreateWithLocalMemory(kAllocatorMemorySize, 0, "");
+  ASSERT_TRUE(GlobalHistogramAllocator::Get());
+
+  constexpr int32_t kExemptFlags = HistogramBase::kUmaTargetedHistogramFlag |
+                                   HistogramBase::kExemptFromNameMappingFlag;
+  Histogram::FactoryGet("OriginalExemptHistogram", 1, 100, 10, kExemptFlags)
+      ->Add(5);
+  SparseHistogram::FactoryGet("OriginalExemptSparse", kExemptFlags)->Add(7);
+
+  GlobalHistogramAllocator* new_allocator =
+      GlobalHistogramAllocator::ReleaseForTesting();
+  local_sr.reset();
+  GlobalHistogramAllocator::Set(old_allocator);
+
+  PersistentHistogramAllocator recovery(
+      std::make_unique<PersistentMemoryAllocator>(
+          const_cast<void*>(new_allocator->memory_allocator()->data()),
+          new_allocator->memory_allocator()->size(), 0, 0, "",
+          PersistentMemoryAllocator::kReadWrite));
+  PersistentHistogramAllocator::Iterator hist_iter(&recovery);
+  while (std::unique_ptr<HistogramBase> recovered = hist_iter.GetNext()) {
+    std::string override_name =
+        "Overridden." + std::string(recovered->histogram_name());
+    EXPECT_EQ(PersistentHistogramAllocator::MergeResult::kSuccess,
+              recovery.MergeHistogramDeltaToStatisticsRecorder(recovered.get(),
+                                                               override_name));
+  }
+
+  EXPECT_FALSE(StatisticsRecorder::FindHistogram("OriginalExemptHistogram"));
+  EXPECT_FALSE(StatisticsRecorder::FindHistogram("OriginalExemptSparse"));
+
+  for (const char* name : {"Overridden.OriginalExemptHistogram",
+                           "Overridden.OriginalExemptSparse"}) {
+    HistogramBase* merged = StatisticsRecorder::FindHistogram(name);
+    ASSERT_TRUE(merged) << name;
+    EXPECT_EQ(1, merged->SnapshotSamples()->TotalCount());
+    EXPECT_FALSE(merged->HasFlags(HistogramBase::kExemptFromNameMappingFlag));
+  }
+}
+
 }  // namespace base

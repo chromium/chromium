@@ -711,11 +711,12 @@ PersistentHistogramAllocator::GetOrCreateStatisticsRecorderHistogram(
   histogram->SerializeInfo(&pickle);
   PickleIterator iter(pickle);
 
-  base::RepeatingCallback<std::string_view(std::string_view)> mapper;
+  HistogramBase::NameMapper mapper;
   if (!name_override.empty()) {
+    // Override applies to every histogram, flagged or not.
     mapper = base::BindRepeating(
-        [](std::string_view override_name, std::string_view /* original_name */)
-            -> std::string_view { return override_name; },
+        [](std::string_view override_name, std::string_view /* original_name */,
+           int32_t /* flags */) -> std::string_view { return override_name; },
         name_override);
   }
 

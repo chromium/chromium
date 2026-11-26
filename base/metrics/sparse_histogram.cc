@@ -256,12 +256,10 @@ HistogramBase* SparseHistogram::DeserializeInfoImpl(PickleIterator* iter,
 
   flags &= ~HistogramBase::kIPCSerializationSourceFlag;
 
-  std::string_view name_to_use = histogram_name;
-  if (mapper) {
-    name_to_use = mapper.Run(histogram_name);
-    if (name_to_use.empty()) {
-      return DummyHistogram::GetInstance();
-    }
+  std::string_view name_to_use =
+      MapHistogramName(histogram_name, &flags, mapper);
+  if (name_to_use.empty()) {
+    return nullptr;
   }
 
   return SparseHistogram::FactoryGet(name_to_use, flags);
