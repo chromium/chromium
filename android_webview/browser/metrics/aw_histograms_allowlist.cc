@@ -33,6 +33,8 @@ const char* const kHistogramsAllowlist[] = {
     "Android.WebView.VisibleScreenCoverage.PerWebView.http",
     "Android.WebView.VisibleScreenCoverage.PerWebView.https",
     "Autofill.WebView.Enabled",
+    "Memory.Browser.PrivateMemoryFootprint",
+    "Memory.Renderer.PrivateMemoryFootprint",
     "Memory.Total.PrivateMemoryFootprint",
     "PageLoad.InteractiveTiming.InputDelay3",
     "PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration",
