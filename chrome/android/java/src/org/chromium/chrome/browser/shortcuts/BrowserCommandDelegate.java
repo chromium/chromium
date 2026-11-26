@@ -146,6 +146,7 @@ public class BrowserCommandDelegate {
             case ChromeCommandIds.CYCLE_TO_NEXT_TAB:
             case ChromeCommandIds.CYCLE_TO_PREV_TAB:
             case ChromeCommandIds.RESTORE_TAB:
+            case ChromeCommandIds.CLEAR_BROWSING_DATA:
                 return mTabbedBrowserCommandsSupported;
 
             case ChromeCommandIds.SHOW_BOOKMARK_BAR:
@@ -167,7 +168,6 @@ public class BrowserCommandDelegate {
             case ChromeCommandIds.BOOKMARK_ALL_TABS:
             case ChromeCommandIds.SHOW_BOOKMARK_MANAGER:
             case ChromeCommandIds.SHOW_DOWNLOADS:
-            case ChromeCommandIds.CLEAR_BROWSING_DATA:
             case ChromeCommandIds.HELP_PAGE_VIA_KEYBOARD:
             case ChromeCommandIds.CARET_BROWSING_TOGGLE:
             case ChromeCommandIds.TAB_SEARCH:
