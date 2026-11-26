@@ -45,6 +45,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/lookalikes/core/lookalike_test_psl-reversed-inc.cc"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/lookalikes/core/safety_tips.pb.h"
@@ -60,6 +61,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -432,6 +434,11 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   LookalikeTestHelper* test_helper() { return test_helper_.get(); }
 
  private:
+  // Frozen Public Suffix List; see
+  // components/lookalikes/core/lookalike_test_psl.gperf. Installed before
+  // browser threads start to avoid racing with background PSL lookups.
+  net::registry_controlled_domains::ScopedFindDomainGraphForTesting scoped_psl_{
+      lookalikes::test_psl::kDafsa};
   // TODO(https://crbug.com/423465927): Explore a better approach to make the
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList prewarm_feature_list_{
@@ -1818,6 +1825,11 @@ class SafetyTipPageInfoBubbleViewPrerenderBrowserTest
   }
 
  private:
+  // Frozen Public Suffix List; see
+  // components/lookalikes/core/lookalike_test_psl.gperf. Installed before
+  // browser threads start to avoid racing with background PSL lookups.
+  net::registry_controlled_domains::ScopedFindDomainGraphForTesting scoped_psl_{
+      lookalikes::test_psl::kDafsa};
   content::test::PrerenderTestHelper prerender_helper_;
 };
 

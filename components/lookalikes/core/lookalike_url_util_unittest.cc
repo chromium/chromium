@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "components/lookalikes/core/lookalike_test_psl-reversed-inc.cc"
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/lookalikes/core/safety_tips_config.h"
 #include "components/url_formatter/spoof_checks/common_words/common_words_test-inc.cc"
@@ -16,6 +17,7 @@
 #include "components/url_formatter/spoof_checks/top_domains/test_domains_trie.h"
 #include "components/url_formatter/spoof_checks/top_domains/test_top_bucket_domains.h"
 #include "components/version_info/channel.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using lookalikes::ComboSquattingParams;
@@ -54,10 +56,10 @@ std::string TargetEmbeddingTypeToString(TargetEmbeddingType type) {
   NOTREACHED();
 }
 
-// These tests do not use the production top domain list. This is to avoid
-// having to adjust the tests when the top domain list is updated. Instead,
-// these tests use the data in `test_domains.list` and `common_words_test.gpref`
-// files.
+// These tests do not use the production top domain list or Public Suffix List.
+// This is to avoid having to adjust the tests when those lists are updated.
+// Instead, these tests use the data in `test_domains.list`,
+// `common_words_test.gperf`, and `lookalike_test_psl.gperf`.
 class LookalikeUrlUtilTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -82,6 +84,10 @@ class LookalikeUrlUtilTest : public testing::Test {
     lookalikes::ResetTopBucketDomainsParamsForTesting();
     url_formatter::IDNSpoofChecker::RestoreTrieParamsForTesting();
   }
+
+ private:
+  net::registry_controlled_domains::ScopedFindDomainGraphForTesting scoped_psl_{
+      lookalikes::test_psl::kDafsa};
 };
 
 TEST_F(LookalikeUrlUtilTest, IsEditDistanceAtMostOne) {
@@ -789,6 +795,10 @@ class ComboSquattingTest : public testing::Test {
   void TearDown() override {
     lookalikes::ResetComboSquattingParamsForTesting();
   }
+
+ private:
+  net::registry_controlled_domains::ScopedFindDomainGraphForTesting scoped_psl_{
+      lookalikes::test_psl::kDafsa};
 };
 
 // Test for Combo Squatting check of domains.

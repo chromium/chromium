@@ -9,19 +9,27 @@
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/lookalikes/core/lookalike_test_psl-reversed-inc.cc"
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/lookalikes/core/safety_tips_config.h"
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace lookalikes {
 
-class LookalikeThrottleTest : public ChromeRenderViewHostTestHarness {};
+class LookalikeThrottleTest : public ChromeRenderViewHostTestHarness {
+ private:
+  // Frozen Public Suffix List; see
+  // components/lookalikes/core/lookalike_test_psl.gperf.
+  net::registry_controlled_domains::ScopedFindDomainGraphForTesting scoped_psl_{
+      lookalikes::test_psl::kDafsa};
+};
 
 // Tests that spoofy hostnames are properly handled in the throttle.
 TEST_F(LookalikeThrottleTest, SpoofsBlocked) {

@@ -208,10 +208,12 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_test_path_utils",
     "//components/google/core/common",
+    "//components/lookalikes/core:lookalike_test_psl",
     "//components/lookalikes/core:proto_gen",
     "//components/lookalikes/core:safety_tips",
     "//components/safe_browsing/content/browser/password_protection:test_support",
     "//content/test:test_support",
+    "//net",
     "//testing/gtest",
     "//ui/events:test_support",
   ]

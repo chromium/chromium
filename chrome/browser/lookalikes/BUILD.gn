@@ -128,7 +128,11 @@ source_set("unit_tests") {
     ]
   } else {
     sources += [ "lookalike_url_navigation_throttle_unittest.cc" ]
-    deps += [ "//components/url_formatter" ]
+    deps += [
+      "//components/lookalikes/core:lookalike_test_psl",
+      "//components/url_formatter",
+      "//net",
+    ]
   }
 }
 
@@ -145,9 +149,11 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//components/lookalikes/core",
+      "//components/lookalikes/core:lookalike_test_psl",
       "//components/lookalikes/core:safety_tips",
       "//components/omnibox/browser",
       "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains_header",
+      "//net",
       "//services/metrics/public/cpp:metrics_cpp",
       "//services/metrics/public/cpp:ukm_builders",
     ]

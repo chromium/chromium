@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "components/lookalikes/core/lookalike_test_psl-reversed-inc.cc"
 #import "components/lookalikes/core/safety_tip_test_utils.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
@@ -13,6 +14,7 @@
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/apple/url_conversions.h"
+#import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "testing/platform_test.h"
 
 class LookalikeUrlTabHelperTest : public PlatformTest {
@@ -60,6 +62,10 @@ class LookalikeUrlTabHelperTest : public PlatformTest {
   web::FakeWebState web_state_;
 
  private:
+  // Frozen Public Suffix List; see
+  // components/lookalikes/core/lookalike_test_psl.gperf.
+  net::registry_controlled_domains::ScopedFindDomainGraphForTesting scoped_psl_{
+      lookalikes::test_psl::kDafsa};
   raw_ptr<LookalikeUrlTabAllowList> allow_list_;
 };
 

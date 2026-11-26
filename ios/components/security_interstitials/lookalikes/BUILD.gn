@@ -42,6 +42,7 @@ source_set("unit_tests") {
     ":lookalikes",
     "//base/test:test_support",
     "//components/lookalikes/core",
+    "//components/lookalikes/core:lookalike_test_psl",
     "//components/lookalikes/core:safety_tips",
     "//components/security_interstitials/core",
     "//components/ukm:test_support",

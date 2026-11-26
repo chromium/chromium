@@ -55,6 +55,21 @@ static_library("safety_tips") {
   ]
 }
 
+# Compiles the frozen Public Suffix List used by lookalike URL unit tests into a
+# DAFSA, the same way //net/base/registry_controlled_domains does.
+action("lookalike_test_psl") {
+  testonly = true
+  script = "//net/tools/dafsa/make_dafsa.py"
+  sources = [ "lookalike_test_psl.gperf" ]
+  outputs = [ "$target_gen_dir/lookalike_test_psl-reversed-inc.cc" ]
+  args = [
+    "--reverse",
+    "--namespace=lookalikes::test_psl",
+    rebase_path(sources[0], root_build_dir),
+    rebase_path(outputs[0], root_build_dir),
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -65,6 +80,7 @@ source_set("unit_tests") {
 
   deps = [
     ":core",
+    ":lookalike_test_psl",
     ":proto",
     ":safety_tips",
     "//base/test:test_support",
@@ -75,6 +91,7 @@ source_set("unit_tests") {
     "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains",
     "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains_header",
     "//components/version_info:channel",
+    "//net",
     "//net:test_support",
     "//testing/gtest",
   ]

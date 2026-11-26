@@ -1,0 +1,46 @@
+%{
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+// Frozen Public Suffix List used by lookalike URL unit tests and browsertests,
+// so the tests do not depend on the contents of the production list. Compiled
+// into a DAFSA by //net/tools/dafsa/make_dafsa.py (see BUILD.gn).
+// Values: 0 = ICANN rule, 4 = private rule.
+//
+// Intentionally omitted (assumed absent by tests):
+//   hostname, localpost, randomreg, test, xn--9ca (é), xn--cm-cja (cóm),
+//   xn--googl-fsa (googlé), xn--ixa (τ), xn--tst-bma (tést)
+%}
+%%
+blogspot.com, 4
+bluebite.io, 4
+ca, 0
+cloud.goog, 4
+co.ir, 0
+co.kr, 0
+co.uk, 0
+com, 0
+com.de, 4
+com.mx, 0
+com.tr, 0
+com.tw, 0
+de, 0
+edu, 0
+goog, 0
+google, 0
+gov, 0
+io, 0
+ir, 0
+kr, 0
+mx, 0
+net, 0
+org, 0
+rs, 0
+ru, 0
+sk, 0
+sr, 0
+tr, 0
+tw, 0
+uk, 0
+xn--p1ai, 0
+%%
