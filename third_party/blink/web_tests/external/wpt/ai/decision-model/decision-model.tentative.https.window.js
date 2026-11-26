@@ -27,7 +27,14 @@ const kSampleSchema = {
     {
       id: 'severity',
       type: 'score',
-      prompt: 'Rate the business impact from 1 (minimal) to 5 (critical).',
+      prompt: 'Rate the business impact from 0 (minimal) to 4 (critical).',
+      options: [
+        {label: '0', description: 'Minimal impact'},
+        {label: '1', description: 'Low impact'},
+        {label: '2', description: 'Moderate impact'},
+        {label: '3', description: 'High impact'},
+        {label: '4', description: 'Critical outage'},
+      ],
     },
   ],
 };
@@ -50,6 +57,7 @@ promise_test(async t => {
   const {is_urgent, category, severity} = result;
   assert_equals(is_urgent.id, 'is_urgent');
   assert_in_array(is_urgent.label, ['true', 'false']);
+  assert_false('score' in is_urgent);
   assert_equals(typeof is_urgent.confidence, 'number');
   assert_equals(typeof is_urgent.probabilities, 'object');
   assert_false(Array.isArray(is_urgent.probabilities));
@@ -63,6 +71,7 @@ promise_test(async t => {
 
   assert_equals(category.id, 'category');
   assert_in_array(category.label, ['bug', 'billing', 'feature_request']);
+  assert_false('score' in category);
   assert_equals(typeof category.confidence, 'number');
   assert_equals(typeof category.probabilities, 'object');
   assert_false(Array.isArray(category.probabilities));
@@ -73,13 +82,15 @@ promise_test(async t => {
   }
 
   assert_equals(severity.id, 'severity');
-  assert_in_array(severity.label, ['1', '2', '3', '4', '5']);
-  assert_equals(typeof severity.expectedScore, 'number');
+  assert_in_array(severity.label, ['0', '1', '2', '3', '4']);
+  assert_equals(typeof severity.score, 'number');
+  assert_greater_than_equal(severity.score, 0);
+  assert_less_than_equal(severity.score, 4);
   assert_equals(typeof severity.confidence, 'number');
   assert_equals(typeof severity.probabilities, 'object');
   assert_false(Array.isArray(severity.probabilities));
   assert_array_equals(Object.keys(severity.probabilities),
-                      ['1', '2', '3', '4', '5']);
+                      ['0', '1', '2', '3', '4']);
   for (const p of Object.values(severity.probabilities)) {
     assert_equals(typeof p, 'number');
   }
@@ -110,8 +121,8 @@ promise_test(async t => {
                       ['infra', 'security']);
   assert_array_equals(Object.keys(result.custom_rating.probabilities),
                       ['10', '20', '30']);
-  assert_greater_than_equal(result.custom_rating.expectedScore, 10);
-  assert_less_than_equal(result.custom_rating.expectedScore, 30);
+  assert_greater_than_equal(result.custom_rating.score, 0);
+  assert_less_than_equal(result.custom_rating.score, 2);
 }, 'DecisionModel dynamically reflects custom choice and score question schemas');
 
 promise_test(async t => {
@@ -185,10 +196,41 @@ promise_test(async t => {
     },
     {
       questions: [{
+        id: 'choice_with_too_many_options',
+        type: 'choice',
+        prompt: 'Choice with too many options',
+        options: Array.from({length: 999}, (_, i) => ({label: String(i)})),
+      }],
+    },
+    {
+      questions: [{
+        id: 'score_without_options',
+        type: 'score',
+        prompt: 'Score without options',
+      }],
+    },
+    {
+      questions: [{
+        id: 'score_with_empty_options',
+        type: 'score',
+        prompt: 'Score with empty options',
+        options: [],
+      }],
+    },
+    {
+      questions: [{
         id: 'score_with_single_option',
         type: 'score',
         prompt: 'Score with one option',
-        options: [{label: '1'}],
+        options: [{label: '0'}],
+      }],
+    },
+    {
+      questions: [{
+        id: 'score_with_too_many_options',
+        type: 'score',
+        prompt: 'Score with too many options',
+        options: Array.from({length: 999}, (_, i) => ({label: String(i)})),
       }],
     },
   ];

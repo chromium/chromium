@@ -34,15 +34,19 @@ std::string_view GetQuestionTypeName(
   }
 }
 
+bool IsBlank(std::string_view text) {
+  return base::TrimWhitespaceASCII(text, base::TRIM_ALL).empty();
+}
+
 std::string RenderOption(const mojom::DecisionOption& opt,
                          size_t index,
                          LayaQueryAdapter::QuestionType question_type) {
   if (question_type == LayaQueryAdapter::QuestionType::kScore) {
-    const std::string& desc =
-        opt.description.empty() ? opt.label : opt.description;
+    const std::string_view desc =
+        IsBlank(opt.description) ? opt.label : opt.description;
     return base::StrCat({"level ", base::NumberToString(index), ": ", desc});
   }
-  if (opt.description.empty()) {
+  if (IsBlank(opt.description)) {
     return opt.label;
   }
   return base::StrCat({opt.label, ": ", opt.description});

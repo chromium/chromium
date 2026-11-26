@@ -68,16 +68,18 @@ TEST(DecisionModelPromptBuilderTest, ChoiceQuestionShowsDescriptions) {
             "B) billing\n\nReply with just the letter of the best option.");
 }
 
-TEST(DecisionModelPromptBuilderTest, DefaultScoreLevelsAreKeyed) {
-  const auto schema = CompileOrDie({MakeQuestion("s", QuestionType::kScore)});
+TEST(DecisionModelPromptBuilderTest, ScoreLevelsAreKeyed) {
+  const auto schema =
+      CompileOrDie({MakeQuestion("s", QuestionType::kScore,
+                                 {{"low", "Minimal impact"},
+                                  {"mid", std::nullopt},
+                                  {"high", "Critical outage"}})});
 
   EXPECT_EQ(DecisionModelPromptBuilder::BuildQuestionPrompt(schema, 0),
             "\n\nQuestion: Prompt for s\n"
-            "A) 1: very low, strongly negative.\n"
-            "B) 2: low, fairly negative.\n"
-            "C) 3: moderate, medium, neutral.\n"
-            "D) 4: high, fairly positive.\n"
-            "E) 5: very high, strongly positive.\n\n"
+            "A) low: Minimal impact\n"
+            "B) mid\n"
+            "C) high: Critical outage\n\n"
             "Reply with just the letter of the best option.");
 }
 

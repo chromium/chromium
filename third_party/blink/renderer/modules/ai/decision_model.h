@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -31,6 +32,16 @@ class MODULES_EXPORT DecisionModel final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // Schema limits. Keep in sync with `DecisionModelSchemaCompiler` in
+  // //chrome/browser/ai, which enforces the same rules in the browser.
+  // TODO(crbug.com/565849508): Resolve backend-specific upper bounds for
+  // choice and score option counts instead of fixed renderer limits.
+  static constexpr wtf_size_t kMaxQuestions = 16;
+  static constexpr wtf_size_t kMinChoiceOptions = 2;
+  static constexpr wtf_size_t kMaxChoiceOptions = 26;
+  static constexpr wtf_size_t kMinScoreOptions = 2;
+  static constexpr wtf_size_t kMaxScoreOptions = 11;
+
   DecisionModel(
       ScriptState* script_state,
       scoped_refptr<base::SequencedTaskRunner> task_runner,

@@ -485,6 +485,17 @@ TEST(LayaQueryAdapterTest, SanitizesMasksAndCapsPrefixLength) {
       EXPECT_EQ(tight_seqs[0][pos], tokenizer.mask_token_id());
     }
   }
+
+  // Whitespace-only score descriptions fall back to the option label.
+  query->questions[0]->options[0] = mojom::DecisionOption::New("bad", " \t\n");
+  ASSERT_OK_AND_ASSIGN(
+      LayaQueryAdapter blank_adapter,
+      LayaQueryAdapter::Create(*query, tokenizer, /*max_seq_len=*/64,
+                               /*max_options=*/4));
+  const std::vector<int32_t> bad_token = tokenizer.Tokenize(" bad");
+  ASSERT_EQ(bad_token.size(), 1u);
+  EXPECT_THAT(blank_adapter.questions()[0].prefix_ids,
+              ::testing::Contains(bad_token[0]));
 }
 
 }  // namespace

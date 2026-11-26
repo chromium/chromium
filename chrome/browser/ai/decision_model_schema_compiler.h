@@ -18,20 +18,17 @@
 // `AIDecisionModelResult`s for both the language model and embedding backends,
 // and formats and scores passages for the embedding backend.
 //
-// For score questions, each option's value is its label as a number if every
-// label in the question is a finite number (`base::StringToDouble()`), and its
-// 1-based position otherwise. So options {"0", "5", "10"} give a score in
-// [0, 10], and {"low", "mid", "high"} give a score in [1, 3]. This is the rule
-// documented on `blink.mojom.AIDecisionModelDecision.score`.
+// For score questions with L levels, `DecodeResult()` computes the expected
+// 0-based level index `sum(i * p_i)` in `[0, L - 1]`.
 class DecisionModelSchemaCompiler {
  public:
-  // TODO(crbug.com/565849508): Track these limits with the manifest use case.
+  // TODO(crbug.com/565849508): Resolve backend-specific upper bounds for
+  // `kChoice` and `kScore` option counts instead of fixed limits.
   static constexpr size_t kMaxQuestions = 16;
   static constexpr size_t kMinChoiceOptions = 2;
   static constexpr size_t kMaxChoiceOptions = 26;
   static constexpr size_t kMinScoreLevels = 2;
   static constexpr size_t kMaxScoreLevels = 11;
-  static constexpr size_t kDefaultScoreLevels = 5;
 
   // TODO(crbug.com/565849508): Configure softmax temperature via model
   // metadata.
@@ -42,8 +39,6 @@ class DecisionModelSchemaCompiler {
     std::string label;
     // Optional criteria shown to the model next to the label.
     std::string description;
-    // Score questions only: the option's value in the expected score.
-    double value = 0;
   };
 
   struct CompiledQuestion {

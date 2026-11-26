@@ -11,23 +11,17 @@ import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 enum AIDecisionModelQuestionType {
   // Binary yes/no decision with calibrated probability P("true") in [0.0, 1.0].
   kBoolean,
-  // Categorical selection over N developer-defined options for N=[2..26]
-  // (bounded by single-token 'A'..'Z' option keys in the prompt compiler).
+  // Categorical selection over N developer-defined options (N >= 2; upper
+  // bound is backend-dependent).
   kChoice,
-  // Ordered rating scale over N developer-defined options for N=[2..9]
-  // (bounded by single-digit '1'..'9' token keys; default scale is "1".."5"),
-  // yields a continuous score (e.g. `3.7`).
+  // Ordered rating scale over L developer-defined options (L >= 2; upper
+  // bound is backend-dependent), yielding a continuous expected score in
+  // [0.0, L-1] (e.g. `3.7`).
   kScore,
 };
 
 // A single candidate option for a question in an AIDecisionModel schema.
-// `label` must be non-empty and unique within its question. For `kScore`
-// questions, if all option `label`s in a question parse via
-// `base::StringToDouble` as finite numbers, the browser weights `score` by
-// those numeric values; otherwise it uses 1-based ordinal weights (1..N).
-// TODO(crbug.com/565849508): Consider a typed union or dedicated numeric
-// weight field (or separate ordinal vs weighted score types) instead of
-// parsing numeric strings in the browser.
+// `label` must be non-empty and unique within its question.
 struct AIDecisionModelOption {
   string label;
   string? description;
@@ -38,14 +32,12 @@ struct AIDecisionModelQuestion {
   string id;
   string prompt;
   AIDecisionModelQuestionType type;
-  // Candidate options validated by both renderer (`TypeError`) and browser:
+  // Candidate options validated by both renderer (`TypeError`) and browser
+  // (TODO(crbug.com/565849508): enforce backend-specific upper bounds for
+  // both `kChoice` and `kScore` option counts):
   // - `kBoolean`: must be empty (implicitly evaluates ["true", "false"]).
-  // - `kChoice`: requires N=[2..26] options with unique non-empty `label`s.
-  // - `kScore`: accepts 0 options (defaults to "1".."5") or N=[2..9] options
-  //   with unique non-empty `label`s. If all N labels parse as finite numbers
-  //   (including negative or float scales), those values weight `score`; if
-  //   any label is non-numeric (e.g. mixed ("3", "4", "a")), all N options
-  //   use 1-based ordinal weights (1..N).
+  // - `kChoice`: requires N >= 2 options with unique non-empty `label`s.
+  // - `kScore`: requires L >= 2 options with unique non-empty `label`s.
   array<AIDecisionModelOption> options;
 };
 
@@ -87,9 +79,8 @@ struct AIDecisionModelDecision {
   string top_label;
   // Confidence in the decision in [0.0, 1.0] (inclusive).
   float confidence;
-  // Populated only for `kScore` questions: expected rating scale value
-  // `sum(v_i * p_i)` where `v_i` is the parsed numeric option value (or
-  // 1-based ordinal index 1..N when any option label is non-numeric).
+  // Populated only for `kScore` questions: expected 0-based level index
+  // `sum(i * p_i)` for `i` in [0..L-1].
   float? score;
   // Full normalized probability distribution over options, in schema order
   // (exposed to script as a record<DOMString, float> keyed by option label).

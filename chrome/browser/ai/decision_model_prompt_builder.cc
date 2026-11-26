@@ -15,8 +15,8 @@ namespace {
 
 // Formats boolean options as "true: yes" / "false: no" instead of the
 // compiler's default descriptions, which are tuned for embedding similarity.
-// TODO(crbug.com/565849508): Read default labels and descriptions (e.g.
-// "true: yes", "1: low", "5: high") from the model's manifest config.
+// TODO(crbug.com/565849508): Read default boolean descriptions from the model's
+// manifest config.
 std::string_view GetBooleanDescription(size_t option_index) {
   return option_index == 0 ? "yes" : "no";
 }

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ai/decision_model.h"
 
+#include <optional>
+
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -107,6 +109,17 @@ class MockAIDecisionModel : public mojom::blink::AIDecisionModel {
     decision->probabilities.push_back(
         mojom::blink::AIDecisionModelOptionProbability::New("false", 0.92f));
     result->decisions.push_back(std::move(decision));
+
+    auto score_decision = mojom::blink::AIDecisionModelDecision::New();
+    score_decision->question_id = "severity";
+    score_decision->top_label = "high";
+    score_decision->confidence = 0.7f;
+    score_decision->score = 0.7f;
+    score_decision->probabilities.push_back(
+        mojom::blink::AIDecisionModelOptionProbability::New("low", 0.3f));
+    score_decision->probabilities.push_back(
+        mojom::blink::AIDecisionModelOptionProbability::New("high", 0.7f));
+    result->decisions.push_back(std::move(score_decision));
     return result;
   }
 
@@ -154,10 +167,26 @@ TEST_F(DecisionModelTest, DecideSucceeds) {
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
 
-  EXPECT_TRUE(tester.IsFulfilled());
+  ASSERT_TRUE(tester.IsFulfilled());
   EXPECT_EQ(mock_remote_->call_count(), 1);
   EXPECT_EQ(mock_remote_->last_input(),
             "Production database connection pool exhausted");
+
+  v8::Local<v8::Context> context = scope.GetContext();
+  v8::Local<v8::Object> result_obj = tester.Value().V8Value().As<v8::Object>();
+  auto* is_urgent = DecisionModelDecision::Create(
+      scope.GetIsolate(),
+      result_obj->Get(context, V8String(scope.GetIsolate(), "is_urgent"))
+          .ToLocalChecked(),
+      exception_state);
+  EXPECT_FALSE(is_urgent->hasScore());
+  auto* severity = DecisionModelDecision::Create(
+      scope.GetIsolate(),
+      result_obj->Get(context, V8String(scope.GetIsolate(), "severity"))
+          .ToLocalChecked(),
+      exception_state);
+  ASSERT_TRUE(severity->hasScore());
+  EXPECT_FLOAT_EQ(severity->score(), 0.7f);
 }
 
 TEST_F(DecisionModelTest, ValidateSchemaRejectsInvalidQuestions) {
@@ -204,9 +233,49 @@ TEST_F(DecisionModelTest, ValidateSchemaRejectsInvalidQuestions) {
 
     auto* opts = DecisionModelCreateOptions::Create();
     opts->setQuestions({q});
-    DecisionModel::create(scope.GetScriptState(), opts, exception_state);
+    DecisionModel::availability(scope.GetScriptState(), opts, exception_state);
     EXPECT_TRUE(exception_state.HadException());
     EXPECT_EQ(exception_state.CodeAs<ESErrorType>(), ESErrorType::kTypeError);
+
+    DummyExceptionStateForTesting create_exception_state;
+    DecisionModel::create(scope.GetScriptState(), opts, create_exception_state);
+    EXPECT_TRUE(create_exception_state.HadException());
+    EXPECT_EQ(create_exception_state.CodeAs<ESErrorType>(),
+              ESErrorType::kTypeError);
+  }
+
+  // Score question with omitted, empty, 1, or too many options throws
+  // TypeError.
+  for (std::optional<wtf_size_t> count :
+       {std::optional<wtf_size_t>(), std::optional<wtf_size_t>(0u),
+        std::optional<wtf_size_t>(1u),
+        std::optional<wtf_size_t>(DecisionModel::kMaxScoreOptions + 1)}) {
+    DummyExceptionStateForTesting exception_state;
+    auto* q = DecisionModelQuestion::Create();
+    q->setId("severity");
+    q->setPrompt("Rate severity");
+    q->setType(V8DecisionModelQuestionType::Enum::kScore);
+    if (count.has_value()) {
+      HeapVector<Member<DecisionModelOption>> score_opts;
+      for (wtf_size_t i = 0; i < *count; ++i) {
+        auto* opt = DecisionModelOption::Create();
+        opt->setLabel(String::Number(i));
+        score_opts.push_back(opt);
+      }
+      q->setOptions(score_opts);
+    }
+
+    auto* opts = DecisionModelCreateOptions::Create();
+    opts->setQuestions({q});
+    DecisionModel::availability(scope.GetScriptState(), opts, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<ESErrorType>(), ESErrorType::kTypeError);
+
+    DummyExceptionStateForTesting create_exception_state;
+    DecisionModel::create(scope.GetScriptState(), opts, create_exception_state);
+    EXPECT_TRUE(create_exception_state.HadException());
+    EXPECT_EQ(create_exception_state.CodeAs<ESErrorType>(),
+              ESErrorType::kTypeError);
   }
 
   // Empty decide() input throws TypeError.

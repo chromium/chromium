@@ -5,7 +5,6 @@
 #include "chrome/browser/ai/decision_model_schema_compiler.h"
 
 #include <algorithm>
-#include <array>
 #include <cmath>
 #include <limits>
 #include <string_view>
@@ -13,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
-#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -72,106 +70,6 @@ std::string FormatLabel(std::string_view label) {
   return formatted;
 }
 
-// Returns a default Likert-scale description for a score option across 2-11
-// levels, with odd-numbered scales including a neutral midpoint.
-// TODO(crbug.com/565849508): Evaluate default score descriptions, including
-// rank ratios (e.g. "4/5"), negative or descending numeric label ordering, and
-// magnitude vs. sentiment polarity wording.
-std::string_view GetDefaultScoreDescription(size_t option_index,
-                                            size_t option_count) {
-  constexpr std::string_view kExtremelyLow =
-      "extremely low, lowest, most negative.";
-  constexpr std::string_view kVeryLow = "very low, strongly negative.";
-  constexpr std::string_view kLow = "low, fairly negative.";
-  constexpr std::string_view kSomewhatLow =
-      "somewhat low, moderately negative.";
-  constexpr std::string_view kSlightlyLow = "slightly low, slightly negative.";
-  constexpr std::string_view kModerate = "moderate, medium, neutral.";
-  constexpr std::string_view kSlightlyHigh =
-      "slightly high, slightly positive.";
-  constexpr std::string_view kSomewhatHigh =
-      "somewhat high, moderately positive.";
-  constexpr std::string_view kHigh = "high, fairly positive.";
-  constexpr std::string_view kVeryHigh = "very high, strongly positive.";
-  constexpr std::string_view kExtremelyHigh =
-      "extremely high, highest, most positive.";
-
-  CHECK_GE(option_count, DecisionModelSchemaCompiler::kMinScoreLevels);
-  CHECK_LE(option_count, DecisionModelSchemaCompiler::kMaxScoreLevels);
-  CHECK_LT(option_index, option_count);
-  const size_t half = option_count / 2;
-  if (option_count % 2 == 1) {
-    if (option_index == half) {
-      return kModerate;
-    }
-    if (option_index > half) {
-      --option_index;
-    }
-  }
-  switch (half) {
-    case 1: {
-      constexpr std::array kDescriptions = {kLow, kHigh};
-      return kDescriptions[option_index];
-    }
-    case 2: {
-      constexpr std::array kDescriptions = {kVeryLow, kLow, kHigh, kVeryHigh};
-      return kDescriptions[option_index];
-    }
-    case 3: {
-      constexpr std::array kDescriptions = {kVeryLow,      kLow,  kSlightlyLow,
-                                            kSlightlyHigh, kHigh, kVeryHigh};
-      return kDescriptions[option_index];
-    }
-    case 4: {
-      constexpr std::array kDescriptions = {kExtremelyLow, kVeryLow,      kLow,
-                                            kSlightlyLow,  kSlightlyHigh, kHigh,
-                                            kVeryHigh,     kExtremelyHigh};
-      return kDescriptions[option_index];
-    }
-    case 5: {
-      constexpr std::array kDescriptions = {
-          kExtremelyLow, kVeryLow,      kLow,  kSomewhatLow, kSlightlyLow,
-          kSlightlyHigh, kSomewhatHigh, kHigh, kVeryHigh,    kExtremelyHigh};
-      return kDescriptions[option_index];
-    }
-    default:
-      NOTREACHED();
-  }
-}
-
-std::vector<DecisionModelSchemaCompiler::CompiledOption> CompileOptions(
-    const std::vector<blink::mojom::AIDecisionModelOptionPtr>& options) {
-  std::vector<DecisionModelSchemaCompiler::CompiledOption> compiled;
-  compiled.reserve(options.size());
-  for (const auto& option : options) {
-    compiled.push_back(
-        {option->label, option->description.value_or(std::string())});
-  }
-  return compiled;
-}
-
-// Sets each score option's value: its label as a number if every label is a
-// finite number, otherwise its 1-based position. Returns true if every label is
-// a finite number.
-bool SetScoreValues(
-    std::vector<DecisionModelSchemaCompiler::CompiledOption>& options) {
-  std::vector<double> numbers;
-  numbers.reserve(options.size());
-  for (const auto& option : options) {
-    double number = 0;
-    if (!base::StringToDouble(option.label, &number) ||
-        !std::isfinite(number)) {
-      break;
-    }
-    numbers.push_back(number);
-  }
-  const bool all_numbers = numbers.size() == options.size();
-  for (size_t i = 0; i < options.size(); ++i) {
-    options[i].value = all_numbers ? numbers[i] : static_cast<double>(i + 1);
-  }
-  return all_numbers;
-}
-
 }  // namespace
 
 // static
@@ -202,24 +100,6 @@ DecisionModelSchemaCompiler::Compile(
       return base::unexpected(base::StrCat({"Duplicate question id: ", q->id}));
     }
 
-    if (q->type == QuestionType::kBoolean && !q->options.empty()) {
-      return base::unexpected(base::StrCat(
-          {"Boolean question '", q->id, "' must not specify options."}));
-    }
-
-    base::flat_set<std::string> labels;
-    for (const auto& option : q->options) {
-      if (IsBlank(option->label)) {
-        return base::unexpected(base::StrCat(
-            {"Option labels in question '", q->id, "' must not be empty."}));
-      }
-      if (!labels.insert(option->label).second) {
-        return base::unexpected(
-            base::StrCat({"Duplicate option label '", option->label,
-                          "' in question '", q->id, "'."}));
-      }
-    }
-
     CompiledQuestion cq;
     cq.id = q->id;
     cq.prompt = q->prompt;
@@ -227,32 +107,21 @@ DecisionModelSchemaCompiler::Compile(
 
     switch (q->type) {
       case QuestionType::kBoolean:
+        if (!q->options.empty()) {
+          return base::unexpected(base::StrCat(
+              {"Boolean question '", q->id, "' must not specify options."}));
+        }
         // TODO(crbug.com/565849508): Evaluate default boolean descriptions.
         cq.options = {{"true", "true, yes, affirmative."},
                       {"false", "No, false, none, not applicable, unrelated."}};
         break;
       case QuestionType::kScore:
-        if (!q->options.empty() && (q->options.size() < kMinScoreLevels ||
-                                    q->options.size() > kMaxScoreLevels)) {
+        if (q->options.size() < kMinScoreLevels ||
+            q->options.size() > kMaxScoreLevels) {
           return base::unexpected(base::StrCat(
               {"Score question '", q->id, "' needs between ",
                base::NumberToString(kMinScoreLevels), " and ",
                base::NumberToString(kMaxScoreLevels), " levels."}));
-        }
-        if (q->options.empty()) {
-          for (size_t i = 1; i <= kDefaultScoreLevels; ++i) {
-            cq.options.push_back({base::NumberToString(i), std::string()});
-          }
-        } else {
-          cq.options = CompileOptions(q->options);
-        }
-        if (SetScoreValues(cq.options) &&
-            std::ranges::all_of(cq.options, &IsBlank,
-                                &CompiledOption::description)) {
-          for (size_t i = 0; i < cq.options.size(); ++i) {
-            cq.options[i].description =
-                std::string(GetDefaultScoreDescription(i, cq.options.size()));
-          }
         }
         break;
       case QuestionType::kChoice:
@@ -263,8 +132,26 @@ DecisionModelSchemaCompiler::Compile(
                base::NumberToString(kMinChoiceOptions), " and ",
                base::NumberToString(kMaxChoiceOptions), " options."}));
         }
-        cq.options = CompileOptions(q->options);
         break;
+    }
+
+    if (!q->options.empty()) {
+      base::flat_set<std::string_view> labels;
+      labels.reserve(q->options.size());
+      cq.options.reserve(q->options.size());
+      for (const auto& option : q->options) {
+        if (IsBlank(option->label)) {
+          return base::unexpected(base::StrCat(
+              {"Option labels in question '", q->id, "' must not be empty."}));
+        }
+        if (!labels.insert(option->label).second) {
+          return base::unexpected(
+              base::StrCat({"Duplicate option label '", option->label,
+                            "' in question '", q->id, "'."}));
+        }
+        cq.options.push_back(
+            {option->label, option->description.value_or(std::string())});
+      }
     }
 
     schema.questions.push_back(std::move(cq));
@@ -291,8 +178,11 @@ std::string DecisionModelSchemaCompiler::BuildOptionEmbeddingPassage(
   // avoid truncating option details when long prompts exceed the token window.
   switch (question.type) {
     case QuestionType::kScore:
-      return base::StrCat({"title: Level ", label, " | text: Question: ",
-                           question.prompt, " - ", detail});
+      // TODO(crbug.com/565849508): Evaluate whether to include `label` when
+      // `option.description` is non-blank.
+      return base::StrCat({"title: Level ", base::NumberToString(option_index),
+                           " | text: Question: ", question.prompt, " - ",
+                           detail});
     case QuestionType::kBoolean:
     case QuestionType::kChoice:
       return base::StrCat({"title: ", label, " | text: Question: ",
@@ -433,14 +323,11 @@ DecisionModelSchemaCompiler::DecodeResult(
               cq.options[i].label, probs[i]));
     }
     if (cq.type == QuestionType::kScore) {
-      double expected_score = 0;
+      double score = 0.0;
       for (size_t i = 0; i < num_options; ++i) {
-        expected_score += cq.options[i].value * probs[i];
+        score += static_cast<double>(i) * probs[i];
       }
-      // Labels like "1e300" are finite doubles but don't fit in a float.
-      decision->score = static_cast<float>(std::clamp<double>(
-          expected_score, std::numeric_limits<float>::lowest(),
-          std::numeric_limits<float>::max()));
+      decision->score = static_cast<float>(score);
     }
     result->decisions.push_back(std::move(decision));
   }

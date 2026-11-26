@@ -46,14 +46,6 @@ namespace blink {
 
 namespace {
 
-// Schema limits. Keep in sync with `DecisionModelSchemaCompiler` in
-// //chrome/browser/ai, which enforces the same rules in the browser.
-constexpr wtf_size_t kMaxQuestions = 16;
-constexpr wtf_size_t kMinChoiceOptions = 2;
-constexpr wtf_size_t kMaxChoiceOptions = 26;
-constexpr wtf_size_t kMinScoreOptions = 2;
-constexpr wtf_size_t kMaxScoreOptions = 11;
-
 // Validates the developer-provided schema. Throws a TypeError and returns false
 // if it is malformed. When `require_questions` is false, a missing `questions`
 // member is allowed (e.g. a generic `availability()` check).
@@ -73,7 +65,7 @@ bool ValidateQuestions(const DecisionModelCreateCoreOptions* options,
         "DecisionModel requires a non-empty questions array.");
     return false;
   }
-  if (options->questions().size() > kMaxQuestions) {
+  if (options->questions().size() > DecisionModel::kMaxQuestions) {
     exception_state.ThrowTypeError(
         "DecisionModel supports at most 16 questions per schema.");
     return false;
@@ -108,8 +100,8 @@ bool ValidateQuestions(const DecisionModelCreateCoreOptions* options,
         }
         break;
       case V8DecisionModelQuestionType::Enum::kChoice:
-        if (!has_opts || num_opts < kMinChoiceOptions ||
-            num_opts > kMaxChoiceOptions) {
+        if (!has_opts || num_opts < DecisionModel::kMinChoiceOptions ||
+            num_opts > DecisionModel::kMaxChoiceOptions) {
           exception_state.ThrowTypeError(
               "Choice DecisionModelQuestion requires between 2 and 26 "
               "options.");
@@ -117,11 +109,11 @@ bool ValidateQuestions(const DecisionModelCreateCoreOptions* options,
         }
         break;
       case V8DecisionModelQuestionType::Enum::kScore:
-        if (has_opts &&
-            (num_opts < kMinScoreOptions || num_opts > kMaxScoreOptions)) {
+        if (!has_opts || num_opts < DecisionModel::kMinScoreOptions ||
+            num_opts > DecisionModel::kMaxScoreOptions) {
           exception_state.ThrowTypeError(
-              "Score DecisionModelQuestion options must have between 2 and 11 "
-              "levels when specified.");
+              "Score DecisionModelQuestion requires between 2 and 11 "
+              "levels.");
           return false;
         }
         break;
@@ -605,7 +597,7 @@ DecisionModel::decide(ScriptState* script_state,
                   decision->setLabel(mojo_dec->top_label);
                   decision->setConfidence(mojo_dec->confidence);
                   if (mojo_dec->score.has_value()) {
-                    decision->setExpectedScore(*mojo_dec->score);
+                    decision->setScore(*mojo_dec->score);
                   }
 
                   Vector<std::pair<String, float>> probs;

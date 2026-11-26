@@ -179,7 +179,7 @@ TEST_F(AILayaDecisionModelTest, ForwardsQueryAndDecodesOptionScores) {
   EXPECT_EQ(rating->question_id, "rating");
   EXPECT_EQ(rating->top_label, "5");
   ASSERT_TRUE(rating->score.has_value());
-  EXPECT_THAT(*rating->score, FloatNear(4.2f, 1e-5f));
+  EXPECT_THAT(*rating->score, FloatNear(0.8f, 1e-5f));
 }
 
 TEST_F(AILayaDecisionModelTest, ReusesSessionAcrossDecides) {

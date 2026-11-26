@@ -4,12 +4,10 @@
 
 #include "content/browser/ai/echo_ai_decision_model.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
 
 namespace content {
@@ -21,20 +19,8 @@ std::vector<std::string> GetLabels(
   switch (question.type) {
     case blink::mojom::AIDecisionModelQuestionType::kBoolean:
       return {"true", "false"};
-    case blink::mojom::AIDecisionModelQuestionType::kChoice: {
-      std::vector<std::string> labels;
-      labels.reserve(question.options.size());
-      for (const auto& option : question.options) {
-        if (option) {
-          labels.push_back(option->label);
-        }
-      }
-      return labels;
-    }
+    case blink::mojom::AIDecisionModelQuestionType::kChoice:
     case blink::mojom::AIDecisionModelQuestionType::kScore: {
-      if (question.options.empty()) {
-        return {"1", "2", "3", "4", "5"};
-      }
       std::vector<std::string> labels;
       labels.reserve(question.options.size());
       for (const auto& option : question.options) {
@@ -115,26 +101,15 @@ void EchoAIDecisionModel::Decide(const std::string& input,
         decision->top_label = labels.back();
         decision->confidence = top_prob;
 
-        bool all_numeric = true;
-        std::vector<double> numeric_values(n, 0.0);
-        for (size_t i = 0; i < n; ++i) {
-          if (!base::StringToDouble(labels[i], &numeric_values[i])) {
-            all_numeric = false;
-            break;
-          }
-        }
-
-        float expected_score = 0.0f;
+        float score = 0.0f;
         for (size_t i = 0; i < n; ++i) {
           const float p = (i + 1 == n) ? top_prob : rem_prob;
-          const float val = all_numeric ? static_cast<float>(numeric_values[i])
-                                        : static_cast<float>(i + 1);
-          expected_score += val * p;
+          score += static_cast<float>(i) * p;
           decision->probabilities.push_back(
               blink::mojom::AIDecisionModelOptionProbability::New(labels[i],
                                                                   p));
         }
-        decision->score = expected_score;
+        decision->score = score;
         break;
       }
     }
