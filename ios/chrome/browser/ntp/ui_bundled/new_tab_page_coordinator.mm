@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_presenter.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_coordinator.h"
@@ -2569,10 +2570,18 @@
                                                             files:nil
                                                        driveItems:nil];
 
+  // With dynamic AIM fulfillment, the image opens in regular search and routing
+  // decides whether it needs AI Mode.
+  BOOL dynamicAimFulfillment = [_composeboxInputStateManager isEligibleToAIM] &&
+                               IsDynamicAimFulfillmentEnabled(
+                                   ComposeboxEntrypoint::kNTPAttachImageButton);
+  omnibox::ToolMode toolMode = dynamicAimFulfillment
+                                   ? omnibox::ToolMode::TOOL_MODE_UNSPECIFIED
+                                   : omnibox::ToolMode::TOOL_MODE_AIM;
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kNTPAttachImageButton
                    query:nil
-                toolMode:omnibox::ToolMode::TOOL_MODE_AIM
+                toolMode:toolMode
                modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:attachments];
 

@@ -2570,6 +2570,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     if (_items.hasFile || _items.hasImage) {
       return NO;
     }
+  } else if ([self isDynamicAIMFulfillmentEnabled] && !_items.empty) {
+    // With dynamic AIM fulfillment, regular search can have attachments, which
+    // leaves the default tool active. Keep them visible, with the Send button.
+    return NO;
   }
 
   // Selecting a tool keeps the input plate expanded so the tool stays visible.
@@ -2660,6 +2664,12 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 }
 
 #pragma mark - Private helpers
+
+// Whether dynamic AIM fulfillment is enabled for this composebox.
+- (BOOL)isDynamicAIMFulfillmentEnabled {
+  return [_stateManager isEligibleToAIM] &&
+         IsDynamicAimFulfillmentEnabled(_entrypoint);
+}
 
 // Whether the user can ask about the current Tab.
 - (BOOL)canAskAboutCurrentTab {

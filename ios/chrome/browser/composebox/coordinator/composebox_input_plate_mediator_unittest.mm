@@ -808,6 +808,31 @@ TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithAttachments) {
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
 }
 
+// Tests that, with dynamic AIM fulfillment, an image in regular search keeps
+// the input plate expanded with the Send button and without the AI Mode pill.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       DynamicAimFulfillmentKeepsImageInExpandedRegularSearch) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures({omnibox::kDynamicAimFulfillment},
+                                        {kComposeboxAIMNudge});
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ForwardSearchboxConfig();
+  SetOmniboxText(u"some text");
+
+  UIImage* image = [[UIImage alloc] init];
+  NSItemProvider* provider = [[NSItemProvider alloc] initWithObject:image];
+  [mediator_
+      processImageItemProvider:provider
+                       assetID:@"123"
+                        source:ComposeboxInputItemSource::kGalleryPicker];
+
+  EXPECT_TRUE(
+      [consumer_ showsControls:ComposeboxInputPlateControls::kLeadingImage]);
+  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
+  EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kAIM]);
+}
+
 // Disables multimodal options when not eligible.
 TEST_F(ComposeboxInputPlateMediatorTest,
        DisablesMultimodalActionsWhenAIMNotEligible) {
