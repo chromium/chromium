@@ -24,6 +24,7 @@
 <translation id="4949828774841497663">Идите у Applications (Апликације) &gt; System Settings (Подешавања система) &gt; Network (Мрежа), па изаберите
           активну мрежу, кликните на дугме Details... (Детаљи), а затим поништите избор свих проксија
           који су изабрани.</translation>
+<translation id="5228339820845278804">Подсетник: Најбоље Chromium безбедносне функције у вашем џепу</translation>
 <translation id="6480456350195404966">Идите у
           Chromium мени &gt;
           <ph name="SETTINGS_TITLE" />
@@ -39,6 +40,7 @@
 <translation id="6613594504749178791">Промене ће ступити на снагу када следећи пут поново покренете Chromium.</translation>
 <translation id="691026815377248078">Chromium захтева приступ Bluetooth-у ради настављања са 
  упаривањем. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="7641677656706511803">Уз апликацију Chromium, безбедност коју Chromium нуди увек је са вама</translation>
 <translation id="7681937895330411637">Chromium омогућава <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> пројекат отвореног кода.</translation>
 <translation id="7861509383340276692">Отворите
           Chromium мени &gt;

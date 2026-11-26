@@ -139,6 +139,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2295218613066132598">Zobraziť odkazy na weby v Chrome</translation>
 <translation id="2301513536169703857">Ak chcete mať heslá, záložky a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do Chromu</translation>
 <translation id="2307973900865360088">Ponechať v doku</translation>
+<translation id="2308558013860776484">Zdieľajte snímku obrazovky s obsahom mimo Chromu, napríklad s inými aplikáciami či súbormi</translation>
 <translation id="2309047409763057870">Toto je sekundárna inštalácia prehliadača Google Chrome – nemôže byť nastavený ako váš predvolený prehliadač.</translation>
 <translation id="2345992953227471816">Chrome zistil, že tieto rozšírenia obsahujú malvér:</translation>
 <translation id="2358140144860869442">Ak chcete mať čitateľský zoznam a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do Chromu</translation>
@@ -248,6 +249,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="3294686910656423119">Štatistiky používania a prehľady zrútení</translation>
 <translation id="3327226547491422998">Neskôr sa vás Chrome môže opýtať, či chcete automaticky dopĺňať formuláre pomocou uložených informácií</translation>
 <translation id="3352986031709923790">pravý horný roh oblasti vyhľadávania: vpravo <ph name="RIGHT" /> %, hore <ph name="TOP" /> %</translation>
+<translation id="3370239327277137701">Weby a Chrome môžu pomocou umelej inteligencie, ktorá sa spúšťa priamo vo vašom zariadení, poskytovať funkcie, ako sú súhrny, jazyková korektúra, titulky a ďalšie. Táto funkcia je oddelená od Gemini v Chrome. <ph name="BEGIN_LINK" />Ďalšie informácie o umelej inteligencii v zariadení<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Niektoré funkcie a rozšírenia Chromu majú skratky. Môžete ich znova zapnúť.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sa teraz reštartuje}=1{Chrome sa reštartuje o 1 sekundu}few{Chrome sa reštartuje o # sekundy}many{Chrome sa reštartuje o # sekundy}other{Chrome sa reštartuje o # sekúnd}}</translation>
 <translation id="3380249972812870825">Ak chcete otvoriť Gemini v Chrome, stlačte <ph name="GLOBAL_HOTKEY" /></translation>
@@ -346,6 +348,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="4427306783828095590">Rozšírená ochrana efektívnejšie blokuje phishing aj malvér</translation>
 <translation id="4434353761996769206">Chyba inštalátora: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Zdieľajte tento dokument s Gemini v Chrome, aby ste získali rýchly prehľad a mohli klásť doplňujúce otázky</translation>
+<translation id="4440999670272408191">Môžete ich kedykoľvek odstrániť. Chrome ich môže automaticky znova stiahnuť, keď ich bude potrebovať nejaký web alebo funkcia.</translation>
 <translation id="4450664632294415862">Chrome – prihlásenie do siete – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">V prehliadači Google Chrome práve prebieha ďalšia operácia. Skúste to neskôr.</translation>
 <translation id="4493028449971051158">Chyba pri spustení: spustite inštalátor ako správca.</translation>
@@ -353,6 +356,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="4501839397124711198">Vyhľadávanie Google si môžete pripnúť na bočný panel, aby ste mohli pri prehliadaní klásť otázky</translation>
 <translation id="4571503333518166079">Prejsť do nastavení upozornení Chromu</translation>
 <translation id="4580939929828762295">Buďte v bezpečí so Správcom hesiel Google</translation>
+<translation id="4589544932092381064">Zobrazovať vyhľadávanie pomocou Chromu na paneli úloh systému Windows a zapnúť klávesovú skratku</translation>
 <translation id="459622048091363950">Keď Chrome získa prístup, weby vás budú môcť žiadať o prístup.</translation>
 <translation id="4598116752460667024">Vyhľadajte v zozname ľubovoľný postup.</translation>
 <translation id="4600710005438004015">Chrome sa nepodarilo aktualizovať na najnovšiu verziu. K dispozícii tak nie sú niektoré nové funkcie a bezpečnostné opravy.</translation>
@@ -368,6 +372,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Zrýchľuje weby pomocou nástroja V8 Chromu, ale mierne zníži odolnosť prehliadača voči útokom</translation>
 <translation id="4768676935374695498">Vyhľadať toto video pomocou funkcie Google Lens</translation>
+<translation id="4783580253728290203">Keď je toto nastavenie vypnuté, Chrome odstráni modely umelej inteligencie v zariadení a už ich znova nestiahne. Niektoré weby a funkcie Chromu nemusia fungovať.</translation>
 <translation id="479167709087336770">Využíva rovnaký nástroj na kontrolu pravopisu, aký sa používa vo Vyhľadávaní Google. Text zadaný do prehliadača sa odošle Googlu. Toto správanie môžete zmeniť v nastaveniach.</translation>
 <translation id="4793679854893018356">Ako vás Chrome chráni</translation>
 <translation id="4803313124144656665">Zavrieť Vyhľadávanie Google v Chrome</translation>
@@ -453,6 +458,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nepodarilo sa pripojiť k internetu. Proxy server vyžaduje overenie.</translation>
 <translation id="5709557627224531708">Nastavte Chrome ako predvolený prehliadač</translation>
+<translation id="5715427327524421317">Chrome sťahuje a aktualizuje tieto modely umelej inteligencie automaticky</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Rozšírená ochrana vyžaduje, aby ste na použitie aktualizácie znova spustili Chrome. Izolované okno sa znova neotvorí.}few{Rozšírená ochrana vyžaduje, aby ste na použitie aktualizácie znova spustili Chrome. Vaše # izolované okná sa znova neotvoria.}many{Advanced Protection requires that you relaunch Chrome to apply an update. Your # Isolated windows won't reopen.}other{Rozšírená ochrana vyžaduje, aby ste na použitie aktualizácie znova spustili Chrome. Vašich # izolovaných okien sa znova neotvorí.}}</translation>
 <translation id="5719246646468301581">Dodatočné zmluvné podmienky prehliadača Google Chrome a systému ChromeOS</translation>
 <translation id="5736850870166430177">Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chrome môže odoslať Bezpečnému prehliadaniu aj webové adresy vrátane častí obsahu stránok</translation>
@@ -544,6 +550,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6491330562720922580">QR kód na stiahnutie prehliadača Chrome v mobilných zariadeniach</translation>
 <translation id="6493527311031785448">Google Chrome sa pokúša <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome bol automaticky zavretý</translation>
+<translation id="650039555447046671">Chrome odstráni modely umelej inteligencie z tohto zariadenia. Niektoré weby a funkcie Chromu nemusia fungovať.</translation>
 <translation id="6506909944137591434">Chrome vyžaduje na vytvorenie 3D mapy vášho okolia povolený prístup ku kamere</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Ak chcete používať polohu, udeľte Chromu prístup v <ph name="BEGIN_LINK" />nastaveniach systému<ph name="END_LINK" /></translation>
@@ -582,6 +589,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6877155553248388166">pravý dolný roh oblasti vyhľadávania: vpravo <ph name="RIGHT" /> %, dole <ph name="BOTTOM" /> %</translation>
 <translation id="6879791154455204815">Otvoriť vyhľadávanie v Chrome</translation>
 <translation id="6881299373831449287">Aktualizuje sa Chrome</translation>
+<translation id="6881997500528805781">Využíva priestor zariadenia. Chrome odstraňuje nepoužívané modely umelej inteligencie po 45 dňoch alebo keď je málo priestoru</translation>
 <translation id="6885412569789873916">Aplikácie pre Chrome beta verzie</translation>
 <translation id="6893363893008038481">Odstrániť účet z Chromu</translation>
 <translation id="6896758677409633944">Skopírovať</translation>

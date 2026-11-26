@@ -53,6 +53,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1572572333538561328">Znova otvoriť režim AI vo Vyhľadávaní</translation>
 <translation id="1574377791422810894">Bezpečnostné nástroje prehliadača Chromium</translation>
 <translation id="1594928384848033697">Chromium chce odstrániť vaše údaje Správcu hesiel. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
+<translation id="1599690375407103815">Keď je toto nastavenie vypnuté, Chromium odstráni modely umelej inteligencie v zariadení a už ich znova nestiahne. Niektoré weby a funkcie prehliadača Chromium nemusia fungovať.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Správca požaduje nové spustenie prehliadača Chromium, aby sa použila aktualizácia}=1{Správca požaduje nové spustenie prehliadača Chromium, aby sa použila aktualizácia. Vaše okno inkognito sa neotvorí.}few{Správca požaduje nové spustenie prehliadača Chromium, aby sa použila aktualizácia. Vaše # okná inkognito sa neotvoria.}many{Správca požaduje nové spustenie prehliadača Chromium, aby sa použila aktualizácia. Your # Incognito windows won't reopen.}other{Správca požaduje nové spustenie prehliadača Chromium, aby sa použila aktualizácia. Vašich # okien inkognito sa neotvorí.}}</translation>
 <translation id="1625909126243026060">Pozrite si hlavné ovládacie prvky ochrany súkromia a zabezpečenia v prehliadači Chromium</translation>
 <translation id="1640672724030957280">Sťahuje sa…</translation>
@@ -67,6 +68,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1745121272106313518">Chromium sa reštartuje o <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Keď HTTPS nie je k dispozícii, Chromium bude bez upozornenia používať nezabezpečené pripojenie</translation>
 <translation id="1774152462503052664">Povoliť prehliadaču Chromium spustenie na pozadí</translation>
+<translation id="1792680680989393197">Môžete ich kedykoľvek odstrániť. Chromium ich môže automaticky znova stiahnuť, keď ich bude potrebovať nejaký web alebo funkcia.</translation>
 <translation id="1793486931176048546">Kliknutím na <ph name="BEGIN_BOLD" />Áno<ph name="END_BOLD" /> v upozornení systému Windows pripnite Chromium na panel aplikácií, aby ste k nemu mali rýchly prístup.</translation>
 <translation id="1808667845054772817">Preinštalovať prehliadač Chromium</translation>
 <translation id="1820835682567584003">Chromium sa pokúša <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -251,6 +253,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3751920144677881410">Tlačidlom Vyhľadávanie na bočnom paneli môžete z panela s nástrojmi znova otvoriť Vyhľadávanie na bočnom paneli a klásť otázky počas prehliadania</translation>
 <translation id="3788675262216168505">Spravovať profily prehliadača Chromium</translation>
 <translation id="3790262771324122253">Prečo Chromium blokuje niektoré stiahnuté súbory</translation>
+<translation id="3793196697433239004">Využíva priestor zariadenia. Chromium odstraňuje nepoužívané modely umelej inteligencie po 45 dňoch alebo keď je málo priestoru</translation>
 <translation id="379589255253486813">Ak bude potrebné niečo skontrolovať, Chromium vás upozorní</translation>
 <translation id="3802055581630249637">Chromium prednačítava stránky, ktoré pravdepodobne navštívite, aby sa načítali rýchlejšie, keď na ne prejdete</translation>
 <translation id="3810973564298564668">Spravovať</translation>
@@ -332,6 +335,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4621240073146040695">Aktualizácia je takmer hotová! Dokončite ju reštartovaním prehliadača Chromium.</translation>
 <translation id="4625064703209785397">Zrýchľuje weby pomocou nástroja V8 prehliadača Chromium, ale mierne zníži odolnosť prehliadača voči útokom</translation>
 <translation id="4626321472657185181">Otvoriť vyhľadávanie v prehliadači Chromium</translation>
+<translation id="4639628733881319833">Zdieľajte snímku obrazovky s obsahom mimo prehliadača Chromium, napríklad s inými aplikáciami či súbormi</translation>
 <translation id="4654639495249754755">Profil prehliadača Chromium</translation>
 <translation id="4665829708273112819">Upozornenie: Chromium nemôže zabrániť rozšíreniam v zaznamenávaní vašej histórie prehliadania. Ak chcete rozšírenie v režime inkognito zakázať, zrušte výber tejto možnosti.</translation>
 <translation id="4673151026126227699">Ak zdieľate aj prehľady používania prehliadača Chromium, nachádzajú sa v nich webové adresy, ktoré navštívite</translation>
@@ -389,6 +393,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5405650547142096840">Odstrániť z prehliadača Chromium</translation>
 <translation id="5424544524441439284">Zníži výkonnosť, ale prehliadač Chromium bude odolnejší voči útokom</translation>
 <translation id="5427571867875391349">Nastaviť Chromium ako predvolený prehliadač</translation>
+<translation id="5435079900593041559">Zobrazovať vyhľadávanie pomocou prehliadača Chromium na paneli aplikácií systému Windows a zapnúť klávesovú skratku</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium odporúča pozastaviť kartu, ktorá spomaľuje váš prehliadač}few{Chromium odporúča pozastaviť karty, ktoré spomaľujú váš prehliadač}many{Chromium Recommends Pausing the Tabs Slowing Your Browser}other{Chromium odporúča pozastaviť karty, ktoré spomaľujú váš prehliadač}}</translation>
 <translation id="5473971139929175403">Chromium nemusí fungovať správne, pretože v tejto verzii systému Linux už nie je podporovaný</translation>
@@ -415,6 +420,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Zobraziť Chromium v tomto jazyku</translation>
 <translation id="569897634095159764">Nepodarilo sa pripojiť k internetu. Proxy server vyžaduje overenie.</translation>
+<translation id="5755377560105094542">Weby a Chromium môžu pomocou umelej inteligencie, ktorá sa spúšťa priamo vo vašom zariadení, poskytovať funkcie, ako sú súhrny, jazyková korektúra, titulky a ďalšie. Táto funkcia je oddelená od Gemini v prehliadači Chromium. <ph name="BEGIN_LINK" />Ďalšie informácie o umelej inteligencii v zariadení<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">Tlačidlom Panel vyhľadávania na paneli s nástrojmi môžete znova otvoriť panel Vyhľadávania a klásť otázky počas prehliadania</translation>
 <translation id="5768371961535086509">Chromium uvoľňuje pamäť z neaktívnych kariet. Aktívne karty a ďalšie aplikácie tak získajú viac zdrojov počítača a prehliadač Chromium zostane rýchly. Neaktívne karty sa automaticky znova aktivujú, keď na ne prejdete. <ph name="BEGIN_LINK" />Ďalšie informácie o šetriči pamäte<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="SETTINGS_LINK" /> údaje prehliadača Chromium vo svojom účte</translation>
@@ -471,6 +477,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="6245734527075554892">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v prehliadači Chromium</translation>
 <translation id="6248213926982192922">Nastavte Chromium ako svoj predvolený prehliadač</translation>
 <translation id="6248988683584659830">Vyhľadať nastavenia</translation>
+<translation id="6251986571402453005">Chromium sťahuje a aktualizuje tieto modely umelej inteligencie automaticky</translation>
 <translation id="6268381023930128611">Odhlásiť sa z prehliadača Chromium?</translation>
 <translation id="6270547683008298381">Tieto karty spotrebúvajú dodatočné zdroje. Prehliadač Chromium ich môže deaktivovať, aby zlepšil výkon.</translation>
 <translation id="6281746429495226318">Prispôsobiť profil prehliadača Chromium</translation>
@@ -761,6 +768,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8981886272598860786">na vyhľadávanie pomocou prehliadača Chromium alebo prispôsobenie v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Spravovať profily prehliadača Chromium</translation>
 <translation id="8993855408334954620">Pomocou klávesnice môžete prechádzať medzi Gemini v prehliadači Chromium a otvorenou kartou.</translation>
+<translation id="9002987346523307190">Chromium odstráni modely umelej inteligencie z tohto zariadenia. Niektoré weby a funkcie prehliadača Chromium nemusia fungovať.</translation>
 <translation id="9018218886431812662">Inštalácia bola dokončená</translation>
 <translation id="9022552996538154597">Prihlásiť sa do prehliadača Chromium</translation>
 <translation id="9035791714111278917">Zobrazovať vyhľadávanie pomocou prehliadača Chromium na paneli s ponukami Macu a zapnúť klávesovú skratku</translation>

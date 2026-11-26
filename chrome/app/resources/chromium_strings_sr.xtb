@@ -72,6 +72,7 @@
 <translation id="1792680680989393197">Можете да их уклоните у сваком тренутку. Chromium може аутоматски поново да их преузме када затребају сајту или функцији.</translation>
 <translation id="1793486931176048546">Кликните на <ph name="BEGIN_BOLD" />Да<ph name="END_BOLD" /> у Windows обавештењу да бисте закачили Chromium на траку задатака ради брзог приступа.</translation>
 <translation id="1808667845054772817">Поново инсталирај Chromium</translation>
+<translation id="1814482312667514397">Користите најбоље Chromium безбедносне функције у покрету, уз апликацију Chromium на телефону</translation>
 <translation id="1820835682567584003">Chromium покушава да <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="1828328511398219809">Корисник <ph name="EXISTING_USER" /> је већ пријављен. Да би вам прегледање било раздвојено, пријавите се у Chromium преко свог профила као <ph name="USER_EMAIL_ADDRESS" />. Моћи ћете да преузмете и додатке и друго са уређаја <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Следећи пут када отворите Chromium на уређају <ph name="DEVICE_TYPE" />, видећете упит да користите Google менаџер лозинки.</translation>
@@ -135,6 +136,7 @@
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Један или више додатака за Chromium су приступали 1 HID уређају}=1{Један или више додатака за Chromium приступају 1 HID уређају}one{Један или више додатака за Chromium приступају # HID уређају}few{Један или више додатака за Chromium приступају HID уређајима (#)}other{Један или више додатака за Chromium приступају HID уређајима (#)}}</translation>
 <translation id="2401032172288869980">Chromium-у су потребне дозволе за камеру и микрофон за овај сајт</translation>
 <translation id="2403703063067034158">Грешка при покретању: Тренутно је покренута друга инстанца подешавања. Пробајте поново касније.</translation>
+<translation id="241044568699443215">Користите безбедност коју Chromium нуди у покрету уз апликацију Chromium на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="2418322681019544463">Отварајте линкове у Chromium-у из било које апликације и омогућите приступ прегледачу на траци задатака</translation>
 <translation id="2425157128016763890">Кликните на дугме Резимирај да бисте поделили овај документ са Gemini-јем у Chromium-у ради брзог прегледа и постављања додатних питања</translation>
 <translation id="2440750600860946460">Помоћу <ph name="BEGIN_LINK" />Chromium алатки<ph name="END_LINK" /> можете безбедно да прегледате и задржите контролу</translation>
@@ -753,6 +755,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8907580949721785412">Chromium покушава да прикаже лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="8910309838319708610">Браво! Сада можете лако да постављате питања док прегледате помоћу AI режима Претраге</translation>
 <translation id="8932992523185907506">Chromium више није подразумевани прегледач. Желите да подесите Chromium као подразумевани прегледач?</translation>
+<translation id="8940844567350264767">Користите најбоље Chromium безбедносне функције у покрету уз Chromium</translation>
 <translation id="8941642502866065432">Не можете да ажурирате Chromium</translation>
 <translation id="8944232836376404813">Овом радњом:
           <ph name="LINE_BREAKS" />
