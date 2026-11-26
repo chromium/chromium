@@ -11,7 +11,7 @@ import '../read_aloud/language_toast.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {isRTL} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -965,8 +965,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
         return 'window-mode';
       case LineFocusType.LINE:
         return 'line-mode';
-      default:
+      case LineFocusType.NONE:
         return '';
+      default:
+        assertNotReachedCase(type);
     }
   }
 

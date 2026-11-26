@@ -10,7 +10,7 @@ import './preview_area.js';
 import './sidebar.js';
 
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {isMac, isWindows} from 'chrome://resources/js/platform.js';
@@ -321,8 +321,10 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
 
         this.$.state.transitTo(State.ERROR);
         break;
-      default:
+      case DestinationState.INIT:
         break;
+      default:
+        assertNotReachedCase(destinationState);
     }
   }
 
@@ -461,8 +463,11 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
                                                       State.FATAL_ERROR);
         }
         break;
-      default:
+      case PreviewAreaState.LOADING:
+      case PreviewAreaState.OPEN_IN_PREVIEW_LOADING:
         break;
+      default:
+        assertNotReachedCase(previewState);
     }
   }
 

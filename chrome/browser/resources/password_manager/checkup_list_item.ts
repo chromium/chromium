@@ -11,7 +11,7 @@ import './site_favicon.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -271,8 +271,10 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
         return this.i18n('automatedPasswordChangeConfirmingChangedPassword');
       case PasswordAutomaticChangeState.kPasswordChangedSuccessfully:
         return this.i18n('automatedPasswordChangeChangedSuccessfully');
-      default:
+      case PasswordAutomaticChangeState.kError:
         return this.i18n('automatedPasswordChangeError');
+      default:
+        assertNotReachedCase(this.passwordChangeState);
     }
   }
 

@@ -11,7 +11,7 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -331,7 +331,8 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
                 'checkingPasswords', this.status_.totalNumberOfPasswords || 0);
         return;
       default:
-        assertNotReached(
+        assertNotReachedCase(
+            this.status_.state,
             'Can\'t find a title for state: ' + this.status_.state);
     }
   }
@@ -470,7 +471,8 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
       case CheckState.OTHER_ERROR:
         return this.i18n('checkupErrorGeneric', brandingName);
       default:
-        assertNotReached(
+        assertNotReachedCase(
+            this.status_.state,
             'Can\'t find a title for state: ' + this.status_.state);
     }
   }

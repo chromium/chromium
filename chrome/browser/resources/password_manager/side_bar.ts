@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './icons.html.js';
 
 import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -141,8 +141,13 @@ export class PasswordManagerSideBarElement extends
         return Page.CHECKUP;
       case Page.PASSWORD_DETAILS:
         return Page.PASSWORDS;
-      default:
+      case Page.PASSWORDS:
+      case Page.CHECKUP:
+      case Page.SETTINGS:
+      case Page.PASSWORD_CHANGE:
         return this.selectedPage_;
+      default:
+        assertNotReachedCase(this.selectedPage_);
     }
   }
 

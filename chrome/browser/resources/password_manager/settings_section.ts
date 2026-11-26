@@ -20,7 +20,7 @@ import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -337,8 +337,9 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
             loadTimeData.getString('trustedVaultOptInUrl'));
         break;
       case TrustedVaultBannerState.NOT_SHOWN:
-      default:
         assertNotReached();
+      default:
+        assertNotReachedCase(this.trustedVaultBannerState_);
     }
   }
 
@@ -351,7 +352,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       case TrustedVaultBannerState.NOT_SHOWN:
         return '';
       default:
-        assertNotReached();
+        assertNotReachedCase(this.trustedVaultBannerState_);
     }
   }
 
@@ -364,7 +365,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       case TrustedVaultBannerState.NOT_SHOWN:
         return '';
       default:
-        assertNotReached();
+        assertNotReachedCase(this.trustedVaultBannerState_);
     }
   }
 

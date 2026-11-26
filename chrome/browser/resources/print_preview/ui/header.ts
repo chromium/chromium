@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './icons.html.js';
 import '/strings.m.js';
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -101,9 +102,16 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
       case (State.FATAL_ERROR):
         this.summary_ = this.getErrorMessage_();
         break;
-      default:
+      case (State.NOT_READY):
+      case (State.PRINT_PENDING):
+      case (State.HIDDEN):
+      case (State.SYSTEM_DIALOG):
+      case (State.ERROR):
+      case (State.CLOSING):
         this.summary_ = null;
         break;
+      default:
+        assertNotReachedCase(this.state);
     }
   }
 
@@ -114,8 +122,16 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
     switch (this.error) {
       case Error.PRINT_FAILED:
         return loadTimeData.getString('couldNotPrint');
-      default:
+      case Error.NONE:
+      case Error.INVALID_TICKET:
+      case Error.INVALID_PRINTER:
+      case Error.NO_DESTINATIONS:
+      case Error.PREVIEW_FAILED:
+      case Error.MAX_BUCKET:
+      case null:
         return '';
+      default:
+        assertNotReachedCase(this.error);
     }
   }
 

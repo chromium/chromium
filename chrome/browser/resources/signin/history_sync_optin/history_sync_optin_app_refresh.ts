@@ -8,7 +8,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -119,10 +119,13 @@ export class HistorySyncOptinAppRefreshElement extends
         return 'visibility-hidden';
       case ScreenMode.kUnrestricted:
         return 'tonal-button';
-      default:
+      case ScreenMode.kRestricted:
+      case ScreenMode.kDeadlined:
         // Default cr-button styling, appears equally weighted with the other
         // button.
         return '';
+      default:
+        assertNotReachedCase(this.screenMode_);
     }
   }
 
@@ -132,10 +135,13 @@ export class HistorySyncOptinAppRefreshElement extends
         return 'visibility-hidden';
       case ScreenMode.kUnrestricted:
         return 'action-button';
-      default:
+      case ScreenMode.kRestricted:
+      case ScreenMode.kDeadlined:
         // Default cr-button styling, appears equally weighted with the other
         // button.
         return '';
+      default:
+        assertNotReachedCase(this.screenMode_);
     }
   }
 

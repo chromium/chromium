@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 export enum State {
@@ -96,8 +96,10 @@ export class PrintPreviewStateElement extends CrLitElement {
       case (State.CLOSING):
         assert(this.state_ !== State.HIDDEN);
         break;
-      default:
+      case State.FATAL_ERROR:
         break;
+      default:
+        assertNotReachedCase(newState);
     }
 
     const oldState = this.state_;

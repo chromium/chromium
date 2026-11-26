@@ -7,7 +7,7 @@ import './margin_control_container.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -226,17 +226,20 @@ export class PrintPreviewPreviewAreaElement extends
         return this.i18nAdvanced('loading');
       case PreviewAreaState.DISPLAY_PREVIEW:
         return window.trustedTypes!.emptyHTML;
-      // <if expr="is_macosx">
       case PreviewAreaState.OPEN_IN_PREVIEW_LOADING:
       case PreviewAreaState.OPEN_IN_PREVIEW_LOADED:
+        // <if expr="is_macosx">
         return this.i18nAdvanced('openingPDFInPreview');
-      // </if>
+        // </if>
+        // <if expr="not is_macosx">
+        return window.trustedTypes!.emptyHTML;
+        // </if>
       case PreviewAreaState.ERROR:
         // The preview area is responsible for displaying all errors except
         // print failed.
         return this.getErrorMessage_();
       default:
-        return window.trustedTypes!.emptyHTML;
+        assertNotReachedCase(this.previewState);
     }
   }
 
@@ -762,8 +765,15 @@ export class PrintPreviewPreviewAreaElement extends
         });
       case Error.PREVIEW_FAILED:
         return this.i18nAdvanced('previewFailed');
-      default:
+      case Error.NONE:
+      case Error.INVALID_TICKET:
+      case Error.NO_DESTINATIONS:
+      case Error.PRINT_FAILED:
+      case Error.MAX_BUCKET:
+      case null:
         return window.trustedTypes!.emptyHTML;
+      default:
+        assertNotReachedCase(this.error);
     }
   }
 }

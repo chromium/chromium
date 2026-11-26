@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '/strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -78,10 +79,7 @@ export class PrintPreviewButtonStripElement extends CrLitElement {
 
   private updatePrintButtonEnabled_() {
     switch (this.state) {
-      case (State.PRINTING):
-        this.printButtonEnabled_ = false;
-        break;
-      case (State.READY):
+      case State.READY:
         this.printButtonEnabled_ = true;
         if (this.firstLoad || this.lastState_ === State.PRINTING) {
           this.shadowRoot
@@ -90,9 +88,18 @@ export class PrintPreviewButtonStripElement extends CrLitElement {
           this.fire('print-button-focused');
         }
         break;
-      default:
+      case State.NOT_READY:
+      case State.PRINT_PENDING:
+      case State.HIDDEN:
+      case State.PRINTING:
+      case State.SYSTEM_DIALOG:
+      case State.ERROR:
+      case State.FATAL_ERROR:
+      case State.CLOSING:
         this.printButtonEnabled_ = false;
         break;
+      default:
+        assertNotReachedCase(this.state);
     }
     this.lastState_ = this.state;
   }

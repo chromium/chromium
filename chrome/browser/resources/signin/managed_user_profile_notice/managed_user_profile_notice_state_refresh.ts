@@ -6,7 +6,7 @@ import '/strings.m.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -94,8 +94,13 @@ export class ManagedUserProfileNoticeStateRefreshElement extends
         return this.i18n('timeoutTitle');
       case State.ERROR:
         return this.errorTitle_;
-      default:
+      case State.DISCLOSURE:
+      case State.VALUE_PROPOSITION:
+      case State.USER_DATA_HANDLING:
+      case State.SIGNALS_DISCLAIMER:
         assertNotReached();
+      default:
+        assertNotReachedCase(this.state);
     }
   }
 
@@ -109,8 +114,13 @@ export class ManagedUserProfileNoticeStateRefreshElement extends
         return this.i18n('timeoutSubtitle');
       case State.ERROR:
         return this.errorSubtitle_;
-      default:
+      case State.DISCLOSURE:
+      case State.VALUE_PROPOSITION:
+      case State.USER_DATA_HANDLING:
+      case State.SIGNALS_DISCLAIMER:
         assertNotReached();
+      default:
+        assertNotReachedCase(this.state);
     }
   }
 }

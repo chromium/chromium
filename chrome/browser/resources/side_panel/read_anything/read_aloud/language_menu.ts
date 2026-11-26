@@ -14,7 +14,7 @@ import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -248,7 +248,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
         return {isError: false};
       default:
         // This ensures the switch statement is exhaustive
-        return notification satisfies never;
+        assertNotReachedCase(notification);
     }
   }
 

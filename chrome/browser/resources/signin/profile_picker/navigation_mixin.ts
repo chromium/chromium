@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {isBrowserSigninAllowed, isForceSigninEnabled, isSignInProfileCreationSupported} from './profile_picker_flags.js';
@@ -61,7 +61,7 @@ function computeStep(route: Routes): string {
     case Routes.PROFILE_SWITCH:
       return 'profileSwitch';
     default:
-      assertNotReached();
+      assertNotReachedCase(route);
   }
 }
 

@@ -12,7 +12,7 @@ import '/strings.m.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -199,9 +199,11 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
             .then(() => {});
       case Routes.PROFILE_SWITCH:
         return ensureLazyLoaded();
-      default:
+      case null:
         // |this.currentRoute_| should be set by now.
         assertNotReached();
+      default:
+        assertNotReachedCase(this.currentRoute_);
     }
   }
 

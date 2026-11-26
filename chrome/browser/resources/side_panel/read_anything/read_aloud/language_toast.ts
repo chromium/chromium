@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -114,8 +115,12 @@ export class LanguageToastElement extends LanguageToastElementBase implements
         }
         // </if>
         return;
-      default:
+      case NotificationType.NONE:
+      case NotificationType.DOWNLOADING:
+      case NotificationType.GENERIC_ERROR:
         return;
+      default:
+        assertNotReachedCase(type);
     }
 
     this.show_();

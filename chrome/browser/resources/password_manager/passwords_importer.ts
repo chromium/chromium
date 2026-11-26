@@ -52,7 +52,7 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -370,7 +370,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
         this.dialogState_ = DialogState.NO_DIALOG;
         break;
       default:
-        assertNotReached();
+        assertNotReachedCase(this.results_.status);
     }
   }
 
@@ -445,8 +445,13 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
             loadTimeData.getString('importPasswordsHelpURL'),
           ],
         });
-      default:
+      case ImportResultsStatus.kSuccess:
+      case ImportResultsStatus.kDismissed:
+      case ImportResultsStatus.kImportAlreadyActive:
+      case ImportResultsStatus.kConflicts:
         assertNotReached();
+      default:
+        assertNotReachedCase(this.results_.status);
     }
   }
 
@@ -515,8 +520,10 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
         return this.i18n('importPasswordsLongNote');
       case ImportEntryStatus.kUnknownError:
       case ImportEntryStatus.kNonAsciiUrl:
-      default:
+      case ImportEntryStatus.kValid:
         assertNotReached();
+      default:
+        assertNotReachedCase(status);
     }
   }
 }

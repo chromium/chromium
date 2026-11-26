@@ -8,7 +8,7 @@
  * testing. The chrome.passwordsPrivate API is being migrated to use Mojo.
  */
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {ImportEntryStatus, ImportResultsStatus, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, PasswordManagerActionableError, PasswordStoreSet as MojoPasswordStoreSet} from './password_manager.mojom-webui.js';
@@ -472,7 +472,7 @@ export function toMojoActionableError(
     case PrivateError.NEEDS_PASSPHRASE:
       return PasswordManagerActionableError.kNeedsPassphrase;
     default:
-      return PasswordManagerActionableError.kNoError;
+      assertNotReachedCase(error);
   }
 }
 
@@ -501,8 +501,9 @@ export function toMojoImportResultsStatus(
     case PrivateStatus.CONFLICTS:
       return ImportResultsStatus.kConflicts;
     case PrivateStatus.UNKNOWN_ERROR:
-    default:
       return ImportResultsStatus.kUnknownError;
+    default:
+      assertNotReachedCase(status);
   }
 }
 
@@ -539,8 +540,9 @@ export function toMojoImportEntryStatus(
     case PrivateStatus.VALID:
       return ImportEntryStatus.kValid;
     case PrivateStatus.UNKNOWN_ERROR:
-    default:
       return ImportEntryStatus.kUnknownError;
+    default:
+      assertNotReachedCase(status);
   }
 }
 
@@ -579,7 +581,7 @@ export function toMojoPasswordStoreSet(
     case chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT:
       return MojoPasswordStoreSet.kDeviceAndAccount;
     default:
-      assertNotReached();
+      assertNotReachedCase(store);
   }
 }
 

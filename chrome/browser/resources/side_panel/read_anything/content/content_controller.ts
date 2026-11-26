@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
@@ -327,7 +327,7 @@ export class ContentController {
       default:
         // The state comes from the renderer, which only sends the values in
         // TranslationState.
-        assertNotReached(`Invalid translation state: ${state}`);
+        assertNotReachedCase(state, `Invalid translation state: ${state}`);
     }
   }
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReachedCase} from '//resources/js/assert.js';
+
 import type {Notification} from '../menus/menu_util.js';
 
 import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
@@ -192,7 +194,7 @@ export function getNotification(
       return NotificationType.NONE;
     default:
       // This ensures the switch statement is exhaustive
-      return status satisfies never;
+      assertNotReachedCase(status);
   }
 }
 
@@ -559,6 +561,6 @@ export function getNotificationFor(
     case NotificationType.NONE:
       return {isError: false};
     default:
-      return notification satisfies never;
+      assertNotReachedCase(notification);
   }
 }

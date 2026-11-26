@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {dedupingMixin} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -74,7 +74,7 @@ export class Route {
         path = '/' + Page.SETTINGS + '/' + Page.PASSWORD_CHANGE;
         break;
       default:
-        assertNotReached();
+        assertNotReachedCase(this.page);
     }
     const queryString = this.queryParameters.toString();
     if (queryString) {

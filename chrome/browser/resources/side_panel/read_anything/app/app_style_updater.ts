@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReachedCase} from '//resources/js/assert.js';
 import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {LineFocusType} from '../content/read_anything_types.js';
@@ -289,8 +290,16 @@ export class AppStyleUpdater {
     switch (colorSuffix) {
       case ColorSuffix.DEFAULT:
         return EMPTY_STATE_BODY_DEFAULT;
-      default:
+      case ColorSuffix.DARK:
+      case ColorSuffix.LIGHT:
+      case ColorSuffix.YELLOW:
+      case ColorSuffix.BLUE:
+      case ColorSuffix.HIGH_CONTRAST:
+      case ColorSuffix.LOW_CONTRAST_LIGHT:
+      case ColorSuffix.LOW_CONTRAST_DARK:
         return `${EMPTY_STATE_HEADING}${colorSuffix})`;
+      default:
+        assertNotReachedCase(colorSuffix);
     }
   }
 

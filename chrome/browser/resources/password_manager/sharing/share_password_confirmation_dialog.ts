@@ -12,7 +12,7 @@ import '../site_favicon.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -139,7 +139,7 @@ export class SharePasswordConfirmationDialogElement extends
       case ConfirmationDialogStage.SUCCESS:
         return this.i18n('shareDialogSuccessTitle');
       default:
-        assertNotReached();
+        assertNotReachedCase(this.dialogStage_);
     }
   }
 

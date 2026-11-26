@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// <if expr="is_chromeos">
-import {hasGoogleIdentifier} from './voice_language_conversions.js';
-// </if>
-// clang-format on
+import {assertNotReachedCase} from '//resources/js/assert.js';
 
 import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
+
 import type {AudioBrowserProxy} from './audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import type {SpeechBrowserProxy} from './speech_browser_proxy.js';
 import {SpeechBrowserProxyImpl} from './speech_browser_proxy.js';
 import {getFilteredVoiceList} from './tts_voice_filtering.js';
+// clang-format off
+// <if expr="is_chromeos">
+import {hasGoogleIdentifier} from './voice_language_conversions.js';
+// </if>
+// clang-format on
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, EXTENSION_RESPONSE_TIMEOUT_MS, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, hasNaturalIdentifier, isLanguageLocallyAvailable, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_conversions.js';
 import type {VoicePackStatus} from './voice_language_conversions.js';
 import {VoiceLanguageModel} from './voice_language_model.js';
@@ -807,7 +809,7 @@ export class VoiceLanguageController {
           break;
         default:
           // This ensures the switch statement is exhaustive
-          return newStatusCode satisfies never;
+          assertNotReachedCase(newStatusCode);
       }
     } else if (isVoicePackStatusError(newStatus)) {
       if (this.visualBrowserProxy_.isReadAnythingImprovedUiEnabled()) {
@@ -836,7 +838,7 @@ export class VoiceLanguageController {
           break;
         default:
           // This ensures the switch statement is exhaustive
-          return newStatusCode satisfies never;
+          assertNotReachedCase(newStatusCode);
       }
     } else {
       // Couldn't parse the response

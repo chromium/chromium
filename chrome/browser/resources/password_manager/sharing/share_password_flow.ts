@@ -14,7 +14,7 @@ import './share_password_not_family_member_dialog.js';
 import './share_password_confirmation_dialog.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {PasswordManagerProxy} from '../password_manager_proxy.js';
@@ -92,7 +92,7 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
         this.flowState = ShareFlowState.FAMILY_PICKER;
         break;
       default:
-        assertNotReached();
+        assertNotReachedCase(this.fetchResults_.status);
     }
   }
 
