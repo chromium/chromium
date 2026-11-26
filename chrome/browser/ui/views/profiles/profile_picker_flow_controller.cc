@@ -526,7 +526,11 @@ void ProfilePickerFlowController::Init() {
 void ProfilePickerFlowController::SwitchToSignIn(
     ProfilePicker::ProfileInfo profile_info,
     StepSwitchFinishedCallback switch_finished_callback) {
-  DCHECK_EQ(Step::kProfilePicker, current_step());
+  // The picker WebUI remains visible while an async step switch (such as
+  // loading Gaia) is in progress, so ignore duplicate sign-in requests.
+  if (current_step() != Step::kProfilePicker || HasFlowExited()) {
+    return;
+  }
 
   base::FilePath profile_path;
   // Split the variant information from `profile_info`.

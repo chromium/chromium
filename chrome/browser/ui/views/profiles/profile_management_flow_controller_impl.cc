@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -50,10 +52,12 @@ void ProfileManagementFlowControllerImpl::
         signin_metrics::AccessPoint access_point,
         base::FilePath profile_path,
         const std::string& initial_email) {
-  // TODO(crbug.com/577950735): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK_NE(Step::kAccountSelection, current_step());
+  CHECK_NE(Step::kAccountSelection, current_step(), base::NotFatalUntil::M164);
   CHECK_NE(Step::kPostSignInFlow, current_step(), base::NotFatalUntil::M162);
+  if (current_step() == Step::kAccountSelection ||
+      current_step() == Step::kPostSignInFlow) {
+    return;
+  }
 
   bool step_needs_registration = !IsStepInitialized(Step::kAccountSelection);
   if (step_needs_registration) {

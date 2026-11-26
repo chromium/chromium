@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -92,6 +93,7 @@
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
@@ -2209,6 +2211,31 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   widget()->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
   // The flow should not crash.
   WaitForPickerClosed();
+}
+
+// Regression test for crbug.com/577950735.
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       DuplicateSwitchToSignInIgnored) {
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  ASSERT_EQ(1u, g_browser_process->profile_manager()->GetNumberOfProfiles());
+  ShowPickerAndWait();
+
+  base::MockCallback<base::OnceCallback<void(bool)>> first_callback;
+  EXPECT_CALL(first_callback, Run(true));
+  ProfilePicker::SwitchToSignIn(kProfileColor, first_callback.Get());
+
+  // Duplicate requests while `Step::kAccountSelection` is initializing the new
+  // profile or after the sign-in screen has loaded are ignored.
+  base::MockCallback<base::OnceCallback<void(bool)>> duplicate_callback;
+  EXPECT_CALL(duplicate_callback, Run).Times(0);
+  ProfilePicker::SwitchToSignIn(kProfileColor, duplicate_callback.Get());
+
+  WaitForLoadStop(GetSigninChromeSyncDiceUrl());
+  ProfilePicker::SwitchToSignIn(kProfileColor, duplicate_callback.Get());
+
+  EXPECT_EQ(2u, g_browser_process->profile_manager()->GetNumberOfProfiles());
+  EXPECT_EQ(GetSigninChromeSyncDiceUrl(),
+            web_contents()->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,

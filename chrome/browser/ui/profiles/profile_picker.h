@@ -258,7 +258,8 @@ class ProfilePicker {
   // `profile_info` param. The profile is loaded then the sign-page will be
   // rendered with the profile.
   // `switch_finished_callback` gets informed whether the creation of the new
-  // profile succeeded and the sign-in page gets displayed.
+  // profile succeeded and the sign-in page gets displayed. Ignored without
+  // invoking `switch_finished_callback` if the main picker step is not active.
   static void SwitchToSignIn(
       ProfileInfo profile_info,
       base::OnceCallback<void(bool)> switch_finished_callback);
