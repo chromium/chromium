@@ -255,19 +255,7 @@ void WindowsEventRouter::OnWindowBoundsChanged(
 void WindowsEventRouter::OnWindowFocusChanged(
     WindowController* window_controller,
     bool has_focus) {
-  if (!has_focus) {
-    // Ignore focus loss unless `window_controller` is the currently focused
-    // window in this profile. `WindowControllerList` is global across profiles
-    // and deactivation can arrive after another window has already activated.
-    if (!window_controller ||
-        !profile_->IsSameOrParent(window_controller->profile()) ||
-        focused_window_id_ != window_controller->GetWindowId()) {
-      return;
-    }
-    OnActiveWindowChanged(nullptr);
-    return;
-  }
-  OnActiveWindowChanged(window_controller);
+  OnActiveWindowChanged(has_focus ? window_controller : nullptr);
 }
 
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)

@@ -562,13 +562,11 @@ TEST_F(DocumentPipHostTest,
   host->OnWidgetBoundsChanged(host->GetWidget(), bounds);
   EXPECT_EQ(1, observer.bounds_changed);
 
-  // Only activation notifies WindowControllerList on desktop; focus leaving all
-  // Chrome windows is handled separately by WindowsEventRouter.
+  // Native activation delivery varies by platform; drive both host callbacks.
   observer.focus_changes.clear();
   host->OnWidgetActivationChanged(host->GetWidget(), false);
-  EXPECT_TRUE(observer.focus_changes.empty());
   host->OnWidgetActivationChanged(host->GetWidget(), true);
-  EXPECT_EQ(std::vector<bool>{true}, observer.focus_changes);
+  EXPECT_EQ((std::vector<bool>{false, true}), observer.focus_changes);
 }
 
 TEST_F(DocumentPipHostTest, ExtensionWindowCoalescesUserBoundsChanges) {
