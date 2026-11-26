@@ -842,12 +842,6 @@ TEST_F(RedactionToolTest, RedactAndKeepSelected) {
   EXPECT_EQ(redaction_output_ip,
             redactor_.RedactAndKeepSelected(redaction_input,
                                             PIITypeSet{PIIType::kIPAddress}));
-  // The std::set overload should behave the same way, and should ignore
-  // values outside the PIIType range instead of crashing.
-  EXPECT_EQ(redaction_output_ip,
-            redactor_.RedactAndKeepSelected(
-                redaction_input, std::set<PIIType>{PIIType::kIPAddress,
-                                                   static_cast<PIIType>(100)}));
   // Test RedactAndKeepSelected() by keeping MAC addresses and hashes in the
   // redacted output. The hashes that URLs and Android storage paths contain
   // will be redacted with the URL or Android storage path that they're part of.

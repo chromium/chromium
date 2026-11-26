@@ -89,13 +89,6 @@ class RedactionTool {
       PIITypeSet pii_types_to_keep,
       const base::Location& location = base::Location::Current());
 
-  // Same as above, but takes the PII types to keep as a std::set.
-  // TODO(crbug.com/433462519): Remove once all callers pass a PIITypeSet.
-  std::string RedactAndKeepSelected(
-      const std::string& input,
-      const std::set<PIIType>& pii_types_to_keep,
-      const base::Location& location = base::Location::Current());
-
   // Setting `enabled` to `true` redacts credit card numbers in addition to
   // gathering UMA metrics. If not called or `enabled` set to `false` credit
   // cards will only be detected and gathered as UMA metric.

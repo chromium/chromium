@@ -619,22 +619,6 @@ std::string RedactionTool::Redact(const std::string& input,
 
 std::string RedactionTool::RedactAndKeepSelected(
     const std::string& input,
-    const std::set<PIIType>& pii_types_to_keep,
-    const base::Location& location) {
-  PIITypeSet pii_type_set;
-  for (PIIType pii_type : pii_types_to_keep) {
-    // PIITypeSet::Put() CHECK-fails on values outside the enum range, while
-    // the std::set lookups this replaces ignored them. Skip such values so
-    // callers keep the old behavior instead of crashing.
-    if (pii_type >= PIIType::kMinValue && pii_type <= PIIType::kMaxValue) {
-      pii_type_set.Put(pii_type);
-    }
-  }
-  return RedactAndKeepSelected(input, pii_type_set, location);
-}
-
-std::string RedactionTool::RedactAndKeepSelected(
-    const std::string& input,
     PIITypeSet pii_types_to_keep,
     const base::Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
