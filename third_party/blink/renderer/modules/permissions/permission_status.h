@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/permissions/permission_status_listener.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -22,10 +23,11 @@ class V8PermissionState;
 
 // Expose the status of a given permission type for the current
 // ExecutionContext.
-class PermissionStatus : public EventTarget,
-                         public ActiveScriptWrappable<PermissionStatus>,
-                         public ExecutionContextLifecycleStateObserver,
-                         public PermissionStatusListener::Observer {
+class MODULES_EXPORT PermissionStatus
+    : public EventTarget,
+      public ActiveScriptWrappable<PermissionStatus>,
+      public ExecutionContextLifecycleStateObserver,
+      public PermissionStatusListener::Observer {
   DEFINE_WRAPPERTYPEINFO();
 
   using MojoPermissionDescriptor = mojom::blink::PermissionDescriptorPtr;
@@ -55,7 +57,7 @@ class PermissionStatus : public EventTarget,
 
   // ExecutionContextLifecycleStateObserver implementation.
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
-  void ContextDestroyed() override {}
+  void ContextDestroyed() override;
 
   // PermissionStatusListener::Observer
   void OnPermissionStatusChange(MojoPermissionStatusWithDetails) override;

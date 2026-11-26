@@ -101,6 +101,13 @@ void PermissionStatus::ContextLifecycleStateChanged(
     StopListening();
 }
 
+void PermissionStatus::ContextDestroyed() {
+  // Clear registered listeners so post-detach `removeEventListener()` calls do
+  // not notify `listener_` with a destroyed `ExecutionContext`, while keeping
+  // `listener_` intact for detached `state()` / `name()` / `accuracyMode()`.
+  EventTarget::RemoveAllEventListeners();
+}
+
 V8PermissionState PermissionStatus::state() const {
   if (!listener_) {
     return V8PermissionState(V8PermissionState::Enum::kDenied);

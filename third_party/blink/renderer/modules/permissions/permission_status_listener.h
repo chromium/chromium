@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -19,7 +20,7 @@ namespace blink {
 class ExecutionContext;
 class V8PermissionState;
 
-class PermissionStatusListener final
+class MODULES_EXPORT PermissionStatusListener final
     : public GarbageCollected<PermissionStatusListener>,
       public ExecutionContextClient,
       public mojom::blink::PermissionObserver {

@@ -4,11 +4,25 @@
 
 #include "third_party/blink/renderer/modules/permissions/permissions.h"
 
+#include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/modules/permissions/permission_status.h"
+#include "third_party/blink/renderer/modules/permissions/permission_status_listener.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -99,6 +113,56 @@ TEST(PermissionsTest, RemoteClientDataJsonPermissionEnabled) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_EQ(descriptor->name,
             PermissionName::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON);
+}
+
+class NoopEventListener final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event*) override {}
+};
+
+class PermissionStatusTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    page_holder_ = std::make_unique<DummyPageHolder>();
+    LocalDOMWindow* window = page_holder_->GetFrame().DomWindow();
+    listener_ = PermissionStatusListener::Create(
+        window,
+        mojom::blink::PermissionStatusWithDetails::New(
+            mojom::blink::PermissionStatus::ASK, nullptr),
+        CreateDescriptor(PermissionName::GEOLOCATION));
+    status_ = MakeGarbageCollected<PermissionStatus>(listener_, window);
+    status_->UpdateStateIfNeeded();
+    status_->ContextLifecycleStateChanged(
+        mojom::blink::FrameLifecycleState::kRunning);
+    handler_ = MakeGarbageCollected<NoopEventListener>();
+    ASSERT_TRUE(status_->addEventListener(event_type_names::kChange, handler_));
+  }
+
+  test::TaskEnvironment task_environment_;
+  std::unique_ptr<DummyPageHolder> page_holder_;
+  Persistent<PermissionStatusListener> listener_;
+  Persistent<PermissionStatus> status_;
+  Persistent<NoopEventListener> handler_;
+};
+
+TEST_F(PermissionStatusTest, RemoveChangeListenerAfterContextDestroyed) {
+  page_holder_.reset();
+  EXPECT_FALSE(status_->HasEventListeners(event_type_names::kChange));
+  EXPECT_FALSE(status_->removeEventListener(event_type_names::kChange, handler_,
+                                            /*use_capture=*/false));
+  EXPECT_FALSE(status_->HasPendingActivity());
+  EXPECT_EQ(status_->state(), V8PermissionState::Enum::kPrompt);
+}
+
+TEST_F(PermissionStatusTest, RemoveChangeListenerAfterFrozenContextDestroyed) {
+  page_holder_->GetFrame().DomWindow()->SetLifecycleState(
+      mojom::blink::FrameLifecycleState::kFrozen);
+  page_holder_.reset();
+  EXPECT_FALSE(status_->HasEventListeners(event_type_names::kChange));
+  EXPECT_FALSE(status_->removeEventListener(event_type_names::kChange, handler_,
+                                            /*use_capture=*/false));
+  EXPECT_FALSE(status_->HasPendingActivity());
+  EXPECT_EQ(status_->state(), V8PermissionState::Enum::kPrompt);
 }
 
 }  // namespace
