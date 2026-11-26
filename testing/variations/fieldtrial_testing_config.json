@@ -12681,6 +12681,24 @@
             ]
         }
     ],
+    "KillSpareRenderOnCriticalMemoryPressure": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "KillSpareRenderOnCriticalMemoryPressure"
+                    ]
+                }
+            ]
+        }
+    ],
     "LCPPDeferUnusedPreload": [
         {
             "platforms": [
