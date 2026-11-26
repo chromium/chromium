@@ -231,7 +231,10 @@ void DocumentAnimations::UpdateAnimationTimingIfNeeded() {
 }
 
 void DocumentAnimations::ExecutePendingCompositorTriggerNotifications() {
-  for (AnimationTrigger* trigger : triggers_) {
+  // Iterate over a copy, as any triggers constructed while executing the
+  // notifications are added to `triggers_`.
+  HeapVector<Member<AnimationTrigger>> triggers(triggers_);
+  for (AnimationTrigger* trigger : triggers) {
     trigger->ExecutePendingCompositorNotifications();
   }
 }
@@ -537,7 +540,12 @@ void DocumentAnimations::UpdateCompositorAnimationTriggers(
     return;
   }
 
-  for (AnimationTrigger* trigger : triggers_) {
+  // Creating a compositor trigger can resolve style-dependent timeline
+  // offsets, which can synchronously recalculate slot assignments and update
+  // style. Triggers constructed by that style update are added to `triggers_`,
+  // so iterate over a copy.
+  HeapVector<Member<AnimationTrigger>> triggers(triggers_);
+  for (AnimationTrigger* trigger : triggers) {
     trigger->UpdateCompositorTrigger(paint_artifact_compositor);
   }
 }

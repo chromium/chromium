@@ -125,6 +125,10 @@ class CORE_EXPORT DocumentAnimations final
       const {
     return timelines_;
   }
+  const HeapHashSet<WeakMember<AnimationTrigger>>& GetTriggersForTesting()
+      const {
+    return triggers_;
+  }
 
   using TriggerAttachmentMap =
       HeapHashMap<Member<const TriggerScopedName>,

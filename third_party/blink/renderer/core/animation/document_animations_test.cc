@@ -8,6 +8,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
+#include "third_party/blink/renderer/core/animation/document_timeline.h"
+#include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -40,6 +42,14 @@ class MockAnimationTimeline : public AnimationTimeline {
 
  protected:
   MOCK_METHOD0(CurrentTimeInternal, std::optional<base::TimeDelta>());
+};
+
+class MockTimelineTrigger : public TimelineTrigger {
+ public:
+  MockTimelineTrigger() : TimelineTrigger(/*ranges=*/nullptr) {}
+
+  MOCK_METHOD(void, CreateCompositorTrigger, (), (override));
+  MOCK_METHOD(void, ExecutePendingCompositorNotifications, (), (override));
 };
 
 class DocumentAnimationsTest : public RenderingTest {
@@ -164,6 +174,69 @@ TEST_F(DocumentAnimationsTest, UpdateAnimationsUpdatesAllTimelines) {
   // Verify that animations count is correctly updated on animation host.
   cc::AnimationHost* host = document->View()->GetCompositorAnimationHost();
   EXPECT_EQ(5u, host->MainThreadAnimationsCount());
+}
+
+// Regression test for crbug.com/584278375: adding new triggers while updating
+// compositor triggers must not invalidate iteration over the document's
+// triggers set.
+TEST_F(DocumentAnimationsTest,
+       UpdateCompositorAnimationTriggersAllowsTriggerAdditionDuringUpdate) {
+  DocumentAnimations& document_animations = document->GetDocumentAnimations();
+  // AnimationTrigger::UpdateCompositorTrigger() only creates compositor
+  // triggers for triggers that have animations.
+  Animation* animation = document->Timeline().Play(nullptr);
+  auto add_trigger = [&]() {
+    auto* trigger = MakeGarbageCollected<MockTimelineTrigger>();
+    trigger->UpdateBehaviorMap(*animation, AnimationTrigger::Behavior::kPlay,
+                               AnimationTrigger::Behavior::kPause);
+    document_animations.AddAnimationTrigger(*trigger);
+    return trigger;
+  };
+  MockTimelineTrigger* trigger1 = add_trigger();
+  MockTimelineTrigger* trigger2 = add_trigger();
+
+  HeapVector<Member<MockTimelineTrigger>> added_triggers;
+  EXPECT_CALL(*trigger1, CreateCompositorTrigger()).WillOnce([&]() {
+    for (int i = 0; i < 64; ++i) {
+      MockTimelineTrigger* added = add_trigger();
+      EXPECT_CALL(*added, CreateCompositorTrigger()).Times(0);
+      added_triggers.push_back(added);
+    }
+  });
+  EXPECT_CALL(*trigger2, CreateCompositorTrigger());
+
+  document_animations.UpdateCompositorAnimationTriggers(
+      document->View()->GetPaintArtifactCompositor());
+  EXPECT_EQ(66u, document_animations.GetTriggersForTesting().size());
+}
+
+// Regression test for crbug.com/584278375: adding new triggers while executing
+// pending compositor notifications must not invalidate iteration over the
+// document's triggers set.
+TEST_F(DocumentAnimationsTest,
+       ExecutePendingCompositorTriggerNotificationsAllowsTriggerAddition) {
+  DocumentAnimations& document_animations = document->GetDocumentAnimations();
+  auto add_trigger = [&]() {
+    auto* trigger = MakeGarbageCollected<MockTimelineTrigger>();
+    document_animations.AddAnimationTrigger(*trigger);
+    return trigger;
+  };
+  MockTimelineTrigger* trigger1 = add_trigger();
+  MockTimelineTrigger* trigger2 = add_trigger();
+
+  HeapVector<Member<MockTimelineTrigger>> added_triggers;
+  EXPECT_CALL(*trigger1, ExecutePendingCompositorNotifications())
+      .WillOnce([&]() {
+        for (int i = 0; i < 64; ++i) {
+          MockTimelineTrigger* added = add_trigger();
+          EXPECT_CALL(*added, ExecutePendingCompositorNotifications()).Times(0);
+          added_triggers.push_back(added);
+        }
+      });
+  EXPECT_CALL(*trigger2, ExecutePendingCompositorNotifications());
+
+  document_animations.ExecutePendingCompositorTriggerNotifications();
+  EXPECT_EQ(66u, document_animations.GetTriggersForTesting().size());
 }
 
 }  // namespace blink
