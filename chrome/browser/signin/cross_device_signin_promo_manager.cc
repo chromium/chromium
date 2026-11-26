@@ -47,31 +47,8 @@
 
 namespace {
 
-// These query parameter names are used to track installs on iOS and Android.
-constexpr std::string_view kCrossDevicePromoIOSCampaignQueryParam =
-    "ios-campaign";
-constexpr std::string_view kCrossDevicePromoAndroidCampaignQueryParam =
-    "android-campaign";
-
-// Campaign values for cross-device sign-in QR code bubble entry points.
-constexpr std::string_view kCrossDeviceProfileMenuCampaign =
-    "XDeviceProfileMenu";
-constexpr std::string_view kCrossDeviceHistoryPageCampaign =
-    "XDeviceHistoryPage";
-constexpr std::string_view kCrossDeviceSendTabToSelfCampaign =
-    "XDeviceSendTabToSelf";
-// TODO(crbug.com/579407047): Update with the final campaign value.
-constexpr std::string_view kCrossDeviceForeignTabsCampaign =
-    "XDeviceForeignTabs";
-// TODO(crbug.com/571014322): Update with the final What's New campaign value.
-constexpr std::string_view kCrossDeviceWhatsNewCampaign = "XDeviceWhatsNew";
-
-// Limits for dismissible promos.
+// Per-surface impression limit for dismissible promos.
 constexpr int kMaxShownCount = 5;
-constexpr int kMaxTotalShownCount = 6;
-constexpr int kMaxDismissedCount = 2;
-constexpr int kMaxTotalDismissedCount = 4;
-constexpr base::TimeDelta kDismissiblePromoCooldownPeriod = base::Days(7);
 
 using CrossDevicePromoSurface = SigninPrefs::CrossDevicePromoSurface;
 using CrossDevicePromoState = SigninPrefs::CrossDevicePromoState;
@@ -164,6 +141,8 @@ std::optional<CrossDevicePromoState> GetPromoDataForDismissibleEntryPoint(
 // shared by all surfaces, and that cooldown is still active.
 bool IsDismissiblePromoCooldownActive(const SigninPrefs& signin_prefs,
                                       const GaiaId& gaia_id) {
+  static constexpr base::TimeDelta kDismissiblePromoCooldownPeriod =
+      base::Days(7);
   std::optional<base::Time> last_dismissed_time;
   for (CrossDevicePromoSurface surface : CrossDevicePromoSurfaces::All()) {
     const CrossDevicePromoState state =
@@ -188,6 +167,10 @@ bool IsDismissiblePromoCooldownActive(const SigninPrefs& signin_prefs,
 CrossDeviceSigninPromoShouldShowResult CheckDismissiblePromoLimits(
     Profile* profile,
     CrossDevicePromoSurface surface) {
+  static constexpr int kMaxTotalShownCount = 6;
+  static constexpr int kMaxDismissedCount = 2;
+  static constexpr int kMaxTotalDismissedCount = 4;
+
   const GaiaId gaia_id = GetPrimaryAccountGaiaId(profile);
   SigninPrefs signin_prefs(*profile->GetPrefs());
   const CrossDevicePromoState state =
@@ -275,20 +258,29 @@ std::string_view GetCrossDevicePromoCampaign(
     CrossDeviceSigninPromoEntryPoint entry_point) {
   switch (entry_point) {
     case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
-      return kCrossDeviceProfileMenuCampaign;
+      return "XDeviceProfileMenu";
     case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
-      return kCrossDeviceHistoryPageCampaign;
+      return "XDeviceHistoryPage";
     case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
-      return kCrossDeviceSendTabToSelfCampaign;
+      return "XDeviceSendTabToSelf";
     case CrossDeviceSigninPromoEntryPoint::kWhatsNewPage:
-      return kCrossDeviceWhatsNewCampaign;
+      // TODO(crbug.com/571014322): Update with the final What's New campaign
+      // value.
+      return "XDeviceWhatsNew";
     case CrossDeviceSigninPromoEntryPoint::kForeignTabs:
-      return kCrossDeviceForeignTabsCampaign;
+      // TODO(crbug.com/579407047): Update with the final campaign value.
+      return "XDeviceForeignTabs";
   }
 }
 
 GURL GetCrossDeviceSigninQrCodeUrl(CrossDeviceSigninPromoEntryPoint entry_point,
                                    const std::string& email) {
+  // These query parameter names are used to track installs on iOS and Android.
+  static constexpr char kCrossDevicePromoIOSCampaignQueryParam[] =
+      "ios-campaign";
+  static constexpr char kCrossDevicePromoAndroidCampaignQueryParam[] =
+      "android-campaign";
+
   std::string_view campaign = GetCrossDevicePromoCampaign(entry_point);
   std::string base_url_str = switches::kCrossDeviceSigninFromDesktopUrl.Get();
   std::string url_str = base::ReplaceStringPlaceholders(
