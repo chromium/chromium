@@ -18,10 +18,12 @@
 #include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
+#include "base/containers/stack.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1508,7 +1510,7 @@ void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
   CHECK(tool_controller_);
   tool_controller_->Cancel();
 
-  if (!dispatcher_) {
+  if (!IsExecutingActCall()) {
     return;
   }
 
@@ -1538,7 +1540,13 @@ void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
     return;
   }
 
-  dispatcher_->OnToolCompleted(std::move(cancel_result));
+  // Unwind any nested dispatchers so cancellation terminates on the base
+  // dispatcher rather than allowing a composite dispatcher to recover.
+  while (IsExecutingNestedDispatcher()) {
+    dispatchers_.pop();
+  }
+  CHECK(IsExecutingBaseDispatcher());
+  CurrentDispatcher().OnToolCompleted(std::move(cancel_result));
   ProcessNextFromDispatcher();
 }
 
@@ -1580,7 +1588,7 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                   std::move(journal_details).Build());
   }
 
-  if (HasActionSequence()) {
+  if (IsExecutingActCall()) {
     journal_->Log(
         actions[0]->GetURLForJournal(), task_->id(), "Act Failed",
         JournalDetailsBuilder()
@@ -1619,17 +1627,42 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   act_callback_ = std::move(callback);
   observation_strategy_ = TabObservationStrategy();
 
-  dispatcher_ = std::make_unique<BaseDispatcher>(std::move(actions));
+  dispatchers_.push(std::make_unique<BaseDispatcher>(std::move(actions)));
   ProcessNextFromDispatcher();
 }
 
+ExecutionEngineDispatcher& ExecutionEngine::CurrentDispatcher() {
+  CHECK(!dispatchers_.empty());
+  return *dispatchers_.top();
+}
+
+const ExecutionEngineDispatcher& ExecutionEngine::CurrentDispatcher() const {
+  CHECK(!dispatchers_.empty());
+  return *dispatchers_.top();
+}
+
+bool ExecutionEngine::IsExecutingBaseDispatcher() const {
+  return dispatchers_.size() == 1;
+}
+
+bool ExecutionEngine::IsExecutingNestedDispatcher() const {
+  return dispatchers_.size() > 1;
+}
+
 void ExecutionEngine::ProcessNextFromDispatcher() {
-  CHECK(dispatcher_);
-  ExecutionEngineDispatcher::NextAction next = dispatcher_->GetNext(*this);
+  ExecutionEngineDispatcher::NextAction next =
+      CurrentDispatcher().GetNext(*this);
   if (auto* result = std::get_if<ToolResultWithLatencyInfo>(&next)) {
-    CHECK(result->tool_result.data());
-    CompleteActCall(
-        result->tool_result.data()->As<BaseDispatcherToolResult>()->results);
+    dispatchers_.pop();
+    if (dispatchers_.empty()) {
+      CHECK(result->tool_result.data());
+      CompleteActCall(
+          result->tool_result.data()->As<BaseDispatcherToolResult>()->results);
+      return;
+    }
+
+    CurrentDispatcher().OnToolCompleted(std::move(*result));
+    ProcessNextFromDispatcher();
     return;
   }
 
@@ -1655,8 +1688,10 @@ void ExecutionEngine::StartExecutingNewRequest() {
       << "Current state is " << StateToString(state_);
   CHECK(executing_request_);
 
+  // TODO(b/555808355): Consider how observation deferral should work with
+  // followup/composite tools.
   if (tool_controller_->HasPendingObservation() &&
-      (GetNextAction().IsFollowup() ||
+      (GetNextAction().IsFollowup() || IsExecutingNestedDispatcher() ||
        tool_controller_->ShouldSettlePendingObservationBefore(
            GetNextAction()))) {
     tool_controller_->SettlePendingObservation(
@@ -1711,7 +1746,7 @@ void ExecutionEngine::ReportResultAndStartNext(
     ToolResult tool_result,
     std::vector<InterceptedJavaScriptDialog> javascript_dialogs) {
   CHECK(executing_request_);
-  CHECK(dispatcher_);
+
   MaybeRecordActionResultCodeAfterSkippedWait(tool_result);
 
   // TODO(b/555808355): Should this call tool_controller_->Cancel()?
@@ -1721,7 +1756,7 @@ void ExecutionEngine::ReportResultAndStartNext(
       action_start_time_.is_null() ? end_time : action_start_time_;
   std::string tool_name(executing_request_->Name());
 
-  dispatcher_->OnToolCompleted(ToolResultWithLatencyInfo(
+  CurrentDispatcher().OnToolCompleted(ToolResultWithLatencyInfo(
       start_time, std::max(start_time, end_time), std::move(tool_result),
       tool_name, std::move(javascript_dialogs)));
   ProcessNextFromDispatcher();
@@ -1772,7 +1807,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
     mojom::ActionResultCode result_code) {
   TRACE_EVENT0("actor", "ExecutionEngine::DidFinishAsyncSafetyChecks");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(dispatcher_);
+  CHECK(executing_request_);
 
   ActorSurface* actor_surface = GetSurfaceForValidation(GetNextAction());
   if (!actor_surface) {
@@ -1833,7 +1868,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
 void ExecutionEngine::ExecuteNextAction() {
   TRACE_EVENT0("actor", "ExecutionEngine::ExecuteNextAction");
   CHECK_EQ(state_, State::kStartAction, base::NotFatalUntil::M161);
-  CHECK(dispatcher_);
+  CHECK(executing_request_);
   CHECK(tool_controller_);
 
   SetState(State::kToolCreateAndVerify);
@@ -2042,7 +2077,6 @@ void ExecutionEngine::FinishedUiPostInvoke(
     mojom::ActionResultPtr ui_result) {
   TRACE_EVENT0("actor", "ExecutionEngine::FinishedUiPostInvoke");
   CHECK_EQ(state_, State::kUiPostInvoke, base::NotFatalUntil::M161);
-  CHECK(dispatcher_);
   CHECK(executing_request_);
   CHECK(deferred_finish_tool_invoke_.is_null());
 
@@ -2054,7 +2088,7 @@ void ExecutionEngine::FinishedUiPostInvoke(
   }
 
   MaybeRecordActionResultCodeAfterSkippedWait(execute_result.tool_result);
-  dispatcher_->OnToolCompleted(std::move(execute_result));
+  CurrentDispatcher().OnToolCompleted(std::move(execute_result));
   ProcessNextFromDispatcher();
 }
 
@@ -2073,7 +2107,7 @@ void ExecutionEngine::MaybeRecordActionResultCodeAfterSkippedWait(
 void ExecutionEngine::CompleteActCall(
     std::vector<ToolResultWithLatencyInfo> results) {
   TRACE_EVENT0("actor", "ExecutionEngine::CompleteActCall");
-  CHECK(dispatcher_);
+  CHECK(dispatchers_.empty());
   CHECK(act_callback_);
 
   completed_results_ = std::move(results);
@@ -2113,7 +2147,6 @@ void ExecutionEngine::CompleteActCall(
 
   completed_results_.reset();
   // TODO(b/555808355): Move these to the top of the method.
-  dispatcher_.reset();
   executing_request_.reset();
   external_tool_failure_reason_.reset();
   actions_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -2127,12 +2160,13 @@ void ExecutionEngine::RetryCompleteActCallWhenObservationSettled() {
   CompleteActCall(std::move(results));
 }
 
+// TODO(b/555808355): Rename "Action" to "Request" throughout this class.
 base::WeakPtr<ExecutionEngine> ExecutionEngine::GetActionSequenceWeakPtr() {
   return actions_weak_ptr_factory_.GetWeakPtr();
 }
 
-bool ExecutionEngine::HasActionSequence() const {
-  return dispatcher_ != nullptr;
+bool ExecutionEngine::IsExecutingActCall() const {
+  return !dispatchers_.empty() || completed_results_.has_value();
 }
 
 favicon::FaviconService* ExecutionEngine::GetFaviconService() {
@@ -2333,14 +2367,18 @@ void ExecutionEngine::UninterruptFromTool() {
 
 void ExecutionEngine::EnqueueFollowupAction(
     std::unique_ptr<ToolRequest> action) {
-  CHECK(dispatcher_);
+  // TODO(b/555808355): Followups are going to be replaced by dispatchers.
+  // Until they're removed we'll preserve the existing behavior by allowing
+  // followup only in the base dispatcher (i.e. the initially passed-in vector
+  // of ToolRequests).
+  CHECK(IsExecutingBaseDispatcher());
   action->SetAsFollowup(base::PassKey<ExecutionEngine>());
   // Follow-ups act on behalf of the in-progress action, so they inherit its
   // observation delay behavior.
   action->SetSkipObservationDelay(
       GetInProgressAction().ShouldSkipObservationDelay());
-  static_cast<BaseDispatcher*>(dispatcher_.get())
-      ->EnqueueFollowupAction(std::move(action));
+  static_cast<BaseDispatcher&>(CurrentDispatcher())
+      .EnqueueFollowupAction(std::move(action));
 }
 
 void ExecutionEngine::AddActorSurface(
@@ -2537,9 +2575,17 @@ ExecutionEngine::GetDeferredObservationConfig() const {
   const PageToolRequest* current_page_request =
       current_action.AsPageToolRequest();
   if (!current_page_request || current_action.IsFollowup() ||
+      IsExecutingNestedDispatcher() ||
       current_action.ShouldSkipObservationDelay()) {
     return std::nullopt;
   }
+
+  // TODO(b/555808355): To preserve current behavior, DeferredObservations will
+  // only be supported on the base dispatcher (i.e. not on a composite tool).
+  // This matches current behavior that breaks up observation deferral across
+  // followup actions. Re-consider once we understand the interaction better.
+  CHECK(IsExecutingBaseDispatcher());
+
   const ActorSurfaceHandle actor_surface =
       current_page_request->GetActorSurfaceHandle();
   content::RenderFrameHost* target_frame = FindTargetLocalRootFrame(
@@ -2556,10 +2602,9 @@ ExecutionEngine::GetDeferredObservationConfig() const {
                target_frame;
   };
 
-  CHECK(dispatcher_);
   base::span<const std::unique_ptr<ToolRequest>> remaining =
-      static_cast<const BaseDispatcher*>(dispatcher_.get())
-          ->PeekRemainingRequests();
+      static_cast<const BaseDispatcher&>(CurrentDispatcher())
+          .PeekRemainingRequests();
 
   if (remaining.empty() || !is_in_bundle(*remaining[0])) {
     return std::nullopt;

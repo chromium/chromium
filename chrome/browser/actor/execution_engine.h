@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/stack.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -206,7 +207,8 @@ class ExecutionEngine : public ToolDelegate,
   ExecutionEngine& operator=(const ExecutionEngine&) = delete;
   ~ExecutionEngine() override;
 
-  // Cancels any ongoing actions.
+  // Cancels a call to Act. Immediately ends any in progress ToolRequests and
+  // calls the ActCallback. No-op if no Act is in progress.
   void CancelOngoingActions(mojom::ActionResultCode reason);
 
   // Notifies ongoing actions that they have been paused.
@@ -231,7 +233,9 @@ class ExecutionEngine : public ToolDelegate,
   // Invalidated anytime `action_sequence_` is reset.
   base::WeakPtr<ExecutionEngine> GetActionSequenceWeakPtr();
 
-  bool HasActionSequence() const;
+  // This returns true from when a call to Act is made until the caller
+  // receives a reply.
+  bool IsExecutingActCall() const;
 
   // ToolDelegate:
   Profile& GetProfile() override;
@@ -407,6 +411,10 @@ class ExecutionEngine : public ToolDelegate,
   void FinishedUiPostInvoke(ToolResultWithLatencyInfo execute_result,
                             mojom::ActionResultPtr ui_result);
 
+  ExecutionEngineDispatcher& CurrentDispatcher();
+  const ExecutionEngineDispatcher& CurrentDispatcher() const;
+  bool IsExecutingBaseDispatcher() const;
+  bool IsExecutingNestedDispatcher() const;
   void ProcessNextFromDispatcher();
   // Starts the next action by calling SafetyChecksForNextAction(). Must only be
   // called if there is a next action.
@@ -546,7 +554,24 @@ class ExecutionEngine : public ToolDelegate,
 
   base::flat_map<url::Origin, url::Origin> affiliated_origin_map_;
 
-  std::unique_ptr<ExecutionEngineDispatcher> dispatcher_;
+  // ExecutionEngine gets the next ToolRequest to run from a Dispatcher. This
+  // allows bundling multiple ToolRequests into a single call to Act. A
+  // dispatcher is simply a source of ToolRequests from which ExecutionEngine
+  // can request GetNext (and feed back the invocation result before requesting
+  // the next ToolRequest).
+  //
+  // Dispatchers are kept on a stack so that they can be nested. Certain
+  // "composite" tools are implemented as a dispatcher, bundling together
+  // multiple simple ToolRequests to implement more complex behaviors. When a
+  // composite tool is executed its dispatcher is pushed onto the stack so it
+  // becomes the new source of ToolRequests. When it completes it is popped off
+  // the stack.
+  //
+  // The bottom of the stack is special: it is always a BaseDispatcher type
+  // implemented by ExecutionEngine itself. It is used to wrap the incoming
+  // vector<ToolRequests> that's provided to Act. When it is popped the call to
+  // Act is completed.
+  base::stack<std::unique_ptr<ExecutionEngineDispatcher>> dispatchers_;
   std::unique_ptr<ToolRequest> executing_request_;
   // Only set after `CompleteActCall` is invoked; needed because async
   // observation deferral there can require re-calling `CompleteActCall` on

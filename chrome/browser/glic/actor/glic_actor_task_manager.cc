@@ -768,7 +768,7 @@ void GlicActorClientSession::UninterruptActorTask(int32_t task_id) {
     return;
   }
   actor::ActorTask::State next_state = actor::ActorTask::State::kReflecting;
-  if (task->GetExecutionEngine().HasActionSequence()) {
+  if (task->GetExecutionEngine().IsExecutingActCall()) {
     next_state = actor::ActorTask::State::kActing;
   }
   task->Uninterrupt(next_state);
