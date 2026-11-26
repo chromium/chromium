@@ -652,9 +652,12 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_BrowserActionPopup) {
       minSize,
   });
   for (size_t i = 0; i < std::size(kExpectedSizes); i++) {
-    content::WebContentsAddedObserver popup_observer;
+    ExtensionHostTestHelper popup_observer(profile(), extension->id());
+    popup_observer.RestrictToType(mojom::ViewType::kExtensionPopup);
     actions_bar->Press(extension->id());
-    content::WebContents* popup = popup_observer.GetWebContents();
+    ExtensionHost* popup_host = popup_observer.WaitForRenderProcessReady();
+    ASSERT_TRUE(popup_host);
+    content::WebContents* popup = popup_host->host_contents();
     actions_bar->WaitForExtensionsContainerLayout();
 
     gfx::Size max_available_size =
