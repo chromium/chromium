@@ -741,7 +741,14 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), "srcObjectReassignSameObject()"));
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest, ApplyConstraintsVideo) {
+// TODO(crbug.com/590519490): Flaky on Android CI (expected '640', got '639').
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ApplyConstraintsVideo DISABLED_ApplyConstraintsVideo
+#else
+#define MAYBE_ApplyConstraintsVideo ApplyConstraintsVideo
+#endif
+IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
+                       MAYBE_ApplyConstraintsVideo) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/media/getusermedia.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
