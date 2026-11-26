@@ -1203,6 +1203,62 @@ TEST_F(
                                           EntityType(kRedressNumber)));
 }
 
+// Tests that `Autofill.Ai.Import.CapabilityUnknown.EquallyWeightedButtons` is
+// emitted only for `AutofillAiAction::kImport` on private passes when all
+// non-capability import requirements are met.
+TEST_F(AutofillAiMayPerformImportToWalletTest,
+       Import_LogsButtonsCapabilityUnknownForPrivatePassesOnly) {
+  constexpr std::string_view kHistogram =
+      "Autofill.Ai.Import.CapabilityUnknown.EquallyWeightedButtons";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillAiWalletPrivatePasses,
+       features::kAutofillRegionalizedPrivatePassesUxRefine},
+      /*disabled_features=*/{});
+  client().SetWalletPublicPassStorageEnabled(true);
+
+  {
+    // Known capability (`false` by default in fixture) logs `false` on
+    // `kImport`, and does not log on `kImportToWallet` or public passes.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(MayPerformAutofillAiAction(client(), AutofillAiAction::kImport,
+                                           EntityType(kPassport)));
+    EXPECT_TRUE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kImportToWallet, EntityType(kPassport)));
+    EXPECT_TRUE(MayPerformAutofillAiAction(client(), AutofillAiAction::kImport,
+                                           EntityType(kVehicle)));
+    histogram_tester.ExpectUniqueSample(kHistogram, false, 1);
+  }
+
+  {
+    // Off-the-record and disabled-pref checks short-circuit before capability
+    // logging.
+    base::HistogramTester histogram_tester;
+    client().set_is_off_the_record(true);
+    EXPECT_FALSE(MayPerformAutofillAiAction(client(), AutofillAiAction::kImport,
+                                            EntityType(kPassport)));
+    client().set_is_off_the_record(false);
+
+    client().SetAutofillProfileEnabled(false);
+    EXPECT_FALSE(MayPerformAutofillAiAction(client(), AutofillAiAction::kImport,
+                                            EntityType(kPassport)));
+    client().SetAutofillProfileEnabled(true);
+    histogram_tester.ExpectTotalCount(kHistogram, 0);
+  }
+
+  {
+    // Unknown capability logs `true` even though `kImport` returns `false`.
+    client().ResetAccountCapabilities();
+    client().SetCanUseModelExecutionFeatures(true);
+    client().SetSupportsWalletPrivatePassesInAutofill(true);
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(MayPerformAutofillAiAction(client(), AutofillAiAction::kImport,
+                                            EntityType(kPassport)));
+    histogram_tester.ExpectUniqueSample(kHistogram, true, 1);
+  }
+}
+
 // Tests that equally weighted buttons are not shown when
 // `kAutofillRegionalizedPrivatePassesUxRefine` is disabled.
 TEST_F(AutofillAiPermissionUtilsTest,

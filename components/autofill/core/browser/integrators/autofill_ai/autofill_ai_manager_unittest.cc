@@ -1447,7 +1447,8 @@ TEST_F(AutofillAiManagerImportFormTest,
 
 // Tests that the import prompt is not shown for a private pass when
 // `kAutofillRegionalizedPrivatePassesUxRefine` is enabled and the account
-// capability is `kUnknown`.
+// capability is `kUnknown`, while still logging that the capability was
+// unknown.
 TEST_F(AutofillAiManagerImportFormTest,
        DoesNotShowPrivatePassPromptIfCapabilityUnknown) {
   base::test::ScopedFeatureList feature_list{
@@ -1455,10 +1456,13 @@ TEST_F(AutofillAiManagerImportFormTest,
   autofill_client().ResetAccountCapabilities();
   autofill_client().SetCanUseModelExecutionFeatures(true);
   autofill_client().SetSupportsWalletPrivatePassesInAutofill(true);
+  base::HistogramTester histogram_tester;
 
   EXPECT_CALL(autofill_client(), ShowEntityImportBubble).Times(0);
   EXPECT_FALSE(
       manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.Import.CapabilityUnknown.EquallyWeightedButtons", true, 1);
 }
 
 // Tests that migration prompts are only shown three times per url and entity

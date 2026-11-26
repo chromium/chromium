@@ -48,6 +48,13 @@ void LogUpsertDetailsCacheStatus(AutofillAiUpsertDetailsCacheStatus status) {
                                 status);
 }
 
+void LogPrivatePassEquallyWeightedButtonsCapabilityUnknown(
+    bool capability_unknown) {
+  base::UmaHistogramBoolean(
+      "Autofill.Ai.Import.CapabilityUnknown.EquallyWeightedButtons",
+      capability_unknown);
+}
+
 void LogLocalEntitiesDeduplicationMetrics(
     const base::flat_map<EntityType, size_t>&
         local_entities_considered_for_deduplication_per_type,

@@ -2034,6 +2034,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="EntityRecordType" variants="Autofill.Ai.EntityRecordType"/>
 </histogram>
 
+<histogram name="Autofill.Ai.Import.CapabilityUnknown.EquallyWeightedButtons"
+    enum="Boolean" expires_after="2027-08-08">
+  <owner>taminob@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether the account capability
+    MustShowEquallyWeightedButtonsForPrivatePassesInAutofill is unknown (e.g.
+    not yet fetched) when checking import permissions for an observed private
+    pass on form submission. When true and
+    kAutofillRegionalizedPrivatePassesUxRefine is enabled, the import prompt is
+    suppressed. This histogram can only be triggered when the user is signed in.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.ImportConstraintsMet.WalletSync{EntityType}"
     enum="Boolean" expires_after="2027-05-02">
   <owner>fleimgruber@google.com</owner>

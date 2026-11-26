@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature.h"
 #include "base/feature_list.h"
@@ -28,6 +29,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/geo/country_data.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -471,12 +473,20 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       identity_manager.GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   const AccountCapabilities& capabilities =
       account_info.GetAccountCapabilities();
+  const signin::Tribool buttons_capability =
+      capabilities
+          .must_show_equally_weighted_buttons_for_private_passes_in_autofill();
+
+  if (action == AutofillAiAction::kImport) {
+    // Log only for `kImport` which is checked once per observed entity on form
+    // submission for both local and Wallet saves.
+    LogPrivatePassEquallyWeightedButtonsCapabilityUnknown(
+        buttons_capability == signin::Tribool::kUnknown);
+  }
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillRegionalizedPrivatePassesUxRefine) &&
-      capabilities
-              .must_show_equally_weighted_buttons_for_private_passes_in_autofill() ==
-          signin::Tribool::kUnknown) {
+      buttons_capability == signin::Tribool::kUnknown) {
     MaybeOutputReason(
         debug_message,
         "Account capability for private pass prompt buttons is unknown.");
@@ -536,35 +546,12 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
                       "User's sign-in is in a persistent error state.");
     return false;
   }
-  switch (action) {
-    case AutofillAiAction::kImport:
-    case AutofillAiAction::kImportToWallet: {
-      CHECK(entity_type) << "An entity type is required to check if an entity "
-                            "can be imported";
-      return SatisfiesImportAccountCapabilities(*identity_manager, action,
-                                                *entity_type, debug_message);
-    }
-    case AutofillAiAction::kOptIn: {
-      if (!GetAccountGaiaIdHash(identity_manager).has_value()) {
-        return false;
-      }
-      break;
-    }
-    case AutofillAiAction::kAddLocalEntityInstanceInSettings:
-    case AutofillAiAction::kAmbientAutofill:
-    case AutofillAiAction::kCrowdsourcingVote:
-    case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
-    case AutofillAiAction::kFilling:
-    case AutofillAiAction::kListEntityInstancesInSettings:
-    case AutofillAiAction::kLogToMqls:
-    case AutofillAiAction::kEnableOrDisable:
-    case AutofillAiAction::kServerClassificationModel:
-    case AutofillAiAction::kShowAmbientAutofillInSettings:
-    case AutofillAiAction::kTypeSupportsAmbientAutofillData:
-    case AutofillAiAction::kUseCachedServerClassificationModelResults:
-    case AutofillAiAction::kWalletDataSharingPromotion:
-      break;
+
+  if (action == AutofillAiAction::kOptIn &&
+      !GetAccountGaiaIdHash(identity_manager).has_value()) {
+    return false;
   }
+
   return true;
 }
 
@@ -794,10 +781,24 @@ bool MayPerformAutofillAiAction(
   }
 
   // If the re-auth availability is unknown, error on the side of caution.
-  return SatisfiesMiscellaneousRequirements(
-      is_off_the_record, edm->GetReauthAvailability().value_or(false),
-      has_entity_data_saved, country_code, personal_context_eligibility_state,
-      action, entity_type, debug_message);
+  if (!SatisfiesMiscellaneousRequirements(
+          is_off_the_record, edm->GetReauthAvailability().value_or(false),
+          has_entity_data_saved, country_code,
+          personal_context_eligibility_state, action, entity_type,
+          debug_message)) {
+    return false;
+  }
+
+  // Check requirements that may log metrics last.
+  if (action == AutofillAiAction::kImport ||
+      action == AutofillAiAction::kImportToWallet) {
+    CHECK(entity_type)
+        << "An entity type is required to check if an entity can be imported";
+    return SatisfiesImportAccountCapabilities(
+        CHECK_DEREF(identity_manager), action, *entity_type, debug_message);
+  }
+
+  return true;
 }
 
 bool GetAutofillAiOptInStatus(const AutofillClient& client) {

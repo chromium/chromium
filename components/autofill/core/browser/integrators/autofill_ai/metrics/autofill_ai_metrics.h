@@ -55,6 +55,11 @@ enum class AutofillAiUpsertDetailsCacheStatus {
 
 void LogUpsertDetailsCacheStatus(AutofillAiUpsertDetailsCacheStatus status);
 
+// Logs whether the account capability requiring equally weighted buttons for
+// private passes is unknown when checking import permissions.
+void LogPrivatePassEquallyWeightedButtonsCapabilityUnknown(
+    bool capability_unknown);
+
 void LogLocalEntitiesDeduplicationMetrics(
     const base::flat_map<EntityType, size_t>&
         local_entities_considered_for_deduplication_per_type,
