@@ -17,26 +17,30 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_helper.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -49,6 +53,14 @@ constexpr char kPrivacyIndicatorsAppTypeHistogramName[] =
     "Ash.PrivacyIndicators.AppAccessUpdate.Type";
 constexpr char kPrivacyIndicatorsLaunchSettingsHistogramName[] =
     "Ash.PrivacyIndicators.LaunchSettings";
+constexpr AccountId::Literal kPrimaryUser =
+    AccountId::Literal::FromUserEmailGaiaId(
+        "primary_profile@test",
+        GaiaId::Literal("primary-profile-gaia-id"));
+constexpr AccountId::Literal kSecondaryUser =
+    AccountId::Literal::FromUserEmailGaiaId(
+        "secondary_profile@test",
+        GaiaId::Literal("secondary-profile-gaia-id"));
 
 // Check the visibility of privacy indicators and their camera/microphone icons
 // in all displays.
@@ -89,34 +101,28 @@ void ExpectPrivacyIndicatorsMicrophoneIconVisible(bool visible) {
 
 }  // namespace
 
-class TestAppAccessNotifier : public AppAccessNotifier {
- public:
-  TestAppAccessNotifier() = default;
-  TestAppAccessNotifier(const TestAppAccessNotifier&) = delete;
-  TestAppAccessNotifier& operator=(const TestAppAccessNotifier&) = delete;
-  ~TestAppAccessNotifier() override = default;
-
-  void SetFakeActiveUserAccountId(AccountId id) {
-    user_account_id_ = id;
-    CheckActiveUserChanged();
-  }
-
-  AccountId GetActiveUserAccountId() override { return user_account_id_; }
-
- private:
-  AccountId user_account_id_ = EmptyAccountId();
-};
-
-class AppAccessNotifierTest : public testing::Test,
+class AppAccessNotifierTest : public ChromeAshTestBase,
                               public ::testing::WithParamInterface<bool> {
  public:
   AppAccessNotifierTest()
-      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
   AppAccessNotifierTest(const AppAccessNotifierTest&) = delete;
   AppAccessNotifierTest& operator=(const AppAccessNotifierTest&) = delete;
   ~AppAccessNotifierTest() override = default;
 
   bool IsCrosPrivacyHubEnabled() const { return GetParam(); }
+
+  // ChromeAshTestBase:
+  void SetUpInitParams(ash::AshTestHelper::InitParams& init_params) override {
+    ChromeAshTestBase::SetUpInitParams(init_params);
+    // SetUp() signs the users in itself, so that the UserManager, the
+    // SessionManager and ash's SessionController name the same ones.
+    init_params.users.clear();
+    init_params.user_session_test_environment_delegate =
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            TestingBrowserProcess::GetGlobal());
+  }
 
   void SetUp() override {
     if (!IsCrosPrivacyHubEnabled()) {
@@ -124,73 +130,30 @@ class AppAccessNotifierTest : public testing::Test,
           ash::features::kCrosPrivacyHub);
     }
 
-    ASSERT_TRUE(testing_profile_manager_.SetUp());
+    ChromeAshTestBase::SetUp();
 
-    // Setting ash prefs for testing multi-display.
-    ash::RegisterLocalStatePrefs(local_state_.registry(), /*for_test=*/true);
+    // UserSessionTestEnvironment takes new users only before the first
+    // sign-in, so the secondary user is registered here even though
+    // SetupSecondaryUser() is what signs them in.
+    ash::test::UserSessionTestEnvironment& user_session_test_environment =
+        ash_test_helper()->user_session_test_environment();
+    ASSERT_TRUE(user_session_test_environment.AddRegularUser(kPrimaryUser));
+    ASSERT_TRUE(user_session_test_environment.AddRegularUser(kSecondaryUser));
 
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    fake_user_manager_ = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    ASSERT_NO_FATAL_FAILURE(LogInUser(kPrimaryUser));
 
-    ash_test_helper_.SetUp(
-        {.users = ash::AshTestHelper::InitParams::DefaultUsers(),
-         .local_state = &local_state_});
-
-    app_access_notifier_ = std::make_unique<TestAppAccessNotifier>();
-
-    SetupPrimaryUser();
+    // Built last, so that it finds the signed-in user's app service caches
+    // when it looks them up for the active user.
+    app_access_notifier_ = std::make_unique<AppAccessNotifier>();
   }
 
   void TearDown() override {
     app_access_notifier_.reset();
-    ash_test_helper_.TearDown();
-    scoped_user_manager_.reset();
-    apps::AppCapabilityAccessCacheWrapper::Get().RemoveAppCapabilityAccessCache(
-        &capability_access_cache_secondary_user_);
-    apps::AppCapabilityAccessCacheWrapper::Get().RemoveAppCapabilityAccessCache(
-        &capability_access_cache_primary_user_);
-  }
-
-  void SetupPrimaryUser() {
-    auto* primary_profile = testing_profile_manager_.CreateTestingProfile(
-        account_id_primary_user_.GetUserEmail());
-    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id_primary_user_, false, user_manager::UserType::kRegular,
-        primary_profile);
-
-    registry_cache_primary_user_.SetAccountId(account_id_primary_user_);
-    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(
-        account_id_primary_user_, &registry_cache_primary_user_);
-    capability_access_cache_primary_user_.SetAccountId(
-        account_id_primary_user_);
-    apps::AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
-        account_id_primary_user_, &capability_access_cache_primary_user_);
-
-    SetActiveUserAccountId(/*is_primary=*/true);
-    WaitForAppServiceProxyReady(
-        apps::AppServiceProxyFactory::GetForProfile(primary_profile));
+    ChromeAshTestBase::TearDown();
   }
 
   void SetupSecondaryUser() {
-    auto* secondary_profile = testing_profile_manager_.CreateTestingProfile(
-        account_id_secondary_user_.GetUserEmail());
-    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id_secondary_user_, false, user_manager::UserType::kRegular,
-        secondary_profile);
-
-    registry_cache_secondary_user_.SetAccountId(account_id_secondary_user_);
-    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(
-        account_id_secondary_user_, &registry_cache_secondary_user_);
-    capability_access_cache_secondary_user_.SetAccountId(
-        account_id_secondary_user_);
-    apps::AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
-        account_id_secondary_user_, &capability_access_cache_secondary_user_);
-
-    SetActiveUserAccountId(/*is_primary=*/false);
-    WaitForAppServiceProxyReady(
-        apps::AppServiceProxyFactory::GetForProfile(secondary_profile));
+    ASSERT_NO_FATAL_FAILURE(LogInUser(kSecondaryUser));
   }
 
   std::vector<std::u16string> GetAppsAccessingCamera() {
@@ -242,44 +205,53 @@ class AppAccessNotifierTest : public testing::Test,
     cap_cache->OnCapabilityAccesses(std::move(capability_access_deltas));
   }
 
-  // Set the active account, whether to use the primary or secondary fake user
-  // account.
   void SetActiveUserAccountId(bool is_primary) {
-    auto id =
-        is_primary ? account_id_primary_user_ : account_id_secondary_user_;
-    app_access_notifier_->SetFakeActiveUserAccountId(id);
-
-    fake_user_manager_->LoginUser(id);
-    fake_user_manager_->SwitchActiveUser(id);
+    SetActiveUser(is_primary ? kPrimaryUser : kSecondaryUser);
   }
 
-  const AccountId account_id_primary_user_ =
-      AccountId::FromUserEmail("primary_profile");
-  const AccountId account_id_secondary_user_ =
-      AccountId::FromUserEmail("secondary_profile");
+ private:
+  // Signs `account_id` in and waits for their AppServiceProxy, which is what
+  // registers the app service caches AppAccessNotifier reads.
+  void LogInUser(const AccountId& account_id) {
+    // The delegate creates the user's TestingProfile on LogIn().
+    ash_test_helper()->user_session_test_environment().LogIn(account_id);
+    Profile* const profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            account_id));
+    ASSERT_TRUE(profile);
 
-  std::unique_ptr<TestAppAccessNotifier> app_access_notifier_;
+    // ash's SessionController keeps its own list of sessions, which the
+    // UserManager does not drive.
+    GetSessionControllerClient()->SetUnownedUserPrefService(
+        account_id, profile->GetPrefs());
+    SimulateUserLogin({.account_id = account_id});
 
-  apps::AppRegistryCache registry_cache_primary_user_;
-  apps::AppCapabilityAccessCache capability_access_cache_primary_user_;
-  apps::AppRegistryCache registry_cache_secondary_user_;
-  apps::AppCapabilityAccessCache capability_access_cache_secondary_user_;
+    WaitForAppServiceProxyReady(
+        apps::AppServiceProxyFactory::GetForProfile(profile));
 
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
-      nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+    // UserManager::UserLoggedIn() makes only the primary user active by
+    // itself; a second one becomes active afterwards, once their profile
+    // exists. Switching here signs them in in that order.
+    SetActiveUser(account_id);
+  }
 
-  // This instance is needed for setting up `ash_test_helper_`.
-  // See //docs/threading_and_tasks_testing.md.
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  // Makes `account_id` the active user in both the session manager and ash's
+  // SessionController, which production keeps in step through
+  // SessionControllerClientImpl::DoSwitchActiveUser().
+  void SetActiveUser(const AccountId& account_id) {
+    session_manager::SessionManager* const session_manager =
+        session_manager::SessionManager::Get();
+    const session_manager::Session* const active_session =
+        session_manager->GetActiveSession();
+    // Logging the primary user in already made them active, and switching to
+    // the active user NOTREACHEs.
+    if (!active_session || active_session->account_id() != account_id) {
+      session_manager->SwitchActiveSession(account_id);
+    }
+    SwitchActiveUser(account_id);
+  }
 
-  TestingProfileManager testing_profile_manager_;
-
-  // Use this for testing multi-display.
-  TestingPrefServiceSimple local_state_;
-
-  ash::AshTestHelper ash_test_helper_;
+  std::unique_ptr<AppAccessNotifier> app_access_notifier_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -534,12 +506,12 @@ TEST_P(AppAccessNotifierTest, AppAccessNotification) {
   LaunchAppUsingCameraOrMicrophone(id1, "test_app_name", /*use_camera=*/false,
                                    /*use_microphone=*/false);
   // Fast forward by the minimum duration the privacy indicator should be held.
-  task_environment_.FastForwardBy(
+  task_environment()->FastForwardBy(
       ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   LaunchAppUsingCameraOrMicrophone(id2, "test_app_name", /*use_camera=*/false,
                                    /*use_microphone=*/false);
   // Fast forward by the minimum duration the privacy indicator should be held.
-  task_environment_.FastForwardBy(
+  task_environment()->FastForwardBy(
       ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
       notification_id1));
@@ -571,7 +543,7 @@ TEST_P(AppAccessNotifierTest, PrivacyIndicatorsVisibility) {
                                    /*use_camera=*/true,
                                    /*use_microphone=*/true);
   // Fast forward by the minimum duration the privacy indicator should be held.
-  task_environment_.FastForwardBy(
+  task_environment()->FastForwardBy(
       ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   ExpectPrivacyIndicatorsVisible(/*visible=*/true);
   ExpectPrivacyIndicatorsCameraIconVisible(/*visible=*/true);
@@ -581,7 +553,7 @@ TEST_P(AppAccessNotifierTest, PrivacyIndicatorsVisibility) {
                                    /*use_camera=*/false,
                                    /*use_microphone=*/false);
   // Fast forward by the minimum duration the privacy indicator should be held.
-  task_environment_.FastForwardBy(
+  task_environment()->FastForwardBy(
       ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   ExpectPrivacyIndicatorsVisible(/*visible=*/false);
   ExpectPrivacyIndicatorsCameraIconVisible(/*visible=*/false);

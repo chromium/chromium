@@ -17,6 +17,7 @@ include_rules = [
 specific_include_rules = {
   # Only tests need these //chrome dependencies.
   "app_access_notifier_unittest\\.cc": [
-    "+chrome/browser/ash/login/users",
+    "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
+    "+chrome/browser/profiles/profile.h",
   ],
 }
