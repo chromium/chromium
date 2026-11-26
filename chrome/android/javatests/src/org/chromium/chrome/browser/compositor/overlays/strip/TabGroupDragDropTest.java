@@ -42,8 +42,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.tabmodel.TabGroupCreatedCondition;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
@@ -63,8 +63,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     @LargeTest
     public void testDragDrop_TabGroup_ToSecondWindow_StartIndex() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        Token sourceGroupId = createSingleTabGroup(sourceActivity, /* tabIndex= */ 0);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        Token sourceGroupId = createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ false);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 1);
@@ -125,8 +124,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
         ThreadUtils.runOnUiThreadBlocking(() -> LocalizationUtils.setRtlForTesting(true));
 
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        Token sourceGroupId = createSingleTabGroup(sourceActivity, /* tabIndex= */ 0);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        Token sourceGroupId = createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ false);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 1);
@@ -184,8 +182,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     @LargeTest
     public void testDragDrop_TabGroup_ToSecondWindow_MiddleIndex() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        Token sourceGroupId = createSingleTabGroup(sourceActivity, /* tabIndex= */ 0);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        Token sourceGroupId = createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ false);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 2);
@@ -242,8 +239,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     @LargeTest
     public void testDragDrop_TabGroup_ToSecondWindow_EndIndex() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        Token sourceGroupId = createSingleTabGroup(sourceActivity, /* tabIndex= */ 0);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        Token sourceGroupId = createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ false);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 2);
@@ -302,15 +298,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     public void testDragDrop_TabGroup_MultipleTabsInGroup() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
         // Group tabs 0 and 1 into a multi-tab group.
-        TabStripTestUtils.createTabGroup(
-                sourceActivity,
-                /* isIncognito= */ false,
-                /* firstIndex= */ 0,
-                /* secondIndex= */ 1);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
-        Token sourceGroupId =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> sourceActivity.getCurrentTabModel().getTabAt(0).getTabGroupId());
+        Token sourceGroupId = createTabGroup(/* firstIndex= */ 0, /* secondIndex= */ 1);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 1);
@@ -344,12 +332,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     public void testDragDrop_TabGroup_LastTabGroupClosesSourceWindow() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 1);
         // Group all tabs in source window.
-        TabStripTestUtils.createTabGroup(
-                sourceActivity,
-                /* isIncognito= */ false,
-                /* firstIndex= */ 0,
-                /* secondIndex= */ 1);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        createTabGroup(/* firstIndex= */ 0, /* secondIndex= */ 1);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 1);
@@ -424,16 +407,13 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     @LargeTest
     public void testDragDrop_TabGroup_NearExistingGroup_RemainsSeparate() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        Token sourceGroupId = createSingleTabGroup(sourceActivity, /* tabIndex= */ 0);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        Token sourceGroupId = createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ false);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 1);
-        StripLayoutHelper destHelper = TabStripTestUtils.getActiveStripLayoutHelper(destActivity);
 
         // Group tab 0 in destination activity.
-        Token destGroupId = createSingleTabGroup(destActivity, /* tabIndex= */ 0);
-        TabStripUtils.settleDownCompositor(destHelper);
+        Token destGroupId = createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ false);
 
         int initialSourceCount = ChromeTabUtils.getNumOpenTabs(sourceActivity);
         int initialDestCount = ChromeTabUtils.getNumOpenTabs(destActivity);
@@ -500,20 +480,13 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     @LargeTest
     public void testDragDrop_TabGroup_OverExpandedGroup_RemainsSeparate() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        Token sourceGroupId = createSingleTabGroup(sourceActivity, /* tabIndex= */ 0);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        Token sourceGroupId = createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ false);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 2);
-        StripLayoutHelper destHelper = TabStripTestUtils.getActiveStripLayoutHelper(destActivity);
 
         // Group tab 0 and tab 1 into an expanded group in destination activity.
-        TabStripTestUtils.createTabGroup(
-                destActivity, /* isIncognito= */ false, /* firstIndex= */ 0, /* secondIndex= */ 1);
-        TabStripUtils.settleDownCompositor(destHelper);
-        Token destGroupId =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> destActivity.getCurrentTabModel().getTabAt(0).getTabGroupId());
+        Token destGroupId = createTabGroup(/* firstIndex= */ 0, /* secondIndex= */ 1);
 
         int initialSourceCount = ChromeTabUtils.getNumOpenTabs(sourceActivity);
         int initialDestCount = ChromeTabUtils.getNumOpenTabs(destActivity);
@@ -582,24 +555,13 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     @LargeTest
     public void testDragDrop_TabGroup_CollapsedGroupDoesNotMerge() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        Token sourceGroupId = createSingleTabGroup(sourceActivity, /* tabIndex= */ 0);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        Token sourceGroupId = createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ false);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 1);
-        StripLayoutHelper destHelper = TabStripTestUtils.getActiveStripLayoutHelper(destActivity);
 
         // Group tab 0 in destination activity and collapse it.
-        Token[] destGroupId = new Token[1];
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel destModel = destActivity.getCurrentTabModel();
-                    destModel.createSingleTabGroup(destModel.getTabAt(0));
-                    destGroupId[0] = destModel.getTabAt(0).getTabGroupId();
-                    destModel.setTabGroupCollapsed(
-                            TabGroupId.fromRawToken(destGroupId[0]), /* isCollapsed= */ true);
-                });
-        TabStripUtils.settleDownCompositor(destHelper);
+        Token destGroupId = createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ true);
 
         int initialSourceCount = ChromeTabUtils.getNumOpenTabs(sourceActivity);
         int initialDestCount = ChromeTabUtils.getNumOpenTabs(destActivity);
@@ -609,7 +571,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                 startSimulatedDragForGroup(sourceActivity, /* tabIndexInGroup= */ 0);
 
         // 2. Hover directly over the destination collapsed group title and drop.
-        float dropXPx = getDropXPxForGroupTitle(destActivity, destGroupId[0]);
+        float dropXPx = getDropXPxForGroupTitle(destActivity, destGroupId);
         dispatchDragHover(destActivity, dropXPx, MimeTypeUtils.CHROME_MIMETYPE_TAB_GROUP);
         dispatchDropAndEnd(
                 sourceActivity, destActivity, dropXPx, MimeTypeUtils.CHROME_MIMETYPE_TAB_GROUP);
@@ -637,7 +599,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                             "Dropped grouped tab should exist in destination window", destTab);
                     assertNotEquals(
                             "Dropped tab group should not merge into collapsed group",
-                            destGroupId[0],
+                            destGroupId,
                             destTab.getTabGroupId());
                     assertEquals(
                             "Dropped tab should retain its original group ID",
@@ -648,7 +610,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                             1,
                             destActivity
                                     .getCurrentTabModel()
-                                    .getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId[0]))
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId))
                                     .size());
                 });
     }
@@ -657,8 +619,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     @LargeTest
     public void testDragDrop_TabGroup_CancelDrag_RestoresState() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        createSingleTabGroup(sourceActivity, /* tabIndex= */ 0);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ false);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 1);
@@ -737,8 +698,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     @LargeTest
     public void testDragDrop_TabGroup_DropOnToolbar_Ignored() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        createSingleTabGroup(sourceActivity, /* tabIndex= */ 0);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ false);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 1);
@@ -806,8 +766,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     @LargeTest
     public void testDragDrop_TabGroup_HoverExitReenterDrop() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        Token sourceGroupId = createSingleTabGroup(sourceActivity, /* tabIndex= */ 0);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        Token sourceGroupId = createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ false);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 2);
@@ -989,16 +948,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     @LargeTest
     public void testDragDrop_TabGroup_CollapsedGroup_ToSecondWindow() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        Token[] sourceGroupId = new Token[1];
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel sourceModel = sourceActivity.getCurrentTabModel();
-                    sourceModel.createSingleTabGroup(sourceModel.getTabAt(0));
-                    sourceGroupId[0] = sourceModel.getTabAt(0).getTabGroupId();
-                    sourceModel.setTabGroupCollapsed(
-                            TabGroupId.fromRawToken(sourceGroupId[0]), /* isCollapsed= */ true);
-                });
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        Token sourceGroupId = createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ true);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 1);
@@ -1034,14 +984,13 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                     assertNotNull("Dropped tab should exist in destination window", destTab);
                     assertEquals(
                             "Dropped tab should preserve its group ID",
-                            sourceGroupId[0],
+                            sourceGroupId,
                             destTab.getTabGroupId());
                     assertTrue(
                             "Dropped group should remain collapsed in destination window",
                             destActivity
                                     .getCurrentTabModel()
-                                    .getTabGroupCollapsed(
-                                            TabGroupId.fromRawToken(sourceGroupId[0])));
+                                    .getTabGroupCollapsed(TabGroupId.fromRawToken(sourceGroupId)));
                 });
     }
 
@@ -1049,16 +998,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     @LargeTest
     public void testDragDrop_TabGroup_CollapsedGroup_ExpandsIfTabStripHidden() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        Token[] sourceGroupId = new Token[1];
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel sourceModel = sourceActivity.getCurrentTabModel();
-                    sourceModel.createSingleTabGroup(sourceModel.getTabAt(0));
-                    sourceGroupId[0] = sourceModel.getTabAt(0).getTabGroupId();
-                    sourceModel.setTabGroupCollapsed(
-                            TabGroupId.fromRawToken(sourceGroupId[0]), /* isCollapsed= */ true);
-                });
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        Token sourceGroupId = createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ true);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 1);
@@ -1105,14 +1045,13 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                     assertNotNull("Dropped tab should exist in destination window", destTab);
                     assertEquals(
                             "Dropped tab should preserve its group ID",
-                            sourceGroupId[0],
+                            sourceGroupId,
                             destTab.getTabGroupId());
                     assertFalse(
                             "Dropped group should expand when strip is hidden",
                             destActivity
                                     .getCurrentTabModel()
-                                    .getTabGroupCollapsed(
-                                            TabGroupId.fromRawToken(sourceGroupId[0])));
+                                    .getTabGroupCollapsed(TabGroupId.fromRawToken(sourceGroupId)));
                 });
     }
 
@@ -1120,8 +1059,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
     @LargeTest
     public void testDragDrop_TabGroup_DropOnSourceStrip_RestoresState() throws Exception {
         ChromeTabbedActivity sourceActivity = setupSourceWindow(/* additionalTabs= */ 2);
-        Token sourceGroupId = createSingleTabGroup(sourceActivity, /* tabIndex= */ 0);
-        TabStripUtils.settleDownCompositor(mStripLayoutHelper);
+        Token sourceGroupId = createSingleTabGroup(/* tabIndex= */ 0, /* collapsed= */ false);
 
         ChromeTabbedActivity destActivity =
                 setupDestinationWindow(sourceActivity, /* additionalTabs= */ 1);
@@ -1168,13 +1106,46 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                 });
     }
 
-    private Token createSingleTabGroup(ChromeTabbedActivity activity, int tabIndex) {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel model = activity.getCurrentTabModel();
-                    model.createSingleTabGroup(model.getTabAt(tabIndex));
-                    return model.getTabAt(tabIndex).getTabGroupId();
-                });
+    /**
+     * Groups the tab at |tabIndex| in the current window, collapses the group if |collapsed|, and
+     * waits for the strip to settle.
+     */
+    private Token createSingleTabGroup(int tabIndex, boolean collapsed) {
+        TabModel model = mCurrentStation.getTabModel();
+        var groupCreated = new TabGroupCreatedCondition(mCurrentStation.tabModelElement);
+        mCurrentStation
+                .runOnUiThreadTo(
+                        () -> {
+                            Tab tab = model.getTabAt(tabIndex);
+                            model.createSingleTabGroup(tab);
+                            if (collapsed) {
+                                model.setTabGroupCollapsed(
+                                        TabGroupId.fromRawToken(tab.getTabGroupId()),
+                                        /* isCollapsed= */ true);
+                            }
+                        })
+                .waitForAnd(groupCreated)
+                .reach(mTabStrip.settled());
+        return groupCreated.getFromPast().getToken();
+    }
+
+    /**
+     * Groups the tabs at |firstIndex| and |secondIndex| in the current window and waits for the
+     * strip to settle.
+     */
+    private Token createTabGroup(int firstIndex, int secondIndex) {
+        var groupCreated = new TabGroupCreatedCondition(mCurrentStation.tabModelElement);
+        mCurrentStation
+                .runTo(
+                        () ->
+                                TabStripTestUtils.createTabGroup(
+                                        mCurrentStation.getActivity(),
+                                        /* isIncognito= */ false,
+                                        firstIndex,
+                                        secondIndex))
+                .waitForAnd(groupCreated)
+                .reach(mTabStrip.settled());
+        return groupCreated.getFromPast().getToken();
     }
 
     private List<Integer> startSimulatedDragForGroup(
