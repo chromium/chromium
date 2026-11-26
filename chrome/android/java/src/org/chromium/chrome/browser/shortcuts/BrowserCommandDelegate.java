@@ -191,6 +191,11 @@ public class BrowserCommandDelegate {
                         && mTabbedBrowserCommandsSupported
                         && ChromeFeatureList.sAndroidKeyboardShortcutOpenFile.isEnabled();
 
+            case ChromeCommandIds.FULLSCREEN:
+                return isCurrentTabVisible
+                        && mTabbedBrowserCommandsSupported
+                        && ChromeFeatureList.sAndroidZoomImmersive.isEnabled();
+
             case ChromeCommandIds.PRINT:
             case ChromeCommandIds.FIND:
             case ChromeCommandIds.FIND_NEXT:
@@ -291,6 +296,8 @@ public class BrowserCommandDelegate {
                 return R.id.select_last_tab;
             case ChromeCommandIds.RESTORE_TAB:
                 return R.id.open_recently_closed_tab;
+            case ChromeCommandIds.FULLSCREEN:
+                return R.id.fullscreen_button;
             case ChromeCommandIds.EXIT:
                 return R.id.quit_chrome;
             case ChromeCommandIds.CLOSE_FIND_OR_STOP:

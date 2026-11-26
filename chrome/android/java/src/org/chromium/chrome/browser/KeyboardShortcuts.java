@@ -121,7 +121,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.BOOKMARK_PAGE,
         KeyboardShortcutsSemanticMeaning.BOOKMARK_ALL_TABS,
         KeyboardShortcutsSemanticMeaning.TOGGLE_BOOKMARK_BAR,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_IMMERSIVE,
+        KeyboardShortcutsSemanticMeaning.TOGGLE_IMMERSIVE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_EXIT_IMMERSIVE,
         KeyboardShortcutsSemanticMeaning.DEV_TOOLS,
         KeyboardShortcutsSemanticMeaning.DEV_TOOLS_CONSOLE,
@@ -152,8 +152,7 @@ public class KeyboardShortcuts {
         // KeyboardShortcutsSemanticMeaning.ZOOM_OUT_LEGACY,
         KeyboardShortcutsSemanticMeaning.FOCUS_APP_MENU_BUTTON,
         KeyboardShortcutsSemanticMeaning.OPEN_FILE,
-        KeyboardShortcutsSemanticMeaning.TOGGLE_VERTICAL_TABS_COLLAPSE,
-        KeyboardShortcutsSemanticMeaning.MAX_VALUE
+        KeyboardShortcutsSemanticMeaning.TOGGLE_VERTICAL_TABS_COLLAPSE
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface KeyboardShortcutsSemanticMeaning {
@@ -212,7 +211,7 @@ public class KeyboardShortcuts {
         int TOGGLE_BOOKMARK_BAR = 35;
 
         // Fullscreen.
-        int NOT_IMPLEMENTED_TOGGLE_IMMERSIVE = 36;
+        int TOGGLE_IMMERSIVE = 36;
         int NOT_IMPLEMENTED_EXIT_IMMERSIVE = 37;
 
         // Developer tools.
@@ -276,8 +275,8 @@ public class KeyboardShortcuts {
         // Toggle vertical tabs collapse state.
         int TOGGLE_VERTICAL_TABS_COLLAPSE = 69;
 
-        // Max value.
-        int MAX_VALUE = 69;
+        // Number of entries.
+        int NUM_ENTRIES = 70;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning)
@@ -290,6 +289,16 @@ public class KeyboardShortcuts {
         }
 
         return KeyboardShortcutsSemanticMeaning.UNKNOWN;
+    }
+
+    private static void recordKeyboardShortcutUma(
+            @KeyboardShortcutsSemanticMeaning int semanticMeaning) {
+        RecordHistogram.recordEnumeratedHistogram(
+                AccessibilityState.isKnownScreenReaderEnabled()
+                        ? "Accessibility.Android.KeyboardShortcut.ScreenReaderRunning8"
+                        : "Accessibility.Android.KeyboardShortcut.NoScreenReader8",
+                semanticMeaning,
+                KeyboardShortcutsSemanticMeaning.NUM_ENTRIES);
     }
 
     /**
@@ -644,6 +653,12 @@ public class KeyboardShortcuts {
                 new KeyCombo(KeyEvent.KEYCODE_F7, NO_MODIFIER),
                 R.string.keyboard_shortcut_toggle_caret_browsing,
                 R.string.keyboard_shortcut_chrome_feature_group_header);
+        // TODO(crbug.com/552592933): Register F11 in createShortcutGroup() and
+        // createUnifiedShortcutGroup() behind sAndroidZoomImmersive so it appears in the Android
+        // keyboard shortcuts helper sheet.
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.TOGGLE_IMMERSIVE,
+                new KeyCombo(KeyEvent.KEYCODE_F11, NO_MODIFIER));
 
         // History shortcuts
         new KeyboardShortcutDefinition(
@@ -824,10 +839,6 @@ public class KeyboardShortcuts {
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.BOOKMARK_ALL_TABS,
                 new KeyCombo(KeyEvent.KEYCODE_D, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
-        // TODO(crbug.com/402775002): Allow long press on Esc.
-        new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_IMMERSIVE,
-                new KeyCombo(KeyEvent.KEYCODE_F11, NO_MODIFIER));
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_TOGGLE,
                 new KeyCombo(KeyEvent.KEYCODE_F12, NO_MODIFIER));
@@ -962,6 +973,27 @@ public class KeyboardShortcuts {
                 // buttons mapped to KEYCODE_F1) so the system can handle actions like screenshots.
                 if (!KeyEventUtils.isFromAlphabeticKeyboard(event)) {
                     return false;
+                }
+                break;
+            case KeyEvent.KEYCODE_F11:
+                // Instead of immediately consuming F11, let it fall through to the webpage for
+                // these cases.
+                if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()
+                        || !ChromeFeatureList.sAndroidZoomImmersive.isEnabled()
+                        || fullscreenManager == null
+                        || !fullscreenManager.getPersistentFullscreenMode()
+                        || KeyboardUtils.getMetaState(event) != NO_MODIFIER) {
+                    break;
+                }
+
+                // Safeguard: Only fire the toggle on first key-down.
+                if (event.getAction() != KeyEvent.ACTION_DOWN || event.getRepeatCount() != 0) {
+                    return true;
+                }
+                if (menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                        R.id.fullscreen_button, /* fromMenu= */ false)) {
+                    recordKeyboardShortcutUma(KeyboardShortcutsSemanticMeaning.TOGGLE_IMMERSIVE);
+                    return true;
                 }
                 break;
         }
@@ -1333,6 +1365,7 @@ public class KeyboardShortcuts {
                 && keyCode != KeyEvent.KEYCODE_F6
                 && keyCode != KeyEvent.KEYCODE_F7
                 && keyCode != KeyEvent.KEYCODE_F10
+                && keyCode != KeyEvent.KEYCODE_F11
                 && keyCode != KeyEvent.KEYCODE_FORWARD
                 && keyCode != KeyEvent.KEYCODE_REFRESH) {
             return false;
@@ -1340,12 +1373,7 @@ public class KeyboardShortcuts {
 
         @KeyboardShortcutsSemanticMeaning int semanticMeaning = getKeyboardSemanticMeaning(event);
 
-        RecordHistogram.recordEnumeratedHistogram(
-                AccessibilityState.isKnownScreenReaderEnabled()
-                        ? "Accessibility.Android.KeyboardShortcut.ScreenReaderRunning8"
-                        : "Accessibility.Android.KeyboardShortcut.NoScreenReader8",
-                semanticMeaning,
-                KeyboardShortcuts.KeyboardShortcutsSemanticMeaning.MAX_VALUE + 1);
+        recordKeyboardShortcutUma(semanticMeaning);
 
         if (UiAndroidFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()
                 && !KeyEvent.isGamepadButton(keyCode)) {
@@ -1540,6 +1568,13 @@ public class KeyboardShortcuts {
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.toggle_caret_browsing, false);
                     return true;
+                case KeyboardShortcutsSemanticMeaning.TOGGLE_IMMERSIVE:
+                    if (tabSwitchingEnabled
+                            && ChromeFeatureList.sAndroidZoomImmersive.isEnabled()) {
+                        return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                                R.id.fullscreen_button, /* fromMenu= */ false);
+                    }
+                    return false;
                 case KeyboardShortcutsSemanticMeaning.OPEN_HELP:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.help_id, false);
                     return true;

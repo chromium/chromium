@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,9 +35,12 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.KeyboardShortcuts.KeyboardShortcutsSemanticMeaning;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtilsJni;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -57,6 +61,7 @@ public class KeyboardShortcutsUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private Profile mProfile;
+    @Mock private FullscreenManager mFullscreenManager;
     @Mock private IncognitoUtils.Natives mIncognitoUtilsJniMock;
     @Mock private KeyboardShortcuts.Natives mKeyboardShortcutsJniMock;
 
@@ -317,9 +322,20 @@ public class KeyboardShortcutsUnitTest {
     }
 
     @Test
-    @EnableFeatures(UiAndroidFeatures.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS)
+    @EnableFeatures({
+        UiAndroidFeatures.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS,
+        ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE
+    })
     public void testUnifiedShortcutsEnabled_DefersKeyboardShortcuts() {
+        when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);
         assertNull(dispatchKeyEvent(KeyEvent.KEYCODE_ESCAPE));
+        assertNull(
+                KeyboardShortcuts.dispatchKeyEvent(
+                        createKeyEvent(KeyEvent.KEYCODE_F11, /* metaState= */ 0),
+                        /* uiInitialized= */ true,
+                        mFullscreenManager,
+                        mController,
+                        ApplicationProvider.getApplicationContext()));
         assertNull(
                 KeyboardShortcuts.dispatchKeyEvent(
                         createKeyEvent(KeyEvent.KEYCODE_TAB, KeyEvent.META_CTRL_ON),
@@ -330,6 +346,89 @@ public class KeyboardShortcutsUnitTest {
         assertFalse(onKeyDown(KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON));
         assertFalse(onKeyDown(KeyEvent.KEYCODE_F5));
         assertFalse(onKeyDown(KeyEvent.KEYCODE_F6));
+        assertFalse(onKeyDown(KeyEvent.KEYCODE_F11));
+        verify(mController, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testToggleImmersive_F11_EntersInOnKeyDownAndExitsInDispatchWhenFullscreen() {
+        KeyEvent event = createKeyEvent(KeyEvent.KEYCODE_F11, /* metaState= */ 0);
+        doReturn(true)
+                .when(mController)
+                .onMenuOrKeyboardAction(eq(R.id.fullscreen_button), eq(false));
+
+        // 1. When not in fullscreen, dispatchKeyEvent defers F11 so web content gets first
+        // priority.
+        when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(false);
+        assertNull(
+                KeyboardShortcuts.dispatchKeyEvent(
+                        event,
+                        /* uiInitialized= */ true,
+                        mFullscreenManager,
+                        mController,
+                        ApplicationProvider.getApplicationContext()));
+        verify(mController, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
+
+        // Ignored when no active tab is visible (e.g. in the Hub / tab switcher) or in non-tabbed
+        // windows (e.g. Custom Tabs where tabSwitchingEnabled is false).
+        assertFalse(
+                KeyboardShortcuts.onKeyDown(
+                        event,
+                        /* isCurrentTabVisible= */ false,
+                        /* tabSwitchingEnabled= */ true,
+                        mTabModelSelector,
+                        mController));
+        assertFalse(
+                KeyboardShortcuts.onKeyDown(
+                        event,
+                        /* isCurrentTabVisible= */ true,
+                        /* tabSwitchingEnabled= */ false,
+                        mTabModelSelector,
+                        mController));
+        verify(mController, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
+
+        // Handled in onKeyDown when active tab is visible and page did not consume F11.
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Accessibility.Android.KeyboardShortcut.NoScreenReader8",
+                        KeyboardShortcutsSemanticMeaning.TOGGLE_IMMERSIVE)) {
+            assertTrue(onKeyDown(event));
+        }
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.fullscreen_button), eq(false));
+
+        // 2. When already in fullscreen, dispatchKeyEvent consumes F11 before the page can consume
+        // it so web content cannot trap the user in fullscreen.
+        when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Accessibility.Android.KeyboardShortcut.NoScreenReader8",
+                        KeyboardShortcutsSemanticMeaning.TOGGLE_IMMERSIVE)) {
+            assertTrue(
+                    KeyboardShortcuts.dispatchKeyEvent(
+                            event,
+                            /* uiInitialized= */ true,
+                            mFullscreenManager,
+                            mController,
+                            ApplicationProvider.getApplicationContext()));
+        }
+        verify(mController, times(2)).onMenuOrKeyboardAction(eq(R.id.fullscreen_button), eq(false));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testToggleImmersive_F11_DisabledWhenFeatureOff() {
+        KeyEvent event = createKeyEvent(KeyEvent.KEYCODE_F11, /* metaState= */ 0);
+        when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);
+
+        assertNull(
+                KeyboardShortcuts.dispatchKeyEvent(
+                        event,
+                        /* uiInitialized= */ true,
+                        mFullscreenManager,
+                        mController,
+                        ApplicationProvider.getApplicationContext()));
+        assertFalse(onKeyDown(event));
         verify(mController, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
     }
 

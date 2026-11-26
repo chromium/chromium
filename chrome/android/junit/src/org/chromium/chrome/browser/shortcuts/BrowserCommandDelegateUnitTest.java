@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -300,5 +301,25 @@ public class BrowserCommandDelegateUnitTest {
         mIsCurrentTabVisible = false;
         assertFalse(
                 mTabbedDelegate.isCommandEnabled(ChromeCommandIds.TOGGLE_VERTICAL_TABS_COLLAPSE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testFullscreen_EnabledWhenFeatureOnAndTabVisible() {
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FULLSCREEN));
+        assertTrue(mTabbedDelegate.executeCommand(ChromeCommandIds.FULLSCREEN));
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.fullscreen_button), eq(false));
+
+        assertFalse(mCustomTabDelegate.isCommandEnabled(ChromeCommandIds.FULLSCREEN));
+        mIsCurrentTabVisible = false;
+        assertFalse(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FULLSCREEN));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testFullscreen_DisabledWhenFeatureOff() {
+        assertFalse(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FULLSCREEN));
+        assertFalse(mTabbedDelegate.executeCommand(ChromeCommandIds.FULLSCREEN));
+        verify(mController, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
     }
 }

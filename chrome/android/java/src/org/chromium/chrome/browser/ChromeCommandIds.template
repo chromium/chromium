@@ -35,6 +35,7 @@ public final class ChromeCommandIds {
     public static final int SELECT_TAB_7 = IDC_SELECT_TAB_7;
     public static final int SELECT_LAST_TAB = IDC_SELECT_LAST_TAB;
     public static final int RESTORE_TAB = IDC_RESTORE_TAB;
+    public static final int FULLSCREEN = IDC_FULLSCREEN;
     public static final int EXIT = IDC_EXIT;
     public static final int TOGGLE_MULTISELECT = IDC_TOGGLE_MULTISELECT;
     public static final int TOGGLE_VERTICAL_TABS_COLLAPSE = IDC_TOGGLE_VERTICAL_TABS_COLLAPSE;

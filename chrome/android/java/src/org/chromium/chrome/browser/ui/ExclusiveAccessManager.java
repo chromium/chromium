@@ -247,7 +247,8 @@ public class ExclusiveAccessManager
     }
 
     /**
-     * Toggles browser-initiated fullscreen mode (e.g. from the 3-dot app menu button).
+     * Toggles browser-initiated fullscreen mode (e.g. from the 3-dot app menu button or F11
+     * keyboard shortcut).
      *
      * @param userInitiated whether the toggle was directly initiated by the user.
      */
@@ -263,6 +264,7 @@ public class ExclusiveAccessManager
         if (!isExiting) {
             mFullscreenManager.onEnterBrowserImmersiveMode();
         } else {
+            mLatestFullscreenOptions = null;
             mFullscreenManager.setPendingBrowserImmersiveExitReasonIfUnset(
                     ImmersiveModeExitReason.OTHER);
         }
