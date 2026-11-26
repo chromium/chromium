@@ -827,7 +827,9 @@ PrintBackendServiceManager::GetService(const RemoteId& remote_id,
                                        bool sandboxed) {
   // Performance is improved if a service is launched ahead of the time it will
   // be needed by client callers.
-  CHECK_GT(GetClientsRegisteredCount(), 0u, base::NotFatalUntil::M162);
+  // TODO(crbug.com/590420529): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GT(GetClientsRegisteredCount(), 0u);
 
   if (sandboxed_service_remote_for_test_) {
     // The presence of a sandboxed remote for testing signals a testing
