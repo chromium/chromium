@@ -305,20 +305,22 @@ bool PressureObserver::PassesRateObfuscation(
 
 void PressureObserver::ResolvePendingResolvers(V8PressureSource::Enum source) {
   const auto source_index = ToSourceIndex(source);
-  for (const auto& resolver : pending_resolvers_[source_index]) {
+  HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>> pending_resolvers;
+  pending_resolvers_[source_index].swap(pending_resolvers);
+  for (const auto& resolver : pending_resolvers) {
     resolver->Resolve();
   }
-  pending_resolvers_[source_index].clear();
 }
 
 void PressureObserver::RejectPendingResolvers(V8PressureSource::Enum source,
                                               DOMExceptionCode exception_code,
                                               const String& message) {
   const auto source_index = ToSourceIndex(source);
-  for (const auto& resolver : pending_resolvers_[source_index]) {
+  HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>> pending_resolvers;
+  pending_resolvers_[source_index].swap(pending_resolvers);
+  for (const auto& resolver : pending_resolvers) {
     resolver->RejectWithDOMException(exception_code, message);
   }
-  pending_resolvers_[source_index].clear();
 }
 
 }  // namespace blink
