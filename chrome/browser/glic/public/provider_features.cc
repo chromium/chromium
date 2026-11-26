@@ -151,4 +151,8 @@ BASE_FEATURE(kGlicDynamicChromeTools,
 
 BASE_FEATURE(kGeicPinOnBind, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Default-enabled platforms: all (kill switch for the modal Drive picker; only
+// desktop advertises the capability, so this has no effect on Android).
+BASE_FEATURE(kGlicDrivePicker, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

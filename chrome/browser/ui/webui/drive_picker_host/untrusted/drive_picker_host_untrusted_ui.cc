@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted_ui.h"
 
-#include "chrome/browser/glic/public/features.h"
+#include "base/feature_list.h"
+#include "chrome/browser/glic/public/glic_feature.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/drive_picker_host_untrusted_resources.h"
@@ -15,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
@@ -26,11 +29,24 @@ DrivePickerUntrustedHostUIConfig::DrivePickerUntrustedHostUIConfig()
 
 DrivePickerUntrustedHostUIConfig::~DrivePickerUntrustedHostUIConfig() = default;
 
-bool DrivePickerUntrustedHostUIConfig::IsWebUIEnabled(
+// static
+bool DrivePickerUntrustedHostUIConfig::IsEnabled(
     content::BrowserContext* browser_context) {
+  // The Drive picker isn't available in non-regular profiles (e.g. incognito
+  // or guest).
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile || !profile->IsRegularProfile()) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(
              omnibox::kComposeboxDriveContextMenuOption) ||
-         base::FeatureList::IsEnabled(features::kGlicDrivePicker);
+         glic::GetGlicProviderSpec(profile).SupportsFeature(
+             glic::GlicFeature::kDrivePicker);
+}
+
+bool DrivePickerUntrustedHostUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return IsEnabled(browser_context);
 }
 
 // DrivePickerUntrustedHostUI
@@ -99,6 +115,11 @@ DrivePickerUntrustedHostUI::~DrivePickerUntrustedHostUI() = default;
 void DrivePickerUntrustedHostUI::BindInterface(
     mojo::PendingReceiver<
         drive_picker_host_untrusted::mojom::PageHandlerFactory> receiver) {
+  if (!DrivePickerUntrustedHostUIConfig::IsEnabled(
+          web_ui()->GetWebContents()->GetBrowserContext())) {
+    mojo::ReportBadMessage("The Drive picker host is disabled.");
+    return;
+  }
   factory_receiver_.reset();
   factory_receiver_.Bind(std::move(receiver));
 }

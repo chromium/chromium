@@ -29,6 +29,12 @@ class DrivePickerUntrustedHostUIConfig
   DrivePickerUntrustedHostUIConfig();
   ~DrivePickerUntrustedHostUIConfig() override;
 
+  // Returns whether the Drive picker WebUIs (trusted and untrusted) are enabled
+  // for `browser_context`: it must be a regular profile, and either AI Mode's
+  // `omnibox::kComposeboxDriveContextMenuOption` is on or the profile's Glic
+  // provider supports `glic::GlicFeature::kDrivePicker`.
+  static bool IsEnabled(content::BrowserContext* browser_context);
+
   // content::WebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };

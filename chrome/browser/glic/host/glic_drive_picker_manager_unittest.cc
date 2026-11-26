@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"

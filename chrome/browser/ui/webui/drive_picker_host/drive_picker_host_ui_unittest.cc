@@ -7,7 +7,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/provider_features.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted_ui.h"
@@ -33,6 +35,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -249,9 +253,9 @@ class DrivePickerHostUITest : public testing::Test {
 
 TEST_F(DrivePickerHostUITest, IsWebUIEnabled_FeatureEnabled) {
   DrivePickerHostUIConfig config;
-  feature_list_.InitAndEnableFeature(
-      omnibox::kComposeboxDriveContextMenuOption);
-  EXPECT_TRUE(DrivePickerHostUIConfig::IsEnabled());
+  feature_list_.InitWithFeatures({omnibox::kComposeboxDriveContextMenuOption},
+                                 {features::kGlicDrivePicker});
+  EXPECT_TRUE(DrivePickerHostUIConfig::IsEnabled(profile()));
   EXPECT_TRUE(config.IsWebUIEnabled(profile()));
 }
 
@@ -260,7 +264,7 @@ TEST_F(DrivePickerHostUITest, IsWebUIEnabled_FeatureDisabled) {
   feature_list_.InitWithFeatures(
       {},
       {omnibox::kComposeboxDriveContextMenuOption, features::kGlicDrivePicker});
-  EXPECT_FALSE(DrivePickerHostUIConfig::IsEnabled());
+  EXPECT_FALSE(DrivePickerHostUIConfig::IsEnabled(profile()));
   EXPECT_FALSE(config.IsWebUIEnabled(profile()));
 }
 
@@ -268,8 +272,86 @@ TEST_F(DrivePickerHostUITest, IsWebUIEnabled_GlicFeatureEnabled) {
   DrivePickerHostUIConfig config;
   feature_list_.InitWithFeatures({features::kGlicDrivePicker},
                                  {omnibox::kComposeboxDriveContextMenuOption});
-  EXPECT_TRUE(DrivePickerHostUIConfig::IsEnabled());
+  EXPECT_TRUE(DrivePickerHostUIConfig::IsEnabled(profile()));
   EXPECT_TRUE(config.IsWebUIEnabled(profile()));
+}
+
+// Gemini Enterprise doesn't support the Glic Drive picker, so the WebUI stays
+// disabled unless AI Mode's Drive picker is enabled.
+TEST_F(DrivePickerHostUITest, IsWebUIEnabled_V2ScopeDisabled) {
+  DrivePickerHostUIConfig config;
+  feature_list_.InitWithFeatures({features::kGlicDrivePicker},
+                                 {omnibox::kComposeboxDriveContextMenuOption,
+                                  omnibox::kDrivePickerV2Scope});
+  EXPECT_FALSE(DrivePickerHostUIConfig::IsEnabled(profile()));
+  EXPECT_FALSE(config.IsWebUIEnabled(profile()));
+}
+
+TEST_F(DrivePickerHostUITest, IsWebUIEnabled_GlicFeatureEnabledIncognito) {
+  DrivePickerHostUIConfig config;
+  feature_list_.InitWithFeatures({features::kGlicDrivePicker},
+                                 {omnibox::kComposeboxDriveContextMenuOption});
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_FALSE(DrivePickerHostUIConfig::IsEnabled(incognito_profile));
+  EXPECT_FALSE(config.IsWebUIEnabled(incognito_profile));
+}
+
+TEST_F(DrivePickerHostUITest,
+       IsWebUIEnabled_ComposeboxFeatureEnabledIncognito) {
+  DrivePickerHostUIConfig config;
+  feature_list_.InitWithFeatures({omnibox::kComposeboxDriveContextMenuOption},
+                                 {features::kGlicDrivePicker});
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_FALSE(DrivePickerHostUIConfig::IsEnabled(incognito_profile));
+  EXPECT_FALSE(config.IsWebUIEnabled(incognito_profile));
+}
+
+class DrivePickerHostUIGeminiEnterpriseTest : public DrivePickerHostUITest {
+ private:
+  glic::ScopedGlicProviderOverride provider_override_{
+      glic::GlicProvider::kGeminiEnterprise};
+};
+
+TEST_F(DrivePickerHostUIGeminiEnterpriseTest,
+       IsWebUIEnabled_GlicFeatureEnabled) {
+  DrivePickerHostUIConfig config;
+  feature_list_.InitWithFeatures(
+      {features::kGlicDrivePicker, omnibox::kDrivePickerV2Scope},
+      {omnibox::kComposeboxDriveContextMenuOption});
+  EXPECT_FALSE(DrivePickerHostUIConfig::IsEnabled(profile()));
+  EXPECT_FALSE(config.IsWebUIEnabled(profile()));
+}
+
+TEST_F(DrivePickerHostUIGeminiEnterpriseTest,
+       IsWebUIEnabled_ComposeboxFeatureEnabled) {
+  DrivePickerHostUIConfig config;
+  feature_list_.InitWithFeatures({omnibox::kComposeboxDriveContextMenuOption},
+                                 {features::kGlicDrivePicker});
+  EXPECT_TRUE(DrivePickerHostUIConfig::IsEnabled(profile()));
+  EXPECT_TRUE(config.IsWebUIEnabled(profile()));
+}
+
+TEST_F(DrivePickerHostUIGeminiEnterpriseTest,
+       BindInterfaceReportsBadMessageWhenDisabled) {
+  feature_list_.InitWithFeatures(
+      {features::kGlicDrivePicker, omnibox::kDrivePickerV2Scope},
+      {omnibox::kComposeboxDriveContextMenuOption});
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+
+  mojo::Remote<drive_picker_host::mojom::DrivePickerHostHandler> handler;
+  mojo::test::BadMessageObserver bad_message_observer;
+  {
+    mojo::FakeMessageDispatchContext fake_dispatch_context;
+    controller.BindInterface(handler.BindNewPipeAndPassReceiver());
+  }
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "The Drive picker host is disabled.");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(handler.is_connected());
 }
 
 TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostForwardsToUntrusted) {

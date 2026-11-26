@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted_ui.h"
@@ -34,6 +33,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -91,15 +91,15 @@ DrivePickerHostUIConfig::DrivePickerHostUIConfig()
                                   ProcessModel::kDedicatedProcess) {}
 
 // static
-bool DrivePickerHostUIConfig::IsEnabled() {
-  return base::FeatureList::IsEnabled(
-             omnibox::kComposeboxDriveContextMenuOption) ||
-         base::FeatureList::IsEnabled(features::kGlicDrivePicker);
+bool DrivePickerHostUIConfig::IsEnabled(
+    content::BrowserContext* browser_context) {
+  // Shared with the untrusted WebUI, which can't depend on this target.
+  return DrivePickerUntrustedHostUIConfig::IsEnabled(browser_context);
 }
 
 bool DrivePickerHostUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return IsEnabled();
+  return IsEnabled(browser_context);
 }
 
 DrivePickerHostUI::DrivePickerHostUI(content::WebUI* web_ui)
@@ -332,6 +332,11 @@ void DrivePickerHostUI::OnAccessTokenFetched(
 void DrivePickerHostUI::BindInterface(
     mojo::PendingReceiver<drive_picker_host::mojom::DrivePickerHostHandler>
         receiver) {
+  if (!DrivePickerHostUIConfig::IsEnabled(
+          web_ui()->GetWebContents()->GetBrowserContext())) {
+    mojo::ReportBadMessage("The Drive picker host is disabled.");
+    return;
+  }
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }

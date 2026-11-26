@@ -11,7 +11,9 @@
 #include "base/scoped_observation.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/provider_features.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
@@ -19,6 +21,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/test_web_contents_modal_dialog_host.h"
 #include "content/public/test/test_renderer_host.h"
@@ -427,6 +430,88 @@ TEST_F(DrivePickerHostControllerTest,
 
   EXPECT_FALSE(anchor_controller->GetWidgetForTesting());
   anchor_widget.CloseNow();
+}
+
+class DrivePickerHostControllerGeminiEnterpriseTest
+    : public DrivePickerHostControllerTest {
+ private:
+  glic::ScopedGlicProviderOverride provider_override_{
+      glic::GlicProvider::kGeminiEnterprise};
+};
+
+// Verifies that for a Gemini Enterprise profile, a `Style::kGlic` request uses
+// standard non-Glic sizing and widget behavior even with
+// `features::kGlicDrivePicker` enabled, since the provider doesn't support
+// `GlicFeature::kDrivePicker`.
+TEST_F(DrivePickerHostControllerGeminiEnterpriseTest,
+       GlicStyleUsesNonGlicBehavior) {
+  base::test::ScopedFeatureList enabled_features;
+  enabled_features.InitWithFeatures(
+      {features::kGlicDrivePicker, omnibox::kDrivePickerV2Scope}, {});
+
+  views::Widget anchor_widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.context = parent_widget()->GetNativeWindow();
+  anchor_widget.Init(std::move(params));
+  anchor_widget.Show();
+
+  auto anchor_controller = std::make_unique<DrivePickerHostController>(
+      profile(), browser_window_interface(), &anchor_widget);
+
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  request->set_style(drive_picker_host::DrivePickerHostRequest::Style::kGlic);
+  anchor_controller->ShowDrivePickerHost(std::move(request));
+
+  views::Widget* picker_widget = anchor_controller->GetWidgetForTesting();
+  ASSERT_TRUE(picker_widget);
+  EXPECT_EQ(picker_widget->parent(), parent_widget());
+  EXPECT_FALSE(picker_widget->widget_delegate()->use_desktop_widget_override());
+  EXPECT_EQ(anchor_controller->GetViewForTesting()->GetPreferredSize(),
+            DrivePickerHostView::kPickerDialogSize);
+
+  ViewDestroyedWaiter waiter(anchor_controller->GetViewForTesting());
+  anchor_controller->ResetControllerStateForTesting();
+  waiter.Wait();
+  anchor_widget.CloseNow();
+}
+
+// Verifies that for a Gemini Enterprise profile, a `Style::kGlic` request with
+// no browser window is rejected instead of anchoring to the floaty widget,
+// even with `features::kGlicDrivePicker` and `omnibox::kOmniboxEverywhere`
+// enabled.
+TEST_F(DrivePickerHostControllerGeminiEnterpriseTest,
+       GlicStyleRejectedWithoutBrowserWindow) {
+  // `omnibox::kOmniboxEverywhere` stays enabled from the base fixture, so a
+  // non-Glic request would be allowed without a browser window.
+  base::test::ScopedFeatureList enabled_features;
+  enabled_features.InitWithFeatures(
+      {features::kGlicDrivePicker, omnibox::kDrivePickerV2Scope}, {});
+
+  views::Widget floaty_widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.context = parent_widget()->GetNativeWindow();
+  floaty_widget.Init(std::move(params));
+  floaty_widget.Show();
+
+  auto glic_controller = std::make_unique<DrivePickerHostController>(
+      profile(), /*browser_window_interface=*/nullptr, &floaty_widget);
+
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  request->set_style(drive_picker_host::DrivePickerHostRequest::Style::kGlic);
+  glic_controller->ShowDrivePickerHost(std::move(request));
+
+  EXPECT_FALSE(glic_controller->GetWidgetForTesting());
+  floaty_widget.CloseNow();
 }
 
 // Verifies that when both a browser window (`dialog_host`) and `anchor_widget`

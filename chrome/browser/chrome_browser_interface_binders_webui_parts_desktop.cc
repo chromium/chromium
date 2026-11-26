@@ -112,7 +112,6 @@
 #include "components/notebooks/internals/webui/notebooks_internals.mojom.h"
 #include "components/notebooks/internals/webui/notebooks_internals_ui.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -482,15 +481,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
       plural_string::mojom::PluralStringProvider, NewTabPageUI,
       ContextualTasksUI, OmniboxPopupUI, OmniboxEverywhereUI>(map);
 
-  if (DrivePickerHostUIConfig::IsEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        drive_picker_host::mojom::DrivePickerHostHandler, DrivePickerHostUI>(
-        map);
-    RegisterWebUIControllerInterfaceBinder<
-        drive_picker_host_untrusted::mojom::PageHandlerFactory,
-        DrivePickerUntrustedHostUI>(map);
-  }
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   RegisterWebUIControllerInterfaceBinder<
       app_management::mojom::PageHandlerFactory, WebAppSettingsUI>(map);
@@ -585,10 +575,8 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
         .Add<help_bubble::mojom::HelpBubbleHandlerFactory>();
   }
 
-  if (DrivePickerHostUIConfig::IsEnabled()) {
-    registry.ForWebUI<DrivePickerHostUI>()
-        .Add<drive_picker_host::mojom::DrivePickerHostHandler>();
-  }
+  registry.ForWebUI<DrivePickerHostUI>()
+      .Add<drive_picker_host::mojom::DrivePickerHostHandler>();
 
   registry
       .ForWebUI<settings::SettingsUI>()
@@ -660,10 +648,8 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
   registry.ForWebUI<glic::SelectionOverlayUntrustedUI>()
       .Add<glic::selection::SelectionOverlayPageHandlerFactory>();
 
-  if (DrivePickerHostUIConfig::IsEnabled()) {
-    registry.ForWebUI<DrivePickerUntrustedHostUI>()
-        .Add<drive_picker_host_untrusted::mojom::PageHandlerFactory>();
-  }
+  registry.ForWebUI<DrivePickerUntrustedHostUI>()
+      .Add<drive_picker_host_untrusted::mojom::PageHandlerFactory>();
 }
 
 }  // namespace chrome::internal

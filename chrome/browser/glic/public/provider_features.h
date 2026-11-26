@@ -116,6 +116,15 @@ BASE_DECLARE_FEATURE(kGlicDynamicChromeTools);
 // See `GlicProviderSpec::PinOnBindEnabled()`.
 BASE_DECLARE_FEATURE(kGeicPinOnBind);
 
+// Lets Glic show Chrome's modal Google Drive picker
+// (chrome://drive-picker-host) by advertising `HostCapability::kDrivePicker`
+// to the web client, starting in M160. This does not turn on Drive upload in
+// Glic by itself: the web client decides server-side whether to offer "Add
+// from Drive", and whether to open this modal picker or its own in-panel
+// picker. Kept as a kill switch for the modal picker. See
+// GlicFeature::kDrivePicker.
+BASE_DECLARE_FEATURE(kGlicDrivePicker);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_PROVIDER_FEATURES_H_

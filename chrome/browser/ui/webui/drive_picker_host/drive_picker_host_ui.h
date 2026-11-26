@@ -45,7 +45,9 @@ class DrivePickerHostUIConfig
  public:
   DrivePickerHostUIConfig();
 
-  static bool IsEnabled();
+  // Returns whether the Drive picker WebUIs are enabled for `browser_context`.
+  // See `DrivePickerUntrustedHostUIConfig::IsEnabled()`.
+  static bool IsEnabled(content::BrowserContext* browser_context);
 
   // content::WebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;

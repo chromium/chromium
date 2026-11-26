@@ -351,14 +351,6 @@ extern const base::FeatureParam<base::TimeDelta>
 // sending it via `glic-bootstrap` postMessage.
 BASE_DECLARE_FEATURE(kGlicApiBundleResource);
 
-// Lets Glic show Chrome's modal Google Drive picker
-// (chrome://drive-picker-host) by advertising `HostCapability::kDrivePicker`
-// to the web client, starting in M160. This does not turn on Drive upload in
-// Glic by itself: the web client decides server-side whether to offer "Add
-// from Drive", and whether to open this modal picker or its own in-panel
-// picker. Kept as a kill switch for the modal picker.
-BASE_DECLARE_FEATURE(kGlicDrivePicker);
-
 // Enables loading the Google-internal CiC client inside the Glic guest via a
 // browser-process proxy while keeping Blink's committed origin at the Glic
 // guest origin.

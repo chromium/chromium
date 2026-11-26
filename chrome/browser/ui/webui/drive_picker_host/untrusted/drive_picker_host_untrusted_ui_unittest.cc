@@ -6,7 +6,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/provider_features.h"
+#include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -16,6 +18,9 @@
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -100,8 +105,8 @@ class DrivePickerUntrustedHostUITest : public testing::Test {
 
 TEST_F(DrivePickerUntrustedHostUITest, IsWebUIEnabled_FeatureEnabled) {
   DrivePickerUntrustedHostUIConfig config;
-  feature_list_.InitAndEnableFeature(
-      omnibox::kComposeboxDriveContextMenuOption);
+  feature_list_.InitWithFeatures({omnibox::kComposeboxDriveContextMenuOption},
+                                 {features::kGlicDrivePicker});
   EXPECT_TRUE(config.IsWebUIEnabled(profile()));
 }
 
@@ -120,7 +125,73 @@ TEST_F(DrivePickerUntrustedHostUITest, IsWebUIEnabled_GlicFeatureEnabled) {
   EXPECT_TRUE(config.IsWebUIEnabled(profile()));
 }
 
+TEST_F(DrivePickerUntrustedHostUITest,
+       IsWebUIEnabled_GlicFeatureEnabledIncognito) {
+  DrivePickerUntrustedHostUIConfig config;
+  feature_list_.InitWithFeatures({features::kGlicDrivePicker},
+                                 {omnibox::kComposeboxDriveContextMenuOption});
+  EXPECT_FALSE(config.IsWebUIEnabled(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+}
+
+TEST_F(DrivePickerUntrustedHostUITest,
+       IsWebUIEnabled_ComposeboxFeatureEnabledIncognito) {
+  DrivePickerUntrustedHostUIConfig config;
+  feature_list_.InitWithFeatures({omnibox::kComposeboxDriveContextMenuOption},
+                                 {features::kGlicDrivePicker});
+  EXPECT_FALSE(config.IsWebUIEnabled(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+}
+
+class DrivePickerUntrustedHostUIGeminiEnterpriseTest
+    : public DrivePickerUntrustedHostUITest {
+ private:
+  glic::ScopedGlicProviderOverride provider_override_{
+      glic::GlicProvider::kGeminiEnterprise};
+};
+
+TEST_F(DrivePickerUntrustedHostUIGeminiEnterpriseTest,
+       IsWebUIEnabled_GlicFeatureEnabled) {
+  DrivePickerUntrustedHostUIConfig config;
+  feature_list_.InitWithFeatures(
+      {features::kGlicDrivePicker, omnibox::kDrivePickerV2Scope},
+      {omnibox::kComposeboxDriveContextMenuOption});
+  EXPECT_FALSE(config.IsWebUIEnabled(profile()));
+}
+
+TEST_F(DrivePickerUntrustedHostUIGeminiEnterpriseTest,
+       IsWebUIEnabled_ComposeboxFeatureEnabled) {
+  DrivePickerUntrustedHostUIConfig config;
+  feature_list_.InitWithFeatures({omnibox::kComposeboxDriveContextMenuOption},
+                                 {features::kGlicDrivePicker});
+  EXPECT_TRUE(config.IsWebUIEnabled(profile()));
+}
+
+TEST_F(DrivePickerUntrustedHostUIGeminiEnterpriseTest,
+       BindInterfaceReportsBadMessageWhenDisabled) {
+  feature_list_.InitWithFeatures(
+      {features::kGlicDrivePicker, omnibox::kDrivePickerV2Scope},
+      {omnibox::kComposeboxDriveContextMenuOption});
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerUntrustedHostUI controller(&test_web_ui);
+
+  mojo::Remote<drive_picker_host_untrusted::mojom::PageHandlerFactory>
+      untrusted_factory;
+  mojo::test::BadMessageObserver bad_message_observer;
+  {
+    mojo::FakeMessageDispatchContext fake_dispatch_context;
+    controller.BindInterface(untrusted_factory.BindNewPipeAndPassReceiver());
+  }
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "The Drive picker host is disabled.");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(untrusted_factory.is_connected());
+}
+
 TEST_F(DrivePickerUntrustedHostUITest, ShowDrivePickerForwardsToPage) {
+  feature_list_.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOption);
   content::TestWebUI test_web_ui;
   test_web_ui.set_web_contents(web_contents());
   DrivePickerUntrustedHostUI controller(&test_web_ui);
@@ -157,6 +228,8 @@ TEST_F(DrivePickerUntrustedHostUITest, ShowDrivePickerForwardsToPage) {
 }
 
 TEST_F(DrivePickerUntrustedHostUITest, ShowDrivePickerQueuesUntilPageBound) {
+  feature_list_.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOption);
   content::TestWebUI test_web_ui;
   test_web_ui.set_web_contents(web_contents());
   DrivePickerUntrustedHostUI controller(&test_web_ui);
@@ -237,6 +310,8 @@ TEST_F(DrivePickerUntrustedHostUITest, ShowDrivePickerQueuesOnDisconnect) {
 }
 
 TEST_F(DrivePickerUntrustedHostUITest, LoadConsentKitUrl_ForwardsToPage) {
+  feature_list_.InitAndEnableFeature(
+      omnibox::kComposeboxDriveContextMenuOption);
   content::TestWebUI test_web_ui;
   test_web_ui.set_web_contents(web_contents());
   DrivePickerUntrustedHostUI controller(&test_web_ui);

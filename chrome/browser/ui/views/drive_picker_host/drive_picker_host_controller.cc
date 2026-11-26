@@ -11,7 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_feature.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
@@ -106,8 +107,15 @@ void DrivePickerHostController::ShowDrivePickerHost(
   const bool is_glic_request =
       request->style() ==
       drive_picker_host::DrivePickerHostRequest::Style::kGlic;
-  const bool is_glic = is_glic_request &&
-                       base::FeatureList::IsEnabled(features::kGlicDrivePicker);
+  const bool use_glic_style =
+      is_glic_request && glic::GetGlicProviderSpec(profile_).SupportsFeature(
+                             glic::GlicFeature::kDrivePicker);
+  if (is_glic_request && !use_glic_style) {
+    // The profile's provider doesn't support the Glic Drive picker, so show the
+    // default picker; otherwise the host would still use the Glic layout.
+    request->set_style(
+        drive_picker_host::DrivePickerHostRequest::Style::kDefault);
+  }
 
   // Loomnibox (`kOmniboxEverywhere`) anchors directly to its standalone popup
   // `anchor_widget_` when present (or opens unparented if no browser window
@@ -120,7 +128,7 @@ void DrivePickerHostController::ShowDrivePickerHost(
                                        is_standalone_popup_ &&
                                        is_omnibox_everywhere && anchor_widget_;
   const bool use_glic_floaty_anchoring =
-      !dialog_host && is_glic && anchor_widget_;
+      !dialog_host && use_glic_style && anchor_widget_;
   const bool use_anchor_widget =
       use_loomnibox_anchoring || use_glic_floaty_anchoring;
 
@@ -135,8 +143,8 @@ void DrivePickerHostController::ShowDrivePickerHost(
 
   auto view = std::make_unique<DrivePickerHostView>(
       profile_, browser_window_interface_, request->type(),
-      is_glic ? DrivePickerHostView::Style::kGlic
-              : DrivePickerHostView::Style::kDefault);
+      use_glic_style ? DrivePickerHostView::Style::kGlic
+                     : DrivePickerHostView::Style::kDefault);
   DrivePickerHostView* view_ptr = view.get();
   picker_view_ = view.get();
 

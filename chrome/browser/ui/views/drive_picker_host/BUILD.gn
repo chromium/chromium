@@ -29,7 +29,7 @@ source_set("drive_picker_host") {
   ]
   deps = [
     "//chrome/browser:primitives",
-    "//chrome/browser/glic/public:features",
+    "//chrome/browser/glic",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui/browser_window",
@@ -67,7 +67,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":drive_picker_host",
-    "//chrome/browser/glic/public:features",
+    "//chrome/browser/glic/test_support",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window/test:test_support",
     "//chrome/browser/ui/prefs",
@@ -75,6 +75,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/drive_picker_host",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//components/omnibox/common",
     "//components/web_modal:test_support",
     "//content/test:test_support",
     "//testing/gmock",
