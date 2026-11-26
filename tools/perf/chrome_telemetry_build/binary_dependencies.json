@@ -3,6 +3,12 @@
   "dependencies": {
    "crashpad_database_util": {
       "file_info": {
+        "linux_aarch64": {
+          "local_paths": [
+            "../../../out/Debug/crashpad_database_util",
+            "../../../out/Release/crashpad_database_util"
+          ]
+        },
         "linux_x86_64": {
           "local_paths": [
             "../../../out/Debug/crashpad_database_util",
@@ -39,6 +45,11 @@
           ]
         },
         "mac_x86_64": {
+          "local_paths": [
+            "../../../components/crash/content/tools/generate_breakpad_symbols.py"
+          ]
+        },
+        "linux_aarch64": {
           "local_paths": [
             "../../../components/crash/content/tools/generate_breakpad_symbols.py"
           ]
