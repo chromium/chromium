@@ -704,10 +704,6 @@ inline constexpr char kOverscrollHistoryNavigationEnabled[] =
     "settings.a11y.overscroll_history_navigation";
 #endif
 
-// Whether main node annotations are enabled.
-inline constexpr char kAccessibilityMainNodeAnnotationsEnabled[] =
-    "settings.a11y.enable_main_node_annotations";
-
 // Pref indicating the page colors option the user wants. Page colors is an
 // accessibility feature that simulates forced colors mode at the browser level.
 inline constexpr char kRequestedPageColors[] =

@@ -1234,6 +1234,8 @@ inline constexpr char kPrivacySandboxRelatedWebsiteSetsEnabled[] =
 // Deprecated 11/2026.
 constexpr char kObsoleteAccessibilityAXTreeFixingEnabled[] =
     "settings.a11y.enable_ax_tree_fixing";
+constexpr char kObsoleteAccessibilityMainNodeAnnotationsEnabled[] =
+    "settings.a11y.enable_main_node_annotations";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Deprecated 11/2026.
@@ -1795,6 +1797,8 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 11/2026.
   registry->RegisterBooleanPref(kObsoleteAccessibilityAXTreeFixingEnabled,
                                 false);
+  registry->RegisterBooleanPref(
+      kObsoleteAccessibilityMainNodeAnnotationsEnabled, false);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Deprecated 11/2026.
@@ -2633,9 +2637,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterIntegerPref(prefs::kMemorySaverChipExpandedCount, 0);
   registry->RegisterTimePref(prefs::kLastMemorySaverChipExpandedTimestamp,
                              base::Time());
-  registry->RegisterBooleanPref(
-      prefs::kAccessibilityMainNodeAnnotationsEnabled, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   registry->RegisterBooleanPref(
@@ -3305,6 +3306,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_ANDROID)
   // Added 11/2026.
   profile_prefs->ClearPref(kObsoleteAccessibilityAXTreeFixingEnabled);
+  profile_prefs->ClearPref(kObsoleteAccessibilityMainNodeAnnotationsEnabled);
 
   // Added 11/2026.
   if (profile_prefs->HasPrefPath(prefs::kProfileAvatarIndex)) {

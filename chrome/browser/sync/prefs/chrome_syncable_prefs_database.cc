@@ -346,7 +346,7 @@ enum {
   kAccessibilityReadAnythingLanguagesEnabled = 100278,
   kKeyboardDefaultSplitModifierSettings = 100279,
   kDisplayAmbientLightSensorLastEnabled = 100280,
-  kAccessibilityMainNodeAnnotationsEnabled = 100281,
+  // kAccessibilityMainNodeAnnotationsEnabled = 100281, (deprecated)
   // kSyncableVersionedWallpaperInfo = 100282, (deprecated)
   kFocusModeSelectedTask = 100283,
   kFocusModeSoundSection = 100284,
@@ -1803,11 +1803,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::WriteBehavior::kWriteToBoth}},
     {prefs::kAccessibilityImageLabelsOptInAccepted,
      {syncable_prefs_ids::kAccessibilityImageLabelsOptInAccepted,
-      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone,
-      sync_preferences::WriteBehavior::kWriteToBoth}},
-    {prefs::kAccessibilityMainNodeAnnotationsEnabled,
-     {syncable_prefs_ids::kAccessibilityMainNodeAnnotationsEnabled,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone,
       sync_preferences::WriteBehavior::kWriteToBoth}},
