@@ -209,7 +209,9 @@ void KeyPermissionsServiceImpl::SetCorporateKeyWithLocations(
 
   // A single key location is expected because this is intended for usage after
   // key generation / import, when exactly one location is relevant.
-  CHECK_EQ(key_locations.size(), 1U, base::NotFatalUntil::M161);
+  // TODO(crbug.com/589973520): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(key_locations.size(), 1U);
 
   switch (key_locations[0]) {
     case TokenId::kSystem:
