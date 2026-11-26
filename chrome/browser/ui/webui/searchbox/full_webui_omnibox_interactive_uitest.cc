@@ -3811,8 +3811,17 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, TabSwitchKeepsPopup) {
 // Verifies that switching to a tab in another window from a closing NTP with
 // an unload listener activates and keeps active the target window rather than
 // re-activating the source window when the deferred NTP close completes.
+// TODO(crbug.com/588153350): Re-enable on Linux and ChromeOS once
+// GetWebElementIntersection flakiness on kSwitchToTabChip is resolved.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SwitchToTabFromClosingNtpActivatesOtherWindow \
+  DISABLED_SwitchToTabFromClosingNtpActivatesOtherWindow
+#else
+#define MAYBE_SwitchToTabFromClosingNtpActivatesOtherWindow \
+  SwitchToTabFromClosingNtpActivatesOtherWindow
+#endif
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       SwitchToTabFromClosingNtpActivatesOtherWindow) {
+                       MAYBE_SwitchToTabFromClosingNtpActivatesOtherWindow) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL target_url = embedded_test_server()->GetURL("/title1.html");
   const GURL fg_url = embedded_test_server()->GetURL("/simple.html");
