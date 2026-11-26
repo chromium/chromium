@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 #include "gpu/command_buffer/service/passthrough_program_cache.h"
@@ -553,8 +554,28 @@ class GLES2WebGLDecoderPassthroughCallbackTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/590804902): Compiling shaders via ANGLE and tearing down the
+// GL display clears ANGLE's PoolIndex TLS and crashes subsequent
+// ShaderTranslatorOutputVersionTest cases in the same gpu_unittests batch on
+// Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CallbacksDeliveredWhileContextActive \
+  DISABLED_CallbacksDeliveredWhileContextActive
+#define MAYBE_CallbacksIgnoredAfterContextLostInANGLE \
+  DISABLED_CallbacksIgnoredAfterContextLostInANGLE
+#define MAYBE_CallbacksIgnoredAfterContextLostWhileNotCurrent \
+  DISABLED_CallbacksIgnoredAfterContextLostWhileNotCurrent
+#else
+#define MAYBE_CallbacksDeliveredWhileContextActive \
+  CallbacksDeliveredWhileContextActive
+#define MAYBE_CallbacksIgnoredAfterContextLostInANGLE \
+  CallbacksIgnoredAfterContextLostInANGLE
+#define MAYBE_CallbacksIgnoredAfterContextLostWhileNotCurrent \
+  CallbacksIgnoredAfterContextLostWhileNotCurrent
+#endif
+
 TEST_F(GLES2WebGLDecoderPassthroughCallbackTest,
-       CallbacksDeliveredWhileContextActive) {
+       MAYBE_CallbacksDeliveredWhileContextActive) {
   PassthroughProgramCache program_cache(
       /*max_cache_size_bytes=*/1024 * 1024,
       /*disable_gpu_shader_disk_cache=*/false);
@@ -611,7 +632,7 @@ TEST_F(GLES2WebGLDecoderPassthroughCallbackTest,
 }
 
 TEST_F(GLES2WebGLDecoderPassthroughCallbackTest,
-       CallbacksIgnoredAfterContextLostInANGLE) {
+       MAYBE_CallbacksIgnoredAfterContextLostInANGLE) {
   SecondaryDecoderState secondary;
   ASSERT_NO_FATAL_FAILURE(InitSecondaryDecoder(secondary));
 
@@ -691,7 +712,7 @@ TEST_F(GLES2WebGLDecoderPassthroughCallbackTest,
 }
 
 TEST_F(GLES2WebGLDecoderPassthroughCallbackTest,
-       CallbacksIgnoredAfterContextLostWhileNotCurrent) {
+       MAYBE_CallbacksIgnoredAfterContextLostWhileNotCurrent) {
   SecondaryDecoderState secondary;
   ASSERT_NO_FATAL_FAILURE(InitSecondaryDecoder(secondary));
 
