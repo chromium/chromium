@@ -83,27 +83,28 @@ constinit std::atomic<bool> g_restrict_big_core_thread_affinity{false};
 std::vector<uint64_t>* g_max_frequency_per_processor_override = nullptr;
 
 struct SetAffinityMask {
-  // Only set when the current CPU configuration has at least 3 separate
-  // clusters.
+  // Only set when the current CPU configuration is eligible for the requested
+  // `CoreAffinityPolicy`.
   std::optional<cpu_set_t> mask;
   size_t count = 0;
   int allowed_count = 0;
 };
 
-// Get the CPU affinity mask, given the maximum frequency of all cores, and
-// whether the mask should allow to run on the largest core cluster, for
-// configurations with at least 3 clusters.
+// Get the CPU affinity mask for `policy`, given the maximum frequency of all
+// cores, for configurations with at least 3 clusters.
 //
 // Returns a value where `mask.mask` is not set if the device is not eligible,
-// that is it does not have at least 3 different CPU types.
+// that is it does not have at least 3 different CPU types, or `policy` excludes
+// the little core cluster and fewer than 4 cores remain.
 SetAffinityMask GetAffinityMask(const std::vector<uint64_t>& max_frequencies,
-                                bool can_run) {
+                                CoreAffinityPolicy policy) {
   if (max_frequencies.empty()) {
     return {};
   }
 
   auto sorted = max_frequencies;
   std::sort(sorted.begin(), sorted.end());
+  uint64_t min_frequency = sorted[0];
   uint64_t max_frequency = sorted[sorted.size() - 1];
   auto last = std::unique(sorted.begin(), sorted.end());
   ssize_t distinct_count = std::distance(sorted.begin(), last);
@@ -114,6 +115,17 @@ SetAffinityMask GetAffinityMask(const std::vector<uint64_t>& max_frequencies,
     return {};
   }
 
+  auto is_allowed = [&](uint64_t frequency) {
+    switch (policy) {
+      case CoreAffinityPolicy::kLittleAndMidCores:
+        return frequency < max_frequency;
+      case CoreAffinityPolicy::kAllCores:
+        return true;
+      case CoreAffinityPolicy::kMidAndBigCores:
+        return frequency > min_frequency;
+    }
+  };
+
   int allowed_cpus_count = 0;
   cpu_set_t cpu_set;
   // SAFETY: Here and below, these are macros that we don't control, and hence
@@ -123,14 +135,46 @@ SetAffinityMask GetAffinityMask(const std::vector<uint64_t>& max_frequencies,
   UNSAFE_BUFFERS(CPU_ZERO(&cpu_set));
   for (size_t i = 0; i < max_frequencies.size(); i++) {
     if (i < CPU_SETSIZE) {
-      if (can_run || (max_frequencies[i] < max_frequency)) {
+      if (is_allowed(max_frequencies[i])) {
         allowed_cpus_count++;
         UNSAFE_BUFFERS(CPU_SET(i, &cpu_set));
       }
     }
   }
 
+  // A thread that cannot use the little core cluster competes for the other
+  // cores with the threads that the system places there, which are typically
+  // the most latency-sensitive ones. Only allow this when enough cores remain.
+  if (policy == CoreAffinityPolicy::kMidAndBigCores && allowed_cpus_count < 4) {
+    return {};
+  }
+
   return {cpu_set, max_frequencies.size(), allowed_cpus_count};
+}
+
+// Returns the result of `GetAffinityMask()` for `policy` on this device. It is
+// computed once per policy, unless a testing override is defined.
+SetAffinityMask GetCachedAffinityMask(CoreAffinityPolicy policy) {
+  if (g_max_frequency_per_processor_override) {
+    return GetAffinityMask(*g_max_frequency_per_processor_override, policy);
+  }
+  switch (policy) {
+    case CoreAffinityPolicy::kLittleAndMidCores: {
+      static const SetAffinityMask mask =
+          GetAffinityMask(SysInfo::MaxFrequencyPerProcessor(), policy);
+      return mask;
+    }
+    case CoreAffinityPolicy::kAllCores: {
+      static const SetAffinityMask mask =
+          GetAffinityMask(SysInfo::MaxFrequencyPerProcessor(), policy);
+      return mask;
+    }
+    case CoreAffinityPolicy::kMidAndBigCores: {
+      static const SetAffinityMask mask =
+          GetAffinityMask(SysInfo::MaxFrequencyPerProcessor(), policy);
+      return mask;
+    }
+  }
 }
 
 }  // namespace
@@ -141,29 +185,16 @@ void SetMaxFrequencyPerProcessorOverrideForTesting(
 }
 
 bool IsEligibleForBigCoreAffinityChange() {
-  if (g_max_frequency_per_processor_override) {
-    return GetAffinityMask(*g_max_frequency_per_processor_override, false)
-        .mask.has_value();
-  }
-  static const bool eligible =
-      GetAffinityMask(SysInfo::MaxFrequencyPerProcessor(), false)
-          .mask.has_value();
-  return eligible;
+  return GetCachedAffinityMask(CoreAffinityPolicy::kLittleAndMidCores)
+      .mask.has_value();
 }
 
 void SetCanRunOnBigCore(PlatformThreadId thread_id, bool can_run) {
   TRACE_EVENT("base", __PRETTY_FUNCTION__, "thread_id", thread_id, "can_run",
               can_run);
-  SetAffinityMask mask;
-  if (g_max_frequency_per_processor_override) {
-    mask = GetAffinityMask(*g_max_frequency_per_processor_override, can_run);
-  } else {
-    static const SetAffinityMask all_cores_mask =
-        GetAffinityMask(SysInfo::MaxFrequencyPerProcessor(), true);
-    static const SetAffinityMask no_big_cores_mask =
-        GetAffinityMask(SysInfo::MaxFrequencyPerProcessor(), false);
-    mask = can_run ? all_cores_mask : no_big_cores_mask;
-  }
+  SetAffinityMask mask =
+      GetCachedAffinityMask(can_run ? CoreAffinityPolicy::kAllCores
+                                    : CoreAffinityPolicy::kLittleAndMidCores);
 
   if (!mask.mask) {
     return;
@@ -181,6 +212,10 @@ void SetCanRunOnBigCore(PlatformThreadId thread_id, bool can_run) {
   int retval =
       sched_setaffinity(thread_id.raw(), sizeof(*mask.mask), &*mask.mask);
   DPCHECK(!retval);
+}
+
+bool IsEligibleForCoreAffinityPolicy(CoreAffinityPolicy policy) {
+  return GetCachedAffinityMask(policy).mask.has_value();
 }
 
 namespace internal {

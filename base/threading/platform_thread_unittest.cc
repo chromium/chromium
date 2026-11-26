@@ -894,6 +894,32 @@ TEST(PlatformThreadCpuAffinity, IsEligibleForBigCoreAffinityChange) {
   SetMaxFrequencyPerProcessorOverrideForTesting(nullptr);
 }
 
+TEST(PlatformThreadCpuAffinity, IsEligibleForCoreAffinityPolicy) {
+  std::vector<uint64_t> fake_frequencies;
+  SetMaxFrequencyPerProcessorOverrideForTesting(&fake_frequencies);
+  EXPECT_FALSE(
+      IsEligibleForCoreAffinityPolicy(CoreAffinityPolicy::kMidAndBigCores));
+
+  // Only two core types.
+  fake_frequencies = {1000, 1000, 2000, 2000, 2000, 2000};
+  EXPECT_FALSE(
+      IsEligibleForCoreAffinityPolicy(CoreAffinityPolicy::kMidAndBigCores));
+
+  // Fewer than 4 cores outside of the little core cluster. This only matters
+  // for kMidAndBigCores.
+  fake_frequencies = {1000, 1000, 1000, 1000, 2000, 2000, 3000};
+  EXPECT_FALSE(
+      IsEligibleForCoreAffinityPolicy(CoreAffinityPolicy::kMidAndBigCores));
+  EXPECT_TRUE(
+      IsEligibleForCoreAffinityPolicy(CoreAffinityPolicy::kLittleAndMidCores));
+
+  fake_frequencies = {1000, 1000, 1000, 1000, 2000, 2000, 3000, 3000};
+  EXPECT_TRUE(
+      IsEligibleForCoreAffinityPolicy(CoreAffinityPolicy::kMidAndBigCores));
+
+  SetMaxFrequencyPerProcessorOverrideForTesting(nullptr);
+}
+
 TEST(PlatformThreadTest, AndroidThreadPriorityInitializeFeatures) {
   auto expect_nice_values = [](int bg, int util, int def, int pres, int audio,
                                int rt) {

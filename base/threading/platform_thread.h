@@ -435,6 +435,19 @@ using PlatformThread = PlatformThreadBase;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+// The CPU core clusters that a thread is allowed to run on, for configurations
+// with at least 3 distinct clusters. Clusters are told apart by the maximum
+// frequency of their cores: it is the lowest for the little core cluster, and
+// the highest for the big core cluster.
+enum class CoreAffinityPolicy {
+  // All clusters, except the big core one.
+  kLittleAndMidCores,
+  // All clusters. This is the default for a thread.
+  kAllCores,
+  // All clusters, except the little core one.
+  kMidAndBigCores,
+};
+
 BASE_EXPORT void SetMaxFrequencyPerProcessorOverrideForTesting(
     std::vector<uint64_t>* value);
 
@@ -443,6 +456,14 @@ BASE_EXPORT void SetMaxFrequencyPerProcessorOverrideForTesting(
 // queried for eligible devices. It is thus intended to be temporary, and to be
 // removed once the experiments conclude.
 BASE_EXPORT bool IsEligibleForBigCoreAffinityChange();
+
+// Returns whether the CPU configuration of the device is eligible for `policy`,
+// that is there are at least 3 distinct clusters, and for `kMidAndBigCores`, at
+// least 4 cores outside of the little core cluster. Like
+// `IsEligibleForBigCoreAffinityChange()`, this is intended to help with
+// experiment targeting.
+BASE_EXPORT bool IsEligibleForCoreAffinityPolicy(CoreAffinityPolicy policy);
+
 // Sets whether a thread is allowed to run on the big core cluster, on
 // configurations where this is relevant, i.e. at least 3 distinct
 // clusters. Otherwise this is a no-op.
