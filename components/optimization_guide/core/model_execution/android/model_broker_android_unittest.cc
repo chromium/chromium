@@ -16,8 +16,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -153,10 +153,13 @@ class ModelBrokerAndroidTest : public testing::Test {
       mojom::OnDeviceFeature feature) {
     base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
     client.CreateSession(feature, SessionConfigParams{}, future.GetCallback());
-    base::test::RunUntil([&]() {
-      return client.GetSubscriber(feature).unavailable_reason() ==
-             mojom::ModelUnavailableReason::kPendingAssets;
-    });
+    if (!base::test::RunUntil([&]() {
+          return client.GetSubscriber(feature).unavailable_reason() ==
+                 mojom::ModelUnavailableReason::kPendingAssets;
+        })) {
+      // Callers assert the returned session validity.
+      return nullptr;
+    }
     fake_broker_.java_helper().TriggerDownloaderOnAvailable(spec_.name,
                                                             spec_.version);
     return future.Take();
@@ -179,11 +182,11 @@ TEST_F(ModelBrokerAndroidTest, RequirePersistentModeForTest) {
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
                        future.GetCallback());
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
-  });
+  }));
 
   fake_broker_.java_helper().VerifyDownloaderParams(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST,
@@ -197,11 +200,11 @@ TEST_F(ModelBrokerAndroidTest, DoesNotRequirePersistentModeForScamDetection) {
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::OnDeviceFeature::kScamDetection,
                        SessionConfigParams{}, future.GetCallback());
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kScamDetection)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
-  });
+  }));
 
   fake_broker_.java_helper().VerifyDownloaderParams(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
@@ -216,11 +219,11 @@ TEST_F(ModelBrokerAndroidTest, PendingClient) {
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
                        future.GetCallback());
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
-  });
+  }));
   EXPECT_FALSE(future.IsReady());
   EXPECT_TRUE(client.HasSubscriber(mojom::OnDeviceFeature::kTest));
 }
@@ -299,19 +302,19 @@ TEST_F(ModelBrokerAndroidTest, DownloadFailure) {
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
                        future.GetCallback());
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
-  });
+  }));
   fake_broker_.java_helper().TriggerDownloaderOnUnavailable(
       on_device_model::ModelDownloaderAndroid::DownloadFailureReason::
           kUnknownError);
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kNotSupported;
-  });
+  }));
   EXPECT_EQ(future.Get(), nullptr);
 }
 
@@ -372,11 +375,11 @@ TEST_F(ModelBrokerAndroidTest, DownloadProgressObserver) {
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
                        future.GetCallback());
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
-  });
+  }));
 
   // Trigger download progress — observer1 should receive the normalized update.
   fake_broker_.java_helper().TriggerDownloaderOnDownloadProgress(500, 1000);
@@ -595,11 +598,11 @@ TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusUnavailable) {
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
                        future.GetCallback());
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kNotSupported;
-  });
+  }));
   EXPECT_EQ(future.Get(), nullptr);
 }
 
@@ -614,11 +617,11 @@ TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusDownloading) {
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
                        future.GetCallback());
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
-  });
+  }));
   EXPECT_FALSE(future.IsReady());
 }
 
@@ -633,11 +636,11 @@ TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusDownloadable) {
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
                        future.GetCallback());
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingUsage;
-  });
+  }));
   EXPECT_FALSE(future.IsReady());
 }
 
@@ -654,11 +657,11 @@ TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusApiNotAvailable) {
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
                        future.GetCallback());
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
-  });
+  }));
   EXPECT_FALSE(future.IsReady());
 }
 
@@ -679,9 +682,9 @@ TEST_F(ModelBrokerAndroidStatusCheckTest, BarrierWaitsForAllStatusChecks) {
   // feature. With kAICorePrompt and kScamDetection enabled plus kAICoreTest
   // enabled in the test feature list, the unique AICore features are: PROMPT
   // (covers kPromptApi, kSummarize), SCAM_DETECTION (kScamDetection), and TEST.
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_broker_.java_helper().GetStatusCheckerCount() == 3;
-  });
+  }));
 
   // Complete status checks for all AICore features. The barrier fires,
   // solutions are updated, and the subscriber for kTest feature is added.
@@ -690,11 +693,11 @@ TEST_F(ModelBrokerAndroidStatusCheckTest, BarrierWaitsForAllStatusChecks) {
 
   // All status checkers should have been destroyed after completion.
   EXPECT_EQ(fake_broker_.java_helper().GetStatusCheckerCount(), 0);
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
-  });
+  }));
   EXPECT_FALSE(future.IsReady());
 }
 
@@ -733,11 +736,11 @@ TEST_F(ModelBrokerAndroidRequirePersistentModeEnabledTest,
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::OnDeviceFeature::kScamDetection,
                        SessionConfigParams{}, future.GetCallback());
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kScamDetection)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kPendingAssets;
-  });
+  }));
 
   fake_broker_.java_helper().VerifyDownloaderParams(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
@@ -760,11 +763,11 @@ TEST_F(ModelBrokerAndroidFeatureDisabledTest, FeatureDisabled) {
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
                        future.GetCallback());
-  base::test::RunUntil([&]() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
                .unavailable_reason() ==
            mojom::ModelUnavailableReason::kNotSupported;
-  });
+  }));
   EXPECT_EQ(future.Get(), nullptr);
 }
 
