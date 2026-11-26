@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/autofill/core/browser/ui/autofill_tapjacking_protector.h"
@@ -78,10 +77,6 @@ class ChromeAutofillClientTestApi {
   ChromeAutofillClientTestApi& operator=(const ChromeAutofillClientTestApi&) =
       delete;
   ~ChromeAutofillClientTestApi() = default;
-
-  content::WebContentsObserver& at_memory_copy_paste_observer() {
-    return client_->at_memory_copy_paste_observer_;
-  }
 
   EmailVerificationController* email_verification_controller() {
     return client_->email_verification_controller_.get();

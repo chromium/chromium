@@ -320,36 +320,35 @@ ChromeAutofillClient::~ChromeAutofillClient() {
   }
 }
 
-ChromeAutofillClient::AtMemoryCopyPasteObserver::AtMemoryCopyPasteObserver(
-    ChromeAutofillClient* client)
-    : content::WebContentsObserver(client->web_contents()), client_(*client) {}
+ChromeAutofillClient::CrossTabCopyPasteObserver::CrossTabCopyPasteObserver(
+    content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents) {}
 
-void ChromeAutofillClient::AtMemoryCopyPasteObserver::OnTextCopiedToClipboard(
+void ChromeAutofillClient::CrossTabCopyPasteObserver::OnTextCopiedToClipboard(
     content::RenderFrameHost* render_frame_host,
     const std::u16string& copied_text) {
   CrossTabCopyPasteTracker* tracker =
       CrossTabCopyPasteTrackerFactory::GetForBrowserContext(
-          client_->GetProfile());
+          web_contents()->GetBrowserContext());
   if (!tracker) {
     return;
   }
-  tracker->OnCopy(sessions::SessionTabHelper::IdForTab(client_->web_contents()),
+  tracker->OnCopy(sessions::SessionTabHelper::IdForTab(web_contents()),
                   base::FastHash(base::as_byte_span(copied_text)),
                   render_frame_host->GetPageUkmSourceId());
 }
 
-void ChromeAutofillClient::AtMemoryCopyPasteObserver::OnPaste() {
+void ChromeAutofillClient::CrossTabCopyPasteObserver::OnPaste() {
   CrossTabCopyPasteTracker* tracker =
       CrossTabCopyPasteTrackerFactory::GetForBrowserContext(
-          client_->GetProfile());
+          web_contents()->GetBrowserContext());
   if (!tracker) {
     return;
   }
   const SessionID current_tab_id =
-      sessions::SessionTabHelper::IdForTab(client_->web_contents());
-  tracker->OnPaste(
-      current_tab_id,
-      client_->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+      sessions::SessionTabHelper::IdForTab(web_contents());
+  tracker->OnPaste(current_tab_id,
+                   web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 }
 
 // Observes direct user interaction events to detect hotkey paste (e.g., Ctrl+V,
@@ -359,10 +358,9 @@ void ChromeAutofillClient::AtMemoryCopyPasteObserver::OnPaste() {
 //
 // Note: This function doesn't need to perfectly detect hotkey paste. For
 // example, a false positive can happen when JS handles Ctrl+V and prevents the
-// default action. Slight false positives are OK for promo triggering since the
-// promo is displayed rarely anyway, and for metrics, comparing the copied value
-// hash to the pasted value hash effectively prevents most false positives.
-void ChromeAutofillClient::AtMemoryCopyPasteObserver::DidGetUserInteraction(
+// default action. Comparing the copied value hash to the pasted value hash
+// effectively prevents most false positives for metrics.
+void ChromeAutofillClient::CrossTabCopyPasteObserver::DidGetUserInteraction(
     const blink::WebInputEvent& event) {
   if constexpr (BUILDFLAG(IS_ANDROID)) {
     return;

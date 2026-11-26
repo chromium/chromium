@@ -367,19 +367,16 @@ class ChromeAutofillClient : public ContentAutofillClient {
       base::RepeatingCallback<
           std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>()>;
 
-  class AtMemoryCopyPasteObserver : public content::WebContentsObserver {
+  class CrossTabCopyPasteObserver final : public content::WebContentsObserver {
    public:
-    explicit AtMemoryCopyPasteObserver(ChromeAutofillClient* client);
-    ~AtMemoryCopyPasteObserver() override = default;
+    explicit CrossTabCopyPasteObserver(content::WebContents* web_contents);
+    ~CrossTabCopyPasteObserver() override = default;
 
     // content::WebContentsObserver:
     void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
                                  const std::u16string& copied_text) override;
     void OnPaste() override;
     void DidGetUserInteraction(const blink::WebInputEvent& event) override;
-
-   private:
-    const base::raw_ref<ChromeAutofillClient> client_;
   };
 
   Profile* GetProfile() const;
@@ -480,7 +477,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   std::unique_ptr<FormPredictionsTracker> form_predictions_tracker_;
   std::unique_ptr<ActorAutofillManager> actor_autofill_manager_;
 
-  AtMemoryCopyPasteObserver at_memory_copy_paste_observer_{this};
+  CrossTabCopyPasteObserver cross_tab_copy_paste_observer_{web_contents()};
 
   class OtpTabActivityObserver : public content::WebContentsObserver {
    public:
