@@ -318,8 +318,8 @@ void RenderWidgetHostViewAura::ApplyEventObserverForPopupExit(
           ->set_focus_on_mouse_down_or_key_event(true);
       popup_parent_host_view_->host()->Blur();
     }
-    // Note: popup_parent_host_view_ may be NULL when there are multiple
-    // popup children per view. See: RenderWidgetHostViewAura::InitAsPopup().
+    // Note: popup_parent_host_view_ may be NULL if the parent view was
+    // destroyed.
     Shutdown();
   }
 }
@@ -496,25 +496,41 @@ void RenderWidgetHostViewAura::InitAsPopup(
   CHECK(!static_cast<RenderWidgetHostViewBase*>(parent_host_view)
              ->IsRenderWidgetHostViewChildFrame());
 
-  popup_parent_host_view_ =
-      static_cast<RenderWidgetHostViewAura*>(parent_host_view);
+  // Shutting down any previous popup child as well as
+  // ParentWindowWithContext(), SetBounds(), ShowWithVisibility(), and
+  // SetCapture() below may synchronously close this popup or its parent via
+  // native window, transient window, or focus notifications. Defer deletion of
+  // `this` until this returns, and stop using it once destruction is pending.
+  ScopedInputDispatchPin pin(this);
 
-  // TransientWindowClient may be NULL during tests.
-  aura::client::TransientWindowClient* transient_window_client =
-      aura::client::GetTransientWindowClient();
-  RenderWidgetHostViewAura* old_child =
-      popup_parent_host_view_->popup_child_host_view_;
-  if (old_child) {
-    // TODO(jhorwich): Allow multiple popup_child_host_view_ per view, or
-    // similar mechanism to ensure a second popup doesn't cause the first one
-    // to never get a chance to filter events. See crbug.com/160589.
-    CHECK(old_child->popup_parent_host_view_ == popup_parent_host_view_);
-    if (transient_window_client) {
-      transient_window_client->RemoveTransientChild(
-        popup_parent_host_view_->window_, old_child->window_);
-    }
-    old_child->popup_parent_host_view_ = nullptr;
+  auto* parent = static_cast<RenderWidgetHostViewAura*>(parent_host_view);
+  if (parent->destroy_pending() || !parent->window_) {
+    Shutdown();
+    return;
   }
+  base::WeakPtr<RenderWidgetHostViewAura> weak_parent =
+      parent->weak_ptr_factory_.GetWeakPtr();
+
+  // Loop in case a re-entrant InitAsPopup() attaches another child while
+  // Shutdown() notifies observers.
+  while (RenderWidgetHostViewAura* old_child = parent->popup_child_host_view_) {
+    CHECK_EQ(old_child->popup_parent_host_view_, parent);
+    // Unlink both sides before `Shutdown()`, since it can notify observers
+    // that re-enter `InitAsPopup()`. `~Window()` removes `old_child->window_`
+    // as a transient child via `TransientWindowManager::OnWindowDestroying()`.
+    old_child->popup_parent_host_view_ = nullptr;
+    parent->SetPopupChild(nullptr);
+    old_child->Shutdown();
+    if (destroy_pending()) {
+      return;
+    }
+    if (!weak_parent || parent->destroy_pending() || !parent->window_) {
+      Shutdown();
+      return;
+    }
+  }
+
+  popup_parent_host_view_ = parent;
   popup_parent_host_view_->SetPopupChild(this);
   CreateAuraWindow(aura::client::WINDOW_TYPE_MENU);
   // Use transparent background color for the popup in order to avoid flashing
@@ -525,7 +541,9 @@ void RenderWidgetHostViewAura::InitAsPopup(
   // in a system modal dialog. Do this before calling ParentWindowWithContext
   // below so that the transient parent is visible to WindowTreeClient.
   // This fixes crbug.com/328593.
-  if (transient_window_client) {
+  // TransientWindowClient may be NULL during tests.
+  if (aura::client::TransientWindowClient* transient_window_client =
+          aura::client::GetTransientWindowClient()) {
     transient_window_client->AddTransientChild(
         popup_parent_host_view_->window_, window_);
   }
@@ -536,14 +554,13 @@ void RenderWidgetHostViewAura::InitAsPopup(
       ui::OwnedWindowConstraintAdjustment::kAdjustmentFlipY};
   window_->SetProperty(aura::client::kOwnedWindowAnchor, owned_window_anchor);
 
-  // ParentWindowWithContext(), SetBounds(), and ShowWithVisibility() may
-  // synchronously close this popup via native window or focus notifications
-  // (e.g. if its parent loses focus or is destroyed). Defer deletion until this
-  // returns, and stop using it once destruction is pending.
-  ScopedInputDispatchPin pin(this);
-  aura::Window* root = popup_parent_host_view_->window_->GetRootWindow();
-  aura::client::ParentWindowWithContext(window_, root, bounds_in_screen,
-                                        display::kInvalidDisplayId);
+  if (aura::Window* root = popup_parent_host_view_->window_->GetRootWindow()) {
+    aura::client::ParentWindowWithContext(window_, root, bounds_in_screen,
+                                          display::kInvalidDisplayId);
+  } else {
+    Shutdown();
+    return;
+  }
   if (destroy_pending()) {
     return;
   }
@@ -589,9 +606,11 @@ void RenderWidgetHostViewAura::InitAsPopup(
   SetScaleOverrideForCapture(
       popup_parent_host_view_->GetScaleOverrideForCapture());
 
-  auto* cursor_client = aura::client::GetCursorClient(root);
-  if (cursor_client)
-    UpdateSystemCursorSize(cursor_client->GetSystemCursorSize());
+  if (aura::Window* root = popup_parent_host_view_->window_->GetRootWindow()) {
+    if (auto* cursor_client = aura::client::GetCursorClient(root)) {
+      UpdateSystemCursorSize(cursor_client->GetSystemCursorSize());
+    }
+  }
 
 #if BUILDFLAG(IS_WIN)
   // This will fetch and set the display features.

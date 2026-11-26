@@ -829,8 +829,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // `popup_parent_host_view_` and `popup_child_host_view_` form a matched
   // pair: if one side is set, the other side points back. Every path that
   // breaks the link clears both directions before either view is freed, so
-  // neither can dangle. See `InitAsPopup()`, which unlinks any previous child
-  // before re-parenting, `OnDestroyOrDefer()`, and
+  // neither can dangle. See `InitAsPopup()`, which unlinks and shuts down any
+  // previous child before re-parenting, `OnDestroyOrDefer()`, and
   // ~RenderWidgetHostViewAura(), which unlink whichever side is set and CHECK
   // that the pair agrees.
   raw_ptr<RenderWidgetHostViewAura> popup_parent_host_view_;

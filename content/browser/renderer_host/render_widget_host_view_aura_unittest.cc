@@ -19,6 +19,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/strings/string_util.h"
@@ -274,6 +275,38 @@ class TestWindowObserver : public aura::WindowObserver {
 
   // Was |window_| destroyed?
   bool destroyed_ = false;
+};
+
+// WindowObserver that runs a callback when the observed window is destroying.
+class WindowDestroyingObserver : public aura::WindowObserver {
+ public:
+  WindowDestroyingObserver(aura::Window* window,
+                           base::OnceClosure on_destroying)
+      : window_(window), on_destroying_(std::move(on_destroying)) {
+    window_->AddObserver(this);
+  }
+
+  WindowDestroyingObserver(const WindowDestroyingObserver&) = delete;
+  WindowDestroyingObserver& operator=(const WindowDestroyingObserver&) = delete;
+
+  ~WindowDestroyingObserver() override {
+    if (window_) {
+      window_->RemoveObserver(this);
+    }
+  }
+
+  void OnWindowDestroying(aura::Window* window) override {
+    CHECK_EQ(window, window_);
+    window_->RemoveObserver(this);
+    window_ = nullptr;
+    if (on_destroying_) {
+      std::move(on_destroying_).Run();
+    }
+  }
+
+ private:
+  raw_ptr<aura::Window> window_;
+  base::OnceClosure on_destroying_;
 };
 
 class FakeWindowEventDispatcher : public aura::WindowEventDispatcher {
@@ -1817,6 +1850,111 @@ TEST_F(RenderWidgetHostViewAuraTest,
   parent_pin.reset();
   EXPECT_TRUE(parent_observer.destroyed());
   EXPECT_TRUE(popup_observer.destroyed());
+}
+
+// Regression test for crbug.com/575312381: initializing a second popup on the
+// same parent shuts down the previous popup child instead of leaving it
+// orphaned.
+TEST_F(RenderWidgetHostViewAuraTest, InitAsPopupClosesPreviousPopupChild) {
+  parent_view_->SetBounds(gfx::Rect(10, 10, 400, 400));
+  parent_view_->Focus();
+  EXPECT_TRUE(parent_view_->HasFocus());
+
+  InitViewForPopup(parent_view_, gfx::Rect(10, 10, 100, 100));
+  EXPECT_TRUE(view_->IsHTMLFormPopup());
+  EXPECT_TRUE(view_->IsShowing());
+  EXPECT_EQ(view_, popup_child_host_view(parent_view_));
+  EXPECT_EQ(parent_view_, popup_parent_host_view(view_));
+
+  TestWindowObserver popup1_observer(view_->GetNativeView());
+  base::WeakPtr<RenderWidgetHostViewBase> popup1_weak = view_->GetWeakPtr();
+  base::WeakPtr<RenderWidgetHostImpl> popup1_host_weak =
+      widget_host_->GetWeakPtr();
+
+  // Clear fixture pointers to popup 1 before popup 2's InitAsPopup() shuts it
+  // down.
+  widget_host_ = nullptr;
+  view_ = nullptr;
+
+  view_ = CreateView();
+  widget_host_ = static_cast<MockRenderWidgetHostImpl*>(view_->host());
+  InitViewForPopup(parent_view_, gfx::Rect(50, 60, 120, 80));
+
+  EXPECT_TRUE(popup1_observer.destroyed());
+  EXPECT_FALSE(popup1_weak);
+  EXPECT_FALSE(popup1_host_weak);
+  EXPECT_TRUE(view_->IsHTMLFormPopup());
+  EXPECT_TRUE(view_->IsShowing());
+  EXPECT_EQ(view_, popup_child_host_view(parent_view_));
+  EXPECT_EQ(parent_view_, popup_parent_host_view(view_));
+  EXPECT_EQ(gfx::Rect(50, 60, 120, 80), view_->GetViewBounds());
+}
+
+// Regression test for crbug.com/575312381: if shutting down the previous popup
+// child during InitAsPopup() synchronously destroys the parent view, the new
+// popup must bail out and shut itself down cleanly.
+TEST_F(RenderWidgetHostViewAuraTest,
+       InitAsPopupBailsOutWhenOldChildShutdownDestroysParent) {
+  parent_view_->SetBounds(gfx::Rect(10, 10, 400, 400));
+  parent_view_->Focus();
+
+  InitViewForPopup(parent_view_, gfx::Rect(10, 10, 100, 100));
+  aura::Window* popup1_window = view_->GetNativeView();
+  ASSERT_TRUE(popup1_window);
+
+  bool destroyed_parent = false;
+  WindowDestroyingObserver observer(
+      popup1_window, base::BindLambdaForTesting([&]() {
+        destroyed_parent = true;
+        parent_view_.ExtractAsDangling()->DestroyOrDefer();
+      }));
+
+  // Clear fixture pointers to popup 1 before popup 2's InitAsPopup() shuts it
+  // down.
+  widget_host_ = nullptr;
+  view_ = nullptr;
+
+  FakeRenderWidgetHostViewAura* popup2 = CreateView();
+  base::WeakPtr<RenderWidgetHostViewBase> popup2_weak = popup2->GetWeakPtr();
+  base::WeakPtr<RenderWidgetHostImpl> popup2_host_weak =
+      popup2->host()->GetWeakPtr();
+  popup2->SetWidgetType(WidgetType::kPopup);
+  popup2->InitAsPopup(parent_view_, gfx::Rect(20, 20, 100, 100),
+                      gfx::Rect(20, 20, 1, 1));
+
+  EXPECT_TRUE(destroyed_parent);
+  EXPECT_EQ(nullptr, parent_view_);
+  EXPECT_FALSE(popup2_weak);
+  EXPECT_FALSE(popup2_host_weak);
+}
+
+// Verify that InitAsPopup() bails out and shuts down the new popup cleanly if
+// the parent view already has destruction pending.
+TEST_F(RenderWidgetHostViewAuraTest,
+       InitAsPopupWithDestroyPendingParentBailsOut) {
+  std::optional<input::ScopedInputDispatchPin> parent_pin;
+  parent_pin.emplace(parent_view_);
+
+  RenderWidgetHostViewAura* parent = parent_view_.ExtractAsDangling();
+  parent->DestroyOrDefer();
+  ASSERT_TRUE(parent->destroy_pending());
+
+  FakeRenderWidgetHostViewAura* popup = view_;
+  base::WeakPtr<RenderWidgetHostViewBase> popup_weak = popup->GetWeakPtr();
+  base::WeakPtr<RenderWidgetHostImpl> popup_host_weak =
+      widget_host_->GetWeakPtr();
+  widget_host_ = nullptr;
+  view_ = nullptr;
+
+  popup->SetWidgetType(WidgetType::kPopup);
+  popup->InitAsPopup(parent, gfx::Rect(10, 10, 100, 100),
+                     gfx::Rect(10, 10, 1, 1));
+
+  EXPECT_FALSE(popup_weak);
+  EXPECT_FALSE(popup_host_weak);
+  EXPECT_EQ(nullptr, popup_child_host_view(parent));
+
+  parent_pin.reset();
 }
 
 // Checks that IME-composition-event state is maintained correctly.
