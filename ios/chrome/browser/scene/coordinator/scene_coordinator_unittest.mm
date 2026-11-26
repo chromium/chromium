@@ -7,6 +7,7 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
@@ -33,6 +35,7 @@
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -63,6 +66,52 @@ using UserFeedbackDataCallback =
 @end
 
 namespace {
+
+// Holds strong references to mock command handlers registered on the
+// `CommandDispatcher` (which only holds weak references to targets).
+struct ModalDismissalMocks {
+  id snackbar_handler;
+  id bookmarks_handler;
+  id browser_coordinator_handler;
+  id gemini_handler;
+};
+
+// Registers mock handlers needed by `dismissModalDialogsWithCompletion:` on
+// `coordinator`'s command dispatcher and returns them.
+ModalDismissalMocks SetUpModalDismissalMocks(SceneCoordinator* coordinator) {
+  CommandDispatcher* dispatcher =
+      coordinator.currentBrowser->GetCommandDispatcher();
+
+  ModalDismissalMocks mocks;
+  mocks.snackbar_handler = OCMProtocolMock(@protocol(SnackbarCommands));
+  [dispatcher startDispatchingToTarget:mocks.snackbar_handler
+                           forProtocol:@protocol(SnackbarCommands)];
+
+  mocks.bookmarks_handler = OCMProtocolMock(@protocol(BookmarksCommands));
+  [dispatcher startDispatchingToTarget:mocks.bookmarks_handler
+                           forProtocol:@protocol(BookmarksCommands)];
+
+  mocks.browser_coordinator_handler =
+      OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+  OCMStub([mocks.browser_coordinator_handler
+              clearPresentedStateWithCompletion:[OCMArg any]
+                                 dismissOmnibox:YES])
+      .andDo(^(NSInvocation* invocation) {
+        void* ptr = nullptr;
+        [invocation getArgument:&ptr atIndex:2];
+        ProceduralBlock completionBlock = (__bridge ProceduralBlock)ptr;
+        ASSERT_TRUE(completionBlock);
+        completionBlock();
+      });
+  [dispatcher startDispatchingToTarget:mocks.browser_coordinator_handler
+                           forProtocol:@protocol(BrowserCoordinatorCommands)];
+
+  mocks.gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
+  [dispatcher stopDispatchingForProtocol:@protocol(GeminiCommands)];
+  [dispatcher startDispatchingToTarget:mocks.gemini_handler
+                           forProtocol:@protocol(GeminiCommands)];
+  return mocks;
+}
 
 class SceneCoordinatorTest : public PlatformTest {
  protected:
@@ -235,86 +284,31 @@ TEST_F(SceneCoordinatorTest, PresentViewControllerHidesGeminiFloaty) {
   EXPECT_OCMOCK_VERIFY(mock_delegate);
 }
 
-// Tests that dismissModalDialogsWithCompletion completes without crashing.
+// Tests that dismissModalDialogsWithCompletion: completes without crashing and
+// dismisses Gemini when bottom-sheet migration is disabled.
 TEST_F(SceneCoordinatorTest, TestDismissModalDialogsWithCompletion) {
-  CommandDispatcher* dispatcher =
-      coordinator_.currentBrowser->GetCommandDispatcher();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kIOSGeminiBottomSheetMigration);
 
-  id mockSnackbarHandler = OCMProtocolMock(@protocol(SnackbarCommands));
-  [dispatcher startDispatchingToTarget:mockSnackbarHandler
-                           forProtocol:@protocol(SnackbarCommands)];
-
-  id mockBookmarksHandler = OCMProtocolMock(@protocol(BookmarksCommands));
-  [dispatcher startDispatchingToTarget:mockBookmarksHandler
-                           forProtocol:@protocol(BookmarksCommands)];
-
-  id mockBrowserCoordinatorHandler =
-      OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
-  OCMStub([mockBrowserCoordinatorHandler
-              clearPresentedStateWithCompletion:[OCMArg any]
-                                 dismissOmnibox:YES])
-      .andDo(^(NSInvocation* invocation) {
-        void* ptr = nullptr;
-        [invocation getArgument:&ptr atIndex:2];
-        ProceduralBlock completionBlock = (__bridge ProceduralBlock)ptr;
-        if (completionBlock) {
-          completionBlock();
-        }
-      });
-  [dispatcher startDispatchingToTarget:mockBrowserCoordinatorHandler
-                           forProtocol:@protocol(BrowserCoordinatorCommands)];
-
-  id mockGeminiHandler = OCMProtocolMock(@protocol(GeminiCommands));
-  OCMExpect([mockGeminiHandler dismissGeminiFlowWithCompletion:nil]);
-  [dispatcher startDispatchingToTarget:mockGeminiHandler
-                           forProtocol:@protocol(GeminiCommands)];
+  ModalDismissalMocks mocks = SetUpModalDismissalMocks(coordinator_);
+  OCMExpect([mocks.gemini_handler dismissGeminiFlowWithCompletion:nil]);
+  [[mocks.gemini_handler reject] minimizeGeminiIfInvoked];
 
   __block bool completed = false;
-  [coordinator_
-      dismissModalDialogsWithCompletion:^{
-        completed = true;
-      }
-                         dismissOmnibox:YES
-                       dismissSnackbars:YES];
+  [coordinator_ dismissModalDialogsWithCompletion:^{
+    completed = true;
+  }];
   EXPECT_TRUE(completed);
-  EXPECT_OCMOCK_VERIFY(mockGeminiHandler);
+  EXPECT_OCMOCK_VERIFY(mocks.gemini_handler);
 }
 
-// Tests that dismissModalDialogsWithCompletion does not dismiss Gemini when
-// dismissGemini is NO.
+// Tests that `dismissModalDialogsWithCompletion:` does not dismiss or minimize
+// Gemini when `GeminiDismissalBehavior::kNone` is specified.
 TEST_F(SceneCoordinatorTest,
        TestDismissModalDialogsWithCompletionDoesNotDismissGemini) {
-  CommandDispatcher* dispatcher =
-      coordinator_.currentBrowser->GetCommandDispatcher();
-
-  id mockSnackbarHandler = OCMProtocolMock(@protocol(SnackbarCommands));
-  [dispatcher startDispatchingToTarget:mockSnackbarHandler
-                           forProtocol:@protocol(SnackbarCommands)];
-
-  id mockBookmarksHandler = OCMProtocolMock(@protocol(BookmarksCommands));
-  [dispatcher startDispatchingToTarget:mockBookmarksHandler
-                           forProtocol:@protocol(BookmarksCommands)];
-
-  id mockBrowserCoordinatorHandler =
-      OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
-  OCMStub([mockBrowserCoordinatorHandler
-              clearPresentedStateWithCompletion:[OCMArg any]
-                                 dismissOmnibox:YES])
-      .andDo(^(NSInvocation* invocation) {
-        void* ptr = nullptr;
-        [invocation getArgument:&ptr atIndex:2];
-        ProceduralBlock completionBlock = (__bridge ProceduralBlock)ptr;
-        if (completionBlock) {
-          completionBlock();
-        }
-      });
-  [dispatcher startDispatchingToTarget:mockBrowserCoordinatorHandler
-                           forProtocol:@protocol(BrowserCoordinatorCommands)];
-
-  id mockGeminiHandler = OCMProtocolMock(@protocol(GeminiCommands));
-  [[mockGeminiHandler reject] dismissGeminiFlowWithCompletion:[OCMArg any]];
-  [dispatcher startDispatchingToTarget:mockGeminiHandler
-                           forProtocol:@protocol(GeminiCommands)];
+  ModalDismissalMocks mocks = SetUpModalDismissalMocks(coordinator_);
+  [[mocks.gemini_handler reject] dismissGeminiFlowWithCompletion:[OCMArg any]];
+  [[mocks.gemini_handler reject] minimizeGeminiIfInvoked];
 
   __block bool completed = false;
   [coordinator_
@@ -323,9 +317,9 @@ TEST_F(SceneCoordinatorTest,
       }
                          dismissOmnibox:YES
                        dismissSnackbars:YES
-                          dismissGemini:NO];
+                geminiDismissalBehavior:GeminiDismissalBehavior::kNone];
   EXPECT_TRUE(completed);
-  EXPECT_OCMOCK_VERIFY(mockGeminiHandler);
+  EXPECT_OCMOCK_VERIFY(mocks.gemini_handler);
 }
 
 // Tests that `showRemoteActorCredentialBottomSheetWithRequest:` starts
@@ -696,6 +690,52 @@ TEST_F(SceneCoordinatorTest, ClosePresentedViewsStopsRemoteActorSheet) {
 
   [partial_scene_coordinator stopMocking];
   [mock_application stopMocking];
+}
+
+// Tests that `dismissModalDialogsWithCompletion:` minimizes Gemini instead of
+// dismissing it when `IOSGeminiBottomSheetMigration` is enabled.
+TEST_F(SceneCoordinatorTest,
+       TestDismissModalDialogsWithCompletionMinimizesGeminiWhenMigrated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  ModalDismissalMocks mocks = SetUpModalDismissalMocks(coordinator_);
+  [[mocks.gemini_handler reject] dismissGeminiFlowWithCompletion:[OCMArg any]];
+  OCMExpect([mocks.gemini_handler minimizeGeminiIfInvoked]);
+
+  __block bool completed = false;
+  [coordinator_ dismissModalDialogsWithCompletion:^{
+    completed = true;
+  }];
+  EXPECT_TRUE(completed);
+  EXPECT_OCMOCK_VERIFY(mocks.gemini_handler);
+}
+
+// Tests that `dismissModalDialogsWithCompletion:` dismisses Gemini when
+// `GeminiDismissalBehavior::kDismiss` is explicitly requested even if
+// `IOSGeminiBottomSheetMigration` is enabled.
+TEST_F(
+    SceneCoordinatorTest,
+    TestDismissModalDialogsWithCompletionDismissesGeminiWhenExplicitlyRequested) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  ModalDismissalMocks mocks = SetUpModalDismissalMocks(coordinator_);
+  OCMExpect([mocks.gemini_handler dismissGeminiFlowWithCompletion:nil]);
+  [[mocks.gemini_handler reject] minimizeGeminiIfInvoked];
+
+  __block bool completed = false;
+  [coordinator_
+      dismissModalDialogsWithCompletion:^{
+        completed = true;
+      }
+                         dismissOmnibox:YES
+                       dismissSnackbars:YES
+                geminiDismissalBehavior:GeminiDismissalBehavior::kDismiss];
+  EXPECT_TRUE(completed);
+  EXPECT_OCMOCK_VERIFY(mocks.gemini_handler);
 }
 
 }  // namespace

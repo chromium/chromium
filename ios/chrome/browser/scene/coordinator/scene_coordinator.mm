@@ -545,22 +545,14 @@ inline LayoutStateScenePassKey PassKey() {
   [self dismissModalDialogsWithCompletion:completion
                            dismissOmnibox:YES
                          dismissSnackbars:YES
-                            dismissGemini:YES];
-}
-
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox
-                         dismissSnackbars:(BOOL)dismissSnackbars {
-  [self dismissModalDialogsWithCompletion:completion
-                           dismissOmnibox:dismissOmnibox
-                         dismissSnackbars:dismissSnackbars
-                            dismissGemini:YES];
+                  geminiDismissalBehavior:GeminiDismissalBehavior::kDefault];
 }
 
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox
                          dismissSnackbars:(BOOL)dismissSnackbars
-                            dismissGemini:(BOOL)dismissGemini {
+                  geminiDismissalBehavior:
+                      (GeminiDismissalBehavior)geminiDismissalBehavior {
   // Disconnected scenes should no-op, since browser objects may not exist.
   // See crbug.com/371847600.
   if (self.sceneState.activationLevel == SceneActivationLevelDisconnected) {
@@ -632,10 +624,21 @@ inline LayoutStateScenePassKey PassKey() {
 
   [self closePresentedViews:NO completion:closePresentedViewsCompletion];
 
-  if (dismissGemini) {
-    id<GeminiCommands> geminiHandler = HandlerForProtocol(
-        _regularBrowser->GetCommandDispatcher(), GeminiCommands);
-    [geminiHandler dismissGeminiFlowWithCompletion:nil];
+  id<GeminiCommands> geminiHandler = HandlerForProtocol(
+      _regularBrowser->GetCommandDispatcher(), GeminiCommands);
+  switch (geminiDismissalBehavior) {
+    case GeminiDismissalBehavior::kDefault:
+      if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+        [geminiHandler minimizeGeminiIfInvoked];
+      } else {
+        [geminiHandler dismissGeminiFlowWithCompletion:nil];
+      }
+      break;
+    case GeminiDismissalBehavior::kNone:
+      break;
+    case GeminiDismissalBehavior::kDismiss:
+      [geminiHandler dismissGeminiFlowWithCompletion:nil];
+      break;
   }
 
   // Verify that no modal views are left presented.
@@ -1141,7 +1144,8 @@ inline LayoutStateScenePassKey PassKey() {
   }
   [self dismissModalDialogsWithCompletion:ensureNTP
                            dismissOmnibox:YES
-                         dismissSnackbars:dismissSnackbars];
+                         dismissSnackbars:dismissSnackbars
+                  geminiDismissalBehavior:GeminiDismissalBehavior::kDefault];
 }
 
 - (void)openAIMenu {
@@ -2724,6 +2728,11 @@ inline LayoutStateScenePassKey PassKey() {
   // If the guided tour is active, stop it.
   [self hideGuidedTour];
 
+  // If the Gemini entry flow or Live FRE is active, stop it so its modal sheet
+  // is cleaned up before presented-state teardown or completion runs.
+  [self stopGeminiEntryFlowCoordinator];
+  [self stopGeminiLiveFirstRunCoordinator];
+
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock resetAndDismiss = ^{
     __typeof(self) strongSelf = weakSelf;
@@ -3056,6 +3065,20 @@ inline LayoutStateScenePassKey PassKey() {
   }
 
   geminiBrowserAgent->StartGeminiFlow(baseViewController, startupState);
+}
+
+// Stops `_geminiEntryFlowCoordinator`.
+- (void)stopGeminiEntryFlowCoordinator {
+  GeminiEntryFlowCoordinator* coordinator = _geminiEntryFlowCoordinator;
+  _geminiEntryFlowCoordinator = nil;
+  [coordinator stop];
+}
+
+// Stops `_geminiLiveFirstRunCoordinator`.
+- (void)stopGeminiLiveFirstRunCoordinator {
+  GeminiFirstRunCoordinator* coordinator = _geminiLiveFirstRunCoordinator;
+  _geminiLiveFirstRunCoordinator = nil;
+  [coordinator stopWithCompletion:nil];
 }
 
 // Stops the existing first run coordinator (if any) and runs `startBlock`.

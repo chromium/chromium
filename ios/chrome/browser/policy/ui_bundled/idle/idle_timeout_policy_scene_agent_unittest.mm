@@ -155,65 +155,82 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
   id mock_settings_handler_;
 };
 
-// The UI should not be showing the dialog or blocking other scenes if the app
+// Tests that the UI does not show the dialog or block other scenes if the app
 // state has not reached its final init stage.
 TEST_F(IdleTimeoutPolicySceneAgentTest, DialogDoesNotShowWhenAppStateNotReady) {
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   OCMReject([mock_application_handler_
-      dismissModalDialogsWithCompletion:[OCMArg any]]);
+      dismissModalDialogsWithCompletion:[OCMArg any]
+                         dismissOmnibox:YES
+                       dismissSnackbars:YES
+                geminiDismissalBehavior:GeminiDismissalBehavior::kDismiss]);
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnForeground);
   EXPECT_NE(app_state_.currentUIBlocker, scene_state_);
   EXPECT_OCMOCK_VERIFY(mock_application_handler_);
 }
 
-// The UI should show the dialog and block other scenes if the app state has
-// reached its final init stage.
+// Tests that the UI shows the dialog, dismisses Gemini, and blocks other
+// scenes if the app state has reached its final init stage.
 TEST_F(IdleTimeoutPolicySceneAgentTest, DialogShowsWhenAppStateReady) {
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
   OCMExpect([mock_application_handler_
-      dismissModalDialogsWithCompletion:[OCMArg any]]);
+      dismissModalDialogsWithCompletion:[OCMArg any]
+                         dismissOmnibox:YES
+                       dismissSnackbars:YES
+                geminiDismissalBehavior:GeminiDismissalBehavior::kDismiss]);
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnForeground);
   EXPECT_EQ(app_state_.currentUIBlocker, scene_state_);
   EXPECT_OCMOCK_VERIFY(mock_application_handler_);
 }
 
-// The UI should not show the dialog when the scene is not foregrounded.
-// This case will likely never happen.
+// Tests that the UI does not show the dialog when the scene is not
+// foregrounded.
 TEST_F(IdleTimeoutPolicySceneAgentTest,
        DialogDoesNotShowWhenSceneStateNotInForeground) {
   SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
   scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
   OCMReject([mock_application_handler_
-      dismissModalDialogsWithCompletion:[OCMArg any]]);
+      dismissModalDialogsWithCompletion:[OCMArg any]
+                         dismissOmnibox:YES
+                       dismissSnackbars:YES
+                geminiDismissalBehavior:GeminiDismissalBehavior::kDismiss]);
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnForeground);
   EXPECT_NE(app_state_.currentUIBlocker, scene_state_);
   EXPECT_OCMOCK_VERIFY(mock_application_handler_);
 }
 
-// The UI should show the dialog when the scene is foregrounded.
+// Tests that the UI shows the dialog and dismisses Gemini when the scene is
+// foregrounded.
 TEST_F(IdleTimeoutPolicySceneAgentTest, DialogShowsWhenSceneStateInForeground) {
   SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   OCMExpect([mock_application_handler_
-      dismissModalDialogsWithCompletion:[OCMArg any]]);
+      dismissModalDialogsWithCompletion:[OCMArg any]
+                         dismissOmnibox:YES
+                       dismissSnackbars:YES
+                geminiDismissalBehavior:GeminiDismissalBehavior::kDismiss]);
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnForeground);
   EXPECT_EQ(app_state_.currentUIBlocker, scene_state_);
   EXPECT_OCMOCK_VERIFY(mock_application_handler_);
 }
 
-// The UI should not show on a scene that is blocked by an overlay modal.
+// Tests that the UI does not show on a scene that is blocked by an overlay
+// modal.
 TEST_F(IdleTimeoutPolicySceneAgentTest,
        DialogDoesNotShowWhenSceneStateBlockedByOtherScene) {
   SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   scene_state_.uiBlockerState.presentingModalOverlay = true;
   OCMReject([mock_application_handler_
-      dismissModalDialogsWithCompletion:[OCMArg any]]);
+      dismissModalDialogsWithCompletion:[OCMArg any]
+                         dismissOmnibox:YES
+                       dismissSnackbars:YES
+                geminiDismissalBehavior:GeminiDismissalBehavior::kDismiss]);
   idle_service_->RunActionsForStateForTesting(
       enterprise_idle::IdleService::LastState::kIdleOnForeground);
   EXPECT_NE(app_state_.currentUIBlocker, scene_state_);

@@ -2970,7 +2970,11 @@ bool IsFullscreenNextIAEnabled() {
     [firstResponder resignFirstResponder];
     // Close presented view controllers, e.g. share sheets.
     if (self.presentedViewController) {
-      [self.sceneHandler dismissModalDialogsWithCompletion:nil];
+      [self.sceneHandler
+          dismissModalDialogsWithCompletion:nil
+                             dismissOmnibox:YES
+                           dismissSnackbars:YES
+                    geminiDismissalBehavior:GeminiDismissalBehavior::kDismiss];
     }
 
   } else {

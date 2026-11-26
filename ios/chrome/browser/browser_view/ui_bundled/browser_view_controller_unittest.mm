@@ -577,6 +577,8 @@ TEST_F(BrowserViewControllerTest, didInsertWebStateWithoutAnimation) {
   });
 }
 
+// Tests that presenting incognito authentication dismisses presented state and
+// Gemini.
 TEST_F(BrowserViewControllerTest,
        presentIncognitoReauthDismissesPresentedState) {
   // Add a presented VC so dismiss modal dialogs is dispatched.
@@ -584,7 +586,11 @@ TEST_F(BrowserViewControllerTest,
                      animated:NO
                    completion:nil];
 
-  OCMExpect([mock_application_handler_ dismissModalDialogsWithCompletion:nil]);
+  OCMExpect([mock_application_handler_
+      dismissModalDialogsWithCompletion:nil
+                         dismissOmnibox:YES
+                       dismissSnackbars:YES
+                geminiDismissalBehavior:GeminiDismissalBehavior::kDismiss]);
 
   // Present incognito authentication must dismiss presented state.
   [bvc_ setItemsRequireAuthentication:YES];

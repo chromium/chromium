@@ -44,27 +44,37 @@ enum class TabGridOpeningMode {
   kTabGroups,
 };
 
+// Behavior for Gemini when dismissing modal dialogs.
+enum class GeminiDismissalBehavior {
+  // Minimize Gemini if the bottom sheet migration is enabled, or dismiss it
+  // otherwise.
+  kDefault,
+  // Do not minimize or dismiss Gemini.
+  kNone,
+  // Dismiss Gemini flow completely.
+  kDismiss,
+};
+
 // Protocol for commands that will generally be handled by the application,
 // rather than a specific tab; in practice this means the SceneController
 // instance.
 @protocol SceneCommands
 
 // Dismisses all modal dialogs with a completion block that is called when
-// modals are dismissed (animations done).
+// modals are dismissed (animations done). Minimizes Gemini if the bottom
+// sheet migration is enabled, or dismisses it otherwise.
+// TODO(crbug.com/589792761): Remove this convenience method and migrate callers
+// to the full 4-argument version.
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion;
 
 // Dismisses all modal dialogs and calls the completion block. Optionally does
-// not dismiss the omnibox or snackbars.
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox
-                         dismissSnackbars:(BOOL)dismissSnackbars;
-
-// Dismisses all modal dialogs and calls the completion block. Optionally does
-// not dismiss the omnibox, snackbars, or Gemini.
+// not dismiss the omnibox or snackbars, and controls Gemini dismissal via
+// `geminiDismissalBehavior`.
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox
                          dismissSnackbars:(BOOL)dismissSnackbars
-                            dismissGemini:(BOOL)dismissGemini;
+                  geminiDismissalBehavior:
+                      (GeminiDismissalBehavior)geminiDismissalBehavior;
 
 // Dismisses all modal dialogs (if any) before showing the Password Checkup page
 // for `referrer`.

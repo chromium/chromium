@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -179,7 +180,8 @@ void RemoveAllInfoBars() {
 void ClearPresentedState(ProceduralBlock completion) {
   [GetForegroundActiveSceneController()
       dismissModalDialogsWithCompletion:completion
-                         dismissOmnibox:YES];
+                         dismissOmnibox:YES
+                geminiDismissalBehavior:GeminiDismissalBehavior::kDismiss];
 }
 
 void SetBooleanLocalStatePref(const char* pref_name, bool value) {

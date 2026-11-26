@@ -2161,25 +2161,17 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 }
 
 // Dismisses modal dialogs via the scene handler and optionally dismisses the
-// omnibox and Gemini.
+// omnibox and controls Gemini dismissal.
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox
-                            dismissGemini:(BOOL)dismissGemini {
+                  geminiDismissalBehavior:
+                      (GeminiDismissalBehavior)geminiDismissalBehavior {
   id<SceneCommands> sceneHandler = HandlerForProtocol(
       self.currentBrowserForURLLoading->GetCommandDispatcher(), SceneCommands);
   [sceneHandler dismissModalDialogsWithCompletion:completion
                                    dismissOmnibox:dismissOmnibox
                                  dismissSnackbars:YES
-                                    dismissGemini:dismissGemini];
-}
-
-// Dismisses modal dialogs via the scene handler and optionally dismisses the
-// omnibox.
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox {
-  [self dismissModalDialogsWithCompletion:completion
-                           dismissOmnibox:dismissOmnibox
-                            dismissGemini:YES];
+                          geminiDismissalBehavior:geminiDismissalBehavior];
 }
 
 // Begins the process of activating the given current model, switching which BVC
@@ -2510,19 +2502,19 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     dismissOmnibox = YES;
   }
 
-  BOOL dismissGemini = YES;
+  GeminiDismissalBehavior geminiDismissalBehavior =
+      GeminiDismissalBehavior::kDefault;
   if (targetMode != ApplicationModeForTabOpening::INCOGNITO) {
     TabOpeningPostOpeningAction postOpeningAction =
         self.startupParameters.postOpeningAction;
     if (postOpeningAction == START_GEMINI_AI_SUMMARIZATION ||
         postOpeningAction == TRIGGER_GEMINI_PROMO) {
-      dismissGemini = NO;
+      geminiDismissalBehavior = GeminiDismissalBehavior::kNone;
     }
   }
-
   [self dismissModalDialogsWithCompletion:dismissModalsCompletion
                            dismissOmnibox:dismissOmnibox
-                            dismissGemini:dismissGemini];
+                  geminiDismissalBehavior:geminiDismissalBehavior];
 }
 
 - (void)dismissModalsAndOpenMultipleTabsWithURLs:(const std::vector<GURL>&)URLs
@@ -2549,7 +2541,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
                            inIncognitoMode:incognitoMode
                                 completion:completion];
       }
-                         dismissOmnibox:dismissOmnibox];
+                         dismissOmnibox:dismissOmnibox
+                geminiDismissalBehavior:GeminiDismissalBehavior::kDefault];
 }
 
 // Note that the current tab of `browserCoordinator`'s BVC will normally be
