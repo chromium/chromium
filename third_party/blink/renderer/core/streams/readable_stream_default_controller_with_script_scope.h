@@ -28,6 +28,8 @@ class CORE_EXPORT ReadableStreamDefaultControllerWithScriptScope
 
   void Close();
   double DesiredSize() const;
+  // https://streams.spec.whatwg.org/#readable-stream-default-controller-can-close-or-enqueue
+  bool CanCloseOrEnqueue() const;
   void Enqueue(v8::Local<v8::Value> js_chunk) const;
   void Error(v8::Local<v8::Value> js_error);
 
