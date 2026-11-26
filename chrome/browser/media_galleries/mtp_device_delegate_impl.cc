@@ -75,7 +75,9 @@ std::string GetDeviceRelativePath(const base::FilePath& registered_dev_path,
                                   const base::FilePath& file_path) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   CHECK(!registered_dev_path.empty(), base::NotFatalUntil::M161);
-  CHECK(!file_path.empty(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/590196300): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!file_path.empty());
   std::string result;
   if (registered_dev_path == file_path) {
     result = kRootPath;
