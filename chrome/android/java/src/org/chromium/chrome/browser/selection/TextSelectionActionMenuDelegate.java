@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.reader_mode.ReaderModeManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.autofill.AutofillSelectionActionMenuDelegate;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -56,6 +57,8 @@ import java.util.Locale;
 @NullMarked
 public class TextSelectionActionMenuDelegate implements SelectionActionMenuDelegate {
     private final Tab mTab;
+    private @Nullable AutofillSelectionActionMenuDelegate mAutofillDelegate;
+
     private @Nullable String mSelectedText;
 
     // These are relative orders within the DEFAULT_ITEMS section. With these and the secondary
@@ -138,6 +141,11 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
             }
             setAskGeminiOrderAndCategory(builder);
             items.add(builder.build());
+        }
+        if (mAutofillDelegate != null) {
+            items.addAll(
+                    mAutofillDelegate.getAdditionalMenuItems(
+                            menuType, isSelectionPassword, isSelectionReadOnly, selectedText));
         }
         return items;
     }
@@ -255,6 +263,10 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
     public boolean handleMenuItemClick(
             SelectionMenuItem item, WebContents webContents, @Nullable View containerView) {
         if (!item.isEnabled) return false;
+        if (mAutofillDelegate != null
+                && mAutofillDelegate.handleMenuItemClick(item, webContents, containerView)) {
+            return true;
+        }
         if (item.id == R.id.contextmenu_open_in_reading_mode) {
             ReaderModeManager readerModeManager =
                     mTab.getUserDataHost().getUserData(ReaderModeManager.class);
@@ -326,6 +338,11 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
             return fullText;
         }
         return getTruncatedText(context, prefix, sanitizedText, suffix);
+    }
+
+    public void setAutofillDelegate(
+            @Nullable AutofillSelectionActionMenuDelegate autofillDelegate) {
+        mAutofillDelegate = autofillDelegate;
     }
 
     private @Nullable String getTruncatedText(

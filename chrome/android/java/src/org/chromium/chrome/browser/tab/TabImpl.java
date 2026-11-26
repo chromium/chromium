@@ -78,7 +78,6 @@ import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
-import org.chromium.chrome.browser.selection.CompositeSelectionActionMenuDelegate;
 import org.chromium.chrome.browser.selection.TextSelectionActionMenuDelegate;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -228,7 +227,7 @@ class TabImpl implements Tab {
     @Nullable AutofillProvider mAutofillProvider;
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
 
-    private @Nullable CompositeSelectionActionMenuDelegate mSelectionActionMenuDelegate;
+    private @Nullable TextSelectionActionMenuDelegate mSelectionActionMenuDelegate;
 
     /**
      * The {@link TabViewManager} associated with this Tab that is responsible for managing custom
@@ -2481,7 +2480,7 @@ class TabImpl implements Tab {
                             createTabContextMenuPopulatorFactory());
 
             mWebContents.notifyRendererPreferenceUpdate();
-            addTextSelectionActionMenuDelegate(webContents);
+            getOrCreateSelectionActionMenuDelegate(webContents);
             initAutofillPrefObserver();
             updateAutofillProviderState();
             TabHelpers.initWebContentsHelpers(this);
@@ -2737,6 +2736,9 @@ class TabImpl implements Tab {
                 mAutofillProvider.destroy();
                 mAutofillProvider = null;
             }
+            if (mSelectionActionMenuDelegate != null) {
+                mSelectionActionMenuDelegate.setAutofillDelegate(null);
+            }
             return false; // Autofill provider can't be prepared.
         }
         if (mAutofillProvider != null) {
@@ -2807,14 +2809,14 @@ class TabImpl implements Tab {
         }
     }
 
-    private @Nullable CompositeSelectionActionMenuDelegate getOrCreateSelectionActionMenuDelegate(
+    private @Nullable TextSelectionActionMenuDelegate getOrCreateSelectionActionMenuDelegate(
             WebContents webContents) {
         SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
         if (controller == null) {
             return null;
         }
         if (mSelectionActionMenuDelegate == null) {
-            mSelectionActionMenuDelegate = new CompositeSelectionActionMenuDelegate();
+            mSelectionActionMenuDelegate = new TextSelectionActionMenuDelegate(this);
             controller.setSelectionActionMenuDelegate(mSelectionActionMenuDelegate);
         }
         return mSelectionActionMenuDelegate;
@@ -2823,24 +2825,14 @@ class TabImpl implements Tab {
     private void addAutofillItemsToSelectionActionMenu(WebContents webContents) {
         assert webContents != null;
         assert mAutofillProvider != null;
-        CompositeSelectionActionMenuDelegate compositeDelegate =
+        TextSelectionActionMenuDelegate delegate =
                 getOrCreateSelectionActionMenuDelegate(webContents);
-        if (compositeDelegate == null) return;
-        AutofillSelectionActionMenuDelegate selectionActionMenuDelegate =
+        if (delegate == null) return;
+        AutofillSelectionActionMenuDelegate autofillDelegate =
                 new AutofillSelectionActionMenuDelegate();
-        selectionActionMenuDelegate.setAutofillSelectionMenuItemHelper(
+        autofillDelegate.setAutofillSelectionMenuItemHelper(
                 new AutofillSelectionMenuItemHelper(mAutofillProvider));
-        compositeDelegate.addDelegate(selectionActionMenuDelegate);
-    }
-
-    private void addTextSelectionActionMenuDelegate(WebContents webContents) {
-        assert webContents != null;
-        CompositeSelectionActionMenuDelegate compositeDelegate =
-                getOrCreateSelectionActionMenuDelegate(webContents);
-        if (compositeDelegate == null) return;
-        TextSelectionActionMenuDelegate textSelectionDelegate =
-                new TextSelectionActionMenuDelegate(this);
-        compositeDelegate.addDelegate(textSelectionDelegate);
+        delegate.setAutofillDelegate(autofillDelegate);
     }
 
     @CalledByNative
@@ -3062,8 +3054,11 @@ class TabImpl implements Tab {
             mAutofillProvider.destroy();
             mAutofillProvider = null;
         }
-        // mSelectionActionMenuDelegate needs to be null'ed out because a new web contents will add
-        // more providers to it.
+        // mSelectionActionMenuDelegate needs to be null'ed out because a new web contents will
+        // create a new delegate.
+        if (mSelectionActionMenuDelegate != null) {
+            mSelectionActionMenuDelegate.setAutofillDelegate(null);
+        }
         mSelectionActionMenuDelegate = null;
 
         if (mContentView != null) {

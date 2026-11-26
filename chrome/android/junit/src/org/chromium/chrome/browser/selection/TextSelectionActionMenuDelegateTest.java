@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.selection.TextSelectionActionMenuDeleg
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
+import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -39,6 +40,7 @@ import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicContextMenuUtils;
@@ -53,6 +55,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reader_mode.ReaderModeManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.components.autofill.AutofillSelectionActionMenuDelegate;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -214,6 +217,33 @@ public class TextSelectionActionMenuDelegateTest {
                         /* selectedText= */ "test");
 
         assertFalse(containsId(items, R.id.contextmenu_open_in_reading_mode));
+    }
+
+    @Test
+    public void testGetAdditionalMenuItems_autofill() {
+        SelectionMenuItem testItem = new SelectionMenuItem.Builder("test item").build();
+        AutofillSelectionActionMenuDelegate autofillDelegate =
+                new AutofillSelectionActionMenuDelegate() {
+                    @Override
+                    public List<SelectionMenuItem> getAdditionalMenuItems(
+                            int menuType,
+                            boolean isSelectionPassword,
+                            boolean isSelectionReadOnly,
+                            String selectedText) {
+                        return List.of(testItem);
+                    }
+                };
+        mDelegate.setAutofillDelegate(autofillDelegate);
+        assertTrue(
+                mDelegate
+                        .getAdditionalMenuItems(MenuType.DROPDOWN, false, false, "test")
+                        .contains(testItem));
+
+        mDelegate.setAutofillDelegate(null);
+        assertFalse(
+                mDelegate
+                        .getAdditionalMenuItems(MenuType.DROPDOWN, false, false, "test")
+                        .contains(testItem));
     }
 
     @Test
@@ -528,6 +558,27 @@ public class TextSelectionActionMenuDelegateTest {
 
         assertFalse(handled);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testHandleMenuItemClick_autofill() {
+        String testItemTitle = "test item";
+        SelectionMenuItem testItem = new SelectionMenuItem.Builder(testItemTitle).build();
+        AutofillSelectionActionMenuDelegate autofillDelegate =
+                new AutofillSelectionActionMenuDelegate() {
+                    @Override
+                    public boolean handleMenuItemClick(
+                            SelectionMenuItem item,
+                            WebContents webContents,
+                            @Nullable View containerView) {
+                        return testItemTitle.contentEquals(item.getTitle(mTab.getContext()));
+                    }
+                };
+        mDelegate.setAutofillDelegate(autofillDelegate);
+        assertTrue(mDelegate.handleMenuItemClick(testItem, mWebContents, mTab.getView()));
+
+        mDelegate.setAutofillDelegate(null);
+        assertFalse(mDelegate.handleMenuItemClick(testItem, mWebContents, mTab.getView()));
     }
 
     @Test
