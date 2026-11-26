@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -90,8 +91,8 @@ class OutputDeviceMixerManager : public ReferenceSignalProviderFactory {
   // ProcessDeviceChange().
   void OnDeviceChange();
 
-  // Tears down existing OutputDeviceMixers and notifies them of a device
-  // change so their clients can recreate their streams.
+  // Tears down all existing OutputDeviceMixers first, and then runs their
+  // streams' device change callbacks so clients can recreate their streams.
   void ProcessDeviceChange();
 
   // Device change notifications reach this class only through mixer-owned

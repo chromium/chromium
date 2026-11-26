@@ -8,10 +8,11 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -67,9 +68,9 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
   // Creates an output stream managed by |this|.
   media::AudioOutputStream* MakeMixableStream(
       const media::AudioParameters& params,
-      base::OnceCallback<void()> on_device_change_callback) final;
+      DeviceChangeCallback on_device_change_callback) final;
 
-  void ProcessDeviceChange() final;
+  [[nodiscard]] std::vector<DeviceChangeCallback> ProcessDeviceChange() final;
 
   // ReferenceOutput implementation.
   // Starts listening to the mixed audio stream.
@@ -101,8 +102,9 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioOutputDeviceMixerMixedPlaybackStatus)
 
-  using MixTracks =
-      std::set<std::unique_ptr<MixTrack>, base::UniquePtrComparator>;
+  using MixTracks = base::flat_map<std::unique_ptr<MixTrack>,
+                                   DeviceChangeCallback,
+                                   base::UniquePtrComparator>;
   using ActiveTracks = std::set<raw_ptr<MixTrack>>;
   using Listeners = std::set<raw_ptr<Listener>>;
 
@@ -139,12 +141,6 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
   // Callback to create physical audio streams.
   const CreateStreamCallback create_stream_callback_;
 
-  // Streams managed by the mixer.
-  MixTracks mix_tracks_ GUARDED_BY_CONTEXT(owning_sequence_);
-
-  // Active tracks rendering audio.
-  ActiveTracks active_tracks_ GUARDED_BY_CONTEXT(owning_sequence_);
-
   // Listeners receiving the reference output (mixed playback). Playback is
   // mixed if and only if there is at least one listener.
   mutable base::Lock listener_lock_;
@@ -153,10 +149,17 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
   // Audio parameters for mixed playback.
   const media::AudioParameters mixing_graph_output_params_;
 
-  // Provides the audio mix combined of |active_members_| audio to
-  // |mixing_output_stream_| for playback.
+  // Provides the audio mix combined of `active_tracks_` audio to
+  // `mixing_graph_output_stream_` for playback. Must outlive `mix_tracks_`, as
+  // each track's `MixingGraph::Input` references `mixing_graph_`.
   const std::unique_ptr<MixingGraph> mixing_graph_
       GUARDED_BY_CONTEXT(owning_sequence_);
+
+  // Streams managed by the mixer, mapped to their device change callbacks.
+  MixTracks mix_tracks_ GUARDED_BY_CONTEXT(owning_sequence_);
+
+  // Active tracks rendering audio.
+  ActiveTracks active_tracks_ GUARDED_BY_CONTEXT(owning_sequence_);
 
   // Stream to render the audio mix. Non-null if and only if the playback is
   // being mixed at the moment.
@@ -168,9 +171,7 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
   base::OneShotTimer switch_to_unmixed_playback_delay_timer_
       GUARDED_BY_CONTEXT(owning_sequence_);
 
-#if DCHECK_IS_ON()
-  bool device_changed_ = false;
-#endif
+  bool device_changed_ GUARDED_BY_CONTEXT(owning_sequence_) = false;
 
   // A mixable stream operation cannot be invoked within a context of another
   // such operation. In practice it means that AudioOutputStream created by the

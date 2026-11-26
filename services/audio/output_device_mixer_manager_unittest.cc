@@ -5,6 +5,8 @@
 #include "services/audio/output_device_mixer_manager.h"
 
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
@@ -100,6 +102,13 @@ class MockAudioOutputStream : public AudioOutputStream {
   MOCK_METHOD0(Flush, void());
 };
 
+template <typename... Closures>
+std::vector<base::OnceClosure> MakeCallbackVector(Closures&&... closures) {
+  std::vector<base::OnceClosure> callbacks;
+  (callbacks.push_back(std::forward<Closures>(closures)), ...);
+  return callbacks;
+}
+
 class LocalMockAudioManager : public media::MockAudioManager {
  public:
   LocalMockAudioManager()
@@ -139,13 +148,18 @@ class MockOutputDeviceMixer : public audio::OutputDeviceMixer {
  public:
   explicit MockOutputDeviceMixer(const std::string& device_id)
       : OutputDeviceMixer(device_id) {}
-  ~MockOutputDeviceMixer() override = default;
+  ~MockOutputDeviceMixer() override { DestructorCalled(); }
+
+  MOCK_METHOD(void, DestructorCalled, ());
 
   MOCK_METHOD(media::AudioOutputStream*,
               MakeMixableStream,
-              (const AudioParameters&, base::OnceClosure),
+              (const AudioParameters&, DeviceChangeCallback),
               (override));
-  MOCK_METHOD(void, ProcessDeviceChange, (), (override));
+  MOCK_METHOD(std::vector<DeviceChangeCallback>,
+              ProcessDeviceChange,
+              (),
+              (override));
 
   MOCK_METHOD(void, StartListening, (Listener*), (override));
   MOCK_METHOD(void, StopListening, (Listener*), (override));
@@ -311,6 +325,23 @@ class OutputDeviceMixerManagerTest
 
   base::OnceClosure GetOnDeviceChangeCallback() {
     return output_mixer_manager_.GetOnDeviceChangeCallback();
+  }
+
+  base::OnceClosure MakeStreamCapturingDeviceChangeCallback(
+      MockOutputDeviceMixer* mixer,
+      const std::string& device_id,
+      base::OnceClosure client_device_change_cb) {
+    base::OnceClosure captured_cb;
+    EXPECT_CALL(*mixer, MakeMixableStream(ExactParams(default_params_),
+                                          ValidDeviceChangeCallback()))
+        .WillOnce([&](const AudioParameters&, base::OnceClosure close_cb) {
+          captured_cb = std::move(close_cb);
+          return nullptr;
+        });
+    output_mixer_manager_.MakeOutputStream(device_id, default_params_,
+                                           std::move(client_device_change_cb));
+    EXPECT_TRUE(captured_cb);
+    return captured_cb;
   }
 
   // Syntactic sugar, to differentiate from base::OnceClosure in tests.
@@ -1130,6 +1161,11 @@ TEST_P(OutputDeviceMixerManagerTest,
       reserved_device_id(), default_params_, base::BindLambdaForTesting([&] {
         initial_reserved_stream.Close();
         ForceOutputMixerCreation(reserved_device_id());
+        // While the first rebuild is still in progress, AudioManager begins
+        // reporting an even newer device ID (|kThirdFakeDeviceId|). The
+        // remaining stream recreation in this pass must not trigger a nested
+        // rebuild.
+        SetCurrentReservedPhysicalDevice(kThirdFakeDeviceId);
       }));
   output_mixer_manager_.MakeOutputStream(
       former_reserved_physical_id, default_params_,
@@ -1149,22 +1185,18 @@ TEST_P(OutputDeviceMixerManagerTest,
 
   base::HistogramTester histogram_tester;
 
-  // Expect, in order: the rebuild tears down |initial_reserved_mixer|, which
-  // runs both callbacks. The reserved stream is recreated on a new reserved
-  // mixer, and the former physical device's stream on its own mixer, which then
-  // also serves the request that triggered the rebuild.
+  // Expect, in order: the rebuild tears down |initial_reserved_mixer| and then
+  // runs both returned callbacks. The reserved stream is recreated on a new
+  // reserved mixer, and the former physical device's stream on its own mixer,
+  // which then also serves the request that triggered the rebuild.
   MockOutputDeviceMixer* reserved_mixer_first_pass = nullptr;
   MockOutputDeviceMixer* former_mixer_first_pass = nullptr;
   {
     InSequence s;
-    EXPECT_CALL(*initial_reserved_mixer, ProcessDeviceChange()).WillOnce([&] {
-      std::move(stored_reserved_close_cb).Run();
-      // While the first rebuild is still in progress, AudioManager begins
-      // reporting an even newer device ID (|kThirdFakeDeviceId|). The remaining
-      // stream recreation in this pass must not trigger a nested rebuild.
-      SetCurrentReservedPhysicalDevice(kThirdFakeDeviceId);
-      std::move(stored_former_close_cb).Run();
-    });
+    EXPECT_CALL(*initial_reserved_mixer, ProcessDeviceChange())
+        .WillOnce(Return(
+            ByMove(MakeCallbackVector(std::move(stored_reserved_close_cb),
+                                      std::move(stored_former_close_cb)))));
     reserved_mixer_first_pass = SetUpReservedMixer_NoStreams();
     former_mixer_first_pass =
         SetUpMockMixer_NoStreams(former_reserved_physical_id);
@@ -1234,6 +1266,61 @@ TEST_P(OutputDeviceMixerManagerTest,
 
   // Trigger the calls to ProcessDeviceChange()
   SimulateDeviceChange();
+}
+
+// Verifies that when a device change causes an earlier mixer's stream to
+// synchronously recreate onto the replacement reserved mixer, every old mixer
+// (including a later mixer still feeding the reserved listener) is torn down
+// before the replacement mixer is created and attaches the listener, and
+// destroyed only after the callbacks have recreated their streams.
+// Regression test for https://crbug.com/579574620.
+TEST_P(OutputDeviceMixerManagerTest,
+       OnDeviceChange_OldMixersStoppedBeforeReplacementAttachesListeners) {
+  SetAudioManagerReservedIdSupport(true);
+
+  MockOutputDeviceMixer* old_next_device_mixer =
+      SetUpMockMixerCreation(kOtherFakeDeviceId);
+  base::OnceClosure next_device_cb = MakeStreamCapturingDeviceChangeCallback(
+      old_next_device_mixer, kOtherFakeDeviceId,
+      base::BindLambdaForTesting(
+          [&] { ForceOutputMixerCreation(kOtherFakeDeviceId); }));
+
+  MockOutputDeviceMixer* old_reserved_mixer = SetUpReservedMixerCreation();
+  auto listener = GetListener_MixerExpectsStart(old_reserved_mixer);
+  reference_signal_provider_->StartListening(listener.get(),
+                                             reserved_device_id());
+  base::OnceClosure reserved_cb = MakeStreamCapturingDeviceChangeCallback(
+      old_reserved_mixer, reserved_device_id(), base::BindLambdaForTesting([&] {
+        ForceOutputMixerCreation(reserved_device_id());
+      }));
+
+  testing::Mock::VerifyAndClearExpectations(this);
+  testing::Mock::VerifyAndClearExpectations(old_next_device_mixer);
+  testing::Mock::VerifyAndClearExpectations(old_reserved_mixer);
+
+  testing::Expectation streams_recreated;
+  {
+    InSequence s;
+    EXPECT_CALL(*old_next_device_mixer, ProcessDeviceChange())
+        .WillOnce(
+            Return(ByMove(MakeCallbackVector(std::move(next_device_cb)))));
+    EXPECT_CALL(*old_reserved_mixer, ProcessDeviceChange())
+        .WillOnce(Return(ByMove(MakeCallbackVector(std::move(reserved_cb)))));
+
+    MockOutputDeviceMixer* new_reserved_mixer = SetUpReservedMixerCreation();
+    EXPECT_CALL(*new_reserved_mixer, StartListening(listener.get())).Times(1);
+    streams_recreated =
+        EXPECT_CALL(*new_reserved_mixer,
+                    MakeMixableStream(ExactParams(default_params_),
+                                      ValidDeviceChangeCallback()))
+            .Times(2)
+            .WillRepeatedly(Return(nullptr));
+  }
+  EXPECT_CALL(*old_next_device_mixer, DestructorCalled())
+      .After(streams_recreated);
+  EXPECT_CALL(*old_reserved_mixer, DestructorCalled()).After(streams_recreated);
+
+  SimulateReservedDeviceChange(kOtherFakeDeviceId);
 }
 
 // Makes sure OnDeviceChange() is only called once per device change.

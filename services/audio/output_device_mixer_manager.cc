@@ -5,9 +5,11 @@
 #include "services/audio/output_device_mixer_manager.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/containers/extend.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -164,9 +166,20 @@ void OutputDeviceMixerManager::ProcessDeviceChange() {
   OutputDeviceMixers old_mixers;
   output_device_mixers_.swap(old_mixers);
 
+  // Stop playback and detach listeners on every old mixer before running any
+  // client callbacks. Client callbacks synchronously re-enter
+  // MakeOutputStream() -> AddMixer(), which attaches registered listeners to
+  // replacement mixers and starts new realtime playout threads; no old mixer
+  // may still be delivering playout data to those listeners at that point.
   // Do not call StopListening(), as |old_mixers| are being destroyed anyways.
+  std::vector<OutputDeviceMixer::DeviceChangeCallback>
+      on_device_change_callbacks;
   for (auto&& mixer : old_mixers) {
-    mixer->ProcessDeviceChange();
+    base::Extend(on_device_change_callbacks, mixer->ProcessDeviceChange());
+  }
+
+  for (auto&& callback : on_device_change_callbacks) {
+    std::move(callback).Run();
   }
 }
 
@@ -174,7 +187,6 @@ void OutputDeviceMixerManager::MaybeProcessMissedDeviceChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   if (processing_device_change_) {
     // Re-entered via ProcessDeviceChange() ->
-    // OutputDeviceMixer::ProcessDeviceChange() ->
     // OutputController::ProcessDeviceChange() -> MakeOutputStream(). The cached
     // device IDs were just refreshed for this rebuild pass; do not re-query
     // AudioManager or start a nested ProcessDeviceChange() while |old_mixers|

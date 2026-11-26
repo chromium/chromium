@@ -5,7 +5,10 @@
 #include "services/audio/output_device_mixer_impl.h"
 
 #include <array>
+#include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
@@ -417,6 +420,28 @@ class OutputDeviceMixerImplTestBase {
   // Called when device change callback of a MixTrack is called.
   MOCK_METHOD1(OnDeviceChangeForMixMember,
                void(const media::AudioParameters& params));
+
+  std::vector<base::OnceClosure> ProcessDeviceChangeAndVerifyNoCallbacksYet(
+      OutputDeviceMixer* mixer) {
+    EXPECT_CALL(*this, OnDeviceChangeForMixMember(_)).Times(0);
+    std::vector<base::OnceClosure> callbacks = mixer->ProcessDeviceChange();
+    VerifyAndClearAllExpectations();
+    return callbacks;
+  }
+
+  void RunAndVerifyDeviceChangeCallbacks(
+      std::vector<base::OnceClosure> callbacks,
+      base::span<const StreamUnderTest> open_streams) {
+    ASSERT_EQ(callbacks.size(), open_streams.size());
+    for (const StreamUnderTest& stream : open_streams) {
+      EXPECT_CALL(*this, OnDeviceChangeForMixMember(
+                             AudioParamsEq(stream.mix_track_mock->params)));
+    }
+    for (auto& callback : callbacks) {
+      std::move(callback).Run();
+    }
+    VerifyAndClearAllExpectations();
+  }
 
   // Fast-forward to the point when delayed switch to unmixed playback must have
   // happened (if it was scheduled).
@@ -1077,12 +1102,12 @@ TEST_P(OutputDeviceMixerImplTest, NStreamsPlayingUmixed_DeviceChange) {
     }
     ExpectIndependentRenderingStreamStreamClosedIfItWasOpen(
         streams_under_test[i]);
-    EXPECT_CALL(*this, OnDeviceChangeForMixMember(AudioParamsEq(
-                           streams_under_test[i].mix_track_mock->params)));
   }
 
-  mixer->ProcessDeviceChange();
-  VerifyAndClearAllExpectations();
+  std::vector<base::OnceClosure> on_device_change_callbacks =
+      ProcessDeviceChangeAndVerifyNoCallbacksYet(mixer.get());
+  RunAndVerifyDeviceChangeCallbacks(std::move(on_device_change_callbacks),
+                                    streams_under_test);
 
   // Stop() and Close() operations on streams are no-op now.
   for (int i = 0; i < stream_count; ++i) {
@@ -1098,7 +1123,7 @@ TEST_P(OutputDeviceMixerImplTest, NStreamsPlayingMixed_DeviceChange) {
 
   int stream_count = GetParam();
 
-  MockListener listener;
+  StrictMock<MockListener> listener;
   ExpectMixingGraphOutputStreamOpen();
   mixer->StartListening(&listener);
   VerifyAndClearAllExpectations();
@@ -1120,16 +1145,23 @@ TEST_P(OutputDeviceMixerImplTest, NStreamsPlayingMixed_DeviceChange) {
     }
     ExpectIndependentRenderingStreamStreamClosedIfItWasOpen(
         streams_under_test[i]);
-    EXPECT_CALL(*this, OnDeviceChangeForMixMember(AudioParamsEq(
-                           streams_under_test[i].mix_track_mock->params)));
   }
 
-  if (stream_count > 1)  // Since we do not start the first stream.
+  if (stream_count > 1) {  // Since we do not start the first stream.
     ExpectMixingGraphOutputStreamStopped();
+  }
   ExpectMixingGraphOutputStreamClosed();
 
-  mixer->ProcessDeviceChange();
-  VerifyAndClearAllExpectations();
+  std::vector<base::OnceClosure> on_device_change_callbacks =
+      ProcessDeviceChangeAndVerifyNoCallbacksYet(mixer.get());
+
+  // Listeners are already detached before any client callbacks are run.
+  EXPECT_CALL(listener, OnPlayoutData(_, _, _)).Times(0);
+  mock_mixing_graph_->SimulateOnMoreData();
+  Mock::VerifyAndClearExpectations(&listener);
+
+  RunAndVerifyDeviceChangeCallbacks(std::move(on_device_change_callbacks),
+                                    streams_under_test);
 
   // Stop() and Close() operations on streams are no-op now.
   for (int i = 0; i < stream_count; ++i) {
@@ -1138,6 +1170,22 @@ TEST_P(OutputDeviceMixerImplTest, NStreamsPlayingMixed_DeviceChange) {
     }
     streams_under_test[i].mixable_stream->Close();
   }
+}
+
+TEST_F(OutputDeviceMixerImplTest,
+       ClosedStream_OmittedFromDeviceChangeNotifications) {
+  std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
+
+  StreamUnderTest closed_stream = CreateNextStreamUnderTest(mixer.get());
+  StreamUnderTest open_stream = CreateNextStreamUnderTest(mixer.get());
+  CloseAndVerifyStreamUnderTest(closed_stream);
+
+  std::vector<base::OnceClosure> on_device_change_callbacks =
+      ProcessDeviceChangeAndVerifyNoCallbacksYet(mixer.get());
+  RunAndVerifyDeviceChangeCallbacks(std::move(on_device_change_callbacks),
+                                    base::span_from_ref(open_stream));
+
+  open_stream.mixable_stream->Close();
 }
 
 TEST_F(OutputDeviceMixerImplTest, OnMoreDataDeliversCallbacks) {

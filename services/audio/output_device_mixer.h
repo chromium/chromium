@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
@@ -42,6 +43,8 @@ class OutputDeviceMixer : public ReferenceOutput {
           CreateStreamCallback create_stream_callback,
           scoped_refptr<base::SingleThreadTaskRunner> task_runner)>;
 
+  using DeviceChangeCallback = base::OnceClosure;
+
   // Creates OutputDeviceMixer which manages playback to the device identified
   // by |device_id|. |output_params| - parameters for the audio mix playback;
   // |create_stream_callback| will be used by OutputDeviceMixer to create output
@@ -68,10 +71,15 @@ class OutputDeviceMixer : public ReferenceOutput {
   // by OutputDeviceMixer.
   virtual media::AudioOutputStream* MakeMixableStream(
       const media::AudioParameters& params,
-      base::OnceCallback<void()> on_device_change_callback) = 0;
+      DeviceChangeCallback on_device_change_callback) = 0;
 
-  // Notify OutputDeviceMixer about the device change event.
-  virtual void ProcessDeviceChange() = 0;
+  // Permanently retires the mixer on a device change: stops playback, detaches
+  // listeners (`StopListening()` must not be called afterward), and returns
+  // the device change callbacks for all open streams. Returned callbacks must
+  // be run before destroying `this`. May be called at most once, after which
+  // `this` may only be destroyed.
+  [[nodiscard]] virtual std::vector<DeviceChangeCallback>
+  ProcessDeviceChange() = 0;
 
  private:
   // Id of the device output to which is managed by the mixer.

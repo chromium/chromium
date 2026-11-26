@@ -5,7 +5,6 @@
 #include "services/audio/output_device_mixer_impl.h"
 
 #include "base/check.h"
-#include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -72,11 +71,8 @@ class OutputDeviceMixerImpl::MixTrack final
     : public media::AudioOutputStream::AudioSourceCallback {
  public:
   MixTrack(OutputDeviceMixerImpl* mixer,
-           std::unique_ptr<MixingGraph::Input> graph_input,
-           base::OnceClosure on_device_change_callback)
-      : mixer_(mixer),
-        on_device_change_callback_(std::move(on_device_change_callback)),
-        graph_input_(std::move(graph_input)) {}
+           std::unique_ptr<MixingGraph::Input> graph_input)
+      : mixer_(mixer), graph_input_(std::move(graph_input)) {}
 
   ~MixTrack() final {
     DCHECK(!audio_source_callback_);
@@ -177,13 +173,6 @@ class OutputDeviceMixerImpl::MixTrack final
     audio_source_callback_->OnError(ErrorType::kUnknown);
   }
 
-  void OnDeviceChange() {
-    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("audio"), "MixTrack::OnDeviceChange",
-                 "this", static_cast<void*>(this));
-    DCHECK(!on_device_change_callback_.is_null());
-    std::move(on_device_change_callback_).Run();
-  }
-
  private:
   // media::AudioOutputStream::AudioSourceCallback implementation to intercept
   // error reporting during independent playback.
@@ -205,14 +194,6 @@ class OutputDeviceMixerImpl::MixTrack final
   double volume_ = kDefaultVolume;
 
   const raw_ptr<OutputDeviceMixerImpl> mixer_;
-
-  // Callback to notify the audio output client of the device change. Note that
-  // all the device change events are initially routed to MixerManager which
-  // does the centralized processing and notifies each mixer via
-  // OutputDeviceMixer::ProcessDeviceChange(). There OutputDeviceMixerImpl does
-  // the cleanup and then dispatches the device change event to all its clients
-  // via |on_device_change_callback_| of its MixTracks.
-  base::OnceClosure on_device_change_callback_;
 
   // Callback to request the audio output data from the client.
   raw_ptr<media::AudioOutputStream::AudioSourceCallback>
@@ -359,9 +340,11 @@ OutputDeviceMixerImpl::~OutputDeviceMixerImpl() {
 
 media::AudioOutputStream* OutputDeviceMixerImpl::MakeMixableStream(
     const media::AudioParameters& params,
-    base::OnceClosure on_device_change_callback) {
+    DeviceChangeCallback on_device_change_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   NON_REENTRANT_SCOPE(reentrancy_checker_);
+  DCHECK(!device_changed_);
+  DCHECK(on_device_change_callback);
   if (!(params.IsValid() &&
         params.format() == media::AudioParameters::AUDIO_PCM_LOW_LATENCY)) {
     LOG(ERROR) << "Invalid output stream patameters for device [" << device_id()
@@ -370,23 +353,22 @@ media::AudioOutputStream* OutputDeviceMixerImpl::MakeMixableStream(
   }
 
   auto mix_track =
-      std::make_unique<MixTrack>(this, mixing_graph_->CreateInput(params),
-                                 std::move(on_device_change_callback));
+      std::make_unique<MixTrack>(this, mixing_graph_->CreateInput(params));
 
   media::AudioOutputStream* mixable_stream =
       new MixableOutputStream(weak_factory_.GetWeakPtr(), mix_track.get());
-  mix_tracks_.insert(std::move(mix_track));
+  mix_tracks_.emplace(std::move(mix_track),
+                      std::move(on_device_change_callback));
   return mixable_stream;
 }
 
-void OutputDeviceMixerImpl::ProcessDeviceChange() {
+std::vector<OutputDeviceMixer::DeviceChangeCallback>
+OutputDeviceMixerImpl::ProcessDeviceChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   NON_REENTRANT_SCOPE(reentrancy_checker_);
 
-#if DCHECK_IS_ON()
   DCHECK(!device_changed_);
   device_changed_ = true;
-#endif
 
   // Make all MixableOutputStream instances no-op.
   weak_factory_.InvalidateWeakPtrs();
@@ -403,37 +385,36 @@ void OutputDeviceMixerImpl::ProcessDeviceChange() {
   }
 
   // For consistency.
-  for (MixTrack* mix_track : active_tracks_)
+  for (MixTrack* mix_track : active_tracks_) {
     mix_track->SetSource(nullptr);
+  }
 
   active_tracks_.clear();
 
-  // Close independent rendering streams: the clients will want to restore
-  // active playback in mix_track->OnDeviceChange() calls below; we don't want
-  // to exceed the limit of simultaneously open output streams when they do so.
-  for (auto&& mix_track : mix_tracks_)
+  // Close independent rendering streams before clients restore active playback
+  // from their device change callbacks, so they do not exceed the limit of
+  // simultaneously open output streams. Collect the callbacks for the caller to
+  // run after all affected mixers have stopped playback and detached listeners.
+  std::vector<DeviceChangeCallback> on_device_change_callbacks;
+  on_device_change_callbacks.reserve(mix_tracks_.size());
+  for (auto& [mix_track, callback] : mix_tracks_) {
     mix_track->CloseIndependentRenderingStream();
+    DCHECK(callback);
+    on_device_change_callbacks.push_back(std::move(callback));
+  }
 
   {
     base::AutoLock scoped_lock(listener_lock_);
     listeners_.clear();
   }
 
-  // Notify MixableOutputStream users of the device change. Normally they should
-  // close the current stream they are holding to, create/open a new one and
-  // resume the playback. We already released all the resources; closing a
-  // MixableOutputStream will be a no-op since weak pointers to |this| have just
-  // been invalidated.
-  for (auto&& mix_track : mix_tracks_)
-    mix_track->OnDeviceChange();
+  return on_device_change_callbacks;
 }
 
 void OutputDeviceMixerImpl::StartListening(Listener* listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   NON_REENTRANT_SCOPE(reentrancy_checker_);
-#if DCHECK_IS_ON()
   DCHECK(!device_changed_);
-#endif
   DVLOG(1) << "Reference output listener added for device [" << device_id()
            << "]";
 
@@ -469,9 +450,7 @@ void OutputDeviceMixerImpl::StartListening(Listener* listener) {
 
 void OutputDeviceMixerImpl::StopListening(Listener* listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-#if DCHECK_IS_ON()
   DCHECK(!device_changed_);
-#endif
   DVLOG(1) << "Reference output listener removed for device [" << device_id()
            << "]";
 
@@ -515,9 +494,7 @@ void OutputDeviceMixerImpl::StopListening(Listener* listener) {
 
 bool OutputDeviceMixerImpl::OpenStream(MixTrack* mix_track) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-#if DCHECK_IS_ON()
   DCHECK(!device_changed_);
-#endif
   DCHECK(mix_track);
 
   // Defer opening the physical output stream, as the audio mix is requested.
@@ -533,9 +510,7 @@ void OutputDeviceMixerImpl::StartStream(
     media::AudioOutputStream::AudioSourceCallback* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   NON_REENTRANT_SCOPE(reentrancy_checker_);
-#if DCHECK_IS_ON()
   DCHECK(!device_changed_);
-#endif
   DCHECK(mix_track);
   DCHECK(callback);
   DCHECK(!active_tracks_.contains(mix_track));
@@ -566,9 +541,7 @@ void OutputDeviceMixerImpl::StartStream(
 void OutputDeviceMixerImpl::StopStream(MixTrack* mix_track) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   NON_REENTRANT_SCOPE(reentrancy_checker_);
-#if DCHECK_IS_ON()
   DCHECK(!device_changed_);
-#endif
   DCHECK(mix_track);
   if (!active_tracks_.contains(mix_track)) {
     // MixableOutputStream::Stop() can be called multiple times, even if the
@@ -610,9 +583,7 @@ void OutputDeviceMixerImpl::StopStream(MixTrack* mix_track) {
 void OutputDeviceMixerImpl::CloseStream(MixTrack* mix_track) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   NON_REENTRANT_SCOPE(reentrancy_checker_);
-#if DCHECK_IS_ON()
   DCHECK(!device_changed_);
-#endif
   DCHECK(mix_track);
   DCHECK(!active_tracks_.contains(mix_track));
 
@@ -761,9 +732,7 @@ void OutputDeviceMixerImpl::SwitchToUnmixedPlaybackTimerHelper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   NON_REENTRANT_SCOPE(reentrancy_checker_);
   DCHECK(MixingInProgress());
-#if DCHECK_IS_ON()
   DCHECK(!device_changed_);
-#endif
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("audio"),
                "OutputDeviceMixerImpl::SwitchToUnmixedPlaybackTimerHelper",
                "device_id", device_id());
