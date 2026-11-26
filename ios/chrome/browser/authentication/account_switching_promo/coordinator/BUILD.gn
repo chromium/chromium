@@ -7,9 +7,9 @@ source_set("coordinator") {
     "account_switching_promo_display_handler.h",
     "account_switching_promo_display_handler.mm",
   ]
+  public_deps = [ "//ios/chrome/browser/promos_manager/coordinator:promos" ]
   deps = [
     "//components/feature_engagement/public",
-    "//ios/chrome/browser/promos_manager/coordinator:promos",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/shared/public/commands",

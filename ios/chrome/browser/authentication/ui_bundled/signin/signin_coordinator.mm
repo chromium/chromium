@@ -217,8 +217,6 @@ using signin_metrics::PromoAction;
     accountSwitchingPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                    browser:(Browser*)browser
-                                              contextStyle:(SigninContextStyle)
-                                                               contextStyle
                                        preselectedIdentity:
                                            (id<SystemIdentity>)
                                                preselectedIdentity {
@@ -226,7 +224,7 @@ using signin_metrics::PromoAction;
   return [[SignInAndHistorySyncCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
-                    contextStyle:contextStyle
+                    contextStyle:SigninContextStyle::kAccountSwitchingPromo
                      accessPoint:AccessPoint::kAccountSwitchingPromo
                      promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
              optionalHistorySync:YES

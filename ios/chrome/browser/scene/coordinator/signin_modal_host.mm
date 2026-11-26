@@ -237,9 +237,6 @@ void RecordIfNeededSigninFullscreenPromoEvent(
       accountSwitchingPromoCoordinatorWithBaseViewController:baseViewController
                                                      browser:_regularBrowser
                                                                  .get()
-                                                contextStyle:
-                                                    SigninContextStyle::
-                                                        kAccountSwitchingPromo
                                          preselectedIdentity:identity];
   [self startSigninCoordinatorWithCompletion:dismissalCompletion];
 }
