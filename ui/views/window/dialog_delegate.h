@@ -381,12 +381,6 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   void set_margins(const gfx::Insets& margins) {
     set_frame_margins({.contents = margins});
   }
-  void set_title_margins(const gfx::Insets& title_margins) {
-    set_frame_margins({.title = title_margins});
-  }
-  void set_footnote_margins(const gfx::Insets& footnote_margins) {
-    set_frame_margins({.footnote = footnote_margins});
-  }
 
   // The margins between the content and the inside of the border.
   // Also includes title and footnote margins.

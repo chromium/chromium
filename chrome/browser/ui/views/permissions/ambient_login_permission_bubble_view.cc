@@ -346,8 +346,8 @@ AmbientLoginPermissionBubbleView::AmbientLoginPermissionBubbleView(
       site_color_(ambient_login_credential_icon::GetSiteColorForWebContents(
           web_contents)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  set_title_margins(
-      gfx::Insets::TLBR(12, kHorizontalPadding, 8, kHorizontalPadding));
+  set_frame_margins({.title = gfx::Insets::TLBR(12, kHorizontalPadding, 8,
+                                                kHorizontalPadding)});
 
   CHECK(delegate);
   CHECK_EQ(delegate->Requests().size(), 1u);
