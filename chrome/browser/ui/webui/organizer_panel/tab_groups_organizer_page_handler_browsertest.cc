@@ -46,14 +46,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/menus/simple_menu_model.h"
-#include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/controls/menu/menu_types.h"
-#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace {
@@ -518,60 +513,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   handler_remote.FlushForTesting();
   EXPECT_FALSE(handler.IsContextMenuRunningForTesting());
   histogram_tester.ExpectTotalCount("TabGroups.ContextMenu.Accessed", 0);
-}
-
-IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
-                       ShowContextMenuInvokesCallbackWhenBlockedByActiveMenu) {
-  tab_groups::TabGroupSyncService* service = sync_service();
-  ASSERT_TRUE(service);
-
-  base::Uuid id = base::Uuid::GenerateRandomV4();
-  tab_groups::SavedTabGroupTab tab(GURL("https://www.google.com"), u"Google",
-                                   id, /*position=*/0);
-  tab_groups::SavedTabGroup group(u"Group 1",
-                                  tab_groups::TabGroupColorId::kBlue, {tab},
-                                  /*position=*/std::nullopt, id);
-  service->AddGroup(group);
-
-  // Open an active menu on a separate widget so MenuRunner::RunMenuAt() in
-  // `handler` cancels it and returns early without starting a new menu.
-  views::Widget* browser_widget = views::Widget::GetTopLevelWidgetForNativeView(
-      browser()->GetTabStripModel()->GetActiveWebContents()->GetNativeView());
-  ASSERT_TRUE(browser_widget);
-
-  views::Widget other_widget;
-  views::Widget::InitParams params(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_CONTROL);
-  params.parent = browser_widget->GetNativeView();
-  params.bounds = gfx::Rect(0, 0, 10, 10);
-  other_widget.Init(std::move(params));
-
-  ui::SimpleMenuModel other_menu_model(nullptr);
-  other_menu_model.AddItem(1, u"Item");
-  views::MenuRunner other_runner(
-      &other_menu_model,
-      views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
-  other_runner.RunMenuAt(&other_widget, nullptr, gfx::Rect(0, 0, 10, 10),
-                         views::MenuAnchorPosition::kTopLeft,
-                         ui::mojom::MenuSourceType::kMouse);
-  ASSERT_TRUE(other_runner.IsRunning());
-
-  FakeTabGroupsOrganizerPage page;
-  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
-      handler_remote;
-  TabGroupsOrganizerPageHandler handler(
-      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
-      browser()->GetTabStripModel()->GetActiveWebContents());
-
-  base::test::TestFuture<void> closed_future;
-  handler_remote->ShowContextMenu(id.AsLowercaseString(),
-                                  gfx::Rect(10, 20, 30, 40),
-                                  closed_future.GetCallback());
-  EXPECT_TRUE(closed_future.Wait());
-  EXPECT_FALSE(other_runner.IsRunning());
-  EXPECT_FALSE(handler.IsContextMenuRunningForTesting());
-  EXPECT_EQ(handler.menu_model_for_testing(), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,

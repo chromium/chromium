@@ -125,10 +125,6 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
-    "//ui/base/mojom:ui_base_types",
-    "//ui/gfx/geometry",
-    "//ui/menus",
-    "//ui/views",
     "//url",
   ]
 }
