@@ -373,9 +373,10 @@ bool AutofillProfile::HasGreaterRankingThan(const AutofillProfile* other,
       other->usage_history_information_, comparison_time);
 }
 
-void AutofillProfile::GetMatchingTypes(std::u16string_view text,
-                                       std::string_view app_locale,
-                                       FieldTypeSet* matching_types) const {
+void AutofillProfile::GetMatchingTypes(
+    std::u16string_view text,
+    const base::i18n::LanguageTag& app_locale,
+    FieldTypeSet* matching_types) const {
   FieldTypeSet matching_types_in_this_profile;
   for (const auto* form_group : FormGroups()) {
     form_group->GetMatchingTypes(text, app_locale,
@@ -600,7 +601,8 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
         return false;
       }
     } else if (type == NAME_FULL) {
-      if (!profile.GetNameInfo().IsNameVariantOf(value, app_locale)) {
+      if (!profile.GetNameInfo().IsNameVariantOf(value,
+                                                 comparator.app_locale())) {
         // Check whether the full name of |this| can be derived from the full
         // name of |profile| if the form contains a full name field.
         //

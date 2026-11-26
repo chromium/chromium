@@ -117,7 +117,7 @@ void PhoneNumber::SetRawInfoWithVerificationStatus(FieldType type,
 }
 
 void PhoneNumber::GetMatchingTypes(std::u16string_view text,
-                                   std::string_view app_locale,
+                                   const base::i18n::LanguageTag& app_locale,
                                    FieldTypeSet* matching_types) const {
   // Strip the common phone number non numerical characters before calling the
   // base matching type function. For example, the `text` "(514) 121-1523"
@@ -136,10 +136,11 @@ void PhoneNumber::GetMatchingTypes(std::u16string_view text,
   // "+33249197070" whereas the US number "+1 (234) 567-8901" would be
   // normalized to "12345678901".
   if (!matching_types->contains(PHONE_HOME_WHOLE_NUMBER)) {
-    std::u16string whole_number = GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale);
+    std::u16string whole_number =
+        GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale.tag_string());
     if (!whole_number.empty()) {
-      std::u16string normalized_number =
-          i18n::NormalizePhoneNumber(text, GetRegion(*profile_, app_locale));
+      std::u16string normalized_number = i18n::NormalizePhoneNumber(
+          text, GetRegion(*profile_, app_locale.tag_string()));
       if (normalized_number == whole_number)
         matching_types->insert(PHONE_HOME_WHOLE_NUMBER);
     }
@@ -149,7 +150,8 @@ void PhoneNumber::GetMatchingTypes(std::u16string_view text,
   // the digits extracted from the `stripped_text` match the `country_code`.
   std::u16string candidate =
       data_util::FindPossiblePhoneCountryCode(stripped_text);
-  std::u16string country_code = GetInfo(PHONE_HOME_COUNTRY_CODE, app_locale);
+  std::u16string country_code =
+      GetInfo(PHONE_HOME_COUNTRY_CODE, app_locale.tag_string());
   if (candidate.size() > 0 && candidate == country_code)
     matching_types->insert(PHONE_HOME_COUNTRY_CODE);
 

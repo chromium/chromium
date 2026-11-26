@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
@@ -170,7 +171,7 @@ void Address::SetRawInfoWithVerificationStatus(FieldType type,
 }
 
 void Address::GetMatchingTypes(std::u16string_view text,
-                               std::string_view app_locale,
+                               const base::i18n::LanguageTag& app_locale,
                                FieldTypeSet* matching_types) const {
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
 
@@ -179,7 +180,7 @@ void Address::GetMatchingTypes(std::u16string_view text,
   // Check to see if the |text| canonicalized as a country name is a match.
   std::string entered_country_code =
       CountryNames::GetInstance()->GetCountryCodeForLocalizedCountryName(
-          text, app_locale);
+          text, app_locale.tag_string());
   if (!entered_country_code.empty() && country_code == entered_country_code)
     matching_types->insert(ADDRESS_HOME_COUNTRY);
 
@@ -194,7 +195,7 @@ void Address::GetMatchingTypes(std::u16string_view text,
 
   if (!state_name.empty() || !state_abbreviation.empty()) {
     std::u16string canon_profile_state = normalization::NormalizeForComparison(
-        GetInfo(ADDRESS_HOME_STATE, app_locale));
+        GetInfo(ADDRESS_HOME_STATE, app_locale.tag_string()));
     if ((!state_name.empty() &&
          compare.StringsEqual(state_name, canon_profile_state)) ||
         (!state_abbreviation.empty() &&

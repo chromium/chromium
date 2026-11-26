@@ -74,7 +74,7 @@ class Address : public FormGroup {
                                      std::string_view locale,
                                      VerificationStatus status) override;
   void GetMatchingTypes(std::u16string_view text,
-                        std::string_view locale,
+                        const base::i18n::LanguageTag& locale,
                         FieldTypeSet* matching_types) const override;
   // Return the verification status of a structured name value.
   VerificationStatus GetVerificationStatus(FieldType type) const override;

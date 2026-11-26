@@ -11,6 +11,10 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace autofill {
 
 class LogBuffer;
@@ -25,7 +29,7 @@ class FormGroup {
   // appropriate. The field types can then be reported back to the server.  This
   // method is additive on `matching_types`.
   virtual void GetMatchingTypes(std::u16string_view text,
-                                std::string_view app_locale,
+                                const base::i18n::LanguageTag& app_locale,
                                 FieldTypeSet* matching_types) const;
 
   // Returns a set of server field types for which this FormGroup has non-empty

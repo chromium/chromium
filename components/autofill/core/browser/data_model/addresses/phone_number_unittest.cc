@@ -48,7 +48,8 @@ void MatchingTypesTest(const std::u16string& number,
   for (const MatchingTypesTestCase& test : tests) {
     SCOPED_TRACE(::testing::Message() << "test.input: " << test.input);
     FieldTypeSet matching_types;
-    phone_number.GetMatchingTypes(test.input, kLocale, &matching_types);
+    phone_number.GetMatchingTypes(
+        test.input, base::i18n::GetKnownLanguageTag("en-US"), &matching_types);
     EXPECT_EQ(matching_types, test.expected_types);
   }
 }

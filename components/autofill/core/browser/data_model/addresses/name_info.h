@@ -114,7 +114,7 @@ class NameInfo : public FormGroup {
   // derived from `full_name` by using the middle initial. Note that the reverse
   // is not true, "john quincy public" is not a name variant of "john q public".
   bool IsNameVariantOf(std::u16string_view full_name,
-                       std::string_view app_locale) const;
+                       const base::i18n::LanguageTag& app_locale) const;
 
   // Returns the storable type of `type`, if it exists.
   // It should only be used for `FieldTypeGroup::kName` types.

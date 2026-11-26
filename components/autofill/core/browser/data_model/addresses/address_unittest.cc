@@ -128,7 +128,9 @@ TEST_F(AddressTest, IsCountry) {
   for (const char* valid_match : kValidMatches) {
     SCOPED_TRACE(valid_match);
     FieldTypeSet matching_types;
-    address.GetMatchingTypes(ASCIIToUTF16(valid_match), "US", &matching_types);
+    address.GetMatchingTypes(ASCIIToUTF16(valid_match),
+                             base::i18n::GetKnownLanguageTag("en-US"),
+                             &matching_types);
     ASSERT_EQ(matching_types.size(), 1U);
     EXPECT_EQ(*matching_types.begin(), ADDRESS_HOME_COUNTRY);
   }
@@ -136,7 +138,8 @@ TEST_F(AddressTest, IsCountry) {
   const char* const kInvalidMatches[] = {"United", "Garbage"};
   for (const char* invalid_match : kInvalidMatches) {
     FieldTypeSet matching_types;
-    address.GetMatchingTypes(ASCIIToUTF16(invalid_match), "US",
+    address.GetMatchingTypes(ASCIIToUTF16(invalid_match),
+                             base::i18n::GetKnownLanguageTag("en-US"),
                              &matching_types);
     EXPECT_EQ(matching_types.size(), 0U);
   }
@@ -145,7 +148,8 @@ TEST_F(AddressTest, IsCountry) {
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, std::u16string());
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"");
   FieldTypeSet matching_types;
-  address.GetMatchingTypes(u"Garbage", "US", &matching_types);
+  address.GetMatchingTypes(u"Garbage", base::i18n::GetKnownLanguageTag("en-US"),
+                           &matching_types);
   EXPECT_EQ(matching_types.size(), 0U);
 }
 

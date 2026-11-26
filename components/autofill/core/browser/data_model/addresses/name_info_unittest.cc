@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -210,11 +211,13 @@ TEST_F(NameInfoTest, GetMatchingTypes) {
   test::VerifyFormGroupValues(name, expectation);
 
   FieldTypeSet matching_types;
-  name.GetMatchingTypes(u"Ruiz", "US", &matching_types);
+  name.GetMatchingTypes(u"Ruiz", base::i18n::GetKnownLanguageTag("en-US"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
 
   // The honorific prefix is ignored.
-  name.GetMatchingTypes(u"Mr.", "US", &matching_types);
+  name.GetMatchingTypes(u"Mr.", base::i18n::GetKnownLanguageTag("en-US"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
 }
 
@@ -269,20 +272,24 @@ TEST_F(NameInfoTest, FinalizeAfterImportWithAlternativeName) {
 
   // Both "あおい" and "アオイ" are semantically equal.
   FieldTypeSet matching_types;
-  name.GetMatchingTypes(u"あおい", "JP", &matching_types);
+  name.GetMatchingTypes(u"あおい", base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypes(u"アオイ", "JP", &matching_types);
+  name.GetMatchingTypes(u"アオイ", base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
   matching_types.clear();
 
   // Both "やまもと" and "ヤマモト" are semantically equal.
-  name.GetMatchingTypes(u"やまもと", "JP", &matching_types);
+  name.GetMatchingTypes(u"やまもと", base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FAMILY_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypes(u"ヤマモト", "JP", &matching_types);
+  name.GetMatchingTypes(u"ヤマモト", base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FAMILY_NAME}));
 }
 
@@ -336,17 +343,20 @@ TEST_F(NameInfoTest, FinalizeAfterImportWithNameAndIncompleteAlternativeName1) {
   test::VerifyFormGroupValues(name, expectation);
 
   FieldTypeSet matching_types;
-  name.GetMatchingTypes(u"葵", "JP", &matching_types);
+  name.GetMatchingTypes(u"葵", base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_FIRST}));
   matching_types.clear();
 
   // Both "やまもと" and "ヤマモト" are semantically equal.
-  name.GetMatchingTypes(u"やまもと", "JP", &matching_types);
+  name.GetMatchingTypes(u"やまもと", base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types,
             FieldTypeSet({ALTERNATIVE_FAMILY_NAME, ALTERNATIVE_FULL_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypes(u"ヤマモト", "JP", &matching_types);
+  name.GetMatchingTypes(u"ヤマモト", base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types,
             FieldTypeSet({ALTERNATIVE_FAMILY_NAME, ALTERNATIVE_FULL_NAME}));
 
@@ -402,11 +412,15 @@ TEST_F(NameInfoTest, FinalizeAfterImportWithNameAndIncompleteAlternativeName2) {
 
   FieldTypeSet matching_types;
   // Both "やまもと あおい" and "ヤマモト アオイ" are semantically equal.
-  name.GetMatchingTypes(u"やまもと あおい", "JP", &matching_types);
+  name.GetMatchingTypes(u"やまもと あおい",
+                        base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FULL_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypes(u"ヤマモト アオイ", "JP", &matching_types);
+  name.GetMatchingTypes(u"ヤマモト アオイ",
+                        base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FULL_NAME}));
 }
 
@@ -454,32 +468,41 @@ TEST_F(NameInfoTest, FinalizeAfterImportWithIncompleteNameAndAlternativeName) {
   test::VerifyFormGroupValues(name, expectation);
 
   FieldTypeSet matching_types;
-  name.GetMatchingTypes(u"葵", "JP", &matching_types);
+  name.GetMatchingTypes(u"葵", base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_FULL, NAME_FIRST}));
   matching_types.clear();
 
   // Both "やまもと あおい" and "ヤマモト アオイ" are semantically equal.
-  name.GetMatchingTypes(u"あおい", "JP", &matching_types);
+  name.GetMatchingTypes(u"あおい", base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypes(u"アオイ", "JP", &matching_types);
+  name.GetMatchingTypes(u"アオイ", base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypes(u"やまもと", "JP", &matching_types);
+  name.GetMatchingTypes(u"やまもと", base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FAMILY_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypes(u"ヤマモト", "JP", &matching_types);
+  name.GetMatchingTypes(u"ヤマモト", base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FAMILY_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypes(u"やまもと あおい", "JP", &matching_types);
+  name.GetMatchingTypes(u"やまもと あおい",
+                        base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FULL_NAME}));
   matching_types.clear();
 
-  name.GetMatchingTypes(u"ヤマモト アオイ", "JP", &matching_types);
+  name.GetMatchingTypes(u"ヤマモト アオイ",
+                        base::i18n::GetKnownLanguageTag("ja-JP"),
+                        &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_FULL_NAME}));
 }
 
@@ -1148,7 +1171,8 @@ TEST_P(NameInfoIsNameVariantOfTest, NameVariants) {
   const IsNameVariantOfTestCase& test_case = GetTestCase();
   NameInfo name_info =
       CreateNameInfo(u"", u"", u"", test_case.full_name.c_str());
-  EXPECT_EQ(name_info.IsNameVariantOf(test_case.other_full_name, kLocale),
+  EXPECT_EQ(name_info.IsNameVariantOf(test_case.other_full_name,
+                                      base::i18n::GetKnownLanguageTag("en-US")),
             test_case.are_variant);
 }
 

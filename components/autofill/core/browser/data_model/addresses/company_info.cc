@@ -38,7 +38,7 @@ FieldTypeSet CompanyInfo::GetSupportedTypes() const {
 }
 
 void CompanyInfo::GetMatchingTypes(std::u16string_view text,
-                                   std::string_view app_locale,
+                                   const base::i18n::LanguageTag& app_locale,
                                    FieldTypeSet* matching_types) const {
   if (IsValid()) {
     FormGroup::GetMatchingTypes(text, app_locale, matching_types);

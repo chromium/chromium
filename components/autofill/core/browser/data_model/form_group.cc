@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
@@ -21,7 +22,7 @@
 namespace autofill {
 
 void FormGroup::GetMatchingTypes(std::u16string_view text,
-                                 std::string_view app_locale,
+                                 const base::i18n::LanguageTag& app_locale,
                                  FieldTypeSet* matching_types) const {
   if (text.empty()) {
     matching_types->insert(EMPTY_TYPE);
@@ -40,7 +41,7 @@ void FormGroup::GetMatchingTypes(std::u16string_view text,
 
   for (FieldType type : GetSupportedTypes()) {
     if (AutofillProfileComparator::Compare(
-            canonicalized_text, GetInfo(type, app_locale),
+            canonicalized_text, GetInfo(type, app_locale.tag_string()),
             normalization::WhitespaceSpec::kDiscard, type)) {
       matching_types->insert(type);
     }

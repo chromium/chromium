@@ -490,14 +490,14 @@ PossibleTypes GetPossibleTypes(
   PossibleTypes pt;
 
   for (const AutofillProfile& profile : profiles) {
-    profile.GetMatchingTypes(value_u16, app_locale.tag_string(), &pt.types);
+    profile.GetMatchingTypes(value_u16, app_locale, &pt.types);
   }
   if (fields_that_match_state.contains(field.global_id())) {
     pt.types.insert(ADDRESS_HOME_STATE);
   }
 
   for (const CreditCard& card : credit_cards) {
-    card.GetMatchingTypes(value_u16, app_locale.tag_string(), &pt.types);
+    card.GetMatchingTypes(value_u16, app_locale, &pt.types);
   }
 
   // Do not issue loyalty card votes on values matching the email format.

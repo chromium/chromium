@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -545,10 +546,12 @@ bool NameInfo::MergeStructuredName(const NameInfo& newer,
   return name_->MergeWithComponent(*newer.name_, newer_was_more_recently_used);
 }
 
-bool NameInfo::IsNameVariantOf(std::u16string_view value,
-                               std::string_view app_locale) const {
+bool NameInfo::IsNameVariantOf(
+    std::u16string_view value,
+    const base::i18n::LanguageTag& app_locale) const {
   return IsNormalizedNameVariantOf(
-      normalization::NormalizeForComparison(GetInfo(NAME_FULL, app_locale)),
+      normalization::NormalizeForComparison(
+          GetInfo(NAME_FULL, app_locale.tag_string())),
       normalization::NormalizeForComparison(value));
 }
 

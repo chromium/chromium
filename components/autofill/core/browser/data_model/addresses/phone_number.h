@@ -68,7 +68,7 @@ class PhoneNumber : public FormGroup {
 
   // FormGroup implementation:
   void GetMatchingTypes(std::u16string_view text,
-                        std::string_view app_locale,
+                        const base::i18n::LanguageTag& app_locale,
                         FieldTypeSet* matching_types) const override;
   std::u16string GetInfo(FieldType type,
                          std::string_view app_locale) const override;

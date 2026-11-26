@@ -2376,7 +2376,8 @@ TEST_F(AutofillProfileTest, GetMatchingTypes_EmptyValuePlaceholder) {
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"none");
 
   FieldTypeSet matching_types;
-  profile.GetMatchingTypes(u"none", "en-US", &matching_types);
+  profile.GetMatchingTypes(u"none", base::i18n::GetKnownLanguageTag("en-US"),
+                           &matching_types);
   EXPECT_THAT(matching_types, IsEmpty());
 }
 
