@@ -695,11 +695,7 @@ public class DetachedResourceRequestTest {
 
     private void testSafeBrowsingMainResource(boolean afterNative, boolean splitCacheEnabled)
             throws Exception {
-        MockSafeBrowsingApiHandler safeBrowsingApiHandler = new MockSafeBrowsingApiHandler();
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        SafeBrowsingApiBridge.setSafeBrowsingApiHandlerForTesting(
-                                safeBrowsingApiHandler));
+        SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
         var sessionHolder = prepareSession();
 
         String cacheable = "/cachetime";
@@ -707,35 +703,39 @@ public class DetachedResourceRequestTest {
                 waitForDetachedRequest(sessionHolder, cacheable, afterNative);
         Uri url = Uri.parse(mServer.getURL(cacheable));
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        safeBrowsingApiHandler.addMockResponse(
-                                url.toString(),
-                                MockSafeBrowsingApiHandler.SOCIAL_ENGINEERING_CODE));
+        try {
+            MockSafeBrowsingApiHandler.addMockResponse(
+                    url.toString(), MockSafeBrowsingApiHandler.SOCIAL_ENGINEERING_CODE);
 
-        Intent intent =
-                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, url.toString());
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+            Intent intent =
+                    CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                            mContext, url.toString());
+            mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
-        Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
+            Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
 
-        // TODO(crbug.com/40666836): For now, we check the presence of an interstitial through
-        // the title since isShowingInterstitialPage does not work with committed interstitials.
-        // Once we fully migrate to committed interstitials, this should be changed to a more
-        // robust check.
-        CriteriaHelper.pollUiThread(() -> tab.getWebContents().getTitle().equals("Security error"));
+            // TODO(crbug.com/40666836): For now, we check the presence of an interstitial through
+            // the title since isShowingInterstitialPage does not work with committed interstitials.
+            // Once we fully migrate to committed interstitials, this should be changed to a more
+            // robust check.
+            CriteriaHelper.pollUiThread(
+                    () -> tab.getWebContents().getTitle().equals("Security error"));
 
-        if (splitCacheEnabled) {
-            // Note that since the SplitCacheByNetworkIsolationKey feature is
-            // enabled, the detached request and the original request both
-            // would be read from the socket as they both would have different
-            // top frame origins in the cache partitioning key: |ORIGIN| and
-            // mServer's base url, respectively.
-            Assert.assertEquals(2, readFromSocketCallback.getCallCount());
-        } else {
-            // 1 read from the detached request, and 0 from the page load, as
-            // the response comes from the cache, and SafeBrowsing blocks it.
-            Assert.assertEquals(1, readFromSocketCallback.getCallCount());
+            if (splitCacheEnabled) {
+                // Note that since the SplitCacheByNetworkIsolationKey feature is
+                // enabled, the detached request and the original request both
+                // would be read from the socket as they both would have different
+                // top frame origins in the cache partitioning key: |ORIGIN| and
+                // mServer's base url, respectively.
+                Assert.assertEquals(2, readFromSocketCallback.getCallCount());
+            } else {
+                // 1 read from the detached request, and 0 from the page load, as
+                // the response comes from the cache, and SafeBrowsing blocks it.
+                Assert.assertEquals(1, readFromSocketCallback.getCallCount());
+            }
+        } finally {
+            MockSafeBrowsingApiHandler.clearMockResponses();
+            SafeBrowsingApiBridge.clearHandlerForTesting();
         }
     }
 

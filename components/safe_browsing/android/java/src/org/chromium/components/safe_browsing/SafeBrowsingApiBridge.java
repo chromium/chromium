@@ -11,8 +11,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
-import org.chromium.base.ResettersForTesting;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,8 +28,7 @@ import org.chromium.components.safe_browsing.SafeBrowsingApiHandler.LookupResult
  * SafetyNetApiHandler eagerly. Calling {@link #initSafeBrowsingApi()} allows initializing the
  * SafeBrowsingApiHandler eagerly.
  *
- * <p>All of these methods can be called on any thread, except the testing setters, which must be
- * called on the UI thread.
+ * <p>All of these methods can be called on any thread.
  */
 @JNINamespace("safe_browsing")
 @NullMarked
@@ -77,26 +74,6 @@ public final class SafeBrowsingApiBridge {
         }
     }
 
-    /** Installs a fresh SafetyNet handler for a native test fixture. Call on the UI thread. */
-    static void setSafetyNetApiHandlerForTesting(SafetyNetApiHandler handler) {
-        ThreadUtils.assertOnUiThread();
-        synchronized (sSafetyNetApiHandlerLock) {
-            // Allow tests to replace an installed handler using the production setter.
-            sSafetyNetApiHandler = null;
-            sSafetyNetApiHandlerInitCalled = false;
-            sSafetyNetApiState = SafetyNetApiHandler.SafetyNetApiState.NOT_AVAILABLE;
-            setSafetyNetApiHandler(handler);
-        }
-        ResettersForTesting.register(
-                () -> {
-                    synchronized (sSafetyNetApiHandlerLock) {
-                        sSafetyNetApiHandler = null;
-                        sSafetyNetApiHandlerInitCalled = false;
-                        sSafetyNetApiState = SafetyNetApiHandler.SafetyNetApiState.NOT_AVAILABLE;
-                    }
-                });
-    }
-
     /**
      * Sets the {@link SafeBrowsingApiHandler} object once and for the lifetime of this process.
      *
@@ -110,20 +87,20 @@ public final class SafeBrowsingApiBridge {
         }
     }
 
-    /** Sets the handler for the current test method or class. Call on the UI thread. */
-    public static void setSafeBrowsingApiHandlerForTesting(SafeBrowsingApiHandler handler) {
-        ThreadUtils.assertOnUiThread();
-        synchronized (sSafeBrowsingApiHandlerLock) {
-            // Allow tests to replace an installed handler using the production setter.
-            sSafeBrowsingApiHandler = null;
-            setSafeBrowsingApiHandler(handler);
+    /**
+     * Clear the handlers to prepare for the next run.
+     * This is needed for native to Java bridge test because the bridge is not destroyed between
+     * each tests.
+     */
+    public static void clearHandlerForTesting() {
+        synchronized (sSafetyNetApiHandlerLock) {
+            sSafetyNetApiHandlerInitCalled = false;
+            sSafetyNetApiHandler = null;
+            sSafetyNetApiState = SafetyNetApiHandler.SafetyNetApiState.NOT_AVAILABLE;
         }
-        ResettersForTesting.register(
-                () -> {
-                    synchronized (sSafeBrowsingApiHandlerLock) {
-                        sSafeBrowsingApiHandler = null;
-                    }
-                });
+        synchronized (sSafeBrowsingApiHandlerLock) {
+            sSafeBrowsingApiHandler = null;
+        }
     }
 
     /**
@@ -180,17 +157,6 @@ public final class SafeBrowsingApiBridge {
         synchronized (sSafeBrowsingApiHandlerLock) {
             sSafeBrowsingApiUrlCheckTimeObserver = observer;
         }
-    }
-
-    static void setOneTimeSafeBrowsingApiUrlCheckObserverForTesting(UrlCheckTimeObserver observer) {
-        ThreadUtils.assertOnUiThread();
-        setOneTimeSafeBrowsingApiUrlCheckObserver(observer);
-        ResettersForTesting.register(
-                () -> {
-                    synchronized (sSafeBrowsingApiHandlerLock) {
-                        sSafeBrowsingApiUrlCheckTimeObserver = null;
-                    }
-                });
     }
 
     @GuardedBy("sSafetyNetApiHandlerLock")

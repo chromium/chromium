@@ -7,8 +7,6 @@ package org.chromium.components.safe_browsing;
 import org.jni_zero.CalledByNative;
 import org.junit.Assert;
 
-import org.chromium.base.ResettersForTesting;
-import org.chromium.base.ThreadUtils;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge.UrlCheckTimeObserver;
 
 import java.util.Arrays;
@@ -20,58 +18,55 @@ import java.util.Map;
  * (components/safe_browsing/android/safe_browsing_api_handler_bridge_unittest.cc/).
  */
 public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
-    // The static JNI entry points share one set of mock instances per gtest fixture.
-    private static SafeBrowsingApiHandlerBridgeNativeUnitTestHelper sInstance;
-
-    private final MockSafetyNetApiHandler mSafetyNetHandler = new MockSafetyNetApiHandler();
-    private final MockSafeBrowsingApiHandler mSafeBrowsingHandler =
-            new MockSafeBrowsingApiHandler();
-    private final MockUrlCheckTimeObserver mUrlCheckTimeObserver = new MockUrlCheckTimeObserver();
-
     /**
      * A fake SafetyNetApiHandler which verifies the parameters of the overridden functions and
      * returns lookup result based on preset values.
      */
-    private static class MockSafetyNetApiHandler implements SafetyNetApiHandler {
+    public static class MockSafetyNetApiHandler implements SafetyNetApiHandler {
         private SafetyNetApiHandler.Observer mObserver;
         // See safe_browsing_api_handler_util.h --> SafetyNetJavaThreatType
         private static final int THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST = 9;
         private static final int THREAT_TYPE_CSD_ALLOWLIST = 16;
         // The result that will be returned in {@link #isVerifyAppsEnabled(long)} or {@link
         // #enableVerifyApps(long)}.
-        private int mVerifyAppsResult = VerifyAppsResult.FAILED;
+        private static int sVerifyAppsResult = VerifyAppsResult.FAILED;
 
         // The results that will be returned in {@link #hasPotentiallyHarmfulApps(long)}}.
-        private int mHarmfulAppsResult = HasHarmfulAppsResultStatus.FAILED;
-        private int mHarmfulAppsNumOfApps;
-        private int mHarmfulAppsStatusCode;
+        private static int sHarmfulAppsResult = HasHarmfulAppsResultStatus.FAILED;
+        private static int sHarmfulAppsNumOfApps;
+        private static int sHarmfulAppsStatusCode;
 
         // Maps to store preset values, keyed by uri.
-        private final Map<String, Boolean> mCsdAllowlistMap = new HashMap<>();
-        private final Map<String, Boolean> mCsdDownloadAllowlistMap = new HashMap<>();
+        private static final Map<String, Boolean> sCsdAllowlistMap = new HashMap<>();
+        private static final Map<String, Boolean> sCsdDownloadAllowlistMap = new HashMap<>();
 
-        private @SafetyNetApiState int mSafetyNetApiInitializationState =
-                SafetyNetApiState.INITIALIZED;
+        // The initialization state of the API handler. The default value of -1 signifies
+        // uninitialized.
+        private static int sSafetyNetApiInitializationState = -1;
 
         // Number to insert into the mock value to return for the default getSafetyNetId() result.
-        private int mGetSafetyNetIdCount;
+        private static int sGetSafetyNetIdCount;
         // A string to override the default mock result for getSafetyNetId().
-        private String mSafetyNetIdResultOverride;
+        private static String sSafetyNetIdResultOverride;
 
         @Override
         public @SafetyNetApiHandler.SafetyNetApiState int initialize(
                 SafetyNetApiHandler.Observer observer) {
             mObserver = observer;
-            return mSafetyNetApiInitializationState;
+            if (sSafetyNetApiInitializationState == -1) {
+                setSafetyNetApiInitializationState(
+                        SafetyNetApiHandler.SafetyNetApiState.INITIALIZED);
+            }
+            return sSafetyNetApiInitializationState;
         }
 
         @Override
         public boolean startAllowlistLookup(final String uri, int threatType) {
             if (threatType == THREAT_TYPE_CSD_ALLOWLIST) {
-                return Boolean.TRUE.equals(mCsdAllowlistMap.get(uri));
+                return Boolean.TRUE.equals(sCsdAllowlistMap.get(uri));
             }
             if (threatType == THREAT_TYPE_CSD_DOWNLOAD_ALLOWLIST) {
-                return Boolean.TRUE.equals(mCsdDownloadAllowlistMap.get(uri));
+                return Boolean.TRUE.equals(sCsdDownloadAllowlistMap.get(uri));
             }
             assert false : "Unsupported threatType";
             return false;
@@ -79,29 +74,65 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
         @Override
         public void isVerifyAppsEnabled(final long callbackId) {
-            mObserver.onVerifyAppsEnabledDone(callbackId, mVerifyAppsResult);
+            mObserver.onVerifyAppsEnabledDone(callbackId, sVerifyAppsResult);
         }
 
         @Override
         public void enableVerifyApps(final long callbackId) {
-            mObserver.onVerifyAppsEnabledDone(callbackId, mVerifyAppsResult);
+            mObserver.onVerifyAppsEnabledDone(callbackId, sVerifyAppsResult);
         }
 
         @Override
         public void hasPotentiallyHarmfulApps(final long callbackId) {
             mObserver.onHasHarmfulAppsDone(
-                    callbackId, mHarmfulAppsResult, mHarmfulAppsNumOfApps, mHarmfulAppsStatusCode);
+                    callbackId, sHarmfulAppsResult, sHarmfulAppsNumOfApps, sHarmfulAppsStatusCode);
         }
 
         @Override
         public void getSafetyNetId() {
-            assert mSafetyNetApiInitializationState
+            assert sSafetyNetApiInitializationState
                     == SafetyNetApiHandler.SafetyNetApiState.INITIALIZED_FIRST_PARTY;
-            String result = mSafetyNetIdResultOverride;
+            String result = sSafetyNetIdResultOverride;
             if (result == null) {
-                result = String.format("safety-net-id-%d", mGetSafetyNetIdCount++);
+                result = String.format("safety-net-id-%d", sGetSafetyNetIdCount++);
             }
             mObserver.onGetSafetyNetIdDone(result);
+        }
+
+        public static void tearDown() {
+            sCsdAllowlistMap.clear();
+            sCsdDownloadAllowlistMap.clear();
+            sSafetyNetApiInitializationState = -1;
+            sGetSafetyNetIdCount = 0;
+        }
+
+        public static void setCsdAllowlistMatch(String uri, boolean match) {
+            sCsdAllowlistMap.put(uri, match);
+        }
+
+        public static void setCsdDownloadAllowlistMatch(String uri, boolean match) {
+            sCsdDownloadAllowlistMap.put(uri, match);
+        }
+
+        public static void setVerifyAppsResult(int result) {
+            sVerifyAppsResult = result;
+        }
+
+        public static void setHarmfulAppsResult(int result, int numOfApps, int statusCode) {
+            sHarmfulAppsResult = result;
+            sHarmfulAppsNumOfApps = numOfApps;
+            sHarmfulAppsStatusCode = statusCode;
+        }
+
+        /** Mock the initialization state enum for tests. */
+        public static void setSafetyNetApiInitializationState(
+                @SafetyNetApiHandler.SafetyNetApiState int state) {
+            sSafetyNetApiInitializationState = state;
+        }
+
+        /** Supply a mock getSafetyNetId result for tests. */
+        public static void setSafetyNetIdResult(String result) {
+            sSafetyNetIdResultOverride = result;
         }
     }
 
@@ -109,7 +140,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
      * A fake SafeBrowsingApiHandler which verifies the parameters of the overridden functions and
      * returns lookup result based on preset values.
      */
-    private static class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
+    public static class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
         private SafeBrowsingApiHandler.Observer mObserver;
 
         // Mock time it takes for a lookup request to complete. This value is verified on the native
@@ -117,7 +148,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         private static final long DEFAULT_CHECK_DELTA_MICROSECONDS = 15;
 
         // Maps to store preset values, keyed by uri.
-        private final Map<String, UrlCheckDoneValues> mPresetValuesMap = new HashMap<>();
+        private static final Map<String, UrlCheckDoneValues> sPresetValuesMap = new HashMap<>();
 
         @Override
         public void setObserver(SafeBrowsingApiHandler.Observer observer) {
@@ -127,8 +158,8 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         @Override
         public void startUriLookup(
                 final long callbackId, String uri, int[] threatTypes, int protocol) {
-            Assert.assertTrue(mPresetValuesMap.containsKey(uri));
-            UrlCheckDoneValues presetValues = mPresetValuesMap.get(uri);
+            Assert.assertTrue(sPresetValuesMap.containsKey(uri));
+            UrlCheckDoneValues presetValues = sPresetValuesMap.get(uri);
             int[] expectedThreatTypes = presetValues.mExpectedThreatTypes;
             Assert.assertNotNull(expectedThreatTypes);
             // The order of threatTypes doesn't matter.
@@ -146,7 +177,11 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
                     DEFAULT_CHECK_DELTA_MICROSECONDS);
         }
 
-        public void setUrlCheckDoneValues(
+        public static void tearDown() {
+            sPresetValuesMap.clear();
+        }
+
+        public static void setUrlCheckDoneValues(
                 String uri,
                 int[] expectedThreatTypes,
                 int expectedProtocol,
@@ -154,8 +189,8 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
                 int returnedThreatType,
                 int[] returnedThreatAttributes,
                 int returnedResponseStatus) {
-            Assert.assertFalse(mPresetValuesMap.containsKey(uri));
-            mPresetValuesMap.put(
+            Assert.assertFalse(sPresetValuesMap.containsKey(uri));
+            sPresetValuesMap.put(
                     uri,
                     new UrlCheckDoneValues(
                             expectedThreatTypes,
@@ -191,7 +226,10 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         }
     }
 
-    private static class MockUrlCheckTimeObserver implements UrlCheckTimeObserver {
+    public static final MockUrlCheckTimeObserver sSafeBrowsingApiUrlCheckTimeObserver =
+            new MockUrlCheckTimeObserver();
+
+    public static class MockUrlCheckTimeObserver implements UrlCheckTimeObserver {
         private long mCapturedUrlCheckTimeDeltaMicros;
         private boolean mIsOnUrlCheckTimeCalled;
 
@@ -206,41 +244,37 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
         public long getCapturedUrlCheckTimeDeltaMicros() {
             return mCapturedUrlCheckTimeDeltaMicros;
         }
+
+        public void tearDown() {
+            mCapturedUrlCheckTimeDeltaMicros = 0;
+            mIsOnUrlCheckTimeCalled = false;
+        }
     }
 
     @CalledByNative
     static void setUp() {
-        if (ResettersForTesting.getState() == ResettersForTesting.State.NOT_ENABLED) {
-            ResettersForTesting.enable();
-        }
-        // Treat each native fixture as a class scope, using the same lifecycle as Java tests.
-        ResettersForTesting.beforeClassHooksWillExecute();
-        sInstance = new SafeBrowsingApiHandlerBridgeNativeUnitTestHelper();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SafeBrowsingApiBridge.setSafetyNetApiHandlerForTesting(
-                            sInstance.mSafetyNetHandler);
-                    SafeBrowsingApiBridge.setSafeBrowsingApiHandlerForTesting(
-                            sInstance.mSafeBrowsingHandler);
-                    SafeBrowsingApiBridge.setOneTimeSafeBrowsingApiUrlCheckObserverForTesting(
-                            sInstance.mUrlCheckTimeObserver);
-                });
+        SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
+        SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
+        SafeBrowsingApiBridge.setOneTimeSafeBrowsingApiUrlCheckObserver(
+                sSafeBrowsingApiUrlCheckTimeObserver);
     }
 
     @CalledByNative
     static void tearDown() {
-        ResettersForTesting.afterClassHooksDidExecute();
-        sInstance = null;
+        MockSafetyNetApiHandler.tearDown();
+        MockSafeBrowsingApiHandler.tearDown();
+        sSafeBrowsingApiUrlCheckTimeObserver.tearDown();
+        SafeBrowsingApiBridge.clearHandlerForTesting();
     }
 
     @CalledByNative
     static void setCsdAllowlistMatch(String uri, boolean match) {
-        sInstance.mSafetyNetHandler.mCsdAllowlistMap.put(uri, match);
+        MockSafetyNetApiHandler.setCsdAllowlistMatch(uri, match);
     }
 
     @CalledByNative
     static void setCsdDownloadAllowlistMatch(String uri, boolean match) {
-        sInstance.mSafetyNetHandler.mCsdDownloadAllowlistMap.put(uri, match);
+        MockSafetyNetApiHandler.setCsdDownloadAllowlistMatch(uri, match);
     }
 
     @CalledByNative
@@ -252,7 +286,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
             int returnedThreatType,
             int[] returnedThreatAttributes,
             int returnedResponseStatus) {
-        sInstance.mSafeBrowsingHandler.setUrlCheckDoneValues(
+        MockSafeBrowsingApiHandler.setUrlCheckDoneValues(
                 uri,
                 expectedThreatTypes,
                 expectedProtocol,
@@ -264,29 +298,27 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
     @CalledByNative
     static long getSafeBrowsingApiUrlCheckTimeObserverResult() {
-        return sInstance.mUrlCheckTimeObserver.getCapturedUrlCheckTimeDeltaMicros();
+        return sSafeBrowsingApiUrlCheckTimeObserver.getCapturedUrlCheckTimeDeltaMicros();
     }
 
     @CalledByNative
     static void setVerifyAppsResult(int result) {
-        sInstance.mSafetyNetHandler.mVerifyAppsResult = result;
+        MockSafetyNetApiHandler.setVerifyAppsResult(result);
     }
 
     @CalledByNative
     static void setHarmfulAppsResult(int result, int numOfApps, int statusCode) {
-        sInstance.mSafetyNetHandler.mHarmfulAppsResult = result;
-        sInstance.mSafetyNetHandler.mHarmfulAppsNumOfApps = numOfApps;
-        sInstance.mSafetyNetHandler.mHarmfulAppsStatusCode = statusCode;
+        MockSafetyNetApiHandler.setHarmfulAppsResult(result, numOfApps, statusCode);
     }
 
     @CalledByNative
     static void setSafetyNetApiInitializationState(
             @SafetyNetApiHandler.SafetyNetApiState int state) {
-        sInstance.mSafetyNetHandler.mSafetyNetApiInitializationState = state;
+        MockSafetyNetApiHandler.setSafetyNetApiInitializationState(state);
     }
 
     @CalledByNative
     static void setSafetyNetIdResultEmpty() {
-        sInstance.mSafetyNetHandler.mSafetyNetIdResultOverride = "";
+        MockSafetyNetApiHandler.setSafetyNetIdResult("");
     }
 }

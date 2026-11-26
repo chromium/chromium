@@ -70,7 +70,7 @@ import java.util.Arrays;
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@DoNotBatch(reason = "Tests change the process-wide Safe Browsing allowlist.")
+@DoNotBatch(reason = "setSafeBrowsingHandler() should be only called once per process.")
 public class SafeBrowsingTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
@@ -343,10 +343,11 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         // Some tests need to inject JavaScript.
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        SafeBrowsingApiBridge.setSafeBrowsingApiHandlerForTesting(
-                                new MockSafeBrowsingApiHandler()));
+        // Load the MockSafeBrowsingApiHandler instead of the real one.
+        // TODO(crbug.com/394290281): Consider moving to @BeforeClass as this should be called once
+        // per
+        // process.
+        SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
     }
 
     private void loadGreenPage() throws Exception {

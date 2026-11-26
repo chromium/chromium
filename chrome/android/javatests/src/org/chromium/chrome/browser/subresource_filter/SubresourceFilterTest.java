@@ -11,8 +11,11 @@ import android.widget.TextView;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,8 +84,18 @@ public final class SubresourceFilterTest {
             "https://support.google.com/chrome/?p=blocked_ads";
     private static boolean sRulesetPublished;
     private WebPageStation mPage;
-    private final MockSafeBrowsingApiHandler mSafeBrowsingApiHandler =
-            new MockSafeBrowsingApiHandler();
+
+    // TODO(crbug.com/553264228): Rename to setSafeBrowsingApiHandlerForTesting and use
+    // ResettersForTesting to automatically clean up after tests.
+    @BeforeClass
+    public static void setUpBeforeClass() {
+        SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() {
+        SafeBrowsingApiBridge.clearHandlerForTesting();
+    }
 
     private void createAndPublishRulesetDisallowingSuffix(String suffix) {
         TestRulesetPublisher publisher = new TestRulesetPublisher();
@@ -98,10 +111,6 @@ public final class SubresourceFilterTest {
 
     @Before
     public void setUp() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        SafeBrowsingApiBridge.setSafeBrowsingApiHandlerForTesting(
-                                mSafeBrowsingApiHandler));
         mTestServer = mActivityTestRule.getTestServer();
         mPage = mActivityTestRule.startOnBlankPage();
 
@@ -110,6 +119,11 @@ public final class SubresourceFilterTest {
             createAndPublishRulesetDisallowingSuffix(".jpg");
             sRulesetPublished = true;
         }
+    }
+
+    @After
+    public void tearDown() {
+        MockSafeBrowsingApiHandler.clearMockResponses();
     }
 
     @Test
@@ -244,12 +258,8 @@ public final class SubresourceFilterTest {
                 isForWarning
                         ? new int[] {MockSafeBrowsingApiHandler.THREAT_ATTRIBUTE_CANARY_CODE}
                         : new int[0];
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mSafeBrowsingApiHandler.addMockResponse(
-                                url,
-                                MockSafeBrowsingApiHandler.BETTER_ADS_VIOLATION_CODE,
-                                threatAttribute));
+        MockSafeBrowsingApiHandler.addMockResponse(
+                url, MockSafeBrowsingApiHandler.BETTER_ADS_VIOLATION_CODE, threatAttribute);
         mActivityTestRule.loadUrl(url);
         return Boolean.parseBoolean(mActivityTestRule.runJavaScriptCodeInCurrentTab("imgLoaded"));
     }
