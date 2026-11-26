@@ -82,7 +82,9 @@ bool GbmPixmap::ScheduleOverlayPlane(
     gfx::AcceleratedWidget widget,
     const gfx::OverlayPlaneData& overlay_plane_data,
     gfx::GpuFenceHandle acquire_fence) {
-  CHECK(buffer_->GetFlags() & GBM_BO_USE_SCANOUT, base::NotFatalUntil::M163);
+  // TODO(crbug.com/586874932): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(buffer_->GetFlags() & GBM_BO_USE_SCANOUT);
   // |framebuffer_id| might be 0 if AddFramebuffer2 failed, in that case we
   // already logged the error in GbmBuffer ctor. We avoid logging the error
   // here since this method might be called every pageflip.
