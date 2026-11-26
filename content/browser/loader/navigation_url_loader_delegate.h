@@ -116,6 +116,15 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
   // `ParseHeaders()` path.
   virtual bool ShouldClearParsedHeadersOnTestReceiveRedirect() = 0;
 
+  // Only for testing purpose. In non-test cases, use `OnResponseStarted()`
+  // instead, and this method must do nothing and return `false`.
+  //
+  // Called when `NavigationURLLoaderImpl::CallOnReceivedResponse()` is called.
+  // When the return value is `true` (which is only allowed in tests),
+  // `head->parsed_headers` is cleared to enforce and test the async
+  // `ParseHeaders()` path.
+  virtual bool ShouldClearParsedHeadersOnTestReceiveResponse() = 0;
+
  protected:
   NavigationURLLoaderDelegate() {}
   virtual ~NavigationURLLoaderDelegate() {}

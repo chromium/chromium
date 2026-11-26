@@ -13,20 +13,33 @@ import "url/mojom/origin.mojom";
 // requests.
 //
 // Implemented in the browser process to be sent messages from the network
-// service. Owned by a single URLLoader.
+// service. Browser-side receivers are owned by `NavigationURLLoaderImpl` while
+// the request (or a copy of it, see Clone()) is the active, not yet responded
+// leg of the navigation, while remotes are held by the corresponding
+// `URLLoader` and any cloned `ResourceRequest`s. The browser closes the
+// receivers when the navigation restarts, follows a redirect on a different
+// loader, hands the response over, or is cancelled. The network service must
+// treat a closed pipe, including one closed before a reply arrives, as "no
+// restart" and continue the request.
 interface AcceptCHFrameObserver {
   // Informs the observer that an ACCEPT_CH frame was received for the given
-  // origin. The observer should check if the hints in the frame would be added
-  // to a request. If so, the observer should drop the associated URLLoader and
-  // issue a new request with the new headers, which should terminate the pipe.
+  // origin. The observer checks whether adding the advertised hints requires
+  // restarting the navigation request with updated headers.
   //
-  // The callback expects a net::Error value. For non-error states, including a
-  // restarting and non-restarting request, send net::OK.
+  // `status` is a `net::Error` value:
+  // - `net::OK`: no restart is needed; the current request may proceed.
+  // - `net::ERR_ABORTED`: the observer is restarting or aborting the
+  //   navigation; sent before tearing down the loader and closing the pipe.
+  // - `net::ERR_TOO_MANY_ACCEPT_CH_RESTARTS`: the restart limit was exceeded
+  //   and the navigation failed.
   OnAcceptCHFrameReceived(
     url.mojom.Origin origin,
     array<WebClientHintsType> accept_ch_frame) => (int32 status);
 
   // Used to make a copy of the observer when copying a ResourceRequest or
   // passing a network.mojom.URLRequest struct through a mojo pipe.
+  // The browser may drop `listener` (closing the new pipe right away) when the
+  // request is no longer the active leg, e.g. after a response has been
+  // received or while a redirect or response is being processed.
   Clone(pending_receiver<AcceptCHFrameObserver> listener);
 };

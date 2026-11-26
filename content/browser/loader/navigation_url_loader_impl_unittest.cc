@@ -5,15 +5,19 @@
 #include "content/browser/loader/navigation_url_loader_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -41,10 +45,14 @@
 #include "content/public/test/test_utils.h"
 #include "content/test/test_navigation_url_loader_delegate.h"
 #include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/load_flags.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/storage_access_api/status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -57,11 +65,14 @@
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/link_header.mojom.h"
+#include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/test/url_loader_context_for_tests.h"
 #include "services/network/url_loader.h"
@@ -73,6 +84,7 @@
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
@@ -81,6 +93,10 @@
 namespace content {
 
 using testing::Optional;
+
+namespace {
+class TestAcceptCHFrameInterceptor;
+}  // namespace
 
 class NavigationURLLoaderImplTest : public testing::Test {
  public:
@@ -92,6 +108,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             net::test::MockNetworkChangeNotifier::Create()) {
     browser_context_ = std::make_unique<TestBrowserContext>();
     http_test_server_.AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+    dummy_navigation_server_.AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -145,12 +163,18 @@ class NavigationURLLoaderImplTest : public testing::Test {
           std::nullopt,
       std::optional<url::Origin> initiator_origin = std::nullopt) {
     // NavigationURLLoader assumes that the corresponding FrameTreeNode has an
-    // associated NavigationRequest.
+    // associated NavigationRequest. Use a hanging local URL rather than an
+    // external domain so the background loader does not fail with DNS
+    // resolution error and clear `FrameTreeNode::navigation_request()` while
+    // the test runs nested message loops.
     // NOTE: This also creates and starts another `NavigationURLLoaderImpl`
     // (`NavigationRequest::loader_`) but it's not the `NavigationURLLoaderImpl`
     // being tested (=the return value of this method).
+    if (!dummy_navigation_server_.Started()) {
+      EXPECT_TRUE(dummy_navigation_server_.Start());
+    }
     pending_navigation_ = NavigationSimulator::CreateBrowserInitiated(
-        GURL("https://example.com"), web_contents_.get());
+        dummy_navigation_server_.GetURL("/hung"), web_contents_.get());
     pending_navigation_->Start();
 
     blink::mojom::BeginNavigationParamsPtr begin_params =
@@ -308,6 +332,20 @@ class NavigationURLLoaderImplTest : public testing::Test {
   }
 
  protected:
+  // A started loader whose only interceptor is a
+  // `TestAcceptCHFrameInterceptor`.
+  struct AcceptCHFrameTestLoader {
+    std::unique_ptr<NavigationURLLoaderImpl> loader;
+    // Owned by `loader`.
+    raw_ptr<TestAcceptCHFrameInterceptor> interceptor;
+  };
+
+  // Creates and starts a loader for `url` with a `TestAcceptCHFrameInterceptor`
+  // and waits until the interceptor has received the first request.
+  AcceptCHFrameTestLoader StartAcceptCHFrameTestLoaderAndWaitForRequest(
+      const GURL& url,
+      TestNavigationURLLoaderDelegate* delegate);
+
   void SetupClientHintsControllerDelegate(
       const std::vector<network::mojom::WebClientHintsType>& client_hints) {
     blink::UserAgentMetadata ua_metadata;
@@ -325,6 +363,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
       client_hints_controller_delegate_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   net::EmbeddedTestServer http_test_server_;
+  net::EmbeddedTestServer dummy_navigation_server_;
   std::unique_ptr<RenderViewHostTestEnabler> rvh_test_enabler_;
   std::unique_ptr<TestWebContents> web_contents_;
   // NavigationURLLoaderImpl relies on the existence of the
@@ -868,6 +907,144 @@ class TestDoubleRedirectInterceptor final : public NavigationLoaderInterceptor {
   mojo::Remote<network::mojom::URLLoaderClient> client_;
 };
 
+// Intercepts navigation requests, clones `accept_ch_frame_observer` on each
+// request copy (matching `ResourceRequest` copies such as Service Worker
+// navigation preload), and allows tests to drive redirects and responses.
+class TestAcceptCHFrameInterceptor final : public NavigationLoaderInterceptor {
+ public:
+  TestAcceptCHFrameInterceptor() = default;
+  TestAcceptCHFrameInterceptor(const TestAcceptCHFrameInterceptor&) = delete;
+  TestAcceptCHFrameInterceptor& operator=(const TestAcceptCHFrameInterceptor&) =
+      delete;
+  ~TestAcceptCHFrameInterceptor() override = default;
+
+  int request_count() const { return static_cast<int>(requests_.size()); }
+  const std::vector<network::ResourceRequest>& requests() const {
+    return requests_;
+  }
+  mojo::Remote<network::mojom::AcceptCHFrameObserver>& observer_at(
+      size_t index) {
+    return cloned_observers_.at(index);
+  }
+
+  void WaitForRequestCount(int expected_count) {
+    if (request_count() >= expected_count) {
+      return;
+    }
+    expected_request_count_ = expected_count;
+    request_wait_loop_ = std::make_unique<base::RunLoop>();
+    request_wait_loop_->Run();
+    request_wait_loop_.reset();
+  }
+
+  void SendRedirect(const GURL& to_url) {
+    ASSERT_THAT(requests_, testing::Not(testing::IsEmpty()));
+    auto [redirect_info, head] = Create302Redirect(requests_.back().url, to_url,
+                                                   requests_.back().method);
+    client_->OnReceiveRedirect(redirect_info, std::move(head));
+  }
+
+  void SendResponse() {
+    auto head = network::mojom::URLResponseHead::New();
+    head->mime_type = "text/html";
+    head->headers = net::HttpResponseHeaders::TryToCreate(
+        "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n");
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    ASSERT_EQ(MOJO_RESULT_OK,
+              mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle));
+    producer_handle.reset();
+    client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
+                               /*cached_metadata=*/std::nullopt);
+  }
+
+ private:
+  void MaybeCreateLoader(
+      const network::ResourceRequest& tentative_resource_request,
+      BrowserContext* browser_context,
+      LoaderCallback callback,
+      FallbackCallback fallback_callback) override {
+    auto factory = base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+        base::BindOnce(&TestAcceptCHFrameInterceptor::HandleRequest,
+                       base::Unretained(this)));
+    std::move(callback).Run(NavigationLoaderInterceptor::Result(
+        std::move(factory), SubresourceLoaderParams()));
+  }
+
+  void HandleRequest(
+      const network::ResourceRequest& request,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+    // Copying `request` clones `trusted_params->accept_ch_frame_observer` via
+    // `AcceptCHFrameObserver::Clone()`, mirroring navigation preload copies.
+    requests_.push_back(request);
+    mojo::Remote<network::mojom::AcceptCHFrameObserver> observer_remote;
+    if (requests_.back().trusted_params &&
+        requests_.back().trusted_params->accept_ch_frame_observer) {
+      observer_remote.Bind(
+          std::move(requests_.back().trusted_params->accept_ch_frame_observer));
+    }
+    cloned_observers_.push_back(std::move(observer_remote));
+
+    loader_receiver_ = std::move(loader);
+    client_.reset();
+    client_.Bind(std::move(client));
+
+    if (request_wait_loop_ && request_count() >= expected_request_count_) {
+      request_wait_loop_->Quit();
+    }
+  }
+
+  std::vector<network::ResourceRequest> requests_;
+  std::vector<mojo::Remote<network::mojom::AcceptCHFrameObserver>>
+      cloned_observers_;
+  int expected_request_count_ = 0;
+  std::unique_ptr<base::RunLoop> request_wait_loop_;
+  mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver_;
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
+};
+
+// Intercepts response handling via `MaybeCreateLoaderForResponse()` and holds
+// `client_receiver` open without sending redirects or responses, keeping
+// `LoaderHolder` in `State::kLoadingViaReceiver`.
+class TestHoldingResponseInterceptor final
+    : public NavigationLoaderInterceptor {
+ public:
+  TestHoldingResponseInterceptor() = default;
+  TestHoldingResponseInterceptor(const TestHoldingResponseInterceptor&) =
+      delete;
+  TestHoldingResponseInterceptor& operator=(
+      const TestHoldingResponseInterceptor&) = delete;
+  ~TestHoldingResponseInterceptor() override = default;
+
+  int response_count() const { return response_count_; }
+
+ private:
+  void MaybeCreateLoader(
+      const network::ResourceRequest& tentative_resource_request,
+      BrowserContext* browser_context,
+      LoaderCallback callback,
+      FallbackCallback fallback_callback) override {
+    std::move(callback).Run(std::nullopt);
+  }
+
+  bool MaybeCreateLoaderForResponse(
+      const network::URLLoaderCompletionStatus& status,
+      const network::ResourceRequest& request,
+      network::mojom::URLResponseHeadPtr* response_head,
+      mojo::ScopedDataPipeConsumerHandle* response_body,
+      mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
+      blink::ThrottlingURLLoader* url_loader,
+      bool* skip_other_interceptors) override {
+    ++response_count_;
+    *client_receiver = client_.BindNewPipeAndPassReceiver();
+    return true;
+  }
+
+  int response_count_ = 0;
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
+};
+
 // This sets the timeout timer but doesn't expect the timer is fired
 // automatically. If needed, the timer should be fired explicitly e.g. via
 // `TriggerTimeoutForTesting()`.
@@ -898,6 +1075,23 @@ class TestContentUriContentBrowserClient : public ContentBrowserClient {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
+
+NavigationURLLoaderImplTest::AcceptCHFrameTestLoader
+NavigationURLLoaderImplTest::StartAcceptCHFrameTestLoaderAndWaitForRequest(
+    const GURL& url,
+    TestNavigationURLLoaderDelegate* delegate) {
+  auto interceptor = std::make_unique<TestAcceptCHFrameInterceptor>();
+  auto* interceptor_ptr = interceptor.get();
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::move(interceptor));
+  auto loader = CreateTestLoader(
+      url, std::string(), "GET", delegate, blink::NavigationDownloadPolicy(),
+      /*is_main_frame=*/true, /*upgrade_if_insecure=*/false,
+      /*is_ad_tagged=*/false, std::move(interceptors));
+  loader->Start();
+  interceptor_ptr->WaitForRequestCount(1);
+  return {std::move(loader), interceptor_ptr};
+}
 
 // Timeout case (failure) while waiting for the response from URLLoader.
 TEST_F(NavigationURLLoaderImplTest, TimeoutDuringURLLoader) {
@@ -2053,6 +2247,424 @@ TEST_F(NavigationURLLoaderImplTest, ResponseWhileRedirectParseHeadersPending) {
   EXPECT_EQ(delegate.net_error(), net::ERR_UNEXPECTED);
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
   EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+}
+
+// Verify that a cloned AcceptCHFrameObserver on an active intercepted loader
+// (such as Service Worker navigation preload prior to response settlement)
+// restarts the navigation, closes the superseded leg's observer pipe, and
+// attaches the requested client hint header.
+TEST_F(NavigationURLLoaderImplTest,
+       ClonedAcceptCHFrameObserverRestartsActiveLoader) {
+  SetupClientHintsControllerDelegate(/*client_hints=*/{});
+  const GURL target_url("https://a.example/page");
+
+  TestNavigationURLLoaderDelegate delegate;
+  auto [loader, interceptor_ptr] =
+      StartAcceptCHFrameTestLoaderAndWaitForRequest(target_url, &delegate);
+  ASSERT_TRUE(interceptor_ptr->observer_at(0).is_bound());
+  interceptor_ptr->observer_at(0).FlushForTesting();
+  ASSERT_TRUE(interceptor_ptr->observer_at(0).is_connected());
+  EXPECT_FALSE(
+      interceptor_ptr->requests()[0].headers.HasHeader("sec-ch-ua-arch"));
+
+  base::test::TestFuture<int32_t> status_future;
+  interceptor_ptr->observer_at(0)->OnAcceptCHFrameReceived(
+      url::Origin::Create(target_url),
+      {network::mojom::WebClientHintsType::kUAArch},
+      status_future.GetCallback());
+  EXPECT_EQ(status_future.Get(), net::ERR_ABORTED);
+
+  interceptor_ptr->WaitForRequestCount(2);
+  interceptor_ptr->observer_at(0).FlushForTesting();
+  EXPECT_FALSE(interceptor_ptr->observer_at(0).is_connected());
+  EXPECT_TRUE(
+      interceptor_ptr->requests()[1].headers.HasHeader("sec-ch-ua-arch"));
+
+  ASSERT_NO_FATAL_FAILURE(interceptor_ptr->SendResponse());
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(delegate.net_error(), net::OK);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+}
+
+// Verify that cloned AcceptCHFrameObserver pipes from an intercepted leg are
+// closed immediately on redirect (even while redirect ParseHeaders() is
+// pending), and that new Clone() requests while redirect ParseHeaders() is
+// active are dropped.
+TEST_F(NavigationURLLoaderImplTest,
+       ClonedAcceptCHFrameObserverRevokedOnRedirectWhileParseHeadersPending) {
+  SetupClientHintsControllerDelegate(/*client_hints=*/{});
+  const GURL initial_url("https://a.example/start");
+  const GURL redirected_url("https://b.example/target");
+
+  TestNavigationURLLoaderDelegate delegate;
+  auto [loader, interceptor_ptr] =
+      StartAcceptCHFrameTestLoaderAndWaitForRequest(initial_url, &delegate);
+  ASSERT_TRUE(interceptor_ptr->observer_at(0).is_bound());
+  interceptor_ptr->observer_at(0).FlushForTesting();
+  ASSERT_TRUE(interceptor_ptr->observer_at(0).is_connected());
+
+  // Pause during redirect ParseHeaders() (ExclusiveTaskType::kRedirect).
+  delegate.set_clear_parsed_headers_on_redirect(true);
+  ASSERT_NO_FATAL_FAILURE(interceptor_ptr->SendRedirect(redirected_url));
+  delegate.WaitForOnReceiveRedirect();
+
+  // Cloning while an exclusive task (redirect ParseHeaders()) is in progress
+  // must drop the new receiver even before received_response_ is set.
+  mojo::Remote<network::mojom::AcceptCHFrameObserver> during_redirect_observer;
+  static_cast<network::mojom::AcceptCHFrameObserver*>(loader.get())
+      ->Clone(during_redirect_observer.BindNewPipeAndPassReceiver());
+
+  // Sending OnAcceptCHFrameReceived on leg 1's observer pipe while redirect
+  // ParseHeaders() is in flight must be ignored because the non-default
+  // loader's observer pipe was already closed on redirect.
+  bool leg1_callback_ran = false;
+  interceptor_ptr->observer_at(0)->OnAcceptCHFrameReceived(
+      url::Origin::Create(initial_url),
+      {network::mojom::WebClientHintsType::kUAArch},
+      base::BindOnce([](bool* ran, int32_t) { *ran = true; },
+                     &leg1_callback_ran));
+
+  delegate.WaitForRequestRedirected();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  interceptor_ptr->observer_at(0).FlushForTesting();
+  EXPECT_FALSE(interceptor_ptr->observer_at(0).is_connected());
+  EXPECT_FALSE(leg1_callback_ran);
+  during_redirect_observer.FlushForTesting();
+  EXPECT_FALSE(during_redirect_observer.is_connected());
+
+  loader->FollowRedirect({});
+  interceptor_ptr->WaitForRequestCount(2);
+  ASSERT_TRUE(interceptor_ptr->observer_at(1).is_bound());
+  interceptor_ptr->observer_at(1).FlushForTesting();
+  ASSERT_TRUE(interceptor_ptr->observer_at(1).is_connected());
+  EXPECT_EQ(interceptor_ptr->requests()[1].url, redirected_url);
+
+  ASSERT_NO_FATAL_FAILURE(interceptor_ptr->SendResponse());
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(delegate.net_error(), net::OK);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+}
+
+// Verify that cross-origin and opaque-origin OnAcceptCHFrameReceived calls
+// return net::OK without restarting or adding headers, and record the
+// kInactiveOrOriginMismatch return location bucket.
+TEST_F(NavigationURLLoaderImplTest,
+       AcceptCHFrameCrossOriginOrOpaqueOriginIgnored) {
+  SetupClientHintsControllerDelegate(/*client_hints=*/{});
+  const GURL target_url("https://b.example/target");
+  const GURL cross_origin_url("https://a.example/other");
+
+  TestNavigationURLLoaderDelegate delegate;
+  auto [loader, interceptor_ptr] =
+      StartAcceptCHFrameTestLoaderAndWaitForRequest(target_url, &delegate);
+  ASSERT_TRUE(interceptor_ptr->observer_at(0).is_bound());
+  interceptor_ptr->observer_at(0).FlushForTesting();
+  ASSERT_TRUE(interceptor_ptr->observer_at(0).is_connected());
+
+  base::HistogramTester histogram_tester;
+  {
+    base::test::TestFuture<int32_t> cross_origin_status;
+    interceptor_ptr->observer_at(0)->OnAcceptCHFrameReceived(
+        url::Origin::Create(cross_origin_url),
+        {network::mojom::WebClientHintsType::kUAArch},
+        cross_origin_status.GetCallback());
+    EXPECT_EQ(cross_origin_status.Get(), net::OK);
+  }
+  {
+    base::test::TestFuture<int32_t> opaque_origin_status;
+    interceptor_ptr->observer_at(0)->OnAcceptCHFrameReceived(
+        url::Origin(), {network::mojom::WebClientHintsType::kUAArch},
+        opaque_origin_status.GetCallback());
+    EXPECT_EQ(opaque_origin_status.Get(), net::OK);
+  }
+  EXPECT_EQ(interceptor_ptr->request_count(), 1);
+  EXPECT_FALSE(loader->GetResourceRequestForTesting().headers.HasHeader(
+      "sec-ch-ua-arch"));
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.URLLoader.OnAcceptCHFrameReceived.ReturnLocation",
+      NavigationURLLoaderImpl::OnAcceptCHFrameReceivedReturnLocation::
+          kInactiveOrOriginMismatch,
+      2);
+  histogram_tester.ExpectTotalCount(
+      "Navigation.URLLoader.OnAcceptCHFrameReceived.ExecutionTime", 2);
+
+  ASSERT_NO_FATAL_FAILURE(interceptor_ptr->SendResponse());
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(delegate.net_error(), net::OK);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+}
+
+// Verify that once OnReceiveResponse unbinds the loader and async
+// ParseHeaders() is pending, cloned AcceptCHFrameObserver remotes are
+// disconnected, late Clone() calls drop their receivers, and
+// OnAcceptCHFrameReceived cannot reset LoaderHolder or restart the navigation.
+TEST_F(NavigationURLLoaderImplTest,
+       AcceptCHFrameIgnoredWhileResponseParseHeadersPending) {
+  SetupClientHintsControllerDelegate(/*client_hints=*/{});
+  const GURL initial_url("https://a.example/start");
+  const GURL inner_url("https://a.example/inner.html");
+
+  TestNavigationURLLoaderDelegate delegate;
+  auto [loader, interceptor_ptr] =
+      StartAcceptCHFrameTestLoaderAndWaitForRequest(initial_url, &delegate);
+  ASSERT_TRUE(interceptor_ptr->observer_at(0).is_bound());
+  interceptor_ptr->observer_at(0).FlushForTesting();
+  ASSERT_TRUE(interceptor_ptr->observer_at(0).is_connected());
+
+  // Redirect to the second leg.
+  ASSERT_NO_FATAL_FAILURE(interceptor_ptr->SendRedirect(inner_url));
+  delegate.WaitForRequestRedirected();
+  loader->FollowRedirect({});
+  interceptor_ptr->WaitForRequestCount(2);
+  ASSERT_TRUE(interceptor_ptr->observer_at(1).is_bound());
+  interceptor_ptr->observer_at(1).FlushForTesting();
+  ASSERT_TRUE(interceptor_ptr->observer_at(1).is_connected());
+
+  // Force async ParseHeaders() on the response so execution pauses while
+  // LoaderHolder is in State::kUnbound.
+  delegate.set_clear_parsed_headers_on_response(true);
+  ASSERT_NO_FATAL_FAILURE(interceptor_ptr->SendResponse());
+  delegate.WaitForOnReceiveResponse();
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Late Clone() after OnReceiveResponse() must drop the receiver.
+  mojo::Remote<network::mojom::AcceptCHFrameObserver> post_response_observer;
+  static_cast<network::mojom::AcceptCHFrameObserver*>(loader.get())
+      ->Clone(post_response_observer.BindNewPipeAndPassReceiver());
+
+  // Queue OnAcceptCHFrameReceived over both Mojo remotes while ParseHeaders()
+  // is still pending, and also verify direct invocation returns net::OK without
+  // hitting LoaderHolder::CheckState() or restarting.
+  bool leg1_callback_ran = false;
+  interceptor_ptr->observer_at(0)->OnAcceptCHFrameReceived(
+      url::Origin::Create(initial_url),
+      {network::mojom::WebClientHintsType::kUAArch},
+      base::BindOnce([](bool* ran, int32_t) { *ran = true; },
+                     &leg1_callback_ran));
+  bool leg2_callback_ran = false;
+  interceptor_ptr->observer_at(1)->OnAcceptCHFrameReceived(
+      url::Origin::Create(inner_url),
+      {network::mojom::WebClientHintsType::kUAArch},
+      base::BindOnce([](bool* ran, int32_t) { *ran = true; },
+                     &leg2_callback_ran));
+
+  base::HistogramTester histogram_tester;
+  std::optional<int32_t> direct_status;
+  static_cast<network::mojom::AcceptCHFrameObserver*>(loader.get())
+      ->OnAcceptCHFrameReceived(
+          url::Origin::Create(inner_url),
+          {network::mojom::WebClientHintsType::kUAArch},
+          base::BindOnce([](std::optional<int32_t>* out,
+                            int32_t status) { *out = status; },
+                         &direct_status));
+  EXPECT_EQ(direct_status, net::OK);
+  EXPECT_EQ(interceptor_ptr->request_count(), 2);
+  EXPECT_FALSE(loader->GetResourceRequestForTesting().headers.HasHeader(
+      "sec-ch-ua-arch"));
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.URLLoader.OnAcceptCHFrameReceived.ReturnLocation",
+      NavigationURLLoaderImpl::OnAcceptCHFrameReceivedReturnLocation::
+          kInactiveOrOriginMismatch,
+      1);
+
+  // Allow ParseHeaders() to finish and verify the response commits normally.
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(delegate.net_error(), net::OK);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+  EXPECT_EQ(interceptor_ptr->request_count(), 2);
+
+  interceptor_ptr->observer_at(0).FlushForTesting();
+  EXPECT_FALSE(interceptor_ptr->observer_at(0).is_connected());
+  EXPECT_FALSE(leg1_callback_ran);
+  interceptor_ptr->observer_at(1).FlushForTesting();
+  EXPECT_FALSE(interceptor_ptr->observer_at(1).is_connected());
+  EXPECT_FALSE(leg2_callback_ran);
+  post_response_observer.FlushForTesting();
+  EXPECT_FALSE(post_response_observer.is_connected());
+}
+
+// Verify that non-HTTP(S) navigations leave `accept_ch_frame_observer` unbound
+// in `CreateThrottlingLoaderAndStart()` and ignore `OnAcceptCHFrameReceived()`
+// with `net::OK` even when `origin.IsSameOriginWith(url_)` is true.
+TEST_F(NavigationURLLoaderImplTest, AcceptCHFrameUnboundAndIgnoredForNonHttp) {
+  SetupClientHintsControllerDelegate(/*client_hints=*/{});
+  const GURL blob_url(
+      "blob:https://a.example/00000000-0000-0000-0000-000000000000");
+  const url::Origin blob_origin = url::Origin::Create(blob_url);
+  ASSERT_TRUE(blob_origin.IsSameOriginWith(blob_url));
+
+  TestNavigationURLLoaderDelegate delegate;
+  auto [loader, interceptor_ptr] =
+      StartAcceptCHFrameTestLoaderAndWaitForRequest(blob_url, &delegate);
+  EXPECT_FALSE(interceptor_ptr->observer_at(0).is_bound());
+
+  base::HistogramTester histogram_tester;
+  std::optional<int32_t> status;
+  static_cast<network::mojom::AcceptCHFrameObserver*>(loader.get())
+      ->OnAcceptCHFrameReceived(
+          blob_origin, {network::mojom::WebClientHintsType::kUAArch},
+          base::BindOnce(
+              [](std::optional<int32_t>* out, int32_t val) { *out = val; },
+              &status));
+  EXPECT_EQ(status, net::OK);
+  EXPECT_EQ(interceptor_ptr->request_count(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.URLLoader.OnAcceptCHFrameReceived.ReturnLocation",
+      NavigationURLLoaderImpl::OnAcceptCHFrameReceivedReturnLocation::
+          kInactiveOrOriginMismatch,
+      1);
+
+  ASSERT_NO_FATAL_FAILURE(interceptor_ptr->SendResponse());
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(delegate.net_error(), net::OK);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+}
+
+// Verify that `OnAcceptCHFrameReceived()` arriving over a cloned pipe while a
+// reused default loader is executing an exclusive task replies `net::OK`
+// without aborting when no restart is needed, and replies `net::ERR_ABORTED`
+// before `OnComplete()` closes the observer pipes and fails the navigation when
+// a restart would otherwise be triggered.
+TEST_F(NavigationURLLoaderImplTest,
+       AcceptCHFrameDuringExclusiveTaskAbortsNavigation) {
+  ASSERT_TRUE(http_test_server_.Start());
+  SetupClientHintsControllerDelegate(/*client_hints=*/{});
+  const GURL redirect_url = http_test_server_.GetURL("/redirect301-to-echo");
+  const GURL final_url = http_test_server_.GetURL("/echo");
+
+  TestNavigationURLLoaderDelegate delegate;
+  auto async_interceptor = std::make_unique<TestAsyncInterceptor>();
+  auto* async_interceptor_ptr = async_interceptor.get();
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::move(async_interceptor));
+
+  auto loader =
+      CreateTestLoader(redirect_url, std::string(), "GET", &delegate,
+                       blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  loader->Start();
+
+  async_interceptor_ptr->WaitUntilMaybeCreateLoader();
+  async_interceptor_ptr->Unblock();
+
+  // Default loader is now active (`State::kLoadingViaLoader`, no exclusive
+  // task). Clone an `AcceptCHFrameObserver` pipe and follow the redirect into
+  // the next interceptor check so `State::kLoadingViaLoader` and
+  // `ExclusiveTaskType::kInterceptor` are active simultaneously.
+  mojo::Remote<network::mojom::AcceptCHFrameObserver> cloned_observer;
+  static_cast<network::mojom::AcceptCHFrameObserver*>(loader.get())
+      ->Clone(cloned_observer.BindNewPipeAndPassReceiver());
+
+  delegate.WaitForRequestRedirected();
+  loader->FollowRedirect({});
+  async_interceptor_ptr->WaitUntilMaybeCreateLoader();
+  cloned_observer.FlushForTesting();
+  ASSERT_TRUE(cloned_observer.is_connected());
+
+  // When no critical hints are missing (no restart needed), the call should
+  // still reply `net::OK` without aborting the navigation.
+  {
+    base::HistogramTester histogram_tester;
+    base::test::TestFuture<int32_t> ok_future;
+    cloned_observer->OnAcceptCHFrameReceived(url::Origin::Create(final_url),
+                                             /*accept_ch_frame=*/{},
+                                             ok_future.GetCallback());
+    EXPECT_EQ(ok_future.Get(), net::OK);
+    EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+    EXPECT_TRUE(cloned_observer.is_connected());
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.URLLoader.OnAcceptCHFrameReceived.ReturnLocation",
+        NavigationURLLoaderImpl::OnAcceptCHFrameReceivedReturnLocation::
+            kNoCriticalHintsMissing,
+        1);
+  }
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<int32_t> status_future;
+  cloned_observer->OnAcceptCHFrameReceived(
+      url::Origin::Create(final_url),
+      {network::mojom::WebClientHintsType::kUAArch},
+      status_future.GetCallback());
+  EXPECT_EQ(status_future.Get(), net::ERR_ABORTED);
+
+  cloned_observer.FlushForTesting();
+  EXPECT_FALSE(cloned_observer.is_connected());
+  if (delegate.on_request_handled_counter() == 0) {
+    delegate.WaitForRequestFailed();
+  }
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+  EXPECT_EQ(delegate.net_error(), net::ERR_ABORTED);
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.URLLoader.OnAcceptCHFrameReceived.ReturnLocation",
+      NavigationURLLoaderImpl::OnAcceptCHFrameReceivedReturnLocation::
+          kDuringExclusiveTask,
+      1);
+
+  async_interceptor_ptr->Unblock();
+}
+
+// Verify that `LoaderHolder::BindReceiver()` (`MaybeCreateLoaderForResponse()`)
+// closes cloned `AcceptCHFrameObserver` pipes and rejects subsequent `Clone()`
+// and `OnAcceptCHFrameReceived()` calls while in `State::kLoadingViaReceiver`.
+TEST_F(NavigationURLLoaderImplTest,
+       ClonedAcceptCHFrameObserverRevokedOnBindReceiver) {
+  ASSERT_TRUE(http_test_server_.Start());
+  SetupClientHintsControllerDelegate(/*client_hints=*/{});
+  const GURL hung_url = http_test_server_.GetURL("/hung");
+
+  TestNavigationURLLoaderDelegate delegate;
+  auto response_interceptor =
+      std::make_unique<TestHoldingResponseInterceptor>();
+  auto* response_interceptor_ptr = response_interceptor.get();
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::move(response_interceptor));
+
+  auto loader =
+      CreateTestLoader(hung_url, std::string(), "GET", &delegate,
+                       blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  mojo::Remote<network::mojom::AcceptCHFrameObserver> cloned_observer;
+  static_cast<network::mojom::AcceptCHFrameObserver*>(loader.get())
+      ->Clone(cloned_observer.BindNewPipeAndPassReceiver());
+  cloned_observer.FlushForTesting();
+  ASSERT_TRUE(cloned_observer.is_connected());
+
+  // Trigger `OnComplete(ERR_TIMED_OUT)` -> `MaybeCreateLoaderForResponse()` ->
+  // `LoaderHolder::BindReceiver()`, transitioning to `kLoadingViaReceiver`
+  // while `received_response_` is still false.
+  static_cast<NavigationURLLoaderImpl*>(loader.get())
+      ->TriggerTimeoutForTesting();
+  ASSERT_EQ(response_interceptor_ptr->response_count(), 1);
+  cloned_observer.FlushForTesting();
+  EXPECT_FALSE(cloned_observer.is_connected());
+
+  mojo::Remote<network::mojom::AcceptCHFrameObserver> post_bind_observer;
+  static_cast<network::mojom::AcceptCHFrameObserver*>(loader.get())
+      ->Clone(post_bind_observer.BindNewPipeAndPassReceiver());
+  post_bind_observer.FlushForTesting();
+  EXPECT_FALSE(post_bind_observer.is_connected());
+
+  base::HistogramTester histogram_tester;
+  std::optional<int32_t> status;
+  static_cast<network::mojom::AcceptCHFrameObserver*>(loader.get())
+      ->OnAcceptCHFrameReceived(url::Origin::Create(hung_url),
+                                {network::mojom::WebClientHintsType::kUAArch},
+                                base::BindOnce([](std::optional<int32_t>* out,
+                                                  int32_t val) { *out = val; },
+                                               &status));
+  EXPECT_EQ(status, net::OK);
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.URLLoader.OnAcceptCHFrameReceived.ReturnLocation",
+      NavigationURLLoaderImpl::OnAcceptCHFrameReceivedReturnLocation::
+          kInactiveOrOriginMismatch,
+      1);
 }
 
 #if BUILDFLAG(IS_ANDROID)

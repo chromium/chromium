@@ -526,9 +526,10 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kTooManyRestart"/>
   <int value="6" label="kSendingErrorAborted"/>
   <int value="7" label="kDuringExclusiveTask"/>
+  <int value="8" label="kInactiveOrOriginMismatch"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/browser/loader/navigation_url_loader_impl.cc:OnAcceptCHFrameReceivedReturnLocation) -->
+<!-- LINT.ThenChange(//content/browser/loader/navigation_url_loader_impl.h:OnAcceptCHFrameReceivedReturnLocation) -->
 
 <!-- LINT.IfChange(OriginAgentClusterAdExclusionResult) -->
 

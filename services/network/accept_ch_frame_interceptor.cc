@@ -6,8 +6,11 @@
 
 #include <algorithm>
 #include <string_view>
+#include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -84,7 +87,19 @@ AcceptCHFrameInterceptor::AcceptCHFrameInterceptor(
         enabled_client_hints,
     base::PassKey<AcceptCHFrameInterceptor>)
     : accept_ch_frame_observer_(std::move(accept_ch_frame_observer)),
-      enabled_client_hints_(std::move(enabled_client_hints)) {}
+      enabled_client_hints_(std::move(enabled_client_hints)) {
+  if (accept_ch_frame_observer_.is_bound()) {
+    // Allow the network transaction to recover gracefully and proceed without
+    // restarting if the browser process closes its observer receiver (for
+    // example, after navigation redirect, response start, or cancellation while
+    // a detached request such as Service Worker navigation preload remains in
+    // flight). `base::Unretained(this)` is safe because `this` owns
+    // `accept_ch_frame_observer_`.
+    accept_ch_frame_observer_.set_disconnect_handler(
+        base::BindOnce(&AcceptCHFrameInterceptor::OnObserverDisconnected,
+                       base::Unretained(this)));
+  }
+}
 
 AcceptCHFrameInterceptor::~AcceptCHFrameInterceptor() = default;
 
@@ -118,31 +133,25 @@ net::Error AcceptCHFrameInterceptor::OnConnected(
   // this URLLoader will be destroyed and another with the correct hints
   // started. Otherwise, the callback to continue the network transaction will
   // be called and the URLLoader will continue as normal.
-  auto record = [](net::CompletionOnceCallback callback,
-                   base::TimeTicks call_time, perfetto::TerminatingFlow flow,
-                   int status) {
-    base::UmaHistogramMicrosecondsTimes("Net.URLLoader.AcceptCH.RoundTripTime",
-                                        base::TimeTicks::Now() - call_time);
-    base::UmaHistogramSparse("Net.URLLoader.AcceptCH.Status", -status);
-    TRACE_EVENT_INSTANT("loading",
-                        "AcceptCHObserver::OnAcceptCHFrameReceived callback",
-                        flow, "status", status);
-    std::move(callback).Run(status);
-  };
   TRACE_EVENT_INSTANT("loading",
                       "AcceptCHObserver::OnAcceptCHFrameReceived call",
                       perfetto::Flow::FromPointer(this), "url", url.spec());
 
+  CHECK(!pending_callback_);
+  pending_callback_ = std::move(callback);
+
   // Explanation of callback lifetime safety:
-  // The `callback` originates from a net/ layer object (e.g.,
-  // HttpNetworkTransaction) and might rely on an unretained pointer to that
-  // object. The URLLoader which owns `this` manages the lifetime of `this`
-  // (and its Mojo remote) and the net/ layer object associated with the
-  // `callback`. So binding the `callback` here is safe.
+  // `callback` (stored in `pending_callback_`) originates from a net/ layer
+  // object (e.g., HttpNetworkTransaction) and might rely on an unretained
+  // pointer to that object. The URLLoader which owns `this` manages the
+  // lifetime of `this` (and its Mojo remote) and the net/ layer object
+  // associated with `callback`, and destroying `this` drops `pending_callback_`
+  // without running it. `base::Unretained(this)` is safe because `this` owns
+  // `accept_ch_frame_observer_`.
   accept_ch_frame_observer_->OnAcceptCHFrameReceived(
       url::Origin::Create(url), hints,
-      base::BindOnce(record, std::move(callback), base::TimeTicks::Now(),
-                     perfetto::TerminatingFlow::FromPointer(this)));
+      base::BindOnce(&AcceptCHFrameInterceptor::OnAcceptCHFrameReceivedReply,
+                     base::Unretained(this), base::TimeTicks::Now()));
   return net::ERR_IO_PENDING;
 }
 
@@ -202,6 +211,26 @@ AcceptCHFrameInterceptor::NeedsObserverCheck(
   }
 
   return NeedsObserverCheckReason::kNotNeeded;
+}
+
+void AcceptCHFrameInterceptor::OnAcceptCHFrameReceivedReply(
+    base::TimeTicks call_time,
+    int status) {
+  base::UmaHistogramMicrosecondsTimes("Net.URLLoader.AcceptCH.RoundTripTime",
+                                      base::TimeTicks::Now() - call_time);
+  base::UmaHistogramSparse("Net.URLLoader.AcceptCH.Status", -status);
+  TRACE_EVENT_INSTANT(
+      "loading", "AcceptCHObserver::OnAcceptCHFrameReceived callback",
+      perfetto::TerminatingFlow::FromPointer(this), "status", status);
+  CHECK(pending_callback_);
+  std::move(pending_callback_).Run(status);
+}
+
+void AcceptCHFrameInterceptor::OnObserverDisconnected() {
+  accept_ch_frame_observer_.reset();
+  if (pending_callback_) {
+    std::move(pending_callback_).Run(net::OK);
+  }
 }
 
 }  // namespace network

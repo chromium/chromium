@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -22,7 +23,10 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/buildflags.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/load_timing_info.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/url_request/url_request.h"
@@ -42,13 +46,17 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
+
 namespace blink {
 class URLLoaderThrottle;
-}
+}  // namespace blink
 
 namespace net {
 struct RedirectInfo;
-}
+}  // namespace net
 
 namespace network {
 class URLLoaderFactoryBuilder;
@@ -71,6 +79,27 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       public network::mojom::URLLoaderClient,
       public network::mojom::AcceptCHFrameObserver {
  public:
+  // Where OnAcceptCHFrameReceived() returned, recorded to
+  // Navigation.URLLoader.OnAcceptCHFrameReceived.ReturnLocation. Public so
+  // that tests can check the recorded bucket.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(OnAcceptCHFrameReceivedReturnLocation)
+  enum class OnAcceptCHFrameReceivedReturnLocation {
+    kUnknown = 0,
+    kNotEnabled = 1,
+    kNoClientHintDelegate = 2,
+    kNoCriticalHintsMissing = 3,
+    kNoRestart = 4,
+    kTooManyRestart = 5,
+    kSendingErrorAborted = 6,
+    kDuringExclusiveTask = 7,
+    kInactiveOrOriginMismatch = 8,
+    kMaxValue = kInactiveOrOriginMismatch,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:OnAcceptCHFrameReceivedReturnLocation)
+
   // The caller is responsible for ensuring that `delegate` outlives the loader.
   NavigationURLLoaderImpl(
       BrowserContext* browser_context,
@@ -253,6 +282,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       bool clear_parsed_headers_for_testing);
 
   void NotifyResponseStarted(
+      const GURL& response_url,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       mojo::ScopedDataPipeConsumerHandle response_body,
       const GlobalRequestID& global_request_id,
@@ -378,12 +408,13 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     explicit LoaderHolder(network::mojom::URLLoaderClient* receiver);
     ~LoaderHolder();
 
-    // Right now, `State` is used only for `DUMP_WILL_BE_CHECK()`ing and the
-    // other underlying members (e.g. `url_loader_`) should be used to check
+    // `State` tracks the active loading mechanism and is used for invariant
+    // checks (`CHECK()` / `DUMP_WILL_BE_CHECK()`) as well as gating
+    // `AcceptCHFrameObserver` operations. Most other callers still check the
+    // underlying members (e.g. `url_loader_`) directly.
+    // TODO(https://crbug.com/434182226): Turn the remaining
+    // `DUMP_WILL_BE_CHECK()`s into `CHECK()`s and use `State` consistently for
     // state-dependent conditions.
-    // TODO(https://crbug.com/434182226): Once the `DUMP_WILL_BE_CHECK()`s stick
-    // and are turned into `CHECK()`s, `State` must match with `url_loader_`
-    // etc. and thus should be used also for non-CHECK purposes.
     enum class State {
       // Neither of the loader or receiver is active right now.
       // This can be a transient state when processing a redirect (after
@@ -434,7 +465,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     void ResetForFailure();
 
     // For starting loading via `url_loader` (transitioning from `kNone` to
-    // `kLoadingViaLoader`). THe caller should actually start the loading by
+    // `kLoadingViaLoader`). The caller should actually start the loading by
     // calling `url_loader->Start()`.
     // Transitions to `State::kLoadingViaLoader`.
     void SetLoader(std::unique_ptr<blink::ThrottlingURLLoader> url_loader);
@@ -451,6 +482,26 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     // `URLLoaderClientEndpointsPtr` (transitioning to `kUnbound`).
     // Transitions to `State::kUnbound`.
     [[nodiscard]] network::mojom::URLLoaderClientEndpointsPtr Unbind();
+
+    // Binds a new `AcceptCHFrameObserver` receiver associated with the current
+    // `url_loader_` (`State::kLoadingViaLoader`). All bound and cloned
+    // receivers are closed whenever `LoaderHolder` resets, switches to
+    // `kLoadingViaReceiver`, or unbinds.
+    mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>
+    BindAcceptCHFrameObserver(
+        network::mojom::AcceptCHFrameObserver* observer,
+        scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+    // Clones an `AcceptCHFrameObserver` receiver if loading via `url_loader_`
+    // is active and no exclusive task is in progress; otherwise drops
+    // `listener`.
+    void CloneAcceptCHFrameObserver(
+        network::mojom::AcceptCHFrameObserver* observer,
+        mojo::PendingReceiver<network::mojom::AcceptCHFrameObserver> listener,
+        scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+    // Closes all active `AcceptCHFrameObserver` receivers.
+    void ClearAcceptCHFrameObservers();
 
     // Redirect handling: the expected sequence is:
     // 1. `NavigationURLLoaderImpl::OnReceiveRedirect()`
@@ -516,6 +567,13 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
     mojo::Receiver<network::mojom::URLLoaderClient> response_loader_receiver_;
 
+    // Scoped to the active `url_loader_` (`State::kLoadingViaLoader`). While
+    // only one network loader is active per leg, copying `TrustedParams` (for
+    // example, for Service Worker navigation preload) clones the pipe into this
+    // set.
+    mojo::ReceiverSet<network::mojom::AcceptCHFrameObserver>
+        accept_ch_frame_observers_;
+
     std::optional<network::HttpRequestHeadersUpdateParams>
         headers_update_params_;
 
@@ -567,12 +625,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // Cleared after `Start()`.
   scoped_refptr<PrefetchedSignedExchangeCache>
       prefetched_signed_exchange_cache_;
-
-  // While it's not expected to have two active Remote ends for the same
-  // NavigationURLLoaderImpl, when a TrustedParam is copied all of the pipes are
-  // cloned instead of being destroyed.
-  mojo::ReceiverSet<network::mojom::AcceptCHFrameObserver>
-      accept_ch_frame_observers_;
 
   // Timer used for triggering (optional) early timeout on the navigation.
   base::OneShotTimer timeout_timer_;

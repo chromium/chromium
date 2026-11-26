@@ -44,6 +44,7 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
   // TODO(clamy): Make the functions not hang if they are called after the
   // event happened.
   void WaitForOnReceiveRedirect();
+  void WaitForOnReceiveResponse();
   void WaitForRequestRedirected();
   void WaitForResponseStarted();
   void WaitForRequestFailed();
@@ -51,6 +52,10 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
   void set_clear_parsed_headers_on_redirect(
       bool clear_parsed_headers_on_redirect) {
     clear_parsed_headers_on_redirect_ = clear_parsed_headers_on_redirect;
+  }
+  void set_clear_parsed_headers_on_response(
+      bool clear_parsed_headers_on_response) {
+    clear_parsed_headers_on_response_ = clear_parsed_headers_on_response;
   }
 
   // NavigationURLLoaderDelegate implementation.
@@ -73,6 +78,7 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
   CreateNavigationEarlyHintsManagerParams(
       const network::mojom::EarlyHints& early_hints) override;
   bool ShouldClearParsedHeadersOnTestReceiveRedirect() override;
+  bool ShouldClearParsedHeadersOnTestReceiveResponse() override;
 
  private:
   net::RedirectInfo redirect_info_;
@@ -84,11 +90,14 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
   int on_request_handled_counter_ = 0;
   int on_redirect_handled_counter_ = 0;
 
-  // See `NavigationURLLoaderImpl::ParseHeaders()` and
-  // `OnReceiveRedirect()`.
+  // See `NavigationURLLoaderImpl::ParseHeaders()`, `OnReceiveRedirect()`, and
+  // `CallOnReceivedResponse()`.
   bool clear_parsed_headers_on_redirect_ = false;
+  bool clear_parsed_headers_on_response_ = false;
+  bool did_receive_response_ = false;
 
   std::unique_ptr<base::RunLoop> on_receive_redirect_;
+  std::unique_ptr<base::RunLoop> on_receive_response_;
   std::unique_ptr<base::RunLoop> request_redirected_;
   std::unique_ptr<base::RunLoop> response_started_;
   std::unique_ptr<base::RunLoop> request_failed_;

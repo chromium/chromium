@@ -16,6 +16,10 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 
+namespace base {
+class TimeTicks;
+}  // namespace base
+
 namespace net {
 class HttpRequestHeaders;
 }  // namespace net
@@ -29,7 +33,11 @@ namespace network {
 // against hints already included in the initial request headers, and interacts
 // with a browser-provided `AcceptCHFrameObserver` to potentially restart the
 // request if additional client hints should be included.
-class COMPONENT_EXPORT(NETWORK_SERVICE) AcceptCHFrameInterceptor {
+//
+// The browser closes the observer pipe once the request it was bound for is no
+// longer the active navigation request. A closed pipe means that no restart
+// will happen, so the request proceeds with `net::OK`.
+class COMPONENT_EXPORT(NETWORK_SERVICE) AcceptCHFrameInterceptor final {
  public:
   // Conditionally creates an instance of AcceptCHFrameInterceptor.
   // Returns nullptr if the `accept_ch_frame_observer` is invalid or if the
@@ -75,13 +83,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) AcceptCHFrameInterceptor {
   // hints needed for the request (based on the frame) were not already
   // included, this method notifies the `accept_ch_frame_observer_`.
   //
-  // Returns `net::OK` if no observer notification is needed. If `net::OK` is
-  // returned, the request can proceed immediately, `callback` will not be
-  // called.
+  // Returns `net::OK` if no observer notification is needed or if the observer
+  // pipe has already been closed. If `net::OK` is returned, the request can
+  // proceed immediately and `callback` will not be called.
   // Returns `net::ERR_IO_PENDING` if the observer is notified. If
-  // `net::ERR_IO_PENDING` is returned, the `callback` will be invoked
-  // asynchronously by this class once the observer responds via Mojo
-  // (the response usually indicates `net::OK` to proceed or an error).
+  // `net::ERR_IO_PENDING` is returned, `callback` will be invoked
+  // asynchronously once the observer responds via Mojo, or with `net::OK` if
+  // the observer disconnects before replying.
+  // Must not be called again while a previous call that returned
+  // `net::ERR_IO_PENDING` has not run its `callback` yet.
   net::Error OnConnected(const GURL& url,
                          const std::string& accept_ch_frame,
                          const net::HttpRequestHeaders& headers,
@@ -90,6 +100,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) AcceptCHFrameInterceptor {
   NeedsObserverCheckReason NeedsObserverCheckForTesting(
       const url::Origin& origin,
       const std::vector<mojom::WebClientHintsType>& hints);
+
+  bool IsObserverConnectedForTesting() const {
+    return accept_ch_frame_observer_.is_bound() &&
+           accept_ch_frame_observer_.is_connected();
+  }
 
  private:
   // Constructor is private to enforce creation via MaybeCreate or
@@ -115,7 +130,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) AcceptCHFrameInterceptor {
       const url::Origin& origin,
       const std::vector<mojom::WebClientHintsType>& hints);
 
+  void OnAcceptCHFrameReceivedReply(base::TimeTicks call_time, int status);
+  void OnObserverDisconnected();
+
   mojo::Remote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer_;
+  net::CompletionOnceCallback pending_callback_;
 
   // `enabled_client_hints_` is the client hints enabled when the
   // resource request was created. If ACCEPT_CH frame has client hints

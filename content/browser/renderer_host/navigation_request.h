@@ -2188,6 +2188,7 @@ class CONTENT_EXPORT NavigationRequest
   CreateNavigationEarlyHintsManagerParams(
       const network::mojom::EarlyHints& early_hints) override;
   bool ShouldClearParsedHeadersOnTestReceiveRedirect() override;
+  bool ShouldClearParsedHeadersOnTestReceiveResponse() override;
 
   // Selecting a `RenderFrameHost` to commit a navigation may occasionally fail.
   // When this happens, the navigation will bind a closure to continue the

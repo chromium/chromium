@@ -25,6 +25,17 @@ void TestNavigationURLLoaderDelegate::WaitForOnReceiveRedirect() {
   on_receive_redirect_.reset();
 }
 
+void TestNavigationURLLoaderDelegate::WaitForOnReceiveResponse() {
+  if (did_receive_response_) {
+    did_receive_response_ = false;
+    return;
+  }
+  on_receive_response_ = std::make_unique<base::RunLoop>();
+  on_receive_response_->Run();
+  on_receive_response_.reset();
+  did_receive_response_ = false;
+}
+
 void TestNavigationURLLoaderDelegate::WaitForRequestRedirected() {
   request_redirected_ = std::make_unique<base::RunLoop>();
   request_redirected_->Run();
@@ -49,6 +60,15 @@ bool TestNavigationURLLoaderDelegate::
     on_receive_redirect_->Quit();
   }
   return clear_parsed_headers_on_redirect_;
+}
+
+bool TestNavigationURLLoaderDelegate::
+    ShouldClearParsedHeadersOnTestReceiveResponse() {
+  did_receive_response_ = true;
+  if (on_receive_response_) {
+    on_receive_response_->Quit();
+  }
+  return clear_parsed_headers_on_response_;
 }
 
 void TestNavigationURLLoaderDelegate::OnRequestRedirected(
