@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -34,6 +35,7 @@
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
 #include "base/win/scoped_com_initializer.h"
+#include "media/base/limits.h"
 #include "media/base/video_types.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
 #include "media/capture/video/win/pin_base_win.h"
@@ -1033,6 +1035,159 @@ TEST_F(VideoCaptureDeviceWinTest, SinkFilterShutdownDetachesObserver) {
   pin_info = {};
   EXPECT_EQ(input_pin->QueryPinInfo(&pin_info), S_OK);
   EXPECT_EQ(pin_info.pFilter, nullptr);
+}
+
+TEST_F(VideoCaptureDeviceWinTest, InputPinRejectsInvalidMediaTypes) {
+  CountingSinkObserver observer;
+  auto sink_filter = base::MakeRefCounted<SinkFilter>(&observer);
+  ComPtr<IPin> input_pin = sink_filter->GetPin(0);
+  ComPtr<FakeOutputPin> upstream_pin = Make<FakeOutputPin>(nullptr);
+
+  AM_MEDIA_TYPE media_type;
+  VIDEOINFOHEADER video_info;
+  // Empty, or too large: wider or (in either orientation) taller than the
+  // maximum dimension, or larger than the maximum canvas.
+  struct Size {
+    LONG width;
+    LONG height;
+  };
+  for (const Size& size :
+       {Size{0, kTestHeight}, Size{-1, kTestHeight}, Size{kTestWidth, 0},
+        Size{kTestWidth, std::numeric_limits<LONG>::min()},
+        Size{0x20000000, kTestHeight},
+        Size{limits::kMaxDimension + 1, kTestHeight},
+        Size{kTestWidth, limits::kMaxDimension + 1},
+        Size{kTestWidth, -(limits::kMaxDimension + 1)},
+        Size{limits::kMaxDimension, limits::kMaxDimension}}) {
+    SCOPED_TRACE(testing::Message() << size.width << "x" << size.height);
+    PopulateI420MediaType(&media_type, &video_info);
+    video_info.bmiHeader.biWidth = size.width;
+    video_info.bmiHeader.biHeight = size.height;
+    EXPECT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), &media_type),
+              VFW_E_TYPE_NOT_ACCEPTED);
+  }
+
+  PopulateI420MediaType(&media_type, &video_info);
+  media_type.cbFormat = sizeof(VIDEOINFOHEADER) - 1;
+  EXPECT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), &media_type),
+            VFW_E_TYPE_NOT_ACCEPTED);
+
+  PopulateI420MediaType(&media_type, &video_info);
+  media_type.pbFormat = nullptr;
+  EXPECT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), &media_type),
+            VFW_E_TYPE_NOT_ACCEPTED);
+
+  // Sizes that VideoCaptureDeviceClient can't handle: odd for the
+  // chroma-subsampled formats, or below 2 for the others.
+  struct FormatCase {
+    const char* name;
+    GUID subtype;
+    DWORD compression;
+    LONG width;
+    LONG height;
+  };
+  const FormatCase kFormatCases[] = {
+      {"I420 49x48", kMediaSubTypeI420, MAKEFOURCC('I', '4', '2', '0'), 49, 48},
+      {"I420 48x47", kMediaSubTypeI420, MAKEFOURCC('I', '4', '2', '0'), 48, 47},
+      {"I420 48x-47", kMediaSubTypeI420, MAKEFOURCC('I', '4', '2', '0'), 48,
+       -47},
+      {"YUY2 49x48", MEDIASUBTYPE_YUY2, MAKEFOURCC('Y', 'U', 'Y', '2'), 49, 48},
+      {"UYVY 48x47", MEDIASUBTYPE_UYVY, MAKEFOURCC('U', 'Y', 'V', 'Y'), 48, 47},
+      {"MJPEG 1x48", MEDIASUBTYPE_MJPG, MAKEFOURCC('M', 'J', 'P', 'G'), 1, 48},
+      {"RGB24 64x1", MEDIASUBTYPE_RGB24, BI_RGB, 64, 1},
+      {"RGB32 1x48", MEDIASUBTYPE_RGB32, BI_RGB, 1, 48},
+  };
+  for (const FormatCase& test_case : kFormatCases) {
+    SCOPED_TRACE(test_case.name);
+    PopulateI420MediaType(&media_type, &video_info);
+    media_type.subtype = test_case.subtype;
+    video_info.bmiHeader.biCompression = test_case.compression;
+    video_info.bmiHeader.biWidth = test_case.width;
+    video_info.bmiHeader.biHeight = test_case.height;
+    EXPECT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), &media_type),
+              VFW_E_TYPE_NOT_ACCEPTED);
+  }
+
+  // Nothing was connected.
+  ComPtr<IPin> connected;
+  EXPECT_EQ(input_pin->ConnectedTo(&connected), VFW_E_NOT_CONNECTED);
+}
+
+TEST_F(VideoCaptureDeviceWinTest, InputPinAcceptsSupportedMediaTypes) {
+  CountingSinkObserver observer;
+  auto sink_filter = base::MakeRefCounted<SinkFilter>(&observer);
+  ComPtr<IPin> input_pin = sink_filter->GetPin(0);
+  ComPtr<FakeOutputPin> upstream_pin = Make<FakeOutputPin>(nullptr);
+
+  // Format block with trailing data, e.g. a palette.
+  struct {
+    VIDEOINFOHEADER video_info;
+    uint8_t extra[16];
+  } format_block = {};
+
+  struct Case {
+    const char* name;
+    GUID subtype;
+    DWORD compression;
+    LONG height;
+    size_t sample_size;
+    VideoPixelFormat pixel_format;
+  };
+  const Case kCases[] = {
+      {"Negative-height I420", kMediaSubTypeI420,
+       MAKEFOURCC('I', '4', '2', '0'), -kTestHeight, kI420FrameBytes,
+       PIXEL_FORMAT_I420},
+      {"MJPEG", MEDIASUBTYPE_MJPG, MAKEFOURCC('M', 'J', 'P', 'G'), kTestHeight,
+       1000, PIXEL_FORMAT_MJPEG},
+      {"Y16", kMediaSubTypeY16, MAKEFOURCC('Y', '1', '6', ' '), kTestHeight,
+       kTestWidth * kTestHeight * 2, PIXEL_FORMAT_Y16},
+  };
+  for (const Case& test_case : kCases) {
+    SCOPED_TRACE(test_case.name);
+    AM_MEDIA_TYPE media_type;
+    PopulateI420MediaType(&media_type, &format_block.video_info);
+    media_type.subtype = test_case.subtype;
+    media_type.cbFormat = sizeof(format_block);
+    format_block.video_info.bmiHeader.biCompression = test_case.compression;
+    format_block.video_info.bmiHeader.biHeight = test_case.height;
+    ASSERT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), &media_type),
+              S_OK);
+
+    EXPECT_EQ(DeliverSampleTo(input_pin.Get(), test_case.sample_size), S_OK);
+    EXPECT_EQ(observer.last_format().frame_size,
+              gfx::Size(kTestWidth, kTestHeight));
+    EXPECT_EQ(observer.last_format().pixel_format, test_case.pixel_format);
+    EXPECT_FALSE(observer.last_flip_y());
+    EXPECT_EQ(input_pin->Disconnect(), S_OK);
+  }
+
+  // An odd size is fine for a format that isn't chroma-subsampled.
+  {
+    AM_MEDIA_TYPE media_type;
+    VIDEOINFOHEADER video_info;
+    PopulateI420MediaType(&media_type, &video_info);
+    media_type.subtype = MEDIASUBTYPE_RGB24;
+    video_info.bmiHeader.biCompression = BI_RGB;
+    video_info.bmiHeader.biWidth = 49;
+    video_info.bmiHeader.biHeight = 47;
+    ASSERT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), &media_type),
+              S_OK);
+    EXPECT_EQ(input_pin->Disconnect(), S_OK);
+  }
+
+  // The largest even width with the largest even height that still fits the
+  // canvas limit is accepted. A sample sized for the test resolution is then
+  // too small and dropped.
+  constexpr int kMaxEvenWidth = limits::kMaxDimension & ~1;
+  AM_MEDIA_TYPE media_type;
+  VIDEOINFOHEADER video_info;
+  PopulateI420MediaType(&media_type, &video_info);
+  video_info.bmiHeader.biWidth = kMaxEvenWidth;
+  video_info.bmiHeader.biHeight = (limits::kMaxCanvas / kMaxEvenWidth) & ~1;
+  ASSERT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), &media_type),
+            S_OK);
+  EXPECT_EQ(DeliverSampleTo(input_pin.Get()), S_FALSE);
+  EXPECT_EQ(input_pin->Disconnect(), S_OK);
 }
 
 // Validating a media type doesn't change the negotiated format. While

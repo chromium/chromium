@@ -4,7 +4,9 @@
 
 #include "media/capture/video/win/sink_input_pin_win.h"
 
+#include <cstdlib>
 #include <cstring>
+#include <limits>
 #include <optional>
 
 // Avoid including strsafe.h via dshow as it will cause build warnings.
@@ -57,16 +59,24 @@ std::optional<ParsedMediaType> ParseMediaType(const AM_MEDIA_TYPE* media_type) {
     return std::nullopt;
   }
 
+  if (media_type->cbFormat < sizeof(VIDEOINFOHEADER) || !media_type->pbFormat) {
+    return std::nullopt;
+  }
+
   // Check for the sub types we support.
   const GUID sub_type = media_type->subtype;
   VIDEOINFOHEADER* pvi =
       reinterpret_cast<VIDEOINFOHEADER*>(media_type->pbFormat);
-  if (!pvi) {
+  if (pvi->bmiHeader.biWidth <= 0 || pvi->bmiHeader.biHeight == 0 ||
+      pvi->bmiHeader.biHeight == std::numeric_limits<LONG>::min()) {
     return std::nullopt;
   }
 
   const gfx::Size frame_size(pvi->bmiHeader.biWidth,
-                             abs(pvi->bmiHeader.biHeight));
+                             std::abs(pvi->bmiHeader.biHeight));
+  if (!VideoFrame::IsValidCodedSize(frame_size)) {
+    return std::nullopt;
+  }
 
   VideoPixelFormat pixel_format = PIXEL_FORMAT_UNKNOWN;
   bool flip_y = false;
@@ -102,6 +112,19 @@ std::optional<ParsedMediaType> ParseMediaType(const AM_MEDIA_TYPE* media_type) {
   } else {
     DVLOG(2) << __func__ << " unsupported media type: "
              << base::win::WStringFromGUID(sub_type);
+    return std::nullopt;
+  }
+
+  // VideoCaptureDeviceClient::OnIncomingCapturedData() CHECKs that frames other
+  // than Y16 are at least 2x2, and that chroma-subsampled ones have an even
+  // size.
+  if (pixel_format != PIXEL_FORMAT_Y16 &&
+      (frame_size.width() < 2 || frame_size.height() < 2)) {
+    return std::nullopt;
+  }
+  if ((pixel_format == PIXEL_FORMAT_I420 || pixel_format == PIXEL_FORMAT_YUY2 ||
+       pixel_format == PIXEL_FORMAT_UYVY) &&
+      (frame_size.width() % 2 || frame_size.height() % 2)) {
     return std::nullopt;
   }
 
