@@ -7,15 +7,12 @@
 #include <tuple>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/win/windows_version.h"
 
 namespace app_launch_prefetch {
 
 namespace {
-
-BASE_FEATURE(kExpandedPrefetchRange, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // /prefetch:# arguments to use when launching various process types. It has
 // been observed that when file reads are consistent for 3 process launches with
@@ -78,9 +75,7 @@ constexpr std::tuple<base::CommandLine::StringViewType, int>
 const std::tuple<base::CommandLine::StringViewType, int>& GetPrefetchInfo(
     SubprocessType type) {
   using enum SubprocessType;
-  if (base::win::GetVersion() >= base::win::Version::WIN11 &&
-      base::FeatureList::GetInstance() &&
-      base::FeatureList::IsEnabled(kExpandedPrefetchRange)) {
+  if (base::win::GetVersion() >= base::win::Version::WIN11) {
     // These are the prefetch arguments used on Windows versions
     // for Win11 and later. There are fewer processes using the same
     // values and this should lead to better App Launch PreFetch (ALPF)
