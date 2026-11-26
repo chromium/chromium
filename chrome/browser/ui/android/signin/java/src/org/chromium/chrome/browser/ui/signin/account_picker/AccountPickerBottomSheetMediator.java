@@ -48,7 +48,6 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -563,10 +562,12 @@ public class AccountPickerBottomSheetMediator
             return;
         }
 
-        if (accountId != null) {
-            mDefaultAccount =
-                    assertNonNull(AccountUtils.findAccountByAccountId(accounts, accountId));
+        @Nullable AccountInfo requestedAccount =
+                accountId == null ? null : AccountUtils.findAccountByAccountId(accounts, accountId);
+        if (requestedAccount != null) {
+            mDefaultAccount = requestedAccount;
         } else {
+            // Also reached if the requested account is signed in to another profile.
             AccountPreviewPreference preference = getValidAccountPreference(accounts);
             if (preference != null) {
                 mDefaultAccount =
@@ -666,10 +667,8 @@ public class AccountPickerBottomSheetMediator
     private List<AccountInfo> getAccounts() {
         if (SigninFeatureMap.isEnabled(
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2)) {
-            return mIdentityManager.getRefreshTokensLoadingState()
-                            == RefreshTokensLoadingState.SUCCEEDED
-                    ? mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken()
-                    : List.of();
+            // Excludes the accounts signed in to other profiles.
+            return mProfileDataCache.getFilteredAccountInfoIfFulfilledOrEmpty();
         }
         return AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts());
     }

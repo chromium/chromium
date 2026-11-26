@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -96,6 +97,8 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.FakeProfileAttributesStorage;
+import org.chromium.chrome.browser.profiles.ProfileAttributesStorage;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.AccountPreviewPreference;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
@@ -133,6 +136,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Tests account picker bottom sheet of the web signin flow.
@@ -205,6 +209,7 @@ public class AccountPickerBottomSheetTest {
     private final boolean mIsIdentityManagerSourceOfAccounts;
     private final AtomicReference<Boolean> mIsNextSigninSuccessful = new AtomicReference<>(true);
     private WebPageStation mPage;
+    private FakeProfileAttributesStorage mProfileAttributesStorage;
     private AccountPickerBottomSheetCoordinator mCoordinator;
     private SigninTestUtil.CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private boolean mIsAccountManaged;
@@ -220,6 +225,9 @@ public class AccountPickerBottomSheetTest {
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2,
                 mIsIdentityManagerSourceOfAccounts);
         mPage = mActivityTestRule.startOnBlankPage();
+        mProfileAttributesStorage =
+                ThreadUtils.runOnUiThreadBlocking(FakeProfileAttributesStorage::new);
+        ProfileAttributesStorage.setInstanceForTesting(mProfileAttributesStorage);
         mAutoTestRule.setIsAutomotive(false);
         mSigninAccessPoint = SigninAccessPoint.WEB_SIGNIN;
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -1012,6 +1020,56 @@ public class AccountPickerBottomSheetTest {
         buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
 
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+
+        checkCollapsedAccountListForWebSignin(TestAccounts.TEST_ACCOUNT_NO_NAME);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testAccountOfOtherProfileIsNotSelectedByDefault() {
+        assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        setPrimaryAccountsOfProfiles(TestAccounts.ACCOUNT1);
+
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+
+        checkCollapsedAccountListForWebSignin(TestAccounts.TEST_ACCOUNT_NO_NAME);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testSelectedAccountSignedInToOtherProfileOnCollapsedSheet() {
+        assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        checkCollapsedAccountListForWebSignin(TestAccounts.ACCOUNT1);
+
+        setPrimaryAccountsOfProfiles(TestAccounts.ACCOUNT1);
+
+        checkCollapsedAccountListForWebSignin(TestAccounts.TEST_ACCOUNT_NO_NAME);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testZeroAccountWhenAllAccountsAreSignedInToOtherProfiles() {
+        assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+
+        setPrimaryAccountsOfProfiles(TestAccounts.ACCOUNT1, TestAccounts.TEST_ACCOUNT_NO_NAME);
+
+        checkZeroAccountBottomSheet();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPROFILE)
+    public void testRequestedAccountSignedInToOtherProfileIsIgnored() {
+        assumeTrue(mIsIdentityManagerSourceOfAccounts);
+        setPrimaryAccountsOfProfiles(TestAccounts.ACCOUNT1);
+
+        buildAndShowBottomSheetForAccount(
+                AccountPickerLaunchMode.DEFAULT, TestAccounts.ACCOUNT1.getId());
 
         checkCollapsedAccountListForWebSignin(TestAccounts.TEST_ACCOUNT_NO_NAME);
     }
@@ -2229,6 +2287,13 @@ public class AccountPickerBottomSheetTest {
         onView(withId(R.id.account_picker_account_list)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_dismiss_button)).check(matches(not(isDisplayed())));
+    }
+
+    private void setPrimaryAccountsOfProfiles(AccountInfo... accounts) {
+        List<CoreAccountId> accountIds =
+                Arrays.stream(accounts).map(AccountInfo::getId).collect(Collectors.toList());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mProfileAttributesStorage.setPrimaryAccountIds(accountIds));
     }
 
     private static void checkZeroAccountBottomSheet() {
