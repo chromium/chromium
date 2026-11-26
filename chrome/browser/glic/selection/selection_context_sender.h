@@ -70,6 +70,7 @@ class SelectionContextSender : public ::selection::PageSelection {
  private:
   void OnSidePanelStateChanged(GlicSidePanelCoordinator::State state);
   void OnGlobalPanelShowHide();
+  void OnInvokeFinished();
   void OnTabActivated(tabs::TabInterface* tab);
   void OnPageContextEligibilityChanged(
       optimization_guide::PageContextEligibilityStatus status);
@@ -109,6 +110,7 @@ class SelectionContextSender : public ::selection::PageSelection {
 
   base::CallbackListSubscription side_panel_state_subscription_;
   base::CallbackListSubscription global_show_hide_subscription_;
+  base::CallbackListSubscription invoke_finished_subscription_;
   base::CallbackListSubscription page_context_eligibility_subscription_;
   base::CallbackListSubscription discard_contents_subscription_;
   base::CallbackListSubscription did_activate_subscription_;

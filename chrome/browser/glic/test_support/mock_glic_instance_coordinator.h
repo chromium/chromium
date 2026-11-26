@@ -81,6 +81,10 @@ class MockGlicInstanceCoordinator
               AddGlobalShowHideCallback,
               (base::RepeatingClosure),
               (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              AddInvokeFinishedCallback,
+              (base::RepeatingClosure),
+              (override));
   MOCK_METHOD(void,
               Reload,
               (content::RenderFrameHost * render_frame_host),

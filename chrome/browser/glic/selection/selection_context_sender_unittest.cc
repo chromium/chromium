@@ -106,6 +106,10 @@ class SelectionContextSenderTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault([this](base::RepeatingClosure cb) {
           return global_show_hide_callbacks_.Add(std::move(cb));
         });
+    ON_CALL(mock_service_->mock_coordinator(), AddInvokeFinishedCallback(_))
+        .WillByDefault([this](base::RepeatingClosure cb) {
+          return invoke_finished_callbacks_.Add(std::move(cb));
+        });
 
     eligibility_helper_ =
         std::make_unique<FakePageContextEligibilityHelper>(mock_tab_);
@@ -179,6 +183,7 @@ class SelectionContextSenderTest : public ChromeRenderViewHostTestHarness {
   tabs::MockTabInterface mock_tab_;
   ui::UnownedUserDataHost user_data_host_;
   base::RepeatingClosureList global_show_hide_callbacks_;
+  base::RepeatingClosureList invoke_finished_callbacks_;
   base::RepeatingCallbackList<
       void(tabs::TabInterface*, content::WebContents*, content::WebContents*)>
       discard_callbacks_;
@@ -469,6 +474,48 @@ TEST_F(SelectionContextSenderTest, SkipsPushWhileInvoking) {
   EXPECT_CALL(instance, SendAdditionalContext).Times(1);
   sender_->SetText(u"Selected text");
   EXPECT_TRUE(sender_->has_sent_selection_context());
+}
+
+// The panel shown during an invocation gets the selection once it finishes.
+TEST_F(SelectionContextSenderTest, InvokeFinishedSendsSelection) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  ON_CALL(instance, IsInvoking()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  sender_->SetText(u"Selected text");
+
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+
+  ON_CALL(instance, IsInvoking()).WillByDefault(Return(false));
+  EXPECT_CALL(instance, SendAdditionalContext).Times(1);
+  invoke_finished_callbacks_.Notify();
+  EXPECT_TRUE(sender_->has_sent_selection_context());
+}
+
+// Deselecting during an invocation clears the chip once it finishes.
+TEST_F(SelectionContextSenderTest, DeselectDuringInvokeTellsNoneAfter) {
+  NiceMock<MockGlicInstance> instance;
+  ON_CALL(instance, IsShowing()).WillByDefault(Return(true));
+  SetInstance(&instance);
+  side_panel_coordinator_->SetState(GlicSidePanelCoordinator::State::kShown);
+  EXPECT_CALL(instance, SendAdditionalContext).Times(1);
+  sender_->SetText(u"Selected text");
+
+  ON_CALL(instance, IsInvoking()).WillByDefault(Return(true));
+  EXPECT_CALL(instance, SendAdditionalContext).Times(0);
+  sender_->SetText(u"");
+
+  ON_CALL(instance, IsInvoking()).WillByDefault(Return(false));
+  mojom::AdditionalContextPtr sent;
+  EXPECT_CALL(instance, SendAdditionalContext)
+      .WillOnce([&sent](mojom::AdditionalContextPtr context) {
+        sent = std::move(context);
+      });
+  invoke_finished_callbacks_.Notify();
+  ASSERT_TRUE(sent);
+  EXPECT_TRUE(sent->parts.empty());
+  EXPECT_FALSE(sender_->has_sent_selection_context());
 }
 
 TEST_F(SelectionContextSenderTest, SkipsPushWhenInstanceHiddenOrMissing) {

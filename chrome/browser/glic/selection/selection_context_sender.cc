@@ -48,6 +48,10 @@ SelectionContextSender::SelectionContextSender(tabs::TabInterface& tab)
         glic_keyed_service_->instance_coordinator().AddGlobalShowHideCallback(
             base::BindRepeating(&SelectionContextSender::OnGlobalPanelShowHide,
                                 weak_ptr_factory_.GetWeakPtr()));
+    invoke_finished_subscription_ =
+        glic_keyed_service_->instance_coordinator().AddInvokeFinishedCallback(
+            base::BindRepeating(&SelectionContextSender::OnInvokeFinished,
+                                weak_ptr_factory_.GetWeakPtr()));
   }
 
   if (auto* helper = tabs::PageContextEligibilityHelper::From(&*tab_)) {
@@ -115,6 +119,12 @@ void SelectionContextSender::OnGlobalPanelShowHide() {
   Sync(Resend::kSelection);
 }
 
+// `Sync()` skips while an invocation is in flight, and the panel may have
+// shown meanwhile.
+void SelectionContextSender::OnInvokeFinished() {
+  Sync(Resend::kSelection);
+}
+
 // Another tab may have changed the floating window's chip, so tell it this
 // tab's selection, even "none".
 void SelectionContextSender::OnTabActivated(tabs::TabInterface* tab) {
@@ -141,7 +151,6 @@ void SelectionContextSender::Sync(Resend resend) {
     return;
   }
   GlicInstance* instance = glic_keyed_service_->GetInstanceForTab(&*tab_);
-  // TODO(b:579078690): Sync again when the invocation finishes.
   if (!instance || !instance->IsShowing() || instance->IsLiveMode() ||
       instance->IsInvoking()) {
     return;

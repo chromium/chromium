@@ -224,6 +224,26 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
       WaitForWebUiContentsVisibility(instance, content::Visibility::VISIBLE));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeFinishedCallbackRunsAfterInvoke) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  base::RunLoop run_loop;
+  bool invoking_when_finished = true;
+  base::CallbackListSubscription subscription =
+      coordinator().AddInvokeFinishedCallback(base::BindLambdaForTesting([&]() {
+        GlicInstance* instance = coordinator().GetInstanceImplForTab(tab);
+        invoking_when_finished = instance && instance->IsInvoking();
+        run_loop.Quit();
+      }));
+
+  GlicInvokeOptions options(Target(*tab),
+                            mojom::InvocationSource::kTopChromeButton);
+  coordinator().Invoke(std::move(options));
+  run_loop.Run();
+
+  EXPECT_FALSE(invoking_when_finished);
+}
+
 // ClearPrimaryAccount is not supported on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SignOutClosesAllInstances DISABLED_SignOutClosesAllInstances

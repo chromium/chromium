@@ -137,6 +137,11 @@ class GlicInstanceCoordinator {
   virtual base::CallbackListSubscription AddGlobalShowHideCallback(
       base::RepeatingClosure callback) = 0;
 
+  // Registers a callback to be run after any invocation ends, whether it
+  // succeeded, failed, or was cancelled.
+  virtual base::CallbackListSubscription AddInvokeFinishedCallback(
+      base::RepeatingClosure callback) = 0;
+
   // Reloads the glic web contents or the FRE's web contents (depending on
   // which is currently visible).
   virtual void Reload(content::RenderFrameHost* render_frame_host) = 0;

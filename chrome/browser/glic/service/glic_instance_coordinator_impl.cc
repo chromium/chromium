@@ -1085,6 +1085,7 @@ void GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete(
   // This destroys `handler`, which is what the completion callback contract
   // requires.
   RemoveInvokeHandler(instance, handler);
+  invoke_finished_callback_list_.Notify();
 }
 
 void GlicInstanceCoordinatorImpl::CloseAndShutdownInstanceWithFrame(
@@ -1133,6 +1134,12 @@ base::CallbackListSubscription
 GlicInstanceCoordinatorImpl::AddGlobalShowHideCallback(
     base::RepeatingClosure callback) {
   return global_show_hide_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+GlicInstanceCoordinatorImpl::AddInvokeFinishedCallback(
+    base::RepeatingClosure callback) {
+  return invoke_finished_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription

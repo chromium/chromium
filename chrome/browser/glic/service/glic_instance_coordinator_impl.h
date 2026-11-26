@@ -203,6 +203,8 @@ class GlicInstanceCoordinatorImpl
 
   base::CallbackListSubscription AddGlobalShowHideCallback(
       base::RepeatingClosure callback) override;
+  base::CallbackListSubscription AddInvokeFinishedCallback(
+      base::RepeatingClosure callback) override;
   using InstanceCreatedCallback =
       base::RepeatingCallback<void(GlicInstanceImpl*)>;
   base::CallbackListSubscription AddInstanceCreatedCallback(
@@ -397,6 +399,7 @@ class GlicInstanceCoordinatorImpl
   base::RepeatingCallbackList<void(GlicInstance*)>
       active_instance_changed_callback_list_;
   base::RepeatingClosureList global_show_hide_callback_list_;
+  base::RepeatingClosureList invoke_finished_callback_list_;
   base::RepeatingCallbackList<void(GlicInstanceImpl*)>
       instance_created_callback_list_;
 
