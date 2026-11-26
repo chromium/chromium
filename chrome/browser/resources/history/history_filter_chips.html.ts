@@ -12,6 +12,38 @@ export function getHtml(this: HistoryFilterChipsElement) {
 <div id="wrapper" style="position: relative;">
   <div class="filter-chip-container" role="group"
       aria-label="$i18n{sourceFilterChipsAriaLabel}">
+    ${this.showTimePeriodFilter ? html`
+      <div class="filter-chips">
+        <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
+        <select id="timePeriodSelect" class="md-select"
+            @change="${this.onTimePeriodSelectChange_}">
+          ${this.timePeriodOptions.map(item => html`
+            <option value="${item.id}"
+                .selected="${this.isTimePeriodSelected_(item)}">
+              ${item.label}
+            </option>
+          `)}
+        </select>
+      </div>
+    ` : ''}
+    ${this.showDeviceFilter ? html`
+      <div class="filter-chips">
+        <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
+        <select id="deviceFilterChip" class="md-select"
+            @mousedown="${this.onDeviceSelectMousedown_}"
+            @change="${this.onDeviceSelectChange_}">
+          <option value="-1" .selected="${this.clientIds.length === 0}">
+            $i18n{deviceFilterAllDevices}
+          </option>
+          ${this.devices.map((item, index) => html`
+            <option value="${index}"
+                .selected="${this.isDeviceSelected_(item)}">
+              ${item.name}
+            </option>
+          `)}
+        </select>
+      </div>
+    ` : ''}
     ${this.showActorFilter ? html`
       ${this.showActorFilterDropDownVersion_() ? html`
         <div class="filter-chips">
@@ -44,38 +76,6 @@ export function getHtml(this: HistoryFilterChipsElement) {
           $i18n{sourceFilterChipActor}
         </cr-chip>
       `}
-    ` : ''}
-    ${this.showDeviceFilter ? html`
-      <div class="filter-chips">
-        <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
-        <select id="deviceFilterChip" class="md-select"
-            @mousedown="${this.onDeviceSelectMousedown_}"
-            @change="${this.onDeviceSelectChange_}">
-          <option value="-1" .selected="${this.clientIds.length === 0}">
-            $i18n{deviceFilterAllDevices}
-          </option>
-          ${this.devices.map((item, index) => html`
-            <option value="${index}"
-                .selected="${this.isDeviceSelected_(item)}">
-              ${item.name}
-            </option>
-          `)}
-        </select>
-      </div>
-    ` : ''}
-    ${this.showTimePeriodFilter ? html`
-      <div class="filter-chips">
-        <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
-        <select id="timePeriodSelect" class="md-select"
-            @change="${this.onTimePeriodSelectChange_}">
-          ${this.timePeriodOptions.map(item => html`
-            <option value="${item.id}"
-                .selected="${this.isTimePeriodSelected_(item)}">
-              ${item.label}
-            </option>
-          `)}
-        </select>
-      </div>
     ` : ''}
     ${this.hasActiveDomainFilter_() ? html`
       <div id="domainFilterChip">

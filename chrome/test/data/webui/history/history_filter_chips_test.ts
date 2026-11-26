@@ -844,9 +844,9 @@ suite('HistoryFilterChipsTest', function() {
     assertTrue(!!actorFilterChip);
     assertTrue(!!deviceFilterChip);
 
-    // When both filters are shown, focus moves to the actor filter (first).
-    deviceFilterChip.value = '0';
-    deviceFilterChip.dispatchEvent(new Event('change'));
+    // When both filters are shown, focus moves to the device filter (first).
+    actorFilterChip.value = 'user';
+    actorFilterChip.dispatchEvent(new Event('change'));
     await microtasksFinished();
 
     let clearAllButton =
@@ -857,12 +857,12 @@ suite('HistoryFilterChipsTest', function() {
     clearAllButton.click();
     await microtasksFinished();
 
-    assertEquals(actorFilterChip, element.shadowRoot.activeElement);
+    assertEquals(deviceFilterChip, element.shadowRoot.activeElement);
 
-    // When the actor filter is hidden, focus moves to the device filter.
-    element.showActorFilter = false;
-    deviceFilterChip.value = '0';
-    deviceFilterChip.dispatchEvent(new Event('change'));
+    // When the device filter is hidden, focus moves to the actor filter.
+    element.showDeviceFilter = false;
+    actorFilterChip.value = 'user';
+    actorFilterChip.dispatchEvent(new Event('change'));
     await microtasksFinished();
 
     clearAllButton =
@@ -873,6 +873,32 @@ suite('HistoryFilterChipsTest', function() {
     clearAllButton.click();
     await microtasksFinished();
 
-    assertEquals(deviceFilterChip, element.shadowRoot.activeElement);
+    assertEquals(actorFilterChip, element.shadowRoot.activeElement);
+  });
+
+  test('FilterOrder', async () => {
+    loadTimeData.overrideValues({
+      isBrowsingHistoryFilterByActorEnabled: true,
+    });
+    element.showActorFilter = true;
+    element.showDeviceFilter = true;
+    element.showTimePeriodFilter = true;
+    element.showDomainFilter = true;
+    element.domain = 'example.com';
+    await microtasksFinished();
+
+    const filterIds = Array.from(
+        element.shadowRoot.querySelectorAll(
+            'select, #domainFilterChip, #clearAllButton'),
+        el => el.id);
+    assertDeepEquals(
+        [
+          'timePeriodSelect',
+          'deviceFilterChip',
+          'actorFilterChip',
+          'domainFilterChip',
+          'clearAllButton',
+        ],
+        filterIds);
   });
 });
