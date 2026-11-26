@@ -41,7 +41,7 @@ import zlib
 # should not be changed manually.
 # They are also read by build/config/compiler/BUILD.gn.
 CLANG_REVISION = 'llvmorg-24-init-22088-g7ba4f04e'
-CLANG_SUB_REVISION = 2
+CLANG_SUB_REVISION = 3
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '24'

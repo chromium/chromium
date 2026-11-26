@@ -792,6 +792,17 @@ def BuildMimalloc(cc, cxx, cmake_sysroot, mac_deployment_target):
     '-DMI_BUILD_TESTS=OFF',
     # Make the library define malloc(), free(), operator new, etc.
     '-DMI_OVERRIDE=ON',
+    # Do not call madvise(MADV_HUGEPAGE) on mimalloc's arenas. Under Linux's
+    # default transparent_hugepage/defrag=madvise, MADV_HUGEPAGE triggers
+    # synchronous compaction and direct reclaim when physical memory fragments,
+    # causing severe build stalls. Define the MI_NO_THP C macro directly rather
+    # than passing -DMI_NO_THP=ON: the CMake option defines
+    # MI_DEFAULT_ALLOW_THP=0, which also calls prctl(PR_SET_THP_DISABLE, 1) and
+    # disables opportunistic THP on enabled=always hosts (regressing clang and
+    # lld by ~16%). Defining MI_NO_THP skips only madvise(MADV_HUGEPAGE) while
+    # still allowing opportunistic THP and respecting MIMALLOC_ALLOW_THP=0 at
+    # runtime.
+    '-DMI_EXTRA_CPPDEFS=MI_NO_THP=1',
   ]
   RunCommand(['cmake', '-GNinja'] + cmake_args + ['..'], setenv=True)
   RunCommand(['ninja', 'mimalloc-static'], setenv=True)
