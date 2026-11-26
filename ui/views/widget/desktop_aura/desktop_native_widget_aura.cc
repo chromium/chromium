@@ -527,7 +527,21 @@ void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
     // Keep another window in the root (e.g. a browser-modal dialog) active.
     const bool other_window_active =
         active_window && !content_window_->Contains(active_window);
-    if (GetWidget()->HasFocusManager() && !other_window_active) {
+    // Restore activation to the child window (e.g. a bubble) that was active
+    // when this widget lost activation.
+    aura::Window* child_to_reactivate =
+        window_to_reactivate_.windows().empty()
+            ? nullptr
+            : window_to_reactivate_.windows().front();
+    window_to_reactivate_.RemoveAll();
+    if (!other_window_active && child_to_reactivate &&
+        host_->window()->Contains(child_to_reactivate) &&
+        child_to_reactivate->IsVisible()) {
+      activation_client->ActivateWindow(child_to_reactivate);
+      if (!is_alive()) {
+        return;
+      }
+    } else if (GetWidget()->HasFocusManager() && !other_window_active) {
       // This function can be called before the focus manager has had a
       // chance to set the focused view. In which case we should get the
       // last focused view.
@@ -610,6 +624,11 @@ void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
     // aura::Window. This way if a child widget is active it gets correctly
     // deactivated (child widgets don't get native desktop activation changes,
     // only aura activation changes).
+    window_to_reactivate_.RemoveAll();
+    if (active_window && active_window != content_window_ &&
+        host_->window()->Contains(active_window)) {
+      window_to_reactivate_.Add(active_window);
+    }
     if (active_window) {
       activation_client->DeactivateWindow(active_window);
       if (!is_alive()) {
@@ -1167,6 +1186,9 @@ bool DesktopNativeWidgetAura::IsVisibleOnScreen() const {
 }
 
 void DesktopNativeWidgetAura::Activate() {
+  // An explicit activation request targets `content_window_`, not the child
+  // window that was active when this widget lost activation.
+  window_to_reactivate_.RemoveAll();
   if (desktop_window_tree_host_ && content_window_) {
     const bool was_tree_active = desktop_window_tree_host_->IsActive();
     auto weak_this = weak_ptr_factory_.GetWeakPtr();

@@ -188,6 +188,49 @@ TEST_F(DesktopNativeWidgetAuraTest, HostDeactivationDoesNotActivateChild) {
   top_level.CloseNow();
 }
 
+// Verifies that a child widget (e.g. a bubble) that was active when the window
+// tree host lost activation becomes active again when the host regains
+// activation, e.g. after a native file chooser opened from the bubble closes.
+// See crbug.com/40700105.
+TEST_F(DesktopNativeWidgetAuraTest, HostReactivationRestoresActiveChild) {
+  MockActivationController activation_controller;
+
+  Widget top_level;
+  top_level.Init(CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                              Widget::InitParams::TYPE_WINDOW));
+  top_level.Show();
+  top_level.Activate();
+  ASSERT_TRUE(top_level.IsActive());
+
+  Widget child;
+  Widget::InitParams child_params =
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  child_params.parent = top_level.GetNativeView();
+  child_params.context = top_level.GetNativeWindow();
+  child_params.native_widget = new NativeWidgetAura(&child);
+  child.Init(std::move(child_params));
+  child.Show();
+  ASSERT_TRUE(child.IsActive());
+
+  // Another top-level window, e.g. a native file chooser, takes activation.
+  auto dialog = std::make_unique<Widget>();
+  dialog->Init(CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW));
+  dialog->Show();
+  dialog->Activate();
+  ASSERT_TRUE(dialog->IsActive());
+  ASSERT_FALSE(child.IsActive());
+
+  // Closing it returns activation to `top_level`'s host.
+  dialog.reset();
+  EXPECT_TRUE(child.IsActive());
+  EXPECT_FALSE(wm::IsActiveWindow(top_level.GetNativeView()));
+
+  child.CloseNow();
+  top_level.CloseNow();
+}
+
 // Verifies that synchronously destroying a CLIENT_OWNS_WIDGET Widget during
 // HandleActivationChanged() (leaving `weak_this` alive while clearing
 // `native_widget_delegate_`) does not dereference a null Widget, and that

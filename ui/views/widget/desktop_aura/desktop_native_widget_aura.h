@@ -15,6 +15,7 @@
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -351,6 +352,10 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   std::unique_ptr<wm::WindowModalityController> window_modality_controller_;
 
   bool restore_focus_on_activate_ = false;
+
+  // The child window that was active when this widget lost activation. It is
+  // activated again when this widget regains activation.
+  aura::WindowTracker window_to_reactivate_;
 
   // This flag is used to ensure that the activation client correctly sees
   // whether this widget should receive activation when handling an activation
