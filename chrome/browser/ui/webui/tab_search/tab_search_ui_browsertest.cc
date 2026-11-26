@@ -37,11 +37,9 @@
 #include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
-#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/variations/variations_test_utils.h"
 #include "content/public/common/content_features.h"
-#include "ui/webui/resources/grit/webui_code_cache_resources_map.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 
 class TabSearchUIBrowserTest : public InProcessBrowserTest {
@@ -278,9 +276,6 @@ class TabSearchUIBundledCodeCacheBrowserTest
 
 IN_PROC_BROWSER_TEST_P(TabSearchUIBundledCodeCacheBrowserTest,
                        SuccessfullyLoadsCodeCache) {
-  // Assert the bundled code-cache map is non-empty.
-  EXPECT_FALSE(webui::GetWebUIResourceUrlToCodeCacheMap().empty());
-
   // Fetch initial histogram counts. We cannot assume these are 0 since other
   // WebUIs (e.g. InitialWebUI) might have loaded during browser startup and
   // fetched shared resources from the bundled cache. We instead verify that

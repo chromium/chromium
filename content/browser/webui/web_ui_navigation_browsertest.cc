@@ -971,9 +971,9 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 }
 
 // Verify that, for WebUIs with a shared process lock host, the embedder is
-// asked about V8 feature flag overrides and WebUI bundled code caching with
-// the WebUI's site URL rather than the shared process lock URL, and that these
-// WebUIs still share a renderer process.
+// asked about V8 feature flag overrides with the WebUI's site URL rather than
+// the shared process lock URL, and that these WebUIs still share a renderer
+// process.
 IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
                        SharedProcessLockPassesSiteURLToEmbedder) {
   // A ContentBrowserClient that returns true only for the site URLs of the
@@ -985,23 +985,12 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
     bool DisallowV8FeatureFlagOverridesForSite(const GURL& site_url) override {
       return IsWebUISiteURL(site_url);
     }
-    bool IsWebUIBundledCodeCachingEnabled(const GURL& site_url) const override {
-      bundled_code_caching_urls_.push_back(site_url);
-      return IsWebUISiteURL(site_url);
-    }
-
-    const std::vector<GURL>& bundled_code_caching_urls() const {
-      return bundled_code_caching_urls_;
-    }
 
    private:
     static bool IsWebUISiteURL(const GURL& url) {
       return url == GURL("chrome://foo.web-ui/") ||
              url == GURL("chrome://bar.web-ui/");
     }
-
-    // URLs passed to `IsWebUIBundledCodeCachingEnabled()`.
-    mutable std::vector<GURL> bundled_code_caching_urls_;
   };
   SiteURLContentBrowserClient browser_client;
 
@@ -1041,13 +1030,6 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   RenderProcessHost* process1 = site_instance1->GetProcess();
   EXPECT_TRUE(process1->DisallowV8FeatureFlagOverrides());
   EXPECT_FALSE(std::ranges::contains(spare_ids, process1->GetID()));
-
-  // WebUI bundled code caching is queried with the site URL, and never with
-  // the process lock URL.
-  EXPECT_TRUE(std::ranges::contains(browser_client.bundled_code_caching_urls(),
-                                    GURL("chrome://foo.web-ui/")));
-  EXPECT_FALSE(std::ranges::contains(browser_client.bundled_code_caching_urls(),
-                                     GURL("chrome://web-ui/")));
 
   // Visit the second WebUI page in a new window. It reuses the process of the
   // first WebUI, since the embedder's answer for its site URL matches.

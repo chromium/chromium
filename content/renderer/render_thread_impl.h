@@ -435,8 +435,6 @@ class CONTENT_EXPORT RenderThreadImpl
 #endif
   void SetIsWebSecurityDisabled(bool value) override;
   void SetIsIsolatedContext(bool value) override;
-  void SetWebUIResourceUrlToCodeCacheMap(
-      const base::flat_map<GURL, int>& resource_map) override;
 
   bool RendererIsHidden() const;
   void OnRendererHidden();

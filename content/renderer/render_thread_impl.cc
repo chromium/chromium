@@ -1368,11 +1368,6 @@ void RenderThreadImpl::SetIsIsolatedContext(bool value) {
   blink::SetIsIsolatedContext(value);
 }
 
-void RenderThreadImpl::SetWebUIResourceUrlToCodeCacheMap(
-    const base::flat_map<GURL, int>& resource_map) {
-  blink_platform_impl_->set_webui_resource_to_code_cache_id_map(resource_map);
-}
-
 void RenderThreadImpl::CompositingModeFallbackToSoftware() {
   gpu_->LoseChannel();
   is_gpu_compositing_disabled_ = true;

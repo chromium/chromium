@@ -417,7 +417,6 @@ source_set("browser_tests") {
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/most_visited",
       "//chrome/browser/ui/webui/customize_buttons",
-      "//chrome/browser/ui/webui/util",
       "//chrome/test/base:testing_browser_process",
       "//chrome/test/user_education:impl",
       "//components/metrics:content",

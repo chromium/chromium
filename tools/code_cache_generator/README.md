@@ -153,12 +153,12 @@ At runtime `chrome::FILE_WEBUI_CODE_CACHE_PACK`, declared in
 [chrome_paths.cc](/chrome/common/chrome_paths.cc), points at the file for the
 running CPU. Only renderer processes load that pak, in
 `ChromeMainDelegate::PreSandboxStartup()` in
-[chrome_main_delegate.cc](/chrome/app/chrome_main_delegate.cc). The browser
-process builds its URL to resource ID map in
-`webui::GetWebUIResourceUrlToCodeCacheMap()`, in
-[webui_util_desktop.cc](/chrome/browser/ui/webui/util/webui_util_desktop.cc),
-from generated resource maps that are compiled into the binary, so it never
-reads the cache bytes.
+[chrome_main_delegate.cc](/chrome/app/chrome_main_delegate.cc). Renderer
+processes look up resource IDs directly from the compiled GRIT resource maps in
+`//chrome/renderer/webui/` via
+`ChromeContentRendererClient::GetWebUIBundledCodeCacheResourceId()` when
+`--enable-webui-bundled-code-cache` is passed, so the browser process never
+reads or maps the cache resources at runtime.
 
 ### Rejected: both caches in resources.pak
 

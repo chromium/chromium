@@ -47,9 +47,7 @@
 #include "content/public/test/test_utils.h"
 #include "ui/webui/buildflags.h"
 #if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
-#include "base/containers/flat_map.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/common/content_features.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
@@ -587,17 +585,6 @@ IN_PROC_BROWSER_TEST_P(WebUiNtpBundledCodeCacheBrowserTest,
       "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode";
   static constexpr char kConsumeCacheHistogram[] =
       "Blink.ResourceRequest.WebUIBundledCachedMetadataHandler.ConsumeCache";
-
-  // Every NTP bundle chunk maps to a code cache only when the feature is on.
-  const base::flat_map<GURL, int> code_cache_map =
-      webui::GetWebUIResourceUrlToCodeCacheMap();
-  for (const char* script_url : {"chrome://new-tab-page/new_tab_page.js",
-                                 "chrome://new-tab-page/lazy_load.js",
-                                 "chrome://new-tab-page/shared.rollup.js"}) {
-    EXPECT_EQ(GetParam().code_cache_enabled,
-              code_cache_map.contains(GURL(script_url)))
-        << script_url;
-  }
 
   auto fetch_histograms = [] {
     content::FetchHistogramsFromChildProcesses();

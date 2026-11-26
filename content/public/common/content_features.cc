@@ -1453,10 +1453,6 @@ BASE_FEATURE(kWebUICodeCache, base::FEATURE_DISABLED_BY_DEFAULT);
 // See crbug.com/375509504 for details.
 BASE_FEATURE(kWebUIBundledCodeCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables populating the WebUI URL to code cache resource map.
-const base::FeatureParam<bool> kWebUIBundledCodeCacheGenerateResourceMap{
-    &kWebUIBundledCodeCache, "WebUIBundledCodeCacheGenerateResourceMap", true};
-
 #if !BUILDFLAG(IS_ANDROID)
 // Reports WebUI Javascript errors to the crash server on all desktop platforms.
 // Previously, this was only supported on ChromeOS and Linux.

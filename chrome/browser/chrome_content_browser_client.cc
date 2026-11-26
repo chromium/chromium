@@ -3994,20 +3994,6 @@ std::string ChromeContentBrowserClient::GetWebUIHostnameForCodeCacheMetrics(
 #endif
 }
 
-bool ChromeContentBrowserClient::IsWebUIBundledCodeCachingEnabled(
-    const GURL& site_url) const {
-  return IsWebUIBundledCodeCacheEnabledForSite(site_url);
-}
-
-base::flat_map<GURL, int>
-ChromeContentBrowserClient::GetWebUIResourceUrlToCodeCacheMap() const {
-#if !BUILDFLAG(IS_ANDROID)
-  return webui::GetWebUIResourceUrlToCodeCacheMap();
-#else
-  return ContentBrowserClient::GetWebUIResourceUrlToCodeCacheMap();
-#endif
-}
-
 void ChromeContentBrowserClient::AllowCertificateError(
     content::WebContents* web_contents,
     int cert_error,

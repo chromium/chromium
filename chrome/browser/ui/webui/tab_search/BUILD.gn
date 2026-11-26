@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//ui/webui/webui_features.gni")
 
 assert(is_linux || is_chromeos || is_win || is_mac)
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
@@ -121,7 +120,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/tabs/saved_tab_groups:test_support",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/metrics_reporter:test_support",
-    "//chrome/browser/ui/webui/util",
     "//chrome/browser/vr",
     "//chrome/test:test_support",
     "//components/metrics:content",
@@ -135,7 +133,4 @@ source_set("browser_tests") {
     "//testing/gtest",
     "//ui/webui:buildflags",
   ]
-  if (enable_webui_generate_code_cache) {
-    deps += [ "//ui/webui/resources:code_cache_resources" ]
-  }
 }

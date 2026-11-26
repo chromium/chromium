@@ -2073,10 +2073,6 @@ if (!is_android) {
       deps += [ "//chrome/browser/enterprise/data_controls:browser_tests" ]
     }
 
-    if (enable_webui_generate_code_cache) {
-      deps += [ "//ui/webui/resources:code_cache_resources" ]
-    }
-
     # All browser_tests sources have been migrated into per-feature
     # source_sets. Do not add new sources to //chrome/test:browser_tests.
     sources = []
@@ -3128,7 +3124,6 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/support_tool:unit_tests",
       "//chrome/browser/ui/webui/tab_search:unit_tests",
       "//chrome/browser/ui/webui/user_education:unit_tests",
-      "//chrome/browser/ui/webui/util:unit_tests",
       "//chrome/browser/ui/webui/webui_toolbar:unit_tests",
       "//chrome/browser/ui/window_metadata:unit_tests",
       "//chrome/browser/user_education:unit_tests",
