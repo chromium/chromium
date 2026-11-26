@@ -440,6 +440,29 @@ chromium-metrics-reviews@google.com.
 
 <!--  LINT.ThenChange(//android_webview/glue/java/src/com/android/webview/chromium/WebViewChromiumAwInit.java:WebViewChromiumStartupMode) -->
 
+<histogram name="Android.AChoreographer.DeadlineDerivedIntervalResult"
+    enum="DeadlineDerivedIntervalResult" expires_after="2027-05-19">
+  <owner>petrcermak@chromium.org</owner>
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Outcome of
+    `viz::ExternalBeginFrameSourceAndroid::AChoreographerImpl::CalculateDeadlineDerivedInterval()`,
+    which populates `viz::BeginFrameArgs::deadline_derived_interval` from the
+    frame timelines provided by the OS to `AChoreographer_postVsyncCallback` by
+    taking the difference between the presentation timestamps of the first two
+    timelines (optionally snapped to the closest display-supported interval from
+    `SetSupportedRefreshRates()` / `Display.getSupportedModes()` or, when
+    enabled, the OS-provided VSync interval from
+    `AChoreographer_registerRefreshRateCallback`).
+
+    Recorded once per VSync in `AChoreographerImpl::OnVSync()` when VSync
+    notifications are enabled, subsampled with probability 1/100. Not recorded
+    when using the Java `Choreographer` fallback in
+    `ExternalBeginFrameSourceAndroid.java` (e.g. on Android WebView).
+  </summary>
+</histogram>
+
 <histogram name="Android.ActivityStop.NumberOfPinnedTabsUsed" units="count"
     expires_after="2027-04-11">
   <owner>madhavpruthi@google.com</owner>

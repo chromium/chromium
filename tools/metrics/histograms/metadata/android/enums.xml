@@ -1568,6 +1568,37 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/viz/service/input/input_manager.cc:CreateAndroidInputReceiverResult) -->
 
+<!-- LINT.IfChange(DeadlineDerivedIntervalResult) -->
+
+<enum name="DeadlineDerivedIntervalResult">
+  <int value="0" label="Not calculated: unsupported Android version (&lt; 16)"/>
+  <int value="1" label="Not calculated: timelines not supported"/>
+  <int value="2" label="Not calculated: only one timeline"/>
+  <int value="3" label="Not calculated: feature disabled"/>
+  <int value="4" label="Not calculated: interval too short (&lt; 1 ms)"/>
+  <int value="5" label="Calculated (unsnapped): zero snap tolerance"/>
+  <int value="6" label="Calculated (unsnapped): no snap candidates"/>
+  <int value="7" label="Calculated (unsnapped): outside snap tolerance"/>
+  <int value="8"
+      label="Calculated (snapped to closest supported): OS-provided disabled
+             or outside snap tolerance"/>
+  <int value="9"
+      label="Calculated (snapped to OS-provided): no supported intervals"/>
+  <int value="10"
+      label="Calculated (snapped to OS-provided): closest supported outside
+             snap tolerance"/>
+  <int value="11"
+      label="Calculated (snapped): equal closest supported and OS-provided"/>
+  <int value="12"
+      label="Calculated (snapped to closest supported): closer than
+             OS-provided"/>
+  <int value="13"
+      label="Calculated (snapped to OS-provided): closer than or tied with
+             closest supported"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/viz/service/frame_sinks/external_begin_frame_source_android.h:DeadlineDerivedIntervalResult,//base/tracing/protos/chrome_track_event.proto:DeadlineDerivedIntervalResult) -->
+
 <enum name="DebuggingEnabled">
   <int value="0" label="Debugging not enabled."/>
   <int value="1"

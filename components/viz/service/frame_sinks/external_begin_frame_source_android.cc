@@ -16,6 +16,8 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -41,6 +43,47 @@ base::TimeTicks ToTimeTicks(int64_t time_nanos) {
   DCHECK_EQ(base::TimeTicks::GetClock(),
             base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
   return base::TimeTicks() + base::Nanoseconds(time_nanos);
+}
+
+constexpr perfetto::protos::pbzero::AndroidDeadlineDerivedIntervalCalculation::
+    Result
+    ToProtoResult(
+        viz::ExternalBeginFrameSourceAndroid::DeadlineDerivedIntervalResult
+            result) {
+#define CASE(result, proto_result)                                           \
+  case viz::ExternalBeginFrameSourceAndroid::DeadlineDerivedIntervalResult:: \
+      result:                                                                \
+    return perfetto::protos::pbzero::                                        \
+        AndroidDeadlineDerivedIntervalCalculation::Result::proto_result
+  switch (result) {
+    CASE(kNotCalculatedUnsupportedAndroidVersion,
+         NOT_CALCULATED_UNSUPPORTED_ANDROID_VERSION);
+    CASE(kNotCalculatedTimelinesNotSupported,
+         NOT_CALCULATED_TIMELINES_NOT_SUPPORTED);
+    CASE(kNotCalculatedOnlyOneTimeline, NOT_CALCULATED_ONLY_ONE_TIMELINE);
+    CASE(kNotCalculatedFeatureDisabled, NOT_CALCULATED_FEATURE_DISABLED);
+    CASE(kNotCalculatedIntervalTooShort, NOT_CALCULATED_INTERVAL_TOO_SHORT);
+    CASE(kCalculatedUnsnappedZeroSnapTolerance,
+         CALCULATED_UNSNAPPED_ZERO_SNAP_TOLERANCE);
+    CASE(kCalculatedUnsnappedNoSnapCandidates,
+         CALCULATED_UNSNAPPED_NO_SNAP_CANDIDATES);
+    CASE(kCalculatedUnsnappedOutsideSnapTolerance,
+         CALCULATED_UNSNAPPED_OUTSIDE_SNAP_TOLERANCE);
+    CASE(
+        kCalculatedSnappedToSupportedOsProvidedDisabledOrOutsideSnapTolerance,
+        CALCULATED_SNAPPED_TO_SUPPORTED_OS_PROVIDED_DISABLED_OR_OUTSIDE_SNAP_TOLERANCE);
+    CASE(kCalculatedSnappedToOsProvidedNoSupportedIntervals,
+         CALCULATED_SNAPPED_TO_OS_PROVIDED_NO_SUPPORTED_INTERVALS);
+    CASE(kCalculatedSnappedToOsProvidedSupportedOutsideSnapTolerance,
+         CALCULATED_SNAPPED_TO_OS_PROVIDED_SUPPORTED_OUTSIDE_SNAP_TOLERANCE);
+    CASE(kCalculatedSnappedToEqualSupportedAndOsProvided,
+         CALCULATED_SNAPPED_TO_EQUAL_SUPPORTED_AND_OS_PROVIDED);
+    CASE(kCalculatedSnappedToSupportedCloserThanOsProvided,
+         CALCULATED_SNAPPED_TO_SUPPORTED_CLOSER_THAN_OS_PROVIDED);
+    CASE(kCalculatedSnappedToOsProvidedCloserOrTiedWithSupported,
+         CALCULATED_SNAPPED_TO_OS_PROVIDED_CLOSER_OR_TIED_WITH_SUPPORTED);
+  }
+#undef CASE
 }
 
 }  // namespace
@@ -73,12 +116,58 @@ class ExternalBeginFrameSourceAndroid::AChoreographerImpl {
   void SetVsyncPeriod(int64_t vsync_period_nanos);
   void RequestVsyncIfNeeded();
 
-  std::optional<base::TimeDelta> FindClosestSupportedVsyncInterval(
-      base::TimeDelta interval) const;
-  std::optional<base::TimeDelta> FindClosestSnapCandidate(
-      base::TimeDelta interval) const;
+  // Output of `CalculateDeadlineDerivedIntervalImpl()`, bundling the actual
+  // VSync interval to store in `BeginFrameArgs::deadline_derived_interval`
+  // together with intermediate metadata used only for debugging/analysis (UMA
+  // and trace events).
+  struct DeadlineDerivedIntervalCalculation {
+    // The actual VSync interval to store in
+    // `BeginFrameArgs::deadline_derived_interval` (empty if none was calculated
+    // for reasons stored in `result`).
+    std::optional<base::TimeDelta> deadline_derived_interval;
+
+    // The remaining fields are for debugging/analysis purposes only (UMA and
+    // tracing) and do not affect frame scheduling or scroll jank metrics.
+
+    // Outcome of the calculation and reason why `deadline_derived_interval` was
+    // not calculated, was left unsnapped, or was snapped.
+    DeadlineDerivedIntervalResult result;
+
+    // Difference between the expected presentation deltas of the first two
+    // frame timelines (`present_delta[1] - present_delta[0]`). Populated
+    // whenever at least two timelines are available and the feature is enabled
+    // (even if the difference is less than `kMinDerivedVsyncInterval`).
+    std::optional<base::TimeDelta> present_deltas_difference;
+
+    // Closest display-supported VSync interval in `supported_intervals_` to
+    // `present_deltas_difference`. Populated whenever `supported_intervals_` is
+    // non-empty, `present_deltas_difference >= kMinDerivedVsyncInterval`, and
+    // `snap_tolerance > 0` (even when unsnapped or snapped to `vsync_period_`).
+    std::optional<base::TimeDelta> closest_supported_interval;
+  };
+
+  struct SnapDeadlineDerivedIntervalResult {
+    // The final VSync interval to store in
+    // `BeginFrameArgs::deadline_derived_interval`.
+    base::TimeDelta deadline_derived_interval;
+
+    // Reason why `deadline_derived_interval` was left unsnapped or snapped (for
+    // debugging/analysis).
+    DeadlineDerivedIntervalResult result;
+  };
+
   std::optional<base::TimeDelta> CalculateDeadlineDerivedInterval(
       const PossibleDeadlines& possible_deadlines) const;
+  DeadlineDerivedIntervalCalculation CalculateDeadlineDerivedIntervalImpl(
+      const PossibleDeadlines& possible_deadlines) const;
+  std::optional<base::TimeDelta> FindClosestSupportedVsyncInterval(
+      base::TimeDelta interval) const;
+  SnapDeadlineDerivedIntervalResult SnapDeadlineDerivedInterval(
+      base::TimeDelta present_deltas_difference,
+      double snap_tolerance,
+      std::optional<base::TimeDelta> closest_supported_interval) const;
+  void RecordDeadlineDerivedIntervalCalculation(
+      const DeadlineDerivedIntervalCalculation& calculation) const;
 
   const raw_ptr<ExternalBeginFrameSourceAndroid> client_;
   const raw_ptr<AChoreographer> achoreographer_;
@@ -256,6 +345,73 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::
 }
 
 std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
+    AChoreographerImpl::CalculateDeadlineDerivedInterval(
+        const PossibleDeadlines& possible_deadlines) const {
+  const DeadlineDerivedIntervalCalculation calculation =
+      CalculateDeadlineDerivedIntervalImpl(possible_deadlines);
+  RecordDeadlineDerivedIntervalCalculation(calculation);
+  return calculation.deadline_derived_interval;
+}
+
+ExternalBeginFrameSourceAndroid::AChoreographerImpl::
+    DeadlineDerivedIntervalCalculation
+    ExternalBeginFrameSourceAndroid::AChoreographerImpl::
+        CalculateDeadlineDerivedIntervalImpl(
+            const PossibleDeadlines& possible_deadlines) const {
+  using enum DeadlineDerivedIntervalResult;
+
+  // Order matters: check Android version and deadline count BEFORE querying
+  // `kCalculateDeadlineDerivedInterval` so ineligible devices/frames neither
+  // activate the field trial nor dilute UMA buckets.
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_BAKLAVA) {
+    return {.result = kNotCalculatedUnsupportedAndroidVersion};
+  }
+  if (possible_deadlines.empty()) {
+    return {.result = kNotCalculatedTimelinesNotSupported};
+  }
+  if (possible_deadlines.size() < 2u) {
+    return {.result = kNotCalculatedOnlyOneTimeline};
+  }
+  if (!base::FeatureList::IsEnabled(
+          features::kCalculateDeadlineDerivedInterval)) {
+    return {.result = kNotCalculatedFeatureDisabled};
+  }
+
+  const base::TimeDelta present_deltas_difference =
+      possible_deadlines.GetDeadlineByIndex(1).present_delta -
+      possible_deadlines.GetDeadlineByIndex(0).present_delta;
+  if (present_deltas_difference < kMinDerivedVsyncInterval) {
+    return {
+        .result = kNotCalculatedIntervalTooShort,
+        .present_deltas_difference = present_deltas_difference,
+    };
+  }
+
+  const double snap_tolerance =
+      features::kCalculateDeadlineDerivedIntervalSnapToleranceParam.Get();
+  if (snap_tolerance <= 0.0) {
+    return {
+        .deadline_derived_interval = present_deltas_difference,
+        .result = kCalculatedUnsnappedZeroSnapTolerance,
+        .present_deltas_difference = present_deltas_difference,
+    };
+  }
+
+  const std::optional<base::TimeDelta> closest_supported_interval =
+      FindClosestSupportedVsyncInterval(present_deltas_difference);
+  const SnapDeadlineDerivedIntervalResult snap_result =
+      SnapDeadlineDerivedInterval(present_deltas_difference, snap_tolerance,
+                                  closest_supported_interval);
+  return {
+      .deadline_derived_interval = snap_result.deadline_derived_interval,
+      .result = snap_result.result,
+      .present_deltas_difference = present_deltas_difference,
+      .closest_supported_interval = closest_supported_interval,
+  };
+}
+
+std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
     AChoreographerImpl::FindClosestSupportedVsyncInterval(
         base::TimeDelta interval) const {
   if (supported_intervals_.empty()) {
@@ -275,60 +431,132 @@ std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
                                                                : prev_interval;
 }
 
-std::optional<base::TimeDelta>
-ExternalBeginFrameSourceAndroid::AChoreographerImpl::FindClosestSnapCandidate(
-    base::TimeDelta interval) const {
-  const std::optional<base::TimeDelta> closest_supported =
-      FindClosestSupportedVsyncInterval(interval);
-  if (!features::kCalculateDeadlineDerivedIntervalSnapToOsProvidedParam.Get()) {
-    return closest_supported;
+ExternalBeginFrameSourceAndroid::AChoreographerImpl::
+    SnapDeadlineDerivedIntervalResult
+    ExternalBeginFrameSourceAndroid::AChoreographerImpl::
+        SnapDeadlineDerivedInterval(
+            base::TimeDelta present_deltas_difference,
+            double snap_tolerance,
+            std::optional<base::TimeDelta> closest_supported_interval) const {
+  DCHECK_GT(snap_tolerance, 0.0);
+  using enum DeadlineDerivedIntervalResult;
+
+  const bool snap_to_os_provided =
+      features::kCalculateDeadlineDerivedIntervalSnapToOsProvidedParam.Get();
+  if (!closest_supported_interval.has_value() && !snap_to_os_provided) {
+    return {
+        .deadline_derived_interval = present_deltas_difference,
+        .result = kCalculatedUnsnappedNoSnapCandidates,
+    };
   }
-  if (!closest_supported.has_value()) {
-    return vsync_period_;
+
+  const base::TimeDelta max_snap_distance =
+      snap_tolerance * present_deltas_difference;
+  const std::optional<base::TimeDelta> closest_supported_interval_distance =
+      closest_supported_interval.transform(
+          [&](const base::TimeDelta& interval) {
+            return (present_deltas_difference - interval).magnitude();
+          });
+  const bool closest_supported_interval_within_tolerance =
+      closest_supported_interval_distance.has_value() &&
+      *closest_supported_interval_distance <= max_snap_distance;
+
+  const std::optional<base::TimeDelta> vsync_period_distance =
+      snap_to_os_provided
+          ? std::make_optional(
+                (present_deltas_difference - vsync_period_).magnitude())
+          : std::nullopt;
+  const bool vsync_period_within_tolerance =
+      vsync_period_distance.has_value() &&
+      *vsync_period_distance <= max_snap_distance;
+
+  // Neither candidate is within `snap_tolerance`.
+  if (!closest_supported_interval_within_tolerance &&
+      !vsync_period_within_tolerance) {
+    return {
+        .deadline_derived_interval = present_deltas_difference,
+        .result = kCalculatedUnsnappedOutsideSnapTolerance,
+    };
   }
-  // If both `vsync_period_` and `closest_supported` are present, choose the
-  // one that's closer to `interval`. If there's a tie, choose `vsync_period_`.
-  const base::TimeDelta closest_supported_distance =
-      (interval - *closest_supported).magnitude();
-  const base::TimeDelta vsync_period_distance =
-      (interval - vsync_period_).magnitude();
-  return closest_supported_distance < vsync_period_distance ? *closest_supported
-                                                            : vsync_period_;
+
+  // Only `closest_supported_interval` is within `snap_tolerance`.
+  if (closest_supported_interval_within_tolerance &&
+      !vsync_period_within_tolerance) {
+    return {
+        .deadline_derived_interval = *closest_supported_interval,
+        .result =
+            kCalculatedSnappedToSupportedOsProvidedDisabledOrOutsideSnapTolerance,
+    };
+  }
+
+  // Only `vsync_period_` is within `snap_tolerance`.
+  if (!closest_supported_interval_within_tolerance &&
+      vsync_period_within_tolerance) {
+    return {
+        .deadline_derived_interval = vsync_period_,
+        .result =
+            closest_supported_interval.has_value()
+                ? kCalculatedSnappedToOsProvidedSupportedOutsideSnapTolerance
+                : kCalculatedSnappedToOsProvidedNoSupportedIntervals,
+    };
+  }
+
+  // Both `closest_supported_interval` and `vsync_period_` are within
+  // `snap_tolerance`.
+
+  if (*closest_supported_interval == vsync_period_) {
+    return {
+        .deadline_derived_interval = vsync_period_,
+        .result = kCalculatedSnappedToEqualSupportedAndOsProvided,
+    };
+  }
+
+  if (*closest_supported_interval_distance < *vsync_period_distance) {
+    return {
+        .deadline_derived_interval = *closest_supported_interval,
+        .result = kCalculatedSnappedToSupportedCloserThanOsProvided,
+    };
+  }
+
+  // If `*closest_supported_interval_distance == *vsync_period_distance`, i.e.
+  // there's a tie between `closest_supported_interval` and `vsync_period_` and
+  // they sit on different sides of `present_deltas_difference`, prefer
+  // `vsync_period_`.
+  return {
+      .deadline_derived_interval = vsync_period_,
+      .result = kCalculatedSnappedToOsProvidedCloserOrTiedWithSupported,
+  };
 }
 
-std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
-    AChoreographerImpl::CalculateDeadlineDerivedInterval(
-        const PossibleDeadlines& possible_deadlines) const {
-  if (base::android::android_info::sdk_int() <
-          base::android::android_info::SDK_VERSION_BAKLAVA ||
-      possible_deadlines.size() < 2u ||
-      !base::FeatureList::IsEnabled(
-          features::kCalculateDeadlineDerivedInterval)) {
-    return std::nullopt;
+void ExternalBeginFrameSourceAndroid::AChoreographerImpl::
+    RecordDeadlineDerivedIntervalCalculation(
+        const DeadlineDerivedIntervalCalculation& calculation) const {
+  TRACE_EVENT_INSTANT(
+      "viz,input.scrolling",
+      "AChoreographerImpl::CalculateDeadlineDerivedInterval",
+      [&](perfetto::EventContext ctx) {
+        auto* out = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                        ->set_android_deadline_derived_interval_calculation();
+        out->set_result(ToProtoResult(calculation.result));
+        out->set_os_provided_interval_us(vsync_period_.InMicroseconds());
+        if (calculation.present_deltas_difference.has_value()) {
+          out->set_present_deltas_difference_us(
+              calculation.present_deltas_difference->InMicroseconds());
+        }
+        if (calculation.closest_supported_interval.has_value()) {
+          out->set_closest_supported_interval_us(
+              calculation.closest_supported_interval->InMicroseconds());
+        }
+        if (calculation.deadline_derived_interval.has_value()) {
+          out->set_deadline_derived_interval_us(
+              calculation.deadline_derived_interval->InMicroseconds());
+        }
+      });
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Android.AChoreographer.DeadlineDerivedIntervalResult",
+        calculation.result);
   }
-
-  const base::TimeDelta timeline_derived_interval =
-      possible_deadlines.GetDeadlineByIndex(1).present_delta -
-      possible_deadlines.GetDeadlineByIndex(0).present_delta;
-  if (timeline_derived_interval < kMinDerivedVsyncInterval) {
-    return std::nullopt;
-  }
-
-  const std::optional<base::TimeDelta> snap_candidate =
-      FindClosestSnapCandidate(timeline_derived_interval);
-  if (!snap_candidate.has_value()) {
-    return timeline_derived_interval;
-  }
-
-  const double snap_tolerance =
-      features::kCalculateDeadlineDerivedIntervalSnapToleranceParam.Get();
-  const base::TimeDelta snap_distance =
-      (timeline_derived_interval - *snap_candidate).magnitude();
-  if (snap_distance > snap_tolerance * timeline_derived_interval) {
-    return timeline_derived_interval;
-  }
-
-  return *snap_candidate;
 }
 
 void ExternalBeginFrameSourceAndroid::AChoreographerImpl::OnVSync(

@@ -3185,11 +3185,68 @@ message AndroidVsyncIntervalDecision {
   repeated int64 supported_intervals_us = 5 [deprecated = true];
 }
 
+message AndroidDeadlineDerivedIntervalCalculation {
+  // Outcome of
+  // `ExternalBeginFrameSourceAndroid::AChoreographerImpl::CalculateDeadlineDerivedInterval()`,
+  // together with the reason why a deadline-derived VSync interval was not
+  // calculated, was left unsnapped, or was snapped to a display-supported or
+  // OS-provided VSync interval.
+  // LINT.IfChange(DeadlineDerivedIntervalResult)
+  enum Result {
+    RESULT_UNSPECIFIED = 0;
+    NOT_CALCULATED_UNSUPPORTED_ANDROID_VERSION = 1;
+    NOT_CALCULATED_TIMELINES_NOT_SUPPORTED = 2;
+    NOT_CALCULATED_ONLY_ONE_TIMELINE = 3;
+    NOT_CALCULATED_FEATURE_DISABLED = 4;
+    NOT_CALCULATED_INTERVAL_TOO_SHORT = 5;
+    CALCULATED_UNSNAPPED_ZERO_SNAP_TOLERANCE = 6;
+    CALCULATED_UNSNAPPED_NO_SNAP_CANDIDATES = 7;
+    CALCULATED_UNSNAPPED_OUTSIDE_SNAP_TOLERANCE = 8;
+    CALCULATED_SNAPPED_TO_SUPPORTED_OS_PROVIDED_DISABLED_OR_OUTSIDE_SNAP_TOLERANCE =
+        9;
+    CALCULATED_SNAPPED_TO_OS_PROVIDED_NO_SUPPORTED_INTERVALS = 10;
+    CALCULATED_SNAPPED_TO_OS_PROVIDED_SUPPORTED_OUTSIDE_SNAP_TOLERANCE = 11;
+    CALCULATED_SNAPPED_TO_EQUAL_SUPPORTED_AND_OS_PROVIDED = 12;
+    CALCULATED_SNAPPED_TO_SUPPORTED_CLOSER_THAN_OS_PROVIDED = 13;
+    CALCULATED_SNAPPED_TO_OS_PROVIDED_CLOSER_OR_TIED_WITH_SUPPORTED = 14;
+  }
+  // LINT.ThenChange(
+  //   //components/viz/service/frame_sinks/external_begin_frame_source_android.h:DeadlineDerivedIntervalResult,
+  //   //tools/metrics/histograms/metadata/android/enums.xml:DeadlineDerivedIntervalResult
+  // )
+  optional Result result = 1;
+
+  // VSync interval provided by the OS via
+  // `AChoreographer_registerRefreshRateCallback` (`BeginFrameArgs::interval`),
+  // in microseconds.
+  optional int64 os_provided_interval_us = 2;
+
+  // Difference between the expected presentation timestamps of the first two
+  // frame timelines in `AChoreographer_postVsyncCallback`
+  // (`present_delta[1] - present_delta[0]`), in microseconds. Populated
+  // whenever `CalculateDeadlineDerivedInterval()` computes the timeline
+  // difference (including when `result == NOT_CALCULATED_INTERVAL_TOO_SHORT`).
+  optional int64 present_deltas_difference_us = 3;
+
+  // Closest display-supported VSync interval (from `SetSupportedRefreshRates()`
+  // / `Display.getSupportedModes()`) to `present_deltas_difference_us`, in
+  // microseconds. Populated whenever display-supported intervals are available,
+  // `present_deltas_difference_us` >= 1000 (1 ms), and `snap_tolerance` > 0,
+  // even when unsnapped or snapped to `os_provided_interval_us`.
+  optional int64 closest_supported_interval_us = 4;
+
+  // Final VSync interval stored in `BeginFrameArgs::deadline_derived_interval`
+  // (snapped to `closest_supported_interval_us` or `os_provided_interval_us`,
+  // or equal to `present_deltas_difference_us`), in microseconds. Unset if no
+  // interval was calculated.
+  optional int64 deadline_derived_interval_us = 5;
+}
+
 message ChromeTrackEvent {
   reserved 1045;
 
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1088
+  // Next ID: 1089
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -3379,5 +3436,8 @@ message ChromeTrackEvent {
         1086;
 
     optional MacVoucherReleasePool mac_voucher_release_pool = 1087;
+
+    optional AndroidDeadlineDerivedIntervalCalculation
+        android_deadline_derived_interval_calculation = 1088;
   }
 }
