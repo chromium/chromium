@@ -311,7 +311,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
@@ -1199,18 +1198,6 @@ const FeatureEntry::Choice kSchedulerConfigurationChoices[] = {
      ash::switches::kSchedulerConfiguration,
      ash::switches::kSchedulerConfigurationPerformance},
 };
-
-const FeatureEntry::FeatureParam kDynamicSearchUpdateAnimationDuration_50[] = {
-    {"search_result_translation_duration", "50"}};
-const FeatureEntry::FeatureParam kDynamicSearchUpdateAnimationDuration_100[] = {
-    {"search_result_translation_duration", "100"}};
-const FeatureEntry::FeatureParam kDynamicSearchUpdateAnimationDuration_150[] = {
-    {"search_result_translation_duration", "150"}};
-
-const FeatureEntry::FeatureVariation kDynamicSearchUpdateAnimationVariations[] =
-    {{"50ms", kDynamicSearchUpdateAnimationDuration_50, nullptr},
-     {"100ms", kDynamicSearchUpdateAnimationDuration_100, nullptr},
-     {"150ms", kDynamicSearchUpdateAnimationDuration_150, nullptr}};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 const FeatureEntry::Choice kSiteIsolationOptOutChoices[] = {
@@ -8706,14 +8693,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTetheringExperimentalFunctionalityName,
      flag_descriptions::kTetheringExperimentalFunctionalityDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kTetheringExperimentalFunctionality)},
-
-    {"dynamic-search-update-animation",
-     flag_descriptions::kDynamicSearchUpdateAnimationName,
-     flag_descriptions::kDynamicSearchUpdateAnimationDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         app_list_features::kDynamicSearchUpdateAnimation,
-         kDynamicSearchUpdateAnimationVariations,
-         "LauncherDynamicAnimations")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)

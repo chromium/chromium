@@ -22,7 +22,6 @@
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -197,8 +196,7 @@ void AppListSearchView::OnSearchResultContainerResultsChanged() {
     // Search result changes within `kForcedFastAnimationInterval` of
     // `search_result_fast_update_time_` should also use fast animations and
     // refresh the timestamp.
-    if (search_result_fast_update_time_.has_value() &&
-        app_list_features::IsDynamicSearchUpdateAnimationEnabled()) {
+    if (search_result_fast_update_time_.has_value()) {
       const base::TimeDelta time_since_last_update =
           base::TimeTicks::Now() - search_result_fast_update_time_.value();
       if (time_since_last_update < kForcedFastAnimationInterval) {
@@ -294,18 +292,16 @@ void AppListSearchView::UpdateForNewSearch(bool search_active) {
     container->SetActive(search_active);
   }
 
-  if (app_list_features::IsDynamicSearchUpdateAnimationEnabled()) {
-    if (search_active) {
-      // Scan result_container_views_ to see if there are any in progress
-      // animations when the search model is updated.
-      for (SearchResultContainerView* view : result_container_views_) {
-        if (view->HasAnimatingChildView()) {
-          search_result_fast_update_time_ = base::TimeTicks::Now();
-        }
+  if (search_active) {
+    // Scan result_container_views_ to see if there are any in progress
+    // animations when the search model is updated.
+    for (SearchResultContainerView* view : result_container_views_) {
+      if (view->HasAnimatingChildView()) {
+        search_result_fast_update_time_ = base::TimeTicks::Now();
       }
-    } else {
-      search_result_fast_update_time_.reset();
     }
+  } else {
+    search_result_fast_update_time_.reset();
   }
 }
 

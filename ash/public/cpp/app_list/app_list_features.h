@@ -7,8 +7,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/time/time.h"
 
 namespace app_list_features {
 
@@ -22,10 +20,6 @@ ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kEnableAppListLaunchRecording);
 // suggestions.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kForceShowContinueSection);
 
-// Enable shortened search result update animations when in progress animations
-// are interrupted by search model updates.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kDynamicSearchUpdateAnimation);
-
 // Enables Play Store search in the launcher.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kLauncherPlayStoreSearch);
 
@@ -33,8 +27,6 @@ ASH_PUBLIC_EXPORT bool IsAppListLaunchRecordingEnabled();
 ASH_PUBLIC_EXPORT bool IsForceShowContinueSectionEnabled();
 ASH_PUBLIC_EXPORT bool IsAggregatedMlSearchRankingEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherSearchNormalizationEnabled();
-ASH_PUBLIC_EXPORT bool IsDynamicSearchUpdateAnimationEnabled();
-ASH_PUBLIC_EXPORT base::TimeDelta DynamicSearchUpdateAnimationDuration();
 ASH_PUBLIC_EXPORT bool IsLauncherPlayStoreSearchEnabled();
 
 }  // namespace app_list_features

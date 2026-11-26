@@ -4,10 +4,10 @@
 
 #include "ash/app_list/views/search_result_container_view.h"
 
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/animation_builder.h"
@@ -19,6 +19,8 @@ constexpr base::TimeDelta kFadeInDuration = base::Milliseconds(100);
 constexpr base::TimeDelta kIdentityTranslationDuration =
     base::Milliseconds(200);
 constexpr base::TimeDelta kFastFadeInDuration = base::Milliseconds(0);
+constexpr base::TimeDelta kFastIdentityTranslationDuration =
+    base::Milliseconds(100);
 
 // Show animations for search result views and titles have a translation
 // distance of 'kAnimatedOffsetMultiplier' * i where i is the position of the
@@ -257,10 +259,8 @@ void SearchResultContainerView::ShowViewWithAnimation(
       .SetOpacity(result_view, 1.0f, gfx::Tween::LINEAR)
       .SetDuration(use_short_animations ? kFastFadeInDuration : kFadeInDuration)
       .At(base::TimeDelta())
-      .SetDuration(
-          use_short_animations
-              ? app_list_features::DynamicSearchUpdateAnimationDuration()
-              : kIdentityTranslationDuration)
+      .SetDuration(use_short_animations ? kFastIdentityTranslationDuration
+                                        : kIdentityTranslationDuration)
       .SetTransform(result_view, gfx::Transform(),
                     gfx::Tween::LINEAR_OUT_SLOW_IN);
 }

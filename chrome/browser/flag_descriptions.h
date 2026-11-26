@@ -4553,13 +4553,6 @@ inline constexpr char kTabStorageSqlitePrototypeName[] =
 inline constexpr char kTabStorageSqlitePrototypeDescription[] =
     "Enables a prototype for using SQLite for tab storage.";
 
-inline constexpr char kDynamicSearchUpdateAnimationName[] =
-    "Dynamic Search Result Update Animation";
-inline constexpr char kDynamicSearchUpdateAnimationDescription[] =
-    "Dynamically adjust the search result update animation when those update "
-    "animations are preempted. Shortened animation durations configurable "
-    "(unit: milliseconds).";
-
 inline constexpr char kSaasUsageReportingName[] = "Saas Usage Reporting";
 inline constexpr char kSaasUsageReportingDescription[] =
     "Enable reporting of SaaS usage. This feature only takes effect if a "
