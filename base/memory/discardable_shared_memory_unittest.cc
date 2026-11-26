@@ -12,8 +12,11 @@
 #include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/page_size.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/memory/shared_memory_tracker.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/tracing_buildflags.h"
@@ -21,25 +24,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-
-namespace {
-
-// On 32-bit architectures, DiscardableSharedMemory truncates timestamps to
-// whole-second precision to fit the shared state into a 32-bit atomic.
-// This helper snaps the mock clock to a whole-second boundary to ensure
-// that Time::Now() has no sub-second components, preventing mismatches
-// when comparing captured timestamps with values from shared memory.
-void MaybeSnapMockClockToNextWholeSecond(
-    test::TaskEnvironment& task_environment) {
-#if defined(ARCH_CPU_32_BITS)
-  Time now = Time::Now();
-  Time rounded =
-      Time::UnixEpoch() + Seconds((now - Time::UnixEpoch()).InSeconds() + 1);
-  task_environment.AdvanceClock(rounded - now);
-#endif
-}
-
-}  // namespace
 
 TEST(DiscardableSharedMemoryTest, CreateAndMap) {
   const uint32_t kDataSize = 1024;
@@ -163,6 +147,40 @@ TEST(DiscardableSharedMemoryTest, Purge) {
   ASSERT_FALSE(memory2.IsMemoryResident());
 }
 
+// Processes of different bitness can share the same memory (e.g. on Android, a
+// 32-bit WebView browser process with a 64-bit renderer), so the shared state
+// must have the same layout and encoding regardless of bitness: a 64-bit word
+// holding the lock bit and the full-precision usage timestamp.
+TEST(DiscardableSharedMemoryTest, SharedStateLayoutIsIndependentOfBitness) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::TimeSource::MOCK_TIME};
+  const uint32_t kDataSize = 1024;
+
+  DiscardableSharedMemory memory;
+  ASSERT_TRUE(memory.CreateAndMap(kDataSize));
+
+  // The shared state is stored at the start of the region.
+  UnsafeSharedMemoryRegion region = memory.DuplicateRegion();
+  ASSERT_TRUE(region.IsValid());
+  WritableSharedMemoryMapping mapping = region.MapAt(0, sizeof(uint64_t));
+  ASSERT_TRUE(mapping.IsValid());
+  const uint64_t* state = mapping.GetMemoryAs<uint64_t>();
+  ASSERT_TRUE(state);
+
+  // Locked, with a null timestamp.
+  EXPECT_EQ(*state, 1u);
+
+  // Unlocked, with the full-precision unlock time.
+  task_environment.FastForwardBy(Milliseconds(1500));
+  const Time unlock_time = Time::Now();
+  memory.Unlock(0, 0);
+  EXPECT_EQ(*state, static_cast<uint64_t>(unlock_time.ToInternalValue()) << 1);
+
+  // Purged: unlocked, with a null timestamp, so the whole word is zero.
+  ASSERT_TRUE(memory.Purge(Time::Now()));
+  EXPECT_EQ(*state, 0u);
+}
+
 TEST(DiscardableSharedMemoryTest, PurgeAfterClose) {
   test::TaskEnvironment task_environment{
       test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -185,7 +203,6 @@ TEST(DiscardableSharedMemoryTest, PurgeAfterClose) {
 TEST(DiscardableSharedMemoryTest, LastUsed) {
   test::TaskEnvironment task_environment{
       test::TaskEnvironment::TimeSource::MOCK_TIME};
-  MaybeSnapMockClockToNextWholeSecond(task_environment);
   const uint32_t kDataSize = 1024;
 
   DiscardableSharedMemory memory1;
@@ -332,7 +349,6 @@ TEST(DiscardableSharedMemoryTest, LockShouldFailIfPlatformLockPagesFails) {
 TEST(DiscardableSharedMemoryTest, LockAndUnlockRange) {
   test::TaskEnvironment task_environment{
       test::TaskEnvironment::TimeSource::MOCK_TIME};
-  MaybeSnapMockClockToNextWholeSecond(task_environment);
   const size_t kDataSize = 32;
 
   size_t data_size_in_bytes = kDataSize * base::GetPageSize();

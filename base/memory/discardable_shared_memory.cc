@@ -7,8 +7,8 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <atomic>
 
-#include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -54,77 +54,66 @@
 namespace base {
 namespace {
 
-// Use a machine-sized pointer as atomic type. It will use the Atomic32 or
-// Atomic64 routines, depending on the architecture.
-typedef intptr_t AtomicType;
-typedef uintptr_t UAtomicType;
+// The shared state is read and written by processes that may have different
+// bitness (e.g. on Android, WebView's browser process runs in the host app,
+// which may be 32-bit, while its renderer may be 64-bit). Use a fixed-width
+// type so that all processes agree on the layout and encoding of the state.
+//
+// The shared state is accessed concurrently from multiple processes, so its
+// atomic operations must not rely on a process-local lock.
+static_assert(std::atomic_ref<uint64_t>::is_always_lock_free);
 
-// Template specialization for timestamp serialization/deserialization. This
-// is used to serialize timestamps using Unix time on systems where AtomicType
-// does not have enough precision to contain a timestamp in the standard
-// serialized format.
-template <int>
-Time TimeFromWireFormat(int64_t value);
-template <int>
-int64_t TimeToWireFormat(Time time);
-
-// Serialize to Unix time when using 4-byte wire format.
-// Note: 19 January 2038, this will cease to work.
-template <>
-[[maybe_unused]] Time TimeFromWireFormat<4>(int64_t value) {
-  return value ? Time::UnixEpoch() + Seconds(value) : Time();
-}
-template <>
-[[maybe_unused]] int64_t TimeToWireFormat<4>(Time time) {
-  return time > Time::UnixEpoch() ? (time - Time::UnixEpoch()).InSeconds() : 0;
-}
-
-// Standard serialization format when using 8-byte wire format.
-template <>
-[[maybe_unused]] Time TimeFromWireFormat<8>(int64_t value) {
+Time TimeFromWireFormat(int64_t value) {
   return Time::FromInternalValue(value);
 }
-template <>
-[[maybe_unused]] int64_t TimeToWireFormat<8>(Time time) {
+
+int64_t TimeToWireFormat(Time time) {
   return time.ToInternalValue();
 }
 
-struct SharedState {
+struct alignas(std::atomic_ref<uint64_t>::required_alignment) SharedState {
   enum LockState { UNLOCKED = 0, LOCKED = 1 };
 
-  explicit SharedState(AtomicType ivalue) { value.i = ivalue; }
+  explicit SharedState(uint64_t value) : value(value) {}
   SharedState(LockState lock_state, Time timestamp) {
-    int64_t wire_timestamp = TimeToWireFormat<sizeof(AtomicType)>(timestamp);
+    int64_t wire_timestamp = TimeToWireFormat(timestamp);
     DCHECK_GE(wire_timestamp, 0);
     DCHECK_EQ(lock_state & ~1, 0);
-    value.u = (static_cast<UAtomicType>(wire_timestamp) << 1) | lock_state;
+    value = (static_cast<uint64_t>(wire_timestamp) << 1) | lock_state;
   }
 
-  LockState GetLockState() const { return static_cast<LockState>(value.u & 1); }
+  LockState GetLockState() const { return static_cast<LockState>(value & 1); }
 
   Time GetTimestamp() const {
-    return TimeFromWireFormat<sizeof(AtomicType)>(value.u >> 1);
+    return TimeFromWireFormat(static_cast<int64_t>(value >> 1));
   }
 
   // Bit 1: Lock state. Bit is set when locked.
-  // Bit 2..sizeof(AtomicType)*8: Usage timestamp. NULL time when locked or
-  // purged.
-  union {
-    AtomicType i;
-    UAtomicType u;
-  } value;
+  // Bit 2..64: Usage timestamp. NULL time when locked or purged.
+  uint64_t value;
 };
 
-// Shared state is stored at offset 0 in shared memory segments.
-const SharedState* SharedStateFromSharedMemory(
-    const WritableSharedMemoryMapping& shared_memory) {
-  DCHECK(shared_memory.IsValid());
-  return shared_memory.GetMemoryAs<const SharedState>();
-}
-SharedState* SharedStateFromSharedMemory(
+// Shared state is stored at offset 0 in shared memory segments. Returns an
+// atomic reference to it.
+std::atomic_ref<uint64_t> SharedStateFromSharedMemory(
     WritableSharedMemoryMapping& shared_memory) {
   DCHECK(shared_memory.IsValid());
-  return shared_memory.GetMemoryAs<SharedState>();
+  return std::atomic_ref<uint64_t>(
+      shared_memory.GetMemoryAs<SharedState>()->value);
+}
+
+// Loads the shared state with no ordering constraints, for callers that only
+// read it.
+SharedState LoadSharedStateFromSharedMemory(
+    const WritableSharedMemoryMapping& shared_memory) {
+  DCHECK(shared_memory.IsValid());
+  // `std::atomic_ref` requires a non-const object, but the state is only
+  // loaded here, never modified.
+  return SharedState(std::atomic_ref<uint64_t>(
+                         const_cast<SharedState*>(
+                             shared_memory.GetMemoryAs<const SharedState>())
+                             ->value)
+                         .load(std::memory_order_relaxed));
 }
 
 // Round up |size| to a multiple of page size.
@@ -187,9 +176,8 @@ bool DiscardableSharedMemory::CreateAndMap(size_t size) {
 
   DCHECK(last_known_usage_.is_null());
   SharedState new_state(SharedState::LOCKED, Time());
-  subtle::Release_Store(
-      &SharedStateFromSharedMemory(shared_memory_mapping_)->value.i,
-      new_state.value.i);
+  SharedStateFromSharedMemory(shared_memory_mapping_)
+      .store(new_state.value, std::memory_order_release);
   return true;
 }
 
@@ -257,13 +245,14 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
 
     SharedState old_state(SharedState::UNLOCKED, last_known_usage_);
     SharedState new_state(SharedState::LOCKED, Time());
-    SharedState result(subtle::Acquire_CompareAndSwap(
-        &SharedStateFromSharedMemory(shared_memory_mapping_)->value.i,
-        old_state.value.i, new_state.value.i));
-    if (result.value.u != old_state.value.u) {
+    uint64_t observed = old_state.value;
+    if (!SharedStateFromSharedMemory(shared_memory_mapping_)
+             .compare_exchange_strong(observed, new_state.value,
+                                      std::memory_order_acquire,
+                                      std::memory_order_acquire)) {
       // Update |last_known_usage_| in case the above CAS failed because of
       // an incorrect timestamp.
-      last_known_usage_ = result.GetTimestamp();
+      last_known_usage_ = SharedState(observed).GetTimestamp();
       return FAILED;
     }
   }
@@ -374,11 +363,13 @@ void DiscardableSharedMemory::Unlock(size_t offset, size_t length) {
   // Timestamp precision should at least be accurate to the second.
   DCHECK_EQ((new_state.GetTimestamp() - Time::UnixEpoch()).InSeconds(),
             (current_time - Time::UnixEpoch()).InSeconds());
-  SharedState result(subtle::Release_CompareAndSwap(
-      &SharedStateFromSharedMemory(shared_memory_mapping_)->value.i,
-      old_state.value.i, new_state.value.i));
-
-  DCHECK_EQ(old_state.value.u, result.value.u);
+  uint64_t observed = old_state.value;
+  const bool exchanged =
+      SharedStateFromSharedMemory(shared_memory_mapping_)
+          .compare_exchange_strong(observed, new_state.value,
+                                   std::memory_order_release,
+                                   std::memory_order_relaxed);
+  DCHECK(exchanged);
 
   last_known_usage_ = current_time;
 }
@@ -410,16 +401,20 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
 
   SharedState old_state(SharedState::UNLOCKED, last_known_usage_);
   SharedState new_state(SharedState::UNLOCKED, Time());
-  SharedState result(subtle::Acquire_CompareAndSwap(
-      &SharedStateFromSharedMemory(shared_memory_mapping_)->value.i,
-      old_state.value.i, new_state.value.i));
+  uint64_t observed = old_state.value;
+  const bool exchanged =
+      SharedStateFromSharedMemory(shared_memory_mapping_)
+          .compare_exchange_strong(observed, new_state.value,
+                                   std::memory_order_acquire,
+                                   std::memory_order_acquire);
 
   // Update |last_known_usage_| to |current_time| if the memory is locked. This
   // allows the caller to determine if purging failed because last known usage
   // was incorrect or memory was locked. In the second case, the caller should
   // most likely wait for some amount of time before attempting to purge the
   // the memory again.
-  if (result.value.u != old_state.value.u) {
+  if (!exchanged) {
+    const SharedState result(observed);
     last_known_usage_ = result.GetLockState() == SharedState::LOCKED
                             ? current_time
                             : result.GetTimestamp();
@@ -485,8 +480,8 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
 bool DiscardableSharedMemory::IsMemoryResident() const {
   DCHECK(shared_memory_mapping_.IsValid());
 
-  SharedState result(subtle::NoBarrier_Load(
-      &SharedStateFromSharedMemory(shared_memory_mapping_)->value.i));
+  const SharedState result =
+      LoadSharedStateFromSharedMemory(shared_memory_mapping_);
 
   return result.GetLockState() == SharedState::LOCKED ||
          !result.GetTimestamp().is_null();
@@ -495,8 +490,8 @@ bool DiscardableSharedMemory::IsMemoryResident() const {
 bool DiscardableSharedMemory::IsMemoryLocked() const {
   DCHECK(shared_memory_mapping_.IsValid());
 
-  SharedState result(subtle::NoBarrier_Load(
-      &SharedStateFromSharedMemory(shared_memory_mapping_)->value.i));
+  const SharedState result =
+      LoadSharedStateFromSharedMemory(shared_memory_mapping_);
 
   return result.GetLockState() == SharedState::LOCKED;
 }
