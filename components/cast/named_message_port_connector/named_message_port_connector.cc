@@ -18,6 +18,47 @@
 #include "components/cast/message_port/platform_message_port.h"
 
 namespace cast_api_bindings {
+namespace {
+
+constexpr std::string_view kMasterConnectedPortId = "cast.master.connected";
+
+std::optional<std::string> ParsePortRequestId(
+    std::string_view message,
+    const base::UnguessableToken& expected_token) {
+  if (expected_token.is_empty()) {
+    DLOG(WARNING) << "Ignoring port request with no active generation token.";
+    return std::nullopt;
+  }
+
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(message, base::JSON_PARSE_RFC);
+  if (!dict) {
+    DLOG(WARNING)
+        << "Ignoring malformed port request: not a valid JSON dictionary.";
+    return std::nullopt;
+  }
+
+  const std::string* id = dict->FindString("portId");
+  if (!id || id->empty()) {
+    DLOG(WARNING)
+        << "Ignoring malformed port request: missing or empty portId.";
+    return std::nullopt;
+  }
+
+  const std::string* token_str = dict->FindString("token");
+  std::optional<base::UnguessableToken> parsed_token =
+      token_str ? base::UnguessableToken::DeserializeFromString(*token_str)
+                : std::nullopt;
+  if (!parsed_token || *parsed_token != expected_token) {
+    DLOG(WARNING)
+        << "Ignoring port request with missing or stale generation token.";
+    return std::nullopt;
+  }
+
+  return *id;
+}
+
+}  // namespace
 
 NamedMessagePortConnector::NamedMessagePortConnector() = default;
 
@@ -28,54 +69,57 @@ void NamedMessagePortConnector::RegisterPortHandler(
   handler_ = std::move(handler);
 }
 
+void NamedMessagePortConnector::RegisterOnConnectedCallback(
+    base::OnceClosure callback) {
+  on_connected_callback_ = std::move(callback);
+}
+
+void NamedMessagePortConnector::Reset() {
+  on_connected_callback_.Reset();
+  if (control_port_) {
+    control_port_->Close();
+    control_port_.reset();
+  }
+  generation_token_ = base::UnguessableToken();
+}
+
 // Receives the MessagePort and forwards ports to their corresponding binding
 // handlers.
 bool NamedMessagePortConnector::OnMessage(
     std::string_view message,
     std::vector<std::unique_ptr<MessagePort>> ports) {
-  if (ports.size() != 1) {
-    DLOG(WARNING) << "Ignoring malformed port request: expected 1 port, got "
-                  << ports.size();
+  std::optional<std::string> id =
+      ParsePortRequestId(message, generation_token_);
+  if (!id) {
     return false;
   }
 
-  std::optional<base::DictValue> dict =
-      base::JSONReader::ReadDict(message, base::JSON_PARSE_RFC);
-  if (!dict) {
-    DLOG(WARNING)
-        << "Ignoring malformed port request: not a valid JSON dictionary.";
+  const bool is_master_ack = (*id == kMasterConnectedPortId);
+  const size_t expected_ports = is_master_ack ? 0u : 1u;
+  if (ports.size() != expected_ports) {
+    DLOG(WARNING) << "Ignoring malformed port request: expected "
+                  << expected_ports << " ports, got " << ports.size();
     return false;
   }
 
-  const std::string* id = dict->FindString("portId");
-  if (!id || id->empty()) {
-    DLOG(WARNING)
-        << "Ignoring malformed port request: missing or empty portId.";
-    return false;
+  if (on_connected_callback_) {
+    std::move(on_connected_callback_).Run();
   }
-
-  const std::string* token_str = dict->FindString("token");
-  std::optional<base::UnguessableToken> parsed_token =
-      token_str ? base::UnguessableToken::DeserializeFromString(*token_str)
-                : std::nullopt;
-  if (!parsed_token) {
-    DLOG(WARNING)
-        << "Ignoring malformed port request: missing or invalid token.";
-    return false;
-  }
-  if (*parsed_token != generation_token_) {
-    DLOG(WARNING) << "Ignoring late port request from stale generation token.";
-    return false;
+  if (is_master_ack) {
+    return true;
   }
 
   return handler_.Run(*id, std::move(ports[0]));
 }
 
-void NamedMessagePortConnector::OnPipeError() {}
+void NamedMessagePortConnector::OnPipeError() {
+  Reset();
+}
 
 void NamedMessagePortConnector::GetConnectMessage(
     std::string* message,
     std::unique_ptr<MessagePort>* port) {
+  Reset();
   CreatePlatformMessagePortPair(&control_port_, port);
   generation_token_ = base::UnguessableToken::Create();
 

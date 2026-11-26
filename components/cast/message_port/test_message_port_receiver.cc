@@ -27,6 +27,9 @@ bool TestMessagePortReceiver::RunUntilMessageCountEqual(size_t message_count) {
 }
 
 void TestMessagePortReceiver::RunUntilDisconnected() {
+  if (disconnected_) {
+    return;
+  }
   base::RunLoop run_loop;
   on_disconnect_ = run_loop.QuitClosure();
   run_loop.Run();
@@ -44,6 +47,7 @@ bool TestMessagePortReceiver::OnMessage(
 }
 
 void TestMessagePortReceiver::OnPipeError() {
+  disconnected_ = true;
   if (on_disconnect_)
     std::move(on_disconnect_).Run();
 }

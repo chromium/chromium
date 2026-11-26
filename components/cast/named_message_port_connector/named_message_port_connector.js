@@ -239,6 +239,23 @@ const portConnectorInstance = new class {
   }
 
   /**
+   * Binds the control port, notifies native code that the handshake succeeded,
+   * and flushes any queued port bind requests.
+   * @param {!MessagePort} controlPort
+   */
+  connectControlPort(controlPort) {
+    this.controlPort_ = controlPort;
+    const payload = safeObjectCreate(null);
+    payload.portId = 'cast.master.connected';
+    payload.token = this.token_;
+    postMessage(this.controlPort_, safeJsonStringify(payload));
+    for (const portId in this.pendingPorts_) {
+      this.sendPort(portId, this.pendingPorts_[portId]);
+    }
+    this.pendingPorts_ = null;
+  }
+
+  /**
    * Handles frame message events to receive a connection "control port" from
    * native code.
    * @param {Event} messageEvent
@@ -284,12 +301,7 @@ const portConnectorInstance = new class {
       return;
     }
 
-    this.controlPort_ = ports[0];
-    for (const portId in this.pendingPorts_) {
-      this.sendPort(portId, this.pendingPorts_[portId]);
-    }
-    this.pendingPorts_ = null;
-
+    this.connectControlPort(ports[0]);
     stopPropagation(messageEvent);
 
     // No need to receive more onmessage events. Remove listener using the

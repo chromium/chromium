@@ -36,9 +36,9 @@ class ApiBindingsClient {
   ~ApiBindingsClient();
 
   // Informs the Agent of the origin of the document currently connected to
-  // this ApiBindings session. Must be called upon main document
-  // load/navigation, prior to establishing the NamedMessagePortConnector
-  // handshake with the frame.
+  // this ApiBindings session. Cleared upon main document navigation or load,
+  // and updated to the committed origin once the NamedMessagePortConnector
+  // handshake completes with the frame.
   void SetOrigin(const url::Origin& origin);
 
   // Injects APIs and handles channel connections on |frame|.

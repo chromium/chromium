@@ -30,3 +30,15 @@ grit("resources") {
   # Allow GRIT to assign IDs using its default set of base IDs.
   resource_ids = ""
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "named_message_port_connector_unittest.cc" ]
+  deps = [
+    ":named_message_port_connector",
+    "//base/test:test_support",
+    "//components/cast/message_port",
+    "//components/cast/message_port:test_message_port_receiver",
+    "//testing/gtest",
+  ]
+}

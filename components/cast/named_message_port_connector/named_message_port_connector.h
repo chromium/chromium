@@ -39,6 +39,14 @@ class NamedMessagePortConnector : public MessagePort::Receiver {
   // Sets the callback which will be invoked when a port is connected.
   void RegisterPortHandler(PortConnectedCallback handler);
 
+  // Sets a callback to be invoked once the page accepts the current connection
+  // message over `control_port_`. Reset whenever `GetConnectMessage()` or
+  // `Reset()` is called.
+  void RegisterOnConnectedCallback(base::OnceClosure callback);
+
+  // Closes any active control port and invalidates pending connection state.
+  void Reset();
+
   // Returns a data payload and MessagePort which, when posted into a web
   // content main frame, will establish a connection between |this| and the
   // NamedMessagePortConnector JavaScript module.
@@ -52,6 +60,7 @@ class NamedMessagePortConnector : public MessagePort::Receiver {
   void OnPipeError() final;
 
   PortConnectedCallback handler_;
+  base::OnceClosure on_connected_callback_;
   std::unique_ptr<MessagePort> control_port_;
   base::UnguessableToken generation_token_;
 };

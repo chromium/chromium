@@ -18,3 +18,15 @@ source_set("manager") {
   defines = [ "CAST_COMPONENT_IMPLEMENTATION" ]
   public_deps = [ "//components/cast/message_port" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "manager_unittest.cc" ]
+  deps = [
+    ":manager",
+    "//base/test:test_support",
+    "//components/cast/message_port",
+    "//components/cast/message_port:test_message_port_receiver",
+    "//testing/gtest",
+  ]
+}

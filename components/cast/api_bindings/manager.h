@@ -5,11 +5,14 @@
 #ifndef COMPONENTS_CAST_API_BINDINGS_MANAGER_H_
 #define COMPONENTS_CAST_API_BINDINGS_MANAGER_H_
 
+#include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "components/cast/cast_component_export.h"
 #include "components/cast/message_port/message_port.h"
 
@@ -32,6 +35,9 @@ class CAST_COMPONENT_EXPORT Manager {
   // Registers a |handler| which will receive MessagePorts originating from
   // the frame's web content. |port_name| is an alphanumeric string that is
   // consistent across JS and native code.
+  // Ports delivered to |handler| (including transferred sub-ports received via
+  // OnMessage()) may be wrapped by Manager and must not be passed directly to
+  // platform FromMessagePort() helpers.
   // All handlers must be Unregistered() before |this| is destroyed.
   void RegisterPortHandler(std::string_view port_name,
                            MessagePortConnectedHandler handler);
@@ -59,12 +65,23 @@ class CAST_COMPONENT_EXPORT Manager {
                        std::unique_ptr<cast_api_bindings::MessagePort> port);
 
   // Sets the origin of the document currently connected to the bindings
-  // session.
+  // session. Disconnecting from the previous origin closes all ports connected
+  // during that session.
   void SetOrigin(std::string origin);
 
  private:
+  class DisconnectableMessagePort;
+
+  std::unique_ptr<cast_api_bindings::MessagePort> WrapPort(
+      std::unique_ptr<cast_api_bindings::MessagePort> port);
+  std::unique_ptr<cast_api_bindings::MessagePort> UnwrapPort(
+      std::unique_ptr<cast_api_bindings::MessagePort> port);
+
   base::flat_map<std::string, MessagePortConnectedHandler> port_handlers_;
+  std::vector<base::WeakPtr<DisconnectableMessagePort>> connected_ports_;
   std::string origin_;
+
+  base::WeakPtrFactory<Manager> weak_factory_{this};
 };
 
 }  // namespace cast_api_bindings

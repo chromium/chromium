@@ -24,6 +24,7 @@
 #include "components/cast/message_port/fuchsia/create_web_message.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "components/cast/message_port/platform_message_port.h"
+#include "fuchsia_web/cast_streaming/cast_streaming.h"
 #include "fuchsia_web/runners/cast/cast_runner.h"
 #include "fuchsia_web/runners/cast/cast_streaming.h"
 #include "fuchsia_web/runners/common/web_component.h"
@@ -144,6 +145,8 @@ void CastComponent::StartComponent() {
             DestroyComponent(kBindingsFailureExitCode);
           }
         });
+    api_bindings_client_->SetOrigin(
+        url::Origin::Create(GURL(kCastStreamingWebUrl)));
     api_bindings_client_->OnPortConnected(kCastStreamingMessagePortName,
                                           std::move(message_port_for_agent));
   }
@@ -254,16 +257,21 @@ void CastComponent::OnNavigationStateChanged(
 
 void CastComponent::MaybeConnectPortConnector(
     const fuchsia::web::NavigationState& change) {
-  if (!change.has_is_main_document_loaded() ||
-      !change.is_main_document_loaded()) {
+  if (!change.has_is_main_document_loaded()) {
+    return;
+  }
+
+  connector_->Reset();
+  if (api_bindings_client_ &&
+      !IsAppConfigForCastStreaming(application_config_)) {
+    api_bindings_client_->SetOrigin(url::Origin());
+  }
+
+  if (!change.is_main_document_loaded()) {
     return;
   }
 
   url::Origin committed_origin = url::Origin::Create(GURL(current_url_));
-  if (api_bindings_client_) {
-    api_bindings_client_->SetOrigin(committed_origin);
-  }
-
   if (committed_origin.opaque()) {
     return;
   }
@@ -271,6 +279,11 @@ void CastComponent::MaybeConnectPortConnector(
   std::string connect_message;
   std::unique_ptr<cast_api_bindings::MessagePort> connect_port;
   connector_->GetConnectMessage(&connect_message, &connect_port);
+  if (api_bindings_client_) {
+    connector_->RegisterOnConnectedCallback(base::BindOnce(
+        &ApiBindingsClient::SetOrigin,
+        base::Unretained(api_bindings_client_.get()), committed_origin));
+  }
 
   // Send the NamedMessagePortConnector handshake to the page.
   frame()->PostMessage(

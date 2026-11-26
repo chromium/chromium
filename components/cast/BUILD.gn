@@ -2,11 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/test.gni")
+
 source_set("export") {
   sources = [ "cast_component_export.h" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  deps = [ "//components/cast/message_port:message_port_unittest" ]
+  deps = [
+    "//components/cast/api_bindings:unit_tests",
+    "//components/cast/message_port:message_port_unittest",
+    "//components/cast/named_message_port_connector:unit_tests",
+  ]
+}
+
+test("cast_components_unittests") {
+  deps = [
+    ":unit_tests",
+    "//mojo/core/test:run_all_unittests",
+  ]
 }

@@ -763,6 +763,47 @@ TEST_F(CastRunnerIntegrationTest,
             url::Origin::Create(second_url).Serialize());
 }
 
+TEST_F(CastRunnerIntegrationTest,
+       BindingsManagerFuchsia_Origin_ClearedWhileNavigationPending) {
+  TestCastComponent component(test_realm_services());
+
+  component.bindings_manager().AddBinding(
+      "navigator",
+      "window.addEventListener('DOMContentLoaded', () => {"
+      "  var port = cast.__platform__.PortConnector.bind('nav');"
+      "  port.onmessage = (msg) => {"
+      "    window.location.href = msg.data;"
+      "  };"
+      "});");
+
+  const GURL first_url = test_server().GetURL("/connector.html");
+  const GURL hung_url = test_server().GetURL("/hung");
+  app_config_manager().AddApp(kTestAppId, first_url);
+
+  cast_api_bindings::TestMessagePortReceiver nav_receiver;
+  std::unique_ptr<cast_api_bindings::MessagePort> nav_port;
+  {
+    ScopedPortHandler echo_handler(component.bindings_manager(), "echo");
+    ScopedPortHandler nav_handler(component.bindings_manager(), "nav");
+
+    component.StartCastComponent(base::StrCat({"cast:", kTestAppId}));
+
+    ASSERT_TRUE(echo_handler.RunUntilPortConnected());
+    EXPECT_EQ(component.bindings_manager().origin(),
+              url::Origin::Create(first_url).Serialize());
+
+    nav_port = nav_handler.RunUntilPortConnected();
+    ASSERT_TRUE(nav_port);
+    nav_port->SetReceiver(&nav_receiver);
+  }
+
+  // Navigating to /hung never commits, so the old document stays alive and
+  // port disconnection + origin clearing must come from CastComponent.
+  nav_port->PostMessage(hung_url.spec());
+  nav_receiver.RunUntilDisconnected();
+  EXPECT_TRUE(component.bindings_manager().origin().empty());
+}
+
 TEST_F(CastRunnerIntegrationTest, UnknownCastAppId_Fails) {
   TestCastComponent component(test_realm_services());
   const char kUnknownComponentUrl[] = "cast:99999999";

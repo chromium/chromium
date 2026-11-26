@@ -53,7 +53,7 @@ bool ScopedApiBinding::SendMessage(std::string_view data_utf8) {
   DCHECK(delegate_);
 
   DVLOG(1) << "SendMessage: message=" << data_utf8;
-  if (!message_port_->CanPostMessage()) {
+  if (!message_port_ || !message_port_->CanPostMessage()) {
     LOG(WARNING)
         << "Attempted to write to unconnected MessagePort, dropping message.";
     return false;
@@ -73,6 +73,7 @@ bool ScopedApiBinding::OnMessage(
 }
 
 void ScopedApiBinding::OnPipeError() {
+  message_port_.reset();
   delegate_->OnDisconnected();
 }
 

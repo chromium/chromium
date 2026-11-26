@@ -49,6 +49,7 @@ class TestMessagePortReceiver
   size_t message_count_target_ = 0;
   base::OnceClosure on_receive_satisfied_;
   base::OnceClosure on_disconnect_;
+  bool disconnected_ = false;
   bool on_message_result_ = true;
 };
 

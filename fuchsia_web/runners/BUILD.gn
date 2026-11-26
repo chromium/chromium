@@ -157,12 +157,19 @@ fuchsia_package_installer("cast_runner") {
 }
 
 test("cast_runner_unittests") {
-  sources = [ "cast/application_controller_impl_unittest.cc" ]
+  sources = [
+    "cast/application_controller_impl_unittest.cc",
+    "cast/cast_component_unittest.cc",
+  ]
   deps = [
     ":cast_runner_core",
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//chromecast/bindings:bindings_manager_fuchsia",
+    "//components/cast/message_port",
+    "//components/cast/message_port:test_message_port_receiver",
+    "//fuchsia_web/common",
     "//fuchsia_web/common/test:test_support",
     "//fuchsia_web/runners/cast/fidl:fidl_cpp",
     "//fuchsia_web/runners/cast/fidl:fidl_cpp_testing",
@@ -170,7 +177,12 @@ test("cast_runner_unittests") {
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.runner:fuchsia.component.runner_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_cpp",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web:fuchsia.web_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/vfs_cpp",
+    "//url",
   ]
   data_deps = [ ":cast_runner_core" ]
 }
