@@ -187,6 +187,36 @@ const auto kTrackedPrefs = std::to_array<prefs::TrackedPreferenceMetadata>({
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::IMPERSONAL},
 #endif
+// File System Access persisted grants and read/write guard settings must
+// not be forgeable via unprotected Preferences (https://crbug.com/584014474).
+#if !BUILDFLAG(IS_ANDROID)
+    {39,
+     "profile.content_settings.exceptions."
+     "file_system_access_extended_permission",
+     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
+     ValueType::IMPERSONAL},
+    {40, "profile.content_settings.exceptions.file_system_access_chooser_data",
+     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
+     // Contains absolute local file paths; keep them out of incident reports.
+     ValueType::PERSONAL},
+    {41,
+     "profile.default_content_setting_values."
+     "file_system_access_extended_permission",
+     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
+     ValueType::IMPERSONAL},
+#endif
+    {42, "profile.content_settings.exceptions.file_system_read_guard",
+     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
+     ValueType::IMPERSONAL},
+    {43, "profile.content_settings.exceptions.file_system_write_guard",
+     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
+     ValueType::IMPERSONAL},
+    {44, "profile.default_content_setting_values.file_system_read_guard",
+     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
+     ValueType::IMPERSONAL},
+    {45, "profile.default_content_setting_values.file_system_write_guard",
+     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
+     ValueType::IMPERSONAL},
 
     // See note at top, new items added here also need to be added to
     // histograms.xml's TrackedPreference enum.
