@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_SYNC_SERVICE_SYNC_SERVICE_CRYPTO_H_
 #define COMPONENTS_SYNC_SERVICE_SYNC_SERVICE_CRYPTO_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -81,7 +83,8 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
 
   // The following methods may only be called if the sync engine is initialized.
   void IsTrustedVaultEnrollmentPossible(
-      base::OnceCallback<void(bool)> callback) const;
+      base::OnceCallback<void(bool)> callback);
+  void EnrollInTrustedVault(base::OnceCallback<void(bool)> callback);
   void SetEncryptionPassphrase(const std::string& passphrase);
   bool SetDecryptionPassphrase(const std::string& passphrase);
 
@@ -155,6 +158,9 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     kKeystoreKeysRequired,
   };
 
+  static bool RequiredUserActionAllowsTrustedVaultEnrollment(
+      RequiredUserAction required_user_action);
+
   // Reads trusted vault keys from the client and feeds them to the sync engine.
   void FetchTrustedVaultKeys(
       bool is_second_fetch_attempt,
@@ -201,6 +207,11 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // pending keys, transitions required user action to kNone, and triggers
   // data type reconfiguration.
   void ResolvePendingKeysRequiredState();
+
+  void OnCanEnrollCompleted(bool can_enroll);
+  void OnTrustedVaultClientEnrolled(const std::vector<uint8_t>& new_shared_key,
+                                    int new_version);
+  void OnSetTrustedVaultEncryptionPassphraseCompleted(bool success);
 
   const raw_ptr<Delegate> delegate_;
 
@@ -250,6 +261,15 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     // Set to true when FetchKeys() should be issued again once an ongoing
     // fetch-and-add procedure completes.
     bool deferred_trusted_vault_fetch_keys_pending = false;
+
+    // Callbacks awaiting completion of an in-flight
+    // `IsTrustedVaultEnrollmentPossible()` or `EnrollInTrustedVault()`
+    // operation. Non-null only while an operation is in flight. Cleared and
+    // resolved asynchronously with `false` on `Reset()`.
+    std::unique_ptr<base::OnceCallbackList<void(bool)>>
+        ongoing_can_enroll_callbacks;
+    std::unique_ptr<base::OnceCallbackList<void(bool)>>
+        ongoing_enroll_callbacks;
   } state_;
 
   SEQUENCE_CHECKER(sequence_checker_);

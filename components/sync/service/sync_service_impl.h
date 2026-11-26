@@ -226,7 +226,8 @@ class SyncServiceImpl : public SyncService,
   // SyncUserSettingsImpl::Delegate implementation.
   bool IsCustomPassphraseAllowed() const override;
   void IsTrustedVaultEnrollmentPossible(
-      base::OnceCallback<void(bool)> callback) const override;
+      base::OnceCallback<void(bool)> callback) override;
+  void EnrollInTrustedVault(base::OnceCallback<void(bool)> callback) override;
   SyncPrefs::SyncAccountState GetSyncAccountStateForPrefs() const override;
   CoreAccountInfo GetSyncAccountInfoForPrefs() const override;
   void OnSyncClientDisabledByPolicyChanged() override;

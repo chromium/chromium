@@ -100,7 +100,11 @@ class MockDelegate : public SyncUserSettingsImpl::Delegate {
   MOCK_METHOD(void,
               IsTrustedVaultEnrollmentPossible,
               (base::OnceCallback<void(bool)>),
-              (const override));
+              (override));
+  MOCK_METHOD(void,
+              EnrollInTrustedVault,
+              (base::OnceCallback<void(bool)>),
+              (override));
   MOCK_METHOD(SyncPrefs::SyncAccountState,
               GetSyncAccountStateForPrefs,
               (),
@@ -836,6 +840,31 @@ TEST_F(SyncUserSettingsImplTest,
   {
     base::test::TestFuture<bool> future;
     sync_user_settings->IsTrustedVaultEnrollmentPossible(future.GetCallback());
+    EXPECT_TRUE(future.Get());
+  }
+}
+
+TEST_F(SyncUserSettingsImplTest, EnrollInTrustedVaultForwardsToDelegate) {
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  EXPECT_CALL(delegate_, EnrollInTrustedVault)
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(false);
+      });
+  {
+    base::test::TestFuture<bool> future;
+    sync_user_settings->EnrollInTrustedVault(future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
+
+  EXPECT_CALL(delegate_, EnrollInTrustedVault)
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      });
+  {
+    base::test::TestFuture<bool> future;
+    sync_user_settings->EnrollInTrustedVault(future.GetCallback());
     EXPECT_TRUE(future.Get());
   }
 }

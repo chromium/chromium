@@ -95,7 +95,11 @@ class SyncUserSettingsMock : public SyncUserSettings {
   MOCK_METHOD(void,
               IsTrustedVaultEnrollmentPossible,
               (base::OnceCallback<void(bool)>),
-              (const override));
+              (override));
+  MOCK_METHOD(void,
+              EnrollInTrustedVault,
+              (base::OnceCallback<void(bool)>),
+              (override));
   MOCK_METHOD(bool, IsTrustedVaultKeyRequired, (), (const override));
   MOCK_METHOD(bool, IsKeystoreKeyRequiredForTesting, (), (const override));
   MOCK_METHOD(bool,

@@ -231,8 +231,13 @@ void TestSyncUserSettings::MarkPassphrasePromptMutedForCurrentProductVersion() {
 }
 
 void TestSyncUserSettings::IsTrustedVaultEnrollmentPossible(
-    base::OnceCallback<void(bool)> callback) const {
+    base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(trusted_vault_enrollment_possible_);
+}
+
+void TestSyncUserSettings::EnrollInTrustedVault(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(false);
 }
 
 bool TestSyncUserSettings::IsTrustedVaultKeyRequired() const {

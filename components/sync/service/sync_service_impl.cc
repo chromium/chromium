@@ -1509,7 +1509,7 @@ bool SyncServiceImpl::IsCustomPassphraseAllowed() const {
 }
 
 void SyncServiceImpl::IsTrustedVaultEnrollmentPossible(
-    base::OnceCallback<void(bool)> callback) const {
+    base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!SatisfiesLocalTrustedVaultEnrollmentPrerequisites()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1517,6 +1517,17 @@ void SyncServiceImpl::IsTrustedVaultEnrollmentPossible(
     return;
   }
   crypto_.IsTrustedVaultEnrollmentPossible(std::move(callback));
+}
+
+void SyncServiceImpl::EnrollInTrustedVault(
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!SatisfiesLocalTrustedVaultEnrollmentPrerequisites()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+  crypto_.EnrollInTrustedVault(std::move(callback));
 }
 
 SyncPrefs::SyncAccountState SyncServiceImpl::GetSyncAccountStateForPrefs()

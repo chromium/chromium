@@ -52,6 +52,14 @@ class FakeSyncEngine final : public SyncEngine {
     return last_configure_reason_;
   }
 
+  const std::vector<uint8_t>& last_trusted_vault_passphrase_key() const {
+    return last_trusted_vault_passphrase_key_;
+  }
+
+  std::optional<int> last_trusted_vault_passphrase_key_version() const {
+    return last_trusted_vault_passphrase_key_version_;
+  }
+
   bool started_handling_invalidations() {
     return started_handling_invalidations_;
   }
@@ -143,6 +151,7 @@ class FakeSyncEngine final : public SyncEngine {
   // AcrossTasksDanglingUntriaged because it is assigned a
   // AcrossTasksDanglingUntriaged pointer.
   raw_ptr<SyncEngineHost, AcrossTasksDanglingUntriaged> host_ = nullptr;
+  std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy_;
   bool initialized_ = false;
   SyncStatus sync_status_;
   CoreAccountId authenticated_account_id_;
@@ -150,6 +159,8 @@ class FakeSyncEngine final : public SyncEngine {
   bool is_next_poll_time_in_the_past_ = false;
   ConfigureReason last_configure_reason_ = ConfigureReason::kUnknown;
   std::optional<SyncCredentials> last_credentials_;
+  std::vector<uint8_t> last_trusted_vault_passphrase_key_;
+  std::optional<int> last_trusted_vault_passphrase_key_version_;
   base::WeakPtrFactory<FakeSyncEngine> weak_ptr_factory_{this};
 };
 

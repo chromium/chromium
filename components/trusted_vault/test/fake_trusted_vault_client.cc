@@ -257,11 +257,28 @@ void FakeTrustedVaultClient::AddTrustedRecoveryMethod(
 void FakeTrustedVaultClient::CanEnroll(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(can_enroll_);
+  ++can_enroll_call_count_;
+  pending_responses_.push_back(
+      base::BindOnce(std::move(callback), can_enroll_));
+  if (auto_complete_requests_) {
+    PostCompleteAllPendingRequests();
+  }
 }
 
 void FakeTrustedVaultClient::Enroll(
     const CoreAccountInfo& account_info,
+    base::OnceCallback<void(const std::vector<uint8_t>&, int)> callback) {
+  ++enroll_call_count_;
+  pending_responses_.push_back(base::BindOnce(
+      &FakeTrustedVaultClient::CompleteEnroll, weak_ptr_factory_.GetWeakPtr(),
+      account_info.gaia, std::move(callback)));
+  if (auto_complete_requests_) {
+    PostCompleteAllPendingRequests();
+  }
+}
+
+void FakeTrustedVaultClient::CompleteEnroll(
+    const GaiaId& gaia_id,
     base::OnceCallback<void(const std::vector<uint8_t>&, int)> callback) {
   if (!enroll_success_) {
     std::move(callback).Run(std::vector<uint8_t>(), -1);
@@ -269,15 +286,15 @@ void FakeTrustedVaultClient::Enroll(
   }
   const std::vector<uint8_t> new_shared_key =
       crypto::RandBytesAsVector(kSharedKeyLength);
-  CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[account_info.gaia];
+  CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
   const int new_key_version =
       cached_keys.keys.empty() ? 1 : cached_keys.keys.back().version + 1;
   cached_keys.keys.emplace_back(new_shared_key, new_key_version);
   cached_keys.marked_as_stale = false;
   server_.StoreKeysOnServer(
-      account_info.gaia,
+      gaia_id,
       base::ToVector(cached_keys.keys, &TrustedVaultKeyAndVersion::key));
-  for (auto& observer : observer_list_) {
+  for (Observer& observer : observer_list_) {
     observer.OnTrustedVaultKeysChanged(/*trigger=*/std::nullopt);
   }
   std::move(callback).Run(new_shared_key, new_key_version);

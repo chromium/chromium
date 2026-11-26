@@ -33,7 +33,9 @@ class SyncUserSettingsImpl : public SyncUserSettings, public SyncPrefObserver {
 
     virtual bool IsCustomPassphraseAllowed() const = 0;
     virtual void IsTrustedVaultEnrollmentPossible(
-        base::OnceCallback<void(bool)> callback) const = 0;
+        base::OnceCallback<void(bool)> callback) = 0;
+    virtual void EnrollInTrustedVault(
+        base::OnceCallback<void(bool)> callback) = 0;
     virtual SyncPrefs::SyncAccountState GetSyncAccountStateForPrefs() const = 0;
     virtual CoreAccountInfo GetSyncAccountInfoForPrefs() const = 0;
 
@@ -109,7 +111,8 @@ class SyncUserSettingsImpl : public SyncUserSettings, public SyncPrefObserver {
   bool IsPassphrasePromptMutedForCurrentProductVersion() const override;
   void MarkPassphrasePromptMutedForCurrentProductVersion() override;
   void IsTrustedVaultEnrollmentPossible(
-      base::OnceCallback<void(bool)> callback) const override;
+      base::OnceCallback<void(bool)> callback) override;
+  void EnrollInTrustedVault(base::OnceCallback<void(bool)> callback) override;
   bool IsTrustedVaultKeyRequired() const override;
   bool IsKeystoreKeyRequiredForTesting() const override;
   bool IsTrustedVaultKeyRequiredForPreferredDataTypes() const override;

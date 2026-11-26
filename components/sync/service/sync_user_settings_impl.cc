@@ -311,8 +311,13 @@ void SyncUserSettingsImpl::MarkPassphrasePromptMutedForCurrentProductVersion() {
 }
 
 void SyncUserSettingsImpl::IsTrustedVaultEnrollmentPossible(
-    base::OnceCallback<void(bool)> callback) const {
+    base::OnceCallback<void(bool)> callback) {
   delegate_->IsTrustedVaultEnrollmentPossible(std::move(callback));
+}
+
+void SyncUserSettingsImpl::EnrollInTrustedVault(
+    base::OnceCallback<void(bool)> callback) {
+  delegate_->EnrollInTrustedVault(std::move(callback));
 }
 
 bool SyncUserSettingsImpl::IsTrustedVaultKeyRequired() const {

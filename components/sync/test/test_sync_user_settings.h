@@ -71,7 +71,8 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool IsPassphrasePromptMutedForCurrentProductVersion() const override;
   void MarkPassphrasePromptMutedForCurrentProductVersion() override;
   void IsTrustedVaultEnrollmentPossible(
-      base::OnceCallback<void(bool)> callback) const override;
+      base::OnceCallback<void(bool)> callback) override;
+  void EnrollInTrustedVault(base::OnceCallback<void(bool)> callback) override;
   bool IsTrustedVaultKeyRequired() const override;
   bool IsKeystoreKeyRequiredForTesting() const override;
   bool IsTrustedVaultKeyRequiredForPreferredDataTypes() const override;

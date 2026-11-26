@@ -4,9 +4,12 @@
 
 #include "components/sync/service/sync_service_crypto.h"
 
+#include <cstdint>
 #include <functional>
+#include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/functional/callback.h"
@@ -15,11 +18,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/sync_status.h"
 #include "components/sync/model/crypto/nigori.h"
@@ -1210,6 +1215,9 @@ TEST_F(SyncServiceCryptoTest,
   {
     base::test::TestFuture<bool> future;
     crypto_.IsTrustedVaultEnrollmentPossible(future.GetCallback());
+    ASSERT_EQ(trusted_vault_client_.can_enroll_call_count(), 1);
+    EXPECT_FALSE(future.IsReady());
+    ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
     EXPECT_FALSE(future.Get());
   }
 
@@ -1217,8 +1225,29 @@ TEST_F(SyncServiceCryptoTest,
   {
     base::test::TestFuture<bool> future;
     crypto_.IsTrustedVaultEnrollmentPossible(future.GetCallback());
+    ASSERT_EQ(trusted_vault_client_.can_enroll_call_count(), 2);
+    EXPECT_FALSE(future.IsReady());
+    ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
     EXPECT_TRUE(future.Get());
   }
+}
+
+TEST_F(SyncServiceCryptoTest,
+       ShouldCoalesceConcurrentIsTrustedVaultEnrollmentPossibleCalls) {
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  trusted_vault_client_.SetCanEnroll(true);
+
+  base::test::TestFuture<bool> future1;
+  base::test::TestFuture<bool> future2;
+  crypto_.IsTrustedVaultEnrollmentPossible(future1.GetCallback());
+  crypto_.IsTrustedVaultEnrollmentPossible(future2.GetCallback());
+  EXPECT_EQ(trusted_vault_client_.can_enroll_call_count(), 1);
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_FALSE(future2.IsReady());
+
+  ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  EXPECT_TRUE(future1.Get());
+  EXPECT_TRUE(future2.Get());
 }
 
 TEST_F(SyncServiceCryptoTest,
@@ -1229,8 +1258,280 @@ TEST_F(SyncServiceCryptoTest,
 
   base::test::TestFuture<bool> future;
   crypto_.IsTrustedVaultEnrollmentPossible(future.GetCallback());
+  EXPECT_EQ(trusted_vault_client_.can_enroll_call_count(), 0);
   EXPECT_FALSE(future.IsReady());
   EXPECT_FALSE(future.Get());
+}
+
+TEST_F(
+    SyncServiceCryptoTest,
+    ShouldReportTrustedVaultEnrollmentNotPossibleWhenUserActionBecomesRequiredWhileCanEnrollInFlight) {
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  trusted_vault_client_.SetCanEnroll(true);
+
+  base::test::TestFuture<bool> future;
+  crypto_.IsTrustedVaultEnrollmentPossible(future.GetCallback());
+  ASSERT_EQ(trusted_vault_client_.can_enroll_call_count(), 1);
+
+  crypto_.OnKeystoreKeysRequired();
+  ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(
+    SyncServiceCryptoTest,
+    ShouldReportTrustedVaultEnrollmentNotPossibleWhenPassphraseTypeChangesWhileCanEnrollInFlight) {
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase,
+                                  base::Time::Now());
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  trusted_vault_client_.SetCanEnroll(true);
+
+  base::test::TestFuture<bool> future;
+  crypto_.IsTrustedVaultEnrollmentPossible(future.GetCallback());
+  ASSERT_EQ(trusted_vault_client_.can_enroll_call_count(), 1);
+
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kCustomPassphrase,
+                                  base::Time::Now());
+  ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(SyncServiceCryptoTest,
+       ShouldResolveIsTrustedVaultEnrollmentPossibleFalseOnReset) {
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  trusted_vault_client_.SetCanEnroll(true);
+
+  base::test::TestFuture<bool> future;
+  crypto_.IsTrustedVaultEnrollmentPossible(future.GetCallback());
+  ASSERT_EQ(trusted_vault_client_.can_enroll_call_count(), 1);
+
+  crypto_.Reset();
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+
+  // Completing the stale in-flight client request after `Reset()` must be a
+  // safe no-op.
+  EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+}
+
+TEST_F(SyncServiceCryptoTest,
+       ShouldEnrollAndSetTrustedVaultEncryptionPassphrase) {
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase,
+                                  base::Time::Now());
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  const int initial_recoverability_calls =
+      trusted_vault_client_.get_is_recoverablity_degraded_call_count();
+
+  base::test::TestFuture<bool> enroll_future;
+  crypto_.EnrollInTrustedVault(enroll_future.GetCallback());
+  ASSERT_EQ(trusted_vault_client_.enroll_call_count(), 1);
+  EXPECT_FALSE(enroll_future.IsReady());
+
+  std::vector<uint8_t> passed_key;
+  int passed_version = -1;
+  base::OnceCallback<void(bool)> engine_done_cb;
+  EXPECT_CALL(engine_, SetTrustedVaultEncryptionPassphrase)
+      .WillOnce([&](const std::vector<uint8_t>& key, int version,
+                    base::OnceCallback<void(bool)> done_cb) {
+        passed_key = key;
+        passed_version = version;
+        engine_done_cb = std::move(done_cb);
+      });
+
+  ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  ASSERT_FALSE(engine_done_cb.is_null());
+  const std::vector<std::vector<uint8_t>> stored_keys =
+      trusted_vault_client_.GetStoredKeys(kSyncingAccount.gaia);
+  ASSERT_EQ(stored_keys.size(), 1u);
+  EXPECT_FALSE(passed_key.empty());
+  EXPECT_EQ(passed_key, stored_keys.back());
+  EXPECT_EQ(passed_version, 1);
+  EXPECT_FALSE(enroll_future.IsReady());
+
+  // `OnPassphraseTypeChanged` alone must not prematurely resolve enrollment
+  // before `SetTrustedVaultEncryptionPassphrase()` completes.
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
+                                  base::Time::Now());
+  EXPECT_FALSE(enroll_future.IsReady());
+  EXPECT_EQ(trusted_vault_client_.get_is_recoverablity_degraded_call_count(),
+            initial_recoverability_calls);
+
+  // Completing `SetTrustedVaultEncryptionPassphrase()` refreshes recoverability
+  // and resolves the enrollment callback to `true`.
+  std::move(engine_done_cb).Run(true);
+  EXPECT_TRUE(enroll_future.Get());
+  EXPECT_EQ(trusted_vault_client_.get_is_recoverablity_degraded_call_count(),
+            initial_recoverability_calls + 1);
+}
+
+TEST_F(SyncServiceCryptoTest,
+       ShouldCoalesceConcurrentEnrollInTrustedVaultCalls) {
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase,
+                                  base::Time::Now());
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+
+  base::test::TestFuture<bool> future1;
+  base::test::TestFuture<bool> future2;
+  crypto_.EnrollInTrustedVault(future1.GetCallback());
+  crypto_.EnrollInTrustedVault(future2.GetCallback());
+  EXPECT_EQ(trusted_vault_client_.enroll_call_count(), 1);
+
+  base::OnceCallback<void(bool)> engine_done_cb;
+  EXPECT_CALL(engine_, SetTrustedVaultEncryptionPassphrase)
+      .WillOnce([&engine_done_cb](const std::vector<uint8_t>&, int,
+                                  base::OnceCallback<void(bool)> done_cb) {
+        engine_done_cb = std::move(done_cb);
+      });
+  ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  ASSERT_FALSE(engine_done_cb.is_null());
+
+  base::test::TestFuture<bool> future3;
+  crypto_.EnrollInTrustedVault(future3.GetCallback());
+  EXPECT_EQ(trusted_vault_client_.enroll_call_count(), 1);
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_FALSE(future2.IsReady());
+  EXPECT_FALSE(future3.IsReady());
+
+  std::move(engine_done_cb).Run(true);
+  EXPECT_TRUE(future1.Get());
+  EXPECT_TRUE(future2.Get());
+  EXPECT_TRUE(future3.Get());
+}
+
+TEST_F(SyncServiceCryptoTest, ShouldFailEnrollWhenUserActionRequired) {
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase,
+                                  base::Time::Now());
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  crypto_.OnKeystoreKeysRequired();
+  EXPECT_CALL(engine_, SetTrustedVaultEncryptionPassphrase).Times(0);
+
+  base::test::TestFuture<bool> future;
+  crypto_.EnrollInTrustedVault(future.GetCallback());
+  EXPECT_EQ(trusted_vault_client_.enroll_call_count(), 0);
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(
+    SyncServiceCryptoTest,
+    ShouldFailEnrollWhenUserActionBecomesRequiredWhileClientEnrollmentInFlight) {
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase,
+                                  base::Time::Now());
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  EXPECT_CALL(engine_, SetTrustedVaultEncryptionPassphrase).Times(0);
+
+  base::test::TestFuture<bool> future;
+  crypto_.EnrollInTrustedVault(future.GetCallback());
+  ASSERT_EQ(trusted_vault_client_.enroll_call_count(), 1);
+
+  crypto_.OnKeystoreKeysRequired();
+  ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(SyncServiceCryptoTest,
+       ShouldFailEnrollWhenPassphraseTypeChangesWhileClientEnrollmentInFlight) {
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase,
+                                  base::Time::Now());
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  EXPECT_CALL(engine_, SetTrustedVaultEncryptionPassphrase).Times(0);
+
+  base::test::TestFuture<bool> future;
+  crypto_.EnrollInTrustedVault(future.GetCallback());
+  ASSERT_EQ(trusted_vault_client_.enroll_call_count(), 1);
+
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kCustomPassphrase,
+                                  base::Time::Now());
+  ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(SyncServiceCryptoTest, ShouldFailEnrollWhenClientEnrollmentFails) {
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase,
+                                  base::Time::Now());
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  trusted_vault_client_.SetEnrollSuccess(false);
+  EXPECT_CALL(engine_, SetTrustedVaultEncryptionPassphrase).Times(0);
+
+  base::test::TestFuture<bool> future;
+  crypto_.EnrollInTrustedVault(future.GetCallback());
+  ASSERT_EQ(trusted_vault_client_.enroll_call_count(), 1);
+  ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(SyncServiceCryptoTest,
+       ShouldFailEnrollWhenResetWhileClientEnrollmentInFlight) {
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase,
+                                  base::Time::Now());
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  EXPECT_CALL(engine_, SetTrustedVaultEncryptionPassphrase).Times(0);
+
+  base::test::TestFuture<bool> future;
+  crypto_.EnrollInTrustedVault(future.GetCallback());
+  ASSERT_EQ(trusted_vault_client_.enroll_call_count(), 1);
+
+  crypto_.Reset();
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+  EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+}
+
+TEST_F(SyncServiceCryptoTest,
+       ShouldFailEnrollWhenSetTrustedVaultEncryptionPassphraseFails) {
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase,
+                                  base::Time::Now());
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  const int initial_recoverability_calls =
+      trusted_vault_client_.get_is_recoverablity_degraded_call_count();
+
+  base::test::TestFuture<bool> future;
+  crypto_.EnrollInTrustedVault(future.GetCallback());
+  ASSERT_EQ(trusted_vault_client_.enroll_call_count(), 1);
+
+  base::OnceCallback<void(bool)> engine_done_cb;
+  EXPECT_CALL(engine_, SetTrustedVaultEncryptionPassphrase)
+      .WillOnce([&engine_done_cb](const std::vector<uint8_t>&, int,
+                                  base::OnceCallback<void(bool)> done_cb) {
+        engine_done_cb = std::move(done_cb);
+      });
+  ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  ASSERT_FALSE(engine_done_cb.is_null());
+
+  std::move(engine_done_cb).Run(false);
+  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(trusted_vault_client_.get_is_recoverablity_degraded_call_count(),
+            initial_recoverability_calls);
+}
+
+TEST_F(
+    SyncServiceCryptoTest,
+    ShouldFailEnrollWhenResetWhileSetTrustedVaultEncryptionPassphraseInFlight) {
+  crypto_.OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase,
+                                  base::Time::Now());
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  const int initial_recoverability_calls =
+      trusted_vault_client_.get_is_recoverablity_degraded_call_count();
+
+  base::test::TestFuture<bool> future;
+  crypto_.EnrollInTrustedVault(future.GetCallback());
+  ASSERT_EQ(trusted_vault_client_.enroll_call_count(), 1);
+
+  base::OnceCallback<void(bool)> engine_done_cb;
+  EXPECT_CALL(engine_, SetTrustedVaultEncryptionPassphrase)
+      .WillOnce([&engine_done_cb](const std::vector<uint8_t>&, int,
+                                  base::OnceCallback<void(bool)> done_cb) {
+        engine_done_cb = std::move(done_cb);
+      });
+  ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  ASSERT_FALSE(engine_done_cb.is_null());
+
+  crypto_.Reset();
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_FALSE(future.Get());
+  std::move(engine_done_cb).Run(true);
+  EXPECT_EQ(trusted_vault_client_.get_is_recoverablity_degraded_call_count(),
+            initial_recoverability_calls);
 }
 
 }  // namespace

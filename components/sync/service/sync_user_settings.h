@@ -135,7 +135,16 @@ class SyncUserSettings {
   // asynchronously with the result upon completion (or with `false` if Sync
   // transport is not active).
   virtual void IsTrustedVaultEnrollmentPossible(
-      base::OnceCallback<void(bool)> callback) const = 0;
+      base::OnceCallback<void(bool)> callback) = 0;
+
+  // Asynchronously enrolls the user's account in Trusted Vault
+  // (`kTrustedVaultPassphrase`) encryption and transitions Sync encryption to
+  // the newly generated key. Invokes `callback` asynchronously with `true` once
+  // enrollment and the local Nigori transition succeed, or `false` if Sync
+  // transport is not active, local eligibility prerequisites are not met,
+  // enrollment fails, or the transition does not complete.
+  virtual void EnrollInTrustedVault(
+      base::OnceCallback<void(bool)> callback) = 0;
 
   // NOTE: All of the state below may only be queried or modified if the Sync
   // engine is initialized.

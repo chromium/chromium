@@ -12,7 +12,9 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/sync_engine_host.h"
 #include "components/sync/model/data_type_controller_delegate.h"
@@ -53,6 +55,7 @@ void FakeSyncEngine::Initialize(InitParams params) {
 
   authenticated_account_id_ = params.authenticated_account_info.account_id;
   host_ = params.host;
+  encryption_observer_proxy_ = std::move(params.encryption_observer_proxy);
 
   if (allow_init_completion_) {
     TriggerInitializationCompletion(/*success=*/true);
@@ -103,6 +106,12 @@ void FakeSyncEngine::SetTrustedVaultEncryptionPassphrase(
     const std::vector<uint8_t>& key,
     int version,
     base::OnceCallback<void(bool)> done_cb) {
+  last_trusted_vault_passphrase_key_ = key;
+  last_trusted_vault_passphrase_key_version_ = version;
+  if (encryption_observer_proxy_) {
+    encryption_observer_proxy_->OnPassphraseTypeChanged(
+        PassphraseType::kTrustedVaultPassphrase, base::Time());
+  }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(done_cb), true));
 }
@@ -121,6 +130,7 @@ void FakeSyncEngine::AddTrustedVaultDecryptionKeys(
 void FakeSyncEngine::StopSyncingForShutdown() {}
 
 void FakeSyncEngine::Shutdown(ShutdownReason reason) {
+  encryption_observer_proxy_.reset();
   if (reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
     sync_transport_data_cleared_cb_.Run();
   }

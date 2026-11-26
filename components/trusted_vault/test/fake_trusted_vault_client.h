@@ -70,9 +70,9 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
     std::map<GaiaId, std::vector<RecoveryMethod>> gaia_id_to_recovery_methods_;
   };
 
-  // If `auto_complete_requests` set to true, CompleteAllPendingRequests will be
-  // invoked automatically (in a dedicated task) upon FetchKeys() and
-  // GetIsRecoverabilityDegraded() calls.
+  // If `auto_complete_requests` is set to true, `CompleteAllPendingRequests()`
+  // will be invoked automatically (in a dedicated task) upon `FetchKeys()`,
+  // `GetIsRecoverabilityDegraded()`, `CanEnroll()`, and `Enroll()` calls.
   explicit FakeTrustedVaultClient(bool auto_complete_requests = false);
   ~FakeTrustedVaultClient() override;
 
@@ -92,19 +92,25 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
     return get_is_recoverablity_degraded_call_count_;
   }
 
+  // Exposes the total number of calls to `CanEnroll()`.
+  int can_enroll_call_count() const { return can_enroll_call_count_; }
+
+  // Exposes the total number of calls to `Enroll()`.
+  int enroll_call_count() const { return enroll_call_count_; }
+
   // Similar to FetchKeys(), but synchronous and never requests new keys from
   // `server_`.
   std::vector<std::vector<uint8_t>> GetStoredKeys(const GaiaId& gaia_id) const;
 
-  // Returns the number of pending FetchKeys() and
-  // GetIsRecoverabilityDegraded() requests that will be completed by
-  // CompleteAllPendingRequests().
+  // Returns the number of pending `FetchKeys()`,
+  // `GetIsRecoverabilityDegraded()`, `CanEnroll()`, and `Enroll()` requests
+  // that will be completed by `CompleteAllPendingRequests()`.
   int GetPendingRequestCount() const {
     return static_cast<int>(pending_responses_.size());
   }
 
-  // Mimics the completion of all FetchKeys() and GetIsRecoverabilityDegraded()
-  // requests.
+  // Mimics the completion of all `FetchKeys()`,
+  // `GetIsRecoverabilityDegraded()`, `CanEnroll()`, and `Enroll()` requests.
   bool CompleteAllPendingRequests();
 
   // When set to true, implementation will start to report that recoverability
@@ -165,6 +171,9 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
       const GaiaId& gaia_id,
       base::OnceCallback<void(const std::vector<TrustedVaultKeyAndVersion>&)>
           callback);
+  void CompleteEnroll(
+      const GaiaId& gaia_id,
+      base::OnceCallback<void(const std::vector<uint8_t>&, int)> callback);
   void PostCompleteAllPendingRequests();
 
   const bool auto_complete_requests_;
@@ -176,6 +185,8 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   int fetch_count_ = 0;
   int keys_marked_as_stale_count_ = 0;
   int get_is_recoverablity_degraded_call_count_ = 0;
+  int can_enroll_call_count_ = 0;
+  int enroll_call_count_ = 0;
   int server_request_count_ = 0;
   std::vector<base::OnceClosure> pending_responses_;
   bool is_recovery_method_required_ = false;

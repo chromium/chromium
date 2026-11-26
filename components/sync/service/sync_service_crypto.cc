@@ -4,10 +4,13 @@
 
 #include "components/sync/service/sync_service_crypto.h"
 
+#include <cstdint>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -18,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -159,8 +163,25 @@ SyncServiceCrypto::GetEncryptor() const {
 
 void SyncServiceCrypto::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::unique_ptr<base::OnceCallbackList<void(bool)>> can_enroll_callbacks =
+      std::move(state_.ongoing_can_enroll_callbacks);
+  std::unique_ptr<base::OnceCallbackList<void(bool)>> enroll_callbacks =
+      std::move(state_.ongoing_enroll_callbacks);
   weak_factory_.InvalidateWeakPtrs();
   state_ = State();
+
+  if (can_enroll_callbacks) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&base::OnceCallbackList<void(bool)>::Notify<bool>,
+                       std::move(can_enroll_callbacks), false));
+  }
+  if (enroll_callbacks) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&base::OnceCallbackList<void(bool)>::Notify<bool>,
+                       std::move(enroll_callbacks), false));
+  }
 }
 
 void SyncServiceCrypto::StopObservingTrustedVaultClient() {
@@ -219,26 +240,60 @@ bool SyncServiceCrypto::IsEncryptEverythingEnabled() const {
 }
 
 void SyncServiceCrypto::IsTrustedVaultEnrollmentPossible(
-    base::OnceCallback<void(bool)> callback) const {
+    base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(state_.engine);
 
-  switch (state_.required_user_action) {
-    case RequiredUserAction::kNone:
-      break;
-    case RequiredUserAction::kUnknownDuringInitialization:
-    case RequiredUserAction::kPassphraseRequired:
-    case RequiredUserAction::kFetchingTrustedVaultKeys:
-    case RequiredUserAction::kTrustedVaultKeyRequired:
-    case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
-    case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
-    case RequiredUserAction::kKeystoreKeysRequired:
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), false));
-      return;
+  if (!RequiredUserActionAllowsTrustedVaultEnrollment(
+          state_.required_user_action)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
   }
 
-  trusted_vault_client_->CanEnroll(state_.account_info, std::move(callback));
+  if (state_.ongoing_can_enroll_callbacks) {
+    // `trusted_vault_client_->CanEnroll()` was already invoked by an earlier
+    // request.
+    state_.ongoing_can_enroll_callbacks->AddUnsafe(std::move(callback));
+    return;
+  }
+  state_.ongoing_can_enroll_callbacks =
+      std::make_unique<base::OnceCallbackList<void(bool)>>();
+  state_.ongoing_can_enroll_callbacks->AddUnsafe(std::move(callback));
+  trusted_vault_client_->CanEnroll(
+      state_.account_info,
+      base::BindOnce(&SyncServiceCrypto::OnCanEnrollCompleted,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void SyncServiceCrypto::EnrollInTrustedVault(
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(state_.engine);
+
+  if (!RequiredUserActionAllowsTrustedVaultEnrollment(
+          state_.required_user_action)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
+  if (state_.ongoing_enroll_callbacks) {
+    // `trusted_vault_client_->Enroll()` was already invoked by an earlier
+    // request.
+    state_.ongoing_enroll_callbacks->AddUnsafe(std::move(callback));
+    return;
+  }
+  state_.ongoing_enroll_callbacks =
+      std::make_unique<base::OnceCallbackList<void(bool)>>();
+  state_.ongoing_enroll_callbacks->AddUnsafe(std::move(callback));
+  // Half-enrolled accounts (where the security domain is already enrolled, but
+  // Nigori is still on keystore passphrase) are not handled here; `Enroll()`
+  // will fail and callers must fall back to the web enrollment flow.
+  trusted_vault_client_->Enroll(
+      state_.account_info,
+      base::BindOnce(&SyncServiceCrypto::OnTrustedVaultClientEnrolled,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
@@ -555,10 +610,10 @@ void SyncServiceCrypto::OnPassphraseTypeChanged(PassphraseType type,
 
   // Clear recoverability degraded state in case a custom passphrase was set.
   // Note that the opposite transition (into degraded recoverability) isn't
-  // handled here, i.e. RefreshIsRecoverabilityDegraded() isn't invoked, as
-  // it can be safely assumed that in practice either of
-  // OnTrustedVaultKeyRequired() or OnTrustedVaultKeyAccepted() will eventually
-  // be invoked.
+  // handled here, i.e. `RefreshIsRecoverabilityDegraded()` isn't invoked, as
+  // remote transitions invoke either `OnTrustedVaultKeyRequired()` or
+  // `OnTrustedVaultKeyAccepted()`, and local enrollment invokes
+  // `RefreshIsRecoverabilityDegraded()` upon transition completion.
   if (type != PassphraseType::kTrustedVaultPassphrase &&
       state_.required_user_action ==
           RequiredUserAction::kTrustedVaultRecoverabilityDegraded) {
@@ -606,6 +661,24 @@ void SyncServiceCrypto::OnTrustedVaultRecoverabilityChanged() {
     return;
   }
   RefreshIsRecoverabilityDegraded();
+}
+
+// static
+bool SyncServiceCrypto::RequiredUserActionAllowsTrustedVaultEnrollment(
+    RequiredUserAction required_user_action) {
+  switch (required_user_action) {
+    case RequiredUserAction::kNone:
+      return true;
+    case RequiredUserAction::kUnknownDuringInitialization:
+    case RequiredUserAction::kPassphraseRequired:
+    case RequiredUserAction::kFetchingTrustedVaultKeys:
+    case RequiredUserAction::kTrustedVaultKeyRequired:
+    case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
+    case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
+    case RequiredUserAction::kKeystoreKeysRequired:
+      return false;
+  }
+  NOTREACHED();
 }
 
 void SyncServiceCrypto::FetchTrustedVaultKeys(
@@ -834,6 +907,70 @@ void SyncServiceCrypto::MaybeSetDecryptionKeyFromBootstrapToken() {
 
   state_.engine->SetDecryptionBootstrapToken(token);
   ResolvePendingKeysRequiredState();
+}
+
+void SyncServiceCrypto::OnCanEnrollCompleted(bool can_enroll) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(state_.engine);
+  CHECK(state_.ongoing_can_enroll_callbacks);
+  bool result = can_enroll;
+  if (GetPassphraseType().value_or(PassphraseType::kKeystorePassphrase) !=
+          PassphraseType::kKeystorePassphrase ||
+      !RequiredUserActionAllowsTrustedVaultEnrollment(
+          state_.required_user_action)) {
+    result = false;
+  }
+
+  std::exchange(state_.ongoing_can_enroll_callbacks, nullptr)->Notify(result);
+}
+
+void SyncServiceCrypto::OnTrustedVaultClientEnrolled(
+    const std::vector<uint8_t>& new_shared_key,
+    int new_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(state_.engine);
+  CHECK(state_.ongoing_enroll_callbacks);
+  if (GetPassphraseType().value_or(PassphraseType::kKeystorePassphrase) !=
+      PassphraseType::kKeystorePassphrase) {
+    std::exchange(state_.ongoing_enroll_callbacks, nullptr)->Notify(false);
+    return;
+  }
+  if (!RequiredUserActionAllowsTrustedVaultEnrollment(
+          state_.required_user_action)) {
+    std::exchange(state_.ongoing_enroll_callbacks, nullptr)->Notify(false);
+    return;
+  }
+
+  if (new_shared_key.empty() || new_version < 0) {
+    std::exchange(state_.ongoing_enroll_callbacks, nullptr)->Notify(false);
+    return;
+  }
+  state_.engine->SetTrustedVaultEncryptionPassphrase(
+      new_shared_key, new_version,
+      base::BindOnce(
+          &SyncServiceCrypto::OnSetTrustedVaultEncryptionPassphraseCompleted,
+          weak_factory_.GetWeakPtr()));
+}
+
+void SyncServiceCrypto::OnSetTrustedVaultEncryptionPassphraseCompleted(
+    bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(state_.engine);
+  CHECK(state_.ongoing_enroll_callbacks);
+  std::unique_ptr<base::OnceCallbackList<void(bool)>> callbacks =
+      std::exchange(state_.ongoing_enroll_callbacks, nullptr);
+  if (!success) {
+    callbacks->Notify(false);
+    return;
+  }
+  // `OnPassphraseTypeChanged()` skips `RefreshIsRecoverabilityDegraded()`
+  // assuming `OnTrustedVaultKeyRequired()` or `OnTrustedVaultKeyAccepted()`
+  // will be invoked. Local `SetTrustedVaultEncryptionPassphrase()` has no
+  // pending keys and does not trigger `OnTrustedVaultKeyAccepted()` (which
+  // would also be a no-op when `required_user_action` is `kNone`), so refresh
+  // degraded recoverability explicitly here.
+  RefreshIsRecoverabilityDegraded();
+  callbacks->Notify(true);
 }
 
 }  // namespace syncer
