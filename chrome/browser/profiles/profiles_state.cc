@@ -220,6 +220,30 @@ bool IsRegularUserProfile(Profile* profile) {
   return selections.ApplyProfileSelection(profile);
 }
 
+void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  // The BrowsingDataRemover relies on many objects that aren't created in unit
+  // tests. Previously this code would depend on content::ResourceDispatcherHost
+  // but that's gone, so do a similar hack for now.
+  if (!g_browser_process->safe_browsing_service()) {
+    return;
+  }
+#endif
+
+  Profile* profile =
+      g_browser_process->profile_manager()->GetProfileByPath(profile_path);
+  if (!profile) {
+    return;
+  }
+
+  // For guest profiles the browsing data is in the OTR profile.
+  if (profile->IsGuestSession()) {
+    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  }
+
+  profile->Wipe();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 std::u16string GetAvatarNameForProfile(const base::FilePath& profile_path) {
   if (profile_path == ProfileManager::GetGuestProfilePath()) {
@@ -393,27 +417,6 @@ void UpdateGaiaProfileInfoIfNeeded(Profile* profile) {
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  // The BrowsingDataRemover relies on many objects that aren't created in unit
-  // tests. Previously this code would depend on content::ResourceDispatcherHost
-  // but that's gone, so do a similar hack for now.
-  if (!g_browser_process->safe_browsing_service())
-    return;
-#endif
-
-  Profile* profile =
-      g_browser_process->profile_manager()->GetProfileByPath(profile_path);
-  if (!profile)
-    return;
-
-  // For guest profiles the browsing data is in the OTR profile.
-  if (profile->IsGuestSession())
-    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-
-  profile->Wipe();
-}
 
 bool IsDemoSession() {
 #if BUILDFLAG(IS_CHROMEOS)

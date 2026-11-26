@@ -442,12 +442,8 @@ bool ShouldGoOffTheRecord(Profile* profile) {
 }  // namespace
 
 ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
-    : user_data_dir_(user_data_dir)
-#if !BUILDFLAG(IS_ANDROID)
-      ,
-      delete_profile_helper_(std::make_unique<DeleteProfileHelper>(*this))
-#endif
-{
+    : user_data_dir_(user_data_dir),
+      delete_profile_helper_(std::make_unique<DeleteProfileHelper>(*this)) {
 #if !BUILDFLAG(IS_ANDROID)
   closing_all_browsers_subscription_ = chrome::AddClosingAllBrowsersCallback(
       base::BindRepeating(&ProfileManager::OnClosingAllBrowsersChanged,
@@ -990,10 +986,9 @@ bool ProfileManager::CanCreateProfileAtPath(const base::FilePath& path) const {
     return false;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (IsProfileDirectoryMarkedForDeletion(path))
+  if (IsProfileDirectoryMarkedForDeletion(path)) {
     return false;
-#endif
+  }
 
   return true;
 }
@@ -1937,8 +1932,6 @@ void ProfileManager::OnProfileCreationStarted(Profile* profile,
   RegisterUnownedProfile(profile);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-
 std::optional<base::FilePath> ProfileManager::FindLastActiveProfile(
     base::RepeatingCallback<bool(ProfileAttributesEntry*)> predicate) {
   bool found_entry_loaded = false;
@@ -1980,8 +1973,6 @@ std::optional<base::FilePath> ProfileManager::FindLastActiveProfile(
 DeleteProfileHelper& ProfileManager::GetDeleteProfileHelper() {
   return *delete_profile_helper_;
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 ProfileManager::ProfileInfo* ProfileManager::RegisterOwnedProfile(
     std::unique_ptr<Profile> profile) {
@@ -2202,13 +2193,11 @@ void ProfileManager::OnProfileDestructionComplete(
 }
 
 void ProfileManager::SetProfileAsLastUsed(Profile* last_active) {
-#if !BUILDFLAG(IS_ANDROID)
   // The profile may incorrectly become "active" during its destruction, caused
   // by the UI teardown. See https://crbug.com/40686320
   if (IsProfileDirectoryMarkedForDeletion(last_active->GetPath())) {
     return;
   }
-#endif
 
   // If there is a primary account, mark it as used "just now".
   signin::IdentityManager* identity_manager =

@@ -27,7 +27,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
-#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
@@ -40,26 +39,41 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/common/pref_names.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
+#endif
+
 namespace {
 
 void RecordDeletedProfileStateIfNeeded(ProfileAttributesStorage& storage,
                                        ProfileAttributesEntry* entry) {
+  // TODO(crbug.com/581791485): Revisit enabling `RecordDeletedProfileState()`
+  // on Android once `Profile.DeleteProfileContext` window semantics are audited
+  // for Android.
+#if !BUILDFLAG(IS_ANDROID)
   if (entry) {
     storage.RecordDeletedProfileState(entry);
   }
+#endif
 }
 
 void CloseBrowsersBeforeDeletion(Profile* profile,
                                  base::OnceClosure on_closed) {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, profile deletion is not cancellable by beforeunload handlers.
+  // TODO(crbug.com/586893824): Invoke the Android API to permanently close open
+  // windows and tabs for `profile` once implemented.
+  std::move(on_closed).Run();
+#else
   chrome::CloseAllBrowsersWithProfile(
       profile, /*skip_beforeunload=*/false,
       base::BindRepeating(
@@ -72,13 +86,16 @@ void CloseBrowsersBeforeDeletion(Profile* profile,
           },
           base::OwnedRef(std::move(on_closed))),
       base::BindRepeating(&CancelProfileDeletion));
+#endif
 }
 
 void DeletePlatformShortcutsForProfile(const base::FilePath& profile_path) {
+#if !BUILDFLAG(IS_ANDROID)
   web_app::internals::GetShortcutIOTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&web_app::internals::DeleteAllShortcutsForProfile,
                      profile_path));
+#endif
 }
 
 bool IsValidFallbackProfilePath(const base::FilePath& candidate_path,
@@ -106,9 +123,12 @@ void ProfileCleanedUp(base::Value profile_path_value) {
   if (!g_browser_process || g_browser_process->IsShuttingDown()) {
     return;
   }
-  ScopedListPrefUpdate deleted_profiles(g_browser_process->local_state(),
-                                        prefs::kProfilesDeleted);
-  deleted_profiles->EraseValue(profile_path_value);
+  PrefService* local_state = g_browser_process->local_state();
+  {
+    ScopedListPrefUpdate deleted_profiles(local_state, prefs::kProfilesDeleted);
+    deleted_profiles->EraseValue(profile_path_value);
+  }
+  FlushLocalStateIfNeeded(local_state);
 }
 
 void PostNukeProfileFromDisk(const base::FilePath& profile_path) {
@@ -169,24 +189,31 @@ struct DeleteProfileHelper::DeletionContext {
   DeletionContext(const base::FilePath& profile_dir,
                   ProfileLoadedCallback callback)
       : profile_dir(profile_dir),
+#if !BUILDFLAG(IS_ANDROID)
         browser_keep_alive(std::make_unique<ScopedKeepAlive>(
             KeepAliveOrigin::PROFILE_MANAGER,
             KeepAliveRestartOption::DISABLED)),
-        callback(std::move(callback)) {}
+#endif
+        callback(std::move(callback)) {
+  }
   DeletionContext(DeletionContext&&) = default;
   DeletionContext& operator=(DeletionContext&&) = default;
   ~DeletionContext() = default;
 
   void CheckValid() const {
+#if !BUILDFLAG(IS_ANDROID)
     CHECK(browser_keep_alive, base::NotFatalUntil::M162);
+#endif
   }
 
   base::FilePath profile_dir;
+#if !BUILDFLAG(IS_ANDROID)
   // Prevents browser shutdown from starting while browser windows are closing
   // or a fallback profile is loading asynchronously. Declared before
   // `profile_keep_alive` so the process keep-alive outlives the profile
   // keep-alive on destruction.
   std::unique_ptr<ScopedKeepAlive> browser_keep_alive;
+#endif
   // Avoids unloading the profile during the deletion process; null if the
   // profile is not loaded.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
@@ -224,11 +251,12 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
     // Cancel all in-progress downloads before deleting the profile to prevent a
     // "Do you want to exit Google Chrome and cancel the downloads?" prompt
     // (crbug.com/40348586).
-    DownloadCoreService* service =
-        DownloadCoreServiceFactory::GetForBrowserContext(profile);
-    service->CancelDownloads(
-        DownloadCoreService::CancelDownloadsTrigger::kProfileDeletion);
-    CHECK_EQ(0, service->BlockingShutdownCount(), base::NotFatalUntil::M162);
+    if (DownloadCoreService* service =
+            DownloadCoreServiceFactory::GetForBrowserContext(profile)) {
+      service->CancelDownloads(
+          DownloadCoreService::CancelDownloadsTrigger::kProfileDeletion);
+      CHECK_EQ(0, service->BlockingShutdownCount(), base::NotFatalUntil::M162);
+    }
 
     // Take a `ScopedProfileKeepAlive` for the deletion process to avoid the
     // profile from being randomly unloaded.
@@ -476,7 +504,12 @@ void DeleteProfileHelper::OnLoadProfileForProfileDeletion(
     PostNukeProfileFromDisk(profile_dir);
   }
 
+  // TODO(crbug.com/581791485): On Android, also delete per-profile state stored
+  // outside `profile_dir` (multi-instance metadata, `app_tabs/`, tab
+  // thumbnails, per-profile SharedPreferences, and notifications) once the API
+  // is available.
   storage.RemoveProfile(profile_dir);
+  FlushLocalStateIfNeeded(g_browser_process->local_state());
 
   if (profile &&
       base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {

@@ -93,6 +93,10 @@ void SetLastUsedProfile(const base::FilePath& profile_dir);
 // profiles should use `Profile::IsRegularProfile()` instead.
 bool IsRegularUserProfile(Profile* profile);
 
+// Deletes all browsing data for the profile given by `profile_path` using a
+// `BrowsingDataRemover` if the profile is loaded in `ProfileManager`.
+void RemoveBrowsingDataForProfile(const base::FilePath& profile_path);
+
 #if !BUILDFLAG(IS_ANDROID)
 // Returns the display name of the specified on-the-record profile (or guest),
 // specified by |profile_path|, used in the avatar button or user manager. If
@@ -147,10 +151,6 @@ bool IsProfileLocked(const base::FilePath& profile_path);
 // profile info.
 void UpdateGaiaProfileInfoIfNeeded(Profile* profile);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-// If the profile given by |profile_path| is loaded in the ProfileManager, use
-// a BrowsingDataRemover to delete all the Profile's data.
-void RemoveBrowsingDataForProfile(const base::FilePath& profile_path);
 
 // Returns true if the current session is a Demo session.
 bool IsDemoSession();

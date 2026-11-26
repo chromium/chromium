@@ -25,6 +25,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
@@ -33,7 +34,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/scoped_observation.h"
-#include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"  // nogncheck
 
 class GlobalBrowserCollection;
@@ -48,7 +48,6 @@ class ProfileAttributesStorageAndroid;
 class ProfileManagerAndroid;
 #endif
 
-class DeleteProfileHelper;
 class ProfileAttributesStorage;
 enum class ProfileKeepAliveOrigin;
 class ProfileManagerObserver;
@@ -323,7 +322,6 @@ class ProfileManager : public Profile::Delegate {
   // profile specfic desktop shortcuts.
   ProfileShortcutManager* profile_shortcut_manager();
 
-#if !BUILDFLAG(IS_ANDROID)
   // Searches for the latest active profile that respects |predicate|, already
   // loaded preferably. Returns nullopt if no existing profile respects all the
   // conditions.
@@ -331,7 +329,6 @@ class ProfileManager : public Profile::Delegate {
       base::RepeatingCallback<bool(ProfileAttributesEntry*)> predicate);
 
   DeleteProfileHelper& GetDeleteProfileHelper();
-#endif
 
   // Autoloads profiles if they are running background apps.
   void AutoloadProfiles();
@@ -654,9 +651,9 @@ class ProfileManager : public Profile::Delegate {
 
 #if !BUILDFLAG(IS_ANDROID)
   BrowserCollectionObserver browser_collection_observer_{this};
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   std::unique_ptr<DeleteProfileHelper> delete_profile_helper_;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Maps profile path to `ProfileInfo` (if profile has been loaded). Use
   // `RegisterProfile()` to add into this map. This map owns all loaded profile

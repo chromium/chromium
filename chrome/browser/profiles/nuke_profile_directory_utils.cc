@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -116,6 +118,16 @@ void NukeProfileFromDiskImpl(const base::FilePath& profile_path,
 
 }  // namespace
 
+void FlushLocalStateIfNeeded(PrefService* local_state) {
+#if BUILDFLAG(IS_ANDROID)
+  // Android terminates cached processes via SIGKILL without running browser
+  // shutdown hooks, so flush Local State immediately.
+  if (local_state) {
+    local_state->CommitPendingWrite();
+  }
+#endif
+}
+
 void NukeDeletedProfilesFromDisk() {
   for (const auto& item : ProfilesToDelete()) {
     if (item.second == ProfileDeletionStage::MARKED) {
@@ -163,16 +175,19 @@ void MarkProfileDirectoryForDeletion(const base::FilePath& path) {
   ProfilesToDelete()[path] = ProfileDeletionStage::MARKED;
   // Remember that this profile was deleted and files should have been deleted
   // on shutdown. In case of a crash remaining files are removed on next start.
-  ScopedListPrefUpdate deleted_profiles(g_browser_process->local_state(),
-                                        prefs::kProfilesDeleted);
-  deleted_profiles->Append(base::FilePathToValue(path.BaseName()));
+  PrefService* local_state = g_browser_process->local_state();
+  {
+    ScopedListPrefUpdate deleted_profiles(local_state, prefs::kProfilesDeleted);
+    deleted_profiles->Append(base::FilePathToValue(path.BaseName()));
+  }
 
   // Set profile as ephemeral.
   ProfileAttributesEntry* entry = g_browser_process->profile_manager()
                                       ->GetProfileAttributesStorage()
                                       .GetProfileAttributesWithPath(path);
-  if (!entry->IsEphemeral()) {
+  if (entry && !entry->IsEphemeral()) {
     entry->SetIsEphemeral(true);
     entry->SetIsOmitted(true);
   }
+  FlushLocalStateIfNeeded(local_state);
 }

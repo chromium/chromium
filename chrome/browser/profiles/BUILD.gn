@@ -469,6 +469,7 @@ source_set("profile") {
 source_set("profile_manager") {
   sources = [
     "chrome_version_service.h",
+    "delete_profile_helper.h",
     "profile_destroyer.h",
     "profile_manager.h",
     "profile_metrics.h",
@@ -485,10 +486,7 @@ source_set("profile_manager") {
   ]
 
   if (!is_android) {
-    sources += [
-      "delete_profile_helper.h",
-      "profile_window.h",
-    ]
+    sources += [ "profile_window.h" ]
     deps += [ "//chrome/browser/ui/browser_window" ]
   }
 
@@ -499,6 +497,7 @@ source_set("profile_manager") {
 
 source_set("profile_manager_impl") {
   sources = [
+    "delete_profile_helper.cc",
     "profile_destroyer.cc",
     "profile_manager.cc",
     "profile_metrics.cc",
@@ -520,6 +519,7 @@ source_set("profile_manager_impl") {
     "//chrome/browser:startup_data",
     "//chrome/browser/accessibility",
     "//chrome/browser/browsing_data",
+    "//chrome/browser/download",
     "//chrome/browser/lifetime",
     "//chrome/browser/navigation_predictor",
     "//chrome/browser/prefs",
@@ -527,6 +527,7 @@ source_set("profile_manager_impl") {
     "//chrome/browser/signin",
     "//chrome/browser/supervised_user",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/unified_consent",
     "//chrome/common",
     "//chrome/common:buildflags",
@@ -538,6 +539,7 @@ source_set("profile_manager_impl") {
     "//components/search_engines",
     "//components/signin/core/browser",
     "//components/signin/public/base:signin_buildflags",
+    "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//components/sync/base",
@@ -552,18 +554,15 @@ source_set("profile_manager_impl") {
   }
 
   if (!is_android) {
-    sources += [
-      "delete_profile_helper.cc",
-      "profile_window.cc",
-    ]
+    sources += [ "profile_window.cc" ]
     deps += [
       "//chrome/browser/ui:browser_window_header",
-      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/dialogs:browser_dialogs",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/startup",
       "//chrome/browser/web_applications",
+      "//components/keep_alive_registry",
       "//components/live_caption",
     ]
   }

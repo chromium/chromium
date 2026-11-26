@@ -11,6 +11,12 @@ namespace base {
 class FilePath;
 }
 
+class PrefService;
+
+// Flushes `local_state` immediately on platforms where cached processes may be
+// terminated without running browser shutdown steps (e.g. Android).
+void FlushLocalStateIfNeeded(PrefService* local_state);
+
 // Physically remove deleted profile directories from disk.
 void NukeDeletedProfilesFromDisk();
 
