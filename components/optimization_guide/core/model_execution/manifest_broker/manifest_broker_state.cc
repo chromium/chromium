@@ -221,11 +221,12 @@ void ManifestBrokerState::OnManifestUpdated() {
 
   // Init will complete the first time we finish loading all available assets
   // for a manifest.
+  const bool has_assets = manifest_monitor_.manifest()->HasAssets();
   auto factory = std::make_unique<ManifestSolutionFactory>(
       *manifest_monitor_.manifest(), model_broker_impl_, usage_tracker_,
       service_client_, access_controller_, performance_classifier_,
       base::BindOnce(&ManifestBrokerState::OnSolutionFactoryInit,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), has_assets),
       base::BindRepeating(
           &ManifestBrokerState::NotifyObserversOfBrokerStateChange,
           weak_ptr_factory_.GetWeakPtr()));
@@ -239,13 +240,20 @@ void ManifestBrokerState::OnManifestUpdated() {
   NotifyObserversOfBrokerStateChange();
 }
 
-void ManifestBrokerState::OnSolutionFactoryInit() {
+void ManifestBrokerState::OnSolutionFactoryInit(bool has_assets) {
   TRACE_EVENT("optimization_guide",
               "ManifestBrokerState::OnSolutionFactoryInit");
   manifest_initialization_complete_ = true;
   delegate_->SetDiskSpaceCheckPriority(
       ManifestMonitorDelegate::DiskSpaceCheckReason::kInitialization,
       /*user_visible=*/false);
+  if (!broker_init_.is_complete()) {
+    base::UmaHistogramLongTimes100(
+        base::StrCat(
+            {"OptimizationGuide.OnDeviceModel.ManifestBrokerInitLatency.",
+             has_assets ? "ActiveManifest" : "UninstallManifest"}),
+        construction_timer_.Elapsed());
+  }
   broker_init_.Complete(GetPossibleOnDeviceCapabilities());
 
   if (manifest_monitor_.manifest().has_value()) {

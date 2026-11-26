@@ -2010,6 +2010,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.OnDeviceModel.ManifestBrokerInitLatency.{ManifestType}"
+    units="ms" expires_after="2027-04-14">
+  <owner>holte@chromium.org</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the elapsed time from `ManifestBrokerState` construction to initial
+    `BrokerInit` completion for {ManifestType}. Active manifests define
+    reachable on-device model assets for the device category, whereas uninstall
+    manifests have zero reachable assets (either an uninstall sentinel or a
+    parsed manifest with no assets for the device category). Recorded at most
+    once per `ManifestBrokerState` lifetime when the initial
+    `ManifestSolutionFactory` finishes loading its asset states and solution
+    configs (subsequent manifest reloads do not emit). Not recorded if the
+    browser shuts down before initial `BrokerInit` completes; compare against
+    `OptimizationGuide.OnDeviceModel.ManifestBrokerInstantiated` for total
+    broker instantiations.
+  </summary>
+  <token key="ManifestType">
+    <variant name="ActiveManifest" summary="an active manifest"/>
+    <variant name="UninstallManifest" summary="an uninstall manifest"/>
+  </token>
+</histogram>
+
 <histogram name="OptimizationGuide.OnDeviceModel.ManifestBrokerInstantiated"
     enum="Boolean" expires_after="2027-04-14">
   <owner>zekunjiang@google.com</owner>

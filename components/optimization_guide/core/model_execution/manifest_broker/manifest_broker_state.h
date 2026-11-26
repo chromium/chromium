@@ -6,14 +6,15 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MANIFEST_BROKER_MANIFEST_BROKER_STATE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/optimization_guide/core/model_execution/broker_init.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_monitor.h"
-#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_validation.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
@@ -100,7 +101,7 @@ class ManifestBrokerState final : public OnDeviceCapability,
   void OnManifestUpdated();
   // Called whenever a ManifestSolutionFactory finishes loading its initial
   // asset states and solution configs.
-  void OnSolutionFactoryInit();
+  void OnSolutionFactoryInit(bool has_assets);
 
   on_device_model::Capabilities GetPossibleOnDeviceCapabilities() const;
 
@@ -121,6 +122,7 @@ class ManifestBrokerState final : public OnDeviceCapability,
   // Notify `debug_observers_` of changes to the broker's internal state.
   void NotifyObserversOfBrokerStateChange();
 
+  const base::ElapsedTimer construction_timer_;
   raw_ref<PrefService> local_state_;
   std::unique_ptr<ManifestAssetManagerDelegate> delegate_;
   on_device_model::ServiceClient service_client_;

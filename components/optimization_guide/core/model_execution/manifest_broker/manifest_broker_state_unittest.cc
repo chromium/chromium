@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/task/execution_fence.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -931,6 +932,102 @@ TEST_F(ManifestBrokerStateTest, GetModelsInstallAndUninstall) {
     EXPECT_EQ(models[0].status, OnDeviceModelControl::ModelStatus::kReady);
     EXPECT_GT(models[0].size_bytes, 0u);
   }
+}
+
+TEST_F(
+    ManifestBrokerStateTest,
+    InitLatencyRecordedForConstructorSyncUninstallManifestAndSingleEmissionOnReload) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+
+  // Cached performance class + disabled user setting runs
+  // `UseUninstallManifest()` -> `OnManifestUpdated()` ->
+  // `OnSolutionFactoryInit()` synchronously inside `ManifestBrokerState`'s
+  // constructor.
+  UpdatePerformanceClassPref(&fake_.local_state(),
+                             OnDeviceModelPerformanceClass::kHigh);
+  fake_.local_state().SetBoolean(
+      model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled,
+      false);
+
+  base::HistogramTester histogram_tester;
+  fake_.Startup();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.OnDeviceModel.ManifestBrokerInitLatency."
+      "UninstallManifest",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.OnDeviceModel.ManifestBrokerInitLatency."
+      "ActiveManifest",
+      0);
+
+  // Re-enable user settings with `"test"` requested to reload an active
+  // manifest. Wait for `"model_A_key"` registration so the replacement factory
+  // is active (`kPendingAssets` rather than the uninstall manifest's terminal
+  // `kNotSupported`), then `CreateSession()` waits for download and solution
+  // config loading (after which the reloaded factory's
+  // `OnSolutionFactoryInit()` has run).
+  fake_.state().SetUseCaseRequested("test", true);
+  fake_.local_state().SetBoolean(
+      model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled, true);
+  ASSERT_TRUE(fake_.component_state().WaitForRegistration(
+      {"model_A_key", base::Version("1.0.0.0")}));
+  ASSERT_TRUE(fake_.CreateSession());
+
+  // Reloads must not emit a second `ManifestBrokerInitLatency` sample.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.OnDeviceModel.ManifestBrokerInitLatency."
+      "UninstallManifest",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.OnDeviceModel.ManifestBrokerInitLatency."
+      "ActiveManifest",
+      0);
+}
+
+TEST_F(ManifestBrokerStateTest,
+       InitLatencySupportsUnclippedStartupDelayAndActiveManifest) {
+  base::test::ScopedFeatureList startup_delay_feature;
+  startup_delay_feature.InitAndEnableFeatureWithParameters(
+      kLogOnDeviceMetricsOnStartup, {{"on_device_startup_metric_delay", "4m"}});
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+
+  base::HistogramTester histogram_tester;
+  fake_.Startup();
+  fake_.state().performance_classifier().ScheduleEvaluation();
+
+  task_environment_.FastForwardBy(base::Minutes(3));
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.OnDeviceModel.ManifestBrokerInitLatency."
+      "ActiveManifest",
+      0);
+
+  task_environment_.FastForwardBy(base::Minutes(1));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !histogram_tester
+                .GetAllSamples(
+                    "OptimizationGuide.OnDeviceModel."
+                    "ManifestBrokerInitLatency.ActiveManifest")
+                .empty();
+  }));
+
+  const std::vector<base::Bucket> samples = histogram_tester.GetAllSamples(
+      "OptimizationGuide.OnDeviceModel.ManifestBrokerInitLatency."
+      "ActiveManifest");
+  ASSERT_EQ(samples.size(), 1u);
+  EXPECT_EQ(samples[0].count, 1);
+  // Verify the 4-minute startup delay lands above `UmaHistogramMediumTimes`'s
+  // 3-minute ceiling without clipping into the 1-hour overflow bucket.
+  EXPECT_GT(samples[0].min, base::Minutes(3).InMilliseconds());
+  EXPECT_LT(samples[0].min, base::Hours(1).InMilliseconds());
+  EXPECT_GE(histogram_tester.GetTotalSum(
+                "OptimizationGuide.OnDeviceModel.ManifestBrokerInitLatency."
+                "ActiveManifest"),
+            base::Minutes(4).InMilliseconds());
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.OnDeviceModel.ManifestBrokerInitLatency."
+      "UninstallManifest",
+      0);
 }
 
 }  // namespace optimization_guide
