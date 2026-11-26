@@ -506,8 +506,11 @@ NOINLINE void ValidateResourceRequestForPrePrefetch(
                         resource_request_for_validation.previews_state);
   DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.upgrade_if_insecure,
                         resource_request_for_validation.upgrade_if_insecure);
-  DUMP_WILL_BE_CHECK_EQ(resource_request_for_pre_prefetch.is_revalidating,
-                        resource_request_for_validation.is_revalidating);
+  DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.revalidation_etag ==
+                     resource_request_for_validation.revalidation_etag);
+  DUMP_WILL_BE_CHECK(
+      resource_request_for_pre_prefetch.revalidation_last_modified ==
+      resource_request_for_validation.revalidation_last_modified);
   DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.throttling_profile_id ==
                      resource_request_for_validation.throttling_profile_id);
   DUMP_WILL_BE_CHECK(resource_request_for_pre_prefetch.fetch_window_id ==

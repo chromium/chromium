@@ -1468,7 +1468,7 @@ chromium-metrics-reviews@google.com.
   <int value="36" label="transition_type"/>
   <int value="37" label="previews_state"/>
   <int value="38" label="upgrade_if_insecure"/>
-  <int value="39" label="is_revalidating"/>
+  <int value="39" label="is_revalidating (deprecated)"/>
   <int value="40" label="throttling_profile_id"/>
   <int value="41" label="custom_proxy_pre_cache_headers (deprecated)"/>
   <int value="42" label="custom_proxy_post_cache_headers (deprecated)"/>

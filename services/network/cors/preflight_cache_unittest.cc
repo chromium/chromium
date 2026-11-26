@@ -99,7 +99,7 @@ class PreflightCacheTest : public testing::Test {
     return cache_.CheckIfRequestCanSkipPreflight(
         origin, url, network_isolation_key,
         network::mojom::CredentialsMode::kInclude, /*method=*/"POST",
-        net::HttpRequestHeaders(), /*is_revalidating=*/false, net_log_, true);
+        net::HttpRequestHeaders(), net_log_, true);
   }
 
   bool CheckOptionMethodEntryAndRefreshCache(
@@ -109,7 +109,7 @@ class PreflightCacheTest : public testing::Test {
     return cache_.CheckIfRequestCanSkipPreflight(
         origin, url, network_isolation_key,
         network::mojom::CredentialsMode::kInclude, /*method=*/"OPTION",
-        net::HttpRequestHeaders(), /*is_revalidating=*/false, net_log_, true);
+        net::HttpRequestHeaders(), net_log_, true);
   }
 
   void ClearCache(mojom::ClearDataFilterPtr url_filter) {

@@ -72,7 +72,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
   // JavaScript-initiated requests.
   std::optional<CorsErrorStatus> EnsureAllowedCrossOriginHeaders(
       const net::HttpRequestHeaders& headers,
-      bool is_revalidating,
       NonWildcardRequestHeadersSupport
           with_non_wildcard_request_headers_support) const;
 
@@ -86,7 +85,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
   bool EnsureAllowedRequest(mojom::CredentialsMode credentials_mode,
                             const std::string& method,
                             const net::HttpRequestHeaders& headers,
-                            bool is_revalidating,
                             NonWildcardRequestHeadersSupport
                                 with_non_wildcard_request_headers_support,
                             bool acam_preflight_spec_conformant) const;
@@ -114,16 +112,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
       const std::optional<std::string>& max_age_header);
 
  private:
-  std::optional<CorsErrorStatus>
-  EnsureAllowedCrossOriginHeadersWithAuthorizationCoveredByWildcard(
-      const net::HttpRequestHeaders& headers,
-      bool is_revalidating) const;
-
-  std::optional<CorsErrorStatus>
-  EnsureAllowedCrossOriginHeadersWithAuthorizationNotCoveredByWildcard(
-      const net::HttpRequestHeaders& headers,
-      bool is_revalidating) const;
-
   // Holds an absolute time when the result should be expired in the
   // CORS-preflight cache.
   base::TimeTicks absolute_expiry_time_;

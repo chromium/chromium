@@ -371,9 +371,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool upgrade_if_insecure(const network::ResourceRequest& request) {
     return request.upgrade_if_insecure;
   }
-  static bool is_revalidating(const network::ResourceRequest& request) {
-    return request.is_revalidating;
-  }
   static const std::optional<std::string>& revalidation_etag(
       const network::ResourceRequest& request) {
     return request.revalidation_etag;

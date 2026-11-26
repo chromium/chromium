@@ -466,12 +466,13 @@ struct URLRequest {
   // HTTPS due to an Upgrade-Insecure-Requests requirement.
   bool upgrade_if_insecure;
 
-  // True when the request is revalidating.
-  // Some users, notably blink, has its own cache. This flag is set to exempt
-  // some CORS logic for a revalidating request.
-  bool is_revalidating;
-
-  // Metadata passed for safe revalidation handling in Network Service.
+  // Optional conditional cache-revalidation validators passed from a
+  // client-side cache to the Network Service. When either field is present,
+  // the Network Service synthesizes the corresponding `If-None-Match` /
+  // `If-Modified-Since` request header when starting the network request and
+  // exempts a 304 response from the CORS access check. When non-null, each
+  // value must be non-empty and satisfy `net::HttpUtil::IsValidHeaderValue()`,
+  // or deserialization fails.
   string? revalidation_etag;
   string? revalidation_last_modified;
 

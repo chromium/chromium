@@ -397,10 +397,6 @@ bool WebURLRequest::SupportsAsyncRevalidation() const {
   return resource_request_->AllowsStaleResponse();
 }
 
-bool WebURLRequest::IsRevalidating() const {
-  return resource_request_->IsRevalidating();
-}
-
 const std::optional<base::UnguessableToken>&
 WebURLRequest::GetDevToolsThrottlingToken() const {
   return resource_request_->GetDevToolsThrottlingToken();

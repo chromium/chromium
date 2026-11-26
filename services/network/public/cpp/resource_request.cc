@@ -365,7 +365,6 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          is_reload_navigation == request.is_reload_navigation &&
          previews_state == request.previews_state &&
          upgrade_if_insecure == request.upgrade_if_insecure &&
-         is_revalidating == request.is_revalidating &&
          revalidation_etag == request.revalidation_etag &&
          revalidation_last_modified == request.revalidation_last_modified &&
          throttling_profile_id == request.throttling_profile_id &&
@@ -401,6 +400,11 @@ bool ResourceRequest::SendsCookies() const {
 bool ResourceRequest::SavesCookies() const {
   return credentials_mode == network::mojom::CredentialsMode::kInclude &&
          !(load_flags & net::LOAD_DO_NOT_SAVE_COOKIES);
+}
+
+bool ResourceRequest::IsRevalidating() const {
+  return revalidation_etag.has_value() ||
+         revalidation_last_modified.has_value();
 }
 
 void ResourceRequest::UpdateOnRedirect(const net::RedirectInfo& redirect_info) {

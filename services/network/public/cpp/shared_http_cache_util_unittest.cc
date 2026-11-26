@@ -165,12 +165,6 @@ TEST(SharedHttpCacheUtilTest, Revalidation) {
   // network response can be written to the cache.
   {
     auto request = CreateValidRequest();
-    request.is_revalidating = true;
-    EXPECT_TRUE(IsRequestEligibleForSharedHttpCacheWrite(request));
-    EXPECT_FALSE(IsRequestEligibleForSharedHttpCacheLookup(request));
-  }
-  {
-    auto request = CreateValidRequest();
     request.revalidation_etag = "etag-123";
     EXPECT_TRUE(IsRequestEligibleForSharedHttpCacheWrite(request));
     EXPECT_FALSE(IsRequestEligibleForSharedHttpCacheLookup(request));

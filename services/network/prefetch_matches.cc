@@ -91,7 +91,6 @@ namespace {
   DO_FIELD(is_reload_navigation) __VA_ARGS__                       \
   DO_FIELD(previews_state) __VA_ARGS__                             \
   DO_FIELD(upgrade_if_insecure) __VA_ARGS__                        \
-  DO_FIELD(is_revalidating) __VA_ARGS__                            \
   DO_FIELD(revalidation_etag) __VA_ARGS__                           \
   DO_FIELD(revalidation_last_modified) __VA_ARGS__                  \
   DO_FIELD(throttling_profile_id) __VA_ARGS__                      \
@@ -189,7 +188,7 @@ enum class FieldsForUma {
   kTransitionType = 36,
   kPreviewsState = 37,
   kUpgradeIfInsecure = 38,
-  kIsRevalidating = 39,
+  // DEPRECATED: kIsRevalidating = 39,
   kThrottlingProfileId = 40,
   // DEPRECATED: kCustomProxyPreCacheHeaders = 41,
   // DEPRECATED: kCustomProxyPostCacheHeaders = 42,
@@ -267,7 +266,6 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
     {Fields::kis_reload_navigation, FieldsForUma::kIsReloadNavigation},
     {Fields::kpreviews_state, FieldsForUma::kPreviewsState},
     {Fields::kupgrade_if_insecure, FieldsForUma::kUpgradeIfInsecure},
-    {Fields::kis_revalidating, FieldsForUma::kIsRevalidating},
     {Fields::krevalidation_etag, FieldsForUma::kRevalidationEtag},
     {Fields::krevalidation_last_modified,
      FieldsForUma::kRevalidationLastModified},

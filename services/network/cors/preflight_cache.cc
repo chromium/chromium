@@ -117,7 +117,6 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     mojom::CredentialsMode credentials_mode,
     const std::string& method,
     const net::HttpRequestHeaders& request_headers,
-    bool is_revalidating,
     const net::NetLogWithSource& net_log,
     bool acam_preflight_spec_conformant) {
   const std::optional<net::SchemefulSite>& top_frame_site =
@@ -141,7 +140,7 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     // Both `origin` and `url` are in cache. Check if the entry is sufficient to
     // skip CORS-preflight.
     if (cache_entry->second->EnsureAllowedRequest(
-            credentials_mode, method, request_headers, is_revalidating,
+            credentials_mode, method, request_headers,
             NonWildcardRequestHeadersSupport(true),
             acam_preflight_spec_conformant)) {
       cache_.Get(top_frame_site);

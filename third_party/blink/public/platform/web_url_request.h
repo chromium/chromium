@@ -243,9 +243,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequest {
 
   bool SupportsAsyncRevalidation() const;
 
-  // Returns true when the request is for revalidation.
-  bool IsRevalidating() const;
-
   // Returns the DevTools token used to throttle the network request.
   const std::optional<base::UnguessableToken>& GetDevToolsThrottlingToken()
       const;

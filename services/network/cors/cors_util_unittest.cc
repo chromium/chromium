@@ -17,9 +17,7 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNames) {
   using List = std::vector<std::string>;
 
   // Empty => Empty
-  EXPECT_EQ(
-      CorsUnsafeNotForbiddenRequestHeaderNames({}, false /* is_revalidating */),
-      List({}));
+  EXPECT_EQ(CorsUnsafeNotForbiddenRequestHeaderNames({}), List({}));
 
   // "user-agent" is NOT forbidden per spec, but forbidden in Chromium.
   EXPECT_EQ(
@@ -28,8 +26,7 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNames) {
                                                 {"aCCept", "en,ja"},
                                                 {"accept-charset", "utf-8"},
                                                 {"uSer-Agent", "foo"},
-                                                {"hogE", "fuga"}},
-                                               false /* is_revalidating */),
+                                                {"hogE", "fuga"}}),
       List({"hoge"}));
 
   EXPECT_EQ(
@@ -37,8 +34,7 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNames) {
                                                 {"dpr", "123-45"},
                                                 {"aCCept", "en,ja"},
                                                 {"accept-charset", "utf-8"},
-                                                {"hogE", "fuga"}},
-                                               false /* is_revalidating */),
+                                                {"hogE", "fuga"}}),
       List({"content-type", "dpr", "hoge"}));
 
   // `safelistValueSize` is 1024.
@@ -54,8 +50,7 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNames) {
            {"viewport-width", std::string(128, '1')},
            {"width", std::string(126, '1')},
            {"accept-charset", "utf-8"},
-           {"hogE", "fuga"}},
-          false /* is_revalidating */),
+           {"hogE", "fuga"}}),
       List({"hoge"}));
 
   // `safelistValueSize` is 1025.
@@ -71,8 +66,7 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNames) {
            {"viewport-width", std::string(128, '1')},
            {"width", std::string(127, '1')},
            {"accept-charset", "utf-8"},
-           {"hogE", "fuga"}},
-          false /* is_revalidating */),
+           {"hogE", "fuga"}}),
       List({"hoge", "content-type", "accept", "accept-language",
             "content-language", "dpr", "device-memory", "save-data",
             "viewport-width", "width"}));
@@ -90,34 +84,17 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNames) {
            {"viewport-width", std::string(128, '1')},
            {"width", std::string(127, '1')},
            {"accept-charset", "utf-8"},
-           {"hogE", "fuga"}},
-          false /* is_revalidating */),
+           {"hogE", "fuga"}}),
       List({"content-type", "hoge"}));
 }
 
-TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNamesWithRevalidating) {
-  // Needed because initializer list is not allowed for a macro argument.
+TEST_F(CorsUtilTest, ConditionalAndCacheHeadersAreNotSafelisted) {
   using List = std::vector<std::string>;
 
-  // Empty => Empty
-  EXPECT_EQ(
-      CorsUnsafeNotForbiddenRequestHeaderNames({}, true /* is_revalidating */),
-      List({}));
-
-  // These three headers will be ignored.
   EXPECT_EQ(
       CorsUnsafeNotForbiddenRequestHeaderNames({{"If-MODifIED-since", "x"},
                                                 {"iF-nONE-MATCh", "y"},
-                                                {"CACHE-ContrOl", "z"}},
-                                               true /* is_revalidating */),
-      List({}));
-
-  // Without is_revalidating set, these three headers will not be safelisted.
-  EXPECT_EQ(
-      CorsUnsafeNotForbiddenRequestHeaderNames({{"If-MODifIED-since", "x"},
-                                                {"iF-nONE-MATCh", "y"},
-                                                {"CACHE-ContrOl", "z"}},
-                                               false /* is_revalidating */),
+                                                {"CACHE-ContrOl", "z"}}),
       List({"if-modified-since", "if-none-match", "cache-control"}));
 }
 

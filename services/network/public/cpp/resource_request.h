@@ -185,6 +185,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool SendsCookies() const;
   bool SavesCookies() const;
 
+  // Returns true only when `revalidation_etag` or `revalidation_last_modified`
+  // is set; raw conditional headers in `headers` do not count. Gates the CORS
+  // 304 response exemption.
+  bool IsRevalidating() const;
+
   // Updates `*this` upon a redirect. This method is to deduplicate the common
   // `ResourceRequest` modification code based on `RedirectInfo`.
   // TODO(crbug.com/434292502): Unify more call sites. For example, there are
@@ -261,7 +266,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool is_reload_navigation = false;
   int previews_state = 0;
   bool upgrade_if_insecure = false;
-  bool is_revalidating = false;
   std::optional<std::string> revalidation_etag;
   std::optional<std::string> revalidation_last_modified;
   std::optional<base::UnguessableToken> throttling_profile_id;

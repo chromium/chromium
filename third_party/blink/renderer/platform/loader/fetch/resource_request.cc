@@ -107,7 +107,6 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       is_form_submission_(false),
       priority_incremental_(net::kDefaultPriorityIncremental),
       upgrade_if_insecure_(false),
-      is_revalidating_(false),
       is_automatic_upgrade_(false),
       is_from_origin_dirty_style_sheet_(false),
       is_fetch_like_api_(false),

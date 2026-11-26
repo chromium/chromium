@@ -305,7 +305,7 @@ TEST_F(SharedHttpCacheClientTest, EarlyReturnOnIneligibleRequest) {
   // Ineligible due to revalidation.
   {
     auto request = CreateRequest(url);
-    request.is_revalidating = true;
+    request.revalidation_etag = "\"etag\"";
     base::test::TestFuture<std::optional<SharedHttpCacheClient::Response>>
         future;
     client->Find(request, factory_, future.GetCallback(),

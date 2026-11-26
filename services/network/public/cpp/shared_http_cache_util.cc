@@ -73,8 +73,7 @@ bool IsRequestEligibleForSharedHttpCacheLookup(const ResourceRequest& request) {
 
   // Revalidation requests cannot be served directly from the shared cache
   // without network validation.
-  if (request.is_revalidating || request.revalidation_etag.has_value() ||
-      request.revalidation_last_modified.has_value()) {
+  if (request.IsRevalidating()) {
     return false;
   }
 

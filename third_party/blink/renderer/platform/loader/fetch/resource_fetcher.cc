@@ -1668,38 +1668,18 @@ void ResourceFetcher::InitializeRevalidation(
   // RawResource doesn't support revalidation.
   CHECK(!IsRawResource(*resource));
 
-  revalidating_request.SetIsRevalidating(true);
-
   const AtomicString& last_modified =
       resource->GetResponse().HttpHeaderField(http_names::kLastModified);
   const AtomicString& e_tag =
       resource->GetResponse().HttpHeaderField(http_names::kETag);
-  if (!last_modified.empty() || !e_tag.empty()) {
-    DCHECK_NE(mojom::blink::FetchCacheMode::kBypassCache,
-              revalidating_request.GetCacheMode());
-    if (revalidating_request.GetCacheMode() ==
-        mojom::blink::FetchCacheMode::kValidateCache) {
-      if (!base::FeatureList::IsEnabled(network::features::kSafeRevalidation)) {
-        revalidating_request.SetHttpHeaderField(http_names::kCacheControl,
-                                                AtomicString("max-age=0"));
-      }
-    }
+  DCHECK((last_modified.empty() && e_tag.empty()) ||
+         revalidating_request.GetCacheMode() !=
+             mojom::blink::FetchCacheMode::kBypassCache);
+  if (!last_modified.empty()) {
+    revalidating_request.SetRevalidationLastModified(last_modified);
   }
-  if (base::FeatureList::IsEnabled(network::features::kSafeRevalidation)) {
-    if (!last_modified.empty()) {
-      revalidating_request.SetRevalidationLastModified(last_modified);
-    }
-    if (!e_tag.empty()) {
-      revalidating_request.SetRevalidationEtag(e_tag);
-    }
-  } else {
-    if (!last_modified.empty()) {
-      revalidating_request.SetHttpHeaderField(http_names::kIfModifiedSince,
-                                              last_modified);
-    }
-    if (!e_tag.empty()) {
-      revalidating_request.SetHttpHeaderField(http_names::kIfNoneMatch, e_tag);
-    }
+  if (!e_tag.empty()) {
+    revalidating_request.SetRevalidationEtag(e_tag);
   }
 
   resource->SetRevalidatingRequest(revalidating_request);

@@ -430,8 +430,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   }
   bool UpgradeIfInsecure() const { return upgrade_if_insecure_; }
 
-  bool IsRevalidating() const { return is_revalidating_; }
-  void SetIsRevalidating(bool value) { is_revalidating_ = value; }
   const String& RevalidationEtag() const { return revalidation_etag_; }
   void SetRevalidationEtag(const String& etag) { revalidation_etag_ = etag; }
   const String& RevalidationLastModified() const {
@@ -682,9 +680,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool is_form_submission_ : 1;
   bool priority_incremental_ : 1;
   bool upgrade_if_insecure_ : 1;
-  bool is_revalidating_ : 1;
-  String revalidation_etag_;
-  String revalidation_last_modified_;
   bool is_automatic_upgrade_ : 1;
   bool is_from_origin_dirty_style_sheet_ : 1;
   bool is_fetch_like_api_ : 1;
@@ -740,6 +735,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
   String requested_with_header_;
   String client_data_header_;
   String event_source_last_event_id_;
+  String revalidation_etag_;
+  String revalidation_last_modified_;
 
   std::optional<String> devtools_stack_id_;
 

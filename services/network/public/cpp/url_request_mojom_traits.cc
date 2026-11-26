@@ -217,7 +217,6 @@ bool StructTraits<
   out->is_reload_navigation = data.is_reload_navigation();
   out->previews_state = data.previews_state();
   out->upgrade_if_insecure = data.upgrade_if_insecure();
-  out->is_revalidating = data.is_revalidating();
   if (!data.ReadRevalidationEtag(&out->revalidation_etag) ||
       !data.ReadRevalidationLastModified(&out->revalidation_last_modified)) {
     return false;

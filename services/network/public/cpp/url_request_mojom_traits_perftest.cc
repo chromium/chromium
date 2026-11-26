@@ -82,7 +82,6 @@ network::ResourceRequest CreateResourceRequest() {
   request.is_reload_navigation = false;
   request.previews_state = 0;
   request.upgrade_if_insecure = true;
-  request.is_revalidating = false;
   request.throttling_profile_id = base::UnguessableToken::Create();
   request.fetch_window_id = base::UnguessableToken::Create();
   request.web_bundle_token_params =

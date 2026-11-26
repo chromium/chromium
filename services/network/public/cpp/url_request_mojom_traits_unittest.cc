@@ -101,7 +101,6 @@ TEST_F(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.is_reload_navigation = true;
   original.previews_state = 0;
   original.upgrade_if_insecure = true;
-  original.is_revalidating = false;
   original.throttling_profile_id = base::UnguessableToken::Create();
   original.fetch_window_id = base::UnguessableToken::Create();
   original.web_bundle_token_params =

@@ -72,13 +72,6 @@ std::optional<std::string> GetHeaderString(
   return headers->GetNormalizedHeader(header_name);
 }
 
-bool IsRevalidatingForHeadersCheck(const ResourceRequest& request) {
-  if (base::FeatureList::IsEnabled(features::kSafeRevalidation)) {
-    return false;
-  }
-  return request.is_revalidating;
-}
-
 // Algorithm step 3 of the CORS-preflight fetch,
 // https://fetch.spec.whatwg.org/#cors-preflight-fetch-0, that requires
 //  - CORS-safelisted request-headers excluded
@@ -86,14 +79,12 @@ bool IsRevalidatingForHeadersCheck(const ResourceRequest& request) {
 //  - sorted lexicographically
 //  - byte-lowercased
 std::string CreateAccessControlRequestHeadersHeader(
-    const net::HttpRequestHeaders& headers,
-    bool is_revalidating) {
+    const net::HttpRequestHeaders& headers) {
   // Exclude the forbidden headers because they may be added by the user
   // agent. They must be checked separately and rejected for
   // JavaScript-initiated requests.
   std::vector<std::string> filtered_headers =
-      CorsUnsafeNotForbiddenRequestHeaderNames(headers.GetHeaderVector(),
-                                               is_revalidating);
+      CorsUnsafeNotForbiddenRequestHeaderNames(headers.GetHeaderVector());
   if (filtered_headers.empty())
     return std::string();
 
@@ -135,8 +126,8 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
   preflight_request->headers.SetHeader(
       header_names::kAccessControlRequestMethod, request.method);
 
-  std::string request_headers = CreateAccessControlRequestHeadersHeader(
-      request.headers, IsRevalidatingForHeadersCheck(request));
+  std::string request_headers =
+      CreateAccessControlRequestHeadersHeader(request.headers);
   if (!request_headers.empty()) {
     preflight_request->headers.SetHeader(
         header_names::kAccessControlRequestHeaders, request_headers);
@@ -332,8 +323,7 @@ std::optional<CorsErrorStatus> CheckPreflightResult(
     return status;
 
   return result.EnsureAllowedCrossOriginHeaders(
-      original_request.headers, IsRevalidatingForHeadersCheck(original_request),
-      non_wildcard_request_headers_support);
+      original_request.headers, non_wildcard_request_headers_support);
 }
 
 }  // namespace
@@ -647,8 +637,7 @@ PreflightController::PerformPreflightCheck(
                        features::kCorsPreflightCacheKeyTaintedOrigin)) &&
       cache_.CheckIfRequestCanSkipPreflight(
           request.request_initiator.value(), request.url, network_isolation_key,
-          request.credentials_mode, request.method, request.headers,
-          IsRevalidatingForHeadersCheck(request), net_log,
+          request.credentials_mode, request.method, request.headers, net_log,
           acam_preflight_spec_conformant)) {
     std::move(callback).Run(net::OK, std::nullopt, false);
     return nullptr;

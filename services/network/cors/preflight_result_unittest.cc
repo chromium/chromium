@@ -401,7 +401,7 @@ TEST_F(PreflightResultTest, EnsureHeaders) {
       headers.SetHeader(header.first, header.second);
     EXPECT_EQ(test.expected_result,
               result->EnsureAllowedCrossOriginHeaders(
-                  headers, false, NonWildcardRequestHeadersSupport(false)));
+                  headers, NonWildcardRequestHeadersSupport(false)));
   }
 }
 
@@ -417,7 +417,7 @@ TEST_F(PreflightResultTest, EnsureRequest) {
     EXPECT_EQ(test.expected_result == std::nullopt,
               result->EnsureAllowedRequest(
                   test.request_credentials_mode, test.request_method, headers,
-                  false, NonWildcardRequestHeadersSupport(false), true));
+                  NonWildcardRequestHeadersSupport(false), true));
   }
 
   for (const auto& test : kHeaderCases) {
@@ -431,7 +431,7 @@ TEST_F(PreflightResultTest, EnsureRequest) {
     EXPECT_EQ(test.expected_result == std::nullopt,
               result->EnsureAllowedRequest(
                   test.request_credentials_mode, test.request_method, headers,
-                  false, NonWildcardRequestHeadersSupport(false), true));
+                  NonWildcardRequestHeadersSupport(false), true));
   }
 
   struct {
@@ -457,7 +457,7 @@ TEST_F(PreflightResultTest, EnsureRequest) {
     net::HttpRequestHeaders headers;
     EXPECT_EQ(test.expected_result,
               result->EnsureAllowedRequest(
-                  test.request_credentials_mode, "GET", headers, false,
+                  test.request_credentials_mode, "GET", headers,
                   NonWildcardRequestHeadersSupport(false), true));
   }
 }
@@ -490,7 +490,7 @@ TEST_F(PreflightResultTest, ParseAllowControlAllowHeaders) {
         headers.SetHeader(request_header.first, request_header.second);
         EXPECT_EQ(std::nullopt,
                   result->EnsureAllowedCrossOriginHeaders(
-                      headers, false, NonWildcardRequestHeadersSupport(false)));
+                      headers, NonWildcardRequestHeadersSupport(false)));
       }
     }
   }
@@ -546,7 +546,7 @@ TEST_F(PreflightResultTest,
   ASSERT_EQ(error, std::nullopt);
   net::HttpRequestHeaders headers = CreateHeaders({{"auThorization", "x"}});
   const auto status = result->EnsureAllowedCrossOriginHeaders(
-      headers, false, NonWildcardRequestHeadersSupport(false));
+      headers, NonWildcardRequestHeadersSupport(false));
   EXPECT_EQ(status, std::nullopt);
 }
 
@@ -561,7 +561,7 @@ TEST_F(PreflightResultTest,
   ASSERT_EQ(error, std::nullopt);
   net::HttpRequestHeaders headers = CreateHeaders({{"auThorization", "x"}});
   const auto status = result->EnsureAllowedCrossOriginHeaders(
-      headers, false, NonWildcardRequestHeadersSupport(true));
+      headers, NonWildcardRequestHeadersSupport(true));
   ASSERT_NE(status, std::nullopt);
   EXPECT_EQ(status->cors_error,
             mojom::CorsError::kHeaderDisallowedByPreflightResponse);
@@ -581,7 +581,7 @@ TEST_F(
   ASSERT_EQ(error, std::nullopt);
   net::HttpRequestHeaders headers = CreateHeaders({{"auThorization", "x"}});
   const auto status = result->EnsureAllowedCrossOriginHeaders(
-      headers, false, NonWildcardRequestHeadersSupport(true));
+      headers, NonWildcardRequestHeadersSupport(true));
   EXPECT_EQ(status, std::nullopt);
 }
 

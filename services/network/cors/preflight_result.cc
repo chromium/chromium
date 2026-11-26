@@ -8,7 +8,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -21,7 +20,6 @@
 #include "net/http/http_util.h"
 #include "services/network/cors/cors_util.h"
 #include "services/network/public/cpp/cors/cors.h"
-#include "services/network/public/cpp/features.h"
 
 namespace network::cors {
 
@@ -175,7 +173,6 @@ std::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
 
 std::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginHeaders(
     const net::HttpRequestHeaders& headers,
-    bool is_revalidating,
     NonWildcardRequestHeadersSupport non_wildcard_request_headers_support)
     const {
   const bool has_wildcard = !credentials_ && headers_.contains("*");
@@ -198,8 +195,8 @@ std::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginHeaders(
   // Forbidden headers are forbidden to be used by JavaScript, and checked
   // beforehand. But user-agents may add these headers internally, and it's
   // fine.
-  for (const auto& name : CorsUnsafeNotForbiddenRequestHeaderNames(
-           headers.GetHeaderVector(), is_revalidating)) {
+  for (const auto& name :
+       CorsUnsafeNotForbiddenRequestHeaderNames(headers.GetHeaderVector())) {
     // Header list check is performed in case-insensitive way. Here, we have a
     // parsed header list set in lower case, and search each header in lower
     // case.
@@ -219,7 +216,6 @@ bool PreflightResult::EnsureAllowedRequest(
     mojom::CredentialsMode credentials_mode,
     const std::string& method,
     const net::HttpRequestHeaders& headers,
-    bool is_revalidating,
     NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
     bool acam_preflight_spec_conformant) const {
   if (!credentials_ && credentials_mode == mojom::CredentialsMode::kInclude) {
@@ -230,7 +226,7 @@ bool PreflightResult::EnsureAllowedRequest(
     return false;
   }
 
-  if (EnsureAllowedCrossOriginHeaders(headers, is_revalidating,
+  if (EnsureAllowedCrossOriginHeaders(headers,
                                       non_wildcard_request_headers_support)) {
     return false;
   }
