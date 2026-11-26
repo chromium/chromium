@@ -9,7 +9,10 @@ source_set("permissions") {
     "permissions.h",
     "permissions.mm",
   ]
-  deps = [ "//ios/web/public/permissions" ]
+  public_deps = [
+    "//components/content_settings/core/common",
+    "//ios/web/public/permissions",
+  ]
 }
 
 source_set("infobar_delegate") {

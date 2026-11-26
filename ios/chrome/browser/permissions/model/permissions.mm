@@ -4,7 +4,34 @@
 
 #import "ios/chrome/browser/permissions/model/permissions.h"
 
-std::optional<web::Permission> WebPermissionFromContentPermission(
+#import <optional>
+
+#import "components/content_settings/core/common/content_settings_types.h"
+#import "ios/web/public/permissions/permissions.h"
+
+ContentSettingsType ContentPermissionToContentSettingsType(
+    ContentPermission permission) {
+  switch (permission) {
+    case ContentPermission::kCamera:
+      return ContentSettingsType::MEDIASTREAM_CAMERA;
+    case ContentPermission::kMicrophone:
+      return ContentSettingsType::MEDIASTREAM_MIC;
+    case ContentPermission::kGeolocation:
+      return ContentSettingsType::GEOLOCATION;
+  }
+}
+
+ContentPermission WebPermissionToContentPermission(
+    web::Permission web_permission) {
+  switch (web_permission) {
+    case web::PermissionCamera:
+      return ContentPermission::kCamera;
+    case web::PermissionMicrophone:
+      return ContentPermission::kMicrophone;
+  }
+}
+
+std::optional<web::Permission> ContentPermissionToWebPermission(
     ContentPermission permission) {
   switch (permission) {
     case ContentPermission::kCamera:

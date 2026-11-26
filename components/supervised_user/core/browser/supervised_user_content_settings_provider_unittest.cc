@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "build/buildflag.h"
 #include "components/content_settings/core/browser/content_settings_mock_observer.h"
@@ -70,25 +71,27 @@ class SupervisedUserProviderTestForGeolocation
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     SupervisedUserProviderTestForGeolocation);
 
+TEST_P(SupervisedUserProviderTestForGeolocation, GeolocationTest) {
 #if BUILDFLAG(IS_IOS)
-// GEOLOCATION and GEOLOCATION_WITH_OPTIONS are not registered on IOS.
-TEST_P(SupervisedUserProviderTestForGeolocation, GeolocationTest) {
-  std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      provider_->GetRuleIterator(
-          content_settings::GeolocationContentSettingsType(), false);
-  EXPECT_FALSE(rule_iterator);
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    // GEOLOCATION_WITH_OPTIONS is not registered on iOS.
+    std::unique_ptr<content_settings::RuleIterator> rule_iterator =
+        provider_->GetRuleIterator(
+            content_settings::GeolocationContentSettingsType(), false);
+    EXPECT_FALSE(rule_iterator);
 
-  // Disable the default geolocation setting.
-  service_.SetLocalSetting(kGeolocationDisabled, base::Value(true));
+    // Disable the default geolocation setting.
+    service_.SetLocalSetting(kGeolocationDisabled, base::Value(true));
 
-  // Check that nothing happened since the setting is not registered on IOS.
-  rule_iterator = provider_->GetRuleIterator(
-      content_settings::GeolocationContentSettingsType(), false);
-  EXPECT_FALSE(rule_iterator);
-}
+    // Check that nothing happened since the setting is not registered on iOS.
+    rule_iterator = provider_->GetRuleIterator(
+        content_settings::GeolocationContentSettingsType(), false);
+    EXPECT_FALSE(rule_iterator);
+    return;
+  }
+#endif
 
-#else
-TEST_P(SupervisedUserProviderTestForGeolocation, GeolocationTest) {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
       provider_->GetRuleIterator(
           content_settings::GeolocationContentSettingsType(), false);
@@ -123,7 +126,6 @@ TEST_P(SupervisedUserProviderTestForGeolocation, GeolocationTest) {
       content_settings::GeolocationContentSettingsType(), false);
   EXPECT_FALSE(rule_iterator);
 }
-#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(SupervisedUserProviderTest, CookiesTest) {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =

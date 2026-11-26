@@ -7,13 +7,13 @@
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "components/content_settings/core/browser/content_settings_observer.h"
-#import "components/content_settings/core/browser/content_settings_registry.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
 #import "components/content_settings/core/common/content_settings_types.h"
 #import "ios/chrome/browser/content_settings/model/content_settings_observer_bridge.h"
 #import "ios/chrome/browser/settings/site_settings/ui/site_settings_consumer.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 @interface SiteSettingsMediator () <ContentSettingsObserving>
 @end
@@ -66,9 +66,7 @@
 #pragma mark - Private
 
 - (void)loadSettings {
-  BOOL locationSupported =
-      content_settings::ContentSettingsRegistry::GetInstance()->Get(
-          ContentSettingsType::GEOLOCATION) != nullptr;
+  BOOL locationSupported = IsIOSGeolocationSitePermissionsEnabled();
   [_consumer setLocationCategoryEnabled:locationSupported];
 
   ContentSetting micSetting = _settingsMap->GetDefaultContentSetting(
