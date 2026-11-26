@@ -1180,6 +1180,7 @@ def main():
     # On Apple Silicon, Speedometer3 executes quickly enough that 3 repeats and
     # a 5x merge weight (see https://crbug.com/363195532) are used to match the
     # mac-arm-pgo builder configuration.
+    # TODO(crbug.com/590548281): Unify PGO weights across platforms.
     is_mac_arm = (
         not args.android_browser
         and sys.platform == 'darwin'
