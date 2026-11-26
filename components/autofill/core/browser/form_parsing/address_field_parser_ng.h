@@ -71,14 +71,21 @@ class AddressFieldParserNG : public FormFieldParser {
   explicit AddressFieldParserNG(AddressCountryCode country_code);
 
   // Returns the score of the best matching rule that assigns `field_type` to
-  // the field at the current cursor position, assuming cross-field ordering
-  // prerequisites are satisfied. If no rule matches, std::nullopt is returned.
+  // the field at the current cursor position. If no rule matches, std::nullopt
+  // is returned.
   //
   // The scores don't correspond to the scores in `autofill::MatchingPattern`
   // to enable a contextual scoring. E.g. the "ADDRESS_LINE_1" patterns are used
   // for ADDRESS_HOME_STREET_ADDRESS and ADDRESS_HOME_LINE1 but matches are
   // assigned different scores.
-  std::optional<double> FindScoreOfBestMatchingRule(FieldType field_type) const;
+  std::optional<double> FindScoreOfBestMatchingRule(FieldType field_type);
+
+  // Function to block certain combinations of field types that cannot be
+  // expressed by the type-incompatibility detection mechanism of
+  // `AddressHierarchyConstraints`. E.g. we should not assign
+  // ADDRESS_HOME_HOUSE_NUMBER to a field unless we have more evidence that the
+  // field is part of a structured address form.
+  bool IsClassificationPlausible() const;
 
   // The core backtracking algorithm.
   //
@@ -88,15 +95,12 @@ class AddressFieldParserNG : public FormFieldParser {
   // current cursor position, the current classification is considered for being
   // a new best classification.
   //
-  // `prev_was_line2` indicates whether the immediately preceding field was
-  // classified as `ADDRESS_HOME_LINE2`.
-  //
   // The following invariant is maintained: After a call of `ParseRecursively`
   // returns, `partial_classification_` and `scanner_` must be in the same state
   // as before (`partial_classification_` must contain the same assignments and
   // `scanner_` put point to the same field). The `best_classification_` may be
   // updated.
-  void ParseRecursively(bool prev_was_line2 = false);
+  void ParseRecursively();
 
   // Prepared work for the address hierarchy corresponding to the country of the
   // client.
