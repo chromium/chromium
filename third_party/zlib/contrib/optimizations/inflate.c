@@ -139,6 +139,10 @@ int ZEXPORT inflateReset(z_streamp strm) {
             state->window = Z_NULL;
         }
         state->wbits = state->reqbits;
+    } else if (state->window != Z_NULL) {
+        /* Clear the window before reusing it, to avoid "chunked copies"
+         * copying bytes from a previous session. */
+        zmemzero(state->window, (1U << state->wbits) + CHUNKCOPY_CHUNK_SIZE);
     }
     state->wrap = state->reqwrap;
     state->wsize = 0;
@@ -388,15 +392,10 @@ local int updatewindow(z_streamp strm, const Bytef *end, unsigned copy) {
                         ZALLOC(strm, wsize + CHUNKCOPY_CHUNK_SIZE,
                                sizeof(unsigned char));
         if (state->window == Z_NULL) return 1;
-#ifdef INFLATE_CLEAR_UNUSED_UNDEFINED
-        /* Copies from the overflow portion of this buffer are undefined and
-           may cause analysis tools to raise a warning if we don't initialize
-           it.  However, this undefined data overwrites other undefined data
-           and is subsequently either overwritten or left deliberately
-           undefined at the end of decode; so there's really no point.
-         */
-        zmemzero(state->window + wsize, CHUNKCOPY_CHUNK_SIZE);
-#endif
+
+        /* Clear the window to avoid "chunked copies" writing uninitialized
+         * bytes from the window to the output buffer (crbug.com/575038806). */
+        zmemzero(state->window, wsize + CHUNKCOPY_CHUNK_SIZE);
     }
 
     /* if window not in use yet, initialize */
@@ -1262,29 +1261,6 @@ int ZEXPORT inflate(z_streamp strm, int flush) {
        Note: a memory error from inflate() is non-recoverable.
      */
   inf_leave:
-#if defined(ZLIB_DEBUG)
-   /* XXX(cavalcantii): I put this in place back in 2017 to help debug faulty
-    * client code relying on undefined behavior when chunk_copy first landed.
-    *
-    * It is save to say after all these years that Chromium code is well
-    * behaved and works fine with the optimization, therefore we can enable
-    * this only for DEBUG builds.
-    *
-    * We write a defined value in the unused space to help mark
-    * where the stream has ended. We don't use zeros as that can
-    * mislead clients relying on undefined behavior (i.e. assuming
-    * that the data is over when the buffer has a zero/null value).
-    *
-    * The basic idea is that if client code is not relying on the zlib context
-    * to inform the amount of decompressed data, but instead reads the output
-    * buffer until a zero/null is found, it will fail faster and harder
-    * when the remaining of the buffer is marked with a symbol (e.g. 0x55).
-    */
-   if (left >= CHUNKCOPY_CHUNK_SIZE)
-      memset(put, 0x55, CHUNKCOPY_CHUNK_SIZE);
-   else
-      memset(put, 0x55, left);
-#endif
     RESTORE();
     if (state->wsize || (out != strm->avail_out && state->mode < BAD &&
             (state->mode < CHECK || flush != Z_FINISH)))
@@ -1537,7 +1513,7 @@ int ZEXPORT inflateCopy(z_streamp dest, z_streamp source) {
     copy->next = copy->codes + (state->next - state->codes);
     if (window != Z_NULL) {
         wsize = 1U << state->wbits;
-        zmemcpy(window, state->window, wsize);
+        zmemcpy(window, state->window, wsize + CHUNKCOPY_CHUNK_SIZE);
     }
     copy->window = window;
     dest->state = (struct internal_state FAR *)copy;

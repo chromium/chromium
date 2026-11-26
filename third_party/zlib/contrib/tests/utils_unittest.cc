@@ -1297,6 +1297,149 @@ TEST(ZlibTest, InflateChunkRefillLiteralBitBudget) {
   EXPECT_EQ('b', output[5]);
 }
 
+static voidpf debug_alloc(voidpf opaque, uInt items, uInt size) {
+  size_t n = items * size;
+  void *p = malloc(n);
+  if (!p)
+    return p;
+  memset(p, 255, n);
+  return p;
+}
+
+TEST(ZlibTest, InflateWindowZeroInit) {
+  // $ echo "0hello123hello" | gzip | xxd -i
+  static const uint8_t kCompressed[] = {
+  0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x33, 0xc8,
+  0x48, 0xcd, 0xc9, 0xc9, 0x37, 0x34, 0x32, 0x06, 0xd3, 0x5c, 0x00, 0x32,
+  0x8e, 0x87, 0x00, 0x0f, 0x00, 0x00, 0x00
+  };
+
+  unsigned char out[256] = {0};
+  z_stream stream = {};
+  // Use an allocator that initializes memory with 255-bytes.
+  stream.zalloc = debug_alloc;
+  stream.next_in = const_cast<uint8_t*>(kCompressed);
+  stream.avail_in = sizeof(kCompressed);
+
+  // Initialize inflation (+32 for gzip header).
+  ASSERT_EQ(Z_OK, inflateInit2(&stream, 15 + 32));
+
+  // Extract the first part, forcing zlib to save it in the window for later.
+  stream.next_out = out;
+  stream.avail_out = 6;
+  ASSERT_EQ(Z_OK, inflate(&stream, Z_SYNC_FLUSH));
+
+  // Extract the rest, performing a wide copy (for the backref) from the window.
+  stream.avail_out = sizeof(out) - stream.total_out;
+  ASSERT_EQ(Z_STREAM_END, inflate(&stream, Z_FINISH));
+  EXPECT_EQ(std::string(out, out + stream.total_out), "0hello123hello\n");
+  for (unsigned char c : out) {
+    EXPECT_NE(255, c); // No debug bytes from the window in out.
+  }
+
+  ASSERT_EQ(Z_OK, inflateEnd(&stream));
+}
+
+TEST(ZlibTest, InflateCopyWindowInit) {
+  // A window-sized (32768) byte sequence ending with "hello", followed by
+  // another "hello":
+  // $ printf "%32768shello" hello | gzip | xxd -i
+  static const uint8_t kCompressed[] = {
+  0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xed, 0xc4,
+  0x31, 0x09, 0x00, 0x00, 0x08, 0x00, 0xb0, 0x2a, 0x96, 0x13, 0x3c, 0x04,
+  0xfb, 0x7f, 0x82, 0x35, 0xdc, 0x8e, 0x45, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0xc0, 0x6b, 0x95, 0xdd, 0x73, 0x2d, 0x6f, 0xc6, 0x49, 0x63,
+  0x05, 0x80, 0x00, 0x00
+  };
+
+  unsigned char out[65536] = {0};
+  z_stream stream = {};
+  // Use an allocator that initializes memory with 255-bytes.
+  stream.zalloc = debug_alloc;
+  stream.next_in = const_cast<uint8_t*>(kCompressed);
+  stream.avail_in = sizeof(kCompressed);
+
+  // Initialize inflation (+32 for gzip header).
+  ASSERT_EQ(Z_OK, inflateInit2(&stream, 15 + 32));
+
+  // Extract the first part, forcing zlib to save it in the window for later.
+  stream.next_out = out;
+  stream.avail_out = 32768;
+  ASSERT_EQ(Z_OK, inflate(&stream, Z_SYNC_FLUSH));
+
+  // The stream copy should have a fully initialized window.
+  z_stream stream_cpy = {};
+  ASSERT_EQ(Z_OK, inflateCopy(&stream_cpy, &stream));
+  ASSERT_EQ(Z_OK, inflateEnd(&stream));
+
+  // Extract the rest, performing a wide copy (for the backref) from the end of
+  // the window.
+  stream_cpy.avail_out = sizeof(out) - stream_cpy.total_out;
+  ASSERT_EQ(Z_STREAM_END, inflate(&stream_cpy, Z_FINISH));
+  EXPECT_EQ(std::string(out + 32768 - 5, out + stream_cpy.total_out),
+            "hellohello");
+  for (unsigned char c : out) {
+    EXPECT_NE(255, c); // No debug bytes from the window in out.
+  }
+  ASSERT_EQ(Z_OK, inflateEnd(&stream_cpy));
+}
+
+TEST(ZlibTest, InflateResetWindowInit) {
+  // A long (larger than a window) sequence of x's:
+  // $ perl -e 'print "x" x 50000' | gzip | xxd -i
+  static const uint8_t kCompressed1[] = {
+  0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xed, 0xc1,
+  0x01, 0x0d, 0x00, 0x00, 0x00, 0xc2, 0xa0, 0xda, 0x8f, 0x6f, 0x0f, 0x07,
+  0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x4f, 0x06, 0xda, 0x1f, 0xee, 0xb5, 0x50, 0xc3, 0x00, 0x00
+  };
+
+  // $ echo "0hello123hello" | gzip | xxd -i
+  static const uint8_t kCompressed2[] = {
+  0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x33, 0xc8,
+  0x48, 0xcd, 0xc9, 0xc9, 0x37, 0x34, 0x32, 0x06, 0xd3, 0x5c, 0x00, 0x32,
+  0x8e, 0x87, 0x00, 0x0f, 0x00, 0x00, 0x00
+  };
+
+  unsigned char out[65536] = {0};
+  z_stream stream = {};
+
+  // Fill the window with x's.
+  stream.next_in = const_cast<uint8_t*>(kCompressed1);
+  stream.avail_in = sizeof(kCompressed1);
+  ASSERT_EQ(Z_OK, inflateInit2(&stream, 15 + 32));
+  stream.next_out = out;
+  stream.avail_out = 32768;
+  ASSERT_EQ(Z_OK, inflate(&stream, Z_SYNC_FLUSH));
+
+  // Resetting should clear the window.
+  ASSERT_EQ(Z_OK, inflateReset(&stream));
+  memset(out, 0, sizeof(out));
+
+  // Extract the first part of kCompressed2, forcing zlib to save it in the
+  // window for later.
+  stream.next_in = const_cast<uint8_t*>(kCompressed2);
+  stream.avail_in = sizeof(kCompressed2);
+  stream.next_out = out;
+  stream.avail_out = 6;
+  ASSERT_EQ(Z_OK, inflate(&stream, Z_SYNC_FLUSH));
+
+  // Extract the rest, performing a wide copy (for the backref) from the window.
+  stream.avail_out = sizeof(out) - stream.total_out;
+  ASSERT_EQ(Z_STREAM_END, inflate(&stream, Z_FINISH));
+  EXPECT_EQ(std::string(out, out + stream.total_out), "0hello123hello\n");
+  for (unsigned char c : out) {
+    EXPECT_NE('x', c); // No x's from the first inflation window in out.
+  }
+
+  ASSERT_EQ(Z_OK, inflateEnd(&stream));
+}
+
 // TODO(gustavoa): make these tests run standalone.
 #ifndef CMAKE_STANDALONE_UNITTESTS
 
