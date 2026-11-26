@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
@@ -15,19 +14,23 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/core/browser/test_account_preview_data_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "base/test/scoped_feature_list.h"
+#endif
 
 namespace {
 
@@ -50,11 +53,6 @@ class BookmarkPromoDelegateTestBase : public testing::Test {
 class BatchUploadPromoDelegateTest : public BookmarkPromoDelegateTestBase {
  public:
   BatchUploadPromoDelegateTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {};
-#if !BUILDFLAG(IS_CHROMEOS)
-    enabled_features.push_back(syncer::kUnoPhase2FollowUp);
-#endif
-    feature_list_.InitWithFeatures(enabled_features, {});
     batch_upload_service_ = batch_upload_test_helper_.CreateBatchUploadService(
         identity_test_env_.identity_manager(), &pref_service_);
   }
@@ -66,7 +64,6 @@ class BatchUploadPromoDelegateTest : public BookmarkPromoDelegateTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   BatchUploadServiceTestHelper batch_upload_test_helper_;
   std::unique_ptr<BatchUploadService> batch_upload_service_;
 };
