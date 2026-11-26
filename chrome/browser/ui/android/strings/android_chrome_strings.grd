@@ -7852,17 +7852,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Recent activity bottom sheet closed
       </message>
 
-      <!-- Interstitial shown prior to making digital identity request to wallet -->
-      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_DIALOG_TITLE">
-        Do you trust this site with your data?
-      </message>
-      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_LOW_RISK_DIALOG_TEXT">
-        <ph name="WEBSITE_ORIGIN">%1$s<ex>www.cheapalcohol.com</ex></ph> wants to use personal info from your digital wallet.
-      </message>
-      <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_LOW_RISK_NEGATIVE_BUTTON_TEXT">
-        Cancel
-      </message>
-
       <!-- Inline PDF viewer support -->
       <message name="IDS_PDF_TRANSIENT_TAB_TITLE" desc="This string is shown as the temporary tab title when a PDF file is loading in a tab. The tab title will be updated to the actual PDF file name once available.">
         Loading PDF…

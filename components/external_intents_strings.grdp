@@ -9,4 +9,15 @@
   <message name="IDS_EXTERNAL_NAVIGATION_CONTINUE_TO_ACTION" desc="Action for the Continue To App Message." formatter_data="android_java">
     Continue
   </message>
+
+  <!-- Interstitial shown prior to making digital identity request to wallet -->
+  <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_DIALOG_TITLE" formatter_data="android_java">
+    Do you trust this site with your data?
+  </message>
+  <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_LOW_RISK_DIALOG_TEXT" formatter_data="android_java">
+    <ph name="WEBSITE_ORIGIN">%1$s<ex>www.cheapalcohol.com</ex></ph> wants to use personal info from your digital wallet.
+  </message>
+  <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_LOW_RISK_NEGATIVE_BUTTON_TEXT" formatter_data="android_java">
+    Cancel
+  </message>
 </grit-part>
