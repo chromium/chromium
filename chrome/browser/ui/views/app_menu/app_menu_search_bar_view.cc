@@ -47,8 +47,6 @@ constexpr int kIconPadding = 12;
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
-                                      kSearchFieldElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
                                       kSearchIconElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
                                       kClearButtonElementId);

@@ -16,6 +16,16 @@ namespace metrics {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(ChroMenuSearchJourneySteps)
+enum class ChroMenuSearchJourneySteps {
+  kAppMenuOpened = 1,
+  kSearchQueryEntered = 2,
+  kSearchResultClicked = 3,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:ChroMenuSearchJourneySteps)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // LINT.IfChange(PinExtensionJourneySteps)
 enum class PinExtensionJourneySteps {
   kExtensionsMenuButtonClicked = 1,

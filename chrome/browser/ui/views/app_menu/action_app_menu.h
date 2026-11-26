@@ -145,6 +145,8 @@ class ActionAppMenu : public views::MenuDelegate,
 
   void CancelAndEvaluate(actions::ActionId action_id, int mouse_event_flags);
 
+  void NotifySearchResultClicked();
+
   // Pins the root menu to its current width: the submenu's minimum preferred
   // width is the floor and GetMaxWidthForMenu() is the ceiling while the
   // returned runner is alive. Running it releases the width again. Returns an
@@ -218,6 +220,10 @@ class ActionAppMenu : public views::MenuDelegate,
 
   // The search bar view in the menu, if kChroMenuSearch is enabled.
   raw_ptr<AppMenuSearchBarView> search_bar_ = nullptr;
+
+  // Owner widget hosting the menu, retained for custom events emitted after
+  // MenuRunner destroys the menu host widget.
+  base::WeakPtr<views::Widget> owner_widget_;
 
   // Runs the searches for search_bar_. Created along with the search bar.
   std::unique_ptr<AppMenuSearchController> search_controller_;

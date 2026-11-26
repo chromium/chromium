@@ -14,6 +14,16 @@ This file defines enums used in Critical User Journey histograms.
 
 <!-- Define the steps for your journeys below! -->
 
+<!-- LINT.IfChange(ChroMenuSearchJourneySteps) -->
+
+<enum name="ChroMenuSearchJourneySteps">
+  <int value="1" label="App menu opened with search bar"/>
+  <int value="2" label="Search query entered"/>
+  <int value="3" label="Search result clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:ChroMenuSearchJourneySteps) -->
+
 <!-- LINT.IfChange(ClearBrowsingHistoryJourneySteps) -->
 
 <enum name="ClearBrowsingHistoryJourneySteps">

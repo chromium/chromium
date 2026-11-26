@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -20,7 +21,8 @@ class AppMenuSearchBarView : public views::BoxLayoutView {
   METADATA_HEADER(AppMenuSearchBarView, views::BoxLayoutView)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchFieldElementId);
+  static constexpr ui::ElementIdentifier kSearchFieldElementId =
+      kAppMenuSearchFieldElementId;
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchIconElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kClearButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSeparatorElementId);

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/settings/settings_element_ids.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -499,6 +500,88 @@ TEST_F(CriticalUserJourneyProductionJourneysTest,
       CriticalUserJourneySession::JourneyResult::kAbandoned, 2);
   histograms.ExpectTotalCount(
       "CriticalUserJourney.SplitViewJourney.OverallDuration", 1);
+}
+
+class CriticalUserJourneyChroMenuSearchTest : public testing::Test {
+ public:
+  CriticalUserJourneyChroMenuSearchTest() {
+    feature_list_.InitWithFeatures(
+        {kCriticalUserJourneyService, kChroMenuSearchJourney,
+         features::kAppMenuGlowUp, features::kChroMenuSearch},
+        {});
+  }
+
+  void SetUp() override {
+    testing::Test::SetUp();
+    profile_ = std::make_unique<TestingProfile>();
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+};
+
+TEST_F(CriticalUserJourneyChroMenuSearchTest, Completes) {
+  ASSERT_TRUE(CriticalUserJourneyServiceFactory::GetForProfile(profile_.get()));
+
+  base::HistogramTester histograms;
+  ui::test::TestElement search_field(kAppMenuSearchFieldElementId,
+                                     kTestContext);
+  search_field.Show();
+  base::RunLoop().RunUntilIdle();
+
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      &search_field, kAppMenuSearchQueryEnteredEventId);
+  base::RunLoop().RunUntilIdle();
+
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      &search_field, kAppMenuSearchResultClickedEventId);
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectUniqueSample(
+      "CriticalUserJourney.ChroMenuSearchJourney.Result",
+      CriticalUserJourneySession::JourneyResult::kCompleted, 1);
+  histograms.ExpectBucketCount(
+      "CriticalUserJourney.ChroMenuSearchJourney.StepReached",
+      static_cast<int>(ChroMenuSearchJourneySteps::kAppMenuOpened), 1);
+  histograms.ExpectBucketCount(
+      "CriticalUserJourney.ChroMenuSearchJourney.StepReached",
+      static_cast<int>(ChroMenuSearchJourneySteps::kSearchQueryEntered), 1);
+  histograms.ExpectBucketCount(
+      "CriticalUserJourney.ChroMenuSearchJourney.StepReached",
+      static_cast<int>(ChroMenuSearchJourneySteps::kSearchResultClicked), 1);
+  histograms.ExpectTotalCount(
+      "CriticalUserJourney.ChroMenuSearchJourney.Step1ToStep2Duration", 1);
+  histograms.ExpectTotalCount(
+      "CriticalUserJourney.ChroMenuSearchJourney.Step2ToStep3Duration", 1);
+  histograms.ExpectTotalCount(
+      "CriticalUserJourney.ChroMenuSearchJourney.OverallDuration", 1);
+}
+
+TEST_F(CriticalUserJourneyChroMenuSearchTest, AbortsOnDismiss) {
+  ASSERT_TRUE(CriticalUserJourneyServiceFactory::GetForProfile(profile_.get()));
+
+  base::HistogramTester histograms;
+  ui::test::TestElement search_field(kAppMenuSearchFieldElementId,
+                                     kTestContext);
+  search_field.Show();
+  base::RunLoop().RunUntilIdle();
+
+  search_field.Hide();
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectUniqueSample(
+      "CriticalUserJourney.ChroMenuSearchJourney.Result",
+      CriticalUserJourneySession::JourneyResult::kAborted, 1);
+  histograms.ExpectUniqueSample(
+      "CriticalUserJourney.ChroMenuSearchJourney.StepReached",
+      static_cast<int>(ChroMenuSearchJourneySteps::kAppMenuOpened), 1);
+  histograms.ExpectUniqueSample(
+      "CriticalUserJourney.ChroMenuSearchJourney.StepAborted",
+      static_cast<int>(ChroMenuSearchJourneySteps::kAppMenuOpened), 1);
+  histograms.ExpectTotalCount(
+      "CriticalUserJourney.ChroMenuSearchJourney.OverallDuration", 0);
 }
 
 }  // namespace metrics

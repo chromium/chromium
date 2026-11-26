@@ -5,6 +5,8 @@
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_service.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/path_service.h"
@@ -33,6 +35,8 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/split_view_cuj_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
@@ -52,6 +56,10 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/view_utils.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/download/download_display.h"
@@ -655,6 +663,78 @@ IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
   histograms.ExpectBucketCount(
       step_reached,
       static_cast<int>(SplitViewJourneySteps::kSustainedComparison), 1);
+}
+
+class ChroMenuSearchJourneyInteractiveTest : public InteractiveBrowserTest {
+ public:
+  ChroMenuSearchJourneyInteractiveTest() {
+    feature_list_.InitWithFeatures(
+        {features::kAppMenuGlowUp, features::kChroMenuSearch,
+         kCriticalUserJourneyService, kChroMenuSearchJourney},
+        {});
+  }
+  ~ChroMenuSearchJourneyInteractiveTest() override = default;
+
+ protected:
+  static std::string HistogramName(std::string_view suffix) {
+    return base::StrCat(
+        {GetMetricJourneyPrefix(kChroMenuSearchJourney), ".", suffix});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChroMenuSearchJourneyInteractiveTest,
+                       SearchResultClickCompletesJourney) {
+  static constexpr char kDownloadsResult[] = "downloads_result";
+  base::HistogramTester histograms;
+
+  RunTestSequence(
+      MoveMouseTo(kToolbarBackButtonElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(kAppMenuSearchFieldElementId),
+      WaitForShow(AppMenuModel::kMoreToolsMenuItem),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_DOWN, ui::EF_NONE),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_D, ui::EF_NONE),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_O, ui::EF_NONE),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_W, ui::EF_NONE),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_N, ui::EF_NONE),
+      WaitForHide(AppMenuModel::kMoreToolsMenuItem),
+      NameViewRelative(
+          kAppMenuSearchFieldElementId, kDownloadsResult,
+          [](views::View* search_field) -> views::View* {
+            for (views::View* view = search_field; view;
+                 view = view->parent()) {
+              if (auto* const item =
+                      views::AsViewClass<views::MenuItemView>(view)) {
+                return item->GetRootMenuItem()->GetMenuItemByID(
+                    kActionShowDownloadsPage);
+              }
+            }
+            return nullptr;
+          }),
+      SelectMenuItem(kDownloadsResult),
+      WaitForHide(kAppMenuSearchFieldElementId));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               HistogramName("Result"),
+               CriticalUserJourneySession::JourneyResult::kCompleted) > 0;
+  }));
+
+  for (const auto step : {ChroMenuSearchJourneySteps::kAppMenuOpened,
+                          ChroMenuSearchJourneySteps::kSearchQueryEntered,
+                          ChroMenuSearchJourneySteps::kSearchResultClicked}) {
+    histograms.ExpectBucketCount(HistogramName("StepReached"),
+                                 static_cast<int>(step), 1);
+  }
+  histograms.ExpectUniqueSample(
+      HistogramName("Result"),
+      CriticalUserJourneySession::JourneyResult::kCompleted, 1);
+  histograms.ExpectTotalCount(HistogramName("Step1ToStep2Duration"), 1);
+  histograms.ExpectTotalCount(HistogramName("Step2ToStep3Duration"), 1);
+  histograms.ExpectTotalCount(HistogramName("OverallDuration"), 1);
 }
 
 }  // namespace metrics

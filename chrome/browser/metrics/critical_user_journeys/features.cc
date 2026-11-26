@@ -11,6 +11,7 @@ namespace metrics {
 BASE_FEATURE(kCriticalUserJourneyService, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // These can be toggled by default as needed.
+BASE_FEATURE(kChroMenuSearchJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kClearBrowsingHistoryJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kViewDownloadedFileJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kViewDownloadedFileFromAppMenuJourney,

@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/fuzzy_search/fuzzy_finder.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
@@ -37,6 +38,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "url/gurl.h"
 
 namespace {
@@ -236,6 +238,16 @@ void AppMenuSearchController::OnQueryChanged() {
     // The query is below the minimum query length threshold. Keep the current
     // rows until the query is long enough or cleared.
     return;
+  }
+
+  if (!has_emitted_query_entered_event_) {
+    if (views::View* search_field =
+            search_bar_->GetViewByElementId(kAppMenuSearchFieldElementId);
+        search_field &&
+        views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+            kAppMenuSearchQueryEnteredEventId, search_field)) {
+      has_emitted_query_entered_event_ = true;
+    }
   }
 
   delegate_->ShowSearchResults(results.get());

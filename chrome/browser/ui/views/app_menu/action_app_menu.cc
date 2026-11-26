@@ -16,8 +16,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -56,6 +58,7 @@
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
@@ -284,6 +287,7 @@ void ActionAppMenu::RunMenu(views::Widget* parent,
 
   views::Widget* const owner_widget =
       parent ? parent : (host ? host->button()->GetWidget() : nullptr);
+  owner_widget_ = owner_widget ? owner_widget->GetWeakPtr() : nullptr;
   focus_controller_ = search_bar_ ? std::make_unique<AppMenuFocusController>(
                                         owner_widget, search_bar_)
                                   : nullptr;
@@ -448,6 +452,12 @@ void ActionAppMenu::ExecuteCommand(int id, int mouse_event_flags) {
 
   metrics_.LogMenuAction(base_action);
 
+  if (showing_search_results_ &&
+      base_action->GetProperty(AppMenuActionItem::kDisplayTypeKey) !=
+          AppMenuActionItem::DisplayType::kNotification) {
+    NotifySearchResultClicked();
+  }
+
   // A row's action runs before OnMenuClosed() gives the browser window its
   // focus back, which is too late for an action that needs that focus.
   if (focus_controller_ && ActsOnFocusedView(*action_ptr)) {
@@ -488,6 +498,7 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   }
 
   search_bar_ = nullptr;
+  owner_widget_.reset();
   menu_width_lock_.RunAndReset();
   has_notification_header_ = false;
   showing_search_results_ = false;
@@ -795,6 +806,32 @@ void ActionAppMenu::CancelAndEvaluate(actions::ActionId action_id,
                                    .context = BuildActionInvocationContext(
                                        base_action, mouse_event_flags)};
     CloseMenu();
+  }
+}
+
+void ActionAppMenu::NotifySearchResultClicked() {
+  // MenuRunnerImpl destroys menu hosts before calling ExecuteCommand() for
+  // non-repeatable items, so BrowserView (in the same ElementContext) is the
+  // reliable anchor in production.
+  if (auto* browser_elements = BrowserElements::From(browser_window_interface_);
+      browser_elements &&
+      browser_elements->NotifyEvent(kBrowserViewElementId,
+                                    kAppMenuSearchResultClickedEventId)) {
+    return;
+  }
+  if (search_bar_) {
+    if (views::View* search_field =
+            search_bar_->GetViewByElementId(kAppMenuSearchFieldElementId);
+        search_field &&
+        views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+            kAppMenuSearchResultClickedEventId, search_field)) {
+      return;
+    }
+  }
+  if (owner_widget_ && owner_widget_->IsVisible() &&
+      owner_widget_->GetRootView()) {
+    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+        kAppMenuSearchResultClickedEventId, owner_widget_->GetRootView());
   }
 }
 

@@ -6,12 +6,14 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/settings/settings_element_ids.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
@@ -208,6 +210,22 @@ void CriticalUserJourneyRegistry::AddJourneys() {
                    TabSearchJourneySteps::kTabSearchBubbleShown)
           .LaunchHatsSurveyOnCompletion(tab_search_hats_params)
           .Build());
+
+  // ChroMenu Search
+  if (base::FeatureList::IsEnabled(features::kAppMenuGlowUp) &&
+      base::FeatureList::IsEnabled(features::kChroMenuSearch)) {
+    AddJourney(CriticalUserJourney::Builder(&kChroMenuSearchJourney)
+                   .AddStep(kAppMenuSearchFieldElementId,
+                            ui::InteractionSequence::StepType::kShown,
+                            ChroMenuSearchJourneySteps::kAppMenuOpened)
+                   .AddStep(kAppMenuSearchQueryEnteredEventId,
+                            ui::InteractionSequence::StepType::kCustomEvent,
+                            ChroMenuSearchJourneySteps::kSearchQueryEntered)
+                   .AddStep(kAppMenuSearchResultClickedEventId,
+                            ui::InteractionSequence::StepType::kCustomEvent,
+                            ChroMenuSearchJourneySteps::kSearchResultClicked)
+                   .Build());
+  }
 
   // ---------------------------------------------------------------------------
   // Settings Glow Up Journeys

@@ -180,6 +180,9 @@ class AppMenuSearchController {
   // The search results shown below the search bar.
   std::unique_ptr<actions::ActionItem> search_results_;
 
+  // Ensures the query-entered CUJ event is emitted at most once per menu open.
+  bool has_emitted_query_entered_event_ = false;
+
   base::CallbackListSubscription query_changed_subscription_;
 };
 

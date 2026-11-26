@@ -25,6 +25,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="JourneyNames">
+  <variant name="ChroMenuSearchJourney" summary="ChroMenu Search"/>
   <variant name="ClearBrowsingHistoryJourney"/>
   <variant name="CustomizeChromeJourney"
       summary="Customize Chrome Themes &amp; Colors"/>
@@ -49,6 +50,16 @@ chromium-metrics-reviews@google.com.
 <!-- Add new journeys here! -->
 
 </variants>
+
+<histogram name="CriticalUserJourney.ChroMenuSearchJourney.{StepAction}"
+    enum="ChroMenuSearchJourneySteps" expires_after="2027-05-09">
+  <owner>dljames@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a step is {StepAction} in the ChroMenuSearchJourney.
+  </summary>
+  <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
+</histogram>
 
 <histogram name="CriticalUserJourney.ClearBrowsingHistoryJourney.{StepAction}"
     enum="ClearBrowsingHistoryJourneySteps" expires_after="2027-05-09">

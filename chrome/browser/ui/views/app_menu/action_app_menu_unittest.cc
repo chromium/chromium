@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -110,6 +111,7 @@
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -4190,6 +4192,53 @@ TEST_F(ActionAppMenuWithSearchTest, DynamicSearchResultClickLogsMetrics) {
               1);
     histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
   }
+}
+
+TEST_F(ActionAppMenuWithSearchTest,
+       EmitsSearchQueryEnteredOnceAndResultClickedOnSearchResult) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  int query_entered_count = 0;
+  int result_clicked_count = 0;
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  auto query_sub = tracker->AddCustomEventInAnyContextCallback(
+      kAppMenuSearchQueryEnteredEventId,
+      base::BindLambdaForTesting(
+          [&](ui::TrackedElement*) { ++query_entered_count; }));
+  auto result_sub = tracker->AddCustomEventInAnyContextCallback(
+      kAppMenuSearchResultClickedEventId,
+      base::BindLambdaForTesting(
+          [&](ui::TrackedElement*) { ++result_clicked_count; }));
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  EXPECT_CALL(mock_action_invoked_, Call(kActionShowDownloadsPage, _, _))
+      .Times(2);
+  // Normal menu execution does not emit result clicked.
+  menu.ExecuteCommand(kActionShowDownloadsPage, ui::EF_NONE);
+  EXPECT_EQ(result_clicked_count, 0);
+
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+
+  // Queries below minimum length do not emit; further edits in the same open
+  // emit only once.
+  search_bar->SetText(u"d");
+  EXPECT_EQ(query_entered_count, 0);
+  search_bar->SetText(u"do");
+  EXPECT_EQ(query_entered_count, 1);
+  search_bar->SetText(u"dow");
+  search_bar->SetText(u"");
+  search_bar->SetText(u"downloads");
+  EXPECT_EQ(query_entered_count, 1);
+
+  menu.ExecuteCommand(kActionShowDownloadsPage, ui::EF_NONE);
+  EXPECT_EQ(result_clicked_count, 1);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
 }
 
 TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {

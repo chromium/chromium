@@ -14,6 +14,7 @@ namespace metrics {
 BASE_DECLARE_FEATURE(kCriticalUserJourneyService);
 
 // Dedicated feature flags for each journey.
+BASE_DECLARE_FEATURE(kChroMenuSearchJourney);
 BASE_DECLARE_FEATURE(kClearBrowsingHistoryJourney);
 BASE_DECLARE_FEATURE(kViewDownloadedFileJourney);
 BASE_DECLARE_FEATURE(kViewDownloadedFileFromAppMenuJourney);
