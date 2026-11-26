@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -95,8 +96,6 @@ import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -210,7 +209,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     private boolean mShouldUpdatePrefs;
 
     /** Maps {@link UserSelectableType} to the corresponding preference. */
-    private Map<Integer, ChromeSwitchPreference> mSyncTypeSwitchPreferencesMap = new HashMap<>();
+    private SparseArray<ChromeSwitchPreference> mSyncTypeSwitchPreferencesMap = new SparseArray<>();
 
     private Preference mGoogleActivityControls;
     private Preference mSyncEncryption;
@@ -445,7 +444,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     private void setupAccountDataTypePreferences() {
-        mSyncTypeSwitchPreferencesMap = new HashMap<>();
+        mSyncTypeSwitchPreferencesMap = new SparseArray<>();
         mSyncTypeSwitchPreferencesMap.put(
                 UserSelectableType.AUTOFILL, findPreference(PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE));
         mSyncTypeSwitchPreferencesMap.put(
@@ -487,9 +486,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             themesToggle.setVisible(false);
         }
 
-        mSyncTypeSwitchPreferencesMap
-                .values()
-                .forEach(pref -> pref.setOnPreferenceChangeListener(this));
+        for (int i = 0; i < mSyncTypeSwitchPreferencesMap.size(); i++) {
+            mSyncTypeSwitchPreferencesMap.valueAt(i).setOnPreferenceChangeListener(this);
+        }
     }
 
     private void setupSyncDisabledByAdministrator() {
@@ -633,8 +632,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     /** Gets the state from data type switches and saves this state into {@link SyncService}. */
     private void updateSyncStateFromSelectedTypes() {
-        for (var entry : mSyncTypeSwitchPreferencesMap.entrySet()) {
-            mSyncService.setSelectedType(entry.getKey(), entry.getValue().isChecked());
+        for (int i = 0; i < mSyncTypeSwitchPreferencesMap.size(); i++) {
+            mSyncService.setSelectedType(
+                    mSyncTypeSwitchPreferencesMap.keyAt(i),
+                    mSyncTypeSwitchPreferencesMap.valueAt(i).isChecked());
         }
 
         // Some calls to setSelectedTypes don't trigger syncStateChanged, so schedule update here.
@@ -863,9 +864,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
         boolean syncDisabledByPolicy = mSyncService.isSyncDisabledByEnterprisePolicy();
 
-        for (Map.Entry<Integer, ChromeSwitchPreference> entry :
-                mSyncTypeSwitchPreferencesMap.entrySet()) {
-            @UserSelectableType int type = entry.getKey();
+        for (int i = 0; i < mSyncTypeSwitchPreferencesMap.size(); i++) {
+            @UserSelectableType int type = mSyncTypeSwitchPreferencesMap.keyAt(i);
             boolean enabled = !mSyncService.isTypeManagedByCustodian(type);
             boolean checked = selectedSyncTypes.contains(type);
             final boolean managed;
@@ -896,7 +896,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             // otherwise add a disclaimer to all the preferences that it's managed.
             enabled = enabled && !syncDisabledByPolicy;
 
-            ChromeSwitchPreference pref = entry.getValue();
+            ChromeSwitchPreference pref = mSyncTypeSwitchPreferencesMap.valueAt(i);
             pref.setEnabled(enabled);
             pref.setChecked(checked);
             pref.setManagedPreferenceDelegate(
