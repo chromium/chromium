@@ -19,8 +19,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
-#include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
-#include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -117,8 +115,6 @@ class QuiesceStatusChangeChecker::NestedUpdatedProgressMarkerChecker
       : SingleClientStatusChangeChecker(service),
         fake_server_(CHECK_DEREF(fake_server)),
         check_exit_condition_cb_(check_exit_condition_cb) {
-    CHECK(sync_datatype_helper::test()->TestUsesSelfNotifications());
-
     // `HasUnsyncedItemsForTest()` requires the engine to be initialized.
     if (service->IsEngineInitialized()) {
       service->HasUnsyncedItemsForTest(base::BindOnce(

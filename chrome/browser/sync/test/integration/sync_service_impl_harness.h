@@ -27,6 +27,10 @@
 
 class Profile;
 
+namespace fake_server {
+class FakeServer;
+}  // namespace fake_server
+
 namespace signin {
 class GaiaIdHash;
 }  // namespace signin
@@ -56,8 +60,19 @@ class SyncServiceImplHarness {
   using SetUserSettingsCallback =
       base::OnceCallback<void(syncer::SyncUserSettings*)>;
 
+  // Creates a harness without an associated `FakeServer` (for live-server E2E
+  // tests or browser tests that do not exercise `FakeServer`-backed waits like
+  // `AwaitQuiescence()` and `TriggerRefreshAndWait()`).
   static std::unique_ptr<SyncServiceImplHarness> Create(Profile* profile,
                                                         SigninType signin_type);
+
+  // Creates a harness backed by `fake_server`, which must outlive the returned
+  // harness.
+  static std::unique_ptr<SyncServiceImplHarness> CreateWithFakeServer(
+      Profile* profile,
+      SigninType signin_type,
+      fake_server::FakeServer& fake_server,
+      bool uses_self_notifications);
   ~SyncServiceImplHarness();
 
   SyncServiceImplHarness(const SyncServiceImplHarness&) = delete;
@@ -235,9 +250,11 @@ class SyncServiceImplHarness {
 
  private:
   // `profile` must not be null and must outlive `this`. `signin_delegate` must
-  // not be null.
+  // not be null. `fake_server`, if non-null, must outlive `this`.
   SyncServiceImplHarness(Profile* profile,
-                         std::unique_ptr<SyncSigninDelegate> signin_delegate);
+                         std::unique_ptr<SyncSigninDelegate> signin_delegate,
+                         fake_server::FakeServer* fake_server,
+                         bool uses_self_notifications);
 
   // Gets detailed status from `service_` in pretty-printable form.
   std::string GetServiceStatus();
@@ -254,6 +271,12 @@ class SyncServiceImplHarness {
   // flexibility in tests: this object may outlive `Profile` as long as it isn't
   // exercised.
   const base::WeakPtr<Profile> profile_;
+
+  // `FakeServer` associated with this sync client, if any.
+  const raw_ptr<fake_server::FakeServer> fake_server_;
+
+  // Whether self-notifications are enabled for this client's test server.
+  const bool uses_self_notifications_;
 
   // SyncServiceImpl object associated with |profile_|.
   const raw_ptr<syncer::SyncServiceImpl, AcrossTasksDanglingUntriaged> service_;

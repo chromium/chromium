@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
@@ -27,10 +28,8 @@
 #include "chrome/browser/sync/test/integration/invalidations/invalidations_status_checker.h"
 #include "chrome/browser/sync/test/integration/quiesce_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
-#include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_signin_delegate.h"
-#include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/trigger_refresh_checker.h"
 #include "chrome/common/channel_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -187,18 +186,38 @@ std::unique_ptr<SyncServiceImplHarness> SyncServiceImplHarness::Create(
     SigninType signin_type) {
   CHECK(profile);
   return base::WrapUnique(new SyncServiceImplHarness(
-      profile, CreateSyncSigninDelegateForType(signin_type, profile)));
+      profile, CreateSyncSigninDelegateForType(signin_type, profile),
+      /*fake_server=*/nullptr, /*uses_self_notifications=*/false));
+}
+
+// static
+std::unique_ptr<SyncServiceImplHarness>
+SyncServiceImplHarness::CreateWithFakeServer(
+    Profile* profile,
+    SigninType signin_type,
+    fake_server::FakeServer& fake_server,
+    bool uses_self_notifications) {
+  CHECK(profile);
+  return base::WrapUnique(new SyncServiceImplHarness(
+      profile, CreateSyncSigninDelegateForType(signin_type, profile),
+      &fake_server, uses_self_notifications));
 }
 
 SyncServiceImplHarness::SyncServiceImplHarness(
     Profile* profile,
-    std::unique_ptr<SyncSigninDelegate> signin_delegate)
+    std::unique_ptr<SyncSigninDelegate> signin_delegate,
+    fake_server::FakeServer* fake_server,
+    bool uses_self_notifications)
     : profile_(CHECK_DEREF(profile).GetWeakPtr()),
+      fake_server_(fake_server),
+      uses_self_notifications_(uses_self_notifications),
       service_(SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
           profile)),
       profile_debug_name_(profile->GetDebugName()),
       signin_delegate_(std::move(signin_delegate)) {
   CHECK(profile_);
+  // Self-notifications are only meaningful when backed by a `FakeServer`.
+  CHECK(fake_server_ || !uses_self_notifications_);
   CHECK(service_);
   CHECK(signin_delegate_);
 }
@@ -414,13 +433,16 @@ bool SyncServiceImplHarness::AwaitQuiescence(
   CHECK(!sync_integration_test_util::IsCurrentTestAllowlistedForE2EMode())
       << "AwaitQuiescence is not supported for E2E tests.";
 
+  fake_server::FakeServer* fake_server = clients[0]->fake_server_.get();
+  CHECK(fake_server);
+
   std::vector<raw_ptr<SyncServiceImpl>> services;
   for (SyncServiceImplHarness* harness : clients) {
+    CHECK_EQ(harness->fake_server_.get(), fake_server);
+    CHECK(harness->uses_self_notifications_);
     services.push_back(harness->service());
   }
-  return QuiesceStatusChangeChecker(
-             services, sync_datatype_helper::test()->GetFakeServer())
-      .Wait();
+  return QuiesceStatusChangeChecker(services, fake_server).Wait();
 }
 
 bool SyncServiceImplHarness::AwaitEngineInitialization() {
@@ -479,8 +501,8 @@ bool SyncServiceImplHarness::AwaitInvalidationsStatus(bool expected_status) {
 
 bool SyncServiceImplHarness::TriggerRefreshAndWait(
     const syncer::DataTypeSet& types) {
-  TriggerRefreshChecker checker(
-      service(), sync_datatype_helper::test()->GetFakeServer(), types);
+  CHECK(fake_server_);
+  TriggerRefreshChecker checker(service(), fake_server_.get(), types);
   service()->TriggerRefresh(syncer::SyncService::TriggerRefreshSource::kUnknown,
                             types);
   return checker.Wait();

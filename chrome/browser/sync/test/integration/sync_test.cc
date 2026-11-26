@@ -737,14 +737,18 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   }
 #endif
 
-  SyncServiceImplHarness::SigninType signin_type =
-      server_type_ == EXTERNAL_LIVE_SERVER
-          ? SyncServiceImplHarness::SigninType::UI_SIGNIN
-          : SyncServiceImplHarness::SigninType::FAKE_SIGNIN;
-
   CHECK(!clients_[index].harness);
-  clients_[index].harness =
-      SyncServiceImplHarness::Create(GetProfile(index), signin_type);
+  switch (server_type_) {
+    case EXTERNAL_LIVE_SERVER:
+      clients_[index].harness = SyncServiceImplHarness::Create(
+          GetProfile(index), SyncServiceImplHarness::SigninType::UI_SIGNIN);
+      break;
+    case IN_PROCESS_FAKE_SERVER:
+      clients_[index].harness = SyncServiceImplHarness::CreateWithFakeServer(
+          GetProfile(index), SyncServiceImplHarness::SigninType::FAKE_SIGNIN,
+          CHECK_DEREF(GetFakeServer()), TestUsesSelfNotifications());
+      break;
+  }
   EXPECT_NE(nullptr, GetClient(index)) << "Could not create Client " << index;
 }
 
@@ -952,23 +956,17 @@ void SyncTest::TearDownOnMainThread() {
     previous_profile_ = nullptr;
   }
 
-  if (fake_server_.get()) {
-    fake_sync_invalidation_sender_.reset();
-    embedded_fake_server_adapter_.reset();
-    fake_server_.reset();
-  }
-
   for (SyncClientState& client : clients_) {
+    client.harness.reset();
+
     Profile* profile = client.profile;
     // Profile could be removed earlier.
     if (profile) {
       profile->RemoveObserver(this);
 
-      // Clear `harness` and `profile` now since `this` is no longer observing
-      // `profile` (so `OnProfileWillBeDestroyed()` will not be called), and
-      // closing the browsers below may destroy `profile` before `clients_` is
-      // cleared.
-      client.harness.reset();
+      // Clear `profile` now since `this` is no longer observing `profile` (so
+      // `OnProfileWillBeDestroyed()` will not be called), and closing the
+      // browsers below may destroy `profile` before `clients_` is cleared.
       client.profile = nullptr;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1007,6 +1005,14 @@ void SyncTest::TearDownOnMainThread() {
       }
 #endif  // BUILDFLAG(IS_ANDROID)
     }
+  }
+
+  // Tear down `fake_server_` after resetting client harnesses so `fake_server_`
+  // strictly outlives `SyncServiceImplHarness::fake_server_`.
+  if (fake_server_) {
+    fake_sync_invalidation_sender_.reset();
+    embedded_fake_server_adapter_.reset();
+    fake_server_.reset();
   }
 
 #if !BUILDFLAG(IS_ANDROID)
