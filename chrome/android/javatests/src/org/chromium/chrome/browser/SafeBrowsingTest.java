@@ -7,7 +7,6 @@ package org.chromium.chrome.browser;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,6 +34,9 @@ public final class SafeBrowsingTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    private final MockSafeBrowsingApiHandler mSafeBrowsingApiHandler =
+            new MockSafeBrowsingApiHandler();
 
     /**
      * Wait for an interstitial (or lack thereof) to be shown. Disclaimer: when |shouldBeShown| is
@@ -76,13 +78,10 @@ public final class SafeBrowsingTest {
 
     @Before
     public void setUp() {
-        SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
-    }
-
-    @After
-    public void tearDown() {
-        MockSafeBrowsingApiHandler.clearMockResponses();
-        SafeBrowsingApiBridge.clearHandlerForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        SafeBrowsingApiBridge.setSafeBrowsingApiHandlerForTesting(
+                                mSafeBrowsingApiHandler));
     }
 
     @Test
@@ -99,8 +98,10 @@ public final class SafeBrowsingTest {
     public void interstitialPage() {
         String url =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
-        MockSafeBrowsingApiHandler.addMockResponse(
-                url, MockSafeBrowsingApiHandler.SOCIAL_ENGINEERING_CODE);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mSafeBrowsingApiHandler.addMockResponse(
+                                url, MockSafeBrowsingApiHandler.SOCIAL_ENGINEERING_CODE));
 
         mActivityTestRule.startOnBlankPage();
         loadUrlNonBlocking(url);

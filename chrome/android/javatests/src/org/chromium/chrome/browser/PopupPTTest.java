@@ -10,16 +10,14 @@ import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestinati
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.RequiresRestart;
@@ -44,26 +42,16 @@ public class PopupPTTest {
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private WebPageStation mEntryPage;
-
-    @BeforeClass
-    public static void setUpClass() {
-        // TODO(crbug.com/329302688): Use ResettersForTesting instead.
-        SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-        SafeBrowsingApiBridge.clearHandlerForTesting();
-    }
+    private final MockSafeBrowsingApiHandler mSafeBrowsingApiHandler =
+            new MockSafeBrowsingApiHandler();
 
     @Before
     public void setUp() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        SafeBrowsingApiBridge.setSafeBrowsingApiHandlerForTesting(
+                                mSafeBrowsingApiHandler));
         mEntryPage = mCtaTestRule.startOnBlankPage();
-    }
-
-    @After
-    public void tearDown() {
-        MockSafeBrowsingApiHandler.clearMockResponses();
     }
 
     @Test
@@ -131,9 +119,12 @@ public class PopupPTTest {
     @Test
     @MediumTest
     public void test030AbusiveGesturePopupBlocked() {
-        MockSafeBrowsingApiHandler.addMockResponse(
-                mCtaTestRule.getTestServer().getURL(PopupOnClickPageStation.PATH),
-                MockSafeBrowsingApiHandler.ABUSIVE_EXPERIENCE_VIOLATION_CODE);
+        // Initialize the server off the UI thread so its service connection can complete.
+        String url = mCtaTestRule.getTestServer().getURL(PopupOnClickPageStation.PATH);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mSafeBrowsingApiHandler.addMockResponse(
+                                url, MockSafeBrowsingApiHandler.ABUSIVE_EXPERIENCE_VIOLATION_CODE));
 
         PopupOnClickPageStation page =
                 PopupOnClickPageStation.loadInCurrentTab(

@@ -920,4 +920,25 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   EXPECT_EQ(result_future2.Get(), "");
 }
 
+TEST_F(SafeBrowsingApiHandlerBridgeTest, EmptySafetyNetIdIsScopedToFixture) {
+  SetSafetyNetApiInitializationState(
+      SafetyNetApiInitializationState::kInitializedFirstParty);
+  SetSafetyNetIdResultEmpty();
+  base::test::TestFuture<const std::string&> first_result;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartGetSafetyNetId(
+      first_result.GetCallback());
+  EXPECT_EQ(first_result.Get(), "");
+
+  // Exercise consecutive fixtures in one process, independent of test order.
+  WithMockSafeBrowsingApiHandler::TearDown();
+  WithMockSafeBrowsingApiHandler::SetUp();
+
+  SetSafetyNetApiInitializationState(
+      SafetyNetApiInitializationState::kInitializedFirstParty);
+  base::test::TestFuture<const std::string&> next_result;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartGetSafetyNetId(
+      next_result.GetCallback());
+  EXPECT_EQ(next_result.Get(), "safety-net-id-0");
+}
+
 }  // namespace safe_browsing

@@ -106,10 +106,15 @@ public class TabSuspensionTest {
     private EmbeddedTestServer mTestServer;
     private String mStartingUrl;
     private String mDifferentUrl;
+    private final MockSafeBrowsingApiHandler mSafeBrowsingApiHandler =
+            new MockSafeBrowsingApiHandler();
 
     @Before
     public void setUp() throws InterruptedException {
-        SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        SafeBrowsingApiBridge.setSafeBrowsingApiHandlerForTesting(
+                                mSafeBrowsingApiHandler));
         UsageStatsBridgeJni.setInstanceForTesting(mUsageStatsNativeMock);
         doReturn(123456L).when(mUsageStatsNativeMock).init(any(), any());
         // TokenTracker and EventTracker hold a promise, and Promises can only be used on a single
@@ -394,8 +399,10 @@ public class TabSuspensionTest {
         startLoadingUrl(mTab, mStartingUrl);
         waitForSuspendedTabToShow(mTab, STARTING_FQDN);
 
-        MockSafeBrowsingApiHandler.addMockResponse(
-                mDifferentUrl, MockSafeBrowsingApiHandler.SOCIAL_ENGINEERING_CODE);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mSafeBrowsingApiHandler.addMockResponse(
+                                mDifferentUrl, MockSafeBrowsingApiHandler.SOCIAL_ENGINEERING_CODE));
         startLoadingUrl(mTab, mDifferentUrl);
 
         waitForSuspendedTabToHide(mTab);
