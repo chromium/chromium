@@ -75,7 +75,7 @@ PIIMap DetectPII(
 // Converts `shill_log` into std::string and redacts PII sensitive data it
 // contains.
 std::string RedactAndKeepSelectedPII(
-    const std::set<redaction::PIIType>& pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     const base::DictValue& shill_log,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   redaction::RedactionTool* redaction_tool = redaction_tool_container->Get();
@@ -99,11 +99,10 @@ bool WriteOutputFiles(std::string shill_property,
 // Recursively traverses `dict`. Detects and adds PII listed in
 // `system_logs::kShillPIIMaskedMap` in `dict` to `pii_map` if `scrub` is false;
 // otherwise replace PII with `kMaskedString`.
-void DetectOrScrubPIIInDictionary(
-    base::DictValue& dict,
-    bool scrub,
-    std::set<redaction::PIIType>& pii_types_to_keep,
-    PIIMap& pii_map) {
+void DetectOrScrubPIIInDictionary(base::DictValue& dict,
+                                  bool scrub,
+                                  redaction::PIITypeSet pii_types_to_keep,
+                                  PIIMap& pii_map) {
   for (auto entry : dict) {
     if (entry.second.is_dict()) {
       DetectOrScrubPIIInDictionary(entry.second.GetDict(), scrub,
@@ -116,7 +115,7 @@ void DetectOrScrubPIIInDictionary(
     // values don't contain PII anyway.
     if (HasEmptyContents(entry.second))
       continue;
-    if (scrub && !pii_types_to_keep.contains(
+    if (scrub && !pii_types_to_keep.Has(
                      system_logs::kShillPIIMaskedMap.at(entry.first))) {
       entry.second = base::Value(kMaskedString);
       continue;
@@ -321,9 +320,8 @@ base::DictValue ShillDataCollector::ExpandProperties(
     pii_map_[redaction::PIIType::kMACAddress].insert(
         *dict.FindString(shill::kAddressProperty));
   }
-  std::set<redaction::PIIType> empty = {};
   DetectOrScrubPIIInDictionary(dict, /*scrub=*/false,
-                               /*pii_types_to_keep=*/empty, pii_map_);
+                               /*pii_types_to_keep=*/{}, pii_map_);
   return dict;
 }
 
@@ -363,14 +361,14 @@ void ShillDataCollector::OnPIIDetected(PIIMap detected_pii) {
 }
 
 void ShillDataCollector::ExportCollectedDataWithPII(
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
     DataCollectorDoneCallback on_exported_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Only masks shill::kNameProperty in the top levels of devices and services.
-  if (!pii_types_to_keep.count(redaction::PIIType::kSSID)) {
+  if (!pii_types_to_keep.Has(redaction::PIIType::kSSID)) {
     for (auto entry : *shill_log_.FindDict(kNetworkServices)) {
       std::string log_name = ash::NetworkPathId(entry.first);  // Not PII
       entry.second.GetDict().Set(shill::kNameProperty, log_name);

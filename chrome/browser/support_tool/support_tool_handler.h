@@ -104,7 +104,7 @@ class SupportToolHandler {
   // export couldn't happen due to an error. This function should be called only
   // once on an instance of SupportToolHandler.
   void ExportCollectedData(
-      std::set<redaction::PIIType> pii_types_to_keep,
+      redaction::PIITypeSet pii_types_to_keep,
       base::FilePath target_path,
       SupportToolDataExportedCallback on_data_exported_callback);
 
@@ -133,7 +133,7 @@ class SupportToolHandler {
   // DataCollector with their name. The DataCollectors will export their output
   // to that path then the contents of the `tmp_path` will be put inside a zip
   // archive on `target_path`.
-  void ExportIntoTempDir(std::set<redaction::PIIType> pii_types_to_keep,
+  void ExportIntoTempDir(redaction::PIITypeSet pii_types_to_keep,
                          base::FilePath target_path,
                          base::FilePath tmp_path);
 
@@ -149,7 +149,7 @@ class SupportToolHandler {
   void OnAllDataCollectorsDoneExporting(
       base::FilePath tmp_path,
       base::FilePath target_path,
-      std::set<redaction::PIIType> pii_types_to_keep);
+      redaction::PIITypeSet pii_types_to_keep);
 
   // OnMetadataFileWritten is called when metadata file is written. Archives
   // the data exported by DataCollectors inside a .zip archive and calls

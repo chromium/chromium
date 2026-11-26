@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <utility>
 
@@ -54,7 +53,7 @@ std::pair<std::unique_ptr<system_logs::SystemLogsResponse>, PIIMap> DetectPII(
 // redacted versions. Takes the ownership of `system_logs_response` and returns
 // it back.
 std::unique_ptr<system_logs::SystemLogsResponse> RedactAndKeepSelectedPII(
-    const std::set<redaction::PIIType>& pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   CHECK(system_logs_response, base::NotFatalUntil::M163);
@@ -144,7 +143,7 @@ void SystemLogSourceDataCollectorAdaptor::OnPIIDetected(
 }
 
 void SystemLogSourceDataCollectorAdaptor::ExportCollectedDataWithPII(
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,

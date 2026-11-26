@@ -36,7 +36,7 @@ struct SupportPacketDetails {
   std::string issue_case_id;
   std::string issue_description;
   std::set<support_tool::DataCollectorType> requested_data_collectors;
-  std::set<redaction::PIIType> requested_pii_types;
+  redaction::PIITypeSet requested_pii_types;
 
   SupportPacketDetails();
   ~SupportPacketDetails();

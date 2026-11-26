@@ -69,7 +69,7 @@ class TestDataCollector : public DataCollector {
   }
 
   void ExportCollectedDataWithPII(
-      std::set<redaction::PIIType> pii_types_to_keep,
+      redaction::PIITypeSet pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
@@ -224,8 +224,7 @@ TEST_F(SupportToolHandlerTest, ExportSupportDataTest) {
       FILE_PATH_LITERAL("support-tool-export-success"));
   base::test::TestFuture<base::FilePath, std::set<SupportToolError>>
       test_future;
-  std::set<redaction::PIIType> pii_types{
-      redaction::PIIType::kUIHierarchyWindowTitles};
+  redaction::PIITypeSet pii_types{redaction::PIIType::kUIHierarchyWindowTitles};
   handler->ExportCollectedData(pii_types, target_path,
                                test_future.GetCallback());
   // handler should return the exported path on success.
@@ -303,8 +302,7 @@ TEST_F(SupportToolHandlerTest, ErrorMessageOnExportSupportData) {
   // Export collected data into the target temporary directory.
   base::test::TestFuture<base::FilePath, std::set<SupportToolError>>
       test_future;
-  std::set<redaction::PIIType> pii_types{
-      redaction::PIIType::kUIHierarchyWindowTitles};
+  redaction::PIITypeSet pii_types{redaction::PIIType::kUIHierarchyWindowTitles};
   handler->ExportCollectedData(pii_types, target_path,
                                test_future.GetCallback());
   // Check the error message.

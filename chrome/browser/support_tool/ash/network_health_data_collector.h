@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SUPPORT_TOOL_ASH_NETWORK_HEALTH_DATA_COLLECTOR_H_
 #define CHROME_BROWSER_SUPPORT_TOOL_ASH_NETWORK_HEALTH_DATA_COLLECTOR_H_
 
-#include <set>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -41,7 +40,7 @@ class NetworkHealthDataCollector : public SystemLogSourceDataCollectorAdaptor {
   // `SystemLogSourceDataCollectorAdaptor::ExportCollectedDataWithPII` function
   // after removing network names.
   void ExportCollectedDataWithPII(
-      std::set<redaction::PIIType> pii_types_to_keep,
+      redaction::PIITypeSet pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,

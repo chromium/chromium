@@ -58,9 +58,8 @@ UIHierarchyData::UIHierarchyData(UIHierarchyData&& ui_hierarchy_data) = default;
 bool UiHierarchyDataCollector::WriteOutputFile(
     std::string ui_hierarchy_data,
     base::FilePath target_directory,
-    std::set<redaction::PIIType> pii_types_to_keep) {
-  if (pii_types_to_keep.count(redaction::PIIType::kUIHierarchyWindowTitles) ==
-      0) {
+    redaction::PIITypeSet pii_types_to_keep) {
+  if (!pii_types_to_keep.Has(redaction::PIIType::kUIHierarchyWindowTitles)) {
     ui_hierarchy_data = RemoveWindowTitles(ui_hierarchy_data);
   }
   return base::WriteFile(
@@ -120,7 +119,7 @@ void UiHierarchyDataCollector::CollectDataAndDetectPII(
 }
 
 void UiHierarchyDataCollector::ExportCollectedDataWithPII(
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SUPPORT_TOOL_ASH_CHROME_USER_LOGS_DATA_COLLECTOR_H_
 
 #include <map>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -43,7 +42,7 @@ class ChromeUserLogsDataCollector : public DataCollector {
       override;
 
   void ExportCollectedDataWithPII(
-      std::set<redaction::PIIType> pii_types_to_keep,
+      redaction::PIITypeSet pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
@@ -71,7 +70,7 @@ class ChromeUserLogsDataCollector : public DataCollector {
       base::RepeatingClosure barrier_closure,
       std::string file_name,
       base::FilePath target_directory,
-      std::set<redaction::PIIType> pii_types_to_keep,
+      redaction::PIITypeSet pii_types_to_keep,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
       std::optional<std::string> log_contents);
@@ -90,7 +89,7 @@ class ChromeUserLogsDataCollector : public DataCollector {
   SEQUENCE_CHECKER(sequence_checker_);
   PIIMap pii_map_;
   base::FilePath temp_dir_;
-  std::map<base::FilePath, std::set<redaction::PIIType>> pii_in_log_files_;
+  std::map<base::FilePath, redaction::PIITypeSet> pii_in_log_files_;
   std::vector<std::string> errors_;
   DataCollectorDoneCallback on_data_collector_done_callback_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool_;

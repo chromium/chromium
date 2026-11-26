@@ -52,8 +52,7 @@ std::string GetPIITypeDescription(redaction::PIIType type_enum);
 base::ListValue GetDetectedPIIDataItems(const PIIMap& detected_pii);
 
 // Returns the set of PIITypes that has their `keep` field true in `pii_items`.
-std::set<redaction::PIIType> GetPIITypesToKeep(
-    const base::ListValue* pii_items);
+redaction::PIITypeSet GetPIITypesToKeep(const base::ListValue* pii_items);
 
 // Returns the support case ID that's extracted from `url` with query
 // `kSupportCaseIDQuery`. Returns empty string if `url` doesn't contain support

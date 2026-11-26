@@ -9,7 +9,6 @@
 #include <cstddef>
 #include <map>
 #include <optional>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -110,10 +109,10 @@ PIIMap DetectPII(
   return redaction_tool->Detect(log_contents);
 }
 
-std::set<redaction::PIIType> GetPIITypesInMap(const PIIMap& pii_map) {
-  std::set<redaction::PIIType> pii_types;
+redaction::PIITypeSet GetPIITypesInMap(const PIIMap& pii_map) {
+  redaction::PIITypeSet pii_types;
   for (const auto& pii_map_entry : pii_map)
-    pii_types.insert(pii_map_entry.first);
+    pii_types.Put(pii_map_entry.first);
   return pii_types;
 }
 
@@ -140,7 +139,7 @@ std::optional<std::string> ReadLogFromFile(base::FilePath log_file) {
 
 std::string RedactPII(
     std::string log_contents,
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   redaction::RedactionTool* redaction_tool = redaction_tool_container->Get();
   return redaction_tool->RedactAndKeepSelected(log_contents, pii_types_to_keep);
@@ -309,7 +308,7 @@ void ChromeUserLogsDataCollector::OnAllUserLogFilesReadAndDetected() {
 }
 
 void ChromeUserLogsDataCollector::ExportCollectedDataWithPII(
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
@@ -325,9 +324,7 @@ void ChromeUserLogsDataCollector::ExportCollectedDataWithPII(
                      weak_ptr_factory_.GetWeakPtr()));
 
   for (const auto& [path_in_temp_dir, pii_types] : pii_in_log_files_) {
-    bool keep_all_pii_in_log =
-        std::includes(pii_types_to_keep.begin(), pii_types_to_keep.end(),
-                      pii_types.begin(), pii_types.end());
+    bool keep_all_pii_in_log = pii_types_to_keep.HasAll(pii_types);
     // Use `file_name` for detailed error messages.
     std::string file_name = path_in_temp_dir.BaseName().AsUTF8Unsafe();
     if (keep_all_pii_in_log) {
@@ -357,7 +354,7 @@ void ChromeUserLogsDataCollector::OnReadLogFromFile(
     base::RepeatingClosure barrier_closure,
     std::string file_name,
     base::FilePath target_directory,
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
     std::optional<std::string> log_contents) {

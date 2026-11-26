@@ -7,7 +7,6 @@
 #include <cstdio>
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <utility>
 
@@ -60,7 +59,7 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS)
 
 // The set of PII types that can be found in policy status.
-const std::set<redaction::PIIType> kExpectedPIITypesInPolicyStatus = {
+constexpr redaction::PIITypeSet kExpectedPIITypesInPolicyStatus = {
     redaction::PIIType::kStableIdentifier,
     redaction::PIIType::kStableIdentifier, redaction::PIIType::kGaiaID,
     redaction::PIIType::kEmail};
@@ -186,10 +185,10 @@ class PolicyDataCollectorBrowserTestAsh
   }
 
  protected:
-  std::set<redaction::PIIType> GetSetOfPIITypesInPIIMap(const PIIMap& pii_map) {
-    std::set<redaction::PIIType> pii_types;
+  redaction::PIITypeSet GetSetOfPIITypesInPIIMap(const PIIMap& pii_map) {
+    redaction::PIITypeSet pii_types;
     for (const auto& map_entry : pii_map) {
-      pii_types.insert(map_entry.first);
+      pii_types.Put(map_entry.first);
     }
     return pii_types;
   }

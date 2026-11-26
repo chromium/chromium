@@ -147,10 +147,37 @@ TEST_F(SupportToolUiUtilsTest, PiiItems) {
     pii_item.Set(support_tool_ui::kPiiItemKeepKey, true);
   }
 
-  const std::set<redaction::PIIType>& pii_to_keep_result =
+  const redaction::PIITypeSet pii_to_keep_result =
       GetPIITypesToKeep(&detected_pii_items);
   // Check if the returned PII type set is as expected.
   EXPECT_THAT(pii_to_keep_result, UnorderedElementsAreArray(kPIITypes));
+}
+
+TEST_F(SupportToolUiUtilsTest, PiiItemsWithInvalidTypesAreIgnored) {
+  base::ListValue pii_items;
+  // A valid item that should be kept.
+  pii_items.Append(base::DictValue()
+                       .Set(support_tool_ui::kPiiItemPIITypeKey,
+                            static_cast<int>(redaction::PIIType::kEmail))
+                       .Set(support_tool_ui::kPiiItemKeepKey, true));
+  // Items with out-of-range PII types.
+  pii_items.Append(base::DictValue()
+                       .Set(support_tool_ui::kPiiItemPIITypeKey,
+                            static_cast<int>(redaction::PIIType::kMaxValue) + 1)
+                       .Set(support_tool_ui::kPiiItemKeepKey, true));
+  pii_items.Append(base::DictValue()
+                       .Set(support_tool_ui::kPiiItemPIITypeKey, -1)
+                       .Set(support_tool_ui::kPiiItemKeepKey, true));
+  // An item without a PII type.
+  pii_items.Append(
+      base::DictValue().Set(support_tool_ui::kPiiItemKeepKey, true));
+  // An item whose PII type is not an integer.
+  pii_items.Append(base::DictValue()
+                       .Set(support_tool_ui::kPiiItemPIITypeKey, "email")
+                       .Set(support_tool_ui::kPiiItemKeepKey, true));
+
+  EXPECT_EQ(GetPIITypesToKeep(&pii_items),
+            redaction::PIITypeSet({redaction::PIIType::kEmail}));
 }
 
 TEST_F(SupportToolUiUtilsTest, CustomizedUrl) {

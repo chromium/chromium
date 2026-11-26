@@ -257,17 +257,22 @@ base::ListValue GetDetectedPIIDataItems(const PIIMap& detected_pii) {
   });
 }
 
-std::set<redaction::PIIType> GetPIITypesToKeep(
-    const base::ListValue* pii_items) {
-  std::set<redaction::PIIType> pii_to_keep;
+redaction::PIITypeSet GetPIITypesToKeep(const base::ListValue* pii_items) {
+  redaction::PIITypeSet pii_to_keep;
   for (const auto& item : *pii_items) {
     const base::DictValue* item_as_dict = item.GetIfDict();
     CHECK(item_as_dict, base::NotFatalUntil::M162);
     std::optional<bool> keep =
         item_as_dict->FindBool(support_tool_ui::kPiiItemKeepKey);
     if (keep && keep.value()) {
-      pii_to_keep.insert(static_cast<redaction::PIIType>(
-          item_as_dict->FindInt(support_tool_ui::kPiiItemPIITypeKey).value()));
+      const std::optional<int> pii_type =
+          item_as_dict->FindInt(support_tool_ui::kPiiItemPIITypeKey);
+      // Ignore items whose PII type is missing or isn't a valid PII type.
+      if (pii_type &&
+          *pii_type >= static_cast<int>(redaction::PIIType::kMinValue) &&
+          *pii_type <= static_cast<int>(redaction::PIIType::kMaxValue)) {
+        pii_to_keep.Put(static_cast<redaction::PIIType>(*pii_type));
+      }
     }
   }
   return pii_to_keep;

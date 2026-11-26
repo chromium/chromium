@@ -107,7 +107,7 @@ PIIMap DetectPII(
 // containing redacted logs.
 std::map<std::string, std::string> RedactPII(
     std::map<std::string, std::string> system_logs,
-    const std::set<redaction::PIIType>& pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   redaction::RedactionTool* redaction_tool = redaction_tool_container->Get();
   for (auto& [log_name, log_contents] : system_logs) {
@@ -228,7 +228,7 @@ void SystemLogsDataCollector::OnPIIDetected(
 }
 
 void SystemLogsDataCollector::ExportCollectedDataWithPII(
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,

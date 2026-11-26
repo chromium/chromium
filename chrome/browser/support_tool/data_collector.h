@@ -87,7 +87,7 @@ class DataCollector {
   // `on_exported_callback` when done. `on_exported_callback` won't be called
   // if the DataCollector instance is deleted.
   virtual void ExportCollectedDataWithPII(
-      std::set<redaction::PIIType> pii_types_to_keep,
+      redaction::PIITypeSet pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,

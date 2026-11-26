@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 
 #include "base/atomic_ref_count.h"
@@ -48,7 +47,7 @@ class ShillDataCollector : public DataCollector {
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container)
       override;
   void ExportCollectedDataWithPII(
-      std::set<redaction::PIIType> pii_types_to_keep,
+      redaction::PIITypeSet pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,

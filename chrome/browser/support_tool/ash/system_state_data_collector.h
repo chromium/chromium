@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SUPPORT_TOOL_ASH_SYSTEM_STATE_DATA_COLLECTOR_H_
 
 #include <map>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -43,7 +42,7 @@ class SystemStateDataCollector : public DataCollector {
       override;
 
   void ExportCollectedDataWithPII(
-      std::set<redaction::PIIType> pii_types_to_keep,
+      redaction::PIITypeSet pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
@@ -51,14 +50,14 @@ class SystemStateDataCollector : public DataCollector {
 
  private:
   struct SystemLog {
-    SystemLog(std::string log, std::set<redaction::PIIType> detected_pii_types);
+    SystemLog(std::string log, redaction::PIITypeSet detected_pii_types);
     ~SystemLog();
     SystemLog(const SystemLog& other);
 
     // Contents of the system log.
     std::string log;
     // Set of PII types detected in the logs.
-    std::set<redaction::PIIType> detected_pii_types;
+    redaction::PIITypeSet detected_pii_types;
   };
 
   static std::pair<PIIMap, std::map<std::string, SystemLog>> DetectPII(
@@ -67,8 +66,9 @@ class SystemStateDataCollector : public DataCollector {
 
   static std::map<std::string, std::string> RedactPII(
       std::map<std::string, SystemLog> system_logs,
-      std::set<redaction::PIIType> pii_types_to_keep,
-      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container);
+      redaction::PIITypeSet pii_types_to_keep,
+      scoped_refptr<redaction::RedactionToolContainer>
+          redaction_tool_container);
 
   void OnGetLog(base::RepeatingClosure barrier_closure,
                 std::string log_name,

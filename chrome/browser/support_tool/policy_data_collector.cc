@@ -6,7 +6,6 @@
 
 #include <map>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -119,7 +118,7 @@ void PolicyDataCollector::CollectDataAndDetectPII(
 }
 
 void PolicyDataCollector::ExportCollectedDataWithPII(
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
@@ -176,7 +175,7 @@ void PolicyDataCollector::DetectPIIInPolicyStatus() {
 }
 
 void PolicyDataCollector::RedactPIIInPolicyStatus(
-    std::set<redaction::PIIType> pii_types_to_keep) {
+    redaction::PIITypeSet pii_types_to_keep) {
   // Iterator is a reference std::pair<const std::string&, Value&> as explained
   // in base/value_iterators.h documentation.
   for (std::pair<const std::string&, base::Value&> entry : policy_status_) {
@@ -184,7 +183,7 @@ void PolicyDataCollector::RedactPIIInPolicyStatus(
          entry.second.GetDict()) {
       std::optional<redaction::PIIType> pii_type =
           GetPIITypeOfStatusField(status_pair.first);
-      if (!pii_type || pii_types_to_keep.contains(pii_type.value())) {
+      if (!pii_type || pii_types_to_keep.Has(pii_type.value())) {
         continue;
       }
       // Replace the value with `kRedactedPlaceholder` if it's a PII type that

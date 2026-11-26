@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SUPPORT_TOOL_UPDATER_DATA_COLLECTOR_H_
 
 #include <optional>
-#include <set>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -61,7 +60,7 @@ class UpdaterDataCollector final : public DataCollector {
   // redaction. Fails with a SupportToolError if called before
   // CollectDataAndDetectPII.
   void ExportCollectedDataWithPII(
-      std::set<redaction::PIIType> pii_types_to_keep,
+      redaction::PIITypeSet pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,

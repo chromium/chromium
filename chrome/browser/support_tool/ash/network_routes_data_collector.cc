@@ -49,7 +49,7 @@ PIIMap DetectPII(
 // `pii_types_to_keep` and replaces the values in `network_routes` with
 // redacted versions. Returns the modified version of `network_routes`.
 std::vector<std::string> RedactAndKeepSelectedPII(
-    const std::set<redaction::PIIType>& pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     std::vector<std::string> network_routes,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   redaction::RedactionTool* redaction_tool = redaction_tool_container->Get();
@@ -145,7 +145,7 @@ void NetworkRoutesDataCollector::OnPIIDetected(
 }
 
 void NetworkRoutesDataCollector::ExportCollectedDataWithPII(
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,

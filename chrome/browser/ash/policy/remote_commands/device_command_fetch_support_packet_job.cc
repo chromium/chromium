@@ -136,14 +136,13 @@ redaction::PIIType GetPiiTypeFromProtoEnum(support_tool::PiiType pii_type) {
   }
 }
 
-std::set<redaction::PIIType> GetPiiTypes(
-    const base::ListValue& requested_pii_types) {
-  std::set<redaction::PIIType> pii_types;
+redaction::PIITypeSet GetPiiTypes(const base::ListValue& requested_pii_types) {
+  redaction::PIITypeSet pii_types;
   for (const auto& pii_type_value : requested_pii_types) {
     if (!support_tool::PiiType_IsValid(pii_type_value.GetInt())) {
       continue;
     }
-    pii_types.emplace(GetPiiTypeFromProtoEnum(
+    pii_types.Put(GetPiiTypeFromProtoEnum(
         static_cast<support_tool::PiiType>(pii_type_value.GetInt())));
   }
   return pii_types;
@@ -384,11 +383,10 @@ void DeviceCommandFetchSupportPacketJob::OnDataCollected(
       GetTargetDir(), kFilenamePrefix, support_tool_handler_->GetCaseId(),
       base::Time::Now());
 
-  std::set<redaction::PIIType> pii_types =
-      support_packet_details_.requested_pii_types;
+  redaction::PIITypeSet pii_types = support_packet_details_.requested_pii_types;
   if (!pii_types.empty() && !IsPiiAllowed()) {
     notes_.emplace(FetchSupportPacketResultNote::WARNING_PII_NOT_ALLOWED);
-    pii_types.clear();
+    pii_types.Clear();
   }
 
   support_tool_handler_->ExportCollectedData(

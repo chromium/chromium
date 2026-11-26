@@ -8,7 +8,6 @@
 #include <array>
 #include <map>
 #include <optional>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -46,13 +45,13 @@ constexpr std::array<const char*, 2> kExcludeList = {
 
 // Adds the contents of `map_to_merge` into `target_map` and returns a set of
 // keys in `map_to_merge`.
-std::set<redaction::PIIType> MergePIIMapsAndGetPIITypes(PIIMap& target_map,
-                                                       PIIMap& map_to_merge) {
-  std::set<redaction::PIIType> keys;
-  for (auto& pii_data : map_to_merge) {
+redaction::PIITypeSet MergePIIMapsAndGetPIITypes(PIIMap& target_map,
+                                                 const PIIMap& map_to_merge) {
+  redaction::PIITypeSet keys;
+  for (const auto& pii_data : map_to_merge) {
     target_map[pii_data.first].insert(pii_data.second.begin(),
                                       pii_data.second.end());
-    keys.insert(pii_data.first);
+    keys.Put(pii_data.first);
   }
   return keys;
 }
@@ -81,7 +80,7 @@ std::string GetErrorMessage(const std::vector<std::string>& errors) {
 
 SystemStateDataCollector::SystemLog::SystemLog(
     std::string log,
-    std::set<redaction::PIIType> detected_pii_types)
+    redaction::PIITypeSet detected_pii_types)
     : log(log), detected_pii_types(std::move(detected_pii_types)) {}
 SystemStateDataCollector::SystemLog::~SystemLog() = default;
 SystemStateDataCollector::SystemLog::SystemLog(const SystemLog& other) =
@@ -228,7 +227,7 @@ void SystemStateDataCollector::OnPIIDetected(
 }
 
 void SystemStateDataCollector::ExportCollectedDataWithPII(
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
@@ -291,15 +290,13 @@ SystemStateDataCollector::DetectPII(
 
 std::map<std::string, std::string> SystemStateDataCollector::RedactPII(
     std::map<std::string, SystemStateDataCollector::SystemLog> system_logs,
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   redaction::RedactionTool* redaction_tool = redaction_tool_container->Get();
   std::map<std::string, std::string> redacted_logs;
   for (auto [log_name, system_log] : system_logs) {
     redacted_logs[log_name] =
-        std::includes(pii_types_to_keep.begin(), pii_types_to_keep.end(),
-                      system_log.detected_pii_types.begin(),
-                      system_log.detected_pii_types.end())
+        pii_types_to_keep.HasAll(system_log.detected_pii_types)
             ? system_log.log
             : redaction_tool->RedactAndKeepSelected(system_log.log,
                                                     pii_types_to_keep);

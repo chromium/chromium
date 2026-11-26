@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SUPPORT_TOOL_ASH_UI_HIERARCHY_DATA_COLLECTOR_H_
 #define CHROME_BROWSER_SUPPORT_TOOL_ASH_UI_HIERARCHY_DATA_COLLECTOR_H_
 
-#include <set>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -56,7 +55,7 @@ class UiHierarchyDataCollector : public DataCollector {
       override;
 
   void ExportCollectedDataWithPII(
-      std::set<redaction::PIIType> pii_types_to_keep,
+      redaction::PIITypeSet pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
@@ -69,7 +68,7 @@ class UiHierarchyDataCollector : public DataCollector {
   // in `pii_types_to_keep`.
   static bool WriteOutputFile(std::string ui_hierarchy_data,
                               base::FilePath target_directory,
-                              std::set<redaction::PIIType> pii_types_to_keep);
+                              redaction::PIITypeSet pii_types_to_keep);
 
   // Runs `on_exported_callback` when the data export is done. Returns an error
   // to the callback if `success` is false.

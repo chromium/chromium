@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SUPPORT_TOOL_SYSTEM_LOG_SOURCE_DATA_COLLECTOR_ADAPTOR_H_
 
 #include <memory>
-#include <set>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -49,7 +48,7 @@ class SystemLogSourceDataCollectorAdaptor : public DataCollector {
       override;
 
   void ExportCollectedDataWithPII(
-      std::set<redaction::PIIType> pii_types_to_keep,
+      redaction::PIITypeSet pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,

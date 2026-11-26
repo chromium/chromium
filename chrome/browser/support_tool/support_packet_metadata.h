@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/support_tool/data_collector.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 #include "components/policy/core/browser/webui/json_generation.h"
 
 // SupportPacketMetadata stores the metadata related to the given support packet
@@ -72,7 +73,7 @@ class SupportPacketMetadata {
   // Removes all PII sensitive data from metadata except the PII types in
   // `pii_to_keep`. Runs `on_metadata_file_written` when file is written.
   void WriteMetadataFile(base::FilePath target_path,
-                         std::set<redaction::PIIType> pii_to_keep,
+                         redaction::PIITypeSet pii_to_keep,
                          base::OnceClosure on_matadata_file_written);
 
  private:

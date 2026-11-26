@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SUPPORT_TOOL_POLICY_DATA_COLLECTOR_H_
 
 #include <memory>
-#include <set>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -50,7 +49,7 @@ class PolicyDataCollector
       override;
 
   void ExportCollectedDataWithPII(
-      std::set<redaction::PIIType> pii_types_to_keep,
+      redaction::PIITypeSet pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
       scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
@@ -67,7 +66,7 @@ class PolicyDataCollector
   // Detects the PII in `policy_status_` and inserts them to `pii_map_`.
   void DetectPIIInPolicyStatus();
 
-  void RedactPIIInPolicyStatus(std::set<redaction::PIIType> pii_types_to_keep);
+  void RedactPIIInPolicyStatus(redaction::PIITypeSet pii_types_to_keep);
 
   void OnFileWritten(DataCollectorDoneCallback on_exported_callback,
                      bool success);

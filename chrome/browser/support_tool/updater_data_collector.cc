@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <initializer_list>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -175,7 +174,7 @@ void CollectAndDetectForScope(
 // writes the resulting content to the provided output directory for an updater
 // scope.
 void ExportAndRedactForScope(
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     const base::FilePath& target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
@@ -221,7 +220,7 @@ void ExportAndRedactForScope(
     task_runner_for_redaction_tool->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(
-            [](const std::set<redaction::PIIType>& pii_types_to_keep,
+            [](redaction::PIITypeSet pii_types_to_keep,
                scoped_refptr<redaction::RedactionToolContainer>
                    redaction_tool_container,
                const std::string& contents, const base::FilePath& path) {
@@ -294,7 +293,7 @@ void CollectDataAndDetectPIIImpl(
 void ExportCollectedDataWithPIIImpl(
     DataCollectorDoneCallback on_exported_callback,
     const base::FilePath& temp_dir,
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
@@ -386,7 +385,7 @@ void UpdaterDataCollector::CollectDataAndDetectPII(
 }
 
 void UpdaterDataCollector::ExportCollectedDataWithPII(
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,

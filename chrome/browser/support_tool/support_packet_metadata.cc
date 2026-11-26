@@ -70,7 +70,7 @@ const std::pair<const char* const, redaction::PIIType> kMetadataKeys[] = {
     {kErrorMessagesKey, PIIType::kNone}};
 
 void WriteContentsOnFile(base::FilePath metadata_file,
-                         std::set<redaction::PIIType> pii_to_keep,
+                         redaction::PIITypeSet pii_to_keep,
                          std::map<std::string, std::string> metadata_contents) {
   // Create the file with write permissions.
   base::WriteFile(metadata_file, "");
@@ -78,7 +78,7 @@ void WriteContentsOnFile(base::FilePath metadata_file,
     // If the metadata key is considered a PII-sensitive data and the it's not
     // listed in `pii_to_keep`, we redact it.
     bool redact = (metadata_key.second != PIIType::kNone &&
-                   pii_to_keep.find(metadata_key.second) == pii_to_keep.end());
+                   !pii_to_keep.Has(metadata_key.second));
     base::AppendToFile(
         metadata_file,
         base::StringPrintf(
@@ -202,7 +202,7 @@ void SupportPacketMetadata::AddErrorMessagesToMetadata() {
 
 void SupportPacketMetadata::WriteMetadataFile(
     base::FilePath target_path,
-    std::set<redaction::PIIType> pii_to_keep,
+    redaction::PIITypeSet pii_to_keep,
     base::OnceClosure on_metadata_file_written) {
   AddErrorMessagesToMetadata();
   base::FilePath metadata_file =

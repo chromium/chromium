@@ -182,7 +182,7 @@ class ShillDataCollectorTest : public ::testing::Test {
       {redaction::PIIType::kMACAddress, {"0123456789ab", "23456789abcd"}}};
 
   // Types of all PII data contained in the test data
-  const std::set<redaction::PIIType> all_pii_types_in_data_ = {
+  const redaction::PIITypeSet all_pii_types_in_data_ = {
       redaction::PIIType::kIPAddress, redaction::PIIType::kURL,
       redaction::PIIType::kSSID, redaction::PIIType::kMACAddress};
 
@@ -207,16 +207,16 @@ TEST_F(ShillDataCollectorTest, CollectAndExportUnmaskedData) {
   EXPECT_EQ(error, std::nullopt);
   PIIMap detected_pii = data_collector.GetDetectedPII();
   // Get the types of all PII data detected
-  std::set<redaction::PIIType> detected_pii_types;
-  std::ranges::transform(
-      detected_pii, std::inserter(detected_pii_types, detected_pii_types.end()),
-      &PIIMap::value_type::first);
+  redaction::PIITypeSet detected_pii_types;
+  for (const auto& [pii_type, pii_data] : detected_pii) {
+    detected_pii_types.Put(pii_type);
+  }
   // If set A is a subset of set B, then A unioned with B equals B
   EXPECT_THAT(detected_pii_types, IsSupersetOf(all_pii_types_in_data_));
 
   // For each PII type, checks if every PII string in the fake entries has
   // been detected.
-  for (const auto& pii_type : all_pii_types_in_data_) {
+  for (redaction::PIIType pii_type : all_pii_types_in_data_) {
     EXPECT_THAT(detected_pii[pii_type],
                 IsSupersetOf(pii_in_test_data_.at(pii_type)));
   }
@@ -265,16 +265,16 @@ TEST_F(ShillDataCollectorTest, CollectAndExportMaskedData) {
   EXPECT_EQ(error, std::nullopt);
   PIIMap detected_pii = data_collector.GetDetectedPII();
   // Get the types of all PII data detected
-  std::set<redaction::PIIType> detected_pii_types;
-  std::ranges::transform(
-      detected_pii, std::inserter(detected_pii_types, detected_pii_types.end()),
-      &PIIMap::value_type::first);
+  redaction::PIITypeSet detected_pii_types;
+  for (const auto& [pii_type, pii_data] : detected_pii) {
+    detected_pii_types.Put(pii_type);
+  }
   // If set A is a subset of set B, then A unioned with B equals B
   EXPECT_THAT(detected_pii_types, IsSupersetOf(all_pii_types_in_data_));
 
   // For each PII type, checks if every PII string in the fake entries has
   // been detected.
-  for (const auto& pii_type : all_pii_types_in_data_) {
+  for (redaction::PIIType pii_type : all_pii_types_in_data_) {
     EXPECT_THAT(detected_pii[pii_type],
                 IsSupersetOf(pii_in_test_data_.at(pii_type)));
   }

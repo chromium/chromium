@@ -9,7 +9,6 @@
 #include <map>
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -183,7 +182,7 @@ void SupportToolHandler::OnMetadataContentsPopulated() {
 }
 
 void SupportToolHandler::ExportCollectedData(
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     base::FilePath target_path,
     SupportToolDataExportedCallback on_data_exported_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -201,7 +200,7 @@ void SupportToolHandler::ExportCollectedData(
 }
 
 void SupportToolHandler::ExportIntoTempDir(
-    std::set<redaction::PIIType> pii_types_to_keep,
+    redaction::PIITypeSet pii_types_to_keep,
     base::FilePath target_path,
     base::FilePath tmp_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -246,7 +245,7 @@ void SupportToolHandler::OnDataCollectorDoneExporting(
 void SupportToolHandler::OnAllDataCollectorsDoneExporting(
     base::FilePath tmp_path,
     base::FilePath target_path,
-    std::set<redaction::PIIType> pii_types_to_keep) {
+    redaction::PIITypeSet pii_types_to_keep) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metadata_.InsertErrors(collected_errors_);
   metadata_.WriteMetadataFile(

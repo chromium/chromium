@@ -7,7 +7,6 @@
 #include <cstdio>
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <utility>
 
@@ -38,7 +37,7 @@
 
 namespace {
 
-const std::set<redaction::PIIType> kExpectedPIITypes = {
+constexpr redaction::PIITypeSet kExpectedPIITypes = {
     redaction::PIIType::kEmail, redaction::PIIType::kURL,
     redaction::PIIType::kGaiaID};
 
@@ -52,11 +51,11 @@ void ReadExportedFile(base::DictValue* signin, base::FilePath file_path) {
   *signin = std::move(dict_value->GetDict());
 }
 
-std::set<redaction::PIIType> GetPIITypes(const PIIMap& pii_map) {
+redaction::PIITypeSet GetPIITypes(const PIIMap& pii_map) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  std::set<redaction::PIIType> pii_types;
+  redaction::PIITypeSet pii_types;
   for (const auto& pii_map_entry : pii_map) {
-    pii_types.insert(pii_map_entry.first);
+    pii_types.Put(pii_map_entry.first);
   }
   return pii_types;
 }

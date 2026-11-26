@@ -166,7 +166,7 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
 
   void OnDataExportDone(base::FilePath path, std::set<SupportToolError> errors);
 
-  std::set<redaction::PIIType> selected_pii_to_keep_;
+  redaction::PIITypeSet selected_pii_to_keep_;
   base::FilePath data_path_;
   std::unique_ptr<SupportToolHandler> handler_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
@@ -386,7 +386,7 @@ void SupportToolMessageHandler::FileSelected(const ui::SelectedFileInfo& file,
 }
 
 void SupportToolMessageHandler::FileSelectionCanceled() {
-  selected_pii_to_keep_.clear();
+  selected_pii_to_keep_.Clear();
   select_file_dialog_.reset();
 }
 
