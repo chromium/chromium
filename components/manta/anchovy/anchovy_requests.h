@@ -27,6 +27,7 @@ inline constexpr char kTypeSecondaryCaption[] = "SECONDARY_CAPTION";
 inline constexpr char kTypeCaption[] = "CAPTION";
 inline constexpr char kTypeLabel[] = "LABEL";
 inline constexpr char kTypeOcr[] = "OCR";
+inline constexpr char kTypeIcon[] = "ICON";
 
 // Represents one tagged image payload within a batched description request.
 // `tag` must be a non-empty valid UTF-8 string unique within the batch, and

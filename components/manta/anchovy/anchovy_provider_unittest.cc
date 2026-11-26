@@ -364,6 +364,74 @@ TEST(AnchovyProtoHelperTest, HandleImageDescriptionsResponseErrorAndEmpty) {
   EXPECT_EQ(invalid_future.Get<1>().status_code, MantaStatusCode::kOk);
 }
 
+// Verifies that ICON entries parse alongside other annotation types across
+// tags, ignore custom type URLs, and drop entries with empty text or
+// non-finite scores.
+TEST(AnchovyProtoHelperTest, HandleImageDescriptionsResponseParsesIcons) {
+  auto response = std::make_unique<proto::Response>();
+
+  // Tag "0": ICON coexists with caption, label, and OCR entries.
+  AddAnchovyOutputData(response.get(),
+                       proto::AnchovyDescription_Type_PRIMARY_CAPTION,
+                       "A search icon", 0.90f, "0");
+  AddAnchovyOutputData(response.get(), proto::AnchovyDescription_Type_LABEL,
+                       "magnifying glass", 0.85f, "0");
+  AddAnchovyOutputData(response.get(), proto::AnchovyDescription_Type_OCR,
+                       "Search", 0.92f, "0");
+  AddAnchovyOutputData(
+      response.get(), proto::AnchovyDescription_Type_ICON,
+      "ICON_MAGNIFYING_GLASS", 0.88f, "0",
+      "type.googleapis.com/example.AccessibilityImageAnnotation");
+
+  // Tag "1": standalone ICON entry.
+  AddAnchovyOutputData(response.get(), proto::AnchovyDescription_Type_ICON,
+                       "ICON_PLUS", 0.75f, "1");
+
+  // Tag "2": only invalid ICON entries (empty text or non-finite score), so
+  // tag "2" must remain absent from `results_by_tag`.
+  AddAnchovyOutputData(response.get(), proto::AnchovyDescription_Type_ICON, "",
+                       0.90f, "2");
+  AddAnchovyOutputData(response.get(), proto::AnchovyDescription_Type_ICON,
+                       "ICON_HOME", std::numeric_limits<float>::quiet_NaN(),
+                       "2");
+  AddAnchovyOutputData(response.get(), proto::AnchovyDescription_Type_ICON,
+                       "ICON_SHARE", std::numeric_limits<float>::infinity(),
+                       "2");
+  AddAnchovyOutputData(response.get(), proto::AnchovyDescription_Type_ICON,
+                       "ICON_STAR", -std::numeric_limits<float>::infinity(),
+                       "2");
+
+  base::test::TestFuture<base::DictValue, MantaStatus> future;
+  anchovy::AnchovyProtoHelper::HandleImageDescriptionsResponse(
+      future.GetCallback(), std::move(response), {MantaStatusCode::kOk, "ok"});
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get<1>().status_code, MantaStatusCode::kOk);
+  const base::DictValue* results_by_tag =
+      future.Get<0>().FindDict(anchovy::kResultsByTagKey);
+  ASSERT_NE(results_by_tag, nullptr);
+  EXPECT_EQ(results_by_tag->size(), 2u);
+  EXPECT_EQ(results_by_tag->FindList("2"), nullptr);
+
+  const base::ListValue* tag0 = results_by_tag->FindList("0");
+  ASSERT_NE(tag0, nullptr);
+  ASSERT_EQ(tag0->size(), 4u);
+  EXPECT_EQ(*(*tag0)[0].GetDict().FindString("type"),
+            anchovy::kTypePrimaryCaption);
+  EXPECT_EQ(*(*tag0)[1].GetDict().FindString("type"), anchovy::kTypeLabel);
+  EXPECT_EQ(*(*tag0)[2].GetDict().FindString("type"), anchovy::kTypeOcr);
+  EXPECT_EQ(*(*tag0)[3].GetDict().FindString("type"), anchovy::kTypeIcon);
+  EXPECT_EQ(*(*tag0)[3].GetDict().FindString("text"), "ICON_MAGNIFYING_GLASS");
+  EXPECT_NEAR(*(*tag0)[3].GetDict().FindDouble("score"), 0.88, 1e-5);
+
+  const base::ListValue* tag1 = results_by_tag->FindList("1");
+  ASSERT_NE(tag1, nullptr);
+  ASSERT_EQ(tag1->size(), 1u);
+  EXPECT_EQ(*(*tag1)[0].GetDict().FindString("type"), anchovy::kTypeIcon);
+  EXPECT_EQ(*(*tag1)[0].GetDict().FindString("text"), "ICON_PLUS");
+  EXPECT_NEAR(*(*tag1)[0].GetDict().FindDouble("score"), 0.75, 1e-5);
+}
+
 TEST_F(AnchovyProviderTest, GetImageDescriptionsBatchSuccess) {
   proto::Response response;
   AddAnchovyOutputData(&response,

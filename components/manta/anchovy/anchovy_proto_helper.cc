@@ -36,6 +36,8 @@ std::string_view AnchovyDescriptionTypeToString(
       return kTypeLabel;
     case proto::AnchovyDescription_Type_OCR:
       return kTypeOcr;
+    case proto::AnchovyDescription_Type_ICON:
+      return kTypeIcon;
     case proto::AnchovyDescription_Type_UNKNOWN:
     case proto::AnchovyDescription_Type_UNUSED:
     case proto::
