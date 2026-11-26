@@ -1136,6 +1136,40 @@ public class TtcSessionMediatorTest {
         verify(mService).setMicMuted(false);
     }
 
+    @Test
+    public void testWaveformFollowsListening() {
+        TtcSessionMediator mediator = createMediator();
+        mediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
+        // Connecting.
+        assertEquals(
+                TtcWaveformView.Mode.IDLE, (int) mModel.get(TtcSessionProperties.WAVEFORM_MODE));
+
+        setSessionLifecycle(SessionLifecycle.LIVE, mediator);
+        assertEquals(
+                TtcWaveformView.Mode.ACTIVE, (int) mModel.get(TtcSessionProperties.WAVEFORM_MODE));
+
+        mediator.onMicMutedChanged(true);
+        assertEquals(
+                TtcWaveformView.Mode.IDLE, (int) mModel.get(TtcSessionProperties.WAVEFORM_MODE));
+        mediator.onMicMutedChanged(false);
+        assertEquals(
+                TtcWaveformView.Mode.ACTIVE, (int) mModel.get(TtcSessionProperties.WAVEFORM_MODE));
+
+        mediator.onError(0);
+        assertEquals(
+                TtcWaveformView.Mode.IDLE, (int) mModel.get(TtcSessionProperties.WAVEFORM_MODE));
+    }
+
+    @Test
+    public void testWaveformListeningWhenLiveSessionAlreadyActiveOnCreation() {
+        when(mService.isSessionActive()).thenReturn(true);
+        setSessionLifecycle(SessionLifecycle.LIVE);
+        createMediator();
+
+        assertEquals(
+                TtcWaveformView.Mode.ACTIVE, (int) mModel.get(TtcSessionProperties.WAVEFORM_MODE));
+    }
+
     private void resolvePermissionRequest(int grantResult) {
         ArgumentCaptor<PermissionCallback> captor =
                 ArgumentCaptor.forClass(PermissionCallback.class);

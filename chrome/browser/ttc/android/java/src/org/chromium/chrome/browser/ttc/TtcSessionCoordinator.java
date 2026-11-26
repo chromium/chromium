@@ -95,6 +95,7 @@ public class TtcSessionCoordinator {
                         .with(TtcSessionProperties.AUDIO_LEVEL, 0f)
                         .with(TtcSessionProperties.MIC_MUTED, false)
                         .with(TtcSessionProperties.PAUSE_ENABLED, false)
+                        .with(TtcSessionProperties.WAVEFORM_MODE, TtcWaveformView.Mode.IDLE)
                         .build();
         // The view is only built the first time a session makes the model visible. Attached
         // before the mediator, which may show a session that is already running.

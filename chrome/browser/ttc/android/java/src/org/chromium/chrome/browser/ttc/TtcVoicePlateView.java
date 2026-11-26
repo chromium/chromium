@@ -16,6 +16,7 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ttc.TtcWaveformView.Mode;
 import org.chromium.components.browser_ui.widget.floating_pill.FloatingPillView;
 
 /**
@@ -27,7 +28,7 @@ import org.chromium.components.browser_ui.widget.floating_pill.FloatingPillView;
 @NullMarked
 class TtcVoicePlateView {
     private final FloatingPillView mPill;
-    private final View mWaveform;
+    private final TtcWaveformView mWaveform;
     private final ImageButton mPauseButton;
 
     /** Inflates the voice plate, hidden and without a parent. */
@@ -64,6 +65,16 @@ class TtcVoicePlateView {
 
     void setVisible(boolean visible) {
         mPill.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    /** Sets whether the waveform shows bars that follow the microphone level, or resting dots. */
+    void setWaveformMode(@Mode int mode) {
+        mWaveform.setMode(mode);
+    }
+
+    /** Reports the microphone level, in [0, 1]. Ignored while the waveform is resting. */
+    void setAudioLevel(float level) {
+        mWaveform.setAudioLevel(level);
     }
 
     /**

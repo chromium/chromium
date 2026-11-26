@@ -65,6 +65,16 @@ public class TtcVoicePlateViewTest {
     }
 
     @Test
+    public void testWaveform() {
+        TtcWaveformView waveform = (TtcWaveformView) mPlate.getWaveformForTesting();
+        mPlate.setWaveformMode(TtcWaveformView.Mode.ACTIVE);
+        assertEquals(TtcWaveformView.Mode.ACTIVE, waveform.getModeForTesting());
+
+        mPlate.setWaveformMode(TtcWaveformView.Mode.IDLE);
+        assertEquals(TtcWaveformView.Mode.IDLE, waveform.getModeForTesting());
+    }
+
+    @Test
     public void testPauseButton() {
         ImageButton pause = mPlate.getPauseButtonForTesting();
         String pauseLabel = mActivity.getString(R.string.ttc_voice_plate_pause);

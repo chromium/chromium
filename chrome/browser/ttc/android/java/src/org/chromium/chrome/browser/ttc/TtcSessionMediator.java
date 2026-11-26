@@ -295,12 +295,14 @@ class TtcSessionMediator
             if (mShowingError) return;
         }
         mModel.set(TtcSessionProperties.VISIBLE, active);
+        updateWaveformMode();
     }
 
     @Override
     public void onSessionLifecycleChanged(@SessionLifecycle int lifecycle) {
         // Muting is a no-op until the session is live.
         mModel.set(TtcSessionProperties.PAUSE_ENABLED, lifecycle == SessionLifecycle.LIVE);
+        updateWaveformMode();
         // FINISHED is reported just before SESSION_INACTIVE hides the pill; keep the current text
         // (or error) until then rather than flashing "connecting".
         if (mShowingError || lifecycle == SessionLifecycle.FINISHED) return;
@@ -310,6 +312,7 @@ class TtcSessionMediator
     @Override
     public void onMicMutedChanged(boolean muted) {
         mModel.set(TtcSessionProperties.MIC_MUTED, muted);
+        updateWaveformMode();
     }
 
     @Override
@@ -320,6 +323,7 @@ class TtcSessionMediator
     @Override
     public void onError(int errorCode) {
         mShowingError = true;
+        updateWaveformMode();
         mModel.set(TtcSessionProperties.STATUS_TEXT_RES_ID, R.string.ttc_session_error);
         mModel.set(TtcSessionProperties.AUDIO_LEVEL, 0f);
         mHandler.removeCallbacks(mHideAfterErrorTask);
@@ -403,6 +407,7 @@ class TtcSessionMediator
 
     private void hideAfterError() {
         mShowingError = false;
+        updateWaveformMode();
         if (mService != null && mService.isSessionActive()) {
             // A non-fatal error: the session is still running, so go back to its status.
             mModel.set(TtcSessionProperties.STATUS_TEXT_RES_ID, getSessionStatusTextResId());
@@ -431,5 +436,24 @@ class TtcSessionMediator
         if (!mShowingError) return;
         mShowingError = false;
         mHandler.removeCallbacks(mHideAfterErrorTask);
+        updateWaveformMode();
+    }
+
+    /**
+     * Shows bars that follow the microphone while the session is listening: shown, live, unmuted
+     * and not showing an error. This includes while the model speaks, as on desktop. Resting dots
+     * otherwise. The lifecycle is read from the native session, so that a window that starts
+     * showing a session shows its current state.
+     */
+    private void updateWaveformMode() {
+        boolean listening =
+                mModel.get(TtcSessionProperties.VISIBLE)
+                        && !mShowingError
+                        && !mModel.get(TtcSessionProperties.MIC_MUTED)
+                        && mService != null
+                        && mService.getSessionLifecycle() == SessionLifecycle.LIVE;
+        mModel.set(
+                TtcSessionProperties.WAVEFORM_MODE,
+                listening ? TtcWaveformView.Mode.ACTIVE : TtcWaveformView.Mode.IDLE);
     }
 }

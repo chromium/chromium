@@ -45,6 +45,12 @@ class TtcSessionProperties {
      */
     static final WritableBooleanPropertyKey PAUSE_ENABLED = new WritableBooleanPropertyKey();
 
+    /**
+     * The {@link TtcWaveformView.Mode} of the voice plate's waveform: bars following {@link
+     * #AUDIO_LEVEL} while the session is listening, resting dots otherwise.
+     */
+    static final WritableIntPropertyKey WAVEFORM_MODE = new WritableIntPropertyKey();
+
     static final PropertyKey[] ALL_KEYS = {
         VISIBLE,
         STATUS_TEXT_RES_ID,
@@ -52,6 +58,7 @@ class TtcSessionProperties {
         ON_CLICK_LISTENER,
         MIC_MUTED,
         ON_PAUSE_CLICK_LISTENER,
-        PAUSE_ENABLED
+        PAUSE_ENABLED,
+        WAVEFORM_MODE
     };
 }
