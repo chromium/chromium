@@ -4492,7 +4492,7 @@
 <translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{تم إيقاف هذه الإضافة لأنّها أصبحت غير متوافقة}zero{تم إيقاف هذه الإضافات لأنّها أصبحت غير متوافقة}two{تم إيقاف هاتين الإضافتين لأنّهما أصبحتا غير متوافقتين}few{تم إيقاف هذه الإضافات لأنّها أصبحت غير متوافقة}many{تم إيقاف هذه الإضافات لأنّها أصبحت غير متوافقة}other{تم إيقاف هذه الإضافات لأنّها أصبحت غير متوافقة}}</translation>
 <translation id="4386435410933281983">يتعذَّر الحفظ. يُرجى إعادة المحاولة</translation>
 <translation id="4386604394450371010">نظرة عامة</translation>
-<translation id="4387890294700445764">كلمات مرور محتمَل تعرّضها للاختراق</translation>
+<translation id="4387890294700445764">كلمات مرور معرّضة للاختراق</translation>
 <translation id="4388650384344483842">يجب استخدام 8 أحرف على الأقل.</translation>
 <translation id="4388700905120039425">{COUNT,plural, =1{كلمة المرور للموقع الإلكتروني <ph name="URL" />}zero{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}two{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}few{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}many{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}other{كلمات المرور للموقع الإلكتروني <ph name="URL" /> ({COUNT})}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /> و<ph name="THIRD_SWITCH" /> و<ph name="NUMBER_OF_OTHER_SWITCHES" /> مفتاح تبديل آخر</translation>
