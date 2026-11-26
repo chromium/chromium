@@ -564,16 +564,6 @@ BASE_FEATURE(kMediaStreamTrackTransfer, base::FEATURE_DISABLED_BY_DEFAULT);
 // IPCs. Otherwise it's configured to use Content's IO thread for that purpose.
 BASE_FEATURE(kMojoDedicatedThread, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, additional spare RPHs will be warmed up when the browser is
-// not busy.
-BASE_FEATURE(kMultipleSpareRPHs, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE_PARAM(size_t,
-                   kMultipleSpareRPHsCount,
-                   &kMultipleSpareRPHs,
-                   "count",
-                   1u);
-
 // When enabled, performs a dry run of the Navigation Fast Fetch feature.
 // It determines eligibility of navigations and records metrics to measure
 // the potential benefit of fetching document resources early, without

@@ -9,8 +9,7 @@
 #include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory_coordinator/memory_coordinator_features.h"
-#include "base/memory_coordinator/utils.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
@@ -112,9 +111,8 @@ class SpareRenderProcessHostManagerTest
     // The AndroidWarmUpSpareRendererWithTimeout will stop
     // PrepareForFutureRequests from creating a delayed process. Disable so that
     // we can test the defer behavior.
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kAndroidWarmUpSpareRendererWithTimeout, false},
-         {features::kMultipleSpareRPHs, false}});
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kAndroidWarmUpSpareRendererWithTimeout);
   }
 
  private:
@@ -1238,149 +1236,8 @@ IN_PROC_BROWSER_TEST_F(AndroidSpareRendererProcessHostManagerTest,
 }
 #endif
 
-class ExtraSpareRenderProcessHostManagerTest
-    : public SpareRenderProcessHostManagerTest {
- public:
-  ExtraSpareRenderProcessHostManagerTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kMultipleSpareRPHs,
-        {
-            {features::kMultipleSpareRPHsCount.name, "2"},
-        });
-  }
-
-  void WaitForNextSpareReady() {
-    auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
-    auto& spares = spare_manager.GetSpares();
-    ASSERT_FALSE(spares.empty());
-    RenderProcessHost* next_spare_rph = spares.back();
-    ASSERT_FALSE(next_spare_rph->IsReady());
-
-    RenderProcessHostWatcher watcher(
-        next_spare_rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
-    watcher.Wait();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  base::test::ScopedAmountOfPhysicalMemoryOverride
-      scoped_amount_of_physical_memory_override_{base::GiB(8)};
-};
-
-IN_PROC_BROWSER_TEST_F(ExtraSpareRenderProcessHostManagerTest, ExtraSpares) {
-  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
-
-  // Initially zero spares.
-  ASSERT_EQ(spare_manager.GetSpares().size(), 0u);
-
-  // Explicitly start a spare renderer.
-  spare_manager.WarmupSpare(browser_context());
-  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
-  WaitForNextSpareReady();
-
-  // An extra spare is automatically started after the previous one is ready.
-  ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
-  WaitForNextSpareReady();
-
-  // We've hit the limit, no extra spare is started.
-  ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
-}
-
-IN_PROC_BROWSER_TEST_F(ExtraSpareRenderProcessHostManagerTest, BrowserNotIdle) {
-  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
-  spare_manager.SetIsBrowserIdleForTesting(false);
-
-  // Initially zero spares.
-  ASSERT_EQ(spare_manager.GetSpares().size(), 0u);
-
-  // Explicitly start a spare renderer.
-  spare_manager.WarmupSpare(browser_context());
-  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
-  WaitForNextSpareReady();
-
-  // An extra spare is *not* automatically started after the previous one is
-  // ready.
-  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
-
-  spare_manager.SetIsBrowserIdleForTesting(true);
-  ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
-}
-
-IN_PROC_BROWSER_TEST_F(ExtraSpareRenderProcessHostManagerTest,
-                       CleanupExtraSpares) {
-  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
-
-  // Initially zero spares.
-  ASSERT_EQ(spare_manager.GetSpares().size(), 0u);
-
-  // Create the first spare manually. Keep the browser non-idle so the first
-  // spare becoming ready cannot trigger automatic extra-spare creation before
-  // the one-spare CleanupExtraSpares() check below.
-  spare_manager.SetIsBrowserIdleForTesting(false);
-  spare_manager.WarmupSpare(browser_context());
-  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
-  RenderProcessHost* first_spare = spare_manager.GetSpares()[0];
-
-  // CleanupExtraSpares() should be a no-op when there are no extra spares.
-  spare_manager.CleanupExtraSpares(std::nullopt);
-  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
-  ASSERT_EQ(spare_manager.GetSpares()[0], first_spare);
-
-  // A second spare is started automatically after the first one is ready, if
-  // the browser is idle.
-  spare_manager.SetIsBrowserIdleForTesting(true);
-  WaitForNextSpareReady();
-  ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
-  WaitForNextSpareReady();
-  ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
-
-  spare_manager.CleanupExtraSpares(std::nullopt);
-  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
-  ASSERT_EQ(spare_manager.GetSpares()[0], first_spare);
-  EXPECT_TRUE(spare_manager.GetSpares()[0]->IsReady());
-}
-
-class LowMemoryExtraSpareRenderProcessHostManagerTest
-    : public ExtraSpareRenderProcessHostManagerTest {
- public:
-  void WaitForNextSpareReady() {
-    auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
-    auto& spares = spare_manager.GetSpares();
-    ASSERT_FALSE(spares.empty());
-    RenderProcessHost* next_spare_rph = spares.back();
-    ASSERT_FALSE(next_spare_rph->IsReady());
-
-    RenderProcessHostWatcher watcher(
-        next_spare_rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
-    watcher.Wait();
-  }
-
- private:
-  base::test::ScopedAmountOfPhysicalMemoryOverride
-      scoped_amount_of_physical_memory_override_{base::GiB(2)};
-};
-
-IN_PROC_BROWSER_TEST_F(LowMemoryExtraSpareRenderProcessHostManagerTest,
-                       LowMemory) {
-  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
-
-  // Initially zero spares.
-  ASSERT_EQ(spare_manager.GetSpares().size(), 0u);
-
-  // Explicitly start a spare renderer.
-  spare_manager.WarmupSpare(browser_context());
-  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
-  WaitForNextSpareReady();
-
-  // An extra spare is *not* automatically started after the previous one is
-  // ready.
-  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
-}
-
 struct MemoryPressureTestParams {
-  bool enable_multiple_spares;
-  bool keep_one_alive;
+  bool kill_spare_on_memory_pressure;
   bool use_critical_memory_pressure_threshold;
   base::MemoryLimit memory_limit;
   size_t expected_spares_after_pressure;
@@ -1391,79 +1248,72 @@ class SpareRenderProcessHostManagerMemoryPressureParamTest
       public testing::WithParamInterface<MemoryPressureTestParams> {
  public:
   SpareRenderProcessHostManagerMemoryPressureParamTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    enabled_features.push_back({kKillSpareRenderOnMemoryPressure, {}});
-
-    if (GetParam().keep_one_alive) {
-      enabled_features.push_back({kSpareRPHKeepOneAliveOnMemoryPressure, {}});
+    if (GetParam().kill_spare_on_memory_pressure) {
+      enabled_features.push_back(kKillSpareRenderOnMemoryPressure);
     } else {
-      disabled_features.push_back(kSpareRPHKeepOneAliveOnMemoryPressure);
+      disabled_features.push_back(kKillSpareRenderOnMemoryPressure);
     }
 
     if (GetParam().use_critical_memory_pressure_threshold) {
-      enabled_features.push_back({kSpareRPHUseCriticalMemoryPressure, {}});
+      enabled_features.push_back(kSpareRPHUseCriticalMemoryPressure);
     } else {
       disabled_features.push_back(kSpareRPHUseCriticalMemoryPressure);
     }
 
-    if (GetParam().enable_multiple_spares) {
-      enabled_features.push_back(
-          {features::kMultipleSpareRPHs,
-           {{features::kMultipleSpareRPHsCount.name, "2"}}});
-      memory_override_.emplace(base::GiB(8));
-    } else {
-      disabled_features.push_back(features::kMultipleSpareRPHs);
-    }
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features);
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  void WaitForNextSpareReady() {
+  void WaitForSpareReady() {
     auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
     auto& spares = spare_manager.GetSpares();
     ASSERT_FALSE(spares.empty());
-    RenderProcessHost* next_spare_rph = spares.back();
-    ASSERT_FALSE(next_spare_rph->IsReady());
+    RenderProcessHost* spare_rph = spares.back();
+    if (spare_rph->IsReady()) {
+      return;
+    }
 
     RenderProcessHostWatcher watcher(
-        next_spare_rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+        spare_rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
     watcher.Wait();
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  // Simulates sufficient physical memory (8GB) to allow extra spares
-  // allocation.
-  std::optional<base::test::ScopedAmountOfPhysicalMemoryOverride>
-      memory_override_;
 };
 
-// Verifies that memory pressure destroys spare renderers based on parameters.
+// Verifies that memory pressure destroys the spare renderer based on feature
+// flags and thresholds.
 IN_PROC_BROWSER_TEST_P(SpareRenderProcessHostManagerMemoryPressureParamTest,
                        PressureResponse) {
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
   spare_manager.WarmupSpare(browser_context());
   ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  WaitForSpareReady();
 
-  if (GetParam().enable_multiple_spares) {
-    WaitForNextSpareReady();
-    ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
-    WaitForNextSpareReady();
-  }
-
-  // Trigger memory pressure.
+  base::HistogramTester histogram_tester;
   content::test::ScopedMemoryLimitOverride memory_override(
       "SpareRenderProcessHostManagerImpl");
+
+  // OnUpdateMemoryLimit() must not evict an existing spare.
   memory_override.SetLimit(GetParam().memory_limit);
+  EXPECT_EQ(spare_manager.GetSpares().size(), 1u);
+
   memory_override.NotifyReleaseMemory();
 
   EXPECT_EQ(spare_manager.GetSpares().size(),
             GetParam().expected_spares_after_pressure);
   if (GetParam().expected_spares_after_pressure > 0) {
     EXPECT_TRUE(spare_manager.GetSpares()[0]->IsReady());
+    histogram_tester.ExpectBucketCount(
+        "BrowserRenderProcessHost.SpareRendererDispatchResult",
+        SpareRendererDispatchResult::kMemoryPressure, 0);
+  } else {
+    histogram_tester.ExpectUniqueSample(
+        "BrowserRenderProcessHost.SpareRendererDispatchResult",
+        SpareRendererDispatchResult::kMemoryPressure, 1);
   }
 }
 
@@ -1472,247 +1322,33 @@ INSTANTIATE_TEST_SUITE_P(
     SpareRenderProcessHostManagerMemoryPressureParamTest,
     testing::Values(
         MemoryPressureTestParams{
-            /*enable_multiple_spares=*/false,
-            /*keep_one_alive=*/false,
+            /*kill_spare_on_memory_pressure=*/true,
             /*use_critical_memory_pressure_threshold=*/false,
             /*memory_limit=*/base::MemoryLimit::ModeratePressureThreshold(),
             /*expected_spares_after_pressure=*/0u},
         MemoryPressureTestParams{
-            /*enable_multiple_spares=*/true,
-            /*keep_one_alive=*/true,
-            /*use_critical_memory_pressure_threshold=*/false,
+            /*kill_spare_on_memory_pressure=*/true,
+            /*use_critical_memory_pressure_threshold=*/true,
             /*memory_limit=*/base::MemoryLimit::ModeratePressureThreshold(),
             /*expected_spares_after_pressure=*/1u},
         MemoryPressureTestParams{
-            /*enable_multiple_spares=*/true,
-            /*keep_one_alive=*/true,
-            /*use_critical_memory_pressure_threshold=*/true,
-            /*memory_limit=*/base::MemoryLimit::ModeratePressureThreshold(),
-            /*expected_spares_after_pressure=*/2u},
-        MemoryPressureTestParams{
-            /*enable_multiple_spares=*/false,
-            /*keep_one_alive=*/false,
+            /*kill_spare_on_memory_pressure=*/true,
             /*use_critical_memory_pressure_threshold=*/true,
             /*memory_limit=*/base::MemoryLimit::CriticalPressureThreshold(),
-            /*expected_spares_after_pressure=*/0u}));
-
-struct StatefulMemoryPressureTestParams {
-  bool enable_multiple_spares;
-  bool keep_one_alive;
-  bool use_critical_memory_pressure_threshold;
-  bool kill_spare_on_memory_pressure;
-  base::MemoryLimit memory_limit;
-  size_t expected_spares_after_pressure;
-};
-
-class SpareRenderProcessHostManagerStatefulMemoryPressureParamTest
-    : public SpareRenderProcessHostManagerTest,
-      public testing::WithParamInterface<StatefulMemoryPressureTestParams> {
- public:
-  SpareRenderProcessHostManagerStatefulMemoryPressureParamTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.push_back({base::kStatefulMemoryPressure, {}});
-
-    if (GetParam().kill_spare_on_memory_pressure) {
-      enabled_features.push_back({kKillSpareRenderOnMemoryPressure, {}});
-    } else {
-      disabled_features.push_back(kKillSpareRenderOnMemoryPressure);
-    }
-
-    if (GetParam().keep_one_alive) {
-      enabled_features.push_back({kSpareRPHKeepOneAliveOnMemoryPressure, {}});
-    } else {
-      disabled_features.push_back(kSpareRPHKeepOneAliveOnMemoryPressure);
-    }
-
-    if (GetParam().use_critical_memory_pressure_threshold) {
-      enabled_features.push_back({kSpareRPHUseCriticalMemoryPressure, {}});
-    } else {
-      disabled_features.push_back(kSpareRPHUseCriticalMemoryPressure);
-    }
-
-    if (GetParam().enable_multiple_spares) {
-      enabled_features.push_back(
-          {features::kMultipleSpareRPHs,
-           {{features::kMultipleSpareRPHsCount.name, "2"}}});
-      memory_override_.emplace(base::GiB(8));
-    } else {
-      disabled_features.push_back(features::kMultipleSpareRPHs);
-    }
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features);
-  }
-
-  void WaitForNextSpareReady() {
-    auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
-    auto& spares = spare_manager.GetSpares();
-    ASSERT_FALSE(spares.empty());
-    RenderProcessHost* next_spare_rph = spares.back();
-    ASSERT_FALSE(next_spare_rph->IsReady());
-
-    RenderProcessHostWatcher watcher(
-        next_spare_rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
-    watcher.Wait();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  // Simulates sufficient physical memory (8GB) to allow extra spares
-  // allocation.
-  std::optional<base::test::ScopedAmountOfPhysicalMemoryOverride>
-      memory_override_;
-};
-
-IN_PROC_BROWSER_TEST_P(
-    SpareRenderProcessHostManagerStatefulMemoryPressureParamTest,
-    StatefulPressureResponse) {
-  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
-  spare_manager.WarmupSpare(browser_context());
-  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
-  WaitForNextSpareReady();
-
-  if (GetParam().enable_multiple_spares) {
-    ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
-    WaitForNextSpareReady();
-  }
-
-  const size_t initial_spares = GetParam().enable_multiple_spares ? 2u : 1u;
-  base::HistogramTester histogram_tester;
-
-  content::test::ScopedMemoryLimitOverride memory_override(
-      "SpareRenderProcessHostManagerImpl");
-
-  // Non-destructive update: OnUpdateMemoryLimit() must not evict spares.
-  memory_override.SetLimit(GetParam().memory_limit);
-  EXPECT_EQ(spare_manager.GetSpares().size(), initial_spares);
-  for (RenderProcessHost* spare : spare_manager.GetSpares()) {
-    EXPECT_TRUE(spare->IsReady());
-  }
-
-  // Release phase: OnReleaseMemory() trims down to the target limit.
-  memory_override.NotifyReleaseMemory();
-
-  EXPECT_EQ(spare_manager.GetSpares().size(),
-            GetParam().expected_spares_after_pressure);
-  if (GetParam().expected_spares_after_pressure > 0) {
-    EXPECT_TRUE(spare_manager.GetSpares()[0]->IsReady());
-  }
-
-  const size_t expected_trimmed =
-      initial_spares - GetParam().expected_spares_after_pressure;
-  if (expected_trimmed > 0) {
-    histogram_tester.ExpectBucketCount(
-        "BrowserRenderProcessHost.SpareRendererDispatchResult",
-        SpareRendererDispatchResult::kMemoryPressure, expected_trimmed);
-  }
-
-  // Step-up replenishment: Relieving memory pressure back to 100% allows the
-  // pool to recover back to `initial_spares`.
-  memory_override.SetLimit(base::MemoryLimit::Default());
-  if (spare_manager.GetSpares().empty()) {
-    spare_manager.WarmupSpare(browser_context());
-  }
-  while (spare_manager.GetSpares().size() < initial_spares ||
-         !spare_manager.GetSpares().back()->IsReady()) {
-    WaitForNextSpareReady();
-  }
-  EXPECT_EQ(spare_manager.GetSpares().size(), initial_spares);
-  for (RenderProcessHost* spare : spare_manager.GetSpares()) {
-    EXPECT_TRUE(spare->IsReady());
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SpareRenderProcessHostManagerStatefulMemoryPressureParamTest,
-    testing::Values(
-        // Standard multi-spare with keep_one_alive: 50% limit keeps 1 spare.
-        StatefulMemoryPressureTestParams{
-            /*enable_multiple_spares=*/true,
-            /*keep_one_alive=*/true,
-            /*use_critical_memory_pressure_threshold=*/false,
-            /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/base::MemoryLimit::FromPercent(50),
-            /*expected_spares_after_pressure=*/1u},
-        // Standard multi-spare with keep_one_alive: 25% limit clamps to 1
-        // spare.
-        StatefulMemoryPressureTestParams{
-            /*enable_multiple_spares=*/true,
-            /*keep_one_alive=*/true,
-            /*use_critical_memory_pressure_threshold=*/false,
-            /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/base::MemoryLimit::FromPercent(25),
-            /*expected_spares_after_pressure=*/1u},
-        // Standard multi-spare with keep_one_alive: 0% limit trims all to 0.
-        StatefulMemoryPressureTestParams{
-            /*enable_multiple_spares=*/true,
-            /*keep_one_alive=*/true,
-            /*use_critical_memory_pressure_threshold=*/false,
-            /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/base::MemoryLimit::FromPercent(0),
             /*expected_spares_after_pressure=*/0u},
-        // Aggressive mode (keep_one_alive disabled): 25% limit scales to 0
-        // spares.
-        StatefulMemoryPressureTestParams{
-            /*enable_multiple_spares=*/true,
-            /*keep_one_alive=*/false,
-            /*use_critical_memory_pressure_threshold=*/false,
-            /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/base::MemoryLimit::FromPercent(25),
-            /*expected_spares_after_pressure=*/0u},
-        // Main toggle disabled: killing disabled keeps all 2 spares at 0%
-        // limit.
-        StatefulMemoryPressureTestParams{
-            /*enable_multiple_spares=*/true,
-            /*keep_one_alive=*/true,
-            /*use_critical_memory_pressure_threshold=*/false,
+        MemoryPressureTestParams{
             /*kill_spare_on_memory_pressure=*/false,
-            /*memory_limit=*/base::MemoryLimit::FromPercent(0),
-            /*expected_spares_after_pressure=*/2u},
-        // Critical-only mode: moderate pressure (50%) does not trim.
-        StatefulMemoryPressureTestParams{
-            /*enable_multiple_spares=*/true,
-            /*keep_one_alive=*/true,
-            /*use_critical_memory_pressure_threshold=*/true,
-            /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/base::MemoryLimit::FromPercent(50),
-            /*expected_spares_after_pressure=*/2u},
-        // Critical-only mode: critical pressure (0%) trims to 0.
-        StatefulMemoryPressureTestParams{
-            /*enable_multiple_spares=*/true,
-            /*keep_one_alive=*/false,
-            /*use_critical_memory_pressure_threshold=*/true,
-            /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/base::MemoryLimit::FromPercent(0),
-            /*expected_spares_after_pressure=*/0u},
-        // Single spare with keep_one_alive: 50% limit keeps 1 spare.
-        StatefulMemoryPressureTestParams{
-            /*enable_multiple_spares=*/false,
-            /*keep_one_alive=*/true,
             /*use_critical_memory_pressure_threshold=*/false,
-            /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/base::MemoryLimit::FromPercent(50),
-            /*expected_spares_after_pressure=*/1u},
-        // Single spare without keep_one_alive: 50% limit trims to 0 spares.
-        StatefulMemoryPressureTestParams{
-            /*enable_multiple_spares=*/false,
-            /*keep_one_alive=*/false,
-            /*use_critical_memory_pressure_threshold=*/false,
-            /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/base::MemoryLimit::FromPercent(50),
-            /*expected_spares_after_pressure=*/0u}));
+            /*memory_limit=*/base::MemoryLimit::CriticalPressureThreshold(),
+            /*expected_spares_after_pressure=*/1u}));
 
-class SpareRenderProcessHostManagerStatefulKillDisabledTest
-    : public ExtraSpareRenderProcessHostManagerTest {
+class SpareRenderProcessHostManagerKillDisabledTest
+    : public SpareRenderProcessHostManagerTest {
  public:
-  SpareRenderProcessHostManagerStatefulKillDisabledTest() {
+  SpareRenderProcessHostManagerKillDisabledTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{base::kStatefulMemoryPressure},
+        /*enabled_features=*/{},
         /*disabled_features=*/{kKillSpareRenderOnMemoryPressure,
-                               kSpareRPHKeepOneAliveOnMemoryPressure,
                                kSpareRPHUseCriticalMemoryPressure});
   }
 
@@ -1720,10 +1356,9 @@ class SpareRenderProcessHostManagerStatefulKillDisabledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verifies that when kStatefulMemoryPressure is enabled and
-// kKillSpareRenderOnMemoryPressure is disabled, memory pressure still prevents
-// creating new spares.
-IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerStatefulKillDisabledTest,
+// Verifies that when kKillSpareRenderOnMemoryPressure is disabled, memory
+// pressure still prevents creating a new spare.
+IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerKillDisabledTest,
                        CreationGatedUnderMemoryPressure) {
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
   ASSERT_TRUE(spare_manager.GetSpares().empty());
@@ -1755,19 +1390,17 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerStatefulKillDisabledTest,
         NoSpareRendererReason::kMemoryPressure, 1);
   }
 
-  // At 75% (above moderate threshold, below no-pressure threshold), the first
-  // spare is created, but extra spares are not created.
+  // Above moderate pressure (75%), creating a spare is allowed.
   memory_override.SetLimit(base::MemoryLimit::FromPercent(75));
-  EXPECT_NE(spare_manager.WarmupSpare(browser_context()), nullptr);
+  RenderProcessHost* spare_rph = spare_manager.WarmupSpare(browser_context());
+  ASSERT_NE(spare_rph, nullptr);
   ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
-  WaitForNextSpareReady();
-  EXPECT_EQ(spare_manager.GetSpares().size(), 1u);
-
-  // Restoring the limit to 100% allows the extra spare to be created.
-  memory_override.SetLimit(base::MemoryLimit::Default());
-  ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
-  WaitForNextSpareReady();
-  EXPECT_EQ(spare_manager.GetSpares().size(), 2u);
+  if (!spare_rph->IsReady()) {
+    RenderProcessHostWatcher watcher(
+        spare_rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+    watcher.Wait();
+  }
+  EXPECT_TRUE(spare_rph->IsReady());
 }
 
 }  // namespace content

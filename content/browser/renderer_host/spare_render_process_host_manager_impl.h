@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
-#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/process_allocation_context.h"
@@ -71,13 +70,11 @@ enum class NoSpareRendererReason {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:NoSpareRendererReason)
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kKillSpareRenderOnMemoryPressure);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kSpareRPHKeepOneAliveOnMemoryPressure);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSpareRPHUseCriticalMemoryPressure);
 
 class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
     : public SpareRenderProcessHostManager,
       public RenderProcessHostObserver,
-      public performance_scenarios::PerformanceScenarioObserver,
       public base::MemoryConsumer {
  public:
   SpareRenderProcessHostManagerImpl();
@@ -152,16 +149,8 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   void CleanupSpares(
       std::optional<SpareRendererDispatchResult> dispatch_result);
 
-  // Gracefully removes and cleanups any extra spare RenderProcessHost beyond
-  // the first one. This is always a nop if the kMultipleSpareRPHs feature is
-  // disabled.
-  void CleanupExtraSpares(
-      std::optional<SpareRendererDispatchResult> dispatch_result);
-
   void SetDeferTimerTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
-
-  void SetIsBrowserIdleForTesting(bool is_browser_idle);
 
   bool HasSpareRenderer() { return !spare_rphs_.empty(); }
 
@@ -177,14 +166,6 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
                            const ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
-  // performance_scenarios::PerformanceScenarioObserver:
-  void OnLoadingScenarioChanged(
-      performance_scenarios::ScenarioScope scope,
-      performance_scenarios::LoadingScenario old_scenario,
-      performance_scenarios::LoadingScenario new_scenario) override;
-
-  void SetIsBrowserIdle(bool is_browser_idle);
-
   // Start a spare renderer at a later time if there isn't one.
   // This is to avoid resource contention between existing renderers and a
   // new spare renderer.
@@ -199,14 +180,6 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   // base::MemoryConsumer:
   void OnUpdateMemoryLimit() override;
   void OnReleaseMemory() override;
-
-  // Returns true if an extra spare should be created.
-  bool ShouldCreateExtraSpare() const;
-
-  // Creates an extra spare, if ShouldCreateExtraSpare() returns true. This
-  // function is responsible for the creation of all the extra spares.
-  // `WarmupSpare()` is still responsible for creating the first one.
-  void MaybeCreateExtraSpare();
 
 #if BUILDFLAG(IS_ANDROID)
   FRIEND_TEST_ALL_PREFIXES(
@@ -227,14 +200,6 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   // Destroys an individual spare renderer and notifies observers.
   void DestroySpare(RenderProcessHost* spare_rph,
                     std::optional<SpareRendererDispatchResult> dispatch_result);
-
-  // Trims excess spare renderers from the tail down to `target_count`.
-  void TrimSpares(size_t target_count,
-                  std::optional<SpareRendererDispatchResult> dispatch_result);
-
-  // Calculates the target number of spares based on active feature flags and
-  // the current memory limit.
-  size_t GetTargetSpareRPHCount() const;
 
   base::MemoryConsumerRegistration memory_consumer_registration_;
 
@@ -267,9 +232,6 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   // The process allocation context for the previous successful
   // MaybeTakeSpare() function call.
   std::optional<ProcessAllocationContext> previous_taken_context_;
-
-  // Indicates if the browser is not currently loading content.
-  bool is_browser_idle_ = true;
 
   std::optional<LastSpareRendererCreationInfo>
       last_spare_renderer_creation_info_;

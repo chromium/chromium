@@ -8,18 +8,13 @@
 #include <optional>
 #include <string_view>
 
-#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory_coordinator/memory_coordinator_features.h"
-#include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/system/sys_info.h"
-#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/features.h"
@@ -30,16 +25,15 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/byte_size.h"
+#include "base/system/sys_info.h"
+#endif
+
 namespace content {
 
 // Enables killing spare renders when memory pressure signal is received.
 BASE_FEATURE(kKillSpareRenderOnMemoryPressure,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, only the extra RPHs (controlled by the MultipleSpareRPHs
-// experiment) are killed on memory pressure. Does nothing if
-// kKillSpareRenderOnMemoryPressure is disabled.
-BASE_FEATURE(kSpareRPHKeepOneAliveOnMemoryPressure,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, MEMORY_PRESSURE_LEVEL_CRITICAL is used as the threshold that
@@ -48,9 +42,6 @@ BASE_FEATURE(kSpareRPHKeepOneAliveOnMemoryPressure,
 BASE_FEATURE(kSpareRPHUseCriticalMemoryPressure,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-using performance_scenarios::LoadingScenario;
-using performance_scenarios::PerformanceScenarioObserverList;
-using performance_scenarios::ScenarioScope;
 using SpareProcessMaybeTakeAction =
     content::RenderProcessHostImpl::SpareProcessMaybeTakeAction;
 
@@ -227,16 +218,6 @@ std::string GetNoSpareRendererAllocationForCOOPUMAName(
                        GetNoSpareRendererReasonName(reason)});
 }
 
-// Returns the number of spare hosts that should be created. Ensures the field
-// trial is not activated on excluded machines.
-size_t GetSpareRPHCount() {
-  // Exclude machines with less than 4gigs of ram.
-  if (base::SysInfo::AmountOfTotalPhysicalMemory() < base::GiB(4)) {
-    return 1u;
-  }
-  return features::kMultipleSpareRPHsCount.Get();
-}
-
 void LogAllocationContext(const std::string& source_uma_name,
                           const std::string& stage_uma_name,
                           const std::string& for_coop_uma_name,
@@ -344,13 +325,6 @@ constexpr base::MemoryConsumerTraits kSpareRenderProcessHostManagerTraits(
 constexpr std::string_view kMemoryConsumerName =
     "SpareRenderProcessHostManagerImpl";
 
-// Granular pool scaling requires both stateful memory pressure and killing on
-// pressure; otherwise creation gates use discrete threshold checks.
-bool ShouldScaleSparesWithMemoryLimit() {
-  return base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName) &&
-         base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure);
-}
-
 }  // namespace
 
 SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
@@ -367,20 +341,6 @@ SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
               base::Unretained(this))))
 #endif
 {
-  // Need to register first before checking the state to make sure we don't miss
-  // a notification.
-  if (auto performance_scenario_observer_list =
-          PerformanceScenarioObserverList::GetForScope(
-              ScenarioScope::kGlobal)) {
-    // Note: SpareRenderProcessHostManagerImpl is a global singleton using
-    // base::NoDestructor, so no need to call RemoveObserver() later.
-    performance_scenario_observer_list->AddObserver(this);
-
-    is_browser_idle_ =
-        performance_scenarios::GetLoadingScenario(ScenarioScope::kGlobal)
-            ->load(std::memory_order_relaxed) ==
-        LoadingScenario::kNoPageLoading;
-  }
 #if BUILDFLAG(IS_ANDROID)
   OnApplicationStateChange(
       base::android::ApplicationStatusListener::GetState());
@@ -532,16 +492,9 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
   // Don't create a spare renderer when the system is under load.  This is
   // currently approximated by only looking at the memory pressure.  See also
   // https://crbug.com/852905.
-  if (ShouldScaleSparesWithMemoryLimit()) {
-    if (GetTargetSpareRPHCount() == 0) {
-      no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
-      return nullptr;
-    }
-  } else {
-    if (memory_limit() <= GetMemoryLimitThreshold()) {
-      no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
-      return nullptr;
-    }
+  if (memory_limit() <= GetMemoryLimitThreshold()) {
+    no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
+    return nullptr;
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -570,10 +523,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
   process_startup_timer_ = std::make_unique<base::ElapsedTimer>();
 
   // Start the timer to track how long it takes for a spare renderer to be used.
-  // Note: This timer only makes sense when there is a single spare.
-  if (GetSpareRPHCount() == 1u) {
-    spare_renderer_maybe_take_timer_ = std::make_unique<base::ElapsedTimer>();
-  }
+  spare_renderer_maybe_take_timer_ = std::make_unique<base::ElapsedTimer>();
   RenderProcessHost* new_spare_rph =
       RenderProcessHostImpl::CreateSpareRenderProcessHost(
           browser_context, nullptr /* site_instance */);
@@ -737,8 +687,6 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
   } else if (RenderProcessHost::IsProcessLimitReached()) {
     // Drop all spares if we are at a process limit and the spare wasn't taken.
     // This helps avoid process reuse.
-    // TODO(pmonette): Only cleanup n spares, where n is the count of processes
-    // that is over the limit.
     CleanupSpares(SpareRendererDispatchResult::kDestroyedProcessLimit);
     CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kProcessLimit);
   }
@@ -893,68 +841,10 @@ void SpareRenderProcessHostManagerImpl::CleanupSpares(
   }
 }
 
-void SpareRenderProcessHostManagerImpl::CleanupExtraSpares(
-    std::optional<SpareRendererDispatchResult> dispatch_result) {
-  TrimSpares(1u /* target_count */, dispatch_result);
-}
-
-void SpareRenderProcessHostManagerImpl::TrimSpares(
-    size_t target_count,
-    std::optional<SpareRendererDispatchResult> dispatch_result) {
-  if (spare_rphs_.size() <= target_count) {
-    return;
-  }
-  if (target_count == 0) {
-    CleanupSpares(dispatch_result);
-    return;
-  }
-
-  std::vector<raw_ptr<RenderProcessHost>> spares_to_remove;
-  while (spare_rphs_.size() > target_count) {
-    spares_to_remove.push_back(spare_rphs_.back());
-    spare_rphs_.pop_back();
-  }
-
-  for (RenderProcessHost* spare_rph : spares_to_remove) {
-    DestroySpare(spare_rph, dispatch_result);
-  }
-}
-
-size_t SpareRenderProcessHostManagerImpl::GetTargetSpareRPHCount() const {
-  const size_t baseline = GetSpareRPHCount();
-
-  if (!ShouldScaleSparesWithMemoryLimit()) {
-    return baseline;
-  }
-
-  // Under critical-only mode, do not scale down under moderate/mild pressure.
-  if (base::FeatureList::IsEnabled(kSpareRPHUseCriticalMemoryPressure) &&
-      memory_limit() > base::MemoryLimit::CriticalPressureThreshold()) {
-    return baseline;
-  }
-
-  size_t target = memory_limit().Scale(baseline);
-
-  // Preserve 1 spare if keep-one-alive policy is active.
-  if (base::FeatureList::IsEnabled(kSpareRPHKeepOneAliveOnMemoryPressure) &&
-      memory_limit() > base::MemoryLimit::FromPercent(0)) {
-    target = std::max(size_t{1}, target);
-  }
-
-  return target;
-}
-
 void SpareRenderProcessHostManagerImpl::SetDeferTimerTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   deferred_warmup_timer_.SetTaskRunner(task_runner);
   deferred_destroy_timer_.SetTaskRunner(task_runner);
-}
-
-void SpareRenderProcessHostManagerImpl::SetIsBrowserIdleForTesting(
-    bool is_browser_idle) {
-  CHECK(!PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal),
-        base::NotFatalUntil::M152);
-  SetIsBrowserIdle(is_browser_idle);
 }
 
 void SpareRenderProcessHostManagerImpl::ReleaseSpare(
@@ -973,9 +863,6 @@ void SpareRenderProcessHostManagerImpl::ReleaseSpare(
   if (spare_rphs_.empty()) {
     no_spare_renderer_reason_ = MapToNoSpareRendererReason(dispatch_result);
   }
-
-  // Since that a spare was just released, check if we need to start another.
-  MaybeCreateExtraSpare();
 }
 
 void SpareRenderProcessHostManagerImpl::RenderProcessReady(
@@ -991,10 +878,6 @@ void SpareRenderProcessHostManagerImpl::RenderProcessReady(
   for (auto& observer : observer_list_) {
     observer.OnSpareRenderProcessHostReady(host);
   }
-
-  // Now that a spare was just fully initialized, check if we need to start
-  // another.
-  MaybeCreateExtraSpare();
 }
 
 void SpareRenderProcessHostManagerImpl::RenderProcessExited(
@@ -1017,48 +900,9 @@ void SpareRenderProcessHostManagerImpl::RenderProcessHostDestroyed(
   ReleaseSpare(host, SpareRendererDispatchResult::kProcessHostDestroyed);
 }
 
-void SpareRenderProcessHostManagerImpl::OnLoadingScenarioChanged(
-    ScenarioScope scope,
-    LoadingScenario old_scenario,
-    LoadingScenario new_scenario) {
-  SetIsBrowserIdle(new_scenario == LoadingScenario::kNoPageLoading);
-}
-
-void SpareRenderProcessHostManagerImpl::SetIsBrowserIdle(bool is_browser_idle) {
-  if (is_browser_idle_ == is_browser_idle) {
-    return;
-  }
-
-  is_browser_idle_ = is_browser_idle;
-
-  // Now that the browser is idle, check if we need to start another spare.
-  MaybeCreateExtraSpare();
-}
-
-void SpareRenderProcessHostManagerImpl::OnUpdateMemoryLimit() {
-  if (ShouldScaleSparesWithMemoryLimit()) {
-    // If memory limit improved and we have headroom, sequentially warm up extra
-    // spares:
-    if (spare_rphs_.size() < GetTargetSpareRPHCount()) {
-      MaybeCreateExtraSpare();
-    }
-    return;
-  }
-
-  // If the system is no longer under memory pressure, check if we need
-  // to start another spare.
-  if (memory_limit() > GetMemoryLimitThreshold()) {
-    MaybeCreateExtraSpare();
-  }
-}
+void SpareRenderProcessHostManagerImpl::OnUpdateMemoryLimit() {}
 
 void SpareRenderProcessHostManagerImpl::OnReleaseMemory() {
-  if (ShouldScaleSparesWithMemoryLimit()) {
-    TrimSpares(GetTargetSpareRPHCount(),
-               SpareRendererDispatchResult::kMemoryPressure);
-    return;
-  }
-
   if (memory_limit() > GetMemoryLimitThreshold()) {
     return;
   }
@@ -1067,77 +911,8 @@ void SpareRenderProcessHostManagerImpl::OnReleaseMemory() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kSpareRPHKeepOneAliveOnMemoryPressure)) {
-    CleanupExtraSpares(SpareRendererDispatchResult::kMemoryPressure);
-  } else {
-    CleanupSpares(SpareRendererDispatchResult::kMemoryPressure);
-    CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kMemoryPressure);
-  }
-}
-
-bool SpareRenderProcessHostManagerImpl::ShouldCreateExtraSpare() const {
-  // Check target spare count. This function has the side-effect of
-  // activating the field trial.
-  if (spare_rphs_.size() >= GetTargetSpareRPHCount()) {
-    return false;
-  }
-
-  // Avoid doing work on shutdown.
-  if (BrowserMainRunner::ExitedMainMessageLoop()) {
-    return false;
-  }
-
-  // Only create extra spares when the browser is idle.
-  if (!is_browser_idle_) {
-    return false;
-  }
-
-  // The first spare is created using either WarmupSpare() or
-  // PrepareForFutureRequests().
-  if (spare_rphs_.empty()) {
-    return false;
-  }
-
-  // Avoid doing work on shutdown again.
-  if (spare_rphs_.back()->GetBrowserContext()->ShutdownStarted()) {
-    return false;
-  }
-
-  // Don't create spares beyond the renderer count limit.
-  if (RenderProcessHost::IsProcessLimitReached()) {
-    return false;
-  }
-
-  if (!ShouldScaleSparesWithMemoryLimit()) {
-    // Don't create spares when under memory pressure.
-    if (memory_limit() < base::MemoryLimit::NoPressureThreshold()) {
-      return false;
-    }
-  }
-
-  // A spare is already being initialized right now.
-  if (!spare_rphs_.back()->IsReady()) {
-    return false;
-  }
-
-  return true;
-}
-
-void SpareRenderProcessHostManagerImpl::MaybeCreateExtraSpare() {
-  if (!ShouldCreateExtraSpare()) {
-    return;
-  }
-
-  // Use the same browser context of an existing spare.
-  BrowserContext* browser_context = spare_rphs_.at(0)->GetBrowserContext();
-
-  process_startup_timer_ = std::make_unique<base::ElapsedTimer>();
-  RenderProcessHost* new_spare_rph =
-      RenderProcessHostImpl::CreateSpareRenderProcessHost(
-          browser_context, nullptr /* site_instance */);
-  spare_rphs_.push_back(new_spare_rph);
-  new_spare_rph->AddObserver(this);
-  new_spare_rph->Init();
+  CleanupSpares(SpareRendererDispatchResult::kMemoryPressure);
+  CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kMemoryPressure);
 }
 
 #if BUILDFLAG(IS_ANDROID)

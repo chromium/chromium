@@ -13502,30 +13502,6 @@
             ]
         }
     ],
-    "MultipleSpareRPHs": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled2",
-                    "params": {
-                        "count": "2"
-                    },
-                    "enable_features": [
-                        "KillSpareRenderOnMemoryPressure",
-                        "MultipleSpareRPHs",
-                        "SpareRPHKeepOneAliveOnMemoryPressure",
-                        "SpareRPHUseCriticalMemoryPressure"
-                    ]
-                }
-            ]
-        }
-    ],
     "NTPThreadsRail": [
         {
             "platforms": [
