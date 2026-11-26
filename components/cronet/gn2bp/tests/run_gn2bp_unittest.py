@@ -1174,6 +1174,21 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             tool_files,
         )
 
+    def test_get_cflags_strips_fno_module_local_hints(self):
+        cflags = gen_android_bp.translators._get_cflags(
+            [
+                "-O2",
+                "-fno-module-local-hints",
+                "-fno-exceptions",
+                "-Wno-unsequenced-volatile",
+            ],
+            [],
+        )
+        self.assertEqual(
+            cflags,
+            ["-O2", "-fno-exceptions", "-Wno-unsequenced-volatile"],
+        )
+
 
 if __name__ == '__main__':
     # This allows you to run the file directly

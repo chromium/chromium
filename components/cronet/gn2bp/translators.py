@@ -1090,6 +1090,11 @@ def _is_cflag_allowed(cflag):
             #   clang++-real: error: unknown argument: '-fno-lifetime-dse'
             # See https://crbug.com/484919839
             '-fno-lifetime-dse',
+            # Added in Chromium's Clang roll (https://crrev.com/c/8856010) and
+            # not yet recognized by Android's prebuilt Clang, causing:
+            #   clang++-real: error: unknown argument: '-fno-module-local-hints'
+            # See https://crbug.com/587906184
+            '-fno-module-local-hints',
             # C++ version is picked via a Soong attribute.
             '-std=',
             # Added automatically by specifying `afdo: true`
