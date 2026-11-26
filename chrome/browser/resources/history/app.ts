@@ -177,8 +177,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
     geminiAppsActivity: loadTimeData.getBoolean('isGlicEnabled'),
   };
   // <if expr="not is_chromeos">
-  private readonly unoPhase2FollowUpEnabled_: boolean =
-      loadTimeData.getBoolean('unoPhase2FollowUp');
   private accessor shouldShowHistorySyncPromo_: boolean = false;
   // </if>
   // <if expr="not is_chromeos and not is_android">
@@ -790,12 +788,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   // <if expr="not is_chromeos">
   // History sync promo is shown based on the following conditions:
-  // 1. UNO phase 2 follow up feature flag is enabled.
-  // 2. Should be shown based on user prefs (the promo was closed < 5 times)
-  // 3. History sync is not disabled.
-  // 4. User is not already signed in and syncing history.
+  // 1. Should be shown based on user prefs (e.g., shown < 5 times).
+  // 2. History sync is not disabled.
+  // 3. User is not already signed in and syncing history.
   protected shouldShowHistoryPageHistorySyncPromo_(): boolean {
-    return this.unoPhase2FollowUpEnabled_ && this.shouldShowHistorySyncPromo_ &&
+    return this.shouldShowHistorySyncPromo_ &&
         this.identityState_.historySync !== SyncState.kDisabled &&
         !(this.identityState_.signIn === HistorySignInState.kSignedIn &&
           this.identityState_.historySync === SyncState.kTurnedOn);

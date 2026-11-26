@@ -68,15 +68,12 @@ suite('HistoryAppTest', function() {
 
 // <if expr="not is_chromeos">
 // history sync promo is not shown for ChromeOS.
-suite('HistoryAppUnoPhase2FollowUpTest', () => {
+suite('HistoryAppHistorySyncPromoTest', () => {
   let element: HistoryAppElement;
   let browserProxy: TestHistoryBrowserProxy;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues({
-      unoPhase2FollowUp: true,
-    });
     browserProxy = new TestHistoryBrowserProxy();
     BrowserProxyImpl.setInstance(browserProxy);
     browserProxy.handler.setResultFor(
@@ -111,7 +108,7 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
     browserProxy.handler.setResultFor(
         'shouldShowHistoryPageHistorySyncPromo',
         Promise.resolve({shouldShow: false}));
-    // Re-create the element to pick up the new loadTimeData.
+    // Re-create the element to pick up the updated handler response.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('history-app');
     document.body.appendChild(element);

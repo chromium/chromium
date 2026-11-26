@@ -38,7 +38,6 @@
 #include "components/page_image_service/image_service_handler.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -63,11 +62,6 @@ namespace {
 content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIHistoryHost);
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  source->AddBoolean("unoPhase2FollowUp",
-                     base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   HistoryUtil::PopulateCommonSourceForHistory(source, profile);
 

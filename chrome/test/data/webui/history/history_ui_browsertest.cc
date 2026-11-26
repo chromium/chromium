@@ -10,7 +10,6 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/history_clusters/core/features.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
@@ -338,13 +337,13 @@ IN_PROC_BROWSER_TEST_F(HistoryTest, HistoryAppTest) {
   RunTest("history/history_app_test.js", "runMochaSuite('HistoryAppTest')");
 }
 
-// HistoryAppUnoPhase2FollowUpTest is only available outside CrOS and Android.
-// Android does not participate in the Desktop Uno identity and sync promo flows
-// (kUnoPhase2FollowUp is desktop-only DICE), matching CrOS.
+// HistoryAppHistorySyncPromoTest is only available outside CrOS and Android.
+// Android does not participate in the desktop history sync promo flow, matching
+// CrOS.
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(HistoryTest, HistoryAppUnoPhase2FollowUpTest) {
+IN_PROC_BROWSER_TEST_F(HistoryTest, HistoryAppHistorySyncPromoTest) {
   RunTest("history/history_app_test.js",
-          "runMochaSuite('HistoryAppUnoPhase2FollowUpTest')");
+          "runMochaSuite('HistoryAppHistorySyncPromoTest')");
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
