@@ -19,6 +19,15 @@
 #include "components/security_interstitials/content/android/jni_headers/DateAndTimeSettingsHelper_jni.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include <memory>
+#include <vector>
+
+#include "base/containers/span.h"
+#include "base/environment.h"
+#include "base/nix/xdg_util.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
@@ -30,6 +39,53 @@
 
 namespace security_interstitials {
 
+#if BUILDFLAG(IS_LINUX)
+namespace {
+
+using Command = base::span<const char* const>;
+
+constexpr const char* kUnityClockCommand[] = {"unity-control-center",
+                                              "datetime"};
+// NOTE: On old Ubuntu, naming control panels doesn't work, so it opens the
+// overview. This will have to be good enough.
+constexpr const char* kGnomeClockCommand[] = {"gnome-control-center",
+                                              "datetime"};
+constexpr const char* kKde4ClockCommand[] = {"kcmshell4", "clock"};
+constexpr const char* kKde5ClockCommand[] = {"kcmshell5", "clock"};
+constexpr const char* kKde6ClockCommand[] = {"kcmshell6", "kcm_clock"};
+
+}  // namespace
+
+std::vector<std::string> GetDateAndTimeSettingsCommand(base::Environment* env) {
+  std::vector<Command> candidates;
+  switch (base::nix::GetDesktopEnvironment(env)) {
+    case base::nix::DESKTOP_ENVIRONMENT_KDE4:
+      candidates.push_back(kKde4ClockCommand);
+      break;
+    case base::nix::DESKTOP_ENVIRONMENT_KDE5:
+      candidates.push_back(kKde5ClockCommand);
+      break;
+    case base::nix::DESKTOP_ENVIRONMENT_KDE6:
+      candidates.push_back(kKde6ClockCommand);
+      break;
+    default:
+      break;
+  }
+  // Fall back to any known tool, in case the desktop environment is unknown
+  // or its preferred tool is not installed.
+  candidates.insert(candidates.end(),
+                    {kUnityClockCommand, kGnomeClockCommand, kKde6ClockCommand,
+                     kKde5ClockCommand, kKde4ClockCommand});
+
+  for (Command command : candidates) {
+    if (base::ExecutableExistsInPath(env, command[0])) {
+      return std::vector<std::string>(command.begin(), command.end());
+    }
+  }
+  return {};
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 void LaunchDateAndTimeSettings() {
 // The code for each OS is completely separate, in order to avoid bugs like
@@ -38,44 +94,17 @@ void LaunchDateAndTimeSettings() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DateAndTimeSettingsHelper_openDateAndTimeSettings(env);
 #elif BUILDFLAG(IS_LINUX)
-  struct ClockCommand {
-    const char* const pathname;
-    const char* const argument;
-  };
-  static const ClockCommand kClockCommands[] = {
-      // Unity
-      {"/usr/bin/unity-control-center", "datetime"},
-      // GNOME
-      //
-      // NOTE: On old Ubuntu, naming control panels doesn't work, so it
-      // opens the overview. This will have to be good enough.
-      {"/usr/bin/gnome-control-center", "datetime"},
-      {"/usr/local/bin/gnome-control-center", "datetime"},
-      {"/opt/bin/gnome-control-center", "datetime"},
-      // KDE
-      {"/usr/bin/kcmshell4", "clock"},
-      {"/usr/local/bin/kcmshell4", "clock"},
-      {"/opt/bin/kcmshell4", "clock"},
-  };
-
-  base::CommandLine command(base::FilePath(""));
-  for (const ClockCommand& cmd : kClockCommands) {
-    base::FilePath pathname(cmd.pathname);
-    if (base::PathExists(pathname)) {
-      command.SetProgram(pathname);
-      command.AppendArg(cmd.argument);
-      break;
-    }
-  }
-  if (command.GetProgram().empty()) {
-    // Alas, there is nothing we can do.
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  std::vector<std::string> argv = GetDateAndTimeSettingsCommand(env.get());
+  if (argv.empty()) {
+    // Alas, there is nothing that can be done.
     return;
   }
 
   base::LaunchOptions options;
   options.wait = false;
   options.allow_new_privs = true;
-  base::LaunchProcess(command, options);
+  base::LaunchProcess(argv, options);
 
 #elif BUILDFLAG(IS_MAC)
   base::mac::OpenSystemSettingsPane(

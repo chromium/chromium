@@ -160,6 +160,11 @@ source_set("unit_tests") {
     "//net:",
     "//net:test_support",
     "//services/network:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_linux) {
+    sources += [ "utils_unittest.cc" ]
+  }
 }
