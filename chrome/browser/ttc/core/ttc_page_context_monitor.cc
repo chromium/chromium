@@ -21,6 +21,7 @@
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "components/actor/core/journal_details_builder.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/pdf/common/constants.h"
@@ -374,19 +375,47 @@ void TtcPageContextMonitor::OnActionablePageContentFetched(
     return;
   }
 
-  pending_cached_notification_.Cancel();
-  weak_ptr_factory_.InvalidateWeakPtrs();
   if (!actionable_result.has_value()) {
+    // Cancel any racing URL check started by `OnPageContentExtracted()`.
+    weak_ptr_factory_.InvalidateWeakPtrs();
     MaybeNotifyPageContextFetched(
         weak_page, base::unexpected(PageContextError::FetchFailed()));
     return;
   }
 
+  // TODO(b/590474045): Move `PageContextEligibility` into
+  // `GetPageRestrictionForUrl()` once the PCES extraction path is removed.
+  optimization_guide::PageContextEligibility::GetAsync(
+      base::BindOnce(&TtcPageContextMonitor::OnActionableEligibilityResolved,
+                     fetch_weak_ptr_factory_.GetWeakPtr(), weak_page,
+                     std::move(*actionable_result)));
+}
+
+void TtcPageContextMonitor::OnActionableEligibilityResolved(
+    base::WeakPtr<content::Page> weak_page,
+    optimization_guide::AIPageContentResult actionable_result,
+    optimization_guide::PageContextEligibility* page_context_eligibility) {
+  if (!weak_page || !IsMonitoredPage(*weak_page)) {
+    return;
+  }
+
+  // Cancel any racing URL check started by `OnPageContentExtracted()`.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  const GURL& url = weak_page->GetMainDocument().GetLastCommittedURL();
+  const bool is_eligible_for_server_upload =
+      optimization_guide::IsPageContextEligible(
+          url.GetHost(), url.GetPath(),
+          optimization_guide::GetFrameMetadataFromPageContent(
+              actionable_result),
+          page_context_eligibility);
+
   MaybeNotifyPageContextFetched(
       weak_page,
-      PageContext(base::MakeRefCounted<
-                  page_content_annotations::RefCountedAnnotatedPageContent>(
-          std::move(actionable_result->proto))));
+      BuildPageContextResult(
+          base::MakeRefCounted<
+              page_content_annotations::RefCountedAnnotatedPageContent>(
+              std::move(actionable_result.proto)),
+          is_eligible_for_server_upload));
 }
 
 }  // namespace ttc

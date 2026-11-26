@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -28,6 +30,8 @@
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "components/actor/core/safety_list_manager.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
@@ -115,6 +119,56 @@ std::vector<std::string> CollectText(
   return text;
 }
 
+bool IsIneligibleTestHost(std::string_view host) {
+  return host.contains("ineligible");
+}
+
+bool HasIneligibleFrame(
+    const std::vector<optimization_guide::FrameMetadata>& frame_metadata) {
+  return std::ranges::any_of(frame_metadata, &IsIneligibleTestHost,
+                             &optimization_guide::FrameMetadata::host);
+}
+
+constexpr optimization_guide::PageContextEligibilityAPI kTestEligibilityApi = {
+    .IsPageContextEligible =
+        [](const std::string& host,
+           const std::string&,
+           const std::vector<optimization_guide::FrameMetadata>&
+               frame_metadata) {
+          return !IsIneligibleTestHost(host) &&
+                 !HasIneligibleFrame(frame_metadata);
+        },
+    .IsPageContextEligibleWithAccount =
+        [](const std::string& host,
+           const std::string&,
+           const std::string&,
+           const std::vector<optimization_guide::FrameMetadata>&
+               frame_metadata) {
+          return !IsIneligibleTestHost(host) &&
+                 !HasIneligibleFrame(frame_metadata);
+        },
+    .ShouldReextractPageContext =
+        [](const std::string&,
+           const std::string&,
+           const std::vector<std::string>&) { return false; },
+    .GetMetaTagNamesAffectingEligibility =
+        [](std::string_view,
+           std::string_view,
+           const std::vector<optimization_guide::FrameMetadata>&) {
+          return optimization_guide::StringViewSpan{};
+        },
+    .CheckPageEligibility =
+        [](const std::vector<optimization_guide::FrameUrl>& frames) {
+          const bool ineligible =
+              std::ranges::any_of(frames, &IsIneligibleTestHost,
+                                  &optimization_guide::FrameUrl::host);
+          return optimization_guide::PageEligibilityResult{
+              .status = ineligible
+                            ? optimization_guide::PageEligibility::kIneligible
+                            : optimization_guide::PageEligibility::kEligible};
+        },
+};
+
 class PageContextMonitorBrowserTest : public TtcCoreBrowserTestBase {
  public:
   PageContextMonitorBrowserTest() = default;
@@ -182,12 +236,13 @@ class PageContextMonitorBrowserTest : public TtcCoreBrowserTestBase {
     EXPECT_TRUE(restricted.Wait());
   }
 
-  // Simulates the user starting to speak and waits for a restricted context
-  // update with `reason`.
+  // Simulates a user speech turn and waits for a restricted context update
+  // with `reason`.
   void SpeakExpectingRestricted(PageRestrictionReason reason) {
     auto refreshed = ExpectRestrictedUpdate(reason);
     ttc_service().session_controller()->OnSpeakerChanged(Speaker::kUser);
     EXPECT_TRUE(refreshed.Wait());
+    ttc_service().session_controller()->OnSpeakerChanged(Speaker::kIdle);
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
   }
 
@@ -717,6 +772,79 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   ASSERT_TRUE(extracted_blocked.Wait());
   FlushMessageLoop();
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+}
+
+class PageContextMonitorEligibilityBrowserTest
+    : public PageContextMonitorBrowserTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    PageContextMonitorBrowserTest::SetUpInProcessBrowserTestFixture();
+    optimization_guide::PageContextEligibility::SetForTesting(
+        &test_eligibility_);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    optimization_guide::PageContextEligibility::SetForTesting(nullptr);
+    PageContextMonitorBrowserTest::TearDownInProcessBrowserTestFixture();
+  }
+
+ private:
+  optimization_guide::PageContextEligibility test_eligibility_{
+      &kTestEligibilityApi};
+};
+
+// Pages marked ineligible for server upload by `PageContextEligibility` must
+// emit `kSafetyPolicy` on initial extraction, cached session start, and user
+// speech refresh, and resume sending context on eligible pages.
+IN_PROC_BROWSER_TEST_F(PageContextMonitorEligibilityBrowserTest,
+                       ServerUploadIneligiblePagesSendSafetyPolicyRestriction) {
+  const GURL ineligible_url =
+      embedded_test_server()->GetURL("ineligible.com", "/simple.html");
+  const GURL allowed_url =
+      embedded_test_server()->GetURL("allowed.com", "/simple.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), ineligible_url));
+
+  // Initial session start on an ineligible host emits `kSafetyPolicy`.
+  ASSERT_NO_FATAL_FAILURE(
+      StartSessionExpectingRestricted(PageRestrictionReason::kSafetyPolicy));
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  // Restarting a session when PCES has cached the ineligible extraction also
+  // emits `kSafetyPolicy`.
+  ttc_service().EndSession();
+  ASSERT_NO_FATAL_FAILURE(
+      StartSessionExpectingRestricted(PageRestrictionReason::kSafetyPolicy));
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  // Speaking triggers an actionable APC refresh, which must also enforce
+  // server-upload eligibility and emit `kSafetyPolicy`.
+  SpeakExpectingRestricted(PageRestrictionReason::kSafetyPolicy);
+
+  // Navigating to an eligible page resumes sending normal page context.
+  auto navigated = ExpectPageChange();
+  base::test::TestFuture<void> allowed_sent;
+  EXPECT_CALL(
+      *conversation(),
+      SendContextUpdate(SharedContextIs(TabContextIs(allowed_url, "OK"))))
+      .WillOnce(base::test::RunOnceClosure(allowed_sent.GetCallback()));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), allowed_url));
+  EXPECT_TRUE(navigated.Wait());
+  EXPECT_TRUE(allowed_sent.Wait());
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  // Speaking on an eligible page triggers an actionable APC refresh that must
+  // still deliver normal page context under `PageContextEligibility`.
+  {
+    base::test::TestFuture<void> refreshed;
+    EXPECT_CALL(
+        *conversation(),
+        SendContextUpdate(SharedContextIs(TabContextIs(allowed_url, "OK"))))
+        .WillOnce(base::test::RunOnceClosure(refreshed.GetCallback()));
+    ttc_service().session_controller()->OnSpeakerChanged(Speaker::kUser);
+    EXPECT_TRUE(refreshed.Wait());
+    EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+  }
 }
 
 // Extracted page context includes the content of a cross-site iframe.

@@ -32,6 +32,10 @@ class Page;
 class WebContents;
 }  // namespace content
 
+namespace optimization_guide {
+class PageContextEligibility;
+}  // namespace optimization_guide
+
 namespace ttc {
 
 class SessionControllerImpl;
@@ -141,6 +145,10 @@ class TtcPageContextMonitor
           journal_event,
       base::WeakPtr<content::Page> page,
       optimization_guide::AIPageContentResultOrError result);
+  void OnActionableEligibilityResolved(
+      base::WeakPtr<content::Page> page,
+      optimization_guide::AIPageContentResult result,
+      optimization_guide::PageContextEligibility* page_context_eligibility);
 
   const raw_ref<SessionControllerImpl> session_controller_;
   base::ScopedObservation<SessionController, SessionController::Observer>
