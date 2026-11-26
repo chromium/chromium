@@ -74,12 +74,26 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
     bool is_third_party_context = false;
   };
 
-  // Creates a new FileSystemAccessEntryPtr from the path to a file. Assumes the
-  // passed in path is valid and represents a file.
+  // Controls whether reading a single-file handle via `AsBlob()` consults
+  // `FileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess()`.
+  enum class SensitiveEntryReadCheck {
+    // Enforce the sensitive-entry blocklist on reads. This is used for the
+    // picker-selected and directory-derived handles.
+    kEnforce,
+    // Skip the sensitive-entry blocklist on reads for the originally opened
+    // path. This is used only for OS-initiated single-file launches (such as
+    // PWA `file_handlers`) where the OS stages files in blocklisted
+    // directories. Write operations and symlink checks remain enforced.
+    kSkip,
+  };
+
+  // Creates a new `FileSystemAccessEntryPtr` from the path to a file. Assumes
+  // the passed in path is valid and represents a file.
   virtual blink::mojom::FileSystemAccessEntryPtr CreateFileEntryFromPath(
       const BindingContext& binding_context,
       const content::PathInfo& path_info,
-      AccessTrigger access_trigger) = 0;
+      AccessTrigger access_trigger,
+      SensitiveEntryReadCheck read_check) = 0;
 
   // Creates a new FileSystemAccessEntryPtr from the path to a directory.
   // Assumes the passed in path is valid and represents a directory.

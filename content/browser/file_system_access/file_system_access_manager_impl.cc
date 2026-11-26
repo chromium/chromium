@@ -558,8 +558,11 @@ void DidCheckIfDefaultDirectoryExists(
 
 FileSystemAccessManagerImpl::SharedHandleState::SharedHandleState(
     scoped_refptr<FileSystemAccessPermissionGrant> read_grant,
-    scoped_refptr<FileSystemAccessPermissionGrant> write_grant)
-    : read_grant(std::move(read_grant)), write_grant(std::move(write_grant)) {
+    scoped_refptr<FileSystemAccessPermissionGrant> write_grant,
+    std::optional<base::FilePath> read_blocklist_exempt_path)
+    : read_grant(std::move(read_grant)),
+      write_grant(std::move(write_grant)),
+      read_blocklist_exempt_path(std::move(read_blocklist_exempt_path)) {
   CHECK(this->read_grant, base::NotFatalUntil::M159);
   CHECK(this->write_grant, base::NotFatalUntil::M159);
 }
@@ -1117,10 +1120,15 @@ void FileSystemAccessManagerImpl::
     return;
   }
 
+  // Single-file drag-and-drop handles intentionally skip the sensitive-entry
+  // blocklist at token redemption (see crbug.com/40061211), so preserve that
+  // exemption for read-only `AsBlob()` calls on the exact dropped path.
   SharedHandleState shared_handle_state =
       GetSharedHandleStateForNonSandboxedPath(
           path_info, binding_context.storage_key, file_type,
-          AccessTrigger::kDragAndDrop);
+          AccessTrigger::kDragAndDrop,
+          file_type == HandleType::kFile ? std::make_optional(url.path())
+                                         : std::nullopt);
 
   blink::mojom::FileSystemAccessEntryPtr entry;
   if (file_type == HandleType::kDirectory) {
@@ -1529,14 +1537,18 @@ blink::mojom::FileSystemAccessEntryPtr
 FileSystemAccessManagerImpl::CreateFileEntryFromPath(
     const BindingContext& binding_context,
     const content::PathInfo& file_path_info,
-    AccessTrigger access_trigger) {
+    AccessTrigger access_trigger,
+    SensitiveEntryReadCheck read_check) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   storage::FileSystemURL url = CreateFileSystemURLFromPath(file_path_info);
 
   SharedHandleState shared_handle_state =
       GetSharedHandleStateForNonSandboxedPath(
           file_path_info, binding_context.storage_key, HandleType::kFile,
-          access_trigger);
+          access_trigger,
+          read_check == SensitiveEntryReadCheck::kSkip
+              ? std::make_optional(url.path())
+              : std::nullopt);
 
   return blink::mojom::FileSystemAccessEntry::New(
       blink::mojom::FileSystemAccessHandle::NewFile(
@@ -1588,6 +1600,9 @@ FileSystemAccessManagerImpl::CreateDirectoryHandle(
     const SharedHandleState& handle_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(url.is_valid(), base::NotFatalUntil::M161);
+  // Directory handles must never inherit a single-file read-blocklist
+  // exemption.
+  CHECK(!handle_state.read_blocklist_exempt_path.has_value());
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle> result;
   directory_receivers_.Add(
@@ -2147,7 +2162,8 @@ void FileSystemAccessManagerImpl::OnCheckPathsAgainstEnterprisePolicy(
   result_entries.reserve(entries.size());
   for (const auto& entry : entries) {
     result_entries.push_back(
-        CreateFileEntryFromPath(binding_context, entry, AccessTrigger::kOpen));
+        CreateFileEntryFromPath(binding_context, entry, AccessTrigger::kOpen,
+                                SensitiveEntryReadCheck::kEnforce));
   }
 
   std::move(callback).Run(file_system_access_error::Ok(),
@@ -2323,8 +2339,11 @@ FileSystemAccessManagerImpl::GetSharedHandleStateForNonSandboxedPath(
     const content::PathInfo& path_info,
     const blink::StorageKey& storage_key,
     HandleType handle_type,
-    FileSystemAccessPermissionContext::AccessTrigger access_trigger) {
+    FileSystemAccessPermissionContext::AccessTrigger access_trigger,
+    std::optional<base::FilePath> read_blocklist_exempt_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!read_blocklist_exempt_path.has_value() ||
+        handle_type == HandleType::kFile);
 
   scoped_refptr<FileSystemAccessPermissionGrant> read_grant, write_grant;
   if (storage_key.IsThirdPartyContext()) {
@@ -2375,11 +2394,15 @@ FileSystemAccessManagerImpl::GetSharedHandleStateForNonSandboxedPath(
   }
 
   if (shared_handle_state_callback_for_test_) {
-    return shared_handle_state_callback_for_test_.Run(read_grant,  // IN-TEST
-                                                      write_grant);
+    SharedHandleState test_state =
+        shared_handle_state_callback_for_test_.Run(read_grant,  // IN-TEST
+                                                   write_grant);
+    return SharedHandleState(test_state.read_grant, test_state.write_grant,
+                             std::move(read_blocklist_exempt_path));
   }
 
-  return SharedHandleState(std::move(read_grant), std::move(write_grant));
+  return SharedHandleState(std::move(read_grant), std::move(write_grant),
+                           std::move(read_blocklist_exempt_path));
 }
 
 FileSystemAccessHandleBase::SharedHandleState

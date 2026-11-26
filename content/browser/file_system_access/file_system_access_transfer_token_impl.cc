@@ -147,6 +147,7 @@ FileSystemAccessTransferTokenImpl::CreateDirectoryHandle(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(handle_type_, HandleType::kDirectory, base::NotFatalUntil::M159);
   CHECK(handle_state_.has_value());
+  CHECK(!handle_state_->read_blocklist_exempt_path.has_value());
   return std::make_unique<FileSystemAccessDirectoryHandleImpl>(
       manager_, binding_context, url_,
       GetEffectiveHandleStateForContext(url_, binding_context, *handle_state_));

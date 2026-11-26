@@ -196,19 +196,37 @@ void FileSystemAccessFileHandleImpl::AsBlob(AsBlobCallback callback) {
   }
 
   if (base::FeatureList::IsEnabled(
-          features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
-    RunWithSensitiveEntryAccess(
-        url(), display_name(), HandleType::kFile,
-        AccessTrigger::kProgrammaticRead,
-        base::BindOnce(&FileSystemAccessFileHandleImpl::DoAsBlob,
-                       weak_factory_.GetWeakPtr()),
-        base::BindOnce([](AsBlobCallback callback) {
-          std::move(callback).Run(file_system_access_error::FromStatus(
-                                      FileSystemAccessStatus::kSecurityError),
-                                  base::File::Info(), nullptr);
-        }),
-        std::move(callback));
-    return;
+          features::kFileSystemAccessAsBlobBlocklistCheck)) {
+    const bool is_non_absolute_local_path =
+        url().type() == storage::FileSystemType::kFileSystemTypeLocal &&
+        !url().path().IsAbsolute()
+#if BUILDFLAG(IS_ANDROID)
+        && !url().path().IsContentUri()
+#endif
+        ;
+    const bool is_exempt_from_read_blocklist =
+        handle_state().read_blocklist_exempt_path.has_value() &&
+        *handle_state().read_blocklist_exempt_path == url().path() &&
+        !is_non_absolute_local_path
+#if BUILDFLAG(IS_ANDROID)
+        && !url().path().IsContentUri()
+#endif
+        ;
+
+    if (!is_exempt_from_read_blocklist) {
+      RunWithSensitiveEntryAccess(
+          url(), display_name(), HandleType::kFile,
+          AccessTrigger::kProgrammaticRead,
+          base::BindOnce(&FileSystemAccessFileHandleImpl::DoAsBlob,
+                         weak_factory_.GetWeakPtr()),
+          base::BindOnce([](AsBlobCallback callback) {
+            std::move(callback).Run(file_system_access_error::FromStatus(
+                                        FileSystemAccessStatus::kSecurityError),
+                                    base::File::Info(), nullptr);
+          }),
+          std::move(callback));
+      return;
+    }
   }
 
   DoAsBlob(std::move(callback));

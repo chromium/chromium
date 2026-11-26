@@ -678,6 +678,87 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   }
 }
 
+// Verifies that when an installed PWA is launched by the OS with a single file
+// located inside a blocklisted directory (for example, `%LOCALAPPDATA%\Temp` on
+// Windows), reading the explicitly opened file via `getFile()` succeeds, while
+// writing via `createWritable()` remains blocked by the sensitive-entry
+// blocklist and post-launch symlink replacement remains blocked.
+IN_PROC_BROWSER_TEST_F(
+    WebAppFileHandlingBrowserTest,
+    FileLaunchParamsInBlockedDirectoryReadAllowedWriteBlocked) {
+  InstallFileHandlingPWA();
+
+  // `profile()->GetPath().DirName()` (the user data directory) is always
+  // blocklisted with `BlockType::kBlockAllChildren` on all platforms.
+  const base::FilePath blocked_dir =
+      profile()->GetPath().DirName().AppendASCII("blocked_launch_dir");
+  const base::FilePath test_file_path = blocked_dir.AppendASCII("demo.txt");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateDirectory(blocked_dir));
+    ASSERT_TRUE(base::WriteFile(test_file_path, "sample_data"));
+  }
+
+  LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path});
+  VerifyPwaDidReceiveFileLaunchParams(test_file_path);
+
+  // Reading the explicitly launched file succeeds despite being inside a
+  // blocklisted directory.
+  EXPECT_EQ("sample_data",
+            content::EvalJs(
+                web_contents_.get(),
+                "(async () => {"
+                "  const file = await window.launchParams.files[0].getFile();"
+                "  return await file.text();"
+                "})()"));
+
+  // Even when the user approves write permission, `createWritable()` must
+  // still enforce the write blocklist and reject with `SecurityError`.
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents_.get())
+      ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
+
+  EXPECT_EQ("SecurityError", EvalJs(web_contents_.get(), R"(
+      (async () => {
+        try {
+          const writable = await window.launchParams.files[0].createWritable();
+          await writable.write('blocked_write');
+          await writable.close();
+          return 'success';
+        } catch (e) {
+          return e.name;
+        }
+      })())"));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string content;
+    EXPECT_TRUE(base::ReadFileToString(test_file_path, &content));
+    EXPECT_EQ("sample_data", content);
+  }
+
+#if BUILDFLAG(IS_POSIX)
+  // Replacing the launched file with a symlink must still be rejected at read
+  // time.
+  const base::FilePath symlink_target = blocked_dir.AppendASCII("secret.txt");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::WriteFile(symlink_target, "secret_data"));
+    ASSERT_TRUE(base::DeleteFile(test_file_path));
+    ASSERT_TRUE(base::CreateSymbolicLink(symlink_target, test_file_path));
+  }
+
+  EXPECT_EQ("NotFoundError", EvalJs(web_contents_.get(), R"(
+      (async () => {
+        try {
+          const file = await window.launchParams.files[0].getFile();
+          return await file.text();
+        } catch (e) {
+          return e.name;
+        }
+      })())"));
+#endif  // BUILDFLAG(IS_POSIX)
+}
+
 // Regression test for https://crbug.com/505670262: when an app window is on a
 // validated `scope_extensions` origin and receives a file-handling launch (here
 // via `focus-existing`), `EntriesBuilder` must bind the File System Access

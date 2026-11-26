@@ -2805,15 +2805,24 @@ class FileSystemAccessFileHandleImplAsBlobTest
   }
 
  protected:
-  void SetDisplayName(const std::string& display_name) {
+  // Re-creates `handle_` with `display_name` and optional
+  // `read_blocklist_exempt_path` on its `SharedHandleState`.
+  void SetHandleWithExemptPath(
+      const std::string& display_name,
+      std::optional<base::FilePath> read_blocklist_exempt_path) {
     handle_ = std::make_unique<FileSystemAccessFileHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
             test_src_storage_key_, test_src_url_,
             web_contents_->GetPrimaryMainFrame()->GetGlobalId()),
         test_file_url_, display_name,
-        FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
-                                                       allow_grant_));
+        FileSystemAccessManagerImpl::SharedHandleState(
+            allow_grant_, allow_grant_, std::move(read_blocklist_exempt_path)));
+  }
+
+  void SetDisplayName(const std::string& display_name) {
+    SetHandleWithExemptPath(display_name,
+                            /*read_blocklist_exempt_path=*/std::nullopt);
   }
 
   std::pair<FileSystemAccessStatus, blink::mojom::SerializedBlobPtr> GetBlob() {
@@ -3039,7 +3048,7 @@ TEST_F(FileSystemAccessFileHandleImplAsBlobTest,
        SensitiveEntryAccessFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      features::kFileSystemAccessDirectoryIterationBlocklistCheck);
+      features::kFileSystemAccessAsBlobBlocklistCheck);
 
   manager_->SetPermissionContextForTesting(&permission_context_);
   EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_).Times(0);
@@ -3093,6 +3102,62 @@ TEST_F(FileSystemAccessFileHandleImplAsBlobTest,
       test_src_storage_key_, storage::kFileSystemTypeLocal,
       base::FilePath::FromUTF8Unsafe("relative_test_path"));
   SetDisplayName("relative_test_path");
+
+  manager_->SetPermissionContextForTesting(&permission_context_);
+  EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_).Times(0);
+
+  auto [status, blob] = GetBlob();
+  EXPECT_EQ(status, FileSystemAccessStatus::kSecurityError);
+  EXPECT_TRUE(blob.is_null());
+}
+
+// Verifies that `AsBlob()` skips the sensitive entry access check when
+// `read_blocklist_exempt_path` matches the handle's exact local path.
+TEST_F(FileSystemAccessFileHandleImplAsBlobTest,
+       SensitiveEntryAccessExemptPathSkipped) {
+  SetHandleWithExemptPath("test", test_file_url_.path());
+
+  manager_->SetPermissionContextForTesting(&permission_context_);
+  EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_).Times(0);
+
+  auto [status, blob] = GetBlob();
+  EXPECT_EQ(status, FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(blob.is_null());
+}
+
+// Verifies that `AsBlob()` still enforces the sensitive entry access check if
+// `read_blocklist_exempt_path` does not match the handle's current path (e.g.
+// after the handle has been moved).
+TEST_F(FileSystemAccessFileHandleImplAsBlobTest,
+       SensitiveEntryAccessExemptPathMismatchEnforced) {
+  SetHandleWithExemptPath("test",
+                          test_file_url_.path().DirName().AppendASCII("other"));
+
+  manager_->SetPermissionContextForTesting(&permission_context_);
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          test_src_storage_key_.origin(),
+          PathInfo(PathType::kLocal, test_file_url_.path(), "test"),
+          FileSystemAccessPermissionContext::HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead,
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
+      .WillOnce(base::test::RunOnceCallback<5>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort));
+
+  auto [status, blob] = GetBlob();
+  EXPECT_EQ(status, FileSystemAccessStatus::kSecurityError);
+  EXPECT_TRUE(blob.is_null());
+}
+
+// Verifies that `AsBlob()` still blocks a non-absolute local path even when
+// `read_blocklist_exempt_path` matches it.
+TEST_F(FileSystemAccessFileHandleImplAsBlobTest,
+       SensitiveEntryAccessExemptRelativeLocalPathBlocked) {
+  test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
+      test_src_storage_key_, storage::kFileSystemTypeLocal,
+      base::FilePath::FromUTF8Unsafe("relative_test_path"));
+  SetHandleWithExemptPath("relative_test_path", test_file_url_.path());
 
   manager_->SetPermissionContextForTesting(&permission_context_);
   EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_).Times(0);

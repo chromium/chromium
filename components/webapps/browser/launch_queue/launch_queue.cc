@@ -54,8 +54,13 @@ class EntriesBuilder {
   void AddFileEntry(
       const content::PathInfo& path_info,
       content::FileSystemAccessEntryFactory::AccessTrigger trigger) {
-    entries_.push_back(
-        entry_factory_->CreateFileEntryFromPath(context_, path_info, trigger));
+    // OS-initiated single-file launches (e.g. "Open with" or opening an email
+    // attachment) may stage files in directories on the FSA blocklist such as
+    // `%LOCALAPPDATA%\Temp`. Skip the read-time blocklist check for the
+    // explicitly launched file while keeping write and symlink checks enforced.
+    entries_.push_back(entry_factory_->CreateFileEntryFromPath(
+        context_, path_info, trigger,
+        content::FileSystemAccessEntryFactory::SensitiveEntryReadCheck::kSkip));
   }
 
   void AddDirectoryEntry(const content::PathInfo& path_info) {
