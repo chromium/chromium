@@ -93,7 +93,7 @@ ByteSize SysInfo::AmountOfTotalPhysicalMemoryImpl() {
 std::string SysInfo::OperatingSystemBuildVersion() {
   std::optional<std::string> build_number =
       StringSysctl({CTL_KERN, KERN_OSVERSION});
-  return build_number.value();
+  return build_number.value_or(std::string{});
 }
 
 }  // namespace base
