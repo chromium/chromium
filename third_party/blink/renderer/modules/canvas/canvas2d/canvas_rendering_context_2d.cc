@@ -201,7 +201,6 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(
   if (canvas->GetDocument().GetSettings() &&
       canvas->GetDocument().GetSettings()->GetAntialiasedClips2dCanvasEnabled())
     clip_antialiasing_ = kAntiAliased;
-  SetShouldAntialias(true);
 }
 
 V8RenderingContext* CanvasRenderingContext2D::AsV8RenderingContext() {
@@ -372,10 +371,6 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
 
 bool CanvasRenderingContext2D::ShouldAntialias() const {
   return GetState().ShouldAntialias();
-}
-
-void CanvasRenderingContext2D::SetShouldAntialias(bool do_aa) {
-  GetState().SetShouldAntialias(do_aa);
 }
 
 void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
