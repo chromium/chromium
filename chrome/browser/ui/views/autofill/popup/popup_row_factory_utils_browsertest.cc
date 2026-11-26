@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/password_favicon_loader.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
-#include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -193,130 +191,6 @@ const Suggestion kBnplSuggestions[] = {
                          /*linked=*/false,
                          /*deactivated=*/true)};
 
-struct AtMemoryTestParam {
-  std::string name;
-  base::RepeatingCallback<Suggestion()> generator;
-};
-
-Suggestion CreateAtMemorySearchResultSuggestion() {
-  MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport Number",
-                           u"987654321");
-  entry.metadata_list.emplace_back(MemoryDataType::kPassportName, u"Name",
-                                   u"John Doe");
-  entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
-  return AtMemoryManager::TransformResultIntoSuggestion(entry, "en-US");
-}
-
-Suggestion CreateAtMemoryAddressSearchResultTwoLinesNoOverflowSuggestion() {
-  MemorySearchResult entry(MemoryDataType::kAddressFull, u"Address",
-                           u"123 Long Street Name, Suite 100, San Francisco");
-  entry.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
-                                   u"John Doe");
-  entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
-  return AtMemoryManager::TransformResultIntoSuggestion(entry, "en-US");
-}
-
-Suggestion CreateAtMemoryAddressSearchResultTwoLinesOverflowSuggestion() {
-  MemorySearchResult entry(
-      MemoryDataType::kAddressFull, u"Address",
-      u"123 Very Long Street Name, Suite 100, Building A, San Francisco, "
-      u"California 94107");
-  entry.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
-                                   u"John Doe");
-  entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
-  return AtMemoryManager::TransformResultIntoSuggestion(entry, "en-US");
-}
-
-Suggestion CreateAtMemoryAddressSearchResultLabelTruncationSuggestion() {
-  MemorySearchResult entry(MemoryDataType::kAddressFull, u"Address",
-                           u"123 Long Street Name, Suite 100, San Francisco");
-  entry.metadata_list.emplace_back(
-      MemoryDataType::kNameFull, u"Name",
-      u"Very Long Name That Exceeds The Maximum Allowed Width For A Label");
-  entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
-  return AtMemoryManager::TransformResultIntoSuggestion(entry, "en-US");
-}
-
-Suggestion CreateAtMemorySearchResultArabicSuggestion() {
-  MemorySearchResult entry(MemoryDataType::kPassportNumber, u"جواز سفر",
-                           u"987654321");
-  entry.metadata_list.emplace_back(MemoryDataType::kPassportName, u"الاسم",
-                                   u"محمد أحمد");
-  entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
-  return AtMemoryManager::TransformResultIntoSuggestion(entry, "ar");
-}
-
-Suggestion
-CreateAtMemoryAddressSearchResultTwoLinesNoOverflowArabicSuggestion() {
-  MemorySearchResult entry(MemoryDataType::kAddressFull, u"العنوان",
-                           u"شارع الملك فهد، جناح ١٠٠، الرياض");
-  entry.metadata_list.emplace_back(MemoryDataType::kNameFull, u"الاسم",
-                                   u"محمد أحمد");
-  entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
-  return AtMemoryManager::TransformResultIntoSuggestion(entry, "ar");
-}
-
-Suggestion CreateAtMemoryAddressSearchResultTwoLinesOverflowArabicSuggestion() {
-  MemorySearchResult entry(
-      MemoryDataType::kAddressFull, u"العنوان",
-      u"١٢٣ شارع الملك عبد العزيز الطويل جداً، جناح ١٠٠، مبنى أ، الرياض، "
-      u"المملكة العربية السعودية");
-  entry.metadata_list.emplace_back(MemoryDataType::kNameFull, u"الاسم",
-                                   u"محمد أحمد");
-  entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
-  return AtMemoryManager::TransformResultIntoSuggestion(entry, "ar");
-}
-
-Suggestion CreateAtMemoryAddressSearchResultLabelTruncationArabicSuggestion() {
-  MemorySearchResult entry(MemoryDataType::kAddressFull, u"العنوان",
-                           u"شارع الملك فهد، جناح ١٠٠، الرياض");
-  entry.metadata_list.emplace_back(
-      MemoryDataType::kNameFull, u"الاسم",
-      u"اسم طويل جداً يتجاوز الحد الأقصى للعرض المسموح به لعنوان التسمية");
-  entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
-  return AtMemoryManager::TransformResultIntoSuggestion(entry, "ar");
-}
-
-const AtMemoryTestParam kAtMemorySuggestions[] = {
-    {"AtMemory_search_result",
-     base::BindRepeating(&CreateAtMemorySearchResultSuggestion)},
-    {"AtMemory_address_search_result_2lines_no_overflow",
-     base::BindRepeating(
-         &CreateAtMemoryAddressSearchResultTwoLinesNoOverflowSuggestion)},
-    {"AtMemory_address_search_result_2lines_overflow",
-     base::BindRepeating(
-         &CreateAtMemoryAddressSearchResultTwoLinesOverflowSuggestion)},
-    {"AtMemory_address_search_result_label_truncation",
-     base::BindRepeating(
-         &CreateAtMemoryAddressSearchResultLabelTruncationSuggestion)},
-    {"AtMemory_source_attribution",
-     base::BindRepeating(&AtMemoryManager::CreateSourceAttributionSuggestion)},
-    {"AtMemory_fetching",
-     base::BindRepeating(&AtMemoryManager::CreateFetchingSuggestion, 0)},
-    {"AtMemory_search_affordance", base::BindRepeating([]() {
-       return AtMemoryManager::CreateSearchAffordanceSuggestion(u"passport");
-     })},
-    {"AtMemory_no_connection", base::BindRepeating([]() {
-       return AtMemoryManager::CreateNoConnectionSuggestion(u"passport");
-     })},
-    {"AtMemory_generic_error",
-     base::BindRepeating(&AtMemoryManager::CreateGenericErrorSuggestion)},
-};
-
-const AtMemoryTestParam kAtMemoryRtlSuggestions[] = {
-    {"AtMemory_search_result",
-     base::BindRepeating(&CreateAtMemorySearchResultArabicSuggestion)},
-    {"AtMemory_address_search_result_2lines_no_overflow",
-     base::BindRepeating(
-         &CreateAtMemoryAddressSearchResultTwoLinesNoOverflowArabicSuggestion)},
-    {"AtMemory_address_search_result_2lines_overflow",
-     base::BindRepeating(
-         &CreateAtMemoryAddressSearchResultTwoLinesOverflowArabicSuggestion)},
-    {"AtMemory_address_search_result_label_truncation",
-     base::BindRepeating(
-         &CreateAtMemoryAddressSearchResultLabelTruncationArabicSuggestion)},
-};
-
 class MockPasswordFaviconLoader : public PasswordFaviconLoader {
  public:
   MOCK_METHOD(void,
@@ -477,67 +351,6 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, FilterMatchHighlighting) {
                                                          gfx::Range(1, 5)});
   ShowAndVerifyUi();
 }
-
-using AtMemoryTestParamType =
-    std::tuple<AtMemoryTestParam, std::optional<PopupRowView::CellType>, bool>;
-
-class AtMemoryCreatePopupRowViewTest
-    : public PopupRowViewTestBase,
-      public ::testing::WithParamInterface<AtMemoryTestParamType> {
- public:
-  static std::string GetTestName(
-      const testing::TestParamInfo<AtMemoryTestParamType>& info) {
-    const auto& [param, selection, is_rtl] = info.param;
-    const std::string selection_part =
-        !selection.has_value()                          ? "NotSelected"
-        : selection == PopupRowView::CellType::kContent ? "ContentSelected"
-                                                        : "ControlSelected";
-    const std::string rtl_part = is_rtl ? "_Rtl" : "";
-    return param.name + "_" + selection_part + rtl_part;
-  }
-
-  void SetUpOnMainThread() override {
-    scoped_rtl_.emplace(std::get<bool>(GetParam()));
-    PopupRowViewTestBase::SetUpOnMainThread();
-  }
-
-  void TearDownOnMainThread() override {
-    PopupRowViewTestBase::TearDownOnMainThread();
-    scoped_rtl_.reset();
-  }
-
- private:
-  std::optional<base::i18n::ScopedRTLForTesting> scoped_rtl_;
-};
-
-// Tests that the suggestion row is rendered correctly.
-IN_PROC_BROWSER_TEST_P(AtMemoryCreatePopupRowViewTest, SuggestionRowUiTest) {
-  const auto& [param, selection, is_rtl] = GetParam();
-  CreateRowView(param.generator.Run(), selection);
-  ShowAndVerifyUi();
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AtMemorySuggestions,
-    AtMemoryCreatePopupRowViewTest,
-    ::testing::Combine(::testing::ValuesIn(kAtMemorySuggestions),
-                       ::testing::ValuesIn({
-                           std::optional<PopupRowView::CellType>(),
-                           std::optional(PopupRowView::CellType::kContent),
-                       }),
-                       ::testing::Bool()),
-    AtMemoryCreatePopupRowViewTest::GetTestName);
-
-INSTANTIATE_TEST_SUITE_P(
-    AtMemoryRtlSuggestions,
-    AtMemoryCreatePopupRowViewTest,
-    ::testing::Combine(::testing::ValuesIn(kAtMemoryRtlSuggestions),
-                       ::testing::ValuesIn({
-                           std::optional<PopupRowView::CellType>(),
-                           std::optional(PopupRowView::CellType::kContent),
-                       }),
-                       ::testing::Bool()),
-    AtMemoryCreatePopupRowViewTest::GetTestName);
 
 IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, FreeformFooter) {
   CreateRowView(CreateFreeformFooter(),

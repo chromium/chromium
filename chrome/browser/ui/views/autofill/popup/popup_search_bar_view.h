@@ -73,7 +73,6 @@ class PopupSearchBarView : public views::View,
       const std::u16string& placeholder,
       const std::u16string& initial_value,
       Delegate& delegate,
-      bool show_search_icon_sparkle = false,
       base::TimeDelta debounce_delay = kInputChangeCallbackDelay);
   PopupSearchBarView(const PopupSearchBarView&) = delete;
   PopupSearchBarView& operator=(const PopupSearchBarView&) = delete;

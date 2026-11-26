@@ -109,9 +109,6 @@ class PopupViewViews : public PopupBaseView,
   // The maximum width of an Autofill AI sub-popup.
   static constexpr int kAutofillAiSubPopupMaxWidth = 320;
 
-  // The width of the AtMemory popup.
-  static constexpr int kAtMemoryPopupWidth = 320;
-
   // The maximum number of entries shown before making the popup scrollable. A
   // decimal number means the last element will appear "cut-off" to indicate
   // the scroll area.
@@ -305,11 +302,6 @@ class PopupViewViews : public PopupBaseView,
   // Reacts to key events under the assumption that the currently shown popup
   // contains Compose content.
   bool HandleKeyPressEventForCompose(
-      const input::NativeWebKeyboardEvent& event);
-
-  // Reacts to key events under the assumption that the currently shown popup
-  // contains AtMemory content.
-  bool HandleKeyPressEventForAtMemory(
       const input::NativeWebKeyboardEvent& event);
 
   // Handles horizontal navigation (Left/Right arrows) for the popup, which

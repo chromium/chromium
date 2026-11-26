@@ -124,7 +124,7 @@ TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledAfterDelay) {
 TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledImmediatelyWithZeroDelay) {
   auto view = std::make_unique<PopupSearchBarView>(
       u"placeholder", /*initial_value=*/u"", delegate(),
-      /*show_search_icon_sparkle=*/false, /*debounce_delay=*/base::TimeDelta());
+      /*debounce_delay=*/base::TimeDelta());
 
   EXPECT_CALL(delegate(), SearchBarOnInputChanged(Eq(u"input text")));
   view->SetInputTextForTesting(u"input text");
@@ -225,7 +225,6 @@ TEST_F(PopupSearchBarViewTest, InitialText) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
           u"placeholder", u"initial query", delegate(),
-          /*show_search_icon_sparkle=*/false,
           /*debounce_delay=*/PopupSearchBarView::kInputChangeCallbackDelay));
   widget().Show();
 

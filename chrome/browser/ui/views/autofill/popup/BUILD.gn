@@ -60,7 +60,6 @@ source_set("popup_impl") {
     ":popup_bnpl_footnote_view",
     ":popup_cell_utils",
     ":popup_centered_text_view",
-    ":popup_footer_with_link_view",
     ":popup_interactive_row_view",
     ":popup_loading_view",
     ":popup_notice_view",
@@ -138,7 +137,6 @@ source_set("popup_view_views_impl") {
     ":popup_bnpl_footnote_view",
     ":popup_cell_utils",
     ":popup_centered_text_view",
-    ":popup_footer_with_link_view",
     ":popup_interactive_row_view",
     ":popup_loading_view",
     ":popup_notice_view",
@@ -382,7 +380,6 @@ source_set("popup_search_bar_view") {
   ]
   deps = [
     "//chrome/browser/ui/views:layout_provider",
-    "//components/omnibox/browser:vector_icons",
     "//components/strings:components_strings",
     "//components/user_education/views",
     "//components/vector_icons",
@@ -447,31 +444,6 @@ source_set("popup_row_with_button_view") {
     "//ui/base",
     "//ui/color",
     "//ui/events",
-  ]
-}
-
-source_set("popup_footer_with_link_view") {
-  public = [ "popup_footer_with_link_view.h" ]
-  sources = [ "popup_footer_with_link_view.cc" ]
-  public_deps = [
-    ":popup",
-    ":popup_interactive_row_view",
-    "//base",
-    "//ui/base/metadata",
-  ]
-  deps = [
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:chrome_pages",
-    "//chrome/browser/ui/autofill",
-    "//chrome/common",
-    "//components/strings:components_strings",
-    "//components/user_education/views",
-    "//components/vector_icons",
-    "//content/public/browser",
-    "//ui/accessibility:ax_enums_mojo",
-    "//ui/base",
-    "//ui/color",
-    "//ui/views",
   ]
 }
 
@@ -587,7 +559,6 @@ source_set("unit_tests") {
     ":popup_bnpl_footnote_view",
     ":popup_cell_utils",
     ":popup_centered_text_view",
-    ":popup_footer_with_link_view",
     ":popup_interactive_row_view",
     ":popup_loading_view",
     ":popup_notice_view",

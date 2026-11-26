@@ -88,10 +88,6 @@ constexpr int kCustomIconSize = 16;
 // The size of a close or delete icon.
 constexpr int kCloseIconSize = 16;
 
-// The custom horizontal spacing between labels in the same row for AtMemory
-// results suggestions.
-constexpr int kAtMemoryLabelHorizontalSpacing = 4;
-
 // Popup items that use a leading icon instead of a trailing one.
 // TODO(crbug.com/40100455): Rename to `kSuggestionTypesUsingLeadingIcons`.
 constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
@@ -115,11 +111,6 @@ constexpr int kAutofillPopupPasswordMaxWidth = 108;
 
 // Max width for the Autofill suggestion text.
 constexpr int kAutofillSuggestionMaxWidth = 192;
-
-// Max lines for the AtMemory suggestion text.
-constexpr int kAtMemorySuggestionMaxLines = 2;
-// Max width for the AtMemory suggestion text.
-constexpr int kAtMemorySuggestionWidth = 236;
 
 // Max lines for the Wallet Direct Offer suggestion text.
 constexpr int kWalletDirectOfferSuggestionMaxLines = 2;
@@ -202,10 +193,8 @@ void FormatLabel(views::Label& label,
                  const Suggestion::Text& text,
                  FillingProduct main_filling_product,
                  std::optional<int> maximum_width_single_line = std::nullopt) {
-  const int max_width = maximum_width_single_line.value_or(
-      main_filling_product == FillingProduct::kAtMemory
-          ? kAtMemorySuggestionWidth
-          : kAutofillSuggestionMaxWidth);
+  const int max_width =
+      maximum_width_single_line.value_or(kAutofillSuggestionMaxWidth);
   switch (main_filling_product) {
     case FillingProduct::kAddress:
     case FillingProduct::kAutocomplete:
@@ -290,13 +279,9 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
     const Suggestion& suggestion,
     FillingProduct main_filling_product) {
   std::vector<std::unique_ptr<views::View>> result;
-  // TODO(crbug.com/550237412): Maybe this can be applied to all the
-  // suggestion types.
   const int between_child_spacing =
-      suggestion.type == SuggestionType::kAtMemorySearchResult
-          ? kAtMemoryLabelHorizontalSpacing
-          : ChromeLayoutProvider::Get()->GetDistanceMetric(
-                DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
 
   for (const std::vector<Suggestion::Text>& label_row : suggestion.labels) {
     if (std::ranges::all_of(label_row, &std::u16string::empty,
@@ -310,14 +295,9 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
             .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
             .SetBetweenChildSpacing(between_child_spacing)
             .Build();
-    int used_width = 0;
     for (const Suggestion::Text& label_text : label_row) {
       // If a column is empty, do not include any further columns.
       if (label_text.value.empty()) {
-        break;
-      }
-      if (suggestion.type == SuggestionType::kAtMemorySearchResult &&
-          used_width >= kAtMemorySuggestionWidth) {
         break;
       }
       auto* label =
@@ -335,16 +315,10 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
       if (suggestion.type == SuggestionType::kGmailOneTimePasswordEntry) {
         label->SetElideBehavior(gfx::ELIDE_EMAIL);
       }
-      if (suggestion.type == SuggestionType::kAtMemorySearchResult) {
-        const int remaining_width = kAtMemorySuggestionWidth - used_width;
-        FormatLabel(*label, label_text, main_filling_product, remaining_width);
-        used_width += label->GetPreferredSize().width() + between_child_spacing;
-      } else {
-        // To make sure the popup width will not exceed its maximum value,
-        // divide the maximum label width by the number of labels.
-        FormatLabel(*label, label_text, main_filling_product,
-                    kAutofillSuggestionMaxWidth / label_row.size());
-      }
+      // To make sure the popup width will not exceed its maximum value,
+      // divide the maximum label width by the number of labels.
+      FormatLabel(*label, label_text, main_filling_product,
+                  kAutofillSuggestionMaxWidth / label_row.size());
     }
     result.push_back(std::move(label_row_container_view));
   }
@@ -874,47 +848,6 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
       PopupRowWithButtonView::ButtonSelectBehavior::kUnselectSuggestion);
 }
 
-std::unique_ptr<PopupRowContentView>
-CreateAtMemorySearchResultPopupRowContentView(
-    const Suggestion& suggestion,
-    std::optional<user_education::DisplayNewBadge> show_new_badge) {
-  std::unique_ptr<PopupRowContentView> view =
-      std::make_unique<PopupRowContentView>();
-  std::unique_ptr<views::Label> main_text_label =
-      CreateMainTextLabel(suggestion, show_new_badge);
-
-  main_text_label->SetMultiLine(true);
-  main_text_label->SetMaxLines(kAtMemorySuggestionMaxLines);
-  main_text_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-  main_text_label->SetMaximumWidth(kAtMemorySuggestionWidth);
-
-  // Checks if the text of a label fits in one line. Assumes that non-empty
-  // text has been set on `label` before calling this lambda.
-  const auto fits_in_one_line = [](const views::Label& label) -> bool {
-    CHECK(!label.GetText().empty());
-    const int line_height = label.GetLineHeight();
-    CHECK(line_height > 0);
-    return label.GetHeightForWidth(kAtMemorySuggestionWidth) == line_height;
-  };
-  const bool main_label_fits_in_one_line = fits_in_one_line(*main_text_label);
-
-  popup_cell_utils::AddSuggestionContentToView(
-      suggestion, std::move(main_text_label), CreateMinorTextLabels(suggestion),
-      /*description_label=*/nullptr,
-      CreateSubtextViews(*view, suggestion, FillingProduct::kAtMemory),
-      popup_cell_utils::GetIconImageView(suggestion), *view);
-
-  if (!main_label_fits_in_one_line) {
-    view->SetInsideBorderInsets(
-        gfx::Insets(view->GetInsideBorderInsets())
-            .set_top_bottom(
-                kAutofillMultilineSuggestionAdditionalVerticalMargin,
-                kAutofillMultilineSuggestionAdditionalVerticalMargin));
-  }
-
-  return view;
-}
-
 std::unique_ptr<PopupRowContentView> CreateWalletDirectOfferRowContentView(
     const Suggestion& suggestion,
     std::optional<user_education::DisplayNewBadge> show_new_badge,
@@ -1058,10 +991,20 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
 
   switch (type) {
     // These `type` should never be displayed in a `PopupRowView`.
-    case SuggestionType::kAtMemoryAiDisclosure:
-    case SuggestionType::kAtMemoryShortcutSettingsPromo:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kSeparator:
+    // TODO(crbug.com/584211585): Remove AtMemory enum cases.
+    case SuggestionType::kAtMemoryAiDisclosure:
+    case SuggestionType::kAtMemoryFetching:
+    case SuggestionType::kAtMemoryGenericError:
+    case SuggestionType::kAtMemoryInactivityNudge:
+    case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemoryOpenGemini:
+    case SuggestionType::kAtMemorySearchAffordance:
+    case SuggestionType::kAtMemorySearchResult:
+    case SuggestionType::kAtMemoryShortcutSettingsPromo:
+    case SuggestionType::kAtMemorySourceAttribution:
+    case SuggestionType::kAutocompleteAtMemoryButton:
       NOTREACHED();
     case SuggestionType::kAutofillAiSourceAttribution:
       return std::make_unique<PopupRowView>(
@@ -1117,26 +1060,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
       // BNPL suggestion.
       [[fallthrough]];
     }
-    case SuggestionType::kAtMemorySearchResult: {
-      return std::make_unique<PopupRowView>(
-          a11y_selection_delegate, selection_delegate, controller, line_number,
-          CreateAtMemorySearchResultPopupRowContentView(suggestion,
-                                                        show_new_badge));
-    }
-    // AtMemory suggestions do not apply filter match bolding to the main text.
-    case SuggestionType::kAtMemoryGenericError:
-    case SuggestionType::kAtMemoryFetching:
-    case SuggestionType::kAtMemoryInactivityNudge:
-    case SuggestionType::kAtMemoryNoConnection:
-    case SuggestionType::kAtMemoryOpenGemini:
-    case SuggestionType::kAtMemorySearchAffordance:
-    case SuggestionType::kAtMemorySourceAttribution: {
-      return std::make_unique<PopupRowView>(
-          a11y_selection_delegate, selection_delegate, controller, line_number,
-          CreatePopupRowContentView(suggestion, show_new_badge,
-                                    FillingProduct::kAtMemory,
-                                    /*filter_match=*/std::nullopt));
-    }
     case SuggestionType::kMerchantPromoCodeEntry: {
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
@@ -1148,7 +1071,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
-    case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kAutofillAiOtherOrders:
     case SuggestionType::kAutofillAiOtherShipments:

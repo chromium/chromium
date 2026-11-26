@@ -286,8 +286,7 @@ TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsNoControl) {
 }
 
 TEST_F(PopupRowViewTest, SetSelectedCellIgnoresUnselectableSuggestions) {
-  Suggestion suggestion(u"Source attribution",
-                        SuggestionType::kAtMemorySourceAttribution);
+  Suggestion suggestion(u"Freeform footer", SuggestionType::kFreeformFooter);
   suggestion.acceptability =
       Suggestion::Acceptability::kUnselectableAndUnacceptable;
   ShowView(/*line_number=*/0, {suggestion});
