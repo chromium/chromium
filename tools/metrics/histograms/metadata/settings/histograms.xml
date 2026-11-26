@@ -372,7 +372,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram name="Settings.PreloadStatus.OnStartup3" enum="PreloadPagesState"
     expires_after="2027-03-21">
-  <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
