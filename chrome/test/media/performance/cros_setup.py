@@ -3,31 +3,18 @@
 # found in the LICENSE file.
 """Starts Chrome on a ChromeOS sender through Crossbench."""
 
-import importlib.abc
-import importlib.util
 import logging
 import re
 import sys
 import time
-import typing
 from unittest.mock import MagicMock
 
-import typing_extensions
 from selenium.common.exceptions import WebDriverException
 
 import perf_config
 import remote_transport
 import senders
 
-# Optional Crossbench dependencies that the perf bots do not install.
-_MOCKED_PACKAGES = [
-    "google.cloud",
-    "psutil",
-    "xlsxwriter",
-    "hjson",
-    "mobly",
-    "snippet_uiautomator",
-]
 # Geometry flags are handled by the Viewport, and passing them to the
 # autologin launch script crashes it.
 _EXCLUDED_FLAGS = [
@@ -40,50 +27,13 @@ _CROS_CHROME_PATH = "/opt/google/chrome/chrome"
 _PREINSTALLED_CHROMEDRIVER = "/usr/local/chromedriver/chromedriver"
 
 
-class _MockFinder(importlib.abc.MetaPathFinder, importlib.abc.Loader):
-    """Serves a MagicMock for any import under `mocked_packages`."""
-
-    def __init__(self, mocked_packages):
-        self.mocked_packages = mocked_packages
-
-    def find_spec(self, fullname, path, target=None):
-        del path, target
-        if any(
-            fullname == pkg or fullname.startswith(pkg + '.')
-            for pkg in self.mocked_packages
-        ):
-            return importlib.util.spec_from_loader(fullname, self)
-        return None
-
-    def create_module(self, spec):
-        mock = MagicMock()
-        # Ensure the mock is treated as a package for submodule imports.
-        mock.__path__ = []
-        return mock
-
-    def exec_module(self, module):
-        pass
-
-
 def _prepare_crossbench_imports():
-    """Makes Crossbench importable without its optional dependencies."""
-    # Chromium's root vpython.toml pins Python 3.11, while Crossbench imports
-    # PEP 698/695 helpers (such as `override`) directly from `typing`.
-    for attr in ('override', 'TypeAliasType'):
-        if not hasattr(typing, attr) and hasattr(typing_extensions, attr):
-            setattr(typing, attr, getattr(typing_extensions, attr))
+    """Puts Crossbench on sys.path.
 
-    if not any(isinstance(f, _MockFinder) for f in sys.meta_path):
-        sys.meta_path.insert(0, _MockFinder(_MOCKED_PACKAGES))
-    try:
-        # pylint: disable-next=import-outside-toplevel
-        import google.protobuf.runtime_version
-
-        google.protobuf.runtime_version.ValidateProtobufRuntimeVersion = (
-            lambda *args, **kwargs: None
-        )
-    except (ImportError, AttributeError):
-        pass
+    The test runs under Crossbench's own vpython spec (see
+    perf_config.reexec_with_crossbench_python), so its Python version and
+    dependencies are already in place.
+    """
     if perf_config.CROSSBENCH_ROOT not in sys.path:
         sys.path.insert(0, perf_config.CROSSBENCH_ROOT)
 

@@ -19,6 +19,7 @@ from perf_test_fakes import NO_ROUTE, completed, make_args
 import common
 import cros_setup
 import media_metrics
+import perf_config
 
 
 class ReexportTest(unittest.TestCase):
@@ -292,33 +293,14 @@ class CrosSetupTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'Google Chrome dev'):
             cros_setup.detect_milestone(cb_platform)
 
-    def test_prepare_crossbench_imports_polyfills_typing_override(self):
-        sentinel = object()
-        had_override = hasattr(cros_setup.typing, 'override')
-        orig_override = getattr(cros_setup.typing, 'override', None)
-        try:
-            if had_override:
-                delattr(cros_setup.typing, 'override')
-            with mock.patch.object(
-                cros_setup.typing_extensions,
-                'override',
-                sentinel,
-                create=True,
-            ):
-                cros_setup._prepare_crossbench_imports()
-                cros_setup._prepare_crossbench_imports()
-                self.assertIs(cros_setup.typing.override, sentinel)
-            finders = [
-                f
-                for f in cros_setup.sys.meta_path
-                if isinstance(f, cros_setup._MockFinder)
-            ]
-            self.assertEqual(len(finders), 1)
-        finally:
-            if had_override:
-                cros_setup.typing.override = orig_override
-            elif hasattr(cros_setup.typing, 'override'):
-                delattr(cros_setup.typing, 'override')
+    def test_prepare_crossbench_imports_adds_crossbench_to_path_once(self):
+        with mock.patch.object(cros_setup.sys, 'path', ['/other']):
+            cros_setup._prepare_crossbench_imports()
+            cros_setup._prepare_crossbench_imports()
+            self.assertEqual(
+                cros_setup.sys.path,
+                [perf_config.CROSSBENCH_ROOT, '/other'],
+            )
 
     def test_crossbench_flags_uses_shared_tmp_log_and_respects_override(self):
         default_flags = cros_setup._crossbench_flags(['--v=1'])
@@ -332,6 +314,80 @@ class CrosSetupTest(unittest.TestCase):
         self.assertEqual(
             log_flags, [('--log-file', '/var/log/chrome/chrome_debug_H264.log')]
         )
+
+
+class ReexecWithCrossbenchPythonTest(unittest.TestCase):
+    def setUp(self):
+        super().setUp()
+        env = {
+            k: v
+            for k, v in perf_config.os.environ.items()
+            if k != perf_config._REEXEC_ENV
+        }
+        patcher = mock.patch.dict(perf_config.os.environ, env, clear=True)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.execve = self.enterContext(
+            mock.patch.object(perf_config.os, 'execve')
+        )
+        # A ChromeOS run, which is the only kind that re-executes.
+        self.enterContext(
+            mock.patch.object(
+                perf_config.sys, 'argv', ['test.py', '--sender-os=cros']
+            )
+        )
+
+    def test_execs_script_under_crossbench_spec(self):
+        with (
+            mock.patch.object(
+                perf_config.shutil, 'which', return_value='/bin/vpython3'
+            ),
+            mock.patch.object(
+                perf_config.sys, 'argv', ['test.py', '--sender-os', 'cros']
+            ),
+        ):
+            perf_config.reexec_with_crossbench_python('test.py')
+
+        path, argv, env = self.execve.call_args.args
+        self.assertEqual(path, '/bin/vpython3')
+        self.assertEqual(
+            argv,
+            [
+                '/bin/vpython3',
+                '-vpython-spec',
+                perf_config.CROSSBENCH_VPYTHON_SPEC,
+                perf_config.os.path.abspath('test.py'),
+                '--sender-os',
+                'cros',
+            ],
+        )
+        self.assertEqual(env[perf_config._REEXEC_ENV], '1')
+
+    def test_does_nothing_once_reexecuted(self):
+        perf_config.os.environ[perf_config._REEXEC_ENV] = '1'
+        perf_config.reexec_with_crossbench_python('test.py')
+        self.execve.assert_not_called()
+
+    def test_other_senders_stay_on_root_python(self):
+        for argv in (
+            ['test.py', '--sender-os', 'mac'],
+            ['test.py', '--sender-os=linux'],
+            ['test.py'],
+        ):
+            with (
+                self.subTest(argv=argv),
+                mock.patch.object(perf_config.sys, 'argv', argv),
+            ):
+                perf_config.reexec_with_crossbench_python('test.py')
+        self.execve.assert_not_called()
+
+    def test_missing_vpython_raises(self):
+        with (
+            mock.patch.object(perf_config.shutil, 'which', return_value=None),
+            self.assertRaisesRegex(RuntimeError, 'vpython3 is not on PATH'),
+        ):
+            perf_config.reexec_with_crossbench_python('test.py')
+        self.execve.assert_not_called()
 
 
 class MediaMetricsTest(unittest.TestCase):

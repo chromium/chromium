@@ -25,6 +25,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 import common
+import perf_config
 import test_results
 
 # Must follow common, which puts these modules on sys.path.
@@ -374,5 +375,6 @@ def _run_tests(reporter):
 
 
 if __name__ == '__main__':
+    perf_config.reexec_with_crossbench_python(__file__)
     with common.StartProcess(common.server.start, [common.SERVER_PORT], True):
         sys.exit(main())
